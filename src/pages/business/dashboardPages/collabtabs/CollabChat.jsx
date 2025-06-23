@@ -217,81 +217,80 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = () => {
-    if (isSending) {
-      console.warn("Already sending message, aborting.");
-      return;
-    }
-    if (!input.trim() || !selectedConversation || !socketRef.current) {
-      console.warn("Cannot send message: missing input, conversation, or socket");
-      return;
-    }
-
-    setIsSending(true);
-
-    let otherId =
-  selectedConversation.participantsInfo?.find(
-    (b) => b._id.toString() !== myBusinessId.toString()
-  )?._id || 
-  selectedConversation.participants.find((id) => {
-    if (typeof id === "object" && id !== null) {
-      return id.toString() !== myBusinessId.toString();
-    }
-    return id !== myBusinessId.toString();
-  });
-
-// המרה בטוחה למחרוזת מזהה
-if (typeof otherId === "object" && otherId !==  null) {
-  if (typeof otherId._id !== "undefined") {
-    otherId = otherId._id.toString();
-  } else if (typeof otherId.toString === "function") {
-    otherId = otherId.toString();
-  } else {
-    otherId = "";
+  if (isSending) {
+    console.warn("Already sending message, aborting.");
+    return;
   }
-} else {
-  otherId = otherId.toString();
-}
+  if (!input.trim() || !selectedConversation || !socketRef.current) {
+    console.warn("Cannot send message: missing input, conversation, or socket");
+    return;
+  }
 
-const payload = {
-  conversationId: selectedConversation._id,
-  from: myBusinessId.toString(),
-  to: otherId,
-  text: input.trim(),
+  setIsSending(true);
+
+  // מצא את מזהה הצד השני בצורה בטוחה
+  let otherId =
+    selectedConversation.participantsInfo?.find(
+      (b) => b._id.toString() !== myBusinessId.toString()
+    )?._id ||
+    selectedConversation.participants.find((id) => {
+      if (typeof id === "object" && id !== null) {
+        return id.toString() !== myBusinessId.toString();
+      }
+      return id !== myBusinessId.toString();
+    });
+
+  // המרה בטוחה למחרוזת מזהה
+  if (typeof otherId === "object" && otherId !== null) {
+    if (typeof otherId._id !== "undefined") {
+      otherId = otherId._id.toString();
+    } else if (typeof otherId.toString === "function") {
+      otherId = otherId.toString();
+    } else {
+      otherId = "";
+    }
+  } else {
+    otherId = otherId.toString();
+  }
+
+  const payload = {
+    conversationId: selectedConversation._id.toString(),
+    from: myBusinessId.toString(),
+    to: otherId,
+    text: input.trim(),
+  };
+
+  const optimistic = {
+    ...payload,
+    timestamp: new Date().toISOString(),
+    _id: "pending-" + Math.random().toString(36).substr(2, 9),
+    fromBusinessId: payload.from,
+    toBusinessId: payload.to,
+    sending: true,
+  };
+
+  console.log("Sending message:", payload);
+  setMessages((prev) => uniqueMessages([...prev, optimistic]));
+  setInput("");
+
+  socketRef.current.emit("sendMessage", payload, (ack) => {
+    setIsSending(false);
+    if (!ack.ok) {
+      alert("שליחת הודעה נכשלה: " + ack.error);
+      setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
+    } else if (ack.message?._id) {
+      const real = {
+        ...ack.message,
+        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+        toBusinessId: ack.message.toBusinessId || ack.message.to,
+      };
+      setMessages((prev) =>
+        uniqueMessages([...prev.filter((m) => m._id !== optimistic._id), real])
+      );
+    }
+  });
 };
 
-
-
-
-    const optimistic = {
-      ...payload,
-      timestamp: new Date().toISOString(),
-      _id: "pending-" + Math.random().toString(36).substr(2, 9),
-      fromBusinessId: payload.from,
-      toBusinessId: payload.to,
-      sending: true,
-    };
-
-    console.log("Sending message:", payload);
-    setMessages((prev) => uniqueMessages([...prev, optimistic]));
-    setInput("");
-
-    socketRef.current.emit("sendMessage", payload, (ack) => {
-      setIsSending(false);
-      if (!ack.ok) {
-        alert("שליחת הודעה נכשלה: " + ack.error);
-        setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
-      } else if (ack.message?._id) {
-        const real = {
-          ...ack.message,
-          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-          toBusinessId: ack.message.toBusinessId || ack.message.to,
-        };
-        setMessages((prev) =>
-          uniqueMessages([...prev.filter((m) => m._id !== optimistic._id), real])
-        );
-      }
-    });
-  };
 
   const handleAttach = () => {
     if (fileInputRef.current) {
