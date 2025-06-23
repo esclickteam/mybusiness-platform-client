@@ -133,25 +133,32 @@ export default function BusinessChatTab({
 
   // 1. התחברות ל־conversation, סימון קריאה, וטענת היסטוריה
   useEffect(() => {
-    if (!socket || !conversationId) {
-      dispatch({ type: "set", payload: [] });
-      return;
-    }
-    socket.emit("joinConversation", conversationId, (ack) => {
-      if (!ack.ok) console.error("joinConversation failed");
-    });
-    socket.emit("markMessagesRead", conversationId, (resp) => {
-      if (!resp.ok) console.error("markMessagesRead failed");
-    });
-     socket.emit(
+  if (!socket || !conversationId) {
+    dispatch({ type: "set", payload: [] });
+    return;
+  }
+
+  socket.emit("joinConversation", conversationId, (ack) => {
+    if (!ack.ok) console.error("joinConversation failed");
+  });
+
+  socket.emit("markMessagesRead", conversationId, (resp) => {
+    if (!resp.ok) console.error("markMessagesRead failed");
+  });
+
+  socket.emit(
     "getHistory",
     { conversationId },
     (res) => {
       if (res.ok) {
         const msgs = (res.messages || []).map((m) => ({
           ...m,
-          timestamp: m.createdAt,  // ממפה createdAt ל־timestamp
-          text:      m.content,    // ממפה content ל־text
+          timestamp:    m.createdAt,    // createdAt → timestamp
+          text:         m.content,      // content → text
+          fileUrl:      m.fileUrl,      // URL קבוע מהשרת
+          fileType:     m.fileType,
+          fileName:     m.fileName,
+          fileDuration: m.fileDuration,
         }));
         dispatch({ type: "set", payload: msgs });
       } else {
@@ -165,6 +172,9 @@ export default function BusinessChatTab({
     socket.emit("leaveConversation", conversationId);
   };
 }, [socket, conversationId]);
+
+
+
 
   // 2. מאזינים ל־newMessage ו־typing
   useEffect(() => {
@@ -247,52 +257,57 @@ export default function BusinessChatTab({
     fileInputRef.current?.click();
   };
   const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !socket) return;
-    const tempId = uuidv4();
-    const optimistic = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      fileUrl: URL.createObjectURL(file),
-      fileName: file.name,
-      fileType: file.type,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
-    dispatch({ type: "append", payload: optimistic });
-    const reader = new FileReader();
-    reader.onload = () => {
-      socket.emit(
-        "sendFile",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          fileName: file.name,
-          fileType: file.type,
-          buffer: reader.result,
-          tempId,
-        },
-        (ack) => {
-          dispatch({
-            type: "updateStatus",
-            payload: {
-              id: tempId,
-              updates: {
-                ...(ack.message || {}),
-                sending: false,
-                failed: !ack.ok,
-              },
-            },
-          });
-        }
-      );
-    };
-    reader.readAsArrayBuffer(file);
+  const file = e.target.files?.[0];
+  if (!file || !socket) return;
+  const tempId = uuidv4();
+
+  // אופטימיסטית: מציגים blob עד לקבלת ה־fileUrl מהשרת
+  const optimistic = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    fileUrl: URL.createObjectURL(file),
+    fileName: file.name,
+    fileType: file.type,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId,
   };
+  dispatch({ type: "append", payload: optimistic });
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    socket.emit(
+      "sendFile",
+      {
+        conversationId,
+        from: businessId,
+        to: customerId,
+        fileName: file.name,
+        fileType: file.type,
+        buffer: reader.result,
+        tempId,
+      },
+      (ack) => {
+        // כאן אנחנו מקבלים fileUrl אמת מהשרת
+        dispatch({
+          type: "updateStatus",
+          payload: {
+            id: tempId,
+            updates: {
+              fileUrl: ack.message.fileUrl,  // <-- URL קבוע ששמרנו בשרת
+              sending: false,
+              failed: !ack.ok,
+            },
+          },
+        });
+      }
+    );
+  };
+  reader.readAsArrayBuffer(file);
+};
+
 
   const startRecording = async () => {
     if (recording || !navigator.mediaDevices) return;
