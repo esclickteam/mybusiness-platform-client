@@ -232,16 +232,27 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   selectedConversation.participantsInfo?.find(
     (b) => b._id.toString() !== myBusinessId.toString()
   )?._id.toString() ||
-  selectedConversation.participants.find(
-    (id) => id.toString() !== myBusinessId.toString()
-  ).toString();
+  selectedConversation.participants.find((id) => {
+    // אם id הוא אובייקט, המיר אותו למחרוזת
+    if (typeof id === "object" && id !== null) {
+      return id.toString() !== myBusinessId.toString();
+    }
+    // אחרת, השווה ישירות
+    return id !== myBusinessId.toString();
+  });
+
+const otherIdString =
+  typeof otherId === "object" && otherId !== null
+    ? otherId.toString()
+    : otherId;
 
 const payload = {
   conversationId: selectedConversation._id,
   from: myBusinessId.toString(),
-  to: otherId,
+  to: otherIdString,
   text: input.trim(),
 };
+
 
 
     const optimistic = {
