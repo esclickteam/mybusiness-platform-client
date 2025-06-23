@@ -229,15 +229,20 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     setIsSending(true);
 
     const otherId =
-      selectedConversation.participantsInfo?.find((b) => b._id !== myBusinessId)?._id ||
-      selectedConversation.participants.find((id) => id !== myBusinessId);
+  selectedConversation.participantsInfo?.find(
+    (b) => b._id.toString() !== myBusinessId.toString()
+  )?._id.toString() ||
+  selectedConversation.participants.find(
+    (id) => id.toString() !== myBusinessId.toString()
+  ).toString();
 
-    const payload = {
-      conversationId: selectedConversation._id,
-      from: myBusinessId,
-      to: otherId,
-      text: input.trim(),
-    };
+const payload = {
+  conversationId: selectedConversation._id,
+  from: myBusinessId.toString(),
+  to: otherId,
+  text: input.trim(),
+};
+
 
     const optimistic = {
       ...payload,
