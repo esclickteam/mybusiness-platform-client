@@ -195,34 +195,45 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
 
+  useEffect(() => {
+  if (!socketRef.current) return;
+  conversations.forEach(conv => {
+    socketRef.current.emit("joinConversation", conv._id, ack => {
+      if (!ack?.ok) {
+        console.error("joinConversation failed for", conv._id);
+      }
+    });
+  });
+}, [conversations]);
+
+
   // טיפול בהודעות נכנסות
   const handleNewMessage = useCallback(
-    (msg) => {
-      const fullMsg = msg.fullMsg || msg;
-      const normalized = {
-        ...fullMsg,
-        fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-        toBusinessId: fullMsg.toBusinessId || fullMsg.to,
-        // תמיכה בשמות חלופיים
-        conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
-      };
+  (msg) => {
+    const fullMsg = msg.fullMsg || msg;
+    const convId = fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId;
+    const normalized = {
+      ...fullMsg,
+      fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+      toBusinessId:   fullMsg.toBusinessId   || fullMsg.to,
+      conversationId: convId,
+    };
 
-      // אם מיועדת לשיחה הנוכחית
-      if (normalized.conversationId === selectedConversationRef.current?._id) {
-        setMessages((prev) => uniqueMessages([...prev, normalized]));
-      }
+    if (normalized.conversationId === selectedConversationRef.current?._id) {
+      setMessages((prev) => uniqueMessages([...prev, normalized]));
+    }
 
-      // עדכון ברשימת השיחות
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === normalized.conversationId
-            ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
-            : conv
-        )
-      );
-    },
-    [uniqueMessages]
-  );
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv._id === normalized.conversationId
+          ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
+          : conv
+      )
+    );
+  },
+  [uniqueMessages]
+);
+
 
   useEffect(() => {
     if (!socketRef.current) return;
