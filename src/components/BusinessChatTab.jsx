@@ -104,6 +104,7 @@ export default function BusinessChatTab({
   customerId,
   customerName,
   socket,
+  conversationType = "user-business",
 }) {
   const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
@@ -224,42 +225,44 @@ export default function BusinessChatTab({
   };
 
   const sendMessage = () => {
-    if (sending) return;
-    const text = input.trim();
-    if (!text || !socket) return;
-    setSending(true);
-    const tempId = uuidv4();
-    const optimistic = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      text,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
-    dispatch({ type: "append", payload: optimistic });
-    setInput("");
-    socket.emit(
-      "sendMessage",
-      { conversationId, from: businessId, to: customerId, text, tempId },
-      (ack) => {
-        setSending(false);
-        dispatch({
-          type: "updateStatus",
-          payload: {
-            id: tempId,
-            updates: {
-              ...(ack.message || {}),
-              sending: false,
-              failed: !ack.ok,
-            },
-          },
-        });
-      }
-    );
+  if (sending) return;
+  const text = input.trim();
+  if (!text || !socket) return;
+  setSending(true);
+  const tempId = uuidv4();
+  const optimistic = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    text,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId,
   };
+  dispatch({ type: "append", payload: optimistic });
+  setInput("");
+  
+  socket.emit(
+    "sendMessage",
+    { conversationId, from: businessId, to: customerId, text, tempId, conversationType }, // הוספנו conversationType כאן
+    (ack) => {
+      setSending(false);
+      dispatch({
+        type: "updateStatus",
+        payload: {
+          id: tempId,
+          updates: {
+            ...(ack.message || {}),
+            sending: false,
+            failed: !ack.ok,
+          },
+        },
+      });
+    }
+  );
+};
+
 
   const handleAttach = () => {
     fileInputRef.current?.click();

@@ -32,21 +32,29 @@ export default function BusinessChatPage() {
       .then(({ data }) => {
         const list = data.conversations || [];
         setConvos(list);
+
         // unread initial
         const u = {};
-        list.forEach(c => { if (c.unreadCount) u[c.conversationId] = c.unreadCount; });
+        list.forEach(c => {
+          if (c.unreadCount) u[c.conversationId] = c.unreadCount;
+        });
         setUnreadCounts(u);
-        // בחר אוטומטית את הראשונה
+
+        // בחר אוטומטית את הראשונה כולל conversationType
         if (list.length) {
-          const { conversationId, clientId, clientName } = list[0];
-          setSelected({ conversationId, partnerId: clientId, partnerName: clientName });
+          const { conversationId, clientId, clientName, conversationType } = list[0];
+          setSelected({ conversationId, partnerId: clientId, partnerName: clientName, conversationType });
         }
       })
       .catch(() => {/* error handling */});
   }, [initialized, businessId]);
 
   const handleSelect = (conversationId, partnerId, partnerName) => {
-    setSelected({ conversationId, partnerId, partnerName });
+    const convo = convos.find(c => c.conversationId === conversationId);
+    const type = convo?.conversationType || "user-business";
+
+    setSelected({ conversationId, partnerId, partnerName, conversationType: type });
+
     // מאפסים את הספירה של השיחה הנבחרת
     setUnreadCounts(prev => {
       const next = { ...prev };
@@ -78,6 +86,7 @@ export default function BusinessChatPage() {
             customerId={selected.partnerId}
             customerName={selected.partnerName}
             socket={socket}
+            conversationType={selected.conversationType}
           />
         ) : (
           <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
