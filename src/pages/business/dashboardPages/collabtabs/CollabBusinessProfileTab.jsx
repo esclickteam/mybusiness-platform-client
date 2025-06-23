@@ -34,7 +34,7 @@ export default function CollabBusinessProfileTab({ socket }) {
     if (!socket) return;
 
     const handleNewRecommendation = (rec) => {
-      addSuggestion(rec); // מוסיף המלצה לקונטקסט
+      addSuggestion(rec);
     };
 
     socket.on("newRecommendation", handleNewRecommendation);
@@ -172,11 +172,15 @@ export default function CollabBusinessProfileTab({ socket }) {
           </div>
           <div className="business-section">
             <h4>🤝 שיתופי פעולה רצויים:</h4>
-            <ul>
-              {safeProfile.collabPref.split("\n").map((line, index) => (
-                <li key={index}>{line}</li>
-              ))}
-            </ul>
+            {safeProfile.collabPref ? (
+              <ul className="collab-list">
+                {safeProfile.collabPref.split("\n").map((line, index) =>
+                  line.trim() ? <li key={index}>{line}</li> : null
+                )}
+              </ul>
+            ) : (
+              <p>אין שיתופי פעולה רצויים מוזנים.</p>
+            )}
           </div>
           <div className="business-section">
             <h4>📞 פרטי קשר:</h4>
@@ -284,15 +288,17 @@ export default function CollabBusinessProfileTab({ socket }) {
           justifyContent: "center",
         }}
       >
-        <Box sx={{
-          width: "100%",
-          maxWidth: 900,
-          bgcolor: "#fff",
-          borderRadius: "16px",
-          boxShadow: 6,
-          p: 2,
-          outline: "none"
-        }}>
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 900,
+            bgcolor: "#fff",
+            borderRadius: "16px",
+            boxShadow: 6,
+            p: 2,
+            outline: "none",
+          }}
+        >
           {myBusinessId && (
             <CollabChat
               token={API.token || localStorage.getItem("token")}
