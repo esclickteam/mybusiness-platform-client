@@ -386,7 +386,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   };
 
   useEffect(() => {
-    console.log("[CollabChat] Scrolling to bottom");
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -573,20 +572,49 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               padding: 16,
               borderTop: "1px solid #eee",
               alignItems: "center",
+              backgroundColor: "#fff",
+              boxShadow: "0 -2px 8px rgba(0,0,0,0.1)",
+              borderRadius: "0 0 18px 18px",
             }}
           >
             <TextField
               fullWidth
-              size="small"
+              size="medium"
               placeholder="כתוב הודעה..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               autoComplete="off"
+              sx={{
+                backgroundColor: "#f0efff",
+                borderRadius: "20px",
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "20px",
+                  "& fieldset": { borderColor: "#bbb" },
+                  "&:hover fieldset": { borderColor: "#7153dd" },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#7153dd",
+                    boxShadow: "0 0 6px rgba(113, 83, 221, 0.5)",
+                  },
+                },
+                input: { padding: "14px 16px", fontSize: "1rem" },
+              }}
             />
+
             <Button
               type="submit"
               variant="contained"
-              sx={{ fontWeight: 600 }}
+              sx={{
+                fontWeight: 700,
+                borderRadius: "20px",
+                padding: "12px 32px",
+                fontSize: "1.15rem",
+                boxShadow: "0 6px 15px rgba(113, 83, 221, 0.6)",
+                textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "#5d3dc7",
+                  boxShadow: "0 8px 20px rgba(92, 62, 199, 0.8)",
+                },
+              }}
               disabled={!input.trim() || isSending}
             >
               שלח
@@ -595,11 +623,25 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             <Button
               type="button"
               onClick={handleAttach}
-              sx={{ ml: 1 }}
+              sx={{
+                ml: 1,
+                fontSize: "1.6rem",
+                padding: "10px 14px",
+                borderRadius: "50%",
+                minWidth: 0,
+                backgroundColor: "#e3dffc",
+                color: "#7153dd",
+                boxShadow: "0 6px 15px rgba(111, 94, 203, 0.4)",
+                "&:hover": {
+                  backgroundColor: "#c7bcf8",
+                  boxShadow: "0 8px 20px rgba(111, 94, 203, 0.7)",
+                },
+              }}
               title="צרף קובץ"
             >
               📎
             </Button>
+
             <input
               type="file"
               ref={fileInputRef}
