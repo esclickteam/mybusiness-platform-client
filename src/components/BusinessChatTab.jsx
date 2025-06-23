@@ -202,16 +202,8 @@ export default function BusinessChatTab({
       }
     };
 
-    const handleReadReceipt = ({ messageId, userId: readerId, readBy }) => {
-  setMessages((prev) =>
-    prev.map((msg) => {
-      if (msg._id === messageId) {
-        // עדכון עם מערך readBy שמגיע מהשרת, או השארת הקיים אם לא קיים
-        return { ...msg, readBy: readBy || msg.readBy || [] };
-      }
-      return msg;
-    })
-  );
+    const handleReadReceipt = ({ messageId, readBy }) => {
+  dispatch({ type: "updateReadBy", payload: { messageId, readBy } });
 };
 
 
