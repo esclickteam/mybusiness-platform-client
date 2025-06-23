@@ -8,24 +8,49 @@ import { useAuth } from "../../../../context/AuthContext";
 
 // פונקציה כללית למציאת מזהה העסק השני מתוך conversation
 function getOtherBusinessId(conv, myBusinessId) {
-  if (!conv || !myBusinessId) return "";
+  if (!conv || !myBusinessId) {
+    console.warn("getOtherBusinessId: missing conv or myBusinessId");
+    return "";
+  }
 
   if (Array.isArray(conv.participantsInfo)) {
+    console.log("getOtherBusinessId: checking participantsInfo array");
     const info = conv.participantsInfo.find(
-      (b) => b._id.toString() !== myBusinessId.toString()
+      (b) => {
+        const bIdStr = b._id.toString();
+        const myIdStr = myBusinessId.toString();
+        console.log(`Comparing participantsInfo id: ${bIdStr} !== ${myIdStr}`);
+        return bIdStr !== myIdStr;
+      }
     );
-    if (info) return info._id.toString();
+    if (info) {
+      const idStr = info._id.toString();
+      console.log("getOtherBusinessId: found id in participantsInfo:", idStr);
+      return idStr;
+    }
   }
 
   if (Array.isArray(conv.participants)) {
+    console.log("getOtherBusinessId: checking participants array");
     const raw = conv.participants.find(
-      (id) => id.toString() !== myBusinessId.toString()
+      (id) => {
+        const idStr = id.toString();
+        const myIdStr = myBusinessId.toString();
+        console.log(`Comparing participants id: ${idStr} !== ${myIdStr}`);
+        return idStr !== myIdStr;
+      }
     );
-    if (raw) return raw.toString();
+    if (raw) {
+      const rawStr = raw.toString();
+      console.log("getOtherBusinessId: found id in participants:", rawStr);
+      return rawStr;
+    }
   }
 
+  console.warn("getOtherBusinessId: no other participant found");
   return "";
 }
+
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
