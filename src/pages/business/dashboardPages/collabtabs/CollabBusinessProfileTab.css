@@ -257,3 +257,18 @@
   color: #7153dd;
   font-weight: 700;
 }
+.modal-box {
+  direction: rtl;
+  background: white;
+  border-radius: 35px;
+  padding: 3rem 3.5rem;
+  max-width: 580px;
+  max-height: 85vh;      /* הוסף את השורה הזו */
+  margin: 5% auto;
+  box-shadow: 0 25px 55px rgba(120, 81, 169, 0.35);
+  outline: none;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #483d7a;
+  overflow-y: auto;      /* הוסף את השורה הזו */
+  box-sizing: border-box;
+}
