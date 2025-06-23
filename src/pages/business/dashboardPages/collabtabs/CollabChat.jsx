@@ -34,12 +34,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
-    return msgs.filter((m) => {
+    const filtered = msgs.filter((m) => {
       const id = m._id?.toString() || m.tempId || m.timestamp;
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
+    return filtered;
   }, []);
 
   const fetchConversations = useCallback(async () => {
@@ -58,15 +59,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       if (!selectedConversation && convs.length > 0) {
         setSelectedConversation(convs[0]);
       }
-    } catch (err) {
+    } catch {
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
   }, [refreshAccessToken, selectedConversation]);
 
   useEffect(() => {
-    if (!myBusinessId || socketInitializedRef.current) return;
-
+    if (!myBusinessId) return;
+    if (socketInitializedRef.current) return;
     socketInitializedRef.current = true;
 
     async function setupSocket() {
@@ -518,73 +519,21 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             }}
             style={{
               display: "flex",
-              gap: 12,
-              padding: 12,
-              borderTop: "1px solid #ddd",
+              gap: 8,
+              padding: 16,
+              borderTop: "1px solid #eee",
               alignItems: "center",
-              backgroundColor: "#faf9ff",
-              borderRadius: "0 0 18px 18px",
-              boxShadow: "0 -2px 8px rgba(0,0,0,0.07)",
+              backgroundColor: "#f5f3ff",
+              boxShadow: "0 -2px 6px rgb(90 71 168 / 0.3)",
             }}
           >
-            <TextField
-              fullWidth
-              size="medium"
-              placeholder="כתוב הודעה..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              autoComplete="off"
-              sx={{
-                backgroundColor: "#f5f4ff",
-                borderRadius: "25px",
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "25px",
-                  "& fieldset": { borderColor: "#ccc" },
-                  "&:hover fieldset": { borderColor: "#7153dd" },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#7153dd",
-                    boxShadow: "0 0 6px rgba(113, 83, 221, 0.35)",
-                  },
-                },
-                input: { padding: "14px 20px", fontSize: "1rem" },
-              }}
-            />
-
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{
-                minWidth: "45px",
-                width: "45px",
-                height: "45px",
-                padding: 0,
-                borderRadius: "50%",
-                fontWeight: 700,
-                fontSize: "1.1rem",
-                boxShadow: "0 5px 15px rgba(113, 83, 221, 0.6)",
-                backgroundColor: "#7153dd",
-                color: "#fff",
-                "&:hover": {
-                  backgroundColor: "#5d3dc7",
-                  boxShadow: "0 7px 20px rgba(92, 62, 199, 0.8)",
-                },
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              disabled={!input.trim() || isSending}
-              title="שלח הודעה"
-            >
-              ➤
-            </Button>
-
             <Button
               type="button"
               onClick={handleAttach}
               sx={{
-                minWidth: "40px",
-                width: "40px",
-                height: "40px",
+                minWidth: 40,
+                width: 40,
+                height: 40,
                 padding: 0,
                 borderRadius: "50%",
                 backgroundColor: "#e3dffc",
@@ -604,6 +553,51 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               📎
             </Button>
 
+            <TextField
+              fullWidth
+              size="medium"
+              placeholder="כתוב הודעה..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              autoComplete="off"
+              sx={{
+                backgroundColor: "white",
+                borderRadius: 25,
+                "& .MuiOutlinedInput-root": {
+                  paddingRight: "20px",
+                  paddingLeft: "20px",
+                  borderRadius: 25,
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#7153dd",
+                },
+                "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#7153dd",
+                  borderWidth: 2,
+                },
+              }}
+            />
+
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{
+                minWidth: 80,
+                height: 40,
+                borderRadius: "20px",
+                fontWeight: 700,
+                backgroundColor: "#7153dd",
+                boxShadow: "0 4px 12px rgba(111, 94, 203, 0.6)",
+                "&:hover": {
+                  backgroundColor: "#5d3dc7",
+                  boxShadow: "0 6px 18px rgba(92, 62, 199, 0.9)",
+                },
+              }}
+              disabled={!input.trim() || isSending}
+            >
+              ➤
+            </Button>
+
             <input
               type="file"
               ref={fileInputRef}
@@ -615,7 +609,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         )}
 
         {onClose && (
-          <Button sx={{ position: "absolute", top: 13, left: 18 }} onClick={onClose}>
+          <Button
+            sx={{ position: "absolute", top: 13, left: 18 }}
+            onClick={onClose}
+            title="סגור צ'אט"
+          >
             ✖
           </Button>
         )}
