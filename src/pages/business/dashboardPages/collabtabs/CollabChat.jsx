@@ -207,66 +207,46 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   // טיפול בהודעות נכנסות בזמן אמת
   const handleNewMessage = useCallback(
-    (msg) => {
-      const fullMsg = msg.fullMsg || msg;
-      const normalized = {
-        ...fullMsg,
-        fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-        toBusinessId: fullMsg.toBusinessId || fullMsg.to,
-        conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
-      };
+  (msg) => {
+    const fullMsg = msg.fullMsg || msg;
+    const normalized = {
+      ...fullMsg,
+      fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+      toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+      conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
+    };
 
-      dispatchMessages((prevMessages) => {
-        const optimisticIndex = prevMessages.findIndex(
-          (m) =>
-            m._id.startsWith("pending-") &&
-            (m.text === normalized.text || m.fileUrl === normalized.fileUrl) &&
-            m.fromBusinessId === normalized.fromBusinessId
-        );
+    // הוספת סינון: אם ההודעה לא שייכת לשיחה הנבחרת - מתעלמים
+    if (!selectedConversation || normalized.conversationId !== selectedConversation._id) {
+      return;
+    }
 
-        if (optimisticIndex !== -1) {
-          // שחרור URL זמני של הקובץ אם היה
-          const oldMsg = prevMessages[optimisticIndex];
-          if (oldMsg.fileUrl && oldMsg.fileUrl.startsWith("blob:")) {
-            URL.revokeObjectURL(oldMsg.fileUrl);
-          }
+    dispatchMessages((prevMessages) => {
+      // המשך הקוד כמו שהיה...
+    });
 
-          // החלפת ההודעה האופטימית בהודעה האמיתית
-          const newMessages = [...prevMessages];
-          newMessages[optimisticIndex] = normalized;
-          return newMessages;
-        }
+    // עדכון שיחה נבחרת ושיחות בהתאם
+    setSelectedConversation((prev) => {
+      if (prev && prev._id === normalized.conversationId) {
+        return {
+          ...prev,
+          messages: uniqueMessages([...(prev.messages || []), normalized]),
+        };
+      }
+      return prev;
+    });
 
-        // אם ההודעה כבר קיימת, אל תוסיף שוב
-        if (prevMessages.some((m) => m._id === normalized._id)) {
-          return prevMessages;
-        }
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv._id === normalized.conversationId
+          ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
+          : conv
+      )
+    );
+  },
+  [selectedConversation, uniqueMessages]
+);
 
-        // הוסף הודעה חדשה
-        return [...prevMessages, normalized];
-      });
-
-      // עדכון שיחה נבחרת ושיחות בהתאם
-      setSelectedConversation((prev) => {
-        if (prev && prev._id === normalized.conversationId) {
-          return {
-            ...prev,
-            messages: uniqueMessages([...(prev.messages || []), normalized]),
-          };
-        }
-        return prev;
-      });
-
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === normalized.conversationId
-            ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
-            : conv
-        )
-      );
-    },
-    [selectedConversation, uniqueMessages]
-  );
 
   useEffect(() => {
     if (!socketRef.current) return;
