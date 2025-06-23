@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, useReducer } from "react";
 import { io } from "socket.io-client";
 import API from "../../../../api";
 import Box from "@mui/material/Box";
@@ -31,12 +31,27 @@ function getOtherBusinessId(conv, myBusinessId) {
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
+function messagesReducer(state, action) {
+  switch (action.type) {
+    case "set":
+      return action.payload;
+    case "append": {
+      const exists = state.some((m) => m._id === action.payload._id);
+      if (exists) return state;
+      return [...state, action.payload];
+    }
+    case "replace":
+      return state.map((m) => (m._id === action.payload._id ? action.payload : m));
+    default:
+      return state;
+  }
+}
+
 export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const socketRef = useRef(null);
   const socketInitializedRef = useRef(false);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
-  const selectedConversationRef = useRef(null);
 
   const { refreshAccessToken: refreshAccessTokenOriginal, logout: logoutOriginal } = useAuth();
 
@@ -51,15 +66,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [messages, dispatchMessages] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
   const [isSending, setIsSending] = useState(false);
-
-  // Sync ref עם הבחירה הנוכחית
-  useEffect(() => {
-    selectedConversationRef.current = selectedConversation;
-  }, [selectedConversation]);
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
@@ -71,7 +81,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   }, []);
 
-  // טען שיחות מה־API
   const fetchConversations = useCallback(async () => {
     try {
       const token = await refreshAccessToken();
@@ -85,16 +94,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         messages: Array.isArray(c.messages) ? c.messages : [],
       }));
       setConversations(convs);
-      if (!selectedConversationRef.current && convs.length > 0) {
+      if (!selectedConversation && convs.length > 0) {
         setSelectedConversation(convs[0]);
       }
     } catch (err) {
       setConversations([]);
       setError("לא הצלחנו לטעון שיחות");
     }
-  }, [refreshAccessToken]);
+  }, [refreshAccessToken, selectedConversation]);
 
-  // התחברות ל־WebSocket
   useEffect(() => {
     if (!myBusinessId) return;
     if (socketInitializedRef.current) return;
@@ -148,7 +156,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout, fetchConversations]);
 
-  // ברגע שהשיחות נטענות, מצטרפים לכל חדר
+  // הצטרפות לחדרי שיחה כאשר מתעדכנות השיחות
   useEffect(() => {
     if (!socketRef.current) return;
     conversations.forEach((conv) => {
@@ -156,16 +164,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   }, [conversations]);
 
-  // טעינת הודעות כשמשתנה selectedConversation
+  // טעינת הודעות של השיחה הנבחרת
   useEffect(() => {
     if (!socketRef.current || !selectedConversation) {
-      setMessages([]);
+      dispatchMessages({ type: "set", payload: [] });
       return;
     }
     const convId = selectedConversation._id;
 
     const joinHandler = () => {
-      socketRef.current.emit("joinConversation", selectedConversationRef.current._id);
+      socketRef.current.emit("joinConversation", convId);
     };
 
     socketRef.current.on("connect", joinHandler);
@@ -183,9 +191,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           fromBusinessId: msg.fromBusinessId || msg.from,
           toBusinessId: msg.toBusinessId || msg.to,
         }));
-        setMessages(uniqueMessages(normMsgs));
+        dispatchMessages({ type: "set", payload: uniqueMessages(normMsgs) });
       } catch {
-        setMessages([]);
+        dispatchMessages({ type: "set", payload: [] });
       }
     })();
 
@@ -195,45 +203,31 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
 
-  useEffect(() => {
-  if (!socketRef.current) return;
-  conversations.forEach(conv => {
-    socketRef.current.emit("joinConversation", conv._id, ack => {
-      if (!ack?.ok) {
-        console.error("joinConversation failed for", conv._id);
-      }
-    });
-  });
-}, [conversations]);
-
-
-  // טיפול בהודעות נכנסות
+  // טיפול בהודעות נכנסות בזמן אמת
   const handleNewMessage = useCallback(
-  (msg) => {
-    const fullMsg = msg.fullMsg || msg;
-    const convId = fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId;
-    const normalized = {
-      ...fullMsg,
-      fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-      toBusinessId:   fullMsg.toBusinessId   || fullMsg.to,
-      conversationId: convId,
-    };
+    (msg) => {
+      const fullMsg = msg.fullMsg || msg;
+      const normalized = {
+        ...fullMsg,
+        fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+        toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+        conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
+      };
 
-    if (normalized.conversationId === selectedConversationRef.current?._id) {
-      setMessages((prev) => uniqueMessages([...prev, normalized]));
-    }
+      if (normalized.conversationId === selectedConversation?._id) {
+        dispatchMessages({ type: "append", payload: normalized });
+      }
 
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv._id === normalized.conversationId
-          ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
-          : conv
-      )
-    );
-  },
-  [uniqueMessages]
-);
-
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === normalized.conversationId
+            ? { ...conv, messages: [...(conv.messages || []), normalized] }
+            : conv
+        )
+      );
+    },
+    [selectedConversation]
+  );
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -249,9 +243,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const sendMessage = () => {
     if (isSending) return;
-    if (!input.trim() || !selectedConversationRef.current || !socketRef.current) return;
+    if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
-    const otherIdRaw = getOtherBusinessId(selectedConversationRef.current, myBusinessId);
+    const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
     if (!otherIdRaw) return;
     const otherId =
       typeof otherIdRaw === "string"
@@ -261,7 +255,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         : otherIdRaw.toString();
 
     const payload = {
-      conversationId: selectedConversationRef.current._id.toString(),
+      conversationId: selectedConversation._id.toString(),
       from: myBusinessId.toString(),
       to: otherId,
       text: input.trim(),
@@ -276,7 +270,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       sending: true,
     };
 
-    setMessages((prev) => uniqueMessages([...prev, optimistic]));
+    dispatchMessages({ type: "append", payload: optimistic });
     setInput("");
     setIsSending(true);
 
@@ -284,16 +278,20 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       setIsSending(false);
       if (!ack.ok) {
         alert("שליחת הודעה נכשלה: " + ack.error);
-        setMessages((prev) => prev.filter((m) => m._id !== optimistic._id));
+        dispatchMessages({
+          type: "set",
+          payload: messages.filter((m) => m._id !== optimistic._id),
+        });
       } else if (ack.message?._id) {
         const real = {
           ...ack.message,
           fromBusinessId: ack.message.fromBusinessId || ack.message.from,
           toBusinessId: ack.message.toBusinessId || ack.message.to,
         };
-        setMessages((prev) =>
-          uniqueMessages([...prev.filter((m) => m._id !== optimistic._id), real])
-        );
+        dispatchMessages({
+          type: "replace",
+          payload: real,
+        });
       }
     });
   };
@@ -307,9 +305,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file || !socketRef.current || !selectedConversationRef.current) return;
+    if (!file || !socketRef.current || !selectedConversation) return;
 
-    const toRaw = getOtherBusinessId(selectedConversationRef.current, myBusinessId);
+    const toRaw = getOtherBusinessId(selectedConversation, myBusinessId);
     if (!toRaw) return;
 
     const toBusinessId =
@@ -325,7 +323,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     const optimisticMsg = {
       _id: tempId,
-      conversationId: selectedConversationRef.current._id,
+      conversationId: selectedConversation._id,
       fromBusinessId: myBusinessId,
       toBusinessId,
       fileUrl: URL.createObjectURL(file),
@@ -335,15 +333,15 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       sending: true,
     };
 
-    setMessages((prev) => uniqueMessages([...prev, optimisticMsg]));
+    dispatchMessages({ type: "append", payload: optimisticMsg });
 
     setConversations((prevConvs) =>
       prevConvs.map((conv) => {
-        if (conv._id === selectedConversationRef.current._id) {
+        if (conv._id === selectedConversation._id) {
           const msgs = Array.isArray(conv.messages) ? conv.messages : [];
           return {
             ...conv,
-            messages: uniqueMessages([...msgs, optimisticMsg]),
+            messages: [...msgs, optimisticMsg],
           };
         }
         return conv;
@@ -355,7 +353,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       socketRef.current.emit(
         "sendFile",
         {
-          conversationId: selectedConversationRef.current._id,
+          conversationId: selectedConversation._id,
           from: myBusinessId,
           to: toBusinessId,
           fileType: file.type,
@@ -367,10 +365,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           setIsSending(false);
           if (!ack.ok) {
             alert("שליחת קובץ נכשלה: " + (ack.error || "שגיאה לא ידועה"));
-            setMessages((prev) => prev.filter((m) => m._id !== tempId));
+            dispatchMessages({
+              type: "set",
+              payload: messages.filter((m) => m._id !== tempId),
+            });
             setConversations((prevConvs) =>
               prevConvs.map((conv) => {
-                if (conv._id === selectedConversationRef.current._id) {
+                if (conv._id === selectedConversation._id) {
                   const msgs = Array.isArray(conv.messages)
                     ? conv.messages.filter((m) => m._id !== tempId)
                     : [];
@@ -385,18 +386,19 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               fromBusinessId: ack.message.fromBusinessId || ack.message.from,
               toBusinessId: ack.message.toBusinessId || ack.message.to,
             };
-            setMessages((prev) =>
-              uniqueMessages([...prev.filter((m) => m._id !== tempId), realMsg])
-            );
+            dispatchMessages({
+              type: "replace",
+              payload: realMsg,
+            });
             setConversations((prevConvs) =>
               prevConvs.map((conv) => {
-                if (conv._id === selectedConversationRef.current._id) {
+                if (conv._id === selectedConversation._id) {
                   const msgs = Array.isArray(conv.messages)
                     ? conv.messages.filter((m) => m._id !== tempId)
                     : [];
                   return {
                     ...conv,
-                    messages: uniqueMessages([...msgs, realMsg]),
+                    messages: [...msgs, realMsg],
                   };
                 }
                 return conv;
@@ -456,7 +458,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 businessName: "עסק",
               };
             const lastMsg =
-              conv.messages.length > 0 ? conv.messages[conv.messages.length - 1].text : "";
+              conv.messages.length > 0
+                ? conv.messages[conv.messages.length - 1].text
+                : "";
             return (
               <Box
                 key={conv._id}
