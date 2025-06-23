@@ -115,7 +115,8 @@ export default function ClientChatTab({
     setLoading(true);
     setError("");
 
-    fetch(`/api/chat/history?conversationId=${conversationId}`, {
+      fetch(`/api/conversations/${conversationId}/history`, {
+
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -439,7 +440,8 @@ export default function ClientChatTab({
                 </a>
               )
             ) : (
-              <div className="text">{m.isEdited && m.editedText ? m.editedText : m.text}</div>
+              <div className="text">{m.isEdited && m.editedText ? m.editedText : (m.content || m.text)}</div>
+
             )}
             {m.isEdited && userRole === "business" && (
               <div className="edited-label" style={{ fontSize: "0.8em", color: "#888" }}>
@@ -449,7 +451,8 @@ export default function ClientChatTab({
             <div className="meta">
               <span className="time">
                 {(() => {
-                  const date = new Date(m.timestamp);
+                      const date = new Date(m.createdAt);
+
                   if (isNaN(date)) return "";
                   return date.toLocaleTimeString("he-IL", {
                     hour: "2-digit",
