@@ -209,13 +209,13 @@ export default function ClientChatTab({
       );
     };
 
-    // טיפול בעדכון סימון קריאה (read receipt)
+    // טיפול בעדכון סימון קריאה (read receipt) עם המרה ל-string
     const handleReadReceipt = ({ messageId, userId: readerId }) => {
       setMessages((prev) =>
         prev.map((msg) => {
           if (msg._id === messageId) {
             const readBy = msg.readBy || [];
-            if (!readBy.includes(readerId)) {
+            if (!readBy.some((id) => id.toString() === readerId.toString())) {
               return { ...msg, readBy: [...readBy, readerId] };
             }
           }
@@ -254,7 +254,7 @@ export default function ClientChatTab({
 
     // סמן הודעות שהגיעו מהצד השני וטרם נקראו על ידך
     const unreadMessages = messages.filter(
-      (m) => m.from !== userId && (!m.readBy || !m.readBy.includes(userId))
+      (m) => m.from !== userId && (!m.readBy || !m.readBy.some(id => id.toString() === userId.toString()))
     );
 
     unreadMessages.forEach((msg) => {
@@ -456,7 +456,7 @@ export default function ClientChatTab({
             )}
 
             {/* סימון קריאה */}
-            {m.from === userId && m.readBy && m.readBy.includes(businessId) && (
+            {m.from === userId && m.readBy && m.readBy.some(id => id.toString() === businessId.toString()) && (
               <span className="read-indicator" title="נקראה">
                 ✔✔
               </span>
