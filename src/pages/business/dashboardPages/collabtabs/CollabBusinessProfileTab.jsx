@@ -125,65 +125,72 @@ export default function CollabBusinessProfileTab({ socket }) {
 
   return (
     <>
-      <div className="collab-section">
-        <h3 className="collab-title">📇 פרופיל עסקי</h3>
-        <div className="business-profile-card">
-          <div className="business-header">
-            <label htmlFor="logo-upload" style={{ cursor: "pointer" }}>
+      <div className="profile-wrapper">
+        <h2 className="profile-header">📇 פרופיל עסקי</h2>
+
+        <div className="profile-card">
+          <div className="profile-top">
+            <label htmlFor="logo-upload" className="logo-label">
               <img
                 src={logoPreview || "https://via.placeholder.com/150"}
                 alt="לוגו העסק"
-                className="business-logo"
+                className="profile-logo"
               />
               <input
                 id="logo-upload"
                 type="file"
                 accept="image/*"
-                style={{ display: "none" }}
                 onChange={handleLogoChange}
+                style={{ display: "none" }}
               />
             </label>
-            <div className="business-header-text">
-              <h2 className="business-name">{safeProfile.businessName}</h2>
-              <p className="business-category">{safeProfile.category}</p>
+
+            <div className="profile-info">
+              <h3 className="business-name">{safeProfile.businessName}</h3>
+              <span className="business-category">{safeProfile.category}</span>
             </div>
-            <div className="flex gap-2">
+
+            <div className="profile-actions">
               <button
-                className="collab-form-button"
+                className="btn-primary"
                 onClick={() => setShowEditProfile(true)}
               >
                 ✏️ עריכת פרופיל
               </button>
               <button
-                className="collab-form-button"
+                className="btn-secondary"
                 onClick={() => setShowBusinessChat(true)}
               >
                 💬 הודעות עסקיות
               </button>
             </div>
           </div>
-          <div className="business-section">
-            <h4>📍 אזור פעילות:</h4>
+
+          <div className="profile-section">
+            <h4>📍 אזור פעילות</h4>
             <p>{safeProfile.area}</p>
           </div>
-          <div className="business-section">
-            <h4>📝 על העסק:</h4>
+
+          <div className="profile-section">
+            <h4>📝 על העסק</h4>
             <p>{safeProfile.about}</p>
           </div>
-          <div className="business-section">
-            <h4>🤝 שיתופי פעולה רצויים:</h4>
+
+          <div className="profile-section">
+            <h4>🤝 שיתופי פעולה רצויים</h4>
             {safeProfile.collabPref ? (
               <ul className="collab-list">
-                {safeProfile.collabPref.split("\n").map((line, index) =>
-                  line.trim() ? <li key={index}>{line}</li> : null
+                {safeProfile.collabPref.split("\n").map((line, i) =>
+                  line.trim() ? <li key={i}>{line}</li> : null
                 )}
               </ul>
             ) : (
-              <p>אין שיתופי פעולה רצויים מוזנים.</p>
+              <p>אין שיתופי פעולה מוזנים.</p>
             )}
           </div>
-          <div className="business-section">
-            <h4>📞 פרטי קשר:</h4>
+
+          <div className="profile-section">
+            <h4>📞 פרטי קשר</h4>
             <p>
               <strong>איש קשר:</strong> {safeProfile.contact}
             </p>
@@ -217,57 +224,49 @@ export default function CollabBusinessProfileTab({ socket }) {
             עריכת פרופיל עסקי
           </h3>
           <form onSubmit={handleSaveProfile} className="styled-form">
-            <div>
-              <label>שם העסק</label>
-              <input
-                name="businessName"
-                defaultValue={safeProfile.businessName}
-                required
-              />
-            </div>
-            <div>
-              <label>תחום</label>
-              <input name="category" defaultValue={safeProfile.category} required />
-            </div>
-            <div>
-              <label>אזור פעילות</label>
-              <input name="area" defaultValue={safeProfile.area} required />
-            </div>
-            <div>
-              <label>על העסק</label>
-              <textarea name="about" defaultValue={safeProfile.about} rows="3" />
-            </div>
-            <div>
-              <label>שיתופי פעולה רצויים</label>
-              <textarea
-                name="collabPref"
-                defaultValue={safeProfile.collabPref}
-                rows="3"
-              />
-            </div>
-            <div>
-              <label>שם איש קשר</label>
-              <input name="contact" defaultValue={safeProfile.contact} required />
-            </div>
-            <div>
-              <label>טלפון</label>
-              <input name="phone" defaultValue={safeProfile.phone} required />
-            </div>
-            <div>
-              <label>אימייל</label>
-              <input name="email" defaultValue={safeProfile.email} required />
-            </div>
+            <label>שם העסק</label>
+            <input
+              name="businessName"
+              defaultValue={safeProfile.businessName}
+              required
+            />
+
+            <label>תחום</label>
+            <input name="category" defaultValue={safeProfile.category} required />
+
+            <label>אזור פעילות</label>
+            <input name="area" defaultValue={safeProfile.area} required />
+
+            <label>על העסק</label>
+            <textarea name="about" defaultValue={safeProfile.about} rows="3" />
+
+            <label>שיתופי פעולה רצויים</label>
+            <textarea
+              name="collabPref"
+              defaultValue={safeProfile.collabPref}
+              rows="3"
+            />
+
+            <label>שם איש קשר</label>
+            <input name="contact" defaultValue={safeProfile.contact} required />
+
+            <label>טלפון</label>
+            <input name="phone" defaultValue={safeProfile.phone} required />
+
+            <label>אימייל</label>
+            <input name="email" defaultValue={safeProfile.email} required />
+
             <div className="modal-buttons">
               <button
                 type="submit"
-                className="collab-form-button"
+                className="btn-primary"
                 disabled={saving}
               >
                 {saving ? "שומר..." : "💾 שמירה"}
               </button>
               <button
                 type="button"
-                className="collab-form-button secondary"
+                className="btn-secondary"
                 onClick={() => setShowEditProfile(false)}
                 disabled={saving}
               >
