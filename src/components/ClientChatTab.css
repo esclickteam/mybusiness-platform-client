@@ -547,3 +547,21 @@
     font-size: 18px;
   }
 }
+
+/* סימון קריאה עם שני וי */
+.read-indicator {
+  font-size: 14px;
+  user-select: none;
+  margin-left: 6px;
+  align-self: center;
+  letter-spacing: -2px; /* מצמיד את שני הסימנים */
+  font-weight: 600;
+}
+
+.read-indicator.sent {
+  color: gray; /* הודעה נשלחה אך לא נקראה */
+}
+
+.read-indicator.read {
+  color: #4fc3f7; /* הודעה נקראה - כחול וואטסאפ */
+}

@@ -108,7 +108,6 @@ export default function ClientChatTab({
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // טעינת ההיסטוריה פעם אחת עם שינוי conversationId
   useEffect(() => {
     if (!conversationId) return;
 
@@ -138,7 +137,6 @@ export default function ClientChatTab({
       });
   }, [conversationId, setMessages]);
 
-  // מאזיני socket לעדכונים בזמן אמת (בלי fetch חוזר)
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
 
@@ -154,7 +152,6 @@ export default function ClientChatTab({
         : null;
 
       setMessages((prev) => {
-        // אם ההודעה כבר קיימת (כולל החלפת tempId ב-id אמיתי), עדכן במקום להוסיף כפילויות
         const existsIdx = prev.findIndex((m) => {
           const mid = m.isRecommendation
             ? `rec_${m.recommendationId}`
@@ -209,7 +206,6 @@ export default function ClientChatTab({
       );
     };
 
-    // טיפול בעדכון סימון קריאה (read receipt) עם המרה ל-string
     const handleReadReceipt = ({ messageId, userId: readerId }) => {
       setMessages((prev) =>
         prev.map((msg) => {
@@ -241,18 +237,15 @@ export default function ClientChatTab({
     };
   }, [socket, conversationId, businessId, setMessages]);
 
-  // גלילה אוטומטית לתחתית כשמתווספות הודעות
   useEffect(() => {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // שליחת סימון קריאה עבור הודעות חדשות שנקראו מצד הלקוח
   useEffect(() => {
     if (!socket || !messages.length) return;
 
-    // סמן הודעות שהגיעו מהצד השני וטרם נקראו על ידך
     const unreadMessages = messages.filter(
       (m) => m.from !== userId && (!m.readBy || !m.readBy.some(id => id.toString() === userId.toString()))
     );
@@ -264,8 +257,6 @@ export default function ClientChatTab({
       });
     });
   }, [messages, socket, conversationId, userId]);
-
-  // פונקציות ניהול הקלטה ושמירת הודעות (אודיו, קבצים, טקסט וכו')
 
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
@@ -327,7 +318,6 @@ export default function ClientChatTab({
     );
   };
 
-  // הקלטת אודיו
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
 
@@ -396,7 +386,6 @@ export default function ClientChatTab({
     }
   };
 
-  // שליחת קובץ
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file || !socket) return;
@@ -455,9 +444,22 @@ export default function ClientChatTab({
               <div className="text">{m.content || m.text}</div>
             )}
 
-            {/* סימון קריאה */}
-            {m.from === userId && m.readBy && m.readBy.some(id => id.toString() === businessId.toString()) && (
-              <span className="read-indicator" title="נקראה">✔✔</span>
+            {/* סימון קריאה תמיד עם שני וים */}
+            {m.from === userId && (
+              <span
+                className={`read-indicator ${
+                  m.readBy && m.readBy.some(id => id.toString() === businessId.toString())
+                    ? "read"
+                    : "sent"
+                }`}
+                title={
+                  m.readBy && m.readBy.some(id => id.toString() === businessId.toString())
+                    ? "נקראה"
+                    : "נשלחה"
+                }
+              >
+                ✔✔
+              </span>
             )}
 
             <div className="meta">
