@@ -293,28 +293,25 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   setIsSending(true);
 
   socketRef.current.emit("sendMessage", payload, (ack) => {
-    setIsSending(false);
-    console.log("[sendMessage] Server ack:", ack);
-    if (!ack.ok) {
-      alert("שליחת הודעה נכשלה: " + ack.error);
-      // הסרת ההודעה האופטימית במקרה של כשלון
-      dispatchMessages({
-        type: "set",
-        payload: messages.filter((m) => m._id !== tempId),
-      });
-    } else if (ack.message?._id) {
-      const real = {
-        ...ack.message,
-        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-        toBusinessId: ack.message.toBusinessId || ack.message.to,
-      };
-      // החלפה של ההודעה האופטימית בהודעה האמיתית עם ה-ID מהשרת
-      dispatchMessages({
-        type: "replace",
-        payload: real,
-      });
-    }
-  });
+  setIsSending(false);
+  console.log("[sendMessage] Server ack:", ack);
+  if (!ack.ok) {
+    alert("שליחת הודעה נכשלה: " + ack.error);
+    // הסרת ההודעה האופטימית במקרה של כשלון, עם גישה למצב מעודכן
+    dispatchMessages((prevMessages) => prevMessages.filter((m) => m._id !== tempId));
+  } else if (ack.message?._id) {
+    const real = {
+      ...ack.message,
+      fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+      toBusinessId: ack.message.toBusinessId || ack.message.to,
+    };
+    // החלפה של ההודעה האופטימית בהודעה האמיתית עם ה-ID מהשרת
+    dispatchMessages({
+      type: "replace",
+      payload: real,
+    });
+  }
+});
 };
 
 
