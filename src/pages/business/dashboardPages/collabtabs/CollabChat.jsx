@@ -205,29 +205,40 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   // טיפול בהודעות נכנסות בזמן אמת
   const handleNewMessage = useCallback(
-    (msg) => {
-      const fullMsg = msg.fullMsg || msg;
-      const normalized = {
-        ...fullMsg,
-        fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-        toBusinessId: fullMsg.toBusinessId || fullMsg.to,
-        conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
-      };
+  (msg) => {
+    const fullMsg = msg.fullMsg || msg;
+    const normalized = {
+      ...fullMsg,
+      fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+      toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+      conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
+    };
 
-      if (normalized.conversationId === selectedConversation?._id) {
-        dispatchMessages({ type: "append", payload: normalized });
-      }
+    if (normalized.conversationId === selectedConversation?._id) {
+      dispatchMessages({ type: "append", payload: normalized });
 
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === normalized.conversationId
-            ? { ...conv, messages: [...(conv.messages || []), normalized] }
-            : conv
-        )
-      );
-    },
-    [selectedConversation]
-  );
+      setSelectedConversation((prev) => {
+        if (prev && prev._id === normalized.conversationId) {
+          return {
+            ...prev,
+            messages: uniqueMessages([...(prev.messages || []), normalized]),
+          };
+        }
+        return prev;
+      });
+    }
+
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv._id === normalized.conversationId
+          ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
+          : conv
+      )
+    );
+  },
+  [selectedConversation, uniqueMessages]
+);
+
 
   useEffect(() => {
     if (!socketRef.current) return;
