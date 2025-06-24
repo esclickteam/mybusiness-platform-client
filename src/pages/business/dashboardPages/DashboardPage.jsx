@@ -64,10 +64,11 @@ function enrichAppointment(appt, business) {
   );
   return {
     ...appt,
-    clientName: appt.client?.name || "לא ידוע",
+    clientName: appt.clientName || (appt.client?.name || "לא ידוע"),
     serviceName: service ? service.name : "לא ידוע",
   };
 }
+
 
 function countItemsInLastWeek(items, dateKey = "date") {
   if (!Array.isArray(items)) return 0;
