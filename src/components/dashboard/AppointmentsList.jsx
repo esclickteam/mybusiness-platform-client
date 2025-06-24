@@ -10,25 +10,30 @@ const AppointmentsList = ({ appointments }) => {
     );
   }
 
-  const sorted = [...appointments].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const sorted = [...appointments].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
 
   return (
     <div className="graph-box">
       <h4>📅 פגישות קרובות</h4>
       <ul style={{ listStyle: "none", padding: 0, fontSize: "14px" }}>
         {sorted.map((item, i) => {
-          const clientName = item.client?.name || item.client || "לא ידוע";
-          const serviceName = item.service?.title || item.service?.name || item.service || "לא ידוע";
+          const clientName = item.clientName || "לא ידוע";
+          const serviceName =
+            item.serviceName || item.service?.name || item.service || "לא ידוע";
 
           return (
             <li key={i} style={{ marginBottom: "10px" }}>
-              <strong>{new Date(item.date).toLocaleString("he-IL", {
-                weekday: "long",
-                day: "numeric",
-                month: "short",
-                hour: "2-digit",
-                minute: "2-digit"
-              })}</strong>
+              <strong>
+                {new Date(item.date).toLocaleString("he-IL", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "short",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </strong>
               <br />
               לקוח: {clientName} | שירות: {serviceName}
             </li>
