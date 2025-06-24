@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API from "../../../../api"; // הנתיב שלך ל-API
+import API from "../../../../api";
 import "./CollabMarketTab.css";
 import { useNavigate } from "react-router-dom";
 
@@ -41,7 +41,6 @@ function CreateCollabForm({ onSuccess }) {
         phone:        phone.trim(),
       });
 
-      // נקה שדות
       setTitle("");
       setDescription("");
       setNeeds("");
@@ -186,6 +185,8 @@ export default function CollabMarketTab({ isDevUser }) {
               expiryDate:  msg.expiryDate,
               contactName: item.contactName,
               phone:       item.phone,
+              // הוסף שדה תמונה אם יש לך מקור
+              imageUrl:    item.imageUrl || "/default-profile.png",
             };
           });
           setCollabMarket(collabs);
@@ -217,22 +218,26 @@ export default function CollabMarketTab({ isDevUser }) {
 
       {collabMarket.map(item => (
         <div key={item._id} className="collab-card">
-          <h4>{item.title}</h4>
-          <p><strong>תיאור:</strong> {item.description}</p>
-          <p><strong>מה העסק צריך:</strong> {item.needs.join(', ')}</p>
-          <p><strong>מה העסק נותן:</strong> {item.offers.join(', ')}</p>
-          <p><strong>תקציב:</strong> ₪{item.budget}</p>
-          <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
-          <div className="contact-info">
-            <p><strong>איש קשר:</strong> {item.contactName}</p>
-            <p><strong>טלפון:</strong> {item.phone}</p>
+          <img
+            src={item.imageUrl}
+            alt={item.contactName}
+            className="profile-image"
+          />
+          <div className="content">
+            <h4>{item.contactName}</h4>
+            <p className="role">{item.title}</p>
+            <p className="description">{item.description}</p>
+            <p><strong>מה העסק צריך:</strong> {item.needs.join(", ")}</p>
+            <p><strong>מה העסק נותן:</strong> {item.offers.join(", ")}</p>
+            <p><strong>תקציב:</strong> ₪{item.budget}</p>
+            <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
+            <button
+              className="contact-button"
+              onClick={() => navigate(`/business-profile/${item.businessId}`)}
+            >
+              צפייה בפרופיל
+            </button>
           </div>
-          <button
-            className="contact-button"
-            onClick={() => navigate(`/business-profile/${item.businessId}`)}
-          >
-            👁️ צפייה בפרופיל
-          </button>
         </div>
       ))}
     </div>
