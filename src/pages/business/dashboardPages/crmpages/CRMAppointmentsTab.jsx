@@ -6,10 +6,8 @@ import { useAuth } from "../../../../context/AuthContext";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const CRMAppointmentsTab = () => {
-  console.log('🔍 CRMAppointmentsTab rendered');
   const { user, socket } = useAuth();
   const businessId = user?.businessId || user?.business?._id || null;
-  console.log('🚀 businessId:', businessId);
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
@@ -46,8 +44,6 @@ const CRMAppointmentsTab = () => {
     queryKey: ['appointments', 'all-with-services', businessId],
     queryFn: () => API.get("/appointments/all-with-services").then(res => res.data),
     enabled: !!businessId,
-    onSuccess: data => console.log('✅ fetched appointments', data),
-    onError: err => console.error('❌ error fetching appointments', err),
   });
 
   // קבלת שירותים
@@ -55,16 +51,12 @@ const CRMAppointmentsTab = () => {
     queryKey: ['business', 'services', businessId],
     queryFn: () => API.get("/business/my/services").then(res => res.data.services),
     enabled: !!businessId,
-    onSuccess: data => console.log('✅ fetched services', data),
-    onError: err => console.error('❌ error fetching services', err),
   });
 
   useEffect(() => {
     if (!socket) return;
-    console.log('🔌 setting up socket listeners');
 
     const onCreated = (appt) => {
-      console.log('🔔 appointmentCreated event', appt);
       queryClient.setQueryData(['appointments', 'all-with-services', businessId], (old = []) => {
         if (old.some(a => a._id === appt._id)) return old;
         return [...old, appt];
@@ -72,14 +64,12 @@ const CRMAppointmentsTab = () => {
     };
 
     const onUpdated = (updatedAppt) => {
-      console.log('🔔 appointmentUpdated event', updatedAppt);
       queryClient.setQueryData(['appointments', 'all-with-services', businessId], (old = []) =>
         old.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
       );
     };
 
     const onDeleted = ({ id }) => {
-      console.log('🔔 appointmentDeleted event', id);
       queryClient.setQueryData(['appointments', 'all-with-services', businessId], (old = []) =>
         old.filter((appt) => appt._id !== id)
       );
@@ -90,7 +80,6 @@ const CRMAppointmentsTab = () => {
     socket.on("appointmentDeleted", onDeleted);
 
     return () => {
-      console.log('🔌 cleaning up socket listeners');
       socket.off("appointmentCreated", onCreated);
       socket.off("appointmentUpdated", onUpdated);
       socket.off("appointmentDeleted", onDeleted);
@@ -99,7 +88,6 @@ const CRMAppointmentsTab = () => {
 
   // סינון כפילויות + חיפוש
   const filteredUniqueAppointments = useMemo(() => {
-    console.log('🔎 filtering appointments with search:', search);
     const seen = new Set();
     const searchLower = search.toLowerCase().trim();
     const searchDigitsOnly = search.replace(/\D/g, "");
@@ -126,7 +114,6 @@ const CRMAppointmentsTab = () => {
 
   // פונקציה לשליחת תזכורת בוואטסאפ
   const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
-    console.log('📩 sendWhatsAppReminder', { phone, clientName, date, time, service });
     if (!phone) {
       alert("מספר טלפון של הלקוח לא זמין");
       return;
@@ -157,42 +144,53 @@ const CRMAppointmentsTab = () => {
       ? `https://wa.me/${cleanPhone}?text=${encodedMessage}`
       : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
 
-    console.log('🌐 opening URL', url);
     window.open(url, "_blank");
   };
 
   // שאר הפונקציות שלך לעריכה, מחיקה, הוספה
   const handleServiceChange = (serviceId, isEdit = false) => {
-    console.log('🔄 handleServiceChange', serviceId, isEdit);
     const service = services.find((s) => s._id === serviceId);
     if (service) {
-      const targetState = isEdit ? setEditData : setNewAppointment;
-      targetState((prev) => ({
-        ...prev,
-        serviceId: service._id,
-        serviceName: service.name,
-        time: "",
-      }));
+      if (isEdit) {
+        setEditData((prev) => ({
+          ...prev,
+          serviceId: service._id,
+          serviceName: service.name,
+          time: "",
+        }));
+      } else {
+        setNewAppointment((prev) => ({
+          ...prev,
+          serviceId: service._id,
+          serviceName: service.name,
+          time: "",
+        }));
+      }
     } else {
-      const targetState = isEdit ? setEditData : setNewAppointment;
-      targetState((prev) => ({
-        ...prev,
-        serviceId: "",
-        serviceName: "",
-        time: "",
-      }));
+      if (isEdit) {
+        setEditData((prev) => ({
+          ...prev,
+          serviceId: "",
+          serviceName: "",
+          time: "",
+        }));
+      } else {
+        setNewAppointment((prev) => ({
+          ...prev,
+          serviceId: "",
+          serviceName: "",
+          time: "",
+        }));
+      }
     }
   };
 
   const handleDelete = async (id) => {
-    console.log('🗑️ handleDelete', id);
     if (window.confirm("האם למחוק את התיאום?")) {
       try {
         await API.delete(`/appointments/${id}`);
-        console.log('✅ deleted appointment', id);
         await refetchAppointments();
-      } catch (err) {
-        console.error('❌ error deleting appointment', err);
+      } catch {
         alert("❌ שגיאה במחיקת התיאום");
       }
     }
@@ -200,15 +198,12 @@ const CRMAppointmentsTab = () => {
 
   const saveEdit = async () => {
     if (!editId) return;
-    console.log('💾 saveEdit', editId, editData);
     setIsSaving(true);
     try {
       await API.patch(`/appointments/${editId}`, editData);
-      console.log('✅ saved edit', editId);
       await refetchAppointments();
       setEditId(null);
-    } catch (err) {
-      console.error('❌ error saving edit', err);
+    } catch {
       alert("❌ שגיאה בשמירת השינוי");
     } finally {
       setIsSaving(false);
@@ -216,7 +211,6 @@ const CRMAppointmentsTab = () => {
   };
 
   const startEdit = (appt) => {
-    console.log('✏️ startEdit', appt);
     setEditId(appt._id);
     setEditData({
       clientName: appt.clientName || "",
@@ -232,7 +226,6 @@ const CRMAppointmentsTab = () => {
   };
 
   const handleEditInputChange = (field, value) => {
-    console.log('📝 handleEditInputChange', field, value);
     setEditData((prev) => {
       let newState = { ...prev, [field]: value };
       if (field === "serviceId") {
@@ -245,7 +238,6 @@ const CRMAppointmentsTab = () => {
   };
 
   const handleInputChange = (field, value) => {
-    console.log('✍️ handleInputChange', field, value);
     setNewAppointment((prev) => {
       let newState = { ...prev, [field]: value };
       if (field === "serviceId") {
@@ -258,7 +250,6 @@ const CRMAppointmentsTab = () => {
   };
 
   const handleConfirmAppointment = async () => {
-    console.log('📅 handleConfirmAppointment', newAppointment);
     if (isSaving) return;
 
     if (
@@ -274,7 +265,7 @@ const CRMAppointmentsTab = () => {
 
     setIsSaving(true);
     try {
-      const response = await API.post("/appointments", {
+      await API.post("/appointments", {
         businessId: businessId,
         name: newAppointment.clientName,
         phone: newAppointment.clientPhone,
@@ -287,7 +278,6 @@ const CRMAppointmentsTab = () => {
         serviceName: newAppointment.serviceName,
         duration: 30,
       });
-      console.log('✅ appointment confirmed', response);
       await refetchAppointments();
       setShowAddForm(false);
       setNewAppointment({
@@ -302,7 +292,6 @@ const CRMAppointmentsTab = () => {
         time: "",
       });
     } catch (error) {
-      console.error('❌ error confirming appointment', error);      
       if (
         error.response &&
         error.response.status === 400 &&
@@ -335,7 +324,6 @@ const CRMAppointmentsTab = () => {
         <button
           className="add-btn"
           onClick={() => {
-            console.log('➕ toggle add form');
             setShowAddForm((show) => !show);
             setNewAppointment({
               clientName: "",
