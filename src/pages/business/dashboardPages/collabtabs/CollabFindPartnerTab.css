@@ -1,116 +1,115 @@
 :root {
-  --card-bg: #ffffff;
-  --border-color: #e1d9f3;
-  --radius: 14px;
-  --shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
   --primary: #9b59b6;
   --accent: #6c5ce7;
   --my-biz: #fff4d1;
   --my-biz-border: #f6c90e;
+  --border-color: #e1d9f3;
+  --radius: 16px;
 }
 
+/* גריד כללי */
 .partners-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
   gap: 24px;
   padding: 1rem;
   direction: rtl;
 }
 
-/* כרטיס כללי */
+/* כרטיס */
 .collab-card {
   background: linear-gradient(135deg, #f8f0ff, #fef9ff);
-  border-radius: 18px;
-  padding: 1.6rem;
+  border-radius: var(--radius);
+  padding: 2rem 1.5rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
   border: 2px solid var(--border-color);
-  min-height: 220px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  text-align: center;
+  transition: transform 0.25s ease;
 }
 
 .collab-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
 }
 
+/* לוגו */
+.business-logo img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  border: 3px solid var(--primary);
+}
+
+/* טקסט */
+.business-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 0.3rem;
+  font-family: "Heebo", sans-serif;
+}
+
+.business-category,
+.business-desc {
+  color: #5a5a5a;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+  font-family: "Heebo", sans-serif;
+}
+
+.status-badge {
+  color: var(--primary);
+  font-weight: 600;
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* העסק שלי */
 .collab-card.my-business {
   background: linear-gradient(135deg, var(--my-biz), #fffde0);
   border: 2px solid var(--my-biz-border);
   box-shadow: 0 0 0 4px #fff7c2, 0 10px 22px rgba(0,0,0,0.1);
 }
 
-.business-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--accent);
-  margin-bottom: 0.5rem;
-}
-
 .my-business-badge {
+  display: inline-block;
+  margin-right: 6px;
   background: var(--my-biz-border);
   color: #5b4305;
-  font-size: 0.9rem;
-  padding: 0.3em 0.8em;
+  font-size: 0.8rem;
+  padding: 0.2em 0.7em;
   border-radius: 999px;
-  margin-right: 0.5rem;
-  box-shadow: 0 1px 4px #f9e79f88;
 }
 
-.business-category,
-.business-desc,
-.status-badge {
-  font-size: 0.95rem;
-  color: #4a4a4a;
-  margin-bottom: 6px;
-}
-
-.status-badge {
-  font-weight: 600;
-  color: var(--primary);
-}
-
+/* כפתור */
 .collab-card-buttons {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-}
-
-.message-box-button {
-  background-color: var(--primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.6rem 1.4rem;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.message-box-button:hover {
-  background-color: var(--accent);
+  margin-top: 1.3rem;
 }
 
 .message-box-button.secondary {
-  background-color: #fff;
+  font-size: 0.95rem;
+  padding: 0.5rem 1.2rem;
+  background: white;
   border: 2px solid var(--primary);
   color: var(--primary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .message-box-button.secondary:hover {
   background-color: #f3e8ff;
 }
 
-.message-box-button:disabled,
+/* כפתור לא פעיל */
 .disabled-action {
   background: #f1f1f1;
   color: #b2b2b2;
   border: 1px dashed #ccc;
-  cursor: not-allowed;
-  pointer-events: none;
   font-weight: 500;
   padding: 0.7rem 1.1rem;
+  border-radius: var(--radius);
+  cursor: not-allowed;
 }
