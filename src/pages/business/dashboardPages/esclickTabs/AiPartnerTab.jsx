@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import "./AiPartnerTab.css";
-import AiCommandPanel from "./AiCommandPanel"; // אם יש לך פאנל נפרד, אפשר להחליף כאן
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
-const SHORTEN_LENGTH = 200; 
+const SHORTEN_LENGTH = 200;
 
 const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommendation }) => {
   const navigate = useNavigate();
@@ -21,16 +20,20 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [commandText, setCommandText] = useState("");
   const [commandResponse, setCommandResponse] = useState(null);
 
+  const [aiCommandHistory, setAiCommandHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [historyError, setHistoryError] = useState(null);
+
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
   const [socket, setSocket] = useState(null);
   const [clientId, setClientId] = useState(null);
 
-  // פונקציה להסרת קישורי Cloudinary וכוכביות
   const filterText = useCallback((text) =>
     text
-      .replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, "") // הסרת קישורי Cloudinary
-      .replace(/\*+/g, "") // הסרת כוכביות
+      .replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, "")
+      .replace(/\*+/g, "")
       .trim()
   , []);
 
@@ -70,8 +73,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
         console.error("Error fetching recommendations:", err);
       }
     }
-    fetchRecommendations();
-  }, [businessId, token, filterValidUniqueRecommendations]);
+    if (!showHistory) {
+      fetchRecommendations();
+    }
+  }, [businessId, token, filterValidUniqueRecommendations, showHistory]);
 
   useEffect(() => {
     async function fetchClientId() {
@@ -93,6 +98,32 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     }
     fetchClientId();
   }, [conversationId, businessId, token]);
+
+  // טעינת היסטוריית פקודות AI
+  const fetchAiCommandHistory = useCallback(async () => {
+    if (!businessId || !token) return;
+    setLoadingHistory(true);
+    setHistoryError(null);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/ai-command-history/${businessId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch AI command history");
+      const data = await res.json();
+      setAiCommandHistory(data);
+    } catch (err) {
+      console.error("Error fetching AI command history:", err);
+      setHistoryError(err.message);
+    } finally {
+      setLoadingHistory(false);
+    }
+  }, [businessId, token]);
+
+  useEffect(() => {
+    if (showHistory) {
+      fetchAiCommandHistory();
+    }
+  }, [showHistory, fetchAiCommandHistory]);
 
   useEffect(() => {
     if (!businessId || !token) return;
@@ -186,14 +217,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     };
   }, [businessId, token, conversationId, onNewRecommendation]);
 
-  // פונקציה לשליחת פקודה ל-AI ולקבלת תשובה עם ביצוע פעולות
   const sendAiCommand = async () => {
     if (!commandText.trim()) return;
     setLoading(true);
     setCommandResponse(null);
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/ai-command`, {
-
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -216,7 +245,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       setCommandResponse(data.answer);
 
       if (data.actionResult) {
-        // אפשר כאן לעדכן UI או להודיע על ביצוע פעולה
         console.log("Action result:", data.actionResult);
       }
     } catch (err) {
@@ -231,7 +259,6 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     async ({ id, conversationId, text }) => {
       setLoading(true);
       try {
-        // סינון טקסט להסרת קישורי קלאודינרי וכוכביות
         const filteredText = filterText(text);
 
         const url = `${import.meta.env.VITE_API_URL}/chat/send-approved`;
@@ -332,81 +359,118 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   return (
     <div className="ai-partner-container">
       <h2>🤖 שותף AI אישי לעסק</h2>
-      <div className="partner-layout">
-        <div className="chat-section">
-          {dailyTip && <div className="daily-tip">💡 {dailyTip}</div>}
 
-          <button
-            onClick={() => setShowSuggestions((prev) => !prev)}
-            className="toggle-suggestions-btn"
-          >
-            {showSuggestions ? "הסתר המלצות" : "הצג המלצות"}
-          </button>
+      <div style={{ margin: "1rem 0" }}>
+        <button onClick={() => setShowHistory((prev) => !prev)}>
+          {showHistory ? "הצג המלצות" : "הצג היסטוריית פקודות AI"}
+        </button>
+      </div>
 
-          {/* פאנל פקודות AI */}
-          <div className="ai-command-panel">
-            <textarea
-              rows={3}
-              value={commandText}
-              onChange={(e) => setCommandText(e.target.value)}
-              placeholder="כתוב פקודה ל-AI, למשל: תאם תור ביום שני ב-10 בבוקר"
-              disabled={loading}
-            />
-            <button onClick={sendAiCommand} disabled={loading || !commandText.trim()}>
-              שלח ל-AI
+      {showHistory ? (
+        <div className="ai-command-history" style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ccc", padding: "1rem" }}>
+          <h3>היסטוריית פקודות AI</h3>
+          {loadingHistory && <p>טוען היסטוריה...</p>}
+          {historyError && <p style={{ color: "red" }}>שגיאה: {historyError}</p>}
+          {!loadingHistory && !historyError && (
+            <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
+              {aiCommandHistory.length === 0 && <li>לא נמצאו פקודות AI בעבר</li>}
+              {aiCommandHistory.map((cmd) => (
+                <li key={cmd._id} style={{ marginBottom: "1rem", borderBottom: "1px solid #ccc", paddingBottom: "0.5rem" }}>
+                  <strong>פקודה:</strong> {cmd.commandText}<br />
+                  <strong>תגובה:</strong> {cmd.responseText}<br />
+                  {cmd.action && (
+                    <>
+                      <strong>פעולה:</strong> <pre>{JSON.stringify(cmd.action, null, 2)}</pre>
+                    </>
+                  )}
+                  {cmd.actionResult && (
+                    <>
+                      <strong>תוצאת פעולה:</strong> <pre>{JSON.stringify(cmd.actionResult, null, 2)}</pre>
+                    </>
+                  )}
+                  <small>נרשמה ב: {new Date(cmd.createdAt).toLocaleString("he-IL")}</small>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : (
+        <div className="partner-layout">
+          <div className="chat-section">
+            {dailyTip && <div className="daily-tip">💡 {dailyTip}</div>}
+
+            <button
+              onClick={() => setShowSuggestions((prev) => !prev)}
+              className="toggle-suggestions-btn"
+            >
+              {showSuggestions ? "הסתר המלצות" : "הצג המלצות"}
             </button>
 
-            {commandResponse && (
-              <div className="command-response">
-                <h4>תשובת השותף AI:</h4>
-                <p>{commandResponse}</p>
+            {/* פאנל פקודות AI */}
+            <div className="ai-command-panel">
+              <textarea
+                rows={3}
+                value={commandText}
+                onChange={(e) => setCommandText(e.target.value)}
+                placeholder="כתוב פקודה ל-AI, למשל: תאם תור ביום שני ב-10 בבוקר"
+                disabled={loading}
+              />
+              <button onClick={sendAiCommand} disabled={loading || !commandText.trim()}>
+                שלח ל-AI
+              </button>
+
+              {commandResponse && (
+                <div className="command-response">
+                  <h4>תשובת השותף AI:</h4>
+                  <p>{commandResponse}</p>
+                </div>
+              )}
+            </div>
+
+            {showSuggestions && (
+              <div className="suggestions-list">
+                {suggestions
+                  .slice()
+                  .sort((a, b) => {
+                    if (a.timestamp && b.timestamp) {
+                      return new Date(b.timestamp) - new Date(a.timestamp);
+                    }
+                    return 0;
+                  })
+                  .map((s) => {
+                    const isLong = s.text.length > SHORTEN_LENGTH;
+                    const filteredTextForDisplay = filterText(s.text);
+                    const shortText = isLong ? filteredTextForDisplay.slice(0, SHORTEN_LENGTH) + "..." : filteredTextForDisplay;
+
+                    return (
+                      <div key={s.id} className={`suggestion ${s.status}`}>
+                        <p>{shortText}</p>
+                        {isLong && (
+                          <button
+                            className="read-more-btn"
+                            onClick={() => setActiveSuggestion(s)}
+                          >
+                            קרא עוד
+                          </button>
+                        )}
+                        <small>
+                          סטטוס: {s.status} |{" "}
+                          {s.timestamp
+                            ? new Date(s.timestamp).toLocaleString("he-IL", {
+                                dateStyle: "short",
+                                timeStyle: "short",
+                              })
+                            : "תאריך לא זמין"}
+                          {s.isEdited && <span> (נערך)</span>}
+                        </small>
+                      </div>
+                    );
+                  })}
               </div>
             )}
           </div>
-
-          {showSuggestions && (
-            <div className="suggestions-list">
-              {suggestions
-                .slice()
-                .sort((a, b) => {
-                  if (a.timestamp && b.timestamp) {
-                    return new Date(b.timestamp) - new Date(a.timestamp);
-                  }
-                  return 0;
-                })
-                .map((s) => {
-                  const isLong = s.text.length > SHORTEN_LENGTH;
-                  const filteredTextForDisplay = filterText(s.text);
-                  const shortText = isLong ? filteredTextForDisplay.slice(0, SHORTEN_LENGTH) + "..." : filteredTextForDisplay;
-
-                  return (
-                    <div key={s.id} className={`suggestion ${s.status}`}>
-                      <p>{shortText}</p>
-                      {isLong && (
-                        <button
-                          className="read-more-btn"
-                          onClick={() => setActiveSuggestion(s)}
-                        >
-                          קרא עוד
-                        </button>
-                      )}
-                      <small>
-                        סטטוס: {s.status} |{" "}
-                        {s.timestamp
-                          ? new Date(s.timestamp).toLocaleString("he-IL", {
-                              dateStyle: "short",
-                              timeStyle: "short",
-                            })
-                          : "תאריך לא זמין"}
-                        {s.isEdited && <span> (נערך)</span>}
-                      </small>
-                    </div>
-                  );
-                })}
-            </div>
-          )}
         </div>
-      </div>
+      )}
 
       {activeSuggestion && (
         <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>

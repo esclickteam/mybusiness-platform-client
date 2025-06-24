@@ -334,3 +334,51 @@
   box-sizing: border-box;
   overflow: auto;
 }
+
+/* ======= AI Command History ======= */
+.ai-command-history {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  background-color: #faf9ff;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #444;
+  margin-top: 1.5rem;
+}
+
+.ai-command-history h3 {
+  color: #6a1b9a;
+  margin-bottom: 1rem;
+}
+
+.ai-command-history ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.ai-command-history li {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.7rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #333;
+}
+
+.ai-command-history strong {
+  color: #5e35b1;
+}
+
+.ai-command-history pre {
+  background-color: #ede7f6;
+  padding: 8px 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  color: #311b92;
+  margin: 0.5rem 0 1rem 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
