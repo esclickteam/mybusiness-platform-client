@@ -1,69 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, Outlet, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
-import CollabBusinessProfileTab from "./collabtabs/CollabBusinessProfileTab";
-import CollabFindPartnerTab from "./collabtabs/CollabFindPartnerTab";
-import CollabMessagesTab from "./collabtabs/CollabMessagesTab";
-import CollabMarketTab from "./collabtabs/CollabMarketTab";
 import { AiProvider } from "../../../context/AiContext";
 import "./Collab.css";
 
-const tabMap = {
-  profile: 0,
-  findPartner: 1,
-  messages: 2,
-  market: 3,
-};
-
-const tabLabels = {
-  profile: "פרופיל עסקי",
-  findPartner: "מצא שותף עסקי",
-  messages: "הצעות",
-  market: "מרקט שיתופים",
-};
-
 export default function Collab() {
-  const { tab: tabParam } = useParams();
-  const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { tab } = useParams();
 
-  const devMode = true;
-
-  const [tab, setTab] = useState(tabMap[tabParam] ?? 0);
-
-  const [refreshSent, setRefreshSent] = useState(0);
-  const [refreshReceived, setRefreshReceived] = useState(0);
-
-  const [profileImage, setProfileImage] = useState(null);
   const [profileData, setProfileData] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
-
-  // --- Socket.IO state ---
   const [socket, setSocket] = useState(null);
 
-  useEffect(() => {
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
-
-    const newSocket = io(SOCKET_URL, {
-      auth: { token: localStorage.getItem("token") },
-    });
-
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.disconnect();
-    };
-  }, []);
-
-  // Sync tab state with URL param
-  useEffect(() => {
-    if (tabMap[tabParam] !== undefined && tabMap[tabParam] !== tab) {
-      setTab(tabMap[tabParam]);
-    }
-  }, [tabParam, tab]);
+  const devMode = true;
+  const isDevUser = user?.email === "newuser@example.com";
+  const hasCollabAccess =
+    isDevUser || user?.subscriptionPlan?.includes("collaboration");
 
   // טעינת פרופיל העסק
   useEffect(() => {
@@ -89,126 +45,69 @@ export default function Collab() {
     fetchProfile();
   }, []);
 
-  const isDevUser = user?.email === "newuser@example.com";
-  const hasCollabAccess =
-    isDevUser || user?.subscriptionPlan?.includes("collaboration");
+  // חיבור ל-Socket.IO
+  useEffect(() => {
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
-  const handleSaveProfile = (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const newData = {
-      businessName: form.businessName.value,
-      category: form.category.value,
-      area: form.area.value,
-      about: form.about.value,
-      collabPref: form.collabPref.value,
-      contact: form.contact.value,
-      phone: form.phone.value,
-      email: form.email.value,
+    const newSocket = io(SOCKET_URL, {
+      auth: { token: localStorage.getItem("token") },
+    });
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
     };
-    setProfileData(newData);
-    alert("✅ פרטי הפרופיל נשמרו");
-  };
-
-  const handleSendProposal = async (toBusinessId, message, contactName, phone) => {
-    try {
-      let endpoint = "";
-      const payload = { message, contactName, phone };
-
-      if (toBusinessId) {
-        endpoint = "/business/my/proposals/private";
-        payload.toBusinessId = toBusinessId;
-      } else {
-        endpoint = "/business/my/proposals/public";
-      }
-
-      await API.post(endpoint, payload);
-      setRefreshSent((f) => f + 1);
-    } catch (err) {
-      console.error(err);
-      alert("❌ שגיאה בשליחת ההצעה");
-    }
-  };
-
-  const handleStatusChange = () => {
-    setRefreshSent((f) => f + 1);
-    setRefreshReceived((f) => f + 1);
-  };
-
-  const handleOpenChat = (businessWithMessage) => {
-    console.log("פותח צ׳אט עם:", businessWithMessage);
-  };
+  }, []);
 
   if (loading) return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
-  if (!user && !devMode) {
-    return (
-      <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>
-    );
-  }
-  if (!hasCollabAccess && !devMode) {
+  if (!user && !devMode)
+    return <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>;
+  if (!hasCollabAccess && !devMode)
     return (
       <div className="p-6 text-center">
         <h2>שיתופי פעולה זמינים רק בחבילה מתקדמת</h2>
         <UpgradeBanner />
       </div>
     );
-  }
 
   return (
     <AiProvider>
       <div className="p-6 collab-container">
-        <div className="tab-header">
-          {Object.keys(tabMap).map((key) => (
-            <button
-              key={key}
-              className={`tab ${tab === tabMap[key] ? "active" : ""}`}
-              onClick={() => {
-                setTab(tabMap[key]);
-                navigate(`/business/collaborations/${key}`, { replace: true });
-              }}
-            >
-              {tabLabels[key]}
-            </button>
-          ))}
-        </div>
+        <nav className="tab-header" role="tablist" aria-label="שיתופי פעולה">
+          <NavLink
+            to="profile"
+            className={({ isActive }) => (isActive ? "tab active" : "tab")}
+          >
+            פרופיל עסקי
+          </NavLink>
+          <NavLink
+            to="find-partner"
+            className={({ isActive }) => (isActive ? "tab active" : "tab")}
+          >
+            מצא שותף עסקי
+          </NavLink>
+          <NavLink
+            to="messages"
+            className={({ isActive }) => (isActive ? "tab active" : "tab")}
+          >
+            הצעות
+          </NavLink>
+          <NavLink
+            to="market"
+            className={({ isActive }) => (isActive ? "tab active" : "tab")}
+          >
+            מרקט שיתופים
+          </NavLink>
+        </nav>
 
-        {tab === tabMap.profile &&
-          (loadingProfile ? (
-            <div className="p-6 text-center">🔄 טוען פרופיל עסק...</div>
-          ) : (
-            <CollabBusinessProfileTab
-              profileData={profileData}
-              profileImage={profileImage}
-              handleSaveProfile={handleSaveProfile}
-            />
-          ))}
-
-        {tab === tabMap.findPartner && (
-          <CollabFindPartnerTab
-            searchMode="category"
-            setSearchMode={() => {}}
-            searchCategory={""}
-            setSearchCategory={() => {}}
-            freeText={""}
-            setFreeText={() => {}}
-            categories={[]}
-            setSelectedBusiness={() => {}}
-            handleSendProposal={handleSendProposal}
-            handleOpenChat={handleOpenChat}
-            isDevUser={isDevUser}
-          />
-        )}
-
-        {tab === tabMap.messages && (
-          <CollabMessagesTab
-            socket={socket}
-            refreshFlag={refreshSent + refreshReceived}
-            onStatusChange={handleStatusChange}
-            userBusinessId={user?.businessId}
-          />
-        )}
-
-        {tab === tabMap.market && <CollabMarketTab isDevUser={isDevUser} />}
+        <Outlet
+          context={{
+            profileData,
+            profileImage,
+            loadingProfile,
+            socket,
+          }}
+        />
       </div>
     </AiProvider>
   );
