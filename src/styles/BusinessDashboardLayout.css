@@ -40,7 +40,6 @@
   flex-shrink: 0; /* לא יתכווץ */
   box-shadow: 0 0 20px rgb(124 77 255 / 0.35);
   border-radius: 12px !important;
-
 }
 
 /* במובייל – Slide-in/out לפי class */
@@ -89,15 +88,19 @@
 }
 .sidebar a {
   padding: 0.75rem 1rem !important;
-  border-radius: 6px !important;
+  border-radius: 16px !important; /* עיגול חזק יותר */
   color: var(--text-secondary) !important;
   text-decoration: none !important;
   transition: background 0.2s !important;
+  display: block !important; /* כדי שהעיגול יכסה את כל הרוחב */
+  margin-bottom: 0.3rem !important; /* רווח בין הטאבים */
 }
 .sidebar a.active {
   background: var(--primary) !important;
   color: #fff !important;
   font-weight: 600;
+  border-radius: 16px !important; /* עיגול חזק גם לטאב פעיל */
+  box-shadow: 0 4px 8px rgb(92 70 255 / 0.5); /* הצללה להדגשה */
 }
 
 /* תוכן הדשבורד */
