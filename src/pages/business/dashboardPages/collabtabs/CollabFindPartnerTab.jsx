@@ -97,9 +97,6 @@ export default function CollabFindPartnerTab({
                     </h3>
                     <p className="business-category">{business.category}</p>
                     <p className="business-desc">{business.description}</p>
-                    <span className="status-badge">
-                      סטטוס בקשה: {business.status || "לא ידוע"}
-                    </span>
                     <div className="collab-card-buttons">
                       {isMine ? (
                         <span className="disabled-action">לא ניתן לשלוח לעצמך</span>

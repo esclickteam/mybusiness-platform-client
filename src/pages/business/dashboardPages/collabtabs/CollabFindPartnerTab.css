@@ -1,8 +1,8 @@
 :root {
   --card-bg: #ffffff;
-  --border-color: #e1d9f3;
-  --radius: 14px;
-  --shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  --border-color: #d5c2f0;
+  --radius: 16px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   --primary: #9b59b6;
   --accent: #6c5ce7;
   --my-biz: #fff4d1;
@@ -19,65 +19,38 @@
 
 /* כרטיס כללי */
 .collab-card {
-  background: linear-gradient(135deg, #f8f0ff, #fef9ff);
-  border-radius: 18px;
+  background: #fbf5ff;
+  border-radius: var(--radius);
   padding: 1.6rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  border: 2px solid var(--border-color);
+  border: 3px solid var(--border-color);
   min-height: 220px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-/* מבנה פנימי של כרטיס */
 .collab-card-inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-/* תוכן טקסטואלי מימין */
+/* תוכן טקסט */
 .collab-card-content {
   flex: 1;
   text-align: right;
 }
 
-/* לוגו בשמאל */
-.business-logo-left {
-  flex-shrink: 0;
-  margin-right: 1rem;
-}
-
-.business-logo-left img {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--accent);
-  background-color: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-}
-
-.collab-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
-}
-
-.collab-card.my-business {
-  background: linear-gradient(135deg, var(--my-biz), #fffde0);
-  border: 2px solid var(--my-biz-border);
-  box-shadow: 0 0 0 4px #fff7c2, 0 10px 22px rgba(0,0,0,0.1);
-}
-
 .business-name {
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: 1.6rem;
+  font-weight: 900;
   color: var(--accent);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.7rem;
   font-family: "Heebo", sans-serif;
+  letter-spacing: 0.5px;
 }
 
 .my-business-badge {
@@ -91,20 +64,31 @@
 }
 
 .business-category,
-.business-desc,
-.status-badge {
+.business-desc {
   font-size: 0.95rem;
   color: #4a4a4a;
   margin-bottom: 6px;
 }
 
-.status-badge {
-  font-weight: 600;
-  color: var(--primary);
+/* לוגו גדול יותר */
+.business-logo-left {
+  flex-shrink: 0;
+  margin-right: 1rem;
 }
 
+.business-logo-left img {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent);
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* כפתור */
 .collab-card-buttons {
-  margin-top: 1rem;
+  margin-top: 1.2rem;
   display: flex;
   justify-content: center;
 }
