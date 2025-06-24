@@ -64,7 +64,7 @@ function enrichAppointment(appt, business) {
   );
   return {
     ...appt,
-    clientName: appt.clientName || (appt.client?.name || "לא ידוע"),
+    clientName: appt.clientName || "לא ידוע",  // לא לבדוק appt.client?.name בכלל
     serviceName: service ? service.name : "לא ידוע",
   };
 }
