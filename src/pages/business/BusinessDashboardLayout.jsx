@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { useSocket } from "../../context/socketContext";
 import { useUnreadMessages } from "../../context/UnreadMessagesContext";
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 
@@ -21,7 +21,7 @@ const tabs = [
   { path: "help-center", label: "❓ מרכז העזרה" },
 ];
 
-export default function BusinessDashboardLayout() {
+export default function BusinessDashboardLayout({ children }) {
   const { user, loading } = useAuth();
   const socket = useSocket();
   const navigate = useNavigate();
@@ -31,19 +31,20 @@ export default function BusinessDashboardLayout() {
   const { unreadCountsByConversation, updateMessagesCount, incrementMessagesCount } = useUnreadMessages();
   const queryClient = useQueryClient();
 
+  // prefetch
   useEffect(() => {
     if (!user?.businessId) return;
-
-    queryClient.prefetchQuery(['business-profile', user.businessId], () =>
-      API.get(`/business/${user.businessId}`).then(res => res.data)
+    queryClient.prefetchQuery(
+      ['business-profile', user.businessId],
+      () => API.get(`/business/${user.businessId}`).then(res => res.data)
     );
-
-    queryClient.prefetchQuery(['unread-messages', user.businessId], () =>
-      API.get(`/messages/unread-count?businessId=${user.businessId}`).then(res => res.data)
+    queryClient.prefetchQuery(
+      ['unread-messages', user.businessId],
+      () => API.get(`/messages/unread-count?businessId=${user.businessId}`).then(res => res.data)
     );
-
-    queryClient.prefetchQuery(['crm-appointments', user.businessId], () =>
-      API.get(`/appointments/all-with-services?businessId=${user.businessId}`).then(res => res.data)
+    queryClient.prefetchQuery(
+      ['crm-appointments', user.businessId],
+      () => API.get(`/appointments/all-with-services?businessId=${user.businessId}`).then(res => res.data)
     );
   }, [user?.businessId, queryClient]);
 
@@ -55,125 +56,92 @@ export default function BusinessDashboardLayout() {
   const sidebarRef = useRef(null);
   const hasResetUnreadCount = useRef(false);
 
+  // socket: new messages
   useEffect(() => {
     if (!socket) return;
-
-    const handleNewClientMessage = (data) => {
-      if (data?.conversationId) {
-        incrementMessagesCount(data.conversationId);
-      }
-    };
-
-    socket.on("newClientMessageNotification", handleNewClientMessage);
-    return () => {
-      socket.off("newClientMessageNotification", handleNewClientMessage);
-    };
+    const handleNew = data => data?.conversationId && incrementMessagesCount(data.conversationId);
+    socket.on("newClientMessageNotification", handleNew);
+    return () => socket.off("newClientMessageNotification", handleNew);
   }, [socket, incrementMessagesCount]);
 
+  // socket: unread counts
   useEffect(() => {
     if (!socket) return;
-
-    const handleUnreadCounts = (unreadCountsObj) => {
-      if (typeof unreadCountsObj !== "object" || unreadCountsObj === null) return;
-
-      Object.entries(unreadCountsObj).forEach(([convId, count]) => {
-        updateMessagesCount(convId, count);
-      });
+    const handleCounts = obj => {
+      if (!obj || typeof obj !== "object") return;
+      Object.entries(obj).forEach(([convId, count]) => updateMessagesCount(convId, count));
     };
-
-    socket.on("unreadCountsByConversation", handleUnreadCounts);
-    return () => {
-      socket.off("unreadCountsByConversation", handleUnreadCounts);
-    };
+    socket.on("unreadCountsByConversation", handleCounts);
+    return () => socket.off("unreadCountsByConversation", handleCounts);
   }, [socket, updateMessagesCount]);
 
+  // mark read/reset
   useEffect(() => {
     if (!socket || !businessId) return;
-
     if (location.pathname.includes("/messages")) {
       hasResetUnreadCount.current = false;
-      const conversationId = location.state?.conversationId || null;
-      if (conversationId) {
-        socket.emit("markMessagesRead", conversationId, (response) => {
-          if (response.ok) {
-            updateMessagesCount(conversationId, 0);
-          }
-        });
-      }
-    } else {
-      if (!hasResetUnreadCount.current) {
-        setTimeout(() => {
-          if (!hasResetUnreadCount.current) {
-            Object.keys(unreadCountsByConversation).forEach((convId) =>
-              updateMessagesCount(convId, 0)
-            );
-            hasResetUnreadCount.current = true;
-          }
-        }, 200);
-      }
+      const conv = location.state?.conversationId;
+      conv && socket.emit("markMessagesRead", conv, resp => {
+        resp.ok && updateMessagesCount(conv, 0);
+      });
+    } else if (!hasResetUnreadCount.current) {
+      setTimeout(() => {
+        if (!hasResetUnreadCount.current) {
+          Object.keys(unreadCountsByConversation).forEach(conv => updateMessagesCount(conv, 0));
+          hasResetUnreadCount.current = true;
+        }
+      }, 200);
     }
   }, [location.pathname, socket, businessId, updateMessagesCount, location.state, unreadCountsByConversation]);
 
+  // resize
   useEffect(() => {
-    const handleResize = () => {
+    const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       setShowSidebar(!mobile);
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // auth + default tab
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
       return;
     }
-    const searchParams = new URLSearchParams(location.search);
-    const tabFromQuery = searchParams.get("tab");
-    const tabFromState = location.state?.activeTab;
-
-    if (tabFromQuery && tabs.some((t) => t.path === tabFromQuery)) {
-      navigate(`./${tabFromQuery}`, { replace: true });
-    } else if (tabFromState && tabs.some((t) => t.path === tabFromState)) {
-      navigate(`./${tabFromState}`, { replace: true });
+    const params = new URLSearchParams(location.search);
+    const tabQ = params.get("tab");
+    const tabS = location.state?.activeTab;
+    if (tabQ && tabs.some(t => t.path === tabQ)) {
+      navigate(`./${tabQ}`, { replace: true });
+    } else if (tabS && tabs.some(t => t.path === tabS)) {
+      navigate(`./${tabS}`, { replace: true });
     }
   }, [user, loading, location.search, location.state, navigate]);
 
+  // focus trap mobile
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
-
-    const focusableSelectors =
+    const sel =
       'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-    const focusableEls = sidebarRef.current.querySelectorAll(focusableSelectors);
-    if (focusableEls.length === 0) return;
-
-    const firstEl = focusableEls[0];
-    const lastEl = focusableEls[focusableEls.length - 1];
-
-    const handleKeyDown = (e) => {
+    const els = sidebarRef.current.querySelectorAll(sel);
+    if (!els.length) return;
+    const first = els[0], last = els[els.length - 1];
+    const onKey = e => {
       if (e.key === "Tab") {
-        if (e.shiftKey) {
-          if (document.activeElement === firstEl) {
-            e.preventDefault();
-            lastEl.focus();
-          }
-        } else {
-          if (document.activeElement === lastEl) {
-            e.preventDefault();
-            firstEl.focus();
-          }
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
         }
       }
-      if (e.key === "Escape") {
-        setShowSidebar(false);
-      }
+      if (e.key === "Escape") setShowSidebar(false);
     };
-
-    document.addEventListener("keydown", handleKeyDown);
-    firstEl.focus();
-
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", onKey);
+    first.focus();
+    return () => document.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
   return (
@@ -237,15 +205,13 @@ export default function BusinessDashboardLayout() {
                 aria-label="סגור תפריט"
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") setShowSidebar(false);
-                }}
+                onKeyDown={e => { if (e.key === "Enter" || e.key === " ") setShowSidebar(false); }}
               />
             )}
 
             {isMobile && (
               <button
-                onClick={() => setShowSidebar((prev) => !prev)}
+                onClick={() => setShowSidebar(prev => !prev)}
                 aria-label={showSidebar ? "סגור ניווט / חזור לדשבורד" : "פתח ניווט"}
                 style={{
                   position: "fixed",
@@ -280,12 +246,14 @@ export default function BusinessDashboardLayout() {
               aria-live="polite"
               aria-atomic="true"
             >
-              <Outlet
-                context={{
-                  unreadCount,
-                  updateMessagesCount,
-                }}
-              />
+              {children ?? (
+                <Outlet
+                  context={{
+                    unreadCount,
+                    updateMessagesCount,
+                  }}
+                />
+              )}
             </main>
           </div>
         </div>
