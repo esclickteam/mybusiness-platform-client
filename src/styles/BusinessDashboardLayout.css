@@ -39,7 +39,8 @@
   z-index: 9002 !important; /* מעל האופרליי */
   flex-shrink: 0; /* לא יתכווץ */
   box-shadow: 0 0 20px rgb(124 77 255 / 0.35);
-  border-radius: 0 12px 12px 0; /* עיגול בפינות בצד ימין */
+  border-radius: 12px !important;
+
 }
 
 /* במובייל – Slide-in/out לפי class */
