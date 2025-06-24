@@ -64,7 +64,6 @@ function enrichAppointment(appt, business) {
   );
   return {
     ...appt,
-    // קודם clientName אם קיים, אחרת client.name אם קיים, אחרת “לא ידוע”
     clientName:
       appt.clientName?.trim() ||
       appt.client?.name?.trim() ||
@@ -72,8 +71,6 @@ function enrichAppointment(appt, business) {
     serviceName: service ? service.name : "לא ידוע",
   };
 }
-
-
 
 function countItemsInLastWeek(items, dateKey = "date") {
   if (!Array.isArray(items)) return 0;
@@ -310,7 +307,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, refetch]);
+  }, [initialized, businessId, logout, refreshAccessToken, refetch, selectedDate, queryClient]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -339,12 +336,11 @@ const DashboardPage = () => {
   if (isError) return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
 
   const effectiveStats = stats || localData || {};
-  const todaysAppointments = Array.isArray(effectiveStats?.todaysAppointments)
-    ? effectiveStats.todaysAppointments
-    : [];
-  const appointments = Array.isArray(effectiveStats?.appointments)
-    ? effectiveStats.appointments
-    : [];
+
+  // כאן מבצעים העשרה של הפגישות
+  const enrichedAppointments = (effectiveStats.appointments || []).map(appt =>
+    enrichAppointment(appt, effectiveStats)
+  );
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
@@ -367,9 +363,6 @@ const DashboardPage = () => {
   const appointmentsRef = createRef();
   const nextActionsRef = createRef();
   const weeklySummaryRef = createRef();
-
-  console.log("Appointments passed to CalendarView:", appointments);
-
 
   return (
     <div className="dashboard-container">
@@ -454,7 +447,7 @@ const DashboardPage = () => {
           <MemoizedInsights
             stats={{
               ...syncedStats,
-              upcoming_appointments: getUpcomingAppointmentsCount(appointments),
+              upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
             }}
           />
         </div>
@@ -462,20 +455,20 @@ const DashboardPage = () => {
 
       {/* כאן הוספתי את רכיב הגרף */}
       <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
-  <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-    <MemoizedBarChartComponent
-      appointments={effectiveStats.appointments || []} // העברת הנתונים ל-Barchart שלך
-      title="לקוחות שהזמינו פגישות לפי חודשים 📊"
-    />
-  </div>
-</Suspense>
+        <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
+          <MemoizedBarChartComponent
+            appointments={enrichedAppointments}
+            title="לקוחות שהזמינו פגישות לפי חודשים 📊"
+          />
+        </div>
+      </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
         <div ref={nextActionsRef} className="actions-container full-width">
           <MemoizedNextActions
             stats={{
               weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
-              weekly_appointments_count: countItemsInLastWeek(appointments),
+              weekly_appointments_count: countItemsInLastWeek(enrichedAppointments),
               weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
               weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
             }}
@@ -488,17 +481,14 @@ const DashboardPage = () => {
           <div className="day-agenda-box">
             <MemoizedDailyAgenda
               date={selectedDate}
-              appointments={appointments}
+              appointments={enrichedAppointments}
               businessName={syncedStats.businessName}
               businessId={businessId}
             />
           </div>
           <div className="calendar-container">
-
-            
-            
             <MemoizedCalendarView
-              appointments={appointments}
+              appointments={enrichedAppointments}
               onDateClick={setSelectedDate}
               selectedDate={selectedDate}
             />
