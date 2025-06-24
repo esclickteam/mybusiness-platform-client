@@ -110,7 +110,6 @@ const BusinessDashboardRoutes = () => {
           <Route path="faq/eskelik-advisor" element={<EskelikAdvisorFAQ />} />
           <Route path="faq/affiliate-program" element={<AffiliateProgramFAQ />} />
           <Route path="faq/technical-support" element={<TechnicalSupport />} />
-
           <Route path="faq/troubleshooting" element={<TroubleshootingFAQ />} />
 
           {/* שאר הנתיבים */}
@@ -122,8 +121,8 @@ const BusinessDashboardRoutes = () => {
           <Route path="business-messages" element={<CollabChat />} />
           <Route path="affiliate" element={<AffiliatePage />} />
 
-          {/* כאן: העברתי את collab תחת ה-BusinessDashboardLayout */}
-          <Route path="collab" element={<Collab />} />
+          {/* תיקון: collab תחת ה־Layout */}
+          <Route path="collab/*" element={<Collab />} />
 
           <Route path="crm" element={<CRMMain />}>
             <Route index element={<Navigate to="appointments" replace />} />
