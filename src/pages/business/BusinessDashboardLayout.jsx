@@ -8,7 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 
-import { AiProvider } from "../../context/AiContext"; // ייבוא AiProvider בלבד
+import { AiProvider } from "../../context/AiContext";
 
 const tabs = [
   { path: "dashboard", label: "📊 דשבורד" },
@@ -31,7 +31,6 @@ export default function BusinessDashboardLayout() {
   const { unreadCountsByConversation, updateMessagesCount, incrementMessagesCount } = useUnreadMessages();
   const queryClient = useQueryClient();
 
-  // Prefetch חשוב של נתונים מרכזיים
   useEffect(() => {
     if (!user?.businessId) return;
 
