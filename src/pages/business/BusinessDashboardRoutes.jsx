@@ -100,7 +100,7 @@ const BusinessDashboardRoutes = () => {
           {/* דף דשבורד ראשי ותתי טאבים תחתיו */}
           <Route path="dashboard" element={<DashboardPage />} />
 
-          {/* דף פרופיל עסקי ללא תתי־טאבים */}
+          {/* דף פרופיל עסקי תחת אותו Layout */}
           <Route path="profile" element={<BusinessProfilePage />} />
 
           {/* שיתופי פעולה עם תתי־טאבים */}

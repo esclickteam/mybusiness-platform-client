@@ -193,8 +193,8 @@ export default function BusinessDashboardLayout() {
                 <nav>
                   {user?.role === "business" && (
                     <NavLink
-                      to={`/business/${businessId}`}
-                      end
+                      to={`/business/${businessId}/dashboard/profile`}
+                      end={location.pathname === `/business/${businessId}/dashboard/profile`}
                       className={({ isActive }) => (isActive ? "active" : undefined)}
                     >
                       👀 צפייה בפרופיל
@@ -203,8 +203,8 @@ export default function BusinessDashboardLayout() {
                   {tabs.map(({ path, label }) => (
                     <NavLink
                       key={path}
-                      to={path}
-                      end
+                      to={`/business/${businessId}/dashboard/${path}`}
+                      end={location.pathname === `/business/${businessId}/dashboard/${path}`}
                       className={({ isActive }) => (isActive ? "active" : undefined)}
                     >
                       {label}
