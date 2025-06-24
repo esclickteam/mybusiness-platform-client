@@ -11,6 +11,11 @@ const DashboardPage = lazyWithPreload(() => import("./dashboardPages/DashboardPa
 
 // רכיבים נוספים
 const Collab = lazy(() => import("./dashboardPages/Collab"));
+const CollabBusinessProfileTab = lazy(() => import("./dashboardPages/collabtabs/CollabBusinessProfileTab"));
+const CollabFindPartnerTab = lazy(() => import("./dashboardPages/collabtabs/CollabFindPartnerTab"));
+const CollabMessagesTab = lazy(() => import("./dashboardPages/collabtabs/CollabMessagesTab"));
+const CollabMarketTab = lazy(() => import("./dashboardPages/collabtabs/CollabMarketTab"));
+
 const Upgrade = lazy(() => import("./dashboardPages/Upgrade"));
 const CartPage = lazy(() => import("./dashboardPages/buildTabs/shopAndCalendar/Appointments/CartPage"));
 const BusinessChatPage = lazy(() => import("../../components/BusinessChatPage"));
@@ -98,8 +103,14 @@ const BusinessDashboardRoutes = () => {
           {/* דף פרופיל עסקי ללא תתי־טאבים */}
           <Route path="profile" element={<BusinessProfilePage />} />
 
-          {/* שיתופי פעולה עם תמיכה בתתי־נתיבים */}
-          <Route path="collab/*" element={<Collab />} />
+          {/* שיתופי פעולה עם תתי־טאבים */}
+          <Route path="collab" element={<Collab />}>
+            <Route index element={<Navigate to="profile" replace />} />
+            <Route path="profile" element={<CollabBusinessProfileTab />} />
+            <Route path="find-partner" element={<CollabFindPartnerTab />} />
+            <Route path="messages" element={<CollabMessagesTab />} />
+            <Route path="market" element={<CollabMarketTab />} />
+          </Route>
 
           {/* עריכה */}
           <Route path="edit" element={<BuildBusinessPage />} />

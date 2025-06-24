@@ -58,12 +58,14 @@ export default function Collab() {
     };
   }, []);
 
+  // Sync tab state with URL param
   useEffect(() => {
     if (tabMap[tabParam] !== undefined && tabMap[tabParam] !== tab) {
       setTab(tabMap[tabParam]);
     }
   }, [tabParam, tab]);
 
+  // טעינת פרופיל העסק
   useEffect(() => {
     async function fetchProfile() {
       try {
