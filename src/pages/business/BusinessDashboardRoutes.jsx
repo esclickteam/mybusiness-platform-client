@@ -95,12 +95,8 @@ const BusinessDashboardRoutes = () => {
           {/* דף דשבורד ראשי ותתי טאבים תחתיו */}
           <Route path="dashboard" element={<DashboardPage />} />
 
-          {/* דף פרופיל עסקי ותתי־טאבים */}
-          <Route path="profile" element={<BusinessProfilePage />}>
-            <Route index element={<ProfileTab1 />} />
-            <Route path="tab1" element={<ProfileTab1 />} />
-            <Route path="tab2" element={<ProfileTab2 />} />
-          </Route>
+          {/* דף פרופיל עסקי - בלי תתי־טאבים */}
+          <Route path="profile" element={<BusinessProfilePage />} />
 
           {/* עריכה */}
           <Route path="edit" element={<BuildBusinessPage />} />
