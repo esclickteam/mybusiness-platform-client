@@ -162,7 +162,7 @@ export default function BusinessDashboardLayout({ children }) {
                   {user?.role === "business" && (
                     <NavLink
                       to={`/business/${businessId}`}  // פרופיל ציבורי - מחוץ לדשבורד
-                      end={location.pathname === `/business/${businessId}`}
+                      end={true}
                       className={({ isActive }) => (isActive ? "active" : undefined)}
                     >
                       👀 צפייה בפרופיל ציבורי
