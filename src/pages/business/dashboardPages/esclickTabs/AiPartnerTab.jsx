@@ -5,7 +5,7 @@ import "./AiPartnerTab.css";
 import AiCommandPanel from "./AiCommandPanel"; // אם יש לך פאנל נפרד, אפשר להחליף כאן
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
-const SHORTEN_LENGTH = 200; // תווים להצגה מקוצרת
+const SHORTEN_LENGTH = 200; 
 
 const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommendation }) => {
   const navigate = useNavigate();
@@ -193,6 +193,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     setCommandResponse(null);
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/ai-command`, {
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",
