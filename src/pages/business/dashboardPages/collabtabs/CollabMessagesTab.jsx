@@ -200,62 +200,74 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
             : "אין הצעות שאושרו להצגה."}
         </p>
       ) : (
-        messagesToShow.map((msg) => (
-          <div
-            key={msg.proposalId || msg._id}
-            style={{
-              background: "#fff",
-              padding: 16,
-              borderRadius: 12,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-              marginBottom: 16,
-              wordBreak: "break-word",
-              lineHeight: 1.6,
-            }}
-          >
-            <p>
-              <strong>עסק שולח:</strong>{" "}
-              <span style={{ marginLeft: 6 }}>{msg.fromBusinessId?.businessName || "לא ידוע"}</span>
-            </p>
-            <p>
-              <strong>עסק מקבל:</strong>{" "}
-              <span style={{ marginLeft: 6 }}>{msg.toBusinessId?.businessName || "לא ידוע"}</span>
-            </p>
+        messagesToShow.map((msg) => {
+          const userIdStr = String(userBusinessId);
+          const fromIdStr = String(msg.fromBusinessId?._id);
+          const toIdStr = String(msg.toBusinessId?._id);
+          const isUserParty = userIdStr === fromIdStr || userIdStr === toIdStr;
 
-            {msg.message && (
-              <>
-                {msg.message.title && (
-                  <p style={{ fontWeight: "bold", marginBottom: 4 }}>
-                    כותרת: {msg.message.title}
-                  </p>
-                )}
-                {msg.message.description && (
-                  <p style={{ marginBottom: 4, whiteSpace: "pre-line" }}>
-                    תיאור: {msg.message.description}
-                  </p>
-                )}
-                {msg.message.budget != null && (
-                  <p>
-                    <strong>סכום:</strong> {msg.message.budget}
-                  </p>
-                )}
-                {msg.message.expiryDate && (
-                  <p>
-                    <strong>תאריך תוקף:</strong>{" "}
-                    {new Date(msg.message.expiryDate).toLocaleDateString("he-IL")}
-                  </p>
-                )}
-              </>
-            )}
+          console.log("בדיקת IDs להצגה:", {
+            userBusinessId: userIdStr,
+            fromBusinessId: fromIdStr,
+            toBusinessId: toIdStr,
+            agreementId: msg.agreementId,
+            _id: msg._id,
+            isUserParty,
+          });
 
-            <p>
-              <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
-            </p>
+          return (
+            <div
+              key={msg.proposalId || msg._id}
+              style={{
+                background: "#fff",
+                padding: 16,
+                borderRadius: 12,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                marginBottom: 16,
+                wordBreak: "break-word",
+                lineHeight: 1.6,
+              }}
+            >
+              <p>
+                <strong>עסק שולח:</strong>{" "}
+                <span style={{ marginLeft: 6 }}>{msg.fromBusinessId?.businessName || "לא ידוע"}</span>
+              </p>
+              <p>
+                <strong>עסק מקבל:</strong>{" "}
+                <span style={{ marginLeft: 6 }}>{msg.toBusinessId?.businessName || "לא ידוע"}</span>
+              </p>
 
-            {/* כפתור צפייה בהסכם - אם קיים agreementId או _id */}
-            {(msg.agreementId || msg._id) && (
-              (String(userBusinessId) === String(msg.fromBusinessId?._id) ||
-                String(userBusinessId) === String(msg.toBusinessId?._id)) && (
+              {msg.message && (
+                <>
+                  {msg.message.title && (
+                    <p style={{ fontWeight: "bold", marginBottom: 4 }}>
+                      כותרת: {msg.message.title}
+                    </p>
+                  )}
+                  {msg.message.description && (
+                    <p style={{ marginBottom: 4, whiteSpace: "pre-line" }}>
+                      תיאור: {msg.message.description}
+                    </p>
+                  )}
+                  {msg.message.budget != null && (
+                    <p>
+                      <strong>סכום:</strong> {msg.message.budget}
+                    </p>
+                  )}
+                  {msg.message.expiryDate && (
+                    <p>
+                      <strong>תאריך תוקף:</strong>{" "}
+                      {new Date(msg.message.expiryDate).toLocaleDateString("he-IL")}
+                    </p>
+                  )}
+                </>
+              )}
+
+              <p>
+                <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
+              </p>
+
+              {(msg.agreementId || msg._id) && isUserParty && (
                 <button
                   onClick={() => {
                     const idStr = msg.agreementId
@@ -272,85 +284,85 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
                 >
                   צפייה בהסכם
                 </button>
-              )
-            )}
-
-            <div
-              style={{
-                marginTop: 12,
-                display: "flex",
-                gap: 12,
-                justifyContent: "flex-end",
-              }}
-            >
-              {filter === "sent" ? (
-                <>
-                  <button
-                    style={{
-                      backgroundColor: "#6b46c1",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: 8,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => alert("שלח שוב (טרם מיושם)")}
-                  >
-                    📨 שלח שוב
-                  </button>
-                  <button
-                    style={{
-                      backgroundColor: "#d53f8c",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: 8,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => handleCancelProposal(msg.proposalId || msg._id)}
-                  >
-                    🗑️ ביטול
-                  </button>
-                </>
-              ) : filter === "received" && msg.status === "pending" ? (
-                <>
-                  <button
-                    style={{
-                      backgroundColor: "#6b46c1",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: 8,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => handleAccept(msg.proposalId || msg._id)}
-                  >
-                    ✅ אשר
-                  </button>
-                  <button
-                    style={{
-                      backgroundColor: "#d53f8c",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 16px",
-                      borderRadius: 8,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => handleReject(msg.proposalId || msg._id)}
-                  >
-                    ❌ דחה
-                  </button>
-                </>
-              ) : (
-                <p style={{ alignSelf: "center" }}>סטטוס: {msg.status}</p>
               )}
+
+              <div
+                style={{
+                  marginTop: 12,
+                  display: "flex",
+                  gap: 12,
+                  justifyContent: "flex-end",
+                }}
+              >
+                {filter === "sent" ? (
+                  <>
+                    <button
+                      style={{
+                        backgroundColor: "#6b46c1",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => alert("שלח שוב (טרם מיושם)")}
+                    >
+                      📨 שלח שוב
+                    </button>
+                    <button
+                      style={{
+                        backgroundColor: "#d53f8c",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => handleCancelProposal(msg.proposalId || msg._id)}
+                    >
+                      🗑️ ביטול
+                    </button>
+                  </>
+                ) : filter === "received" && msg.status === "pending" ? (
+                  <>
+                    <button
+                      style={{
+                        backgroundColor: "#6b46c1",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => handleAccept(msg.proposalId || msg._id)}
+                    >
+                      ✅ אשר
+                    </button>
+                    <button
+                      style={{
+                        backgroundColor: "#d53f8c",
+                        color: "white",
+                        border: "none",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => handleReject(msg.proposalId || msg._id)}
+                    >
+                      ❌ דחה
+                    </button>
+                  </>
+                ) : (
+                  <p style={{ alignSelf: "center" }}>סטטוס: {msg.status}</p>
+                )}
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       )}
 
       {modalOpen && selectedAgreement && (
