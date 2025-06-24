@@ -185,6 +185,7 @@ export default function CollabMarketTab({ isDevUser }) {
               expiryDate:  item.expiryDate || msg.expiryDate,
               contactName: item.contactName,
               phone:       item.phone,
+              imageUrl:    item.imageUrl || "/default-profile.png",
             };
           });
           setCollabMarket(collabs);
@@ -210,41 +211,37 @@ export default function CollabMarketTab({ isDevUser }) {
       {loading && <p>טוען שיתופי פעולה...</p>}
       {error && <p className="error-text">{error}</p>}
 
-      {!loading && collabMarket.length === 0 && (
-        <div>אין שיתופי פעולה להצגה</div>
-      )}
+      {!loading && collabMarket.length === 0 && <div>אין שיתופי פעולה להצגה</div>}
 
-      {collabMarket.map(item => (
-        <div key={item._id} className="collab-card">
-          <div className="collab-card-inner">
-            <div className="collab-card-content">
-              <h3 className="business-name">{item.contactName}</h3>
-              <p className="business-category">{item.title}</p>
-              <p className="business-desc">{item.description}</p>
-              <p><strong>מה העסק צריך:</strong> {item.needs.join(", ")}</p>
-              <p><strong>מה העסק נותן:</strong> {item.offers.join(", ")}</p>
-              <p><strong>תקציב:</strong> ₪{item.budget}</p>
-              <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
-              <div className="collab-card-buttons">
-                <button
-                  className="message-box-button secondary"
-                  onClick={() => navigate(`/business-profile/${item.businessId}`)}
-                >
-                  צפייה בפרופיל
-                </button>
+      <div className="partners-grid">
+        {collabMarket.map(item => (
+          <div key={item._id} className="collab-card">
+            <div className="collab-card-inner">
+              <div className="collab-card-content">
+                <h3 className="business-name">{item.contactName}</h3>
+                <p className="business-category">{item.title}</p>
+                <p className="business-desc">{item.description}</p>
+                <p><strong>מה העסק צריך:</strong> {item.needs.join(", ")}</p>
+                <p><strong>מה העסק נותן:</strong> {item.offers.join(", ")}</p>
+                <p><strong>תקציב:</strong> ₪{item.budget}</p>
+                <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
+                <div className="collab-card-buttons">
+                  <button
+                    className="message-box-button secondary"
+                    onClick={() => navigate(`/business-profile/${item.businessId}`)}
+                  >
+                    צפייה בפרופיל
+                  </button>
+                </div>
+              </div>
+
+              <div className="business-logo-left">
+                <img src={item.imageUrl} alt={`${item.contactName} לוגו`} />
               </div>
             </div>
-
-            {/* אפשר להוסיף תמונה או לוגו אם יש, לדוגמה: */}
-            {/* <div className="business-logo-left">
-              <img
-                src={item.imageUrl || "/default-profile.png"}
-                alt={item.contactName}
-              />
-            </div> */}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

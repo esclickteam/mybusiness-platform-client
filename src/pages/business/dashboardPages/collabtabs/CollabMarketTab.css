@@ -138,23 +138,27 @@
   margin: 0.1rem 0;
 }
 
-/* כפתור צפייה בפרופיל */
-.collab-card .contact-button {
-  background-color: transparent;
-  border: 2px solid #af90d9;
-  color: #6b4fc4;
-  padding: 6px 14px;
-  border-radius: 12px;
+/* כפתור צפייה בפרופיל - זהה לעיצוב שביקשת */
+.collab-card .contact-button,
+.message-box-button.secondary {
+  background-color: #fff;
+  border: 2px solid #9b59b6; /* סגול */
+  color: #9b59b6;
+  padding: 0.6rem 1.4rem;
+  border-radius: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
   align-self: flex-start;
-  font-size: 0.85rem;
+  text-align: center;
+  display: inline-block;
 }
 
-.collab-card .contact-button:hover {
-  background-color: #af90d9;
-  color: white;
+.collab-card .contact-button:hover,
+.message-box-button.secondary:hover {
+  background-color: #f3e8ff;
+  color: #7a3f9b;
 }
 
 /* 🔘 כפתור הוספת שיתוף */
