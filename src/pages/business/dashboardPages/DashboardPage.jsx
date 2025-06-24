@@ -64,10 +64,15 @@ function enrichAppointment(appt, business) {
   );
   return {
     ...appt,
-    clientName: appt.clientName || "לא ידוע",  // לא לבדוק appt.client?.name בכלל
+    // קודם clientName אם קיים, אחרת client.name אם קיים, אחרת “לא ידוע”
+    clientName:
+      appt.clientName?.trim() ||
+      appt.client?.name?.trim() ||
+      "לא ידוע",
     serviceName: service ? service.name : "לא ידוע",
   };
 }
+
 
 
 function countItemsInLastWeek(items, dateKey = "date") {
@@ -363,6 +368,9 @@ const DashboardPage = () => {
   const nextActionsRef = createRef();
   const weeklySummaryRef = createRef();
 
+  console.log("Appointments passed to CalendarView:", appointments);
+
+
   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
@@ -486,6 +494,9 @@ const DashboardPage = () => {
             />
           </div>
           <div className="calendar-container">
+
+            
+            
             <MemoizedCalendarView
               appointments={appointments}
               onDateClick={setSelectedDate}
