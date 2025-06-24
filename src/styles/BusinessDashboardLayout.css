@@ -39,7 +39,7 @@
   z-index: 9002 !important; /* מעל האופרליי */
   flex-shrink: 0; /* לא יתכווץ */
   box-shadow: 0 0 20px rgb(124 77 255 / 0.35);
-  border-radius: 0 12px 12px 0;
+  border-radius: 0 12px 12px 0; /* עיגול בפינות בצד ימין */
 }
 
 /* במובייל – Slide-in/out לפי class */
@@ -54,7 +54,8 @@
   box-shadow: -8px 0 36px #0001 !important;
   transform: translateX(100%) !important; /* ברירת מחדל: סגור */
   z-index: 9002 !important; /* מעל האופרליי */
-  border-radius: 0 12px 12px 0;
+  border-radius: 0 12px 12px 0; /* עיגול בפינות במובייל */
+  transition: transform 0.35s ease !important;
 }
 .sidebar.mobile.open {
   transform: translateX(0) !important; /* כשלוחצים: פותח */
@@ -164,7 +165,7 @@
     transform: translateX(100%) !important;
     transition: transform 0.35s ease !important;
     z-index: 9002 !important;
-    border-radius: 0 12px 12px 0;
+    border-radius: 0 12px 12px 0; /* עיגול בפינות */
   }
   .sidebar.mobile.open {
     transform: translateX(0) !important;
@@ -178,7 +179,7 @@
     position: relative !important;
     box-shadow: none !important;
     z-index: auto !important;
-    border-radius: 0;
+    border-radius: 0 12px 12px 0; /* שמירת עיגול בפינות בצד ימין */
   }
   .sidebar-toggle-button {
     display: none !important;
