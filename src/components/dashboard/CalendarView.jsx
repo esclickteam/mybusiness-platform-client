@@ -112,10 +112,7 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
               <>
                 <div className="day-number">{day}</div>
                 {events.map((e, i) => {
-                  const clientName =
-                    typeof e.client === "object" && e.client?.name
-                      ? e.client.name
-                      : e.client || "לא ידוע";
+                  const clientName = e.clientName || "לא ידוע";
 
                   const fullDate = getDateTime(e.date, e.time);
 
