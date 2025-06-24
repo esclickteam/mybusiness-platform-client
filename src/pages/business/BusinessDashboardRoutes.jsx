@@ -126,7 +126,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="affiliate" element={<AffiliatePage />} />
 
           {/* תתי-נתיבים של collab תחת ה-Layout */}
-          <Route path="collab" element={<Collab />}>
+          <Route path="collaborations" element={<Collab />}>
             <Route index element={<Navigate to="profile" replace />} />
             <Route path="profile" element={<CollabBusinessProfileTab />} />
             <Route path="findPartner" element={<CollabFindPartnerTab />} />
@@ -134,13 +134,13 @@ const BusinessDashboardRoutes = () => {
             <Route path="market" element={<CollabMarketTab />} />
           </Route>
 
-          <Route path="collab" element={<Collab />}>
-    <Route index element={<Navigate to="profile" replace />} />
-    <Route path="profile" element={<CollabBusinessProfileTab />} />
-    <Route path="findPartner" element={<CollabFindPartnerTab />} />
-    <Route path="messages" element={<CollabMessagesTab />} />
-    <Route path="market" element={<CollabMarketTab />} />
-  </Route>
+          <Route path="crm" element={<CRMMain />}>
+            <Route index element={<Navigate to="appointments" replace />} />
+            <Route path="appointments" element={<CRMAppointmentsTab businessId={businessId} />} />
+            <Route path="clients" element={<CRMClientsTab businessId={businessId} />} />
+            <Route path="services" element={<CRMServicesTab businessId={businessId} />} />
+            <Route path="settings" element={<CRMSettingsTab businessId={businessId} />} />
+          </Route>
 
           <Route path="help-center" element={<HelpCenter />} />
 
