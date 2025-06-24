@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import "./AiPartnerTab.css";
-import AiCommandPanel from "./AiCommandPanel";
-
+import AiCommandPanel from "./AiCommandPanel"; // אם יש לך פאנל נפרד, אפשר להחליף כאן
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 const SHORTEN_LENGTH = 200; // תווים להצגה מקוצרת
@@ -19,6 +18,9 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [editing, setEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [commandText, setCommandText] = useState("");
+  const [commandResponse, setCommandResponse] = useState(null);
+
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
   const [socket, setSocket] = useState(null);
@@ -184,6 +186,46 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
     };
   }, [businessId, token, conversationId, onNewRecommendation]);
 
+  // פונקציה לשליחת פקודה ל-AI ולקבלת תשובה עם ביצוע פעולות
+  const sendAiCommand = async () => {
+    if (!commandText.trim()) return;
+    setLoading(true);
+    setCommandResponse(null);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/ai-command`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          businessId,
+          prompt: commandText,
+          profile: {
+            name: "שם העסק שלך",
+            type: "סוג העסק",
+            tone: "סגנון השפה",
+            audience: "קהל היעד",
+            goal: "מטרת העסק",
+          },
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send command");
+      setCommandResponse(data.answer);
+
+      if (data.actionResult) {
+        // אפשר כאן לעדכן UI או להודיע על ביצוע פעולה
+        console.log("Action result:", data.actionResult);
+      }
+    } catch (err) {
+      alert("שגיאה בשליחת פקודת AI: " + err.message);
+    } finally {
+      setLoading(false);
+      setCommandText("");
+    }
+  };
+
   const approveSuggestion = useCallback(
     async ({ id, conversationId, text }) => {
       setLoading(true);
@@ -299,6 +341,27 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           >
             {showSuggestions ? "הסתר המלצות" : "הצג המלצות"}
           </button>
+
+          {/* פאנל פקודות AI */}
+          <div className="ai-command-panel">
+            <textarea
+              rows={3}
+              value={commandText}
+              onChange={(e) => setCommandText(e.target.value)}
+              placeholder="כתוב פקודה ל-AI, למשל: תאם תור ביום שני ב-10 בבוקר"
+              disabled={loading}
+            />
+            <button onClick={sendAiCommand} disabled={loading || !commandText.trim()}>
+              שלח ל-AI
+            </button>
+
+            {commandResponse && (
+              <div className="command-response">
+                <h4>תשובת השותף AI:</h4>
+                <p>{commandResponse}</p>
+              </div>
+            )}
+          </div>
 
           {showSuggestions && (
             <div className="suggestions-list">
