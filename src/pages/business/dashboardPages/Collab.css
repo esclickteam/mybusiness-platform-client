@@ -100,7 +100,6 @@ body {
 .collab-container {
   background: linear-gradient(to bottom right, #f5f2fc, #fdfbff);
   padding: 2rem;
-  min-height: 100vh;
   direction: rtl;
   text-align: right;
 }
