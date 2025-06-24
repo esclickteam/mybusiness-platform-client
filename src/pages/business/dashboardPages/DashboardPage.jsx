@@ -198,6 +198,18 @@ const DashboardPage = () => {
   });
 
   useEffect(() => {
+    if (!stats && !localData) return;
+    const appointmentsToLog = (stats || localData)?.appointments || [];
+    console.group("Appointments received from API:");
+    appointmentsToLog.forEach((appt, idx) => {
+      console.log(
+        `Appointment #${idx + 1}: clientName="${appt.clientName}", serviceName="${appt.serviceName}", date="${appt.date}", time="${appt.time}"`
+      );
+    });
+    console.groupEnd();
+  }, [stats, localData]);
+
+  useEffect(() => {
     if (!businessId) return;
     queryClient.prefetchQuery(
       ["dashboardStats", businessId],
