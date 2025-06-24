@@ -44,6 +44,11 @@ import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
 import TechnicalSupport from "../technicalSupportFAQs";
 import TroubleshootingFAQ from "../troubleshootingFAQs";
 
+// קומפוננטות פרופיל עסקי
+const BusinessProfilePage = lazy(() => import("./dashboardPages/profile/BusinessProfilePage"));
+const ProfileTab1 = lazy(() => import("./dashboardPages/profile/ProfileTab1"));
+const ProfileTab2 = lazy(() => import("./dashboardPages/profile/ProfileTab2"));
+
 // רכיב להצגת FAQ (מערך שאלות ותשובות)
 function FAQPage({ faqs }) {
   return (
@@ -86,8 +91,18 @@ const BusinessDashboardRoutes = () => {
     <Suspense fallback={<div>🔄 טוען דשבורד...</div>}>
       <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>
+          {/* ברירת מחדל מפנה ל-דשבורד */}
           <Route index element={<Navigate to="dashboard" replace />} />
+
+          {/* דף דשבורד ראשי ותתי טאבים תחתיו */}
           <Route path="dashboard" element={<DashboardPage />} />
+
+          {/* דף פרופיל עסקי ותתי־טאבים */}
+          <Route path="profile" element={<BusinessProfilePage />}>
+            <Route index element={<ProfileTab1 />} />
+            <Route path="tab1" element={<ProfileTab1 />} />
+            <Route path="tab2" element={<ProfileTab2 />} />
+          </Route>
 
           {/* עריכה */}
           <Route path="edit" element={<BuildBusinessPage />} />
@@ -110,8 +125,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="faq/eskelik-advisor" element={<EskelikAdvisorFAQ />} />
           <Route path="faq/affiliate-program" element={<AffiliateProgramFAQ />} />
           <Route path="faq/technical-support" element={<TechnicalSupport />} />
-
-<Route path="faq/troubleshooting" element={<TroubleshootingFAQ />} />
+          <Route path="faq/troubleshooting" element={<TroubleshootingFAQ />} />
 
           {/* שאר הנתיבים */}
           <Route path="cart" element={<CartPage />} />
