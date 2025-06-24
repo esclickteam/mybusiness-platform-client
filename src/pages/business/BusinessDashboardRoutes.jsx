@@ -108,7 +108,10 @@ const BusinessDashboardRoutes = () => {
             <Route index element={<Navigate to="profile" replace />} />
             <Route path="profile" element={<CollabBusinessProfileTab />} />
             <Route path="find-partner" element={<CollabFindPartnerTab />} />
-            <Route path="messages" element={<CollabMessagesTab />} />
+            <Route
+              path="messages"
+              element={<CollabMessagesTab userBusinessId={user?.businessId} />}
+            />
             <Route path="market" element={<CollabMarketTab />} />
           </Route>
 
