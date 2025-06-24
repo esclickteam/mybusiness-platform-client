@@ -101,7 +101,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="dashboard" element={<DashboardPage />} />
 
           {/* דף פרופיל עסקי תחת אותו Layout */}
-          <Route path="profile" element={<BusinessProfilePage />} />
+          <Route path="dashboard/profile" element={<BusinessProfilePage />} />
 
           {/* שיתופי פעולה עם תתי־טאבים */}
           <Route path="collab" element={<Collab />}>
