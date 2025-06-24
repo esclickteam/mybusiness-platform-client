@@ -94,7 +94,8 @@ export default function CollabFindPartnerTab({
 
   const handleOpenProfile = (business) => {
     if (business._id) {
-      navigate(`/business-profile/${myBusinessId}`);
+          navigate(`/business-profile/${business._id}`);
+
 
 
     }
