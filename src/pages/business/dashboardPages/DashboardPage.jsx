@@ -373,7 +373,7 @@ const DashboardPage = () => {
 
       {alert && <p className="alert-text">{alert}</p>}
 
-      {/* NEW: AI Recommendations Section */}
+      {/* המלצות AI אם יש */}
       {recommendations.length > 0 && (
         <section
           className="recommendations-section"
@@ -451,6 +451,15 @@ const DashboardPage = () => {
         </div>
       </Suspense>
 
+      {/* כאן הוספתי את רכיב הגרף */}
+      <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
+        <div ref={chartsRef} style={{ marginTop: 20 }}>
+          <MemoizedBarChartComponent
+            data={effectiveStats.graphData || []} // החלף בנתונים הרלוונטיים לגרף שלך
+          />
+        </div>
+      </Suspense>
+
       <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
         <div ref={nextActionsRef} className="actions-container full-width">
           <MemoizedNextActions
@@ -465,24 +474,24 @@ const DashboardPage = () => {
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
-  <div ref={appointmentsRef} className="calendar-row">
-    <div className="day-agenda-box">
-      <MemoizedDailyAgenda
-        date={selectedDate}
-        appointments={appointments}
-        businessName={syncedStats.businessName}
-        businessId={businessId}  
-      />
-    </div>
-    <div className="calendar-container">
-      <MemoizedCalendarView
-        appointments={appointments}
-        onDateClick={setSelectedDate}
-        selectedDate={selectedDate}
-      />
-    </div>
-  </div>
-</Suspense>
+        <div ref={appointmentsRef} className="calendar-row">
+          <div className="day-agenda-box">
+            <MemoizedDailyAgenda
+              date={selectedDate}
+              appointments={appointments}
+              businessName={syncedStats.businessName}
+              businessId={businessId}
+            />
+          </div>
+          <div className="calendar-container">
+            <MemoizedCalendarView
+              appointments={appointments}
+              onDateClick={setSelectedDate}
+              selectedDate={selectedDate}
+            />
+          </div>
+        </div>
+      </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄  טוען סיכום שבועי...</div>}>
         <div ref={weeklySummaryRef}>
