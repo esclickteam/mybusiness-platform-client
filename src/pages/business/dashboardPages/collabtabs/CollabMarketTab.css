@@ -3,6 +3,8 @@
 .collab-market-container {
   padding: 2rem;
   background: #fdfbff;
+  font-family: "Heebo", sans-serif;
+  direction: rtl;
 }
 
 /* 🖼️ תמונת קמפיין */
@@ -22,7 +24,7 @@
   padding: 1.5rem;
   margin-bottom: 2rem;
   transition: transform 0.2s ease;
-  text-align: center; /* מרכזים כל הטקסט בתוך הכרטיס */
+  text-align: right;
 }
 
 .collab-card:hover {
@@ -50,7 +52,6 @@
 /* מרכזים איש קשר וטלפון בתוך הכרטיס */
 .collab-card > div {
   margin: 1rem 0;
-  /* text-align: center; כבר מוגדר ב .collab-card */
 }
 
 /* 🔘 כפתור הוספת שיתוף */
@@ -155,4 +156,22 @@
 
 .cancel-button:hover {
   background-color: #ddd;
+}
+
+/* טקסט שגיאה */
+.error-text {
+  color: #bf1650;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* כותרת מרכזית */
+.collab-title {
+  text-align: center;
+  font-size: 1.6rem;
+  color: #6c5ce7;
+  font-weight: 900;
+  margin: 2rem 0 1.5rem 0;
 }

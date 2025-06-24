@@ -54,14 +54,14 @@ function CreateCollabForm({ onSuccess }) {
       if (onSuccess) onSuccess();
     } catch (err) {
       console.error(err);
-      setError("\u274C \u05e9\u05d2\u05d9\u05d0\u05d4 \u05d1\u05e4\u05e8\u05e1\u05d5\u05dd \u05d4\u05d4\u05e6\u05e2\u05d4");
+      setError("❌ שגיאה בפרסום ההצעה");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="market-modal">
+    <form onSubmit={handleSubmit} className="proposal-form">
       <h3>פרסם שיתוף פעולה חדש</h3>
 
       <label>
@@ -86,7 +86,7 @@ function CreateCollabForm({ onSuccess }) {
       </label>
 
       <label>
-        מה העסק צריך ( מופרד בפסיקים ):
+        מה העסק צריך (מופרד בפסיקים):
         <input
           type="text"
           value={needs}
@@ -96,7 +96,7 @@ function CreateCollabForm({ onSuccess }) {
       </label>
 
       <label>
-        מה העסק נותן ( מופרד בפסיקים ):
+        מה העסק נותן (מופרד בפסיקים):
         <input
           type="text"
           value={offers}
@@ -161,6 +161,7 @@ export default function CollabMarketTab({ isDevUser }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshFlag, setRefreshFlag] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -169,29 +170,31 @@ export default function CollabMarketTab({ isDevUser }) {
       setError(null);
       try {
         const res = await API.get("/business/proposals/market");
+        console.log("Response from /api/business/proposals/market:", res.data);
+
         if (Array.isArray(res.data.proposals)) {
           const collabs = res.data.proposals.map(item => {
             const msg = item.message || {};
             return {
-              _id: item._id,
-              businessId: item.fromBusinessId,
-              title: msg.title,
+              _id:         item._id,
+              businessId:  item.fromBusinessId,
+              title:       msg.title,
               description: msg.description,
-              needs: msg.needs || [],
-              offers: msg.offers || [],
-              budget: msg.budget,
-              expiryDate: msg.expiryDate,
+              needs:       msg.needs || [],
+              offers:      msg.offers || [],
+              budget:      msg.budget,
+              expiryDate:  msg.expiryDate,
               contactName: item.contactName,
-              phone: item.phone,
+              phone:       item.phone,
             };
           });
           setCollabMarket(collabs);
         } else {
-          setError("\u05e9\u05d2\u05d9\u05d0\u05d4 \u05d1\u05d8\u05e2\u05d9\u05e0\u05ea \u05e9\u05d9\u05ea\u05d5\u05e4\u05d9 \u05e4\u05e2\u05d5\u05dc\u05d4");
+          setError("שגיאה בטעינת שיתופי פעולה");
         }
       } catch (err) {
         console.error(err);
-        setError("\u05e9\u05d2\u05d9\u05d0\u05d4 \u05d1\u05d8\u05e2\u05d9\u05e0\u05ea \u05e9\u05d9\u05ea\u05d5\u05e4\u05d9 \u05e4\u05e2\u05d5\u05dc\u05d4");
+        setError("שגיאה בטעינת שיתופי פעולה");
       } finally {
         setLoading(false);
       }
@@ -200,27 +203,30 @@ export default function CollabMarketTab({ isDevUser }) {
   }, [refreshFlag]);
 
   return (
-    <div className="market-wrapper">
+    <div className="collab-market-container">
       <CreateCollabForm onSuccess={() => setRefreshFlag(f => !f)} />
 
-      <h3 className="collab-title">📣 מרקט שיתופים
-      </h3>
+      <h3 className="collab-title">📣 מרקט שיתופים</h3>
 
-      {loading && <p>טוען שיתופים...</p>}
+      {loading && <p>טוען שיתופי פעולה...</p>}
       {error && <p className="error-text">{error}</p>}
 
-      {!loading && collabMarket.length === 0 && <p>אין שיתופים להצגה</p>}
+      {!loading && collabMarket.length === 0 && (
+        <div>אין שיתופי פעולה להצגה</div>
+      )}
 
       {collabMarket.map(item => (
-        <div key={item._id} className="market-card">
+        <div key={item._id} className="collab-card">
           <h4>{item.title}</h4>
           <p><strong>תיאור:</strong> {item.description}</p>
-          <p><strong>מה העסק צריך:</strong> {item.needs.join(", ")}</p>
-          <p><strong>מה העסק נותן:</strong> {item.offers.join(", ")}</p>
-          <p><strong>תקציב:</strong> ₪{item.budget || "לא צוין"}</p>
-          <p><strong>תוקף עד:</strong> {item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : "לא צוין"}</p>
-          <p><strong>איש קשר:</strong> {item.contactName}</p>
-          <p><strong>טלפון:</strong> {item.phone}</p>
+          <p><strong>מה העסק צריך:</strong> {item.needs.join(', ')}</p>
+          <p><strong>מה העסק נותן:</strong> {item.offers.join(', ')}</p>
+          <p><strong>תקציב:</strong> ₪{item.budget}</p>
+          <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
+          <div className="contact-info">
+            <p><strong>איש קשר:</strong> {item.contactName}</p>
+            <p><strong>טלפון:</strong> {item.phone}</p>
+          </div>
           <button
             className="contact-button"
             onClick={() => navigate(`/business-profile/${item.businessId}`)}
