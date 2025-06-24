@@ -45,7 +45,7 @@ import TechnicalSupport from "../technicalSupportFAQs";
 import TroubleshootingFAQ from "../troubleshootingFAQs";
 
 // קומפוננטות פרופיל עסקי
-const BusinessProfilePage = lazy(() => import("./dashboardPages/profile/BusinessProfilePage"));
+const BusinessProfilePage = lazy(() => import("../BusinessProfilePage"));
 const ProfileTab1 = lazy(() => import("./dashboardPages/profile/ProfileTab1"));
 const ProfileTab2 = lazy(() => import("./dashboardPages/profile/ProfileTab2"));
 
