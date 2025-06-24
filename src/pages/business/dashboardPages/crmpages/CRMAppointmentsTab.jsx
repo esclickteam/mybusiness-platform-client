@@ -267,7 +267,7 @@ const CRMAppointmentsTab = () => {
     try {
       await API.post("/appointments", {
         businessId: businessId,
-        clientName: newAppointment.clientName,
+        name: newAppointment.clientName,
         phone: newAppointment.clientPhone,
         address: newAppointment.address,
         email: newAppointment.email,
