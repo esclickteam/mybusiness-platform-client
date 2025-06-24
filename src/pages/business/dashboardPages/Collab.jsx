@@ -1,3 +1,4 @@
+// Collab.js
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -106,6 +107,7 @@ export default function Collab() {
             profileImage,
             loadingProfile,
             socket,
+            userBusinessId: user?.businessId ? String(user.businessId) : null,
           }}
         />
       </div>
