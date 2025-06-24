@@ -432,7 +432,8 @@ const CRMAppointmentsTab = () => {
                       onChange={(e) => handleEditInputChange("clientName", e.target.value)}
                     />
                   ) : (
-                    appt.client?.name || appt.clientName || 'לא ידוע'
+                    appt.clientName || appt.client?.name || 'לא ידוע'
+
 
                   )}
                 </td>
