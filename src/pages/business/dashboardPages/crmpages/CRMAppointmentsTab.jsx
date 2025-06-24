@@ -432,7 +432,8 @@ const CRMAppointmentsTab = () => {
                       onChange={(e) => handleEditInputChange("clientName", e.target.value)}
                     />
                   ) : (
-                    appt.clientName
+                    appt.client?.name || appt.clientName || 'לא ידוע'
+
                   )}
                 </td>
                 <td className="phone-cell">
@@ -551,7 +552,7 @@ const CRMAppointmentsTab = () => {
                         onClick={() =>
                           sendWhatsAppReminder(
                             appt.clientPhone,
-                            appt.clientName,
+                            appt.client?.name || appt.clientName || 'לקוח',
                             appt.date,
                             appt.time,
                             appt.serviceName || appt.service
