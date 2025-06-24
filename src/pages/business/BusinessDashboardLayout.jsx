@@ -160,22 +160,13 @@ export default function BusinessDashboardLayout({ children }) {
                 <h2>ניהול העסק</h2>
                 <nav>
                   {user?.role === "business" && (
-                    <>
-                      <NavLink
-                        to={`/business/${businessId}`}  // פרופיל ציבורי - מחוץ לדשבורד
-                        end={location.pathname === `/business/${businessId}`}
-                        className={({ isActive }) => (isActive ? "active" : undefined)}
-                      >
-                        👀 צפייה בפרופיל ציבורי
-                      </NavLink>
-                      <NavLink
-                        to={`/business/${businessId}/dashboard/profile`} // פרופיל עסקי בדשבורד
-                        end={location.pathname === `/business/${businessId}/dashboard/profile`}
-                        className={({ isActive }) => (isActive ? "active" : undefined)}
-                      >
-                        ✏️ עריכת פרופיל עסקי
-                      </NavLink>
-                    </>
+                    <NavLink
+                      to={`/business/${businessId}`}  // פרופיל ציבורי - מחוץ לדשבורד
+                      end={location.pathname === `/business/${businessId}`}
+                      className={({ isActive }) => (isActive ? "active" : undefined)}
+                    >
+                      👀 צפייה בפרופיל ציבורי
+                    </NavLink>
                   )}
                   {tabs.map(({ path, label }) => (
                     <NavLink
