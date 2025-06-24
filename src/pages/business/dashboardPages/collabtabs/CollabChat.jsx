@@ -317,6 +317,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         socketRef.current.emit(
           "sendFile",
           {
+            
             conversationId: selectedConversation._id,
             from: myBusinessId,
             to: otherId,
@@ -324,7 +325,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             buffer: reader.result,
             fileName: file.name,
             tempId,
-            conversationType,
+            
           },
           (ack) => {
             if (!ack.ok) {
@@ -358,7 +359,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   fileUrl: realMsg.fileUrl,
                   fileName: realMsg.fileName,
                   fileType: realMsg.fileType,
-                  conversationType,
+                  
                 },
                 (msgAck) => {
                   if (!msgAck.ok) {
@@ -398,7 +399,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         from: myBusinessId.toString(),
         to: otherId,
         text: input.trim(),
-        conversationType,
+        
       };
 
       const optimistic = {
