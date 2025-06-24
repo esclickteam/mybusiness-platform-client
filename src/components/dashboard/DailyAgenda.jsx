@@ -110,6 +110,8 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך", bus
             const time = a.time || "";
             const clientName = a.clientName?.trim() || "לא ידוע";
 
+            // לוג להצגת שם הלקוח בקונסול
+            console.log(`Displaying appointment for clientName: ${clientName}`);
 
             const serviceName = a.serviceName || "לא ידוע";
             const clientPhone = a.clientPhone || "";
