@@ -252,43 +252,27 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
               <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
             </p>
 
-            {/* כפתור צפייה בהסכם, רק אם קיים agreementId */}
-            {msg.agreementId && (
-              <>
-                {(String(userBusinessId) === String(msg.fromBusinessId?._id) ||
-                  String(userBusinessId) === String(msg.toBusinessId?._id)) && (
-                  <button
-                    onClick={() => {
-                      console.log("Raw agreementId:", msg.agreementId);
-                      let idStr;
+            {/* כפתור צפייה בהסכם - אם קיים agreementId או _id */}
+            {(msg.agreementId || msg._id) && (
+              (String(userBusinessId) === String(msg.fromBusinessId?._id) ||
+                String(userBusinessId) === String(msg.toBusinessId?._id)) && (
+                <button
+                  onClick={() => {
+                    const idStr = msg.agreementId
+                      ? typeof msg.agreementId === "string"
+                        ? msg.agreementId
+                        : msg.agreementId._id
+                        ? msg.agreementId._id.toString()
+                        : msg.agreementId.toString()
+                      : msg._id.toString();
 
-                      if (typeof msg.agreementId === "string") {
-                        idStr = msg.agreementId;
-                      } else if (msg.agreementId && typeof msg.agreementId === "object") {
-                        if (msg.agreementId._id) {
-                          idStr = msg.agreementId._id.toString();
-                          console.log("agreementId._id found:", idStr);
-                        } else if (msg.agreementId.id) {
-                          idStr = msg.agreementId.id.toString();
-                          console.log("agreementId.id found:", idStr);
-                        } else {
-                          idStr = msg.agreementId.toString();
-                          console.log("agreementId object converted with toString():", idStr);
-                        }
-                      } else {
-                        idStr = String(msg.agreementId);
-                        console.log("agreementId converted with String():", idStr);
-                      }
-
-                      console.log("Final agreementId string sent to API:", idStr);
-                      onOpenAgreement(idStr);
-                    }}
-                    style={buttonStylePurple}
-                  >
-                    צפייה בהסכם
-                  </button>
-                )}
-              </>
+                    onOpenAgreement(idStr);
+                  }}
+                  style={buttonStylePurple}
+                >
+                  צפייה בהסכם
+                </button>
+              )
             )}
 
             <div
