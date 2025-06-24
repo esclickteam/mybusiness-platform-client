@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import "./AiPartnerTab.css";
+import AiCommandPanel from "./AiCommandPanel";
+
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 const SHORTEN_LENGTH = 200; // תווים להצגה מקוצרת
