@@ -453,12 +453,13 @@ const DashboardPage = () => {
 
       {/* כאן הוספתי את רכיב הגרף */}
       <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
-        <div ref={chartsRef} style={{ marginTop: 20 }}>
-          <MemoizedBarChartComponent
-            data={effectiveStats.graphData || []} // החלף בנתונים הרלוונטיים לגרף שלך
-          />
-        </div>
-      </Suspense>
+  <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
+    <MemoizedBarChartComponent
+      appointments={effectiveStats.appointments || []} // העברת הנתונים ל-Barchart שלך
+      title="לקוחות שהזמינו פגישות לפי חודשים 📊"
+    />
+  </div>
+</Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
         <div ref={nextActionsRef} className="actions-container full-width">
