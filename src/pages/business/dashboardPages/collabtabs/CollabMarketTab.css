@@ -5,6 +5,10 @@
   background: #fdfbff;
   font-family: "Heebo", sans-serif;
   direction: rtl;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* עיצוב טופס פרסום שיתוף פעולה */
@@ -81,6 +85,15 @@
 }
 
 /* 🧾 כרטיס - עיצוב חדש תואם כרטיס פרופיל, אך קומפקטי */
+.partners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+  justify-content: center;
+}
+
 .collab-card {
   background-color: #faf5ff;             /* רקע סגול בהיר */
   border: 2px solid #af90d9;             /* מסגרת סגולה */

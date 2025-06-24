@@ -26,19 +26,19 @@ function CreateCollabForm({ onSuccess }) {
     setLoading(true);
     try {
       const message = {
-        title:       title.trim(),
+        title: title.trim(),
         description: description.trim(),
-        needs:       needs.split(",").map(s => s.trim()).filter(Boolean),
-        offers:      offers.split(",").map(s => s.trim()).filter(Boolean),
-        budget:      budget ? Number(budget) : undefined,
-        expiryDate:  expiryDate ? new Date(expiryDate).toISOString() : undefined,
+        needs: needs.split(",").map(s => s.trim()).filter(Boolean),
+        offers: offers.split(",").map(s => s.trim()).filter(Boolean),
+        budget: budget ? Number(budget) : undefined,
+        expiryDate: expiryDate ? new Date(expiryDate).toISOString() : undefined,
       };
 
       await API.post("/business/my/proposals", {
         toBusinessId: null,
         message,
-        contactName:  contactName.trim(),
-        phone:        phone.trim(),
+        contactName: contactName.trim(),
+        phone: phone.trim(),
       });
 
       setTitle("");
@@ -175,17 +175,17 @@ export default function CollabMarketTab({ isDevUser }) {
           const collabs = res.data.proposals.map(item => {
             const msg = item.message || {};
             return {
-              _id:         item._id,
-              businessId:  item.fromBusinessId,
-              title:       msg.title,
+              _id: item._id,
+              businessId: item.fromBusinessId,
+              title: msg.title,
               description: msg.description,
-              needs:       msg.needs || [],
-              offers:      msg.offers || [],
-              budget:      msg.budget,
-              expiryDate:  item.expiryDate || msg.expiryDate,
+              needs: msg.needs || [],
+              offers: msg.offers || [],
+              budget: msg.budget,
+              expiryDate: item.expiryDate || msg.expiryDate,
               contactName: item.contactName,
-              phone:       item.phone,
-              imageUrl:    item.imageUrl || "/default-profile.png",
+              phone: item.phone,
+              // הסרתי את הלוגו
             };
           });
           setCollabMarket(collabs);
@@ -235,9 +235,7 @@ export default function CollabMarketTab({ isDevUser }) {
                 </div>
               </div>
 
-              <div className="business-logo-left">
-                <img src={item.imageUrl} alt={`${item.contactName} לוגו`} />
-              </div>
+              {/* הלוגו הוסר לפי בקשה */}
             </div>
           </div>
         ))}
