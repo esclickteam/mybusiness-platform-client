@@ -25,38 +25,20 @@ export default function CollabFindPartnerTab({
   handleSendProposal,
 }) {
   const navigate = useNavigate();
-
   const [myBusinessId, setMyBusinessId] = useState(null);
-  const [myBusinessName, setMyBusinessName] = useState("");
-
-  const [currentProposalId, setCurrentProposalId] = useState(null);
+  const [partners, setPartners] = useState([]);
 
   useEffect(() => {
     async function fetchMyBusiness() {
       try {
         const res = await API.get("/business/my");
         setMyBusinessId(res.data.business._id);
-        setMyBusinessName(res.data.business.businessName);
       } catch (err) {
         console.error("Error fetching my business:", err);
       }
     }
     fetchMyBusiness();
   }, []);
-
-  const [partners, setPartners] = useState([]);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [chatModalOpen, setChatModalOpen] = useState(false);
-  const [chatTarget, setChatTarget] = useState(null);
-  const [chatMessage, setChatMessage] = useState("");
-  const [sending, setSending] = useState(false);
-
-  const [createAgreementModalOpen, setCreateAgreementModalOpen] = useState(false);
-  const [createAgreementPartner, setCreateAgreementPartner] = useState(null);
-
-  const [sendProposalModalOpen, setSendProposalModalOpen] = useState(false);
-  const [selectedBusinessForProposal, setSelectedBusinessForProposal] = useState(null);
 
   useEffect(() => {
     async function fetchPartners() {
@@ -94,51 +76,50 @@ export default function CollabFindPartnerTab({
 
   const handleOpenProfile = (business) => {
     if (business._id) {
-          navigate(`/business-profile/${business._id}`);
-
-
-
+      navigate(`/business-profile/${business._id}`);
     }
   };
 
   return (
     <div>
-      {/* Search Bar */}
-      <div className="search-container">{/* שדות חיפוש ופילטרים */}</div>
+      <div className="search-container">{/* שדות חיפוש בעתיד */}</div>
 
-      {/* Partners List */}
       {filteredPartners.length === 0 ? (
         <p>לא נמצאו שותפים.</p>
       ) : (
-        filteredPartners.map((business) => {
-          const isMine = business._id === myBusinessId;
-          return (
-            <div
-              key={business._id || business.id}
-              className={`collab-card${isMine ? " my-business" : ""}`}
-            >
-              <h3 className="business-name">
-                {business.businessName}
-                {isMine && <span className="my-business-badge"> (העסק שלי) </span>}
-              </h3>
-              <p className="business-category">{business.category}</p>
-              <p className="business-desc">{business.description}</p>
-              <span className="status-badge">סטטוס בקשה: {business.status || "לא ידוע"}</span>
-              <div className="collab-card-buttons">
-                {isMine ? (
-                  <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
-                ) : (
-                  <button
-                    className="message-box-button secondary"
-                    onClick={() => handleOpenProfile(business)}
-                  >
-                    צפייה בפרופיל
-                  </button>
-                )}
+        <div className="partners-grid">
+          {filteredPartners.map((business) => {
+            const isMine = business._id === myBusinessId;
+            return (
+              <div
+                key={business._id || business.id}
+                className={`collab-card${isMine ? " my-business" : ""}`}
+              >
+                <h3 className="business-name">
+                  {business.businessName}
+                  {isMine && <span className="my-business-badge"> (העסק שלי) </span>}
+                </h3>
+                <p className="business-category">{business.category}</p>
+                <p className="business-desc">{business.description}</p>
+                <span className="status-badge">
+                  סטטוס בקשה: {business.status || "לא ידוע"}
+                </span>
+                <div className="collab-card-buttons">
+                  {isMine ? (
+                    <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
+                  ) : (
+                    <button
+                      className="message-box-button secondary"
+                      onClick={() => handleOpenProfile(business)}
+                    >
+                      צפייה בפרופיל
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })
+            );
+          })}
+        </div>
       )}
     </div>
   );

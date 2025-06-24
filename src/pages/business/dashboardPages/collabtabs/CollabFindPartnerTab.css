@@ -5,89 +5,77 @@
   --shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
   --primary: #9b59b6;
   --accent: #6c5ce7;
-  --my-biz: #ffeaa7;
-  --my-biz-border: #fdcb6e;
+  --my-biz: #fff4d1;
+  --my-biz-border: #f6c90e;
 }
 
-.search-container {
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  margin-bottom: 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
+.partners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 1rem;
+  direction: rtl;
 }
 
-.search-type-toggle {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 0.2rem;
-  font-weight: 500;
-}
-
-.toggle-button {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.7rem 1.2rem;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-right: 1rem;
-  transition: background 0.18s;
-}
-
-.toggle-button:hover {
-  background: var(--primary);
-}
-
-.toggle-button.active {
-  background: var(--primary);
-}
-
+/* כרטיס כללי */
 .collab-card {
-  background: var(--card-bg);
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin-bottom: 1.2rem;
-  box-shadow: var(--shadow);
-  transition: all 0.2s ease;
-  max-width: 100%;
-  border: 2px solid transparent;
-  position: relative;
+  background: linear-gradient(135deg, #f8f0ff, #fef9ff);
+  border-radius: 18px;
+  padding: 1.6rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 2px solid var(--border-color);
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .collab-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
 }
 
 .collab-card.my-business {
-  background: var(--my-biz);
+  background: linear-gradient(135deg, var(--my-biz), #fffde0);
   border: 2px solid var(--my-biz-border);
-  box-shadow: 0 0 0 4px #fffde0, 0 8px 20px rgba(0,0,0,0.09);
+  box-shadow: 0 0 0 4px #fff7c2, 0 10px 22px rgba(0,0,0,0.1);
+}
+
+.business-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
 }
 
 .my-business-badge {
   background: var(--my-biz-border);
-  color: #594006;
-  font-size: 1rem;
-  padding: 0 0.6em;
-  margin-right: 0.5em;
-  border-radius: 1em;
+  color: #5b4305;
+  font-size: 0.9rem;
+  padding: 0.3em 0.8em;
+  border-radius: 999px;
+  margin-right: 0.5rem;
+  box-shadow: 0 1px 4px #f9e79f88;
+}
+
+.business-category,
+.business-desc,
+.status-badge {
+  font-size: 0.95rem;
+  color: #4a4a4a;
+  margin-bottom: 6px;
+}
+
+.status-badge {
   font-weight: 600;
-  vertical-align: middle;
-  box-shadow: 0 1px 4px #f9e79f44;
+  color: var(--primary);
 }
 
 .collab-card-buttons {
+  margin-top: 1rem;
   display: flex;
-  gap: 1rem;
-  margin-top: 1.2rem;
+  justify-content: center;
 }
 
 .message-box-button {
