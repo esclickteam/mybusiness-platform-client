@@ -7,7 +7,6 @@ import Button from "@mui/material/Button";
 import API from "../api";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 import CreateAgreementForm from "../components/CreateAgreementForm";
-import "./BusinessProfilePage.css";
 
 
 export default function BusinessProfilePage({ resetSearchFilters }) {
