@@ -5,8 +5,16 @@ import "./CollabFindPartnerTab.css";
 
 export default function CollabFindPartnerTab({
   searchMode,
+  setSearchMode,
   searchCategory,
+  setSearchCategory,
   freeText,
+  setFreeText,
+  categories,
+  setSelectedBusiness,
+  setOpenModal,
+  isDevUser,
+  handleSendProposal,
 }) {
   const navigate = useNavigate();
   const [myBusinessId, setMyBusinessId] = useState(null);
@@ -65,41 +73,67 @@ export default function CollabFindPartnerTab({
   };
 
   return (
-    <div className="partners-grid">
-      {filteredPartners.map((business) => {
-        const isMine = business._id === myBusinessId;
-        const logoUrl = business.logo || "/default-logo.png";
+    <div>
+      <div className="search-container">{/* שדות חיפוש עתידיים */}</div>
 
-        return (
-          <div
-            key={business._id || business.id}
-            className={`collab-card${isMine ? " my-business" : ""}`}
-          >
-            <div className="business-logo">
-              <img src={logoUrl} alt={`${business.businessName} לוגו`} />
-            </div>
-            <h3 className="business-name">
-              {business.businessName}
-              {isMine && <span className="my-business-badge">העסק שלי</span>}
-            </h3>
-            <p className="business-category">{business.category}</p>
-            <p className="business-desc">{business.description}</p>
-            <span className="status-badge">סטטוס בקשה: {business.status || "לא ידוע"}</span>
-            <div className="collab-card-buttons">
-              {isMine ? (
-                <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
-              ) : (
-                <button
-                  className="message-box-button secondary"
-                  onClick={() => handleOpenProfile(business)}
-                >
-                  צפייה בפרופיל
-                </button>
-              )}
-            </div>
-          </div>
-        );
-      })}
+      {filteredPartners.length === 0 ? (
+        <p>לא נמצאו שותפים.</p>
+      ) : (
+        <div className="partners-grid">
+          {filteredPartners.map((business) => {
+            const isMine = business._id === myBusinessId;
+            const logoUrl = business.logo || "/default-logo.png";
+
+            return (
+              <div
+                key={business._id || business.id}
+                className={`collab-card${isMine ? " my-business" : ""}`}
+              >
+                {/* לוגו בפינה העליונה */}
+                <div className="business-logo-top">
+                  <img src={logoUrl} alt={`${business.businessName} לוגו`} />
+                </div>
+
+                <h3 className="business-name">
+                  {business.businessName}
+                  {isMine && <span className="my-business-badge">העסק שלי</span>}
+                </h3>
+
+                <p className="business-category">{business.category}</p>
+                <p className="business-desc">{business.description}</p>
+                <span className="status-badge">
+                  סטטוס בקשה: {business.status || "לא ידוע"}
+                </span>
+
+                <div className="collab-card-buttons">
+                  {isMine ? (
+                    <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
+                  ) : (
+                    <button
+                      className="message-box-button secondary"
+                      onClick={() => handleOpenProfile(business)}
+                    >
+                      צפייה בפרופיל
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
+
+const modalStyle = {
+  backgroundColor: "#fff",
+  p: 4,
+  borderRadius: 2,
+  maxWidth: 420,
+  m: "10% auto",
+  maxHeight: "80vh",
+  overflowY: "auto",
+  display: "flex",
+  flexDirection: "column",
+};
