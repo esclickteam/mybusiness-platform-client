@@ -108,7 +108,7 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך", bus
         <div className="agenda-list">
           {dayAppointments.map((a) => {
             const time = a.time || "";
-            const clientName = a.clientName?.trim() || a.client?.name?.trim() || "לא ידוע";
+            const clientName = a.clientName?.trim() || "לא ידוע";
 
 
             const serviceName = a.serviceName || "לא ידוע";
