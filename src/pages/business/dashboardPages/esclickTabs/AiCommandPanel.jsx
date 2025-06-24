@@ -13,7 +13,8 @@ export default function AiCommandPanel({ businessId, token, profile }) {
     setResponse(null);
 
     try {
-      const res = await fetch("/api/chat/ai-command", {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || "";
+      const res = await fetch(`${apiBaseUrl}/chat/ai-command`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,16 +36,33 @@ export default function AiCommandPanel({ businessId, token, profile }) {
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: "auto", padding: 20, fontFamily: "Arial, sans-serif" }}>
+    <div
+      style={{
+        maxWidth: 600,
+        margin: "auto",
+        padding: 20,
+        fontFamily: "Arial, sans-serif",
+        direction: "rtl",
+        textAlign: "right",
+      }}
+    >
       <h2>שותף AI - בקש פעולה או תשובה</h2>
 
       <textarea
         rows={4}
-        style={{ width: "100%", fontSize: 16, padding: 8, borderRadius: 4, border: "1px solid #ccc" }}
+        style={{
+          width: "100%",
+          fontSize: 16,
+          padding: 8,
+          borderRadius: 4,
+          border: "1px solid #ccc",
+          resize: "vertical",
+        }}
         placeholder="כתוב כאן את הבקשה שלך לשותף AI..."
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
         disabled={loading}
+        aria-label="בקשה לשותף AI"
       />
 
       <button
@@ -57,15 +75,18 @@ export default function AiCommandPanel({ businessId, token, profile }) {
           color: "white",
           border: "none",
           borderRadius: 4,
+          transition: "background-color 0.3s ease",
         }}
         onClick={sendCommand}
         disabled={loading || !prompt.trim()}
+        aria-disabled={loading || !prompt.trim()}
+        aria-busy={loading}
       >
         {loading ? "שולח..." : "שלח"}
       </button>
 
       {error && (
-        <p style={{ color: "red", marginTop: 10 }}>
+        <p style={{ color: "red", marginTop: 10 }} role="alert" aria-live="assertive">
           שגיאה: {error}
         </p>
       )}
@@ -79,7 +100,9 @@ export default function AiCommandPanel({ businessId, token, profile }) {
             borderRadius: 6,
             whiteSpace: "pre-wrap",
             fontSize: 16,
+            userSelect: "text",
           }}
+          aria-live="polite"
         >
           <h3>תשובת AI:</h3>
           <p>{response.answer}</p>
@@ -93,6 +116,7 @@ export default function AiCommandPanel({ businessId, token, profile }) {
                   padding: 10,
                   borderRadius: 4,
                   overflowX: "auto",
+                  userSelect: "text",
                 }}
               >
                 {JSON.stringify(response.action, null, 2)}
