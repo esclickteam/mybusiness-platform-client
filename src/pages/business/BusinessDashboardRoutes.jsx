@@ -95,8 +95,11 @@ const BusinessDashboardRoutes = () => {
           {/* דף דשבורד ראשי ותתי טאבים תחתיו */}
           <Route path="dashboard" element={<DashboardPage />} />
 
-          {/* דף פרופיל עסקי - בלי תתי־טאבים */}
+          {/* דף פרופיל עסקי ללא תתי־טאבים */}
           <Route path="profile" element={<BusinessProfilePage />} />
+
+          {/* שיתופי פעולה עם תמיכה בתתי־נתיבים */}
+          <Route path="collab/*" element={<Collab />} />
 
           {/* עריכה */}
           <Route path="edit" element={<BuildBusinessPage />} />
@@ -123,7 +126,6 @@ const BusinessDashboardRoutes = () => {
 
           {/* שאר הנתיבים */}
           <Route path="cart" element={<CartPage />} />
-          <Route path="collab" element={<Collab />} />
           <Route path="upgrade" element={<Upgrade />} />
           <Route path="esclick" element={<EsclickAdvisor />} />
           <Route path="goals" element={<GoalsPage />} />
