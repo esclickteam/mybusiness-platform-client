@@ -46,8 +46,6 @@ import TroubleshootingFAQ from "../troubleshootingFAQs";
 
 // קומפוננטות פרופיל עסקי
 const BusinessProfilePage = lazy(() => import("../BusinessProfilePage"));
-const ProfileTab1 = lazy(() => import("./dashboardPages/profile/ProfileTab1"));
-const ProfileTab2 = lazy(() => import("./dashboardPages/profile/ProfileTab2"));
 
 // רכיב להצגת FAQ (מערך שאלות ותשובות)
 function FAQPage({ faqs }) {
