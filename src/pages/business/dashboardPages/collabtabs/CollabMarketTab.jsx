@@ -182,11 +182,9 @@ export default function CollabMarketTab({ isDevUser }) {
               needs:       msg.needs || [],
               offers:      msg.offers || [],
               budget:      msg.budget,
-              expiryDate:  msg.expiryDate,
+              expiryDate:  item.expiryDate || msg.expiryDate,
               contactName: item.contactName,
               phone:       item.phone,
-              // הוסף שדה תמונה אם יש לך מקור
-              imageUrl:    item.imageUrl || "/default-profile.png",
             };
           });
           setCollabMarket(collabs);
@@ -218,25 +216,32 @@ export default function CollabMarketTab({ isDevUser }) {
 
       {collabMarket.map(item => (
         <div key={item._id} className="collab-card">
-          <img
-            src={item.imageUrl}
-            alt={item.contactName}
-            className="profile-image"
-          />
-          <div className="content">
-            <h4>{item.contactName}</h4>
-            <p className="role">{item.title}</p>
-            <p className="description">{item.description}</p>
-            <p><strong>מה העסק צריך:</strong> {item.needs.join(", ")}</p>
-            <p><strong>מה העסק נותן:</strong> {item.offers.join(", ")}</p>
-            <p><strong>תקציב:</strong> ₪{item.budget}</p>
-            <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
-            <button
-              className="contact-button"
-              onClick={() => navigate(`/business-profile/${item.businessId}`)}
-            >
-              צפייה בפרופיל
-            </button>
+          <div className="collab-card-inner">
+            <div className="collab-card-content">
+              <h3 className="business-name">{item.contactName}</h3>
+              <p className="business-category">{item.title}</p>
+              <p className="business-desc">{item.description}</p>
+              <p><strong>מה העסק צריך:</strong> {item.needs.join(", ")}</p>
+              <p><strong>מה העסק נותן:</strong> {item.offers.join(", ")}</p>
+              <p><strong>תקציב:</strong> ₪{item.budget}</p>
+              <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
+              <div className="collab-card-buttons">
+                <button
+                  className="message-box-button secondary"
+                  onClick={() => navigate(`/business-profile/${item.businessId}`)}
+                >
+                  צפייה בפרופיל
+                </button>
+              </div>
+            </div>
+
+            {/* אפשר להוסיף תמונה או לוגו אם יש, לדוגמה: */}
+            {/* <div className="business-logo-left">
+              <img
+                src={item.imageUrl || "/default-profile.png"}
+                alt={item.contactName}
+              />
+            </div> */}
           </div>
         </div>
       ))}
