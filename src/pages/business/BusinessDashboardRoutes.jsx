@@ -134,14 +134,6 @@ const BusinessDashboardRoutes = () => {
             <Route path="market" element={<CollabMarketTab />} />
           </Route>
 
-          <Route path="collab" element={<Collab />}>
-    <Route index element={<Navigate to="profile" replace />} />
-    <Route path="profile" element={<CollabBusinessProfileTab />} />
-    <Route path="findPartner" element={<CollabFindPartnerTab />} />
-    <Route path="messages" element={<CollabMessagesTab />} />
-    <Route path="market" element={<CollabMarketTab />} />
-  </Route>
-
           <Route path="help-center" element={<HelpCenter />} />
 
           <Route path="*" element={<Navigate to="dashboard" replace />} />
