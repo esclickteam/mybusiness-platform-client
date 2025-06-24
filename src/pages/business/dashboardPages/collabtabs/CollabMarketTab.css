@@ -101,14 +101,16 @@
   padding: 1rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 12px rgba(175,144,217,0.3);
-  text-align: right;
+  text-align: center;                    /* מרכז את הטקסט */
   font-family: "Heebo", sans-serif;
   color: #4a3f6b;
   display: flex;
   gap: 1rem;
   align-items: center;
-  max-width: 480px; /* רוחב מוגבל */
+  justify-content: center;               /* מרכז את התוכן אופקית */
+  max-width: 480px;                      /* רוחב מוגבל */
 }
+
 
 /* תמונת פרופיל עגולה עם מסגרת סגולה */
 .collab-card img.profile-image {
