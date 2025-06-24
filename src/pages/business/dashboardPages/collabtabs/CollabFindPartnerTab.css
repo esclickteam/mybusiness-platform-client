@@ -3,7 +3,7 @@
   --border-color: #d5c2f0;
   --radius: 16px;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  --primary: #9b59b6;
+  --primary: #6c5ce7; /* צבע אחיד לכל: כפתור, שם, לוגו */
   --accent: #6c5ce7;
   --my-biz: #fff4d1;
   --my-biz-border: #f6c90e;
@@ -31,6 +31,7 @@
   justify-content: space-between;
 }
 
+/* מבנה פנימי */
 .collab-card-inner {
   display: flex;
   justify-content: space-between;
@@ -38,21 +39,23 @@
   gap: 1.5rem;
 }
 
-/* תוכן טקסט */
+/* תוכן בימין */
 .collab-card-content {
   flex: 1;
   text-align: right;
 }
 
+/* שם העסק */
 .business-name {
   font-size: 1.6rem;
   font-weight: 900;
-  color: var(--accent);
+  color: var(--primary);
   margin-bottom: 0.7rem;
   font-family: "Heebo", sans-serif;
   letter-spacing: 0.5px;
 }
 
+/* תגית "העסק שלי" */
 .my-business-badge {
   background: var(--my-biz-border);
   color: #5b4305;
@@ -63,6 +66,7 @@
   box-shadow: 0 1px 4px #f9e79f88;
 }
 
+/* תוכן משני */
 .business-category,
 .business-desc {
   font-size: 0.95rem;
@@ -70,7 +74,7 @@
   margin-bottom: 6px;
 }
 
-/* לוגו גדול יותר */
+/* לוגו בשמאל */
 .business-logo-left {
   flex-shrink: 0;
   margin-right: 1rem;
@@ -81,7 +85,7 @@
   height: 128px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--accent);
+  border: 3px solid var(--primary);
   background-color: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
@@ -106,7 +110,7 @@
 }
 
 .message-box-button:hover {
-  background-color: var(--accent);
+  background-color: #5a4bd8;
 }
 
 .message-box-button.secondary {
@@ -128,4 +132,11 @@
   pointer-events: none;
   font-weight: 500;
   padding: 0.7rem 1.1rem;
+}
+
+/* כרטיס עסק שלי */
+.collab-card.my-business {
+  background: linear-gradient(135deg, var(--my-biz), #fffde0);
+  border: 2px solid var(--my-biz-border);
+  box-shadow: 0 0 0 4px #fff7c2, 0 10px 22px rgba(0, 0, 0, 0.1);
 }
