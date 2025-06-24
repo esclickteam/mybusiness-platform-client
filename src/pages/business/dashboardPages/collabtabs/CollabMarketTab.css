@@ -122,7 +122,12 @@
 /* אזור תוכן הכרטיס */
 .collab-card .content {
   flex: 1;
-  font-size: 0.9rem; /* טקסט קטן יותר */
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* מרכז אנכית */
+  align-items: center;    /* מרכז אופקי */
+  text-align: center;     /* טקסט מיושר למרכז */
 }
 
 /* כותרת שם */
