@@ -7,6 +7,8 @@ import Button from "@mui/material/Button";
 import API from "../api";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 import CreateAgreementForm from "../components/CreateAgreementForm";
+import "./BusinessProfilePage.css";
+
 
 export default function BusinessProfilePage({ resetSearchFilters }) {
   const { businessId } = useParams();
@@ -18,7 +20,6 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   const [currentUserBusinessId, setCurrentUserBusinessId] = useState(null);
   const [currentUserBusinessName, setCurrentUserBusinessName] = useState("");
 
-  // מזהה ההצעה שנוצרה לאחרונה
   const [currentProposalId, setCurrentProposalId] = useState(null);
 
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
@@ -108,15 +109,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   const closeCreateAgreementModal = () => setCreateAgreementModalOpen(false);
 
   return (
-    <div
-      style={{
-        maxWidth: 700,
-        margin: "40px auto",
-        padding: 30,
-        direction: "rtl",
-        textAlign: "right",
-      }}
-    >
+    <div className="page-container">
       {isOwnerViewingOther && (
         <button
           onClick={() => {
@@ -140,73 +133,54 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
         </button>
       )}
 
-      <div
-        style={{
-          backgroundColor: "#fff",
-          borderRadius: 16,
-          boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
-          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-          color: "#333",
-          padding: 30,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
-          <img
-            src={business.logo || "/default-logo.png"}
-            alt={`${business.businessName} לוגו`}
-            style={{
-              width: 140,
-              height: 140,
-              objectFit: "cover",
-              borderRadius: "50%",
-              border: "4px solid #9b59b6",
-              marginRight: 24,
-              boxShadow: "0 4px 12px rgba(155,89,182,0.4)",
-            }}
-          />
-          <div>
-            <h1
-              style={{ fontSize: 28, marginBottom: 4, color: "#6c3483" }}
-              title={business.businessName}
-            >
-              {business.businessName}
-            </h1>
-            <p
-              style={{ fontSize: 18, color: "#9b59b6", fontWeight: "600" }}
-              title={business.category}
-            >
-              {business.category}
-            </p>
+      <aside className="sidebar">
+        <ul>
+          <li><a href="#profile" className="active">פרופיל עסקי</a></li>
+          <li><a href="#collaborations">שיתופי פעולה רצויים</a></li>
+          <li><a href="#contact">פרטי קשר</a></li>
+          <li><a href="#actions">פעולות</a></li>
+        </ul>
+      </aside>
+
+      <main className="main-content" dir="rtl">
+        <section id="profile" className="profile-section">
+          <h3>📇 פרופיל עסקי</h3>
+          <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 20 }}>
+            <img
+              src={business.logo || "/default-logo.png"}
+              alt={`${business.businessName} לוגו`}
+              style={{
+                width: 140,
+                height: 140,
+                objectFit: "cover",
+                borderRadius: "50%",
+                border: "4px solid #9b59b6",
+                boxShadow: "0 4px 12px rgba(155,89,182,0.4)",
+              }}
+            />
+            <div>
+              <h2 style={{ color: "#6c3483", margin: 0 }}>{business.businessName}</h2>
+              <p style={{ color: "#9b59b6", fontWeight: "600", fontSize: "1.2rem" }}>
+                {business.category}
+              </p>
+            </div>
           </div>
-        </div>
+          <p><b>📍 אזור פעילות:</b> {business.area || "לא מוגדר"}</p>
+          <p><b>📝 תיאור העסק:</b></p>
+          <p style={{ color: "#555" }}>{business.description || "אין תיאור זמין"}</p>
+        </section>
 
-        <div style={{ lineHeight: 1.6, fontSize: 16 }}>
-          <p>
-            <b>📍 אזור פעילות:</b> {business.area || "לא מוגדר"}
-          </p>
-          <p>
-            <b>📝 תיאור העסק:</b>
-          </p>
-          <p style={{ marginTop: 8, color: "#555" }}>
-            {business.description || "אין תיאור זמין"}
-          </p>
-
+        <section id="collaborations" className="profile-section">
+          <h3>🤝 שיתופי פעולה רצויים</h3>
           {(business.collabPref ||
             (business.lookingFor && business.lookingFor.length) ||
             (business.complementaryCategories &&
-              business.complementaryCategories.length)) && (
-            <div style={{ marginTop: 20 }}>
-              <h3 style={{ color: "#6c3483" }}>🤝 שיתופי פעולה רצויים:</h3>
-              {business.collabPref && (
-                <p>
-                  <b>העדפה כללית:</b> {business.collabPref}
-                </p>
-              )}
+              business.complementaryCategories.length)) ? (
+            <>
+              {business.collabPref && <p><b>העדפה כללית:</b> {business.collabPref}</p>}
               {business.lookingFor && business.lookingFor.length > 0 && (
                 <>
-                  <p>
-                    <b>מחפש שיתופי פעולה בתחומים:</b>
-                  </p>
+                  <p><b>מחפש שיתופי פעולה בתחומים:</b></p>
                   <ul style={{ paddingLeft: 20 }}>
                     {business.lookingFor.map((item, i) => (
                       <li key={i}>{item}</li>
@@ -214,115 +188,47 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
                   </ul>
                 </>
               )}
-              {business.complementaryCategories &&
-                business.complementaryCategories.length > 0 && (
-                  <>
-                    <p>
-                      <b>קטגוריות משלימות:</b>
-                    </p>
-                    <ul style={{ paddingLeft: 20 }}>
-                      {business.complementaryCategories.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-            </div>
+              {business.complementaryCategories && business.complementaryCategories.length > 0 && (
+                <>
+                  <p><b>קטגוריות משלימות:</b></p>
+                  <ul style={{ paddingLeft: 20 }}>
+                    {business.complementaryCategories.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </>
+          ) : (
+            <p>אין שיתופי פעולה מוזנים.</p>
           )}
+        </section>
 
-          {business.contact && (
-            <div style={{ marginTop: 20 }}>
-              <h3 style={{ color: "#6c3483" }}>📞 פרטי איש הקשר:</h3>
-              <p>{business.contact}</p>
-              <div style={{ marginTop: 12 }}>
-                {business.phone && (
-                  <p>
-                    <b>טלפון:</b> {business.phone}
-                  </p>
-                )}
-                {business.email && (
-                  <p>
-                    <b>אימייל:</b> {business.email}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+        <section id="contact" className="profile-section">
+          <h3>📞 פרטי איש הקשר</h3>
+          <p><b>איש קשר:</b> {business.contact}</p>
+          <p><b>טלפון:</b> {business.phone}</p>
+          <p><b>אימייל:</b> {business.email}</p>
+        </section>
 
-        <div
-          style={{
-            marginTop: 30,
-            display: "flex",
-            gap: 10,
-            justifyContent: "center",
-          }}
-        >
-          <button
-            onClick={openProposalModal}
-            style={{
-              backgroundColor: "#8e44ad",
-              color: "white",
-              border: "none",
-              padding: "12px 20px",
-              borderRadius: 30,
-              cursor: "pointer",
-              fontWeight: "600",
-              fontSize: 16,
-              boxShadow: "0 4px 14px rgba(142, 68, 173, 0.4)",
-              transition: "background-color 0.3s ease",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#732d91")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#8e44ad")}
-          >
+        <section id="actions" className="profile-section" style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+          <button className="btn-primary" onClick={openProposalModal}>
             שלח הצעה
           </button>
-
-          <button
-            onClick={openChatModal}
-            style={{
-              backgroundColor: "transparent",
-              border: "2px solid #8e44ad",
-              color: "#8e44ad",
-              padding: "12px 20px",
-              borderRadius: 30,
-              cursor: "pointer",
-              fontWeight: "600",
-              fontSize: 16,
-              transition: "background-color 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#8e44ad";
-              e.currentTarget.style.color = "white";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#8e44ad";
-            }}
-          >
+          <button className="btn-secondary" onClick={openChatModal}>
             צ'אט
           </button>
-
           <button
-            onClick={handleCreateAgreement}
+            className="btn-secondary"
             disabled={!currentProposalId}
             title={!currentProposalId ? "יש לשלוח הצעה קודם" : ""}
-            style={{
-              backgroundColor: !currentProposalId ? "#ccc" : "transparent",
-              border: "2px solid #8e44ad",
-              color: !currentProposalId ? "#666" : "#8e44ad",
-              padding: "12px 20px",
-              borderRadius: 30,
-              cursor: !currentProposalId ? "not-allowed" : "pointer",
-              fontWeight: "600",
-              fontSize: 16,
-              transition: "background-color 0.3s ease",
-            }}
+            style={{ cursor: !currentProposalId ? "not-allowed" : "pointer" }}
+            onClick={handleCreateAgreement}
           >
             צור הסכם חדש
           </button>
-        </div>
-      </div>
+        </section>
+      </main>
 
       {/* Proposal Modal */}
       <Modal open={isProposalModalOpen} onClose={closeProposalModal}>
