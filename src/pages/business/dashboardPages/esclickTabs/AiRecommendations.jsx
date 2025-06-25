@@ -11,20 +11,34 @@ const AiRecommendations = ({ businessId, token }) => {
   useEffect(() => {
     if (!businessId || !token) return;
 
+    console.log("Initializing socket connection...");
+
     const s = io(SOCKET_URL, {
       auth: { token, businessId },
       transports: ["websocket"],
     });
 
     s.on("connect", () => {
+      console.log("Socket connected, id:", s.id);
       s.emit("joinRoom", businessId);
+      console.log(`Emitted joinRoom for businessId: ${businessId}`);
+    });
+
+    s.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
+    });
+
+    s.on("disconnect", (reason) => {
+      console.log("Socket disconnected, reason:", reason);
     });
 
     s.on("newAiSuggestion", (rec) => {
+      console.log("Received newAiSuggestion:", rec);
       setRecommendations((prev) => [...prev, rec]);
     });
 
     s.on("updateRecommendationStatus", (updatedRec) => {
+      console.log("Received updateRecommendationStatus:", updatedRec);
       setRecommendations((prev) =>
         prev.map((r) =>
           r._id === updatedRec._id || r.id === updatedRec.id ? { ...r, ...updatedRec } : r
@@ -33,7 +47,9 @@ const AiRecommendations = ({ businessId, token }) => {
     });
 
     setSocket(s);
+
     return () => {
+      console.log("Disconnecting socket...");
       s.disconnect();
     };
   }, [businessId, token]);
@@ -41,6 +57,7 @@ const AiRecommendations = ({ businessId, token }) => {
   const approveRecommendation = async (id) => {
     setLoading(true);
     try {
+      console.log("Approving recommendation:", id);
       const res = await fetch("/api/chat/send-approved", {
         method: "POST",
         headers: {
@@ -67,6 +84,7 @@ const AiRecommendations = ({ businessId, token }) => {
   const rejectRecommendation = async (id) => {
     setLoading(true);
     try {
+      console.log("Rejecting recommendation:", id);
       const res = await fetch("/api/chat/rejectRecommendation", {
         method: "POST",
         headers: {
