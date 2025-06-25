@@ -34,14 +34,20 @@ const AiRecommendations = ({ businessId, token }) => {
 
     s.on("newAiSuggestion", (rec) => {
       console.log("Received newAiSuggestion:", rec);
-      setRecommendations((prev) => [...prev, rec]);
+      setRecommendations((prev) => {
+        // הימנעות מכפילויות לפי _id
+        if (prev.find(r => r._id === rec._id)) return prev;
+        return [...prev, rec];
+      });
     });
 
-    s.on("updateRecommendationStatus", (updatedRec) => {
-      console.log("Received updateRecommendationStatus:", updatedRec);
+    s.on("messageApproved", ({ recommendationId }) => {
+      console.log("Received messageApproved for recommendationId:", recommendationId);
       setRecommendations((prev) =>
         prev.map((r) =>
-          r._id === updatedRec._id || r.id === updatedRec.id ? { ...r, ...updatedRec } : r
+          r._id === recommendationId || r.id === recommendationId
+            ? { ...r, status: "approved" }
+            : r
         )
       );
     });
@@ -70,7 +76,6 @@ const AiRecommendations = ({ businessId, token }) => {
       if (!res.ok) throw new Error(data.error || "Failed to approve");
 
       alert("ההמלצה אושרה ונשלחה!");
-      // עדכון סטטוס מקומי
       setRecommendations((prev) =>
         prev.map((r) => (r.id === id || r._id === id ? { ...r, status: "approved" } : r))
       );
