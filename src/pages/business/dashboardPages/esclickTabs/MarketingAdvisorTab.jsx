@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Markdown from "markdown-to-jsx";
 import "./AdvisorChat.css";
 
-const MarketingAdvisorTab = ({ businessId, conversationId, userId }) => {
+const MarketingAdvisorTab = () => {
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -23,35 +23,21 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId }) => {
     throw new Error("Missing VITE_API_URL environment variable");
   }
 
-  const sendMessage = async (promptText) => {
-    if (!businessId || !promptText.trim()) return;
-
+  const sendMessage = async (newMessages) => {
     setLoading(true);
-
     const payload = {
-      businessId,
-      prompt: promptText,
-      profile: {
-        conversationId: conversationId || null,
-        userId: userId || null,
-      },
+      messages: newMessages,
+      type: "marketing",
     };
 
     try {
-      console.log("🟢 שולח בקשה לשרת עם הפיילוד:", payload);
-
-      const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
+      const response = await fetch(`${apiBaseUrl}/ask-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      console.log("🟢 סטטוס תגובה מהשרת:", response.status);
-
       const data = await response.json();
-
-      console.log("🟢 תוכן תגובה מהשרת:", data);
-
       const botMessage = {
         role: "assistant",
         content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
@@ -76,7 +62,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId }) => {
     setMessages(newMessages);
     setUserInput("");
     setStartedChat(true);
-    sendMessage(userInput);
+    sendMessage(newMessages);
   };
 
   const handlePresetQuestion = (text) => {
@@ -84,7 +70,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId }) => {
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setStartedChat(true);
-    sendMessage(text);
+    sendMessage(newMessages);
   };
 
   useEffect(() => {
@@ -99,14 +85,12 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId }) => {
       <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
 
       {!startedChat && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.5rem",
-            marginBottom: "1.5rem",
-          }}
-        >
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5rem",
+          marginBottom: "1.5rem"
+        }}>
           {presetQuestions.map((q, index) => (
             <button
               key={index}
@@ -130,21 +114,17 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId }) => {
                     overrides: {
                       p: {
                         component: (props) => (
-                          <p
-                            style={{
-                              margin: "0.2em 0",
-                              direction: "rtl",
-                              whiteSpace: "normal",
-                              wordBreak: "break-word",
-                              overflowWrap: "break-word",
-                              textAlign: "right",
-                            }}
-                          >
-                            {props.children}
-                          </p>
-                        ),
-                      },
-                    },
+                          <p style={{
+                            margin: "0.2em 0",
+                            direction: "rtl",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            textAlign: "right"
+                          }}>{props.children}</p>
+                        )
+                      }
+                    }
                   }}
                 >
                   {msg.content}
@@ -155,7 +135,9 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId }) => {
             </div>
           ))}
 
-          {loading && <div className="bubble assistant">⌛ מחשב תשובה...</div>}
+          {loading && (
+            <div className="bubble assistant">⌛ מחשב תשובה...</div>
+          )}
 
           <div style={{ minHeight: "80px" }} />
           <div ref={bottomRef} />
