@@ -41,7 +41,7 @@ function formatMonthlyData(appointments) {
 const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
   const [data, setData] = useState(() => formatMonthlyData([]));
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const [viewMode, setViewMode] = useState("bar"); // "bar", "line", "table"
+  const [viewMode, setViewMode] = useState("bar");
 
   useEffect(() => {
     setData(formatMonthlyData(appointments));
@@ -55,9 +55,8 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
 
   return (
     <div className="graph-box">
-      <h4 className="graph-title">{title}</h4>
+      <h2 className="graph-title">{title}</h2>
 
-      {/* כפתורי בחירה מעוצבים */}
       <div className="chart-buttons">
         <button
           className={viewMode === "bar" ? "active" : ""}
