@@ -1,28 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
-import { HDate, Event, Location, HebrewCalendar, Luach } from '@hebcal/core'; // דוגמה לספריה לתאריכים עבריים
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
-
-function formatHebrewDate(date) {
-  // המרת תאריך רגיל לתאריך עברי עם ספריית hebcal/core
-  try {
-    const hd = new HDate(date);
-    return hd.renderGematriya(); // או כל פורמט אחר שנוח לך
-  } catch {
-    return new Date(date).toLocaleDateString();
-  }
-}
 
 const AiRecommendations = ({ businessId, token }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [socket, setSocket] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [filterStatus, setFilterStatus] = useState("pending");
 
   useEffect(() => {
     if (!businessId || !token) return;
+
+    console.log("Initializing socket connection...");
 
     const s = io(SOCKET_URL, {
       auth: { token, businessId },
@@ -30,10 +20,22 @@ const AiRecommendations = ({ businessId, token }) => {
     });
 
     s.on("connect", () => {
+      console.log("Socket connected, id:", s.id);
       s.emit("joinRoom", businessId);
+      console.log(`Emitted joinRoom for businessId: ${businessId}`);
+    });
+
+    s.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
+      setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
+    });
+
+    s.on("disconnect", (reason) => {
+      console.log("Socket disconnected, reason:", reason);
     });
 
     s.on("newAiSuggestion", (rec) => {
+      console.log("Received newAiSuggestion:", rec);
       setRecommendations((prev) => {
         if (prev.find((r) => r._id === rec._id)) return prev;
         return [...prev, rec];
@@ -41,6 +43,7 @@ const AiRecommendations = ({ businessId, token }) => {
     });
 
     s.on("messageApproved", ({ recommendationId }) => {
+      console.log("Received messageApproved for recommendationId:", recommendationId);
       setRecommendations((prev) =>
         prev.map((r) =>
           r._id === recommendationId || r.id === recommendationId
@@ -53,6 +56,7 @@ const AiRecommendations = ({ businessId, token }) => {
     setSocket(s);
 
     return () => {
+      console.log("Disconnecting socket...");
       s.disconnect();
     };
   }, [businessId, token]);
@@ -61,6 +65,7 @@ const AiRecommendations = ({ businessId, token }) => {
     setLoading(true);
     setError(null);
     try {
+      console.log("Approving recommendation:", id);
       const res = await fetch("/api/chat/send-approved", {
         method: "POST",
         headers: {
@@ -87,6 +92,7 @@ const AiRecommendations = ({ businessId, token }) => {
     setLoading(true);
     setError(null);
     try {
+      console.log("Rejecting recommendation:", id);
       const res = await fetch("/api/chat/rejectRecommendation", {
         method: "POST",
         headers: {
@@ -106,56 +112,28 @@ const AiRecommendations = ({ businessId, token }) => {
     }
   };
 
-  const filteredRecommendations = recommendations.filter(r => r.status === filterStatus);
-
   return (
     <div>
       <h3>המלצות AI ממתינות לאישור</h3>
-
-      <label htmlFor="statusFilter">סינון לפי סטטוס: </label>
-      <select
-        id="statusFilter"
-        value={filterStatus}
-        onChange={(e) => setFilterStatus(e.target.value)}
-      >
-        <option value="pending">ממתינות לאישור</option>
-        <option value="approved">מאושרות</option>
-        <option value="rejected">נדחות</option>
-        <option value="sent">נשלחו</option>
-      </select>
-
       {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {filteredRecommendations.length === 0 && <p>אין המלצות במצב זה.</p>}
-
+      {recommendations.filter((r) => r.status === "pending").length === 0 && <p>אין המלצות חדשות.</p>}
       <ul>
-        {filteredRecommendations.map(({ _id, id, text, createdAt, conversationId }) => (
-          <li
-            key={_id || id}
-            style={{ marginBottom: "1rem", border: "1px solid #ccc", padding: "0.5rem" }}
-          >
-            <p>{text}</p>
-            <small>תאריך: {formatHebrewDate(createdAt)}</small><br />
-            <a
-              href={`/chat/${conversationId}`} // עדכן לפי הנתיב האמיתי שלך
-              target="_blank"
-              rel="noopener noreferrer"
+        {recommendations
+          .filter((r) => r.status === "pending")
+          .map(({ _id, id, text }) => (
+            <li
+              key={_id || id}
+              style={{ marginBottom: "1rem", border: "1px solid #ccc", padding: "0.5rem" }}
             >
-              מעבר לשיחה
-            </a>
-
-            {filterStatus === "pending" && (
-              <div style={{ marginTop: "0.5rem" }}>
-                <button onClick={() => approveRecommendation(_id || id)} disabled={loading}>
-                  אשר ושלח
-                </button>
-                <button onClick={() => rejectRecommendation(_id || id)} disabled={loading}>
-                  דחה
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
+              <p>{text}</p>
+              <button onClick={() => approveRecommendation(_id || id)} disabled={loading}>
+                אשר ושלח
+              </button>
+              <button onClick={() => rejectRecommendation(_id || id)} disabled={loading}>
+                דחה
+              </button>
+            </li>
+          ))}
       </ul>
     </div>
   );
