@@ -15,40 +15,22 @@
   scroll-behavior: smooth;
 }
 
-/* כותרת גרף עם אייקון */
 .graph-title {
-  text-align: center;
-  margin: 15px 0 20px;
-  color: #4b0082;
-  font-weight: 900;
-  font-size: 1.5rem;
-  letter-spacing: 0.6px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+
+  text-align: center;
+  margin: 10px 0 20px;
+  color: var(--accent-purple);
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: 0.7px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial Black', Arial, sans-serif;
 }
 
-.graph-title img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-
-/* התאמה לגרף מגיב */
-.graph-box .recharts-responsive-container {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 300px;
-}
-
-/* תיקון רוחב דינמי לגרף */
-.graph-box .recharts-wrapper {
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-/* כפתורי בחירת תצוגה */
 .chart-buttons {
   display: flex;
   justify-content: center;
@@ -60,20 +42,17 @@
   background-color: #6a5acd;
   color: white;
   border: none;
-  padding: 8px 18px;
+  padding: 8px 16px;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  box-shadow: 0 3px 8px rgba(106, 90, 205, 0.35);
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  font-size: 1rem;
-  user-select: none;
+  box-shadow: 0 3px 8px rgba(106, 90, 205, 0.3);
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .chart-buttons button:hover {
   background-color: #4b0082;
   transform: translateY(-2px);
-  box-shadow: 0 5px 14px rgba(75, 0, 130, 0.45);
 }
 
 .chart-buttons button:focus {
@@ -83,7 +62,7 @@
 
 .chart-buttons button.active {
   background-color: #4caf50;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.75);
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.6);
   transform: translateY(-2px);
 }
 
@@ -101,18 +80,8 @@
   }
 
   .graph-title {
-  text-align: center;
-  margin: 20px 0 20px;
-  color: #4b0082; /* סגול כהה */
-  font-weight: 900; /* יותר מודגש */
-  font-size: 1.5rem; /* גדול יותר */
-  letter-spacing: 0.7px; /* ריווח אותיות */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* צל עדין */
-  font-family: 'Arial Black', Arial, sans-serif; /* גופן מודגש */
-}
-
-  .chart-buttons button {
-    padding: 6px 14px;
-    font-size: 0.9rem;
+    font-size: 1.25rem;
+    margin-top: 8px;
+    margin-bottom: 8px;
   }
 }
