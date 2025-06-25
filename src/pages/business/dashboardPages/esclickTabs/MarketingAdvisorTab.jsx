@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Markdown from "markdown-to-jsx";
 import "./AdvisorChat.css";
 
-const MarketingAdvisorTab = () => {
+const MarketingAdvisorTab = ({ businessId, conversationId, userId }) => {
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -23,21 +23,30 @@ const MarketingAdvisorTab = () => {
     throw new Error("Missing VITE_API_URL environment variable");
   }
 
-  const sendMessage = async (newMessages) => {
+  const sendMessage = async (promptText) => {
+    if (!businessId || !promptText.trim()) return;
+
     setLoading(true);
+
     const payload = {
-      messages: newMessages,
+      businessId,
+      prompt: promptText,
+      profile: {
+        conversationId: conversationId || null,
+        userId: userId || null,
+      },
       type: "marketing",
     };
 
     try {
-      const response = await fetch(`${apiBaseUrl}/ask-ai`, {
+      const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const data = await response.json();
+
       const botMessage = {
         role: "assistant",
         content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
@@ -62,7 +71,7 @@ const MarketingAdvisorTab = () => {
     setMessages(newMessages);
     setUserInput("");
     setStartedChat(true);
-    sendMessage(newMessages);
+    sendMessage(userInput);
   };
 
   const handlePresetQuestion = (text) => {
@@ -70,7 +79,7 @@ const MarketingAdvisorTab = () => {
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setStartedChat(true);
-    sendMessage(newMessages);
+    sendMessage(text);
   };
 
   useEffect(() => {
@@ -85,12 +94,14 @@ const MarketingAdvisorTab = () => {
       <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
 
       {!startedChat && (
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.5rem",
-          marginBottom: "1.5rem"
-        }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem",
+            marginBottom: "1.5rem",
+          }}
+        >
           {presetQuestions.map((q, index) => (
             <button
               key={index}
@@ -114,17 +125,21 @@ const MarketingAdvisorTab = () => {
                     overrides: {
                       p: {
                         component: (props) => (
-                          <p style={{
-                            margin: "0.2em 0",
-                            direction: "rtl",
-                            whiteSpace: "normal",
-                            wordBreak: "break-word",
-                            overflowWrap: "break-word",
-                            textAlign: "right"
-                          }}>{props.children}</p>
-                        )
-                      }
-                    }
+                          <p
+                            style={{
+                              margin: "0.2em 0",
+                              direction: "rtl",
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
+                              overflowWrap: "break-word",
+                              textAlign: "right",
+                            }}
+                          >
+                            {props.children}
+                          </p>
+                        ),
+                      },
+                    },
                   }}
                 >
                   {msg.content}
@@ -135,9 +150,7 @@ const MarketingAdvisorTab = () => {
             </div>
           ))}
 
-          {loading && (
-            <div className="bubble assistant">⌛ מחשב תשובה...</div>
-          )}
+          {loading && <div className="bubble assistant">⌛ מחשב תשובה...</div>}
 
           <div style={{ minHeight: "80px" }} />
           <div ref={bottomRef} />
