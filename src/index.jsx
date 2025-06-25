@@ -1,30 +1,34 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
-import { AuthProvider } from './context/AuthContext';
-import { SocketProvider } from './context/socketContext';
-import { UnreadMessagesProvider } from './context/UnreadMessagesContext'; 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React, { Suspense, lazy } from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { SocketProvider } from "./context/socketContext";
+import { UnreadMessagesProvider } from "./context/UnreadMessagesContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// ✅ ייבוא CSS ראשי — הכרחי לאנימציית spin
-import './styles/index.css'; // ✅ זה הנתיב הנכון
+// ייבוא CSS ראשי — הכרחי לאנימציית spin
+import "./styles/index.css";
 
-// Polyfill ל-Buffer בדפדפן:
-import { Buffer } from 'buffer';
+// Polyfill ל-Buffer בדפדפן
+import { Buffer } from "buffer";
 window.Buffer = window.Buffer || Buffer;
 
 // יצירת QueryClient חדש
 const queryClient = new QueryClient();
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+// טעינת קומפוננטה App בצורה דינמית
+const App = lazy(() => import("./App"));
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <SocketProvider>
             <UnreadMessagesProvider>
-              <App />
+              <Suspense fallback={<div className="spinner"></div>}>
+                <App />
+              </Suspense>
             </UnreadMessagesProvider>
           </SocketProvider>
         </AuthProvider>

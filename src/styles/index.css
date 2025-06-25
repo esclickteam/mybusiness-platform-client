@@ -12,16 +12,19 @@ html, body {
   font-family: Arial, sans-serif;
   direction: rtl;
   text-align: right;
+  background-color: var(--bg-start); /* צבע בסיס למניעת פלאש לבן */
   background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
   overflow-x: hidden;
   overflow-y: scroll;
   position: relative;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ===== סגנונות כלליים לכל אלמנט ===== */
-* {
-  box-sizing: border-box;
+*, *::before, *::after {
+  box-sizing: inherit;
 }
 
 /* ===== סגנונות לקישורים ===== */
@@ -33,14 +36,21 @@ a {
 /* ===== סגנונות לכפתורים ===== */
 button {
   cursor: pointer;
+  font: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
 }
 
-/* ===== החבא את כפתור הנגישות שלך ===== */
+/* ===== נגישות: סגנון לכפתורי נגישות אם יחליטו להציג ===== */
 #accessibility-button {
-  display: none !important;
+  visibility: hidden; /* מחליף display:none לשמירת נגישות */
+  position: absolute;
+  left: -9999px;
 }
 
-/* ===== אם יש אלמנטים עם position: fixed ===== */
+/* ===== אלמנטים עם position: fixed ===== */
 #accessibility-widget, .some-other-fixed-element {
   position: fixed;
   z-index: 1000;
@@ -60,4 +70,6 @@ button {
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  margin: auto;
+  display: block;
 }
