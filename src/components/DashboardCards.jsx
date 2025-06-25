@@ -14,7 +14,7 @@ const DashboardCards = ({ stats = {} }) => {
       bgColor: "#f0ebff",
     },
     {
-      label: "ביקורות חיוביות",
+      label: "ביקורות",
       value: stats.reviews_count ?? 0,
       icon: "⭐",
       bgColor: "#fff7d6",

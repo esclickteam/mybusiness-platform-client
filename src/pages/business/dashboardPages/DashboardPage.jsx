@@ -303,6 +303,30 @@ const DashboardPage = () => {
         });
       });
 
+  sock.on('allReviewsUpdated', (allReviews) => {
+      if (!businessId) return;
+      queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          reviews: allReviews,
+          reviews_count: allReviews.length,
+        };
+      });
+    });
+
+    sock.on('reviewCreated', (reviewNotification) => {
+      console.log('ביקורת חדשה התקבלה:', reviewNotification);
+      queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          reviews_count: (oldData.reviews_count || 0) + 1,
+        };
+      });
+    });
+
+
       sock.on("disconnect", (reason) => console.log("Dashboard socket disconnected:", reason));
       sock.on("connect_error", (err) => console.error("Socket connection error:", err));
     }
