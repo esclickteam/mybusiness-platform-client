@@ -6,7 +6,17 @@ import "./AiPartnerTab.css";
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 const SHORTEN_LENGTH = 200;
 
-const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommendation }) => {
+const AiPartnerTab = ({
+  businessId,
+  token,
+  conversationId = null,
+  onNewRecommendation,
+  businessName,
+  businessType,
+  languageTone,
+  targetAudience,
+  businessGoal,
+}) => {
   const navigate = useNavigate();
 
   const [dailyTip, setDailyTip] = useState("");
@@ -30,12 +40,14 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
   const [socket, setSocket] = useState(null);
   const [clientId, setClientId] = useState(null);
 
-  const filterText = useCallback((text) =>
-    text
-      .replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, "")
-      .replace(/\*+/g, "")
-      .trim()
-  , []);
+  const filterText = useCallback(
+    (text) =>
+      text
+        .replace(/https:\/\/res\.cloudinary\.com\/[^\s]+/g, "")
+        .replace(/\*+/g, "")
+        .trim(),
+    []
+  );
 
   const filterValidUniqueRecommendations = useCallback((recs) => {
     const filtered = recs.filter(
@@ -232,11 +244,12 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           businessId,
           prompt: commandText,
           profile: {
-            name: "שם העסק שלך",
-            type: "סוג העסק",
-            tone: "סגנון השפה",
-            audience: "קהל היעד",
-            goal: "מטרת העסק",
+            name: businessName,
+            type: businessType,
+            tone: languageTone,
+            audience: targetAudience,
+            goal: businessGoal,
+            conversationId,
           },
         }),
       });
@@ -367,7 +380,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
       </div>
 
       {showHistory ? (
-        <div className="ai-command-history" style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ccc", padding: "1rem" }}>
+        <div
+          className="ai-command-history"
+          style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ccc", padding: "1rem" }}
+        >
           <h3>היסטוריית פקודות AI</h3>
           {loadingHistory && <p>טוען היסטוריה...</p>}
           {historyError && <p style={{ color: "red" }}>שגיאה: {historyError}</p>}
@@ -376,8 +392,10 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
               {aiCommandHistory.length === 0 && <li>לא נמצאו פקודות AI בעבר</li>}
               {aiCommandHistory.map((cmd) => (
                 <li key={cmd._id} style={{ marginBottom: "1rem", borderBottom: "1px solid #ccc", paddingBottom: "0.5rem" }}>
-                  <strong>פקודה:</strong> {cmd.commandText}<br />
-                  <strong>תגובה:</strong> {cmd.responseText}<br />
+                  <strong>פקודה:</strong> {cmd.commandText}
+                  <br />
+                  <strong>תגובה:</strong> {cmd.responseText}
+                  <br />
                   {cmd.action && (
                     <>
                       <strong>פעולה:</strong> <pre>{JSON.stringify(cmd.action, null, 2)}</pre>
@@ -399,10 +417,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
           <div className="chat-section">
             {dailyTip && <div className="daily-tip">💡 {dailyTip}</div>}
 
-            <button
-              onClick={() => setShowSuggestions((prev) => !prev)}
-              className="toggle-suggestions-btn"
-            >
+            <button onClick={() => setShowSuggestions((prev) => !prev)} className="toggle-suggestions-btn">
               {showSuggestions ? "הסתר המלצות" : "הצג המלצות"}
             </button>
 
@@ -446,10 +461,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                       <div key={s.id} className={`suggestion ${s.status}`}>
                         <p>{shortText}</p>
                         {isLong && (
-                          <button
-                            className="read-more-btn"
-                            onClick={() => setActiveSuggestion(s)}
-                          >
+                          <button className="read-more-btn" onClick={() => setActiveSuggestion(s)}>
                             קרא עוד
                           </button>
                         )}
@@ -474,10 +486,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
 
       {activeSuggestion && (
         <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
-          <div
-            className="modal-content approve-recommendation-box"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="modal-content approve-recommendation-box" onClick={(e) => e.stopPropagation()}>
             <h4>הודעת AI חדשה</h4>
 
             {editing ? (
@@ -535,10 +544,7 @@ const AiPartnerTab = ({ businessId, token, conversationId = null, onNewRecommend
                     <button disabled={loading} onClick={() => setEditing(true)}>
                       ערוך
                     </button>
-                    <button
-                      disabled={loading}
-                      onClick={() => rejectSuggestion(activeSuggestion.id)}
-                    >
+                    <button disabled={loading} onClick={() => rejectSuggestion(activeSuggestion.id)}>
                       דחה
                     </button>
                   </div>
