@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./AuthContext"; // עדכן לפי הנתיב אצלך
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 const DashboardSocketContext = createContext(null);
@@ -113,6 +113,22 @@ export function DashboardSocketProvider({ businessId, children }) {
         }));
       });
 
+      socketRef.current.on("reviewCreated", (reviewNotification) => {
+        if (!isMounted) return;
+        setStats((prev) => ({
+          ...prev,
+          reviews_count: (prev.reviews_count ?? 0) + 1,
+        }));
+      });
+
+      socketRef.current.on("allReviewsUpdated", (allReviews) => {
+        if (!isMounted) return;
+        setStats((prev) => ({
+          ...prev,
+          reviews_count: allReviews.length,
+        }));
+      });
+
       socketRef.current.on("connect", () => {
         console.log("🔌 [SocketProvider] מחובר עם ID:", socketRef.current.id);
       });
@@ -138,6 +154,19 @@ export function DashboardSocketProvider({ businessId, children }) {
           }
         });
       });
+
+      // בקשה התחלתית לסטטיסטיקות
+      socketRef.current.emit("getDashboardStats", null, (res) => {
+        if (res?.ok && res.stats) {
+          setStats({
+            views_count: res.stats.views_count ?? 0,
+            reviews_count: res.stats.reviews_count ?? 0,
+            appointments_count: res.stats.appointments_count ?? 0,
+            messages_count: res.stats.messages_count ?? 0,
+            appointments: res.stats.appointments ?? [],
+          });
+        }
+      });
     }
 
     initSocket();
@@ -151,6 +180,8 @@ export function DashboardSocketProvider({ businessId, children }) {
         socketRef.current.off("appointmentUpdated");
         socketRef.current.off("appointmentDeleted");
         socketRef.current.off("allAppointmentsUpdated");
+        socketRef.current.off("reviewCreated");
+        socketRef.current.off("allReviewsUpdated");
         socketRef.current.off("connect");
         socketRef.current.off("connect_error");
         socketRef.current.off("tokenExpired");
