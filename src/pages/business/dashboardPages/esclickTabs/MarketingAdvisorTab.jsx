@@ -114,14 +114,16 @@ const MarketingAdvisorTab = () => {
                     overrides: {
                       p: {
                         component: (props) => (
-                          <p style={{
+                          <div style={{
                             margin: "0.2em 0",
                             direction: "rtl",
                             whiteSpace: "normal",
                             wordBreak: "break-word",
                             overflowWrap: "break-word",
                             textAlign: "right"
-                          }}>{props.children}</p>
+                          }}>
+                            {props.children}
+                          </div>
                         )
                       }
                     }
