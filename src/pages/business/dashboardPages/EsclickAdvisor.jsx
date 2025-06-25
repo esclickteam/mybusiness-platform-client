@@ -6,6 +6,7 @@ import BusinessAdvisorTab from "./esclickTabs/BusinessAdvisorTab";
 import MarketingAdvisorTab from "./esclickTabs/MarketingAdvisorTab";
 import BusinessXrayWrapper from "./esclickTabs/BusinessXrayWrapper";
 import AiPartnerTab from "./esclickTabs/AiPartnerTab";
+import AiRecommendations from "./esclickTabs/AiRecommendations"; 
 import "./EsclickAdvisor.css";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
@@ -53,6 +54,8 @@ const EsclickAdvisor = () => {
         return <BusinessXrayWrapper />;
       case "partner":
         return <AiPartnerTab businessId={user?.businessId} token={token} />;
+      case "recommendations":
+        return <AiRecommendations businessId={user?.businessId} token={token} />;
       default:
         return null;
     }
@@ -91,6 +94,12 @@ const EsclickAdvisor = () => {
           onClick={() => handleTabChange("partner")}
         >
           שותף AI אישי
+        </button>
+        <button
+          className={activeTab === "recommendations" ? "active" : ""}
+          onClick={() => handleTabChange("recommendations")}
+        >
+          המלצות AI
         </button>
       </div>
 
