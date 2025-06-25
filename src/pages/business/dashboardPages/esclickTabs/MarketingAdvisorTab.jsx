@@ -24,45 +24,45 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId }) => {
   }
 
   const sendMessage = async (promptText) => {
-    if (!businessId || !promptText.trim()) return;
+  if (!businessId || !promptText.trim()) return;
 
-    setLoading(true);
+  setLoading(true);
 
-    const payload = {
-      businessId,
-      prompt: promptText,
-      profile: {
-        conversationId: conversationId || null,
-        userId: userId || null,
-      },
-      type: "marketing",
+  const payload = {
+    businessId,
+    prompt: promptText,
+    profile: {
+      conversationId: conversationId || null,
+      userId: userId || null,
+    },
+  };
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+
+    const botMessage = {
+      role: "assistant",
+      content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
     };
 
-    try {
-      const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    setMessages((prev) => [...prev, botMessage]);
+  } catch (error) {
+    console.error("⚠️ שגיאה בבקשה:", error);
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." },
+    ]);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const data = await response.json();
-
-      const botMessage = {
-        role: "assistant",
-        content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
-      };
-
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
-      console.error("⚠️ שגיאה בבקשה:", error);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSend = () => {
     if (!userInput.trim()) return;
