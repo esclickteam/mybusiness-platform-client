@@ -24,7 +24,6 @@ const EsclickAdvisor = () => {
       transports: ["websocket"],
     });
 
-    // מאזין לאירוע חדש - שים לב להחליף בשם האירוע המתאים מהשרת שלך
     socket.on("newRecommendation", () => {
       setHasBusinessNotification(true);
     });
@@ -47,7 +46,7 @@ const EsclickAdvisor = () => {
   const renderTab = () => {
     switch (activeTab) {
       case "business":
-        return <BusinessAdvisorTab />;
+        return <BusinessAdvisorTab businessId={user?.businessId} />;
       case "marketing":
         return <MarketingAdvisorTab />;
       case "xray":
