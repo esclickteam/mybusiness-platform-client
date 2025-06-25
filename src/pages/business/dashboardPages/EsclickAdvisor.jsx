@@ -49,10 +49,9 @@ const EsclickAdvisor = () => {
       case "business":
         return <BusinessAdvisorTab businessId={user?.businessId} />;
       case "marketing":
-        // עכשיו מעבירים רק את businessId
         return <MarketingAdvisorTab businessId={user?.businessId} />;
       case "xray":
-        return <BusinessXrayWrapper />;
+        return <BusinessXrayWrapper businessId={user?.businessId} />;
       case "partner":
         return <AiPartnerTab businessId={user?.businessId} token={token} />;
       case "recommendations":

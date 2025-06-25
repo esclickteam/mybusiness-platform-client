@@ -28,7 +28,7 @@ const businessTypes = {
   ]
 };
 
-const XrayTab = ({ onSubmit, loading }) => {
+const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
   const [answers, setAnswers] = useState({});
   const [businessType, setBusinessType] = useState("");
 
@@ -41,7 +41,8 @@ const XrayTab = ({ onSubmit, loading }) => {
       alert("יש למלא את כל השאלות ולבחור סוג עסק.");
       return;
     }
-    onSubmit(answers, businessType);
+    // שולחים גם את businessId ו conversationId יחד עם התשובות
+    onSubmit({ answers, businessType, businessId, conversationId });
   };
 
   return (
