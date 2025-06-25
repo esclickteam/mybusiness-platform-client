@@ -24,45 +24,50 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId }) => {
   }
 
   const sendMessage = async (promptText) => {
-  if (!businessId || !promptText.trim()) return;
+    if (!businessId || !promptText.trim()) return;
 
-  setLoading(true);
+    setLoading(true);
 
-  const payload = {
-    businessId,
-    prompt: promptText,
-    profile: {
-      conversationId: conversationId || null,
-      userId: userId || null,
-    },
-  };
-
-  try {
-    const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json();
-
-    const botMessage = {
-      role: "assistant",
-      content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
+    const payload = {
+      businessId,
+      prompt: promptText,
+      profile: {
+        conversationId: conversationId || null,
+        userId: userId || null,
+      },
     };
 
-    setMessages((prev) => [...prev, botMessage]);
-  } catch (error) {
-    console.error("⚠️ שגיאה בבקשה:", error);
-    setMessages((prev) => [
-      ...prev,
-      { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." },
-    ]);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      console.log("🟢 שולח בקשה לשרת עם הפיילוד:", payload);
 
+      const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      console.log("🟢 סטטוס תגובה מהשרת:", response.status);
+
+      const data = await response.json();
+
+      console.log("🟢 תוכן תגובה מהשרת:", data);
+
+      const botMessage = {
+        role: "assistant",
+        content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error("⚠️ שגיאה בבקשה:", error);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSend = () => {
     if (!userInput.trim()) return;
