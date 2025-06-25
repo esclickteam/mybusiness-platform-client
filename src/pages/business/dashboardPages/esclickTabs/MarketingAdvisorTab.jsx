@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Markdown from "markdown-to-jsx";
 import "./AdvisorChat.css";
 
-const MarketingAdvisorTab = () => {
+const MarketingAdvisorTab = ({ businessId, conversationId }) => {
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -25,19 +25,24 @@ const MarketingAdvisorTab = () => {
 
   const sendMessage = async (newMessages) => {
     setLoading(true);
+    // שולחים רק את הטקסט האחרון של המשתמש כ-prompt
+    const lastUserMessage = newMessages.filter(m => m.role === "user").slice(-1)[0]?.content || "";
+
     const payload = {
-      messages: newMessages,
-      type: "marketing",
+      businessId,
+      prompt: lastUserMessage,
+      profile: { conversationId }
     };
 
     try {
-      const response = await fetch(`${apiBaseUrl}/ask-ai`, {
+      const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const data = await response.json();
+
       const botMessage = {
         role: "assistant",
         content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
