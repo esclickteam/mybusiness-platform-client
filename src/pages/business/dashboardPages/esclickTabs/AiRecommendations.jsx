@@ -22,9 +22,11 @@ const AiRecommendations = ({ businessId, token }) => {
       setRecommendations((prev) => [...prev, rec]);
     });
 
-    s.on("updateRecommendationStatus", ({ id, status }) => {
+    s.on("updateRecommendationStatus", (updatedRec) => {
       setRecommendations((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, status } : r))
+        prev.map((r) =>
+          r._id === updatedRec._id || r.id === updatedRec.id ? { ...r, ...updatedRec } : r
+        )
       );
     });
 
@@ -47,7 +49,12 @@ const AiRecommendations = ({ businessId, token }) => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to approve");
+
       alert("ההמלצה אושרה ונשלחה!");
+      // עדכון סטטוס מקומי
+      setRecommendations((prev) =>
+        prev.map((r) => (r.id === id || r._id === id ? { ...r, status: "approved" } : r))
+      );
     } catch (err) {
       alert("שגיאה באישור ההמלצה: " + err.message);
     } finally {
@@ -67,7 +74,8 @@ const AiRecommendations = ({ businessId, token }) => {
         body: JSON.stringify({ recommendationId: id }),
       });
       if (!res.ok) throw new Error("Failed to reject");
-      setRecommendations((prev) => prev.filter((r) => r.id !== id));
+
+      setRecommendations((prev) => prev.filter((r) => r.id !== id && r._id !== id));
       alert("ההמלצה נדחתה");
     } catch (err) {
       alert("שגיאה בדחיית ההמלצה: " + err.message);
@@ -79,17 +87,20 @@ const AiRecommendations = ({ businessId, token }) => {
   return (
     <div>
       <h3>המלצות AI ממתינות לאישור</h3>
-      {recommendations.length === 0 && <p>אין המלצות חדשות.</p>}
+      {recommendations.filter((r) => r.status === "pending").length === 0 && <p>אין המלצות חדשות.</p>}
       <ul>
         {recommendations
           .filter((r) => r.status === "pending")
-          .map(({ id, text }) => (
-            <li key={id} style={{ marginBottom: "1rem", border: "1px solid #ccc", padding: "0.5rem" }}>
+          .map(({ _id, id, text }) => (
+            <li
+              key={_id || id}
+              style={{ marginBottom: "1rem", border: "1px solid #ccc", padding: "0.5rem" }}
+            >
               <p>{text}</p>
-              <button onClick={() => approveRecommendation(id)} disabled={loading}>
+              <button onClick={() => approveRecommendation(_id || id)} disabled={loading}>
                 אשר ושלח
               </button>
-              <button onClick={() => rejectRecommendation(id)} disabled={loading}>
+              <button onClick={() => rejectRecommendation(_id || id)} disabled={loading}>
                 דחה
               </button>
             </li>
