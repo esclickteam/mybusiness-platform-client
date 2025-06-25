@@ -56,10 +56,30 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
   return (
     <div className="graph-box">
       <h4 className="graph-title">{title}</h4>
-      <div style={{ textAlign: "center", marginBottom: "1rem" }}>
-        <button onClick={() => setViewMode("bar")}>📊 עמודות</button>
-        <button onClick={() => setViewMode("line")}>📈 קווי</button>
-        <button onClick={() => setViewMode("table")}>📋 טבלה</button>
+
+      {/* כפתורי בחירה מעוצבים */}
+      <div className="chart-buttons">
+        <button
+          className={viewMode === "bar" ? "active" : ""}
+          onClick={() => setViewMode("bar")}
+          aria-label="תצוגת עמודות"
+        >
+          📊 עמודות
+        </button>
+        <button
+          className={viewMode === "line" ? "active" : ""}
+          onClick={() => setViewMode("line")}
+          aria-label="תצוגת קווים"
+        >
+          📈 קווי
+        </button>
+        <button
+          className={viewMode === "table" ? "active" : ""}
+          onClick={() => setViewMode("table")}
+          aria-label="תצוגת טבלה"
+        >
+          📋 טבלה
+        </button>
       </div>
 
       <div className="graph-scroll">
@@ -77,7 +97,7 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
               <XAxis
                 dataKey="name"
                 interval={0}
-                angle={-40} // ✅ הסיבוב החשוב
+                angle={-40}
                 textAnchor="end"
                 tick={{ fill: "#4b0082", fontSize: 12, fontWeight: 700 }}
                 height={70}
