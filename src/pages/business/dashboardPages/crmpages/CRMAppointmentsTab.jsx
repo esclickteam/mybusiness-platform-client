@@ -39,20 +39,31 @@ const CRMAppointmentsTab = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  // קבלת תיאומים
+  // State לשירותים עם טעינה ראשונית
+  const [services, setServices] = useState([]);
+
+  // טעינת שירותים ראשונית
+  useEffect(() => {
+    async function fetchServices() {
+      if (!businessId) return;
+      try {
+        const res = await API.get("/business/my/services");
+        setServices(res.data.services || []);
+      } catch (e) {
+        console.error("Error fetching services:", e);
+      }
+    }
+    fetchServices();
+  }, [businessId]);
+
+  // קבלת תיאומים עם react-query
   const { data: appointments = [], refetch: refetchAppointments, isLoading: isLoadingAppointments, isError: isErrorAppointments } = useQuery({
     queryKey: ['appointments', 'all-with-services', businessId],
     queryFn: () => API.get("/appointments/all-with-services").then(res => res.data),
     enabled: !!businessId,
   });
 
-  // קבלת שירותים
-  const { data: services = [], isLoading: isLoadingServices, isError: isErrorServices } = useQuery({
-    queryKey: ['business', 'services', businessId],
-    queryFn: () => API.get("/business/my/services").then(res => res.data.services),
-    enabled: !!businessId,
-  });
-
+  // מאזינים ל-socket לאירועי תיאומים בזמן אמת
   useEffect(() => {
     if (!socket) return;
 
@@ -85,6 +96,24 @@ const CRMAppointmentsTab = () => {
       socket.off("appointmentDeleted", onDeleted);
     };
   }, [socket, queryClient, businessId]);
+
+  // מאזינים ל-socket לאירוע serviceCreated לעדכון שירותים בזמן אמת
+  useEffect(() => {
+    if (!socket) return;
+
+    const onServiceCreated = (newService) => {
+      setServices((prev) => {
+        if (prev.some(s => s._id === newService._id)) return prev;
+        return [...prev, newService];
+      });
+    };
+
+    socket.on("serviceCreated", onServiceCreated);
+
+    return () => {
+      socket.off("serviceCreated", onServiceCreated);
+    };
+  }, [socket]);
 
   // סינון כפילויות + חיפוש
   const filteredUniqueAppointments = useMemo(() => {
@@ -147,7 +176,8 @@ const CRMAppointmentsTab = () => {
     window.open(url, "_blank");
   };
 
-  // שאר הפונקציות שלך לעריכה, מחיקה, הוספה
+  // שאר הפונקציות לעריכה, מחיקה, הוספה נשארות כפי שהיו, עם שימוש ב-services מה-state החדש
+
   const handleServiceChange = (serviceId, isEdit = false) => {
     const service = services.find((s) => s._id === serviceId);
     if (service) {
@@ -306,8 +336,8 @@ const CRMAppointmentsTab = () => {
     }
   };
 
-  if (isLoadingAppointments || isLoadingServices) return <p>טוען...</p>;
-  if (isErrorAppointments || isErrorServices) return <p>שגיאה בטעינת הנתונים</p>;
+  if (isLoadingAppointments) return <p>טוען תיאומים...</p>;
+  if (isErrorAppointments) return <p>שגיאה בטעינת התיאומים</p>;
 
   return (
     <div className="crm-appointments-tab">
@@ -433,8 +463,6 @@ const CRMAppointmentsTab = () => {
                     />
                   ) : (
                     appt.clientName || 'לא ידוע'
-
-
                   )}
                 </td>
                 <td className="phone-cell">
