@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Markdown from "markdown-to-jsx";
 import './AdvisorChat.css';
 
-const BusinessAdvisorTab = () => {
+const BusinessAdvisorTab = ({ businessId }) => {
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -23,10 +23,16 @@ const BusinessAdvisorTab = () => {
   }
 
   const sendMessage = async (newMessages) => {
+    if (!businessId) {
+      console.error("businessId is required to send message");
+      return;
+    }
+
     setLoading(true);
     const payload = {
       messages: newMessages,
       type: "business",
+      businessId,  // העברת מזהה העסק
     };
 
     try {
