@@ -16,23 +16,38 @@ export function AuthProvider({ children }) {
   const refreshingTokenPromise = useRef(null);
   const ws = useRef(null);
 
-  // רענון טוקן עם queue למניעת קריאות מרובות במקביל
+  // ריענון טוקן עם queue למניעת קריאות מרובות במקביל
   const refreshAccessToken = async () => {
-    if (refreshingTokenPromise.current) return refreshingTokenPromise.current;
+    if (refreshingTokenPromise.current) {
+      console.log("⏳ Refresh token already in progress, waiting for it to complete...");
+      return refreshingTokenPromise.current;
+    }
+
+    console.log("🔄 Starting refresh token process...");
     refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then(response => {
         const newToken = response.data.accessToken;
-        if (newToken) {
-          localStorage.setItem("token", newToken);
-          API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
+        if (!newToken) {
+          console.warn("❌ No new token received during refresh");
+          throw new Error("No new token received");
         }
+        console.log("✅ Refresh token succeeded, new token received");
+        localStorage.setItem("token", newToken);
+        API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
         refreshingTokenPromise.current = null;
         return newToken;
       })
       .catch(err => {
         refreshingTokenPromise.current = null;
+        if (err.response && err.response.status === 403) {
+          console.warn("⚠️ Refresh token invalid or expired (403), logging out immediately...");
+          logout(); // ודא שפונקציית logout מוגדרת ונגישה בסקופ
+        } else {
+          console.error("❌ Error refreshing token:", err.message || err);
+        }
         throw err;
       });
+
     return refreshingTokenPromise.current;
   };
 
@@ -120,11 +135,13 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
+    console.log("🚪 Logging out user...");
     setLoading(true);
     try {
       await API.post("/auth/logout", {}, { withCredentials: true });
+      console.log("✅ Logout request succeeded");
     } catch (e) {
-      console.warn("Logout failed:", e.response?.data || e.message || e);
+      console.warn("⚠️ Logout request failed:", e.response?.data || e.message || e);
     }
     setUser(null);
     localStorage.removeItem("token");
@@ -136,6 +153,7 @@ export function AuthProvider({ children }) {
     }
     setLoading(false);
     navigate("/login", { replace: true });
+    console.log("🏁 User redirected to /login");
   };
 
   useEffect(() => {

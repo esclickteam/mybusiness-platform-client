@@ -15,7 +15,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
   const token = await getValidAccessToken();
 
   if (!token) {
-    alert("Session expired. Please log in again.");
+    // alert("Session expired. Please log in again."); // לא להראות alert כאן, נעשה זאת בהמשך
     if (onLogout) onLogout();
     return null;
   }
@@ -28,7 +28,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
   const rolesNeedingBusinessId = ["business", "business-dashboard"];
   if (rolesNeedingBusinessId.includes(role) && !businessId) {
     console.error("❌ Missing businessId for role", role);
-    alert("Missing business ID. Please log in again.");
+    // alert("Missing business ID. Please log in again.");
     if (onLogout) onLogout();
     return null;
   }
@@ -89,28 +89,28 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
   });
 
   socketInstance.on("tokenExpired", async () => {
-    console.log("🚨 Token expired. Refreshing...");
+    console.log("🚨 Token expired. Attempting silent refresh...");
     const newToken = await getValidAccessToken();
-    if (!newToken) {
-      alert("Session expired. Please log in again.");
+    if (newToken) {
+      console.log("🔄 Token refreshed successfully, updating socket auth");
+
+      socketInstance.auth.token = newToken;
+      socketInstance.io.opts.auth.token = newToken;
+
+      socketInstance.emit("authenticate", { token: newToken }, (ack) => {
+        if (ack && ack.ok) {
+          console.log("✅ Socket re-authenticated successfully");
+        } else {
+          console.warn("⚠ Socket re-authentication failed, disconnecting");
+          socketInstance.disconnect();
+          socketInstance = null;
+          if (onLogout) onLogout();
+        }
+      });
+    } else {
+      console.log("⚠ Token refresh failed, logging out");
       if (onLogout) onLogout();
-      return;
     }
-    console.log("🔄 New token received, updating socket auth");
-
-    socketInstance.auth.token = newToken;
-    socketInstance.io.opts.auth.token = newToken;
-
-    socketInstance.emit("authenticate", { token: newToken }, (ack) => {
-      if (ack && ack.ok) {
-        console.log("✅ Socket re-authenticated successfully");
-      } else {
-        console.warn("⚠ Socket re-authentication failed, disconnecting");
-        socketInstance.disconnect();
-        socketInstance = null;
-        if (onLogout) onLogout();
-      }
-    });
   });
 
   socketInstance.on("connect_error", (err) => {
