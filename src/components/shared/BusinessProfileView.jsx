@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
-import { useSocket, SocketProvider } from "../context/socketContext";
+import { useSocket, SocketProvider } from "../../context/socketContext";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import "react-calendar/dist/Calendar.css";
