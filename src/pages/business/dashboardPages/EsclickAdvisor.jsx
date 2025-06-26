@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 
 import BusinessAdvisorTab from "./esclickTabs/BusinessAdvisorTab";
 import MarketingAdvisorTab from "./esclickTabs/MarketingAdvisorTab";
-import BusinessXrayWrapper from "./esclickTabs/BusinessXrayWrapper";
+// import BusinessXrayWrapper from "./esclickTabs/BusinessXrayWrapper";  // הוסר
 import AiPartnerTab from "./esclickTabs/AiPartnerTab";
 import AiRecommendations from "./esclickTabs/AiRecommendations"; 
 import "./EsclickAdvisor.css";
@@ -50,8 +50,8 @@ const EsclickAdvisor = () => {
         return <BusinessAdvisorTab businessId={user?.businessId} />;
       case "marketing":
         return <MarketingAdvisorTab businessId={user?.businessId} />;
-      case "xray":
-        return <BusinessXrayWrapper businessId={user?.businessId} />;
+      // case "xray":
+      //   return <BusinessXrayWrapper businessId={user?.businessId} />;  // הוסר
       case "partner":
         return <AiPartnerTab businessId={user?.businessId} token={token} />;
       case "recommendations":
@@ -83,12 +83,7 @@ const EsclickAdvisor = () => {
         >
           יועץ שיווקי
         </button>
-        <button
-          className={activeTab === "xray" ? "active" : ""}
-          onClick={() => handleTabChange("xray")}
-        >
-          רנטגן עסקי
-        </button>
+        {/* כפתור הרנטגן הוסר */}
         <button
           className={activeTab === "partner" ? "active" : ""}
           onClick={() => handleTabChange("partner")}
