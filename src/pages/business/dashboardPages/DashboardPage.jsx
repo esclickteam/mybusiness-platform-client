@@ -114,10 +114,9 @@ const DashboardPage = () => {
   }, [unreadCount]);
 
   const today = new Date().toISOString().split("T")[0];
-  const [selectedDate, setSelectedDate] = useState(today);
-  const [alert, setAlert] = useState(null);
-  const [recommendations, setRecommendations] = useState([]);
-  const [profileViewsCount, setProfileViewsCount] = useState(0); // <-- הוספתי סטייט לצפיות
+const [selectedDate, setSelectedDate] = useState(today);
+const [alert, setAlert] = useState(null);
+const [recommendations, setRecommendations] = useState([]);
 
   const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
@@ -179,7 +178,6 @@ const DashboardPage = () => {
       try {
         localStorage.setItem("dashboardStats", JSON.stringify(data));
         setLocalData(data);
-        if (data.views_count !== undefined) setProfileViewsCount(data.views_count); // <-- עדכון צפיות בטעינת הנתונים
       } catch {}
     },
     onError: (error) => {
@@ -255,22 +253,7 @@ const DashboardPage = () => {
         });
       });
 
-      sock.on("dashboardUpdate", (updatedStats) => {
-        if (!updatedStats) {
-          refetch();
-          return;
-        }
-        queryClient.setQueryData(["dashboardStats", businessId], (oldData) => {
-          if (!oldData) return oldData;
-          if (updatedStats.views_count !== undefined) {
-            setProfileViewsCount(updatedStats.views_count);
-          }
-          return {
-            ...oldData,
-            views_count: updatedStats.views_count ?? oldData.views_count,
-          };
-        });
-      });
+      sock.on("dashboardUpdate", () => refetch());
 
       sock.on("appointmentCreated", (newAppointment) => {
         if (newAppointment.business?.toString() !== businessId.toString()) return;
@@ -321,28 +304,29 @@ const DashboardPage = () => {
         });
       });
 
-      sock.on('allReviewsUpdated', (allReviews) => {
-        if (!businessId) return;
-        queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
-          if (!oldData) return oldData;
-          return {
-            ...oldData,
-            reviews: allReviews,
-            reviews_count: allReviews.length,
-          };
-        });
+  sock.on('allReviewsUpdated', (allReviews) => {
+      if (!businessId) return;
+      queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          reviews: allReviews,
+          reviews_count: allReviews.length,
+        };
       });
+    });
 
-      sock.on('reviewCreated', (reviewNotification) => {
-        console.log('ביקורת חדשה התקבלה:', reviewNotification);
-        queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
-          if (!oldData) return oldData;
-          return {
-            ...oldData,
-            reviews_count: (oldData.reviews_count || 0) + 1,
-          };
-        });
+    sock.on('reviewCreated', (reviewNotification) => {
+      console.log('ביקורת חדשה התקבלה:', reviewNotification);
+      queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          reviews_count: (oldData.reviews_count || 0) + 1,
+        };
       });
+    });
+
 
       sock.on("disconnect", (reason) => console.log("Dashboard socket disconnected:", reason));
       sock.on("connect_error", (err) => console.error("Socket connection error:", err));
@@ -420,9 +404,6 @@ const DashboardPage = () => {
         📊 דשבורד העסק
         <span className="greeting">
           {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
-        </span>
-        <span style={{ marginLeft: 20, fontWeight: "bold" }}>
-          👁️ צפיות בפרופיל: {profileViewsCount}
         </span>
       </h2>
 
