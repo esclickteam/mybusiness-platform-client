@@ -77,10 +77,10 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
 }
 
 const getMessageKey = (m) => {
-  if (m.recommendationId) return `rec_${m.recommendationId}_rec`;
-  if (m._id) return `msg_${m._id}_msg`;
-  if (m.tempId) return `temp_${m.tempId}_temp`;
-  return `unknown_${uuidv4()}`;
+  if (m.recommendationId) return `rec_${m.recommendationId}`;
+  if (m._id) return `msg_${m._id}`;
+  if (m.tempId) return `temp_${m.tempId}`;
+  return null; // לא ליצור UUID חדש, להימנע מבעיות רינדור
 };
 
 export default function ClientChatTab({
@@ -91,7 +91,7 @@ export default function ClientChatTab({
   messages,
   setMessages,
   userRole,
-  conversationType = "user-business", // הוספתי ברירת מחדל
+  conversationType = "user-business",
 }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -109,7 +109,6 @@ export default function ClientChatTab({
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // הגדרת isBusinessConversation לפי conversationType
   const isBusinessConversation = conversationType === "business-business";
 
   useEffect(() => {
@@ -164,6 +163,8 @@ export default function ClientChatTab({
             : m.tempId
             ? `temp_${m.tempId}`
             : null;
+
+          // התאמת הודעות זמניות מול הודעות עם _id
           if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
           return mid === id;
         });
@@ -226,8 +227,12 @@ export default function ClientChatTab({
   }, [socket, conversationId, businessId, setMessages, isBusinessConversation]);
 
   useEffect(() => {
-    if (messageListRef.current) {
-      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    if (!messageListRef.current) return;
+    // גלילה רק אם המשתמש כבר בתחתית או קרוב לתחתית
+    const el = messageListRef.current;
+    const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    if (isNearBottom) {
+      el.scrollTop = el.scrollHeight;
     }
   }, [messages]);
 
@@ -250,7 +255,6 @@ export default function ClientChatTab({
     setSending(true);
     setError("");
 
-    // יצירת מזהה זמני ל-optimistic update
     const tempId = uuidv4();
 
     const optimisticMsg = {
@@ -264,12 +268,10 @@ export default function ClientChatTab({
       timestamp: new Date(),
     };
 
-    // הוספת הודעה זמנית ל-UI (Optimistic UI Update)
     setMessages((prev) => [...prev, optimisticMsg]);
 
     setInput("");
 
-    // שליחת ההודעה לשרת עם tempId
     socket.emit(
       "sendMessage",
       {
@@ -279,17 +281,15 @@ export default function ClientChatTab({
         role: "client",
         text: optimisticMsg.text,
         tempId,
-        conversationType, 
+        conversationType,
       },
       (ack) => {
         setSending(false);
         if (ack?.ok) {
-          // החלפת ההודעה הזמנית בהודעה האמיתית מהשרת
           setMessages((prev) =>
             prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
           );
         } else {
-          // במקרה של שגיאה, הסר את ההודעה הזמנית והצג שגיאה
           setError("שגיאה בשליחת ההודעה");
           setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
         }
@@ -405,72 +405,74 @@ export default function ClientChatTab({
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map((m) => (
-          <div
-            key={getMessageKey(m)}
-            className={`message${m.role === "client" ? " mine" : " theirs"}${
-              m.isRecommendation ? " ai-recommendation" : ""
-            }`}
-          >
-            {m.image ? (
-              <img
-                src={m.image}
-                alt={m.fileName || "image"}
-                style={{ maxWidth: 200, borderRadius: 8 }}
-              />
-            ) : m.fileUrl || m.file?.data ? (
-              m.fileType && m.fileType.startsWith("audio") ? (
-                <WhatsAppAudioPlayer
-                  src={m.fileUrl || m.file.data}
-                  userAvatar={m.userAvatar}
-                  duration={m.fileDuration}
-                />
-              ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || "") ? (
+        {messages.map((m) => {
+          const key = getMessageKey(m);
+          if (!key) return null;
+          return (
+            <div
+              key={key}
+              className={`message${m.role === "client" ? " mine" : " theirs"}${
+                m.isRecommendation ? " ai-recommendation" : ""
+              }`}
+            >
+              {m.image ? (
                 <img
-                  src={m.fileUrl || m.file.data}
+                  src={m.image}
                   alt={m.fileName || "image"}
                   style={{ maxWidth: 200, borderRadius: 8 }}
                 />
+              ) : m.fileUrl || m.file?.data ? (
+                m.fileType && m.fileType.startsWith("audio") ? (
+                  <WhatsAppAudioPlayer
+                    src={m.fileUrl || m.file.data}
+                    userAvatar={m.userAvatar}
+                    duration={m.fileDuration}
+                  />
+                ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || "") ? (
+                  <img
+                    src={m.fileUrl || m.file.data}
+                    alt={m.fileName || "image"}
+                    style={{ maxWidth: 200, borderRadius: 8 }}
+                  />
+                ) : (
+                  <a
+                    href={m.fileUrl || m.file?.data}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                  >
+                    {m.fileName || "קובץ להורדה"}
+                  </a>
+                )
               ) : (
-                <a
-                  href={m.fileUrl || m.file?.data}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                >
-                  {m.fileName || "קובץ להורדה"}
-                </a>
-              )
-            ) : (
-              <div className="text">{m.isEdited && m.editedText ? m.editedText : (m.content || m.text)}</div>
-
-            )}
-            {m.isEdited && userRole === "business" && (
-              <div className="edited-label" style={{ fontSize: "0.8em", color: "#888" }}>
-                (נערך)
-              </div>
-            )}
-            <div className="meta">
-              <span className="time">
-                {(() => {
-                      const date = new Date(m.createdAt);
-
-                  if (isNaN(date)) return "";
-                  return date.toLocaleTimeString("he-IL", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  });
-                })()}
-              </span>
-              {m.fileDuration && (
-                <span className="audio-length">
-                  {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
-                  {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
-                </span>
+                <div className="text">{m.isEdited && m.editedText ? m.editedText : (m.content || m.text)}</div>
               )}
+              {m.isEdited && userRole === "business" && (
+                <div className="edited-label" style={{ fontSize: "0.8em", color: "#888" }}>
+                  (נערך)
+                </div>
+              )}
+              <div className="meta">
+                <span className="time">
+                  {(() => {
+                    const date = new Date(m.createdAt);
+                    if (isNaN(date)) return "";
+                    return date.toLocaleTimeString("he-IL", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                  })()}
+                </span>
+                {m.fileDuration && (
+                  <span className="audio-length">
+                    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
+                    {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="inputBar">
