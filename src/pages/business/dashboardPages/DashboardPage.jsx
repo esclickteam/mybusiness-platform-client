@@ -260,6 +260,18 @@ const [recommendations, setRecommendations] = useState([]);
 
       sock.on("dashboardUpdate", () => refetch());
 
+      sock.on('profileViewsUpdated', (data) => {
+  if (data && data.views_count !== undefined) {
+    queryClient.setQueryData(['dashboardStats', businessId], (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        views_count: data.views_count,
+      };
+    });
+  }
+});
+
       sock.on("appointmentCreated", (newAppointment) => {
         if (newAppointment.business?.toString() !== businessId.toString()) return;
         queryClient.setQueryData(["dashboardStats", businessId], (old) => {
