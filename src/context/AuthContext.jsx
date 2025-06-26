@@ -19,20 +19,41 @@ export function AuthProvider({ children }) {
   // רענון טוקן עם queue למניעת קריאות מרובות במקביל
   const refreshAccessToken = async () => {
     if (refreshingTokenPromise.current) return refreshingTokenPromise.current;
+
     refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then(response => {
         const newToken = response.data.accessToken;
         if (newToken) {
           localStorage.setItem("token", newToken);
           API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
+          setUser(prevUser => {
+            if (!prevUser) return prevUser;
+            try {
+              const decoded = jwtDecode(newToken);
+              return {
+                ...prevUser,
+                userId: decoded.userId,
+                name: decoded.name,
+                email: decoded.email,
+                role: decoded.role,
+                subscriptionPlan: decoded.subscriptionPlan,
+                businessId: decoded.businessId || null,
+              };
+            } catch {
+              return prevUser;
+            }
+          });
         }
         refreshingTokenPromise.current = null;
         return newToken;
       })
       .catch(err => {
         refreshingTokenPromise.current = null;
+        // אם הרענון נכשל - התנתק
+        logout();
         throw err;
       });
+
     return refreshingTokenPromise.current;
   };
 
@@ -125,7 +146,6 @@ export function AuthProvider({ children }) {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          // פענוח JWT מידי להצגת UI מיידית
           const decoded = jwtDecode(token);
           if (isMounted) {
             setUser({
@@ -140,8 +160,7 @@ export function AuthProvider({ children }) {
             createSocketConnection(token, decoded);
           }
 
-          // אימות טוקן וטעינת פרטים מעודכנים ברקע
-          API.get("/auth/me", { withCredentials: true })
+          await API.get("/auth/me", { withCredentials: true })
             .then(({ data }) => {
               if (isMounted) {
                 setUser({
@@ -156,11 +175,9 @@ export function AuthProvider({ children }) {
               }
             })
             .catch(() => {
-              // טוקן לא תקף - התנתק
               if (isMounted) logout();
             });
-        } catch (e) {
-          // טוקן לא תקף - התנתק
+        } catch {
           if (isMounted) logout();
         }
       } else {
@@ -184,91 +201,90 @@ export function AuthProvider({ children }) {
   }, [navigate]);
 
   const login = async (email, password, options = { skipRedirect: false }) => {
-  setLoading(true);
-  setError(null);
+    setLoading(true);
+    setError(null);
 
-  try {
-    const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
-    const { accessToken } = response.data;
+    try {
+      const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
+      const { accessToken } = response.data;
 
-    if (!accessToken) throw new Error("No access token received");
+      if (!accessToken) throw new Error("No access token received");
 
-    localStorage.setItem("token", accessToken);
-    API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
+      localStorage.setItem("token", accessToken);
+      API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
-    const decoded = jwtDecode(accessToken);
-    setUser({
-      userId: decoded.userId,
-      name: decoded.name,
-      email: decoded.email,
-      role: decoded.role,
-      subscriptionPlan: decoded.subscriptionPlan,
-      businessId: decoded.businessId || null,
-    });
+      const decoded = jwtDecode(accessToken);
+      setUser({
+        userId: decoded.userId,
+        name: decoded.name,
+        email: decoded.email,
+        role: decoded.role,
+        subscriptionPlan: decoded.subscriptionPlan,
+        businessId: decoded.businessId || null,
+      });
 
-    createSocketConnection(accessToken, decoded);
+      createSocketConnection(accessToken, decoded);
 
-    const { data } = await API.get("/auth/me", { withCredentials: true });
-    if (data.businessId) {
-      localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-    }
-    setUser({
-      userId: data.userId,
-      name: data.name,
-      email: data.email,
-      role: data.role,
-      subscriptionPlan: data.subscriptionPlan,
-      businessId: data.businessId || null,
-    });
-    createSocketConnection(accessToken, data);
-
-    if (!options.skipRedirect && data) {
-      let path = "/";
-      switch (data.role) {
-        case "business":
-          path = `/business/${data.businessId}/dashboard`;
-          break;
-        case "customer":
-          path = "/client/dashboard";
-          break;
-        case "worker":
-          path = "/staff/dashboard";
-          break;
-        case "manager":
-          path = "/manager/dashboard";
-          break;
-        case "admin":
-          path = "/admin/dashboard";
-          break;
+      const { data } = await API.get("/auth/me", { withCredentials: true });
+      if (data.businessId) {
+        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
       }
-      navigate(path, { replace: true });
-    }
+      setUser({
+        userId: data.userId,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        subscriptionPlan: data.subscriptionPlan,
+        businessId: data.businessId || null,
+      });
+      createSocketConnection(accessToken, data);
 
-    setLoading(false);
-    return data;
+      if (!options.skipRedirect && data) {
+        let path = "/";
+        switch (data.role) {
+          case "business":
+            path = `/business/${data.businessId}/dashboard`;
+            break;
+          case "customer":
+            path = "/client/dashboard";
+            break;
+          case "worker":
+            path = "/staff/dashboard";
+            break;
+          case "manager":
+            path = "/manager/dashboard";
+            break;
+          case "admin":
+            path = "/admin/dashboard";
+            break;
+        }
+        navigate(path, { replace: true });
+      }
 
-  } catch (e) {
-    if (e.response?.status === 401) {
-      try {
-        const newToken = await refreshAccessToken();
-        if (!newToken) {
+      setLoading(false);
+      return data;
+
+    } catch (e) {
+      if (e.response?.status === 401 || e.response?.status === 403) {
+        try {
+          const newToken = await refreshAccessToken();
+          if (!newToken) {
+            await logout();
+            setError("❌ אימייל או סיסמה שגויים");
+            navigate("/login");
+          }
+        } catch {
           await logout();
           setError("❌ אימייל או סיסמה שגויים");
           navigate("/login");
         }
-      } catch {
-        await logout();
-        setError("❌ אימייל או סיסמה שגויים");
-        navigate("/login");
+      } else {
+        setError("❌ שגיאה בשרת, נסה שוב");
       }
-    } else {
-      setError("❌ שגיאה בשרת, נסה שוב");
+      setLoading(false);
+      throw e;
     }
-    setLoading(false);
-    throw e;
-  }
-};
-
+  };
 
   useEffect(() => {
     if (successMessage) {
