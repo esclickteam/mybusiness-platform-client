@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
-import { useDashboardStats } from "../../context/DashboardSocketContext";
+import { useSocket, SocketProvider } from "../context/socketContext.jsx";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import "react-calendar/dist/Calendar.css";
@@ -50,6 +50,7 @@ const StarDisplay = ({ rating }) => {
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
+  const socket = useSocket();  // שימוש ב-socket מהקונטקסט
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
 
@@ -65,8 +66,6 @@ export default function BusinessProfileView() {
 
   // סטייט לניהול אילו ביקורות פתוחות
   const [expandedReviews, setExpandedReviews] = useState({});
-
-  const hasIncrementedRef = useRef(false);
 
   // בקשות נתונים
   const { data, isLoading, error, refetch } = useQuery({
@@ -93,6 +92,7 @@ export default function BusinessProfileView() {
     if (!data) return;
     setFaqs(data.faqs || []);
     setServices(data.services || []);
+    setProfileViewsCount(data.views_count || 0);
   }, [data]);
 
   useEffect(() => {
@@ -107,6 +107,19 @@ export default function BusinessProfileView() {
     }
     setSchedule(sched);
   }, [workHoursData]);
+
+  // שליחת אירוע צפיה בפרופיל לעדכון בצד השרת (ולהודעה לדשבורד)
+  useEffect(() => {
+    if (!socket || !bizId) return;
+    // שולחים פעם אחת בלבד במעמד טעינת הפרופיל
+    socket.emit("profileView", { businessId: bizId }, (res) => {
+      if (res.ok) {
+        setProfileViewsCount(res.stats.views_count || 0);
+      } else {
+        console.error("Failed to register profile view:", res.error);
+      }
+    });
+  }, [socket, bizId]);
 
   // מיון ביקורות לפי תאריך חדש לישן
   const sortedReviews = [...reviews].sort(
@@ -403,7 +416,6 @@ export default function BusinessProfileView() {
                 )}
               </div>
             )}
-            {/* שאר הטאבים ללא שינוי */}
             {currentTab === "שאלות תשובות" && (
               <div className="faqs-public">
                 {faqs.length === 0 ? (
