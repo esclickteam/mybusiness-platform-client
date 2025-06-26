@@ -6,6 +6,44 @@ import jwtDecode from "jwt-decode";
 
 export const AuthContext = createContext();
 
+function SessionExpiredNotice({ onLoginClick }) {
+  return (
+    <div style={{
+      position: "fixed",
+      bottom: "20px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      backgroundColor: "#ffdddd",
+      padding: "16px 24px",
+      border: "1px solid #ff5c5c",
+      borderRadius: "8px",
+      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+      zIndex: 9999,
+      fontSize: "16px",
+      textAlign: "center",
+      maxWidth: "300px",
+    }}>
+      <p>שמנו לב שלא היית כאן, אז ניתקנו אותך מטעמי אבטחה.</p>
+      <p>לא נורא – אפשר להתחבר שוב בלחיצה 👇</p>
+      <button
+        style={{
+          backgroundColor: "#ff5c5c",
+          color: "#fff",
+          border: "none",
+          padding: "8px 16px",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontWeight: "bold",
+          marginTop: "8px",
+        }}
+        onClick={onLoginClick}
+      >
+        התחבר מחדש
+      </button>
+    </div>
+  );
+}
+
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -13,18 +51,30 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [initialized, setInitialized] = useState(false);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const refreshingTokenPromise = useRef(null);
   const ws = useRef(null);
+  const refreshTimeout = useRef(null);
+
+  // פונקציה לניקוי טוקן אוטומטי
+  const clearRefreshTimeout = () => {
+    if (refreshTimeout.current) {
+      clearTimeout(refreshTimeout.current);
+      refreshTimeout.current = null;
+    }
+  };
 
   // רענון טוקן עם queue למניעת קריאות מרובות במקביל
   const refreshAccessToken = async () => {
     if (refreshingTokenPromise.current) return refreshingTokenPromise.current;
+
     refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then(response => {
         const newToken = response.data.accessToken;
         if (newToken) {
           localStorage.setItem("token", newToken);
           API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
+          scheduleTokenRefresh(newToken);
         }
         refreshingTokenPromise.current = null;
         return newToken;
@@ -33,7 +83,33 @@ export function AuthProvider({ children }) {
         refreshingTokenPromise.current = null;
         throw err;
       });
+
     return refreshingTokenPromise.current;
+  };
+
+  // תזמון רענון אוטומטי 2 דקות לפני שפג תוקף הטוקן
+  const scheduleTokenRefresh = (token) => {
+    clearRefreshTimeout();
+    try {
+      const decoded = jwtDecode(token);
+      const expiresAt = decoded.exp * 1000; // exp ב-SECONDS, ממיר ל-millis
+      const now = Date.now();
+      const timeout = expiresAt - now - 2 * 60 * 1000; // 2 דקות לפני תום תוקף
+
+      if (timeout > 0) {
+        refreshTimeout.current = setTimeout(() => {
+          refreshAccessToken().catch(() => {
+            logout(true);
+          });
+        }, timeout);
+      } else {
+        // אם הטוקן כבר עומד לפוג או פג, מבצעים logout מיד
+        logout(true);
+      }
+    } catch {
+      // אם יש בעיה בפענוח הטוקן, מנותקים
+      logout(true);
+    }
   };
 
   const createSocketConnection = (token, userData) => {
@@ -74,10 +150,10 @@ export function AuthProvider({ children }) {
           ws.current.disconnect();
           ws.current.connect();
         } else {
-          logout();
+          logout(true);
         }
       } catch {
-        logout();
+        logout(true);
       }
     });
 
@@ -89,17 +165,19 @@ export function AuthProvider({ children }) {
           if (newToken) {
             createSocketConnection(newToken, userData);
           } else {
-            logout();
+            logout(true);
           }
         } catch {
-          logout();
+          logout(true);
         }
       }
     });
   };
 
-  const logout = async () => {
+  // logout עם פרמטר שמציין האם זו ניתוק עקב פקיעת טוקן/אבטחה
+  const logout = async (expired = false) => {
     setLoading(true);
+    clearRefreshTimeout();
     try {
       await API.post("/auth/logout", {}, { withCredentials: true });
     } catch (e) {
@@ -114,7 +192,11 @@ export function AuthProvider({ children }) {
       ws.current = null;
     }
     setLoading(false);
-    navigate("/login", { replace: true });
+    if (expired) {
+      setSessionExpired(true);
+    } else {
+      navigate("/login", { replace: true });
+    }
   };
 
   useEffect(() => {
@@ -125,7 +207,6 @@ export function AuthProvider({ children }) {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          // פענוח JWT מידי להצגת UI מיידית
           const decoded = jwtDecode(token);
           if (isMounted) {
             setUser({
@@ -138,9 +219,9 @@ export function AuthProvider({ children }) {
             });
             API.defaults.headers['Authorization'] = `Bearer ${token}`;
             createSocketConnection(token, decoded);
+            scheduleTokenRefresh(token);
           }
 
-          // אימות טוקן וטעינת פרטים מעודכנים ברקע
           API.get("/auth/me", { withCredentials: true })
             .then(({ data }) => {
               if (isMounted) {
@@ -156,12 +237,10 @@ export function AuthProvider({ children }) {
               }
             })
             .catch(() => {
-              // טוקן לא תקף - התנתק
-              if (isMounted) logout();
+              if (isMounted) logout(true);
             });
         } catch (e) {
-          // טוקן לא תקף - התנתק
-          if (isMounted) logout();
+          if (isMounted) logout(true);
         }
       } else {
         setUser(null);
@@ -176,6 +255,7 @@ export function AuthProvider({ children }) {
 
     return () => {
       isMounted = false;
+      clearRefreshTimeout();
       if (ws.current) {
         ws.current.disconnect();
         ws.current = null;
@@ -183,92 +263,118 @@ export function AuthProvider({ children }) {
     };
   }, [navigate]);
 
-  const login = async (email, password, options = { skipRedirect: false }) => {
-  setLoading(true);
-  setError(null);
-
-  try {
-    const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
-    const { accessToken } = response.data;
-
-    if (!accessToken) throw new Error("No access token received");
-
-    localStorage.setItem("token", accessToken);
-    API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
-
-    const decoded = jwtDecode(accessToken);
-    setUser({
-      userId: decoded.userId,
-      name: decoded.name,
-      email: decoded.email,
-      role: decoded.role,
-      subscriptionPlan: decoded.subscriptionPlan,
-      businessId: decoded.businessId || null,
-    });
-
-    createSocketConnection(accessToken, decoded);
-
-    const { data } = await API.get("/auth/me", { withCredentials: true });
-    if (data.businessId) {
-      localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-    }
-    setUser({
-      userId: data.userId,
-      name: data.name,
-      email: data.email,
-      role: data.role,
-      subscriptionPlan: data.subscriptionPlan,
-      businessId: data.businessId || null,
-    });
-    createSocketConnection(accessToken, data);
-
-    if (!options.skipRedirect && data) {
-      let path = "/";
-      switch (data.role) {
-        case "business":
-          path = `/business/${data.businessId}/dashboard`;
-          break;
-        case "customer":
-          path = "/client/dashboard";
-          break;
-        case "worker":
-          path = "/staff/dashboard";
-          break;
-        case "manager":
-          path = "/manager/dashboard";
-          break;
-        case "admin":
-          path = "/admin/dashboard";
-          break;
+  const apiRequest = async (url, options = {}) => {
+    try {
+      return await API(url, options);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        try {
+          const newToken = await refreshAccessToken();
+          if (newToken) {
+            options.headers = {
+              ...options.headers,
+              Authorization: `Bearer ${newToken}`,
+            };
+            return await API(url, options);
+          } else {
+            await logout(true);
+            throw new Error("Session expired");
+          }
+        } catch {
+          await logout(true);
+          throw new Error("Session expired");
+        }
       }
-      navigate(path, { replace: true });
+      throw error;
     }
+  };
 
-    setLoading(false);
-    return data;
+  const login = async (email, password, options = { skipRedirect: false }) => {
+    setLoading(true);
+    setError(null);
 
-  } catch (e) {
-    if (e.response?.status === 401) {
-      try {
-        const newToken = await refreshAccessToken();
-        if (!newToken) {
-          await logout();
+    try {
+      const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
+      const { accessToken } = response.data;
+
+      if (!accessToken) throw new Error("No access token received");
+
+      localStorage.setItem("token", accessToken);
+      API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
+      scheduleTokenRefresh(accessToken);
+
+      const decoded = jwtDecode(accessToken);
+      setUser({
+        userId: decoded.userId,
+        name: decoded.name,
+        email: decoded.email,
+        role: decoded.role,
+        subscriptionPlan: decoded.subscriptionPlan,
+        businessId: decoded.businessId || null,
+      });
+
+      createSocketConnection(accessToken, decoded);
+
+      const { data } = await API.get("/auth/me", { withCredentials: true });
+      if (data.businessId) {
+        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+      }
+      setUser({
+        userId: data.userId,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        subscriptionPlan: data.subscriptionPlan,
+        businessId: data.businessId || null,
+      });
+      createSocketConnection(accessToken, data);
+
+      if (!options.skipRedirect && data) {
+        let path = "/";
+        switch (data.role) {
+          case "business":
+            path = `/business/${data.businessId}/dashboard`;
+            break;
+          case "customer":
+            path = "/client/dashboard";
+            break;
+          case "worker":
+            path = "/staff/dashboard";
+            break;
+          case "manager":
+            path = "/manager/dashboard";
+            break;
+          case "admin":
+            path = "/admin/dashboard";
+            break;
+        }
+        navigate(path, { replace: true });
+      }
+
+      setLoading(false);
+      return data;
+
+    } catch (e) {
+      if (e.response?.status === 401) {
+        try {
+          const newToken = await refreshAccessToken();
+          if (!newToken) {
+            await logout(true);
+            setError("❌ אימייל או סיסמה שגויים");
+            navigate("/login");
+          }
+        } catch {
+          await logout(true);
           setError("❌ אימייל או סיסמה שגויים");
           navigate("/login");
         }
-      } catch {
-        await logout();
-        setError("❌ אימייל או סיסמה שגויים");
-        navigate("/login");
+      } else {
+        setError("❌ שגיאה בשרת, נסה שוב");
       }
-    } else {
-      setError("❌ שגיאה בשרת, נסה שוב");
+      setLoading(false);
+      throw e;
     }
-    setLoading(false);
-    throw e;
-  }
-};
-
+  };
 
   useEffect(() => {
     if (successMessage) {
@@ -287,11 +393,18 @@ export function AuthProvider({ children }) {
         login,
         logout,
         refreshAccessToken,
+        apiRequest,
         socket: ws.current,
         setUser,
       }}
     >
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
+      {sessionExpired && (
+        <SessionExpiredNotice onLoginClick={() => {
+          setSessionExpired(false);
+          navigate("/login", { replace: true });
+        }} />
+      )}
       {children}
     </AuthContext.Provider>
   );
