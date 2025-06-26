@@ -4,7 +4,32 @@ import API from "../api";
 import { io } from "socket.io-client";
 import jwtDecode from "jwt-decode";
 
-export const AuthContext = createContext();
+export const AuthContext = createContext(null);
+
+// Singleton promise למניעת קריאות רענון מקביליות
+let ongoingRefresh = null;
+
+// פונקציה לרענון access token עם single-flight
+async function singleFlightRefresh() {
+  if (!ongoingRefresh) {
+    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
+      .then(res => {
+        const newToken = res.data.accessToken;
+        if (!newToken) throw new Error("No new token");
+        localStorage.setItem("token", newToken);
+        API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
+        return newToken;
+      })
+      .catch(err => {
+        ongoingRefresh = null;  // מאפשר ניסוי חדש
+        throw err;
+      })
+      .finally(() => {
+        ongoingRefresh = null;  // איפוס בסוף
+      });
+  }
+  return ongoingRefresh;
+}
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
@@ -13,127 +38,9 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [initialized, setInitialized] = useState(false);
-  const refreshingTokenPromise = useRef(null);
   const ws = useRef(null);
 
-  // ריענון טוקן עם queue למניעת קריאות מרובות במקביל
-  const refreshAccessToken = async () => {
-    if (refreshingTokenPromise.current) {
-      console.log("⏳ Refresh token already in progress, waiting for it to complete...");
-      return refreshingTokenPromise.current;
-    }
-
-    console.log("🔄 Starting refresh token process...");
-    refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
-      .then(response => {
-        const newToken = response.data.accessToken;
-        if (!newToken) {
-          console.warn("❌ No new token received during refresh");
-          throw new Error("No new token received");
-        }
-        console.log("✅ Refresh token succeeded, new token received");
-        localStorage.setItem("token", newToken);
-        API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
-        refreshingTokenPromise.current = null;
-        return newToken;
-      })
-      .catch(err => {
-        refreshingTokenPromise.current = null;
-        if (err.response && err.response.status === 403) {
-          console.warn("⚠️ Refresh token invalid or expired (403), logging out immediately...");
-          logout(); // ודא שפונקציית logout מוגדרת ונגישה בסקופ
-        } else {
-          console.error("❌ Error refreshing token:", err.message || err);
-        }
-        throw err;
-      });
-
-    return refreshingTokenPromise.current;
-  };
-
-  // טיפול מרכזי בבקשות עם אפשרות לרענון אוטומטי
-  const fetchWithAuth = async (requestFunc) => {
-    try {
-      return await requestFunc();
-    } catch (err) {
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        try {
-          const newToken = await refreshAccessToken();
-          if (!newToken) throw new Error("No new token");
-          return await requestFunc();
-        } catch {
-          await logout();
-          setError("❌ יש להתחבר מחדש");
-          navigate("/login", { replace: true });
-          throw new Error("Session expired, please login again.");
-        }
-      }
-      throw err;
-    }
-  };
-
-  const createSocketConnection = (token, userData) => {
-    if (ws.current) {
-      ws.current.disconnect();
-      ws.current = null;
-    }
-    if (!token) {
-      console.warn("No token available for Socket.IO connection");
-      return;
-    }
-
-    ws.current = io("https://api.esclick.co.il", {
-      path: "/socket.io",
-      transports: ["websocket"],
-      auth: {
-        token,
-        role: userData?.role,
-        businessId: userData?.businessId || userData?.business?._id,
-      },
-    });
-
-    ws.current.on("connect", () => {
-      console.log("✅ Socket.IO connected, socket id:", ws.current.id);
-    });
-
-    ws.current.on("disconnect", (reason) => {
-      console.log("🔴 Socket.IO disconnected, reason:", reason);
-    });
-
-    ws.current.on("tokenExpired", async () => {
-      console.log("🚨 Socket token expired, refreshing...");
-      try {
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          console.log("🔄 Got new token, reconnecting socket");
-          ws.current.auth.token = newToken;
-          ws.current.disconnect();
-          ws.current.connect();
-        } else {
-          await logout();
-        }
-      } catch {
-        await logout();
-      }
-    });
-
-    ws.current.on("connect_error", async (err) => {
-      console.error("Socket.IO connect error:", err.message);
-      if (err.message === "jwt expired") {
-        try {
-          const newToken = await refreshAccessToken();
-          if (newToken) {
-            createSocketConnection(newToken, userData);
-          } else {
-            await logout();
-          }
-        } catch {
-          await logout();
-        }
-      }
-    });
-  };
-
+  // logout מרכזי
   const logout = async () => {
     console.log("🚪 Logging out user...");
     setLoading(true);
@@ -156,9 +63,103 @@ export function AuthProvider({ children }) {
     console.log("🏁 User redirected to /login");
   };
 
+  // רענון טוקן עם טיפול ב-403 → logout
+  const refreshAccessToken = async () => {
+    try {
+      const newToken = await singleFlightRefresh();
+      console.log("✅ Refresh succeeded, new token received");
+      return newToken;
+    } catch (err) {
+      if (err.response?.status === 403) {
+        console.warn("⚠️ Refresh token invalid/expired (403), logging out...");
+        await logout();
+      }
+      throw err;
+    }
+  };
+
+  // עטיפה לבקשות עם אימות ורענון אוטומטי
+  const fetchWithAuth = async (requestFunc) => {
+    try {
+      return await requestFunc();
+    } catch (err) {
+      const status = err.response?.status;
+      if (status === 401 || status === 403) {
+        try {
+          await refreshAccessToken();
+          return await requestFunc();
+        } catch {
+          await logout();
+          setError("❌ יש להתחבר מחדש");
+          navigate("/login", { replace: true });
+          throw new Error("Session expired");
+        }
+      }
+      throw err;
+    }
+  };
+
+  // יצירת חיבור Socket.IO עם טיפול ברענון טוקן
+  const createSocketConnection = (token, userData) => {
+    if (ws.current) {
+      ws.current.disconnect();
+      ws.current = null;
+    }
+    if (!token) {
+      console.warn("No token for socket connection");
+      return;
+    }
+
+    ws.current = io("https://api.esclick.co.il", {
+      path: "/socket.io",
+      transports: ["websocket"],
+      auth: {
+        token,
+        role: userData?.role,
+        businessId: userData?.businessId || (userData.business && userData.business._id),
+      },
+    });
+
+    ws.current.on("connect", () => {
+      console.log("✅ Socket connected:", ws.current.id);
+    });
+    ws.current.on("disconnect", reason => {
+      console.log("🔴 Socket disconnected:", reason);
+    });
+
+    ws.current.on("tokenExpired", async () => {
+      console.log("🚨 Socket token expired, refreshing...");
+      try {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          ws.current.auth.token = newToken;
+          ws.current.disconnect();
+          ws.current.connect();
+        } else {
+          await logout();
+        }
+      } catch {
+        await logout();
+      }
+    });
+
+    ws.current.on("connect_error", async err => {
+      console.error("Socket connect error:", err.message);
+      if (err.message === "jwt expired") {
+        try {
+          const newToken = await refreshAccessToken();
+          if (newToken) createSocketConnection(newToken, userData);
+          else await logout();
+        } catch {
+          await logout();
+        }
+      }
+    });
+  };
+
+  // אתחול מצב בעת mount
   useEffect(() => {
     let isMounted = true;
-
     const initialize = async () => {
       setLoading(true);
       const token = localStorage.getItem("token");
@@ -178,7 +179,6 @@ export function AuthProvider({ children }) {
             createSocketConnection(token, decoded);
           }
 
-          // אימות טוקן וטעינת פרטים מעודכנים ברקע
           API.get("/auth/me", { withCredentials: true })
             .then(({ data }) => {
               if (isMounted) {
@@ -196,7 +196,7 @@ export function AuthProvider({ children }) {
             .catch(() => {
               if (isMounted) logout();
             });
-        } catch (e) {
+        } catch {
           if (isMounted) logout();
         }
       } else {
@@ -209,7 +209,6 @@ export function AuthProvider({ children }) {
     };
 
     initialize();
-
     return () => {
       isMounted = false;
       if (ws.current) {
@@ -219,84 +218,45 @@ export function AuthProvider({ children }) {
     };
   }, [navigate]);
 
+  // פונקציית login
   const login = async (email, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
-
     try {
       const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
       const { accessToken } = response.data;
-
       if (!accessToken) throw new Error("No access token received");
-
       localStorage.setItem("token", accessToken);
       API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
       const decoded = jwtDecode(accessToken);
-      setUser({
-        userId: decoded.userId,
-        name: decoded.name,
-        email: decoded.email,
-        role: decoded.role,
-        subscriptionPlan: decoded.subscriptionPlan,
-        businessId: decoded.businessId || null,
-      });
-
+      setUser({ ...decoded, businessId: decoded.businessId || null });
       createSocketConnection(accessToken, decoded);
 
       const { data } = await API.get("/auth/me", { withCredentials: true });
       if (data.businessId) {
         localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
       }
-      setUser({
-        userId: data.userId,
-        name: data.name,
-        email: data.email,
-        role: data.role,
-        subscriptionPlan: data.subscriptionPlan,
-        businessId: data.businessId || null,
-      });
+      setUser({ ...data, businessId: data.businessId || null });
       createSocketConnection(accessToken, data);
 
       if (!options.skipRedirect && data) {
         let path = "/";
         switch (data.role) {
-          case "business":
-            path = `/business/${data.businessId}/dashboard`;
-            break;
-          case "customer":
-            path = "/client/dashboard";
-            break;
-          case "worker":
-            path = "/staff/dashboard";
-            break;
-          case "manager":
-            path = "/manager/dashboard";
-            break;
-          case "admin":
-            path = "/admin/dashboard";
-            break;
+          case "business": path = `/business/${data.businessId}/dashboard`; break;
+          case "customer": path = "/client/dashboard"; break;
+          case "worker": path = "/staff/dashboard"; break;
+          case "manager": path = "/manager/dashboard"; break;
+          case "admin": path = "/admin/dashboard"; break;
         }
         navigate(path, { replace: true });
       }
 
       setLoading(false);
       return data;
-
     } catch (e) {
       if (e.response?.status === 401 || e.response?.status === 403) {
-        try {
-          const newToken = await refreshAccessToken();
-          if (!newToken) {
-            await logout();
-            setError("❌ אימייל או סיסמה שגויים");
-            navigate("/login");
-          }
-        } catch {
-          await logout();
-          setError("❌ אימייל או סיסמה שגויים");
-          navigate("/login");
-        }
+        setError("❌ אימייל או סיסמה שגויים");
       } else {
         setError("❌ שגיאה בשרת, נסה שוב");
       }
@@ -313,20 +273,7 @@ export function AuthProvider({ children }) {
   }, [successMessage]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        initialized,
-        error,
-        login,
-        logout,
-        refreshAccessToken,
-        fetchWithAuth: fetchWithAuth,
-        socket: ws.current,
-        setUser,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, initialized, error, login, logout, refreshAccessToken, fetchWithAuth, socket: ws.current, setUser }}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
