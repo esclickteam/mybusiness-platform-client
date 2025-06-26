@@ -66,26 +66,29 @@ export function AuthProvider({ children }) {
 
   // רענון טוקן עם queue למניעת קריאות מרובות במקביל
   const refreshAccessToken = async () => {
-    if (refreshingTokenPromise.current) return refreshingTokenPromise.current;
+  if (refreshingTokenPromise.current) return refreshingTokenPromise.current;
 
-    refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
-      .then(response => {
-        const newToken = response.data.accessToken;
-        if (newToken) {
-          localStorage.setItem("token", newToken);
-          API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
-          scheduleTokenRefresh(newToken);
-        }
-        refreshingTokenPromise.current = null;
-        return newToken;
-      })
-      .catch(err => {
-        refreshingTokenPromise.current = null;
-        throw err;
-      });
+  refreshingTokenPromise.current = API.post("/auth/refresh-token", null, { withCredentials: true })
+    .then(response => {
+      const newToken = response.data.accessToken;
+      if (newToken) {
+        localStorage.setItem("token", newToken);
+        API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
+        scheduleTokenRefresh(newToken);
+      }
+      refreshingTokenPromise.current = null;
+      return newToken;
+    })
+    .catch(async (err) => {
+      refreshingTokenPromise.current = null;
+      console.error("Refresh token failed:", err);
+      await logout(true);  // כאן קוראים לlogout עם הצגת הודעת ניתוק
+      throw err;
+    });
 
-    return refreshingTokenPromise.current;
-  };
+  return refreshingTokenPromise.current;
+};
+
 
   // תזמון רענון אוטומטי 2 דקות לפני שפג תוקף הטוקן
   const scheduleTokenRefresh = (token) => {
