@@ -261,7 +261,8 @@ const [recommendations, setRecommendations] = useState([]);
       sock.on("dashboardUpdate", () => refetch());
 
       sock.on('profileViewsUpdated', (data) => {
-  if (data && data.views_count !== undefined) {
+  console.log('profileViewsUpdated received:', data); // להוסיף לוג לצורך בדיקה
+  if (data && typeof data.views_count === 'number') {
     queryClient.setQueryData(['dashboardStats', businessId], (old) => {
       if (!old) return old;
       return {
