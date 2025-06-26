@@ -10,9 +10,12 @@ const AiRecommendations = ({ businessId, token }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!businessId || !token) return;
+    if (!businessId || !token) {
+      console.warn("AiRecommendations: missing businessId or token, skipping socket connection");
+      return;
+    }
 
-    console.log("Initializing socket connection...");
+    console.log("[Socket] Initializing socket connection...");
 
     const s = io(SOCKET_URL, {
       auth: { token, businessId },
@@ -20,43 +23,49 @@ const AiRecommendations = ({ businessId, token }) => {
     });
 
     s.on("connect", () => {
-      console.log("Socket connected, id:", s.id);
+      console.log(`[Socket] Connected with id: ${s.id}`);
       s.emit("joinRoom", businessId);
-      console.log(`Emitted joinRoom for businessId: ${businessId}`);
+      console.log(`[Socket] Emitted joinRoom for businessId: ${businessId}`);
     });
 
     s.on("connect_error", (err) => {
-      console.error("Socket connection error:", err);
+      console.error("[Socket] Connection error:", err);
       setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
     });
 
     s.on("disconnect", (reason) => {
-      console.log("Socket disconnected, reason:", reason);
+      console.log("[Socket] Disconnected, reason:", reason);
     });
 
     s.on("newAiSuggestion", (rec) => {
-      console.log("Received newAiSuggestion:", rec);
+      console.log("[Socket] Received newAiSuggestion:", rec);
       setRecommendations((prev) => {
-        if (prev.find((r) => r._id === rec._id)) return prev;
+        if (prev.find((r) => r._id === rec._id)) {
+          console.log(`[Socket] Recommendation with id ${rec._id} already exists, skipping`);
+          return prev;
+        }
+        console.log(`[Socket] Adding new recommendation with id ${rec._id}`);
         return [...prev, rec];
       });
     });
 
     s.on("messageApproved", ({ recommendationId }) => {
-      console.log("Received messageApproved for recommendationId:", recommendationId);
+      console.log(`[Socket] Received messageApproved for recommendationId: ${recommendationId}`);
       setRecommendations((prev) =>
-        prev.map((r) =>
-          r._id === recommendationId || r.id === recommendationId
-            ? { ...r, status: "approved" }
-            : r
-        )
+        prev.map((r) => {
+          if (r._id === recommendationId || r.id === recommendationId) {
+            console.log(`[Socket] Updating recommendation ${recommendationId} status to approved`);
+            return { ...r, status: "approved" };
+          }
+          return r;
+        })
       );
     });
 
     setSocket(s);
 
     return () => {
-      console.log("Disconnecting socket...");
+      console.log("[Socket] Disconnecting socket...");
       s.disconnect();
     };
   }, [businessId, token]);
@@ -64,8 +73,8 @@ const AiRecommendations = ({ businessId, token }) => {
   const approveRecommendation = async (id) => {
     setLoading(true);
     setError(null);
+    console.log(`[Action] Approving recommendation: ${id}`);
     try {
-      console.log("Approving recommendation:", id);
       const res = await fetch("/api/chat/send-approved", {
         method: "POST",
         headers: {
@@ -75,13 +84,18 @@ const AiRecommendations = ({ businessId, token }) => {
         body: JSON.stringify({ businessId, recommendationId: id }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to approve");
+
+      if (!res.ok) {
+        console.error(`[Action] Approval failed: ${data.error || "Unknown error"}`);
+        throw new Error(data.error || "Failed to approve");
+      }
 
       alert("ההמלצה אושרה ונשלחה!");
       setRecommendations((prev) =>
         prev.map((r) => (r.id === id || r._id === id ? { ...r, status: "approved" } : r))
       );
     } catch (err) {
+      console.error(`[Action] Error approving recommendation: ${err.message}`);
       setError("שגיאה באישור ההמלצה: " + err.message);
     } finally {
       setLoading(false);
@@ -91,8 +105,8 @@ const AiRecommendations = ({ businessId, token }) => {
   const rejectRecommendation = async (id) => {
     setLoading(true);
     setError(null);
+    console.log(`[Action] Rejecting recommendation: ${id}`);
     try {
-      console.log("Rejecting recommendation:", id);
       const res = await fetch("/api/chat/rejectRecommendation", {
         method: "POST",
         headers: {
@@ -101,11 +115,16 @@ const AiRecommendations = ({ businessId, token }) => {
         },
         body: JSON.stringify({ recommendationId: id }),
       });
-      if (!res.ok) throw new Error("Failed to reject");
+
+      if (!res.ok) {
+        console.error("[Action] Reject failed");
+        throw new Error("Failed to reject");
+      }
 
       setRecommendations((prev) => prev.filter((r) => r.id !== id && r._id !== id));
       alert("ההמלצה נדחתה");
     } catch (err) {
+      console.error(`[Action] Error rejecting recommendation: ${err.message}`);
       setError("שגיאה בדחיית ההמלצה: " + err.message);
     } finally {
       setLoading(false);
@@ -115,7 +134,7 @@ const AiRecommendations = ({ businessId, token }) => {
   return (
     <div>
       <h3>המלצות AI ממתינות לאישור</h3>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
       {recommendations.filter((r) => r.status === "pending").length === 0 && <p>אין המלצות חדשות.</p>}
       <ul>
         {recommendations
