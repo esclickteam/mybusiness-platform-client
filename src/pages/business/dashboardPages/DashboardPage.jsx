@@ -227,23 +227,28 @@ const [recommendations, setRecommendations] = useState([]);
     let isMounted = true;
 
     async function setupSocket() {
-      const token = await refreshAccessToken();
-      if (!token) {
-        logout();
-        return;
-      }
-      const sock = await createSocket(refreshAccessToken, logout, businessId);
-      if (!sock || !isMounted) return;
-      socketRef.current = sock;
+  const token = await refreshAccessToken();
+  if (!token) {
+    logout();
+    return;
+  }
+  const sock = await createSocket(refreshAccessToken, logout, businessId);
+  if (!sock || !isMounted) return;
+  socketRef.current = sock;
 
-      sock.on("connect", () => console.log("Dashboard socket connected:", sock.id));
-      sock.on("tokenExpired", async () => {
-        const newToken = await refreshAccessToken();
-        if (!newToken) {
-          alert("Session expired. Please log in again.");
-          logout();
-          return;
-        }
+  sock.on("connect", () => {
+    console.log("Dashboard socket connected:", sock.id);
+    // הצטרפות לחדר העסק והדשבורד לקבלת עדכונים בזמן אמת
+    sock.emit("joinBusinessRoom", businessId);
+  });
+
+  sock.on("tokenExpired", async () => {
+    const newToken = await refreshAccessToken();
+    if (!newToken) {
+      alert("Session expired. Please log in again.");
+      logout();
+      return;
+    }
         sock.auth.token = newToken;
         sock.emit("authenticate", { token: newToken }, (ack) => {
           if (!ack?.ok) {
