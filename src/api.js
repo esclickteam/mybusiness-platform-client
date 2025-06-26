@@ -1,22 +1,19 @@
 import axios from "axios";
 
-// הגדרת BASE_URL דינמית לפי סביבה (פיתוח / פרודקשן)
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd
   ? "https://api.esclick.co.il/api"
-  : "/api";  // ב־dev proxied ל־localhost:5000/api
+  : "/api";
 
-// יצירת instance של Axios
 const API = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // חשוב לשלוח עוגיות אוטומטית
+  withCredentials: true,
   timeout: 20000,
   headers: {
     Accept: "application/json",
   },
 });
 
-// הגדרת טוקן קיים מראש (כדאי לאפשר גם במידול כעת, לא רק בהתחלה)
 const setAuthToken = (token) => {
   if (token) {
     API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -25,10 +22,21 @@ const setAuthToken = (token) => {
   }
 };
 
-// הגדר טוקן קיים (אם יש)
 setAuthToken(localStorage.getItem("token"));
 
-// interceptor לבקשות שמוודא Authorization header מעודכן
+// משתנה שמצביע אם ריענון טוקן מתבצע
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+function onRefreshed(token) {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
+}
+
+function addRefreshSubscriber(callback) {
+  refreshSubscribers.push(callback);
+}
+
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -49,7 +57,6 @@ API.interceptors.request.use(
   }
 );
 
-// interceptor לתשובות: טיפול ב־401, רענון טוקן ולוג שגיאות
 API.interceptors.response.use(
   (response) => {
     console.log(`API Response: ${response.status} ${response.config.url}`);
@@ -62,20 +69,39 @@ API.interceptors.response.use(
       return Promise.reject(new Error("שגיאת רשת"));
     }
 
-    // טיפול ב־401 (למעט בקשת auth/me) – ניסיון רענון טוקן
     if (response.status === 401 && !config.url.endsWith("/auth/me")) {
+      if (isRefreshing) {
+        // אם כבר מתבצע ריענון, מחכים שיסיים וממשיכים עם הטוקן החדש
+        return new Promise((resolve, reject) => {
+          addRefreshSubscriber((token) => {
+            if (!token) {
+              reject(new Error("Failed to refresh token"));
+              return;
+            }
+            config.headers["Authorization"] = `Bearer ${token}`;
+            resolve(API(config));
+          });
+        });
+      }
+
+      isRefreshing = true;
+
       try {
-        // ** כאן לא שולחים את ה-refreshToken ב-body **
         const refreshResponse = await axios.post(`${BASE_URL}/auth/refresh-token`, null, { withCredentials: true });
         if (refreshResponse.data.accessToken) {
           localStorage.setItem("token", refreshResponse.data.accessToken);
           setAuthToken(refreshResponse.data.accessToken);
           config.headers["Authorization"] = `Bearer ${refreshResponse.data.accessToken}`;
+          onRefreshed(refreshResponse.data.accessToken);
           return API(config);
         }
       } catch (err) {
+        onRefreshed(null);
         console.error("Error refreshing token:", err);
         window.location.replace("/login");
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
 
