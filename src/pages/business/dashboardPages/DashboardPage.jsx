@@ -113,9 +113,10 @@ const DashboardPage = () => {
     unreadCountRef.current = unreadCount;
   }, [unreadCount]);
 
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [alert, setAlert] = useState(null);
-  const [recommendations, setRecommendations] = useState([]);
+  const today = new Date().toISOString().split("T")[0];
+const [selectedDate, setSelectedDate] = useState(today);
+const [alert, setAlert] = useState(null);
+const [recommendations, setRecommendations] = useState([]);
 
   const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
