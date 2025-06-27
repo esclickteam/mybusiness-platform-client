@@ -12,7 +12,7 @@ export default function ChatButton({ previewContent, renderTopBar }) {
       <div className="form-column">
         <div className={styles["edit-link-button-container"]}>
           <NavLink
-            to={`/business/${businessId}/chat`}
+            to={`/business/${businessId}/dashboard/messages`}
             className={({ isActive }) =>
               isActive
                 ? `${styles["edit-link-button"]} ${styles.active}`
