@@ -5,12 +5,12 @@ import "./CRMMain.css";
 
 const crmTabs = [
   { path: "work-hours", label: "⏰ שעות פעילות" },
-  { path: "appointments", label: "📆 תיאומים" },
   { path: "services", label: "🛠️ שירותים" },
+  { path: "appointments", label: "📆 תיאומים" },
   { path: "clients", label: "👥 לקוחות" },
 ];
 
-// פונקציות fetch (החלף לפי הקוד שלך)
+// פונקציות fetch לדוגמה (החלף לפי הקוד שלך)
 async function fetchAppointments() {
   const res = await fetch("/api/appointments");
   return res.json();
