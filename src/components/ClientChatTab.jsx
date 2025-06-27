@@ -1,4 +1,6 @@
 
+javascript
+Copy
 import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./ClientChatTab.css";
@@ -83,6 +85,11 @@ const getMessageKey = (m) => {
   if (m.tempId) return `temp_${m.tempId}`;
   return null; // לא ליצור UUID חדש, להימנע מבעיות רינדור
 };
+
+// פונקציה אחידה ליצירת שם חדר
+function getRoomName(isBusinessConversation, conversationId) {
+  return isBusinessConversation ? `businessbusiness-${conversationId}` : `userbusiness-${conversationId}`;
+}
 
 export default function ClientChatTab({
   socket,
@@ -227,8 +234,10 @@ export default function ClientChatTab({
     socket.on("messageApproved", handleMessageApproved);
     socket.on("recommendationUpdated", handleRecommendationUpdated);
 
+    // שימוש בשם החדר המאוחד להצטרפות לחדר השיחות
     socket.emit("joinConversation", conversationId, isBusinessConversation);
-    socket.emit("joinRoom", businessId);
+    // הסרת הקריאה הכפולה ל-joinRoom כי לא רלוונטית או יוצרת בעיה
+    // socket.emit("joinRoom", businessId);
 
     return () => {
       socket.off("newMessage", handleIncomingMessage);
@@ -307,6 +316,7 @@ export default function ClientChatTab({
       }
     );
   };
+
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
