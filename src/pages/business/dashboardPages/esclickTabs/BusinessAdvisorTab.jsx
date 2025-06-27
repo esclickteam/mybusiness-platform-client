@@ -39,7 +39,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId }) => {
   };
 
   try {
-    const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
+      const response = await fetch(`${apiBaseUrl}/chat/business-advisor`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

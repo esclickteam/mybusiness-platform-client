@@ -234,7 +234,7 @@ const AiPartnerTab = ({
     setLoading(true);
     setCommandResponse(null);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/ai-command`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/ai-partner`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -251,14 +251,17 @@ const AiPartnerTab = ({
             goal: businessGoal,
             conversationId,
           },
+          messages: chat,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send command");
+
       setCommandResponse(data.answer);
 
       if (data.actionResult) {
         console.log("Action result:", data.actionResult);
+        // אפשר להוסיף UI או התראות לפי הצורך
       }
     } catch (err) {
       alert("שגיאה בשליחת פקודת AI: " + err.message);

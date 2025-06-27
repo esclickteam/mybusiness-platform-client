@@ -35,7 +35,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
     };
 
     try {
-      const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
+      const response = await fetch(`${apiBaseUrl}/chat/marketing-advisor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
