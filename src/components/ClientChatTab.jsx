@@ -115,25 +115,40 @@ export default function ClientChatTab({
   useEffect(() => {
   if (!socket || !conversationId) return;
 
-  console.log("ClientChatTab: emitting getHistory with conversationId:", conversationId, "conversationType:", conversationType);
-  setLoading(true);
-  setError("");
+  const isBusinessConversation = conversationType === "business-business";
 
-  socket.emit(
-    "getHistory",
-    { conversationId, limit: 50, conversationType },
-    (response) => {
-      console.log("ClientChatTab: getHistory response:", response);
-      if (response.ok) {
-        setMessages(Array.isArray(response.messages) ? response.messages : []);
-        setLoading(false);
-      } else {
-        setError("שגיאה בטעינת ההיסטוריה: " + (response.error || ""));
+  // הצטרפות לשיחה
+  socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
+    if (!ack.ok) {
+      console.error("joinConversation failed:", ack.error);
+      setError("כשל בהצטרפות לשיחה: " + (ack.error || ""));
+      setLoading(false);
+      return;
+    }
+
+    // לאחר הצטרפות, טען היסטוריה
+    socket.emit(
+      "getHistory",
+      { conversationId, limit: 50, conversationType },
+      (response) => {
+        if (response.ok) {
+          setMessages(Array.isArray(response.messages) ? response.messages : []);
+          setError("");
+        } else {
+          setError("שגיאה בטעינת ההיסטוריה: " + (response.error || ""));
+          setMessages([]);
+        }
         setLoading(false);
       }
-    }
-  );
-}, [socket, conversationId, setMessages, conversationType]);
+    );
+  });
+
+  // ניקוי – עזיבת השיחה
+  return () => {
+    socket.emit("leaveConversation", conversationId, isBusinessConversation);
+  };
+}, [socket, conversationId, conversationType]);
+
 
 
   useEffect(() => {
