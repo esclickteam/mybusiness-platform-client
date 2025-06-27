@@ -1,10 +1,10 @@
+// EsclickAdvisor.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { io } from "socket.io-client";
 
 import BusinessAdvisorTab from "./esclickTabs/BusinessAdvisorTab";
 import MarketingAdvisorTab from "./esclickTabs/MarketingAdvisorTab";
-// import BusinessXrayWrapper from "./esclickTabs/BusinessXrayWrapper";  // הוסר
 import AiPartnerTab from "./esclickTabs/AiPartnerTab";
 import AiRecommendations from "./esclickTabs/AiRecommendations"; 
 import "./EsclickAdvisor.css";
@@ -14,12 +14,14 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 const EsclickAdvisor = () => {
   const [activeTab, setActiveTab] = useState("business");
   const [hasBusinessNotification, setHasBusinessNotification] = useState(false);
+  const [businessDetails, setBusinessDetails] = useState(null);
   const { user, loading } = useAuth();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!user?.businessId || !token) return;
 
+    // חיבור לסוקט עם אישור
     const socket = io(SOCKET_URL, {
       auth: { token, businessId: user.businessId },
       transports: ["websocket"],
@@ -35,6 +37,20 @@ const EsclickAdvisor = () => {
   }, [user?.businessId, token]);
 
   useEffect(() => {
+    if (!user?.businessId || !token) return;
+
+    // בקשה לקבלת פרטי העסק מהשרת
+    fetch(`/api/business/${user.businessId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        setBusinessDetails(data);
+      })
+      .catch(console.error);
+  }, [user?.businessId, token]);
+
+  useEffect(() => {
     if (activeTab === "business") {
       setHasBusinessNotification(false);
     }
@@ -47,11 +63,14 @@ const EsclickAdvisor = () => {
   const renderTab = () => {
     switch (activeTab) {
       case "business":
-        return <BusinessAdvisorTab businessId={user?.businessId} />;
+        return (
+          <BusinessAdvisorTab
+            businessId={user?.businessId}
+            businessDetails={businessDetails}
+          />
+        );
       case "marketing":
         return <MarketingAdvisorTab businessId={user?.businessId} />;
-      // case "xray":
-      //   return <BusinessXrayWrapper businessId={user?.businessId} />;  // הוסר
       case "partner":
         return <AiPartnerTab businessId={user?.businessId} token={token} />;
       case "recommendations":
@@ -83,7 +102,6 @@ const EsclickAdvisor = () => {
         >
           יועץ שיווקי
         </button>
-        {/* כפתור הרנטגן הוסר */}
         <button
           className={activeTab === "partner" ? "active" : ""}
           onClick={() => handleTabChange("partner")}
