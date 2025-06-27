@@ -84,14 +84,10 @@ const getMessageKey = (m) => {
   return null; // לא ליצור UUID חדש, להימנע מבעיות רינדור
 };
 
-// פונקציה אחידה ליצירת שם חדר
-function getRoomName(isBusinessConversation, conversationId) {
-  return isBusinessConversation ? `businessbusiness-${conversationId}` : `userbusiness-${conversationId}`;
-}
-
 export default function ClientChatTab({
   socket,
   conversationId,
+  setConversationId,  // חדש - פונקציה לעדכון מזהה שיחה חדש
   businessId,
   userId,
   messages,
@@ -115,11 +111,13 @@ export default function ClientChatTab({
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  const isBusinessConversation = conversationType === "business-business";
-
-  // טען היסטוריית הודעות דרך Socket.IO
+  // טען היסטוריית הודעות דרך Socket.IO רק אם יש conversationId
   useEffect(() => {
-    if (!socket || !conversationId) return;
+    if (!socket || !conversationId) {
+      setLoading(false);
+      setMessages([]);
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -127,7 +125,7 @@ export default function ClientChatTab({
     socket.emit(
       "joinConversation",
       conversationId,
-      isBusinessConversation,
+      conversationType === "business-business",
       (ack) => {
         if (!ack.ok) {
           setError("כשל בהצטרפות לשיחה: " + (ack.error || ""));
@@ -139,7 +137,6 @@ export default function ClientChatTab({
           "getHistory",
           { conversationId, limit: 50, conversationType },
           (response) => {
-            console.log("getHistory response:", response);
             if (response.ok) {
               setMessages(Array.isArray(response.messages) ? response.messages : []);
               setError("");
@@ -154,11 +151,13 @@ export default function ClientChatTab({
     );
 
     return () => {
-      socket.emit("leaveConversation", conversationId, isBusinessConversation);
+      if (conversationId) {
+        socket.emit("leaveConversation", conversationId, conversationType === "business-business");
+      }
     };
   }, [socket, conversationId, conversationType, setMessages]);
 
-  // מאזין להודעות חדשות
+  // מאזין להודעות חדשות (רק כשיש conversationId)
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
 
@@ -217,33 +216,19 @@ export default function ClientChatTab({
       });
     };
 
-    const handleRecommendationUpdated = (updatedRec) => {
-      if (updatedRec.conversationId !== conversationId) return;
-
-      setMessages((prev) =>
-        prev.map((m) =>
-          m._id === updatedRec._id || m.recommendationId === updatedRec._id
-            ? { ...m, ...updatedRec }
-            : m
-        )
-      );
-    };
-
     socket.on("newMessage", handleIncomingMessage);
     socket.on("messageApproved", handleMessageApproved);
-    socket.on("recommendationUpdated", handleRecommendationUpdated);
 
-    // שימוש בשם החדר המאוחד להצטרפות לחדר השיחות
-    socket.emit("joinConversation", conversationId, isBusinessConversation);
+    socket.emit("joinConversation", conversationId, conversationType === "business-business");
 
     return () => {
       socket.off("newMessage", handleIncomingMessage);
       socket.off("messageApproved", handleMessageApproved);
-      socket.off("recommendationUpdated", handleRecommendationUpdated);
-      socket.emit("leaveConversation", conversationId, isBusinessConversation);
+      socket.emit("leaveConversation", conversationId, conversationType === "business-business");
     };
-  }, [socket, conversationId, businessId, setMessages, isBusinessConversation]);
+  }, [socket, conversationId, businessId, setMessages, conversationType]);
 
+  // גלילה לתחתית ברשימת ההודעות
   useEffect(() => {
     if (!messageListRef.current) return;
     const el = messageListRef.current;
@@ -263,6 +248,7 @@ export default function ClientChatTab({
     if (fileInputRef.current) fileInputRef.current.click();
   };
 
+  // פונקציה לשליחת הודעה, מתמודדת גם עם יצירת שיחה ראשונה אם conversationId=null
   const sendMessage = () => {
     if (!input.trim() || sending || !socket) return;
     if (!socket.connected) {
@@ -272,46 +258,72 @@ export default function ClientChatTab({
     setSending(true);
     setError("");
 
+    // יצירת הודעה עם tempId לאופטימיות ברינדור
     const tempId = uuidv4();
 
-    const optimisticMsg = {
-      _id: tempId,
-      tempId,
-      conversationId,
-      from: userId,
-      to: businessId,
-      role: "client",
-      text: input.trim(),
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-
-    setInput("");
-
-    socket.emit(
-      "sendMessage",
-      {
+    if (!conversationId) {
+      // אין שיחה קיימת - יוצרים שיחה חדשה ושולחים הודעה ראשונה
+      socket.emit(
+        "createConversationAndSendMessage",
+        {
+          from: userId,
+          to: businessId,
+          text: input.trim(),
+          conversationType,
+          tempId,
+        },
+        (ack) => {
+          setSending(false);
+          if (ack?.ok && ack.conversationId && ack.message) {
+            setConversationId(ack.conversationId);
+            setMessages([ack.message]);
+            setInput("");
+            setError("");
+          } else {
+            setError("שגיאה ביצירת השיחה");
+          }
+        }
+      );
+    } else {
+      // שיחה קיימת - שליחה רגילה
+      const optimisticMsg = {
+        _id: tempId,
+        tempId,
         conversationId,
         from: userId,
         to: businessId,
         role: "client",
-        text: optimisticMsg.text,
-        tempId,
-        conversationType,
-      },
-      (ack) => {
-        setSending(false);
-        if (ack?.ok) {
-          setMessages((prev) =>
-            prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
-          );
-        } else {
-          setError("שגיאה בשליחת ההודעה");
-          setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+        text: input.trim(),
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, optimisticMsg]);
+      setInput("");
+
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          text: optimisticMsg.text,
+          tempId,
+          conversationType,
+        },
+        (ack) => {
+          setSending(false);
+          if (ack?.ok) {
+            setMessages((prev) =>
+              prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
+            );
+          } else {
+            setError("שגיאה בשליחת ההודעה");
+            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+          }
         }
-      }
-    );
+      );
+    }
   };
 
 

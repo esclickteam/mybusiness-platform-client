@@ -63,8 +63,7 @@ export default function ClientChatSection() {
     setLoading(true);
     setError("");
 
-    // הסרת /api בסוף כתובת ה-URL אם קיים
-    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '');
+    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
 
     fetch(`${baseUrl}/api/messages/user-conversations`, {
       headers: {
@@ -74,7 +73,6 @@ export default function ClientChatSection() {
       .then((res) => res.json())
       .then((data) => {
         if (data.conversations && data.conversations.length > 0) {
-          // בוחרים שיחה לפי businessId מהפרמטרים אם קיים, אחרת הראשונה
           let conv = null;
           if (businessIdFromParams) {
             conv = data.conversations.find(
@@ -88,10 +86,11 @@ export default function ClientChatSection() {
           setBusinessId(conv.businessId);
           setError("");
         } else {
+          // אין שיחות קיימות — נשאיר conversationId null
           setConversationId(null);
           setBusinessName("");
-          setBusinessId(null);
-          setError("אין שיחות זמינות");
+          setBusinessId(businessIdFromParams || null);
+          setError(""); // לא להציג שגיאה
         }
         setLoading(false);
       })
@@ -102,7 +101,7 @@ export default function ClientChatSection() {
       });
   }, [userId, businessIdFromParams]);
 
-  // טעינת היסטוריית הודעות והאזנות לאירועים בזמן אמת
+  // טעינת היסטוריית הודעות והאזנות בזמן אמת
   useEffect(() => {
     if (!socketRef.current || !socketRef.current.connected || !conversationId) {
       setMessages([]);
@@ -111,7 +110,6 @@ export default function ClientChatSection() {
 
     setLoading(true);
 
-    // טעינת ההיסטוריה הראשונית
     socketRef.current.emit("getHistory", { conversationId }, (res) => {
       if (res.ok) {
         setMessages(Array.isArray(res.messages) ? res.messages : []);
@@ -123,7 +121,6 @@ export default function ClientChatSection() {
       setLoading(false);
     });
 
-    // מטפל בהודעות חדשות
     const handleNewMessage = (msg) => {
       setMessages((prev) => {
         const existsIdx = prev.findIndex((m) => {
@@ -144,7 +141,6 @@ export default function ClientChatSection() {
       });
     };
 
-    // מטפל באישור המלצות
     const handleMessageApproved = (msg) => {
       setMessages((prev) => {
         const idx = prev.findIndex(
@@ -169,7 +165,6 @@ export default function ClientChatSection() {
     });
     socketRef.current.on("messageApproved", handleMessageApproved);
 
-    // הצטרפות לחדר השיחה ולחדר העסק
     socketRef.current.emit("joinConversation", conversationId);
     if (businessId) {
       socketRef.current.emit("joinRoom", businessId);
@@ -186,7 +181,6 @@ export default function ClientChatSection() {
   }, [conversationId, businessId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.whatsappBg}>
@@ -196,18 +190,16 @@ export default function ClientChatSection() {
           <div className={styles.convItemActive}>{businessName || businessId || "עסק לא ידוע"}</div>
         </aside>
         <section className={styles.chatArea}>
-          {conversationId ? (
-            <ClientChatTab
-              socket={socketRef.current}
-              conversationId={conversationId}
-              businessId={businessId}
-              userId={userId}
-              messages={messages}
-              setMessages={setMessages}
-            />
-          ) : (
-            <div className={styles.emptyMessage}>לא הצלחנו לפתוח שיחה…</div>
-          )}
+          {/* תמיד מציגים ClientChatTab גם כשאין conversationId */}
+          <ClientChatTab
+            socket={socketRef.current}
+            conversationId={conversationId} // יכול להיות null
+            businessId={businessId}
+            userId={userId}
+            messages={messages}
+            setMessages={setMessages}
+            setConversationId={setConversationId} // מוסיפים כדי לעדכן conversationId ביצירת שיחה חדשה
+          />
         </section>
       </div>
     </div>
