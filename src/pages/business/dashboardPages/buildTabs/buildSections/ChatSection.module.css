@@ -126,3 +126,19 @@
   background: #a16def;
   box-shadow: 0 6px 12px rgba(161, 109, 239, 0.7);
 }
+
+/* תוספות למרכז הכפתור */
+.form-column {
+  height: 100vh; /* או גובה רלוונטי אחר */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.edit-link-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
