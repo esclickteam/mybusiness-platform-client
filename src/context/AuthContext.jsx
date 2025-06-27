@@ -36,35 +36,58 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const ws = useRef(null);
 
-  // logout מרכזי
+  // axios interceptor לרענון אוטומטי
+  useEffect(() => {
+    const interceptor = API.interceptors.response.use(
+      res => res,
+      async err => {
+        const status = err.response?.status;
+        const original = err.config;
+        if ((status === 401 || status === 403) && !original._retry) {
+          original._retry = true;
+          try {
+            const newToken = await singleFlightRefresh();
+            API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
+            original.headers['Authorization'] = `Bearer ${newToken}`;
+            return API(original);
+          } catch {
+            await logout();
+            return Promise.reject(err);
+          }
+        }
+        return Promise.reject(err);
+      }
+    );
+    return () => API.interceptors.response.eject(interceptor);
+  }, []);
+
+  // logout מרכזי (קודם קריאה ל-logout, ואז ניקוי)
   const logout = async () => {
-    // איפוס promise של רענון
-    ongoingRefresh = null;
-
-    // ניקוי Authorization header
-    delete API.defaults.headers['Authorization'];
-
-    // ניתוק והסרת listeners של הסוקט
-    if (ws.current) {
-      ws.current.removeAllListeners();
-      ws.current.disconnect();
-      ws.current = null;
-    }
-
-    // ניקוי localStorage
-    localStorage.removeItem("token");
-    localStorage.removeItem("businessDetails");
-
     setLoading(true);
     try {
       await API.post("/auth/logout", {}, { withCredentials: true });
       console.log("✅ Logout request succeeded");
     } catch (e) {
       console.warn("⚠️ Logout request failed:", e.response?.data || e.message);
+    } finally {
+      // איפוס promise של רענון
+      ongoingRefresh = null;
+      // ניקוי Authorization header
+      delete API.defaults.headers['Authorization'];
+      // ניתוק והסרת listeners של הסוקט
+      if (ws.current) {
+        ws.current.removeAllListeners();
+        ws.current.disconnect();
+        ws.current = null;
+      }
+      // ניקוי localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("businessDetails");
+
+      setUser(null);
+      setLoading(false);
+      navigate("/login", { replace: true });
     }
-    setUser(null);
-    setLoading(false);
-    navigate("/login", { replace: true });
   };
 
   // login
@@ -117,31 +140,6 @@ export function AuthProvider({ children }) {
       throw e;
     }
   };
-
-  // axios interceptor לרענון אוטומטי
-  useEffect(() => {
-    const interceptor = API.interceptors.response.use(
-      res => res,
-      async err => {
-        const status = err.response?.status;
-        const original = err.config;
-        if ((status === 401 || status === 403) && !original._retry) {
-          original._retry = true;
-          try {
-            const newToken = await singleFlightRefresh();
-            API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
-            original.headers['Authorization'] = `Bearer ${newToken}`;
-            return API(original);
-          } catch {
-            await logout();
-            return Promise.reject(err);
-          }
-        }
-        return Promise.reject(err);
-      }
-    );
-    return () => API.interceptors.response.eject(interceptor);
-  }, []);
 
   // עטיפה לבקשות עם אימות ורענון אוטומטי (אופציונלי)
   const fetchWithAuth = async (requestFunc) => {
