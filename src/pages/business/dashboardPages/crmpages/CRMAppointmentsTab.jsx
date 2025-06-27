@@ -426,6 +426,7 @@ const CRMAppointmentsTab = () => {
             onChange={(time) => handleInputChange("time", time)}
             businessId={businessId}
             serviceId={newAppointment.serviceId}
+            schedule={businessSchedule}
           />
           <button onClick={handleConfirmAppointment} disabled={isSaving}>
             📅 קבע פגישה
