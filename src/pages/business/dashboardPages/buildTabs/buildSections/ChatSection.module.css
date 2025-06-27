@@ -23,6 +23,11 @@
   padding: 1rem;
   border-left: 1px solid #ddd;
   overflow-y: auto;
+
+  /* מרכזים את הכפתור */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* עמודת השיחות מימין */
@@ -97,4 +102,27 @@
 .chatPlaceholder {
   margin: auto;
   color: #777;
+}
+
+/* עיצוב הכפתור המדויק */
+.edit-link-button {
+  background: #bb89f9;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 12px 28px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.3s ease;
+  text-align: center;
+  user-select: none;
+  box-shadow: 0 4px 8px rgba(187, 137, 249, 0.5);
+}
+
+.edit-link-button:hover {
+  background: #a16def;
+  box-shadow: 0 6px 12px rgba(161, 109, 239, 0.7);
 }

@@ -9,12 +9,14 @@ export default function ChatButton({ previewContent, renderTopBar }) {
   return (
     <>
       <div className="form-column">
-        <NavLink
-          to={`/business/${businessId}/dashboard/chat`}
-          className="edit-link-button"
-        >
-          צ'אט עם לקוחות
-        </NavLink>
+        <div className="edit-link-button-container">
+          <NavLink
+            to={`/business/${businessId}/dashboard/chat`}
+            className="edit-link-button"
+          >
+            צ'אט עם לקוחות
+          </NavLink>
+        </div>
       </div>
 
       <div className="preview-column">
