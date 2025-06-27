@@ -250,81 +250,89 @@ export default function ClientChatTab({
 
   // פונקציה לשליחת הודעה, מתמודדת גם עם יצירת שיחה ראשונה אם conversationId=null
   const sendMessage = () => {
-    if (!input.trim() || sending || !socket) return;
-    if (!socket.connected) {
-      setError("Socket אינו מחובר, נסה להתחבר מחדש");
-      return;
-    }
-    setSending(true);
-    setError("");
+  console.log("sendMessage called with input:", input);
+  if (!input.trim() || sending || !socket) {
+    console.log("sendMessage aborted: invalid input or no socket or sending in progress");
+    return;
+  }
+  if (!socket.connected) {
+    setError("Socket אינו מחובר, נסה להתחבר מחדש");
+    console.log("sendMessage aborted: socket not connected");
+    return;
+  }
+  setSending(true);
+  setError("");
 
-    // יצירת הודעה עם tempId לאופטימיות ברינדור
-    const tempId = uuidv4();
+  const tempId = uuidv4();
+  console.log("Generated tempId:", tempId);
 
-    if (!conversationId) {
-      // אין שיחה קיימת - יוצרים שיחה חדשה ושולחים הודעה ראשונה
-      socket.emit(
-        "createConversationAndSendMessage",
-        {
-          from: userId,
-          to: businessId,
-          text: input.trim(),
-          conversationType,
-          tempId,
-        },
-        (ack) => {
-          setSending(false);
-          if (ack?.ok && ack.conversationId && ack.message) {
-            setConversationId(ack.conversationId);
-            setMessages([ack.message]);
-            setInput("");
-            setError("");
-          } else {
-            setError("שגיאה ביצירת השיחה");
-          }
-        }
-      );
-    } else {
-      // שיחה קיימת - שליחה רגילה
-      const optimisticMsg = {
-        _id: tempId,
+  if (!conversationId) {
+    console.log("No conversationId, creating conversation and sending first message");
+    socket.emit(
+      "createConversationAndSendMessage",
+      {
+        from: userId,
+        to: businessId,
+        text: input.trim(),
+        conversationType,
         tempId,
+      },
+      (ack) => {
+        console.log("createConversationAndSendMessage ack:", ack);
+        setSending(false);
+        if (ack?.ok && ack.conversationId && ack.message) {
+          setConversationId(ack.conversationId);
+          setMessages([ack.message]);
+          setInput("");
+          setError("");
+        } else {
+          setError("שגיאה ביצירת השיחה");
+        }
+      }
+    );
+  } else {
+    console.log("Sending message in existing conversation:", conversationId);
+    const optimisticMsg = {
+      _id: tempId,
+      tempId,
+      conversationId,
+      from: userId,
+      to: businessId,
+      role: "client",
+      text: input.trim(),
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setInput("");
+
+    socket.emit(
+      "sendMessage",
+      {
         conversationId,
         from: userId,
         to: businessId,
         role: "client",
-        text: input.trim(),
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, optimisticMsg]);
-      setInput("");
-
-      socket.emit(
-        "sendMessage",
-        {
-          conversationId,
-          from: userId,
-          to: businessId,
-          role: "client",
-          text: optimisticMsg.text,
-          tempId,
-          conversationType,
-        },
-        (ack) => {
-          setSending(false);
-          if (ack?.ok) {
-            setMessages((prev) =>
-              prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
-            );
-          } else {
-            setError("שגיאה בשליחת ההודעה");
-            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-          }
+        text: optimisticMsg.text,
+        tempId,
+        conversationType,
+      },
+      (ack) => {
+        console.log("sendMessage ack:", ack);
+        setSending(false);
+        if (ack?.ok) {
+          setMessages((prev) =>
+            prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
+          );
+        } else {
+          setError("שגיאה בשליחת ההודעה");
+          setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
         }
-      );
-    }
-  };
+      }
+    );
+  }
+};
+
 
 
   const getSupportedMimeType = () =>
