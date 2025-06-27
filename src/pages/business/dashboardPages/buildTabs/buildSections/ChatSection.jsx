@@ -1,5 +1,7 @@
 import React from "react";
 import { NavLink, useParams } from "react-router-dom";
+import styles from "./ChatSection.module.css";
+
 
 export default function ChatButton({ previewContent, renderTopBar }) {
   const { businessId } = useParams();
