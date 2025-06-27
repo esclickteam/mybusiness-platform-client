@@ -3,11 +3,12 @@ import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
 import { io } from "socket.io-client";
-import API from "../api"; // הנחה: מודול API מוגדר מראש, למשל axios
+import API from "../api";
 
 export default function ClientChatSection() {
   const { user, initialized } = useAuth();
   const userId = user?.userId || null;
+  const businessId = user?.businessId || null;
 
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -19,26 +20,49 @@ export default function ClientChatSection() {
 
   const conversationType = "user-business";
 
-  // מצב לפתיחת שיחה חדשה
-  const [creatingNewChat, setCreatingNewChat] = useState(false);
-  const [newChatTarget, setNewChatTarget] = useState("");
-  const [creatingLoading, setCreatingLoading] = useState(false);
-
-  // 1. טעינת שיחות קיימות
+  // טעינת שיחות קיימות + יצירת שיחה ראשונית אוטומטית אם אין שיחות
   useEffect(() => {
     if (!initialized || !userId) return;
+    if (!businessId) {
+      setError("לא נמצא מזהה עסק למשתמש");
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     setError("");
 
     API.get("/messages/user-conversations")
-      .then(({ data }) => {
+      .then(async ({ data }) => {
         if (data.conversations && Array.isArray(data.conversations) && data.conversations.length > 0) {
           setConversations(data.conversations);
           setSelectedConversation(data.conversations[0]);
         } else {
-          setConversations([]);
-          setSelectedConversation(null);
+          try {
+            const response = await API.post("/messages/send", {
+              to: businessId,
+              content: "שלום, מתחילים שיחה חדשה",
+            });
+
+            const newMessage = response.data.message;
+            const newConversationId = newMessage.conversationId;
+
+            const newConv = {
+              conversationId: newConversationId,
+              businessId: newMessage.toId,
+              clientName: user.name || "לקוח",
+              businessName: "העסק שלי",
+              lastMessage: newMessage,
+              unreadCount: 0,
+            };
+
+            setConversations([newConv]);
+            setSelectedConversation(newConv);
+          } catch (err) {
+            setError("שגיאה ביצירת שיחה ראשונית: " + (err.message || "לא ידוע"));
+            setConversations([]);
+            setSelectedConversation(null);
+          }
         }
         setLoading(false);
       })
@@ -46,9 +70,9 @@ export default function ClientChatSection() {
         setError("שגיאה בטעינת השיחות: " + (err.message || "לא ידוע"));
         setLoading(false);
       });
-  }, [initialized, userId]);
+  }, [initialized, userId, businessId, user]);
 
-  // 2. חיבור וטיול Socket כשנבחרת שיחה
+  // חיבור וטיול Socket כשנבחרת שיחה
   useEffect(() => {
     if (!selectedConversation || !userId) return;
 
@@ -97,7 +121,7 @@ export default function ClientChatSection() {
     };
   }, [selectedConversation, userId]);
 
-  // 3. טעינת היסטוריית הודעות והאזנה בזמן אמת
+  // טעינת היסטוריית הודעות והאזנה בזמן אמת
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !selectedConversation) return;
@@ -159,45 +183,6 @@ export default function ClientChatSection() {
     };
   }, [selectedConversation, conversationType]);
 
-  // 4. יצירת שיחה חדשה ושליחת הודעה ראשונית
-  const handleCreateNewChat = async () => {
-    if (!newChatTarget.trim()) {
-      alert("אנא הזן מזהה לקוח או עסק לפתיחת שיחה חדשה");
-      return;
-    }
-
-    try {
-      setCreatingLoading(true);
-
-      // קריאה ל-API ללא conversationId
-      const response = await API.post("/messages/send", {
-        to: newChatTarget.trim(),
-        content: "הודעה ראשונית",
-      });
-
-      const newMessage = response.data.message;
-      const newConversationId = newMessage.conversationId;
-
-      const newConv = {
-        conversationId: newConversationId,
-        businessId: newMessage.toId,
-        clientName: "לקוח חדש", // מומלץ לקבל מהשרת או לממש UI לבחירת שם
-        businessName: "עסק חדש", // גם כאן
-        lastMessage: newMessage,
-        unreadCount: 0,
-      };
-
-      setConversations((prev) => [newConv, ...prev]);
-      setSelectedConversation(newConv);
-      setCreatingNewChat(false);
-      setNewChatTarget("");
-    } catch (e) {
-      alert("שגיאה ביצירת שיחה חדשה: " + (e.response?.data?.error || e.message || "לא ידוע"));
-    } finally {
-      setCreatingLoading(false);
-    }
-  };
-
   if (loading) {
     return <div className={styles.loading}>טוען שיחות והודעות...</div>;
   }
@@ -211,25 +196,6 @@ export default function ClientChatSection() {
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>השיחות שלי</h3>
-          <button onClick={() => setCreatingNewChat(true)}>+ שיחה חדשה</button>
-
-          {creatingNewChat && (
-            <div className={styles.newChatForm}>
-              <input
-                type="text"
-                placeholder="הכנס מזהה לקוח או עסק"
-                value={newChatTarget}
-                onChange={(e) => setNewChatTarget(e.target.value)}
-                disabled={creatingLoading}
-              />
-              <button onClick={handleCreateNewChat} disabled={creatingLoading}>
-                {creatingLoading ? "יוצר..." : "פתח שיחה"}
-              </button>
-              <button onClick={() => setCreatingNewChat(false)} disabled={creatingLoading}>
-                ביטול
-              </button>
-            </div>
-          )}
 
           <div className={styles.conversationList}>
             {conversations.length === 0 && <div>אין שיחות זמינות</div>}
