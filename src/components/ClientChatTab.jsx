@@ -113,25 +113,28 @@ export default function ClientChatTab({
 
   // טען היסטוריית הודעות דרך Socket.IO במקום fetch
   useEffect(() => {
-    if (!socket || !conversationId) return;
+  if (!socket || !conversationId) return;
 
-    setLoading(true);
-    setError("");
+  console.log("ClientChatTab: emitting getHistory with conversationId:", conversationId, "conversationType:", conversationType);
+  setLoading(true);
+  setError("");
 
-    socket.emit(
-      "getHistory",
-      { conversationId, limit: 50, conversationType },
-      (response) => {
-        if (response.ok) {
-          setMessages(Array.isArray(response.messages) ? response.messages : []);
-          setLoading(false);
-        } else {
-          setError("שגיאה בטעינת ההיסטוריה: " + (response.error || ""));
-          setLoading(false);
-        }
+  socket.emit(
+    "getHistory",
+    { conversationId, limit: 50, conversationType },
+    (response) => {
+      console.log("ClientChatTab: getHistory response:", response);
+      if (response.ok) {
+        setMessages(Array.isArray(response.messages) ? response.messages : []);
+        setLoading(false);
+      } else {
+        setError("שגיאה בטעינת ההיסטוריה: " + (response.error || ""));
+        setLoading(false);
       }
-    );
-  }, [socket, conversationId, setMessages]);
+    }
+  );
+}, [socket, conversationId, setMessages, conversationType]);
+
 
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
