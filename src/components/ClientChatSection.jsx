@@ -17,9 +17,9 @@ export default function ClientChatSection() {
   const [messages, setMessages] = useState([]);
   const socketRef = useRef(null);
 
-  const conversationType = "user-business";
+  const conversationType = "user-business"; // או "business-business" לפי הצורך
 
-  // 1. אתחול הסוקט בלבד
+  // אתחול הסוקט
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
     if (socketRef.current) return;
@@ -56,7 +56,7 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId, businessId]);
 
-  // 2. קבלת השיחה הקיימת או יצירת חדשה
+  // קבלת שיחה קיימת או יצירת חדשה
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !userId) return;
@@ -94,7 +94,7 @@ export default function ClientChatSection() {
     });
   }, [userId, businessId]);
 
-  // 3. ברגע שיש conversationId – משיכת היסטוריה והצטרפות לחדר
+  // משיכת היסטוריה והצטרפות לחדר השיחה
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !conversationId) return;
@@ -102,12 +102,12 @@ export default function ClientChatSection() {
     setMessages([]);
     setLoading(true);
 
-    // הפסקת מאזינים קיימים (למניעת כפילויות)
+    // ניקוי מאזינים קיימים
     socket.off("newMessage");
     socket.off("newAiSuggestion");
     socket.off("messageApproved");
 
-    // משיכת היסטוריה
+    // משיכת ההיסטוריה
     socket.emit(
       "getHistory",
       { conversationId, conversationType, limit: 50 },
@@ -123,8 +123,17 @@ export default function ClientChatSection() {
       }
     );
 
-    // הצטרפות לחדר השיחה
-    socket.emit("joinConversation", conversationId);
+    // הצטרפות לחדר השיחה עם הפרמטר המתאים
+    socket.emit(
+      "joinConversation",
+      conversationId,
+      conversationType === "business-business",
+      (ack) => {
+        if (!ack.ok) {
+          setError("כשל בהצטרפות לחדר השיחה: " + (ack.error || ""));
+        }
+      }
+    );
 
     // מאזינים להודעות בזמן אמת
     socket.on("newMessage", (msg) => {
@@ -140,11 +149,13 @@ export default function ClientChatSection() {
         return [...prev, msg];
       });
     });
+
     socket.on("newAiSuggestion", (msg) => {
       if (msg.status !== "pending") {
         socket.emit("newMessage", msg);
       }
     });
+
     socket.on("messageApproved", (msg) => {
       setMessages((prev) =>
         prev.map((m) =>
@@ -160,9 +171,9 @@ export default function ClientChatSection() {
       socket.off("newMessage");
       socket.off("newAiSuggestion");
       socket.off("messageApproved");
-      socket.emit("leaveConversation", conversationId);
+      socket.emit("leaveConversation", conversationId, conversationType === "business-business");
     };
-  }, [conversationId]);
+  }, [conversationId, conversationType]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;

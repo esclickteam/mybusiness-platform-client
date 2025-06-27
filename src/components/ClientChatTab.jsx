@@ -234,8 +234,6 @@ export default function ClientChatTab({
 
     // שימוש בשם החדר המאוחד להצטרפות לחדר השיחות
     socket.emit("joinConversation", conversationId, isBusinessConversation);
-    // הסרת הקריאה הכפולה ל-joinRoom כי לא רלוונטית או יוצרת בעיה
-    // socket.emit("joinRoom", businessId);
 
     return () => {
       socket.off("newMessage", handleIncomingMessage);
