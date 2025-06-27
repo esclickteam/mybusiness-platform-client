@@ -63,7 +63,10 @@ export default function ClientChatSection() {
     setLoading(true);
     setError("");
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/chat/user-conversations`, {
+    // הסרת /api בסוף כתובת ה-URL אם קיים
+    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '');
+
+    fetch(`${baseUrl}/api/chat/user-conversations`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
