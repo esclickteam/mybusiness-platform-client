@@ -6,12 +6,13 @@ import { useAuth } from "../context/AuthContext";
 import { io } from "socket.io-client";
 
 export default function ClientChatSection() {
-  const { businessId } = useParams();
+  const { businessId: businessIdFromParams } = useParams();
   const { user, initialized } = useAuth();
   const userId = user?.userId || null;
 
   const [conversationId, setConversationId] = useState(null);
   const [businessName, setBusinessName] = useState("");
+  const [businessId, setBusinessId] = useState(businessIdFromParams || null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
@@ -19,7 +20,7 @@ export default function ClientChatSection() {
 
   // יצירת socket פעם אחת בלבד
   useEffect(() => {
-    if (!initialized || !userId || !businessId) return;
+    if (!initialized || !userId) return;
     if (socketRef.current) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
@@ -28,7 +29,7 @@ export default function ClientChatSection() {
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       transports: ["websocket"],
-      auth: { token, role: "chat", businessId },
+      auth: { token, role: "chat" },
       withCredentials: true,
       autoConnect: true,
     });
@@ -53,52 +54,50 @@ export default function ClientChatSection() {
         socketRef.current = null;
       }
     };
-  }, [initialized, userId, businessId]);
+  }, [initialized, userId]);
 
-  // פתיחת שיחה חדשה עם העסק
+  // טעינת שיחות המשתמש (user-conversations) ולקיחת שיחה ראשונה
   useEffect(() => {
-    if (!socketRef.current || !businessId) return;
+    if (!userId) return;
 
     setLoading(true);
-    socketRef.current.emit(
-      "startConversation",
-      { otherUserId: businessId },
-      (res) => {
-        if (res.ok) {
-          setConversationId(res.conversationId);
+    setError("");
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/chat/user-conversations`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.conversations && data.conversations.length > 0) {
+          // בוחרים שיחה לפי businessId מהפרמטרים אם קיים, אחרת הראשונה
+          let conv = null;
+          if (businessIdFromParams) {
+            conv = data.conversations.find(
+              (c) => String(c.businessId) === String(businessIdFromParams)
+            );
+          }
+          if (!conv) conv = data.conversations[0];
+
+          setConversationId(conv.conversationId);
+          setBusinessName(conv.businessName);
+          setBusinessId(conv.businessId);
           setError("");
         } else {
-          setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
+          setConversationId(null);
+          setBusinessName("");
+          setBusinessId(null);
+          setError("אין שיחות זמינות");
         }
         setLoading(false);
-      }
-    );
-  }, [businessId]);
-
-  // טעינת שם העסק אחרי שיש conversationId
-  useEffect(() => {
-    if (!socketRef.current || !conversationId || !userId) return;
-
-    socketRef.current.emit(
-      "getConversations",
-      { userId },
-      (res) => {
-        if (res.ok) {
-          const conv = res.conversations.find((c) =>
-            [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
-          );
-          if (conv) {
-            setBusinessName(conv.businessName || "");
-            setError("");
-          } else {
-            setBusinessName("");
-          }
-        } else {
-          setError("שגיאה בטעינת שם העסק");
-        }
-      }
-    );
-  }, [conversationId, userId]);
+      })
+      .catch((err) => {
+        console.error("Error fetching user conversations:", err);
+        setError("שגיאה בטעינת שיחות המשתמש");
+        setLoading(false);
+      });
+  }, [userId, businessIdFromParams]);
 
   // טעינת היסטוריית הודעות והאזנות לאירועים בזמן אמת
   useEffect(() => {
@@ -107,17 +106,19 @@ export default function ClientChatSection() {
       return;
     }
 
+    setLoading(true);
+
     // טעינת ההיסטוריה הראשונית
     socketRef.current.emit("getHistory", { conversationId }, (res) => {
-  if (res.ok) {
-    // תיקון: לוודא שההודעות הן מערך
-    setMessages(Array.isArray(res.messages) ? res.messages : []);
-    setError("");
-  } else {
-    setMessages([]);
-    setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
-  }
-});
+      if (res.ok) {
+        setMessages(Array.isArray(res.messages) ? res.messages : []);
+        setError("");
+      } else {
+        setMessages([]);
+        setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
+      }
+      setLoading(false);
+    });
 
     // מטפל בהודעות חדשות
     const handleNewMessage = (msg) => {
@@ -165,9 +166,11 @@ export default function ClientChatSection() {
     });
     socketRef.current.on("messageApproved", handleMessageApproved);
 
-    // הצטרפות לחדר השיחה
+    // הצטרפות לחדר השיחה ולחדר העסק
     socketRef.current.emit("joinConversation", conversationId);
-    socketRef.current.emit("joinRoom", businessId);
+    if (businessId) {
+      socketRef.current.emit("joinRoom", businessId);
+    }
 
     return () => {
       if (socketRef.current) {
@@ -187,7 +190,7 @@ export default function ClientChatSection() {
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
-          <div className={styles.convItemActive}>{businessName || businessId}</div>
+          <div className={styles.convItemActive}>{businessName || businessId || "עסק לא ידוע"}</div>
         </aside>
         <section className={styles.chatArea}>
           {conversationId ? (
