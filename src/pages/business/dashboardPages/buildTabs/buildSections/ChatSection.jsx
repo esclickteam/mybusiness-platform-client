@@ -2,7 +2,6 @@ import React from "react";
 import { NavLink, useParams } from "react-router-dom";
 import styles from "./ChatSection.module.css";
 
-
 export default function ChatButton({ previewContent, renderTopBar }) {
   const { businessId } = useParams();
 
@@ -11,10 +10,14 @@ export default function ChatButton({ previewContent, renderTopBar }) {
   return (
     <>
       <div className="form-column">
-        <div className="edit-link-button-container">
+        <div className={styles["edit-link-button-container"]}>
           <NavLink
             to={`/business/${businessId}/dashboard/chat`}
-            className="edit-link-button"
+            className={({ isActive }) =>
+              isActive
+                ? `${styles["edit-link-button"]} ${styles.active}`
+                : styles["edit-link-button"]
+            }
           >
             צ'אט עם לקוחות
           </NavLink>
