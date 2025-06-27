@@ -129,10 +129,11 @@
 
 /* תוספות למרכז הכפתור */
 .form-column {
-  height: 100vh; /* או גובה רלוונטי אחר */
+  height: 100vh; /* מלא גובה המסך */
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* מרכז אופקי */
+  align-items: flex-start; /* יישור למעלה אנכית */
+  padding-top: 2rem; /* רווח מלמעלה */
 }
 
 .edit-link-button-container {
@@ -140,5 +141,4 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
 }
