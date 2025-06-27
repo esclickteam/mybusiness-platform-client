@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
-import "../../buildTabs/shopAndCalendar/Appointments/CalendarSetup.css";
+import '../buildTabs/shopAndCalendar/Appointments/CalendarSetup.css';
 
 const weekdays = [
   "ראשון",
