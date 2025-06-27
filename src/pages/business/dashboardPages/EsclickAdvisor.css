@@ -62,6 +62,26 @@
   max-width: 900px;
   margin: 0 auto;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+
+  /* תיקון חיתוך תוכן - הגדרת גובה וגלילה */
+  max-height: 600px; /* התאמה לפי הצורך */
+  overflow-y: auto;
+  direction: rtl; /* עברית - ימין לשמאל */
+}
+
+/* סגנון הצ'אט - מיכל ההודעות */
+.chat-box {
+  padding: 10px;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto; /* גלילה אנכית */
+  direction: rtl; /* עברית - ימין לשמאל */
+}
+
+/* הוספת סגנונות לחסימת גלילה חיצונית מיותרת */
+.chat-box-wrapper {
+  height: 600px; /* חייב להיות לפי max-height של .tab-content או פחות */
+  overflow: hidden;
 }
 
 /* הוספתי סגנון בסיסי לרשימת שיחות לבחירת שיחה (אם תשלב עם הקוד) */
@@ -96,4 +116,29 @@
 .conversation-selector li:hover {
   background-color: #7e57c2;
   color: white;
+}
+
+/* סגנון עבור הבועות בצ'אט */
+.bubble {
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  max-width: 80%;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  direction: rtl; /* עברית */
+  box-sizing: border-box;
+}
+
+.bubble.user {
+  background-color: #e0d9ff;
+  align-self: flex-end;
+  text-align: right;
+}
+
+.bubble.assistant {
+  background-color: #f0f0f0;
+  align-self: flex-start;
+  text-align: right;
 }
