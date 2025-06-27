@@ -11,171 +11,154 @@ export default function ClientChatSection() {
   const userId = user?.userId || null;
 
   const [conversationId, setConversationId] = useState(null);
-  const [otherPartyName, setOtherPartyName] = useState(""); // שמור כאן את שם הצד השני
+  const [otherPartyName, setOtherPartyName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
   const socketRef = useRef(null);
 
-  // יצירת socket פעם אחת בלבד
+  // 1. אתחול הסוקט וחיבור לאירועים כלליים
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
-    if (socketRef.current) return;
+    if (socketRef.current) return; // כבר אתחלנו
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
 
-    socketRef.current = io(socketUrl, {
+    const socket = io(socketUrl, {
       path: "/socket.io",
       transports: ["websocket"],
       auth: { token, role: "chat", businessId },
       withCredentials: true,
       autoConnect: true,
     });
+    socketRef.current = socket;
 
-    socketRef.current.on("connect", () => {
+    socket.on("connect", () => {
       setError("");
+      // כשמתחברים, אם כבר יש שיחה פעילה – טענו היסטוריה
+      if (conversationId) {
+        socket.emit("getHistory", { conversationId }, handleHistory);
+        socket.emit("joinConversation", conversationId);
+        socket.emit("joinRoom", businessId);
+      }
     });
 
-    socketRef.current.on("disconnect", (reason) => {
+    socket.on("disconnect", (reason) => {
       if (reason !== "io client disconnect") {
         setError("Socket disconnected unexpectedly: " + reason);
       }
     });
 
-    socketRef.current.on("connect_error", (err) => {
+    socket.on("connect_error", (err) => {
       setError("שגיאה בחיבור לסוקט: " + err.message);
     });
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+      socket.off();
+      socket.disconnect();
+      socketRef.current = null;
     };
-  }, [initialized, userId, businessId]);
+  }, [initialized, userId, businessId, conversationId]);
 
-  // פתיחת שיחה חדשה עם העסק
+  // 2. מציאת שיחה קיימת או פתיחת שיחה חדשה
   useEffect(() => {
-    if (!socketRef.current || !businessId) return;
+    if (!socketRef.current || !userId) return;
 
     setLoading(true);
-    socketRef.current.emit(
-      "startConversation",
-      { otherUserId: businessId },
-      (res) => {
-        if (res.ok) {
-          setConversationId(res.conversationId);
-          setError("");
-        } else {
-          setError("שגיאה ביצירת השיחה: " + (res.error || "לא ידוע"));
-        }
-        setLoading(false);
-      }
-    );
-  }, [businessId]);
-
-  // טעינת שם הצד השני אחרי שיש conversationId
-  useEffect(() => {
-    if (!socketRef.current || !conversationId || !userId) return;
-
     socketRef.current.emit(
       "getConversations",
       { userId },
       (res) => {
         if (res.ok) {
-          const conv = res.conversations.find((c) =>
-            [c.conversationId, c._id, c.id].map(String).includes(String(conversationId))
+          const existing = res.conversations.find((c) =>
+            c.otherParty?.id === businessId || String(c.otherParty?.id) === String(businessId)
           );
-          if (conv) {
-            // שמירת השם של הצד השני בשיחה
-            setOtherPartyName(conv.otherParty?.name || "");
+          if (existing) {
+            setConversationId(existing.conversationId);
+            setOtherPartyName(existing.otherParty?.name || "");
             setError("");
+            setLoading(false);
           } else {
-            setOtherPartyName("");
+            // אין שיחה קיימת – פתחו חדשה
+            socketRef.current.emit(
+              "startConversation",
+              { otherUserId: businessId },
+              (res2) => {
+                if (res2.ok) {
+                  setConversationId(res2.conversationId);
+                  setError("");
+                } else {
+                  setError("שגיאה ביצירת השיחה: " + (res2.error || "לא ידוע"));
+                }
+                setLoading(false);
+              }
+            );
           }
         } else {
-          setError("שגיאה בטעינת שם העסק");
+          setError("שגיאה בשליפת השיחות: " + (res.error || "לא ידוע"));
+          setLoading(false);
         }
       }
     );
-  }, [conversationId, userId]);
+  }, [userId, businessId]);
 
-  // טעינת היסטוריית הודעות והאזנות לאירועים בזמן אמת
-  useEffect(() => {
-    if (!socketRef.current || !socketRef.current.connected || !conversationId) {
+  // 3. הפונקציה לטיפול בתגובה מהיסטוריית הודעות
+  const handleHistory = (res) => {
+    if (res.ok) {
+      setMessages(Array.isArray(res.messages) ? res.messages : []);
+      setError("");
+    } else {
       setMessages([]);
-      return;
+      setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
     }
+    setLoading(false);
+  };
 
-    // טעינת ההיסטוריה הראשונית
-    socketRef.current.emit("getHistory", { conversationId }, (res) => {
-      if (res.ok) {
-        setMessages(Array.isArray(res.messages) ? res.messages : []);
-        setError("");
-      } else {
-        setMessages([]);
-        setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
-      }
-    });
+  // 4. מאזינים להודעות בזמן אמת אחרי שהשיחה נבחרה
+  useEffect(() => {
+    if (!socketRef.current || !conversationId) return;
 
-    // מטפל בהודעות חדשות
-    const handleNewMessage = (msg) => {
-      setMessages((prev) => {
-        const existsIdx = prev.findIndex((m) => {
-          if (m.isRecommendation && msg.isRecommendation) {
-            return m.recommendationId === msg.recommendationId;
-          }
-          if (!m.isRecommendation && !msg.isRecommendation) {
-            return m._id === msg._id || m.tempId === msg.tempId;
-          }
-          return false;
-        });
-        if (existsIdx !== -1) {
-          const newMessages = [...prev];
-          newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
-          return newMessages;
-        }
-        return [...prev, msg];
-      });
-    };
+    // אפס התצוגה והטענת ההיסטוריה
+    setMessages([]);
+    setLoading(true);
+    socketRef.current.emit("getHistory", { conversationId }, handleHistory);
 
-    // מטפל באישור המלצות
-    const handleMessageApproved = (msg) => {
-      setMessages((prev) => {
-        const idx = prev.findIndex(
-          (m) =>
-            m._id === msg._id ||
-            (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
-        );
-        if (idx !== -1) {
-          const newMessages = [...prev];
-          newMessages[idx] = { ...newMessages[idx], ...msg, status: "approved" };
-          return newMessages;
-        }
-        return [...prev, msg];
-      });
-    };
-
-    socketRef.current.on("newMessage", handleNewMessage);
-    socketRef.current.on("newAiSuggestion", (msg) => {
-      if (msg.status !== "pending") {
-        handleNewMessage(msg);
-      }
-    });
-    socketRef.current.on("messageApproved", handleMessageApproved);
-
-    // הצטרפות לחדר השיחה
+    // הצטרפות לחדר ולעקוב אחרי הודעות
     socketRef.current.emit("joinConversation", conversationId);
     socketRef.current.emit("joinRoom", businessId);
 
+    const handleNewMessage = (msg) => {
+      setMessages((prev) => {
+        const idx = prev.findIndex((m) => m._id === msg._id || m.tempId === msg.tempId);
+        if (idx !== -1) {
+          const newArr = [...prev];
+          newArr[idx] = { ...newArr[idx], ...msg };
+          return newArr;
+        }
+        return [...prev, msg];
+      });
+    };
+
+    const handleApproved = (msg) => {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m._id === msg._id || (m.isRecommendation && m.recommendationId === msg.recommendationId)
+            ? { ...m, ...msg, status: "approved" }
+            : m
+        )
+      );
+    };
+
+    socketRef.current.on("newMessage", handleNewMessage);
+    socketRef.current.on("newAiSuggestion", (msg) => msg.status !== "pending" && handleNewMessage(msg));
+    socketRef.current.on("messageApproved", handleApproved);
+
     return () => {
-      if (socketRef.current) {
-        socketRef.current.off("newMessage", handleNewMessage);
-        socketRef.current.off("newAiSuggestion", handleNewMessage);
-        socketRef.current.off("messageApproved", handleMessageApproved);
-        socketRef.current.emit("leaveConversation", conversationId);
-      }
+      socketRef.current.off("newMessage", handleNewMessage);
+      socketRef.current.off("newAiSuggestion", handleNewMessage);
+      socketRef.current.off("messageApproved", handleApproved);
+      socketRef.current.emit("leaveConversation", conversationId);
     };
   }, [conversationId, businessId]);
 
@@ -183,7 +166,7 @@ export default function ClientChatSection() {
   if (error) return <div className={styles.error}>{error}</div>;
 
   return (
-    <div className={styles.whatsappBg}>
+    <div className={styles.whatsappBg} dir="rtl">
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
