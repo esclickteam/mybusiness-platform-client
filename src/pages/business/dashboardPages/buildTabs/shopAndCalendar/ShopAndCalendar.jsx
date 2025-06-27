@@ -13,7 +13,6 @@ export default function ShopAndCalendar({
   const { services, setServices } = useBusinessServices();
   const safeServices = Array.isArray(services) ? services : [];
 
-  // סנכרון services ל-Build
   useEffect(() => {
     if (!isPreview && setBusinessDetails) {
       setBusinessDetails(prev => ({
@@ -23,25 +22,9 @@ export default function ShopAndCalendar({
     }
   }, [safeServices, isPreview, setBusinessDetails]);
 
-  // תמיד רנדר יומן בלבד
   return (
-    <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>     
-      <AppointmentsMain
-        isPreview={isPreview}
-        services={safeServices}
-        setServices={setServices}
-        workHours={
-          isPreview
-            ? JSON.parse(localStorage.getItem('demoWorkHours') || '{}')
-            : workHours
-        }
-        setWorkHours={
-          isPreview
-            ? hours => localStorage.setItem('demoWorkHours', JSON.stringify(hours))
-            : setWorkHours
-        }
-        setBusinessDetails={setBusinessDetails}
-      />
+    <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
+      {/* כאן אפשר להוסיף תוכן אחר במקום AppointmentsMain */}
     </div>
   );
 }
