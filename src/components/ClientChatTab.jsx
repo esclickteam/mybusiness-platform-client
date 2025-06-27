@@ -1,3 +1,6 @@
+
+jsx
+Copy
 import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./ClientChatTab.css";
@@ -111,41 +114,47 @@ export default function ClientChatTab({
 
   const isBusinessConversation = conversationType === "business-business";
 
+  // טען היסטוריית הודעות דרך Socket.IO
   useEffect(() => {
     if (!socket || !conversationId) return;
 
     setLoading(true);
     setError("");
 
-    socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
-      if (!ack.ok) {
-        console.error("joinConversation failed:", ack.error);
-        setError("כשל בהצטרפות לשיחה: " + (ack.error || ""));
-        setLoading(false);
-        return;
-      }
-
-      socket.emit(
-        "getHistory",
-        { conversationId, limit: 50, conversationType },
-        (response) => {
-          if (response.ok) {
-            setMessages(Array.isArray(response.messages) ? response.messages : []);
-            setError("");
-          } else {
-            setError("שגיאה בטעינת ההיסטוריה: " + (response.error || ""));
-            setMessages([]);
-          }
+    socket.emit(
+      "joinConversation",
+      conversationId,
+      isBusinessConversation,
+      (ack) => {
+        if (!ack.ok) {
+          setError("כשל בהצטרפות לשיחה: " + (ack.error || ""));
           setLoading(false);
+          return;
         }
-      );
-    });
+
+        socket.emit(
+          "getHistory",
+          { conversationId, limit: 50, conversationType },
+          (response) => {
+            if (response.ok) {
+              setMessages(Array.isArray(response.messages) ? response.messages : []);
+              setError("");
+            } else {
+              setError("שגיאה בטעינת ההיסטוריה: " + (response.error || ""));
+              setMessages([]);
+            }
+            setLoading(false);
+          }
+        );
+      }
+    );
 
     return () => {
       socket.emit("leaveConversation", conversationId, isBusinessConversation);
     };
   }, [socket, conversationId, conversationType, setMessages]);
 
+  // מאזין להודעות חדשות
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
 
@@ -170,7 +179,6 @@ export default function ClientChatTab({
             ? `temp_${m.tempId}`
             : null;
 
-          // התאמת הודעות זמניות מול הודעות עם _id
           if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
           return mid === id;
         });
