@@ -25,14 +25,16 @@ export default function ShopAndCalendar({
 
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
-      <div className="edit-links-container">
-        <NavLink to="/crm/work-hours" className="edit-link-button">
-          עריכת שעות פעילות
-        </NavLink>
-        <NavLink to="/crm/services" className="edit-link-button">
-          עריכת שירותים
-        </NavLink>
-      </div>
+      {!isPreview && (
+        <div className="edit-links-container">
+          <NavLink to="/crm/work-hours" className="edit-link-button">
+            עריכת שעות פעילות
+          </NavLink>
+          <NavLink to="/crm/services" className="edit-link-button">
+            עריכת שירותים
+          </NavLink>
+        </div>
+      )}
     </div>
   );
 }
