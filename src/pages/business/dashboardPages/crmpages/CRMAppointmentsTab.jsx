@@ -39,6 +39,8 @@ const CRMAppointmentsTab = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
+  const [businessSchedule, setBusinessSchedule] = useState(null);
+
   // State לשירותים עם טעינה ראשונית
   const [services, setServices] = useState([]);
 
