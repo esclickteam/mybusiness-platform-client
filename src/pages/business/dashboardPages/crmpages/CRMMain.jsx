@@ -7,10 +7,10 @@ const crmTabs = [
   { path: "appointments", label: "📆 תיאומים" },
   { path: "clients", label: "👥 לקוחות" },
   { path: "services", label: "🛠️ שירותים" },
-  // מחקנו את ההגדרות פה
+  { path: "work-hours", label: "⏰ שעות פעילות" }, // טאב חדש
 ];
 
-// דוגמת פונקציות fetch (תחליף לפי הקוד שלך)
+// דוגמאות פונקציות fetch (החלף לפי הקוד שלך)
 async function fetchAppointments() {
   const res = await fetch("/api/appointments");
   return res.json();
@@ -23,15 +23,20 @@ async function fetchServices() {
   const res = await fetch("/api/services");
   return res.json();
 }
+async function fetchWorkHours() {
+  const res = await fetch("/api/appointments/get-work-hours");
+  return res.json();
+}
 
 const CRMMain = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Prefetch לכל טאבים בעת טעינת הרכיב הראשי
+    // Prefetch לכל הטאבים
     queryClient.prefetchQuery(["appointments"], fetchAppointments);
     queryClient.prefetchQuery(["clients"], fetchClients);
     queryClient.prefetchQuery(["services"], fetchServices);
+    queryClient.prefetchQuery(["work-hours"], fetchWorkHours);  // הוספה
   }, [queryClient]);
 
   return (
