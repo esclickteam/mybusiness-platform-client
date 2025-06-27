@@ -50,10 +50,6 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("token");
     localStorage.removeItem("businessDetails");
     delete API.defaults.headers['Authorization'];
-
-    // ניקוי מפורש של עוגיית refreshToken
-    document.cookie = 'refreshToken=; path=/; Max-Age=0; SameSite=None; Secure';
-
     if (ws.current) {
       ws.current.disconnect();
       ws.current = null;
@@ -123,7 +119,6 @@ export function AuthProvider({ children }) {
     ws.current.on("connect", () => {
       console.log("✅ Socket connected:", ws.current.id);
     });
-
     ws.current.on("disconnect", reason => {
       console.log("🔴 Socket disconnected:", reason);
     });
@@ -149,12 +144,8 @@ export function AuthProvider({ children }) {
       if (err.message === "jwt expired") {
         try {
           const newToken = await singleFlightRefresh();
-          if (newToken) {
-            if (ws.current) ws.current.disconnect();
-            createSocketConnection(newToken, userData);
-          } else {
-            await logout();
-          }
+          if (newToken) createSocketConnection(newToken, userData);
+          else await logout();
         } catch {
           await logout();
         }
@@ -229,20 +220,26 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
-      const { accessToken, user: userData } = response.data;
+      const { accessToken } = response.data;
       if (!accessToken) throw new Error("No access token received");
-
       localStorage.setItem("token", accessToken);
       API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
-      setUser({ ...userData, businessId: userData.businessId || null });
+      const decoded = jwtDecode(accessToken);
+      setUser({ ...decoded, businessId: decoded.businessId || null });
+      createSocketConnection(accessToken, decoded);
 
-      createSocketConnection(accessToken, userData);
+      const { data } = await API.get("/auth/me", { withCredentials: true });
+      if (data.businessId) {
+        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+      }
+      setUser({ ...data, businessId: data.businessId || null });
+      createSocketConnection(accessToken, data);
 
-      if (!options.skipRedirect && userData) {
+      if (!options.skipRedirect && data) {
         let path = "/";
-        switch (userData.role) {
-          case "business": path = `/business/${userData.businessId}/dashboard`; break;
+        switch (data.role) {
+          case "business": path = `/business/${data.businessId}/dashboard`; break;
           case "customer": path = "/client/dashboard"; break;
           case "worker": path = "/staff/dashboard"; break;
           case "manager": path = "/manager/dashboard"; break;
@@ -252,7 +249,7 @@ export function AuthProvider({ children }) {
       }
 
       setLoading(false);
-      return userData;
+      return data;
     } catch (e) {
       if (e.response?.status === 401 || e.response?.status === 403) {
         setError("❌ אימייל או סיסמה שגויים");
