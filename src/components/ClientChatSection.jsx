@@ -20,59 +20,79 @@ export default function ClientChatSection() {
 
   const conversationType = "user-business";
 
-  // טעינת שיחות קיימות + יצירת שיחה ראשונית אוטומטית אם אין שיחות
   useEffect(() => {
     if (!initialized || !userId) return;
-    if (!businessId) {
-      setError("לא נמצא מזהה עסק למשתמש");
-      setLoading(false);
-      return;
-    }
 
     setLoading(true);
     setError("");
 
-    API.get("/messages/user-conversations")
-      .then(async ({ data }) => {
-        if (data.conversations && Array.isArray(data.conversations) && data.conversations.length > 0) {
+    const fetchConversations = async () => {
+      try {
+        let response;
+
+        if (businessId) {
+          // משתמש הוא עסק - טוען שיחות עם לקוחות
+          response = await API.get("/messages/client-conversations");
+        } else {
+          // משתמש הוא לקוח - טוען שיחות עם עסקים
+          response = await API.get("/messages/user-conversations");
+        }
+
+        const data = response.data;
+
+        if (data.conversations && data.conversations.length > 0) {
           setConversations(data.conversations);
           setSelectedConversation(data.conversations[0]);
         } else {
-          try {
-            const response = await API.post("/messages/send", {
-              to: businessId,
-              content: "שלום, מתחילים שיחה חדשה",
-            });
+          // אין שיחות קיימות - יצירת שיחה ראשונית רק ללקוח
+          if (!businessId) {
+            if (!user.businessToChatWith) {
+              setError("יש לבחור עסק להתחלת שיחה");
+              setConversations([]);
+              setSelectedConversation(null);
+              setLoading(false);
+              return;
+            }
 
-            const newMessage = response.data.message;
-            const newConversationId = newMessage.conversationId;
+            try {
+              const res = await API.post("/messages/send", {
+                to: user.businessToChatWith,
+                content: "שלום, מתחילים שיחה חדשה",
+              });
 
-            const newConv = {
-              conversationId: newConversationId,
-              businessId: newMessage.toId,
-              clientName: user.name || "לקוח",
-              businessName: "העסק שלי",
-              lastMessage: newMessage,
-              unreadCount: 0,
-            };
+              const newMessage = res.data.message;
+              const newConv = {
+                conversationId: newMessage.conversationId,
+                businessId: newMessage.toId,
+                clientName: user.name || "לקוח",
+                businessName: "העסק שלי",
+                lastMessage: newMessage,
+                unreadCount: 0,
+              };
 
-            setConversations([newConv]);
-            setSelectedConversation(newConv);
-          } catch (err) {
-            setError("שגיאה ביצירת שיחה ראשונית: " + (err.message || "לא ידוע"));
+              setConversations([newConv]);
+              setSelectedConversation(newConv);
+            } catch (err) {
+              setError("שגיאה ביצירת שיחה ראשונית: " + (err.message || "לא ידוע"));
+              setConversations([]);
+              setSelectedConversation(null);
+            }
+          } else {
+            // משתמש עסקי ואין שיחות
             setConversations([]);
             setSelectedConversation(null);
           }
         }
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         setError("שגיאה בטעינת השיחות: " + (err.message || "לא ידוע"));
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchConversations();
   }, [initialized, userId, businessId, user]);
 
-  // חיבור וטיול Socket כשנבחרת שיחה
   useEffect(() => {
     if (!selectedConversation || !userId) return;
 
@@ -121,7 +141,6 @@ export default function ClientChatSection() {
     };
   }, [selectedConversation, userId]);
 
-  // טעינת היסטוריית הודעות והאזנה בזמן אמת
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !selectedConversation) return;

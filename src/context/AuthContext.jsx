@@ -4,10 +4,8 @@ import API from "../api";
 import { io } from "socket.io-client";
 import jwtDecode from "jwt-decode";
 
-// Singleton promise למניעת קריאות רענון מקבילות
 let ongoingRefresh = null;
 
-// פונקציה לרענון access token עם single-flight
 async function singleFlightRefresh() {
   if (!ongoingRefresh) {
     ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
@@ -36,6 +34,14 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const ws = useRef(null);
 
+  // פונקציה לעדכון העסק שהלקוח רוצה לדבר איתו
+  const setBusinessToChatWith = (businessId) => {
+    setUser(prevUser => {
+      if (!prevUser) return prevUser;
+      return { ...prevUser, businessToChatWith: businessId };
+    });
+  };
+
   // axios interceptor לרענון אוטומטי
   useEffect(() => {
     const interceptor = API.interceptors.response.use(
@@ -61,7 +67,6 @@ export function AuthProvider({ children }) {
     return () => API.interceptors.response.eject(interceptor);
   }, []);
 
-  // logout מרכזי (קודם קריאה ל-logout, ואז ניקוי)
   const logout = async () => {
     setLoading(true);
     try {
@@ -70,17 +75,13 @@ export function AuthProvider({ children }) {
     } catch (e) {
       console.warn("⚠️ Logout request failed:", e.response?.data || e.message);
     } finally {
-      // איפוס promise של רענון
       ongoingRefresh = null;
-      // ניקוי Authorization header
       delete API.defaults.headers['Authorization'];
-      // ניתוק והסרת listeners של הסוקט
       if (ws.current) {
         ws.current.removeAllListeners();
         ws.current.disconnect();
         ws.current = null;
       }
-      // ניקוי localStorage
       localStorage.removeItem("token");
       localStorage.removeItem("businessDetails");
 
@@ -90,7 +91,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // login
   const login = async (email, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
@@ -141,7 +141,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // עטיפה לבקשות עם אימות ורענון אוטומטי (אופציונלי)
   const fetchWithAuth = async (requestFunc) => {
     try {
       return await requestFunc();
@@ -157,7 +156,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // יצירת חיבור Socket.IO עם טיפול ברענון טוקן
   const createSocketConnection = (token, userData) => {
     if (ws.current) {
       ws.current.removeAllListeners();
@@ -208,7 +206,6 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // אתחול מצב בעת mount
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -273,7 +270,6 @@ export function AuthProvider({ children }) {
     };
   }, [navigate]);
 
-  // הסרת הודעת הצלחה לאחר זמן
   useEffect(() => {
     if (successMessage) {
       const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -282,7 +278,19 @@ export function AuthProvider({ children }) {
   }, [successMessage]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, initialized, error, login, logout, refreshAccessToken: singleFlightRefresh, fetchWithAuth, socket: ws.current, setUser }}>
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      initialized,
+      error,
+      login,
+      logout,
+      refreshAccessToken: singleFlightRefresh,
+      fetchWithAuth,
+      socket: ws.current,
+      setUser,
+      setBusinessToChatWith // <-- חשוף את הפונקציה לקונטקסט
+    }}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
