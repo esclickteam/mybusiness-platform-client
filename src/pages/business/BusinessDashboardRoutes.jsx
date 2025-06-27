@@ -29,7 +29,7 @@ const CRMServicesTab = lazy(() => import("./dashboardPages/crmpages/CRMServicesT
 const CRMSettingsTab = lazy(() => import("./dashboardPages/crmpages/CRMSettingsTab"));
 const GoalsPage = lazy(() => import("./dashboardPages/GoalsPage"));
 const HelpCenter = lazy(() => import("../HelpCenter"));
-const WorkHoursTab = lazy(() => import("./crmpages/WorkHoursTab"));
+const WorkHoursTab = lazy(() => import("./dashboardPages/crmpages/WorkHoursTab.jsx"));
 
 
 
