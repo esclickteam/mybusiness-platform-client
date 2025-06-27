@@ -120,7 +120,7 @@ export default function ClientChatTab({
 
     socket.emit(
       "getHistory",
-      { conversationId, limit: 50 },
+      { conversationId, limit: 50, conversationType },
       (response) => {
         if (response.ok) {
           setMessages(Array.isArray(response.messages) ? response.messages : []);
