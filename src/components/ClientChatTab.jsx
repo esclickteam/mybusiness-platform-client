@@ -139,6 +139,7 @@ export default function ClientChatTab({
           "getHistory",
           { conversationId, limit: 50, conversationType },
           (response) => {
+            console.log("getHistory response:", response);
             if (response.ok) {
               setMessages(Array.isArray(response.messages) ? response.messages : []);
               setError("");
