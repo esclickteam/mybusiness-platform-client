@@ -1,4 +1,3 @@
-// EsclickAdvisor.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { io } from "socket.io-client";
@@ -19,7 +18,10 @@ const EsclickAdvisor = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (!user?.businessId || !token) return;
+    if (!user?.businessId || !token) {
+      setBusinessDetails(null); // איפוס פרטי העסק כשאין משתמש או טוקן
+      return;
+    }
 
     // חיבור לסוקט עם אישור
     const socket = io(SOCKET_URL, {
@@ -37,17 +39,26 @@ const EsclickAdvisor = () => {
   }, [user?.businessId, token]);
 
   useEffect(() => {
-    if (!user?.businessId || !token) return;
+    if (!user?.businessId || !token) {
+      setBusinessDetails(null); // איפוס במקרה של שינוי/יציאה
+      return;
+    }
 
     // בקשה לקבלת פרטי העסק מהשרת
     fetch(`/api/business/${user.businessId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch business details");
+        return res.json();
+      })
       .then(data => {
         setBusinessDetails(data);
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error(err);
+        setBusinessDetails(null);
+      });
   }, [user?.businessId, token]);
 
   useEffect(() => {

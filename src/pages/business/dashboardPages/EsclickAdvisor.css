@@ -70,18 +70,19 @@
 }
 
 /* סגנון הצ'אט - מיכל ההודעות */
-.chat-box {
-  padding: 10px;
-  height: 100%;
-  box-sizing: border-box;
-  overflow-y: auto; /* גלילה אנכית */
-  direction: rtl; /* עברית - ימין לשמאל */
+.chat-box-wrapper {
+  height: 600px; /* שמור גובה קבוע */
+  overflow-y: auto; /* אפשר גלילה אנכית */
+  overflow-x: hidden; /* למנוע גלילה אופקית */
 }
 
-/* הוספת סגנונות לחסימת גלילה חיצונית מיותרת */
-.chat-box-wrapper {
-  height: 600px; /* חייב להיות לפי max-height של .tab-content או פחות */
-  overflow: hidden;
+.chat-box {
+  padding: 10px;
+  min-height: 100%; /* אפשר גם height: 100%; */
+  box-sizing: border-box;
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
 }
 
 /* הוספתי סגנון בסיסי לרשימת שיחות לבחירת שיחה (אם תשלב עם הקוד) */
