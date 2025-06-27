@@ -4,13 +4,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import "./CRMMain.css";
 
 const crmTabs = [
+  { path: "work-hours", label: "⏰ שעות פעילות" },
   { path: "appointments", label: "📆 תיאומים" },
-  { path: "clients", label: "👥 לקוחות" },
   { path: "services", label: "🛠️ שירותים" },
-  { path: "work-hours", label: "⏰ שעות פעילות" }, // טאב חדש
+  { path: "clients", label: "👥 לקוחות" },
 ];
 
-// דוגמאות פונקציות fetch (החלף לפי הקוד שלך)
+// פונקציות fetch (החלף לפי הקוד שלך)
 async function fetchAppointments() {
   const res = await fetch("/api/appointments");
   return res.json();
@@ -32,11 +32,10 @@ const CRMMain = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Prefetch לכל הטאבים
     queryClient.prefetchQuery(["appointments"], fetchAppointments);
     queryClient.prefetchQuery(["clients"], fetchClients);
     queryClient.prefetchQuery(["services"], fetchServices);
-    queryClient.prefetchQuery(["work-hours"], fetchWorkHours);  // הוספה
+    queryClient.prefetchQuery(["work-hours"], fetchWorkHours);
   }, [queryClient]);
 
   return (
