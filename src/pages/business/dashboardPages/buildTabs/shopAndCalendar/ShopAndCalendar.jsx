@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import '../../build/Build.css';
 import './ShopAndCalendar.css';
 
-import AppointmentsMain from './Appointments/AppointmentsMain';
 import { useBusinessServices } from '@context/BusinessServicesContext';
 
 export default function ShopAndCalendar({
