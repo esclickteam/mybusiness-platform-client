@@ -17,13 +17,12 @@ export default function ClientChatSection() {
   const [messages, setMessages] = useState([]);
   const socketRef = useRef(null);
 
-  // conversationType - לפי ההקשר שלנו זה תמיד user-business (אם צריך לשנות, לשנות כאן)
   const conversationType = "user-business";
 
-  // 1. אתחול הסוקט וחיבור לאירועים כלליים
+  // 1. אתחול הסוקט בלבד
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
-    if (socketRef.current) return; // כבר אתחלנו
+    if (socketRef.current) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
@@ -33,21 +32,11 @@ export default function ClientChatSection() {
       transports: ["websocket"],
       auth: { token, role: "chat", businessId },
       withCredentials: true,
-      autoConnect: true,
     });
     socketRef.current = socket;
 
     socket.on("connect", () => {
       setError("");
-      if (conversationId) {
-        socket.emit(
-          "getHistory",
-          { conversationId, conversationType, limit: 50 },
-          handleHistory
-        );
-        socket.emit("joinConversation", conversationId, conversationType === "business-business");
-        socket.emit("joinRoom", businessId);
-      }
     });
 
     socket.on("disconnect", (reason) => {
@@ -65,91 +54,98 @@ export default function ClientChatSection() {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [initialized, userId, businessId, conversationId]);
+  }, [initialized, userId, businessId]);
 
-  // 2. מציאת שיחה קיימת או פתיחת שיחה חדשה
+  // 2. קבלת השיחה הקיימת או יצירת חדשה
   useEffect(() => {
-    if (!socketRef.current || !userId) return;
-
+    const socket = socketRef.current;
+    if (!socket || !userId) return;
     setLoading(true);
-    socketRef.current.emit(
-      "getConversations",
-      { userId },
-      (res) => {
-        if (res.ok) {
-          const existing = res.conversations.find(
-            (c) =>
-              c.otherParty?.id === businessId ||
-              String(c.otherParty?.id) === String(businessId)
-          );
-          if (existing) {
-            setConversationId(existing.conversationId);
-            setOtherPartyName(existing.otherParty?.name || "");
-            setError("");
-            setLoading(false);
-          } else {
-            socketRef.current.emit(
-              "startConversation",
-              { otherUserId: businessId },
-              (res2) => {
-                if (res2.ok) {
-                  setConversationId(res2.conversationId);
-                  setError("");
-                } else {
-                  setError("שגיאה ביצירת השיחה: " + (res2.error || "לא ידוע"));
-                }
-                setLoading(false);
-              }
-            );
-          }
-        } else {
-          setError("שגיאה בשליפת השיחות: " + (res.error || "לא ידוע"));
+
+    socket.emit("getConversations", { userId }, (res) => {
+      if (res.ok) {
+        const existing = res.conversations.find(
+          (c) => String(c.otherParty?.id) === String(businessId)
+        );
+        if (existing) {
+          setConversationId(existing.conversationId);
+          setOtherPartyName(existing.otherParty?.name || "");
           setLoading(false);
+        } else {
+          socket.emit(
+            "startConversation",
+            { otherUserId: businessId },
+            (res2) => {
+              if (res2.ok) {
+                setConversationId(res2.conversationId);
+              } else {
+                setError(
+                  "שגיאה ביצירת השיחה: " + (res2.error || "לא ידוע")
+                );
+              }
+              setLoading(false);
+            }
+          );
         }
+      } else {
+        setError("שגיאה בשליפת השיחות: " + (res.error || "לא ידוע"));
+        setLoading(false);
       }
-    );
+    });
   }, [userId, businessId]);
 
-  // 3. הפונקציה לטיפול בתגובה מהיסטוריית הודעות
-  const handleHistory = (res) => {
-    if (res.ok) {
-      setMessages(Array.isArray(res.messages) ? res.messages : []);
-      setError("");
-    } else {
-      setMessages([]);
-      setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
-    }
-    setLoading(false);
-  };
-
-  // 4. מאזינים להודעות בזמן אמת אחרי שהשיחה נבחרה
+  // 3. ברגע שיש conversationId – משיכת היסטוריה והצטרפות לחדר
   useEffect(() => {
-    if (!socketRef.current || !conversationId) return;
+    const socket = socketRef.current;
+    if (!socket || !conversationId) return;
 
-    // אפס התצוגה והטענת ההיסטוריה
     setMessages([]);
     setLoading(true);
-    socketRef.current.emit("getHistory", { conversationId, conversationType, limit: 50 }, handleHistory);
 
-    // הצטרפות לחדר ולעקוב אחרי הודעות
-    socketRef.current.emit("joinConversation", conversationId, conversationType === "business-business");
-    socketRef.current.emit("joinRoom", businessId);
+    // הפסקת מאזינים קיימים (למניעת כפילויות)
+    socket.off("newMessage");
+    socket.off("newAiSuggestion");
+    socket.off("messageApproved");
 
-    const handleNewMessage = (msg) => {
+    // משיכת היסטוריה
+    socket.emit(
+      "getHistory",
+      { conversationId, conversationType, limit: 50 },
+      (res) => {
+        if (res.ok) {
+          setMessages(Array.isArray(res.messages) ? res.messages : []);
+          setError("");
+        } else {
+          setMessages([]);
+          setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
+        }
+        setLoading(false);
+      }
+    );
+
+    // הצטרפות לחדר השיחה
+    socket.emit("joinConversation", conversationId);
+
+    // מאזינים להודעות בזמן אמת
+    socket.on("newMessage", (msg) => {
       setMessages((prev) => {
         const idx = prev.findIndex(
           (m) => m._id === msg._id || m.tempId === msg.tempId
         );
         if (idx !== -1) {
-          const newArr = [...prev];
-          newArr[idx] = { ...newArr[idx], ...msg };
-          return newArr;
+          const copy = [...prev];
+          copy[idx] = { ...copy[idx], ...msg };
+          return copy;
         }
         return [...prev, msg];
       });
-    };
-
-    const handleApproved = (msg) => {
+    });
+    socket.on("newAiSuggestion", (msg) => {
+      if (msg.status !== "pending") {
+        socket.emit("newMessage", msg);
+      }
+    });
+    socket.on("messageApproved", (msg) => {
       setMessages((prev) =>
         prev.map((m) =>
           m._id === msg._id ||
@@ -158,19 +154,15 @@ export default function ClientChatSection() {
             : m
         )
       );
-    };
-
-    socketRef.current.on("newMessage", handleNewMessage);
-    socketRef.current.on("newAiSuggestion", (msg) => msg.status !== "pending" && handleNewMessage(msg));
-    socketRef.current.on("messageApproved", handleApproved);
+    });
 
     return () => {
-      socketRef.current.off("newMessage", handleNewMessage);
-      socketRef.current.off("newAiSuggestion", handleNewMessage);
-      socketRef.current.off("messageApproved", handleApproved);
-      socketRef.current.emit("leaveConversation", conversationId, conversationType === "business-business");
+      socket.off("newMessage");
+      socket.off("newAiSuggestion");
+      socket.off("messageApproved");
+      socket.emit("leaveConversation", conversationId);
     };
-  }, [conversationId, businessId]);
+  }, [conversationId]);
 
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
@@ -180,7 +172,9 @@ export default function ClientChatSection() {
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
-          <div className={styles.convItemActive}>{otherPartyName || businessId}</div>
+          <div className={styles.convItemActive}>
+            {otherPartyName || businessId}
+          </div>
         </aside>
         <section className={styles.chatArea}>
           {conversationId ? (
@@ -194,7 +188,9 @@ export default function ClientChatSection() {
               conversationType={conversationType}
             />
           ) : (
-            <div className={styles.emptyMessage}>לא הצלחנו לפתוח שיחה…</div>
+            <div className={styles.emptyMessage}>
+              לא הצלחנו לפתוח שיחה…
+            </div>
           )}
         </section>
       </div>
