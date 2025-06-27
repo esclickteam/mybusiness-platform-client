@@ -23,66 +23,74 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId }) => {
   }
 
   // פונקציה לשליחת הודעה לשרת לפי API שהגדרת
-  const sendMessage = async (promptText) => {
-    if (!businessId || !promptText.trim()) return;
+  const sendMessage = async (promptText, conversationMessages) => {
+  if (!businessId || !promptText.trim()) return;
 
-    setLoading(true);
+  setLoading(true);
 
-    const payload = {
-      businessId,
-      prompt: promptText,
-      profile: {
-        conversationId: conversationId || null,
-        userId: userId || null,
-      },
+  const payload = {
+    businessId,
+    prompt: promptText,
+    profile: {
+      conversationId: conversationId || null,
+      userId: userId || null,
+    },
+    messages: conversationMessages || messages,  // היסטוריית שיחה מעודכנת
+  };
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+
+    // עדכן את ההודעות עם התשובה שקיבלת
+    const botMessage = {
+      role: "assistant",
+      content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
     };
 
-    try {
-      const response = await fetch(`${apiBaseUrl}/chat/ai-command`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    setMessages((prev) => [...prev, botMessage]);
+  } catch (error) {
+    console.error("שגיאה:", error);
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." },
+    ]);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const data = await response.json();
-
-      const botMessage = {
-        role: "assistant",
-        content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
-      };
-
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
-      console.error("שגיאה:", error);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // טיפול בשליחת הודעה חדשה מהמשתמש
   const handleSubmit = () => {
-    if (!userInput.trim()) return;
+  if (!userInput.trim()) return;
 
-    const userMessage = { role: "user", content: userInput };
-    setMessages((prev) => [...prev, userMessage]);
-    setUserInput("");
-    setStartedChat(true);
+  const userMessage = { role: "user", content: userInput };
+  setMessages((prev) => {
+    const newMessages = [...prev, userMessage];
+    sendMessage(userInput, newMessages); // שולח היסטוריה מעודכנת
+    return newMessages;
+  });
+  setUserInput("");
+  setStartedChat(true);
+};
 
-    sendMessage(userInput);
-  };
+// טיפול בבחירת שאלה מוכנה
+const handlePresetQuestion = (question) => {
+  const userMessage = { role: "user", content: question };
+  setMessages((prev) => {
+    const newMessages = [...prev, userMessage];
+    sendMessage(question, newMessages); // שולח היסטוריה מעודכנת
+    return newMessages;
+  });
+  setStartedChat(true);
+};
 
-  // טיפול בבחירת שאלה מוכנה
-  const handlePresetQuestion = (question) => {
-    const userMessage = { role: "user", content: question };
-    setMessages((prev) => [...prev, userMessage]);
-    setStartedChat(true);
-
-    sendMessage(question);
-  };
 
   // גלילה לתחתית התכתבות בכל שינוי
   useEffect(() => {
