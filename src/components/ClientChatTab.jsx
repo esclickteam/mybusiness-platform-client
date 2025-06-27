@@ -111,45 +111,34 @@ export default function ClientChatTab({
 
   const isBusinessConversation = conversationType === "business-business";
 
-  // טען היסטוריית הודעות דרך Socket.IO במקום fetch
   useEffect(() => {
-  if (!socket || !conversationId) return;
+    if (!conversationId) return;
 
-  const isBusinessConversation = conversationType === "business-business";
+    setLoading(true);
+    setError("");
 
-  // הצטרפות לשיחה
-  socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
-    if (!ack.ok) {
-      console.error("joinConversation failed:", ack.error);
-      setError("כשל בהצטרפות לשיחה: " + (ack.error || ""));
-      setLoading(false);
-      return;
-    }
-
-    // לאחר הצטרפות, טען היסטוריה
-    socket.emit(
-      "getHistory",
-      { conversationId, limit: 50, conversationType },
-      (response) => {
-        if (response.ok) {
-          setMessages(Array.isArray(response.messages) ? response.messages : []);
-          setError("");
-        } else {
-          setError("שגיאה בטעינת ההיסטוריה: " + (response.error || ""));
-          setMessages([]);
+    fetch(`/api/conversations/${conversationId}/history`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      credentials: "include",
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const errMsg = await res.text();
+          throw new Error(errMsg || "Error loading chat history");
         }
+        return res.json();
+      })
+      .then((data) => {
+        setMessages(Array.isArray(data.messages) ? data.messages : []);
         setLoading(false);
-      }
-    );
-  });
-
-  // ניקוי – עזיבת השיחה
-  return () => {
-    socket.emit("leaveConversation", conversationId, isBusinessConversation);
-  };
-}, [socket, conversationId, conversationType]);
-
-
+      })
+      .catch((err) => {
+        setError("שגיאה בטעינת ההיסטוריה: " + err.message);
+        setLoading(false);
+      });
+  }, [conversationId, setMessages]);
 
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
