@@ -29,6 +29,9 @@ const CRMServicesTab = lazy(() => import("./dashboardPages/crmpages/CRMServicesT
 const CRMSettingsTab = lazy(() => import("./dashboardPages/crmpages/CRMSettingsTab"));
 const GoalsPage = lazy(() => import("./dashboardPages/GoalsPage"));
 const HelpCenter = lazy(() => import("../HelpCenter"));
+const WorkHoursTab = lazy(() => import("./crmpages/WorkHoursTab"));
+
+
 
 // דפי מדריכים חדשים
 const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessPage"));
@@ -153,6 +156,7 @@ const BusinessDashboardRoutes = () => {
             <Route path="clients" element={<CRMClientsTab businessId={businessId} />} />
             <Route path="services" element={<CRMServicesTab businessId={businessId} />} />
             <Route path="settings" element={<CRMSettingsTab businessId={businessId} />} />
+            <Route path="work-hours" element={<WorkHoursTab businessId={businessId} />} />
           </Route>
 
           <Route path="help-center" element={<HelpCenter />} />
