@@ -67,6 +67,57 @@ export function AuthProvider({ children }) {
     navigate("/login", { replace: true });
   };
 
+  // login
+  const login = async (email, password, options = { skipRedirect: false }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await API.post(
+        "/auth/login",
+        { email: email.trim().toLowerCase(), password },
+        { withCredentials: true }
+      );
+      const { accessToken } = response.data;
+      if (!accessToken) throw new Error("No access token received");
+      localStorage.setItem("token", accessToken);
+      API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
+
+      const decoded = jwtDecode(accessToken);
+      setUser({ ...decoded, businessId: decoded.businessId || null });
+      createSocketConnection(accessToken, decoded);
+
+      const { data } = await API.get("/auth/me", { withCredentials: true });
+      if (data.businessId) {
+        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+      }
+      setUser({ ...data, businessId: data.businessId || null });
+      createSocketConnection(accessToken, data);
+
+      if (!options.skipRedirect) {
+        let path = "/";
+        switch (data.role) {
+          case "business": path = `/business/${data.businessId}/dashboard`; break;
+          case "customer": path = "/client/dashboard"; break;
+          case "worker": path = "/staff/dashboard"; break;
+          case "manager": path = "/manager/dashboard"; break;
+          case "admin": path = "/admin/dashboard"; break;
+        }
+        navigate(path, { replace: true });
+      }
+
+      setLoading(false);
+      return data;
+    } catch (e) {
+      if (e.response?.status === 401 || e.response?.status === 403) {
+        setError("❌ אימייל או סיסמה שגויים");
+      } else {
+        setError("❌ שגיאה בשרת, נסה שוב");
+      }
+      setLoading(false);
+      throw e;
+    }
+  };
+
   // axios interceptor לרענון אוטומטי
   useEffect(() => {
     const interceptor = API.interceptors.response.use(
@@ -234,7 +285,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ user, loading, initialized, error, login, logout, refreshAccessToken: singleFlightRefresh, fetchWithAuth, socket: ws.current, setUser }}>
-      {successMessage && <div className="global-success-toast">{successMessage}</div>}      
+      {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
   );
