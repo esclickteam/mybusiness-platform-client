@@ -7,7 +7,6 @@ import { NavLink } from 'react-router-dom';
 
 export default function ShopAndCalendar({
   isPreview = false,
-  isEditMode = false, // פרופ חדש למצב עריכה
   workHours = {},
   setWorkHours = () => {},
   setBusinessDetails
@@ -26,16 +25,14 @@ export default function ShopAndCalendar({
 
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
-      {isEditMode && (
-        <div className="edit-links-container">
-          <NavLink to="/crm/work-hours" className="edit-link-button">
-            עריכת שעות פעילות
-          </NavLink>
-          <NavLink to="/crm/services" className="edit-link-button">
-            עריכת שירותים
-          </NavLink>
-        </div>
-      )}
+      <div className="edit-links-container">
+        <NavLink to="/crm/work-hours" className="edit-link-button">
+          עריכת שעות פעילות
+        </NavLink>
+        <NavLink to="/crm/services" className="edit-link-button">
+          עריכת שירותים
+        </NavLink>
+      </div>
     </div>
   );
 }
