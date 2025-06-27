@@ -150,26 +150,28 @@ export default function BusinessChatTab({
 
   // הוספת conversationType לקריאה
   socket.emit(
-    "getHistory",
-    { conversationId, conversationType }, 
-    (res) => {
-      if (res.ok) {
-        const msgs = (res.messages || []).map((m) => ({
-          ...m,
-          timestamp: m.createdAt || new Date().toISOString(),
-          text: m.content || "",
-          fileUrl: m.fileUrl || null,
-          fileType: m.fileType || null,
-          fileName: m.fileName || "",
-          fileDuration: m.fileDuration || 0,
-        }));
-        dispatch({ type: "set", payload: msgs });
-      } else {
-        console.error("getHistory failed");
-        dispatch({ type: "set", payload: [] });
-      }
+  "getHistory",
+  { conversationId, conversationType },
+  (res) => {
+    console.log("getHistory response:", res);
+    if (res.ok) {
+      const msgs = (res.messages || []).map((m) => ({
+        ...m,
+        timestamp: m.createdAt || new Date().toISOString(),
+        text: m.content || "",
+        fileUrl: m.fileUrl || null,
+        fileType: m.fileType || null,
+        fileName: m.fileName || "",
+        fileDuration: m.fileDuration || 0,
+      }));
+      dispatch({ type: "set", payload: msgs });
+    } else {
+      console.error("getHistory failed:", res.error);
+      dispatch({ type: "set", payload: [] });
     }
-  );
+  }
+);
+
 
   return () => {
     socket.emit("leaveConversation", conversationId, isBusinessConversation);
