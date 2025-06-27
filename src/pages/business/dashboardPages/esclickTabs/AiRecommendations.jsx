@@ -6,7 +6,7 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 const AiRecommendations = ({ businessId, token }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [socket, setSocket] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingIds, setLoadingIds] = useState(new Set());
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -60,6 +60,21 @@ const AiRecommendations = ({ businessId, token }) => {
           return r;
         })
       );
+      setLoadingIds((ids) => {
+        const newIds = new Set(ids);
+        newIds.delete(recommendationId);
+        return newIds;
+      });
+    });
+
+    s.on("recommendationRejected", ({ recommendationId }) => {
+      console.log(`[Socket] Received recommendationRejected for recommendationId: ${recommendationId}`);
+      setRecommendations((prev) => prev.filter((r) => r._id !== recommendationId && r.id !== recommendationId));
+      setLoadingIds((ids) => {
+        const newIds = new Set(ids);
+        newIds.delete(recommendationId);
+        return newIds;
+      });
     });
 
     setSocket(s);
@@ -71,7 +86,7 @@ const AiRecommendations = ({ businessId, token }) => {
   }, [businessId, token]);
 
   const approveRecommendation = async (id) => {
-    setLoading(true);
+    setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     console.log(`[Action] Approving recommendation: ${id}`);
     try {
@@ -90,20 +105,23 @@ const AiRecommendations = ({ businessId, token }) => {
         throw new Error(data.error || "Failed to approve");
       }
 
-      alert("ההמלצה אושרה ונשלחה!");
+      // סטטוס יתעדכן גם משידור ה-Socket.IO (messageApproved), אבל נשמור פה לצורך מיידיות UI
       setRecommendations((prev) =>
         prev.map((r) => (r.id === id || r._id === id ? { ...r, status: "approved" } : r))
       );
     } catch (err) {
       console.error(`[Action] Error approving recommendation: ${err.message}`);
       setError("שגיאה באישור ההמלצה: " + err.message);
-    } finally {
-      setLoading(false);
+      setLoadingIds((ids) => {
+        const newIds = new Set(ids);
+        newIds.delete(id);
+        return newIds;
+      });
     }
   };
 
   const rejectRecommendation = async (id) => {
-    setLoading(true);
+    setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     console.log(`[Action] Rejecting recommendation: ${id}`);
     try {
@@ -122,12 +140,14 @@ const AiRecommendations = ({ businessId, token }) => {
       }
 
       setRecommendations((prev) => prev.filter((r) => r.id !== id && r._id !== id));
-      alert("ההמלצה נדחתה");
     } catch (err) {
       console.error(`[Action] Error rejecting recommendation: ${err.message}`);
       setError("שגיאה בדחיית ההמלצה: " + err.message);
-    } finally {
-      setLoading(false);
+      setLoadingIds((ids) => {
+        const newIds = new Set(ids);
+        newIds.delete(id);
+        return newIds;
+      });
     }
   };
 
@@ -139,20 +159,24 @@ const AiRecommendations = ({ businessId, token }) => {
       <ul>
         {recommendations
           .filter((r) => r.status === "pending")
-          .map(({ _id, id, text }) => (
-            <li
-              key={_id || id}
-              style={{ marginBottom: "1rem", border: "1px solid #ccc", padding: "0.5rem" }}
-            >
-              <p>{text}</p>
-              <button onClick={() => approveRecommendation(_id || id)} disabled={loading}>
-                אשר ושלח
-              </button>
-              <button onClick={() => rejectRecommendation(_id || id)} disabled={loading}>
-                דחה
-              </button>
-            </li>
-          ))}
+          .map(({ _id, id, text }) => {
+            const recId = _id || id;
+            const isLoading = loadingIds.has(recId);
+            return (
+              <li
+                key={recId}
+                style={{ marginBottom: "1rem", border: "1px solid #ccc", padding: "0.5rem" }}
+              >
+                <p>{text}</p>
+                <button onClick={() => approveRecommendation(recId)} disabled={isLoading}>
+                  {isLoading ? "טוען..." : "אשר ושלח"}
+                </button>
+                <button onClick={() => rejectRecommendation(recId)} disabled={isLoading}>
+                  {isLoading ? "טוען..." : "דחה"}
+                </button>
+              </li>
+            );
+          })}
       </ul>
     </div>
   );
