@@ -39,10 +39,23 @@ const CRMAppointmentsTab = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const [businessSchedule, setBusinessSchedule] = useState(null);
-
   // State לשירותים עם טעינה ראשונית
   const [services, setServices] = useState([]);
+
+  // State ללוח זמנים העסק
+  const [businessSchedule, setBusinessSchedule] = useState(null);
+
+  // המרה של businessSchedule לארrray מתאים ל-SelectTimeFromSlots
+  const scheduleArray = useMemo(() => {
+    if (!businessSchedule) return [];
+    if (Array.isArray(businessSchedule)) return businessSchedule;
+    // ממיר אובייקט למערך של אובייקטים עם day, start, end
+    return Object.entries(businessSchedule).map(([day, { start, end }]) => ({
+      day,
+      start,
+      end,
+    }));
+  }, [businessSchedule]);
 
   // טעינת שירותים ראשונית
   useEffect(() => {
@@ -56,6 +69,20 @@ const CRMAppointmentsTab = () => {
       }
     }
     fetchServices();
+  }, [businessId]);
+
+  // טעינת לוח זמנים העסק
+  useEffect(() => {
+    async function fetchSchedule() {
+      if (!businessId) return;
+      try {
+        const res = await API.get('/get-work-hours', { params: { businessId } });
+        setBusinessSchedule(res.data.workHours || {});
+      } catch (e) {
+        console.error("Error fetching schedule:", e);
+      }
+    }
+    fetchSchedule();
   }, [businessId]);
 
   // קבלת תיאומים עם react-query
@@ -428,7 +455,7 @@ const CRMAppointmentsTab = () => {
             onChange={(time) => handleInputChange("time", time)}
             businessId={businessId}
             serviceId={newAppointment.serviceId}
-            schedule={businessSchedule}
+            schedule={scheduleArray}
           />
           <button onClick={handleConfirmAppointment} disabled={isSaving}>
             📅 קבע פגישה
@@ -548,6 +575,7 @@ const CRMAppointmentsTab = () => {
                       onChange={(time) => handleEditInputChange("time", time)}
                       businessId={businessId}
                       serviceId={editData.serviceId}
+                      schedule={scheduleArray}
                     />
                   ) : (
                     appt.time
