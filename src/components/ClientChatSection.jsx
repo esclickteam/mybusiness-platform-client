@@ -17,6 +17,9 @@ export default function ClientChatSection() {
   const [messages, setMessages] = useState([]);
   const socketRef = useRef(null);
 
+  // conversationType - לפי ההקשר שלנו זה תמיד user-business (אם צריך לשנות, לשנות כאן)
+  const conversationType = "user-business";
+
   // 1. אתחול הסוקט וחיבור לאירועים כלליים
   useEffect(() => {
     if (!initialized || !userId || !businessId) return;
@@ -36,10 +39,13 @@ export default function ClientChatSection() {
 
     socket.on("connect", () => {
       setError("");
-      // כשמתחברים, אם כבר יש שיחה פעילה – טענו היסטוריה
       if (conversationId) {
-        socket.emit("getHistory", { conversationId }, handleHistory);
-        socket.emit("joinConversation", conversationId);
+        socket.emit(
+          "getHistory",
+          { conversationId, conversationType, limit: 50 },
+          handleHistory
+        );
+        socket.emit("joinConversation", conversationId, conversationType === "business-business");
         socket.emit("joinRoom", businessId);
       }
     });
@@ -71,8 +77,10 @@ export default function ClientChatSection() {
       { userId },
       (res) => {
         if (res.ok) {
-          const existing = res.conversations.find((c) =>
-            c.otherParty?.id === businessId || String(c.otherParty?.id) === String(businessId)
+          const existing = res.conversations.find(
+            (c) =>
+              c.otherParty?.id === businessId ||
+              String(c.otherParty?.id) === String(businessId)
           );
           if (existing) {
             setConversationId(existing.conversationId);
@@ -80,7 +88,6 @@ export default function ClientChatSection() {
             setError("");
             setLoading(false);
           } else {
-            // אין שיחה קיימת – פתחו חדשה
             socketRef.current.emit(
               "startConversation",
               { otherUserId: businessId },
@@ -122,15 +129,17 @@ export default function ClientChatSection() {
     // אפס התצוגה והטענת ההיסטוריה
     setMessages([]);
     setLoading(true);
-    socketRef.current.emit("getHistory", { conversationId }, handleHistory);
+    socketRef.current.emit("getHistory", { conversationId, conversationType, limit: 50 }, handleHistory);
 
     // הצטרפות לחדר ולעקוב אחרי הודעות
-    socketRef.current.emit("joinConversation", conversationId);
+    socketRef.current.emit("joinConversation", conversationId, conversationType === "business-business");
     socketRef.current.emit("joinRoom", businessId);
 
     const handleNewMessage = (msg) => {
       setMessages((prev) => {
-        const idx = prev.findIndex((m) => m._id === msg._id || m.tempId === msg.tempId);
+        const idx = prev.findIndex(
+          (m) => m._id === msg._id || m.tempId === msg.tempId
+        );
         if (idx !== -1) {
           const newArr = [...prev];
           newArr[idx] = { ...newArr[idx], ...msg };
@@ -143,7 +152,8 @@ export default function ClientChatSection() {
     const handleApproved = (msg) => {
       setMessages((prev) =>
         prev.map((m) =>
-          m._id === msg._id || (m.isRecommendation && m.recommendationId === msg.recommendationId)
+          m._id === msg._id ||
+          (m.isRecommendation && m.recommendationId === msg.recommendationId)
             ? { ...m, ...msg, status: "approved" }
             : m
         )
@@ -158,7 +168,7 @@ export default function ClientChatSection() {
       socketRef.current.off("newMessage", handleNewMessage);
       socketRef.current.off("newAiSuggestion", handleNewMessage);
       socketRef.current.off("messageApproved", handleApproved);
-      socketRef.current.emit("leaveConversation", conversationId);
+      socketRef.current.emit("leaveConversation", conversationId, conversationType === "business-business");
     };
   }, [conversationId, businessId]);
 
@@ -181,6 +191,7 @@ export default function ClientChatSection() {
               userId={userId}
               messages={messages}
               setMessages={setMessages}
+              conversationType={conversationType}
             />
           ) : (
             <div className={styles.emptyMessage}>לא הצלחנו לפתוח שיחה…</div>
