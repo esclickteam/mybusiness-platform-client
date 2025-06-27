@@ -20,12 +20,8 @@ async function singleFlightRefresh() {
         API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
         return newToken;
       })
-      .catch(err => {
-        ongoingRefresh = null;  // מאפשר ניסוי חדש
-        throw err;
-      })
       .finally(() => {
-        ongoingRefresh = null;  // איפוס בסוף
+        ongoingRefresh = null;  // איפוס תמיד בסוף, בין אם הצליח או נכשל
       });
   }
   return ongoingRefresh;
@@ -34,7 +30,7 @@ async function singleFlightRefresh() {
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [initialized, setInitialized] = useState(false);
@@ -54,6 +50,10 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("token");
     localStorage.removeItem("businessDetails");
     delete API.defaults.headers['Authorization'];
+
+    // ניקוי מפורש של עוגיית refreshToken
+    document.cookie = 'refreshToken=; path=/; Max-Age=0; SameSite=None; Secure';
+
     if (ws.current) {
       ws.current.disconnect();
       ws.current = null;
@@ -123,6 +123,7 @@ export function AuthProvider({ children }) {
     ws.current.on("connect", () => {
       console.log("✅ Socket connected:", ws.current.id);
     });
+
     ws.current.on("disconnect", reason => {
       console.log("🔴 Socket disconnected:", reason);
     });
@@ -130,7 +131,7 @@ export function AuthProvider({ children }) {
     ws.current.on("tokenExpired", async () => {
       console.log("🚨 Socket token expired, refreshing...");
       try {
-        const newToken = await refreshAccessToken();
+        const newToken = await singleFlightRefresh();
         if (newToken) {
           ws.current.auth.token = newToken;
           ws.current.disconnect();
@@ -147,9 +148,13 @@ export function AuthProvider({ children }) {
       console.error("Socket connect error:", err.message);
       if (err.message === "jwt expired") {
         try {
-          const newToken = await refreshAccessToken();
-          if (newToken) createSocketConnection(newToken, userData);
-          else await logout();
+          const newToken = await singleFlightRefresh();
+          if (newToken) {
+            if (ws.current) ws.current.disconnect();
+            createSocketConnection(newToken, userData);
+          } else {
+            await logout();
+          }
         } catch {
           await logout();
         }
@@ -224,26 +229,20 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const response = await API.post("/auth/login", { email: email.trim().toLowerCase(), password }, { withCredentials: true });
-      const { accessToken } = response.data;
+      const { accessToken, user: userData } = response.data;
       if (!accessToken) throw new Error("No access token received");
+
       localStorage.setItem("token", accessToken);
       API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
-      const decoded = jwtDecode(accessToken);
-      setUser({ ...decoded, businessId: decoded.businessId || null });
-      createSocketConnection(accessToken, decoded);
+      setUser({ ...userData, businessId: userData.businessId || null });
 
-      const { data } = await API.get("/auth/me", { withCredentials: true });
-      if (data.businessId) {
-        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-      }
-      setUser({ ...data, businessId: data.businessId || null });
-      createSocketConnection(accessToken, data);
+      createSocketConnection(accessToken, userData);
 
-      if (!options.skipRedirect && data) {
+      if (!options.skipRedirect && userData) {
         let path = "/";
-        switch (data.role) {
-          case "business": path = `/business/${data.businessId}/dashboard`; break;
+        switch (userData.role) {
+          case "business": path = `/business/${userData.businessId}/dashboard`; break;
           case "customer": path = "/client/dashboard"; break;
           case "worker": path = "/staff/dashboard"; break;
           case "manager": path = "/manager/dashboard"; break;
@@ -253,7 +252,7 @@ export function AuthProvider({ children }) {
       }
 
       setLoading(false);
-      return data;
+      return userData;
     } catch (e) {
       if (e.response?.status === 401 || e.response?.status === 403) {
         setError("❌ אימייל או סיסמה שגויים");
