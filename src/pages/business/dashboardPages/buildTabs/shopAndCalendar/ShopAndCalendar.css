@@ -192,3 +192,31 @@
   margin-top: 6px;
   line-height: 1.5;
 }
+
+/* הוספת עיצוב לקישורים/כפתורים לעריכת שעות ושירותים */
+
+.edit-links-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.edit-link-button {
+  background: linear-gradient(135deg, #c27dff, #eaa4ff);
+  color: white;
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-align: center;
+}
+
+.edit-link-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(140, 0, 255, 0.3);
+}

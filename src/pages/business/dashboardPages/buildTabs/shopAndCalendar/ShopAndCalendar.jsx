@@ -3,6 +3,7 @@ import '../../build/Build.css';
 import './ShopAndCalendar.css';
 
 import { useBusinessServices } from '@context/BusinessServicesContext';
+import { NavLink } from 'react-router-dom';
 
 export default function ShopAndCalendar({
   isPreview = false,
@@ -24,7 +25,14 @@ export default function ShopAndCalendar({
 
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
-      {/* כאן אפשר להוסיף תוכן אחר במקום AppointmentsMain */}
+      <div className="edit-links-container">
+        <NavLink to="/crm/work-hours" className="edit-link-button">
+          עריכת שעות פעילות
+        </NavLink>
+        <NavLink to="/crm/services" className="edit-link-button">
+          עריכת שירותים
+        </NavLink>
+      </div>
     </div>
   );
 }
