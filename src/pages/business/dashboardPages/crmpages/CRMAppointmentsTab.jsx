@@ -76,7 +76,8 @@ const CRMAppointmentsTab = () => {
     async function fetchSchedule() {
       if (!businessId) return;
       try {
-        const res = await API.get('/get-work-hours', { params: { businessId } });
+        const res = await API.get('/appointments/get-work-hours', { params: { businessId } });
+
         setBusinessSchedule(res.data.workHours || {});
       } catch (e) {
         console.error("Error fetching schedule:", e);
