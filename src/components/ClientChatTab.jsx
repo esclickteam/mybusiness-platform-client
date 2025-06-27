@@ -112,33 +112,39 @@ export default function ClientChatTab({
   const isBusinessConversation = conversationType === "business-business";
 
   useEffect(() => {
-    if (!conversationId) return;
+    if (!socket || !conversationId) return;
 
     setLoading(true);
     setError("");
 
-    fetch(`/api/conversations/${conversationId}/history`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      credentials: "include",
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          const errMsg = await res.text();
-          throw new Error(errMsg || "Error loading chat history");
+    socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
+      if (!ack.ok) {
+        console.error("joinConversation failed:", ack.error);
+        setError("כשל בהצטרפות לשיחה: " + (ack.error || ""));
+        setLoading(false);
+        return;
+      }
+
+      socket.emit(
+        "getHistory",
+        { conversationId, limit: 50, conversationType },
+        (response) => {
+          if (response.ok) {
+            setMessages(Array.isArray(response.messages) ? response.messages : []);
+            setError("");
+          } else {
+            setError("שגיאה בטעינת ההיסטוריה: " + (response.error || ""));
+            setMessages([]);
+          }
+          setLoading(false);
         }
-        return res.json();
-      })
-      .then((data) => {
-        setMessages(Array.isArray(data.messages) ? data.messages : []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError("שגיאה בטעינת ההיסטוריה: " + err.message);
-        setLoading(false);
-      });
-  }, [conversationId, setMessages]);
+      );
+    });
+
+    return () => {
+      socket.emit("leaveConversation", conversationId, isBusinessConversation);
+    };
+  }, [socket, conversationId, conversationType, setMessages]);
 
   useEffect(() => {
     if (!socket || !conversationId || !businessId) return;
@@ -228,7 +234,6 @@ export default function ClientChatTab({
 
   useEffect(() => {
     if (!messageListRef.current) return;
-    // גלילה רק אם המשתמש כבר בתחתית או קרוב לתחתית
     const el = messageListRef.current;
     const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
     if (isNearBottom) {
