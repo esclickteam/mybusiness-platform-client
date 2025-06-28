@@ -630,25 +630,28 @@ html, body, #root {
 
 .reviews-summary {
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* למרכז את התוכן */
   align-items: center;
-  max-width: 300px;
-  background: white;
-  padding: 10px 20px;
+  gap: 8px; /* ריווח בין הציון לכמות */
+  max-width: 160px;
+  background: #f4f3ff; /* צבע רקע בהיר עם גוון סגול-כחול עדין */
+  padding: 12px 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(121, 90, 192, 0.3); /* צל סגול עדין */
   font-family: 'Arial', sans-serif;
   margin: 1rem 0;
-  color: #4A148C;
+  color: #5c2d91; /* סגול כהה מעט שונה */
 }
 
 .reviews-count {
-  font-size: 1rem;
+  font-size: 0.9rem;
   opacity: 0.7;
+  color: #7c57c9; /* סגול בהיר יותר לטקסט משני */
+  white-space: nowrap;
 }
 
 .reviews-average {
-  font-weight: 900;
+  font-weight: 700;
   font-size: 2rem;
-  color: #6A1B9A;
+  color: #5c2d91;
 }
