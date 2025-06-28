@@ -184,20 +184,26 @@ export default function BusinessProfileView() {
               {businessName}
             </h1>
             <button
-              onClick={toggleFavorite}
-              className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
-              aria-label={isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "1.5rem",
-                color: isFavorite ? "#FF4081" : "#4A148C", // צבעים מודרניים
-                transition: "color 0.3s ease",
-              }}
-            >
-              {isFavorite ? "❤️" : "🤍"}
-            </button>
+  onClick={toggleFavorite}
+  className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
+  aria-label={isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
+  style={{
+    background: isFavorite ? "#FF4081" : "#EEE",
+    border: "1px solid #4A148C",
+    borderRadius: "24px",
+    cursor: "pointer",
+    fontSize: "1.2rem",
+    color: isFavorite ? "white" : "#4A148C",
+    padding: "6px 12px",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    transition: "all 0.3s ease",
+  }}
+>
+  {isFavorite ? "❤️" : "🤍"}
+  <span>{isFavorite ? "מועדף" : "הוסף למועדפים"}</span>
+</button>
           </div>
 
           {/* פרטים כלליים */}
