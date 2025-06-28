@@ -60,13 +60,12 @@ export default function BusinessProfileView() {
     enabled: !!bizId
   });
 
-  // עדכון סטייטים
   useEffect(() => {
     if (!data) return;
     setFaqs(data.faqs || []);
     setServices(data.services || []);
     setProfileViewsCount(data.views_count || 0);
-    setIsFavorite(user?.favorites?.includes(bizId) || false); // לדוגמה אם יש נתונים כאלה
+    setIsFavorite(user?.favorites?.includes(bizId) || false);
   }, [data, user, bizId]);
 
   useEffect(() => {
@@ -171,12 +170,14 @@ export default function BusinessProfileView() {
               ✏️ ערוך פרטי העסק
             </Link>
           )}
+
           {/* לוגו העסק */}
           {logoUrl && (
             <div className="profile-logo-wrapper">
               <img className="profile-logo" src={logoUrl} alt="לוגו העסק" loading="lazy" />
             </div>
           )}
+
           {/* שם העסק וכפתור מועדפים */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <h1 className="business-name">{businessName}</h1>
