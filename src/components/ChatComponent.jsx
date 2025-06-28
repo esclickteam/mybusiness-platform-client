@@ -12,7 +12,7 @@ export default function ChatComponent({
   isBusiness,
 }) {
   const socket = useSocket();
-  const { logout } = useAuth();
+  const { authToken } = useAuth(); // משיג את הטוקן מהקונטקסט
 
   const [conversationId, setConversationId] = useState(initialConversationId || null);
   const [conversations, setConversations] = useState([]);
@@ -93,6 +93,7 @@ export default function ChatComponent({
       socket={socket}
       userRole="business"
       conversationType="user-business"
+      authToken={authToken}  // העברת הטוקן ל-BusinessChatTab
     />
   ) : (
     <ClientChatTab
