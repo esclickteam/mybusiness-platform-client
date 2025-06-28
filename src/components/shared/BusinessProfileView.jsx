@@ -24,13 +24,20 @@ const ServicesSelector = lazy(() => import("../ServicesSelector"));
 const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar"));
 
 // מיפוי תוויות דירוג
+// מיפוי תוויות דירוג
 const ratingLabels = {
   cleanliness: "ניקיון",
   punctuality: "עמידה בזמנים",
   professionalism: "מקצועיות",
   communication: "תקשורת",
   value: "תמורה למחיר",
+  service: "שירות",
+  goal: "מטרה",
+  experience: "ניסיון",
+  timing: "זמנים",
+  availability: "זמינות",
 };
+
 
 // קומפוננטה להצגת כוכבים לפי דירוג (StarDisplay)
 function StarDisplay({ rating }) {
