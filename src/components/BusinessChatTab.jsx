@@ -309,34 +309,41 @@ export default function BusinessChatTab({
 
     const reader = new FileReader();
     reader.onload = () => {
-      socket.emit(
-        "sendFile",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          fileName: file.name,
-          fileType: file.type,
-          buffer: reader.result,
-          tempId,
-          conversationType, // שולח conversationType גם כאן
+  socket.emit(
+    "sendFile",
+    {
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileName: file.name,
+      fileType: file.type,
+      buffer: reader.result,
+      tempId,
+      conversationType, // שולח conversationType גם כאן
+    },
+    (ack) => {
+      console.log("🔔 sendFile ACK:", ack);
+      const ackUrl = ack.message?.fileUrl;
+      console.log("→ fileUrl from ack:", ackUrl);
+      // אם אין URL אמיתי — נשאר עם ה-blob
+      const newUrl = ackUrl ?? optimistic.fileUrl;
+      console.log("→ using URL:", newUrl);
+
+      dispatch({
+        type: "updateStatus",
+        payload: {
+          id: tempId,
+          updates: {
+            fileUrl: newUrl,
+            sending: false,
+            failed: !ack.ok,
+          },
         },
-        (ack) => {
-          dispatch({
-            type: "updateStatus",
-            payload: {
-              id: tempId,
-              updates: {
-                fileUrl: ack.message?.fileUrl || null,
-                sending: false,
-                failed: !ack.ok,
-              },
-            },
-          });
-        }
-      );
-    };
-    reader.readAsArrayBuffer(file);
+      });
+    }
+  );
+};
+reader.readAsArrayBuffer(file);
   };
 
   const startRecording = async () => {
