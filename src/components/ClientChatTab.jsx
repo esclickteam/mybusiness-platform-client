@@ -76,14 +76,15 @@ const getMessageKey = (m) => {
   return `uniq_${m.__uniqueKey}`;
 };
 
-async function uploadFileToServer(file, conversationId, businessId, userId) {
+async function uploadFileToServer(file, conversationId, businessId, toId, message) {
   const formData = new FormData();
   formData.append("file", file);
 
   if (conversationId) formData.append("conversationId", conversationId);
   if (businessId) formData.append("businessId", businessId);
-  if (userId) formData.append("from", userId);
-
+  if (toId) formData.append("toId", toId);
+  formData.append("message", message || "");  // חובה לשים message (אפשר גם מחרוזת ריקה)
+  
   const token = localStorage.getItem("token");
 
   const response = await fetch("/api/business/my/chat", {
@@ -103,6 +104,7 @@ async function uploadFileToServer(file, conversationId, businessId, userId) {
   const data = await response.json();
   return data.newMessage?.fileUrl || data.fileUrl || "";
 }
+
 
 export default function ClientChatTab({
   socket,
@@ -395,7 +397,8 @@ export default function ClientChatTab({
 
     try {
       const file = new File([recordedBlob], `recording_${Date.now()}.webm`, { type: recordedBlob.type });
-      const uploadedUrl = await uploadFileToServer(file, conversationId, businessId, userId);
+      const uploadedUrl = await uploadFileToServer(file, conversationId, businessId, userId, input.trim());
+
 
       socket.emit(
         "sendMessage",
