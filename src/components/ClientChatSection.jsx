@@ -6,25 +6,28 @@ import { useAuth } from "../context/AuthContext";
 import { io } from "socket.io-client";
 
 export default function ClientChatSection() {
+  /* ─── Route params & Auth ───────────────────────────────────────── */
   const { businessId: businessIdFromParams } = useParams();
   const { user, initialized } = useAuth();
   const userId = user?.userId || null;
 
+  /* ─── Local state ──────────────────────────────────────────────── */
   const [conversationId, setConversationId] = useState(null);
-  const [businessName, setBusinessName] = useState("");
-  const [businessId, setBusinessId] = useState(businessIdFromParams || null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [businessName, setBusinessName]     = useState("");
+  const [businessId,  setBusinessId]        = useState(businessIdFromParams || null);
+  const [loading,      setLoading]          = useState(true);
+  const [error,        setError]            = useState("");
+  const [messages,     setMessages]         = useState([]);
+
   const socketRef = useRef(null);
 
-  // יצירת socket פעם אחת בלבד
+  /* ─── Create socket once ─────────────────────────────────────────────────── */
   useEffect(() => {
     if (!initialized || !userId) return;
-    if (socketRef.current) return;
+    if (socketRef.current)       return; // already connected
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    const token = localStorage.getItem("token");
+    const token     = localStorage.getItem("token");
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
@@ -34,9 +37,7 @@ export default function ClientChatSection() {
       autoConnect: true,
     });
 
-    socketRef.current.on("connect", () => {
-      setError("");
-    });
+    socketRef.current.on("connect", () => setError(""));
 
     socketRef.current.on("disconnect", (reason) => {
       if (reason !== "io client disconnect") {
@@ -49,14 +50,12 @@ export default function ClientChatSection() {
     });
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+      socketRef.current?.disconnect();
+      socketRef.current = null;
     };
   }, [initialized, userId]);
 
-  // טעינת שיחות המשתמש (user-conversations) ולקיחת שיחה ראשונה
+  /* ─── Fetch user conversations once (REST) ─────────────────────── */
   useEffect(() => {
     if (!userId) return;
 
@@ -66,31 +65,28 @@ export default function ClientChatSection() {
     const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
 
     fetch(`${baseUrl}/api/messages/user-conversations`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.conversations && data.conversations.length > 0) {
+        if (Array.isArray(data.conversations) && data.conversations.length) {
+          // נסה לבחור שיחה לפי businessId מה‑URL, אחרת הראשונה ברשימה
           let conv = null;
           if (businessIdFromParams) {
             conv = data.conversations.find(
-              (c) => String(c.businessId) === String(businessIdFromParams)
+              (c) => String(c.otherParty?.id) === String(businessIdFromParams)
             );
           }
           if (!conv) conv = data.conversations[0];
 
           setConversationId(conv.conversationId);
-          setBusinessName(conv.businessName);
-          setBusinessId(conv.businessId);
-          setError("");
+          setBusinessName(conv.otherParty?.name || "");
+          setBusinessId(conv.otherParty?.id);
         } else {
-          // אין שיחות קיימות — נשאיר conversationId null
+          // אין שיחות קיימות – נתחיל חדשה כשישלחו הודעה
           setConversationId(null);
           setBusinessName("");
           setBusinessId(businessIdFromParams || null);
-          setError(""); // לא להציג שגיאה
         }
         setLoading(false);
       })
@@ -101,16 +97,17 @@ export default function ClientChatSection() {
       });
   }, [userId, businessIdFromParams]);
 
-  // טעינת היסטוריית הודעות והאזנות בזמן אמת
+  /* ─── WS: history + realtime listeners ─────────────────────────── */
   useEffect(() => {
-    if (!socketRef.current || !socketRef.current.connected || !conversationId) {
+    const socket = socketRef.current;
+    if (!socket || !socket.connected || !conversationId) {
       setMessages([]);
       return;
     }
 
     setLoading(true);
 
-    socketRef.current.emit("getHistory", { conversationId }, (res) => {
+    socket.emit("getHistory", { conversationId, businessId }, (res) => {
       if (res.ok) {
         setMessages(Array.isArray(res.messages) ? res.messages : []);
         setError("");
@@ -121,65 +118,37 @@ export default function ClientChatSection() {
       setLoading(false);
     });
 
-    const handleNewMessage = (msg) => {
+    const handleNew = (msg) => {
       setMessages((prev) => {
-        const existsIdx = prev.findIndex((m) => {
-          if (m.isRecommendation && msg.isRecommendation) {
-            return m.recommendationId === msg.recommendationId;
-          }
-          if (!m.isRecommendation && !msg.isRecommendation) {
-            return m._id === msg._id || m.tempId === msg.tempId;
-          }
-          return false;
-        });
-        if (existsIdx !== -1) {
-          const newMessages = [...prev];
-          newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
-          return newMessages;
-        }
-        return [...prev, msg];
-      });
-    };
-
-    const handleMessageApproved = (msg) => {
-      setMessages((prev) => {
-        const idx = prev.findIndex(
-          (m) =>
-            m._id === msg._id ||
-            (m.isRecommendation && msg.recommendationId && m.recommendationId === msg.recommendationId)
+        const idx = prev.findIndex((m) =>
+          m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
         );
         if (idx !== -1) {
-          const newMessages = [...prev];
-          newMessages[idx] = { ...newMessages[idx], ...msg, status: "approved" };
-          return newMessages;
+          const next = [...prev];
+          next[idx] = { ...next[idx], ...msg };
+          return next;
         }
         return [...prev, msg];
       });
     };
+    const handleApproved = (msg) => {
+      setMessages((prev) => prev.map((m) => (m._id === msg._id ? { ...m, status: "approved" } : m)));
+    };
 
-    socketRef.current.on("newMessage", handleNewMessage);
-    socketRef.current.on("newAiSuggestion", (msg) => {
-      if (msg.status !== "pending") {
-        handleNewMessage(msg);
-      }
-    });
-    socketRef.current.on("messageApproved", handleMessageApproved);
+    socket.on("newMessage", handleNew);
+    socket.on("messageApproved", handleApproved);
 
-    socketRef.current.emit("joinConversation", conversationId);
-    if (businessId) {
-      socketRef.current.emit("joinRoom", businessId);
-    }
+    socket.emit("joinConversation", conversationId);
+    businessId && socket.emit("joinRoom", businessId);
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.off("newMessage", handleNewMessage);
-        socketRef.current.off("newAiSuggestion", handleNewMessage);
-        socketRef.current.off("messageApproved", handleMessageApproved);
-        socketRef.current.emit("leaveConversation", conversationId);
-      }
+      socket.off("newMessage", handleNew);
+      socket.off("messageApproved", handleApproved);
+      socket.emit("leaveConversation", conversationId);
     };
   }, [conversationId, businessId]);
 
+  /* ─── UI ───────────────────────────────────────────────────────── */
   if (loading) return <div className={styles.loading}>טוען…</div>;
 
   return (
@@ -190,15 +159,14 @@ export default function ClientChatSection() {
           <div className={styles.convItemActive}>{businessName || businessId || "עסק לא ידוע"}</div>
         </aside>
         <section className={styles.chatArea}>
-          {/* תמיד מציגים ClientChatTab גם כשאין conversationId */}
           <ClientChatTab
             socket={socketRef.current}
-            conversationId={conversationId} // יכול להיות null
+            conversationId={conversationId}
+            setConversationId={setConversationId}
             businessId={businessId}
             userId={userId}
             messages={messages}
             setMessages={setMessages}
-            setConversationId={setConversationId} // מוסיפים כדי לעדכן conversationId ביצירת שיחה חדשה
           />
         </section>
       </div>
