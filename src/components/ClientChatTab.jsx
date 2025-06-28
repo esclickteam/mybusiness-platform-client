@@ -272,6 +272,7 @@ export default function ClientChatTab({
         {
           conversationId,
           from: userId,
+          to: businessId, 
           role: "client",
           text: optimisticMsg.text,
           tempId,
