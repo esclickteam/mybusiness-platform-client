@@ -93,7 +93,7 @@ export default function BusinessProfileView() {
   }, [socket, bizId]);
 
   const sortedReviews = [...reviews].sort(
-    (a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
+    (a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || b.date)
   );
 
   const toggleFavorite = async () => {
@@ -164,21 +164,18 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-          {/* כפתור עריכת העסק במידה ומנהל */}
           {isOwner && (
             <Link to={`/business/${bizId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
 
-          {/* לוגו העסק */}
           {logoUrl && (
             <div className="profile-logo-wrapper">
               <img className="profile-logo" src={logoUrl} alt="לוגו העסק" loading="lazy" />
             </div>
           )}
 
-          {/* שם העסק וכפתור מועדפים */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <h1 className="business-name" style={{ fontSize: "2rem", color: "#4A148C", fontWeight: "bold" }}>
               {businessName}
@@ -193,13 +190,13 @@ export default function BusinessProfileView() {
                 cursor: "pointer",
                 fontSize: "1.5rem",
                 color: isFavorite ? "red" : "gray",
+                transition: "color 0.3s, transform 0.2s",
               }}
             >
               {isFavorite ? "❤️" : "🤍"}
             </button>
           </div>
 
-          {/* פרטים כלליים */}
           <div className="about-phone" style={{ marginBottom: "1rem" }}>
             {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
@@ -207,7 +204,6 @@ export default function BusinessProfileView() {
             {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
-          {/* דירוג כללי */}
           <div className="overall-rating" aria-label={`דירוג ממוצע: ${roundedAvg.toFixed(1)} מתוך 5`}>
             <span className="big-score" style={{ fontSize: "1.8rem", fontWeight: "bold", color: "#4A148C" }}>
               {roundedAvg.toFixed(1)}
@@ -217,7 +213,6 @@ export default function BusinessProfileView() {
 
           <hr className="profile-divider" style={{ marginTop: "1rem", borderColor: "#4A148C" }} />
 
-          {/* טאבים */}
           <div className="profile-tabs" role="tablist">
             {TABS.map((tab) => (
               <button
@@ -235,6 +230,7 @@ export default function BusinessProfileView() {
                   cursor: "pointer",
                   margin: "0 5px",
                   borderRadius: "6px",
+                  transition: "background-color 0.3s, transform 0.2s",
                 }}
               >
                 {tab}
@@ -242,10 +238,8 @@ export default function BusinessProfileView() {
             ))}
           </div>
 
-          {/* תוכן לפי טאבים */}
           <div className="tab-content" role="tabpanel">
-
-            {/* ראשי */}
+            {/* תוכן טאבים */}
             {currentTab === "ראשי" && (
               <>
                 <div className="public-main-images">
@@ -427,64 +421,6 @@ export default function BusinessProfileView() {
                   <p className="no-data">אין ביקורות</p>
                 )}
               </div>
-            )}
-
-            {/* שאלות ותשובות */}
-            {currentTab === "שאלות תשובות" && (
-              <div className="faqs-public" dir="rtl">
-                {faqs.length === 0 ? (
-                  <p className="no-data">אין עדיין שאלות ותשובות</p>
-                ) : (
-                  faqs.map((faq, i) => (
-                    <div key={faq._id || i} className="faq-card">
-                      <p><strong>שאלה:</strong> {faq.question}</p>
-                      <p><strong>תשובה:</strong> {faq.answer}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-
-            {/* הודעות מלקוחות */}
-            {currentTab === "הודעות מלקוחות" && (
-              <div style={{ textAlign: "center", margin: "36px 0" }} dir="rtl">
-                {user?.role === "customer" && (
-                  <Link to={`/business/${bizId}/messages`} className="chat-link-btn">
-                    💬 שלח הודעה לעסק
-                  </Link>
-                )}
-                {isOwner && (
-                  <Link to={`/business/${bizId}/dashboard/messages`} className="chat-link-btn">
-                    ▶️ ניהול הודעות מלקוחות
-                  </Link>
-                )}
-              </div>
-            )}
-
-            {/* יומן */}
-            {currentTab === "יומן" && (
-              <>
-                <Suspense fallback={<div>טוען בחירת שירות...</div>}>
-                  <ServicesSelector services={services} onSelect={(svc) => setSelectedService(svc)} />
-                </Suspense>
-                {!selectedService ? (
-                  <p className="choose-prompt" dir="rtl">אנא בחרי שירות כדי להציג את היומן</p>
-                ) : (
-                  <>
-                    <button className="back-btn" onClick={() => setSelectedService(null)} dir="rtl">
-                      ← שנה שירות
-                    </button>
-                    <Suspense fallback={<div>טוען יומן תורים...</div>}>
-                      <ClientCalendar
-                        workHours={schedule}
-                        selectedService={selectedService}
-                        onBackToList={() => setSelectedService(null)}
-                        businessId={bizId}
-                      />
-                    </Suspense>
-                  </>
-                )}
-              </>
             )}
           </div>
         </div>
