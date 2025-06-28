@@ -269,8 +269,8 @@ export default function BusinessProfileView() {
                 style={{
   padding: "10px 20px",
   fontSize: "1rem",
-  background: "#5c2d91",   // רקע סגול לכל הטאבים
-  color: "white",          // טקסט לבן לכל הטאבים
+  background: "#5c2d91",   
+  color: "white",          
   border: "none",
   cursor: "pointer",
   margin: "0 5px",

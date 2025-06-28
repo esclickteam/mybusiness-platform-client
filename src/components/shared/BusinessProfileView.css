@@ -614,9 +614,9 @@ html, body, #root {
 
 .public-main-images img,
 .gallery img {
-  border: 3px solid #b46af1;        /* מסגרת בצבע סגול תואם */
+  border: 3px solid #5c2d91;        /* מסגרת בצבע סגול תואם */
   border-radius: 12px;               /* פינות מעוגלות */
-  box-shadow: 0 4px 12px rgba(180, 106, 241, 0.4); /* צל עדין בגוון הסגול */
+  box-shadow: 0 4px 12px rgba(92, 45, 145, 0.4); /* צל עדין בגוון הסגול */
   padding: 5px;                     /* רווח בין התמונה למסגרת */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
@@ -625,8 +625,9 @@ html, body, #root {
 .public-main-images img:hover,
 .gallery img:hover {
   transform: scale(1.05);           /* הגדלה קלה בהובר */
-  box-shadow: 0 8px 20px rgba(180, 106, 241, 0.6); /* צל חזק יותר בהובר */
+  box-shadow: 0 8px 20px rgba(92, 45, 145, 0.6); /* צל חזק יותר בהובר */
 }
+
 
 .reviews-summary {
   display: flex;
