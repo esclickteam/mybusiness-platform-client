@@ -269,14 +269,14 @@ export default function BusinessProfileView() {
                 style={{
   padding: "10px 20px",
   fontSize: "1rem",
-  background: tab === currentTab ? "#5c2d91" : "transparent",  // רקע סגול פעיל, אחרת שקוף
-  color: tab === currentTab ? "white" : "#5c2d91",             // טקסט לבן פעיל, אחרת סגול
+  background: "#5c2d91",   // רקע סגול לכל הטאבים
+  color: "white",          // טקסט לבן לכל הטאבים
   border: "none",
   cursor: "pointer",
   margin: "0 5px",
-  borderRadius: "6px",
-  boxShadow: tab === currentTab ? "0 4px 10px rgba(0, 0, 0, 0.2)" : "none",
-  transition: "background-color 0.3s ease",
+  borderRadius: "8px",
+  boxShadow: "0 4px 12px rgba(92, 45, 145, 0.6)",  // צל לכל הטאבים
+  transition: "background-color 0.3s ease, color 0.3s ease",
 }}
               >
                 {tab}
