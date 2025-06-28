@@ -23,6 +23,15 @@ const ReviewForm = lazy(() => import("../../pages/business/dashboardPages/buildT
 const ServicesSelector = lazy(() => import("../ServicesSelector"));
 const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar"));
 
+// הוספת מיפוי לתוויות הדירוג
+const ratingLabels = {
+  cleanliness: "ניקיון",
+  punctuality: "עמידה בזמנים",
+  professionalism: "מקצועיות",
+  communication: "תקשורת",
+  value: "תמורה למחיר",
+};
+
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
@@ -184,26 +193,26 @@ export default function BusinessProfileView() {
               {businessName}
             </h1>
             <button
-  onClick={toggleFavorite}
-  className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
-  aria-label={isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
-  style={{
-    background: isFavorite ? "#FF4081" : "#EEE",
-    border: "1px solid #4A148C",
-    borderRadius: "24px",
-    cursor: "pointer",
-    fontSize: "1.2rem",
-    color: isFavorite ? "white" : "#4A148C",
-    padding: "6px 12px",
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-    transition: "all 0.3s ease",
-  }}
->
-  {isFavorite ? "❤️" : "🤍"}
-  <span>{isFavorite ? "מועדף" : "הוסף למועדפים"}</span>
-</button>
+              onClick={toggleFavorite}
+              className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
+              aria-label={isFavorite ? "הסר מהמועדפים" : "הוסף למועדפים"}
+              style={{
+                background: isFavorite ? "#FF4081" : "#EEE",
+                border: "1px solid #4A148C",
+                borderRadius: "24px",
+                cursor: "pointer",
+                fontSize: "1.2rem",
+                color: isFavorite ? "white" : "#4A148C",
+                padding: "6px 12px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                transition: "all 0.3s ease",
+              }}
+            >
+              {isFavorite ? "❤️" : "🤍"}
+              <span>{isFavorite ? "מועדף" : "הוסף למועדפים"}</span>
+            </button>
           </div>
 
           {/* פרטים כלליים */}
@@ -216,12 +225,12 @@ export default function BusinessProfileView() {
 
           {/* דירוג כללי */}
           <div className="reviews-summary" aria-label={`דירוג ממוצע: ${roundedAvg.toFixed(1)} מתוך 5, מבוסס על ${reviews.length} ביקורות`}>
-  <span className="reviews-average">
-    {roundedAvg.toFixed(1)}
-    <span className="star">⭐</span>
-    <span className="reviews-count">({reviews.length} ביקורות)</span>
-  </span>
-</div>
+            <span className="reviews-average">
+              {roundedAvg.toFixed(1)}
+              <span className="star">⭐</span>
+              <span className="reviews-count">({reviews.length} ביקורות)</span>
+            </span>
+          </div>
 
           <hr className="profile-divider" style={{ marginTop: "1rem", borderColor: "#4A148C" }} />
 
