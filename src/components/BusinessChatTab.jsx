@@ -189,7 +189,7 @@ export default function BusinessChatTab({
         const safeMsg = {
           ...msg,
           timestamp: msg.createdAt || new Date().toISOString(),
-          text: msg.content || "",
+          text: msg.text || msg.content || "",
           fileUrl: msg.fileUrl || null,
           fileType: msg.fileType || null,
           fileName: msg.fileName || "",
@@ -265,6 +265,8 @@ export default function BusinessChatTab({
       }
     );
   };
+
+
 
   const handleAttach = () => {
     fileInputRef.current?.click();
