@@ -158,7 +158,7 @@ export default function BusinessChatTab({
       const msgs = (res.messages || []).map((m) => ({
         ...m,
         timestamp: m.createdAt || new Date().toISOString(),
-        text: m.content || m.text || "",
+        text: m.text || m.content || "",
         fileUrl: m.fileUrl || null,
         fileType: m.fileType || null,
         fileName: m.fileName || "",
