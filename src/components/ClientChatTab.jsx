@@ -259,6 +259,8 @@ export default function ClientChatTab({
 
   const sendMessage = () => {
     console.log("sendMessage called with input:", input);
+      console.log("sendMessage called with businessId (to):", businessId); // <-- הוסף כאן
+
     if (!input.trim() || sending || !socket) {
       console.log("sendMessage aborted: invalid input or no socket or sending in progress");
       return;
