@@ -76,17 +76,25 @@ const getMessageKey = (m) => {
   return `uniq_${m.__uniqueKey}`;
 };
 
-async function uploadFileToServer(file, conversationId, businessId, toId, message) {
+async function uploadFileToServer(
+  file,
+  conversationId,
+  businessId,
+  toId,
+  message
+) {
   const formData = new FormData();
   formData.append("file", file);
 
   if (conversationId) formData.append("conversationId", conversationId);
-  if (businessId) formData.append("businessId", businessId);
-  if (toId) formData.append("toId", toId);
-  formData.append("message", message || "");  // חובה לשים message (אפשר גם מחרוזת ריקה)
-  
-  const token = localStorage.getItem("token");
+  if (businessId)    formData.append("businessId", businessId);
+  if (toId)          formData.append("toId", toId);
 
+  // אם message הוא undefined או ריק אחרי trim(), נשלח רווח במקום
+  const effectiveMessage = message && message.trim() ? message : " ";
+  formData.append("message", effectiveMessage);
+
+  const token = localStorage.getItem("token");
   const response = await fetch("/api/business/my/chat", {
     method: "POST",
     headers: {
@@ -104,6 +112,8 @@ async function uploadFileToServer(file, conversationId, businessId, toId, messag
   const data = await response.json();
   return data.newMessage?.fileUrl || data.fileUrl || "";
 }
+
+
 
 
 export default function ClientChatTab({
