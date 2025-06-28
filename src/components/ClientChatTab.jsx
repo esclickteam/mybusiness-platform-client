@@ -69,11 +69,16 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
+// פונקציה לשחזור key ייחודי גם במקרה שאין מזהים
 const getMessageKey = (m) => {
   if (m.recommendationId) return `rec_${m.recommendationId}`;
   if (m._id) return `msg_${m._id}`;
   if (m.tempId) return `temp_${m.tempId}`;
-  return null;
+  // אם אין מזהה, צור מזהה ייחודי חדש (חשוב לשמור אותו אם ההודעה נשארת באותו קומפוננט)
+  if (!m.__uniqueKey) {
+    m.__uniqueKey = uuidv4();
+  }
+  return `uniq_${m.__uniqueKey}`;
 };
 
 export default function ClientChatTab({
@@ -103,7 +108,6 @@ export default function ClientChatTab({
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // Ref לשמירת ההודעות הכי עדכניות
   const messagesRef = useRef(messages);
   useEffect(() => {
     messagesRef.current = messages;
