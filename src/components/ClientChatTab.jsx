@@ -37,9 +37,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
     `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
 
   const totalDots = 20;
-  const activeDot = duration
-    ? Math.floor((progress / duration) * totalDots)
-    : 0;
+  const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
 
   return (
     <div className={`custom-audio-player ${userAvatar ? "with-avatar" : "no-avatar"}`}>
@@ -74,7 +72,6 @@ const getMessageKey = (m) => {
   if (m.recommendationId) return `rec_${m.recommendationId}`;
   if (m._id) return `msg_${m._id}`;
   if (m.tempId) return `temp_${m.tempId}`;
-  // אם אין מזהה, צור מזהה ייחודי חדש (חשוב לשמור אותו אם ההודעה נשארת באותו קומפוננט)
   if (!m.__uniqueKey) {
     m.__uniqueKey = uuidv4();
   }
@@ -250,6 +247,17 @@ export default function ClientChatTab({
   };
 
   const sendMessage = () => {
+    console.log("sendMessage called with values:", {
+      conversationId,
+      from: userId,
+      to: businessId,
+      text: input.trim(),
+      tempId: "will be generated below",
+      socketConnected: socket?.connected,
+      sending,
+      inputLength: input.trim().length,
+    });
+
     if (!input.trim() || sending || !socket) return;
     if (!socket.connected) {
       setError("Socket אינו מחובר, נסה להתחבר מחדש");
@@ -271,6 +279,7 @@ export default function ClientChatTab({
           tempId,
         },
         (ack) => {
+          console.log("createConversationAndSendMessage ack:", ack);
           setSending(false);
           if (ack?.ok && ack.conversationId && ack.message) {
             setConversationId(ack.conversationId);
@@ -296,6 +305,16 @@ export default function ClientChatTab({
       setMessages((prev) => [...prev, optimisticMsg]);
       setInput("");
 
+      console.log("Sending sendMessage event with:", {
+        conversationId,
+        from: userId,
+        to: businessId,
+        role: "client",
+        text: optimisticMsg.text,
+        tempId,
+        conversationType,
+      });
+
       socket.emit(
         "sendMessage",
         {
@@ -308,6 +327,7 @@ export default function ClientChatTab({
           conversationType,
         },
         (ack) => {
+          console.log("sendMessage ack:", ack);
           setSending(false);
           if (ack?.ok) {
             setMessages((prev) =>
@@ -366,6 +386,16 @@ export default function ClientChatTab({
       const arrayBuffer = await recordedBlob.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
+      console.log("Sending sendAudio event with data:", {
+        conversationId,
+        from: userId,
+        role: "client",
+        bufferLength: buffer.length,
+        fileType: recordedBlob.type,
+        duration: timer,
+        conversationType,
+      });
+
       socket.emit(
         "sendAudio",
         {
@@ -378,6 +408,7 @@ export default function ClientChatTab({
           conversationType,
         },
         (ack) => {
+          console.log("sendAudio ack:", ack);
           setSending(false);
           setRecordedBlob(null);
           setTimer(0);
@@ -399,6 +430,16 @@ export default function ClientChatTab({
     reader.onload = () => {
       const base64Data = reader.result.split(",")[1];
 
+      console.log("Sending sendFile event with data:", {
+        conversationId,
+        from: userId,
+        role: "client",
+        bufferLength: base64Data.length,
+        fileType: file.type,
+        fileName: file.name,
+        conversationType,
+      });
+
       socket.emit(
         "sendFile",
         {
@@ -411,6 +452,7 @@ export default function ClientChatTab({
           conversationType,
         },
         (ack) => {
+          console.log("sendFile ack:", ack);
           setSending(false);
           if (!ack.ok) setError("שגיאה בשליחת הקובץ");
         }
