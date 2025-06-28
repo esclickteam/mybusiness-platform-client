@@ -1,71 +1,93 @@
 import React, { useState, useEffect } from "react";
-import { useSocket } from "../context/socketContext"; // קונטקסט של socket
+import { useSocket } from "../context/socketContext";
 import { useAuth } from "../context/AuthContext";
 import BusinessChatTab from "./BusinessChatTab";
 import ClientChatTab from "./ClientChatTab";
 
 export default function ChatComponent({
-  userId,
   partnerId,
   initialConversationId,
   customerId: customerIdProp,
   isBusiness,
 }) {
   const socket = useSocket();
-  const { authToken } = useAuth(); // משיג את הטוקן מהקונטקסט
+  const { user, authToken, initialized } = useAuth();
+  // משיגים את ה־businessId מתוך ה־AuthContext
+  const businessId =
+    user?.businessId?.toString() || user?.business?._id?.toString() || null;
 
-  const [conversationId, setConversationId] = useState(initialConversationId || null);
+  const [conversationId, setConversationId] = useState(
+    initialConversationId || null
+  );
   const [conversations, setConversations] = useState([]);
   const [loadingConvs, setLoadingConvs] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-  const [currentCustomerId, setCurrentCustomerId] = useState(customerIdProp || null);
+  const [currentCustomerId, setCurrentCustomerId] = useState(
+    customerIdProp || null
+  );
 
+  // טעינת שיחות לעסק
   useEffect(() => {
-    if (!userId || !socket) return;
+    if (!businessId || !socket) return;
 
     if (isBusiness) {
       setLoadingConvs(true);
-      socket.emit("getConversations", { userId }, (res) => {
-        setLoadingConvs(false);
-        if (!res || typeof res !== "object") {
-          console.error("Invalid response from getConversations:", res);
-          return;
-        }
-        if (res.ok) {
-          const convs = Array.isArray(res.conversations) ? res.conversations : [];
-          setConversations(convs);
-          if (!conversationId && convs.length > 0) {
-            const first = convs[0];
-            const convoId = first._id ?? first.conversationId;
-            const custId = first.participants.find(
-              (pid) => pid.toString() !== userId.toString()
-            ) ?? null;
-            setConversationId(convoId);
-            setCurrentCustomerId(custId);
-          }
-        } else {
-          console.error("Error loading conversations:", res.error);
-        }
-      });
-    } else {
-      if (!conversationId && partnerId) {
-        setLoadingInit(true);
-        socket.emit("startConversation", { otherUserId: partnerId }, (res) => {
-          setLoadingInit(false);
+      socket.emit(
+        "getConversations",
+        { userId: businessId },
+        (res) => {
+          setLoadingConvs(false);
           if (!res || typeof res !== "object") {
-            console.error("Invalid response from startConversation:", res);
+            console.error("Invalid response from getConversations:", res);
             return;
           }
           if (res.ok) {
-            setConversationId(res.conversationId);
+            const convs = Array.isArray(res.conversations)
+              ? res.conversations
+              : [];
+            setConversations(convs);
+            if (!conversationId && convs.length > 0) {
+              const first = convs[0];
+              const convoId = first._id ?? first.conversationId;
+              const custId = first.participants.find(
+                (pid) => pid.toString() !== businessId.toString()
+              );
+              setConversationId(convoId);
+              setCurrentCustomerId(custId);
+            }
           } else {
-            console.error("Failed to start conversation:", res.error);
+            console.error("Error loading conversations:", res.error);
           }
-        });
+        }
+      );
+    } else {
+      // לקוח פותח שיחה
+      if (!conversationId && partnerId) {
+        setLoadingInit(true);
+        socket.emit(
+          "startConversation",
+          { otherUserId: partnerId },
+          (res) => {
+            setLoadingInit(false);
+            if (!res || typeof res !== "object") {
+              console.error(
+                "Invalid response from startConversation:",
+                res
+              );
+              return;
+            }
+            if (res.ok) {
+              setConversationId(res.conversationId);
+            } else {
+              console.error("Failed to start conversation:", res.error);
+            }
+          }
+        );
       }
     }
-  }, [userId, isBusiness, partnerId, socket, conversationId]);
+  }, [businessId, isBusiness, partnerId, socket, conversationId]);
 
+  // עדכון currentCustomerId כשמקצים שיחה
   useEffect(() => {
     if (isBusiness && conversationId && conversations.length) {
       const conv = conversations.find(
@@ -73,33 +95,33 @@ export default function ChatComponent({
       );
       if (conv) {
         const custId = conv.participants.find(
-          (pid) => pid.toString() !== userId.toString()
-        ) ?? null;
+          (pid) => pid.toString() !== businessId.toString()
+        );
         setCurrentCustomerId(custId);
       }
     }
-  }, [conversationId, isBusiness, conversations, userId]);
+  }, [conversationId, isBusiness, conversations, businessId]);
 
-  if (loadingInit) return <p>⏳ פותח שיחה…</p>;
-  if (loadingConvs) return <p>⏳ טוען שיחות…</p>;
+  // מצבי טעינה
+  if (!initialized) return <p>⏳ טוען פרטי משתמש…</p>;
+  if (isBusiness && loadingConvs) return <p>⏳ טוען שיחות…</p>;
   if (!conversationId) return <p>⏳ אין שיחה זמינה</p>;
-  if (!userId) return <p>⏳ טוען משתמש…</p>;
 
   return isBusiness ? (
     <BusinessChatTab
       conversationId={conversationId}
-      businessId={userId}
+      businessId={businessId}
       customerId={currentCustomerId}
       socket={socket}
       userRole="business"
       conversationType="user-business"
-      authToken={authToken}  // העברת הטוקן ל-BusinessChatTab
+      authToken={authToken}
     />
   ) : (
     <ClientChatTab
       conversationId={conversationId}
       businessId={partnerId}
-      userId={userId}
+      userId={businessId}
       socket={socket}
       userRole="client"
       conversationType="user-business"
