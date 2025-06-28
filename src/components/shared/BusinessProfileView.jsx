@@ -9,10 +9,7 @@ import "react-calendar/dist/Calendar.css";
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
 import "./BusinessProfileView.css";
 
-const ReviewForm = lazy(() => import("../../pages/business/dashboardPages/buildTabs/ReviewForm"));
-const ServicesSelector = lazy(() => import("../ServicesSelector"));
-const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar"));
-
+// טאב ראשי
 const TABS = [
   "ראשי",
   "גלריה",
@@ -22,30 +19,9 @@ const TABS = [
   "יומן",
 ];
 
-// מילון תרגום שדות דירוג
-const ratingLabels = {
-  service: "שירות 🤝",
-  professional: "מקצועיות 💼",
-  timing: "עמידה בזמנים ⏰",
-  availability: "זמינות 📞",
-  value: "תמורה למחיר 💰",
-  goal: "השגת מטרה 🎯",
-  experience: "חוויה כללית 🎉",
-};
-
-const StarDisplay = ({ rating }) => {
-  const full = Math.floor(rating);
-  const half = rating % 1 >= 0.5;
-  const stars = [];
-  for (let i = 0; i < full; i++) stars.push("★");
-  if (half) stars.push("✩");
-  while (stars.length < 5) stars.push("☆");
-  return (
-    <span style={{ color: "#f5a623", fontSize: "1.2rem", marginLeft: 4 }} aria-label={`דירוג ${rating} מתוך 5 כוכבים`}>
-      {stars.join("")}
-    </span>
-  );
-};
+const ReviewForm = lazy(() => import("../../pages/business/dashboardPages/buildTabs/ReviewForm"));
+const ServicesSelector = lazy(() => import("../ServicesSelector"));
+const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar"));
 
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
@@ -65,7 +41,6 @@ export default function BusinessProfileView() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [expandedReviews, setExpandedReviews] = useState({});
 
-  // בקשות נתונים
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['business', bizId],
     queryFn: () => API.get(`/business/${bizId}`).then(res => res.data.business || res.data),
@@ -85,7 +60,7 @@ export default function BusinessProfileView() {
     enabled: !!bizId
   });
 
-  // עדכון סטייטים כשנתונים נטענים
+  // עדכון סטייטים
   useEffect(() => {
     if (!data) return;
     setFaqs(data.faqs || []);
@@ -107,7 +82,6 @@ export default function BusinessProfileView() {
     setSchedule(sched);
   }, [workHoursData]);
 
-  // שליחת אירוע צפייה בפרופיל
   useEffect(() => {
     if (!socket || !bizId) return;
     socket.emit("profileView", { businessId: bizId }, (res) => {
@@ -119,12 +93,10 @@ export default function BusinessProfileView() {
     });
   }, [socket, bizId]);
 
-  // מיון ביקורות לפי תאריך חדש לישן
   const sortedReviews = [...reviews].sort(
     (a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
   );
 
-  // הפונקציה לשינוי מצב מועדפים
   const toggleFavorite = async () => {
     if (!user) {
       alert("אנא התחבר כדי לנהל מועדפים");
@@ -157,7 +129,6 @@ export default function BusinessProfileView() {
     }
   };
 
-  // הפעלת/כיבוי פירוט דירוג ביקורת
   const toggleReviewDetails = (id) => {
     setExpandedReviews((prev) => ({
       ...prev,
@@ -194,21 +165,18 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-
           {/* כפתור עריכת העסק במידה ומנהל */}
           {isOwner && (
             <Link to={`/business/${bizId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
-
           {/* לוגו העסק */}
           {logoUrl && (
             <div className="profile-logo-wrapper">
               <img className="profile-logo" src={logoUrl} alt="לוגו העסק" loading="lazy" />
             </div>
           )}
-
           {/* שם העסק וכפתור מועדפים */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <h1 className="business-name">{businessName}</h1>
@@ -503,7 +471,6 @@ export default function BusinessProfileView() {
                 )}
               </>
             )}
-
           </div>
         </div>
       </div>
