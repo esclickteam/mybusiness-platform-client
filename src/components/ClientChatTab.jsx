@@ -86,7 +86,7 @@ const getMessageKey = (m) => {
 export default function ClientChatTab({
   socket,
   conversationId,
-  setConversationId, // חדש - פונקציה לעדכון מזהה שיחה חדש
+  setConversationId,
   businessId,
   userId,
   messages,
@@ -110,7 +110,6 @@ export default function ClientChatTab({
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
 
-  // טען היסטוריית הודעות דרך Socket.IO רק אם יש conversationId
   useEffect(() => {
     if (!socket || !conversationId) {
       setLoading(false);
@@ -159,9 +158,8 @@ export default function ClientChatTab({
         socket.emit("leaveConversation", conversationId, conversationType === "business-business");
       }
     };
-  }, [socket, conversationId, conversationType, setMessages]);
+  }, [socket, conversationId, conversationType, setMessages, businessId]);
 
-  // מאזין להודעות חדשות (רק כשיש conversationId)
   useEffect(() => {
     if (!socket || !conversationId || !businessId) {
       console.log("Socket, conversationId or businessId missing for newMessage listener");
@@ -239,7 +237,6 @@ export default function ClientChatTab({
     };
   }, [socket, conversationId, businessId, setMessages, conversationType]);
 
-  // גלילה לתחתית ברשימת ההודעות
   useEffect(() => {
     if (!messageListRef.current) return;
     const el = messageListRef.current;
@@ -260,7 +257,6 @@ export default function ClientChatTab({
     if (fileInputRef.current) fileInputRef.current.click();
   };
 
-  // פונקציה לשליחת הודעה, מתמודדת גם עם יצירת שיחה ראשונה אם conversationId=null
   const sendMessage = () => {
     console.log("sendMessage called with input:", input);
     if (!input.trim() || sending || !socket) {
@@ -298,7 +294,6 @@ export default function ClientChatTab({
             setInput("");
             setError("");
 
-            // הצטרפות לחדר השיחה החדש
             console.log("Joining new conversation room:", ack.conversationId);
             socket.emit("joinConversation", ack.conversationId, conversationType === "business-business");
           } else {
@@ -322,6 +317,16 @@ export default function ClientChatTab({
       setMessages((prev) => [...prev, optimisticMsg]);
       setInput("");
 
+      console.log("Sending sendMessage with data:", {
+        conversationId,
+        from: userId,
+        to: businessId,
+        role: "client",
+        text: optimisticMsg.text,
+        tempId,
+        conversationType,
+      });
+
       socket.emit(
         "sendMessage",
         {
@@ -341,15 +346,13 @@ export default function ClientChatTab({
               prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
             );
           } else {
-            setError("שגיאה בשליחת ההודעה");
+            setError("שגיאה בשליחת ההודעה: " + (ack.error || "לא ידוע"));
             setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
           }
         }
       );
     }
   };
-
-
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
@@ -395,6 +398,17 @@ export default function ClientChatTab({
       const arrayBuffer = await recordedBlob.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
+      console.log("Sending sendAudio with data:", {
+        conversationId,
+        from: userId,
+        to: businessId,
+        role: "client",
+        bufferSize: buffer.length,
+        fileType: recordedBlob.type,
+        duration: timer,
+        conversationType,
+      });
+
       socket.emit(
         "sendAudio",
         {
@@ -412,6 +426,7 @@ export default function ClientChatTab({
           setRecordedBlob(null);
           setTimer(0);
           if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
+          else console.log("sendAudio ack:", ack);
         }
       );
     } catch (e) {
@@ -427,6 +442,18 @@ export default function ClientChatTab({
 
     const reader = new FileReader();
     reader.onload = () => {
+      const base64Data = reader.result.split(",")[1];
+      console.log("Sending sendFile with data:", {
+        conversationId,
+        from: userId,
+        to: businessId,
+        role: "client",
+        fileSize: base64Data.length,
+        fileType: file.type,
+        fileName: file.name,
+        conversationType,
+      });
+
       socket.emit(
         "sendFile",
         {
@@ -434,7 +461,7 @@ export default function ClientChatTab({
           from: userId,
           to: businessId,
           role: "client",
-          buffer: Buffer.from(reader.result.split(",")[1], "base64"),
+          buffer: Buffer.from(base64Data, "base64"),
           fileType: file.type,
           fileName: file.name,
           conversationType,
@@ -442,6 +469,7 @@ export default function ClientChatTab({
         (ack) => {
           setSending(false);
           if (!ack.ok) setError("שגיאה בשליחת הקובץ");
+          else console.log("sendFile ack:", ack);
         }
       );
     };
