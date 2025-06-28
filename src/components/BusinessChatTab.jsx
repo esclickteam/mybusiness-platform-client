@@ -461,10 +461,8 @@ export default function BusinessChatTab({
                   </a>
                 )
               ) : (
-  <div className="text">
-    {(m.text && m.text.toString().trim() !== '') ? m.text.toString() : ''}
-  </div>
-)}
+                <div className="text">{m.text}</div>
+              )}
 
               <div className="meta">
                 <span className="time">
