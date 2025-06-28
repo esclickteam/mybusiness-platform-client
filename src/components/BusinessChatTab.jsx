@@ -77,8 +77,8 @@ function messagesReducer(state, action) {
     case "append": {
       const idx = state.findIndex(
         (m) =>
-          m._id === action.payload._id ||
-          m.tempId === action.payload.tempId
+          (m._id && m._id === action.payload._id) ||
+          (m.tempId && m.tempId === action.payload.tempId)
       );
       if (idx !== -1) {
         const next = [...state];
@@ -135,100 +135,94 @@ export default function BusinessChatTab({
   const listRef = useRef(null);
 
   useEffect(() => {
-  if (!socket || !conversationId) {
-    dispatch({ type: "set", payload: [] });
-    return;
-  }
-
-  socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
-    if (!ack.ok) console.error("joinConversation failed:", ack.error);
-  });
-
-  socket.emit("markMessagesRead", conversationId, (resp) => {
-    if (!resp.ok) console.error("markMessagesRead failed");
-  });
-
-  // הוספת conversationType לקריאה
-  socket.emit(
-  "getHistory",
-  { conversationId, conversationType },
-  (res) => {
-    console.log("getHistory response:", res);
-    if (res.ok) {
-      const msgs = (res.messages || []).map((m) => {
-        let text = m.text || m.content || "";
-        if (text === "0") text = ""; // מניעת הצגת "0"
-        return {
-          ...m,
-          timestamp: m.createdAt || new Date().toISOString(),
-          text,
-          fileUrl: m.fileUrl || null,
-          fileType: m.fileType || null,
-          fileName: m.fileName || "",
-          fileDuration: m.fileDuration || 0,
-        };
-      });
-      dispatch({ type: "set", payload: msgs });
-    } else {
-      console.error("getHistory failed:", res.error);
+    if (!socket || !conversationId) {
       dispatch({ type: "set", payload: [] });
+      return;
     }
-  }
-);
 
+    socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
+      if (!ack.ok) console.error("joinConversation failed:", ack.error);
+    });
 
-  return () => {
-    socket.emit("leaveConversation", conversationId, isBusinessConversation);
-  };
-}, [socket, conversationId, isBusinessConversation, conversationType]);
+    socket.emit("markMessagesRead", conversationId, (resp) => {
+      if (!resp.ok) console.error("markMessagesRead failed");
+    });
 
+    socket.emit(
+      "getHistory",
+      { conversationId, conversationType },
+      (res) => {
+        if (res.ok) {
+          const msgs = (res.messages || []).map((m) => {
+            let text = m.text || m.content || "";
+            if (text === "0") text = ""; // מניעת הצגת "0"
+            return {
+              ...m,
+              timestamp: m.createdAt || new Date().toISOString(),
+              text,
+              fileUrl: m.fileUrl || null,
+              fileType: m.fileType || null,
+              fileName: m.fileName || "",
+              fileDuration: m.fileDuration || 0,
+              tempId: m.tempId || null,
+            };
+          });
+          dispatch({ type: "set", payload: msgs });
+        } else {
+          console.error("getHistory failed:", res.error);
+          dispatch({ type: "set", payload: [] });
+        }
+      }
+    );
+
+    return () => {
+      socket.emit("leaveConversation", conversationId, isBusinessConversation);
+    };
+  }, [socket, conversationId, isBusinessConversation, conversationType]);
 
   useEffect(() => {
-  if (!socket) return;
+    if (!socket) return;
 
-  const handleNew = (msg) => {
-    if (
-      msg.conversationId === conversationId &&
-      msg.conversationType === conversationType
-    ) {
-      // קיפול של msg.text ו־msg.content לאותו משתנה raw
-      const raw = msg.text || msg.content || "";
-      // המרת "0" לריק
-      const text = raw === "0" ? "" : raw;
+    const handleNew = (msg) => {
+      if (
+        msg.conversationId === conversationId &&
+        msg.conversationType === conversationType
+      ) {
+        const raw = msg.text || msg.content || "";
+        const text = raw === "0" ? "" : raw;
 
-      const safeMsg = {
-        ...msg,
-        timestamp: msg.createdAt || new Date().toISOString(),
-        text,                      // כבר נקי מ-"0"
-        fileUrl: msg.fileUrl || null,
-        fileType: msg.fileType || null,
-        fileName: msg.fileName || "",
-        fileDuration: msg.fileDuration || 0,
-      };
+        const safeMsg = {
+          ...msg,
+          timestamp: msg.createdAt || new Date().toISOString(),
+          text,
+          fileUrl: msg.fileUrl || null,
+          fileType: msg.fileType || null,
+          fileName: msg.fileName || "",
+          fileDuration: msg.fileDuration || 0,
+          tempId: msg.tempId || null,
+        };
 
-      dispatch({ type: "append", payload: safeMsg });
-    }
-  };
+        dispatch({ type: "append", payload: safeMsg });
+      }
+    };
 
-  const handleTyping = ({ from }) => {
-    if (from === customerId) {
-      setIsTyping(true);
+    const handleTyping = ({ from }) => {
+      if (from === customerId) {
+        setIsTyping(true);
+        clearTimeout(handleTyping._t);
+        handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
+      }
+    };
+
+    socket.on("newMessage", handleNew);
+    socket.on("typing", handleTyping);
+
+    return () => {
+      socket.off("newMessage", handleNew);
+      socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
-      handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
-    }
-  };
-
-  socket.on("newMessage", handleNew);
-  socket.on("typing", handleTyping);
-
-  return () => {
-    socket.off("newMessage", handleNew);
-    socket.off("typing", handleTyping);
-    clearTimeout(handleTyping._t);
-  };
-}, [socket, conversationId, customerId, conversationType]);
-
-
+    };
+  }, [socket, conversationId, customerId, conversationType]);
 
   useEffect(() => {
     const el = listRef.current;
@@ -282,8 +276,6 @@ export default function BusinessChatTab({
     );
   };
 
-
-
   const handleAttach = () => {
     fileInputRef.current?.click();
   };
@@ -319,7 +311,7 @@ export default function BusinessChatTab({
           fileType: file.type,
           buffer: reader.result,
           tempId,
-          conversationType, // שולח conversationType גם כאן
+          conversationType,
         },
         (ack) => {
           dispatch({
@@ -371,9 +363,7 @@ export default function BusinessChatTab({
 
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
-    mediaStreamRef.current
-      ?.getTracks()
-      .forEach((t) => t.stop());
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
     setRecording(false);
     clearInterval(timerRef.current);
   };
@@ -414,7 +404,7 @@ export default function BusinessChatTab({
           fileType: recordedBlob.type,
           duration: timer,
           tempId,
-          conversationType, // שולח conversationType
+          conversationType,
         },
         (ack) => {
           dispatch({
