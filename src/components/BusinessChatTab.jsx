@@ -114,6 +114,12 @@ export default function BusinessChatTab({
 
   const isBusinessConversation = conversationType === "business-business";
 
+  // שמירת ההודעות הכי עדכניות ב-ref
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
   const formatTime = (ts) => {
     if (!ts) return "";
     const d = new Date(ts);
@@ -190,8 +196,8 @@ export default function BusinessChatTab({
       ) {
         console.log("[socket] newMessage event received:", msg._id || msg.tempId);
 
-        // בדיקה אם ההודעה כבר קיימת במצב messages
-        const exists = messages.some(
+        // שימוש ב-messagesRef.current לבדיקה עדכנית של הודעות קיימות
+        const exists = messagesRef.current.some(
           (m) => m._id === msg._id || (msg.tempId && m.tempId === msg.tempId)
         );
         if (exists) {
@@ -233,7 +239,7 @@ export default function BusinessChatTab({
       socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
     };
-  }, [socket, conversationId, customerId, conversationType, messages]);
+  }, [socket, conversationId, customerId, conversationType]);
 
   useEffect(() => {
     const el = listRef.current;
