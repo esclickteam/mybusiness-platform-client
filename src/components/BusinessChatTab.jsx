@@ -235,7 +235,7 @@ export default function BusinessChatTab({
   const sendMessage = () => {
     if (sending) return;
     const text = input.trim();
-    if (!text || !socket) return;
+    if (!text || text === "0" || !socket) return;
     setSending(true);
     const tempId = uuidv4();
     const optimistic = {
