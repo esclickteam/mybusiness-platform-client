@@ -110,8 +110,11 @@ async function uploadFileToServer(
   }
 
   const data = await response.json();
-  return data.newMessage?.fileUrl || data.fileUrl || "";
+
+  const fileUrlFromNewMsg = data.newMessage?.file?.url;
+  return fileUrlFromNewMsg || data.fileUrl || "";
 }
+
 
 
 
