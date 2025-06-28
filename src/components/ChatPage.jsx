@@ -47,7 +47,15 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
           if (!selected && convs.length > 0) {
             const first = convs[0];
             const convoId = first._id || first.conversationId;
-            const partnerId = (first.participants || []).find((pid) => pid !== userId) || null;
+
+            // בדיקה קפדנית של partnerId: להשוות למחרוזות כדי למנוע השוואת סוגים שונים
+            const partnerId =
+              (first.participants || []).find(
+                (pid) => pid && pid.toString() !== userId.toString()
+              ) || null;
+
+            console.log("Selected conversation initialized:", { convoId, partnerId });
+
             setSelected({ conversationId: convoId, partnerId });
           }
         } else {
@@ -93,8 +101,16 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
   }, [userId, isBusiness, getValidAccessToken, logout, selected]);
 
   const handleSelect = ({ conversationId, partnerId }) => {
+    if (!partnerId) {
+      console.warn("Selected partnerId is null or undefined:", partnerId);
+      setError("לא ניתן לבחור שיחה ללא שותף תקין");
+      return;
+    }
     setSelected({ conversationId, partnerId });
   };
+
+  if (!userId) return <p>⏳ טוען משתמש…</p>;
+  if (!selected) return <p>⏳ בחר שיחה כדי להתחיל</p>;
 
   return (
     <div className="chat-page">
@@ -109,18 +125,14 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
         />
       </aside>
       <main className="chat-main">
-        {selected ? (
-          <ChatComponent
-            isBusiness={isBusiness}
-            userId={userId}
-            partnerId={selected.partnerId}
-            initialConversationId={selected.conversationId}
-            socket={socketRef.current}
-            existingMessages={selected.messages}
-          />
-        ) : (
-          <div className="empty-chat">בחר שיחה כדי להתחיל</div>
-        )}
+        <ChatComponent
+          isBusiness={isBusiness}
+          userId={userId}
+          partnerId={selected.partnerId}
+          initialConversationId={selected.conversationId}
+          socket={socketRef.current}
+          existingMessages={selected.messages}
+        />
       </main>
     </div>
   );
