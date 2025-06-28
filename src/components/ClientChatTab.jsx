@@ -80,11 +80,16 @@ async function uploadFileToServer(file) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch("/api/business/my/chat", {
-    method: "POST",
-    body: formData,
-    credentials: "include", // אם צריך לשלוח קוקיז או טוקן
-  });
+  const token = localStorage.getItem("token"); // או שם שאתה שומר בו את הטוקן
+
+const response = await fetch("/api/business/my/chat", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+  body: formData,
+  credentials: "include", 
+});
 
   if (!response.ok) {
     const err = await response.json();
