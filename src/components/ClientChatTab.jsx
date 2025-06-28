@@ -76,21 +76,21 @@ const getMessageKey = (m) => {
   return `uniq_${m.__uniqueKey}`;
 };
 
-async function sendChatMessageWithFile(file, conversationId, businessId, toId, message) {
+async function uploadFileToServer(file, conversationId, businessId, toId, message) {
   const formData = new FormData();
-  if (file) formData.append("file", file);
+  formData.append("file", file);
+
   if (conversationId) formData.append("conversationId", conversationId);
   if (businessId) formData.append("businessId", businessId);
   if (toId) formData.append("toId", toId);
-  formData.append("message", message || "");
-
+  formData.append("message", message || "");  // חובה לשים message (אפשר גם מחרוזת ריקה)
+  
   const token = localStorage.getItem("token");
 
   const response = await fetch("/api/business/my/chat", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      // אין צורך להגדיר Content-Type כאן כשמשתמשים ב-FormData — הדפדפן מטפל בזה אוטומטית.
     },
     body: formData,
     credentials: "include",
@@ -102,9 +102,8 @@ async function sendChatMessageWithFile(file, conversationId, businessId, toId, m
   }
 
   const data = await response.json();
-  return data.newMessage || data; // בהתאם למבנה התגובה
+  return data.newMessage?.fileUrl || data.fileUrl || "";
 }
-
 
 
 export default function ClientChatTab({
