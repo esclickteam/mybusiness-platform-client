@@ -216,10 +216,9 @@ export default function BusinessProfileView() {
 
           {/* דירוג כללי */}
           <div className="reviews-summary" aria-label={`דירוג ממוצע: ${roundedAvg.toFixed(1)} מתוך 5, מבוסס על ${reviews.length} ביקורות`}>
-  <div className="reviews-average">
-    {roundedAvg.toFixed(1)} ⭐
-  </div>
-  <div className="reviews-count">({reviews.length} ביקורות)</div>
+  <span className="reviews-count">({reviews.length} ביקורות)</span>
+  <span className="reviews-average">{roundedAvg.toFixed(1)}</span>
+  <span className="star">⭐</span>
 </div>
 
           <hr className="profile-divider" style={{ marginTop: "1rem", borderColor: "#4A148C" }} />
