@@ -282,7 +282,6 @@ export default function ClientChatTab({
         "createConversationAndSendMessage",
         {
           from: userId,
-          to: businessId,
           text: input.trim(),
           conversationType,
           tempId,
@@ -310,7 +309,6 @@ export default function ClientChatTab({
         tempId,
         conversationId,
         from: userId,
-        to: businessId,
         role: "client",
         text: input.trim(),
         timestamp: new Date(),
@@ -322,7 +320,6 @@ export default function ClientChatTab({
       console.log("Sending sendMessage with data:", {
         conversationId,
         from: userId,
-        to: businessId,
         role: "client",
         text: optimisticMsg.text,
         tempId,
@@ -334,7 +331,6 @@ export default function ClientChatTab({
         {
           conversationId,
           from: userId,
-          to: businessId,
           role: "client",
           text: optimisticMsg.text,
           tempId,
@@ -403,7 +399,6 @@ export default function ClientChatTab({
       console.log("Sending sendAudio with data:", {
         conversationId,
         from: userId,
-        to: businessId,
         role: "client",
         bufferSize: buffer.length,
         fileType: recordedBlob.type,
@@ -416,7 +411,6 @@ export default function ClientChatTab({
         {
           conversationId,
           from: userId,
-          to: businessId,
           role: "client",
           buffer,
           fileType: recordedBlob.type,
@@ -448,7 +442,6 @@ export default function ClientChatTab({
       console.log("Sending sendFile with data:", {
         conversationId,
         from: userId,
-        to: businessId,
         role: "client",
         fileSize: base64Data.length,
         fileType: file.type,
@@ -461,7 +454,6 @@ export default function ClientChatTab({
         {
           conversationId,
           from: userId,
-          to: businessId,
           role: "client",
           buffer: Buffer.from(base64Data, "base64"),
           fileType: file.type,
