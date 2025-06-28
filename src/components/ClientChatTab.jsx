@@ -67,7 +67,6 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
-// פונקציה לשחזור key ייחודי גם במקרה שאין מזהים
 const getMessageKey = (m) => {
   if (m.recommendationId) return `rec_${m.recommendationId}`;
   if (m._id) return `msg_${m._id}`;
@@ -247,106 +246,82 @@ export default function ClientChatTab({
   };
 
   const sendMessage = () => {
-  console.log("sendMessage called with values:", {
-    conversationId,
-    from: userId,
-    to: businessId,
-    text: input.trim(),
-    tempId: "will be generated below",
-    socketConnected: socket?.connected,
-    sending,
-    inputLength: input.trim().length,
-  });
+    if (!businessId) {
+      setError("businessId לא מוגדר, לא ניתן לשלוח הודעה");
+      return;
+    }
 
-  if (!businessId) {
-    setError("businessId לא מוגדר, לא ניתן לשלוח הודעה");
-    return;
-  }
+    if (!input.trim() || sending || !socket) return;
+    if (!socket.connected) {
+      setError("Socket אינו מחובר, נסה להתחבר מחדש");
+      return;
+    }
+    setSending(true);
+    setError("");
 
-  if (!input.trim() || sending || !socket) return;
-  if (!socket.connected) {
-    setError("Socket אינו מחובר, נסה להתחבר מחדש");
-    return;
-  }
-  setSending(true);
-  setError("");
+    const tempId = uuidv4();
 
-  const tempId = uuidv4();
-
-  if (!conversationId) {
-    socket.emit(
-      "createConversationAndSendMessage",
-      {
-        from: userId,
-        to: businessId,
-        text: input.trim(),
-        conversationType,
-        tempId,
-      },
-      (ack) => {
-        console.log("createConversationAndSendMessage ack:", ack);
-        setSending(false);
-        if (ack?.ok && ack.conversationId && ack.message) {
-          setConversationId(ack.conversationId);
-          setMessages([ack.message]);
-          setInput("");
-          socket.emit("joinConversation", ack.conversationId, conversationType === "business-business");
-        } else {
-          setError("שגיאה ביצירת השיחה");
+    if (!conversationId) {
+      socket.emit(
+        "createConversationAndSendMessage",
+        {
+          from: userId,
+          to: businessId,
+          text: input.trim(),
+          conversationType,
+          tempId,
+        },
+        (ack) => {
+          setSending(false);
+          if (ack?.ok && ack.conversationId && ack.message) {
+            setConversationId(ack.conversationId);
+            setMessages([ack.message]);
+            setInput("");
+            socket.emit("joinConversation", ack.conversationId, conversationType === "business-business");
+          } else {
+            setError("שגיאה ביצירת השיחה");
+          }
         }
-      }
-    );
-  } else {
-    const optimisticMsg = {
-      _id: tempId,
-      tempId,
-      conversationId,
-      from: userId,
-      role: "client",
-      text: input.trim(),
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setInput("");
-
-    console.log("Sending sendMessage event with:", {
-      conversationId,
-      from: userId,
-      to: businessId,
-      role: "client",
-      text: optimisticMsg.text,
-      tempId,
-      conversationType,
-    });
-
-    socket.emit(
-      "sendMessage",
-      {
+      );
+    } else {
+      const optimisticMsg = {
+        _id: tempId,
+        tempId,
         conversationId,
         from: userId,
-        to: businessId,
         role: "client",
-        text: optimisticMsg.text,
-        tempId,
-        conversationType,
-      },
-      (ack) => {
-        console.log("sendMessage ack:", ack);
-        setSending(false);
-        if (ack?.ok) {
-          setMessages((prev) =>
-            prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
-          );
-        } else {
-          setError("שגיאה בשליחת ההודעה: " + (ack.error || "לא ידוע"));
-          setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-        }
-      }
-    );
-  }
-};
+        text: input.trim(),
+        timestamp: new Date(),
+      };
 
+      setMessages((prev) => [...prev, optimisticMsg]);
+      setInput("");
+
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          text: optimisticMsg.text,
+          tempId,
+          conversationType,
+        },
+        (ack) => {
+          setSending(false);
+          if (ack?.ok) {
+            setMessages((prev) =>
+              prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
+            );
+          } else {
+            setError("שגיאה בשליחת ההודעה: " + (ack.error || "לא ידוע"));
+            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+          }
+        }
+      );
+    }
+  };
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
@@ -391,16 +366,7 @@ export default function ClientChatTab({
     try {
       const arrayBuffer = await recordedBlob.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-
-      console.log("Sending sendAudio event with data:", {
-        conversationId,
-        from: userId,
-        role: "client",
-        bufferLength: buffer.length,
-        fileType: recordedBlob.type,
-        duration: timer,
-        conversationType,
-      });
+      const tempId = uuidv4();
 
       socket.emit(
         "sendAudio",
@@ -412,9 +378,9 @@ export default function ClientChatTab({
           fileType: recordedBlob.type,
           duration: timer,
           conversationType,
+          tempId,
         },
         (ack) => {
-          console.log("sendAudio ack:", ack);
           setSending(false);
           setRecordedBlob(null);
           setTimer(0);
@@ -432,19 +398,27 @@ export default function ClientChatTab({
     if (!file || !socket) return;
     setSending(true);
 
+    const tempId = uuidv4();
+
+    // יצירת הודעה אופטימית עם tempId להצגה מיידית
+    const optimisticMsg = {
+      _id: tempId,
+      tempId,
+      conversationId,
+      from: userId,
+      role: "client",
+      fileName: file.name,
+      fileType: file.type,
+      // אפשר להוסיף URL זמני להצגה, לדוגמה:
+      fileUrl: URL.createObjectURL(file),
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+
     const reader = new FileReader();
     reader.onload = () => {
       const base64Data = reader.result.split(",")[1];
-
-      console.log("Sending sendFile event with data:", {
-        conversationId,
-        from: userId,
-        role: "client",
-        bufferLength: base64Data.length,
-        fileType: file.type,
-        fileName: file.name,
-        conversationType,
-      });
 
       socket.emit(
         "sendFile",
@@ -456,17 +430,25 @@ export default function ClientChatTab({
           fileType: file.type,
           fileName: file.name,
           conversationType,
+          tempId,
         },
         (ack) => {
-          console.log("sendFile ack:", ack);
           setSending(false);
-          if (!ack.ok) setError("שגיאה בשליחת הקובץ");
+          if (ack.ok && ack.message) {
+            setMessages((prev) =>
+              prev.map((msg) => (msg.tempId === tempId ? ack.message : msg))
+            );
+          } else {
+            setError("שגיאה בשליחת הקובץ");
+            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+          }
         }
       );
     };
     reader.onerror = () => {
       setSending(false);
       setError("שגיאה בהמרת הקובץ");
+      setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
     };
 
     reader.readAsDataURL(file);
