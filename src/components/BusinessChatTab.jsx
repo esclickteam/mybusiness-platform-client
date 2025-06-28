@@ -69,11 +69,10 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   );
 }
 
-// Reducer לניהול היסטוריית ההודעות עם לוגים
+// Reducer לניהול היסטוריית ההודעות
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
-      console.log("[messagesReducer] Setting messages, count:", action.payload.length);
       return action.payload;
     case "append": {
       const idx = state.findIndex(
@@ -82,16 +81,13 @@ function messagesReducer(state, action) {
           (m.tempId && m.tempId === action.payload.tempId)
       );
       if (idx !== -1) {
-        console.log("[messagesReducer] Updating existing message:", action.payload._id || action.payload.tempId);
         const next = [...state];
         next[idx] = { ...next[idx], ...action.payload };
         return next;
       }
-      console.log("[messagesReducer] Adding new message:", action.payload._id || action.payload.tempId);
       return [...state, action.payload];
     }
     case "updateStatus":
-      console.log("[messagesReducer] Updating status for message id:", action.payload.id);
       return state.map((m) =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
@@ -140,28 +136,22 @@ export default function BusinessChatTab({
 
   useEffect(() => {
     if (!socket || !conversationId) {
-      console.log("[useEffect] No socket or conversationId, clearing messages");
       dispatch({ type: "set", payload: [] });
       return;
     }
 
-    console.log("[useEffect] Joining conversation:", conversationId);
-
     socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
       if (!ack.ok) console.error("joinConversation failed:", ack.error);
-      else console.log("joinConversation success");
     });
 
     socket.emit("markMessagesRead", conversationId, (resp) => {
       if (!resp.ok) console.error("markMessagesRead failed");
-      else console.log("markMessagesRead success");
     });
 
     socket.emit(
       "getHistory",
       { conversationId, conversationType },
       (res) => {
-        console.log("[getHistory] Response received:", res);
         if (res.ok) {
           const msgs = (res.messages || []).map((m) => {
             let text = m.text || m.content || "";
@@ -186,7 +176,6 @@ export default function BusinessChatTab({
     );
 
     return () => {
-      console.log("[useEffect] Leaving conversation:", conversationId);
       socket.emit("leaveConversation", conversationId, isBusinessConversation);
     };
   }, [socket, conversationId, isBusinessConversation, conversationType]);
@@ -200,6 +189,16 @@ export default function BusinessChatTab({
         msg.conversationType === conversationType
       ) {
         console.log("[socket] newMessage event received:", msg._id || msg.tempId);
+
+        // בדיקה אם ההודעה כבר קיימת במצב messages
+        const exists = messages.some(
+          (m) => m._id === msg._id || (msg.tempId && m.tempId === msg.tempId)
+        );
+        if (exists) {
+          console.log("[messagesReducer] Skipping duplicate message:", msg._id || msg.tempId);
+          return; // לא להוסיף שוב
+        }
+
         const raw = msg.text || msg.content || "";
         const text = raw === "0" ? "" : raw;
 
@@ -230,22 +229,19 @@ export default function BusinessChatTab({
     socket.on("typing", handleTyping);
 
     return () => {
-      console.log("[useEffect] Cleaning up socket listeners");
       socket.off("newMessage", handleNew);
       socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
     };
-  }, [socket, conversationId, customerId, conversationType]);
+  }, [socket, conversationId, customerId, conversationType, messages]);
 
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
     const nearBottom =
       el.scrollHeight - el.scrollTop - el.clientHeight < 100;
-    if (nearBottom) {
-      el.scrollTop = el.scrollHeight;
-      console.log("[useEffect] Auto-scrolled to bottom");
-    }
+    if (nearBottom) el.scrollTop = el.scrollHeight;
+    console.log("[useEffect] Auto-scrolled to bottom");
   }, [messages, isTyping]);
 
   const handleInput = (e) => {
@@ -259,6 +255,7 @@ export default function BusinessChatTab({
     if (!text || text === "0" || !socket) return;
     setSending(true);
     const tempId = uuidv4();
+    console.log("[sendMessage] Sending message:", tempId, text);
     const optimistic = {
       _id: tempId,
       conversationId,
@@ -269,7 +266,6 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
-    console.log("[sendMessage] Sending message:", tempId, text);
     dispatch({ type: "append", payload: optimistic });
     setInput("");
 
@@ -277,7 +273,7 @@ export default function BusinessChatTab({
       "sendMessage",
       { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
       (ack) => {
-        console.log("[sendMessage] Ack received:", ack);
+        console.log("[sendMessage] Ack received: ", ack);
         setSending(false);
         dispatch({
           type: "updateStatus",
@@ -303,6 +299,8 @@ export default function BusinessChatTab({
     if (!file || !socket) return;
     const tempId = uuidv4();
 
+    console.log("[sendFile] Preparing file:", file.name, tempId);
+
     const optimistic = {
       _id: tempId,
       conversationId,
@@ -315,7 +313,6 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
-    console.log("[handleFileChange] Sending file:", file.name, tempId);
     dispatch({ type: "append", payload: optimistic });
 
     const reader = new FileReader();
@@ -399,6 +396,7 @@ export default function BusinessChatTab({
   const sendRecording = () => {
     if (!recordedBlob || !socket) return;
     const tempId = uuidv4();
+    console.log("[sendRecording] Sending audio message:", tempId);
     const optimistic = {
       _id: tempId,
       conversationId,
@@ -412,7 +410,6 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
-    console.log("[sendRecording] Sending audio message:", tempId);
     dispatch({ type: "append", payload: optimistic });
     setRecordedBlob(null);
 
