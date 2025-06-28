@@ -76,21 +76,14 @@ const getMessageKey = (m) => {
   return `uniq_${m.__uniqueKey}`;
 };
 
-async function uploadFileToServer(
-  file,
-  conversationId,
-  businessId,
-  toId,
-  message
-) {
+async function uploadFileToServer(file, conversationId, businessId, toId, message) {
   const formData = new FormData();
   formData.append("file", file);
 
   if (conversationId) formData.append("conversationId", conversationId);
-  if (businessId)    formData.append("businessId", businessId);
-  if (toId)          formData.append("toId", toId);
+  if (businessId) formData.append("businessId", businessId);
+  if (toId) formData.append("toId", toId);
 
-  // אם message הוא undefined או ריק אחרי trim(), נשלח רווח במקום
   const effectiveMessage = message && message.trim() ? message : " ";
   formData.append("message", effectiveMessage);
 
@@ -114,10 +107,6 @@ async function uploadFileToServer(
   const fileUrlFromNewMsg = data.newMessage?.file?.url;
   return fileUrlFromNewMsg || data.fileUrl || "";
 }
-
-
-
-
 
 export default function ClientChatTab({
   socket,
@@ -412,13 +401,12 @@ export default function ClientChatTab({
       const file = new File([recordedBlob], `recording_${Date.now()}.webm`, { type: recordedBlob.type });
       const uploadedUrl = await uploadFileToServer(file, conversationId, businessId, userId, input.trim());
 
-
       socket.emit(
         "sendMessage",
         {
           conversationId,
           from: userId,
-          to: businessId, 
+          to: businessId,
           role: "client",
           fileUrl: uploadedUrl,
           fileName: file.name,
@@ -441,70 +429,68 @@ export default function ClientChatTab({
   };
 
   const handleFileChange = async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-  setSending(true);
-  setError("");
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSending(true);
+    setError("");
 
-  const tempId = uuidv4();
-  const optimisticMsg = {
-    _id: tempId,
-    tempId,
-    conversationId,
-    from: userId,
-    role: "client",
-    fileName: file.name,
-    fileType: file.type,
-    fileUrl: URL.createObjectURL(file),
-    timestamp: new Date(),
-  };
-
-  setMessages((prev) => [...prev, optimisticMsg]);
-
-  try {
-    // שולחים ל־uploadFileToServer את businessId כ־toId (ולמסר הקלט אם קיים)
-    const uploadedUrl = await uploadFileToServer(
-      file,
+    const tempId = uuidv4();
+    const optimisticMsg = {
+      _id: tempId,
+      tempId,
       conversationId,
-      businessId,
-      businessId,          // <–– toId צריך להיות המזהה של היעד (העסק)
-      input.trim()         // ניתן גם לערוך או להשאיר ריק, הפונקציה מטפלת בברירת־מחדל
-    );
+      from: userId,
+      role: "client",
+      fileName: file.name,
+      fileType: file.type,
+      fileUrl: URL.createObjectURL(file),
+      timestamp: new Date(),
+    };
 
-    socket.emit(
-      "sendMessage",
-      {
+    setMessages((prev) => [...prev, optimisticMsg]);
+
+    try {
+      const uploadedUrl = await uploadFileToServer(
+        file,
         conversationId,
-        from: userId,
-        to: businessId,     // <–– הוספנו את השדה to
-        role: "client",
-        fileUrl: uploadedUrl,
-        fileName: file.name,
-        fileType: file.type,
-        tempId,
-        conversationType,
-      },
-      (ack) => {
-        setSending(false);
-        if (ack.ok && ack.message) {
-          setMessages((prev) =>
-            prev.map((msg) => (msg.tempId === tempId ? ack.message : msg))
-          );
-        } else {
-          setError("שגיאה בשליחת הקובץ");
-          setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+        businessId,
+        businessId,
+        input.trim()
+      );
+
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          fileUrl: uploadedUrl,
+          fileName: file.name,
+          fileType: file.type,
+          tempId,
+          conversationType,
+        },
+        (ack) => {
+          setSending(false);
+          if (ack.ok && ack.message) {
+            setMessages((prev) =>
+              prev.map((msg) => (msg.tempId === tempId ? ack.message : msg))
+            );
+          } else {
+            setError("שגיאה בשליחת הקובץ");
+            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+          }
         }
-      }
-    );
-  } catch (error) {
-    setSending(false);
-    setError("שגיאה בהעלאת הקובץ: " + error.message);
-    setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-  }
+      );
+    } catch (error) {
+      setSending(false);
+      setError("שגיאה בהעלאת הקובץ: " + error.message);
+      setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+    }
 
-  e.target.value = null;
-};
-
+    e.target.value = null;
+  };
 
   return (
     <div className="chat-container client">
@@ -521,12 +507,29 @@ export default function ClientChatTab({
                 m.isRecommendation ? " ai-recommendation" : ""
               }`}
             >
-              {m.image ? (
-                <img
-                  src={m.image}
-                  alt={m.fileName || "image"}
-                  style={{ maxWidth: 200, borderRadius: 8 }}
-                />
+              {m.file ? (
+                m.file.type && m.file.type.startsWith("audio") ? (
+                  <WhatsAppAudioPlayer
+                    src={m.file.url}
+                    userAvatar={m.userAvatar}
+                    duration={m.file.duration || m.fileDuration}
+                  />
+                ) : m.file.type && m.file.type.startsWith("image") ? (
+                  <img
+                    src={m.file.url}
+                    alt={m.file.name || "image"}
+                    style={{ maxWidth: 200, borderRadius: 8 }}
+                  />
+                ) : (
+                  <a
+                    href={m.file.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download={m.file.name}
+                  >
+                    {m.file.name || "קובץ להורדה"}
+                  </a>
+                )
               ) : m.fileUrl ? (
                 m.fileType && m.fileType.startsWith("audio") ? (
                   <WhatsAppAudioPlayer
