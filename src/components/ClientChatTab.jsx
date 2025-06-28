@@ -247,71 +247,82 @@ export default function ClientChatTab({
   };
 
   const sendMessage = () => {
-    console.log("sendMessage called with:", {
+  console.log("sendMessage called with values:", {
+    conversationId,
+    from: userId,
+    to: businessId,
+    text: input.trim(),
+    tempId: "will be generated below",
+    socketConnected: socket?.connected,
+    sending,
+    inputLength: input.trim().length,
+  });
+
+  if (!businessId) {
+    setError("businessId לא מוגדר, לא ניתן לשלוח הודעה");
+    return;
+  }
+
+  if (!input.trim() || sending || !socket) return;
+  if (!socket.connected) {
+    setError("Socket אינו מחובר, נסה להתחבר מחדש");
+    return;
+  }
+  setSending(true);
+  setError("");
+
+  const tempId = uuidv4();
+
+  if (!conversationId) {
+    socket.emit(
+      "createConversationAndSendMessage",
+      {
+        from: userId,
+        to: businessId,
+        text: input.trim(),
+        conversationType,
+        tempId,
+      },
+      (ack) => {
+        console.log("createConversationAndSendMessage ack:", ack);
+        setSending(false);
+        if (ack?.ok && ack.conversationId && ack.message) {
+          setConversationId(ack.conversationId);
+          setMessages([ack.message]);
+          setInput("");
+          socket.emit("joinConversation", ack.conversationId, conversationType === "business-business");
+        } else {
+          setError("שגיאה ביצירת השיחה");
+        }
+      }
+    );
+  } else {
+    const optimisticMsg = {
+      _id: tempId,
+      tempId,
+      conversationId,
+      from: userId,
+      role: "client",
+      text: input.trim(),
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setInput("");
+
+    console.log("Sending sendMessage event with:", {
       conversationId,
       from: userId,
       to: businessId,
-      text: input.trim(),
-      socketConnected: socket?.connected,
-      sending,
-      inputLength: input.trim().length,
+      role: "client",
+      text: optimisticMsg.text,
+      tempId,
+      conversationType,
     });
 
-    if (!input.trim() || sending || !socket) return;
-
-    if (!businessId) {
-      setError("היעד אינו מוגדר. נסה לרענן את הדף.");
-      console.error("sendMessage aborted: businessId is undefined");
-      return;
-    }
-
-    if (!socket.connected) {
-      setError("Socket אינו מחובר, נסה להתחבר מחדש");
-      return;
-    }
-    setSending(true);
-    setError("");
-
-    const tempId = uuidv4();
-
-    if (!conversationId) {
-      socket.emit(
-        "createConversationAndSendMessage",
-        {
-          from: userId,
-          to: businessId,
-          text: input.trim(),
-          conversationType,
-          tempId,
-        },
-        (ack) => {
-          console.log("createConversationAndSendMessage ack:", ack);
-          setSending(false);
-          if (ack?.ok && ack.conversationId && ack.message) {
-            setConversationId(ack.conversationId);
-            setMessages([ack.message]);
-            setInput("");
-            socket.emit("joinConversation", ack.conversationId, conversationType === "business-business");
-          } else {
-            setError("שגיאה ביצירת השיחה");
-          }
-        }
-      );
-    } else {
-      const optimisticMsg = {
-        _id: tempId,
-        tempId,
-        conversationId,
-        from: userId,
-        role: "client",
-        text: input.trim(),
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, optimisticMsg]);
-      setInput("");
-
-      console.log("Sending sendMessage event with:", {
+    socket.emit(
+      "sendMessage",
+      {
         conversationId,
         from: userId,
         to: businessId,
@@ -319,34 +330,23 @@ export default function ClientChatTab({
         text: optimisticMsg.text,
         tempId,
         conversationType,
-      });
-
-      socket.emit(
-        "sendMessage",
-        {
-          conversationId,
-          from: userId,
-          to: businessId,
-          role: "client",
-          text: optimisticMsg.text,
-          tempId,
-          conversationType,
-        },
-        (ack) => {
-          console.log("sendMessage ack:", ack);
-          setSending(false);
-          if (ack?.ok) {
-            setMessages((prev) =>
-              prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
-            );
-          } else {
-            setError("שגיאה בשליחת ההודעה: " + (ack.error || "לא ידוע"));
-            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-          }
+      },
+      (ack) => {
+        console.log("sendMessage ack:", ack);
+        setSending(false);
+        if (ack?.ok) {
+          setMessages((prev) =>
+            prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
+          );
+        } else {
+          setError("שגיאה בשליחת ההודעה: " + (ack.error || "לא ידוע"));
+          setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
         }
-      );
-    }
-  };
+      }
+    );
+  }
+};
+
 
   const getSupportedMimeType = () =>
     MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";

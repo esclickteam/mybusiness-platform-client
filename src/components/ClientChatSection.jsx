@@ -13,21 +13,22 @@ export default function ClientChatSection() {
 
   /* ─── Local state ──────────────────────────────────────────────── */
   const [conversationId, setConversationId] = useState(null);
-  const [businessName, setBusinessName]     = useState("");
-  const [businessId,  setBusinessId]        = useState(businessIdFromParams || null);
-  const [loading,      setLoading]          = useState(true);
-  const [error,        setError]            = useState("");
-  const [messages,     setMessages]         = useState([]);
+  const [businessName, setBusinessName] = useState("");
+  const [businessId, setBusinessId] = useState(businessIdFromParams || null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [messages, setMessages] = useState([]);
 
   const socketRef = useRef(null);
 
   /* ─── Create socket once ─────────────────────────────────────────────────── */
   useEffect(() => {
+    console.log("ClientChatSection: initialized =", initialized, "userId =", userId);
     if (!initialized || !userId) return;
-    if (socketRef.current)       return; // already connected
+    if (socketRef.current) return; // already connected
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
-    const token     = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
@@ -37,19 +38,25 @@ export default function ClientChatSection() {
       autoConnect: true,
     });
 
-    socketRef.current.on("connect", () => setError(""));
+    socketRef.current.on("connect", () => {
+      console.log("Socket connected");
+      setError("");
+    });
 
     socketRef.current.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
       if (reason !== "io client disconnect") {
         setError("Socket disconnected unexpectedly: " + reason);
       }
     });
 
     socketRef.current.on("connect_error", (err) => {
+      console.log("Socket connect error:", err);
       setError("שגיאה בחיבור לסוקט: " + err.message);
     });
 
     return () => {
+      console.log("Disconnecting socket");
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
@@ -57,6 +64,7 @@ export default function ClientChatSection() {
 
   /* ─── Fetch user conversations once (REST) ─────────────────────── */
   useEffect(() => {
+    console.log("Fetching user conversations for userId:", userId);
     if (!userId) return;
 
     setLoading(true);
@@ -69,8 +77,8 @@ export default function ClientChatSection() {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log("User conversations response:", data);
         if (Array.isArray(data.conversations) && data.conversations.length) {
-          // נסה לבחור שיחה לפי businessId מה‑URL, אחרת הראשונה ברשימה
           let conv = null;
           if (businessIdFromParams) {
             conv = data.conversations.find(
@@ -79,11 +87,13 @@ export default function ClientChatSection() {
           }
           if (!conv) conv = data.conversations[0];
 
+          console.log("Selected conversation:", conv);
+
           setConversationId(conv.conversationId);
           setBusinessName(conv.otherParty?.name || "");
           setBusinessId(conv.otherParty?.id);
         } else {
-          // אין שיחות קיימות – נתחיל חדשה כשישלחו הודעה
+          console.log("No conversations found");
           setConversationId(null);
           setBusinessName("");
           setBusinessId(businessIdFromParams || null);
@@ -97,9 +107,16 @@ export default function ClientChatSection() {
       });
   }, [userId, businessIdFromParams]);
 
+  /* ─── Log changes to conversationId and businessId ────────────── */
+  useEffect(() => {
+    console.log("Updated conversationId:", conversationId);
+    console.log("Updated businessId:", businessId);
+  }, [conversationId, businessId]);
+
   /* ─── WS: history + realtime listeners ─────────────────────────── */
   useEffect(() => {
     const socket = socketRef.current;
+    console.log("Setting up socket listeners, conversationId:", conversationId, "businessId:", businessId);
     if (!socket || !socket.connected || !conversationId) {
       setMessages([]);
       return;
@@ -108,6 +125,7 @@ export default function ClientChatSection() {
     setLoading(true);
 
     socket.emit("getHistory", { conversationId, businessId }, (res) => {
+      console.log("getHistory response:", res);
       if (res.ok) {
         setMessages(Array.isArray(res.messages) ? res.messages : []);
         setError("");
@@ -139,7 +157,7 @@ export default function ClientChatSection() {
     socket.on("messageApproved", handleApproved);
 
     socket.emit("joinConversation", conversationId);
-    businessId && socket.emit("joinRoom", businessId);
+    if (businessId) socket.emit("joinRoom", businessId);
 
     return () => {
       socket.off("newMessage", handleNew);
