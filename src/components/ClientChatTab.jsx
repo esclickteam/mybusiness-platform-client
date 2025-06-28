@@ -76,20 +76,24 @@ const getMessageKey = (m) => {
   return `uniq_${m.__uniqueKey}`;
 };
 
-async function uploadFileToServer(file) {
+async function uploadFileToServer(file, conversationId, businessId, userId) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const token = localStorage.getItem("token"); // או שם שאתה שומר בו את הטוקן
+  if (conversationId) formData.append("conversationId", conversationId);
+  if (businessId) formData.append("businessId", businessId);
+  if (userId) formData.append("from", userId);
 
-const response = await fetch("/api/business/my/chat", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-  body: formData,
-  credentials: "include", 
-});
+  const token = localStorage.getItem("token");
+
+  const response = await fetch("/api/business/my/chat", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+    credentials: "include",
+  });
 
   if (!response.ok) {
     const err = await response.json();
@@ -97,7 +101,7 @@ const response = await fetch("/api/business/my/chat", {
   }
 
   const data = await response.json();
-  return data.newMessage?.fileUrl || data.fileUrl || ""; // בהתאם לתגובה מהשרת
+  return data.newMessage?.fileUrl || data.fileUrl || "";
 }
 
 export default function ClientChatTab({
@@ -391,7 +395,7 @@ export default function ClientChatTab({
 
     try {
       const file = new File([recordedBlob], `recording_${Date.now()}.webm`, { type: recordedBlob.type });
-      const uploadedUrl = await uploadFileToServer(file);
+      const uploadedUrl = await uploadFileToServer(file, conversationId, businessId, userId);
 
       socket.emit(
         "sendMessage",
@@ -434,14 +438,14 @@ export default function ClientChatTab({
       role: "client",
       fileName: file.name,
       fileType: file.type,
-      fileUrl: URL.createObjectURL(file), // תצוגה זמנית
+      fileUrl: URL.createObjectURL(file),
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
 
     try {
-      const uploadedUrl = await uploadFileToServer(file);
+      const uploadedUrl = await uploadFileToServer(file, conversationId, businessId, userId);
 
       socket.emit(
         "sendMessage",
