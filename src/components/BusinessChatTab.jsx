@@ -185,23 +185,31 @@ export default function BusinessChatTab({
 
   useEffect(() => {
   if (!socket) return;
+
   const handleNew = (msg) => {
     if (
       msg.conversationId === conversationId &&
-      msg.conversationType === conversationType 
+      msg.conversationType === conversationType
     ) {
+      // קיפול של msg.text ו־msg.content לאותו משתנה raw
+      const raw = msg.text || msg.content || "";
+      // המרת "0" לריק
+      const text = raw === "0" ? "" : raw;
+
       const safeMsg = {
         ...msg,
         timestamp: msg.createdAt || new Date().toISOString(),
-        text: msg.text === "0" ? "" : (msg.text || msg.content || ""),  // <-- התיקון פה
+        text,                      // כבר נקי מ-"0"
         fileUrl: msg.fileUrl || null,
         fileType: msg.fileType || null,
         fileName: msg.fileName || "",
         fileDuration: msg.fileDuration || 0,
       };
+
       dispatch({ type: "append", payload: safeMsg });
     }
   };
+
   const handleTyping = ({ from }) => {
     if (from === customerId) {
       setIsTyping(true);
@@ -209,14 +217,17 @@ export default function BusinessChatTab({
       handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
     }
   };
+
   socket.on("newMessage", handleNew);
   socket.on("typing", handleTyping);
+
   return () => {
     socket.off("newMessage", handleNew);
     socket.off("typing", handleTyping);
     clearTimeout(handleTyping._t);
   };
 }, [socket, conversationId, customerId, conversationType]);
+
 
 
   useEffect(() => {
@@ -475,7 +486,7 @@ export default function BusinessChatTab({
                 <span className="time">
                   {formatTime(m.timestamp)}
                 </span>
-                {m.fileDuration && (
+                {m.fileDuration > 0 && (
                   <span className="audio-length">{`${Math.floor(
                     m.fileDuration / 60
                   )
