@@ -192,7 +192,8 @@ export default function BusinessProfileView() {
                 border: "none",
                 cursor: "pointer",
                 fontSize: "1.5rem",
-                color: isFavorite ? "red" : "gray",
+                color: isFavorite ? "#FF4081" : "#4A148C", // צבעים מודרניים
+                transition: "color 0.3s ease",
               }}
             >
               {isFavorite ? "❤️" : "🤍"}
@@ -212,7 +213,9 @@ export default function BusinessProfileView() {
             <span className="big-score" style={{ fontSize: "1.8rem", fontWeight: "bold", color: "#4A148C" }}>
               {roundedAvg.toFixed(1)}
             </span>
-            <span className="count" style={{ fontSize: "1.2rem", color: "#4A148C" }}>({reviews.length} ביקורות)</span>
+            <span className="count" style={{ fontSize: "1.2rem", color: "#4A148C" }}>
+              ({reviews.length} ביקורות)
+            </span>
           </div>
 
           <hr className="profile-divider" style={{ marginTop: "1rem", borderColor: "#4A148C" }} />
@@ -229,12 +232,14 @@ export default function BusinessProfileView() {
                 style={{
                   padding: "10px 20px",
                   fontSize: "1rem",
-                  background: "#4A148C",
+                  background: tab === currentTab ? "#4A148C" : "#9C4D99", // צבעים סגולים שונים
                   color: "white",
                   border: "none",
                   cursor: "pointer",
                   margin: "0 5px",
                   borderRadius: "6px",
+                  boxShadow: tab === currentTab ? "0 4px 10px rgba(0, 0, 0, 0.2)" : "none", // צללים
+                  transition: "background-color 0.3s ease",
                 }}
               >
                 {tab}
@@ -244,14 +249,13 @@ export default function BusinessProfileView() {
 
           {/* תוכן לפי טאבים */}
           <div className="tab-content" role="tabpanel">
-
             {/* ראשי */}
             {currentTab === "ראשי" && (
               <>
                 <div className="public-main-images">
                   {mainImages.length ? (
                     mainImages.slice(0, 6).map((url, i) => (
-                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} loading="lazy" style={{ margin: "10px", width: "100%", height: "auto" }} />
+                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} loading="lazy" style={{ margin: "10px", width: "100%", height: "auto", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }} />
                     ))
                   ) : (
                     <p className="no-data">אין תמונות להצגה</p>
