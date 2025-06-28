@@ -76,6 +76,20 @@ const getMessageKey = (m) => {
   return `uniq_${m.__uniqueKey}`;
 };
 
+// פונקציית נירמול שדות מטא-דאטה בקובץ להבטיח שדות אחידים ל־UI
+function normalizeMessageFileFields(message) {
+  if (!message.fileUrl && message.url) {
+    message.fileUrl = message.url;
+  }
+  if (!message.fileName && message.originalName) {
+    message.fileName = message.originalName;
+  }
+  if (!message.fileType && message.mimeType) {
+    message.fileType = message.mimeType;
+  }
+  return message;
+}
+
 async function uploadFileToServer(
   file,
   conversationId,
@@ -87,10 +101,9 @@ async function uploadFileToServer(
   formData.append("file", file);
 
   if (conversationId) formData.append("conversationId", conversationId);
-  if (businessId)    formData.append("businessId", businessId);
-  if (toId)          formData.append("toId", toId);
+  if (businessId) formData.append("businessId", businessId);
+  if (toId) formData.append("toId", toId);
 
-  // אם message הוא undefined או ריק אחרי trim(), נשלח רווח במקום
   const effectiveMessage = message && message.trim() ? message : " ";
   formData.append("message", effectiveMessage);
 
@@ -114,10 +127,6 @@ async function uploadFileToServer(
   const fileUrlFromNewMsg = data.newMessage?.file?.url;
   return fileUrlFromNewMsg || data.fileUrl || "";
 }
-
-
-
-
 
 export default function ClientChatTab({
   socket,
@@ -177,7 +186,8 @@ export default function ClientChatTab({
           { conversationId, limit: 50, conversationType, businessId },
           (response) => {
             if (response.ok) {
-              setMessages(Array.isArray(response.messages) ? response.messages : []);
+              const normalizedMessages = (Array.isArray(response.messages) ? response.messages : []).map(normalizeMessageFileFields);
+              setMessages(normalizedMessages);
               setError("");
             } else {
               setError("שגיאה בטעינת ההיסטוריה: " + (response.error || ""));
@@ -201,6 +211,8 @@ export default function ClientChatTab({
 
     const handleIncomingMessage = (msg) => {
       if (msg.isRecommendation && msg.status === "pending") return;
+
+      msg = normalizeMessageFileFields(msg);
 
       const id = msg.isRecommendation
         ? `rec_${msg.recommendationId}`
@@ -237,6 +249,8 @@ export default function ClientChatTab({
 
     const handleMessageApproved = (msg) => {
       if (msg.conversationId !== conversationId) return;
+
+      msg = normalizeMessageFileFields(msg);
 
       setMessages((prev) => {
         const idx = prev.findIndex(
@@ -317,7 +331,7 @@ export default function ClientChatTab({
           setSending(false);
           if (ack?.ok && ack.conversationId && ack.message) {
             setConversationId(ack.conversationId);
-            setMessages([ack.message]);
+            setMessages([normalizeMessageFileFields(ack.message)]);
             setInput("");
             socket.emit("joinConversation", ack.conversationId, conversationType === "business-business");
           } else {
@@ -354,7 +368,7 @@ export default function ClientChatTab({
           setSending(false);
           if (ack?.ok) {
             setMessages((prev) =>
-              prev.map((msg) => (msg.tempId === tempId && ack.message ? ack.message : msg))
+              prev.map((msg) => (msg.tempId === tempId && ack.message ? normalizeMessageFileFields(ack.message) : msg))
             );
           } else {
             setError("שגיאה בשליחת ההודעה: " + (ack.error || "לא ידוע"));
@@ -412,13 +426,12 @@ export default function ClientChatTab({
       const file = new File([recordedBlob], `recording_${Date.now()}.webm`, { type: recordedBlob.type });
       const uploadedUrl = await uploadFileToServer(file, conversationId, businessId, userId, input.trim());
 
-
       socket.emit(
         "sendMessage",
         {
           conversationId,
           from: userId,
-          to: businessId, 
+          to: businessId,
           role: "client",
           fileUrl: uploadedUrl,
           fileName: file.name,
@@ -441,70 +454,71 @@ export default function ClientChatTab({
   };
 
   const handleFileChange = async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-  setSending(true);
-  setError("");
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSending(true);
+    setError("");
 
-  const tempId = uuidv4();
-  const optimisticMsg = {
-    _id: tempId,
-    tempId,
-    conversationId,
-    from: userId,
-    role: "client",
-    fileName: file.name,
-    fileType: file.type,
-    fileUrl: URL.createObjectURL(file),
-    timestamp: new Date(),
-  };
-
-  setMessages((prev) => [...prev, optimisticMsg]);
-
-  try {
-    // שולחים ל־uploadFileToServer את businessId כ־toId (ולמסר הקלט אם קיים)
-    const uploadedUrl = await uploadFileToServer(
-      file,
+    const tempId = uuidv4();
+    const optimisticMsg = {
+      _id: tempId,
+      tempId,
       conversationId,
-      businessId,
-      businessId,          // <–– toId צריך להיות המזהה של היעד (העסק)
-      input.trim()         // ניתן גם לערוך או להשאיר ריק, הפונקציה מטפלת בברירת־מחדל
-    );
+      from: userId,
+      role: "client",
+      fileName: file.name,
+      fileType: file.type,
+      fileUrl: URL.createObjectURL(file),
+      timestamp: new Date(),
+    };
 
-    socket.emit(
-      "sendMessage",
-      {
+    setMessages((prev) => [...prev, optimisticMsg]);
+
+    try {
+      // שולחים ל־uploadFileToServer את businessId כ־toId (ולמסר הקלט אם קיים)
+      const uploadedUrl = await uploadFileToServer(
+        file,
         conversationId,
-        from: userId,
-        to: businessId,     // <–– הוספנו את השדה to
-        role: "client",
-        fileUrl: uploadedUrl,
-        fileName: file.name,
-        fileType: file.type,
-        tempId,
-        conversationType,
-      },
-      (ack) => {
-        setSending(false);
-        if (ack.ok && ack.message) {
-          setMessages((prev) =>
-            prev.map((msg) => (msg.tempId === tempId ? ack.message : msg))
-          );
-        } else {
-          setError("שגיאה בשליחת הקובץ");
-          setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+        businessId,
+        businessId,
+        input.trim()
+      );
+
+      socket.emit(
+        "sendMessage",
+        {
+          conversationId,
+          from: userId,
+          to: businessId,
+          role: "client",
+          fileUrl: uploadedUrl,
+          fileName: file.name,
+          fileType: file.type,
+          tempId,
+          conversationType,
+        },
+        (ack) => {
+          setSending(false);
+          if (ack.ok && ack.message) {
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.tempId === tempId ? normalizeMessageFileFields(ack.message) : msg
+              )
+            );
+          } else {
+            setError("שגיאה בשליחת הקובץ");
+            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+          }
         }
-      }
-    );
-  } catch (error) {
-    setSending(false);
-    setError("שגיאה בהעלאת הקובץ: " + error.message);
-    setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-  }
+      );
+    } catch (error) {
+      setSending(false);
+      setError("שגיאה בהעלאת הקובץ: " + error.message);
+      setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+    }
 
-  e.target.value = null;
-};
-
+    e.target.value = null;
+  };
 
   return (
     <div className="chat-container client">
@@ -514,6 +528,7 @@ export default function ClientChatTab({
         {messages.map((m) => {
           const key = getMessageKey(m);
           if (!key) return null;
+
           return (
             <div
               key={key}
