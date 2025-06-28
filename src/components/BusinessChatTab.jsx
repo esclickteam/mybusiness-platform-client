@@ -98,15 +98,14 @@ export default function BusinessChatTab({
   customerName,
   socket,
   conversationType = "user-business",
-  authToken, // הוסף props לקבלת JWT token אם יש
+  authToken,
 }) {
   const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const fileInputRef = useRef(null);
-
-  const isBusinessConversation = conversationType === "business-business";
+  const listRef = useRef(null);
 
   const formatTime = (ts) => {
     if (!ts) return "";
@@ -123,9 +122,43 @@ export default function BusinessChatTab({
   const recordedChunks = useRef([]);
   const timerRef = useRef(null);
 
-  const listRef = useRef(null);
+  // טעינת הודעות ותחזוקת מאזינים ל-socket
+  useEffect(() => {
+    if (!socket || !conversationId) return;
 
-  // ... (השאר את useEffect והאזנות הסוקט כמו שהיה - רק לא לשלוח קבצים דרך socket)
+    // טען הודעות התחלתיות
+    socket.emit("getMessages", { conversationId }, (res) => {
+      if (res?.ok && Array.isArray(res.messages)) {
+        dispatch({ type: "set", payload: res.messages });
+      } else {
+        console.error("Failed to load messages:", res?.error);
+      }
+    });
+
+    // מאזין להודעה חדשה
+    const onNewMessage = (msg) => {
+      if (msg.conversationId === conversationId) {
+        dispatch({ type: "append", payload: msg });
+      }
+    };
+    socket.on("newMessage", onNewMessage);
+
+    // מאזין לאירוע הקלדה
+    const onTyping = ({ conversationId: typingConvoId, from }) => {
+      if (typingConvoId === conversationId && from !== businessId) {
+        setIsTyping(true);
+        const timeout = setTimeout(() => setIsTyping(false), 2000);
+        return () => clearTimeout(timeout);
+      }
+    };
+    socket.on("typing", onTyping);
+
+    // ניקוי מאזינים בסיום
+    return () => {
+      socket.off("newMessage", onNewMessage);
+      socket.off("typing", onTyping);
+    };
+  }, [socket, conversationId, businessId]);
 
   const handleInput = (e) => {
     setInput(e.target.value);
@@ -135,7 +168,7 @@ export default function BusinessChatTab({
   const sendMessage = () => {
     if (sending) return;
     const text = input.trim();
-    if (!text || text === "0" || !socket) return;
+    if (!text || !socket) return;
     setSending(true);
     const tempId = uuidv4();
     const optimistic = {
@@ -174,73 +207,70 @@ export default function BusinessChatTab({
     fileInputRef.current?.click();
   };
 
-  // *** עדכון כאן: שליחת קובץ דרך fetch עם FormData ***
-
   const handleFileChange = async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-  const tempId = uuidv4();
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const tempId = uuidv4();
 
-  const optimistic = {
-    _id: tempId,
-    conversationId,
-    from: businessId,
-    to: customerId,
-    fileUrl: URL.createObjectURL(file),
-    fileName: file.name,
-    fileType: file.type,
-    timestamp: new Date().toISOString(),
-    sending: true,
-    tempId,
-  };
-  dispatch({ type: "append", payload: optimistic });
+    const optimistic = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      fileUrl: URL.createObjectURL(file),
+      fileName: file.name,
+      fileType: file.type,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+    dispatch({ type: "append", payload: optimistic });
 
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("businessId", businessId);
-    formData.append("message", " "); // חובה לא לשלוח מחרוזת ריקה!
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("businessId", businessId);
+      formData.append("conversationId", conversationId);
+      formData.append("toId", customerId);
+      formData.append("message", " "); // חובה לא לשלוח מחרוזת ריקה!
 
-    const response = await fetch("/api/business/my/chat", {
-      method: "POST",
-      body: formData,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      dispatch({
-        type: "updateStatus",
-        payload: {
-          id: tempId,
-          updates: {
-            fileUrl: data.newMessage.fileUrl,
-            sending: false,
-            failed: false,
-          },
+      const response = await fetch("/api/business/my/chat", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
         },
       });
-    } else {
+
+      const data = await response.json();
+
+      if (response.ok) {
+        dispatch({
+          type: "updateStatus",
+          payload: {
+            id: tempId,
+            updates: {
+              fileUrl: data.newMessage.fileUrl,
+              sending: false,
+              failed: false,
+            },
+          },
+        });
+      } else {
+        dispatch({
+          type: "updateStatus",
+          payload: { id: tempId, updates: { sending: false, failed: true } },
+        });
+        console.error("Upload failed:", data.error);
+      }
+    } catch (err) {
       dispatch({
         type: "updateStatus",
         payload: { id: tempId, updates: { sending: false, failed: true } },
       });
-      console.error("Upload failed:", data.error);
+      console.error("Upload error:", err);
     }
-  } catch (err) {
-    dispatch({
-      type: "updateStatus",
-      payload: { id: tempId, updates: { sending: false, failed: true } },
-    });
-    console.error("Upload error:", err);
-  }
-};
-
-
-  // *** שליחת הקלטת אודיו דרך fetch ו-FormData ***
+  };
 
   const startRecording = async () => {
     if (recording || !navigator.mediaDevices) return;
@@ -299,7 +329,9 @@ export default function BusinessChatTab({
       const formData = new FormData();
       formData.append("file", recordedBlob);
       formData.append("businessId", businessId);
-      formData.append("message", ""); // טקסט אם רוצים
+      formData.append("conversationId", conversationId);
+      formData.append("toId", customerId);
+      formData.append("message", " "); // חובה לא לשלוח מחרוזת ריקה!
 
       const response = await fetch("/api/business/my/chat", {
         method: "POST",
