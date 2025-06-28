@@ -76,34 +76,49 @@ const getMessageKey = (m) => {
   return `uniq_${m.__uniqueKey}`;
 };
 
-async function uploadFileToServer(file, conversationId, businessId, toId, message) {
+async function sendChatMessageWithFile(file, conversationId, businessId, toId, message) {
   const formData = new FormData();
-  formData.append("file", file);
-
+  if (file) formData.append("file", file);
   if (conversationId) formData.append("conversationId", conversationId);
   if (businessId) formData.append("businessId", businessId);
   if (toId) formData.append("toId", toId);
-  formData.append("message", message || "");  // חובה לשים message (אפשר גם מחרוזת ריקה)
-  
+  formData.append("message", message || "");
+
+  console.log("Sending formData entries:");
+  for (const pair of formData.entries()) {
+    if (pair[0] === "file") {
+      console.log(`${pair[0]}:`, pair[1].name, pair[1].type, pair[1].size);
+    } else {
+      console.log(`${pair[0]}:`, pair[1]);
+    }
+  }
+
   const token = localStorage.getItem("token");
 
   const response = await fetch("/api/business/my/chat", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      // אין צורך להגדיר Content-Type כאן כשמשתמשים ב-FormData — הדפדפן מטפל בזה אוטומטית.
     },
     body: formData,
     credentials: "include",
   });
 
+  console.log("Response status:", response.status);
+
   if (!response.ok) {
     const err = await response.json();
+    console.error("Error response from server:", err);
     throw new Error(err.error || "Upload failed");
   }
 
   const data = await response.json();
-  return data.newMessage?.fileUrl || data.fileUrl || "";
+  console.log("Response data:", data);
+  return data.newMessage || data; // בהתאם למבנה התגובה
 }
+
+
 
 
 export default function ClientChatTab({
