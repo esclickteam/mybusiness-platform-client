@@ -38,7 +38,6 @@ export default function ConversationsList({
             ? conv.clientName
             : conv.businessName || partnerId;
           const isActive = convoId === selectedConversationId;
-          const unreadCount = unreadCountsByConversation[convoId] || 0;
 
           return (
             <div
@@ -48,26 +47,7 @@ export default function ConversationsList({
               style={{ position: "relative" }}
             >
               {displayName}
-              {unreadCount > 0 && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: 8,
-                    right: 10,
-                    backgroundColor: "red",
-                    color: "white",
-                    borderRadius: "12px",
-                    padding: "2px 6px",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    userSelect: "none",
-                    minWidth: 18,
-                    textAlign: "center",
-                  }}
-                >
-                  {unreadCount}
-                </span>
-              )}
+              {/* מספר ההודעות הלא נקראות הוסר */}
             </div>
           );
         })}
