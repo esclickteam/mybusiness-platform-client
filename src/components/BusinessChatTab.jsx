@@ -73,6 +73,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
+      console.log("[Reducer] Setting messages array", action.payload);
       return action.payload;
     case "append": {
       const idx = state.findIndex(
@@ -83,11 +84,14 @@ function messagesReducer(state, action) {
       if (idx !== -1) {
         const next = [...state];
         next[idx] = { ...next[idx], ...action.payload };
+        console.log(`[Reducer] Updating message at index ${idx}`, next[idx]);
         return next;
       }
+      console.log("[Reducer] Appending new message", action.payload);
       return [...state, action.payload];
     }
     case "updateStatus":
+      console.log("[Reducer] Updating message status", action.payload);
       return state.map((m) =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
@@ -135,118 +139,133 @@ export default function BusinessChatTab({
   const listRef = useRef(null);
 
   useEffect(() => {
-  if (!socket || !conversationId) {
-    dispatch({ type: "set", payload: [] });
-    return;
-  }
-
-  socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
-    if (!ack.ok) console.error("joinConversation failed:", ack.error);
-  });
-
-  socket.emit("markMessagesRead", conversationId, (resp) => {
-    if (!resp.ok) console.error("markMessagesRead failed");
-  });
-
-  // הוספת conversationType לקריאה
-  socket.emit(
-  "getHistory",
-  { conversationId, conversationType },
-  (res) => {
-    console.log("getHistory response:", res);
-    if (res.ok) {
-      const msgs = (res.messages || []).map((m) => {
-        let text = m.text || m.content || "";
-        if (text === "0") text = ""; // מניעת הצגת "0"
-        return {
-          ...m,
-          timestamp: m.createdAt || new Date().toISOString(),
-          text,
-          fileUrl: m.fileUrl || null,
-          fileType: m.fileType || null,
-          fileName: m.fileName || "",
-          fileDuration: m.fileDuration || 0,
-        };
-      });
-      dispatch({ type: "set", payload: msgs });
-    } else {
-      console.error("getHistory failed:", res.error);
+    if (!socket || !conversationId) {
+      console.log("[useEffect] Socket or conversationId missing, clearing messages");
       dispatch({ type: "set", payload: [] });
+      return;
     }
-  }
-);
 
+    console.log(`[useEffect] Joining conversation ${conversationId}, isBusinessConversation: ${isBusinessConversation}`);
+    socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
+      if (!ack.ok) console.error("joinConversation failed:", ack.error);
+      else console.log("joinConversation success");
+    });
 
-  return () => {
-    socket.emit("leaveConversation", conversationId, isBusinessConversation);
-  };
-}, [socket, conversationId, isBusinessConversation, conversationType]);
+    socket.emit("markMessagesRead", conversationId, (resp) => {
+      if (!resp.ok) console.error("markMessagesRead failed");
+      else console.log("markMessagesRead success");
+    });
 
+    socket.emit(
+      "getHistory",
+      { conversationId, conversationType },
+      (res) => {
+        console.log("getHistory response:", res);
+        if (res.ok) {
+          const msgs = (res.messages || []).map((m) => {
+            let text = m.text || m.content || "";
+            if (text === "0") text = ""; // מניעת הצגת "0"
+            return {
+              ...m,
+              timestamp: m.createdAt || new Date().toISOString(),
+              text,
+              fileUrl: m.fileUrl || null,
+              fileType: m.fileType || null,
+              fileName: m.fileName || "",
+              fileDuration: m.fileDuration || 0,
+            };
+          });
+          dispatch({ type: "set", payload: msgs });
+        } else {
+          console.error("getHistory failed:", res.error);
+          dispatch({ type: "set", payload: [] });
+        }
+      }
+    );
+
+    return () => {
+      console.log(`[useEffect] Leaving conversation ${conversationId}`);
+      socket.emit("leaveConversation", conversationId, isBusinessConversation);
+    };
+  }, [socket, conversationId, isBusinessConversation, conversationType]);
 
   useEffect(() => {
-  if (!socket) return;
+    if (!socket) return;
 
-  const handleNew = (msg) => {
-    if (
-      msg.conversationId === conversationId &&
-      msg.conversationType === conversationType
-    ) {
-      // קיפול של msg.text ו־msg.content לאותו משתנה raw
-      const raw = msg.text || msg.content || "";
-      // המרת "0" לריק
-      const text = raw === "0" ? "" : raw;
+    const handleNew = (msg) => {
+      console.log("[Socket] Received newMessage:", msg);
+      if (
+        msg.conversationId === conversationId &&
+        msg.conversationType === conversationType
+      ) {
+        const raw = msg.text || msg.content || "";
+        const text = raw === "0" ? "" : raw;
 
-      const safeMsg = {
-        ...msg,
-        timestamp: msg.createdAt || new Date().toISOString(),
-        text,                      // כבר נקי מ-"0"
-        fileUrl: msg.fileUrl || null,
-        fileType: msg.fileType || null,
-        fileName: msg.fileName || "",
-        fileDuration: msg.fileDuration || 0,
-      };
+        const safeMsg = {
+          ...msg,
+          timestamp: msg.createdAt || new Date().toISOString(),
+          text,
+          fileUrl: msg.fileUrl || null,
+          fileType: msg.fileType || null,
+          fileName: msg.fileName || "",
+          fileDuration: msg.fileDuration || 0,
+        };
 
-      dispatch({ type: "append", payload: safeMsg });
-    }
-  };
+        dispatch({ type: "append", payload: safeMsg });
+      } else {
+        console.log("[Socket] Ignored newMessage from different conversation");
+      }
+    };
 
-  const handleTyping = ({ from }) => {
-    if (from === customerId) {
-      setIsTyping(true);
+    const handleTyping = ({ from }) => {
+      if (from === customerId) {
+        setIsTyping(true);
+        clearTimeout(handleTyping._t);
+        handleTyping._t = setTimeout(() => {
+          setIsTyping(false);
+          console.log("[Socket] Typing stopped");
+        }, 1800);
+        console.log("[Socket] Typing event received");
+      }
+    };
+
+    socket.on("newMessage", handleNew);
+    socket.on("typing", handleTyping);
+
+    return () => {
+      socket.off("newMessage", handleNew);
+      socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
-      handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
-    }
-  };
-
-  socket.on("newMessage", handleNew);
-  socket.on("typing", handleTyping);
-
-  return () => {
-    socket.off("newMessage", handleNew);
-    socket.off("typing", handleTyping);
-    clearTimeout(handleTyping._t);
-  };
-}, [socket, conversationId, customerId, conversationType]);
-
-
+    };
+  }, [socket, conversationId, customerId, conversationType]);
 
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
     const nearBottom =
       el.scrollHeight - el.scrollTop - el.clientHeight < 100;
-    if (nearBottom) el.scrollTop = el.scrollHeight;
+    if (nearBottom) {
+      el.scrollTop = el.scrollHeight;
+      console.log("[useEffect] Scrolled to bottom");
+    }
   }, [messages, isTyping]);
 
   const handleInput = (e) => {
     setInput(e.target.value);
+    console.log("[handleInput] User typing:", e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
   };
 
   const sendMessage = () => {
-    if (sending) return;
+    if (sending) {
+      console.log("[sendMessage] Already sending, ignoring");
+      return;
+    }
     const text = input.trim();
-    if (!text || text === "0" || !socket) return;
+    if (!text || text === "0" || !socket) {
+      console.log("[sendMessage] Invalid input or socket missing");
+      return;
+    }
     setSending(true);
     const tempId = uuidv4();
     const optimistic = {
@@ -259,6 +278,7 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
+    console.log("[sendMessage] Dispatching optimistic message:", optimistic);
     dispatch({ type: "append", payload: optimistic });
     setInput("");
 
@@ -267,6 +287,7 @@ export default function BusinessChatTab({
       { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
       (ack) => {
         setSending(false);
+        console.log("[sendMessage] ACK received:", ack);
         dispatch({
           type: "updateStatus",
           payload: {
@@ -282,15 +303,17 @@ export default function BusinessChatTab({
     );
   };
 
-
-
   const handleAttach = () => {
+    console.log("[handleAttach] Triggering file input click");
     fileInputRef.current?.click();
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file || !socket) return;
+    if (!file || !socket) {
+      console.log("[handleFileChange] No file or socket missing");
+      return;
+    }
     const tempId = uuidv4();
 
     const optimistic = {
@@ -305,49 +328,56 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
+    console.log("[handleFileChange] Dispatching optimistic file message:", optimistic);
     dispatch({ type: "append", payload: optimistic });
 
     const reader = new FileReader();
     reader.onload = () => {
-  socket.emit(
-    "sendFile",
-    {
-      conversationId,
-      from: businessId,
-      to: customerId,
-      fileName: file.name,
-      fileType: file.type,
-      buffer: reader.result,
-      tempId,
-      conversationType, // שולח conversationType גם כאן
-    },
-    (ack) => {
-      console.log("🔔 sendFile ACK:", ack);
-      const ackUrl = ack.message?.fileUrl;
-      console.log("→ fileUrl from ack:", ackUrl);
-      // אם אין URL אמיתי — נשאר עם ה-blob
-      const newUrl = ackUrl ?? optimistic.fileUrl;
-      console.log("→ using URL:", newUrl);
-
-      dispatch({
-        type: "updateStatus",
-        payload: {
-          id: tempId,
-          updates: {
-            fileUrl: newUrl,
-            sending: false,
-            failed: !ack.ok,
-          },
+      console.log("[handleFileChange] FileReader loaded, emitting sendFile");
+      socket.emit(
+        "sendFile",
+        {
+          conversationId,
+          from: businessId,
+          to: customerId,
+          fileName: file.name,
+          fileType: file.type,
+          buffer: reader.result,
+          tempId,
+          conversationType, // שולח conversationType גם כאן
         },
-      });
-    }
-  );
-};
-reader.readAsArrayBuffer(file);
+        (ack) => {
+          console.log("🔔 sendFile ACK:", ack);
+          const ackUrl = ack.message?.fileUrl;
+          console.log("→ fileUrl from ack:", ackUrl);
+          const newUrl = ackUrl ?? optimistic.fileUrl;
+          console.log("→ using URL:", newUrl);
+
+          dispatch({
+            type: "updateStatus",
+            payload: {
+              id: tempId,
+              updates: {
+                fileUrl: newUrl,
+                sending: false,
+                failed: !ack.ok,
+              },
+            },
+          });
+        }
+      );
+    };
+    reader.onerror = (err) => {
+      console.error("[handleFileChange] FileReader error:", err);
+    };
+    reader.readAsArrayBuffer(file);
   };
 
   const startRecording = async () => {
-    if (recording || !navigator.mediaDevices) return;
+    if (recording || !navigator.mediaDevices) {
+      console.log("[startRecording] Already recording or no mediaDevices");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -365,12 +395,14 @@ reader.readAsArrayBuffer(file);
             type: recorder.mimeType,
           })
         );
+        console.log("[startRecording] Recording stopped and blob set");
       };
       recorder.start();
       mediaRecorderRef.current = recorder;
       setRecording(true);
       setTimer(0);
       timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
+      console.log("[startRecording] Recording started");
     } catch (err) {
       console.error("[startRecording] Recording error:", err);
     }
@@ -383,15 +415,20 @@ reader.readAsArrayBuffer(file);
       .forEach((t) => t.stop());
     setRecording(false);
     clearInterval(timerRef.current);
+    console.log("[stopRecording] Recording stopped");
   };
 
   const discardRecording = () => {
     setRecordedBlob(null);
     setTimer(0);
+    console.log("[discardRecording] Recording discarded");
   };
 
   const sendRecording = () => {
-    if (!recordedBlob || !socket) return;
+    if (!recordedBlob || !socket) {
+      console.log("[sendRecording] No recorded blob or socket missing");
+      return;
+    }
     const tempId = uuidv4();
     const optimistic = {
       _id: tempId,
@@ -406,11 +443,13 @@ reader.readAsArrayBuffer(file);
       sending: true,
       tempId,
     };
+    console.log("[sendRecording] Dispatching optimistic audio message", optimistic);
     dispatch({ type: "append", payload: optimistic });
     setRecordedBlob(null);
 
     const reader = new FileReader();
     reader.onload = () => {
+      console.log("[sendRecording] FileReader loaded, emitting sendAudio");
       socket.emit(
         "sendAudio",
         {
@@ -424,6 +463,7 @@ reader.readAsArrayBuffer(file);
           conversationType, // שולח conversationType
         },
         (ack) => {
+          console.log("[sendRecording] sendAudio ACK received", ack);
           dispatch({
             type: "updateStatus",
             payload: {
@@ -437,6 +477,9 @@ reader.readAsArrayBuffer(file);
           });
         }
       );
+    };
+    reader.onerror = (err) => {
+      console.error("[sendRecording] FileReader error:", err);
     };
     reader.readAsArrayBuffer(recordedBlob);
   };
