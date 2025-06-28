@@ -267,17 +267,17 @@ export default function BusinessProfileView() {
                 role="tab"
                 aria-selected={tab === currentTab}
                 style={{
-                  padding: "10px 20px",
-                  fontSize: "1rem",
-                  background: tab === currentTab ? "#5c2d91" : undefined, 
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                  margin: "0 5px",
-                  borderRadius: "6px",
-                  boxShadow: tab === currentTab ? "0 4px 10px rgba(0, 0, 0, 0.2)" : "none", // צללים
-                  transition: "background-color 0.3s ease",
-                }}
+  padding: "10px 20px",
+  fontSize: "1rem",
+  background: tab === currentTab ? "#5c2d91" : "transparent",  // רקע סגול פעיל, אחרת שקוף
+  color: tab === currentTab ? "white" : "#5c2d91",             // טקסט לבן פעיל, אחרת סגול
+  border: "none",
+  cursor: "pointer",
+  margin: "0 5px",
+  borderRadius: "6px",
+  boxShadow: tab === currentTab ? "0 4px 10px rgba(0, 0, 0, 0.2)" : "none",
+  transition: "background-color 0.3s ease",
+}}
               >
                 {tab}
               </button>
