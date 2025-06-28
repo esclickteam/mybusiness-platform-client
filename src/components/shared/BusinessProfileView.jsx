@@ -212,7 +212,7 @@ export default function BusinessProfileView() {
 
           {/* שם העסק וכפתור מועדפים */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <h1 className="business-name" style={{ fontSize: "2rem", color: "#9C4D99", fontWeight: "bold" }}>
+            <h1 className="business-name" style={{ fontSize: "2rem", color: "#5c2d91;", fontWeight: "bold" }}>
               {businessName}
             </h1>
             <button
