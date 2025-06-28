@@ -180,7 +180,9 @@ export default function BusinessProfileView() {
 
           {/* שם העסק וכפתור מועדפים */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <h1 className="business-name">{businessName}</h1>
+            <h1 className="business-name" style={{ fontSize: "2rem", color: "#4A148C", fontWeight: "bold" }}>
+              {businessName}
+            </h1>
             <button
               onClick={toggleFavorite}
               className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
@@ -207,11 +209,13 @@ export default function BusinessProfileView() {
 
           {/* דירוג כללי */}
           <div className="overall-rating" aria-label={`דירוג ממוצע: ${roundedAvg.toFixed(1)} מתוך 5`}>
-            <span className="big-score">{roundedAvg.toFixed(1)}</span>
-            <span className="count">({reviews.length} ביקורות)</span>
+            <span className="big-score" style={{ fontSize: "1.8rem", fontWeight: "bold", color: "#4A148C" }}>
+              {roundedAvg.toFixed(1)}
+            </span>
+            <span className="count" style={{ fontSize: "1.2rem", color: "#4A148C" }}>({reviews.length} ביקורות)</span>
           </div>
 
-          <hr className="profile-divider" />
+          <hr className="profile-divider" style={{ marginTop: "1rem", borderColor: "#4A148C" }} />
 
           {/* טאבים */}
           <div className="profile-tabs" role="tablist">
@@ -222,6 +226,16 @@ export default function BusinessProfileView() {
                 onClick={() => handleTabChange(tab)}
                 role="tab"
                 aria-selected={tab === currentTab}
+                style={{
+                  padding: "10px 20px",
+                  fontSize: "1rem",
+                  background: "#4A148C",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                  margin: "0 5px",
+                  borderRadius: "6px",
+                }}
               >
                 {tab}
               </button>
@@ -237,7 +251,7 @@ export default function BusinessProfileView() {
                 <div className="public-main-images">
                   {mainImages.length ? (
                     mainImages.slice(0, 6).map((url, i) => (
-                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} loading="lazy" />
+                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} loading="lazy" style={{ margin: "10px", width: "100%", height: "auto" }} />
                     ))
                   ) : (
                     <p className="no-data">אין תמונות להצגה</p>
