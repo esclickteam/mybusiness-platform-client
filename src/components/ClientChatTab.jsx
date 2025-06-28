@@ -97,7 +97,6 @@ function normalizeMessageFileFields(message) {
   return message;
 }
 
-
 async function uploadFileToServer(
   file,
   conversationId,
@@ -222,37 +221,18 @@ export default function ClientChatTab({
 
       msg = normalizeMessageFileFields(msg);
 
-      const id = msg.isRecommendation
-        ? `rec_${msg.recommendationId}`
-        : msg._id
-        ? `msg_${msg._id}`
-        : msg.tempId
-        ? `temp_${msg.tempId}`
-        : null;
-
-      const existsIdx = messagesRef.current.findIndex((m) => {
-        const mid = m.isRecommendation
-          ? `rec_${m.recommendationId}`
-          : m._id
-          ? `msg_${m._id}`
-          : m.tempId
-          ? `temp_${m.tempId}`
-          : null;
-
-        if (m.tempId && msg._id && m.tempId === msg.tempId) return true;
-        return mid === id;
-      });
-
-      if (existsIdx !== -1) {
-        setMessages((prev) => {
+      setMessages((prev) => {
+        const idx = prev.findIndex((m) =>
+          (m._id && msg._id && m._id === msg._id) ||
+          (m.tempId && msg.tempId && m.tempId === msg.tempId)
+        );
+        if (idx !== -1) {
           const newMessages = [...prev];
-          newMessages[existsIdx] = { ...newMessages[existsIdx], ...msg };
+          newMessages[idx] = { ...newMessages[idx], ...msg };
           return newMessages;
-        });
-        return;
-      }
-
-      setMessages((prev) => [...prev, msg]);
+        }
+        return [...prev, msg];
+      });
     };
 
     const handleMessageApproved = (msg) => {
@@ -483,7 +463,6 @@ export default function ClientChatTab({
     setMessages((prev) => [...prev, optimisticMsg]);
 
     try {
-      // שולחים ל־uploadFileToServer את businessId כ־toId (ולמסר הקלט אם קיים)
       const uploadedUrl = await uploadFileToServer(
         file,
         conversationId,
