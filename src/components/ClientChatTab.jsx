@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./ClientChatTab.css";
-import { Buffer } from "buffer";
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   if (!src) return null;
@@ -76,6 +75,25 @@ const getMessageKey = (m) => {
   }
   return `uniq_${m.__uniqueKey}`;
 };
+
+async function uploadFileToServer(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch("/api/business/my/chat", {
+    method: "POST",
+    body: formData,
+    credentials: "include", // אם צריך לשלוח קוקיז או טוקן
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error || "Upload failed");
+  }
+
+  const data = await response.json();
+  return data.newMessage?.fileUrl || data.fileUrl || ""; // בהתאם לתגובה מהשרת
+}
 
 export default function ClientChatTab({
   socket,
@@ -361,24 +379,27 @@ export default function ClientChatTab({
   };
 
   const handleSendRecording = async () => {
-    if (!recordedBlob || !socket) return;
+    if (!recordedBlob) return;
     setSending(true);
+    setError("");
+    const tempId = uuidv4();
+
     try {
-      const arrayBuffer = await recordedBlob.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const tempId = uuidv4();
+      const file = new File([recordedBlob], `recording_${Date.now()}.webm`, { type: recordedBlob.type });
+      const uploadedUrl = await uploadFileToServer(file);
 
       socket.emit(
-        "sendAudio",
+        "sendMessage",
         {
           conversationId,
           from: userId,
           role: "client",
-          buffer,
-          fileType: recordedBlob.type,
-          duration: timer,
-          conversationType,
+          fileUrl: uploadedUrl,
+          fileName: file.name,
+          fileType: file.type,
+          fileDuration: timer,
           tempId,
+          conversationType,
         },
         (ack) => {
           setSending(false);
@@ -387,20 +408,19 @@ export default function ClientChatTab({
           if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
         }
       );
-    } catch (e) {
+    } catch (error) {
       setSending(false);
-      setError("שגיאה בהכנת הקובץ למשלוח");
+      setError("שגיאה בהעלאת ההקלטה: " + error.message);
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
-    if (!file || !socket) return;
+    if (!file) return;
     setSending(true);
+    setError("");
 
     const tempId = uuidv4();
-
-    // יצירת הודעה אופטימית עם tempId להצגה מיידית
     const optimisticMsg = {
       _id: tempId,
       tempId,
@@ -409,28 +429,26 @@ export default function ClientChatTab({
       role: "client",
       fileName: file.name,
       fileType: file.type,
-      // אפשר להוסיף URL זמני להצגה, לדוגמה:
-      fileUrl: URL.createObjectURL(file),
+      fileUrl: URL.createObjectURL(file), // תצוגה זמנית
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64Data = reader.result.split(",")[1];
+    try {
+      const uploadedUrl = await uploadFileToServer(file);
 
       socket.emit(
-        "sendFile",
+        "sendMessage",
         {
           conversationId,
           from: userId,
           role: "client",
-          buffer: Buffer.from(base64Data, "base64"),
-          fileType: file.type,
+          fileUrl: uploadedUrl,
           fileName: file.name,
-          conversationType,
+          fileType: file.type,
           tempId,
+          conversationType,
         },
         (ack) => {
           setSending(false);
@@ -444,14 +462,12 @@ export default function ClientChatTab({
           }
         }
       );
-    };
-    reader.onerror = () => {
+    } catch (error) {
       setSending(false);
-      setError("שגיאה בהמרת הקובץ");
+      setError("שגיאה בהעלאת הקובץ: " + error.message);
       setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-    };
+    }
 
-    reader.readAsDataURL(file);
     e.target.value = null;
   };
 
@@ -476,22 +492,22 @@ export default function ClientChatTab({
                   alt={m.fileName || "image"}
                   style={{ maxWidth: 200, borderRadius: 8 }}
                 />
-              ) : m.fileUrl || m.file?.data ? (
+              ) : m.fileUrl ? (
                 m.fileType && m.fileType.startsWith("audio") ? (
                   <WhatsAppAudioPlayer
-                    src={m.fileUrl || m.file.data}
+                    src={m.fileUrl}
                     userAvatar={m.userAvatar}
                     duration={m.fileDuration}
                   />
-                ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl || "") ? (
+                ) : /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
                   <img
-                    src={m.fileUrl || m.file.data}
+                    src={m.fileUrl}
                     alt={m.fileName || "image"}
                     style={{ maxWidth: 200, borderRadius: 8 }}
                   />
                 ) : (
                   <a
-                    href={m.fileUrl || m.file?.data}
+                    href={m.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     download
