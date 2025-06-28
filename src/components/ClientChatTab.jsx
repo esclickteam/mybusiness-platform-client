@@ -137,7 +137,7 @@ export default function ClientChatTab({
 
         socket.emit(
           "getHistory",
-          { conversationId, limit: 50, conversationType },
+          { conversationId, limit: 50, conversationType, businessId },
           (response) => {
             console.log("getHistory response:", response);
             if (response.ok) {
