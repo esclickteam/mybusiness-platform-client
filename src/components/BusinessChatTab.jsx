@@ -177,67 +177,68 @@ export default function BusinessChatTab({
   // *** עדכון כאן: שליחת קובץ דרך fetch עם FormData ***
 
   const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const tempId = uuidv4();
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const tempId = uuidv4();
 
-    const optimistic = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      fileUrl: URL.createObjectURL(file),
-      fileName: file.name,
-      fileType: file.type,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
-    dispatch({ type: "append", payload: optimistic });
+  const optimistic = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    fileUrl: URL.createObjectURL(file),
+    fileName: file.name,
+    fileType: file.type,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId,
+  };
+  dispatch({ type: "append", payload: optimistic });
 
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("businessId", businessId);
-      formData.append("message", ""); // אפשר לשלוח טקסט אם רוצים
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("businessId", businessId);
+    formData.append("message", " "); // חובה לא לשלוח מחרוזת ריקה!
 
-      const response = await fetch("/api/business/my/chat", {
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${authToken}`, // אם יש צורך באימות
+    const response = await fetch("/api/business/my/chat", {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      dispatch({
+        type: "updateStatus",
+        payload: {
+          id: tempId,
+          updates: {
+            fileUrl: data.newMessage.fileUrl,
+            sending: false,
+            failed: false,
+          },
         },
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        dispatch({
-          type: "updateStatus",
-          payload: {
-            id: tempId,
-            updates: {
-              fileUrl: data.newMessage.fileUrl,
-              sending: false,
-              failed: false,
-            },
-          },
-        });
-      } else {
-        dispatch({
-          type: "updateStatus",
-          payload: { id: tempId, updates: { sending: false, failed: true } },
-        });
-        console.error("Upload failed:", data.error);
-      }
-    } catch (err) {
+    } else {
       dispatch({
         type: "updateStatus",
         payload: { id: tempId, updates: { sending: false, failed: true } },
       });
-      console.error("Upload error:", err);
+      console.error("Upload failed:", data.error);
     }
-  };
+  } catch (err) {
+    dispatch({
+      type: "updateStatus",
+      payload: { id: tempId, updates: { sending: false, failed: true } },
+    });
+    console.error("Upload error:", err);
+  }
+};
+
 
   // *** שליחת הקלטת אודיו דרך fetch ו-FormData ***
 
