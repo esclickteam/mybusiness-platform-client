@@ -630,19 +630,28 @@ html, body, #root {
 
 .reviews-summary {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 12px;
-  max-width: 160px;
-  background: #f4f3ff;
   padding: 16px 20px;
+  background: #f4f3ff;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(121, 90, 192, 0.3);
   font-family: 'Arial', sans-serif;
-  margin: 1rem auto; /* מרכז אוטומטי */
+  margin: 1rem auto;
+}
+
+.reviews-average {
+  font-weight: 900;
+  font-size: 2.4rem;
   color: #5c2d91;
-  font-weight: 700;
-  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.star {
+  color: gold;
+  font-size: 2.4rem;
+  filter: drop-shadow(0 0 3px #c9b61b);
 }
 
 .reviews-count {
@@ -652,16 +661,3 @@ html, body, #root {
   color: #7c57c9;
 }
 
-.reviews-average {
-  font-size: 2.4rem;
-  color: #5c2d91;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.star {
-  font-size: 2.4rem;
-  color: gold;
-  filter: drop-shadow(0 0 3px #c9b61b);
-  line-height: 1;
-}
