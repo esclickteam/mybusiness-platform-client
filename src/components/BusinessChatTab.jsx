@@ -184,39 +184,40 @@ export default function BusinessChatTab({
 
 
   useEffect(() => {
-    if (!socket) return;
-    const handleNew = (msg) => {
-      if (
-        msg.conversationId === conversationId &&
-        msg.conversationType === conversationType 
-      ) {
-        const safeMsg = {
-          ...msg,
-          timestamp: msg.createdAt || new Date().toISOString(),
-          text: msg.text || msg.content || "",
-          fileUrl: msg.fileUrl || null,
-          fileType: msg.fileType || null,
-          fileName: msg.fileName || "",
-          fileDuration: msg.fileDuration || 0,
-        };
-        dispatch({ type: "append", payload: safeMsg });
-      }
-    };
-    const handleTyping = ({ from }) => {
-      if (from === customerId) {
-        setIsTyping(true);
-        clearTimeout(handleTyping._t);
-        handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
-      }
-    };
-    socket.on("newMessage", handleNew);
-    socket.on("typing", handleTyping);
-    return () => {
-      socket.off("newMessage", handleNew);
-      socket.off("typing", handleTyping);
+  if (!socket) return;
+  const handleNew = (msg) => {
+    if (
+      msg.conversationId === conversationId &&
+      msg.conversationType === conversationType 
+    ) {
+      const safeMsg = {
+        ...msg,
+        timestamp: msg.createdAt || new Date().toISOString(),
+        text: msg.text === "0" ? "" : (msg.text || msg.content || ""),  // <-- התיקון פה
+        fileUrl: msg.fileUrl || null,
+        fileType: msg.fileType || null,
+        fileName: msg.fileName || "",
+        fileDuration: msg.fileDuration || 0,
+      };
+      dispatch({ type: "append", payload: safeMsg });
+    }
+  };
+  const handleTyping = ({ from }) => {
+    if (from === customerId) {
+      setIsTyping(true);
       clearTimeout(handleTyping._t);
-    };
-  }, [socket, conversationId, customerId, conversationType]);
+      handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
+    }
+  };
+  socket.on("newMessage", handleNew);
+  socket.on("typing", handleTyping);
+  return () => {
+    socket.off("newMessage", handleNew);
+    socket.off("typing", handleTyping);
+    clearTimeout(handleTyping._t);
+  };
+}, [socket, conversationId, customerId, conversationType]);
+
 
   useEffect(() => {
     const el = listRef.current;
