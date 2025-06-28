@@ -2,25 +2,6 @@ import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./BusinessChatTab.css";
 
-async function uploadChatFile(businessId, message, file, token) {
-  const formData = new FormData();
-  formData.append("businessId", businessId);
-  formData.append("message", message);
-  if (file) formData.append("file", file);
-
-  const res = await fetch("/api/business/my/chat", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: formData,
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error || "Failed to send message");
-  }
-  const { newMessage } = await res.json();
-  return newMessage;
-}
-
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   if (!src) return null;
   const audioRef = useRef(null);
@@ -116,26 +97,16 @@ export default function BusinessChatTab({
   customerId,
   customerName,
   socket,
-  token,
   conversationType = "user-business",
+  authToken, // הוסף props לקבלת JWT token אם יש
 }) {
   const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-
-  // חדש: state ו־refs להקלטת אודיו
-  const [recording, setRecording] = useState(false);
-  const [recordedBlob, setRecordedBlob] = useState(null);
-  const [timer, setTimer] = useState(0);
-  const mediaRecorderRef = useRef(null);
-  const mediaStreamRef = useRef(null);
-  const recordedChunks = useRef([]);
-  const timerRef = useRef(null);
-
   const fileInputRef = useRef(null);
+
   const isBusinessConversation = conversationType === "business-business";
-  const listRef = useRef(null);
 
   const formatTime = (ts) => {
     if (!ts) return "";
@@ -144,85 +115,27 @@ export default function BusinessChatTab({
     return d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
   };
 
-  // Fetch history והודעות בזמן אמת (כמו קודם)
-  useEffect(() => {
-    if (!socket || !conversationId) {
-      dispatch({ type: "set", payload: [] });
-      return;
-    }
-    socket.emit("joinConversation", conversationId, isBusinessConversation);
-    socket.emit("markMessagesRead", conversationId);
-    socket.emit("getHistory", { conversationId, conversationType }, (res) => {
-      if (res.ok) {
-        const msgs = (res.messages || []).map((m) => ({
-          ...m,
-          timestamp: m.createdAt || new Date().toISOString(),
-          text: m.text === "0" ? "" : m.text || m.content || "",
-          fileUrl: m.fileUrl || null,
-          fileType: m.fileType || null,
-          fileName: m.fileName || "",
-          fileDuration: m.fileDuration || 0,
-        }));
-        dispatch({ type: "set", payload: msgs });
-      } else dispatch({ type: "set", payload: [] });
-    });
-    return () => {
-      socket.emit("leaveConversation", conversationId, isBusinessConversation);
-    };
-  }, [socket, conversationId, isBusinessConversation, conversationType]);
+  const [recording, setRecording] = useState(false);
+  const [recordedBlob, setRecordedBlob] = useState(null);
+  const [timer, setTimer] = useState(0);
+  const mediaRecorderRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+  const recordedChunks = useRef([]);
+  const timerRef = useRef(null);
 
-  useEffect(() => {
-    if (!socket) return;
-    const handleNew = (msg) => {
-      if (
-        msg.conversationId === conversationId &&
-        msg.conversationType === conversationType
-      ) {
-        const text = msg.text === "0" ? "" : msg.text || msg.content || "";
-        const safeMsg = {
-          ...msg,
-          timestamp: msg.createdAt || new Date().toISOString(),
-          text,
-          fileUrl: msg.fileUrl || null,
-          fileType: msg.fileType || null,
-          fileName: msg.fileName || "",
-          fileDuration: msg.fileDuration || 0,
-        };
-        dispatch({ type: "append", payload: safeMsg });
-      }
-    };
-    const handleTyping = ({ from }) => {
-      if (from === customerId) {
-        setIsTyping(true);
-        clearTimeout(handleTyping._t);
-        handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
-      }
-    };
-    socket.on("newMessage", handleNew);
-    socket.on("typing", handleTyping);
-    return () => {
-      socket.off("newMessage", handleNew);
-      socket.off("typing", handleTyping);
-      clearTimeout(handleTyping._t);
-    };
-  }, [socket, conversationId, customerId, conversationType]);
+  const listRef = useRef(null);
 
-  useEffect(() => {
-    const el = listRef.current;
-    if (!el) return;
-    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
-    if (nearBottom) el.scrollTop = el.scrollHeight;
-  }, [messages, isTyping]);
+  // ... (השאר את useEffect והאזנות הסוקט כמו שהיה - רק לא לשלוח קבצים דרך socket)
 
   const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
   };
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (sending) return;
     const text = input.trim();
-    if (!text) return;
+    if (!text || text === "0" || !socket) return;
     setSending(true);
     const tempId = uuidv4();
     const optimistic = {
@@ -237,40 +150,43 @@ export default function BusinessChatTab({
     };
     dispatch({ type: "append", payload: optimistic });
     setInput("");
-
-    try {
-      const newMsg = await uploadChatFile(businessId, text, null, token);
-      dispatch({
-        type: "updateStatus",
-        payload: { id: tempId, updates: { ...newMsg, sending: false, failed: false } },
-      });
-      socket?.emit("sendMessage", { ...newMsg, conversationType });
-    } catch (err) {
-      dispatch({
-        type: "updateStatus",
-        payload: { id: tempId, updates: { sending: false, failed: true } },
-      });
-    } finally {
-      setSending(false);
-    }
+    socket.emit(
+      "sendMessage",
+      { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
+      (ack) => {
+        setSending(false);
+        dispatch({
+          type: "updateStatus",
+          payload: {
+            id: tempId,
+            updates: {
+              ...(ack.message || {}),
+              sending: false,
+              failed: !ack.ok,
+            },
+          },
+        });
+      }
+    );
   };
 
   const handleAttach = () => {
     fileInputRef.current?.click();
   };
 
+  // *** עדכון כאן: שליחת קובץ דרך fetch עם FormData ***
+
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setSending(true);
     const tempId = uuidv4();
-    const previewUrl = URL.createObjectURL(file);
+
     const optimistic = {
       _id: tempId,
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: previewUrl,
+      fileUrl: URL.createObjectURL(file),
       fileName: file.name,
       fileType: file.type,
       timestamp: new Date().toISOString(),
@@ -280,22 +196,50 @@ export default function BusinessChatTab({
     dispatch({ type: "append", payload: optimistic });
 
     try {
-      const newMsg = await uploadChatFile(businessId, "", file, token);
-      dispatch({
-        type: "updateStatus",
-        payload: { id: tempId, updates: { ...newMsg, sending: false, failed: false } },
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("businessId", businessId);
+      formData.append("message", ""); // אפשר לשלוח טקסט אם רוצים
+
+      const response = await fetch("/api/business/my/chat", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${authToken}`, // אם יש צורך באימות
+        },
       });
-      socket?.emit("sendMessage", { ...newMsg, conversationType });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        dispatch({
+          type: "updateStatus",
+          payload: {
+            id: tempId,
+            updates: {
+              fileUrl: data.newMessage.fileUrl,
+              sending: false,
+              failed: false,
+            },
+          },
+        });
+      } else {
+        dispatch({
+          type: "updateStatus",
+          payload: { id: tempId, updates: { sending: false, failed: true } },
+        });
+        console.error("Upload failed:", data.error);
+      }
     } catch (err) {
       dispatch({
         type: "updateStatus",
         payload: { id: tempId, updates: { sending: false, failed: true } },
       });
-    } finally {
-      URL.revokeObjectURL(previewUrl);
-      setSending(false);
+      console.error("Upload error:", err);
     }
   };
+
+  // *** שליחת הקלטת אודיו דרך fetch ו-FormData ***
 
   const startRecording = async () => {
     if (recording || !navigator.mediaDevices) return;
@@ -304,7 +248,7 @@ export default function BusinessChatTab({
       mediaStreamRef.current = stream;
       recordedChunks.current = [];
       const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-      recorder.ondataavailable = e => recordedChunks.current.push(e.data);
+      recorder.ondataavailable = (e) => recordedChunks.current.push(e.data);
       recorder.onstop = () => {
         setRecordedBlob(new Blob(recordedChunks.current, { type: recorder.mimeType }));
       };
@@ -312,15 +256,15 @@ export default function BusinessChatTab({
       mediaRecorderRef.current = recorder;
       setRecording(true);
       setTimer(0);
-      timerRef.current = setInterval(() => setTimer(t => t + 1), 1000);
+      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
     } catch (err) {
-      console.error("[startRecording]", err);
+      console.error("[startRecording] Recording error:", err);
     }
   };
 
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
-    mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
     setRecording(false);
     clearInterval(timerRef.current);
   };
@@ -332,40 +276,65 @@ export default function BusinessChatTab({
 
   const sendRecording = async () => {
     if (!recordedBlob) return;
-    setSending(true);
     const tempId = uuidv4();
-    const previewUrl = URL.createObjectURL(recordedBlob);
+
     const optimistic = {
       _id: tempId,
       conversationId,
       from: businessId,
       to: customerId,
-      fileUrl: previewUrl,
-      fileName:`audio.${recordedBlob.type.split("/")[1]}`,
+      fileUrl: URL.createObjectURL(recordedBlob),
+      fileName: `audio.${recordedBlob.type.split("/")[1]}`,
       fileType: recordedBlob.type,
       fileDuration: timer,
       timestamp: new Date().toISOString(),
       sending: true,
-      tempId
+      tempId,
     };
     dispatch({ type: "append", payload: optimistic });
     setRecordedBlob(null);
 
     try {
-      const newMsg = await uploadChatFile(businessId, "", recordedBlob, token);
-      dispatch({
-        type: "updateStatus",
-        payload: { id: tempId, updates: { ...newMsg, sending: false, failed: false } }
+      const formData = new FormData();
+      formData.append("file", recordedBlob);
+      formData.append("businessId", businessId);
+      formData.append("message", ""); // טקסט אם רוצים
+
+      const response = await fetch("/api/business/my/chat", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
       });
-      socket?.emit("sendMessage", { ...newMsg, conversationType });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        dispatch({
+          type: "updateStatus",
+          payload: {
+            id: tempId,
+            updates: {
+              fileUrl: data.newMessage.fileUrl,
+              sending: false,
+              failed: false,
+            },
+          },
+        });
+      } else {
+        dispatch({
+          type: "updateStatus",
+          payload: { id: tempId, updates: { sending: false, failed: true } },
+        });
+        console.error("Upload failed:", data.error);
+      }
     } catch (err) {
       dispatch({
         type: "updateStatus",
-        payload: { id: tempId, updates: { sending: false, failed: true } }
+        payload: { id: tempId, updates: { sending: false, failed: true } },
       });
-    } finally {
-      URL.revokeObjectURL(previewUrl);
-      setSending(false);
+      console.error("Upload error:", err);
     }
   };
 
