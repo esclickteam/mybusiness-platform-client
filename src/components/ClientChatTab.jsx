@@ -78,17 +78,25 @@ const getMessageKey = (m) => {
 
 // פונקציית נירמול שדות מטא-דאטה בקובץ להבטיח שדות אחידים ל־UI
 function normalizeMessageFileFields(message) {
-  if (!message.fileUrl && message.url) {
-    message.fileUrl = message.url;
-  }
-  if (!message.fileName && message.originalName) {
-    message.fileName = message.originalName;
-  }
-  if (!message.fileType && message.mimeType) {
-    message.fileType = message.mimeType;
+  if (message.file) {
+    if (!message.fileUrl) message.fileUrl = message.file.url || "";
+    if (!message.fileName) message.fileName = message.file.name || "";
+    if (!message.fileType) message.fileType = message.file.type || "";
+    if (!message.fileDuration) message.fileDuration = message.file.duration || 0;
+  } else {
+    if (!message.fileUrl && message.url) {
+      message.fileUrl = message.url;
+    }
+    if (!message.fileName && message.originalName) {
+      message.fileName = message.originalName;
+    }
+    if (!message.fileType && message.mimeType) {
+      message.fileType = message.mimeType;
+    }
   }
   return message;
 }
+
 
 async function uploadFileToServer(
   file,
