@@ -29,6 +29,7 @@ const ratingLabels = {
   cleanliness: "ניקיון",
   punctuality: "עמידה בזמנים",
   professionalism: "מקצועיות",
+  professional: "מקצועיות",  
   communication: "תקשורת",
   value: "תמורה למחיר",
   service: "שירות",
