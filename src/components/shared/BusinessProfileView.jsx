@@ -230,7 +230,6 @@ export default function BusinessProfileView() {
 
           {/* תוכן לפי טאבים */}
           <div className="tab-content" role="tabpanel">
-
             {/* ראשי */}
             {currentTab === "ראשי" && (
               <>
@@ -243,7 +242,6 @@ export default function BusinessProfileView() {
                     <p className="no-data">אין תמונות להצגה</p>
                   )}
                 </div>
-
                 <div className="latest-reviews" style={{ marginTop: "2rem" }}>
                   {sortedReviews.length ? (
                     sortedReviews.slice(0, 2).map((r, i) => {
@@ -261,7 +259,6 @@ export default function BusinessProfileView() {
                           {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
                           <p><strong>🗓️ תאריך:</strong> {dateStr}</p>
                           {r.client && <p><strong>👤 מאת:</strong> {r.client.name}</p>}
-
                           <button
                             style={{
                               marginTop: "8px",
@@ -279,7 +276,6 @@ export default function BusinessProfileView() {
                           >
                             {isExpanded ? "הסתר פירוט דירוג 📋" : "פירוט דירוג 📋"}
                           </button>
-
                           {isExpanded && r.ratings && (
                             <div
                               id={`review-details-${r._id || i}`}
