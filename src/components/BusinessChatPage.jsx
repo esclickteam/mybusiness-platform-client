@@ -19,13 +19,14 @@ export default function BusinessChatPage() {
   const [unreadCounts, setUnreadCounts] = useState({});
   const socket = useSocket();
 
-  // סיכום כל ה‐unread
+  // קבלת הטוקן מתוך localStorage
+  const authToken = localStorage.getItem("token");
+
   useEffect(() => {
     const total = Object.values(unreadCounts).reduce((a, b) => a + b, 0);
     updateMessagesCount?.(total);
   }, [unreadCounts, updateMessagesCount]);
 
-  // טעינת רשימת השיחות
   useEffect(() => {
     if (!initialized || !businessId) return;
     API.get("/messages/client-conversations")
@@ -33,14 +34,12 @@ export default function BusinessChatPage() {
         const list = data.conversations || [];
         setConvos(list);
 
-        // unread initial
         const u = {};
         list.forEach(c => {
           if (c.unreadCount) u[c.conversationId] = c.unreadCount;
         });
         setUnreadCounts(u);
 
-        // בחר אוטומטית את הראשונה כולל conversationType
         if (list.length) {
           const { conversationId, clientId, clientName, conversationType } = list[0];
           setSelected({ conversationId, partnerId: clientId, partnerName: clientName, conversationType });
@@ -55,7 +54,6 @@ export default function BusinessChatPage() {
 
     setSelected({ conversationId, partnerId, partnerName, conversationType: type });
 
-    // מאפסים את הספירה של השיחה הנבחרת
     setUnreadCounts(prev => {
       const next = { ...prev };
       delete next[conversationId];
@@ -87,6 +85,7 @@ export default function BusinessChatPage() {
             customerName={selected.partnerName}
             socket={socket}
             conversationType={selected.conversationType}
+            authToken={authToken}  
           />
         ) : (
           <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
