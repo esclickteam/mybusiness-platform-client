@@ -418,6 +418,7 @@ export default function ClientChatTab({
         {
           conversationId,
           from: userId,
+          to: businessId, 
           role: "client",
           fileUrl: uploadedUrl,
           fileName: file.name,
@@ -440,61 +441,70 @@ export default function ClientChatTab({
   };
 
   const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setSending(true);
-    setError("");
+  const file = e.target.files?.[0];
+  if (!file) return;
+  setSending(true);
+  setError("");
 
-    const tempId = uuidv4();
-    const optimisticMsg = {
-      _id: tempId,
-      tempId,
-      conversationId,
-      from: userId,
-      role: "client",
-      fileName: file.name,
-      fileType: file.type,
-      fileUrl: URL.createObjectURL(file),
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-
-    try {
-      const uploadedUrl = await uploadFileToServer(file, conversationId, businessId, userId);
-
-      socket.emit(
-        "sendMessage",
-        {
-          conversationId,
-          from: userId,
-          role: "client",
-          fileUrl: uploadedUrl,
-          fileName: file.name,
-          fileType: file.type,
-          tempId,
-          conversationType,
-        },
-        (ack) => {
-          setSending(false);
-          if (ack.ok && ack.message) {
-            setMessages((prev) =>
-              prev.map((msg) => (msg.tempId === tempId ? ack.message : msg))
-            );
-          } else {
-            setError("שגיאה בשליחת הקובץ");
-            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-          }
-        }
-      );
-    } catch (error) {
-      setSending(false);
-      setError("שגיאה בהעלאת הקובץ: " + error.message);
-      setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-    }
-
-    e.target.value = null;
+  const tempId = uuidv4();
+  const optimisticMsg = {
+    _id: tempId,
+    tempId,
+    conversationId,
+    from: userId,
+    role: "client",
+    fileName: file.name,
+    fileType: file.type,
+    fileUrl: URL.createObjectURL(file),
+    timestamp: new Date(),
   };
+
+  setMessages((prev) => [...prev, optimisticMsg]);
+
+  try {
+    // שולחים ל־uploadFileToServer את businessId כ־toId (ולמסר הקלט אם קיים)
+    const uploadedUrl = await uploadFileToServer(
+      file,
+      conversationId,
+      businessId,
+      businessId,          // <–– toId צריך להיות המזהה של היעד (העסק)
+      input.trim()         // ניתן גם לערוך או להשאיר ריק, הפונקציה מטפלת בברירת־מחדל
+    );
+
+    socket.emit(
+      "sendMessage",
+      {
+        conversationId,
+        from: userId,
+        to: businessId,     // <–– הוספנו את השדה to
+        role: "client",
+        fileUrl: uploadedUrl,
+        fileName: file.name,
+        fileType: file.type,
+        tempId,
+        conversationType,
+      },
+      (ack) => {
+        setSending(false);
+        if (ack.ok && ack.message) {
+          setMessages((prev) =>
+            prev.map((msg) => (msg.tempId === tempId ? ack.message : msg))
+          );
+        } else {
+          setError("שגיאה בשליחת הקובץ");
+          setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+        }
+      }
+    );
+  } catch (error) {
+    setSending(false);
+    setError("שגיאה בהעלאת הקובץ: " + error.message);
+    setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+  }
+
+  e.target.value = null;
+};
+
 
   return (
     <div className="chat-container client">
