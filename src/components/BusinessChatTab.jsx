@@ -155,15 +155,19 @@ export default function BusinessChatTab({
   (res) => {
     console.log("getHistory response:", res);
     if (res.ok) {
-      const msgs = (res.messages || []).map((m) => ({
-        ...m,
-        timestamp: m.createdAt || new Date().toISOString(),
-        text: m.text || m.content || "",
-        fileUrl: m.fileUrl || null,
-        fileType: m.fileType || null,
-        fileName: m.fileName || "",
-        fileDuration: m.fileDuration || 0,
-      }));
+      const msgs = (res.messages || []).map((m) => {
+        let text = m.text || m.content || "";
+        if (text === "0") text = ""; // מניעת הצגת "0"
+        return {
+          ...m,
+          timestamp: m.createdAt || new Date().toISOString(),
+          text,
+          fileUrl: m.fileUrl || null,
+          fileType: m.fileType || null,
+          fileName: m.fileName || "",
+          fileDuration: m.fileDuration || 0,
+        };
+      });
       dispatch({ type: "set", payload: msgs });
     } else {
       console.error("getHistory failed:", res.error);
