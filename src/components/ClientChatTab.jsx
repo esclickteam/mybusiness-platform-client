@@ -84,15 +84,6 @@ async function sendChatMessageWithFile(file, conversationId, businessId, toId, m
   if (toId) formData.append("toId", toId);
   formData.append("message", message || "");
 
-  console.log("Sending formData entries:");
-  for (const pair of formData.entries()) {
-    if (pair[0] === "file") {
-      console.log(`${pair[0]}:`, pair[1].name, pair[1].type, pair[1].size);
-    } else {
-      console.log(`${pair[0]}:`, pair[1]);
-    }
-  }
-
   const token = localStorage.getItem("token");
 
   const response = await fetch("/api/business/my/chat", {
@@ -105,19 +96,14 @@ async function sendChatMessageWithFile(file, conversationId, businessId, toId, m
     credentials: "include",
   });
 
-  console.log("Response status:", response.status);
-
   if (!response.ok) {
     const err = await response.json();
-    console.error("Error response from server:", err);
     throw new Error(err.error || "Upload failed");
   }
 
   const data = await response.json();
-  console.log("Response data:", data);
   return data.newMessage || data; // בהתאם למבנה התגובה
 }
-
 
 
 
