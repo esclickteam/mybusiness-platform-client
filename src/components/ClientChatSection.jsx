@@ -19,11 +19,14 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
 
+  /* ─── Helper: don't לדרוס ערך תקף ב-null/undefined ────────────── */
+  const safeSetBusinessId = (newId) =>
+    setBusinessId((prev) => newId ?? prev);
+
   const socketRef = useRef(null);
 
-  /* ─── Create socket once ─────────────────────────────────────────────────── */
+  /* ─── Create socket once ───────────────────────────────────────── */
   useEffect(() => {
-    console.log("ClientChatSection: initialized =", initialized, "userId =", userId);
     if (!initialized || !userId) return;
     if (socketRef.current) return; // already connected
 
@@ -38,25 +41,19 @@ export default function ClientChatSection() {
       autoConnect: true,
     });
 
-    socketRef.current.on("connect", () => {
-      console.log("Socket connected");
-      setError("");
-    });
+    socketRef.current.on("connect", () => setError(""));
 
     socketRef.current.on("disconnect", (reason) => {
-      console.log("Socket disconnected:", reason);
       if (reason !== "io client disconnect") {
         setError("Socket disconnected unexpectedly: " + reason);
       }
     });
 
-    socketRef.current.on("connect_error", (err) => {
-      console.log("Socket connect error:", err);
-      setError("שגיאה בחיבור לסוקט: " + err.message);
-    });
+    socketRef.current.on("connect_error", (err) =>
+      setError("שגיאה בחיבור לסוקט: " + err.message)
+    );
 
     return () => {
-      console.log("Disconnecting socket");
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
@@ -64,7 +61,6 @@ export default function ClientChatSection() {
 
   /* ─── Fetch user conversations once (REST) ─────────────────────── */
   useEffect(() => {
-    console.log("Fetching user conversations for userId:", userId);
     if (!userId) return;
 
     setLoading(true);
@@ -77,7 +73,6 @@ export default function ClientChatSection() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("User conversations response:", data);
         if (Array.isArray(data.conversations) && data.conversations.length) {
           let conv = null;
           if (businessIdFromParams) {
@@ -87,16 +82,13 @@ export default function ClientChatSection() {
           }
           if (!conv) conv = data.conversations[0];
 
-          console.log("Selected conversation:", conv);
-
           setConversationId(conv.conversationId);
           setBusinessName(conv.otherParty?.name || "");
-          setBusinessId(conv.otherParty?.id);
+          safeSetBusinessId(conv.otherParty?.id);
         } else {
-          console.log("No conversations found");
           setConversationId(null);
           setBusinessName("");
-          setBusinessId(businessIdFromParams || null);
+          safeSetBusinessId(businessIdFromParams);
         }
         setLoading(false);
       })
@@ -107,16 +99,9 @@ export default function ClientChatSection() {
       });
   }, [userId, businessIdFromParams]);
 
-  /* ─── Log changes to conversationId and businessId ────────────── */
-  useEffect(() => {
-    console.log("Updated conversationId:", conversationId);
-    console.log("Updated businessId:", businessId);
-  }, [conversationId, businessId]);
-
   /* ─── WS: history + realtime listeners ─────────────────────────── */
   useEffect(() => {
     const socket = socketRef.current;
-    console.log("Setting up socket listeners, conversationId:", conversationId, "businessId:", businessId);
     if (!socket || !socket.connected || !conversationId) {
       setMessages([]);
       return;
@@ -125,7 +110,6 @@ export default function ClientChatSection() {
     setLoading(true);
 
     socket.emit("getHistory", { conversationId, businessId }, (res) => {
-      console.log("getHistory response:", res);
       if (res.ok) {
         setMessages(Array.isArray(res.messages) ? res.messages : []);
         setError("");
@@ -138,8 +122,8 @@ export default function ClientChatSection() {
 
     const handleNew = (msg) => {
       setMessages((prev) => {
-        const idx = prev.findIndex((m) =>
-          m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
+        const idx = prev.findIndex(
+          (m) => m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
         );
         if (idx !== -1) {
           const next = [...prev];
@@ -149,9 +133,11 @@ export default function ClientChatSection() {
         return [...prev, msg];
       });
     };
-    const handleApproved = (msg) => {
-      setMessages((prev) => prev.map((m) => (m._id === msg._id ? { ...m, status: "approved" } : m)));
-    };
+
+    const handleApproved = (msg) =>
+      setMessages((prev) =>
+        prev.map((m) => (m._id === msg._id ? { ...m, status: "approved" } : m))
+      );
 
     socket.on("newMessage", handleNew);
     socket.on("messageApproved", handleApproved);
@@ -163,6 +149,7 @@ export default function ClientChatSection() {
       socket.off("newMessage", handleNew);
       socket.off("messageApproved", handleApproved);
       socket.emit("leaveConversation", conversationId);
+      if (businessId) socket.emit("leaveRoom", businessId);
     };
   }, [conversationId, businessId]);
 
@@ -174,7 +161,9 @@ export default function ClientChatSection() {
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
-          <div className={styles.convItemActive}>{businessName || businessId || "עסק לא ידוע"}</div>
+          <div className={styles.convItemActive}>
+            {businessName || businessId || "עסק לא ידוע"}
+          </div>
         </aside>
         <section className={styles.chatArea}>
           <ClientChatTab
