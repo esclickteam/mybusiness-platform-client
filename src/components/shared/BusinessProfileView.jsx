@@ -23,7 +23,7 @@ const ReviewForm = lazy(() => import("../../pages/business/dashboardPages/buildT
 const ServicesSelector = lazy(() => import("../ServicesSelector"));
 const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar"));
 
-// הוספת מיפוי לתוויות הדירוג
+// מיפוי תוויות דירוג
 const ratingLabels = {
   cleanliness: "ניקיון",
   punctuality: "עמידה בזמנים",
@@ -31,6 +31,21 @@ const ratingLabels = {
   communication: "תקשורת",
   value: "תמורה למחיר",
 };
+
+// קומפוננטה להצגת כוכבים לפי דירוג (StarDisplay)
+function StarDisplay({ rating }) {
+  const fullStars = Math.floor(rating);
+  const halfStar = rating - fullStars >= 0.5;
+  const stars = [];
+
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(<span key={i}>⭐</span>);
+  }
+  if (halfStar) {
+    stars.push(<span key="half">⭐</span>);
+  }
+  return <>{stars}</>;
+}
 
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
