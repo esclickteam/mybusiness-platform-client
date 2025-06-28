@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
-import { useSocket, SocketProvider } from "../../context/socketContext";
+import { useSocket } from "../../context/socketContext";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import "react-calendar/dist/Calendar.css";
@@ -47,10 +47,41 @@ const StarDisplay = ({ rating }) => {
   );
 };
 
+// קומפוננטת כרטיסי מידע לעיצוב החלק העליון
+function BusinessInfoCards({ category, description, collaborations, contact }) {
+  return (
+    <div className="info-cards-container">
+      <div className="info-card">
+        <h3>📍 אזור פעילות</h3>
+        <p>{contact.city || "לא צויין"}</p>
+      </div>
+
+      <div className="info-card">
+        <h3>📝 על העסק</h3>
+        <p>{description || "אין תיאור"}</p>
+      </div>
+
+      <div className="info-card">
+        <h3>🤝 שיתופי פעולה רצויים</h3>
+        <p>{collaborations || "אין נתונים"}</p>
+      </div>
+
+      <div className="info-card">
+        <h3>📞 פרטי קשר</h3>
+        <p>
+          <strong>איש קשר:</strong> {contact.person || "-"}<br />
+          <strong>טלפון:</strong> {contact.phone || "-"}<br />
+          <strong>אימייל:</strong> {contact.email || "-"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function BusinessProfileView() {
   const { businessId: paramId } = useParams();
   const { user } = useAuth();
-  const socket = useSocket();  // שימוש ב-socket מהקונטקסט
+  const socket = useSocket();
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
 
@@ -63,8 +94,6 @@ export default function BusinessProfileView() {
   const [selectedService, setSelectedService] = useState(null);
   const [profileViewsCount, setProfileViewsCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
-
-  // סטייט לניהול אילו ביקורות פתוחות
   const [expandedReviews, setExpandedReviews] = useState({});
 
   // בקשות נתונים
@@ -87,7 +116,6 @@ export default function BusinessProfileView() {
     enabled: !!bizId
   });
 
-  // עדכונים לסטייטים
   useEffect(() => {
     if (!data) return;
     setFaqs(data.faqs || []);
@@ -108,10 +136,8 @@ export default function BusinessProfileView() {
     setSchedule(sched);
   }, [workHoursData]);
 
-  // שליחת אירוע צפיה בפרופיל לעדכון בצד השרת (ולהודעה לדשבורד)
   useEffect(() => {
     if (!socket || !bizId) return;
-    // שולחים פעם אחת בלבד במעמד טעינת הפרופיל
     socket.emit("profileView", { businessId: bizId }, (res) => {
       if (res.ok) {
         setProfileViewsCount(res.stats.views_count || 0);
@@ -121,7 +147,6 @@ export default function BusinessProfileView() {
     });
   }, [socket, bizId]);
 
-  // מיון ביקורות לפי תאריך חדש לישן
   const sortedReviews = [...reviews].sort(
     (a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
   );
@@ -158,7 +183,6 @@ export default function BusinessProfileView() {
     }
   };
 
-  // פונקציה להפעלת/כיבוי פירוט דירוג ביקורת
   const toggleReviewDetails = (id) => {
     setExpandedReviews((prev) => ({
       ...prev,
@@ -200,13 +224,14 @@ export default function BusinessProfileView() {
               ✏️ ערוך פרטי העסק
             </Link>
           )}
+
           {logoUrl && (
             <div className="profile-logo-wrapper">
               <img className="profile-logo" src={logoUrl} alt="לוגו העסק" loading="lazy" />
             </div>
           )}
 
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div style={{ textAlign: "center", marginTop: "1rem" }}>
             <h1 className="business-name">{businessName}</h1>
             <button
               onClick={toggleFavorite}
@@ -224,12 +249,19 @@ export default function BusinessProfileView() {
             </button>
           </div>
 
-          <div className="about-phone">
-            {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
-            {description && <p><strong>📝 תיאור:</strong> {description}</p>}
-            {phone && <p><strong>📞 טלפון:</strong> {phone}</p>}
-            {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
-          </div>
+          {/* כרטיסי מידע */}
+          <BusinessInfoCards
+            category={category}
+            description={description}
+            collaborations={category} // אפשר לשנות למידע רלוונטי אחר
+            contact={{
+              city,
+              person: businessName,
+              phone,
+              email: data.email || "",
+            }}
+          />
+
           <div className="overall-rating">
             <span className="big-score">{roundedAvg.toFixed(1)}</span>
             <span className="count">({reviews.length} ביקורות)</span>
