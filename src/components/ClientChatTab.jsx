@@ -247,18 +247,24 @@ export default function ClientChatTab({
   };
 
   const sendMessage = () => {
-    console.log("sendMessage called with values:", {
+    console.log("sendMessage called with:", {
       conversationId,
       from: userId,
       to: businessId,
       text: input.trim(),
-      tempId: "will be generated below",
       socketConnected: socket?.connected,
       sending,
       inputLength: input.trim().length,
     });
 
     if (!input.trim() || sending || !socket) return;
+
+    if (!businessId) {
+      setError("היעד אינו מוגדר. נסה לרענן את הדף.");
+      console.error("sendMessage aborted: businessId is undefined");
+      return;
+    }
+
     if (!socket.connected) {
       setError("Socket אינו מחובר, נסה להתחבר מחדש");
       return;
