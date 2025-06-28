@@ -282,6 +282,7 @@ export default function ClientChatTab({
         "createConversationAndSendMessage",
         {
           from: userId,
+          to: businessId, 
           text: input.trim(),
           conversationType,
           tempId,
