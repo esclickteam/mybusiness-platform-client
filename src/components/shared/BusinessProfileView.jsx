@@ -269,7 +269,7 @@ export default function BusinessProfileView() {
                 style={{
                   padding: "10px 20px",
                   fontSize: "1rem",
-                  background: tab === currentTab ? "#4A148C" : "#9C4D99", // צבעים סגולים שונים
+                  background: tab === currentTab ? "#5c2d91" : undefined, 
                   color: "white",
                   border: "none",
                   cursor: "pointer",
