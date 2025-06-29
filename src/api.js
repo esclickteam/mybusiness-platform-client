@@ -14,6 +14,7 @@ const API = axios.create({
   },
 });
 
+// פונקציה מרכזית להגדרת כותרת Authorization
 const setAuthToken = (token) => {
   if (token) {
     API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -22,9 +23,20 @@ const setAuthToken = (token) => {
   }
 };
 
+// קביעת הטוקן במעמד טעינת המודול
 setAuthToken(localStorage.getItem("token"));
 
-// משתנה שמצביע אם ריענון טוקן מתבצע
+// זיהוי מוקדי קצה של Authentication כדי להתעלם מהם ברענון טוקן
+const isAuthEndpoint = (url) => {
+  return [
+    "/auth/me",
+    "/auth/refresh-token",
+    "/auth/login",
+    "/auth/register",
+  ].some((endpoint) => url.endsWith(endpoint));
+};
+
+// משתנים למעקב אחרי רענון טוקן ורישום callback
 let isRefreshing = false;
 let refreshSubscribers = [];
 
@@ -37,6 +49,7 @@ function addRefreshSubscriber(callback) {
   refreshSubscribers.push(callback);
 }
 
+// Request interceptor: מוסיף כותרת Authorization מכל קריאה
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -57,6 +70,7 @@ API.interceptors.request.use(
   }
 );
 
+// Response interceptor: טיפול בתשובות שגיאה, כולל רענון טוקן
 API.interceptors.response.use(
   (response) => {
     console.log(`API Response: ${response.status} ${response.config.url}`);
@@ -69,9 +83,15 @@ API.interceptors.response.use(
       return Promise.reject(new Error("שגיאת רשת"));
     }
 
-    if (response.status === 401 && !config.url.endsWith("/auth/me")) {
+    // טיפול ב-401/403 עבור קריאות שאינן Authentication
+    if (
+      (response.status === 401 || response.status === 403) &&
+      !isAuthEndpoint(config.url) &&
+      !config._retry
+    ) {
+      config._retry = true;
+
       if (isRefreshing) {
-        // אם כבר מתבצע ריענון, מחכים שיסיים וממשיכים עם הטוקן החדש
         return new Promise((resolve, reject) => {
           addRefreshSubscriber((token) => {
             if (!token) {
@@ -85,14 +105,18 @@ API.interceptors.response.use(
       }
 
       isRefreshing = true;
-
       try {
-        const refreshResponse = await axios.post(`${BASE_URL}/auth/refresh-token`, null, { withCredentials: true });
-        if (refreshResponse.data.accessToken) {
-          localStorage.setItem("token", refreshResponse.data.accessToken);
-          setAuthToken(refreshResponse.data.accessToken);
-          config.headers["Authorization"] = `Bearer ${refreshResponse.data.accessToken}`;
-          onRefreshed(refreshResponse.data.accessToken);
+        const refreshResponse = await axios.post(
+          `${BASE_URL}/auth/refresh-token`,
+          null,
+          { withCredentials: true }
+        );
+        const newToken = refreshResponse.data.accessToken;
+        if (newToken) {
+          localStorage.setItem("token", newToken);
+          setAuthToken(newToken);
+          config.headers["Authorization"] = `Bearer ${newToken}`;
+          onRefreshed(newToken);
           return API(config);
         }
       } catch (err) {
@@ -105,17 +129,20 @@ API.interceptors.response.use(
       }
     }
 
+    // טיפול בשגיאות רגילות
     const contentType = response.headers["content-type"] || "";
     let message;
     if (!contentType.includes("application/json")) {
-      message = typeof response.data === "string" ? response.data : JSON.stringify(response.data);
+      message = typeof response.data === "string"
+        ? response.data
+        : JSON.stringify(response.data);
     } else {
       message = response.data?.message || JSON.stringify(response.data);
     }
-
     console.error(`API Error ${response.status}:`, message);
     return Promise.reject(new Error(message));
   }
 );
 
+export { setAuthToken };
 export default API;

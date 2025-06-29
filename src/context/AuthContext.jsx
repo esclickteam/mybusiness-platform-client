@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api";
+import API, { setAuthToken } from "../api";
 import { io } from "socket.io-client";
 import jwtDecode from "jwt-decode";
 
@@ -15,7 +15,7 @@ async function singleFlightRefresh() {
         const newToken = res.data.accessToken;
         if (!newToken) throw new Error("No new token");
         localStorage.setItem("token", newToken);
-        API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
+        setAuthToken(newToken);
         return newToken;
       })
       .finally(() => {
@@ -38,12 +38,10 @@ export function AuthProvider({ children }) {
   const ws = useRef(null);
 
   const setBusinessToChatWith = (businessId) => {
-    setUser(prevUser => {
-      if (!prevUser) return prevUser;
-      return { ...prevUser, businessToChatWith: businessId };
-    });
+    setUser(prev => prev ? { ...prev, businessToChatWith: businessId } : prev);
   };
 
+  // Response interceptor for token refresh
   useEffect(() => {
     const interceptor = API.interceptors.response.use(
       res => res,
@@ -54,7 +52,7 @@ export function AuthProvider({ children }) {
           original._retry = true;
           try {
             const newToken = await singleFlightRefresh();
-            API.defaults.headers['Authorization'] = `Bearer ${newToken}`;
+            setAuthToken(newToken);
             original.headers['Authorization'] = `Bearer ${newToken}`;
             return API(original);
           } catch {
@@ -72,27 +70,25 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await API.post("/auth/logout", {}, { withCredentials: true });
-      console.log("✅ Logout request succeeded");
-    } catch (e) {
-      console.warn("⚠️ Logout request failed:", e.response?.data || e.message);
+    } catch {
+      // ignore
     } finally {
       ongoingRefresh = null;
       isRefreshing = false;
-      delete API.defaults.headers['Authorization'];
+      setAuthToken(null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("businessDetails");
       if (ws.current) {
         ws.current.removeAllListeners();
         ws.current.disconnect();
         ws.current = null;
       }
-      localStorage.removeItem("token");
-      localStorage.removeItem("businessDetails");
       setUser(null);
       setLoading(false);
       navigate("/login", { replace: true });
     }
   };
 
-  // ---- פונקציית login מעודכנת ----
   const login = async (email, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
@@ -105,14 +101,14 @@ export function AuthProvider({ children }) {
       const { accessToken, redirectUrl } = response.data;
       if (!accessToken) throw new Error("No access token received");
       localStorage.setItem("token", accessToken);
-      API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
+      setAuthToken(accessToken);
 
-      // ממלא את המשתמש מתוך ה-JWT ואז משלים מידע מהשרת
+      // decode and set user
       const decoded = jwtDecode(accessToken);
       setUser({ ...decoded, businessId: decoded.businessId || null });
       createSocketConnection(accessToken, decoded);
 
-      // מביא מהשרת את הפרופיל המלא (כולל businessId וכו')
+      // fetch full profile
       const { data } = await API.get("/auth/me", { withCredentials: true });
       if (data.businessId) {
         localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
@@ -120,25 +116,21 @@ export function AuthProvider({ children }) {
       setUser({ ...data, businessId: data.businessId || null });
       createSocketConnection(accessToken, data);
 
-      // טיפול ב-redirect
+      // redirect
       if (!options.skipRedirect) {
-        if (redirectUrl) {
-          navigate(redirectUrl, { replace: true });
-        } else {
-          let path = "/";
+        const path = data.redirectUrl || (() => {
           switch (data.role) {
-            case "business": path = `/business/${data.businessId}/dashboard`; break;
-            case "customer": path = "/client/dashboard"; break;
-            case "worker": path = "/staff/dashboard"; break;
-            case "manager": path = "/manager/dashboard"; break;
-            case "admin": path = "/admin/dashboard"; break;
+            case "business": return `/business/${data.businessId}/dashboard`;
+            case "customer": return "/client/dashboard";
+            case "worker": return "/staff/dashboard";
+            case "manager": return "/manager/dashboard";
+            case "admin": return "/admin/dashboard";
+            default: return "/";
           }
-          navigate(path, { replace: true });
-        }
+        })();
+        navigate(path, { replace: true });
       }
-
       setLoading(false);
-      // מחזיר גם את ה-user וגם את ה-redirectUrl
       return { user: data, redirectUrl };
     } catch (e) {
       if (e.response?.status === 401 || e.response?.status === 403) {
@@ -151,9 +143,9 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const fetchWithAuth = async (requestFunc) => {
+  const fetchWithAuth = async (fn) => {
     try {
-      return await requestFunc();
+      return await fn();
     } catch (err) {
       const status = err.response?.status;
       if (status === 401 || status === 403) {
@@ -176,34 +168,23 @@ export function AuthProvider({ children }) {
     ws.current = io("https://api.esclick.co.il", {
       path: "/socket.io",
       transports: ["websocket"],
-      auth: {
-        token,
-        role: userData?.role,
-        businessId: userData?.businessId || (userData.business && userData.business._id),
-      },
+      auth: { token, role: userData.role, businessId: userData.businessId }
     });
 
-    ws.current.on("connect", () => console.log("✅ Socket connected:", ws.current.id));
-    ws.current.on("disconnect", reason => console.log("🔴 Socket disconnected:", reason));
-
+    ws.current.on("connect", () => console.log("✅ Socket connected:"));
+    ws.current.on("disconnect", () => console.log("🔴 Socket disconnected"));
     ws.current.on("tokenExpired", async () => {
-      console.log("🚨 Socket token expired, refreshing...");
       try {
         const newToken = await singleFlightRefresh();
         if (newToken) {
           ws.current.auth.token = newToken;
-          ws.current.removeAllListeners();
           ws.current.connect();
-        } else {
-          await logout();
-        }
+        } else await logout();
       } catch {
         await logout();
       }
     });
-
     ws.current.on("connect_error", async err => {
-      console.error("Socket connect error:", err.message);
       if (err.message === "jwt expired") {
         try {
           const newToken = await singleFlightRefresh();
@@ -216,91 +197,43 @@ export function AuthProvider({ children }) {
     });
   };
 
+  // init effect
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
-
     (async () => {
       setLoading(true);
-      let token = localStorage.getItem("token");
-      if (token) {
-        let decoded = null;
-        try {
-          decoded = jwtDecode(token);
-        } catch (e) {
-          await logout();
-          return;
-        }
-
-        if (decoded.exp * 1000 < Date.now()) {
-          try {
-            token = await singleFlightRefresh();
-            decoded = jwtDecode(token);
-          } catch (err) {
-            if (!controller.signal.aborted) {
-              await logout();
-            }
-            return;
-          }
-        }
-
-        if (isMounted) {
-          setUser({
-            userId: decoded.userId,
-            name: decoded.name,
-            email: decoded.email,
-            role: decoded.role,
-            subscriptionPlan: decoded.subscriptionPlan,
-            businessId: decoded.businessId || null,
-          });
-          API.defaults.headers['Authorization'] = `Bearer ${token}`;
-          createSocketConnection(token, decoded);
-        }
-
-        try {
-          if (isRefreshing) {
-            await ongoingRefresh;
-            token = localStorage.getItem("token");
-          }
-          const { data } = await API.get("/auth/me", { withCredentials: true, signal: controller.signal });
-          if (isMounted) {
-            setUser({
-              userId: data.userId,
-              name: data.name,
-              email: data.email,
-              role: data.role,
-              subscriptionPlan: data.subscriptionPlan,
-              businessId: data.businessId || null,
-            });
-            createSocketConnection(token, data);
-            if (data.businessId) {
-              localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-            }
-          }
-        } catch (err) {
-          if (!controller.signal.aborted) {
-            await logout();
-          }
-        }
-      } else {
+      const token = localStorage.getItem("token");
+      if (!token) {
         setUser(null);
+      } else {
+        setAuthToken(token);
+        try {
+          const decoded = jwtDecode(token);
+          if (decoded.exp * 1000 < Date.now()) {
+            await singleFlightRefresh();
+          }
+          if (isMounted) {
+            setUser(decoded);
+            createSocketConnection(token, decoded);
+          }
+          const { data } = await API.get("/auth/me", { signal: controller.signal });
+          if (isMounted) {
+            setUser(data);
+            createSocketConnection(token, data);
+            if (data.businessId) localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+          }
+        } catch {
+          if (!controller.signal.aborted) await logout();
+        }
       }
       if (isMounted) {
         setLoading(false);
         setInitialized(true);
       }
     })();
-
-    return () => {
-      isMounted = false;
-      controller.abort();
-      if (ws.current) {
-        ws.current.removeAllListeners();
-        ws.current.disconnect();
-        ws.current = null;
-      }
-    };
-  }, [navigate]);
+    return () => { isMounted = false; controller.abort(); };
+  }, []);
 
   useEffect(() => {
     if (successMessage) {
@@ -311,17 +244,10 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{
-      user,
-      loading,
-      initialized,
-      error,
-      login,
-      logout,
-      refreshAccessToken: singleFlightRefresh,
-      fetchWithAuth,
-      socket: ws.current,
-      setUser,
-      setBusinessToChatWith
+      user, loading, initialized, error,
+      login, logout, refreshAccessToken: singleFlightRefresh,
+      fetchWithAuth, socket: ws.current,
+      setUser, setBusinessToChatWith
     }}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
@@ -329,6 +255,4 @@ export function AuthProvider({ children }) {
   );
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export function useAuth() { return useContext(AuthContext); }
