@@ -9,7 +9,7 @@ function Plans() {
 
   // תקופות מנוי עם מחירים תואמים
   const [selectedDuration, setSelectedDuration] = useState("1");
-  const prices = { "1": 799, "3": 769, "12": 699 };
+  const prices = { "1": 10, "3": 769, "12": 699 };
 
   const handleDurationChange = (duration) => setSelectedDuration(duration);
 
