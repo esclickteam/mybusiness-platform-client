@@ -14,7 +14,7 @@ export default function Checkout() {
   const [processing, setProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // שליפת מזהה משתמש בפורמט גמיש
+  // שליפת מזהה משתמש (MongoDB _id / id / userId)
   const getUserId = (user) => user?._id || user?.id || user?.userId || null;
   const realUserId = getUserId(user);
 
@@ -40,7 +40,6 @@ export default function Checkout() {
     setProcessing(true);
     setErrorMessage("");
 
-    // בדיקת כל הערכים - לפני שליחה לשרת
     console.log("🚩 תשלום - DEBUG נתונים:");
     console.log("planName:", planName, "| totalPrice:", totalPrice, "| userId:", realUserId);
 
@@ -54,7 +53,7 @@ export default function Checkout() {
       const response = await API.post("/cardcom", {
         plan: planName,
         price: totalPrice,
-        userId: realUserId, // ← תמיד קיים
+        userId: realUserId // ← זה ה־_id שלך ממונגו!
       });
 
       if (response.data.paymentUrl) {
