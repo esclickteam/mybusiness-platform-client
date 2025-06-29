@@ -14,6 +14,10 @@ export default function Checkout() {
   const [processing, setProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // שליפת מזהה משתמש בפורמט גמיש
+  const getUserId = (user) => user?._id || user?.id || user?.userId || null;
+  const realUserId = getUserId(user);
+
   if (loading) return null;
 
   if (!user) {
@@ -38,9 +42,9 @@ export default function Checkout() {
 
     // בדיקת כל הערכים - לפני שליחה לשרת
     console.log("🚩 תשלום - DEBUG נתונים:");
-    console.log("planName:", planName, "| totalPrice:", totalPrice, "| userId:", user?._id);
+    console.log("planName:", planName, "| totalPrice:", totalPrice, "| userId:", realUserId);
 
-    if (!planName || !totalPrice || !user?._id) {
+    if (!planName || !totalPrice || !realUserId) {
       setErrorMessage("❌ חסרים נתונים, לא ניתן להמשיך לתשלום.");
       setProcessing(false);
       return;
@@ -50,7 +54,7 @@ export default function Checkout() {
       const response = await API.post("/cardcom", {
         plan: planName,
         price: totalPrice,
-        userId: user._id,
+        userId: realUserId, // ← תמיד קיים
       });
 
       if (response.data.paymentUrl) {
