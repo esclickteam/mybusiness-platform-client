@@ -7,7 +7,6 @@ import jwtDecode from "jwt-decode";
 let ongoingRefresh = null;
 let isRefreshing = false;
 
-// עוטף את הרענון - אם כבר יש רענון פעיל, מחכה לו (single flight)
 async function singleFlightRefresh() {
   if (!ongoingRefresh) {
     isRefreshing = true;
@@ -38,7 +37,6 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const ws = useRef(null);
 
-  // לעדכון העסק
   const setBusinessToChatWith = (businessId) => {
     setUser(prevUser => {
       if (!prevUser) return prevUser;
@@ -46,7 +44,6 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // Interceptor לרענון טוקן אוטומטי
   useEffect(() => {
     const interceptor = API.interceptors.response.use(
       res => res,
@@ -89,13 +86,13 @@ export function AuthProvider({ children }) {
       }
       localStorage.removeItem("token");
       localStorage.removeItem("businessDetails");
-
       setUser(null);
       setLoading(false);
       navigate("/login", { replace: true });
     }
   };
 
+  // ---- פונקציית login מעודכנת ----
   const login = async (email, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
@@ -105,15 +102,17 @@ export function AuthProvider({ children }) {
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
       );
-      const { accessToken } = response.data;
+      const { accessToken, redirectUrl } = response.data;
       if (!accessToken) throw new Error("No access token received");
       localStorage.setItem("token", accessToken);
       API.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
+      // ממלא את המשתמש מתוך ה-JWT ואז משלים מידע מהשרת
       const decoded = jwtDecode(accessToken);
       setUser({ ...decoded, businessId: decoded.businessId || null });
       createSocketConnection(accessToken, decoded);
 
+      // מביא מהשרת את הפרופיל המלא (כולל businessId וכו')
       const { data } = await API.get("/auth/me", { withCredentials: true });
       if (data.businessId) {
         localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
@@ -121,20 +120,26 @@ export function AuthProvider({ children }) {
       setUser({ ...data, businessId: data.businessId || null });
       createSocketConnection(accessToken, data);
 
+      // טיפול ב-redirect
       if (!options.skipRedirect) {
-        let path = "/";
-        switch (data.role) {
-          case "business": path = `/business/${data.businessId}/dashboard`; break;
-          case "customer": path = "/client/dashboard"; break;
-          case "worker": path = "/staff/dashboard"; break;
-          case "manager": path = "/manager/dashboard"; break;
-          case "admin": path = "/admin/dashboard"; break;
+        if (redirectUrl) {
+          navigate(redirectUrl, { replace: true });
+        } else {
+          let path = "/";
+          switch (data.role) {
+            case "business": path = `/business/${data.businessId}/dashboard`; break;
+            case "customer": path = "/client/dashboard"; break;
+            case "worker": path = "/staff/dashboard"; break;
+            case "manager": path = "/manager/dashboard"; break;
+            case "admin": path = "/admin/dashboard"; break;
+          }
+          navigate(path, { replace: true });
         }
-        navigate(path, { replace: true });
       }
 
       setLoading(false);
-      return data;
+      // מחזיר גם את ה-user וגם את ה-redirectUrl
+      return { user: data, redirectUrl };
     } catch (e) {
       if (e.response?.status === 401 || e.response?.status === 403) {
         setError("❌ אימייל או סיסמה שגויים");
@@ -211,7 +216,6 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // ✨ אתחול עם בדיקה אם הטוקן בתוקף ורענון אוטומטי במידת הצורך
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -228,7 +232,6 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        // אם פג תוקף – רענן!
         if (decoded.exp * 1000 < Date.now()) {
           try {
             token = await singleFlightRefresh();
@@ -255,7 +258,6 @@ export function AuthProvider({ children }) {
         }
 
         try {
-          // בזמן רענון – לא לשלוח שום בקשה
           if (isRefreshing) {
             await ongoingRefresh;
             token = localStorage.getItem("token");

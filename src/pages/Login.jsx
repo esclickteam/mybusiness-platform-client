@@ -4,13 +4,9 @@ import { lazyWithPreload } from "../utils/lazyWithPreload";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
-// טופס שכחת סיסמה בטעינה דינמית
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
-
-// טעינה מוקדמת של הדשבורד
 const DashboardPage = lazyWithPreload(() => import("./business/dashboardPages/DashboardPage"));
 
-// Skeleton UI לטעינת התחברות
 export function LoginSkeleton() {
   return (
     <div className="login-skeleton">
@@ -22,7 +18,7 @@ export function LoginSkeleton() {
 }
 
 export default function Login() {
-  const { login, user, error: authError } = useAuth();
+  const { login, error: authError } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -53,14 +49,15 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
-      // login מחזיר את המשתמש המחובר
-      await login(cleanEmail, password);
+      // login מחזיר את המשתמש וה-redirectUrl (אם יש)
+      const { user: loggedInUser, redirectUrl } = await login(cleanEmail, password);
 
-      // ברגע שה-login הושלם וקיבלנו user, מבצעים ניווט לפי role
-      if (user?.role === "business") {
-        window.location.href = "https://esclick.co.il/plans";
+      if (redirectUrl) {
+        navigate(redirectUrl, { replace: true });
+      } else if (loggedInUser?.role === "business") {
+        navigate("/plans", { replace: true });
       } else {
-        navigate("/client/dashboard");
+        navigate("/client/dashboard", { replace: true });
       }
     } catch (err) {
       setLoginError(authError || err?.message || "אימייל או סיסמה שגויים");
@@ -69,7 +66,6 @@ export default function Login() {
     }
   };
 
-  // הצגה של Skeleton בזמן טעינה
   if (dashboardLoading || loading) {
     return <LoginSkeleton />;
   }
@@ -128,7 +124,7 @@ export default function Login() {
             שכחת את הסיסמה?
           </span>
           <p className="signup-link">
-            לא רשום?{' '}
+            לא רשום?{" "}
             <Link to="/register" className="signup-link-text">
               הירשם עכשיו
             </Link>

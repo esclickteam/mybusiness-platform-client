@@ -18,7 +18,6 @@ const Register = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
-
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -71,9 +70,7 @@ const Register = () => {
         return;
       }
       if (!isValidPhone(phone.trim())) {
-        setError(
-          "⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב-05)"
-        );
+        setError("⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב-05)");
         return;
       }
     }
@@ -88,29 +85,21 @@ const Register = () => {
           phone: userType === "business" ? phone.trim() : "",
           password,
           userType,
-          businessName:
-            userType === "business" ? businessName.trim() : undefined,
-          referralCode:
-            userType === "customer" ? referralCode || undefined : undefined,
+          businessName: userType === "business" ? businessName.trim() : undefined,
+          referralCode: userType === "customer" ? referralCode || undefined : undefined,
         },
         { withCredentials: true }
       );
 
-      const data = response.data;
-
-      // 2. התחברות רגילה בעזרת הקריאה ל-login הקיימת
-      //    skipRedirect מונע מה-login לנווט אוטומטית
-      await login(email.trim().toLowerCase(), password, {
+      // 2. התחברות מידית עם login מהקונטקסט (שמחזיר redirectUrl)
+      const { redirectUrl } = await login(email.trim().toLowerCase(), password, {
         skipRedirect: true,
       });
 
-      // 3. ניווט לפי ה-redirectUrl שהשרת החזיר
-      navigate(data.redirectUrl);
+      // 3. ניווט לפי מה שהשרת החזיר
+      navigate(redirectUrl || "/");
     } catch (err) {
-      console.error(
-        "❌ Registration error:",
-        err.response?.data || err.message
-      );
+      console.error("❌ Registration error:", err.response?.data || err.message);
       if (err.response?.status === 400) {
         setError(err.response.data.error || "❌ אימייל כבר רשום במערכת");
       } else if (err.response?.status === 401) {
