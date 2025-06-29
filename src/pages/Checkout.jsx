@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
@@ -11,8 +11,8 @@ export default function Checkout() {
 
   const { planName, totalPrice, duration } = location.state || {};
 
-  const [processing, setProcessing] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
+  const [processing, setProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   if (loading) return null;
 
@@ -36,11 +36,21 @@ export default function Checkout() {
     setProcessing(true);
     setErrorMessage("");
 
+    // בדיקת כל הערכים - לפני שליחה לשרת
+    console.log("🚩 תשלום - DEBUG נתונים:");
+    console.log("planName:", planName, "| totalPrice:", totalPrice, "| userId:", user?._id);
+
+    if (!planName || !totalPrice || !user?._id) {
+      setErrorMessage("❌ חסרים נתונים, לא ניתן להמשיך לתשלום.");
+      setProcessing(false);
+      return;
+    }
+
     try {
       const response = await API.post("/cardcom", {
         plan: planName,
         price: totalPrice,
-        userId: user._id, // זה חשוב!
+        userId: user._id,
       });
 
       if (response.data.paymentUrl) {
