@@ -25,15 +25,15 @@ const Register = () => {
     const ref = searchParams.get("ref");
     if (ref) {
       localStorage.setItem("affiliate_referral", ref);
-      setFormData(prev => ({ ...prev, referralCode: ref }));
+      setFormData((prev) => ({ ...prev, referralCode: ref }));
     } else {
       localStorage.removeItem("affiliate_referral");
-      setFormData(prev => ({ ...prev, referralCode: "" }));
+      setFormData((prev) => ({ ...prev, referralCode: "" }));
     }
   }, [searchParams]);
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const isValidPhone = (phone) => /^05\d{8}$/.test(phone);
@@ -42,7 +42,16 @@ const Register = () => {
     e.preventDefault();
     setError("");
 
-    const { name, email, phone, password, confirmPassword, userType, businessName, referralCode } = formData;
+    const {
+      name,
+      email,
+      phone,
+      password,
+      confirmPassword,
+      userType,
+      businessName,
+      referralCode,
+    } = formData;
 
     if (!name || !email || !password || !confirmPassword) {
       setError("⚠️ יש למלא את כל השדות הנדרשים");
@@ -62,13 +71,15 @@ const Register = () => {
         return;
       }
       if (!isValidPhone(phone.trim())) {
-        setError("⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב-05)");
+        setError(
+          "⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב-05)"
+        );
         return;
       }
     }
 
     try {
-      // קריאת API ליצירת המשתמש
+      // 1. קריאת API ליצירת המשתמש
       const response = await API.post(
         "/auth/register",
         {
@@ -77,21 +88,29 @@ const Register = () => {
           phone: userType === "business" ? phone.trim() : "",
           password,
           userType,
-          businessName: userType === "business" ? businessName.trim() : undefined,
-          referralCode: userType === "customer" ? referralCode || undefined : undefined,
+          businessName:
+            userType === "business" ? businessName.trim() : undefined,
+          referralCode:
+            userType === "customer" ? referralCode || undefined : undefined,
         },
         { withCredentials: true }
       );
 
       const data = response.data;
 
-      // שמירת accessToken ו-login
-      login(data.user, data.accessToken);
+      // 2. התחברות רגילה בעזרת הקריאה ל-login הקיימת
+      //    skipRedirect מונע מה-login לנווט אוטומטית
+      await login(email.trim().toLowerCase(), password, {
+        skipRedirect: true,
+      });
 
-      // ניווט אוטומטי לפי redirectUrl מהשרת
+      // 3. ניווט לפי ה-redirectUrl שהשרת החזיר
       navigate(data.redirectUrl);
     } catch (err) {
-      console.error("❌ Registration error:", err.response?.data || err.message);
+      console.error(
+        "❌ Registration error:",
+        err.response?.data || err.message
+      );
       if (err.response?.status === 400) {
         setError(err.response.data.error || "❌ אימייל כבר רשום במערכת");
       } else if (err.response?.status === 401) {
