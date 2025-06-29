@@ -41,31 +41,6 @@ export function AuthProvider({ children }) {
     setUser(prev => prev ? { ...prev, businessToChatWith: businessId } : prev);
   };
 
-  // Response interceptor for automatic token refresh
-  useEffect(() => {
-    const interceptor = API.interceptors.response.use(
-      res => res,
-      async err => {
-        const status = err.response?.status;
-        const original = err.config;
-        if ((status === 401 || status === 403) && !original._retry) {
-          original._retry = true;
-          try {
-            const newToken = await singleFlightRefresh();
-            setAuthToken(newToken);
-            original.headers['Authorization'] = `Bearer ${newToken}`;
-            return API(original);
-          } catch {
-            await logout();
-            return Promise.reject(err);
-          }
-        }
-        return Promise.reject(err);
-      }
-    );
-    return () => API.interceptors.response.eject(interceptor);
-  }, []);
-
   const logout = async () => {
     setLoading(true);
     try {
@@ -102,12 +77,10 @@ export function AuthProvider({ children }) {
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
 
-      // Decode initial user data and open socket
       const decoded = jwtDecode(accessToken);
       setUser({ ...decoded, businessId: decoded.businessId || null });
       createSocketConnection(accessToken, decoded);
 
-      // Fetch full profile
       const { data } = await API.get("/auth/me", { withCredentials: true });
       if (data.businessId) {
         localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
@@ -115,7 +88,6 @@ export function AuthProvider({ children }) {
       setUser({ ...data, businessId: data.businessId || null });
       createSocketConnection(accessToken, data);
 
-      // Handle redirect
       if (!options.skipRedirect) {
         const path = redirectUrl || (() => {
           switch (data.role) {
@@ -208,7 +180,6 @@ export function AuthProvider({ children }) {
       if (!token) {
         setUser(null);
       } else {
-        // חשוב: הדבקת ה-Authorization לפני קריאות API
         setAuthToken(token);
         try {
           const decoded = jwtDecode(token);
