@@ -40,8 +40,11 @@ export default function Checkout() {
     setProcessing(true);
     setErrorMessage("");
 
-    console.log("🚩 תשלום - DEBUG נתונים:");
-    console.log("planName:", planName, "| totalPrice:", totalPrice, "| userId:", realUserId);
+    console.log("🚩 תשלום - DEBUG נתונים:", {
+      planName,
+      totalPrice,
+      userId: realUserId,
+    });
 
     if (!planName || !totalPrice || !realUserId) {
       setErrorMessage("❌ חסרים נתונים, לא ניתן להמשיך לתשלום.");
@@ -53,15 +56,18 @@ export default function Checkout() {
       const response = await API.post("/cardcom", {
         plan: planName,
         price: totalPrice,
-        userId: realUserId // ← זה ה־_id שלך ממונגו!
+        userId: realUserId,
       });
 
-      if (response.data.paymentUrl) {
-        window.location.href = response.data.paymentUrl;
+      const { paymentUrl } = response.data;
+      if (paymentUrl) {
+        // 🚀 הפניית המשתמש ישירות לעמוד התשלום של Cardcom
+        window.location.href = paymentUrl;
       } else {
         throw new Error("השרת לא החזיר כתובת תשלום תקינה");
       }
     } catch (err) {
+      console.error("❌ שגיאה בעת יצירת תשלום:", err);
       setErrorMessage("❌ שגיאה בעת יצירת התשלום. נסה שוב מאוחר יותר.");
     } finally {
       setProcessing(false);
