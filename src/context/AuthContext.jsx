@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
     setUser(prev => prev ? { ...prev, businessToChatWith: businessId } : prev);
   };
 
-  // Response interceptor for token refresh
+  // Response interceptor for automatic token refresh
   useEffect(() => {
     const interceptor = API.interceptors.response.use(
       res => res,
@@ -93,22 +93,21 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const response = await API.post(
+      const { data: { accessToken, redirectUrl } } = await API.post(
         "/auth/login",
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
       );
-      const { accessToken, redirectUrl } = response.data;
       if (!accessToken) throw new Error("No access token received");
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
 
-      // decode and set user
+      // Decode initial user data and open socket
       const decoded = jwtDecode(accessToken);
       setUser({ ...decoded, businessId: decoded.businessId || null });
       createSocketConnection(accessToken, decoded);
 
-      // fetch full profile
+      // Fetch full profile
       const { data } = await API.get("/auth/me", { withCredentials: true });
       if (data.businessId) {
         localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
@@ -116,9 +115,9 @@ export function AuthProvider({ children }) {
       setUser({ ...data, businessId: data.businessId || null });
       createSocketConnection(accessToken, data);
 
-      // redirect
+      // Handle redirect
       if (!options.skipRedirect) {
-        const path = data.redirectUrl || (() => {
+        const path = redirectUrl || (() => {
           switch (data.role) {
             case "business": return `/business/${data.businessId}/dashboard`;
             case "customer": return "/client/dashboard";
@@ -130,6 +129,7 @@ export function AuthProvider({ children }) {
         })();
         navigate(path, { replace: true });
       }
+
       setLoading(false);
       return { user: data, redirectUrl };
     } catch (e) {
@@ -197,22 +197,22 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // init effect
+  // Initialize session on mount
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
+
     (async () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       if (!token) {
         setUser(null);
       } else {
+        // חשוב: הדבקת ה-Authorization לפני קריאות API
         setAuthToken(token);
         try {
           const decoded = jwtDecode(token);
-          if (decoded.exp * 1000 < Date.now()) {
-            await singleFlightRefresh();
-          }
+          if (decoded.exp * 1000 < Date.now()) await singleFlightRefresh();
           if (isMounted) {
             setUser(decoded);
             createSocketConnection(token, decoded);
@@ -232,9 +232,11 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     })();
+
     return () => { isMounted = false; controller.abort(); };
   }, []);
 
+  // Cleanup success toast
   useEffect(() => {
     if (successMessage) {
       const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -244,10 +246,17 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{
-      user, loading, initialized, error,
-      login, logout, refreshAccessToken: singleFlightRefresh,
-      fetchWithAuth, socket: ws.current,
-      setUser, setBusinessToChatWith
+      user,
+      loading,
+      initialized,
+      error,
+      login,
+      logout,
+      refreshAccessToken: singleFlightRefresh,
+      fetchWithAuth,
+      socket: ws.current,
+      setUser,
+      setBusinessToChatWith
     }}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
@@ -255,4 +264,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-export function useAuth() { return useContext(AuthContext); }
+export function useAuth() {
+  return useContext(AuthContext);
+}
