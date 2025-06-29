@@ -5,7 +5,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
 
-  // טען התראות מהשרת בהתחלה
   useEffect(() => {
     if (!user) return;
     const token = localStorage.getItem("token");
@@ -25,17 +24,14 @@ export default function Notifications({ socket, user, onClose, clearNotification
     loadNotifications();
   }, [user]);
 
-  // הצטרפות לחדר ההתראות לפי businessId
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
     const room = `business-${user.businessId}`;
     socket.emit("joinRoom", room);
     console.log(`Joined room ${room}`);
-
   }, [socket, user]);
 
-  // מאזין להתראות בזמן אמת דרך socket עם ניהול נכון של off
   const handler = useCallback(
     (data, event) => {
       let newNotif = {};
@@ -44,17 +40,31 @@ export default function Notifications({ socket, user, onClose, clearNotification
         newNotif = {
           id: data._id || data.id || Date.now(),
           type: "review",
-          text: `⭐ ביקורת חדשה: "${data.comment || "ביקורת חדשה"}" - ציון ממוצע: ${data.averageScore || "?"}`,
+          actorName: data.userName || data.actorName || "משתמש",
+          text: `⭐ ביקורת חדשה מ-${data.userName || data.actorName || "משתמש"}: "${data.comment || "ביקורת חדשה"}" - ציון ממוצע: ${data.averageScore || "?"}`,
           read: false,
           timestamp: data.createdAt || Date.now(),
+          targetUrl: "/reviews",
+        };
+      } else if (event === "appointmentCreated") {
+        newNotif = {
+          id: data._id || data.id || Date.now(),
+          type: "meeting",
+          actorName: data.userName || data.actorName || "משתמש",
+          text: `📅 פגישה חדשה מתוזמנת על ידי ${data.userName || data.actorName || "משתמש"}`,
+          read: false,
+          timestamp: data.createdAt || Date.now(),
+          targetUrl: "/meetings",
         };
       } else {
         newNotif = {
           id: data._id || data.id || Date.now(),
           type: data.type || "notification",
-          text: data.text || "התראה חדשה",
+          actorName: data.actorName || "משתמש",
+          text: `${data.actorName ? data.actorName + ": " : ""}${data.text || "התראה חדשה"}`,
           read: false,
           timestamp: data.timestamp || data.createdAt || Date.now(),
+          targetUrl: data.targetUrl || "/",
         };
       }
 
@@ -77,7 +87,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
       "newMessage",
     ];
 
-    // שמירת הפונקציות כדי להשתמש ב-off נכון
     const eventHandlers = events.map((event) => {
       const fn = (data) => handler(data, event);
       socket.on(event, fn);
@@ -91,7 +100,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     };
   }, [socket, handler]);
 
-  // סימון התראה כנקראה בשרת ובמקום
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -111,29 +119,33 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
-  // טיפול בלחיצה על התראה
   const handleClick = (notif) => {
     if (!notif.read) markAsRead(notif.id);
-    switch (notif.type) {
-      case "message":
-        navigate("/messages");
-        break;
-      case "collaboration":
-        navigate("/collaborations");
-        break;
-      case "meeting":
-        navigate("/meetings");
-        break;
-      case "review":
-        navigate("/reviews");
-        break;
-      default:
-        break;
+
+    if (notif.targetUrl) {
+      navigate(notif.targetUrl);
+    } else {
+      switch (notif.type) {
+        case "message":
+          navigate("/messages");
+          break;
+        case "collaboration":
+          navigate("/collaborations");
+          break;
+        case "meeting":
+          navigate("/meetings");
+          break;
+        case "review":
+          navigate("/reviews");
+          break;
+        default:
+          break;
+      }
     }
+
     onClose();
   };
 
-  // ניקוי וסימון כל ההתראות כנקראות בשרת ובמקום
   const handleClearAll = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -157,7 +169,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
-  // מחיקת כל ההתראות שכבר נקראו ושמירת הלא נקראות
   const handleClearReadNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -181,7 +192,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
-  // פונקציה לעיצוב תאריך
   const formatDate = (ts) => {
     const d = new Date(ts);
     return d.toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });

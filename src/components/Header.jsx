@@ -1,22 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; 
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import {
   FaBars,
   FaChevronLeft,
-  FaHome,
-  FaInfoCircle,
-  FaPhone,
-  FaQuestionCircle,
-  FaFileContract,
-  FaCogs,
-  FaUserPlus,
-  FaListUl,
-  FaTags,
-  FaSearch,
-  FaSignOutAlt,
   FaUserCircle,
-  FaHeadset,
+  FaSignOutAlt,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/socketContext";
@@ -37,7 +26,10 @@ export default function Header() {
     if (!socket) return;
 
     const handleNewNotification = (notification) => {
-      setNotifications((prev) => [notification, ...prev]);
+      setNotifications((prev) => {
+        if (prev.some((n) => n.id === notification.id)) return prev; // מניעת כפילויות
+        return [notification, ...prev];
+      });
     };
 
     socket.on("newNotification", handleNewNotification);
@@ -242,7 +234,6 @@ export default function Header() {
                 <h4>לעסקים</h4>
                 {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
                 {link("/how-it-works", <FaCogs />, "איך זה עובד")}
-                
               </div>
 
               <div className="menu-section">
