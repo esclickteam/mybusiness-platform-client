@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect, useRef } from "r
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import { io } from "socket.io-client";
-import jwtDecode from "jwt-decode";
 
 let ongoingRefresh = null;
 let isRefreshing = false;
@@ -64,10 +63,12 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // <<<<<<<< פונקציה מעודכנת: login >>>>>>>>
   const login = async (email, password, options = { skipRedirect: false }) => {
     setLoading(true);
     setError(null);
     try {
+      // התחברות וקבלת טוקן
       const { data: { accessToken, redirectUrl } } = await API.post(
         "/auth/login",
         { email: email.trim().toLowerCase(), password },
@@ -77,15 +78,12 @@ export function AuthProvider({ children }) {
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
 
-      const decoded = jwtDecode(accessToken);
-      setUser({ ...decoded, businessId: decoded.businessId || null });
-      createSocketConnection(accessToken, decoded);
-
+      // *** קריטי: מושכים תמיד מה-API ***
       const { data } = await API.get("/auth/me", { withCredentials: true });
       if (data.businessId) {
         localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
       }
-      setUser({ ...data, businessId: data.businessId || null });
+      setUser(data);
       createSocketConnection(accessToken, data);
 
       if (!options.skipRedirect) {
@@ -169,7 +167,7 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // Initialize session on mount
+  // <<<<<<<< טעינת משתמש על פי טוקן (תמיד מה-API בלבד) >>>>>>>>
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -182,12 +180,7 @@ export function AuthProvider({ children }) {
       } else {
         setAuthToken(token);
         try {
-          const decoded = jwtDecode(token);
-          if (decoded.exp * 1000 < Date.now()) await singleFlightRefresh();
-          if (isMounted) {
-            setUser(decoded);
-            createSocketConnection(token, decoded);
-          }
+          // תמיד מושך מה-API
           const { data } = await API.get("/auth/me", { signal: controller.signal });
           if (isMounted) {
             setUser(data);
