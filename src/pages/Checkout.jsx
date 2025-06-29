@@ -69,9 +69,13 @@ export default function Checkout() {
 
       // טיפול בשגיאת 429 (Rate Limit)
       if (err.response?.status === 429) {
-        setErrorMessage("⏳ נעשו יותר מדי ניסיונות תשלום. נסה שוב בעוד דקה.");
+        setErrorMessage(
+          "⏳ נעשו יותר מדי ניסיונות תשלום. נסה שוב בעוד דקה."
+        );
       } else {
-        setErrorMessage("❌ שגיאה בעת יצירת התשלום. נסה שוב מאוחר יותר.");
+        setErrorMessage(
+          "❌ שגיאה בעת יצירת התשלום. לחץ 'נסה שוב' כדי לקבל קישור חדש."
+        );
       }
     } finally {
       setProcessing(false);
@@ -104,11 +108,10 @@ export default function Checkout() {
             "💳 עבור לתשלום"
           )}
         </button>
-        {errorMessage && (
+        {errorMessage && !processing && (
           <button
             className="retry-link"
             onClick={handlePayment}
-            disabled={processing}
             style={{ marginTop: "1em" }}
           >
             🔄 נסה שוב
