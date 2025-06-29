@@ -5,9 +5,12 @@ import { io } from "socket.io-client";
 import jwtDecode from "jwt-decode";
 
 let ongoingRefresh = null;
+let isRefreshing = false;
 
+// עוטף את הרענון - אם כבר יש רענון פעיל, מחכה לו (single flight)
 async function singleFlightRefresh() {
   if (!ongoingRefresh) {
+    isRefreshing = true;
     ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then(res => {
         const newToken = res.data.accessToken;
@@ -17,6 +20,7 @@ async function singleFlightRefresh() {
         return newToken;
       })
       .finally(() => {
+        isRefreshing = false;
         ongoingRefresh = null;
       });
   }
@@ -34,7 +38,7 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const ws = useRef(null);
 
-  // פונקציה לעדכון העסק שהלקוח רוצה לדבר איתו
+  // לעדכון העסק
   const setBusinessToChatWith = (businessId) => {
     setUser(prevUser => {
       if (!prevUser) return prevUser;
@@ -42,7 +46,7 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // axios interceptor לרענון אוטומטי
+  // Interceptor לרענון טוקן אוטומטי
   useEffect(() => {
     const interceptor = API.interceptors.response.use(
       res => res,
@@ -76,6 +80,7 @@ export function AuthProvider({ children }) {
       console.warn("⚠️ Logout request failed:", e.response?.data || e.message);
     } finally {
       ongoingRefresh = null;
+      isRefreshing = false;
       delete API.defaults.headers['Authorization'];
       if (ws.current) {
         ws.current.removeAllListeners();
@@ -206,29 +211,55 @@ export function AuthProvider({ children }) {
     });
   };
 
+  // ✨ אתחול עם בדיקה אם הטוקן בתוקף ורענון אוטומטי במידת הצורך
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
 
     (async () => {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      let token = localStorage.getItem("token");
       if (token) {
+        let decoded = null;
         try {
-          const decoded = jwtDecode(token);
-          if (isMounted) {
-            setUser({
-              userId: decoded.userId,
-              name: decoded.name,
-              email: decoded.email,
-              role: decoded.role,
-              subscriptionPlan: decoded.subscriptionPlan,
-              businessId: decoded.businessId || null,
-            });
-            API.defaults.headers['Authorization'] = `Bearer ${token}`;
-            createSocketConnection(token, decoded);
-          }
+          decoded = jwtDecode(token);
+        } catch (e) {
+          await logout();
+          return;
+        }
 
+        // אם פג תוקף – רענן!
+        if (decoded.exp * 1000 < Date.now()) {
+          try {
+            token = await singleFlightRefresh();
+            decoded = jwtDecode(token);
+          } catch (err) {
+            if (!controller.signal.aborted) {
+              await logout();
+            }
+            return;
+          }
+        }
+
+        if (isMounted) {
+          setUser({
+            userId: decoded.userId,
+            name: decoded.name,
+            email: decoded.email,
+            role: decoded.role,
+            subscriptionPlan: decoded.subscriptionPlan,
+            businessId: decoded.businessId || null,
+          });
+          API.defaults.headers['Authorization'] = `Bearer ${token}`;
+          createSocketConnection(token, decoded);
+        }
+
+        try {
+          // בזמן רענון – לא לשלוח שום בקשה
+          if (isRefreshing) {
+            await ongoingRefresh;
+            token = localStorage.getItem("token");
+          }
           const { data } = await API.get("/auth/me", { withCredentials: true, signal: controller.signal });
           if (isMounted) {
             setUser({
@@ -246,7 +277,6 @@ export function AuthProvider({ children }) {
           }
         } catch (err) {
           if (!controller.signal.aborted) {
-            console.warn("Initialization failed:", err);
             await logout();
           }
         }
@@ -289,7 +319,7 @@ export function AuthProvider({ children }) {
       fetchWithAuth,
       socket: ws.current,
       setUser,
-      setBusinessToChatWith // <-- חשוף את הפונקציה לקונטקסט
+      setBusinessToChatWith
     }}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
