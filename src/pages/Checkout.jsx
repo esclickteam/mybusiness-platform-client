@@ -29,7 +29,10 @@ export default function Checkout() {
     return (
       <div className="checkout-container error-container">
         <h2 className="error-message">❌ החבילה שבחרת אינה זמינה.</h2>
-        <button className="return-link" onClick={() => navigate("/plans")}>
+        <button
+          className="return-link"
+          onClick={() => navigate("/plans")}
+        >
           🔙 חזרה לעמוד החבילות
         </button>
       </div>
@@ -53,6 +56,7 @@ export default function Checkout() {
     }
 
     try {
+      // שימו לב: קריאה נכונה ל־/api/cardcom
       const response = await API.post("/cardcom", {
         plan: planName,
         price: totalPrice,
@@ -61,7 +65,7 @@ export default function Checkout() {
 
       const { paymentUrl } = response.data;
       if (paymentUrl) {
-        // 🚀 הפניית המשתמש ישירות לעמוד התשלום של Cardcom
+        // 🚀 יציאה מלאה לדומיין של Cardcom
         window.location.href = paymentUrl;
       } else {
         throw new Error("השרת לא החזיר כתובת תשלום תקינה");
