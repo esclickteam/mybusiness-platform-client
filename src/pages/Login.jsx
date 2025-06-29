@@ -22,7 +22,7 @@ export function LoginSkeleton() {
 }
 
 export default function Login() {
-  const { login, error: authError } = useAuth();
+  const { login, user, error: authError } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,15 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
+      // login מחזיר את המשתמש המחובר
       await login(cleanEmail, password);
+
+      // ברגע שה-login הושלם וקיבלנו user, מבצעים ניווט לפי role
+      if (user?.role === "business") {
+        window.location.href = "https://esclick.co.il/plans";
+      } else {
+        navigate("/client/dashboard");
+      }
     } catch (err) {
       setLoginError(authError || err?.message || "אימייל או סיסמה שגויים");
     } finally {
@@ -61,7 +69,7 @@ export default function Login() {
     }
   };
 
-  // ✅ כאן הסקלטון מוצג גם אם dashboardLoading או loading פעיל
+  // הצגה של Skeleton בזמן טעינה
   if (dashboardLoading || loading) {
     return <LoginSkeleton />;
   }
@@ -120,7 +128,7 @@ export default function Login() {
             שכחת את הסיסמה?
           </span>
           <p className="signup-link">
-            לא רשום?{" "}
+            לא רשום?{' '}
             <Link to="/register" className="signup-link-text">
               הירשם עכשיו
             </Link>
