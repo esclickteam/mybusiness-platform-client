@@ -37,7 +37,7 @@ export default function Checkout() {
     setErrorMessage("");
 
     try {
-      const response = await API.post("/payments", {
+      const response = await API.post("/cardcom", {
         plan: planName,
         price: totalPrice,
         userId: user._id, // זה חשוב!
