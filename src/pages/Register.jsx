@@ -22,7 +22,6 @@ const Register = () => {
   const [searchParams] = useSearchParams();
 
   // בודקים אם יש פרמטר ref ב-URL ושומרים ב-localStorage וב-state
-  // ואם אין - מנקים referralCode מה-state ומה-localStorage
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) {
@@ -70,6 +69,7 @@ const Register = () => {
     }
 
     try {
+      // קריאת API ליצירת המשתמש
       await API.post("/auth/register", {
         name: name.trim(),
         email: email.trim().toLowerCase(),
@@ -77,11 +77,20 @@ const Register = () => {
         password,
         userType,
         businessName: userType === "business" ? businessName.trim() : undefined,
-        referralCode: userType === "customer" ? referralCode || undefined : undefined, // רק ללקוחות נשלח referralCode
+        referralCode: userType === "customer" ? referralCode || undefined : undefined,
       });
 
+      // התחברות אוטומטית
       const user = await login(email.trim(), password);
 
+      // ניתוב לפי סוג משתמש
+      if (userType === "business") {
+        // בעל עסק יופנה לעמוד החבילות
+        window.location.href = "https://esclick.co.il/plans";
+        return;
+      }
+
+      // לקוחות ושאר תפקידים
       let dashboardPath = "/";
       switch (user.role) {
         case "admin":
@@ -152,14 +161,13 @@ const Register = () => {
             <input
               type="tel"
               name="phone"
-              placeholder="טלפון"
+              placeholder="טלефон"
               value={formData.phone}
               onChange={handleChange}
               required
             />
           </>
         )}
-        {/* שדה קוד הפניה לקריאה בלבד */}
         {formData.referralCode && (
           <input
             type="text"
