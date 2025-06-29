@@ -9,7 +9,7 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-  const id = searchParams.get("id");
+  const email = searchParams.get("email");
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,10 +18,10 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!token || !id) {
+    if (!token || !email) {
       setError("קישור לא תקין לאיפוס סיסמה");
     }
-  }, [token, id]);
+  }, [token, email]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,7 +40,7 @@ const ResetPassword = () => {
     setLoading(true);
     try {
       const res = await API.post("/auth/reset-password", {
-        id,
+        email,
         token,
         newPassword: password,
       });
@@ -48,7 +48,7 @@ const ResetPassword = () => {
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       console.error("❌ שגיאה באיפוס סיסמה:", err);
-      setError(err.response?.data?.error || "שגיאה בשרת");
+      setError(err.response?.data?.message || "שגיאה בשרת");
     } finally {
       setLoading(false);
     }
