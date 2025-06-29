@@ -5,6 +5,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
 
+  // טען התראות מהשרת בתחילת טעינת קומפוננטה
   useEffect(() => {
     if (!user) return;
     const token = localStorage.getItem("token");
@@ -24,14 +25,15 @@ export default function Notifications({ socket, user, onClose, clearNotification
     loadNotifications();
   }, [user]);
 
+  // הצטרפות לחדר Socket.IO לפי businessId
   useEffect(() => {
     if (!socket || !user?.businessId) return;
-
     const room = `business-${user.businessId}`;
     socket.emit("joinRoom", room);
     console.log(`Joined room ${room}`);
   }, [socket, user]);
 
+  // יצירת התראה חדשה על פי אירוע
   const handler = useCallback(
     (data, event) => {
       let newNotif = {};
@@ -41,7 +43,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
           id: data._id || data.id || Date.now(),
           type: "review",
           actorName: data.userName || data.actorName || "משתמש",
-          text: `⭐ ביקורת חדשה מ-${data.userName || data.actorName || "משתמש"}: "${data.comment || "ביקורת חדשה"}" - ציון ממוצע: ${data.averageScore || "?"}`,
+          text: `⭐ ${data.userName || data.actorName || "משתמש"} השאיר ביקורת: "${data.comment || "ביקורת חדשה"}" - ציון ממוצע: ${data.averageScore || "?"}`,
           read: false,
           timestamp: data.createdAt || Date.now(),
           targetUrl: "/reviews",
@@ -76,6 +78,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
     [setNotifications]
   );
 
+  // האזנה לאירועים ב־Socket.IO
   useEffect(() => {
     if (!socket) return;
 
@@ -100,6 +103,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
     };
   }, [socket, handler]);
 
+  // סימון התראה כנקראה בשרת ובסטייט
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -119,6 +123,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
+  // טיפול בלחיצה על התראה
   const handleClick = (notif) => {
     if (!notif.read) markAsRead(notif.id);
 
@@ -142,10 +147,10 @@ export default function Notifications({ socket, user, onClose, clearNotification
           break;
       }
     }
-
     onClose();
   };
 
+  // ניקוי כל ההתראות (סימון כולן נקראות)
   const handleClearAll = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -169,6 +174,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
+  // ניקוי רק התראות שנקראו
   const handleClearReadNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -192,6 +198,7 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
+  // פונקציית עזר לעיצוב תאריך
   const formatDate = (ts) => {
     const d = new Date(ts);
     return d.toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });

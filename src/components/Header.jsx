@@ -32,20 +32,30 @@ export default function Header() {
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
+  // מאזין לאירועים שונים ב-socket שמעדכנים את ההתראות בסטייט
   useEffect(() => {
     if (!socket) return;
 
-    const handleNewNotification = (notification) => {
+    const handleNotification = (notification) => {
       setNotifications((prev) => {
         if (prev.some((n) => n.id === notification.id)) return prev; // מניעת כפילויות
         return [notification, ...prev];
       });
     };
 
-    socket.on("newNotification", handleNewNotification);
+    // מאזינים לאירועים רלוונטיים ומעבירים ל-handler אחיד
+    const events = [
+      "newNotification",
+      "reviewCreated",
+      "appointmentCreated",
+      "newProposalCreated",
+      "newMessage",
+    ];
+
+    events.forEach((event) => socket.on(event, handleNotification));
 
     return () => {
-      socket.off("newNotification", handleNewNotification);
+      events.forEach((event) => socket.off(event, handleNotification));
     };
   }, [socket]);
 
@@ -88,7 +98,7 @@ export default function Header() {
     setMenuOpen(false);
   };
 
-  // סופרים את מספר ההתראות שעדיין לא נקראו
+  // ספירת התראות שלא נקראו
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
@@ -168,6 +178,7 @@ export default function Header() {
                   socket={socket}
                   user={user}
                   notifications={notifications}
+                  setNotifications={setNotifications} 
                   onClose={() => setNotifOpen(false)}
                   clearNotifications={() => setNotifications([])}
                 />
