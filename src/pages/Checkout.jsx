@@ -1,4 +1,3 @@
-// src/pages/Checkout.jsx
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import API from "../api";
@@ -15,16 +14,13 @@ export default function Checkout() {
   const [processing, setProcessing] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
 
-  // עד שלא יודעים אם יש user או לא, לא מציגים כלום (מונע “הבזקים”)
   if (loading) return null;
 
-  // אם אין משתמש, נעביר אותו ל־login דרך react-router
   if (!user) {
     navigate("/login", { replace: true });
     return null;
   }
 
-  // אם אין פרטי חבילה, נראה שגיאה
   if (!planName || !totalPrice) {
     return (
       <div className="checkout-container error-container">
@@ -41,14 +37,11 @@ export default function Checkout() {
     setErrorMessage("");
 
     try {
-      console.log("🚀 Requesting payment:", { plan: planName, price: totalPrice });
-
       const response = await API.post("/payments", {
         plan: planName,
         price: totalPrice,
+        userId: user._id, // זה חשוב!
       });
-
-      console.log("✅ Payment response:", response.data);
 
       if (response.data.paymentUrl) {
         window.location.href = response.data.paymentUrl;
@@ -56,7 +49,6 @@ export default function Checkout() {
         throw new Error("השרת לא החזיר כתובת תשלום תקינה");
       }
     } catch (err) {
-      console.error("❌ Payment error:", err.response?.data || err.message);
       setErrorMessage("❌ שגיאה בעת יצירת התשלום. נסה שוב מאוחר יותר.");
     } finally {
       setProcessing(false);
@@ -73,9 +65,7 @@ export default function Checkout() {
         <p className="checkout-duration">
           משך המנוי: <strong>{duration} חודשים</strong>
         </p>
-
         {errorMessage && <p className="error-message">{errorMessage}</p>}
-
         <button
           className="pay-button"
           onClick={handlePayment}
