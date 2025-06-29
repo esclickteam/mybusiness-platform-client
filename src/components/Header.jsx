@@ -6,6 +6,16 @@ import {
   FaChevronLeft,
   FaUserCircle,
   FaSignOutAlt,
+  FaUserPlus,
+  FaCogs,
+  FaListUl,
+  FaTags,
+  FaSearch,
+  FaHome,
+  FaInfoCircle,
+  FaPhone,
+  FaQuestionCircle,
+  FaFileContract,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/socketContext";

@@ -10,12 +10,16 @@
   padding: 6px 20px;
   min-height: 120px;
   justify-content: space-between; /* מיישר את התוכן */
+  background-color: rgba(255, 255, 255, 0.95); /* רקע לבן עם שקיפות קלה */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* צל עדין למטה */
+  backdrop-filter: saturate(180%) blur(12px); /* מטשטש את הרקע מאחור */
+  z-index: 1502;
 }
 
 /* מיכל המבורגר + התראות */
 .menu-toggle {
   position: absolute;
-  right: 20px;                  
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1001;
@@ -138,7 +142,7 @@
 .auth-controls.desktop-only {
   position: absolute;
   left: 20px;                    /* מרחק משמאל */
-  top: 50%;                      
+  top: 50%;
   transform: translateY(-50%);   /* למרכז אנכית */
   display: flex;
   gap: 12px;
@@ -159,8 +163,8 @@
 }
 .personal-area-button:hover,
 .logout-button:hover,
-.login-button:hover { 
-  background: #4315c7; 
+.login-button:hover {
+  background: #4315c7;
 }
 
 /* =================================================================== */
@@ -182,8 +186,8 @@
   transition: transform .3s;
   z-index: 1501;
 }
-.side-menu.open { 
-  transform: translateX(0); 
+.side-menu.open {
+  transform: translateX(0);
 }
 
 /* Drawer header – כפתור חזור */
@@ -208,8 +212,8 @@
   font-size: .95rem;
   cursor: pointer;
 }
-.back-button:hover { 
-  background: #e8dbff; 
+.back-button:hover {
+  background: #e8dbff;
 }
 
 /* ===== אזור גלילה ===== */
@@ -233,8 +237,8 @@
 }
 
 /* קטעי קישורים */
-.menu-section { 
-  margin-top: 24px; 
+.menu-section {
+  margin-top: 24px;
 }
 .menu-section h4 {
   margin: 0;
@@ -256,19 +260,19 @@
   text-decoration: none;
   transition: background .2s, color .2s;
 }
-.menu-section a:hover { 
-  background: #f5f1fa; 
-  color: #2d006e; 
+.menu-section a:hover {
+  background: #f5f1fa;
+  color: #2d006e;
 }
-a.active-link        { 
-  background: #f5f1fa; 
-  font-weight: 700; 
-  color: #2d006e; 
+a.active-link {
+  background: #f5f1fa;
+  font-weight: 700;
+  color: #2d006e;
 }
-.link-icon           { 
-  display: inline-flex; 
-  align-items: center; 
-  margin-left: 4px; 
+.link-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
 }
 
 /* ===== פוטר Sticky – אזור אישי / התנתק ===== */
@@ -286,9 +290,16 @@ a.active-link        {
 /* =================================================================== */
 /*                        גלילה – עיצוב VScrollbar                      */
 /* =================================================================== */
-.side-menu::-webkit-scrollbar        { width: 6px; }
-.side-menu::-webkit-scrollbar-track  { background: transparent; }
-.side-menu::-webkit-scrollbar-thumb  { background: rgba(0,0,0,.2); border-radius: 3px; }
+.side-menu::-webkit-scrollbar {
+  width: 6px;
+}
+.side-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+.side-menu::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.2);
+  border-radius: 3px;
+}
 
 /* =================================================================== */
 /*                              Overlay                                */
@@ -305,19 +316,36 @@ a.active-link        {
 /*                          Responsive – Mobile                         */
 /* =================================================================== */
 @media (max-width: 768px) {
-  .app-header        { padding: 0 12px; height: 90px; }
-  .logo-link .logo   { height: 90px; }
-  .auth-controls.desktop-only { display: none !important; }
+  .app-header {
+    padding: 0 12px;
+    height: 90px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: saturate(180%) blur(12px);
+  }
+  .logo-link .logo {
+    height: 90px;
+  }
+  .auth-controls.desktop-only {
+    display: none !important;
+  }
 
-  .side-menu { 
-    max-width: 300px; 
+  .side-menu {
+    max-width: 300px;
   }
 }
 
 /* =================================================================== */
 /*                             Animations                              */
 /* =================================================================== */
-@keyframes fadeInBackdrop { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes fadeInBackdrop {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
 /* =================================================================== */
 /*                       Global Success Toast                          */
@@ -339,10 +367,22 @@ a.active-link        {
 }
 
 @keyframes fadeInOut {
-  0%   { opacity: 0; transform: translateX(-50%) translateY(-12px); }
-  10%  { opacity: 1; transform: translateX(-50%) translateY(0); }
-  90%  { opacity: 1; transform: translateX(-50%) translateY(0); }
-  100% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12px);
+  }
 }
 
 /* כפתור התחברות במובייל בתוך ה־Drawer */
