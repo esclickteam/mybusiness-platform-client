@@ -40,14 +40,10 @@ export default function Checkout() {
   }
 
   const handlePayment = async () => {
+    if (processing) return; // הגנה כפולה
+
     setProcessing(true);
     setErrorMessage("");
-
-    console.log("🚩 תשלום - DEBUG נתונים:", {
-      planName,
-      totalPrice,
-      userId: realUserId,
-    });
 
     if (!planName || !totalPrice || !realUserId) {
       setErrorMessage("❌ חסרים נתונים, לא ניתן להמשיך לתשלום.");
@@ -56,7 +52,6 @@ export default function Checkout() {
     }
 
     try {
-      // שימו לב: קריאה נכונה ל־/api/cardcom
       const response = await API.post("/cardcom", {
         plan: planName,
         price: totalPrice,
@@ -65,14 +60,19 @@ export default function Checkout() {
 
       const { paymentUrl } = response.data;
       if (paymentUrl) {
-        // 🚀 יציאה מלאה לדומיין של Cardcom
         window.location.href = paymentUrl;
       } else {
         throw new Error("השרת לא החזיר כתובת תשלום תקינה");
       }
     } catch (err) {
       console.error("❌ שגיאה בעת יצירת תשלום:", err);
-      setErrorMessage("❌ שגיאה בעת יצירת התשלום. נסה שוב מאוחר יותר.");
+
+      // טיפול בשגיאת 429 (Rate Limit)
+      if (err.response?.status === 429) {
+        setErrorMessage("⏳ נעשו יותר מדי ניסיונות תשלום. נסה שוב בעוד דקה.");
+      } else {
+        setErrorMessage("❌ שגיאה בעת יצירת התשלום. נסה שוב מאוחר יותר.");
+      }
     } finally {
       setProcessing(false);
     }
@@ -88,13 +88,38 @@ export default function Checkout() {
         <p className="checkout-duration">
           משך המנוי: <strong>{duration} חודשים</strong>
         </p>
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
+        {errorMessage && (
+          <p className="error-message">{errorMessage}</p>
+        )}
         <button
           className="pay-button"
           onClick={handlePayment}
           disabled={processing}
         >
-          {processing ? "⏳ מעבד תשלום..." : "💳 עבור לתשלום"}
+          {processing ? (
+            <>
+              <span className="spinner" />⏳ מעבד תשלום...
+            </>
+          ) : (
+            "💳 עבור לתשלום"
+          )}
+        </button>
+        {errorMessage && (
+          <button
+            className="retry-link"
+            onClick={handlePayment}
+            disabled={processing}
+            style={{ marginTop: "1em" }}
+          >
+            🔄 נסה שוב
+          </button>
+        )}
+        <button
+          className="return-link"
+          onClick={() => navigate("/plans")}
+          disabled={processing}
+        >
+          🔙 חזרה לעמוד החבילות
         </button>
       </div>
     </div>
