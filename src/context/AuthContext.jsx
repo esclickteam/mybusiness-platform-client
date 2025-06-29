@@ -75,11 +75,14 @@ export function AuthProvider({ children }) {
         { withCredentials: true }
       );
       if (!accessToken) throw new Error("No access token received");
+
+      // שמירת הטוקן לפני כל קריאה עתידית
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
 
-      // *** קריטי: מושכים תמיד מה-API ***
+      // עכשיו מושכים את פרטי המשתמש לאחר שהטוקן מוגדר ל-axios
       const { data } = await API.get("/auth/me", { withCredentials: true });
+
       if (data.businessId) {
         localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
       }
@@ -178,9 +181,10 @@ export function AuthProvider({ children }) {
       if (!token) {
         setUser(null);
       } else {
+        // קודם מגדירים את הטוקן ל-axios
         setAuthToken(token);
         try {
-          // תמיד מושך מה-API
+          // תמיד מושך מה-API אחרי שהטוקן מוגדר
           const { data } = await API.get("/auth/me", { signal: controller.signal });
           if (isMounted) {
             setUser(data);
