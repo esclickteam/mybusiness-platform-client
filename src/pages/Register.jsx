@@ -13,7 +13,7 @@ const Register = () => {
     confirmPassword: "",
     userType: "customer",
     businessName: "",
-    referralCode: "", // שדה לקוד ההפניה
+    referralCode: "",
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -21,7 +21,6 @@ const Register = () => {
 
   const [searchParams] = useSearchParams();
 
-  // בודקים אם יש פרמטר ref ב-URL ושומרים ב-localStorage וב-state
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) {
@@ -63,58 +62,34 @@ const Register = () => {
         return;
       }
       if (!isValidPhone(phone.trim())) {
-        setError("⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב‑05)");
+        setError("⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב-05)");
         return;
       }
     }
 
     try {
       // קריאת API ליצירת המשתמש
-      await API.post("/auth/register", {
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
-        phone: userType === "business" ? phone.trim() : "",
-        password,
-        userType,
-        businessName: userType === "business" ? businessName.trim() : undefined,
-        referralCode: userType === "customer" ? referralCode || undefined : undefined,
-      });
+      const response = await API.post(
+        "/auth/register",
+        {
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          phone: userType === "business" ? phone.trim() : "",
+          password,
+          userType,
+          businessName: userType === "business" ? businessName.trim() : undefined,
+          referralCode: userType === "customer" ? referralCode || undefined : undefined,
+        },
+        { withCredentials: true }
+      );
 
-      // התחברות אוטומטית
-      const user = await login(email.trim(), password);
+      const data = response.data;
 
-      // ניתוב לפי סוג משתמש
-      if (userType === "business") {
-        // בעל עסק יופנה לעמוד החבילות
-        window.location.href = "https://esclick.co.il/plans";
-        return;
-      }
+      // שמירת accessToken ו-login
+      login(data.user, data.accessToken);
 
-      // לקוחות ושאר תפקידים
-      let dashboardPath = "/";
-      switch (user.role) {
-        case "admin":
-          dashboardPath = "/admin/dashboard";
-          break;
-        case "manager":
-          dashboardPath = "/manager/dashboard";
-          break;
-        case "worker":
-          dashboardPath = "/staff/dashboard";
-          break;
-        case "business":
-          dashboardPath = user.businessId
-            ? `/business/${user.businessId}/dashboard`
-            : "/create-business";
-          break;
-        case "customer":
-          dashboardPath = "/client/dashboard";
-          break;
-        default:
-          dashboardPath = "/";
-      }
-
-      navigate(dashboardPath);
+      // ניווט אוטומטי לפי redirectUrl מהשרת
+      navigate(data.redirectUrl);
     } catch (err) {
       console.error("❌ Registration error:", err.response?.data || err.message);
       if (err.response?.status === 400) {
@@ -161,7 +136,7 @@ const Register = () => {
             <input
               type="tel"
               name="phone"
-              placeholder="טלефон"
+              placeholder="טלפון"
               value={formData.phone}
               onChange={handleChange}
               required
