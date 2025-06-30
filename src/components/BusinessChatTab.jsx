@@ -114,7 +114,7 @@ export default function BusinessChatTab({
 
   const isBusinessConversation = conversationType === "business-business";
 
-  // שמירת ההודעות הכי עדכניות ב-ref
+  // Ref להודעות בשביל בדיקת כפילויות
   const messagesRef = useRef(messages);
   useEffect(() => {
     messagesRef.current = messages;
@@ -140,6 +140,7 @@ export default function BusinessChatTab({
 
   const listRef = useRef(null);
 
+  // טוען היסטוריה בפעם ראשונה
   useEffect(() => {
     if (!socket || !conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -161,15 +162,15 @@ export default function BusinessChatTab({
         if (res.ok) {
           const msgs = (res.messages || []).map((m) => {
             let text = m.text || m.content || "";
-            if (text === "0") text = ""; // מניעת הצגת "0"
+            if (text === "0") text = ""; // למנוע הצגת "0"
             return {
               ...m,
               timestamp: m.createdAt || new Date().toISOString(),
               text,
-              fileUrl: m.fileUrl || null,
-              fileType: m.fileType || null,
-              fileName: m.fileName || "",
-              fileDuration: m.fileDuration || 0,
+              fileUrl: m.fileUrl || m.file?.url || null,
+              fileType: m.fileType || m.file?.mimeType || null,
+              fileName: m.fileName || m.file?.name || "",
+              fileDuration: m.fileDuration ?? m.file?.duration ?? 0,
               tempId: m.tempId || null,
             };
           });
@@ -186,6 +187,7 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId, isBusinessConversation, conversationType]);
 
+  // מאזין להודעות חדשות
   useEffect(() => {
     if (!socket) return;
 
@@ -194,16 +196,10 @@ export default function BusinessChatTab({
         msg.conversationId === conversationId &&
         msg.conversationType === conversationType
       ) {
-        console.log("[socket] newMessage event received:", msg._id || msg.tempId);
-
-        // שימוש ב-messagesRef.current לבדיקה עדכנית של הודעות קיימות
         const exists = messagesRef.current.some(
           (m) => m._id === msg._id || (msg.tempId && m.tempId === msg.tempId)
         );
-        if (exists) {
-          console.log("[messagesReducer] Skipping duplicate message:", msg._id || msg.tempId);
-          return; // לא להוסיף שוב
-        }
+        if (exists) return;
 
         const raw = msg.text || msg.content || "";
         const text = raw === "0" ? "" : raw;
@@ -212,10 +208,10 @@ export default function BusinessChatTab({
           ...msg,
           timestamp: msg.createdAt || new Date().toISOString(),
           text,
-          fileUrl: msg.fileUrl || null,
-          fileType: msg.fileType || null,
-          fileName: msg.fileName || "",
-          fileDuration: msg.fileDuration || 0,
+          fileUrl: msg.fileUrl || msg.file?.url || null,
+          fileType: msg.fileType || msg.file?.mimeType || null,
+          fileName: msg.fileName || msg.file?.name || "",
+          fileDuration: msg.fileDuration ?? msg.file?.duration ?? 0,
           tempId: msg.tempId || null,
         };
 
@@ -241,13 +237,13 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId, customerId, conversationType]);
 
+  // גלילה אוטומטית
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
     const nearBottom =
       el.scrollHeight - el.scrollTop - el.clientHeight < 100;
     if (nearBottom) el.scrollTop = el.scrollHeight;
-    console.log("[useEffect] Auto-scrolled to bottom");
   }, [messages, isTyping]);
 
   const handleInput = (e) => {
@@ -261,7 +257,6 @@ export default function BusinessChatTab({
     if (!text || text === "0" || !socket) return;
     setSending(true);
     const tempId = uuidv4();
-    console.log("[sendMessage] Sending message:", tempId, text);
     const optimistic = {
       _id: tempId,
       conversationId,
@@ -279,7 +274,6 @@ export default function BusinessChatTab({
       "sendMessage",
       { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
       (ack) => {
-        console.log("[sendMessage] Ack received: ", ack);
         setSending(false);
         dispatch({
           type: "updateStatus",
@@ -304,8 +298,6 @@ export default function BusinessChatTab({
     const file = e.target.files?.[0];
     if (!file || !socket) return;
     const tempId = uuidv4();
-
-    console.log("[sendFile] Preparing file:", file.name, tempId);
 
     const optimistic = {
       _id: tempId,
@@ -336,7 +328,6 @@ export default function BusinessChatTab({
           conversationType,
         },
         (ack) => {
-          console.log("[sendFile] Ack received:", ack);
           dispatch({
             type: "updateStatus",
             payload: {
