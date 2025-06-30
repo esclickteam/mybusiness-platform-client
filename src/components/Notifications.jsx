@@ -28,9 +28,8 @@ export default function Notifications({ socket, user, onClose, clearNotification
   // הצטרפות לחדר Socket.IO לפי businessId
   useEffect(() => {
     if (!socket || !user?.businessId) return;
-    const room = `business-${user.businessId}`;
-    socket.emit("joinRoom", room);
-    console.log(`Joined room ${room}`);
+    socket.emit("joinBusinessRoom", user.businessId);
+    console.log(`Requested joinBusinessRoom for business-${user.businessId}`);
   }, [socket, user]);
 
   // יצירת התראה חדשה על פי אירוע
@@ -38,7 +37,17 @@ export default function Notifications({ socket, user, onClose, clearNotification
     (data, event) => {
       let newNotif = {};
 
-      if (event === "reviewCreated") {
+      if (event === "newNotification") {
+        newNotif = {
+          id: data._id || data.id || Date.now(),
+          type: data.type || "notification",
+          actorName: data.actorName || data.fromName || "משתמש",
+          text: data.text || data.message || "התראה חדשה",
+          read: false,
+          timestamp: data.timestamp || data.createdAt || Date.now(),
+          targetUrl: data.targetUrl || "/",
+        };
+      } else if (event === "reviewCreated") {
         newNotif = {
           id: data._id || data.id || Date.now(),
           type: "review",
@@ -58,12 +67,37 @@ export default function Notifications({ socket, user, onClose, clearNotification
           timestamp: data.createdAt || Date.now(),
           targetUrl: "/meetings",
         };
+      } else if (event === "newMessage") {
+        newNotif = {
+          id: data._id || data.id || Date.now(),
+          type: "message",
+          actorName: data.fromName || data.actorName || "משתמש",
+          text: data.content || "התקבלה הודעה חדשה",
+          read: false,
+          timestamp: data.timestamp || Date.now(),
+          targetUrl: "/messages",
+        };
+      } else if (event === "profileViewsUpdated") {
+        newNotif = {
+          id: `pv-${Date.now()}`,
+          type: "info",
+          actorName: "מערכת",
+          text: `👁️ צפיות בפרופיל עודכנו: ${data.views_count}`,
+          read: false,
+          timestamp: Date.now(),
+          targetUrl: "/dashboard",
+        };
+      } else if (event === "dashboardUpdate") {
+        // לא מציג התראה, רק console
+        console.log("Dashboard stats updated", data);
+        return;
       } else {
+        // אירועים נוספים
         newNotif = {
           id: data._id || data.id || Date.now(),
           type: data.type || "notification",
           actorName: data.actorName || "משתמש",
-          text: `${data.actorName ? data.actorName + ": " : ""}${data.text || "התראה חדשה"}`,
+          text: data.text || "התראה חדשה",
           read: false,
           timestamp: data.timestamp || data.createdAt || Date.now(),
           targetUrl: data.targetUrl || "/",
@@ -86,8 +120,9 @@ export default function Notifications({ socket, user, onClose, clearNotification
       "newNotification",
       "reviewCreated",
       "appointmentCreated",
-      "newProposalCreated",
       "newMessage",
+      "profileViewsUpdated",
+      "dashboardUpdate",
     ];
 
     const eventHandlers = events.map((event) => {
@@ -96,14 +131,11 @@ export default function Notifications({ socket, user, onClose, clearNotification
       return { event, fn };
     });
 
-    return () => {
-      eventHandlers.forEach(({ event, fn }) => {
-        socket.off(event, fn);
-      });
-    };
+    return () => eventHandlers.forEach(({ event, fn }) => socket.off(event, fn));
   }, [socket, handler]);
 
-  // סימון התראה כנקראה בשרת ובסטייט
+  // שאר הפונקציות והתצוגה נותרו ללא שינוי
+
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -123,28 +155,16 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
-  // טיפול בלחיצה על התראה
   const handleClick = (notif) => {
     if (!notif.read) markAsRead(notif.id);
-
-    if (notif.targetUrl) {
-      navigate(notif.targetUrl);
-    } else {
+    if (notif.targetUrl) navigate(notif.targetUrl);
+    else {
       switch (notif.type) {
-        case "message":
-          navigate("/messages");
-          break;
-        case "collaboration":
-          navigate("/collaborations");
-          break;
-        case "meeting":
-          navigate("/meetings");
-          break;
-        case "review":
-          navigate("/reviews");
-          break;
-        default:
-          break;
+        case "message": navigate("/messages"); break;
+        case "collaboration": navigate("/collaborations"); break;
+        case "meeting": navigate("/meetings"); break;
+        case "review": navigate("/reviews"); break;
+        default: break;
       }
     }
     onClose();

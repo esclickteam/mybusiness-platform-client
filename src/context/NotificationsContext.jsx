@@ -32,8 +32,6 @@ export function NotificationsProvider({ user, children }) {
 
     socketConnection.on("connect", () => {
       console.log("Socket connected:", socketConnection.id);
-
-      // הצטרפות לחדר העסקי
       socketConnection.emit("joinBusinessRoom", user.businessId);
     });
 
@@ -72,8 +70,11 @@ export function NotificationsProvider({ user, children }) {
     };
   }, [user, addNotification]);
 
+  // ספירת ההתראות שלא נקראו
+  const unreadCount = notifications.filter(n => !n.read).length;
+
   return (
-    <NotificationsContext.Provider value={{ notifications, setNotifications, socket }}>
+    <NotificationsContext.Provider value={{ notifications, setNotifications, socket, unreadCount }}>
       {children}
     </NotificationsContext.Provider>
   );
