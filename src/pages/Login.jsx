@@ -49,19 +49,23 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
-      // login מחזיר את המשתמש וה-redirectUrl (אם יש)
       const { user: loggedInUser, redirectUrl } = await login(cleanEmail, password);
+
+      console.log("loggedInUser:", loggedInUser);
+      const hasPaid =
+        loggedInUser?.hasPaid === true ||
+        loggedInUser?.hasPaid === "true" ||
+        loggedInUser?.hasPaid === 1;
+
+      console.log("hasPaid value and type:", loggedInUser?.hasPaid, typeof loggedInUser?.hasPaid);
 
       if (redirectUrl) {
         navigate(redirectUrl, { replace: true });
-      } else if (loggedInUser?.role === "business" && loggedInUser?.hasPaid === true) {
-        // משתמש עסק ששילם - להפנות לדשבורד העסקים
+      } else if (loggedInUser?.role === "business" && hasPaid) {
         navigate("/business-dashboard", { replace: true });
       } else if (loggedInUser?.role === "business") {
-        // משתמש עסק שלא שילם - להפנות לעמוד תכניות / חבילות
         navigate("/plans", { replace: true });
       } else {
-        // משתמש רגיל
         navigate("/client/dashboard", { replace: true });
       }
     } catch (err) {
