@@ -7,80 +7,108 @@ import styles from "./BusinessChatPage.module.css";
 import API from "../api";
 import { useSocket } from "../context/socketContext";
 
+/**
+ * Business dashboard – chat page
+ * Shows list of client conversations on the left and the active chat on the right.
+ *
+ * Fixes / improvements:
+ * 1. Normalise `conversationId` so it is **always** a string even if the API
+ *    returns `_id` (Mongo) or plain `id`.
+ * 2. Removes duplicated client conversations (keep the newest per client).
+ * 3. Keeps unread‑counts in sync and clears them once a conversation is opened.
+ */
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
   const rawBusinessId = user?.businessId || user?.business?._id;
-  const businessId =
-    rawBusinessId?._id?.toString() || rawBusinessId?.toString();
+  const businessId = (rawBusinessId?._id ?? rawBusinessId)?.toString();
 
   const { updateMessagesCount } = useOutletContext();
 
-  const [convos, setConvos] = useState([]);
-  const [selected, setSelected] = useState(null);
-  const [unreadCounts, setUnreadCounts] = useState({});
+  const [convos, setConvos] = useState([]); // list of conversations
+  const [selected, setSelected] = useState(null); // currently open convo meta
+  const [unreadCounts, setUnreadCounts] = useState({}); // { convoId: n }
   const socket = useSocket();
 
-  // עדכון סך כל ההודעות הלא נקראות בתפריט העליון
-  useEffect(() => {
-    const total = Object.values(unreadCounts).reduce((a, b) => a + b, 0);
-    updateMessagesCount?.(total);
-  }, [unreadCounts, updateMessagesCount]);
+  // Utility – make sure every conversation has a stable string id
+  const normaliseConversation = (c) => ({
+    ...c,
+    conversationId: (c.conversationId ?? c._id ?? c.id)?.toString() ?? "",
+  });
 
-  // הצטרפות לחדר העסק ל־Socket.IO
+  // ────────────────────────────────────────────────────────────────────────────
+  // JOIN BUSINESS SOCKET ROOM
+  // ────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (socket && businessId) {
       socket.emit("joinBusinessRoom", businessId);
     }
   }, [socket, businessId]);
 
-  // טעינת שיחות העסק
+  // ────────────────────────────────────────────────────────────────────────────
+  // FETCH CONVERSATIONS + UNREAD COUNTS
+  // ────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     API.get("/messages/client-conversations")
       .then(({ data }) => {
-        // ה־API מחזיר { conversations: [...] }
-        const list = data.conversations ?? [];
-        setConvos(list);
+        const listRaw = data.conversations ?? data ?? [];
+        const list = listRaw.map(normaliseConversation);
 
-        // בניית מיפוי של unread counts
+        // Remove duplicates – keep first per client
+        const deduped = list.reduce((acc, conv) => {
+          if (!acc.find((c) => c.clientId === conv.clientId)) acc.push(conv);
+          return acc;
+        }, []);
+
+        setConvos(deduped);
+
+        // Build unread counters map
         const counts = {};
-        list.forEach((c) => {
-          if (c.unreadCount) {
-            counts[c.conversationId] = c.unreadCount;
-          }
+        deduped.forEach((c) => {
+          if (c.unreadCount) counts[c.conversationId] = c.unreadCount;
         });
         setUnreadCounts(counts);
 
-        // בחר כברירת מחדל את השיחה הראשונה
-        if (list.length) {
-          const { conversationId, clientId, clientName, conversationType } =
-            list[0];
+        // Auto‑select first conversation if none selected yet
+        if (!selected && deduped.length) {
+          const {
+            conversationId,
+            clientId: partnerId,
+            clientName: partnerName,
+            conversationType,
+          } = deduped[0];
           setSelected({
             conversationId,
-            partnerId: clientId,
-            partnerName: clientName,
-            conversationType,
+            partnerId,
+            partnerName,
+            conversationType: conversationType || "user-business",
           });
         }
       })
       .catch((err) => {
         console.error("Error fetching client conversations:", err);
       });
-  }, [initialized, businessId]);
+  }, [initialized, businessId, selected]);
 
+  // ────────────────────────────────────────────────────────────────────────────
+  // UPDATE TOTAL UNREAD IN TOP MENU
+  // ────────────────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    const total = Object.values(unreadCounts).reduce((a, b) => a + b, 0);
+    updateMessagesCount?.(total);
+  }, [unreadCounts, updateMessagesCount]);
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // HANDLERS
+  // ────────────────────────────────────────────────────────────────────────────
   const handleSelect = (conversationId, partnerId, partnerName) => {
     const convo = convos.find((c) => c.conversationId === conversationId);
     const type = convo?.conversationType || "user-business";
 
-    setSelected({
-      conversationId,
-      partnerId,
-      partnerName,
-      conversationType: type,
-    });
+    setSelected({ conversationId, partnerId, partnerName, conversationType: type });
 
-    // אפס את הספירה של השיחה שנבחרה
+    // clear unread badge for this conversation
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[conversationId];
@@ -88,9 +116,10 @@ export default function BusinessChatPage() {
     });
   };
 
-  if (!initialized) {
-    return <p className={styles.loading}>טוען מידע…</p>;
-  }
+  // ────────────────────────────────────────────────────────────────────────────
+  // RENDER
+  // ────────────────────────────────────────────────────────────────────────────
+  if (!initialized) return <p className={styles.loading}>טוען מידע…</p>;
 
   return (
     <div className={styles.chatContainer}>
@@ -101,7 +130,7 @@ export default function BusinessChatPage() {
           selectedConversationId={selected?.conversationId}
           onSelect={handleSelect}
           unreadCountsByConversation={unreadCounts}
-          isBusiness={true}
+          isBusiness
         />
       </aside>
 
@@ -116,9 +145,7 @@ export default function BusinessChatPage() {
             conversationType={selected.conversationType}
           />
         ) : (
-          <div className={styles.emptyMessage}>
-            בחר שיחה כדי לראות הודעות
-          </div>
+          <div className={styles.emptyMessage}>בחר שיחה כדי לראות הודעות</div>
         )}
       </section>
     </div>
