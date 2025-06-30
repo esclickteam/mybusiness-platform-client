@@ -7,7 +7,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
   const [localNotifications, setLocalNotifications] = useState([]);
   const navigate = useNavigate();
 
-  // טען התראות מהשרת בתחילת טעינת קומפוננטה
   useEffect(() => {
     if (!user) return;
     const token = localStorage.getItem("token");
@@ -30,14 +29,12 @@ export default function Notifications({ socket, user, onClose, clearNotification
     loadNotifications();
   }, [user, dispatch]);
 
-  // הצטרפות לחדר Socket.IO לפי businessId
   useEffect(() => {
     if (!socket || !user?.businessId) return;
     socket.emit("joinBusinessRoom", user.businessId);
     console.log(`Requested joinBusinessRoom for business-${user.businessId}`);
   }, [socket, user]);
 
-  // יצירת התראה חדשה על פי אירוע
   const handler = useCallback(
     (data, event) => {
       let newNotif = {};
@@ -123,7 +120,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     [dispatch]
   );
 
-  // האזנה לאירועים ב־Socket.IO
   useEffect(() => {
     if (!socket) return;
     const events = [
@@ -142,7 +138,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     return () => handlers.forEach(({ event, fn }) => socket.off(event, fn));
   }, [socket, handler]);
 
-  // סימון קריאה
   const markAsRead = async id => {
     try {
       const token = localStorage.getItem("token");
@@ -158,7 +153,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
-  // טיפול בלחיצה
   const handleClick = notif => {
     if (!notif.read) markAsRead(notif.id);
     const url = notif.targetUrl || {
@@ -171,7 +165,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     onClose();
   };
 
-  // ניקוי כל ההתראות
   const handleClearAll = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -190,7 +183,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
-  // ניקוי התראות נקראו
   const handleClearRead = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -209,7 +201,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }
   };
 
-  // עיצוב תאריך
   const formatDate = ts => new Date(ts).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });
 
   return (
