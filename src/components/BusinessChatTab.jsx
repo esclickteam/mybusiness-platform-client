@@ -3,6 +3,26 @@ import { v4 as uuidv4 } from "uuid";
 import "./BusinessChatTab.css";
 
 /**
+ * פונקציה לנרמול הודעות מהשרת למבנה אחיד
+ */
+const normalizeMsg = (m) => ({
+  ...m,
+  text:
+    m.text !== undefined
+      ? m.text === "0" ? "" : m.text
+      : m.content ?? "",
+  fileUrl:
+    m.fileUrl
+    ?? m.file?.url
+    ?? (m.fileId ? `/api/files/${m.fileId}` : null),
+  fileType: m.fileType ?? m.file?.mimeType ?? null,
+  fileName: m.fileName ?? m.file?.name ?? "",
+  fileDuration: m.fileDuration ?? m.file?.duration ?? 0,
+  timestamp: m.createdAt ?? new Date().toISOString(),
+  tempId: m.tempId ?? null,
+});
+
+/**
  * קומפוננטת נגן אודיו בסגנון WhatsApp
  */
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
@@ -102,11 +122,9 @@ function AudioPreview({ recordedBlob }) {
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
-      console.log("[messagesReducer] set messages", action.payload);
       return action.payload;
 
     case "append": {
-      console.log("[messagesReducer] append message", action.payload);
       const idx = state.findIndex(
         (m) =>
           (m._id && m._id === action.payload._id) ||
@@ -115,13 +133,11 @@ function messagesReducer(state, action) {
       if (idx !== -1) {
         const next = [...state];
         next[idx] = { ...next[idx], ...action.payload };
-        console.log("[messagesReducer] updated existing message at index", idx);
         return next;
       }
       return [...state, action.payload];
     }
     case "updateStatus":
-      console.log("[messagesReducer] updateStatus", action.payload);
       return state.map((m) =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
@@ -168,37 +184,19 @@ export default function BusinessChatTab({
     });
   };
 
-  /*** ---------------------- הקלטת אודיו ----------------------- ***/
-  const [recording, setRecording] = useState(false);
-  const [recordedBlob, setRecordedBlob] = useState(null);
-  const [timer, setTimer] = useState(0);
-  const mediaRecorderRef = useRef(null);
-  const mediaStreamRef = useRef(null);
-  const recordedChunks = useRef([]);
-  const timerRef = useRef(null);
-  /*** --------------------------------------------------------- ***/
-
-  const listRef = useRef(null);
-
-  /**
-   * טוען היסטוריה בפעם הראשונה ומצטרף לשיחה
-   */
+  /*** טעינת היסטוריה והצטרפות לשיחה ***/
   useEffect(() => {
     if (!socket || !conversationId) {
-      console.log("[useEffect] No socket or conversationId, clearing messages");
       dispatch({ type: "set", payload: [] });
       return;
     }
 
-    console.log("[useEffect] joining conversation", conversationId);
     socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
       if (!ack.ok) console.error("joinConversation failed:", ack.error);
-      else console.log("joinConversation success");
     });
 
     socket.emit("markMessagesRead", conversationId, (resp) => {
       if (!resp.ok) console.error("markMessagesRead failed");
-      else console.log("markMessagesRead success");
     });
 
     socket.emit(
@@ -206,21 +204,7 @@ export default function BusinessChatTab({
       { conversationId, conversationType },
       (res) => {
         if (res.ok) {
-          console.log("[getHistory] received messages count:", res.messages.length);
-          const msgs = (res.messages || []).map((m) => {
-            let text = m.text || m.content || "";
-            if (text === "0") text = ""; // למנוע הצגת "0"
-            return {
-              ...m,
-              timestamp: m.createdAt || new Date().toISOString(),
-              text,
-              fileUrl: m.fileUrl || m.file?.url || null,
-              fileType: m.fileType || m.file?.mimeType || null,
-              fileName: m.fileName || m.file?.name || "",
-              fileDuration: m.fileDuration ?? m.file?.duration ?? 0,
-              tempId: m.tempId || null,
-            };
-          });
+          const msgs = (res.messages || []).map(normalizeMsg);
           dispatch({ type: "set", payload: msgs });
         } else {
           console.error("getHistory failed:", res.error);
@@ -230,19 +214,15 @@ export default function BusinessChatTab({
     );
 
     return () => {
-      console.log("[useEffect] leaving conversation", conversationId);
       socket.emit("leaveConversation", conversationId, isBusinessConversation);
     };
   }, [socket, conversationId, isBusinessConversation, conversationType]);
 
-  /**
-   * מאזין להודעות נכנסות והקלדה
-   */
+  /*** מאזין להודעות חדשות והקלדה ***/
   useEffect(() => {
     if (!socket) return;
 
     const handleNew = (msg) => {
-      console.log("[socket] newMessage received:", msg);
       if (msg.conversationId !== conversationId || msg.conversationType !== conversationType) {
         return;
       }
@@ -251,41 +231,18 @@ export default function BusinessChatTab({
         (m) =>
           m._id === msg._id ||
           (msg.tempId && m.tempId === msg.tempId) ||
-          // התאמה צולבת: tempId ←→ _id
           (m.tempId && msg._id && m.tempId === msg._id)
       );
-      if (exists) {
-        console.log("[socket] message already exists, ignoring");
-        return;
-      }
+      if (exists) return;
 
-      const raw = msg.text || msg.content || "";
-      const text = raw === "0" ? "" : raw;
-
-      const safeMsg = {
-        ...msg,
-        timestamp: msg.createdAt || new Date().toISOString(),
-        text,
-        fileUrl: msg.fileUrl || msg.file?.url || null,
-        fileType: msg.fileType || msg.file?.mimeType || null,
-        fileName: msg.fileName || msg.file?.name || "",
-        fileDuration: msg.fileDuration ?? msg.file?.duration ?? 0,
-        tempId: msg.tempId || null,
-      };
-
-      console.log("[socket] dispatching append for new message");
-      dispatch({ type: "append", payload: safeMsg });
+      dispatch({ type: "append", payload: normalizeMsg(msg) });
     };
 
     const handleTyping = ({ from }) => {
       if (from !== customerId) return;
-      console.log("[socket] typing event from customer");
       setIsTyping(true);
       clearTimeout(handleTyping._t);
-      handleTyping._t = setTimeout(() => {
-        setIsTyping(false);
-        console.log("[socket] typing timeout cleared");
-      }, 1800);
+      handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
     };
 
     socket.on("newMessage", handleNew);
@@ -298,41 +255,28 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId, customerId, conversationType]);
 
-  /**
-   * גלילה אוטומטית כאשר מגיעה הודעה חדשה
-   */
+  /*** גלילה אוטומטית לתחתית התצוגה ***/
+  const listRef = useRef(null);
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
     if (nearBottom) {
-      console.log("[scroll] scrolling to bottom");
       el.scrollTop = el.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  /**
-   * Input change + emit typing
-   */
+  /*** טיפול בהקלדה בשדה הטקסט ***/
   const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
-    console.log("[handleInput] typing emitted");
   };
 
-  /**
-   * שליחת הודעת טקסט
-   */
+  /*** שליחת הודעת טקסט ***/
   const sendMessage = () => {
-    if (sending) {
-      console.log("[sendMessage] already sending, ignoring");
-      return;
-    }
+    if (sending) return;
     const text = input.trim();
-    if (!text || text === "0" || !socket) {
-      console.log("[sendMessage] invalid text or no socket", { text });
-      return;
-    }
+    if (!text || text === "0" || !socket) return;
 
     setSending(true);
     const tempId = uuidv4();
@@ -346,7 +290,6 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
-    console.log("[sendMessage] dispatching optimistic message", optimistic);
     dispatch({ type: "append", payload: optimistic });
     setInput("");
 
@@ -355,14 +298,12 @@ export default function BusinessChatTab({
       { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
       (ack) => {
         setSending(false);
-        console.log("[sendMessage] ack received", ack);
-
         dispatch({
           type: "updateStatus",
           payload: {
             id: tempId,
             updates: {
-              ...(ack.message || {}),
+              ...normalizeMsg(ack.message || {}),
               sending: false,
               failed: !ack.ok,
             },
@@ -372,27 +313,19 @@ export default function BusinessChatTab({
     );
   };
 
-  /**
-   * פתיחת דיאלוג בחירת קובץ
-   */
+  /*** פתיחת דיאלוג בחירת קובץ ***/
   const handleAttach = () => {
-    console.log("[handleAttach] opening file dialog");
     fileInputRef.current?.click();
   };
 
-  /**
-   * המשתמש בחר קובץ – טיפול בשליחה
-   */
+  /*** טיפול בקובץ שנבחר ***/
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file || !socket) {
-      console.log("[handleFileChange] no file or no socket");
-      return;
-    }
+    if (!file || !socket) return;
     const tempId = uuidv4();
 
     const blobUrl = URL.createObjectURL(file);
-    blobUrlsRef.current[tempId] = blobUrl; // שמירת ה-blobUrl לפי tempId
+    blobUrlsRef.current[tempId] = blobUrl;
 
     const optimistic = {
       _id: tempId,
@@ -406,12 +339,10 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
-    console.log("[handleFileChange] dispatching optimistic file message", optimistic);
     dispatch({ type: "append", payload: optimistic });
 
     const reader = new FileReader();
     reader.onload = () => {
-      console.log("[handleFileChange] emitting sendFile");
       socket.emit(
         "sendFile",
         {
@@ -425,16 +356,12 @@ export default function BusinessChatTab({
           conversationType,
         },
         (ack) => {
-          console.log("[sendFile] ack received:", ack);
-
-          // לא משחררים כאן - נעשה בשלב הבא אחרי עדכון ההודעה
-
           dispatch({
             type: "updateStatus",
             payload: {
               id: tempId,
               updates: {
-                ...(ack.message || {}), // כולל _id, fileUrl קבוע ועוד
+                ...normalizeMsg(ack.message || {}),
                 sending: false,
                 failed: !ack.ok,
               },
@@ -446,26 +373,30 @@ export default function BusinessChatTab({
     reader.readAsArrayBuffer(file);
   };
 
-  // useEffect לניטור שינויים בהודעות ושחרור זיכרון blob כשהכתובת מתחלפת
+  /*** שחרור כתובות blob ישנות כאשר מתחלפות ***/
   useEffect(() => {
     Object.entries(blobUrlsRef.current).forEach(([tempId, blobUrl]) => {
       const msg = messages.find(
         (m) => (m.tempId === tempId || m._id === tempId) && m.fileUrl !== blobUrl
       );
       if (msg) {
-        // כתובת הודעה עודכנה לכתובת אמיתית, משחררים את ה-blob
         URL.revokeObjectURL(blobUrl);
         delete blobUrlsRef.current[tempId];
       }
     });
   }, [messages]);
 
-  /** ----------------- הקלטת ושליחת הודעת קול ---------------- */
+  /*** הקלטת אודיו ***/
+  const [recording, setRecording] = useState(false);
+  const [recordedBlob, setRecordedBlob] = useState(null);
+  const [timer, setTimer] = useState(0);
+  const mediaRecorderRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+  const recordedChunks = useRef([]);
+  const timerRef = useRef(null);
+
   const startRecording = async () => {
-    if (recording || !navigator.mediaDevices) {
-      console.log("[startRecording] already recording or no mediaDevices");
-      return;
-    }
+    if (recording || !navigator.mediaDevices) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
@@ -474,16 +405,14 @@ export default function BusinessChatTab({
       recorder.ondataavailable = (e) => recordedChunks.current.push(e.data);
       recorder.onstop = () => {
         setRecordedBlob(new Blob(recordedChunks.current, { type: recorder.mimeType }));
-        console.log("[startRecording] recorder stopped, blob ready");
       };
       recorder.start();
       mediaRecorderRef.current = recorder;
       setRecording(true);
       setTimer(0);
       timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-      console.log("[startRecording] Recording started");
     } catch (err) {
-      console.error("[startRecording] Recording error:", err);
+      console.error("Recording error:", err);
     }
   };
 
@@ -492,25 +421,18 @@ export default function BusinessChatTab({
     mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
     setRecording(false);
     clearInterval(timerRef.current);
-    console.log("[stopRecording] Recording stopped");
   };
 
   const discardRecording = () => {
     setRecordedBlob(null);
     setTimer(0);
-    console.log("[discardRecording] Recording discarded");
   };
 
   const sendRecording = () => {
-    if (!recordedBlob || !socket) {
-      console.log("[sendRecording] no recording or no socket");
-      return;
-    }
+    if (!recordedBlob || !socket) return;
     const tempId = uuidv4();
-    console.log("[sendRecording] Sending audio message:", tempId);
-
     const blobUrl = URL.createObjectURL(recordedBlob);
-    blobUrlsRef.current[tempId] = blobUrl; // שמירת ה-blobUrl לפי tempId
+    blobUrlsRef.current[tempId] = blobUrl;
 
     const optimistic = {
       _id: tempId,
@@ -530,7 +452,6 @@ export default function BusinessChatTab({
 
     const reader = new FileReader();
     reader.onload = () => {
-      console.log("[sendRecording] emitting sendAudio");
       socket.emit(
         "sendAudio",
         {
@@ -544,16 +465,12 @@ export default function BusinessChatTab({
           conversationType,
         },
         (ack) => {
-          console.log("[sendAudio] Ack received:", ack);
-
-          // לא משחררים כאן - נעשה ב-useEffect לאחר עדכון ההודעה
-
           dispatch({
             type: "updateStatus",
             payload: {
               id: tempId,
               updates: {
-                ...(ack.message || {}),
+                ...normalizeMsg(ack.message || {}),
                 sending: false,
                 failed: !ack.ok,
               },
@@ -564,16 +481,13 @@ export default function BusinessChatTab({
     };
     reader.readAsArrayBuffer(recordedBlob);
   };
-  /** --------------------------------------------------------- */
 
   return (
     <div className="chat-container business">
-      {/* Header */}
       <div className="chat-header">
         <h3>{customerName}</h3>
       </div>
 
-      {/* רשימת הודעות */}
       <div className="message-list" ref={listRef}>
         {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
 
@@ -586,9 +500,9 @@ export default function BusinessChatTab({
             <div
               key={`${m._id || m.tempId}-${m.fileUrl || ""}`}
               className={`message${m.from === businessId ? " mine" : " theirs"}${
-                m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
+                m.sending ? " sending" : ""
+              }${m.failed ? " failed" : ""}`}
             >
-              {/* תוכן ההודעה */}
               {m.fileUrl ? (
                 m.fileType?.startsWith("audio") ? (
                   <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} />
@@ -608,7 +522,6 @@ export default function BusinessChatTab({
                 <div className="text">{m.text}</div>
               )}
 
-              {/* מטאדאטה */}
               <div className="meta">
                 <span className="time">{formatTime(m.timestamp)}</span>
                 {m.fileDuration > 0 && (
@@ -630,7 +543,6 @@ export default function BusinessChatTab({
         {isTyping && <div className="typing-indicator">הלקוח מקליד…</div>}
       </div>
 
-      {/* סרגל קלט */}
       <div className="inputBar">
         {recording || recordedBlob ? (
           <div className="audio-preview-row">
