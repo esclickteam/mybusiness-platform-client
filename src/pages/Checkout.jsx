@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Checkout.css";
 
@@ -14,7 +13,7 @@ export default function Checkout() {
   const [processing, setProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // שליפת מזהה משתמש (MongoDB _id / id / userId)
+  // שליפת מזהה המשתמש מ־user
   const getUserId = (user) => user?._id || user?.id || user?.userId || null;
   const realUserId = getUserId(user);
 
@@ -39,9 +38,8 @@ export default function Checkout() {
     );
   }
 
-  const handlePayment = async () => {
-    if (processing) return; // הגנה כפולה
-
+  const handlePayment = () => {
+    if (processing) return;
     setProcessing(true);
     setErrorMessage("");
 
@@ -51,35 +49,28 @@ export default function Checkout() {
       return;
     }
 
-    try {
-      const response = await API.post("/cardcom", {
-        plan: planName,
-        price: totalPrice,
-        userId: realUserId,
-      });
+    // במקום API.post – בונים <form> ושולחים אותו
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/api/cardcom";
 
-      const { paymentUrl } = response.data;
-      if (paymentUrl) {
-        window.location.href = paymentUrl;
-      } else {
-        throw new Error("השרת לא החזיר כתובת תשלום תקינה");
-      }
-    } catch (err) {
-      console.error("❌ שגיאה בעת יצירת תשלום:", err);
+    const fields = {
+      plan: planName,
+      price: totalPrice,
+      userId: realUserId,
+    };
 
-      // טיפול בשגיאת 429 (Rate Limit)
-      if (err.response?.status === 429) {
-        setErrorMessage(
-          "⏳ נעשו יותר מדי ניסיונות תשלום. נסה שוב בעוד דקה."
-        );
-      } else {
-        setErrorMessage(
-          "❌ שגיאה בעת יצירת התשלום. לחץ 'נסה שוב' כדי לקבל קישור חדש."
-        );
-      }
-    } finally {
-      setProcessing(false);
-    }
+    Object.entries(fields).forEach(([name, value]) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    // הדפדפן יעזוב את ה־SPA ויפנה לשרת, שקורא ל-CardCom ומחזיר HTML עם הפניה אוטומטית
   };
 
   return (
@@ -92,9 +83,7 @@ export default function Checkout() {
         <p className="checkout-duration">
           משך המנוי: <strong>{duration} חודשים</strong>
         </p>
-        {errorMessage && (
-          <p className="error-message">{errorMessage}</p>
-        )}
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
         <button
           className="pay-button"
           onClick={handlePayment}
@@ -108,15 +97,6 @@ export default function Checkout() {
             "💳 עבור לתשלום"
           )}
         </button>
-        {errorMessage && !processing && (
-          <button
-            className="retry-link"
-            onClick={handlePayment}
-            style={{ marginTop: "1em" }}
-          >
-            🔄 נסה שוב
-          </button>
-        )}
         <button
           className="return-link"
           onClick={() => navigate("/plans")}
