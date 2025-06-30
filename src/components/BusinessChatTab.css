@@ -24,7 +24,10 @@
   flex-direction: column;
   border-radius: 16px;
   box-shadow: 0 4px 32px #0002;
-  overflow: hidden;
+  /* אפשר לאפשר גלישה אופקית לתמונות במידת הצורך */
+  overflow-x: visible;
+  /* אם אין צורך ב- overflow:hidden כלל, ניתן למחוק או לשים visible */
+  /* overflow: visible; */
   background: #fff;
   border: 1px solid #e0e0e0;
   position: relative;
@@ -45,6 +48,8 @@
 .message {
   max-width: 72%;
   min-width: 44px;
+  /* מאפשר flex-shrink לילדים להסתגל ללא גלישה */
+  min-width: 0;
   padding: 10px 15px 8px 13px;
   border-radius: 18px;
   word-break: break-word;
@@ -69,10 +74,13 @@
 /* תמונות בהודעות */
 .message .content img,
 .message img {
-  max-width: 200px;
-  max-height: 200px;
-  border-radius: 8px;
   display: block;
+  width: 100%;        /* יתאים תמיד לרוחב הבאבל */
+  max-width: 200px;   /* לא יגדל מעל 200px */
+  max-height: 200px;  /* גובה מקסימלי רצוי */
+  height: auto;       /* שומר על פרופורציה */
+  object-fit: cover;  /* ימנע עיוות */
+  border-radius: 8px;
   margin-bottom: 6px;
 }
 
@@ -125,19 +133,16 @@
   font-style: italic;
   position: relative;
 }
-
 .message.sending .sending-indicator {
   color: #a89fff;
   font-size: 16px;
   margin-left: 6px;
 }
-
 .message.failed {
   opacity: 0.9;
   border: 1.5px solid #d32f2f;
   position: relative;
 }
-
 .message.failed .failed-indicator {
   color: #d32f2f;
   font-size: 16px;
