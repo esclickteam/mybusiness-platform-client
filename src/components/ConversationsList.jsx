@@ -1,30 +1,38 @@
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSocket } from "../context/socketContext";
 import UnreadBadge from "./UnreadBadge";
 import styles from "./ConversationsList.module.css";
-import socket from "../socket"; // instance של socket.io מחובר
 
 export default function ConversationsList({
+  conversations = [],
   businessId,
   selectedConversationId,
   onSelect,
   isBusiness,
+  unreadCountsByConversation = {},
 }) {
+  const socket = useSocket();
+
   const endpoint = isBusiness
     ? "/api/messages/client-conversations"
     : "/api/messages/user-conversations";
 
-  const { data: conversations = [], isLoading, error } = useQuery({
+  const { data: fetchedConversations = [], isLoading, error } = useQuery({
     queryKey: ["conversations", endpoint, businessId],
     queryFn: async () => {
-      const res = await fetch(endpoint);
+      const res = await fetch(endpoint, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       if (!res.ok) throw new Error("שגיאה בטעינת השיחות");
       const json = await res.json();
       return json.conversations ?? json;
     },
-    // אופציונלי: תשמר בקאש למשך 5 דקות
     staleTime: 1000 * 60 * 5,
   });
+
+  // Use passed-in prop if provided, otherwise fetched data
+  const list = conversations.length ? conversations : fetchedConversations;
 
   useEffect(() => {
     if (isBusiness && socket && businessId) {
@@ -39,10 +47,10 @@ export default function ConversationsList({
         שגיאה בטעינת שיחות: {error.message}
       </div>
     );
-  if (conversations.length === 0)
+  if (list.length === 0)
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
 
-  const uniqueConvs = conversations.filter((conv, idx, arr) => {
+  const uniqueConvs = list.filter((conv, idx, arr) => {
     const partnerId = isBusiness ? conv.clientId : conv.businessId;
     return (
       arr.findIndex((c) => {
@@ -65,6 +73,8 @@ export default function ConversationsList({
             ? conv.clientName
             : conv.businessName || partnerId;
           const isActive = convoId === selectedConversationId;
+          const unreadCount = unreadCountsByConversation[convoId] || 0;
+
           return (
             <div
               key={convoId}
@@ -76,7 +86,7 @@ export default function ConversationsList({
             >
               <span>{displayName}</span>
               <div className={styles.badgeWrapper}>
-                <UnreadBadge conversationId={convoId} />
+                <UnreadBadge conversationId={convoId} count={unreadCount} />
               </div>
             </div>
           );
