@@ -267,35 +267,114 @@ export default function BusinessChatTab({
   };
 
   const sendMessage = () => {
-    if (sending) return;
-    const text = input.trim();
-    if (!text || text === "0") return;
-    if (!socket || socket.disconnected) {
-      console.warn("Cannot send message: socket not connected");
-      return;
+  if (sending) return;
+  const text = input.trim();
+  if (!text || text === "0") return;
+
+  if (!socket) {
+    console.warn("Socket לא מאותחל עדיין");
+    return;
+  }
+
+  if (!socket.connected) {
+    console.warn("Socket לא מחובר, מחכה להתחברות...");
+    socket.once("connect", () => {
+      sendMessage();
+    });
+    return;
+  }
+
+  setSending(true);
+  const tempId = uuidv4();
+  const optimistic = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    text,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId,
+  };
+  dispatch({ type: "append", payload: optimistic });
+  setInput("");
+
+  socket.emit(
+    "sendMessage",
+    { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
+    (ack) => {
+      setSending(false);
+
+      dispatch({
+        type: "updateStatus",
+        payload: {
+          id: tempId,
+          updates: {
+            ...(ack.message || {}),
+            sending: false,
+            failed: !ack.ok,
+          },
+        },
+      });
     }
+  );
+};
 
-    setSending(true);
-    const tempId = uuidv4();
-    const optimistic = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      text,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
-    dispatch({ type: "append", payload: optimistic });
-    setInput("");
 
+  const handleAttach = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  if (!socket) {
+    console.warn("Socket לא מאותחל עדיין");
+    return;
+  }
+
+  if (!socket.connected) {
+    console.warn("Socket לא מחובר, מחכה להתחברות...");
+    socket.once("connect", () => {
+      handleFileChange(e);
+    });
+    return;
+  }
+
+  const tempId = uuidv4();
+  const blobUrl = URL.createObjectURL(file);
+  blobUrlsRef.current[tempId] = blobUrl;
+
+  const optimistic = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    fileUrl: blobUrl,
+    fileName: file.name,
+    fileType: file.type,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId,
+  };
+  dispatch({ type: "append", payload: optimistic });
+
+  const reader = new FileReader();
+  reader.onload = () => {
     socket.emit(
-      "sendMessage",
-      { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
+      "sendFile",
+      {
+        conversationId,
+        from: businessId,
+        to: customerId,
+        fileName: file.name,
+        fileType: file.type,
+        buffer: reader.result,
+        tempId,
+        conversationType,
+      },
       (ack) => {
-        setSending(false);
-
         dispatch({
           type: "updateStatus",
           payload: {
@@ -310,64 +389,9 @@ export default function BusinessChatTab({
       }
     );
   };
+  reader.readAsArrayBuffer(file);
+};
 
-  const handleAttach = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !socket || socket.disconnected) return;
-    const tempId = uuidv4();
-
-    const blobUrl = URL.createObjectURL(file);
-    blobUrlsRef.current[tempId] = blobUrl;
-
-    const optimistic = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      fileUrl: blobUrl,
-      fileName: file.name,
-      fileType: file.type,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
-    dispatch({ type: "append", payload: optimistic });
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      socket.emit(
-        "sendFile",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          fileName: file.name,
-          fileType: file.type,
-          buffer: reader.result,
-          tempId,
-          conversationType,
-        },
-        (ack) => {
-          dispatch({
-            type: "updateStatus",
-            payload: {
-              id: tempId,
-              updates: {
-                ...(ack.message || {}),
-                sending: false,
-                failed: !ack.ok,
-              },
-            },
-          });
-        }
-      );
-    };
-    reader.readAsArrayBuffer(file);
-  };
 
   // useEffect לשחרור זיכרון blob כשהכתובת מתחלפת
   useEffect(() => {
@@ -425,59 +449,73 @@ export default function BusinessChatTab({
   };
 
   const sendRecording = () => {
-    if (!recordedBlob || !socket || socket.disconnected) return;
-    const tempId = uuidv4();
+  if (!recordedBlob) return;
 
-    const blobUrl = URL.createObjectURL(recordedBlob);
-    blobUrlsRef.current[tempId] = blobUrl;
+  if (!socket) {
+    console.warn("Socket לא מאותחל עדיין");
+    return;
+  }
 
-    const optimistic = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      fileUrl: blobUrl,
-      fileName: `audio.${recordedBlob.type.split("/")[1]}`,
-      fileType: recordedBlob.type,
-      fileDuration: timer,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
-    dispatch({ type: "append", payload: optimistic });
-    setRecordedBlob(null);
+  if (!socket.connected) {
+    console.warn("Socket לא מחובר, מחכה להתחברות...");
+    socket.once("connect", () => {
+      sendRecording();
+    });
+    return;
+  }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      socket.emit(
-        "sendAudio",
-        {
-          conversationId,
-          from: businessId,
-          to: customerId,
-          buffer: reader.result,
-          fileType: recordedBlob.type,
-          duration: timer,
-          tempId,
-          conversationType,
-        },
-        (ack) => {
-          dispatch({
-            type: "updateStatus",
-            payload: {
-              id: tempId,
-              updates: {
-                ...(ack.message || {}),
-                sending: false,
-                failed: !ack.ok,
-              },
-            },
-          });
-        }
-      );
-    };
-    reader.readAsArrayBuffer(recordedBlob);
+  const tempId = uuidv4();
+  const blobUrl = URL.createObjectURL(recordedBlob);
+  blobUrlsRef.current[tempId] = blobUrl;
+
+  const optimistic = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    fileUrl: blobUrl,
+    fileName: `audio.${recordedBlob.type.split("/")[1]}`,
+    fileType: recordedBlob.type,
+    fileDuration: timer,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId,
   };
+  dispatch({ type: "append", payload: optimistic });
+  setRecordedBlob(null);
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    socket.emit(
+      "sendAudio",
+      {
+        conversationId,
+        from: businessId,
+        to: customerId,
+        buffer: reader.result,
+        fileType: recordedBlob.type,
+        duration: timer,
+        tempId,
+        conversationType,
+      },
+      (ack) => {
+        dispatch({
+          type: "updateStatus",
+          payload: {
+            id: tempId,
+            updates: {
+              ...(ack.message || {}),
+              sending: false,
+              failed: !ack.ok,
+            },
+          },
+        });
+      }
+    );
+  };
+  reader.readAsArrayBuffer(recordedBlob);
+};
+
 
   return (
     <div className="chat-container business">
