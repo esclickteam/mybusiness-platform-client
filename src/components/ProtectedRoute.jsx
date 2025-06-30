@@ -41,6 +41,17 @@ export default function ProtectedRoute({
     }
   }
 
+  // 3.5. בדיקה שעסק ששילם בלבד יוכל לגשת לדפים מוגנים
+  if (
+    roles.map((r) => r.toLowerCase()).includes("business") &&
+    (user.role || "").toLowerCase() === "business"
+  ) {
+    const hasPaid = user.hasPaid === true || user.hasPaid === "true";
+    if (!hasPaid) {
+      return <Navigate to="/plans" replace />;
+    }
+  }
+
   // 4. בדיקת חבילת מנוי נדרשת (אם צוין)
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
     return <Navigate to="/plans" replace />;
@@ -49,7 +60,7 @@ export default function ProtectedRoute({
   // 5. במידה והמשתמש הוא בעל עסק ללא פרופיל עסק קיים, הפנה ליצירת עסק
   if (
     roles.map((r) => r.toLowerCase()).includes("business") &&
-    user.role.toLowerCase() === "business" &&
+    (user.role || "").toLowerCase() === "business" &&
     !user.businessId
   ) {
     return <Navigate to="/create-business" replace />;
