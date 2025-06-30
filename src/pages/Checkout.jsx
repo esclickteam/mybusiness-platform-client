@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Checkout.css";
 
@@ -9,46 +10,76 @@ export default function Checkout() {
   const { user, loading } = useAuth();
 
   const { planName, totalPrice, duration } = location.state || {};
+
   const [processing, setProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // ref ל־<form> המוסתרת
-  const formRef = useRef(null);
+  // שליפת מזהה משתמש (MongoDB _id / id / userId)
+  const getUserId = (user) => user?._id || user?.id || user?.userId || null;
+  const realUserId = getUserId(user);
 
-  // בדיקות התחלה
   if (loading) return null;
+
   if (!user) {
     navigate("/login", { replace: true });
     return null;
   }
+
   if (!planName || !totalPrice) {
     return (
       <div className="checkout-container error-container">
         <h2 className="error-message">❌ החבילה שבחרת אינה זמינה.</h2>
-        <button className="return-link" onClick={() => navigate("/plans")}>
+        <button
+          className="return-link"
+          onClick={() => navigate("/plans")}
+        >
           🔙 חזרה לעמוד החבילות
         </button>
       </div>
     );
   }
 
-  const realUserId = user._id || user.id || user.userId;
+  const handlePayment = async () => {
+    if (processing) return; // הגנה כפולה
 
-  const handlePayment = () => {
-    if (processing) return;
     setProcessing(true);
     setErrorMessage("");
 
-    if (!realUserId) {
-      setErrorMessage("❌ משתמש לא תקין.");
+    if (!planName || !totalPrice || !realUserId) {
+      setErrorMessage("❌ חסרים נתונים, לא ניתן להמשיך לתשלום.");
       setProcessing(false);
       return;
     }
 
-    // שולחים את ה־form המוסתר
-    formRef.current.submit();
-    // הדפדפן יעשה POST רגיל ל־/api/cardcom,
-    // והשרת יחזיר 303 Redirect ל־CardCom → דף סליקה
+    try {
+      const response = await API.post("/cardcom", {
+        plan: planName,
+        price: totalPrice,
+        userId: realUserId,
+      });
+
+      const { paymentUrl } = response.data;
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+      } else {
+        throw new Error("השרת לא החזיר כתובת תשלום תקינה");
+      }
+    } catch (err) {
+      console.error("❌ שגיאה בעת יצירת תשלום:", err);
+
+      // טיפול בשגיאת 429 (Rate Limit)
+      if (err.response?.status === 429) {
+        setErrorMessage(
+          "⏳ נעשו יותר מדי ניסיונות תשלום. נסה שוב בעוד דקה."
+        );
+      } else {
+        setErrorMessage(
+          "❌ שגיאה בעת יצירת התשלום. לחץ 'נסה שוב' כדי לקבל קישור חדש."
+        );
+      }
+    } finally {
+      setProcessing(false);
+    }
   };
 
   return (
@@ -61,10 +92,9 @@ export default function Checkout() {
         <p className="checkout-duration">
           משך המנוי: <strong>{duration} חודשים</strong>
         </p>
-
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
-
-        {/* הכפתור שמפעיל את השליחה */}
+        {errorMessage && (
+          <p className="error-message">{errorMessage}</p>
+        )}
         <button
           className="pay-button"
           onClick={handlePayment}
@@ -78,7 +108,15 @@ export default function Checkout() {
             "💳 עבור לתשלום"
           )}
         </button>
-
+        {errorMessage && !processing && (
+          <button
+            className="retry-link"
+            onClick={handlePayment}
+            style={{ marginTop: "1em" }}
+          >
+            🔄 נסה שוב
+          </button>
+        )}
         <button
           className="return-link"
           onClick={() => navigate("/plans")}
@@ -87,18 +125,6 @@ export default function Checkout() {
           🔙 חזרה לעמוד החבילות
         </button>
       </div>
-
-      {/* הטופס המוסתר */}
-      <form
-        ref={formRef}
-        method="POST"
-        action="/api/cardcom"
-        style={{ display: "none" }}
-      >
-        <input type="hidden" name="plan" value={planName} />
-        <input type="hidden" name="price" value={totalPrice} />
-        <input type="hidden" name="userId" value={realUserId} />
-      </form>
     </div>
   );
 }
