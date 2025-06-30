@@ -74,6 +74,29 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 }
 
 /**
+ * קומפוננטת תצוגה וניהול URL זמני להקלטות
+ */
+function AudioPreview({ recordedBlob }) {
+  const [blobUrl, setBlobUrl] = useState(null);
+
+  useEffect(() => {
+    if (!recordedBlob) {
+      setBlobUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(recordedBlob);
+    setBlobUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [recordedBlob]);
+
+  if (!blobUrl) return null;
+
+  return <audio src={blobUrl} controls />;
+}
+
+/**
  * reducer לניהול היסטוריית ההודעות
  */
 function messagesReducer(state, action) {
@@ -82,9 +105,6 @@ function messagesReducer(state, action) {
       console.log("[messagesReducer] set messages", action.payload);
       return action.payload;
 
-    /**
-     * append – מוסיף הודעה או מעדכן קיימת לפי _id/ tempId
-     */
     case "append": {
       console.log("[messagesReducer] append message", action.payload);
       const idx = state.findIndex(
@@ -133,9 +153,6 @@ export default function BusinessChatTab({
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
-
-  // Ref לשמירת מיפוי blobUrls לפי tempId, לניהול שחרור זיכרון
-  const blobUrlsRef = useRef({});
 
   /**
    * פונקציית עזר לפורמט שעה
@@ -575,15 +592,12 @@ export default function BusinessChatTab({
                 m.fileType?.startsWith("audio") ? (
                   <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} />
                 ) : m.fileType?.startsWith("image") ? (
-                  <>
-                    <img
-                      src={m.fileUrl}
-                      alt={m.fileName}
-                      style={{ maxWidth: 200, borderRadius: 8 }}
-                      onError={() => console.error("[img] failed to load", m.fileUrl)}
-                    />
-                    <div style={{ fontSize: 10, color: "#888" }}>URL: {m.fileUrl}</div>
-                  </>
+                  <img
+                    src={m.fileUrl}
+                    alt={m.fileName}
+                    style={{ maxWidth: 200, borderRadius: 8 }}
+                    onError={() => console.error("[img] failed to load", m.fileUrl)}
+                  />
                 ) : (
                   <a href={m.fileUrl} download>
                     {m.fileName}
@@ -633,7 +647,7 @@ export default function BusinessChatTab({
               </>
             ) : (
               <>
-                <audio src={blobUrlsRef.current[recordedBlob?.tempId] || ""} controls />
+                <AudioPreview recordedBlob={recordedBlob} />
                 <div>{`משך: ${Math.floor(timer / 60)}:${(timer % 60)
                   .toString()
                   .padStart(2, "0")}`}</div>
