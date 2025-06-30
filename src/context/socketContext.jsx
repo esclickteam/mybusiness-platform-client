@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./AuthContext"; // נניח שיש לך קונטקסט לאימות
 
 export const SocketContext = createContext(null);
 
@@ -14,8 +14,9 @@ export function SocketProvider({ children }) {
 
     const setupSocket = async () => {
       const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
-      const token = await refreshAccessToken();
+      console.log('SOCKET_URL:', SOCKET_URL);
 
+      const token = await refreshAccessToken();
       if (!token) {
         logout();
         return;
@@ -25,8 +26,12 @@ export function SocketProvider({ children }) {
       if (user.role === "business") {
         const businessDetailsStr = localStorage.getItem("businessDetails");
         if (businessDetailsStr) {
-          const details = JSON.parse(businessDetailsStr);
-          businessId = details.id || details._id || null;
+          try {
+            const details = JSON.parse(businessDetailsStr);
+            businessId = details.id || details._id || null;
+          } catch (err) {
+            console.error("שגיאה בפענוח businessDetails", err);
+          }
         }
         if (!businessId) {
           logout();
@@ -34,10 +39,10 @@ export function SocketProvider({ children }) {
         }
       }
 
+      // תמיד מנתקים סוקט קודם, אם יש
       if (socketRef.current) {
-        console.log("Socket connection already exists, skipping creation.");
-        setSocket(socketRef.current);
-        return;
+        socketRef.current.disconnect();
+        socketRef.current = null;
       }
 
       const auth = {

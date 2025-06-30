@@ -3,12 +3,13 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
-import { UnreadMessagesProvider } from "./context/UnreadMessagesContext"; // ✅ חדש
+import { UnreadMessagesProvider } from "./context/UnreadMessagesContext";
+import { SocketProvider } from "./context/socketContext"; // 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "./styles/index.css";
 
-// Polyfill ל-Buffer בדפדפן
+// Polyfill ל-Buffer בדפדפן (נדרש בחלק מהספריות)
 import { Buffer } from "buffer";
 window.Buffer = window.Buffer || Buffer;
 
@@ -20,13 +21,15 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <NotificationsProvider>
-            <UnreadMessagesProvider> {/* ✅ עטיפה של אפליקציית ההודעות */}
-              <Suspense fallback={<div className="spinner"></div>}>
-                <App />
-              </Suspense>
-            </UnreadMessagesProvider>
-          </NotificationsProvider>
+          <SocketProvider> {/* ⭐️ עטיפת האפליקציה בסוקט קונטקסט */}
+            <NotificationsProvider>
+              <UnreadMessagesProvider>
+                <Suspense fallback={<div className="spinner"></div>}>
+                  <App />
+                </Suspense>
+              </UnreadMessagesProvider>
+            </NotificationsProvider>
+          </SocketProvider>
         </AuthProvider>
       </QueryClientProvider>
     </BrowserRouter>
