@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 import API from "../api"; // axios עם token מוגדר מראש
+import { useSocket } from "../contexts/SocketContext"; 
 import "./BusinessChatTab.css";
 
 /**
@@ -132,27 +133,24 @@ export default function BusinessChatTab({
   businessId,
   customerId,
   customerName,
-  socket,
   conversationType = "user-business",
 }) {
+  const socket = useSocket();
   const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const fileInputRef = useRef(null);
   const blobUrlsRef = useRef({});
+  const messagesRef = useRef(messages);
+  const listRef = useRef(null);
 
   const isBusinessConversation = conversationType === "business-business";
 
-  // Ref להודעות בשביל בדיקת כפילויות
-  const messagesRef = useRef(messages);
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
-  /**
-   * פונקציית עזר לפורמט שעה
-   */
   const formatTime = (ts) => {
     if (!ts) return "";
     const d = new Date(ts);
@@ -163,7 +161,7 @@ export default function BusinessChatTab({
     });
   };
 
-  // טען היסטוריית הודעות מה-API עם axios שמכיל את הטוקן
+  // טעינת היסטוריית הודעות מה-API
   async function fetchMessagesByConversationId(conversationId, page = 0, limit = 50) {
     try {
       const res = await API.get(`/messages/${conversationId}/history`, {
@@ -182,7 +180,6 @@ export default function BusinessChatTab({
     }
   }
 
-  // אפקט ראשי לטעינת היסטוריה מהשרת
   useEffect(() => {
     if (!conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -203,7 +200,6 @@ export default function BusinessChatTab({
     };
   }, [conversationId]);
 
-  // מאזין להודעות חדשות עם דה-דופליקציה ושמירת IDs כמחרוזות
   useEffect(() => {
     if (!socket) return;
 
@@ -253,7 +249,6 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId, customerId, conversationType]);
 
-  // גלילה אוטומטית רק אם המשתמש קרוב לתחתית
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
@@ -264,77 +259,65 @@ export default function BusinessChatTab({
     }
   }, [messages, isTyping]);
 
-  /**
-   * Input change + emit typing
-   */
   const handleInput = (e) => {
     setInput(e.target.value);
-    socket?.emit("typing", { conversationId, from: businessId });
-  };
-
-  /**
-   * שליחת הודעת טקסט
-   */
-  const sendMessage = () => {
-  if (sending) return;
-  const text = input.trim();
-  if (!text || text === "0" || !socket) {
-    console.warn("Cannot send message: invalid input or socket missing", { text, socket });
-    return;
-  }
-
-  console.log("Sending message:", { conversationId, businessId, customerId, text });
-  setSending(true);
-  const tempId = uuidv4();
-  const optimistic = {
-    _id: tempId,
-    conversationId,
-    from: businessId,
-    to: customerId,
-    text,
-    timestamp: new Date().toISOString(),
-    sending: true,
-    tempId,
-  };
-  dispatch({ type: "append", payload: optimistic });
-  setInput("");
-
-  socket.emit(
-    "sendMessage",
-    { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
-    (ack) => {
-      console.log("sendMessage ACK:", ack);
-      setSending(false);
-
-      dispatch({
-        type: "updateStatus",
-        payload: {
-          id: tempId,
-          updates: {
-            ...(ack.message || {}),
-            sending: false,
-            failed: !ack.ok,
-          },
-        },
-      });
+    if (socket) {
+      socket.emit("typing", { conversationId, from: businessId });
     }
-  );
-};
+  };
 
+  const sendMessage = () => {
+    if (sending) return;
+    const text = input.trim();
+    if (!text || text === "0") return;
+    if (!socket || socket.disconnected) {
+      console.warn("Cannot send message: socket not connected");
+      return;
+    }
 
-  /**
-   * פתיחת דיאלוג בחירת קובץ
-   */
+    setSending(true);
+    const tempId = uuidv4();
+    const optimistic = {
+      _id: tempId,
+      conversationId,
+      from: businessId,
+      to: customerId,
+      text,
+      timestamp: new Date().toISOString(),
+      sending: true,
+      tempId,
+    };
+    dispatch({ type: "append", payload: optimistic });
+    setInput("");
+
+    socket.emit(
+      "sendMessage",
+      { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
+      (ack) => {
+        setSending(false);
+
+        dispatch({
+          type: "updateStatus",
+          payload: {
+            id: tempId,
+            updates: {
+              ...(ack.message || {}),
+              sending: false,
+              failed: !ack.ok,
+            },
+          },
+        });
+      }
+    );
+  };
+
   const handleAttach = () => {
     fileInputRef.current?.click();
   };
 
-  /**
-   * המשתמש בחר קובץ – טיפול בשליחה
-   */
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file || !socket) return;
+    if (!file || !socket || socket.disconnected) return;
     const tempId = uuidv4();
 
     const blobUrl = URL.createObjectURL(file);
@@ -442,7 +425,7 @@ export default function BusinessChatTab({
   };
 
   const sendRecording = () => {
-    if (!recordedBlob || !socket) return;
+    if (!recordedBlob || !socket || socket.disconnected) return;
     const tempId = uuidv4();
 
     const blobUrl = URL.createObjectURL(recordedBlob);
@@ -495,8 +478,6 @@ export default function BusinessChatTab({
     };
     reader.readAsArrayBuffer(recordedBlob);
   };
-
-  const listRef = useRef(null);
 
   return (
     <div className="chat-container business">
