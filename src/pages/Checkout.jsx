@@ -49,11 +49,13 @@ export default function Checkout() {
       return;
     }
 
-    // במקום API.post – בונים <form> ושולחים אותו
+    // בונים <form> מוסתר ושולחים אותו בדפדפן
     const form = document.createElement("form");
     form.method = "POST";
     form.action = "/api/cardcom";
+    form.style.display = "none";
 
+    // השדות שהשרת מצפה להם
     const fields = {
       plan: planName,
       price: totalPrice,
@@ -70,7 +72,8 @@ export default function Checkout() {
 
     document.body.appendChild(form);
     form.submit();
-    // הדפדפן יעזוב את ה־SPA ויפנה לשרת, שקורא ל-CardCom ומחזיר HTML עם הפניה אוטומטית
+    // הדפדפן יבצע POST רגיל ל-/api/cardcom,
+    // וישתמש ב־AutoRedirect של CardCom כדי להעביר אוטומטית לדף הסליקה.
   };
 
   return (
@@ -83,7 +86,9 @@ export default function Checkout() {
         <p className="checkout-duration">
           משך המנוי: <strong>{duration} חודשים</strong>
         </p>
+
         {errorMessage && <p className="error-message">{errorMessage}</p>}
+
         <button
           className="pay-button"
           onClick={handlePayment}
@@ -97,6 +102,7 @@ export default function Checkout() {
             "💳 עבור לתשלום"
           )}
         </button>
+
         <button
           className="return-link"
           onClick={() => navigate("/plans")}
