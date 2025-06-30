@@ -2,7 +2,8 @@ import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import { NotificationsProvider } from "./context/NotificationsContext"; // <-- ייבוא ה־Provider החדש
+import { NotificationsProvider } from "./context/NotificationsContext";
+import { UnreadMessagesProvider } from "./context/UnreadMessagesContext"; // ייבוא ה-Provider הנוסף
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // ייבוא CSS ראשי — הכרחי לאנימציית spin
@@ -29,11 +30,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          {/* עטיפה ב־NotificationsProvider */}
           <NotificationsProvider user={user}>
-            <Suspense fallback={<div className="spinner"></div>}>
-              <App />
-            </Suspense>
+            <UnreadMessagesProvider>
+              <Suspense fallback={<div className="spinner"></div>}>
+                <App />
+              </Suspense>
+            </UnreadMessagesProvider>
           </NotificationsProvider>
         </AuthProvider>
       </QueryClientProvider>
