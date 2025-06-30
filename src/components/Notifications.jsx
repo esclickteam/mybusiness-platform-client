@@ -27,20 +27,23 @@ export default function Notifications({ onClose }) {
   };
 
   const formatDate = (ts) =>
-    new Date(ts).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });
+    new Date(ts).toLocaleString(undefined, {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
 
   return (
     <div
       style={{
         position: "absolute",
-        top: "40px",
-        right: "10px",
-        width: "320px",
-        maxHeight: "400px",
+        top: 40,
+        right: 10,
+        width: 320,
+        maxHeight: 400,
         overflowY: "auto",
         backgroundColor: "white",
         boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-        borderRadius: "8px",
+        borderRadius: 8,
         zIndex: 1000,
       }}
     >
@@ -51,7 +54,7 @@ export default function Notifications({ onClose }) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          fontWeight: "700",
+          fontWeight: 700,
         }}
       >
         התראות
@@ -87,8 +90,9 @@ export default function Notifications({ onClose }) {
           </>
         )}
       </div>
+
       {notifications.length === 0 ? (
-        <div style={{ padding: "15px", textAlign: "center" }}>אין התראות חדשות</div>
+        <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
         notifications.map((notif) => (
           <div
@@ -106,7 +110,12 @@ export default function Notifications({ onClose }) {
           >
             <div>{notif.text}</div>
             <div
-              style={{ fontSize: "0.75rem", color: "#666", opacity: 0.7, marginTop: 4 }}
+              style={{
+                fontSize: "0.75rem",
+                color: "#666",
+                opacity: 0.7,
+                marginTop: 4,
+              }}
             >
               {formatDate(notif.timestamp)}
             </div>

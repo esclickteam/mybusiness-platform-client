@@ -1,9 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
-import { NavLink, Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  useNavigate,
+  useParams,
+  useLocation
+} from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
-import { useSocket } from "../../context/socketContext";
-import { useUnreadMessages } from "../../context/UnreadMessagesContext";
+import { useNotifications } from "../context/NotificationsContext";
 import { useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
@@ -23,78 +28,60 @@ const tabs = [
 
 export default function BusinessDashboardLayout({ children }) {
   const { user, loading } = useAuth();
-  const socket = useSocket();
   const navigate = useNavigate();
   const { businessId } = useParams();
   const location = useLocation();
-
-  const { unreadCountsByConversation, updateMessagesCount, incrementMessagesCount } = useUnreadMessages();
   const queryClient = useQueryClient();
 
-  // prefetch
+  // צריכת Socket ותצוגת ספירת ההודעות הלא־נקראו מתוך הקונטקסט
+  const { socket, unreadMessagesCount } = useNotifications();
+  const unreadCount = unreadMessagesCount;
+
+  // prefetch של הנתונים
   useEffect(() => {
     if (!user?.businessId) return;
     queryClient.prefetchQuery(
-      ['business-profile', user.businessId],
-      () => API.get(`/business/${user.businessId}`).then(res => res.data)
+      ["business-profile", user.businessId],
+      () => API.get(`/business/${user.businessId}`).then((res) => res.data)
     );
     queryClient.prefetchQuery(
-      ['unread-messages', user.businessId],
-      () => API.get(`/messages/unread-count?businessId=${user.businessId}`).then(res => res.data)
+      ["unread-messages", user.businessId],
+      () =>
+        API.get(`/messages/unread-count?businessId=${user.businessId}`).then(
+          (res) => res.data
+        )
     );
     queryClient.prefetchQuery(
-      ['crm-appointments', user.businessId],
-      () => API.get(`/appointments/all-with-services?businessId=${user.businessId}`).then(res => res.data)
+      ["crm-appointments", user.businessId],
+      () =>
+        API.get(
+          `/appointments/all-with-services?businessId=${user.businessId}`
+        ).then((res) => res.data)
     );
   }, [user?.businessId, queryClient]);
 
-  const unreadCount = Object.values(unreadCountsByConversation).reduce((a, b) => a + b, 0);
+  // התאמת ניווט ברירת מחדל
+  useEffect(() => {
+    if (!loading && user?.role !== "business") {
+      navigate("/", { replace: true });
+      return;
+    }
+    const params = new URLSearchParams(location.search);
+    const tabQ = params.get("tab");
+    const tabS = location.state?.activeTab;
+    if (tabQ && tabs.some((t) => t.path === tabQ)) {
+      navigate(`./${tabQ}`, { replace: true });
+    } else if (tabS && tabs.some((t) => t.path === tabS)) {
+      navigate(`./${tabS}`, { replace: true });
+    }
+  }, [user, loading, location.search, location.state, navigate]);
 
+  // הגדרת מצב מובייל ותפריט צדדי
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
   const sidebarRef = useRef(null);
-  const hasResetUnreadCount = useRef(false);
 
-  // socket: new messages
-  useEffect(() => {
-    if (!socket) return;
-    const handleNew = data => data?.conversationId && incrementMessagesCount(data.conversationId);
-    socket.on("newClientMessageNotification", handleNew);
-    return () => socket.off("newClientMessageNotification", handleNew);
-  }, [socket, incrementMessagesCount]);
-
-  // socket: unread counts
-  useEffect(() => {
-    if (!socket) return;
-    const handleCounts = obj => {
-      if (!obj || typeof obj !== "object") return;
-      Object.entries(obj).forEach(([convId, count]) => updateMessagesCount(convId, count));
-    };
-    socket.on("unreadCountsByConversation", handleCounts);
-    return () => socket.off("unreadCountsByConversation", handleCounts);
-  }, [socket, updateMessagesCount]);
-
-  // mark read/reset
-  useEffect(() => {
-    if (!socket || !businessId) return;
-    if (location.pathname.includes("/messages")) {
-      hasResetUnreadCount.current = false;
-      const conv = location.state?.conversationId;
-      conv && socket.emit("markMessagesRead", conv, resp => {
-        resp.ok && updateMessagesCount(conv, 0);
-      });
-    } else if (!hasResetUnreadCount.current) {
-      setTimeout(() => {
-        if (!hasResetUnreadCount.current) {
-          Object.keys(unreadCountsByConversation).forEach(conv => updateMessagesCount(conv, 0));
-          hasResetUnreadCount.current = true;
-        }
-      }, 200);
-    }
-  }, [location.pathname, socket, businessId, updateMessagesCount, location.state, unreadCountsByConversation]);
-
-  // resize
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -105,36 +92,23 @@ export default function BusinessDashboardLayout({ children }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // auth + default tab
-  useEffect(() => {
-    if (!loading && user?.role !== "business") {
-      navigate("/", { replace: true });
-      return;
-    }
-    const params = new URLSearchParams(location.search);
-    const tabQ = params.get("tab");
-    const tabS = location.state?.activeTab;
-    if (tabQ && tabs.some(t => t.path === tabQ)) {
-      navigate(`./${tabQ}`, { replace: true });
-    } else if (tabS && tabs.some(t => t.path === tabS)) {
-      navigate(`./${tabS}`, { replace: true });
-    }
-  }, [user, loading, location.search, location.state, navigate]);
-
-  // focus trap mobile
+  // Trap focus במובייל
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
     const sel =
       'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const els = sidebarRef.current.querySelectorAll(sel);
     if (!els.length) return;
-    const first = els[0], last = els[els.length - 1];
-    const onKey = e => {
+    const first = els[0],
+      last = els[els.length - 1];
+    const onKey = (e) => {
       if (e.key === "Tab") {
         if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault(); last.focus();
+          e.preventDefault();
+          last.focus();
         } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault(); first.focus();
+          e.preventDefault();
+          first.focus();
         }
       }
       if (e.key === "Escape") setShowSidebar(false);
@@ -161,9 +135,11 @@ export default function BusinessDashboardLayout({ children }) {
                 <nav>
                   {user?.role === "business" && (
                     <NavLink
-                      to={`/business/${businessId}`}  // פרופיל ציבורי - מחוץ לדשבורד
+                      to={`/business/${businessId}`}
                       end={true}
-                      className={({ isActive }) => (isActive ? "active" : undefined)}
+                      className={({ isActive }) =>
+                        isActive ? "active" : undefined
+                      }
                     >
                       👀 צפייה בפרופיל ציבורי
                     </NavLink>
@@ -172,8 +148,13 @@ export default function BusinessDashboardLayout({ children }) {
                     <NavLink
                       key={path}
                       to={`/business/${businessId}/dashboard/${path}`}
-                      end={location.pathname === `/business/${businessId}/dashboard/${path}`}
-                      className={({ isActive }) => (isActive ? "active" : undefined)}
+                      end={
+                        location.pathname ===
+                        `/business/${businessId}/dashboard/${path}`
+                      }
+                      className={({ isActive }) =>
+                        isActive ? "active" : undefined
+                      }
                     >
                       {label}
                       {path === "messages" && unreadCount > 0 && (
@@ -205,14 +186,20 @@ export default function BusinessDashboardLayout({ children }) {
                 aria-label="סגור תפריט"
                 role="button"
                 tabIndex={0}
-                onKeyDown={e => { if (e.key === "Enter" || e.key === " ") setShowSidebar(false); }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setShowSidebar(false);
+                }}
               />
             )}
 
             {isMobile && (
               <button
-                onClick={() => setShowSidebar(prev => !prev)}
-                aria-label={showSidebar ? "סגור ניווט / חזור לדשבורד" : "פתח ניווט"}
+                onClick={() => setShowSidebar((prev) => !prev)}
+                aria-label={
+                  showSidebar
+                    ? "סגור ניווט / חזור לדשבורד"
+                    : "פתח ניווט"
+                }
                 style={{
                   position: "fixed",
                   top: 60,
@@ -235,8 +222,12 @@ export default function BusinessDashboardLayout({ children }) {
                   fontWeight: "600",
                 }}
               >
-                <span style={{ fontSize: 24 }}>{showSidebar ? "×" : "☰"}</span>
-                <span>{showSidebar ? "סגור ניווט" : "פתח ניווט"}</span>
+                <span style={{ fontSize: 24 }}>
+                  {showSidebar ? "×" : "☰"}
+                </span>
+                <span>
+                  {showSidebar ? "סגור ניווט" : "פתח ניווט"}
+                </span>
               </button>
             )}
 
@@ -250,7 +241,8 @@ export default function BusinessDashboardLayout({ children }) {
                 <Outlet
                   context={{
                     unreadCount,
-                    updateMessagesCount,
+                    // אם צריך להעביר פונקציות נוספות:
+                    // updateMessagesCount, incrementMessagesCount
                   }}
                 />
               )}
