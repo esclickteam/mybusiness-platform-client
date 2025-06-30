@@ -1,39 +1,16 @@
-import React, { useEffect, useState, useCallback, useContext } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { NotificationsContext } from "../context/NotificationsContext";
+import { useNotifications } from "../context/NotificationsContext";
 
-export default function Notifications({ socket, user, onClose, clearNotifications }) {
-  const { notifications, dispatch } = useContext(NotificationsContext);
+export default function Notifications({ onClose }) {
+  const { notifications, clearAllNotifications, clearReadNotifications } = useNotifications();
   const [localNotifications, setLocalNotifications] = useState([]);
   const navigate = useNavigate();
 
+  // סנכרון התראות מקונטקסט ל-local state
   useEffect(() => {
-    if (!user) return;
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    async function loadNotifications() {
-      try {
-        const res = await fetch("/api/business/my/notifications", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        if (data.ok) {
-          dispatch({ type: 'SET_NOTIFICATIONS', payload: data.notifications });
-          setLocalNotifications(data.notifications);
-        }
-      } catch (err) {
-        console.error("Failed to load notifications", err);
-      }
-    }
-    loadNotifications();
-  }, [user, dispatch]);
-
-  useEffect(() => {
-    if (!socket || !user?.businessId) return;
-    socket.emit("joinBusinessRoom", user.businessId);
-    console.log(`Requested joinBusinessRoom for business-${user.businessId}`);
-  }, [socket, user]);
+    setLocalNotifications(notifications);
+  }, [notifications]);
 
   const handler = useCallback(
     (data, event) => {
@@ -114,30 +91,14 @@ export default function Notifications({ socket, user, onClose, clearNotification
             targetUrl: data.targetUrl || "/",
           };
       }
-      dispatch({ type: 'ADD_NOTIFICATION', payload: newNotif });
+      // כאן במקום dispatch מוסיפים התראה חדשה ישירות בקונטקסט - צריך להתאים לפי מימוש הקונטקסט שלך
+      // לדוגמה: addNotification(newNotif);
       setLocalNotifications(prev => [newNotif, ...prev]);
     },
-    [dispatch]
+    []
   );
 
-  useEffect(() => {
-    if (!socket) return;
-    const events = [
-      "newNotification",
-      "reviewCreated",
-      "appointmentCreated",
-      "newMessage",
-      "profileViewsUpdated",
-      "dashboardUpdate",
-    ];
-    const handlers = events.map(event => {
-      const fn = data => handler(data, event);
-      socket.on(event, fn);
-      return { event, fn };
-    });
-    return () => handlers.forEach(({ event, fn }) => socket.off(event, fn));
-  }, [socket, handler]);
-
+  // סימון קריאה – תוכל לשלב קריאה לשרת ולעדכן קונטקסט במידת הצורך
   const markAsRead = async id => {
     try {
       const token = localStorage.getItem("token");
@@ -146,7 +107,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
         method: "PUT",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       });
-      dispatch({ type: 'MARK_AS_READ', payload: id });
       setLocalNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     } catch (err) {
       console.error("Failed to mark notification as read", err);
@@ -163,42 +123,6 @@ export default function Notifications({ socket, user, onClose, clearNotification
     }[notif.type] || "/";
     navigate(url);
     onClose();
-  };
-
-  const handleClearAll = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-      const res = await fetch("/api/business/my/notifications/readAll", {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      });
-      const data = await res.json();
-      if (data.ok) {
-        dispatch({ type: 'CLEAR_ALL' });
-        setLocalNotifications([]);
-      }
-    } catch (err) {
-      console.error("Failed to clear all notifications", err);
-    }
-  };
-
-  const handleClearRead = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-      const res = await fetch("/api/business/my/notifications/clearRead", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      });
-      const data = await res.json();
-      if (data.ok) {
-        dispatch({ type: 'CLEAR_READ' });
-        setLocalNotifications(prev => prev.filter(n => !n.read));
-      }
-    } catch (err) {
-      console.error("Failed to clear read notifications", err);
-    }
   };
 
   const formatDate = ts => new Date(ts).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" });
@@ -227,10 +151,10 @@ export default function Notifications({ socket, user, onClose, clearNotification
         התראות
         {localNotifications.length > 0 && (
           <>
-            <button onClick={handleClearRead} style={{ background: "none", border: "none", color: "#007bff", cursor: "pointer", fontSize: "0.9rem", marginLeft: 10 }} aria-label="נקה את כל ההתראות שכבר נקראו">
+            <button onClick={clearReadNotifications} style={{ background: "none", border: "none", color: "#007bff", cursor: "pointer", fontSize: "0.9rem", marginLeft: 10 }} aria-label="נקה את כל ההתראות שכבר נקראו">
               נקה נקראו
             </button>
-            <button onClick={handleClearAll} style={{ background: "none", border: "none", color: "#007bff", cursor: "pointer", fontSize: "0.9rem" }} aria-label="סמן את כל ההתראות כנקראות">
+            <button onClick={clearAllNotifications} style={{ background: "none", border: "none", color: "#007bff", cursor: "pointer", fontSize: "0.9rem" }} aria-label="סמן את כל ההתראות כנקראות">
               סמן כנקראות
             </button>
           </>
