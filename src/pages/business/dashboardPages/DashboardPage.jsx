@@ -107,6 +107,8 @@ const DashboardPage = () => {
   const location = useLocation();
   const queryClient = useQueryClient();
 
+  const { unreadMessagesCount, updateMessagesCount } = useNotifications();
+
   // 🟢 Guard: הפניה ל-checkout אם המשתמש לא שילם
   useEffect(() => {
     if (initialized && (!user || !user.hasPaid)) {
@@ -114,11 +116,10 @@ const DashboardPage = () => {
     }
   }, [initialized, user, navigate]);
 
-  const { updateMessagesCount, unreadCount } = useUnreadMessages();
-  const unreadCountRef = useRef(unreadCount);
+  const unreadCountRef = useRef(unreadMessagesCount);
   useEffect(() => {
-    unreadCountRef.current = unreadCount;
-  }, [unreadCount]);
+    unreadCountRef.current = unreadMessagesCount;
+  }, [unreadMessagesCount]);
 
   const today = new Date().toISOString().split("T")[0];
   const [selectedDate, setSelectedDate] = useState(today);
@@ -412,7 +413,7 @@ const DashboardPage = () => {
 
   const syncedStats = {
     ...effectiveStats,
-    messages_count: unreadCount,
+    messages_count: unreadMessagesCount,
   };
 
   const cardsRef = createRef();
@@ -496,7 +497,7 @@ const DashboardPage = () => {
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
         <div ref={cardsRef}>
-          <MemoizedDashboardCards stats={syncedStats} unreadCount={unreadCount} />
+          <MemoizedDashboardCards stats={syncedStats} unreadCount={unreadMessagesCount} />
         </div>
       </Suspense>
 
