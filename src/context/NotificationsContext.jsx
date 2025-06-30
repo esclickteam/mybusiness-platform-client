@@ -47,6 +47,25 @@ export function NotificationsProvider({ user, children }) {
     setNotifications((prev) => prev.filter(n => !n.read));
   }, []);
 
+  // סימון התראה כנקראה ועדכון סטייט
+  const markAsRead = useCallback(async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      await fetch(`/api/business/my/notifications/${id}/read`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+
+      setNotifications((prev) =>
+        prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif))
+      );
+    } catch (err) {
+      console.error("Failed to mark notification as read", err);
+    }
+  }, []);
+
   useEffect(() => {
     if (!user?.businessId || !user?.token) return;
 
@@ -120,7 +139,9 @@ export function NotificationsProvider({ user, children }) {
       profileViews,
       socket,
       clearAllNotifications,
-      clearReadNotifications
+      clearReadNotifications,
+      addNotification,
+      markAsRead,
     }}>
       {children}
     </NotificationsContext.Provider>
