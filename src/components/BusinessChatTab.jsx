@@ -44,9 +44,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
 
   return (
-    <div
-      className={`custom-audio-player ${userAvatar ? "with-avatar" : "no-avatar"}`}
-    >
+    <div className={`custom-audio-player ${userAvatar ? "with-avatar" : "no-avatar"}`}>
       {userAvatar && (
         <div className="avatar-wrapper">
           <img src={userAvatar} alt="avatar" />
@@ -164,88 +162,45 @@ export default function BusinessChatTab({
     });
   };
 
-  /*** ---------------------- הקלטת אודיו ----------------------- ***/
-  const [recording, setRecording] = useState(false);
-  const [recordedBlob, setRecordedBlob] = useState(null);
-  const [timer, setTimer] = useState(0);
-  const mediaRecorderRef = useRef(null);
-  const mediaStreamRef = useRef(null);
-  const recordedChunks = useRef([]);
-  const timerRef = useRef(null);
-  /*** --------------------------------------------------------- ***/
+  // פונקציה לטעינת ההיסטוריה מה-API REST
+  async function fetchMessagesByConversationId(conversationId, page = 0, limit = 50) {
+    try {
+      const res = await fetch(`/api/messages/${conversationId}/history?page=${page}&limit=${limit}`);
+      if (!res.ok) throw new Error("Network response was not ok");
+      const data = await res.json();
+      return data.messages.map(m => ({
+        ...m,
+        _id: String(m._id),
+        timestamp: m.createdAt || new Date().toISOString(),
+        text: m.text || "",
+        tempId: m.tempId || null,
+      }));
+    } catch (error) {
+      console.error("Failed to fetch messages:", error);
+      return [];
+    }
+  }
 
-  const listRef = useRef(null);
-
-  // אפקט ראשי עם fallback ל-REST במקרה ש־getHistory מחזיר 0 הודעות
+  // אפקט ראשי - טען היסטוריה מה-API REST
   useEffect(() => {
-    if (!socket || !conversationId) {
+    if (!conversationId) {
       dispatch({ type: "set", payload: [] });
       return;
     }
 
     let didCancel = false;
 
-    async function fetchHistory() {
-      socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
-        if (!ack.ok) console.error("joinConversation failed:", ack.error);
-      });
-
-      socket.emit("markMessagesRead", conversationId, (resp) => {
-        if (!resp.ok) console.error("markMessagesRead failed");
-      });
-
-      socket.emit("getHistory", { conversationId, conversationType }, async (res) => {
-        if (didCancel) return;
-
-        if (res.ok && res.messages.length > 0) {
-          const msgs = res.messages.map(m => ({
-            ...m,
-            _id: String(m._id),
-            timestamp: m.createdAt || new Date().toISOString(),
-            text: (m.text || m.content || "") === "0" ? "" : (m.text || m.content || ""),
-            fileUrl: m.fileUrl || m.file?.url || null,
-            fileType: m.fileType || m.file?.mimeType || null,
-            fileName: m.fileName || m.file?.name || "",
-            fileDuration: m.fileDuration ?? m.file?.duration ?? 0,
-            tempId: m.tempId || null,
-          }));
-          dispatch({ type: "set", payload: msgs });
-        } else {
-          // Fallback ל-REST GET /messages/:id
-          try {
-            const restRes = await fetch(`/messages/${conversationId}`);
-            const data = await restRes.json();
-            if (data && Array.isArray(data.messages)) {
-              const msgs = data.messages.map(m => ({
-                ...m,
-                _id: String(m._id),
-                timestamp: m.createdAt || new Date().toISOString(),
-                text: (m.text || m.content || "") === "0" ? "" : (m.text || m.content || ""),
-                fileUrl: m.fileUrl || m.file?.url || null,
-                fileType: m.fileType || m.file?.mimeType || null,
-                fileName: m.fileName || m.file?.name || "",
-                fileDuration: m.fileDuration ?? m.file?.duration ?? 0,
-                tempId: m.tempId || null,
-              }));
-              dispatch({ type: "set", payload: msgs });
-            } else {
-              dispatch({ type: "set", payload: [] });
-            }
-          } catch (err) {
-            console.error("REST getHistory failed", err);
-            dispatch({ type: "set", payload: [] });
-          }
-        }
-      });
+    async function loadMessages() {
+      const msgs = await fetchMessagesByConversationId(conversationId);
+      if (!didCancel) dispatch({ type: "set", payload: msgs });
     }
 
-    fetchHistory();
+    loadMessages();
 
     return () => {
       didCancel = true;
-      socket.emit("leaveConversation", conversationId, isBusinessConversation);
     };
-  }, [socket, conversationId, isBusinessConversation, conversationType]);
+  }, [conversationId]);
 
   // מאזין להודעות חדשות עם דה-דופליקציה ושמירת IDs כמחרוזות
   useEffect(() => {
@@ -254,7 +209,6 @@ export default function BusinessChatTab({
     const handleNew = (msg) => {
       if (msg.conversationId !== conversationId || msg.conversationType !== conversationType) return;
 
-      // המרת ID למחרוזת
       msg._id = String(msg._id);
 
       const exists = messagesRef.current.some(
@@ -377,7 +331,7 @@ export default function BusinessChatTab({
     const tempId = uuidv4();
 
     const blobUrl = URL.createObjectURL(file);
-    blobUrlsRef.current[tempId] = blobUrl; // שמירת ה-blobUrl לפי tempId
+    blobUrlsRef.current[tempId] = blobUrl;
 
     const optimistic = {
       _id: tempId,
@@ -439,6 +393,14 @@ export default function BusinessChatTab({
   }, [messages]);
 
   /** ----------------- הקלטת ושליחת הודעת קול ---------------- */
+  const [recording, setRecording] = useState(false);
+  const [recordedBlob, setRecordedBlob] = useState(null);
+  const [timer, setTimer] = useState(0);
+  const mediaRecorderRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+  const recordedChunks = useRef([]);
+  const timerRef = useRef(null);
+
   const startRecording = async () => {
     if (recording || !navigator.mediaDevices) return;
     try {
@@ -526,7 +488,8 @@ export default function BusinessChatTab({
     };
     reader.readAsArrayBuffer(recordedBlob);
   };
-  /** --------------------------------------------------------- */
+
+  const listRef = useRef(null);
 
   return (
     <div className="chat-container business">
