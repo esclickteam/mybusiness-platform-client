@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
+import API from "../api"; // axios עם token מוגדר מראש
 import "./BusinessChatTab.css";
 
 /**
@@ -162,13 +163,13 @@ export default function BusinessChatTab({
     });
   };
 
-  // פונקציה לטעינת ההיסטוריה מה-API REST
+  // טען היסטוריית הודעות מה-API עם axios שמכיל את הטוקן
   async function fetchMessagesByConversationId(conversationId, page = 0, limit = 50) {
     try {
-      const res = await fetch(`/api/messages/${conversationId}/history?page=${page}&limit=${limit}`);
-      if (!res.ok) throw new Error("Network response was not ok");
-      const data = await res.json();
-      return data.messages.map(m => ({
+      const res = await API.get(`/messages/${conversationId}/history`, {
+        params: { page, limit }
+      });
+      return res.data.messages.map(m => ({
         ...m,
         _id: String(m._id),
         timestamp: m.createdAt || new Date().toISOString(),
@@ -181,7 +182,7 @@ export default function BusinessChatTab({
     }
   }
 
-  // אפקט ראשי - טען היסטוריה מה-API REST
+  // אפקט ראשי לטעינת היסטוריה מהשרת
   useEffect(() => {
     if (!conversationId) {
       dispatch({ type: "set", payload: [] });
