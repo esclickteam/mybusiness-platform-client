@@ -1,4 +1,5 @@
 import React from "react";
+import UnreadBadge from "./UnreadBadge";
 import styles from "./ConversationsList.module.css";
 
 export default function ConversationsList({
@@ -7,7 +8,6 @@ export default function ConversationsList({
   selectedConversationId,
   onSelect,
   isBusiness,
-  unreadCountsByConversation = {},
 }) {
   if (conversations.length === 0) {
     return <div className={styles.noSelection}>עדיין אין שיחות</div>;
@@ -15,7 +15,6 @@ export default function ConversationsList({
 
   // מסננים כפילויות לפי partnerId
   const uniqueConvs = conversations.filter((conv, idx, arr) => {
-    // partnerId נקבע לפי סוג המשתמש
     const partnerId = isBusiness ? conv.clientId : conv.businessId;
     return (
       arr.findIndex((c) => {
@@ -46,8 +45,11 @@ export default function ConversationsList({
               onClick={() => onSelect(convoId, partnerId, displayName)}
               style={{ position: "relative" }}
             >
-              {displayName}
-              {/* מספר ההודעות הלא נקראות הוסר */}
+              <span>{displayName}</span>
+              {/* הוספת badge של הודעות לא נקראו */}
+              <div className={styles.badgeWrapper}>
+                <UnreadBadge conversationId={convoId} />
+              </div>
             </div>
           );
         })}

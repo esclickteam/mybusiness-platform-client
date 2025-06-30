@@ -1,42 +1,40 @@
+// src/socket.js
 import { io } from "socket.io-client";
 import { getUserRole } from "./utils/authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
-let socketInstance = null; // משתנה מחוץ לפונקציה לשמירת מופע יחיד
+let socketInstance = null; // מופע יחיד
 
+/**
+ * יוצר או מחזיר מופע Socket.IO קיים, עם אימות JWT והצטרפות לחדרים.
+ * @param {Function} getValidAccessToken - פונקציה אסינכרונית שמחזירה Access Token תקין
+ * @param {Function} onLogout - callback לביצוע logout במקרה של טוקן פג תוקף
+ * @param {string|null} businessId - מזהה העסק (נחוץ לתפקידים עסקיים)
+ */
 export async function createSocket(getValidAccessToken, onLogout, businessId = null) {
-  // אם כבר יש socket פעיל, מחזירים אותו
+  // reuse existing socket אם קיים ומחובר
   if (socketInstance && socketInstance.connected) {
     console.log("Reusing existing socket instance:", socketInstance.id);
     return socketInstance;
   }
 
   const token = await getValidAccessToken();
-
   if (!token) {
-    // alert("Session expired. Please log in again."); // לא להראות alert כאן, נעשה זאת בהמשך
-    if (onLogout) onLogout();
+    onLogout?.();
     return null;
   }
 
   const role = getUserRole();
-
-  console.log("createSocket() - detected role:", role);
-  console.log("createSocket() - received businessId:", businessId);
-
-  const rolesNeedingBusinessId = ["business", "business-dashboard"];
-  if (rolesNeedingBusinessId.includes(role) && !businessId) {
+  const rolesNeedingBiz = ["business", "business-dashboard"];
+  if (rolesNeedingBiz.includes(role) && !businessId) {
     console.error("❌ Missing businessId for role", role);
-    // alert("Missing business ID. Please log in again.");
-    if (onLogout) onLogout();
+    onLogout?.();
     return null;
   }
 
-  console.log("🔗 Connecting socket:", { SOCKET_URL, role, businessId: businessId || "(none)" });
-
-  const auth = { token, role };
-  if (businessId) auth.businessId = businessId;
+  console.log("🔗 Connecting socket:", { SOCKET_URL, role, businessId });
+  const auth = { token, role, ...(businessId && { businessId }) };
 
   socketInstance = io(SOCKET_URL, {
     path: "/socket.io",
@@ -52,92 +50,60 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
   socketInstance.connect();
 
+  // ברגע שמתחברים – מצטרפים לחדרים
   socketInstance.on("connect", () => {
     console.log("✅ Connected to WebSocket server. Socket ID:", socketInstance.id);
+
+    if (businessId) {
+      // חדר לקבלת התראות עסקיות ודשבורד
+      socketInstance.emit("joinBusinessRoom", businessId);
+      console.log(`Requested joinBusinessRoom for business-${businessId}`);
+    }
+
+    // אם סיימנו להצטרף לשיחה ספציפית
     if (socketInstance.conversationId) {
-      socketInstance.emit("joinConversation", socketInstance.conversationId, (ack) => {
-        if (!ack.ok) {
-          console.error("Failed to rejoin conversation:", ack.error);
-        } else {
-          console.log("Rejoined conversation after reconnect");
+      socketInstance.emit(
+        "joinConversation",
+        socketInstance.conversationId,
+        (ack) => {
+          if (!ack.ok) console.error("Failed to rejoin conversation:", ack.error);
+          else console.log("Rejoined conversation after reconnect");
         }
-      });
+      );
     }
   });
 
   socketInstance.on("disconnect", (reason) => {
     console.log("🔴 Disconnected from WebSocket server. Reason:", reason);
     if (reason === "io client disconnect") {
-      console.log("Socket manually disconnected.");
-      socketInstance = null; // איפוס המופע כשמתנתקים ידנית
-    } else {
-      console.log("Trying to reconnect...");
+      socketInstance = null; // איפוס כשמתנתקים ידנית
     }
   });
 
-  socketInstance.on("reconnect_attempt", (attempt) => {
-    console.log("🔄 Reconnect attempt:", attempt);
-  });
-
-  socketInstance.on("reconnect_error", (error) => {
-    console.error("❌ Reconnect error:", error);
-  });
-
-  socketInstance.on("reconnect_failed", () => {
-    console.error("❌ Reconnect failed");
-    alert("Failed to reconnect to server.");
-  });
-
+  // טיפול בתוקף הטוקן
   socketInstance.on("tokenExpired", async () => {
     console.log("🚨 Token expired. Attempting silent refresh...");
     const newToken = await getValidAccessToken();
     if (newToken) {
-      console.log("🔄 Token refreshed successfully, updating socket auth");
-
       socketInstance.auth.token = newToken;
       socketInstance.io.opts.auth.token = newToken;
-
       socketInstance.emit("authenticate", { token: newToken }, (ack) => {
-        if (ack && ack.ok) {
-          console.log("✅ Socket re-authenticated successfully");
-        } else {
-          console.warn("⚠ Socket re-authentication failed, disconnecting");
+        if (!ack.ok) {
           socketInstance.disconnect();
           socketInstance = null;
-          if (onLogout) onLogout();
+          onLogout?.();
         }
       });
     } else {
-      console.log("⚠ Token refresh failed, logging out");
-      if (onLogout) onLogout();
+      onLogout?.();
     }
   });
 
   socketInstance.on("connect_error", (err) => {
     console.error("❌ Socket connection error:", err.message);
-    alert("Connection failed: " + err.message);
-  });
-
-  socketInstance.on("connect_failed", () => {
-    console.error("❌ Socket connection failed");
-    alert("Failed to connect to server. Please try again.");
   });
 
   return socketInstance;
-}
-
-async function fetchConversationHistory(conversationId) {
-  try {
-    const response = await fetch(`/api/conversations/history?conversationId=${conversationId}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch conversation history");
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching conversation history:", error);
-    return [];
-  }
 }
 
 export default createSocket;
