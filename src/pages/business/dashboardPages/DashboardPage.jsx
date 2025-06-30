@@ -12,6 +12,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUnreadMessages } from "../../../context/UnreadMessagesContext";
 import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
