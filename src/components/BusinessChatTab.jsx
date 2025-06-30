@@ -276,45 +276,51 @@ export default function BusinessChatTab({
    * שליחת הודעת טקסט
    */
   const sendMessage = () => {
-    if (sending) return;
-    const text = input.trim();
-    if (!text || text === "0" || !socket) return;
+  if (sending) return;
+  const text = input.trim();
+  if (!text || text === "0" || !socket) {
+    console.warn("Cannot send message: invalid input or socket missing", { text, socket });
+    return;
+  }
 
-    setSending(true);
-    const tempId = uuidv4();
-    const optimistic = {
-      _id: tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      text,
-      timestamp: new Date().toISOString(),
-      sending: true,
-      tempId,
-    };
-    dispatch({ type: "append", payload: optimistic });
-    setInput("");
-
-    socket.emit(
-      "sendMessage",
-      { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
-      (ack) => {
-        setSending(false);
-
-        dispatch({
-          type: "updateStatus",
-          payload: {
-            id: tempId,
-            updates: {
-              ...(ack.message || {}),
-              sending: false,
-              failed: !ack.ok,
-            },
-          },
-        });
-      }
-    );
+  console.log("Sending message:", { conversationId, businessId, customerId, text });
+  setSending(true);
+  const tempId = uuidv4();
+  const optimistic = {
+    _id: tempId,
+    conversationId,
+    from: businessId,
+    to: customerId,
+    text,
+    timestamp: new Date().toISOString(),
+    sending: true,
+    tempId,
   };
+  dispatch({ type: "append", payload: optimistic });
+  setInput("");
+
+  socket.emit(
+    "sendMessage",
+    { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
+    (ack) => {
+      console.log("sendMessage ACK:", ack);
+      setSending(false);
+
+      dispatch({
+        type: "updateStatus",
+        payload: {
+          id: tempId,
+          updates: {
+            ...(ack.message || {}),
+            sending: false,
+            failed: !ack.ok,
+          },
+        },
+      });
+    }
+  );
+};
+
 
   /**
    * פתיחת דיאלוג בחירת קובץ
