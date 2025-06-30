@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import {
@@ -18,46 +18,18 @@ import {
   FaFileContract,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
-import { useSocket } from "../context/socketContext";
+import { useNotifications } from "../context/NotificationsContext";
 import "../styles/Header.css";
 import Notifications from "./Notifications";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
-  const socket = useSocket();
+  const { socket, notifications, unreadMessagesCount } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-
-  // מאזין לאירועים שונים ב-socket שמעדכנים את ההתראות בסטייט
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleNotification = (notification) => {
-      setNotifications((prev) => {
-        if (prev.some((n) => n.id === notification.id)) return prev; // מניעת כפילויות
-        return [notification, ...prev];
-      });
-    };
-
-    // מאזינים לאירועים רלוונטיים ומעבירים ל-handler אחיד
-    const events = [
-      "newNotification",
-      "reviewCreated",
-      "appointmentCreated",
-      "newProposalCreated",
-      "newMessage",
-    ];
-
-    events.forEach((event) => socket.on(event, handleNotification));
-
-    return () => {
-      events.forEach((event) => socket.off(event, handleNotification));
-    };
-  }, [socket]);
 
   if (loading) return null;
 
@@ -98,35 +70,12 @@ export default function Header() {
     setMenuOpen(false);
   };
 
-  // ספירת התראות שלא נקראו
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
   return (
     <>
-      <nav
-        className="app-header"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
-          className="menu-toggle"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            position: "relative",
-            right: 20,
-          }}
-        >
+      <nav className="app-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div className="menu-toggle" style={{ display: "flex", alignItems: "center", gap: "8px", position: "relative", right: 20 }}>
           {!menuOpen && (
-            <button
-              className="menu-button"
-              onClick={() => setMenuOpen(true)}
-              aria-label="תפריט ראשי"
-            >
+            <button className="menu-button" onClick={() => setMenuOpen(true)} aria-label="תפריט ראשי">
               <FaBars size={24} />
             </button>
           )}
@@ -137,38 +86,12 @@ export default function Header() {
                 className="notification-button"
                 onClick={() => setNotifOpen(!notifOpen)}
                 aria-label="התראות"
-                style={{
-                  fontSize: 24,
-                  position: "relative",
-                  cursor: "pointer",
-                  background: "none",
-                  border: "none",
-                  color: "inherit",
-                  padding: 4,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                style={{ fontSize: 24, position: "relative", cursor: "pointer", background: "none", border: "none", color: "inherit", padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}
               >
                 🔔
-                {unreadCount > 0 && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      background: "red",
-                      borderRadius: "50%",
-                      width: "16px",
-                      height: "16px",
-                      color: "white",
-                      fontSize: "12px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {unreadCount}
+                {unreadMessagesCount > 0 && (
+                  <span style={{ position: "absolute", top: 0, right: 0, background: "red", borderRadius: "50%", width: "16px", height: "16px", color: "white", fontSize: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {unreadMessagesCount}
                   </span>
                 )}
               </button>
@@ -178,9 +101,8 @@ export default function Header() {
                   socket={socket}
                   user={user}
                   notifications={notifications}
-                  setNotifications={setNotifications} 
                   onClose={() => setNotifOpen(false)}
-                  clearNotifications={() => setNotifications([])}
+                  clearNotifications={() => notifications.forEach(n => n.read = true)} // או לעדכן דרך dispatch
                 />
               )}
             </>
@@ -194,21 +116,13 @@ export default function Header() {
         </div>
 
         <div className="auth-controls desktop-only">
-          {!user && (
-            <Link to="/login" className="login-button">
-              התחברות
-            </Link>
-          )}
+          {!user && <Link to="/login" className="login-button">התחברות</Link>}
 
           {user && (
             <>
-              <button
-                className="personal-area-button"
-                onClick={() => navigate(getDashboardPath())}
-              >
+              <button className="personal-area-button" onClick={() => navigate(getDashboardPath())}>
                 לוח בקרה
               </button>
-
               <button className="logout-button" onClick={handleLogout}>
                 <FaSignOutAlt style={{ marginLeft: 6 }} />
                 התנתק
@@ -218,11 +132,10 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* ===== DRAWER ===== */}
+      {/* DRAWER */}
       {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
-
           <div className="side-menu open">
             <div className="drawer-header">
               <button className="back-button" onClick={() => setMenuOpen(false)}>
@@ -231,68 +144,48 @@ export default function Header() {
               </button>
             </div>
 
-            {!user && (
+            {!user ? (
               <div className="mobile-auth">
-                <Link
-                  to="/login"
-                  className="login-button"
-                  onClick={() => setMenuOpen(false)}
-                >
+                <Link to="/login" className="login-button" onClick={() => setMenuOpen(false)}>
                   התחברות
                 </Link>
               </div>
-            )}
-
-            <div className="menu-scroll">
-              {user && (
+            ) : (
+              <>  
                 <div className="menu-user">
                   <FaUserCircle size={20} />
                   <span>{user.name || user.email}</span>
                 </div>
-              )}
-
-              <div className="menu-section">
-                <h4>לעסקים</h4>
-                {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
-                {link("/how-it-works", <FaCogs />, "איך זה עובד")}
-              </div>
-
-              <div className="menu-section">
-                <h4>ללקוחות</h4>
-                {link("/businesses", <FaListUl />, "רשימת עסקים")}
-                {link("/categories", <FaTags />, "קטגוריות")}
-                {link("/search", <FaSearch />, "חיפוש מתקדם")}
-              </div>
-
-              <div className="menu-section">
-                <h4>כללי</h4>
-                {link("/", <FaHome />, "דף הבית")}
-                {link("/about", <FaInfoCircle />, "אודות")}
-                {link("/contact", <FaPhone />, "צור קשר")}
-                {link("/faq", <FaQuestionCircle />, "שאלות נפוצות")}
-                {link("/", <FaFileContract />, "תנאי שימוש")}
-                {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")}
-                {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")}
-              </div>
-            </div>
-
-            {user && (
-              <div className="auth-menu">
-                <button
-                  className="personal-area-button"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    navigate(getDashboardPath());
-                  }}
-                >
-                  אזור אישי
-                </button>
-
-                <button className="logout-button" onClick={handleLogout}>
-                  <FaSignOutAlt style={{ marginLeft: 6 }} />
-                  התנתק
-                </button>
-              </div>
+                <div className="menu-section">
+                  <h4>לעסקים</h4>
+                  {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
+                  {link("/how-it-works", <FaCogs />, "איך זה עובד")}
+                </div>
+                <div className="menu-section">
+                  <h4>ללקוחות</h4>
+                  {link("/businesses", <FaListUl />, "רשימת עסקים")}
+                  {link("/categories", <FaTags />, "קטגוריות")}
+                  {link("/search", <FaSearch />, "חיפוש מתקדם")}
+                </div>
+                <div className="menu-section">
+                  <h4>כללי</h4>
+                  {link("/", <FaHome />, "דף הבית")}
+                  {link("/about", <FaInfoCircle />, "אודות")}
+                  {link("/contact", <FaPhone />, "צור קשר")}
+                  {link("/faq", <FaQuestionCircle />, "שאלות נפוצות")}
+                  {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")}
+                  {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")}
+                </div>
+                <div className="auth-menu">
+                  <button className="personal-area-button" onClick={() => { setMenuOpen(false); navigate(getDashboardPath()); }}>
+                    אזור אישי
+                  </button>
+                  <button className="logout-button" onClick={handleLogout}>
+                    <FaSignOutAlt style={{ marginLeft: 6 }} />
+                    התנתק
+                  </button>
+                </div>
+              </>
             )}
           </div>
         </>
