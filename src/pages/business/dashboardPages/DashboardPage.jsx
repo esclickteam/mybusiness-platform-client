@@ -12,7 +12,6 @@ import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNotifications } from "../../../context/NotificationsContext";
 import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
@@ -107,24 +106,16 @@ const DashboardPage = () => {
   const location = useLocation();
   const queryClient = useQueryClient();
 
-  const { unreadMessagesCount, updateMessagesCount } = useNotifications();
-
-  // 🟢 Guard: הפניה ל-checkout אם המשתמש לא שילם
+  const { updateMessagesCount, unreadCount } = useUnreadMessages();
+  const unreadCountRef = useRef(unreadCount);
   useEffect(() => {
-    if (initialized && (!user || !user.hasPaid)) {
-      navigate("/checkout");
-    }
-  }, [initialized, user, navigate]);
-
-  const unreadCountRef = useRef(unreadMessagesCount);
-  useEffect(() => {
-    unreadCountRef.current = unreadMessagesCount;
-  }, [unreadMessagesCount]);
+    unreadCountRef.current = unreadCount;
+  }, [unreadCount]);
 
   const today = new Date().toISOString().split("T")[0];
-  const [selectedDate, setSelectedDate] = useState(today);
-  const [alert, setAlert] = useState(null);
-  const [recommendations, setRecommendations] = useState([]);
+const [selectedDate, setSelectedDate] = useState(today);
+const [alert, setAlert] = useState(null);
+const [recommendations, setRecommendations] = useState([]);
 
   const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
@@ -235,28 +226,28 @@ const DashboardPage = () => {
     let isMounted = true;
 
     async function setupSocket() {
-      const token = await refreshAccessToken();
-      if (!token) {
-        logout();
-        return;
-      }
-      const sock = await createSocket(refreshAccessToken, logout, businessId);
-      if (!sock || !isMounted) return;
-      socketRef.current = sock;
+  const token = await refreshAccessToken();
+  if (!token) {
+    logout();
+    return;
+  }
+  const sock = await createSocket(refreshAccessToken, logout, businessId);
+  if (!sock || !isMounted) return;
+  socketRef.current = sock;
 
-      sock.on("connect", () => {
-        console.log("Dashboard socket connected:", sock.id);
-        // הצטרפות לחדר העסק והדשבורד לקבלת עדכונים בזמן אמת
-        sock.emit("joinBusinessRoom", businessId);
-      });
+  sock.on("connect", () => {
+    console.log("Dashboard socket connected:", sock.id);
+    // הצטרפות לחדר העסק והדשבורד לקבלת עדכונים בזמן אמת
+    sock.emit("joinBusinessRoom", businessId);
+  });
 
-      sock.on("tokenExpired", async () => {
-        const newToken = await refreshAccessToken();
-        if (!newToken) {
-          alert("Session expired. Please log in again.");
-          logout();
-          return;
-        }
+  sock.on("tokenExpired", async () => {
+    const newToken = await refreshAccessToken();
+    if (!newToken) {
+      alert("Session expired. Please log in again.");
+      logout();
+      return;
+    }
         sock.auth.token = newToken;
         sock.emit("authenticate", { token: newToken }, (ack) => {
           if (!ack?.ok) {
@@ -269,17 +260,17 @@ const DashboardPage = () => {
       sock.on("dashboardUpdate", () => refetch());
 
       sock.on('profileViewsUpdated', (data) => {
-        console.log('profileViewsUpdated received:', data);
-        if (data && typeof data.views_count === 'number') {
-          queryClient.setQueryData(['dashboardStats', businessId], (old) => {
-            if (!old) return old;
-            return {
-              ...old,
-              views_count: data.views_count,
-            };
-          });
-        }
-      });
+  console.log('profileViewsUpdated received:', data); // להוסיף לוג לצורך בדיקה
+  if (data && typeof data.views_count === 'number') {
+    queryClient.setQueryData(['dashboardStats', businessId], (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        views_count: data.views_count,
+      };
+    });
+  }
+});
 
       sock.on("appointmentCreated", (newAppointment) => {
         if (newAppointment.business?.toString() !== businessId.toString()) return;
@@ -330,28 +321,29 @@ const DashboardPage = () => {
         });
       });
 
-      sock.on('allReviewsUpdated', (allReviews) => {
-        if (!businessId) return;
-        queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
-          if (!oldData) return oldData;
-          return {
-            ...oldData,
-            reviews: allReviews,
-            reviews_count: allReviews.length,
-          };
-        });
+  sock.on('allReviewsUpdated', (allReviews) => {
+      if (!businessId) return;
+      queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          reviews: allReviews,
+          reviews_count: allReviews.length,
+        };
       });
+    });
 
-      sock.on('reviewCreated', (reviewNotification) => {
-        console.log('ביקורת חדשה התקבלה:', reviewNotification);
-        queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
-          if (!oldData) return oldData;
-          return {
-            ...oldData,
-            reviews_count: (oldData.reviews_count || 0) + 1,
-          };
-        });
+    sock.on('reviewCreated', (reviewNotification) => {
+      console.log('ביקורת חדשה התקבלה:', reviewNotification);
+      queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          reviews_count: (oldData.reviews_count || 0) + 1,
+        };
       });
+    });
+
 
       sock.on("disconnect", (reason) => console.log("Dashboard socket disconnected:", reason));
       sock.on("connect_error", (err) => console.error("Socket connection error:", err));
@@ -413,7 +405,7 @@ const DashboardPage = () => {
 
   const syncedStats = {
     ...effectiveStats,
-    messages_count: unreadMessagesCount,
+    messages_count: unreadCount,
   };
 
   const cardsRef = createRef();
@@ -497,7 +489,7 @@ const DashboardPage = () => {
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
         <div ref={cardsRef}>
-          <MemoizedDashboardCards stats={syncedStats} unreadCount={unreadMessagesCount} />
+          <MemoizedDashboardCards stats={syncedStats} unreadCount={unreadCount} />
         </div>
       </Suspense>
 
