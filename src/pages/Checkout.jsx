@@ -29,18 +29,13 @@ export default function Checkout() {
     return (
       <div className="checkout-container error-container">
         <h2 className="error-message">❌ החבילה שבחרת אינה זמינה.</h2>
-        <button
-          className="return-link"
-          onClick={() => navigate("/plans")}
-        >
-          🔙 חזרה לעמוד החבילות
-        </button>
+        <button className="return-link" onClick={() => navigate("/plans")}>🔙 חזרה לעמוד החבילות</button>
       </div>
     );
   }
 
   const handlePayment = async () => {
-    if (processing) return; // הגנה כפולה
+    if (processing) return;
 
     setProcessing(true);
     setErrorMessage("");
@@ -67,15 +62,10 @@ export default function Checkout() {
     } catch (err) {
       console.error("❌ שגיאה בעת יצירת תשלום:", err);
 
-      // טיפול בשגיאת 429 (Rate Limit)
       if (err.response?.status === 429) {
-        setErrorMessage(
-          "⏳ נעשו יותר מדי ניסיונות תשלום. נסה שוב בעוד דקה."
-        );
+        setErrorMessage("⏳ נעשו יותר מדי ניסיונות תשלום. נסה שוב בעוד דקה.");
       } else {
-        setErrorMessage(
-          "❌ שגיאה בעת יצירת התשלום. לחץ 'נסה שוב' כדי לקבל קישור חדש."
-        );
+        setErrorMessage("❌ שגיאה בעת יצירת התשלום. לחץ 'נסה שוב' כדי לקבל קישור חדש.");
       }
     } finally {
       setProcessing(false);
@@ -92,9 +82,7 @@ export default function Checkout() {
         <p className="checkout-duration">
           משך המנוי: <strong>{duration} חודשים</strong>
         </p>
-        {errorMessage && (
-          <p className="error-message">{errorMessage}</p>
-        )}
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
         <button
           className="pay-button"
           onClick={handlePayment}
@@ -109,11 +97,7 @@ export default function Checkout() {
           )}
         </button>
         {errorMessage && !processing && (
-          <button
-            className="retry-link"
-            onClick={handlePayment}
-            style={{ marginTop: "1em" }}
-          >
+          <button className="retry-link" onClick={handlePayment} style={{ marginTop: "1em" }}>
             🔄 נסה שוב
           </button>
         )}
