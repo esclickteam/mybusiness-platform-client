@@ -13,161 +13,139 @@ export function NotificationsProvider({ user, children }) {
   const [notifications, setNotifications] = useState([]);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [profileViews, setProfileViews] = useState(0);
+  const [dashboardStats, setDashboardStats] = useState({
+    appointments_count: 0,
+    reviews_count: 0,
+    views_count: 0
+  });
   const [socket, setSocket] = useState(null);
 
-  // מוסיף התראה לרשימה אם זה לא כפול
-  const addNotification = useCallback((notification) => {
-    setNotifications((prev) => {
-      if (prev.some(n => n.id === notification.id || n._id === notification._id)) {
-        return prev;
-      }
-      return [notification, ...prev];
-    });
-  }, []);
-
-  // מסמן את כולן כנקראות ומאפס את המונה
-  const clearAllNotifications = useCallback(async () => {
-    try {
-      // אופציונלי: קריאה ל־API לסימון כולן כנקראות
-      // await fetch("/api/business/my/notifications/readAll", { method: "PUT", headers: … });
-    } catch (err) {
-      console.error("Failed to clear all notifications on server:", err);
-    }
-    setNotifications([]);
-    setUnreadMessagesCount(0);
-  }, []);
-
-  // מוחק רק את אלה שכבר סומנו כנקראו
-  const clearReadNotifications = useCallback(async () => {
-    try {
-      // אופציונלי: קריאה ל־API למחיקת התראות נקראו
-      // await fetch("/api/business/my/notifications/clearRead", { method: "DELETE", headers: … });
-    } catch (err) {
-      console.error("Failed to clear read notifications on server:", err);
-    }
-    setNotifications((prev) => prev.filter(n => !n.read));
+  // מוסיף התראה ייחודית
+  const addNotification = useCallback(notification => {
+    setNotifications(prev =>
+      prev.some(n => n.id === notification.id) ? prev : [notification, ...prev]
+    );
   }, []);
 
   // מסמן התראה בודדת כנקראה
-  const markAsRead = useCallback(async (id) => {
+  const markAsRead = useCallback(async id => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
       await fetch(`/api/business/my/notifications/${id}/read`, {
         method: "PUT",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
       });
-      setNotifications((prev) =>
-        prev.map((notif) =>
-          notif.id === id ? { ...notif, read: true } : notif
-        )
+      setNotifications(prev =>
+        prev.map(n => (n.id === id ? { ...n, read: true } : n))
       );
     } catch (err) {
       console.error("Failed to mark notification as read", err);
     }
   }, []);
 
+  // מוחק התראות שכבר נקראו
+  const clearReadNotifications = useCallback(() => {
+    setNotifications(prev => prev.filter(n => !n.read));
+  }, []);
+
+  // מאפס את כל ההתראות והמונה
+  const clearAllNotifications = useCallback(() => {
+    // אופציונלי: קריאה ל־API לסימון כולן כנקראות
+    setNotifications([]);
+    setUnreadMessagesCount(0);
+  }, []);
+
   useEffect(() => {
     if (!user?.businessId || !user?.token) return;
 
-    const socketConnection = io(import.meta.env.VITE_SOCKET_URL, {
+    const sock = io(import.meta.env.VITE_SOCKET_URL, {
       auth: { token: user.token, businessId: user.businessId },
-      path: "/socket.io",
-      transports: ["websocket"],
+      transports: ["websocket"]
     });
-    setSocket(socketConnection);
+    setSocket(sock);
 
-    // הצטרפות לחדר העסק
-    socketConnection.on("connect", () => {
-      socketConnection.emit("joinBusinessRoom", user.businessId);
+    // הצטרפות לחדר
+    sock.on("connect", () => {
+      sock.emit("joinBusinessRoom", user.businessId);
     });
-    socketConnection.on("connect_error", (err) => {
-      console.error("Socket connection error:", err.message);
+
+    // התראות ורענון מונה הודעות
+    sock.on("newNotification", addNotification);
+    sock.on("newMessage", data => {
+      addNotification({
+        id: data.id || Date.now(),
+        type: "message",
+        actorName: data.fromName || "משתמש",
+        text: data.content || "התקבלה הודעה חדשה",
+        read: false,
+        timestamp: data.timestamp || Date.now(),
+        targetUrl: "/messages"
+      });
+      setUnreadMessagesCount(c => c + 1);
+    });
+    sock.on("unreadMessagesCount", setUnreadMessagesCount);
+
+    // עדכון צפיות בפרופיל
+    sock.on("profileViewsUpdated", data => {
+      const views = data.views_count ?? data;
+      setProfileViews(views);
+      setDashboardStats(prev => ({ ...prev, views_count: views }));
+    });
+
+    // עדכוני דשבורד לפגישות וביקורות
+    sock.on("appointmentCreated", () => {
+      setDashboardStats(prev => ({
+        ...prev,
+        appointments_count: prev.appointments_count + 1
+      }));
+    });
+    sock.on("reviewCreated", () => {
+      setDashboardStats(prev => ({
+        ...prev,
+        reviews_count: prev.reviews_count + 1
+      }));
+    });
+    sock.on("dashboardUpdate", stats => {
+      setDashboardStats({
+        appointments_count: stats.appointments_count,
+        reviews_count: stats.reviews_count,
+        views_count: stats.views_count
+      });
     });
 
     // טעינת התראות ראשונית מה־API
     fetch("/api/business/my/notifications", {
-      headers: { Authorization: `Bearer ${user.token}` },
+      headers: { Authorization: `Bearer ${user.token}` }
     })
       .then(res => res.json())
       .then(data => {
-        if (data.ok) {
-          setNotifications(data.notifications);
-        }
+        if (data.ok) setNotifications(data.notifications);
       })
-      .catch(err => console.error("Failed to fetch notifications:", err));
-
-    // האזנה לאירועים בזמן אמת
-    const events = [
-      "newNotification",
-      "reviewCreated",
-      "appointmentCreated",
-      "newProposalCreated",
-      "newMessage",
-      "unreadMessagesCount",
-      "profileViewsUpdated",
-      "dashboardUpdate",
-    ];
-
-    events.forEach(event => {
-      socketConnection.on(event, (data) => {
-        switch (event) {
-          case "unreadMessagesCount":
-            // עדכון ספירת הודעות שלא נקראו
-            setUnreadMessagesCount(data);
-            break;
-
-          case "profileViewsUpdated":
-            // עדכון צפיות בפרופיל
-            setProfileViews(data.views_count ?? data);
-            break;
-
-          case "newMessage":
-            // התראה על הודעה חדשה מהלקוח
-            addNotification({
-              id: data.id || data._id || Date.now(),
-              type: "message",
-              actorName: data.fromName || "משתמש",
-              text: data.content || "התקבלה הודעה חדשה",
-              read: false,
-              timestamp: data.timestamp || Date.now(),
-              targetUrl: "/messages",
-            });
-            // הגדלת המונה
-            setUnreadMessagesCount(count => count + 1);
-            break;
-
-          case "newNotification":
-          case "reviewCreated":
-          case "appointmentCreated":
-          case "newProposalCreated":
-            // התראות כלליות
-            addNotification(data);
-            break;
-
-          default:
-            // dashboardUpdate או אירועים אחרים – ניתן להרחיב
-            break;
-        }
-      });
-    });
+      .catch(console.error);
 
     return () => {
-      socketConnection.disconnect();
+      sock.disconnect();
     };
   }, [user, addNotification]);
 
   return (
-    <NotificationsContext.Provider value={{
-      notifications,
-      unreadMessagesCount,
-      profileViews,
-      socket,
-      clearAllNotifications,
-      clearReadNotifications,
-      markAsRead,
-      addNotification
-    }}>
+    <NotificationsContext.Provider
+      value={{
+        notifications,
+        unreadMessagesCount,
+        profileViews,
+        dashboardStats,
+        socket,
+        addNotification,
+        markAsRead,
+        clearReadNotifications,
+        clearAllNotifications
+      }}
+    >
       {children}
     </NotificationsContext.Provider>
   );
