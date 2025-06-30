@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
-import { useNotifications } from "../context/NotificationsContext";
+import { useNotifications } from "../../context/NotificationsContext";
 import { useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
