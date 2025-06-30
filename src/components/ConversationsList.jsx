@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import UnreadBadge from "./UnreadBadge";
 import styles from "./ConversationsList.module.css";
 import socket from "../socket"; // נניח שיש לכם instance של socket.io מחובר
