@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 import API from "../api"; // axios עם token מוגדר מראש
-import { useSocket } from "../contexts/SocketContext"; 
+import { useSocket } from "../context/socketContext";
 import "./BusinessChatTab.css";
 
 /**
