@@ -9,10 +9,19 @@ export default function Notifications({ onClose }) {
     clearReadNotifications,
     markAsRead,
   } = useNotifications();
+
   const navigate = useNavigate();
 
+  console.log("[Notifications] Rendered with notifications:", notifications);
+
   const handleClick = (notif) => {
-    if (!notif.read) markAsRead(notif.id);
+    console.log("[Notifications] Clicked notification:", notif);
+
+    if (!notif.read) {
+      console.log(`[Notifications] Marking notification ${notif.id} as read`);
+      markAsRead(notif.id);
+    }
+
     const url =
       notif.targetUrl ||
       {
@@ -22,6 +31,7 @@ export default function Notifications({ onClose }) {
         review: "/reviews",
       }[notif.type] ||
       "/";
+    console.log(`[Notifications] Navigating to ${url}`);
     navigate(url);
     onClose();
   };
@@ -61,7 +71,10 @@ export default function Notifications({ onClose }) {
         {notifications.length > 0 && (
           <>
             <button
-              onClick={clearReadNotifications}
+              onClick={() => {
+                console.log("[Notifications] Clearing read notifications");
+                clearReadNotifications();
+              }}
               style={{
                 background: "none",
                 border: "none",
@@ -75,7 +88,10 @@ export default function Notifications({ onClose }) {
               נקה נקראו
             </button>
             <button
-              onClick={clearAllNotifications}
+              onClick={() => {
+                console.log("[Notifications] Clearing all notifications");
+                clearAllNotifications();
+              }}
               style={{
                 background: "none",
                 border: "none",
