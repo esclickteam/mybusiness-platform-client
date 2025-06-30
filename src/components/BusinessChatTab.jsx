@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useReducer
-} from "react";
+import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./BusinessChatTab.css";
 
@@ -138,6 +133,9 @@ export default function BusinessChatTab({
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  // Ref לשמירת מיפוי blobUrls לפי tempId, לניהול שחרור זיכרון
+  const blobUrlsRef = useRef({});
 
   /**
    * פונקציית עזר לפורמט שעה
@@ -376,6 +374,7 @@ export default function BusinessChatTab({
     const tempId = uuidv4();
 
     const blobUrl = URL.createObjectURL(file);
+    blobUrlsRef.current[tempId] = blobUrl; // שמירת ה-blobUrl לפי tempId
 
     const optimistic = {
       _id: tempId,
@@ -410,10 +409,7 @@ export default function BusinessChatTab({
         (ack) => {
           console.log("[sendFile] ack received:", ack);
 
-          // ביטול כתובת blob כדי לשחרר זיכרון
-          if (blobUrl.startsWith("blob:")) {
-            URL.revokeObjectURL(blobUrl);
-          }
+          // לא משחררים כאן - נעשה בשלב הבא אחרי עדכון ההודעה
 
           dispatch({
             type: "updateStatus",
@@ -431,6 +427,20 @@ export default function BusinessChatTab({
     };
     reader.readAsArrayBuffer(file);
   };
+
+  // useEffect לניטור שינויים בהודעות ושחרור זיכרון blob כשהכתובת מתחלפת
+  useEffect(() => {
+    Object.entries(blobUrlsRef.current).forEach(([tempId, blobUrl]) => {
+      const msg = messages.find(
+        (m) => (m.tempId === tempId || m._id === tempId) && m.fileUrl !== blobUrl
+      );
+      if (msg) {
+        // כתובת הודעה עודכנה לכתובת אמיתית, משחררים את ה-blob
+        URL.revokeObjectURL(blobUrl);
+        delete blobUrlsRef.current[tempId];
+      }
+    });
+  }, [messages]);
 
   /** ----------------- הקלטת ושליחת הודעת קול ---------------- */
   const startRecording = async () => {
@@ -482,6 +492,7 @@ export default function BusinessChatTab({
     console.log("[sendRecording] Sending audio message:", tempId);
 
     const blobUrl = URL.createObjectURL(recordedBlob);
+    blobUrlsRef.current[tempId] = blobUrl; // שמירת ה-blobUrl לפי tempId
 
     const optimistic = {
       _id: tempId,
@@ -517,7 +528,7 @@ export default function BusinessChatTab({
         (ack) => {
           console.log("[sendAudio] Ack received:", ack);
 
-          if (blobUrl.startsWith("blob:")) URL.revokeObjectURL(blobUrl);
+          // לא משחררים כאן - נעשה ב-useEffect לאחר עדכון ההודעה
 
           dispatch({
             type: "updateStatus",
@@ -622,7 +633,7 @@ export default function BusinessChatTab({
               </>
             ) : (
               <>
-                <audio src={blobUrl} controls />
+                <audio src={blobUrlsRef.current[recordedBlob?.tempId] || ""} controls />
                 <div>{`משך: ${Math.floor(timer / 60)}:${(timer % 60)
                   .toString()
                   .padStart(2, "0")}`}</div>
