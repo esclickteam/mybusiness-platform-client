@@ -54,9 +54,14 @@ export default function Login() {
 
       if (redirectUrl) {
         navigate(redirectUrl, { replace: true });
+      } else if (loggedInUser?.role === "business" && loggedInUser?.hasPaid === true) {
+        // משתמש עסק ששילם - להפנות לדשבורד העסקים
+        navigate("/business-dashboard", { replace: true });
       } else if (loggedInUser?.role === "business") {
+        // משתמש עסק שלא שילם - להפנות לעמוד תכניות / חבילות
         navigate("/plans", { replace: true });
       } else {
+        // משתמש רגיל
         navigate("/client/dashboard", { replace: true });
       }
     } catch (err) {
