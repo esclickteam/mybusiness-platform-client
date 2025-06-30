@@ -301,19 +301,25 @@ export default function BusinessChatTab({
     setInput("");
 
     socket.emit(
-      "sendMessage",
-      { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
-      (ack) => {
-        setSending(false);
-        console.log("[sendMessage] ack received", ack);
-        dispatch({
-          type: "updateStatus",
-          payload: {
-            id: tempId,
-            updates: {
-              ...(ack.message || {}),
-              sending: false,
-              failed: !ack.ok,
+  "sendMessage",
+  { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
+  (ack) => {
+    setSending(false);
+    console.log("[sendMessage] ack received", ack);
+
+    // הוספת דיבאג: האם יש fileUrl ומה tempId?
+    console.log("ack.message?.fileUrl =", ack.message?.fileUrl);
+    console.log("ack.message?.tempId =", ack.message?.tempId);
+    console.log("tempId (client) =", tempId);
+
+    dispatch({
+      type: "updateStatus",
+      payload: {
+        id: tempId,
+        updates: {
+          ...(ack.message || {}),
+          sending: false,
+          failed: !ack.ok,
             },
           },
         });
