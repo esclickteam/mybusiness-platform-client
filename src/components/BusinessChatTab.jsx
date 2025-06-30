@@ -202,33 +202,32 @@ export default function BusinessChatTab({
     });
 
     socket.emit(
-  "getHistory",
-  { conversationId, conversationType },
-  (res) => {
-    if (res.ok) {
-      console.log("[getHistory] received messages count:", res.messages.length);
-      const msgs = (res.messages || []).map((m) => {
-        let text = m.text || m.content || "";
-        if (text === "0") text = "";
-        return {
-          ...m,
-          timestamp: m.createdAt || new Date().toISOString(),
-          text,
-          fileUrl: m.file?.url ?? m.fileUrl ?? null,
-          fileType: m.file?.type ?? m.fileType ?? null,
-          fileName: m.file?.name ?? m.fileName ?? "",
-          fileDuration: m.file?.duration ?? m.fileDuration ?? 0,
-          tempId: m.tempId || null,
-        };
-      });
-      dispatch({ type: "set", payload: msgs });
-    } else {
-      console.error("getHistory failed:", res.error);
-      dispatch({ type: "set", payload: [] });
-    }
-  }
-);
-
+      "getHistory",
+      { conversationId, conversationType },
+      (res) => {
+        if (res.ok) {
+          console.log("[getHistory] received messages count:", res.messages.length);
+          const msgs = (res.messages || []).map((m) => {
+            let text = m.text || m.content || "";
+            if (text === "0") text = ""; // למנוע הצגת "0"
+            return {
+              ...m,
+              timestamp: m.createdAt || new Date().toISOString(),
+              text,
+              fileUrl: m.fileUrl || m.file?.url || null,
+              fileType: m.fileType || m.file?.mimeType || null,
+              fileName: m.fileName || m.file?.name || "",
+              fileDuration: m.fileDuration ?? m.file?.duration ?? 0,
+              tempId: m.tempId || null,
+            };
+          });
+          dispatch({ type: "set", payload: msgs });
+        } else {
+          console.error("getHistory failed:", res.error);
+          dispatch({ type: "set", payload: [] });
+        }
+      }
+    );
 
     return () => {
       console.log("[useEffect] leaving conversation", conversationId);
@@ -240,66 +239,64 @@ export default function BusinessChatTab({
    * מאזין להודעות נכנסות והקלדה
    */
   useEffect(() => {
-  if (!socket) return;
+    if (!socket) return;
 
-  const handleNew = (msg) => {
-    console.log("[socket] newMessage received:", msg);
-    if (msg.conversationId !== conversationId || msg.conversationType !== conversationType) {
-      return;
-    }
+    const handleNew = (msg) => {
+      console.log("[socket] newMessage received:", msg);
+      if (msg.conversationId !== conversationId || msg.conversationType !== conversationType) {
+        return;
+      }
 
-    const exists = messagesRef.current.some(
-      (m) =>
-        m._id === msg._id ||
-        (msg.tempId && m.tempId === msg.tempId) ||
-        // התאמה צולבת: tempId ←→ _id
-        (m.tempId && msg._id && m.tempId === msg._id)
-    );
-    if (exists) {
-      console.log("[socket] message already exists, ignoring");
-      return;
-    }
+      const exists = messagesRef.current.some(
+        (m) =>
+          m._id === msg._id ||
+          (msg.tempId && m.tempId === msg.tempId) ||
+          // התאמה צולבת: tempId ←→ _id
+          (m.tempId && msg._id && m.tempId === msg._id)
+      );
+      if (exists) {
+        console.log("[socket] message already exists, ignoring");
+        return;
+      }
 
-    const raw = msg.text || msg.content || "";
-    const text = raw === "0" ? "" : raw;
+      const raw = msg.text || msg.content || "";
+      const text = raw === "0" ? "" : raw;
 
-    // סדר עדיפות: file.* קודם, אח"כ שדות ישנים
-    const safeMsg = {
-      ...msg,
-      timestamp: msg.createdAt || new Date().toISOString(),
-      text,
-      fileUrl: msg.file?.url ?? msg.fileUrl ?? null,
-      fileType: msg.file?.type ?? msg.fileType ?? null,
-      fileName: msg.file?.name ?? msg.fileName ?? "",
-      fileDuration: msg.file?.duration ?? msg.fileDuration ?? 0,
-      tempId: msg.tempId || null,
+      const safeMsg = {
+        ...msg,
+        timestamp: msg.createdAt || new Date().toISOString(),
+        text,
+        fileUrl: msg.fileUrl || msg.file?.url || null,
+        fileType: msg.fileType || msg.file?.mimeType || null,
+        fileName: msg.fileName || msg.file?.name || "",
+        fileDuration: msg.fileDuration ?? msg.file?.duration ?? 0,
+        tempId: msg.tempId || null,
+      };
+
+      console.log("[socket] dispatching append for new message");
+      dispatch({ type: "append", payload: safeMsg });
     };
 
-    console.log("[socket] dispatching append for new message");
-    dispatch({ type: "append", payload: safeMsg });
-  };
+    const handleTyping = ({ from }) => {
+      if (from !== customerId) return;
+      console.log("[socket] typing event from customer");
+      setIsTyping(true);
+      clearTimeout(handleTyping._t);
+      handleTyping._t = setTimeout(() => {
+        setIsTyping(false);
+        console.log("[socket] typing timeout cleared");
+      }, 1800);
+    };
 
-  const handleTyping = ({ from }) => {
-    if (from !== customerId) return;
-    console.log("[socket] typing event from customer");
-    setIsTyping(true);
-    clearTimeout(handleTyping._t);
-    handleTyping._t = setTimeout(() => {
-      setIsTyping(false);
-      console.log("[socket] typing timeout cleared");
-    }, 1800);
-  };
+    socket.on("newMessage", handleNew);
+    socket.on("typing", handleTyping);
 
-  socket.on("newMessage", handleNew);
-  socket.on("typing", handleTyping);
-
-  return () => {
-    socket.off("newMessage", handleNew);
-    socket.off("typing", handleTyping);
-    clearTimeout(handleTyping._t);
-  };
-}, [socket, conversationId, customerId, conversationType]);
-
+    return () => {
+      socket.off("newMessage", handleNew);
+      socket.off("typing", handleTyping);
+      clearTimeout(handleTyping._t);
+    };
+  }, [socket, conversationId, customerId, conversationType]);
 
   /**
    * גלילה אוטומטית כאשר מגיעה הודעה חדשה
