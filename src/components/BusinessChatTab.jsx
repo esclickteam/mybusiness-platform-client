@@ -73,8 +73,10 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
+      console.log("[messagesReducer] set messages", action.payload);
       return action.payload;
     case "append": {
+      console.log("[messagesReducer] append message", action.payload);
       const idx = state.findIndex(
         (m) =>
           (m._id && m._id === action.payload._id) ||
@@ -83,11 +85,13 @@ function messagesReducer(state, action) {
       if (idx !== -1) {
         const next = [...state];
         next[idx] = { ...next[idx], ...action.payload };
+        console.log("[messagesReducer] updated existing message at index", idx);
         return next;
       }
       return [...state, action.payload];
     }
     case "updateStatus":
+      console.log("[messagesReducer] updateStatus", action.payload);
       return state.map((m) =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
@@ -143,16 +147,20 @@ export default function BusinessChatTab({
   // טוען היסטוריה בפעם ראשונה
   useEffect(() => {
     if (!socket || !conversationId) {
+      console.log("[useEffect] No socket or conversationId, clearing messages");
       dispatch({ type: "set", payload: [] });
       return;
     }
 
+    console.log("[useEffect] joining conversation", conversationId);
     socket.emit("joinConversation", conversationId, isBusinessConversation, (ack) => {
       if (!ack.ok) console.error("joinConversation failed:", ack.error);
+      else console.log("joinConversation success");
     });
 
     socket.emit("markMessagesRead", conversationId, (resp) => {
       if (!resp.ok) console.error("markMessagesRead failed");
+      else console.log("markMessagesRead success");
     });
 
     socket.emit(
@@ -160,6 +168,7 @@ export default function BusinessChatTab({
       { conversationId, conversationType },
       (res) => {
         if (res.ok) {
+          console.log("[getHistory] received messages count:", res.messages.length);
           const msgs = (res.messages || []).map((m) => {
             let text = m.text || m.content || "";
             if (text === "0") text = ""; // למנוע הצגת "0"
@@ -183,6 +192,7 @@ export default function BusinessChatTab({
     );
 
     return () => {
+      console.log("[useEffect] leaving conversation", conversationId);
       socket.emit("leaveConversation", conversationId, isBusinessConversation);
     };
   }, [socket, conversationId, isBusinessConversation, conversationType]);
@@ -192,6 +202,7 @@ export default function BusinessChatTab({
     if (!socket) return;
 
     const handleNew = (msg) => {
+      console.log("[socket] newMessage received:", msg);
       if (
         msg.conversationId === conversationId &&
         msg.conversationType === conversationType
@@ -199,7 +210,10 @@ export default function BusinessChatTab({
         const exists = messagesRef.current.some(
           (m) => m._id === msg._id || (msg.tempId && m.tempId === msg.tempId)
         );
-        if (exists) return;
+        if (exists) {
+          console.log("[socket] message already exists, ignoring");
+          return;
+        }
 
         const raw = msg.text || msg.content || "";
         const text = raw === "0" ? "" : raw;
@@ -215,15 +229,20 @@ export default function BusinessChatTab({
           tempId: msg.tempId || null,
         };
 
+        console.log("[socket] dispatching append for new message");
         dispatch({ type: "append", payload: safeMsg });
       }
     };
 
     const handleTyping = ({ from }) => {
       if (from === customerId) {
+        console.log("[socket] typing event from customer");
         setIsTyping(true);
         clearTimeout(handleTyping._t);
-        handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
+        handleTyping._t = setTimeout(() => {
+          setIsTyping(false);
+          console.log("[socket] typing timeout cleared");
+        }, 1800);
       }
     };
 
@@ -243,18 +262,28 @@ export default function BusinessChatTab({
     if (!el) return;
     const nearBottom =
       el.scrollHeight - el.scrollTop - el.clientHeight < 100;
-    if (nearBottom) el.scrollTop = el.scrollHeight;
+    if (nearBottom) {
+      console.log("[scroll] scrolling to bottom");
+      el.scrollTop = el.scrollHeight;
+    }
   }, [messages, isTyping]);
 
   const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
+    console.log("[handleInput] typing emitted");
   };
 
   const sendMessage = () => {
-    if (sending) return;
+    if (sending) {
+      console.log("[sendMessage] already sending, ignoring");
+      return;
+    }
     const text = input.trim();
-    if (!text || text === "0" || !socket) return;
+    if (!text || text === "0" || !socket) {
+      console.log("[sendMessage] invalid text or no socket", { text });
+      return;
+    }
     setSending(true);
     const tempId = uuidv4();
     const optimistic = {
@@ -267,6 +296,7 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
+    console.log("[sendMessage] dispatching optimistic message", optimistic);
     dispatch({ type: "append", payload: optimistic });
     setInput("");
 
@@ -275,6 +305,7 @@ export default function BusinessChatTab({
       { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
       (ack) => {
         setSending(false);
+        console.log("[sendMessage] ack received", ack);
         dispatch({
           type: "updateStatus",
           payload: {
@@ -291,12 +322,16 @@ export default function BusinessChatTab({
   };
 
   const handleAttach = () => {
+    console.log("[handleAttach] opening file dialog");
     fileInputRef.current?.click();
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file || !socket) return;
+    if (!file || !socket) {
+      console.log("[handleFileChange] no file or no socket");
+      return;
+    }
     const tempId = uuidv4();
 
     const optimistic = {
@@ -311,10 +346,12 @@ export default function BusinessChatTab({
       sending: true,
       tempId,
     };
+    console.log("[handleFileChange] dispatching optimistic file message", optimistic);
     dispatch({ type: "append", payload: optimistic });
 
     const reader = new FileReader();
     reader.onload = () => {
+      console.log("[handleFileChange] emitting sendFile");
       socket.emit(
         "sendFile",
         {
@@ -328,6 +365,7 @@ export default function BusinessChatTab({
           conversationType,
         },
         (ack) => {
+          console.log("[sendFile] ack received:", ack);
           dispatch({
             type: "updateStatus",
             payload: {
@@ -346,7 +384,10 @@ export default function BusinessChatTab({
   };
 
   const startRecording = async () => {
-    if (recording || !navigator.mediaDevices) return;
+    if (recording || !navigator.mediaDevices) {
+      console.log("[startRecording] already recording or no mediaDevices");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -364,6 +405,7 @@ export default function BusinessChatTab({
             type: recorder.mimeType,
           })
         );
+        console.log("[startRecording] recorder stopped, blob ready");
       };
       recorder.start();
       mediaRecorderRef.current = recorder;
@@ -391,7 +433,10 @@ export default function BusinessChatTab({
   };
 
   const sendRecording = () => {
-    if (!recordedBlob || !socket) return;
+    if (!recordedBlob || !socket) {
+      console.log("[sendRecording] no recording or no socket");
+      return;
+    }
     const tempId = uuidv4();
     console.log("[sendRecording] Sending audio message:", tempId);
     const optimistic = {
@@ -412,6 +457,7 @@ export default function BusinessChatTab({
 
     const reader = new FileReader();
     reader.onload = () => {
+      console.log("[sendRecording] emitting sendAudio");
       socket.emit(
         "sendAudio",
         {
@@ -477,11 +523,19 @@ export default function BusinessChatTab({
                     duration={m.fileDuration}
                   />
                 ) : m.fileType?.startsWith("image") ? (
-                  <img
-                    src={m.fileUrl}
-                    alt={m.fileName}
-                    style={{ maxWidth: 200, borderRadius: 8 }}
-                  />
+                  <>
+                    <img
+                      src={m.fileUrl}
+                      alt={m.fileName}
+                      style={{ maxWidth: 200, borderRadius: 8 }}
+                      onError={() =>
+                        console.error("[img] failed to load", m.fileUrl)
+                      }
+                    />
+                    <div style={{ fontSize: 10, color: "#888" }}>
+                      URL: {m.fileUrl}
+                    </div>
+                  </>
                 ) : (
                   <a href={m.fileUrl} download>
                     {m.fileName}
