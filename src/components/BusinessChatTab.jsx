@@ -145,6 +145,7 @@ export default function BusinessChatTab({
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const fileInputRef = useRef(null);
+  const blobUrlsRef = useRef({});
 
   const isBusinessConversation = conversationType === "business-business";
 
