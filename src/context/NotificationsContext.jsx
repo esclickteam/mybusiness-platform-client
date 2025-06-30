@@ -6,10 +6,12 @@ import React, {
   useCallback
 } from "react";
 import { io } from "socket.io-client";
+import { useAuth } from "./AuthContext";  // <-- ייבוא useAuth
 
 const NotificationsContext = createContext();
 
-export function NotificationsProvider({ user, children }) {
+export function NotificationsProvider({ children }) {
+  const { user, token } = useAuth();   // <-- שימוש ב־AuthContext
   const [notifications, setNotifications] = useState([]);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [profileViews, setProfileViews] = useState(0);
@@ -20,60 +22,45 @@ export function NotificationsProvider({ user, children }) {
   });
   const [socket, setSocket] = useState(null);
 
-  // מוסיף התראה ייחודית
   const addNotification = useCallback(notification => {
     setNotifications(prev =>
       prev.some(n => n.id === notification.id) ? prev : [notification, ...prev]
     );
   }, []);
 
-  // מסמן התראה בודדת כנקראה
   const markAsRead = useCallback(async id => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-      await fetch(`/api/business/my/notifications/${id}/read`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-      setNotifications(prev =>
-        prev.map(n => (n.id === id ? { ...n, read: true } : n))
-      );
-    } catch (err) {
-      console.error("Failed to mark notification as read", err);
-    }
-  }, []);
+    if (!token) return;
+    await fetch(`/api/business/my/notifications/${id}/read`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+    });
+    setNotifications(prev =>
+      prev.map(n => (n.id === id ? { ...n, read: true } : n))
+    );
+  }, [token]);
 
-  // מוחק התראות שכבר נקראו
   const clearReadNotifications = useCallback(() => {
     setNotifications(prev => prev.filter(n => !n.read));
   }, []);
 
-  // מאפס את כל ההתראות והמונה
   const clearAllNotifications = useCallback(() => {
-    // אופציונלי: קריאה ל־API לסימון כולן כנקראות
     setNotifications([]);
     setUnreadMessagesCount(0);
   }, []);
 
   useEffect(() => {
-    if (!user?.businessId || !user?.token) return;
+    if (!user?.businessId || !token) return;
 
     const sock = io(import.meta.env.VITE_SOCKET_URL, {
-      auth: { token: user.token, businessId: user.businessId },
+      auth: { token, businessId: user.businessId },
       transports: ["websocket"]
     });
     setSocket(sock);
 
-    // הצטרפות לחדר
     sock.on("connect", () => {
       sock.emit("joinBusinessRoom", user.businessId);
     });
 
-    // התראות ורענון מונה הודעות
     sock.on("newNotification", addNotification);
     sock.on("newMessage", data => {
       addNotification({
@@ -89,14 +76,12 @@ export function NotificationsProvider({ user, children }) {
     });
     sock.on("unreadMessagesCount", setUnreadMessagesCount);
 
-    // עדכון צפיות בפרופיל
     sock.on("profileViewsUpdated", data => {
       const views = data.views_count ?? data;
       setProfileViews(views);
       setDashboardStats(prev => ({ ...prev, views_count: views }));
     });
 
-    // עדכוני דשבורד לפגישות וביקורות
     sock.on("appointmentCreated", () => {
       setDashboardStats(prev => ({
         ...prev,
@@ -117,20 +102,17 @@ export function NotificationsProvider({ user, children }) {
       });
     });
 
-    // טעינת התראות ראשונית מה־API
     fetch("/api/business/my/notifications", {
-      headers: { Authorization: `Bearer ${user.token}` }
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
-      .then(data => {
-        if (data.ok) setNotifications(data.notifications);
-      })
+      .then(data => data.ok && setNotifications(data.notifications))
       .catch(console.error);
 
     return () => {
       sock.disconnect();
     };
-  }, [user, addNotification]);
+  }, [user, token, addNotification]);
 
   return (
     <NotificationsContext.Provider
