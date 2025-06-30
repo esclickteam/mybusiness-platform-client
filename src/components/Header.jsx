@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import {
@@ -24,7 +24,7 @@ import Notifications from "./Notifications";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
-  const { socket, notifications, unreadMessagesCount } = useNotifications();
+  const { clearAllNotifications, clearReadNotifications, unreadMessagesCount } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -73,7 +73,10 @@ export default function Header() {
   return (
     <>
       <nav className="app-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div className="menu-toggle" style={{ display: "flex", alignItems: "center", gap: "8px", position: "relative", right: 20 }}>
+        <div
+          className="menu-toggle"
+          style={{ display: "flex", alignItems: "center", gap: "8px", position: "relative", right: 20 }}
+        >
           {!menuOpen && (
             <button className="menu-button" onClick={() => setMenuOpen(true)} aria-label="תפריט ראשי">
               <FaBars size={24} />
@@ -86,23 +89,47 @@ export default function Header() {
                 className="notification-button"
                 onClick={() => setNotifOpen(!notifOpen)}
                 aria-label="התראות"
-                style={{ fontSize: 24, position: "relative", cursor: "pointer", background: "none", border: "none", color: "inherit", padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}
+                style={{
+                  fontSize: 24,
+                  position: "relative",
+                  cursor: "pointer",
+                  background: "none",
+                  border: "none",
+                  color: "inherit",
+                  padding: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
                 🔔
                 {unreadMessagesCount > 0 && (
-                  <span style={{ position: "absolute", top: 0, right: 0, background: "red", borderRadius: "50%", width: "16px", height: "16px", color: "white", fontSize: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      background: "red",
+                      borderRadius: "50%",
+                      width: "16px",
+                      height: "16px",
+                      color: "white",
+                      fontSize: "12px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     {unreadMessagesCount}
                   </span>
                 )}
               </button>
 
-              {notifOpen && socket && user && (
+              {notifOpen && (
                 <Notifications
-                  socket={socket}
-                  user={user}
-                  notifications={notifications}
                   onClose={() => setNotifOpen(false)}
-                  clearNotifications={() => notifications.forEach(n => n.read = true)} // או לעדכן דרך dispatch
+                  clearReadNotifications={clearReadNotifications}
+                  clearAllNotifications={clearAllNotifications}
                 />
               )}
             </>
@@ -116,7 +143,11 @@ export default function Header() {
         </div>
 
         <div className="auth-controls desktop-only">
-          {!user && <Link to="/login" className="login-button">התחברות</Link>}
+          {!user && (
+            <Link to="/login" className="login-button">
+              התחברות
+            </Link>
+          )}
 
           {user && (
             <>
@@ -151,7 +182,7 @@ export default function Header() {
                 </Link>
               </div>
             ) : (
-              <>  
+              <>
                 <div className="menu-user">
                   <FaUserCircle size={20} />
                   <span>{user.name || user.email}</span>
@@ -177,7 +208,13 @@ export default function Header() {
                   {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")}
                 </div>
                 <div className="auth-menu">
-                  <button className="personal-area-button" onClick={() => { setMenuOpen(false); navigate(getDashboardPath()); }}>
+                  <button
+                    className="personal-area-button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate(getDashboardPath());
+                    }}
+                  >
                     אזור אישי
                   </button>
                   <button className="logout-button" onClick={handleLogout}>
