@@ -106,7 +106,8 @@ export default function App() {
 
   return (
     <>
-      <NotificationsProvider user={user}>
+      {/* אין צורך להעביר user לפרוביידר */}
+      <NotificationsProvider>
         <Header onToggleNotifications={toggleNotifications} />
         <ScrollToTop />
         <AiProvider>
@@ -336,7 +337,6 @@ export default function App() {
     </>
   );
 }
-
 
 // ------ כאן נשארים ה־wrappers שלך (BusinessChatListWrapper, BusinessChatWrapper) כפי שהם ------
 export function BusinessChatListWrapper() {
