@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
   const ongoingRefresh = useRef(null);
   const isRefreshing = useRef(false);
   const isMounted = useRef(true);
+  const lastToken = useRef(token);
 
   // Single-flight token refresh בתוך הקונטקסט
   async function singleFlightRefresh() {
@@ -31,7 +32,7 @@ export function AuthProvider({ children }) {
           const newToken = res.data.accessToken;
           if (!newToken) throw new Error("No new token");
           if (newToken === token) {
-            console.log("[AuthContext] Token unchanged");
+            console.log("[AuthContext] Token unchanged, skipping setToken");
             return newToken;
           }
           console.log("[AuthContext] Refresh token success:", newToken);
@@ -40,8 +41,9 @@ export function AuthProvider({ children }) {
           setToken(newToken);
           return newToken;
         })
-        .catch(err => {
+        .catch(async err => {
           console.error("[AuthContext] Refresh token failed:", err);
+          await logout();
           throw err;
         })
         .finally(() => {
@@ -171,7 +173,7 @@ export function AuthProvider({ children }) {
       auth: { token, role: userData.role, businessId: userData.businessId }
     });
 
-    ws.current.on("connect",    () => console.log("✅ Socket connected"));
+    ws.current.on("connect", () => console.log("✅ Socket connected"));
     ws.current.on("disconnect", () => console.log("🔴 Socket disconnected"));
 
     ws.current.on("tokenExpired", async () => {
@@ -204,7 +206,7 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // מניעת רינדור אינסופי
+  // ניהול mounted state למניעת עדכון סטייט אחרי unmount
   useEffect(() => {
     isMounted.current = true;
     return () => {
@@ -212,13 +214,21 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // watch token changes: fetch /auth/me & init WS
+  // watch token changes: fetch /auth/me & init WS, עם בדיקת lastToken
   useEffect(() => {
     if (!token) {
       setUser(null);
       setInitialized(true);
+      lastToken.current = null;
       return;
     }
+
+    if (token === lastToken.current) {
+      console.log("[AuthContext] Token unchanged, skipping effect");
+      return;
+    }
+
+    lastToken.current = token;
 
     setLoading(true);
     setAuthToken(token);
