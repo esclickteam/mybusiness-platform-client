@@ -1,5 +1,11 @@
 // src/context/NotificationsContext.jsx
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { useAuth } from "./AuthContext.jsx";
 
 const NotificationsContext = createContext();
@@ -46,23 +52,10 @@ export function NotificationsProvider({ children }) {
   }, []);
 
   /* ------------------------------------------------------------------ */
-  /*  Socket listeners & room join                                      */
+  /*  Socket listeners (no manual room join – done server‑side)         */
   /* ------------------------------------------------------------------ */
   useEffect(() => {
-    if (!socket || !user?.businessId) return;
-
-    const joinRooms = () => {
-      socket.emit("joinBusinessRoom", user.businessId, (ok) =>
-        console.log("business join ack →", ok)
-      );
-    };
-
-    // הצטרפות מיידית אם כבר מחובר
-    if (socket.connected) joinRooms();
-
-    // התחברות‑מחדש
-    socket.on("connect", joinRooms);
-    socket.io.on("reconnect", joinRooms);
+    if (!socket) return; // businessId כבר טופל ב‑handshake
 
     // Business events
     socket.on("notificationBundle", handleBundle);
@@ -70,17 +63,16 @@ export function NotificationsProvider({ children }) {
     socket.on("unreadMessagesCount", setUnreadCount);
     socket.on("dashboardUpdate", handleDashboard);
 
-    // cleanup
-    return () => {
-      socket.off("connect", joinRooms);
-      socket.io.off("reconnect", joinRooms);
+    // DEBUG – לראות כל אירוע (למחוק בפרודקשן)
+    // socket.onAny((ev, payload) => console.log("[SOCKET]", ev, payload));
 
+    return () => {
       socket.off("notificationBundle", handleBundle);
       socket.off("newNotification", handleNew);
       socket.off("unreadMessagesCount", setUnreadCount);
       socket.off("dashboardUpdate", handleDashboard);
     };
-  }, [socket, user?.businessId, handleBundle, handleNew, handleDashboard]);
+  }, [socket, handleBundle, handleNew, handleDashboard]);
 
   /* ------------------------------------------------------------------ */
   /*  Initial fetch                                                     */
@@ -90,7 +82,7 @@ export function NotificationsProvider({ children }) {
 
     (async () => {
       try {
-        const res  = await fetch("/api/business/my/notifications", {
+        const res = await fetch("/api/business/my/notifications", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const data = await res.json();
@@ -107,13 +99,13 @@ export function NotificationsProvider({ children }) {
   /* ------------------------------------------------------------------ */
   /*  Context value                                                     */
   /* ------------------------------------------------------------------ */
-  return (
-    <NotificationsContext.Provider
-      value={{ notifications, unreadMessagesCount: unreadCount, dashboardStats }}
-    >
-      {children}
-    </NotificationsContext.Provider>
-  );
+  const ctx = {
+    notifications,
+    unreadMessagesCount: unreadCount,
+    dashboardStats,
+  };
+
+  return <NotificationsContext.Provider value={ctx}>{children}</NotificationsContext.Provider>;
 }
 
 export function useNotifications() {

@@ -8,32 +8,7 @@ import React, {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
-import { io } from "socket.io-client";
-
-/* ------------------------------------------------------------------ */
-/*  Utility: single-flight refresh                                     */
-/* ------------------------------------------------------------------ */
-let ongoingRefresh = null;
-let isRefreshing   = false;
-
-export async function singleFlightRefresh() {
-  if (!ongoingRefresh) {
-    isRefreshing   = true;
-    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
-      .then((res) => {
-        const newToken = res.data.accessToken;
-        if (!newToken) throw new Error("No new token");
-        localStorage.setItem("token", newToken);
-        setAuthToken(newToken);
-        return newToken;
-      })
-      .finally(() => {
-        isRefreshing   = false;
-        ongoingRefresh = null;
-      });
-  }
-  return ongoingRefresh;
-}
+import createSocket, { singleFlightRefresh } from "../socket"; // ← singleton socket helper
 
 /* ------------------------------------------------------------------ */
 /*  Context init                                                      */
@@ -46,76 +21,15 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   /*  State                                                         */
   /* -------------------------------------------------------------- */
-  const socketRef            = useRef(null); // live socket instance
-  const [socket, setSocket]  = useState(null); // state for consumers
+  const socketRef           = useRef(null); // live socket instance
+  const [socket, setSocket] = useState(null); // exposed to consumers
 
-  const [token, setToken]    = useState(() => localStorage.getItem("token") || null);
-  const [user, setUser]      = useState(null);
+  const [token, setToken]   = useState(() => localStorage.getItem("token") || null);
+  const [user, setUser]     = useState(null);
   const [loading, setLoading]          = useState(false);
   const [initialized, setInitialized]  = useState(false);
   const [error, setError]              = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-
-  /* -------------------------------------------------------------- */
-  /*  Disconnect helper                                             */
-  /* -------------------------------------------------------------- */
-  const disconnectSocket = () => {
-    if (socketRef.current) {
-      socketRef.current.removeAllListeners();
-      socketRef.current.disconnect();
-      socketRef.current = null;
-      setSocket(null);
-    }
-  };
-
-  /* -------------------------------------------------------------- */
-  /*  WS creator — idempotent                                        */
-  /* -------------------------------------------------------------- */
-  const ensureSocket = (tokenValue, userData) => {
-    if (!tokenValue || !userData) return;
-
-    // אם כבר יש סוקט פעיל עם אותו טוקן – השאר אותו
-    if (socketRef.current && socketRef.current.connected) {
-      if (socketRef.current.auth.token === tokenValue) return;
-      // token changed (refresh) → רק עדכן auth ולאתחל מחדש
-      socketRef.current.auth.token = tokenValue;
-      return;
-    }
-
-    // צור חדש
-    const s = io("https://api.esclick.co.il", {
-      path: "/socket.io",
-      transports: ["websocket"],
-      auth: { token: tokenValue, role: userData.role, businessId: userData.businessId },
-      reconnection: true,
-    });
-
-    socketRef.current = s;
-    setSocket(s);
-
-    s.on("connect", () => {
-      console.log("✅ WS connected", s.id);
-    });
-    s.on("disconnect", () => console.log("🔴 WS disconnected"));
-
-    // Token expiry ↔ refresh
-    const refreshAndReconnect = async () => {
-      try {
-        const newToken = await singleFlightRefresh();
-        setAuthToken(newToken);
-        s.auth.token = newToken;
-        s.connect();
-        console.log("🔄 WS reconnected with new token");
-      } catch {
-        await logout();
-      }
-    };
-
-    s.on("tokenExpired", refreshAndReconnect);
-    s.on("connect_error", async (err) => {
-      if (err?.message === "jwt expired") await refreshAndReconnect();
-    });
-  };
 
   /* -------------------------------------------------------------- */
   /*  Logout                                                        */
@@ -126,17 +40,18 @@ export function AuthProvider({ children }) {
       await API.post("/auth/logout", {}, { withCredentials: true });
     } catch {}
 
-    ongoingRefresh = null;
-    isRefreshing   = false;
-
     setAuthToken(null);
     localStorage.removeItem("token");
-    setToken(null);
     localStorage.removeItem("businessDetails");
-
-    disconnectSocket();
-
+    setToken(null);
     setUser(null);
+
+    // נתק סוקט (אם יש)
+    socketRef.current?.removeAllListeners();
+    socketRef.current?.disconnect();
+    socketRef.current = null;
+    setSocket(null);
+
     setLoading(false);
     navigate("/login", { replace: true });
   };
@@ -144,25 +59,26 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   /*  Login                                                         */
   /* -------------------------------------------------------------- */
-  const login = async (email, password, options = { skipRedirect: false }) => {
+  const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
     setError(null);
 
     try {
-      const { data: { accessToken, redirectUrl } } = await API.post(
+      const {
+        data: { accessToken, redirectUrl },
+      } = await API.post(
         "/auth/login",
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
       );
+
       if (!accessToken) throw new Error("No access token received");
 
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      // העסקת רידיירקט וכו' תתבצע אחרי שה-token effect יביא את המשתמש
-      if (!options.skipRedirect) {
-        // נשמור redirectUrl כדי שה-effect ישתמש מאוחר יותר
+      if (!skipRedirect) {
         sessionStorage.setItem("postLoginRedirect", redirectUrl || "");
       }
 
@@ -196,12 +112,15 @@ export function AuthProvider({ children }) {
   };
 
   /* -------------------------------------------------------------- */
-  /*  Init on token                                                 */
+  /*  Init / token change                                           */
   /* -------------------------------------------------------------- */
   useEffect(() => {
     if (!token) {
+      // לא מחובר – נתק הכל
+      socketRef.current?.disconnect();
+      socketRef.current = null;
+      setSocket(null);
       setUser(null);
-      disconnectSocket();
       setInitialized(true);
       return;
     }
@@ -209,27 +128,33 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setAuthToken(token);
 
-    API.get("/auth/me", { withCredentials: true })
-      .then(({ data }) => {
+    (async () => {
+      try {
+        const { data } = await API.get("/auth/me", { withCredentials: true });
         setUser(data);
-        ensureSocket(token, data);
 
-        // redirect after login if pending
+        // יצירת / קבלת סוקט מאומת
+        const s = await createSocket(singleFlightRefresh, logout, data.businessId);
+        socketRef.current = s;
+        setSocket(s);
+
+        // בצע redirect אם שמור
         const redirectUrl = sessionStorage.getItem("postLoginRedirect") || "";
         if (redirectUrl) {
           navigate(redirectUrl || "/", { replace: true });
           sessionStorage.removeItem("postLoginRedirect");
         }
-      })
-      .catch(logout)
-      .finally(() => {
+      } catch (err) {
+        await logout();
+      } finally {
         setLoading(false);
         setInitialized(true);
-      });
+      }
+    })();
   }, [token]);
 
   /* -------------------------------------------------------------- */
-  /*  Auto-dismiss success toast                                    */
+  /*  Auto‑dismiss success toast                                    */
   /* -------------------------------------------------------------- */
   useEffect(() => {
     if (!successMessage) return;
@@ -240,7 +165,7 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   /*  Context value                                                 */
   /* -------------------------------------------------------------- */
-  const contextValue = {
+  const ctx = {
     token,
     user,
     loading,
@@ -255,7 +180,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={ctx}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
