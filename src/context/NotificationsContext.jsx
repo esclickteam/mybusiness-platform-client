@@ -29,6 +29,13 @@ export function NotificationsProvider({ children }) {
   // ——— HELPERS ———
   const addNotification = useCallback((n) => {
     const id = n.id || n._id;
+    console.log("[NotificationsProvider] Adding notification:", n);
+
+    if (!id) {
+      console.warn("[NotificationsProvider] Notification missing id or _id:", n);
+      // אפשר להוסיף מזהה זמני פה אם רוצים למנוע כפילויות
+    }
+
     setNotifications((prev) =>
       prev.some((x) => (x.id || x._id) === id) ? prev : [n, ...prev]
     );
@@ -36,33 +43,48 @@ export function NotificationsProvider({ children }) {
 
   const markAsRead = useCallback(
     async (id) => {
-      if (!token) return;
-      await fetch(`/api/business/my/notifications/${id}/read`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setNotifications((prev) =>
-        prev.map((n) => ((n.id || n._id) === id ? { ...n, read: true } : n))
-      );
+      if (!token) {
+        console.warn("[NotificationsProvider] markAsRead called without token");
+        return;
+      }
+      console.log(`[NotificationsProvider] Marking notification ${id} as read`);
+
+      try {
+        await fetch(`/api/business/my/notifications/${id}/read`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        setNotifications((prev) =>
+          prev.map((n) => ((n.id || n._id) === id ? { ...n, read: true } : n))
+        );
+      } catch (err) {
+        console.error("[NotificationsProvider] Error marking as read:", err);
+      }
     },
     [token]
   );
 
   const clearReadNotifications = useCallback(() => {
+    console.log("[NotificationsProvider] Clearing read notifications");
     setNotifications((prev) => prev.filter((n) => !n.read));
   }, []);
 
   const clearAllNotifications = useCallback(() => {
+    console.log("[NotificationsProvider] Clearing all notifications");
     setNotifications([]);
     setUnreadCount(0);
   }, []);
 
   // ——— EFFECT: FETCH + SOCKET ———
   useEffect(() => {
-    if (!user?.businessId || !token) return;
+    if (!user?.businessId || !token) {
+      console.log("[NotificationsProvider] Missing user.businessId or token, skipping setup");
+      return;
+    }
 
     // 1. Fetch initial list (סינכרון ראשוני)
     fetch("/api/business/my/notifications", {
@@ -71,14 +93,22 @@ export function NotificationsProvider({ children }) {
       .then((r) => r.json())
       .then((d) => {
         if (d.ok) {
+          console.log("[NotificationsProvider] Initial notifications fetched:", d.notifications);
           setNotifications(d.notifications);
           setUnreadCount(d.notifications.filter((n) => !n.read).length);
+        } else {
+          console.error("[NotificationsProvider] Failed fetching initial notifications:", d);
         }
       })
-      .catch(console.error);
+      .catch((e) => {
+        console.error("[NotificationsProvider] Fetch error:", e);
+      });
 
     // 2. Create socket if not connected already
-    if (socketRef.current?.connected) return;
+    if (socketRef.current?.connected) {
+      console.log("[NotificationsProvider] Socket already connected, skipping");
+      return;
+    }
 
     const s = io(import.meta.env.VITE_SOCKET_URL, {
       auth: { token },
@@ -88,25 +118,32 @@ export function NotificationsProvider({ children }) {
 
     // ——— SOCKET EVENT HANDLERS ———
     const joinRooms = () => {
+      console.log("[NotificationsProvider] Socket connected, joining business room:", user.businessId);
       s.emit("joinBusinessRoom", user.businessId);
     };
 
     const onBundle = ({ count, lastNotification }) => {
+      console.log("[NotificationsProvider] Received notificationBundle:", { count, lastNotification });
       if (lastNotification) addNotification(lastNotification);
       setUnreadCount(count);
     };
 
     const onDashboard = (stats) => {
+      console.log("[NotificationsProvider] Received dashboardUpdate:", stats);
       setDashboardStats(stats);
     };
 
     s.on("connect", joinRooms);
     s.on("notificationBundle", onBundle);
-    s.on("unreadMessagesCount", setUnreadCount);
+    s.on("unreadMessagesCount", (count) => {
+      console.log("[NotificationsProvider] Received unreadMessagesCount:", count);
+      setUnreadCount(count);
+    });
     s.on("dashboardUpdate", onDashboard);
 
     // ——— CLEANUP ———
     return () => {
+      console.log("[NotificationsProvider] Cleaning up socket listeners and disconnecting");
       s.off("connect", joinRooms);
       s.off("notificationBundle", onBundle);
       s.off("unreadMessagesCount", setUnreadCount);

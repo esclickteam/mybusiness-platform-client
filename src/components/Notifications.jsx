@@ -15,11 +15,13 @@ export default function Notifications({ onClose }) {
   console.log("[Notifications] Rendered with notifications:", notifications);
 
   const handleClick = (notif) => {
+    const id = notif.id || notif._id;
+
     console.log("[Notifications] Clicked notification:", notif);
+    console.log(`[Notifications] Marking notification ${id} as read`);
 
     if (!notif.read) {
-      console.log(`[Notifications] Marking notification ${notif.id} as read`);
-      markAsRead(notif.id);
+      markAsRead(id);
     }
 
     const url =
@@ -32,6 +34,7 @@ export default function Notifications({ onClose }) {
       }[notif.type] ||
       "/";
     console.log(`[Notifications] Navigating to ${url}`);
+
     navigate(url);
     onClose();
   };
@@ -110,33 +113,36 @@ export default function Notifications({ onClose }) {
       {notifications.length === 0 ? (
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
-        notifications.map((notif) => (
-          <div
-            key={notif.id}
-            onClick={() => handleClick(notif)}
-            style={{
-              padding: "10px 15px",
-              borderBottom: "1px solid #eee",
-              fontWeight: notif.read ? "normal" : "700",
-              backgroundColor: notif.read ? "white" : "#e8f4ff",
-              cursor: "pointer",
-              userSelect: "none",
-            }}
-            title={notif.text}
-          >
-            <div>{notif.text}</div>
+        notifications.map((notif) => {
+          const key = notif.id || notif._id;
+          return (
             <div
+              key={key}
+              onClick={() => handleClick(notif)}
               style={{
-                fontSize: "0.75rem",
-                color: "#666",
-                opacity: 0.7,
-                marginTop: 4,
+                padding: "10px 15px",
+                borderBottom: "1px solid #eee",
+                fontWeight: notif.read ? "normal" : "700",
+                backgroundColor: notif.read ? "white" : "#e8f4ff",
+                cursor: "pointer",
+                userSelect: "none",
               }}
+              title={notif.text}
             >
-              {formatDate(notif.timestamp)}
+              <div>{notif.text}</div>
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "#666",
+                  opacity: 0.7,
+                  marginTop: 4,
+                }}
+              >
+                {formatDate(notif.timestamp)}
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );
