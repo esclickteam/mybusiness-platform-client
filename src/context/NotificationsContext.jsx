@@ -21,8 +21,8 @@ export function NotificationsProvider({ children }) {
   });
 
   const addNotification = useCallback((notif) => {
-    setNotifications(prev =>
-      prev.some(n => n.id === notif.id) ? prev : [notif, ...prev]
+    setNotifications((prev) =>
+      prev.some((n) => n.id === notif.id) ? prev : [notif, ...prev]
     );
   }, []);
 
@@ -37,7 +37,7 @@ export function NotificationsProvider({ children }) {
         const data = await res.json();
         if (data.ok) {
           setNotifications(data.notifications);
-          setUnreadCount(data.notifications.filter(n => !n.read).length);
+          setUnreadCount(data.notifications.filter((n) => !n.read).length);
         }
       } catch (err) {
         console.error("Notifications fetch failed:", err);
@@ -47,28 +47,38 @@ export function NotificationsProvider({ children }) {
 
   // Real-time WebSocket listeners for notifications & counts
   useEffect(() => {
-    if (!socket || !socket.connected) return;
+    if (!socket) return;
 
-    const onNewNotification = notif => {
+    const onConnect = () => {
+      if (user?.businessId) {
+        socket.emit("joinBusinessRoom", user.businessId);
+        console.log("[WS] joinBusinessRoom emitted:", user.businessId);
+      }
+    };
+    const onNewNotification = (notif) => {
       console.log("[WS] newNotification:", notif);
       addNotification(notif);
-      setUnreadCount(c => c + 1);
+      setUnreadCount((c) => c + 1);
     };
-    const onCount = count => {
+    const onCount = (count) => {
       console.log("[WS] unreadMessagesCount:", count);
       setUnreadCount(count);
     };
-    const onDashboard = stats => {
+    const onDashboard = (stats) => {
       console.log("[WS] dashboardUpdate:", stats);
       setDashboardStats(stats);
     };
 
-    socket.emit("joinBusinessRoom", user.businessId);
+    socket.on("connect", onConnect);
+    // in case already connected
+    if (socket.connected) onConnect();
+
     socket.on("newNotification", onNewNotification);
     socket.on("unreadMessagesCount", onCount);
     socket.on("dashboardUpdate", onDashboard);
 
     return () => {
+      socket.off("connect", onConnect);
       socket.off("newNotification", onNewNotification);
       socket.off("unreadMessagesCount", onCount);
       socket.off("dashboardUpdate", onDashboard);
@@ -77,21 +87,18 @@ export function NotificationsProvider({ children }) {
 
   // Real-time WebSocket listener for new messages
   useEffect(() => {
-    if (!socket || !socket.connected) return;
+    if (!socket) return;
 
-    const onNewMessage = msg => {
-      console.log('[WS] newMessage:', msg);
-      // כאן תוכל להוסיף לוגיקה להוספת ההודעה לשיחה, למשל:
-      // addToConversation(msg.conversationId, msg);
+    const onNewMessage = (msg) => {
+      console.log("[WS] newMessage:", msg);
+      // למשל: addToConversation(msg.conversationId, msg);
     };
 
-    socket.on('newMessage', onNewMessage);
-    return () => {
-      socket.off('newMessage', onNewMessage);
-    };
+    socket.on("newMessage", onNewMessage);
+    return () => socket.off("newMessage", onNewMessage);
   }, [socket]);
 
-  const markAsRead = useCallback(async id => {
+  const markAsRead = useCallback(async (id) => {
     try {
       await fetch("/api/notifications/mark-read", {
         method: "POST",
@@ -101,10 +108,10 @@ export function NotificationsProvider({ children }) {
         },
         body: JSON.stringify({ notificationId: id }),
       });
-      setNotifications(prev => prev.map(n =>
-        n.id === id ? { ...n, read: true } : n
-      ));
-      setUnreadCount(c => Math.max(c - 1, 0));
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      );
+      setUnreadCount((c) => Math.max(c - 1, 0));
     } catch (err) {
       console.error("markAsRead error:", err);
     }
@@ -116,7 +123,7 @@ export function NotificationsProvider({ children }) {
   }, []);
 
   const clearRead = useCallback(() => {
-    setNotifications(prev => prev.filter(n => !n.read));
+    setNotifications((prev) => prev.filter((n) => !n.read));
   }, []);
 
   const ctx = {

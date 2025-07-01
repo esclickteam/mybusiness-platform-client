@@ -5,8 +5,8 @@ import { useNotifications } from "../context/NotificationsContext";
 export default function Notifications({ onClose }) {
   const {
     notifications,
-    clearAllNotifications,
-    clearReadNotifications,
+    clearAll,
+    clearRead,
     markAsRead,
   } = useNotifications();
 
@@ -76,7 +76,7 @@ export default function Notifications({ onClose }) {
             <button
               onClick={() => {
                 console.log("[Notifications] Clearing read notifications");
-                clearReadNotifications();
+                clearRead();
               }}
               style={{
                 background: "none",
@@ -93,7 +93,7 @@ export default function Notifications({ onClose }) {
             <button
               onClick={() => {
                 console.log("[Notifications] Clearing all notifications");
-                clearAllNotifications();
+                clearAll();
               }}
               style={{
                 background: "none",
