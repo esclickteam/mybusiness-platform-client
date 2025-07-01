@@ -48,7 +48,7 @@ export function NotificationsProvider({ children }) {
     })();
   }, [user?.businessId]);
 
-  // 2️⃣ Real-time: notificationBundle, newNotification & counts
+  // 2️⃣ Real-time: notificationBundle & newNotification
   useEffect(() => {
     if (!socket) return;
 
@@ -58,22 +58,14 @@ export function NotificationsProvider({ children }) {
       }
     };
     const onBundle = ({ count, lastNotification }) => {
-      console.log("[WS] notificationBundle:", count, lastNotification);
+      // סנכרון מלא של מספר ההתראות
       if (lastNotification) addNotification(lastNotification);
       setUnreadCount(count);
     };
     const onNew = (notif) => {
-      console.log("[WS] newNotification:", notif);
+      // התראה בודדת
       addNotification(notif);
       setUnreadCount((c) => c + 1);
-    };
-    const onCount = (count) => {
-      console.log("[WS] unreadMessagesCount:", count);
-      setUnreadCount(count);
-    };
-    const onDashboard = (stats) => {
-      console.log("[WS] dashboardUpdate:", stats);
-      setDashboardStats(stats);
     };
 
     socket.on("connect", onConnect);
@@ -81,29 +73,22 @@ export function NotificationsProvider({ children }) {
 
     socket.on("notificationBundle", onBundle);
     socket.on("newNotification", onNew);
-    socket.on("unreadMessagesCount", onCount);
-    socket.on("dashboardUpdate", onDashboard);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("notificationBundle", onBundle);
       socket.off("newNotification", onNew);
-      socket.off("unreadMessagesCount", onCount);
-      socket.off("dashboardUpdate", onDashboard);
     };
   }, [socket, user?.businessId, addNotification]);
 
-  // 3️⃣ Real-time: newMessage listener
+  // 3️⃣ (אופציונלי) listener עבור עדכוני דשבורד
   useEffect(() => {
     if (!socket) return;
-    const onNewMessage = (msg) => {
-      console.log("[WS] newMessage:", msg);
-      // כאן אפשר להזריק ל־state של השיחות
+    const onDashboard = (stats) => {
+      setDashboardStats(stats);
     };
-    socket.on("newMessage", onNewMessage);
-    return () => {
-      socket.off("newMessage", onNewMessage);
-    };
+    socket.on("dashboardUpdate", onDashboard);
+    return () => socket.off("dashboardUpdate", onDashboard);
   }, [socket]);
 
   const markAsRead = useCallback(async (id) => {
@@ -134,17 +119,17 @@ export function NotificationsProvider({ children }) {
     setNotifications((prev) => prev.filter((n) => !n.read));
   }, []);
 
-  const ctx = {
-    notifications,
-    unreadCount,
-    dashboardStats,
-    markAsRead,
-    clearAll,
-    clearRead,
-  };
-
   return (
-    <NotificationsContext.Provider value={ctx}>
+    <NotificationsContext.Provider
+      value={{
+        notifications,
+        unreadCount,
+        dashboardStats,
+        markAsRead,
+        clearAll,
+        clearRead,
+      }}
+    >
       {children}
     </NotificationsContext.Provider>
   );
