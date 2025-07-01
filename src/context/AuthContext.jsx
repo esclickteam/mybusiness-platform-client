@@ -3,53 +3,52 @@ import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import { io } from "socket.io-client";
 
-let ongoingRefresh = null;
-let isRefreshing = false;
-
-// Single-flight token refresh
-async function singleFlightRefresh() {
-  console.log("[AuthContext] singleFlightRefresh called");
-  if (!ongoingRefresh) {
-    isRefreshing = true;
-    console.log("[AuthContext] Starting token refresh");
-    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
-      .then(res => {
-        const newToken = res.data.accessToken;
-        if (!newToken) throw new Error("No new token");
-        console.log("[AuthContext] Refresh token success:", newToken);
-        localStorage.setItem("token", newToken);
-        setAuthToken(newToken);
-        setToken(newToken);           // ← update local state
-        return newToken;
-      })
-      .catch(err => {
-        console.error("[AuthContext] Refresh token failed:", err);
-        throw err;
-      })
-      .finally(() => {
-        isRefreshing = false;
-        ongoingRefresh = null;
-        console.log("[AuthContext] Token refresh finished");
-      });
-  } else {
-    console.log("[AuthContext] Using ongoing token refresh");
-  }
-  return ongoingRefresh;
-}
-
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
-  // ← NEW: keep token in state (initialized from localStorage)
   const [token, setToken] = useState(() => localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+
   const ws = useRef(null);
+  const ongoingRefresh = useRef(null);
+  const isRefreshing = useRef(false);
+
+  // Single-flight token refresh בתוך הקונטקסט
+  async function singleFlightRefresh() {
+    console.log("[AuthContext] singleFlightRefresh called");
+    if (!ongoingRefresh.current) {
+      isRefreshing.current = true;
+      console.log("[AuthContext] Starting token refresh");
+      ongoingRefresh.current = API.post("/auth/refresh-token", null, { withCredentials: true })
+        .then(res => {
+          const newToken = res.data.accessToken;
+          if (!newToken) throw new Error("No new token");
+          console.log("[AuthContext] Refresh token success:", newToken);
+          localStorage.setItem("token", newToken);
+          setAuthToken(newToken);
+          setToken(newToken);
+          return newToken;
+        })
+        .catch(err => {
+          console.error("[AuthContext] Refresh token failed:", err);
+          throw err;
+        })
+        .finally(() => {
+          isRefreshing.current = false;
+          ongoingRefresh.current = null;
+          console.log("[AuthContext] Token refresh finished");
+        });
+    } else {
+      console.log("[AuthContext] Using ongoing token refresh");
+    }
+    return ongoingRefresh.current;
+  }
 
   // Logout
   const logout = async () => {
@@ -61,11 +60,11 @@ export function AuthProvider({ children }) {
     } catch {
       console.warn("[AuthContext] logout API error (ignored)");
     } finally {
-      ongoingRefresh = null;
-      isRefreshing = false;
+      ongoingRefresh.current = null;
+      isRefreshing.current = false;
       setAuthToken(null);
       localStorage.removeItem("token");
-      setToken(null);               // ← clear state
+      setToken(null);
       localStorage.removeItem("businessDetails");
       console.log("[AuthContext] Cleared token & details");
       if (ws.current) {
@@ -96,7 +95,7 @@ export function AuthProvider({ children }) {
 
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
-      setToken(accessToken);        // ← store in state
+      setToken(accessToken);
 
       const { data } = await API.get("/auth/me", { withCredentials: true });
       console.log("[AuthContext] /auth/me returned:", data);
