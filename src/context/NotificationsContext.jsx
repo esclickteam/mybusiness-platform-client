@@ -9,6 +9,9 @@ import React, {
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 
+// ————————————————————————————
+// Notifications Context
+// ————————————————————————————
 const NotificationsContext = createContext();
 
 export function NotificationsProvider({ children }) {
@@ -26,14 +29,16 @@ export function NotificationsProvider({ children }) {
   // ——— SOCKET REF (למניעת כפל חיבורים) ———
   const socketRef = useRef(null);
 
-  // ——— HELPERS ———
+  // ————————————————————————————
+  // Helpers
+  // ————————————————————————————
   const addNotification = useCallback((n) => {
     const id = n.id || n._id;
     console.log("[NotificationsProvider] Adding notification:", n);
 
     if (!id) {
       console.warn("[NotificationsProvider] Notification missing id or _id:", n);
-      // אפשר להוסיף מזהה זמני פה אם רוצים למנוע כפילויות
+      // במקרה הצורך – אפשר להוסיף מזהה זמני למניעת כפילויות
     }
 
     setNotifications((prev) =>
@@ -79,7 +84,9 @@ export function NotificationsProvider({ children }) {
     setUnreadCount(0);
   }, []);
 
-  // ——— EFFECT: FETCH + SOCKET ———
+  // ————————————————————————————
+  // Effect: initial fetch + socket
+  // ————————————————————————————
   useEffect(() => {
     if (!user?.businessId || !token) {
       console.log("[NotificationsProvider] Missing user.businessId or token, skipping setup");
@@ -104,12 +111,14 @@ export function NotificationsProvider({ children }) {
         console.error("[NotificationsProvider] Fetch error:", e);
       });
 
-    // 2. Create socket if not connected already
-    if (socketRef.current?.connected) {
-      console.log("[NotificationsProvider] Socket already connected, skipping");
-      return;
+    // 2. Disconnect any previous socket before creating a new one (במיוחד כאשר מתחלף משתמש)
+    if (socketRef.current) {
+      console.log("[NotificationsProvider] Disposing previous socket instance");
+      socketRef.current.disconnect();
+      socketRef.current = null;
     }
 
+    // 3. Create socket
     const s = io(import.meta.env.VITE_SOCKET_URL, {
       auth: { token },
       transports: ["websocket"]
@@ -118,8 +127,12 @@ export function NotificationsProvider({ children }) {
 
     // ——— SOCKET EVENT HANDLERS ———
     const joinRooms = () => {
-      console.log("[NotificationsProvider] Socket connected, joining business room:", user.businessId);
-      s.emit("joinBusinessRoom", user.businessId);
+      const rooms = [
+        `business-${user.businessId}`,
+        `dashboard-${user.businessId}`
+      ];
+      console.log("[NotificationsProvider] Socket connected, joining rooms:", rooms);
+      rooms.forEach((room) => s.emit("joinRoom", room));
     };
 
     const onBundle = ({ count, lastNotification }) => {
@@ -139,29 +152,38 @@ export function NotificationsProvider({ children }) {
       setDashboardStats(stats);
     };
 
+    // Primary connect + reconnect
     s.on("connect", joinRooms);
+    s.on("reconnect", joinRooms);
+
+    // Notifications
     s.on("notificationBundle", onBundle);
     s.on("newNotification", onNewNotification);
     s.on("unreadMessagesCount", (count) => {
       console.log("[NotificationsProvider] Received unreadMessagesCount:", count);
       setUnreadCount(count);
     });
+
+    // Dashboard stats
     s.on("dashboardUpdate", onDashboard);
 
     // ——— CLEANUP ———
     return () => {
       console.log("[NotificationsProvider] Cleaning up socket listeners and disconnecting");
       s.off("connect", joinRooms);
+      s.off("reconnect", joinRooms);
       s.off("notificationBundle", onBundle);
       s.off("newNotification", onNewNotification);
-      s.off("unreadMessagesCount", setUnreadCount);
+      s.off("unreadMessagesCount");
       s.off("dashboardUpdate", onDashboard);
       s.disconnect();
       socketRef.current = null;
     };
   }, [user?.businessId, token, addNotification]);
 
-  // ——— PROVIDER VALUE ———
+  // ————————————————————————————
+  // Provider Value
+  // ————————————————————————————
   const value = {
     notifications,
     unreadMessagesCount: unreadCount,
