@@ -19,6 +19,7 @@ async function singleFlightRefresh() {
         console.log("[AuthContext] Refresh token success:", newToken);
         localStorage.setItem("token", newToken);
         setAuthToken(newToken);
+        setToken(newToken);           // ← update local state
         return newToken;
       })
       .catch(err => {
@@ -40,34 +41,33 @@ export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
+
+  // ← NEW: keep token in state (initialized from localStorage)
+  const [token, setToken] = useState(() => localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [initialized, setInitialized] = useState(false);
   const ws = useRef(null);
 
-  // Helper to update user
-  const setBusinessToChatWith = (businessId) => {
-    setUser(prev => prev ? { ...prev, businessToChatWith: businessId } : prev);
-  };
-
-  // Logout logic
+  // Logout
   const logout = async () => {
     console.log("[AuthContext] logout called");
     setLoading(true);
     try {
       await API.post("/auth/logout", {}, { withCredentials: true });
       console.log("[AuthContext] logout API success");
-    } catch (e) {
-      console.warn("[AuthContext] logout API error (ignored):", e);
+    } catch {
+      console.warn("[AuthContext] logout API error (ignored)");
     } finally {
       ongoingRefresh = null;
       isRefreshing = false;
       setAuthToken(null);
       localStorage.removeItem("token");
+      setToken(null);               // ← clear state
       localStorage.removeItem("businessDetails");
-      console.log("[AuthContext] Cleared token and businessDetails from storage");
+      console.log("[AuthContext] Cleared token & details");
       if (ws.current) {
         ws.current.removeAllListeners();
         ws.current.disconnect();
@@ -80,7 +80,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Login logic
+  // Login
   const login = async (email, password, options = { skipRedirect: false }) => {
     console.log("[AuthContext] login called with:", email);
     setLoading(true);
@@ -92,35 +92,30 @@ export function AuthProvider({ children }) {
         { withCredentials: true }
       );
       if (!accessToken) throw new Error("No access token received");
-      console.log("[AuthContext] login success, accessToken:", accessToken);
+      console.log("[AuthContext] login success:", accessToken);
 
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
+      setToken(accessToken);        // ← store in state
 
       const { data } = await API.get("/auth/me", { withCredentials: true });
       console.log("[AuthContext] /auth/me returned:", data);
 
       if (data.businessId) {
-        localStorage.setItem(
-          "businessDetails",
-          JSON.stringify({ _id: data.businessId })
-        );
+        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
         console.log("[AuthContext] Stored businessDetails:", data.businessId);
       }
       setUser(data);
       createSocketConnection(accessToken, data);
 
       if (!options.skipRedirect) {
-        const path = redirectUrl || (() => {
-          switch (data.role) {
-            case "business": return `/business/${data.businessId}/dashboard`;
-            case "customer": return "/client/dashboard";
-            case "worker": return "/staff/dashboard";
-            case "manager": return "/manager/dashboard";
-            case "admin": return "/admin/dashboard";
-            default: return "/";
-          }
-        })();
+        const path = redirectUrl || {
+          business: `/business/${data.businessId}/dashboard`,
+          customer: "/client/dashboard",
+          worker: "/staff/dashboard",
+          manager: "/manager/dashboard",
+          admin: "/admin/dashboard"
+        }[data.role] || "/";
         console.log("[AuthContext] Redirecting to:", path);
         navigate(path, { replace: true });
       }
@@ -129,24 +124,23 @@ export function AuthProvider({ children }) {
       return { user: data, redirectUrl };
     } catch (e) {
       console.error("[AuthContext] login error:", e);
-      if (e.response?.status === 401 || e.response?.status === 403) {
-        setError("❌ אימייל או סיסמה שגויים");
-      } else {
-        setError("❌ שגיאה בשרת, נסה שוב");
-      }
+      setError(
+        e.response?.status >= 400 && e.response?.status < 500
+          ? "❌ אימייל או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסה שוב"
+      );
       setLoading(false);
       throw e;
     }
   };
 
-  // Helper to fetch with auth & handle expiration
-  const fetchWithAuth = async (fn) => {
+  // Fetch wrapper
+  const fetchWithAuth = async fn => {
     try {
       return await fn();
     } catch (err) {
-      const status = err.response?.status;
-      if (status === 401 || status === 403) {
-        console.warn("[AuthContext] fetchWithAuth detected unauthorized, logging out");
+      if ([401, 403].includes(err.response?.status)) {
+        console.warn("[AuthContext] Unauthorized – logging out");
         await logout();
         setError("❌ יש להתחבר מחדש");
         navigate("/login", { replace: true });
@@ -163,7 +157,7 @@ export function AuthProvider({ children }) {
       ws.current.removeAllListeners();
       ws.current.disconnect();
       ws.current = null;
-      console.log("[AuthContext] Previous WebSocket disposed");
+      console.log("[AuthContext] Disposed previous WS");
     }
     if (!token) return;
 
@@ -173,23 +167,27 @@ export function AuthProvider({ children }) {
       auth: { token, role: userData.role, businessId: userData.businessId }
     });
 
-    ws.current.on("connect", () => console.log("✅ Socket connected:"));
+    ws.current.on("connect",    () => console.log("✅ Socket connected"));
     ws.current.on("disconnect", () => console.log("🔴 Socket disconnected"));
+
     ws.current.on("tokenExpired", async () => {
-      console.warn("[AuthContext] Socket tokenExpired event");
+      console.warn("[AuthContext] Socket tokenExpired");
       try {
         const newToken = await singleFlightRefresh();
         if (newToken) {
           ws.current.auth.token = newToken;
           ws.current.connect();
-          console.log("[AuthContext] Reconnected socket with new token");
-        } else await logout();
+          console.log("[AuthContext] WS reconnected with new token");
+        } else {
+          await logout();
+        }
       } catch {
         await logout();
       }
     });
+
     ws.current.on("connect_error", async err => {
-      console.error("[AuthContext] socket connect_error:", err);
+      console.error("[AuthContext] WS connect_error:", err);
       if (err.message === "jwt expired") {
         try {
           const newToken = await singleFlightRefresh();
@@ -202,65 +200,61 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // Initial load: get token from storage & fetch user
+  // ↳ watch token changes: fetch /auth/me & init WS
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
 
-    (async () => {
-      console.log("[AuthContext] Initializing auth on mount");
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      console.log("[AuthContext] Token from localStorage:", token);
-      if (!token) {
-        console.log("[AuthContext] No token found, skipping /auth/me");
-        setUser(null);
-      } else {
-        setAuthToken(token);
-        try {
-          const { data } = await API.get("/auth/me", { signal: controller.signal });
-          console.log("[AuthContext] /auth/me success on mount:", data);
-          if (isMounted) {
-            setUser(data);
-            createSocketConnection(token, data);
-            if (data.businessId) {
-              localStorage.setItem(
-                "businessDetails",
-                JSON.stringify({ _id: data.businessId })
-              );
-              console.log("[AuthContext] Stored businessDetails on mount:", data.businessId);
-            }
-          }
-        } catch (e) {
-          if (!controller.signal.aborted) {
-            console.error("[AuthContext] /auth/me error on mount:", e);
-            await logout();
-          }
+    console.log("[AuthContext] useEffect token changed:", token);
+    if (!token) {
+      setUser(null);
+      setInitialized(true);
+      return;
+    }
+
+    setLoading(true);
+    setAuthToken(token);
+    API.get("/auth/me", { signal: controller.signal })
+      .then(({ data }) => {
+        if (!isMounted) return;
+        console.log("[AuthContext] /auth/me success:", data);
+        setUser(data);
+        createSocketConnection(token, data);
+        if (data.businessId) {
+          localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+          console.log("[AuthContext] Stored businessDetails:", data.businessId);
         }
-      }
-      if (isMounted) {
-        setLoading(false);
-        setInitialized(true);
-        console.log("[AuthContext] Initialization complete");
-      }
-    })();
+      })
+      .catch(async e => {
+        if (!controller.signal.aborted) {
+          console.error("[AuthContext] /auth/me error:", e);
+          await logout();
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+          setInitialized(true);
+          console.log("[AuthContext] Initialization complete");
+        }
+      });
 
     return () => {
       isMounted = false;
       controller.abort();
     };
-  }, []);
+  }, [token]);
 
-  // Cleanup success toast
+  // Auto-dismiss success toast
   useEffect(() => {
-    if (successMessage) {
-      const t = setTimeout(() => setSuccessMessage(null), 4000);
-      return () => clearTimeout(t);
-    }
+    if (!successMessage) return;
+    const t = setTimeout(() => setSuccessMessage(null), 4000);
+    return () => clearTimeout(t);
   }, [successMessage]);
 
   return (
     <AuthContext.Provider value={{
+      token,
       user,
       loading,
       initialized,
@@ -270,8 +264,7 @@ export function AuthProvider({ children }) {
       refreshAccessToken: singleFlightRefresh,
       fetchWithAuth,
       socket: ws.current,
-      setUser,
-      setBusinessToChatWith
+      setUser
     }}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
