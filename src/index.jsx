@@ -21,7 +21,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <SocketProvider> {/* ⭐️ עטיפת האפליקציה בסוקט קונטקסט */}
+          <SocketProvider> 
             <NotificationsProvider>
               <UnreadMessagesProvider>
                 <Suspense fallback={<div className="spinner"></div>}>
