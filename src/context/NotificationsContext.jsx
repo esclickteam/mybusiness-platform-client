@@ -1,3 +1,4 @@
+// src/context/NotificationsContext.jsx
 import React, {
   createContext,
   useContext,
@@ -7,9 +8,6 @@ import React, {
 } from "react";
 import { useAuth } from "./AuthContext.jsx";
 
-// ————————————————————————————
-// Notifications Context
-// ————————————————————————————
 const NotificationsContext = createContext();
 
 export function NotificationsProvider({ children }) {
@@ -22,94 +20,80 @@ export function NotificationsProvider({ children }) {
     views_count: 0
   });
 
-  // ————————————————————————————
-  // Helpers
-  // ————————————————————————————
+  // עוזר להוסיף רק פעם אחת כל notification
   const addNotification = useCallback((n) => {
     const id = n.id || n._id;
-    setNotifications((prev) =>
-      prev.some((x) => (x.id || x._id) === id) ? prev : [n, ...prev]
+    setNotifications(prev =>
+      prev.some(x => (x.id||x._id)===id) ? prev : [n, ...prev]
     );
   }, []);
 
-  // ————————————————————————————
-  // Socket event handlers
-  // ————————————————————————————
-  const handleBundle = useCallback(
-    ({ count, lastNotification }) => {
-      if (lastNotification) addNotification(lastNotification);
-      setUnreadCount(count);
-    },
-    [addNotification]
-  );
+  const handleBundle = useCallback(({ count, lastNotification }) => {
+    if (lastNotification) addNotification(lastNotification);
+    setUnreadCount(count);
+  }, [addNotification]);
 
-  const handleNew = useCallback(
-    (n) => {
-      addNotification(n);
-      setUnreadCount((c) => c + 1);
-    },
-    [addNotification]
-  );
+  const handleNew = useCallback(n => {
+    addNotification(n);
+    setUnreadCount(c => c + 1);
+  }, [addNotification]);
 
-  const handleDashboard = useCallback((stats) => {
+  const handleDashboard = useCallback(stats => {
     setDashboardStats(stats);
   }, []);
 
-  // ————————————————————————————
-  // Effect: register socket listeners
-  // ————————————————————————————
+  // מאזינים לאירועי ה־socket שמגיע מה־AuthContext
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
+    // מצטרפים לחדרים ברגע שהחיבור עולה
     const joinRooms = () => {
       socket.emit("joinRoom", `business-${user.businessId}`);
       socket.emit("joinRoom", `dashboard-${user.businessId}`);
     };
 
-    socket.on("connect", joinRooms);
-    socket.on("reconnect", joinRooms);
+    socket.on("connect",    joinRooms);
+    socket.on("reconnect",  joinRooms);
+
     socket.on("notificationBundle", handleBundle);
-    socket.on("newNotification", handleNew);
+    socket.on("newNotification",     handleNew);
     socket.on("unreadMessagesCount", setUnreadCount);
-    socket.on("dashboardUpdate", handleDashboard);
+    socket.on("dashboardUpdate",     handleDashboard);
 
     return () => {
-      socket.off("connect", joinRooms);
-      socket.off("reconnect", joinRooms);
+      socket.off("connect",    joinRooms);
+      socket.off("reconnect",  joinRooms);
+
       socket.off("notificationBundle", handleBundle);
-      socket.off("newNotification", handleNew);
+      socket.off("newNotification",     handleNew);
       socket.off("unreadMessagesCount", setUnreadCount);
-      socket.off("dashboardUpdate", handleDashboard);
+      socket.off("dashboardUpdate",     handleDashboard);
     };
   }, [socket, user?.businessId, handleBundle, handleNew, handleDashboard]);
 
-  // ————————————————————————————
-  // Effect: fetch initial notifications once socket ready
-  // ————————————————————————————
+  // טעינת התראות ראשונית מה־API ברגע שה־socket קיים
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
     fetch("/api/business/my/notifications", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
-      .then((r) => r.json())
-      .then((d) => {
+      .then(r => r.json())
+      .then(d => {
         if (d.ok) {
           setNotifications(d.notifications);
-          setUnreadCount(d.notifications.filter((n) => !n.read).length);
+          setUnreadCount(d.notifications.filter(n => !n.read).length);
         }
       })
-      .catch((e) => console.error("[NotificationsProvider] Fetch error:", e));
+      .catch(console.error);
   }, [socket, user?.businessId]);
 
   return (
-    <NotificationsContext.Provider
-      value={{
-        notifications,
-        unreadMessagesCount: unreadCount,
-        dashboardStats
-      }}
-    >
+    <NotificationsContext.Provider value={{
+      notifications,
+      unreadMessagesCount: unreadCount,
+      dashboardStats
+    }}>
       {children}
     </NotificationsContext.Provider>
   );
