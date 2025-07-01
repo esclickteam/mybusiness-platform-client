@@ -76,7 +76,6 @@ const getMessageKey = (m) => {
   return `uniq_${m.__uniqueKey}`;
 };
 
-// פונקציית נירמול שדות מטא-דאטה בקובץ להבטיח שדות אחידים ל־UI
 function normalizeMessageFileFields(message) {
   if (message.file) {
     if (!message.fileUrl) message.fileUrl = message.file.url || "";
@@ -97,44 +96,6 @@ function normalizeMessageFileFields(message) {
   return message;
 }
 
-async function uploadFileToServer(
-  file,
-  conversationId,
-  businessId,
-  toId,
-  message
-) {
-  const formData = new FormData();
-  formData.append("file", file);
-
-  if (conversationId) formData.append("conversationId", conversationId);
-  if (businessId) formData.append("businessId", businessId);
-  if (toId) formData.append("toId", toId);
-
-  const effectiveMessage = message && message.trim() ? message : " ";
-  formData.append("message", effectiveMessage);
-
-  const token = localStorage.getItem("token");
-  const response = await fetch("/api/business/my/chat", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.error || "Upload failed");
-  }
-
-  const data = await response.json();
-
-  const fileUrlFromNewMsg = data.newMessage?.file?.url;
-  return fileUrlFromNewMsg || data.fileUrl || "";
-}
-
 export default function ClientChatTab({
   socket,
   conversationId,
@@ -150,17 +111,9 @@ export default function ClientChatTab({
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [recording, setRecording] = useState(false);
-  const [recordedBlob, setRecordedBlob] = useState(null);
-  const [timer, setTimer] = useState(0);
 
   const messageListRef = useRef(null);
   const textareaRef = useRef(null);
-  const fileInputRef = useRef(null);
-  const timerRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const recordedChunksRef = useRef([]);
-  const mediaStreamRef = useRef(null);
 
   const messagesRef = useRef(messages);
   useEffect(() => {
@@ -193,7 +146,10 @@ export default function ClientChatTab({
           { conversationId, limit: 50, conversationType, businessId },
           (response) => {
             if (response.ok) {
-              const normalizedMessages = (Array.isArray(response.messages) ? response.messages : []).map(normalizeMessageFileFields);
+              const normalizedMessages = (Array.isArray(response.messages)
+                ? response.messages
+                : []
+              ).map(normalizeMessageFileFields);
               setMessages(normalizedMessages);
               setError("");
             } else {
@@ -222,9 +178,10 @@ export default function ClientChatTab({
       msg = normalizeMessageFileFields(msg);
 
       setMessages((prev) => {
-        const idx = prev.findIndex((m) =>
-          (m._id && msg._id && m._id === msg._id) ||
-          (m.tempId && msg.tempId && m.tempId === msg.tempId)
+        const idx = prev.findIndex(
+          (m) =>
+            (m._id && msg._id && m._id === msg._id) ||
+            (m.tempId && msg.tempId && m.tempId === msg.tempId)
         );
         if (idx !== -1) {
           const newMessages = [...prev];
@@ -283,10 +240,6 @@ export default function ClientChatTab({
     if (!textareaRef.current) return;
     textareaRef.current.style.height = "auto";
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
-  };
-
-  const handleAttach = () => {
-    if (fileInputRef.current) fileInputRef.current.click();
   };
 
   const sendMessage = () => {
@@ -356,7 +309,9 @@ export default function ClientChatTab({
           setSending(false);
           if (ack?.ok) {
             setMessages((prev) =>
-              prev.map((msg) => (msg.tempId === tempId && ack.message ? normalizeMessageFileFields(ack.message) : msg))
+              prev.map((msg) =>
+                msg.tempId === tempId && ack.message ? normalizeMessageFileFields(ack.message) : msg
+              )
             );
           } else {
             setError("שגיאה בשליחת ההודעה: " + (ack.error || "לא ידוע"));
@@ -365,146 +320,6 @@ export default function ClientChatTab({
         }
       );
     }
-  };
-
-  const getSupportedMimeType = () =>
-    MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/webm";
-
-  const handleRecordStart = async () => {
-    if (recording) return;
-    recordedChunksRef.current = [];
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaStreamRef.current = stream;
-      const mimeType = getSupportedMimeType();
-      const recorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorderRef.current = recorder;
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) recordedChunksRef.current.push(e.data);
-      };
-      recorder.onstop = () => {
-        const blob = new Blob(recordedChunksRef.current, { type: mimeType });
-        setRecordedBlob(blob);
-        clearInterval(timerRef.current);
-        setRecording(false);
-      };
-
-      recorder.start();
-      setRecording(true);
-      setTimer(0);
-      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-    } catch {
-      setError("אין הרשאה להקלטה");
-    }
-  };
-
-  const handleRecordStop = () => {
-    if (!recording || !mediaRecorderRef.current) return;
-    mediaRecorderRef.current.stop();
-  };
-
-  const handleSendRecording = async () => {
-    if (!recordedBlob) return;
-    setSending(true);
-    setError("");
-    const tempId = uuidv4();
-
-    try {
-      const file = new File([recordedBlob], `recording_${Date.now()}.webm`, { type: recordedBlob.type });
-      const uploadedUrl = await uploadFileToServer(file, conversationId, businessId, userId, input.trim());
-
-      socket.emit(
-        "sendMessage",
-        {
-          conversationId,
-          from: userId,
-          to: businessId,
-          role: "client",
-          fileUrl: uploadedUrl,
-          fileName: file.name,
-          fileType: file.type,
-          fileDuration: timer,
-          tempId,
-          conversationType,
-        },
-        (ack) => {
-          setSending(false);
-          setRecordedBlob(null);
-          setTimer(0);
-          if (!ack.ok) setError("שגיאה בשליחת ההקלטה");
-        }
-      );
-    } catch (error) {
-      setSending(false);
-      setError("שגיאה בהעלאת ההקלטה: " + error.message);
-    }
-  };
-
-  const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setSending(true);
-    setError("");
-
-    const tempId = uuidv4();
-    const optimisticMsg = {
-      _id: tempId,
-      tempId,
-      conversationId,
-      from: userId,
-      role: "client",
-      fileName: file.name,
-      fileType: file.type,
-      fileUrl: URL.createObjectURL(file),
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-
-    try {
-      const uploadedUrl = await uploadFileToServer(
-        file,
-        conversationId,
-        businessId,
-        businessId,
-        input.trim()
-      );
-
-      socket.emit(
-        "sendMessage",
-        {
-          conversationId,
-          from: userId,
-          to: businessId,
-          role: "client",
-          fileUrl: uploadedUrl,
-          fileName: file.name,
-          fileType: file.type,
-          tempId,
-          conversationType,
-        },
-        (ack) => {
-          setSending(false);
-          if (ack.ok && ack.message) {
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.tempId === tempId ? normalizeMessageFileFields(ack.message) : msg
-              )
-            );
-          } else {
-            setError("שגיאה בשליחת הקובץ");
-            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-          }
-        }
-      );
-    } catch (error) {
-      setSending(false);
-      setError("שגיאה בהעלאת הקובץ: " + error.message);
-      setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
-    }
-
-    e.target.value = null;
   };
 
   return (
@@ -586,91 +401,29 @@ export default function ClientChatTab({
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
 
-        {(recording || recordedBlob) ? (
-          <div className="audio-preview-row">
-            {recording ? (
-              <>
-                <button className="recordBtn recording" onClick={handleRecordStop} type="button">
-                  ⏹️
-                </button>
-                <span className="preview-timer">
-                  {String(Math.floor(timer / 60)).padStart(2, "0")}:
-                  {String(timer % 60).padStart(2, "0")}
-                </span>
-                <button
-                  className="preview-btn trash"
-                  onClick={() => {
-                    setRecording(false);
-                    setRecordedBlob(null);
-                    setTimer(0);
-                  }}
-                  type="button"
-                >
-                  🗑️
-                </button>
-              </>
-            ) : (
-              <>
-                <audio src={URL.createObjectURL(recordedBlob)} controls style={{ height: 30 }} />
-                <div>
-                  משך הקלטה:{" "}
-                  {String(Math.floor(timer / 60)).padStart(2, "0")}:
-                  {String(timer % 60).padStart(2, "0")}
-                </div>
-                <button className="send-btn" onClick={handleSendRecording} disabled={sending}>
-                  שלח
-                </button>
-              </>
-            )}
-          </div>
-        ) : (
-          <>
-            <textarea
-              ref={textareaRef}
-              className="inputField"
-              placeholder="הקלד הודעה..."
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                resizeTextarea();
-              }}
-              onKeyDown={(e) =>
-                e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())
-              }
-              disabled={sending}
-              rows={1}
-            />
-            <button
-              className="sendButtonFlat"
-              onClick={sendMessage}
-              disabled={sending || !input.trim()}
-              type="button"
-            >
-              ◀
-            </button>
-            <div className="inputBar-right">
-              <button className="attachBtn" onClick={handleAttach} disabled={sending} type="button">
-                📎
-              </button>
-              <button
-                className={`recordBtn${recording ? " recording" : ""}`}
-                onClick={handleRecordStart}
-                disabled={sending}
-                type="button"
-              >
-                🎤
-              </button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="fileInput"
-                onChange={handleFileChange}
-                disabled={sending}
-                style={{ display: "none" }}
-              />
-            </div>
-          </>
-        )}
+        <textarea
+          ref={textareaRef}
+          className="inputField"
+          placeholder="הקלד הודעה..."
+          value={input}
+          onChange={(e) => {
+            setInput(e.target.value);
+            resizeTextarea();
+          }}
+          onKeyDown={(e) =>
+            e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())
+          }
+          disabled={sending}
+          rows={1}
+        />
+        <button
+          className="sendButtonFlat"
+          onClick={sendMessage}
+          disabled={sending || !input.trim()}
+          type="button"
+        >
+          ◀
+        </button>
       </div>
     </div>
   );
