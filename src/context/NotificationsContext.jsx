@@ -18,18 +18,23 @@ const initialState = {
   },
 };
 
+// עדכון: הנורמליזציה חייבת להחזיר id שהוא threadId (ולא הודעה)
 function normalizeNotification(notif) {
   return {
     ...notif,
-    id: notif.id || notif._id?.toString(),
+    // חובה! לזהות threadId או מזהה שיחה כ-id להתראה.
+    id: notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
+    lastMessage: notif.lastMessage, // תעדכן פה את שדה ההודעה האחרונה אם צריך
+    read: notif.read ?? false,
+    timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
   };
 }
 
-// רידוסר לטיפול בהתראות
+// Reducer בסגנון פייסבוק – שורה אחת לכל thread עם הודעה לא נקראה
 function notificationsReducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
-      // מיזוג התראות עם הקיימות, ללא כפילויות וממוינות לפי תאריך
+      // מיזוג התראות לפי threadId בלבד
       const incoming = action.payload.map(normalizeNotification);
       const map = new Map();
       state.notifications.forEach(n => map.set(n.id, n));
@@ -45,12 +50,19 @@ function notificationsReducer(state, action) {
       const exists = state.notifications.find(n => n.id === normalized.id);
       let newNotifications;
       if (exists) {
+        // מעדכן את שורת ההתראה – תמיד שם כלא נקרא, ומעדכן הודעה אחרונה
         newNotifications = state.notifications.map(n =>
-          n.id === normalized.id ? normalized : n
+          n.id === normalized.id
+            ? { ...n, ...normalized, read: false } // תמיד מסמן לא נקרא כשהגיעה הודעה חדשה
+            : n
         );
       } else {
         newNotifications = [normalized, ...state.notifications];
       }
+      // ממיין מחדש לפי תאריך (כך שהשיחה עם ההודעה הכי עדכנית תהיה למעלה)
+      newNotifications.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
       return { ...state, notifications: newNotifications };
     }
 
@@ -85,9 +97,10 @@ export function NotificationsProvider({ children }) {
 
   const [state, dispatch] = useReducer(notificationsReducer, initialState);
 
+  // מונה שיחות לא נקראו (בסגנון פייסבוק)
   const unreadCount = state.notifications.filter(n => !n.read).length;
 
-  // 1️⃣ Fetch initial notifications
+  // טעינת התראות ראשוניות
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
@@ -104,7 +117,7 @@ export function NotificationsProvider({ children }) {
       .catch(err => console.error("Notifications fetch failed:", err));
   }, [user?.businessId]);
 
-  // 2️⃣ Setup WS listeners
+  // האזנה ל־socket לאירועים חיים
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -141,8 +154,8 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId]);
 
-  // 3️⃣ אופציונלי - לסמן קריאה
-  const markAsRead = useCallback(async (id) => {
+  // סימון שיחה כנקראה
+  const markAsRead = useCallback(async (threadId) => {
     try {
       await fetch("/api/notifications/mark-read", {
         method: "POST",
@@ -150,9 +163,9 @@ export function NotificationsProvider({ children }) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ notificationId: id }),
+        body: JSON.stringify({ threadId }), // שים לב: threadId!
       });
-      dispatch({ type: "MARK_AS_READ", payload: id });
+      dispatch({ type: "MARK_AS_READ", payload: threadId });
     } catch (err) {
       console.error("markAsRead error:", err);
     }

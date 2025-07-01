@@ -12,30 +12,48 @@ export default function Notifications({ onClose }) {
 
   const navigate = useNavigate();
 
-  console.log("[Notifications] Rendered with notifications:", notifications);
+  // איחוד התראות צ'אט לפי threadId (כמו בפייסבוק)
+  const dedupedNotifications = React.useMemo(() => {
+    const seenThreads = new Set();
+    const filtered = [];
+
+    for (const notif of notifications) {
+      if (notif.type === "message" && notif.threadId) {
+        if (!seenThreads.has(notif.threadId)) {
+          filtered.push(notif);
+          seenThreads.add(notif.threadId);
+        }
+      } else {
+        filtered.push(notif);
+      }
+    }
+    return filtered;
+  }, [notifications]);
 
   const handleClick = (notif) => {
     const id = notif.id || notif._id;
 
-    console.log("[Notifications] Clicked notification:", notif);
-    console.log(`[Notifications] Marking notification ${id} as read`);
-
+    // סמן כהתראה נקראה
     if (!notif.read) {
       markAsRead(id);
     }
 
-    const url =
-      notif.targetUrl ||
-      {
-        message: "/messages",
-        collaboration: "/collaborations",
-        meeting: "/meetings",
-        review: "/reviews",
-      }[notif.type] ||
-      "/";
-    console.log(`[Notifications] Navigating to ${url}`);
+    // צ'אט – מעבר לשיחה עצמה
+    if (notif.type === "message" && notif.threadId) {
+      navigate(`/chat/${notif.threadId}`);
+    } else {
+      // מעבר ליעד הרגיל
+      const url =
+        notif.targetUrl ||
+        {
+          collaboration: "/collaborations",
+          meeting: "/meetings",
+          review: "/reviews",
+        }[notif.type] ||
+        "/";
+      navigate(url);
+    }
 
-    navigate(url);
     onClose();
   };
 
@@ -71,13 +89,10 @@ export default function Notifications({ onClose }) {
         }}
       >
         התראות
-        {notifications.length > 0 && (
+        {dedupedNotifications.length > 0 && (
           <>
             <button
-              onClick={() => {
-                console.log("[Notifications] Clearing read notifications");
-                clearRead();
-              }}
+              onClick={clearRead}
               style={{
                 background: "none",
                 border: "none",
@@ -91,10 +106,7 @@ export default function Notifications({ onClose }) {
               נקה נקראו
             </button>
             <button
-              onClick={() => {
-                console.log("[Notifications] Clearing all notifications");
-                clearAll();
-              }}
+              onClick={clearAll}
               style={{
                 background: "none",
                 border: "none",
@@ -110,11 +122,11 @@ export default function Notifications({ onClose }) {
         )}
       </div>
 
-      {notifications.length === 0 ? (
+      {dedupedNotifications.length === 0 ? (
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
-        notifications.map((notif) => {
-          const key = notif.id || notif._id;
+        dedupedNotifications.map((notif) => {
+          const key = notif.id || notif._id || notif.threadId;
           return (
             <div
               key={key}
