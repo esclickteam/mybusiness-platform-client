@@ -20,21 +20,20 @@ export function NotificationsProvider({ children }) {
     views_count: 0,
   });
 
+  // מוסיף התראה לרשימה אם לא קיים
   const addNotification = useCallback((notif) => {
     setNotifications((prev) =>
       prev.some((n) => n.id === notif.id) ? prev : [notif, ...prev]
     );
   }, []);
 
-  // 1️⃣ Fetch initial notifications
+  // 1️⃣ טען התראות ראשוניות
   useEffect(() => {
     if (!user?.businessId) return;
     (async () => {
       try {
         const res = await fetch("/api/business/my/notifications", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const data = await res.json();
         if (data.ok) {
@@ -49,62 +48,66 @@ export function NotificationsProvider({ children }) {
     })();
   }, [user?.businessId]);
 
-  // 2️⃣ Real-time: notifications & counts
+  // 2️⃣ מאזין לאירועי WebSocket של התראות
   useEffect(() => {
     if (!socket) return;
 
+    // מצטרף לחדר העסק לאחר התחברות
     const onConnect = () => {
       if (user?.businessId) {
         socket.emit("joinBusinessRoom", user.businessId);
         console.log("[WS] joinBusinessRoom emitted:", user.businessId);
       }
     };
+    if (socket.connected) onConnect();
+    socket.on("connect", onConnect);
+
+    // אירוע התראה בודדת
     const onNewNotification = (notif) => {
       console.log("[WS] newNotification:", notif);
       addNotification(notif);
       setUnreadCount((c) => c + 1);
     };
-    const onCount = (count) => {
-      console.log("[WS] unreadMessagesCount:", count);
+    socket.on("newNotification", onNewNotification);
+
+    // אירוע חבילה עם מונה ו� lastNotification
+    const onBundle = ({ count, lastNotification }) => {
+      console.log("[WS] notificationBundle:", count, lastNotification);
+      if (lastNotification) addNotification(lastNotification);
       setUnreadCount(count);
     };
+    socket.on("notificationBundle", onBundle);
+
+    // אירוע עדכון סטטיסטיקות לוח בקרה
     const onDashboard = (stats) => {
       console.log("[WS] dashboardUpdate:", stats);
       setDashboardStats(stats);
     };
-
-    socket.on("connect", onConnect);
-    // אם כבר מחובר — צור שוב את החיבור לחדר
-    if (socket.connected) onConnect();
-
-    socket.on("newNotification", onNewNotification);
-    socket.on("unreadMessagesCount", onCount);
     socket.on("dashboardUpdate", onDashboard);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("newNotification", onNewNotification);
-      socket.off("unreadMessagesCount", onCount);
+      socket.off("notificationBundle", onBundle);
       socket.off("dashboardUpdate", onDashboard);
     };
   }, [socket, user?.businessId, addNotification]);
 
-  // 3️⃣ Real-time: newMessage listener
+  // 3️⃣ מאזין להודעות חדשות (לשימוש בחלקי צ׳אט אחרים)
   useEffect(() => {
     if (!socket) return;
 
     const onNewMessage = (msg) => {
       console.log("[WS] newMessage:", msg);
-      // כאן אפשר לקרוא לפונקציה בסביבה שישלוט על מצב השיחות
-      // למשל: addToConversation(msg.conversationId, msg);
+      // במידת הצורך: הוסף callback לעדכון צ׳אט
     };
-
     socket.on("newMessage", onNewMessage);
     return () => {
       socket.off("newMessage", onNewMessage);
     };
   }, [socket]);
 
+  // סימון התראה כנקראה
   const markAsRead = useCallback(async (id) => {
     try {
       await fetch("/api/notifications/mark-read", {
@@ -124,11 +127,13 @@ export function NotificationsProvider({ children }) {
     }
   }, []);
 
+  // נקה את כל ההתראות
   const clearAll = useCallback(() => {
     setNotifications([]);
     setUnreadCount(0);
   }, []);
 
+  // נקה רק את הקריאות
   const clearRead = useCallback(() => {
     setNotifications((prev) => prev.filter((n) => !n.read));
   }, []);

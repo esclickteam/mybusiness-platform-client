@@ -27,7 +27,7 @@ export default function Header() {
   const {
     clearAll,
     clearRead,
-    unreadCount,           // <-- renamed
+    unreadCount,           // <-- המונה הנכון
   } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
