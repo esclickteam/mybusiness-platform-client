@@ -6,8 +6,8 @@ import { io } from "socket.io-client";
 let ongoingRefresh = null;
 let isRefreshing = false;
 
-// Single-flight token refresh
-async function singleFlightRefresh() {
+// Single-flight token refresh – מקבל setToken כפרמטר
+export async function singleFlightRefresh(setToken) {
   console.log("[AuthContext] singleFlightRefresh called");
   if (!ongoingRefresh) {
     isRefreshing = true;
@@ -42,7 +42,7 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
-  // ← NEW: keep token in state (initialized from localStorage)
+  // keep token in state (initialized from localStorage)
   const [token, setToken] = useState(() => localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -50,6 +50,9 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const ws = useRef(null);
+
+  // עטיפת פונקציית רענון כדי להעביר את setToken
+  const refreshAccessToken = () => singleFlightRefresh(setToken);
 
   // Logout
   const logout = async () => {
@@ -65,7 +68,7 @@ export function AuthProvider({ children }) {
       isRefreshing = false;
       setAuthToken(null);
       localStorage.removeItem("token");
-      setToken(null);               // ← clear state
+      setToken(null);
       localStorage.removeItem("businessDetails");
       console.log("[AuthContext] Cleared token & details");
       if (ws.current) {
@@ -96,7 +99,7 @@ export function AuthProvider({ children }) {
 
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
-      setToken(accessToken);        // ← store in state
+      setToken(accessToken);
 
       const { data } = await API.get("/auth/me", { withCredentials: true });
       console.log("[AuthContext] /auth/me returned:", data);
@@ -173,7 +176,7 @@ export function AuthProvider({ children }) {
     ws.current.on("tokenExpired", async () => {
       console.warn("[AuthContext] Socket tokenExpired");
       try {
-        const newToken = await singleFlightRefresh();
+        const newToken = await refreshAccessToken();
         if (newToken) {
           ws.current.auth.token = newToken;
           ws.current.connect();
@@ -190,7 +193,7 @@ export function AuthProvider({ children }) {
       console.error("[AuthContext] WS connect_error:", err);
       if (err.message === "jwt expired") {
         try {
-          const newToken = await singleFlightRefresh();
+          const newToken = await refreshAccessToken();
           if (newToken) createSocketConnection(newToken, userData);
           else await logout();
         } catch {
@@ -200,7 +203,7 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // ↳ watch token changes: fetch /auth/me & init WS
+  // watch token changes: fetch /auth/me & init WS
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -261,7 +264,7 @@ export function AuthProvider({ children }) {
       error,
       login,
       logout,
-      refreshAccessToken: singleFlightRefresh,
+      refreshAccessToken,
       fetchWithAuth,
       socket: ws.current,
       setUser
