@@ -1,44 +1,30 @@
-// src/socket.js — Singleton WebSocket helper
+// src/socket.js — Singleton WebSocket helper (v2)
 import { io } from "socket.io-client";
 import { getUserRole } from "./utils/authHelpers";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
-let socketInstance = null;          // מופע סוקט יחיד לכל האפליקציה
-let currentToken   = null;          // token האחרון שהוזרק
+let socketInstance = null; // מופע יחיד
+let currentToken   = null; // הטוקן האחרון
 
 /**
- * יוצר (או מחזיר) מופע Socket.IO מאומת, ללא כפילויות.
- * – מצרף businessId ו‑role כבר ב‑handshake כך שהשרת ישים את הסוקט בחדרים לפני  connect.
- * – מטפל ברענון טוקן אוטומטי ובניתוק נקי בלוג‑אאוט.
- *
- * @param {() => Promise<string|null>} getValidAccessToken  פונקציה שמחזירה JWT תקין
- * @param {() => Promise<void>|void}  onLogout             להתנתק אם אי‑אפשר לרענן
- * @param {string|null}                businessId          ID עסק (נחוץ לתפקידים עסקיים)
- * @returns {Promise<import("socket.io-client").Socket|null>}
+ * מחזיר מופע Socket.IO יחיד – אם כבר קיים (גם אם עדיין connecting) מחזיר אותו.
+ * @param {() => Promise<string|null>} getValidAccessToken
+ * @param {() => void|Promise<void>}   onLogout
+ * @param {string|null}                businessId
  */
 export async function createSocket(getValidAccessToken, onLogout, businessId = null) {
-  // 1. קבל/חדש טוקן
   const token = await getValidAccessToken();
-  if (!token) {
-    onLogout?.();
-    return null;
-  }
+  if (!token) { onLogout?.(); return null; }
 
   const role = getUserRole();
-  const rolesNeedBiz = ["business", "business-dashboard"];
-  if (rolesNeedBiz.includes(role) && !businessId) {
-    console.error("❌ Missing businessId for role", role);
-    onLogout?.();
-    return null;
-  }
+  const needBiz = ["business", "business-dashboard"];
+  if (needBiz.includes(role) && !businessId) { onLogout?.(); return null; }
 
-  // 2. אם כבר יש סוקט עם אותו טוקן → החזר אותו
-  if (socketInstance && socketInstance.connected && token === currentToken) {
-    return socketInstance;
-  }
+  // 👉 אם כבר קיים אינסטנס עם אותו טוקן – החזר אותו (גם אם עדיין לא connected)
+  if (socketInstance && token === currentToken) return socketInstance;
 
-  // 3. אם יש אינסטנס קיים עם טוקן ישן → נתק ונאפס
+  // 🧹 נתק את הקודם (טוקן הוחלף)
   if (socketInstance) {
     socketInstance.removeAllListeners();
     socketInstance.disconnect();
@@ -47,49 +33,34 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
   currentToken = token;
 
-  /* ------------------------------------------------------------------ */
-  /*  יצירת סוקט חדש                                                   */
-  /* ------------------------------------------------------------------ */
   socketInstance = io(SOCKET_URL, {
     path: "/socket.io",
     transports: ["websocket"],
-    auth: { token, role, businessId }, // ← נשלח ב‑handshake
+    auth: { token, role, businessId },
     reconnection: true,
-    reconnectionAttempts: Infinity,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
-    randomizationFactor: 0.3,
   });
 
-  /* -------------------------‬ EVENTS -------------------------------- */
-  socketInstance.on("connect", () => {
-    console.log(`✅ WS connected (${socketInstance.id}) role=${role}`);
-  });
-
-  socketInstance.on("disconnect", (reason) => {
-    console.log("🔴 WS disconnected:", reason);
-    if (["io client disconnect", "io server disconnect"].includes(reason)) {
+  // לוגים בסיסיים
+  socketInstance.on("connect", () => console.log(`✅ singleton WS connected (${socketInstance.id})`));
+  socketInstance.on("disconnect", (r) => {
+    console.log("🔴 WS disconnected:", r);
+    if (["io client disconnect", "io server disconnect"].includes(r)) {
       socketInstance = null;
     }
   });
 
-  /*  רענון טוקן אוטומטי  */
+  // רענון טוקן
   const refreshAndReconnect = async () => {
-    const newToken = await getValidAccessToken();
-    if (!newToken) {
-      await onLogout?.();
-      return;
-    }
-    currentToken = newToken;
-    socketInstance.auth.token = newToken;
-    socketInstance.io.opts.auth.token = newToken;
+    const newT = await getValidAccessToken();
+    if (!newT) return onLogout?.();
+    currentToken = newT;
+    socketInstance.auth.token = newT;
+    socketInstance.io.opts.auth.token = newT;
     socketInstance.connect();
   };
-
   socketInstance.on("tokenExpired", refreshAndReconnect);
-  socketInstance.on("connect_error", (err) => {
-    if (err?.message === "jwt expired") refreshAndReconnect();
-    else console.error("❌ WS connect_error:", err.message);
+  socketInstance.on("connect_error", (e) => {
+    if (e?.message === "jwt expired") refreshAndReconnect();
   });
 
   return socketInstance;

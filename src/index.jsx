@@ -1,17 +1,18 @@
+// src/main.jsx (entrypoint)
 import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+/* Contexts */
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
 import { UnreadMessagesProvider } from "./context/UnreadMessagesContext";
-import { SocketProvider } from "./context/socketContext"; // 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import "./styles/index.css";
 
-// Polyfill ל-Buffer בדפדפן (נדרש בחלק מהספריות)
+// Polyfill ל‑Buffer (חלק מהספריות דורשות)
 import { Buffer } from "buffer";
-window.Buffer = window.Buffer || Buffer;
+if (!window.Buffer) window.Buffer = Buffer;
 
 const queryClient = new QueryClient();
 const App = lazy(() => import("./App"));
@@ -21,15 +22,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <SocketProvider> 
-            <NotificationsProvider>
-              <UnreadMessagesProvider>
-                <Suspense fallback={<div className="spinner"></div>}>
-                  <App />
-                </Suspense>
-              </UnreadMessagesProvider>
-            </NotificationsProvider>
-          </SocketProvider>
+          <NotificationsProvider>
+            <UnreadMessagesProvider>
+              <Suspense fallback={<div className="spinner" />}>  {/* ניתן להחליף בספינר ייעודי */}
+                <App />
+              </Suspense>
+            </UnreadMessagesProvider>
+          </NotificationsProvider>
         </AuthProvider>
       </QueryClientProvider>
     </BrowserRouter>
