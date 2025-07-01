@@ -66,8 +66,7 @@ export function AuthProvider({ children }) {
 
     setAuthToken(null);
     localStorage.removeItem("token");
-    localStorage.removeItem("businessDetails");
-    localStorage.removeItem("user"); // ניקוי פרטי משתמש מ-localStorage
+    localStorage.removeItem("businessDetails");  // שים לב למפתח החדש
     setToken(null);
     setUser(null);
 
@@ -142,7 +141,7 @@ export function AuthProvider({ children }) {
       socketRef.current = null;
       setSocket(null);
       setUser(null);
-      localStorage.removeItem("user"); // ניקוי פרטי משתמש ב-localStorage
+      localStorage.removeItem("businessDetails");  // ניקוי פרטי משתמש לפי המפתח החדש
       setInitialized(true);
       return;
     }
@@ -154,7 +153,7 @@ export function AuthProvider({ children }) {
       try {
         const { data } = await API.get("/auth/me", { withCredentials: true });
         setUser(data);
-        localStorage.setItem("user", JSON.stringify(data)); // שמירת פרטי משתמש
+        localStorage.setItem("businessDetails", JSON.stringify(data)); // שמירת פרטי משתמש תחת המפתח החדש
 
         const s = await createSocket(singleFlightRefresh, logout, data.businessId);
         socketRef.current = s;
@@ -166,7 +165,7 @@ export function AuthProvider({ children }) {
           sessionStorage.removeItem("postLoginRedirect");
         }
       } catch (err) {
-        localStorage.removeItem("user"); // ניקוי במקרה של שגיאה
+        localStorage.removeItem("businessDetails");  // ניקוי במקרה של שגיאה לפי המפתח החדש
         await logout();
       } finally {
         setLoading(false);
