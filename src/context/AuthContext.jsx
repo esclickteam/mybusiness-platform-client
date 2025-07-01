@@ -1,48 +1,25 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useCallback
+} from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import { io } from "socket.io-client";
 
+// keep these at module level for single-flight behavior
 let ongoingRefresh = null;
 let isRefreshing = false;
-
-// Single-flight token refresh
-async function singleFlightRefresh() {
-  console.log("[AuthContext] singleFlightRefresh called");
-  if (!ongoingRefresh) {
-    isRefreshing = true;
-    console.log("[AuthContext] Starting token refresh");
-    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
-      .then(res => {
-        const newToken = res.data.accessToken;
-        if (!newToken) throw new Error("No new token");
-        console.log("[AuthContext] Refresh token success:", newToken);
-        localStorage.setItem("token", newToken);
-        setAuthToken(newToken);
-        setToken(newToken);           // ← update local state
-        return newToken;
-      })
-      .catch(err => {
-        console.error("[AuthContext] Refresh token failed:", err);
-        throw err;
-      })
-      .finally(() => {
-        isRefreshing = false;
-        ongoingRefresh = null;
-        console.log("[AuthContext] Token refresh finished");
-      });
-  } else {
-    console.log("[AuthContext] Using ongoing token refresh");
-  }
-  return ongoingRefresh;
-}
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
-  // ← NEW: keep token in state (initialized from localStorage)
+  // ← NEW: token in state
   const [token, setToken] = useState(() => localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -50,6 +27,37 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const ws = useRef(null);
+
+  // ← NEW: single-flight refresh INSIDE component so setToken is in scope
+  const singleFlightRefresh = useCallback(async () => {
+    console.log("[AuthContext] singleFlightRefresh called");
+    if (!ongoingRefresh) {
+      isRefreshing = true;
+      console.log("[AuthContext] Starting token refresh");
+      ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
+        .then(res => {
+          const newToken = res.data.accessToken;
+          if (!newToken) throw new Error("No new token");
+          console.log("[AuthContext] Refresh token success:", newToken);
+          localStorage.setItem("token", newToken);
+          setAuthToken(newToken);
+          setToken(newToken);           // ← update local state
+          return newToken;
+        })
+        .catch(err => {
+          console.error("[AuthContext] Refresh token failed:", err);
+          throw err;
+        })
+        .finally(() => {
+          isRefreshing = false;
+          ongoingRefresh = null;
+          console.log("[AuthContext] Token refresh finished");
+        });
+    } else {
+      console.log("[AuthContext] Using ongoing token refresh");
+    }
+    return ongoingRefresh;
+  }, []);
 
   // Logout
   const logout = async () => {
@@ -86,7 +94,9 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const { data: { accessToken, redirectUrl } } = await API.post(
+      const {
+        data: { accessToken, redirectUrl }
+      } = await API.post(
         "/auth/login",
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
@@ -102,20 +112,26 @@ export function AuthProvider({ children }) {
       console.log("[AuthContext] /auth/me returned:", data);
 
       if (data.businessId) {
-        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
+        localStorage.setItem(
+          "businessDetails",
+          JSON.stringify({ _id: data.businessId })
+        );
         console.log("[AuthContext] Stored businessDetails:", data.businessId);
       }
       setUser(data);
       createSocketConnection(accessToken, data);
 
       if (!options.skipRedirect) {
-        const path = redirectUrl || {
-          business: `/business/${data.businessId}/dashboard`,
-          customer: "/client/dashboard",
-          worker: "/staff/dashboard",
-          manager: "/manager/dashboard",
-          admin: "/admin/dashboard"
-        }[data.role] || "/";
+        const path =
+          redirectUrl ||
+          {
+            business: `/business/${data.businessId}/dashboard`,
+            customer: "/client/dashboard",
+            worker: "/staff/dashboard",
+            manager: "/manager/dashboard",
+            admin: "/admin/dashboard"
+          }[data.role] ||
+          "/";
         console.log("[AuthContext] Redirecting to:", path);
         navigate(path, { replace: true });
       }
@@ -221,8 +237,14 @@ export function AuthProvider({ children }) {
         setUser(data);
         createSocketConnection(token, data);
         if (data.businessId) {
-          localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-          console.log("[AuthContext] Stored businessDetails:", data.businessId);
+          localStorage.setItem(
+            "businessDetails",
+            JSON.stringify({ _id: data.businessId })
+          );
+          console.log(
+            "[AuthContext] Stored businessDetails:",
+            data.businessId
+          );
         }
       })
       .catch(async e => {
@@ -243,7 +265,7 @@ export function AuthProvider({ children }) {
       isMounted = false;
       controller.abort();
     };
-  }, [token]);
+  }, [token, logout]);
 
   // Auto-dismiss success toast
   useEffect(() => {
@@ -253,20 +275,24 @@ export function AuthProvider({ children }) {
   }, [successMessage]);
 
   return (
-    <AuthContext.Provider value={{
-      token,
-      user,
-      loading,
-      initialized,
-      error,
-      login,
-      logout,
-      refreshAccessToken: singleFlightRefresh,
-      fetchWithAuth,
-      socket: ws.current,
-      setUser
-    }}>
-      {successMessage && <div className="global-success-toast">{successMessage}</div>}
+    <AuthContext.Provider
+      value={{
+        token,
+        user,
+        loading,
+        initialized,
+        error,
+        login,
+        logout,
+        refreshAccessToken: singleFlightRefresh,
+        fetchWithAuth,
+        socket: ws.current,
+        setUser
+      }}
+    >
+      {successMessage && (
+        <div className="global-success-toast">{successMessage}</div>
+      )}
       {children}
     </AuthContext.Provider>
   );
