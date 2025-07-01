@@ -175,7 +175,6 @@ export function AuthProvider({ children }) {
       console.warn("[AuthContext] Socket tokenExpired");
       try {
         const newToken = await singleFlightRefresh();
-        // עדכון ב-header וב-socket
         setAuthToken(newToken);
         ws.current.auth.token = newToken;
         ws.current.disconnect();
@@ -261,7 +260,6 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
-    // הוספת refreshAccessToken כדי שתהיה פונקציה תקינה בצרכנים
     refreshAccessToken: singleFlightRefresh,
     fetchWithAuth,
     socket: ws.current,
@@ -283,5 +281,10 @@ export function AuthProvider({ children }) {
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
-  ); useContext(AuthContext);
+  );
+}
+
+// ייצוא ה-hook useAuth כדי שתוכלו לייבא אותו כ־named import
+export function useAuth() {
+  return useContext(AuthContext);
 }

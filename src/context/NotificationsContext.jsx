@@ -7,7 +7,8 @@ import React, {
   useCallback
 } from "react";
 import { io } from "socket.io-client";
-import { useAuth } from "./AuthContext";
+// חשוב: ייבוא בשם עם ה־.jsx כדי שההרכבה תמצא את הייצוא
+import { useAuth } from "./AuthContext.jsx";
 
 // ————————————————————————————
 // Notifications Context
@@ -41,7 +42,6 @@ export function NotificationsProvider({ children }) {
 
     if (!id) {
       console.warn("[NotificationsProvider] Notification missing id or _id:", n);
-      // במקרה הצורך – אפשר להוסיף מזהה זמני למניעת כפילויות
     }
 
     setNotifications((prev) =>
@@ -128,7 +128,7 @@ export function NotificationsProvider({ children }) {
         console.error("[NotificationsProvider] Fetch error:", e);
       });
 
-    // 2. Disconnect any previous socket before creating a new one (במיוחד כאשר מתחלף משתמש)
+    // 2. Disconnect any previous socket before creating a new one
     if (socketRef.current) {
       console.log(
         "[NotificationsProvider] Disposing previous socket instance"
@@ -183,11 +183,8 @@ export function NotificationsProvider({ children }) {
       setDashboardStats(stats);
     };
 
-    // Primary connect + reconnect
     s.on("connect", joinRooms);
     s.on("reconnect", joinRooms);
-
-    // Notifications
     s.on("notificationBundle", onBundle);
     s.on("newNotification", onNewNotification);
     s.on("unreadMessagesCount", (count) => {
@@ -197,11 +194,8 @@ export function NotificationsProvider({ children }) {
       );
       setUnreadCount(count);
     });
-
-    // Dashboard stats
     s.on("dashboardUpdate", onDashboard);
 
-    // ——— CLEANUP ———
     return () => {
       console.log(
         "[NotificationsProvider] Cleaning up socket listeners and disconnecting"
