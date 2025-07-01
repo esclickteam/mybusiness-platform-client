@@ -31,10 +31,14 @@ export function AuthProvider({ children }) {
         .then(res => {
           const newToken = res.data.accessToken;
           if (!newToken) throw new Error("No new token");
-          if (newToken === token) {
-            console.log("[AuthContext] Token unchanged, skipping setToken");
+
+          const storedToken = localStorage.getItem("token") || "";
+
+          if (storedToken.trim() === newToken.trim()) {
+            console.log("[AuthContext] Token in localStorage matches new token, skipping setToken");
             return newToken;
           }
+
           console.log("[AuthContext] Refresh token success:", newToken);
           localStorage.setItem("token", newToken);
           setAuthToken(newToken);
