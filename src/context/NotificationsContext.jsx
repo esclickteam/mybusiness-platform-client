@@ -92,10 +92,47 @@ export function NotificationsProvider({ children }) {
     })();
   }, [socket, user?.businessId]);
 
+  // פונקציה לסימון התראה כנקראה, עם עדכון לשרת
+  const markAsRead = useCallback(async (id) => {
+    try {
+      await fetch("/api/notifications/mark-read", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ notificationId: id }),
+      });
+
+      setNotifications((prev) =>
+        prev.map((n) =>
+          (n.id || n._id) === id ? { ...n, read: true } : n
+        )
+      );
+      setUnreadCount((count) => Math.max(count - 1, 0));
+    } catch (err) {
+      console.error("Failed to mark notification as read", err);
+    }
+  }, []);
+
+  // ניקוי כל ההתראות
+  const clearAllNotifications = useCallback(() => {
+    setNotifications([]);
+    setUnreadCount(0);
+  }, []);
+
+  // ניקוי רק ההתראות שכבר נקראו
+  const clearReadNotifications = useCallback(() => {
+    setNotifications((prev) => prev.filter((n) => !n.read));
+  }, []);
+
   const ctx = {
     notifications,
     unreadMessagesCount: unreadCount,
     dashboardStats,
+    markAsRead,
+    clearAllNotifications,
+    clearReadNotifications,
   };
 
   useEffect(() => {
