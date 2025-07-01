@@ -20,9 +20,6 @@ export function NotificationsProvider({ children }) {
     views_count: 0,
   });
 
-  /* ------------------------------------------------------------------ */
-  /*  Helpers                                                           */
-  /* ------------------------------------------------------------------ */
   const addNotification = useCallback((n) => {
     const id = n.id || n._id;
     setNotifications((prev) =>
@@ -32,6 +29,7 @@ export function NotificationsProvider({ children }) {
 
   const handleBundle = useCallback(
     ({ count, lastNotification }) => {
+      console.log('[Socket] notificationBundle received:', { count, lastNotification });
       if (lastNotification) addNotification(lastNotification);
       setUnreadCount(count);
     },
@@ -40,6 +38,7 @@ export function NotificationsProvider({ children }) {
 
   const handleNew = useCallback(
     (n) => {
+      console.log('[Socket] newNotification received:', n);
       addNotification(n);
       setUnreadCount((c) => c + 1);
     },
@@ -47,41 +46,33 @@ export function NotificationsProvider({ children }) {
   );
 
   const handleDashboard = useCallback((stats) => {
+    console.log('[Socket] dashboardUpdate received:', stats);
     setDashboardStats(stats);
   }, []);
 
-  /* ------------------------------------------------------------------ */
-  /*  Socket listeners                                                  */
-  /* ------------------------------------------------------------------ */
   useEffect(() => {
     if (!socket) return;
 
-    // הצטרפות לחדר העסק לקבלת אירועים
     if (user?.businessId) {
       socket.emit("joinBusinessRoom", user.businessId);
     }
 
-    // מאזינים לאירועים מהשרת
     socket.on("notificationBundle", handleBundle);
     socket.on("newNotification", handleNew);
-    socket.on("unreadMessagesCount", setUnreadCount);
+    socket.on("unreadMessagesCount", (count) => {
+      console.log('[Socket] unreadMessagesCount received:', count);
+      setUnreadCount(count);
+    });
     socket.on("dashboardUpdate", handleDashboard);
-
-    // DEBUG – לראות כל אירוע (למחוק בפרודקשן)
-    // socket.onAny((ev, payload) => console.log("[SOCKET]", ev, payload));
 
     return () => {
       socket.off("notificationBundle", handleBundle);
       socket.off("newNotification", handleNew);
-      socket.off("unreadMessagesCount", setUnreadCount);
+      socket.off("unreadMessagesCount");
       socket.off("dashboardUpdate", handleDashboard);
-      // socket.offAny(); // במידה ומפעילים onAny
     };
   }, [socket, user?.businessId, handleBundle, handleNew, handleDashboard]);
 
-  /* ------------------------------------------------------------------ */
-  /*  Initial fetch of notifications                                    */
-  /* ------------------------------------------------------------------ */
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -101,14 +92,16 @@ export function NotificationsProvider({ children }) {
     })();
   }, [socket, user?.businessId]);
 
-  /* ------------------------------------------------------------------ */
-  /*  Context value                                                    */
-  /* ------------------------------------------------------------------ */
   const ctx = {
     notifications,
     unreadMessagesCount: unreadCount,
     dashboardStats,
   };
+
+  useEffect(() => {
+    console.log('[Notifications] notifications changed:', notifications);
+    console.log('[Notifications] unreadCount:', unreadCount);
+  }, [notifications, unreadCount]);
 
   return <NotificationsContext.Provider value={ctx}>{children}</NotificationsContext.Provider>;
 }
