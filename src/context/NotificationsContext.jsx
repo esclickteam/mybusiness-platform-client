@@ -128,6 +128,12 @@ export function NotificationsProvider({ children }) {
       setUnreadCount(count);
     };
 
+    const onNewNotification = (notification) => {
+      console.log("[NotificationsProvider] Received newNotification:", notification);
+      if (notification) addNotification(notification);
+      setUnreadCount((count) => count + 1);
+    };
+
     const onDashboard = (stats) => {
       console.log("[NotificationsProvider] Received dashboardUpdate:", stats);
       setDashboardStats(stats);
@@ -135,6 +141,7 @@ export function NotificationsProvider({ children }) {
 
     s.on("connect", joinRooms);
     s.on("notificationBundle", onBundle);
+    s.on("newNotification", onNewNotification);
     s.on("unreadMessagesCount", (count) => {
       console.log("[NotificationsProvider] Received unreadMessagesCount:", count);
       setUnreadCount(count);
@@ -146,6 +153,7 @@ export function NotificationsProvider({ children }) {
       console.log("[NotificationsProvider] Cleaning up socket listeners and disconnecting");
       s.off("connect", joinRooms);
       s.off("notificationBundle", onBundle);
+      s.off("newNotification", onNewNotification);
       s.off("unreadMessagesCount", setUnreadCount);
       s.off("dashboardUpdate", onDashboard);
       s.disconnect();
