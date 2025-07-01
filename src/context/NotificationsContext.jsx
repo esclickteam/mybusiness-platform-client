@@ -17,6 +17,9 @@ const NotificationsContext = createContext();
 export function NotificationsProvider({ children }) {
   const { user, token } = useAuth();
 
+  // Debug: authentication values
+  console.log("[NotificationsProvider] auth values:", { user, token });
+
   // ——— STATE ———
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -88,8 +91,16 @@ export function NotificationsProvider({ children }) {
   // Effect: initial fetch + socket
   // ————————————————————————————
   useEffect(() => {
+    console.log(
+      "[NotificationsProvider] useEffect fired with:",
+      user?.businessId,
+      token
+    );
+
     if (!user?.businessId || !token) {
-      console.log("[NotificationsProvider] Missing user.businessId or token, skipping setup");
+      console.log(
+        "[NotificationsProvider] Missing user.businessId or token, skipping setup"
+      );
       return;
     }
 
@@ -100,11 +111,17 @@ export function NotificationsProvider({ children }) {
       .then((r) => r.json())
       .then((d) => {
         if (d.ok) {
-          console.log("[NotificationsProvider] Initial notifications fetched:", d.notifications);
+          console.log(
+            "[NotificationsProvider] Initial notifications fetched:",
+            d.notifications
+          );
           setNotifications(d.notifications);
           setUnreadCount(d.notifications.filter((n) => !n.read).length);
         } else {
-          console.error("[NotificationsProvider] Failed fetching initial notifications:", d);
+          console.error(
+            "[NotificationsProvider] Failed fetching initial notifications:",
+            d
+          );
         }
       })
       .catch((e) => {
@@ -113,7 +130,9 @@ export function NotificationsProvider({ children }) {
 
     // 2. Disconnect any previous socket before creating a new one (במיוחד כאשר מתחלף משתמש)
     if (socketRef.current) {
-      console.log("[NotificationsProvider] Disposing previous socket instance");
+      console.log(
+        "[NotificationsProvider] Disposing previous socket instance"
+      );
       socketRef.current.disconnect();
       socketRef.current = null;
     }
@@ -131,24 +150,36 @@ export function NotificationsProvider({ children }) {
         `business-${user.businessId}`,
         `dashboard-${user.businessId}`
       ];
-      console.log("[NotificationsProvider] Socket connected, joining rooms:", rooms);
+      console.log(
+        "[NotificationsProvider] Socket connected, joining rooms:",
+        rooms
+      );
       rooms.forEach((room) => s.emit("joinRoom", room));
     };
 
     const onBundle = ({ count, lastNotification }) => {
-      console.log("[NotificationsProvider] Received notificationBundle:", { count, lastNotification });
+      console.log(
+        "[NotificationsProvider] Received notificationBundle:",
+        { count, lastNotification }
+      );
       if (lastNotification) addNotification(lastNotification);
       setUnreadCount(count);
     };
 
     const onNewNotification = (notification) => {
-      console.log("[NotificationsProvider] Received newNotification:", notification);
+      console.log(
+        "[NotificationsProvider] Received newNotification:",
+        notification
+      );
       if (notification) addNotification(notification);
       setUnreadCount((count) => count + 1);
     };
 
     const onDashboard = (stats) => {
-      console.log("[NotificationsProvider] Received dashboardUpdate:", stats);
+      console.log(
+        "[NotificationsProvider] Received dashboardUpdate:",
+        stats
+      );
       setDashboardStats(stats);
     };
 
@@ -160,7 +191,10 @@ export function NotificationsProvider({ children }) {
     s.on("notificationBundle", onBundle);
     s.on("newNotification", onNewNotification);
     s.on("unreadMessagesCount", (count) => {
-      console.log("[NotificationsProvider] Received unreadMessagesCount:", count);
+      console.log(
+        "[NotificationsProvider] Received unreadMessagesCount:",
+        count
+      );
       setUnreadCount(count);
     });
 
@@ -169,7 +203,9 @@ export function NotificationsProvider({ children }) {
 
     // ——— CLEANUP ———
     return () => {
-      console.log("[NotificationsProvider] Cleaning up socket listeners and disconnecting");
+      console.log(
+        "[NotificationsProvider] Cleaning up socket listeners and disconnecting"
+      );
       s.off("connect", joinRooms);
       s.off("reconnect", joinRooms);
       s.off("notificationBundle", onBundle);
