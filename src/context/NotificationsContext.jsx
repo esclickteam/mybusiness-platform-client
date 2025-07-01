@@ -27,15 +27,6 @@ export function NotificationsProvider({ children }) {
     );
   }, []);
 
-  const handleBundle = useCallback(
-    ({ count, lastNotification }) => {
-      console.log('[Socket] notificationBundle received:', { count, lastNotification });
-      if (lastNotification) addNotification(lastNotification);
-      setUnreadCount(count);
-    },
-    [addNotification]
-  );
-
   const handleNew = useCallback(
     (n) => {
       console.log('[Socket] newNotification received:', n);
@@ -45,37 +36,19 @@ export function NotificationsProvider({ children }) {
     [addNotification]
   );
 
+  const handleUnreadCount = useCallback((count) => {
+    console.log('[Socket] unreadMessagesCount received:', count);
+    setUnreadCount(count);
+  }, []);
+
   const handleDashboard = useCallback((stats) => {
     console.log('[Socket] dashboardUpdate received:', stats);
     setDashboardStats(stats);
   }, []);
 
+  // Initial fetch of notifications
   useEffect(() => {
-    if (!socket) return;
-
-    if (user?.businessId) {
-      socket.emit("joinBusinessRoom", user.businessId);
-    }
-
-    socket.on("notificationBundle", handleBundle);
-    socket.on("newNotification", handleNew);
-    socket.on("unreadMessagesCount", (count) => {
-      console.log('[Socket] unreadMessagesCount received:', count);
-      setUnreadCount(count);
-    });
-    socket.on("dashboardUpdate", handleDashboard);
-
-    return () => {
-      socket.off("notificationBundle", handleBundle);
-      socket.off("newNotification", handleNew);
-      socket.off("unreadMessagesCount");
-      socket.off("dashboardUpdate", handleDashboard);
-    };
-  }, [socket, user?.businessId, handleBundle, handleNew, handleDashboard]);
-
-  useEffect(() => {
-    if (!socket || !user?.businessId) return;
-
+    if (!user?.businessId) return;
     (async () => {
       try {
         const res = await fetch("/api/business/my/notifications", {
@@ -90,9 +63,23 @@ export function NotificationsProvider({ children }) {
         console.error("Failed to fetch notifications", err);
       }
     })();
-  }, [socket, user?.businessId]);
+  }, [user?.businessId]);
 
-  // פונקציה לסימון התראה כנקראה, עם עדכון לשרת
+  // Real-time listeners
+  useEffect(() => {
+    if (!socket || !socket.connected) return;
+
+    socket.on("newNotification", handleNew);
+    socket.on("unreadMessagesCount", handleUnreadCount);
+    socket.on("dashboardUpdate", handleDashboard);
+
+    return () => {
+      socket.off("newNotification", handleNew);
+      socket.off("unreadMessagesCount", handleUnreadCount);
+      socket.off("dashboardUpdate", handleDashboard);
+    };
+  }, [socket, handleNew, handleUnreadCount, handleDashboard]);
+
   const markAsRead = useCallback(async (id) => {
     try {
       await fetch("/api/notifications/mark-read", {
@@ -109,19 +96,17 @@ export function NotificationsProvider({ children }) {
           (n.id || n._id) === id ? { ...n, read: true } : n
         )
       );
-      setUnreadCount((count) => Math.max(count - 1, 0));
+      setUnreadCount((c) => Math.max(c - 1, 0));
     } catch (err) {
       console.error("Failed to mark notification as read", err);
     }
   }, []);
 
-  // ניקוי כל ההתראות
   const clearAllNotifications = useCallback(() => {
     setNotifications([]);
     setUnreadCount(0);
   }, []);
 
-  // ניקוי רק ההתראות שכבר נקראו
   const clearReadNotifications = useCallback(() => {
     setNotifications((prev) => prev.filter((n) => !n.read));
   }, []);
