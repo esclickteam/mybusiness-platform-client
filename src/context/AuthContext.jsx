@@ -6,8 +6,8 @@ import { io } from "socket.io-client";
 let ongoingRefresh = null;
 let isRefreshing = false;
 
-// Single-flight token refresh – מקבל setToken כפרמטר
-export async function singleFlightRefresh(setToken) {
+// Single-flight token refresh – לא משנה state, רק header ו-localStorage
+export async function singleFlightRefresh() {
   console.log("[AuthContext] singleFlightRefresh called");
   if (!ongoingRefresh) {
     isRefreshing = true;
@@ -17,9 +17,9 @@ export async function singleFlightRefresh(setToken) {
         const newToken = res.data.accessToken;
         if (!newToken) throw new Error("No new token");
         console.log("[AuthContext] Refresh token success:", newToken);
+        // עדכון ה־header וה־storage בלבד, ללא setToken
         localStorage.setItem("token", newToken);
         setAuthToken(newToken);
-        setToken(newToken);           // ← update local state
         return newToken;
       })
       .catch(err => {
@@ -42,7 +42,6 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
-  // keep token in state (initialized from localStorage)
   const [token, setToken] = useState(() => localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -50,9 +49,6 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const ws = useRef(null);
-
-  // עטיפת פונקציית רענון כדי להעביר את setToken
-  const refreshAccessToken = () => singleFlightRefresh(setToken);
 
   // Logout
   const logout = async () => {
@@ -109,6 +105,7 @@ export function AuthProvider({ children }) {
         console.log("[AuthContext] Stored businessDetails:", data.businessId);
       }
       setUser(data);
+      // חיבור ראשוני של socket
       createSocketConnection(accessToken, data);
 
       if (!options.skipRedirect) {
@@ -173,17 +170,17 @@ export function AuthProvider({ children }) {
     ws.current.on("connect",    () => console.log("✅ Socket connected"));
     ws.current.on("disconnect", () => console.log("🔴 Socket disconnected"));
 
+    // טיפול באירוע tokenExpired ללא setToken
     ws.current.on("tokenExpired", async () => {
       console.warn("[AuthContext] Socket tokenExpired");
       try {
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          ws.current.auth.token = newToken;
-          ws.current.connect();
-          console.log("[AuthContext] WS reconnected with new token");
-        } else {
-          await logout();
-        }
+        const newToken = await singleFlightRefresh();
+        // עדכון ב-header וב-socket
+        setAuthToken(newToken);
+        ws.current.auth.token = newToken;
+        ws.current.disconnect();
+        ws.current.connect();
+        console.log("[AuthContext] WS reconnected with new token");
       } catch {
         await logout();
       }
@@ -193,9 +190,9 @@ export function AuthProvider({ children }) {
       console.error("[AuthContext] WS connect_error:", err);
       if (err.message === "jwt expired") {
         try {
-          const newToken = await refreshAccessToken();
-          if (newToken) createSocketConnection(newToken, userData);
-          else await logout();
+          const newToken = await singleFlightRefresh();
+          setAuthToken(newToken);
+          createSocketConnection(newToken, userData);
         } catch {
           await logout();
         }
@@ -264,7 +261,6 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
-    refreshAccessToken,
     fetchWithAuth,
     socket: ws.current,
     setUser
@@ -276,7 +272,6 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
-    refreshAccessToken,
     fetchWithAuth
   ]);
 
