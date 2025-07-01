@@ -102,11 +102,13 @@ export default function App() {
 
   if (loading) return <LoginSkeleton />;
 
+  if (!user || !user.businessId) return <LoginSkeleton />;
+
   const toggleNotifications = () => setShowNotifications((v) => !v);
 
   return (
     <>
-      <NotificationsProvider user={user}>
+      <NotificationsProvider>
         <Header onToggleNotifications={toggleNotifications} />
         <ScrollToTop />
         <AiProvider>
@@ -336,7 +338,6 @@ export default function App() {
     </>
   );
 }
-
 
 // ------ כאן נשארים ה־wrappers שלך (BusinessChatListWrapper, BusinessChatWrapper) כפי שהם ------
 export function BusinessChatListWrapper() {
