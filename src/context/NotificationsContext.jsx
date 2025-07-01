@@ -14,17 +14,31 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
 
   const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [dashboardStats, setDashboardStats] = useState({
     appointments_count: 0,
     reviews_count: 0,
     views_count: 0,
   });
 
+  // במקום לנהל unreadCount בנפרד, מחשבים אותו מתוך המערך
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  // ממיר כל התראה להוסיף שדה id (מתוך _id אם חסר)
+  const normalizeNotification = (notif) => ({
+    ...notif,
+    id: notif.id || notif._id?.toString(),
+  });
+
   const addNotification = useCallback((notif) => {
-    setNotifications(prev =>
-      prev.some(n => n.id === notif.id) ? prev : [notif, ...prev]
-    );
+    const normalized = normalizeNotification(notif);
+    setNotifications(prev => {
+      const exists = prev.find(n => n.id === normalized.id);
+      if (exists) {
+        // מעדכן התראה קיימת במקום להוסיף כפילות
+        return prev.map(n => n.id === normalized.id ? normalized : n);
+      }
+      return [normalized, ...prev];
+    });
   }, []);
 
   // 1️⃣ Fetch initial notifications
@@ -36,8 +50,8 @@ export function NotificationsProvider({ children }) {
       .then(res => res.json())
       .then(data => {
         if (data.ok) {
-          setNotifications(data.notifications);
-          setUnreadCount(data.notifications.filter(n => !n.read).length);
+          const normalizedNotifs = data.notifications.map(normalizeNotification);
+          setNotifications(normalizedNotifs);
         }
       })
       .catch(err => console.error("Notifications fetch failed:", err));
@@ -47,35 +61,27 @@ export function NotificationsProvider({ children }) {
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    // כשמתחברים לסוקט
     const handleConnect = () => {
       socket.emit("joinBusinessRoom", user.businessId);
       console.log("[WS] joined business room:", user.businessId);
     };
 
-    // מונה ו-bundle
     const handleBundle = ({ count, lastNotification }) => {
       console.log("[WS] notificationBundle:", count, lastNotification);
       if (lastNotification) addNotification(lastNotification);
-      setUnreadCount(count);
     };
 
-    // התראה חדשה
     const handleNew = notif => {
       console.log("[WS] newNotification:", notif);
       addNotification(notif);
-      setUnreadCount(c => c + 1);
     };
 
-    // עדכון דשבורד (לא קשור ל-badge)
     const handleDashboard = stats => {
       console.log("[WS] dashboardUpdate:", stats);
       setDashboardStats(stats);
     };
 
-    // בהרשמה
     socket.on("connect", handleConnect);
-    // אם כבר מתחבר
     if (socket.connected) handleConnect();
 
     socket.on("notificationBundle", handleBundle);
@@ -104,7 +110,6 @@ export function NotificationsProvider({ children }) {
       setNotifications(prev => prev.map(n =>
         n.id === id ? { ...n, read: true } : n
       ));
-      setUnreadCount(c => Math.max(c - 1, 0));
     } catch (err) {
       console.error("markAsRead error:", err);
     }
@@ -112,7 +117,6 @@ export function NotificationsProvider({ children }) {
 
   const clearAll = useCallback(() => {
     setNotifications([]);
-    setUnreadCount(0);
   }, []);
 
   const clearRead = useCallback(() => {
