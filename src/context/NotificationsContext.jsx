@@ -25,9 +25,11 @@ function normalizeNotification(notif) {
   };
 }
 
+// רידוסר לטיפול בהתראות
 function notificationsReducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
+      // מיזוג התראות עם הקיימות, ללא כפילויות וממוינות לפי תאריך
       const incoming = action.payload.map(normalizeNotification);
       const map = new Map();
       state.notifications.forEach(n => map.set(n.id, n));
@@ -37,6 +39,7 @@ function notificationsReducer(state, action) {
       );
       return { ...state, notifications: merged };
     }
+
     case "ADD_NOTIFICATION": {
       const normalized = normalizeNotification(action.payload);
       const exists = state.notifications.find(n => n.id === normalized.id);
@@ -50,6 +53,7 @@ function notificationsReducer(state, action) {
       }
       return { ...state, notifications: newNotifications };
     }
+
     case "MARK_AS_READ": {
       const id = action.payload;
       const updated = state.notifications.map(n =>
@@ -57,14 +61,20 @@ function notificationsReducer(state, action) {
       );
       return { ...state, notifications: updated };
     }
-    case "CLEAR_ALL":
+
+    case "CLEAR_ALL": {
       return { ...state, notifications: [] };
+    }
+
     case "CLEAR_READ": {
       const filtered = state.notifications.filter(n => !n.read);
       return { ...state, notifications: filtered };
     }
-    case "SET_DASHBOARD_STATS":
+
+    case "SET_DASHBOARD_STATS": {
       return { ...state, dashboardStats: action.payload };
+    }
+
     default:
       return state;
   }
@@ -77,6 +87,7 @@ export function NotificationsProvider({ children }) {
 
   const unreadCount = state.notifications.filter(n => !n.read).length;
 
+  // 1️⃣ Fetch initial notifications
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
@@ -93,6 +104,7 @@ export function NotificationsProvider({ children }) {
       .catch(err => console.error("Notifications fetch failed:", err));
   }, [user?.businessId]);
 
+  // 2️⃣ Setup WS listeners
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -129,6 +141,7 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId]);
 
+  // 3️⃣ אופציונלי - לסמן קריאה
   const markAsRead = useCallback(async (id) => {
     try {
       await fetch("/api/notifications/mark-read", {
