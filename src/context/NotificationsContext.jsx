@@ -1,4 +1,4 @@
-// src/context/NotificationsContext.jsx (updated)
+// src/context/NotificationsContext.jsx — final updated version
 import React, {
   createContext,
   useContext,
@@ -22,10 +22,10 @@ export function NotificationsProvider({ children }) {
   });
 
   /* ------------------------- Helpers ------------------------- */
-  const addNotification = useCallback((n) => {
-    const id = n.id || n._id;
+  const addNotification = useCallback((notification) => {
+    const id = notification.id || notification._id;
     setNotifications((prev) =>
-      prev.some((x) => (x.id || x._id) === id) ? prev : [n, ...prev]
+      prev.some((item) => (item.id || item._id) === id) ? prev : [notification, ...prev]
     );
   }, []);
 
@@ -38,38 +38,42 @@ export function NotificationsProvider({ children }) {
   );
 
   const handleNewNotification = useCallback(
-    (n) => {
-      addNotification(n);
+    (notification) => {
+      addNotification(notification);
       setUnreadCount((c) => c + 1);
     },
     [addNotification]
   );
 
-  // הודעות צ׳אט חדשות – רק מגדיל את המונה (לא מוסיף לרשימה)
-  const handleNewMessage = useCallback(() => {
-    setUnreadCount((c) => c + 1);
+  const handleDashboard = useCallback((stats) => {
+    setDashboardStats(stats);
   }, []);
-
-  const handleDashboard = useCallback((stats) => setDashboardStats(stats), []);
 
   /* ---------------------- Socket listeners ------------------- */
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !user?.businessId) return;
+
+    // Join rooms for both Redis adapter and notificationsHandler
+    const joinRooms = () => {
+      socket.emit("joinBusinessRoom", user.businessId);
+    };
+
+    if (socket.connected) joinRooms(); // hot-reload
+    socket.on("connect", joinRooms);
 
     socket.on("notificationBundle", handleBundle);
     socket.on("newNotification", handleNewNotification);
-    socket.on("newMessage", handleNewMessage);          // ← נוסף
     socket.on("unreadMessagesCount", setUnreadCount);
     socket.on("dashboardUpdate", handleDashboard);
 
     return () => {
+      socket.off("connect", joinRooms);
       socket.off("notificationBundle", handleBundle);
       socket.off("newNotification", handleNewNotification);
-      socket.off("newMessage", handleNewMessage);
       socket.off("unreadMessagesCount", setUnreadCount);
       socket.off("dashboardUpdate", handleDashboard);
     };
-  }, [socket, handleBundle, handleNewNotification, handleNewMessage, handleDashboard]);
+  }, [socket, user?.businessId, handleBundle, handleNewNotification, handleDashboard]);
 
   /* -------------------- Initial fetch ------------------------ */
   useEffect(() => {
@@ -92,15 +96,13 @@ export function NotificationsProvider({ children }) {
   }, [socket, user?.businessId]);
 
   /* -------------------- Context value ------------------------ */
-  const ctx = {
+  const value = {
     notifications,
     unreadMessagesCount: unreadCount,
     dashboardStats,
   };
 
-  return (
-    <NotificationsContext.Provider value={ctx}>{children}</NotificationsContext.Provider>
-  );
+  return <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>;
 }
 
 export function useNotifications() {
