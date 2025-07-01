@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import { io } from "socket.io-client";
@@ -255,20 +255,33 @@ export function AuthProvider({ children }) {
     return () => clearTimeout(t);
   }, [successMessage]);
 
+  // useMemo כדי למנוע רינדור אין-סוף
+  const contextValue = useMemo(() => ({
+    token,
+    user,
+    loading,
+    initialized,
+    error,
+    login,
+    logout,
+    refreshAccessToken,
+    fetchWithAuth,
+    socket: ws.current,
+    setUser
+  }), [
+    token,
+    user,
+    loading,
+    initialized,
+    error,
+    login,
+    logout,
+    refreshAccessToken,
+    fetchWithAuth
+  ]);
+
   return (
-    <AuthContext.Provider value={{
-      token,
-      user,
-      loading,
-      initialized,
-      error,
-      login,
-      logout,
-      refreshAccessToken,
-      fetchWithAuth,
-      socket: ws.current,
-      setUser
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
