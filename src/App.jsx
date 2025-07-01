@@ -392,7 +392,7 @@ export function BusinessChatWrapper() {
       partnerId={clientId}
       conversationId={state.conversationId}
       businessName={user.businessName}
-      businessProfilePic={user.profilePic || "/default-business.png"}
+      businessProfilePic={user.profilePic ||  "/default-business.png"}
       clientName="לקוח"
       clientProfilePic="/default-client.png"
     />
