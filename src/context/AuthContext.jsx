@@ -11,7 +11,7 @@ import API, { setAuthToken } from "../api";
 import { io } from "socket.io-client";
 
 /* ------------------------------------------------------------------ */
-/*  Utility: single‑flight refresh                                     */
+/*  Utility: single-flight refresh                                     */
 /* ------------------------------------------------------------------ */
 let ongoingRefresh = null;
 let isRefreshing   = false;
@@ -46,18 +46,18 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   /*  State                                                         */
   /* -------------------------------------------------------------- */
-  const socketRef          = useRef(null);      // low‑level mutable ref
-  const [socket, setSocket] = useState(null);   // state → גורם לרנדר
+  const socketRef            = useRef(null); // live socket instance
+  const [socket, setSocket]  = useState(null); // state for consumers
 
-  const [token, setToken]   = useState(() => localStorage.getItem("token") || null);
-  const [user, setUser]     = useState(null);
-  const [loading, setLoading]           = useState(false);
-  const [initialized, setInitialized]   = useState(false);
-  const [error, setError]               = useState(null);
+  const [token, setToken]    = useState(() => localStorage.getItem("token") || null);
+  const [user, setUser]      = useState(null);
+  const [loading, setLoading]          = useState(false);
+  const [initialized, setInitialized]  = useState(false);
+  const [error, setError]              = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
   /* -------------------------------------------------------------- */
-  /*  Helpers                                                       */
+  /*  Disconnect helper                                             */
   /* -------------------------------------------------------------- */
   const disconnectSocket = () => {
     if (socketRef.current) {
@@ -68,6 +68,58 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /* -------------------------------------------------------------- */
+  /*  WS creator — idempotent                                        */
+  /* -------------------------------------------------------------- */
+  const ensureSocket = (tokenValue, userData) => {
+    if (!tokenValue || !userData) return;
+
+    // אם כבר יש סוקט פעיל עם אותו טוקן – השאר אותו
+    if (socketRef.current && socketRef.current.connected) {
+      if (socketRef.current.auth.token === tokenValue) return;
+      // token changed (refresh) → רק עדכן auth ולאתחל מחדש
+      socketRef.current.auth.token = tokenValue;
+      return;
+    }
+
+    // צור חדש
+    const s = io("https://api.esclick.co.il", {
+      path: "/socket.io",
+      transports: ["websocket"],
+      auth: { token: tokenValue, role: userData.role, businessId: userData.businessId },
+      reconnection: true,
+    });
+
+    socketRef.current = s;
+    setSocket(s);
+
+    s.on("connect", () => {
+      console.log("✅ WS connected", s.id);
+    });
+    s.on("disconnect", () => console.log("🔴 WS disconnected"));
+
+    // Token expiry ↔ refresh
+    const refreshAndReconnect = async () => {
+      try {
+        const newToken = await singleFlightRefresh();
+        setAuthToken(newToken);
+        s.auth.token = newToken;
+        s.connect();
+        console.log("🔄 WS reconnected with new token");
+      } catch {
+        await logout();
+      }
+    };
+
+    s.on("tokenExpired", refreshAndReconnect);
+    s.on("connect_error", async (err) => {
+      if (err?.message === "jwt expired") await refreshAndReconnect();
+    });
+  };
+
+  /* -------------------------------------------------------------- */
+  /*  Logout                                                        */
+  /* -------------------------------------------------------------- */
   const logout = async () => {
     setLoading(true);
     try {
@@ -102,36 +154,19 @@ export function AuthProvider({ children }) {
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
       );
-
       if (!accessToken) throw new Error("No access token received");
 
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      // fetch user
-      const { data } = await API.get("/auth/me", { withCredentials: true });
-      if (data.businessId)
-        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
-
-      setUser(data);
-      createSocketConnection(accessToken, data);
-
+      // העסקת רידיירקט וכו' תתבצע אחרי שה-token effect יביא את המשתמש
       if (!options.skipRedirect) {
-        const path = redirectUrl ||
-          {
-            business: `/business/${data.businessId}/dashboard`,
-            customer: "/client/dashboard",
-            worker: "/staff/dashboard",
-            manager: "/manager/dashboard",
-            admin: "/admin/dashboard",
-          }[data.role] || "/";
-
-        navigate(path, { replace: true });
+        // נשמור redirectUrl כדי שה-effect ישתמש מאוחר יותר
+        sessionStorage.setItem("postLoginRedirect", redirectUrl || "");
       }
 
       setLoading(false);
-      return { user: data, redirectUrl };
     } catch (e) {
       setError(
         e.response?.status >= 400 && e.response?.status < 500
@@ -161,52 +196,7 @@ export function AuthProvider({ children }) {
   };
 
   /* -------------------------------------------------------------- */
-  /*  WS: create / reconnect                                         */
-  /* -------------------------------------------------------------- */
-  const createSocketConnection = (tokenValue, userData) => {
-    disconnectSocket();
-
-    const s = io("https://api.esclick.co.il", {
-      path: "/socket.io",
-      transports: ["websocket"],
-      auth: { token: tokenValue, role: userData.role, businessId: userData.businessId },
-      reconnection: true,
-    });
-
-    socketRef.current = s;
-    setSocket(s); // ← מעדכן את ה-state כדי שצרכנים יקבלו את ה-socket החדש
-
-    s.on("connect", () => {
-      console.log("✅ Socket connected", s.id);
-      // לא מצרפים לחדר כאן ‑ NotificationsContext יתעסק בזה
-    });
-
-    s.on("disconnect", () => console.log("🔴 Socket disconnected"));
-
-    /* ---- Token expiry flow ---- */
-    const refreshAndReconnect = async () => {
-      try {
-        const newToken = await singleFlightRefresh();
-        setAuthToken(newToken);
-        s.auth.token = newToken;
-        s.connect();
-        console.log("🔄 WS reconnected with new token");
-      } catch {
-        await logout();
-      }
-    };
-
-    s.on("tokenExpired", refreshAndReconnect);
-
-    s.on("connect_error", async (err) => {
-      if (err?.message === "jwt expired") {
-        await refreshAndReconnect();
-      }
-    });
-  };
-
-  /* -------------------------------------------------------------- */
-  /*  Initialize on token present                                    */
+  /*  Init on token                                                 */
   /* -------------------------------------------------------------- */
   useEffect(() => {
     if (!token) {
@@ -222,7 +212,14 @@ export function AuthProvider({ children }) {
     API.get("/auth/me", { withCredentials: true })
       .then(({ data }) => {
         setUser(data);
-        createSocketConnection(token, data);
+        ensureSocket(token, data);
+
+        // redirect after login if pending
+        const redirectUrl = sessionStorage.getItem("postLoginRedirect") || "";
+        if (redirectUrl) {
+          navigate(redirectUrl || "/", { replace: true });
+          sessionStorage.removeItem("postLoginRedirect");
+        }
       })
       .catch(logout)
       .finally(() => {
@@ -232,7 +229,7 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   /* -------------------------------------------------------------- */
-  /*  Auto‑dismiss success toast                                     */
+  /*  Auto-dismiss success toast                                    */
   /* -------------------------------------------------------------- */
   useEffect(() => {
     if (!successMessage) return;
@@ -241,7 +238,7 @@ export function AuthProvider({ children }) {
   }, [successMessage]);
 
   /* -------------------------------------------------------------- */
-  /*  Context value                                                  */
+  /*  Context value                                                 */
   /* -------------------------------------------------------------- */
   const contextValue = {
     token,
@@ -253,7 +250,7 @@ export function AuthProvider({ children }) {
     logout,
     fetchWithAuth,
     refreshAccessToken: singleFlightRefresh,
-    socket, // ← consumers get live socket instance
+    socket,
     setUser,
   };
 
