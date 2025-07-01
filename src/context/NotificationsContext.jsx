@@ -1,4 +1,3 @@
-// src/context/NotificationsContext.jsx
 import React, {
   createContext,
   useContext,
@@ -52,12 +51,17 @@ export function NotificationsProvider({ children }) {
   }, []);
 
   /* ------------------------------------------------------------------ */
-  /*  Socket listeners (no manual room join – done server‑side)         */
+  /*  Socket listeners                                                  */
   /* ------------------------------------------------------------------ */
   useEffect(() => {
-    if (!socket) return; // businessId כבר טופל ב‑handshake
+    if (!socket) return;
 
-    // Business events
+    // הצטרפות לחדר העסק לקבלת אירועים
+    if (user?.businessId) {
+      socket.emit("joinBusinessRoom", user.businessId);
+    }
+
+    // מאזינים לאירועים מהשרת
     socket.on("notificationBundle", handleBundle);
     socket.on("newNotification", handleNew);
     socket.on("unreadMessagesCount", setUnreadCount);
@@ -71,11 +75,12 @@ export function NotificationsProvider({ children }) {
       socket.off("newNotification", handleNew);
       socket.off("unreadMessagesCount", setUnreadCount);
       socket.off("dashboardUpdate", handleDashboard);
+      // socket.offAny(); // במידה ומפעילים onAny
     };
-  }, [socket, handleBundle, handleNew, handleDashboard]);
+  }, [socket, user?.businessId, handleBundle, handleNew, handleDashboard]);
 
   /* ------------------------------------------------------------------ */
-  /*  Initial fetch                                                     */
+  /*  Initial fetch of notifications                                    */
   /* ------------------------------------------------------------------ */
   useEffect(() => {
     if (!socket || !user?.businessId) return;
@@ -97,7 +102,7 @@ export function NotificationsProvider({ children }) {
   }, [socket, user?.businessId]);
 
   /* ------------------------------------------------------------------ */
-  /*  Context value                                                     */
+  /*  Context value                                                    */
   /* ------------------------------------------------------------------ */
   const ctx = {
     notifications,
