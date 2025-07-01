@@ -1,4 +1,4 @@
-// src/context/NotificationsContext.jsx
+// src/context/NotificationsContext.jsx (updated)
 import React, {
   createContext,
   useContext,
@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useAuth } from "./AuthContext.jsx";
 
-const NotificationsContext = createContext();
+const NotificationsContext = createContext(null);
 
 export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
@@ -21,9 +21,7 @@ export function NotificationsProvider({ children }) {
     views_count: 0,
   });
 
-  /* ------------------------------------------------------------------ */
-  /*  Helpers                                                           */
-  /* ------------------------------------------------------------------ */
+  /* ------------------------- Helpers ------------------------- */
   const addNotification = useCallback((n) => {
     const id = n.id || n._id;
     setNotifications((prev) =>
@@ -39,7 +37,7 @@ export function NotificationsProvider({ children }) {
     [addNotification]
   );
 
-  const handleNew = useCallback(
+  const handleNewNotification = useCallback(
     (n) => {
       addNotification(n);
       setUnreadCount((c) => c + 1);
@@ -47,36 +45,33 @@ export function NotificationsProvider({ children }) {
     [addNotification]
   );
 
-  const handleDashboard = useCallback((stats) => {
-    setDashboardStats(stats);
+  // הודעות צ׳אט חדשות – רק מגדיל את המונה (לא מוסיף לרשימה)
+  const handleNewMessage = useCallback(() => {
+    setUnreadCount((c) => c + 1);
   }, []);
 
-  /* ------------------------------------------------------------------ */
-  /*  Socket listeners (no manual room join – done server‑side)         */
-  /* ------------------------------------------------------------------ */
-  useEffect(() => {
-    if (!socket) return; // businessId כבר טופל ב‑handshake
+  const handleDashboard = useCallback((stats) => setDashboardStats(stats), []);
 
-    // Business events
+  /* ---------------------- Socket listeners ------------------- */
+  useEffect(() => {
+    if (!socket) return;
+
     socket.on("notificationBundle", handleBundle);
-    socket.on("newNotification", handleNew);
+    socket.on("newNotification", handleNewNotification);
+    socket.on("newMessage", handleNewMessage);          // ← נוסף
     socket.on("unreadMessagesCount", setUnreadCount);
     socket.on("dashboardUpdate", handleDashboard);
 
-    // DEBUG – לראות כל אירוע (למחוק בפרודקשן)
-    // socket.onAny((ev, payload) => console.log("[SOCKET]", ev, payload));
-
     return () => {
       socket.off("notificationBundle", handleBundle);
-      socket.off("newNotification", handleNew);
+      socket.off("newNotification", handleNewNotification);
+      socket.off("newMessage", handleNewMessage);
       socket.off("unreadMessagesCount", setUnreadCount);
       socket.off("dashboardUpdate", handleDashboard);
     };
-  }, [socket, handleBundle, handleNew, handleDashboard]);
+  }, [socket, handleBundle, handleNewNotification, handleNewMessage, handleDashboard]);
 
-  /* ------------------------------------------------------------------ */
-  /*  Initial fetch                                                     */
-  /* ------------------------------------------------------------------ */
+  /* -------------------- Initial fetch ------------------------ */
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -96,16 +91,16 @@ export function NotificationsProvider({ children }) {
     })();
   }, [socket, user?.businessId]);
 
-  /* ------------------------------------------------------------------ */
-  /*  Context value                                                     */
-  /* ------------------------------------------------------------------ */
+  /* -------------------- Context value ------------------------ */
   const ctx = {
     notifications,
     unreadMessagesCount: unreadCount,
     dashboardStats,
   };
 
-  return <NotificationsContext.Provider value={ctx}>{children}</NotificationsContext.Provider>;
+  return (
+    <NotificationsContext.Provider value={ctx}>{children}</NotificationsContext.Provider>
+  );
 }
 
 export function useNotifications() {
