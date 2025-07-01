@@ -261,6 +261,8 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
+    // הוספת refreshAccessToken כדי שתהיה פונקציה תקינה בצרכנים
+    refreshAccessToken: singleFlightRefresh,
     fetchWithAuth,
     socket: ws.current,
     setUser
@@ -272,6 +274,7 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
+    singleFlightRefresh,
     fetchWithAuth
   ]);
 
@@ -280,9 +283,5 @@ export function AuthProvider({ children }) {
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
-  );
-}
-
-export function useAuth() {
-  return useContext(AuthContext);
+  ); useContext(AuthContext);
 }
