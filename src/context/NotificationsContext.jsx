@@ -31,6 +31,7 @@ export function NotificationsProvider({ children }) {
 
   const addNotification = useCallback((notif) => {
     const normalized = normalizeNotification(notif);
+    console.log("Adding notification:", normalized); // לוג לבדיקת קבלת ההתראה
     setNotifications(prev => {
       const exists = prev.find(n => n.id === normalized.id);
       if (exists) {
@@ -50,8 +51,11 @@ export function NotificationsProvider({ children }) {
       .then(res => res.json())
       .then(data => {
         if (data.ok) {
+          console.log("Fetched notifications:", data.notifications); // לוג לבדיקה
           const normalizedNotifs = data.notifications.map(normalizeNotification);
           setNotifications(normalizedNotifs);
+        } else {
+          console.warn("Fetch notifications returned not ok:", data);
         }
       })
       .catch(err => console.error("Notifications fetch failed:", err));
@@ -62,8 +66,8 @@ export function NotificationsProvider({ children }) {
     if (!socket || !user?.businessId) return;
 
     const handleConnect = () => {
+      console.log("[WS] Socket connected, joining room:", user.businessId); // לוג
       socket.emit("joinBusinessRoom", user.businessId);
-      console.log("[WS] joined business room:", user.businessId);
     };
 
     const handleBundle = ({ count, lastNotification }) => {
@@ -72,7 +76,7 @@ export function NotificationsProvider({ children }) {
     };
 
     const handleNew = notif => {
-      console.log("[WS] newNotification:", notif);
+      console.log("[WS] newNotification received:", notif);
       addNotification(notif);
     };
 
