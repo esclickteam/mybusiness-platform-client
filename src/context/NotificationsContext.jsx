@@ -29,17 +29,31 @@ export function NotificationsProvider({ children }) {
     id: notif.id || notif._id?.toString(),
   });
 
+  // פונקציה למיזוג מערכי התראות בלי כפילויות
+  const mergeNotifications = (existing, incoming) => {
+    const map = new Map();
+    existing.forEach(n => map.set(n.id, n));
+    incoming.forEach(n => map.set(n.id, n)); // מעדכן או מוסיף
+    // מיון לפי תאריך, התראה חדשה למעלה
+    return Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  };
+
   const addNotification = useCallback((notif) => {
     const normalized = normalizeNotification(notif);
-    console.log("Adding notification:", normalized); // לוג לבדיקת קבלת ההתראה
     setNotifications(prev => {
       const exists = prev.find(n => n.id === normalized.id);
       if (exists) {
-        // מעדכן התראה קיימת במקום להוסיף כפילות
+        // עדכון התראה קיימת במקום להוסיף כפילות
         return prev.map(n => n.id === normalized.id ? normalized : n);
       }
       return [normalized, ...prev];
     });
+  }, []);
+
+  // עדכון של מערך ההתראות - מיזוג בין קיים לחדש
+  const mergeNewNotifications = useCallback((newNotifs) => {
+    const normalizedNotifs = newNotifs.map(normalizeNotification);
+    setNotifications(prev => mergeNotifications(prev, normalizedNotifs));
   }, []);
 
   // 1️⃣ Fetch initial notifications
@@ -51,37 +65,31 @@ export function NotificationsProvider({ children }) {
       .then(res => res.json())
       .then(data => {
         if (data.ok) {
-          console.log("Fetched notifications:", data.notifications); // לוג לבדיקה
-          const normalizedNotifs = data.notifications.map(normalizeNotification);
-          setNotifications(normalizedNotifs);
+          mergeNewNotifications(data.notifications);
         } else {
           console.warn("Fetch notifications returned not ok:", data);
         }
       })
       .catch(err => console.error("Notifications fetch failed:", err));
-  }, [user?.businessId]);
+  }, [user?.businessId, mergeNewNotifications]);
 
   // 2️⃣ Setup all WS listeners
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
     const handleConnect = () => {
-      console.log("[WS] Socket connected, joining room:", user.businessId); // לוג
       socket.emit("joinBusinessRoom", user.businessId);
     };
 
     const handleBundle = ({ count, lastNotification }) => {
-      console.log("[WS] notificationBundle:", count, lastNotification);
       if (lastNotification) addNotification(lastNotification);
     };
 
     const handleNew = notif => {
-      console.log("[WS] newNotification received:", notif);
       addNotification(notif);
     };
 
     const handleDashboard = stats => {
-      console.log("[WS] dashboardUpdate:", stats);
       setDashboardStats(stats);
     };
 
