@@ -24,7 +24,7 @@ export function NotificationsProvider({ children }) {
   const addNotification = useCallback((n) => {
     const id = n.id || n._id;
     setNotifications(prev =>
-      prev.some(x => (x.id||x._id)===id) ? prev : [n, ...prev]
+      prev.some(x => (x.id || x._id) === id) ? prev : [n, ...prev]
     );
   }, []);
 
@@ -52,8 +52,8 @@ export function NotificationsProvider({ children }) {
       socket.emit("joinRoom", `dashboard-${user.businessId}`);
     };
 
-    socket.on("connect",    joinRooms);
-    socket.on("reconnect",  joinRooms);
+    socket.on("connect",   joinRooms);
+    socket.on("reconnect", joinRooms);
 
     socket.on("notificationBundle", handleBundle);
     socket.on("newNotification",     handleNew);
@@ -61,8 +61,8 @@ export function NotificationsProvider({ children }) {
     socket.on("dashboardUpdate",     handleDashboard);
 
     return () => {
-      socket.off("connect",    joinRooms);
-      socket.off("reconnect",  joinRooms);
+      socket.off("connect",   joinRooms);
+      socket.off("reconnect", joinRooms);
 
       socket.off("notificationBundle", handleBundle);
       socket.off("newNotification",     handleNew);
