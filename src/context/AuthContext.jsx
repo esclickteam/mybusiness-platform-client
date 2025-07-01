@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import { io } from "socket.io-client";
 
-// keep these at module level for single-flight behavior
 let ongoingRefresh = null;
 let isRefreshing = false;
 
@@ -19,16 +18,18 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
-  // ← NEW: token in state
+  // מצב הטוקן והמשתמש
   const [token, setToken] = useState(() => localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+
+  // WebSocket ref
   const ws = useRef(null);
 
-  // ← NEW: single-flight refresh INSIDE component so setToken is in scope
+  // single-flight refresh בתוך הקומפוננטה כדי שתהיה גישה ל־setToken
   const singleFlightRefresh = useCallback(async () => {
     console.log("[AuthContext] singleFlightRefresh called");
     if (!ongoingRefresh) {
@@ -41,7 +42,7 @@ export function AuthProvider({ children }) {
           console.log("[AuthContext] Refresh token success:", newToken);
           localStorage.setItem("token", newToken);
           setAuthToken(newToken);
-          setToken(newToken);           // ← update local state
+          setToken(newToken);
           return newToken;
         })
         .catch(err => {
@@ -59,8 +60,8 @@ export function AuthProvider({ children }) {
     return ongoingRefresh;
   }, []);
 
-  // Logout
-  const logout = async () => {
+  // Logout עטוף ב־useCallback למניעת רינדור אינסופי
+  const logout = useCallback(async () => {
     console.log("[AuthContext] logout called");
     setLoading(true);
     try {
@@ -69,24 +70,28 @@ export function AuthProvider({ children }) {
     } catch {
       console.warn("[AuthContext] logout API error (ignored)");
     } finally {
+      // איפוס מצב
       ongoingRefresh = null;
       isRefreshing = false;
       setAuthToken(null);
       localStorage.removeItem("token");
-      setToken(null);               // ← clear state
+      setToken(null);
       localStorage.removeItem("businessDetails");
       console.log("[AuthContext] Cleared token & details");
+
+      // ניתוק WebSocket
       if (ws.current) {
         ws.current.removeAllListeners();
         ws.current.disconnect();
         ws.current = null;
         console.log("[AuthContext] WebSocket disconnected");
       }
+
       setUser(null);
       setLoading(false);
       navigate("/login", { replace: true });
     }
-  };
+  }, [navigate]);
 
   // Login
   const login = async (email, password, options = { skipRedirect: false }) => {
@@ -106,7 +111,7 @@ export function AuthProvider({ children }) {
 
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
-      setToken(accessToken);        // ← store in state
+      setToken(accessToken);
 
       const { data } = await API.get("/auth/me", { withCredentials: true });
       console.log("[AuthContext] /auth/me returned:", data);
@@ -150,7 +155,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Fetch wrapper
+  // Fetch wrapper לטיפול ב־401/403
   const fetchWithAuth = async fn => {
     try {
       return await fn();
@@ -166,7 +171,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // WebSocket setup
+  // חיבור WebSocket
   const createSocketConnection = (token, userData) => {
     console.log("[AuthContext] createSocketConnection:", { token, userData });
     if (ws.current) {
@@ -216,7 +221,7 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // ↳ watch token changes: fetch /auth/me & init WS
+  // useEffect לאתחול המשתמש בכל שינוי ב־token
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -241,10 +246,7 @@ export function AuthProvider({ children }) {
             "businessDetails",
             JSON.stringify({ _id: data.businessId })
           );
-          console.log(
-            "[AuthContext] Stored businessDetails:",
-            data.businessId
-          );
+          console.log("[AuthContext] Stored businessDetails:", data.businessId);
         }
       })
       .catch(async e => {
@@ -267,7 +269,7 @@ export function AuthProvider({ children }) {
     };
   }, [token, logout]);
 
-  // Auto-dismiss success toast
+  // הסרת הודעת הצלחה אוטומטית
   useEffect(() => {
     if (!successMessage) return;
     const t = setTimeout(() => setSuccessMessage(null), 4000);
