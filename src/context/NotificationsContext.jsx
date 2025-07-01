@@ -20,33 +20,13 @@ export function NotificationsProvider({ children }) {
     views_count: 0,
   });
 
-  const addNotification = useCallback((n) => {
-    const id = n.id || n._id;
-    setNotifications((prev) =>
-      prev.some((x) => (x.id || x._id) === id) ? prev : [n, ...prev]
+  const addNotification = useCallback((notif) => {
+    setNotifications(prev =>
+      prev.some(n => n.id === notif.id) ? prev : [notif, ...prev]
     );
   }, []);
 
-  const handleNew = useCallback(
-    (n) => {
-      console.log('[Socket] newNotification received:', n);
-      addNotification(n);
-      setUnreadCount((c) => c + 1);
-    },
-    [addNotification]
-  );
-
-  const handleUnreadCount = useCallback((count) => {
-    console.log('[Socket] unreadMessagesCount received:', count);
-    setUnreadCount(count);
-  }, []);
-
-  const handleDashboard = useCallback((stats) => {
-    console.log('[Socket] dashboardUpdate received:', stats);
-    setDashboardStats(stats);
-  }, []);
-
-  // Initial fetch of notifications
+  // Fetch initial notifications once when businessId becomes available
   useEffect(() => {
     if (!user?.businessId) return;
     (async () => {
@@ -57,30 +37,44 @@ export function NotificationsProvider({ children }) {
         const data = await res.json();
         if (data.ok) {
           setNotifications(data.notifications);
-          setUnreadCount(data.notifications.filter((n) => !n.read).length);
+          setUnreadCount(data.notifications.filter(n => !n.read).length);
         }
       } catch (err) {
-        console.error("Failed to fetch notifications", err);
+        console.error("Notifications fetch failed:", err);
       }
     })();
   }, [user?.businessId]);
 
-  // Real-time listeners
+  // Real-time WebSocket listeners
   useEffect(() => {
     if (!socket || !socket.connected) return;
 
-    socket.on("newNotification", handleNew);
-    socket.on("unreadMessagesCount", handleUnreadCount);
-    socket.on("dashboardUpdate", handleDashboard);
+    const onNew = notif => {
+      console.log("[WS] newNotification:", notif);
+      addNotification(notif);
+      setUnreadCount(c => c + 1);
+    };
+    const onCount = count => {
+      console.log("[WS] unreadMessagesCount:", count);
+      setUnreadCount(count);
+    };
+    const onDashboard = stats => {
+      console.log("[WS] dashboardUpdate:", stats);
+      setDashboardStats(stats);
+    };
+
+    socket.on("newNotification", onNew);
+    socket.on("unreadMessagesCount", onCount);
+    socket.on("dashboardUpdate", onDashboard);
 
     return () => {
-      socket.off("newNotification", handleNew);
-      socket.off("unreadMessagesCount", handleUnreadCount);
-      socket.off("dashboardUpdate", handleDashboard);
+      socket.off("newNotification", onNew);
+      socket.off("unreadMessagesCount", onCount);
+      socket.off("dashboardUpdate", onDashboard);
     };
-  }, [socket, handleNew, handleUnreadCount, handleDashboard]);
+  }, [socket, addNotification]);
 
-  const markAsRead = useCallback(async (id) => {
+  const markAsRead = useCallback(async id => {
     try {
       await fetch("/api/notifications/mark-read", {
         method: "POST",
@@ -90,42 +84,38 @@ export function NotificationsProvider({ children }) {
         },
         body: JSON.stringify({ notificationId: id }),
       });
-
-      setNotifications((prev) =>
-        prev.map((n) =>
-          (n.id || n._id) === id ? { ...n, read: true } : n
-        )
-      );
-      setUnreadCount((c) => Math.max(c - 1, 0));
+      setNotifications(prev => prev.map(n =>
+        n.id === id ? { ...n, read: true } : n
+      ));
+      setUnreadCount(c => Math.max(c - 1, 0));
     } catch (err) {
-      console.error("Failed to mark notification as read", err);
+      console.error("markAsRead error:", err);
     }
   }, []);
 
-  const clearAllNotifications = useCallback(() => {
+  const clearAll = useCallback(() => {
     setNotifications([]);
     setUnreadCount(0);
   }, []);
 
-  const clearReadNotifications = useCallback(() => {
-    setNotifications((prev) => prev.filter((n) => !n.read));
+  const clearRead = useCallback(() => {
+    setNotifications(prev => prev.filter(n => !n.read));
   }, []);
 
   const ctx = {
     notifications,
-    unreadMessagesCount: unreadCount,
+    unreadCount,
     dashboardStats,
     markAsRead,
-    clearAllNotifications,
-    clearReadNotifications,
+    clearAll,
+    clearRead,
   };
 
-  useEffect(() => {
-    console.log('[Notifications] notifications changed:', notifications);
-    console.log('[Notifications] unreadCount:', unreadCount);
-  }, [notifications, unreadCount]);
-
-  return <NotificationsContext.Provider value={ctx}>{children}</NotificationsContext.Provider>;
+  return (
+    <NotificationsContext.Provider value={ctx}>
+      {children}
+    </NotificationsContext.Provider>
+  );
 }
 
 export function useNotifications() {
