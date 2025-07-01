@@ -7,7 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 /* Contexts */
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
-import { UnreadMessagesProvider } from "./context/UnreadMessagesContext";
 import "./styles/index.css";
 
 // Polyfill ל‑Buffer (חלק מהספריות דורשות)
@@ -23,11 +22,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <NotificationsProvider>
-            <UnreadMessagesProvider>
-              <Suspense fallback={<div className="spinner" />}>  {/* ניתן להחליף בספינר ייעודי */}
-                <App />
-              </Suspense>
-            </UnreadMessagesProvider>
+            <Suspense fallback={<div className="spinner" />}>
+              <App />
+            </Suspense>
           </NotificationsProvider>
         </AuthProvider>
       </QueryClientProvider>
