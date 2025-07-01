@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, {
   createContext,
   useContext,
@@ -14,11 +13,11 @@ import createSocket from "../socket"; // singleton socket helper
 /*  Utility: single‑flight refresh (local)                            */
 /* ------------------------------------------------------------------ */
 let ongoingRefresh = null;
-let isRefreshing   = false;
+let isRefreshing = false;
 
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
-    isRefreshing   = true;
+    isRefreshing = true;
     ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then((res) => {
         const newToken = res.data.accessToken;
@@ -28,7 +27,7 @@ export async function singleFlightRefresh() {
         return newToken;
       })
       .finally(() => {
-        isRefreshing   = false;
+        isRefreshing = false;
         ongoingRefresh = null;
       });
   }
@@ -46,14 +45,14 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   /*  State                                                         */
   /* -------------------------------------------------------------- */
-  const socketRef           = useRef(null);
+  const socketRef = useRef(null);
   const [socket, setSocket] = useState(null);
 
-  const [token, setToken]   = useState(() => localStorage.getItem("token") || null);
-  const [user, setUser]     = useState(null);
-  const [loading, setLoading]          = useState(false);
-  const [initialized, setInitialized]  = useState(false);
-  const [error, setError]              = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem("token") || null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+  const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
   /* -------------------------------------------------------------- */
@@ -61,11 +60,14 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   const logout = async () => {
     setLoading(true);
-    try { await API.post("/auth/logout", {}, { withCredentials: true }); } catch {}
+    try {
+      await API.post("/auth/logout", {}, { withCredentials: true });
+    } catch {}
 
     setAuthToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("businessDetails");
+    localStorage.removeItem("user"); // ניקוי פרטי משתמש מ-localStorage
     setToken(null);
     setUser(null);
 
@@ -86,7 +88,9 @@ export function AuthProvider({ children }) {
     setError(null);
 
     try {
-      const { data: { accessToken, redirectUrl } } = await API.post(
+      const {
+        data: { accessToken, redirectUrl },
+      } = await API.post(
         "/auth/login",
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
@@ -102,7 +106,11 @@ export function AuthProvider({ children }) {
 
       setLoading(false);
     } catch (e) {
-      setError(e.response?.status >= 400 && e.response?.status < 500 ? "❌ אימייל או סיסמה שגויים" : "❌ שגיאה בשרת, נסה שוב");
+      setError(
+        e.response?.status >= 400 && e.response?.status < 500
+          ? "❌ אימייל או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסה שוב"
+      );
       setLoading(false);
       throw e;
     }
@@ -112,8 +120,9 @@ export function AuthProvider({ children }) {
   /*  Fetch wrapper                                                 */
   /* -------------------------------------------------------------- */
   const fetchWithAuth = async (fn) => {
-    try { return await fn(); }
-    catch (err) {
+    try {
+      return await fn();
+    } catch (err) {
       if ([401, 403].includes(err.response?.status)) {
         await logout();
         setError("❌ יש להתחבר מחדש");
@@ -133,6 +142,7 @@ export function AuthProvider({ children }) {
       socketRef.current = null;
       setSocket(null);
       setUser(null);
+      localStorage.removeItem("user"); // ניקוי פרטי משתמש ב-localStorage
       setInitialized(true);
       return;
     }
@@ -144,6 +154,7 @@ export function AuthProvider({ children }) {
       try {
         const { data } = await API.get("/auth/me", { withCredentials: true });
         setUser(data);
+        localStorage.setItem("user", JSON.stringify(data)); // שמירת פרטי משתמש
 
         const s = await createSocket(singleFlightRefresh, logout, data.businessId);
         socketRef.current = s;
@@ -155,6 +166,7 @@ export function AuthProvider({ children }) {
           sessionStorage.removeItem("postLoginRedirect");
         }
       } catch (err) {
+        localStorage.removeItem("user"); // ניקוי במקרה של שגיאה
         await logout();
       } finally {
         setLoading(false);
