@@ -24,7 +24,11 @@ import Notifications from "./Notifications";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
-  const { clearAllNotifications, clearReadNotifications, unreadMessagesCount } = useNotifications();
+  const {
+    clearAll,
+    clearRead,
+    unreadCount,           // <-- renamed
+  } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -72,18 +76,36 @@ export default function Header() {
 
   return (
     <>
-      <nav className="app-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <nav
+        className="app-header"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <div
           className="menu-toggle"
-          style={{ display: "flex", alignItems: "center", gap: "8px", position: "relative", right: 20 }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            position: "relative",
+            right: 20,
+          }}
         >
           {!menuOpen && (
-            <button className="menu-button" onClick={() => setMenuOpen(true)} aria-label="תפריט ראשי">
+            <button
+              className="menu-button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="תפריט ראשי"
+            >
               <FaBars size={24} />
             </button>
           )}
 
-          {(user?.role === "business" || user?.role === "business-dashboard") && (
+          {(user?.role === "business" ||
+            user?.role === "business-dashboard") && (
             <>
               <button
                 className="notification-button"
@@ -103,7 +125,7 @@ export default function Header() {
                 }}
               >
                 🔔
-                {unreadMessagesCount > 0 && (
+                {unreadCount > 0 && (
                   <span
                     style={{
                       position: "absolute",
@@ -120,7 +142,7 @@ export default function Header() {
                       justifyContent: "center",
                     }}
                   >
-                    {unreadMessagesCount}
+                    {unreadCount}
                   </span>
                 )}
               </button>
@@ -128,8 +150,8 @@ export default function Header() {
               {notifOpen && (
                 <Notifications
                   onClose={() => setNotifOpen(false)}
-                  clearReadNotifications={clearReadNotifications}
-                  clearAllNotifications={clearAllNotifications}
+                  clearReadNotifications={clearRead}
+                  clearAllNotifications={clearAll}
                 />
               )}
             </>
@@ -151,7 +173,10 @@ export default function Header() {
 
           {user && (
             <>
-              <button className="personal-area-button" onClick={() => navigate(getDashboardPath())}>
+              <button
+                className="personal-area-button"
+                onClick={() => navigate(getDashboardPath())}
+              >
                 לוח בקרה
               </button>
               <button className="logout-button" onClick={handleLogout}>
@@ -166,10 +191,16 @@ export default function Header() {
       {/* DRAWER */}
       {menuOpen && (
         <>
-          <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
+          <div
+            className="menu-backdrop"
+            onClick={() => setMenuOpen(false)}
+          />
           <div className="side-menu open">
             <div className="drawer-header">
-              <button className="back-button" onClick={() => setMenuOpen(false)}>
+              <button
+                className="back-button"
+                onClick={() => setMenuOpen(false)}
+              >
                 <FaChevronLeft size={20} />
                 <span className="back-text">חזור</span>
               </button>
@@ -177,7 +208,11 @@ export default function Header() {
 
             {!user ? (
               <div className="mobile-auth">
-                <Link to="/login" className="login-button" onClick={() => setMenuOpen(false)}>
+                <Link
+                  to="/login"
+                  className="login-button"
+                  onClick={() => setMenuOpen(false)}
+                >
                   התחברות
                 </Link>
               </div>
@@ -217,7 +252,10 @@ export default function Header() {
                   >
                     אזור אישי
                   </button>
-                  <button className="logout-button" onClick={handleLogout}>
+                  <button
+                    className="logout-button"
+                    onClick={handleLogout}
+                  >
                     <FaSignOutAlt style={{ marginLeft: 6 }} />
                     התנתק
                   </button>
