@@ -5,7 +5,8 @@ import { useAuth } from "./AuthContext.jsx";
 const NotificationsContext = createContext();
 
 export function NotificationsProvider({ children }) {
-  const { user, socket } = useAuth(); // מקבלים את ה‑socket המאוחד מה‑AuthContext
+  const { user, socket } = useAuth();
+
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [dashboardStats, setDashboardStats] = useState({
@@ -14,7 +15,9 @@ export function NotificationsProvider({ children }) {
     views_count: 0,
   });
 
-  // מוודא שלא תתווסף אותה התראה פעמיים
+  /* ------------------------------------------------------------------ */
+  /*  Helpers                                                           */
+  /* ------------------------------------------------------------------ */
   const addNotification = useCallback((n) => {
     const id = n.id || n._id;
     setNotifications((prev) =>
@@ -42,36 +45,32 @@ export function NotificationsProvider({ children }) {
     setDashboardStats(stats);
   }, []);
 
-  /* -------------------------------------------------------------------- */
-  /* הצטרפות לחדרים ורישום מאזינים בזמן אמת                               */
-  /* -------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------ */
+  /*  Socket listeners & room join                                      */
+  /* ------------------------------------------------------------------ */
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    const businessRoom = `business-${user.businessId}`;
-    const dashboardRoom = `dashboard-${user.businessId}`;
-
     const joinRooms = () => {
-      socket.emit("joinRoom", businessRoom);
-      socket.emit("joinRoom", dashboardRoom);
+      socket.emit("joinBusinessRoom", user.businessId, (ok) =>
+        console.log("business join ack →", ok)
+      );
     };
 
-    /* 1) אם החיבור כבר קיים (refresh חם או fast‑refresh) — מצטרפים מייד */
-    if (socket.connected) {
-      joinRooms();
-    }
+    // הצטרפות מיידית אם כבר מחובר
+    if (socket.connected) joinRooms();
 
-    /* 2) הצטרפות בכל התחברות / התחברות‑מחדש */
+    // התחברות‑מחדש
     socket.on("connect", joinRooms);
-    socket.io.on("reconnect", joinRooms); // manager‑level event
+    socket.io.on("reconnect", joinRooms);
 
-    /* 3) אירועי עסק */
+    // Business events
     socket.on("notificationBundle", handleBundle);
     socket.on("newNotification", handleNew);
     socket.on("unreadMessagesCount", setUnreadCount);
     socket.on("dashboardUpdate", handleDashboard);
 
-    /* ניקוי */
+    // cleanup
     return () => {
       socket.off("connect", joinRooms);
       socket.io.off("reconnect", joinRooms);
@@ -83,18 +82,16 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId, handleBundle, handleNew, handleDashboard]);
 
-  /* -------------------------------------------------------------------- */
-  /* טעינה ראשונית של התראות מה‑REST API                                   */
-  /* -------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------ */
+  /*  Initial fetch                                                     */
+  /* ------------------------------------------------------------------ */
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
     (async () => {
       try {
-        const res = await fetch("/api/business/my/notifications", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+        const res  = await fetch("/api/business/my/notifications", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const data = await res.json();
         if (data.ok) {
@@ -107,13 +104,12 @@ export function NotificationsProvider({ children }) {
     })();
   }, [socket, user?.businessId]);
 
+  /* ------------------------------------------------------------------ */
+  /*  Context value                                                     */
+  /* ------------------------------------------------------------------ */
   return (
     <NotificationsContext.Provider
-      value={{
-        notifications,
-        unreadMessagesCount: unreadCount,
-        dashboardStats,
-      }}
+      value={{ notifications, unreadMessagesCount: unreadCount, dashboardStats }}
     >
       {children}
     </NotificationsContext.Provider>
