@@ -1,4 +1,4 @@
-// src/context/NotificationsContext.jsx — final updated version
+// src/context/NotificationsContext.jsx
 import React, {
   createContext,
   useContext,
@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useAuth } from "./AuthContext.jsx";
 
-const NotificationsContext = createContext(null);
+const NotificationsContext = createContext();
 
 export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
@@ -21,11 +21,13 @@ export function NotificationsProvider({ children }) {
     views_count: 0,
   });
 
-  /* ------------------------- Helpers ------------------------- */
-  const addNotification = useCallback((notification) => {
-    const id = notification.id || notification._id;
+  /* ------------------------------------------------------------------ */
+  /*  Helpers                                                           */
+  /* ------------------------------------------------------------------ */
+  const addNotification = useCallback((n) => {
+    const id = n.id || n._id;
     setNotifications((prev) =>
-      prev.some((item) => (item.id || item._id) === id) ? prev : [notification, ...prev]
+      prev.some((x) => (x.id || x._id) === id) ? prev : [n, ...prev]
     );
   }, []);
 
@@ -37,9 +39,9 @@ export function NotificationsProvider({ children }) {
     [addNotification]
   );
 
-  const handleNewNotification = useCallback(
-    (notification) => {
-      addNotification(notification);
+  const handleNew = useCallback(
+    (n) => {
+      addNotification(n);
       setUnreadCount((c) => c + 1);
     },
     [addNotification]
@@ -49,33 +51,32 @@ export function NotificationsProvider({ children }) {
     setDashboardStats(stats);
   }, []);
 
-  /* ---------------------- Socket listeners ------------------- */
+  /* ------------------------------------------------------------------ */
+  /*  Socket listeners (no manual room join – done server‑side)         */
+  /* ------------------------------------------------------------------ */
   useEffect(() => {
-    if (!socket || !user?.businessId) return;
+    if (!socket) return; // businessId כבר טופל ב‑handshake
 
-    // Join rooms for both Redis adapter and notificationsHandler
-    const joinRooms = () => {
-      socket.emit("joinBusinessRoom", user.businessId);
-    };
-
-    if (socket.connected) joinRooms(); // hot-reload
-    socket.on("connect", joinRooms);
-
+    // Business events
     socket.on("notificationBundle", handleBundle);
-    socket.on("newNotification", handleNewNotification);
+    socket.on("newNotification", handleNew);
     socket.on("unreadMessagesCount", setUnreadCount);
     socket.on("dashboardUpdate", handleDashboard);
 
+    // DEBUG – לראות כל אירוע (למחוק בפרודקשן)
+    // socket.onAny((ev, payload) => console.log("[SOCKET]", ev, payload));
+
     return () => {
-      socket.off("connect", joinRooms);
       socket.off("notificationBundle", handleBundle);
-      socket.off("newNotification", handleNewNotification);
+      socket.off("newNotification", handleNew);
       socket.off("unreadMessagesCount", setUnreadCount);
       socket.off("dashboardUpdate", handleDashboard);
     };
-  }, [socket, user?.businessId, handleBundle, handleNewNotification, handleDashboard]);
+  }, [socket, handleBundle, handleNew, handleDashboard]);
 
-  /* -------------------- Initial fetch ------------------------ */
+  /* ------------------------------------------------------------------ */
+  /*  Initial fetch                                                     */
+  /* ------------------------------------------------------------------ */
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -95,14 +96,16 @@ export function NotificationsProvider({ children }) {
     })();
   }, [socket, user?.businessId]);
 
-  /* -------------------- Context value ------------------------ */
-  const value = {
+  /* ------------------------------------------------------------------ */
+  /*  Context value                                                     */
+  /* ------------------------------------------------------------------ */
+  const ctx = {
     notifications,
     unreadMessagesCount: unreadCount,
     dashboardStats,
   };
 
-  return <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>;
+  return <NotificationsContext.Provider value={ctx}>{children}</NotificationsContext.Provider>;
 }
 
 export function useNotifications() {
