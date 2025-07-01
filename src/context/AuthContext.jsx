@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
   const ws = useRef(null);
   const ongoingRefresh = useRef(null);
   const isRefreshing = useRef(false);
+  const isMounted = useRef(true);
 
   // Single-flight token refresh בתוך הקונטקסט
   async function singleFlightRefresh() {
@@ -29,6 +30,10 @@ export function AuthProvider({ children }) {
         .then(res => {
           const newToken = res.data.accessToken;
           if (!newToken) throw new Error("No new token");
+          if (newToken === token) {
+            console.log("[AuthContext] Token unchanged");
+            return newToken;
+          }
           console.log("[AuthContext] Refresh token success:", newToken);
           localStorage.setItem("token", newToken);
           setAuthToken(newToken);
@@ -199,12 +204,16 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // ↳ watch token changes: fetch /auth/me & init WS
+  // מניעת רינדור אינסופי
   useEffect(() => {
-    let isMounted = true;
-    const controller = new AbortController();
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
-    console.log("[AuthContext] useEffect token changed:", token);
+  // watch token changes: fetch /auth/me & init WS
+  useEffect(() => {
     if (!token) {
       setUser(null);
       setInitialized(true);
@@ -213,9 +222,12 @@ export function AuthProvider({ children }) {
 
     setLoading(true);
     setAuthToken(token);
+
+    const controller = new AbortController();
+
     API.get("/auth/me", { signal: controller.signal })
       .then(({ data }) => {
-        if (!isMounted) return;
+        if (!isMounted.current) return;
         console.log("[AuthContext] /auth/me success:", data);
         setUser(data);
         createSocketConnection(token, data);
@@ -231,7 +243,7 @@ export function AuthProvider({ children }) {
         }
       })
       .finally(() => {
-        if (isMounted) {
+        if (isMounted.current) {
           setLoading(false);
           setInitialized(true);
           console.log("[AuthContext] Initialization complete");
@@ -239,7 +251,6 @@ export function AuthProvider({ children }) {
       });
 
     return () => {
-      isMounted = false;
       controller.abort();
     };
   }, [token]);
