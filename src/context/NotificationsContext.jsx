@@ -1,62 +1,82 @@
-// src/context/NotificationsContext.jsx
 import React, {
   createContext,
   useContext,
   useEffect,
-  useState,
+  useReducer,
   useCallback,
 } from "react";
 import { useAuth } from "./AuthContext.jsx";
 
 const NotificationsContext = createContext();
 
-export function NotificationsProvider({ children }) {
-  const { user, socket } = useAuth();
-
-  const [notifications, setNotifications] = useState([]);
-  const [dashboardStats, setDashboardStats] = useState({
+const initialState = {
+  notifications: [],
+  dashboardStats: {
     appointments_count: 0,
     reviews_count: 0,
     views_count: 0,
-  });
+  },
+};
 
-  // במקום לנהל unreadCount בנפרד, מחשבים אותו מתוך המערך
-  const unreadCount = notifications.filter(n => !n.read).length;
-
-  // ממיר כל התראה להוסיף שדה id (מתוך _id אם חסר)
-  const normalizeNotification = (notif) => ({
+function normalizeNotification(notif) {
+  return {
     ...notif,
     id: notif.id || notif._id?.toString(),
-  });
-
-  // פונקציה למיזוג מערכי התראות בלי כפילויות
-  const mergeNotifications = (existing, incoming) => {
-    const map = new Map();
-    existing.forEach(n => map.set(n.id, n));
-    incoming.forEach(n => map.set(n.id, n)); // מעדכן או מוסיף
-    // מיון לפי תאריך, התראה חדשה למעלה
-    return Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   };
+}
 
-  const addNotification = useCallback((notif) => {
-    const normalized = normalizeNotification(notif);
-    setNotifications(prev => {
-      const exists = prev.find(n => n.id === normalized.id);
+function notificationsReducer(state, action) {
+  switch (action.type) {
+    case "SET_NOTIFICATIONS": {
+      const incoming = action.payload.map(normalizeNotification);
+      const map = new Map();
+      state.notifications.forEach(n => map.set(n.id, n));
+      incoming.forEach(n => map.set(n.id, n));
+      const merged = Array.from(map.values()).sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
+      return { ...state, notifications: merged };
+    }
+    case "ADD_NOTIFICATION": {
+      const normalized = normalizeNotification(action.payload);
+      const exists = state.notifications.find(n => n.id === normalized.id);
+      let newNotifications;
       if (exists) {
-        // עדכון התראה קיימת במקום להוסיף כפילות
-        return prev.map(n => n.id === normalized.id ? normalized : n);
+        newNotifications = state.notifications.map(n =>
+          n.id === normalized.id ? normalized : n
+        );
+      } else {
+        newNotifications = [normalized, ...state.notifications];
       }
-      return [normalized, ...prev];
-    });
-  }, []);
+      return { ...state, notifications: newNotifications };
+    }
+    case "MARK_AS_READ": {
+      const id = action.payload;
+      const updated = state.notifications.map(n =>
+        n.id === id ? { ...n, read: true } : n
+      );
+      return { ...state, notifications: updated };
+    }
+    case "CLEAR_ALL":
+      return { ...state, notifications: [] };
+    case "CLEAR_READ": {
+      const filtered = state.notifications.filter(n => !n.read);
+      return { ...state, notifications: filtered };
+    }
+    case "SET_DASHBOARD_STATS":
+      return { ...state, dashboardStats: action.payload };
+    default:
+      return state;
+  }
+}
 
-  // עדכון של מערך ההתראות - מיזוג בין קיים לחדש
-  const mergeNewNotifications = useCallback((newNotifs) => {
-    const normalizedNotifs = newNotifs.map(normalizeNotification);
-    setNotifications(prev => mergeNotifications(prev, normalizedNotifs));
-  }, []);
+export function NotificationsProvider({ children }) {
+  const { user, socket } = useAuth();
 
-  // 1️⃣ Fetch initial notifications
+  const [state, dispatch] = useReducer(notificationsReducer, initialState);
+
+  const unreadCount = state.notifications.filter(n => !n.read).length;
+
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
@@ -65,15 +85,14 @@ export function NotificationsProvider({ children }) {
       .then(res => res.json())
       .then(data => {
         if (data.ok) {
-          mergeNewNotifications(data.notifications);
+          dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
         } else {
           console.warn("Fetch notifications returned not ok:", data);
         }
       })
       .catch(err => console.error("Notifications fetch failed:", err));
-  }, [user?.businessId, mergeNewNotifications]);
+  }, [user?.businessId]);
 
-  // 2️⃣ Setup all WS listeners
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -82,15 +101,17 @@ export function NotificationsProvider({ children }) {
     };
 
     const handleBundle = ({ count, lastNotification }) => {
-      if (lastNotification) addNotification(lastNotification);
+      if (lastNotification) {
+        dispatch({ type: "ADD_NOTIFICATION", payload: lastNotification });
+      }
     };
 
     const handleNew = notif => {
-      addNotification(notif);
+      dispatch({ type: "ADD_NOTIFICATION", payload: notif });
     };
 
     const handleDashboard = stats => {
-      setDashboardStats(stats);
+      dispatch({ type: "SET_DASHBOARD_STATS", payload: stats });
     };
 
     socket.on("connect", handleConnect);
@@ -106,10 +127,9 @@ export function NotificationsProvider({ children }) {
       socket.off("newNotification", handleNew);
       socket.off("dashboardUpdate", handleDashboard);
     };
-  }, [socket, user?.businessId, addNotification]);
+  }, [socket, user?.businessId]);
 
-  // 3️⃣ (אופציונלי) לסמן קריאה
-  const markAsRead = useCallback(async id => {
+  const markAsRead = useCallback(async (id) => {
     try {
       await fetch("/api/notifications/mark-read", {
         method: "POST",
@@ -119,31 +139,31 @@ export function NotificationsProvider({ children }) {
         },
         body: JSON.stringify({ notificationId: id }),
       });
-      setNotifications(prev => prev.map(n =>
-        n.id === id ? { ...n, read: true } : n
-      ));
+      dispatch({ type: "MARK_AS_READ", payload: id });
     } catch (err) {
       console.error("markAsRead error:", err);
     }
   }, []);
 
   const clearAll = useCallback(() => {
-    setNotifications([]);
+    dispatch({ type: "CLEAR_ALL" });
   }, []);
 
   const clearRead = useCallback(() => {
-    setNotifications(prev => prev.filter(n => !n.read));
+    dispatch({ type: "CLEAR_READ" });
   }, []);
 
   return (
-    <NotificationsContext.Provider value={{
-      notifications,
-      unreadCount,
-      dashboardStats,
-      markAsRead,
-      clearAll,
-      clearRead,
-    }}>
+    <NotificationsContext.Provider
+      value={{
+        notifications: state.notifications,
+        unreadCount,
+        dashboardStats: state.dashboardStats,
+        markAsRead,
+        clearAll,
+        clearRead,
+      }}
+    >
       {children}
     </NotificationsContext.Provider>
   );
