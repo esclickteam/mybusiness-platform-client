@@ -1,129 +1,97 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { io } from "socket.io-client";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+// src/context/AiContext.jsx — updated to reuse singleton socket
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
+import { useAuth } from "./AuthContext";
+import { useSocket } from "./socketContext";
 
-const SOCKET_URL = "https://api.esclick.co.il";
-
-const AiContext = createContext();
+const AiContext = createContext(null);
 
 export function AiProvider({ children }) {
+  /* ------------------------------------------------------------ */
+  /*  Shared state & helpers                                      */
+  /* ------------------------------------------------------------ */
   const { token, user } = useAuth();
-  const navigate = useNavigate();
+  const socket = useSocket(); // ← לא יוצר חיבור חדש
 
   const [suggestions, setSuggestions] = useState(() => {
     try {
-      const stored = localStorage.getItem("aiSuggestions");
-      return stored ? JSON.parse(stored) : [];
+      return JSON.parse(localStorage.getItem("aiSuggestions")) || [];
     } catch {
       return [];
     }
   });
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [socket, setSocket] = useState(null);
 
-  // שמירת suggestions ב-localStorage בכל שינוי
+  /* ------------------------------------------------------------ */
+  /*  Persist + cross‑tab sync                                     */
+  /* ------------------------------------------------------------ */
   useEffect(() => {
     localStorage.setItem("aiSuggestions", JSON.stringify(suggestions));
   }, [suggestions]);
 
-  // מאזין לאירוע storage כדי לסנכרן בין טאבים
   useEffect(() => {
-    function onStorage(e) {
-      if (e.key === "aiSuggestions") {
-        try {
-          const newSuggestions = e.newValue ? JSON.parse(e.newValue) : [];
-          setSuggestions(newSuggestions);
-
-          if (activeSuggestion && !newSuggestions.find(s => s.id === activeSuggestion.id)) {
-            setActiveSuggestion(null);
-          }
-        } catch {}
-      }
-    }
+    const onStorage = (e) => {
+      if (e.key !== "aiSuggestions") return;
+      try {
+        const updated = e.newValue ? JSON.parse(e.newValue) : [];
+        setSuggestions(updated);
+        if (activeSuggestion && !updated.find((s) => s.id === activeSuggestion.id)) {
+          setActiveSuggestion(null);
+        }
+      } catch {}
+    };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, [activeSuggestion]);
 
-  // חיבור וסנכרון socket
+  /* ------------------------------------------------------------ */
+  /*  Socket listeners                                            */
+  /* ------------------------------------------------------------ */
   useEffect(() => {
-    if (!token || !user?.businessId) return;
+    if (!socket) return;
 
-    const s = io(SOCKET_URL, {
-      path: "/socket.io",
-      transports: ["websocket"],
-      auth: {
-        token,
-        businessId: user.businessId,
-      },
-    });
-
-    s.on("connect", () => {
-      console.log("AI Socket connected:", s.id);
-    });
-
-    s.on("disconnect", (reason) => {
-      console.log("AI Socket disconnected:", reason);
-    });
-
-    // קבלת המלצות AI חדשות - הוספה למערך בלי כפילויות
-    s.on("newRecommendation", (suggestion) => {
-      const newSuggestion = {
+    const handleNew = (suggestion) => {
+      const newSug = {
         id: suggestion.recommendationId,
         text: suggestion.recommendation,
         status: suggestion.status || "ממתין",
         conversationId: suggestion.conversationId,
         clientSocketId: suggestion.clientSocketId,
       };
-
-      setSuggestions(prev => {
-        if (prev.find(s => s.id === newSuggestion.id)) return prev;
-        return [...prev, newSuggestion];
-      });
-
-      // !הסרתי את השורה שמעדכנת activeSuggestion כדי לא לפתוח את המודל אוטומטית
-      // setActiveSuggestion(newSuggestion);
-    });
-
-    setSocket(s);
-
-    return () => {
-      s.disconnect();
-      setSocket(null);
+      setSuggestions((prev) => (prev.find((s) => s.id === newSug.id) ? prev : [...prev, newSug]));
     };
-  }, [token, user?.businessId]);
 
-  const addSuggestion = (suggestion) => {
-    setSuggestions((prev) => {
-      if (prev.find(s => s.id === suggestion.id)) {
-        return prev;
-      }
-      return [...prev, suggestion];
-    });
-    setActiveSuggestion(suggestion);
-  };
+    socket.on("newRecommendation", handleNew);
+    return () => socket.off("newRecommendation", handleNew);
+  }, [socket]);
 
+  /* ------------------------------------------------------------ */
+  /*  Actions                                                     */
+  /* ------------------------------------------------------------ */
   const approveSuggestion = async (id) => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL || "https://api.esclick.co.il"}/chat/send-approved`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ businessId: user.businessId, recommendationId: id }),
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL || "https://api.esclick.co.il"}/chat/send-approved`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ businessId: user.businessId, recommendationId: id }),
+        }
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to approve");
 
-      setSuggestions((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s))
-      );
+      setSuggestions((prev) => prev.map((s) => (s.id === id ? { ...s, status: "sent" } : s)));
       setActiveSuggestion(null);
-
-      // כאן נשארים בדף הנוכחי, בלי ניווט:
-      // אפשר להוסיף הודעה אם רוצים, למשל:
-      // alert("ההמלצה אושרה ונשלחה ללקוח!");
-
     } catch (err) {
       console.error("Approve suggestion error:", err);
       alert("שגיאה באישור ההמלצה: " + err.message);
@@ -137,54 +105,53 @@ export function AiProvider({ children }) {
     setActiveSuggestion(null);
   };
 
-  const closeModal = () => {
-    setActiveSuggestion(null);
+  const contextValue = {
+    suggestions,
+    activeSuggestion,
+    setActiveSuggestion,
+    approveSuggestion,
+    rejectSuggestion,
+    loading,
   };
 
   return (
-    <AiContext.Provider
-      value={{
-        suggestions,
-        addSuggestion,
-        activeSuggestion,
-        setActiveSuggestion,
-        approveSuggestion,
-        rejectSuggestion,
-        closeModal,
-        loading,
-        socket,
-      }}
-    >
+    <AiContext.Provider value={contextValue}>
       {children}
       <AiModal />
     </AiContext.Provider>
   );
 }
 
-export function useAi() {
-  return useContext(AiContext);
-}
+export const useAi = () => useContext(AiContext);
 
-// רכיב modal להצגת ההמלצה
+/* ------------------------------------------------------------ */
+/*  Modal component                                             */
+/* ------------------------------------------------------------ */
 function AiModal() {
-  const { activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading } = useAi();
-
+  const { activeSuggestion, approveSuggestion, rejectSuggestion, loading, setActiveSuggestion } = useAi();
   if (!activeSuggestion) return null;
 
   return (
     <div
-      onClick={closeModal}
+      onClick={() => setActiveSuggestion(null)}
       style={{
-        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.5)", display: "flex",
-        justifyContent: "center", alignItems: "center", zIndex: 1000
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1000,
       }}
       aria-modal="true"
       role="dialog"
       tabIndex={-1}
     >
       <div
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         style={{
           background: "white",
           padding: 20,
@@ -199,18 +166,10 @@ function AiModal() {
         <h2>הודעת AI חדשה</h2>
         <p>{activeSuggestion.text}</p>
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
-          <button
-            onClick={() => approveSuggestion(activeSuggestion.id)}
-            disabled={loading}
-            style={{ padding: "8px 16px" }}
-          >
+          <button onClick={() => approveSuggestion(activeSuggestion.id)} disabled={loading}>
             אשר ושלח
           </button>
-          <button
-            onClick={() => rejectSuggestion(activeSuggestion.id)}
-            disabled={loading}
-            style={{ padding: "8px 16px" }}
-          >
+          <button onClick={() => rejectSuggestion(activeSuggestion.id)} disabled={loading}>
             דחה
           </button>
         </div>
