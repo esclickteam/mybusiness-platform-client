@@ -3,63 +3,53 @@ import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import { io } from "socket.io-client";
 
+let ongoingRefresh = null;
+let isRefreshing = false;
+
+// Single-flight token refresh
+async function singleFlightRefresh() {
+  console.log("[AuthContext] singleFlightRefresh called");
+  if (!ongoingRefresh) {
+    isRefreshing = true;
+    console.log("[AuthContext] Starting token refresh");
+    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
+      .then(res => {
+        const newToken = res.data.accessToken;
+        if (!newToken) throw new Error("No new token");
+        console.log("[AuthContext] Refresh token success:", newToken);
+        localStorage.setItem("token", newToken);
+        setAuthToken(newToken);
+        setToken(newToken);           // ← update local state
+        return newToken;
+      })
+      .catch(err => {
+        console.error("[AuthContext] Refresh token failed:", err);
+        throw err;
+      })
+      .finally(() => {
+        isRefreshing = false;
+        ongoingRefresh = null;
+        console.log("[AuthContext] Token refresh finished");
+      });
+  } else {
+    console.log("[AuthContext] Using ongoing token refresh");
+  }
+  return ongoingRefresh;
+}
+
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
+  // ← NEW: keep token in state (initialized from localStorage)
   const [token, setToken] = useState(() => localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-
   const ws = useRef(null);
-  const ongoingRefresh = useRef(null);
-  const isRefreshing = useRef(false);
-  const isMounted = useRef(true);
-  const lastToken = useRef(token);
-
-  // Single-flight token refresh בתוך הקונטקסט
-  async function singleFlightRefresh() {
-    console.log("[AuthContext] singleFlightRefresh called");
-    if (!ongoingRefresh.current) {
-      isRefreshing.current = true;
-      console.log("[AuthContext] Starting token refresh");
-      ongoingRefresh.current = API.post("/auth/refresh-token", null, { withCredentials: true })
-        .then(res => {
-          const newToken = res.data.accessToken;
-          if (!newToken) throw new Error("No new token");
-
-          const storedToken = localStorage.getItem("token") || "";
-
-          if (storedToken.trim() === newToken.trim()) {
-            console.log("[AuthContext] Token in localStorage matches new token, skipping setToken");
-            return newToken;
-          }
-
-          console.log("[AuthContext] Refresh token success:", newToken);
-          localStorage.setItem("token", newToken);
-          setAuthToken(newToken);
-          setToken(newToken);
-          return newToken;
-        })
-        .catch(async err => {
-          console.error("[AuthContext] Refresh token failed:", err);
-          await logout();
-          throw err;
-        })
-        .finally(() => {
-          isRefreshing.current = false;
-          ongoingRefresh.current = null;
-          console.log("[AuthContext] Token refresh finished");
-        });
-    } else {
-      console.log("[AuthContext] Using ongoing token refresh");
-    }
-    return ongoingRefresh.current;
-  }
 
   // Logout
   const logout = async () => {
@@ -71,11 +61,11 @@ export function AuthProvider({ children }) {
     } catch {
       console.warn("[AuthContext] logout API error (ignored)");
     } finally {
-      ongoingRefresh.current = null;
-      isRefreshing.current = false;
+      ongoingRefresh = null;
+      isRefreshing = false;
       setAuthToken(null);
       localStorage.removeItem("token");
-      setToken(null);
+      setToken(null);               // ← clear state
       localStorage.removeItem("businessDetails");
       console.log("[AuthContext] Cleared token & details");
       if (ws.current) {
@@ -106,7 +96,7 @@ export function AuthProvider({ children }) {
 
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
-      setToken(accessToken);
+      setToken(accessToken);        // ← store in state
 
       const { data } = await API.get("/auth/me", { withCredentials: true });
       console.log("[AuthContext] /auth/me returned:", data);
@@ -177,7 +167,7 @@ export function AuthProvider({ children }) {
       auth: { token, role: userData.role, businessId: userData.businessId }
     });
 
-    ws.current.on("connect", () => console.log("✅ Socket connected"));
+    ws.current.on("connect",    () => console.log("✅ Socket connected"));
     ws.current.on("disconnect", () => console.log("🔴 Socket disconnected"));
 
     ws.current.on("tokenExpired", async () => {
@@ -210,38 +200,23 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // ניהול mounted state למניעת עדכון סטייט אחרי unmount
+  // ↳ watch token changes: fetch /auth/me & init WS
   useEffect(() => {
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
+    let isMounted = true;
+    const controller = new AbortController();
 
-  // watch token changes: fetch /auth/me & init WS, עם בדיקת lastToken
-  useEffect(() => {
+    console.log("[AuthContext] useEffect token changed:", token);
     if (!token) {
       setUser(null);
       setInitialized(true);
-      lastToken.current = null;
       return;
     }
-
-    if (token === lastToken.current) {
-      console.log("[AuthContext] Token unchanged, skipping effect");
-      return;
-    }
-
-    lastToken.current = token;
 
     setLoading(true);
     setAuthToken(token);
-
-    const controller = new AbortController();
-
     API.get("/auth/me", { signal: controller.signal })
       .then(({ data }) => {
-        if (!isMounted.current) return;
+        if (!isMounted) return;
         console.log("[AuthContext] /auth/me success:", data);
         setUser(data);
         createSocketConnection(token, data);
@@ -257,7 +232,7 @@ export function AuthProvider({ children }) {
         }
       })
       .finally(() => {
-        if (isMounted.current) {
+        if (isMounted) {
           setLoading(false);
           setInitialized(true);
           console.log("[AuthContext] Initialization complete");
@@ -265,6 +240,7 @@ export function AuthProvider({ children }) {
       });
 
     return () => {
+      isMounted = false;
       controller.abort();
     };
   }, [token]);
