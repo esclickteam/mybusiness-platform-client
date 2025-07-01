@@ -26,18 +26,22 @@ export function NotificationsProvider({ children }) {
     );
   }, []);
 
-  // Fetch initial notifications once when businessId becomes available
+  // 1️⃣ Fetch initial notifications
   useEffect(() => {
     if (!user?.businessId) return;
     (async () => {
       try {
         const res = await fetch("/api/business/my/notifications", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
         const data = await res.json();
         if (data.ok) {
           setNotifications(data.notifications);
-          setUnreadCount(data.notifications.filter((n) => !n.read).length);
+          setUnreadCount(
+            data.notifications.filter((n) => !n.read).length
+          );
         }
       } catch (err) {
         console.error("Notifications fetch failed:", err);
@@ -45,7 +49,7 @@ export function NotificationsProvider({ children }) {
     })();
   }, [user?.businessId]);
 
-  // Real-time WebSocket listeners for notifications & counts
+  // 2️⃣ Real-time: notifications & counts
   useEffect(() => {
     if (!socket) return;
 
@@ -70,7 +74,7 @@ export function NotificationsProvider({ children }) {
     };
 
     socket.on("connect", onConnect);
-    // in case already connected
+    // אם כבר מחובר — צור שוב את החיבור לחדר
     if (socket.connected) onConnect();
 
     socket.on("newNotification", onNewNotification);
@@ -85,17 +89,20 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId, addNotification]);
 
-  // Real-time WebSocket listener for new messages
+  // 3️⃣ Real-time: newMessage listener
   useEffect(() => {
     if (!socket) return;
 
     const onNewMessage = (msg) => {
       console.log("[WS] newMessage:", msg);
+      // כאן אפשר לקרוא לפונקציה בסביבה שישלוט על מצב השיחות
       // למשל: addToConversation(msg.conversationId, msg);
     };
 
     socket.on("newMessage", onNewMessage);
-    return () => socket.off("newMessage", onNewMessage);
+    return () => {
+      socket.off("newMessage", onNewMessage);
+    };
   }, [socket]);
 
   const markAsRead = useCallback(async (id) => {
