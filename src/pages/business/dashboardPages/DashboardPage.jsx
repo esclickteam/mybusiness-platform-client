@@ -107,6 +107,13 @@ const DashboardPage = () => {
   const location = useLocation();
   const queryClient = useQueryClient();
 
+  console.log("DashboardPage render:");
+  console.log(" - initialized:", initialized);
+  console.log(" - user:", user);
+  console.log(" - businessId:", businessId);
+
+
+
   const { updateMessagesCount, unreadCount } = useUnreadMessages();
   const unreadCountRef = useRef(unreadCount);
   useEffect(() => {
