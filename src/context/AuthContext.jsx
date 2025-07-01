@@ -1,72 +1,73 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import { io } from "socket.io-client";
+
+let ongoingRefresh = null;
+let isRefreshing = false;
+
+// Single-flight token refresh
+async function singleFlightRefresh() {
+  console.log("[AuthContext] singleFlightRefresh called");
+  if (!ongoingRefresh) {
+    isRefreshing = true;
+    console.log("[AuthContext] Starting token refresh");
+    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
+      .then(res => {
+        const newToken = res.data.accessToken;
+        if (!newToken) throw new Error("No new token");
+        console.log("[AuthContext] Refresh token success:", newToken);
+        localStorage.setItem("token", newToken);
+        setAuthToken(newToken);
+        setToken(newToken);           // ← update local state
+        return newToken;
+      })
+      .catch(err => {
+        console.error("[AuthContext] Refresh token failed:", err);
+        throw err;
+      })
+      .finally(() => {
+        isRefreshing = false;
+        ongoingRefresh = null;
+        console.log("[AuthContext] Token refresh finished");
+      });
+  } else {
+    console.log("[AuthContext] Using ongoing token refresh");
+  }
+  return ongoingRefresh;
+}
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
-  // Token state from localStorage
+  // ← NEW: keep token in state (initialized from localStorage)
   const [token, setToken] = useState(() => localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [initialized, setInitialized] = useState(false);
   const ws = useRef(null);
 
-  // Refs for single-flight refresh
-  const ongoingRefreshRef = useRef(null);
-  const isRefreshingRef = useRef(false);
-
-  // Single-flight token refresh (now inside component)
-  const singleFlightRefresh = useCallback(async () => {
-    console.log("[AuthContext] singleFlightRefresh called");
-    if (!ongoingRefreshRef.current) {
-      console.log("[AuthContext] Starting token refresh");
-      isRefreshingRef.current = true;
-      ongoingRefreshRef.current = API.post("/auth/refresh-token", null, { withCredentials: true })
-        .then(res => {
-          const newToken = res.data.accessToken;
-          if (!newToken) throw new Error("No new token");
-          console.log("[AuthContext] Refresh token success:", newToken);
-          localStorage.setItem("token", newToken);
-          setAuthToken(newToken);
-          setToken(newToken);
-          return newToken;
-        })
-        .catch(err => {
-          console.error("[AuthContext] Refresh token failed:", err);
-          throw err;
-        })
-        .finally(() => {
-          isRefreshingRef.current = false;
-          ongoingRefreshRef.current = null;
-          console.log("[AuthContext] Token refresh finished");
-        });
-    } else {
-      console.log("[AuthContext] Using ongoing token refresh");
-    }
-    return ongoingRefreshRef.current;
-  }, []);
-
-  // Logout logic
+  // Logout
   const logout = async () => {
     console.log("[AuthContext] logout called");
     setLoading(true);
     try {
       await API.post("/auth/logout", {}, { withCredentials: true });
       console.log("[AuthContext] logout API success");
-    } catch (e) {
-      console.warn("[AuthContext] logout API error (ignored):", e);
+    } catch {
+      console.warn("[AuthContext] logout API error (ignored)");
     } finally {
+      ongoingRefresh = null;
+      isRefreshing = false;
       setAuthToken(null);
       localStorage.removeItem("token");
-      setToken(null);
+      setToken(null);               // ← clear state
       localStorage.removeItem("businessDetails");
-      console.log("[AuthContext] Cleared token & businessDetails");
+      console.log("[AuthContext] Cleared token & details");
       if (ws.current) {
         ws.current.removeAllListeners();
         ws.current.disconnect();
@@ -79,7 +80,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Login logic
+  // Login
   const login = async (email, password, options = { skipRedirect: false }) => {
     console.log("[AuthContext] login called with:", email);
     setLoading(true);
@@ -91,20 +92,17 @@ export function AuthProvider({ children }) {
         { withCredentials: true }
       );
       if (!accessToken) throw new Error("No access token received");
-      console.log("[AuthContext] login success, accessToken:", accessToken);
+      console.log("[AuthContext] login success:", accessToken);
 
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
-      setToken(accessToken);
+      setToken(accessToken);        // ← store in state
 
       const { data } = await API.get("/auth/me", { withCredentials: true });
       console.log("[AuthContext] /auth/me returned:", data);
 
       if (data.businessId) {
-        localStorage.setItem(
-          "businessDetails",
-          JSON.stringify({ _id: data.businessId })
-        );
+        localStorage.setItem("businessDetails", JSON.stringify({ _id: data.businessId }));
         console.log("[AuthContext] Stored businessDetails:", data.businessId);
       }
       setUser(data);
@@ -136,13 +134,12 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Helper to fetch with auth & handle expiration
+  // Fetch wrapper
   const fetchWithAuth = async fn => {
     try {
       return await fn();
     } catch (err) {
-      const status = err.response?.status;
-      if ([401, 403].includes(status)) {
+      if ([401, 403].includes(err.response?.status)) {
         console.warn("[AuthContext] Unauthorized – logging out");
         await logout();
         setError("❌ יש להתחבר מחדש");
@@ -203,7 +200,7 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // Fetch user & init WS on token changes
+  // ↳ watch token changes: fetch /auth/me & init WS
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -246,9 +243,9 @@ export function AuthProvider({ children }) {
       isMounted = false;
       controller.abort();
     };
-  }, [token, logout, singleFlightRefresh]);
+  }, [token]);
 
-  // Cleanup success toast
+  // Auto-dismiss success toast
   useEffect(() => {
     if (!successMessage) return;
     const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -267,7 +264,7 @@ export function AuthProvider({ children }) {
       refreshAccessToken: singleFlightRefresh,
       fetchWithAuth,
       socket: ws.current,
-      setUser,
+      setUser
     }}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
