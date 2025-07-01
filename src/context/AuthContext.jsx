@@ -8,7 +8,32 @@ import React, {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
-import createSocket, { singleFlightRefresh } from "../socket"; // ← singleton socket helper
+import createSocket from "../socket"; // singleton socket helper
+
+/* ------------------------------------------------------------------ */
+/*  Utility: single‑flight refresh (local)                            */
+/* ------------------------------------------------------------------ */
+let ongoingRefresh = null;
+let isRefreshing   = false;
+
+export async function singleFlightRefresh() {
+  if (!ongoingRefresh) {
+    isRefreshing   = true;
+    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
+      .then((res) => {
+        const newToken = res.data.accessToken;
+        if (!newToken) throw new Error("No new token");
+        localStorage.setItem("token", newToken);
+        setAuthToken(newToken);
+        return newToken;
+      })
+      .finally(() => {
+        isRefreshing   = false;
+        ongoingRefresh = null;
+      });
+  }
+  return ongoingRefresh;
+}
 
 /* ------------------------------------------------------------------ */
 /*  Context init                                                      */
@@ -21,8 +46,8 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   /*  State                                                         */
   /* -------------------------------------------------------------- */
-  const socketRef           = useRef(null); // live socket instance
-  const [socket, setSocket] = useState(null); // exposed to consumers
+  const socketRef           = useRef(null);
+  const [socket, setSocket] = useState(null);
 
   const [token, setToken]   = useState(() => localStorage.getItem("token") || null);
   const [user, setUser]     = useState(null);
@@ -36,9 +61,7 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   const logout = async () => {
     setLoading(true);
-    try {
-      await API.post("/auth/logout", {}, { withCredentials: true });
-    } catch {}
+    try { await API.post("/auth/logout", {}, { withCredentials: true }); } catch {}
 
     setAuthToken(null);
     localStorage.removeItem("token");
@@ -46,7 +69,6 @@ export function AuthProvider({ children }) {
     setToken(null);
     setUser(null);
 
-    // נתק סוקט (אם יש)
     socketRef.current?.removeAllListeners();
     socketRef.current?.disconnect();
     socketRef.current = null;
@@ -64,9 +86,7 @@ export function AuthProvider({ children }) {
     setError(null);
 
     try {
-      const {
-        data: { accessToken, redirectUrl },
-      } = await API.post(
+      const { data: { accessToken, redirectUrl } } = await API.post(
         "/auth/login",
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
@@ -78,29 +98,22 @@ export function AuthProvider({ children }) {
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      if (!skipRedirect) {
-        sessionStorage.setItem("postLoginRedirect", redirectUrl || "");
-      }
+      if (!skipRedirect) sessionStorage.setItem("postLoginRedirect", redirectUrl || "");
 
       setLoading(false);
     } catch (e) {
-      setError(
-        e.response?.status >= 400 && e.response?.status < 500
-          ? "❌ אימייל או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסה שוב"
-      );
+      setError(e.response?.status >= 400 && e.response?.status < 500 ? "❌ אימייל או סיסמה שגויים" : "❌ שגיאה בשרת, נסה שוב");
       setLoading(false);
       throw e;
     }
   };
 
   /* -------------------------------------------------------------- */
-  /*  Fetch wrapper – auto logout on 401/403                         */
+  /*  Fetch wrapper                                                 */
   /* -------------------------------------------------------------- */
   const fetchWithAuth = async (fn) => {
-    try {
-      return await fn();
-    } catch (err) {
+    try { return await fn(); }
+    catch (err) {
       if ([401, 403].includes(err.response?.status)) {
         await logout();
         setError("❌ יש להתחבר מחדש");
@@ -116,7 +129,6 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   useEffect(() => {
     if (!token) {
-      // לא מחובר – נתק הכל
       socketRef.current?.disconnect();
       socketRef.current = null;
       setSocket(null);
@@ -133,12 +145,10 @@ export function AuthProvider({ children }) {
         const { data } = await API.get("/auth/me", { withCredentials: true });
         setUser(data);
 
-        // יצירת / קבלת סוקט מאומת
         const s = await createSocket(singleFlightRefresh, logout, data.businessId);
         socketRef.current = s;
         setSocket(s);
 
-        // בצע redirect אם שמור
         const redirectUrl = sessionStorage.getItem("postLoginRedirect") || "";
         if (redirectUrl) {
           navigate(redirectUrl || "/", { replace: true });
@@ -154,7 +164,7 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   /* -------------------------------------------------------------- */
-  /*  Auto‑dismiss success toast                                    */
+  /*  Toast auto‑dismiss                                            */
   /* -------------------------------------------------------------- */
   useEffect(() => {
     if (!successMessage) return;
