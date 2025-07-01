@@ -45,11 +45,11 @@ export function NotificationsProvider({ children }) {
     })();
   }, [user?.businessId]);
 
-  // Real-time WebSocket listeners
+  // Real-time WebSocket listeners for notifications & counts
   useEffect(() => {
     if (!socket || !socket.connected) return;
 
-    const onNew = notif => {
+    const onNewNotification = notif => {
       console.log("[WS] newNotification:", notif);
       addNotification(notif);
       setUnreadCount(c => c + 1);
@@ -63,16 +63,33 @@ export function NotificationsProvider({ children }) {
       setDashboardStats(stats);
     };
 
-    socket.on("newNotification", onNew);
+    socket.emit("joinBusinessRoom", user.businessId);
+    socket.on("newNotification", onNewNotification);
     socket.on("unreadMessagesCount", onCount);
     socket.on("dashboardUpdate", onDashboard);
 
     return () => {
-      socket.off("newNotification", onNew);
+      socket.off("newNotification", onNewNotification);
       socket.off("unreadMessagesCount", onCount);
       socket.off("dashboardUpdate", onDashboard);
     };
-  }, [socket, addNotification]);
+  }, [socket, user?.businessId, addNotification]);
+
+  // Real-time WebSocket listener for new messages
+  useEffect(() => {
+    if (!socket || !socket.connected) return;
+
+    const onNewMessage = msg => {
+      console.log('[WS] newMessage:', msg);
+      // כאן תוכל להוסיף לוגיקה להוספת ההודעה לשיחה, למשל:
+      // addToConversation(msg.conversationId, msg);
+    };
+
+    socket.on('newMessage', onNewMessage);
+    return () => {
+      socket.off('newMessage', onNewMessage);
+    };
+  }, [socket]);
 
   const markAsRead = useCallback(async id => {
     try {
