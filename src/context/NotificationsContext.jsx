@@ -22,76 +22,76 @@ export function NotificationsProvider({ children }) {
   });
 
   const addNotification = useCallback((notif) => {
-    setNotifications((prev) =>
-      prev.some((n) => n.id === notif.id) ? prev : [notif, ...prev]
+    setNotifications(prev =>
+      prev.some(n => n.id === notif.id) ? prev : [notif, ...prev]
     );
   }, []);
 
   // 1️⃣ Fetch initial notifications
   useEffect(() => {
     if (!user?.businessId) return;
-    (async () => {
-      try {
-        const res = await fetch("/api/business/my/notifications", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        const data = await res.json();
+    fetch("/api/business/my/notifications", {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    })
+      .then(res => res.json())
+      .then(data => {
         if (data.ok) {
           setNotifications(data.notifications);
-          setUnreadCount(
-            data.notifications.filter((n) => !n.read).length
-          );
+          setUnreadCount(data.notifications.filter(n => !n.read).length);
         }
-      } catch (err) {
-        console.error("Notifications fetch failed:", err);
-      }
-    })();
+      })
+      .catch(err => console.error("Notifications fetch failed:", err));
   }, [user?.businessId]);
 
-  // 2️⃣ Real-time: notificationBundle & newNotification
+  // 2️⃣ Setup all WS listeners
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !user?.businessId) return;
 
-    const onConnect = () => {
-      if (user?.businessId) {
-        socket.emit("joinBusinessRoom", user.businessId);
-      }
+    // כשמתחברים לסוקט
+    const handleConnect = () => {
+      socket.emit("joinBusinessRoom", user.businessId);
+      console.log("[WS] joined business room:", user.businessId);
     };
-    const onBundle = ({ count, lastNotification }) => {
-      // סנכרון מלא של מספר ההתראות
+
+    // מונה ו-bundle
+    const handleBundle = ({ count, lastNotification }) => {
+      console.log("[WS] notificationBundle:", count, lastNotification);
       if (lastNotification) addNotification(lastNotification);
       setUnreadCount(count);
     };
-    const onNew = (notif) => {
-      // התראה בודדת
+
+    // התראה חדשה
+    const handleNew = notif => {
+      console.log("[WS] newNotification:", notif);
       addNotification(notif);
-      setUnreadCount((c) => c + 1);
+      setUnreadCount(c => c + 1);
     };
 
-    socket.on("connect", onConnect);
-    if (socket.connected) onConnect();
+    // עדכון דשבורד (לא קשור ל-badge)
+    const handleDashboard = stats => {
+      console.log("[WS] dashboardUpdate:", stats);
+      setDashboardStats(stats);
+    };
 
-    socket.on("notificationBundle", onBundle);
-    socket.on("newNotification", onNew);
+    // בהרשמה
+    socket.on("connect", handleConnect);
+    // אם כבר מתחבר
+    if (socket.connected) handleConnect();
+
+    socket.on("notificationBundle", handleBundle);
+    socket.on("newNotification", handleNew);
+    socket.on("dashboardUpdate", handleDashboard);
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("notificationBundle", onBundle);
-      socket.off("newNotification", onNew);
+      socket.off("connect", handleConnect);
+      socket.off("notificationBundle", handleBundle);
+      socket.off("newNotification", handleNew);
+      socket.off("dashboardUpdate", handleDashboard);
     };
   }, [socket, user?.businessId, addNotification]);
 
-  // 3️⃣ (אופציונלי) listener עבור עדכוני דשבורד
-  useEffect(() => {
-    if (!socket) return;
-    const onDashboard = (stats) => {
-      setDashboardStats(stats);
-    };
-    socket.on("dashboardUpdate", onDashboard);
-    return () => socket.off("dashboardUpdate", onDashboard);
-  }, [socket]);
-
-  const markAsRead = useCallback(async (id) => {
+  // 3️⃣ (אופציונלי) לסמן קריאה
+  const markAsRead = useCallback(async id => {
     try {
       await fetch("/api/notifications/mark-read", {
         method: "POST",
@@ -101,10 +101,10 @@ export function NotificationsProvider({ children }) {
         },
         body: JSON.stringify({ notificationId: id }),
       });
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
-      setUnreadCount((c) => Math.max(c - 1, 0));
+      setNotifications(prev => prev.map(n =>
+        n.id === id ? { ...n, read: true } : n
+      ));
+      setUnreadCount(c => Math.max(c - 1, 0));
     } catch (err) {
       console.error("markAsRead error:", err);
     }
@@ -116,20 +116,18 @@ export function NotificationsProvider({ children }) {
   }, []);
 
   const clearRead = useCallback(() => {
-    setNotifications((prev) => prev.filter((n) => !n.read));
+    setNotifications(prev => prev.filter(n => !n.read));
   }, []);
 
   return (
-    <NotificationsContext.Provider
-      value={{
-        notifications,
-        unreadCount,
-        dashboardStats,
-        markAsRead,
-        clearAll,
-        clearRead,
-      }}
-    >
+    <NotificationsContext.Provider value={{
+      notifications,
+      unreadCount,
+      dashboardStats,
+      markAsRead,
+      clearAll,
+      clearRead,
+    }}>
       {children}
     </NotificationsContext.Provider>
   );
