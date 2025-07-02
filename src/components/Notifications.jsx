@@ -19,9 +19,9 @@ export default function Notifications({ onClose }) {
 
     for (const notif of notifications) {
       if (notif.type === "message" && notif.threadId) {
-        if (!seenThreads.has(notif.threadId)) {
+        if (!seenThreads.has(notif.threadId.toString())) {
           filtered.push(notif);
-          seenThreads.add(notif.threadId);
+          seenThreads.add(notif.threadId.toString());
         }
       } else {
         filtered.push(notif);
@@ -44,12 +44,13 @@ export default function Notifications({ onClose }) {
       markAsRead(id);
     }
 
-    // ניווט לפי סוג ההתראה
     if (notif.type === "message" && notif.threadId) {
       const clientId = notif.clientId || notif.partnerId;
+      const threadIdStr = notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
+
       const url = clientId
-        ? `/dashboard/messages?threadId=${notif.threadId}&clientId=${clientId}`
-        : `/dashboard/messages?threadId=${notif.threadId}`;
+        ? `/dashboard/messages?threadId=${threadIdStr}&clientId=${clientId}`
+        : `/dashboard/messages?threadId=${threadIdStr}`;
 
       console.log("Navigating to chat URL:", url);
       navigate(url);
@@ -142,7 +143,7 @@ export default function Notifications({ onClose }) {
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
         dedupedNotifications.map((notif) => {
-          const key = notif.id || notif._id || notif.threadId;
+          const key = notif.id || notif._id || (notif.threadId ? notif.threadId.toString() : null);
           return (
             <div
               key={key}
