@@ -7,12 +7,12 @@ import { io } from "socket.io-client";
 
 export default function ClientChatSection() {
   /* ─── Route params & Auth ───────────────────────────────────────── */
-  const { businessId: businessIdFromParams } = useParams();
+  const { businessId: businessIdFromParams, clientId, threadId } = useParams();
   const { user, initialized } = useAuth();
   const userId = user?.userId || null;
 
   /* ─── Local state ──────────────────────────────────────────────── */
-  const [conversationId, setConversationId] = useState(null);
+  const [conversationId, setConversationId] = useState(threadId || null);
   const [businessName, setBusinessName] = useState("");
   const [businessId, setBusinessId] = useState(businessIdFromParams || null);
   const [loading, setLoading] = useState(true);
@@ -20,8 +20,7 @@ export default function ClientChatSection() {
   const [messages, setMessages] = useState([]);
 
   /* ─── Helper: don't לדרוס ערך תקף ב-null/undefined ────────────── */
-  const safeSetBusinessId = (newId) =>
-    setBusinessId((prev) => newId ?? prev);
+  const safeSetBusinessId = (newId) => setBusinessId((prev) => newId ?? prev);
 
   const socketRef = useRef(null);
 
@@ -59,45 +58,74 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId]);
 
-  /* ─── Fetch user conversations once (REST) ─────────────────────── */
+  /* ─── Load specific conversation if threadId & clientId present ───────── */
   useEffect(() => {
-    if (!userId) return;
+    if (!threadId || !clientId) {
+      // במקרה שאין פרמטרים, נטען שיחות רגילות
+      setLoading(true);
+      setError("");
 
-    setLoading(true);
-    setError("");
+      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
 
-    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
-
-    fetch(`${baseUrl}/api/messages/user-conversations`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data.conversations) && data.conversations.length) {
-          let conv = null;
-          if (businessIdFromParams) {
-            conv = data.conversations.find(
-              (c) => String(c.otherParty?.id) === String(businessIdFromParams)
-            );
-          }
-          if (!conv) conv = data.conversations[0];
-
-          setConversationId(conv.conversationId);
-          setBusinessName(conv.otherParty?.name || "");
-          safeSetBusinessId(conv.otherParty?.id);
-        } else {
-          setConversationId(null);
-          setBusinessName("");
-          safeSetBusinessId(businessIdFromParams);
-        }
-        setLoading(false);
+      fetch(`${baseUrl}/api/messages/user-conversations`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
-      .catch((err) => {
-        console.error("Error fetching user conversations:", err);
-        setError("שגיאה בטעינת שיחות המשתמש");
-        setLoading(false);
-      });
-  }, [userId, businessIdFromParams]);
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data.conversations) && data.conversations.length) {
+            let conv = null;
+            if (businessIdFromParams) {
+              conv = data.conversations.find(
+                (c) => String(c.otherParty?.id) === String(businessIdFromParams)
+              );
+            }
+            if (!conv) conv = data.conversations[0];
+
+            setConversationId(conv.conversationId);
+            setBusinessName(conv.otherParty?.name || "");
+            safeSetBusinessId(conv.otherParty?.id);
+          } else {
+            setConversationId(null);
+            setBusinessName("");
+            safeSetBusinessId(businessIdFromParams);
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching user conversations:", err);
+          setError("שגיאה בטעינת שיחות המשתמש");
+          setLoading(false);
+        });
+    } else {
+      // נטען שיחה ספציפית לפי threadId וודאות שקיימת שיחה עם clientId
+      setLoading(true);
+      setError("");
+
+      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
+
+      fetch(`${baseUrl}/api/conversations/${threadId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data.ok) throw new Error(data.error || "שגיאה בטעינת שיחה");
+          const participants = data.conversation.participants || [];
+          // בדיקה שהלקוח הוא חלק מהשיחה
+          if (!participants.includes(clientId)) {
+            throw new Error("השיחה לא מכילה את הלקוח המבוקש");
+          }
+          setConversationId(threadId);
+          setBusinessName(data.conversation.businessName || "");
+          safeSetBusinessId(businessIdFromParams);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching specific conversation:", err);
+          setError(err.message);
+          setLoading(false);
+        });
+    }
+  }, [threadId, clientId, businessIdFromParams]);
 
   /* ─── WS: history + realtime listeners ─────────────────────────── */
   useEffect(() => {
@@ -110,7 +138,6 @@ export default function ClientChatSection() {
     setLoading(true);
 
     socket.emit("getHistory", { conversationId }, (res) => {
-
       if (res.ok) {
         setMessages(Array.isArray(res.messages) ? res.messages : []);
         setError("");
@@ -124,7 +151,9 @@ export default function ClientChatSection() {
     const handleNew = (msg) => {
       setMessages((prev) => {
         const idx = prev.findIndex(
-          (m) => m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
+          (m) =>
+            m._id === msg._id ||
+            (m.tempId && msg.tempId && m.tempId === msg.tempId)
         );
         if (idx !== -1) {
           const next = [...prev];
@@ -156,6 +185,7 @@ export default function ClientChatSection() {
 
   /* ─── UI ───────────────────────────────────────────────────────── */
   if (loading) return <div className={styles.loading}>טוען…</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.whatsappBg}>
