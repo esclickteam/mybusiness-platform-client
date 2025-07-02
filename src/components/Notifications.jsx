@@ -138,19 +138,43 @@ export default function Notifications({ onClose }) {
                 backgroundColor: notif.read ? "white" : "#e8f4ff",
                 cursor: "pointer",
                 userSelect: "none",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
               title={notif.text}
             >
               <div>{notif.text}</div>
-              <div
-                style={{
-                  fontSize: "0.75rem",
-                  color: "#666",
-                  opacity: 0.7,
-                  marginTop: 4,
-                }}
-              >
-                {formatDate(notif.timestamp)}
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#666",
+                    opacity: 0.7,
+                    marginRight: 10,
+                  }}
+                >
+                  {formatDate(notif.timestamp)}
+                </div>
+                {/* מונה הודעות לא נקראות אם יש יותר מ-1 ולא נקראה */}
+                {!notif.read && notif.unreadCount > 1 && (
+                  <div
+                    style={{
+                      backgroundColor: "#d00",
+                      color: "white",
+                      borderRadius: "50%",
+                      width: 22,
+                      height: 22,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      fontSize: 14,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {notif.unreadCount}
+                  </div>
+                )}
               </div>
             </div>
           );
