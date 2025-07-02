@@ -40,7 +40,7 @@ export default function Notifications({ onClose }) {
 
     // צ'אט – מעבר לשיחה עצמה
     if (notif.type === "message" && notif.threadId) {
-      navigate(`/chat/${notif.threadId}`);
+      navigate(`/dashboard/messages?threadId=${notif.threadId}`);
     } else {
       // מעבר ליעד הרגיל
       const url =
