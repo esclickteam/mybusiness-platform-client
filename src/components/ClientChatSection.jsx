@@ -15,21 +15,20 @@ export default function ClientChatSection() {
   const [conversationId, setConversationId] = useState(null);
   const [businessName, setBusinessName] = useState("");
   const [businessId, setBusinessId] = useState(businessIdFromParams || null);
-  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [messages, setMessages] = useState([]);
 
-  /* ─── Helper: don't overwrite valid values with null ───────────── */
+  /* ─── Helper: don't לדרוס ערך תקף ב-null/undefined ────────────── */
   const safeSetBusinessId = (newId) =>
     setBusinessId((prev) => newId ?? prev);
 
-  /* ─── Socket ref ───────────────────────────────────────────────── */
   const socketRef = useRef(null);
 
-  /* ─── 1. Create socket once ─────────────────────────────────────── */
+  /* ─── Create socket once ───────────────────────────────────────── */
   useEffect(() => {
     if (!initialized || !userId) return;
-    if (socketRef.current) return;
+    if (socketRef.current) return; // already connected
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
@@ -43,11 +42,13 @@ export default function ClientChatSection() {
     });
 
     socketRef.current.on("connect", () => setError(""));
+
     socketRef.current.on("disconnect", (reason) => {
       if (reason !== "io client disconnect") {
         setError("Socket disconnected unexpectedly: " + reason);
       }
     });
+
     socketRef.current.on("connect_error", (err) =>
       setError("שגיאה בחיבור לסוקט: " + err.message)
     );
@@ -58,7 +59,7 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId]);
 
-  /* ─── 2. Fetch user’s conversations once ────────────────────────── */
+  /* ─── Fetch user conversations once (REST) ─────────────────────── */
   useEffect(() => {
     if (!userId) return;
 
@@ -89,68 +90,54 @@ export default function ClientChatSection() {
           setBusinessName("");
           safeSetBusinessId(businessIdFromParams);
         }
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching user conversations:", err);
         setError("שגיאה בטעינת שיחות המשתמש");
-      })
-      .finally(() => {
         setLoading(false);
       });
   }, [userId, businessIdFromParams]);
 
-  /* ─── 3. Load history via REST when conversationId changes ──────── */
+  /* ─── WS: history + realtime listeners ─────────────────────────── */
   useEffect(() => {
-    if (!conversationId) {
+    const socket = socketRef.current;
+    if (!socket || !socket.connected || !conversationId) {
       setMessages([]);
       return;
     }
 
     setLoading(true);
-    setError("");
 
-    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
-    const page = 0;
-    const limit = 50;
-    const url = `${baseUrl}/api/conversations/${conversationId}/history?page=${page}&limit=${limit}`;
-
-    fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then(async (res) => {
-        const body = await res.json();
-        if (!res.ok) throw new Error(body.error || "Unknown error");
-        return body;
-      })
-      .then(({ messages: msgs }) => {
-        setMessages(msgs);
-      })
-      .catch((err) => {
-        console.error("Error fetching history:", err);
+    socket.emit("getHistory", { conversationId, businessId }, (res) => {
+      if (res.ok) {
+        setMessages(Array.isArray(res.messages) ? res.messages : []);
+        setError("");
+      } else {
         setMessages([]);
-        setError("שגיאה בטעינת ההיסטוריה: " + err.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [conversationId]);
-
-  /* ─── 4. Subscribe to real-time updates ────────────────────────── */
-  useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket || !conversationId) return;
+        setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
+      }
+      setLoading(false);
+    });
 
     const handleNew = (msg) => {
-      setMessages((prev) => [...prev, msg]);
+      setMessages((prev) => {
+        const idx = prev.findIndex(
+          (m) => m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
+        );
+        if (idx !== -1) {
+          const next = [...prev];
+          next[idx] = { ...next[idx], ...msg };
+          return next;
+        }
+        return [...prev, msg];
+      });
     };
-    const handleApproved = (msg) => {
+
+    const handleApproved = (msg) =>
       setMessages((prev) =>
         prev.map((m) => (m._id === msg._id ? { ...m, status: "approved" } : m))
       );
-    };
 
     socket.on("newMessage", handleNew);
     socket.on("messageApproved", handleApproved);
@@ -166,7 +153,7 @@ export default function ClientChatSection() {
     };
   }, [conversationId, businessId]);
 
-  /* ─── 5. UI ───────────────────────────────────────────────────── */
+  /* ─── UI ───────────────────────────────────────────────────────── */
   if (loading) return <div className={styles.loading}>טוען…</div>;
 
   return (
@@ -190,7 +177,6 @@ export default function ClientChatSection() {
           />
         </section>
       </div>
-      {error && <div className={styles.error}>{error}</div>}
     </div>
   );
 }
