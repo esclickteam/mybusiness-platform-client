@@ -18,7 +18,6 @@ const initialState = {
   },
 };
 
-// נורמליזציה: מזהה התראה לפי threadId (או מזהה שיחה), והוספת clientId/partnerId אם קיימים
 function normalizeNotification(notif) {
   return {
     ...notif,
@@ -27,23 +26,20 @@ function normalizeNotification(notif) {
     read: notif.read ?? false,
     timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
     unreadCount: notif.unreadCount || (notif.read ? 0 : 1),
-    clientId: notif.clientId || notif.partnerId || null,  // הוסף מזהה לקוח/שותף אם יש
+    clientId: notif.clientId || notif.partnerId || null,
   };
 }
 
-// Reducer עם ניהול מונה הודעות לא נקראות לכל thread
 function notificationsReducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
       const incoming = action.payload.map(normalizeNotification);
       const map = new Map();
 
-      // איחוד לפי id (threadId)
-      state.notifications.forEach(n => map.set(n.id, n));
-      incoming.forEach(n => {
+      state.notifications.forEach((n) => map.set(n.id, n));
+      incoming.forEach((n) => {
         const existing = map.get(n.id);
         if (existing) {
-          // מיזוג מונה לא נקראות (שומר על המקסימום)
           const unreadCount = Math.max(existing.unreadCount || 0, n.unreadCount || 0);
           map.set(n.id, { ...existing, ...n, unreadCount });
         } else {
@@ -59,17 +55,16 @@ function notificationsReducer(state, action) {
 
     case "ADD_NOTIFICATION": {
       const normalized = normalizeNotification(action.payload);
-      const exists = state.notifications.find(n => n.id === normalized.id);
+      const exists = state.notifications.find((n) => n.id === normalized.id);
       let newNotifications;
 
       if (exists) {
-        newNotifications = state.notifications.map(n =>
+        newNotifications = state.notifications.map((n) =>
           n.id === normalized.id
             ? {
                 ...n,
                 ...normalized,
                 read: false,
-                // מגדיל מונה הודעות לא נקראות ב-1
                 unreadCount: (n.unreadCount || 0) + 1,
               }
             : n
@@ -84,7 +79,7 @@ function notificationsReducer(state, action) {
 
     case "MARK_AS_READ": {
       const id = action.payload;
-      const updated = state.notifications.map(n =>
+      const updated = state.notifications.map((n) =>
         n.id === id ? { ...n, read: true, unreadCount: 0 } : n
       );
       return { ...state, notifications: updated };
@@ -95,7 +90,7 @@ function notificationsReducer(state, action) {
     }
 
     case "CLEAR_READ": {
-      const filtered = state.notifications.filter(n => !n.read);
+      const filtered = state.notifications.filter((n) => !n.read);
       return { ...state, notifications: filtered };
     }
 
@@ -113,30 +108,27 @@ export function NotificationsProvider({ children }) {
 
   const [state, dispatch] = useReducer(notificationsReducer, initialState);
 
-  // ספירת כל ההתראות הלא נקראות (כל שיחה עם unreadCount > 0 נספרת פעם אחת)
   const unreadCount = state.notifications.reduce(
     (acc, n) => acc + (n.unreadCount > 0 ? 1 : 0),
     0
   );
 
-  // טעינת התראות ראשוניות
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.ok) {
           dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
         } else {
           console.warn("Fetch notifications returned not ok:", data);
         }
       })
-      .catch(err => console.error("Notifications fetch failed:", err));
+      .catch((err) => console.error("Notifications fetch failed:", err));
   }, [user?.businessId]);
 
-  // האזנה לאירועי Socket חיים
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -150,11 +142,11 @@ export function NotificationsProvider({ children }) {
       }
     };
 
-    const handleNew = notif => {
+    const handleNew = (notif) => {
       dispatch({ type: "ADD_NOTIFICATION", payload: notif });
     };
 
-    const handleDashboard = stats => {
+    const handleDashboard = (stats) => {
       dispatch({ type: "SET_DASHBOARD_STATS", payload: stats });
     };
 
@@ -173,18 +165,17 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId]);
 
-  // סימון התראה (שיחה) כנקראה ואיפוס מונה הודעות לא נקראות
   const markAsRead = useCallback(async (threadId) => {
+    const idStr = threadId.toString ? threadId.toString() : threadId;
     try {
-      await fetch("/api/notifications/mark-read", {
-        method: "POST",
+      await fetch(`/api/business/my/notifications/${idStr}/read`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ threadId }),
       });
-      dispatch({ type: "MARK_AS_READ", payload: threadId });
+      dispatch({ type: "MARK_AS_READ", payload: idStr });
     } catch (err) {
       console.error("markAsRead error:", err);
     }

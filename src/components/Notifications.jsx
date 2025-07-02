@@ -19,9 +19,10 @@ export default function Notifications({ onClose }) {
 
     for (const notif of notifications) {
       if (notif.type === "message" && notif.threadId) {
-        if (!seenThreads.has(notif.threadId.toString())) {
+        const threadIdStr = notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
+        if (!seenThreads.has(threadIdStr)) {
           filtered.push(notif);
-          seenThreads.add(notif.threadId.toString());
+          seenThreads.add(threadIdStr);
         }
       } else {
         filtered.push(notif);
@@ -30,18 +31,13 @@ export default function Notifications({ onClose }) {
     return filtered;
   }, [notifications]);
 
-  const handleClick = (notif) => {
-    console.log("Notification clicked:", notif);
-
+  const handleClick = async (notif) => {
     const id = notif.id || notif._id;
-    if (!id) {
-      console.warn("Notification missing id:", notif);
-    }
+    const idStr = id && (id.toString ? id.toString() : id);
 
-    // סמן כהתראה נקראה
-    if (!notif.read) {
-      console.log("Marking as read:", id);
-      markAsRead(id);
+    // סמן כהתראה נקראה לפני הניווט
+    if (!notif.read && idStr) {
+      await markAsRead(idStr);
     }
 
     if (notif.type === "message" && notif.threadId) {
@@ -52,7 +48,6 @@ export default function Notifications({ onClose }) {
         ? `/dashboard/messages?threadId=${threadIdStr}&clientId=${clientId}`
         : `/dashboard/messages?threadId=${threadIdStr}`;
 
-      console.log("Navigating to chat URL:", url);
       navigate(url);
     } else {
       const url =
@@ -63,13 +58,10 @@ export default function Notifications({ onClose }) {
           review: "/reviews",
         }[notif.type] ||
         "/";
-
-      console.log("Navigating to URL:", url);
       navigate(url);
     }
 
     if (onClose) {
-      console.log("Calling onClose to close notifications panel");
       onClose();
     }
   };
