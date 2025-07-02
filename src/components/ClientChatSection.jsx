@@ -109,7 +109,8 @@ export default function ClientChatSection() {
 
     setLoading(true);
 
-    socket.emit("getHistory", { conversationId, businessId }, (res) => {
+    socket.emit("getHistory", { conversationId }, (res) => {
+
       if (res.ok) {
         setMessages(Array.isArray(res.messages) ? res.messages : []);
         setError("");
