@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from "react";
 import { useAuth } from "./AuthContext.jsx";
-import { useNavigate } from "react-router-dom";
 
 const NotificationsContext = createContext();
 
@@ -22,15 +21,12 @@ const initialState = {
 function normalizeNotification(notif) {
   return {
     ...notif,
-    id:
-      notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
+    id: notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
     lastMessage: notif.lastMessage,
     read: notif.read ?? false,
-    timestamp:
-      notif.timestamp || notif.createdAt || new Date().toISOString(),
+    timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
     unreadCount: notif.unreadCount || (notif.read ? 0 : 1),
     clientId: notif.clientId || notif.partnerId || null,
-    targetUrl: notif.targetUrl || null,
   };
 }
 
@@ -44,10 +40,7 @@ function notificationsReducer(state, action) {
       incoming.forEach((n) => {
         const existing = map.get(n.id);
         if (existing) {
-          const unreadCount = Math.max(
-            existing.unreadCount || 0,
-            n.unreadCount || 0
-          );
+          const unreadCount = Math.max(existing.unreadCount || 0, n.unreadCount || 0);
           map.set(n.id, { ...existing, ...n, unreadCount });
         } else {
           map.set(n.id, n);
@@ -80,9 +73,7 @@ function notificationsReducer(state, action) {
         newNotifications = [{ ...normalized, unreadCount: 1 }, ...state.notifications];
       }
 
-      newNotifications.sort(
-        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-      );
+      newNotifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       return { ...state, notifications: newNotifications };
     }
 
@@ -114,7 +105,6 @@ function notificationsReducer(state, action) {
 
 export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
-  const navigate = useNavigate();
 
   const [state, dispatch] = useReducer(notificationsReducer, initialState);
 
@@ -175,27 +165,21 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId]);
 
-  const markAsRead = useCallback(
-    async (threadId) => {
-      const idStr = threadId.toString ? threadId.toString() : threadId;
-      try {
-        await fetch(
-          `/api/business/my/notifications/${idStr}/read`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        dispatch({ type: "MARK_AS_READ", payload: idStr });
-      } catch (err) {
-        console.error("markAsRead error:", err);
-      }
-    },
-    []
-  );
+  const markAsRead = useCallback(async (threadId) => {
+    const idStr = threadId.toString ? threadId.toString() : threadId;
+    try {
+      await fetch(`/api/business/my/notifications/${idStr}/read`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      dispatch({ type: "MARK_AS_READ", payload: idStr });
+    } catch (err) {
+      console.error("markAsRead error:", err);
+    }
+  }, []);
 
   const clearAll = useCallback(() => {
     dispatch({ type: "CLEAR_ALL" });
@@ -203,15 +187,12 @@ export function NotificationsProvider({ children }) {
 
   const clearRead = useCallback(async () => {
     try {
-      const response = await fetch(
-        "/api/business/my/notifications/clearRead",
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await fetch("/api/business/my/notifications/clearRead", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       const data = await response.json();
       if (data.ok) {
         dispatch({ type: "CLEAR_READ" });
@@ -223,24 +204,6 @@ export function NotificationsProvider({ children }) {
     }
   }, []);
 
-  const handleNotificationClick = useCallback(
-    (notif) => {
-      markAsRead(notif.id);
-      if (notif.targetUrl) {
-        navigate(notif.targetUrl);
-      } else if (notif.clientId) {
-        navigate(
-          `/business/${user.businessId}/chat/${notif.clientId}?threadId=${notif.id}`
-        );
-      } else {
-        navigate(
-          `/business/${user.businessId}/chat?threadId=${notif.id}`
-        );
-      }
-    },
-    [navigate, user.businessId, markAsRead]
-  );
-
   return (
     <NotificationsContext.Provider
       value={{
@@ -250,7 +213,6 @@ export function NotificationsProvider({ children }) {
         markAsRead,
         clearAll,
         clearRead,
-        handleNotificationClick,
       }}
     >
       {children}
