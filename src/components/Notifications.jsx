@@ -31,24 +31,29 @@ export default function Notifications({ onClose }) {
   }, [notifications]);
 
   const handleClick = (notif) => {
+    console.log("Notification clicked:", notif);
+
     const id = notif.id || notif._id;
+    if (!id) {
+      console.warn("Notification missing id:", notif);
+    }
 
     // סמן כהתראה נקראה
     if (!notif.read) {
+      console.log("Marking as read:", id);
       markAsRead(id);
     }
 
-    // צ'אט – מעבר לשיחה עצמה
+    // ניווט לפי סוג ההתראה
     if (notif.type === "message" && notif.threadId) {
-      // ניווט עם threadId ו-clientId אם קיים
       const clientId = notif.clientId || notif.partnerId;
-      if (clientId) {
-        navigate(`/dashboard/messages?threadId=${notif.threadId}&clientId=${clientId}`);
-      } else {
-        navigate(`/dashboard/messages?threadId=${notif.threadId}`);
-      }
+      const url = clientId
+        ? `/dashboard/messages?threadId=${notif.threadId}&clientId=${clientId}`
+        : `/dashboard/messages?threadId=${notif.threadId}`;
+
+      console.log("Navigating to chat URL:", url);
+      navigate(url);
     } else {
-      // מעבר ליעד הרגיל
       const url =
         notif.targetUrl ||
         {
@@ -57,10 +62,15 @@ export default function Notifications({ onClose }) {
           review: "/reviews",
         }[notif.type] ||
         "/";
+
+      console.log("Navigating to URL:", url);
       navigate(url);
     }
 
-    onClose();
+    if (onClose) {
+      console.log("Calling onClose to close notifications panel");
+      onClose();
+    }
   };
 
   const formatDate = (ts) =>
@@ -162,7 +172,6 @@ export default function Notifications({ onClose }) {
                 >
                   {formatDate(notif.timestamp)}
                 </div>
-                {/* מונה הודעות לא נקראות אם יש יותר מ-1 ולא נקראה */}
                 {!notif.read && notif.unreadCount > 1 && (
                   <div
                     style={{
