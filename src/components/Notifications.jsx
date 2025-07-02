@@ -32,11 +32,14 @@ export default function Notifications({ onClose }) {
   }, [notifications]);
 
   const handleClick = async (notif) => {
+    console.log("Notification clicked:", notif);
+
     const id = notif.id || notif._id;
     const idStr = id && (id.toString ? id.toString() : id);
 
     // סמן כהתראה נקראה לפני הניווט
     if (!notif.read && idStr) {
+      console.log("Marking notification as read:", idStr);
       await markAsRead(idStr);
     }
 
@@ -44,10 +47,23 @@ export default function Notifications({ onClose }) {
       const clientId = notif.clientId || notif.partnerId;
       const threadIdStr = notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
 
+      console.log("Navigating to chat with clientId:", clientId, "and threadId:", threadIdStr);
+
+      // ודא שהמשתנה businessId מוגדר ומגיע מהקשר נכון
+      const businessId = notif.businessId || (notif.userBusinessId) || window?.businessId; // תעדכן לפי הצורך
+      console.log("Using businessId:", businessId);
+
+      if (!businessId) {
+        console.error("businessId is undefined, cannot navigate to chat");
+        return;
+      }
+
       const url = clientId
-  ? `/business/${businessId}/chat/${clientId}?threadId=${threadIdStr}`
-  : `/business/${businessId}/chat`;
-navigate(url);
+        ? `/business/${businessId}/chat/${clientId}?threadId=${threadIdStr}`
+        : `/business/${businessId}/chat`;
+
+      console.log("Navigating to URL:", url);
+      navigate(url);
     } else {
       const url =
         notif.targetUrl ||
@@ -57,6 +73,7 @@ navigate(url);
           review: "/reviews",
         }[notif.type] ||
         "/";
+      console.log("Navigating to URL:", url);
       navigate(url);
     }
 
