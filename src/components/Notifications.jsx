@@ -45,10 +45,9 @@ export default function Notifications({ onClose }) {
       const threadIdStr = notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
 
       const url = clientId
-        ? `/dashboard/messages?threadId=${threadIdStr}&clientId=${clientId}`
-        : `/dashboard/messages?threadId=${threadIdStr}`;
-
-      navigate(url);
+  ? `/business/${businessId}/chat/${clientId}?threadId=${threadIdStr}`
+  : `/business/${businessId}/chat`;
+navigate(url);
     } else {
       const url =
         notif.targetUrl ||
