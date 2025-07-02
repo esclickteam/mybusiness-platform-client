@@ -13,28 +13,27 @@ export default function BusinessChatPage() {
   const businessId = (rawBusinessId?._id ?? rawBusinessId)?.toString();
 
   const { updateMessagesCount } = useOutletContext();
-
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
   const [unreadCounts, setUnreadCounts] = useState({});
   const socket = useSocket();
-
   const location = useLocation();
 
   const normaliseConversation = (c) => ({
     ...c,
     conversationId: (c.conversationId ?? c._id ?? c.id)?.toString() ?? "",
+    clientId: c.clientId?.toString() || c.customer?._id?.toString() || "",
+    clientName: c.clientName || c.customer?.name || "לקוח",
   });
 
-  // הוספת אפקט שיבדוק פרמטר query `threadId` ויבחר את השיחה המתאימה
+  // בודק פרמטר query threadId ומגדיר שיחה פתוחה אם יש התאמה
   useEffect(() => {
     if (!initialized || !businessId || convos.length === 0) return;
 
     const params = new URLSearchParams(location.search);
     const threadId = params.get("threadId");
     if (threadId) {
-      // בדיקה אם השיחה קיימת ברשימת השיחות
-      const convo = convos.find(c => c.conversationId === threadId);
+      const convo = convos.find((c) => c.conversationId === threadId);
       if (convo) {
         setSelected({
           conversationId: convo.conversationId,
@@ -43,16 +42,18 @@ export default function BusinessChatPage() {
           conversationType: convo.conversationType || "user-business",
         });
 
-        // ניקוי מונה ההודעות הלא נקראות לשיחה זו
-        setUnreadCounts(prev => {
+        setUnreadCounts((prev) => {
           const next = { ...prev };
           delete next[threadId];
           return next;
         });
+      } else {
+        // אפשר להוסיף כאן טעינת שיחה מהשרת במקרה והשיחה לא קיימת במקומי
       }
     }
   }, [location.search, convos, initialized, businessId]);
 
+  // טוען שיחות מהשרת ומעדכן רשימת שיחות + מונים
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -94,11 +95,13 @@ export default function BusinessChatPage() {
       });
   }, [initialized, businessId]);
 
+  // מעדכן ספירת הודעות לא נקראות בדשבורד או במקום אחר
   useEffect(() => {
     const total = Object.values(unreadCounts).reduce((a, b) => a + b, 0);
     updateMessagesCount?.(total);
   }, [unreadCounts, updateMessagesCount]);
 
+  // טיפול בבחירת שיחה
   const handleSelect = (conversationId, partnerId, partnerName) => {
     const convo = convos.find((c) => c.conversationId === conversationId);
     const type = convo?.conversationType || "user-business";

@@ -40,7 +40,13 @@ export default function Notifications({ onClose }) {
 
     // צ'אט – מעבר לשיחה עצמה
     if (notif.type === "message" && notif.threadId) {
-      navigate(`/dashboard/messages?threadId=${notif.threadId}`);
+      // ניווט עם threadId ו-clientId אם קיים
+      const clientId = notif.clientId || notif.partnerId;
+      if (clientId) {
+        navigate(`/dashboard/messages?threadId=${notif.threadId}&clientId=${clientId}`);
+      } else {
+        navigate(`/dashboard/messages?threadId=${notif.threadId}`);
+      }
     } else {
       // מעבר ליעד הרגיל
       const url =

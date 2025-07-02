@@ -18,7 +18,7 @@ const initialState = {
   },
 };
 
-// נורמליזציה: מזהה התראה לפי threadId (או מזהה שיחה)
+// נורמליזציה: מזהה התראה לפי threadId (או מזהה שיחה), והוספת clientId/partnerId אם קיימים
 function normalizeNotification(notif) {
   return {
     ...notif,
@@ -27,6 +27,7 @@ function normalizeNotification(notif) {
     read: notif.read ?? false,
     timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
     unreadCount: notif.unreadCount || (notif.read ? 0 : 1),
+    clientId: notif.clientId || notif.partnerId || null,  // הוסף מזהה לקוח/שותף אם יש
   };
 }
 
@@ -202,7 +203,7 @@ export function NotificationsProvider({ children }) {
       value={{
         notifications: state.notifications,
         unreadCount,
-        dashboardStats:  state.dashboardStats,
+        dashboardStats: state.dashboardStats,
         markAsRead,
         clearAll,
         clearRead,
