@@ -185,8 +185,23 @@ export function NotificationsProvider({ children }) {
     dispatch({ type: "CLEAR_ALL" });
   }, []);
 
-  const clearRead = useCallback(() => {
-    dispatch({ type: "CLEAR_READ" });
+  const clearRead = useCallback(async () => {
+    try {
+      const response = await fetch("/api/business/my/notifications/clearRead", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await response.json();
+      if (data.ok) {
+        dispatch({ type: "CLEAR_READ" });
+      } else {
+        console.warn("Failed to clear read notifications:", data);
+      }
+    } catch (err) {
+      console.error("clearRead error:", err);
+    }
   }, []);
 
   return (
