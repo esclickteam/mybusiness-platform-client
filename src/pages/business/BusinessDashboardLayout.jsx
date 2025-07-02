@@ -12,7 +12,6 @@ import { useNotifications } from "../../context/NotificationsContext";
 import { useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
-
 import { AiProvider } from "../../context/AiContext";
 
 const tabs = [
@@ -33,11 +32,22 @@ export default function BusinessDashboardLayout({ children }) {
   const location = useLocation();
   const queryClient = useQueryClient();
 
-  // צריכת Socket ותצוגת ספירת ההודעות הלא־נקראו מתוך הקונטקסט
+  // Context של socket וספירה ראשונית
   const { socket, unreadMessagesCount } = useNotifications();
-  const unreadCount = unreadMessagesCount;
 
-  // prefetch של הנתונים
+  // סטייט מקומי לניהול הספירה והעדכון שלה
+  const [messagesCount, setMessagesCount] = useState(unreadMessagesCount);
+  useEffect(() => {
+    setMessagesCount(unreadMessagesCount);
+  }, [unreadMessagesCount]);
+
+  const updateMessagesCount = (newCount) => {
+    setMessagesCount(newCount);
+    // אם רוצים גם לדווח ל־NotificationsContext:
+    // socket.emit("update-unread-count", newCount);
+  };
+
+  // Prefetch לנתונים חשובים
   useEffect(() => {
     if (!user?.businessId) return;
     queryClient.prefetchQuery(
@@ -60,7 +70,7 @@ export default function BusinessDashboardLayout({ children }) {
     );
   }, [user?.businessId, queryClient]);
 
-  // התאמת ניווט ברירת מחדל
+  // ניווט ברירת מחדל לפי role ו־query params
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -76,7 +86,7 @@ export default function BusinessDashboardLayout({ children }) {
     }
   }, [user, loading, location.search, location.state, navigate]);
 
-  // הגדרת מצב מובייל ותפריט צדדי
+  // מצב מובייל ולכידת גודל מסך
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
@@ -92,7 +102,7 @@ export default function BusinessDashboardLayout({ children }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Trap focus במובייל
+  // Trap focus בתפריט מובייל
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
     const sel =
@@ -118,6 +128,10 @@ export default function BusinessDashboardLayout({ children }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
+  if (loading) {
+    return <p className="loading">טוען מידע…</p>;
+  }
+
   return (
     <BusinessServicesProvider>
       <AiProvider>
@@ -136,7 +150,7 @@ export default function BusinessDashboardLayout({ children }) {
                   {user?.role === "business" && (
                     <NavLink
                       to={`/business/${businessId}`}
-                      end={true}
+                      end
                       className={({ isActive }) =>
                         isActive ? "active" : undefined
                       }
@@ -157,21 +171,8 @@ export default function BusinessDashboardLayout({ children }) {
                       }
                     >
                       {label}
-                      {path === "messages" && unreadCount > 0 && (
-                        <span
-                          style={{
-                            backgroundColor: "red",
-                            color: "white",
-                            borderRadius: "12px",
-                            padding: "2px 8px",
-                            fontSize: "12px",
-                            marginLeft: "8px",
-                            fontWeight: "bold",
-                            verticalAlign: "middle",
-                          }}
-                        >
-                          {unreadCount}
-                        </span>
+                      {path === "messages" && messagesCount > 0 && (
+                        <span className="badge">{messagesCount}</span>
                       )}
                     </NavLink>
                   ))}
@@ -200,32 +201,12 @@ export default function BusinessDashboardLayout({ children }) {
                     ? "סגור ניווט / חזור לדשבורד"
                     : "פתח ניווט"
                 }
-                style={{
-                  position: "fixed",
-                  top: 60,
-                  left: 12,
-                  zIndex: 9999,
-                  backgroundColor: "#7c4dff",
-                  border: "none",
-                  borderRadius: 40,
-                  width: 120,
-                  height: 40,
-                  color: "#fff",
-                  fontSize: 16,
-                  cursor: "pointer",
-                  boxShadow: "0 2px 12px rgba(124, 77, 255, 0.6)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  userSelect: "none",
-                  fontWeight: "600",
-                }}
+                className="mobile-toggle-button"
               >
-                <span style={{ fontSize: 24 }}>
+                <span className="icon">
                   {showSidebar ? "×" : "☰"}
                 </span>
-                <span>
+                <span className="label">
                   {showSidebar ? "סגור ניווט" : "פתח ניווט"}
                 </span>
               </button>
@@ -240,9 +221,8 @@ export default function BusinessDashboardLayout({ children }) {
               {children ?? (
                 <Outlet
                   context={{
-                    unreadCount,
-                    // אם צריך להעביר פונקציות נוספות:
-                    // updateMessagesCount, incrementMessagesCount
+                    unreadCount: messagesCount,
+                    updateMessagesCount,
                   }}
                 />
               )}
