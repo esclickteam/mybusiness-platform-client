@@ -136,16 +136,25 @@ export function NotificationsProvider({ children }) {
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    const roomName = `business:${user.businessId}`;
-    const handleConnect = () => socket.emit("joinRoom", roomName);
+    // חדר לפי תקן backend: business-<id>
+    const businessRoom = `business-${user.businessId}`;
+    const dashboardRoom = `dashboard-${user.businessId}`;
+
+    // האירוע הנכון הוא joinBusinessRoom
+    const handleConnect = () => {
+      socket.emit("joinBusinessRoom", user.businessId);
+      // אופציונלי: להתחבר גם לדשבורד
+      // socket.emit("joinDashboardRoom", user.businessId);
+    };
 
     const handleNewNotification = (notif) => {
+      console.log('🔔 newNotification received:', notif); // לעזור בדיבאגינג
       dispatch({ type: "ADD_NOTIFICATION", payload: notif });
     };
 
     const handleNewProposalAsNotification = (proposal) => {
       const notif = {
-        id: proposal._id.toString(),
+        id: proposal._id?.toString() || proposal.id,
         lastMessage: `הצעת שיתוף פעולה: ${proposal.title}`,
         timestamp: new Date().toISOString(),
         read: false,
