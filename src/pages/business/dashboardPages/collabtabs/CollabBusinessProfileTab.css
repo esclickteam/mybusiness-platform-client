@@ -287,90 +287,57 @@
   display: flex !important;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
-  z-index: 1600;
+  z-index: 1300;
 }
 .chat-box {
-  width: 90vw;
+  width: 100vw;
   max-width: 900px;
+  min-width: 320px;
+  min-height: 340px;
+  max-height: 85vh;
   height: 75vh;
-  max-height: 90vh;
   background: white;
   border-radius: 20px;
   box-shadow: 0 30px 50px rgba(120, 81, 169, 0.15);
-  padding: 12px 16px;
+  padding: 12px 16px; /* הוספתי padding פנימי */
   outline: none;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-sizing: border-box;
+  overflow: hidden; /* חשוב לשנות מ-visible ל-hidden */
+  box-sizing: border-box; /* חשוב לכלול padding בגודל */
 }
 
-.collab-chat-root,
-.MuiBox-root.css-ez4sbu,
-.MuiBox-root.css-1s7p9o0,
-.MuiBox-root.css-crlus5 {
+.collab-chat-root {
+  flex: 1 1 auto; /* להתאים ל-flex-grow ול-flex-shrink */
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  height: 100%;
-  min-height: 0;
+  min-height: 0; /* קריטי לגלילה בפלקס */
+  min-width: 0;
   overflow: hidden;
 }
 
+/* גלילה נוחה בעמודת הודעות פנימית */
 .collab-chat-messages {
-  flex-grow: 1;
+  flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   background: #f8f7ff;
   box-sizing: border-box;
-  padding-right: 8px;
+  padding-right: 8px; /* מניעת חיתוך גלילה */
 }
+
 
 /* ----- רספונסיביות ----- */
 @media (max-width: 900px) {
-  .page-container {
-    flex-direction: column;
-    padding: 1rem;
-  }
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    padding: 1rem 0.5rem;
-    border-radius: 16px;
-  }
-  .sidebar ul li {
-    display: inline-block;
-    margin: 0 0.8rem 0 0;
-  }
-  .sidebar ul li a {
-    font-size: 1rem;
-    padding: 0.4rem 0.8rem;
-  }
-  .main-content {
-    max-width: 100%;
-    padding: 1.5rem 1rem;
-    border-radius: 24px;
-  }
-  .profile-card {
-    padding: 2rem 1.5rem;
-  }
-  .profile-top {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  .profile-logo-label,
-  .profile-logo {
-    width: 120px;
-    height: 120px;
-  }
-  .chat-box {
-    max-width: 99vw;
-    width: 99vw;
-    height: 80vh;
-  }
+  .page-container { flex-direction: column; padding: 1rem; }
+  .sidebar { width: 100%; height: auto; position: relative; padding: 1rem 0.5rem; border-radius: 16px; }
+  .sidebar ul li { display: inline-block; margin: 0 0.8rem 0 0; }
+  .sidebar ul li a { font-size: 1rem; padding: 0.4rem 0.8rem; }
+  .main-content { max-width: 100%; padding: 1.5rem 1rem; border-radius: 24px; }
+  .profile-card { padding: 2rem 1.5rem;}
+  .profile-top { flex-direction: column; gap: 1.5rem;}
+  .profile-logo-label, .profile-logo { width: 120px; height: 120px;}
+  .chat-box { max-width: 99vw; width: 99vw; height: 80vh;}
 }
 @media (max-width: 600px) {
   .chat-box {
@@ -384,15 +351,7 @@
   }
 }
 @media (max-width: 500px) {
-  .profile-business-name {
-    font-size: 2rem;
-  }
-  .profile-category {
-    font-size: 1.1rem;
-  }
-  .profile-section {
-    padding: 1.5rem 1rem;
-    font-size: 1.1rem;
-    min-height: 100px;
-  }
+  .profile-business-name { font-size: 2rem; }
+  .profile-category { font-size: 1.1rem; }
+  .profile-section { padding: 1.5rem 1rem; font-size: 1.1rem; min-height: 100px; }
 }
