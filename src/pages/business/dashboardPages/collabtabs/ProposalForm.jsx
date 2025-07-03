@@ -8,6 +8,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import API from "../../../../api";
+import { useAuth } from "../../../../context/AuthContext"; // ודא ייבוא נכון
 import "./ProposalForm.css";
 
 export default function ProposalForm({
@@ -16,14 +17,16 @@ export default function ProposalForm({
   onClose,
   onSent,
 }) {
+  const { user } = useAuth(); // מזהה העסק שלך
+
   const [formData, setFormData] = useState({
     toBusinessId: toBusiness?._id || "",
     title: "",
     description: "",
     amount: "",
     validUntil: "",
-    contactName: "",   // הוספת שדה
-    phone: "",         // הוספת שדה
+    contactName: "",
+    phone: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -62,8 +65,10 @@ export default function ProposalForm({
     }
 
     try {
+      // שליחת ההצעה – **הערה: עכשיו נשלח גם את fromBusinessId**
       const res = await API.post("/business/my/proposals", {
-        toBusinessId: formData.toBusinessId,
+        fromBusinessId: user?.businessId,             // ← מזהה העסק שלך (השולח)
+        toBusinessId: formData.toBusinessId,          // ← מזהה העסק המקבל (הנמען)
         message: {
           title: formData.title,
           description: formData.description,
@@ -85,8 +90,6 @@ export default function ProposalForm({
         proposalIdToSend = res.data.proposalsSent[0]._id;
       }
 
-      console.log("Determined proposalIdToSend:", proposalIdToSend);
-
       if (res.status === 200 || res.status === 201) {
         setSuccessMessage("ההצעה נשלחה בהצלחה!");
         setFormData({
@@ -99,7 +102,6 @@ export default function ProposalForm({
           phone: "",
         });
         if (onSent) {
-          console.log("Sending proposal ID to parent:", proposalIdToSend);
           onSent(proposalIdToSend);
         }
         onClose();
