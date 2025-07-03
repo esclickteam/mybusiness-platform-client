@@ -25,7 +25,12 @@ function normalizeNotification(notif) {
     lastMessage: notif.lastMessage,
     read: notif.read ?? false,
     timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
-    unreadCount: notif.unreadCount || (notif.read ? 0 : 1),
+    unreadCount:
+      notif.unreadCount !== undefined && notif.unreadCount !== null
+        ? notif.unreadCount
+        : notif.read
+        ? 0
+        : 1,
     clientId: notif.clientId || notif.partnerId || null,
   };
 }
