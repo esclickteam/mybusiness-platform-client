@@ -11,7 +11,6 @@ import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
@@ -104,19 +103,14 @@ const DashboardPage = () => {
   const socketRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const queryClient = useQueryClient();
-
-  console.log("DashboardPage render:");
-  console.log(" - initialized:", initialized);
-  console.log(" - user:", user);
-  console.log(" - businessId:", businessId);
 
   const today = new Date().toISOString().split("T")[0];
   const [selectedDate, setSelectedDate] = useState(today);
   const [alert, setAlert] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
-
-  // מחיקת השימוש ב-updateMessagesCount ו-unreadCount
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
@@ -125,15 +119,7 @@ const DashboardPage = () => {
       return;
     }
     socket.emit(event, data, (...args) => {
-      try {
-        if (typeof callback === "function") {
-          callback(...args);
-        } else {
-          console.warn(`Callback for event ${event} is not a function.`);
-        }
-      } catch (err) {
-        console.error(`Error in callback for event ${event}:`, err);
-      }
+      if (typeof callback === "function") callback(...args);
     });
   };
 
@@ -146,7 +132,6 @@ const DashboardPage = () => {
       alert("Socket מנותק, נסה שוב מאוחר יותר");
       return;
     }
-
     safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
       if (!res) {
         console.error("No response object received in callback");
@@ -162,64 +147,27 @@ const DashboardPage = () => {
     });
   }, []);
 
-  const {
-    data: stats,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ["dashboardStats", businessId],
-    queryFn: () => fetchDashboardStats(businessId, refreshAccessToken),
-    enabled: !!businessId && initialized,
-    onSuccess: (data) => {
-      try {
-        localStorage.setItem("dashboardStats", JSON.stringify(data));
-        setLocalData(data);
-      } catch {}
-    },
-    onError: (error) => {
-      setAlert("❌ שגיאה בטעינת נתונים מהשרת");
-      if (error.message === "No token") logout();
-    },
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 30 * 60 * 1000,
-    keepPreviousData: true,
-  });
-
-  const [localData, setLocalData] = useState(() => {
-    try {
-      const lsData = localStorage.getItem("dashboardStats");
-      return lsData ? JSON.parse(lsData) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  useEffect(() => {
-    if (!stats && !localData) return;
-    const appointmentsToLog = (stats || localData)?.appointments || [];
-    console.group("Appointments received from API:");
-    appointmentsToLog.forEach((appt, idx) => {
-      console.log(
-        `Appointment #${idx + 1}: clientName="${appt.clientName}", serviceName="${appt.serviceName}", date="${appt.date}", time="${appt.time}"`
-      );
-    });
-    console.groupEnd();
-  }, [stats, localData]);
-
-  useEffect(() => {
+  // טען סטטיסטיקות ידנית
+  const loadStats = async () => {
     if (!businessId) return;
-    queryClient.prefetchQuery(
-      ["dashboardStats", businessId],
-      () => fetchDashboardStats(businessId, refreshAccessToken),
-      { staleTime: 5 * 60 * 1000 }
-    );
-  }, [businessId, queryClient, refreshAccessToken]);
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchDashboardStats(businessId, refreshAccessToken);
+      setStats(data);
+      localStorage.setItem("dashboardStats", JSON.stringify(data));
+    } catch (err) {
+      setError("❌ שגיאה בטעינת נתונים מהשרת");
+      if (err.message === "No token") logout();
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Socket.IO setup
   useEffect(() => {
     if (!initialized || !businessId) return;
-    if (socketRef.current) return;
+    // טען נתונים ראשוניים
+    loadStats();
 
     let isMounted = true;
 
@@ -254,28 +202,31 @@ const DashboardPage = () => {
         });
       });
 
-      sock.on("dashboardUpdate", () => refetch());
-
-      sock.on('profileViewsUpdated', (data) => {
-        console.log('profileViewsUpdated received:', data);
-        if (data && typeof data.views_count === 'number') {
-          queryClient.setQueryData(['dashboardStats', businessId], (old) => {
-            if (!old) return old;
-            return {
-              ...old,
-              views_count: data.views_count,
-            };
-          });
-        }
+      // קבלת עדכון סטטיסטיקות בזמן אמת
+      sock.on("dashboardUpdate", (newStats) => {
+        console.log("dashboardUpdate received", newStats);
+        setStats(newStats);
+        localStorage.setItem("dashboardStats", JSON.stringify(newStats));
       });
 
+      // עדכון ספירת צפיות פרופיל
+      sock.on('profileViewsUpdated', (data) => {
+        if (!data || typeof data.views_count !== 'number') return;
+        setStats((oldStats) => oldStats ? { ...oldStats, views_count: data.views_count } : oldStats);
+      });
+
+      // עדכון פגישות
       sock.on("appointmentCreated", (newAppointment) => {
-        if (newAppointment.business?.toString() !== businessId.toString()) return;
-        queryClient.setQueryData(["dashboardStats", businessId], (old) => {
-          if (!old) return old;
-          const enriched = enrichAppointment(newAppointment, old);
-          const newAppointments = [...(old.appointments || []), enriched];
-          return { ...old, appointments: newAppointments, appointments_count: newAppointments.length };
+        if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
+        setStats((oldStats) => {
+          if (!oldStats) return oldStats;
+          const enriched = enrichAppointment(newAppointment, oldStats);
+          const updatedAppointments = [...(oldStats.appointments || []), enriched];
+          return {
+            ...oldStats,
+            appointments: updatedAppointments,
+            appointments_count: updatedAppointments.length,
+          };
         });
         if (newAppointment.date) {
           const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
@@ -287,17 +238,21 @@ const DashboardPage = () => {
       });
 
       sock.on("appointmentUpdated", (updatedAppointment) => {
-        if (updatedAppointment.business?.toString() !== businessId.toString()) return;
-        queryClient.setQueryData(["dashboardStats", businessId], (old) => {
-          if (!old) return old;
-          const enriched = enrichAppointment(updatedAppointment, old);
-          const updatedAppointments = (old.appointments || []).map((appt) =>
+        if (!updatedAppointment.business || updatedAppointment.business.toString() !== businessId.toString()) return;
+        setStats((oldStats) => {
+          if (!oldStats) return oldStats;
+          const enriched = enrichAppointment(updatedAppointment, oldStats);
+          const updatedAppointments = (oldStats.appointments || []).map(appt =>
             appt._id === updatedAppointment._id ? enriched : appt
           );
           if (!updatedAppointments.find(a => a._id === updatedAppointment._id)) {
             updatedAppointments.push(enriched);
           }
-          return { ...old, appointments: updatedAppointments, appointments_count: updatedAppointments.length };
+          return {
+            ...oldStats,
+            appointments: updatedAppointments,
+            appointments_count: updatedAppointments.length,
+          };
         });
         if (updatedAppointment.date) {
           const apptDate = new Date(updatedAppointment.date).toISOString().split("T")[0];
@@ -309,21 +264,25 @@ const DashboardPage = () => {
       });
 
       sock.on("allAppointmentsUpdated", (allAppointments) => {
-        queryClient.setQueryData(["dashboardStats", businessId], (old) => {
-          if (!old) return old;
+        setStats((oldStats) => {
+          if (!oldStats) return oldStats;
           const enriched = Array.isArray(allAppointments)
-            ? allAppointments.map((appt) => enrichAppointment(appt, old))
+            ? allAppointments.map((appt) => enrichAppointment(appt, oldStats))
             : [];
-          return { ...old, appointments: enriched, appointments_count: enriched.length };
+          return {
+            ...oldStats,
+            appointments: enriched,
+            appointments_count: enriched.length,
+          };
         });
       });
 
+      // עדכון ביקורות
       sock.on('allReviewsUpdated', (allReviews) => {
-        if (!businessId) return;
-        queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
-          if (!oldData) return oldData;
+        setStats((oldStats) => {
+          if (!oldStats) return oldStats;
           return {
-            ...oldData,
+            ...oldStats,
             reviews: allReviews,
             reviews_count: allReviews.length,
           };
@@ -331,18 +290,22 @@ const DashboardPage = () => {
       });
 
       sock.on('reviewCreated', (reviewNotification) => {
-        console.log('ביקורת חדשה התקבלה:', reviewNotification);
-        queryClient.setQueryData(['dashboardStats', businessId], (oldData) => {
-          if (!oldData) return oldData;
+        setStats((oldStats) => {
+          if (!oldStats) return oldStats;
           return {
-            ...oldData,
-            reviews_count: (oldData.reviews_count || 0) + 1,
+            ...oldStats,
+            reviews_count: (oldStats.reviews_count || 0) + 1,
           };
         });
       });
 
-      sock.on("disconnect", (reason) => console.log("Dashboard socket disconnected:", reason));
-      sock.on("connect_error", (err) => console.error("Socket connection error:", err));
+      sock.on("disconnect", (reason) => {
+        console.log("Dashboard socket disconnected:", reason);
+      });
+
+      sock.on("connect_error", (err) => {
+        console.error("Socket connection error:", err);
+      });
     }
 
     setupSocket();
@@ -354,7 +317,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, refetch, selectedDate, queryClient]);
+  }, [initialized, businessId, logout, refreshAccessToken, selectedDate]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -362,28 +325,22 @@ const DashboardPage = () => {
       const conversationId = location.state?.conversationId || null;
       if (conversationId) {
         socketRef.current.emit("markMessagesRead", conversationId, (response) => {
-          if (response.ok) {
-            // הסרנו קריאה ל-updateMessagesCount
-          } else {
+          if (!response.ok) {
             console.error("Failed to mark messages as read:", response.error);
           }
         });
       }
-    } else {
-      // הוסר קריאה ל-updateMessagesCount כאן גם
     }
   }, [location.pathname]);
 
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-  if (isLoading && !localData) return <DashboardSkeleton />;
-  if (isError) return <p className="error-text">{alert || "שגיאה בטעינת הנתונים"}</p>;
+  if (loading && !stats) return <DashboardSkeleton />;
+  if (error) return <p className="error-text">{alert || error}</p>;
 
-  const effectiveStats = stats || localData || {};
-
-  // כאן מבצעים העשרה של הפגישות
-  const enrichedAppointments = (effectiveStats.appointments || []).map(appt =>
+  const effectiveStats = stats || {};
+  const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
     enrichAppointment(appt, effectiveStats)
   );
 
@@ -399,7 +356,6 @@ const DashboardPage = () => {
 
   const syncedStats = {
     ...effectiveStats,
-    // הוסר השימוש ב-unreadCount
     messages_count: effectiveStats.messages_count || 0,
   };
 
@@ -499,7 +455,6 @@ const DashboardPage = () => {
         </div>
       </Suspense>
 
-      {/* כאן הוספתי את רכיב הגרף */}
       <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
         <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
           <MemoizedBarChartComponent
@@ -522,7 +477,7 @@ const DashboardPage = () => {
         </div>
       </Suspense>
 
-      <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
+      <Suspense fallback={<div className="loading-spinner">🔄  טוען יומן...</div>}>
         <div ref={appointmentsRef} className="calendar-row">
           <div className="day-agenda-box">
             <MemoizedDailyAgenda
