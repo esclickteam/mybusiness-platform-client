@@ -11,21 +11,18 @@ function getOtherBusinessId(conv, myBusinessId) {
     console.warn("getOtherBusinessId: missing conv or myBusinessId");
     return "";
   }
-
   if (Array.isArray(conv.participantsInfo)) {
     const info = conv.participantsInfo.find(
       (b) => b._id.toString() !== myBusinessId.toString()
     );
     if (info) return info._id.toString();
   }
-
   if (Array.isArray(conv.participants)) {
     const raw = conv.participants.find(
       (id) => id.toString() !== myBusinessId.toString()
     );
     if (raw) return raw.toString();
   }
-
   return "";
 }
 
@@ -53,7 +50,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const socketRef = useRef(null);
   const socketInitializedRef = useRef(false);
   const messagesEndRef = useRef(null);
-  const fileInputRef = useRef(null);
 
   const { refreshAccessToken: refreshAccessTokenOriginal, logout: logoutOriginal } = useAuth();
 
@@ -71,7 +67,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [messages, dispatchMessages] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
-  const [attachedFile, setAttachedFile] = useState(null);
 
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
@@ -94,7 +89,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       const convs = convsRaw.map((c) => ({
         ...c,
         messages: Array.isArray(c.messages) ? c.messages : [],
-        // חשוב: ודא ש- conversationType מגיע מהשרת או כאן מוגדר
         conversationType: c.conversationType || "user-business",
       }));
       setConversations(convs);
@@ -160,7 +154,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [myBusinessId, myBusinessName, refreshAccessToken, logout, fetchConversations]);
 
-  // הצטרפות לחדרי שיחה עם הפרדת סוגי שיחות לפי prefix
   useEffect(() => {
     if (!socketRef.current) return;
     conversations.forEach((conv) => {
@@ -169,7 +162,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     });
   }, [conversations]);
 
-  // טעינת הודעות של השיחה הנבחרת
   useEffect(() => {
     if (!socketRef.current || !selectedConversation) {
       dispatchMessages({ type: "set", payload: [] });
@@ -264,8 +256,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // שליחת הודעה טקסט בלבד
   const sendMessage = () => {
-    if ((!input.trim() && !attachedFile) || !selectedConversation || !socketRef.current) return;
+    if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
     const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
     if (!otherIdRaw) return;
@@ -277,177 +270,47 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         : otherIdRaw.toString();
 
     const conversationType = selectedConversation.conversationType || "user-business";
+    const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
 
-    if (attachedFile) {
-      const file = attachedFile;
-      const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
+    const payload = {
+      conversationId: selectedConversation._id.toString(),
+      from: myBusinessId.toString(),
+      to: otherId,
+      text: input.trim(),
+    };
 
-      const optimisticMsg = {
-        _id: tempId,
-        conversationId: selectedConversation._id,
-        fromBusinessId: myBusinessId,
-        toBusinessId: otherId,
-        fileUrl: URL.createObjectURL(file),
-        fileName: file.name,
-        fileType: file.type,
-        timestamp: new Date().toISOString(),
-        sending: true,
-      };
+    const optimistic = {
+      ...payload,
+      timestamp: new Date().toISOString(),
+      _id: tempId,
+      fromBusinessId: payload.from,
+      toBusinessId: payload.to,
+      sending: true,
+    };
 
-      dispatchMessages({ type: "append", payload: optimisticMsg });
+    dispatchMessages({ type: "append", payload: optimistic });
+    setInput("");
 
-      setConversations((prevConvs) =>
-        prevConvs.map((conv) => {
-          if (conv._id === selectedConversation._id) {
-            const msgs = Array.isArray(conv.messages) ? conv.messages : [];
-            return {
-              ...conv,
-              messages: [...msgs, optimisticMsg],
-            };
-          }
-          return conv;
-        })
-      );
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
 
-      setAttachedFile(null);
-      setInput("");
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        socketRef.current.emit(
-          "sendFile",
-          {
-            
-            conversationId: selectedConversation._id,
-            from: myBusinessId,
-            to: otherId,
-            fileType: file.type,
-            buffer: reader.result,
-            fileName: file.name,
-            tempId,
-            
-          },
-          (ack) => {
-            if (!ack.ok) {
-              alert("שליחת קובץ נכשלה: " + (ack.error || "שגיאה לא ידועה"));
-              dispatchMessages({ type: "remove", payload: tempId });
-              setConversations((prevConvs) =>
-                prevConvs.map((conv) => {
-                  if (conv._id === selectedConversation._id) {
-                    const msgs = Array.isArray(conv.messages)
-                      ? conv.messages.filter((m) => m._id !== tempId)
-                      : [];
-                    return { ...conv, messages: msgs };
-                  }
-                  return conv;
-                })
-              );
-            } else if (ack.message?._id) {
-              const realMsg = {
-                ...ack.message,
-                fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-                toBusinessId: ack.message.toBusinessId || ack.message.to,
-              };
-
-              socketRef.current.emit(
-                "sendMessage",
-                {
-                  conversationId: selectedConversation._id,
-                  from: myBusinessId,
-                  to: otherId,
-                  text: "",
-                  fileUrl: realMsg.fileUrl,
-                  fileName: realMsg.fileName,
-                  fileType: realMsg.fileType,
-                  
-                },
-                (msgAck) => {
-                  if (!msgAck.ok) {
-                    alert("שליחת הודעת הקובץ נכשלה: " + msgAck.error);
-                  }
-                }
-              );
-
-              dispatchMessages({
-                type: "replace",
-                payload: realMsg,
-              });
-              setConversations((prevConvs) =>
-                prevConvs.map((conv) => {
-                  if (conv._id === selectedConversation._id) {
-                    const msgs = Array.isArray(conv.messages)
-                      ? conv.messages.filter((m) => m._id !== tempId)
-                      : [];
-                    return {
-                      ...conv,
-                      messages: [...msgs, realMsg],
-                    };
-                  }
-                  return conv;
-                })
-              );
-            }
-          }
-        );
-      };
-      reader.readAsArrayBuffer(file);
-    } else {
-      const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
-
-      const payload = {
-        conversationId: selectedConversation._id.toString(),
-        from: myBusinessId.toString(),
-        to: otherId,
-        text: input.trim(),
-        
-      };
-
-      const optimistic = {
-        ...payload,
-        timestamp: new Date().toISOString(),
-        _id: tempId,
-        fromBusinessId: payload.from,
-        toBusinessId: payload.to,
-        sending: true,
-      };
-
-      dispatchMessages({ type: "append", payload: optimistic });
-      setInput("");
-
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 50);
-
-      socketRef.current.emit("sendMessage", payload, (ack) => {
-        if (!ack.ok) {
-          alert("שליחת הודעה נכשלה: " + ack.error);
-          dispatchMessages({ type: "remove", payload: tempId });
-        } else if (ack.message?._id) {
-          const real = {
-            ...ack.message,
-            fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-            toBusinessId: ack.message.toBusinessId || ack.message.to,
-          };
-          dispatchMessages({
-            type: "replace",
-            payload: real,
-          });
-        }
-      });
-    }
-  };
-
-  const handleAttach = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = null;
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setAttachedFile(file);
+    socketRef.current.emit("sendMessage", payload, (ack) => {
+      if (!ack.ok) {
+        alert("שליחת הודעה נכשלה: " + ack.error);
+        dispatchMessages({ type: "remove", payload: tempId });
+      } else if (ack.message?._id) {
+        const real = {
+          ...ack.message,
+          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+          toBusinessId: ack.message.toBusinessId || ack.message.to,
+        };
+        dispatchMessages({
+          type: "replace",
+          payload: real,
+        });
+      }
+    });
   };
 
   return (
@@ -498,7 +361,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               };
             const lastMsg =
               conv.messages.length > 0
-                ? conv.messages[conv.messages.length - 1].text || (conv.messages[conv.messages.length - 1].fileName || "קובץ")
+                ? conv.messages[conv.messages.length - 1].text
                 : "";
             return (
               <Box
@@ -577,33 +440,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                       wordBreak: "break-word",
                     }}
                   >
-                    {msg.fileUrl ? (
-                      msg.fileType && msg.fileType.startsWith("image") ? (
-                        <img
-                          src={msg.fileUrl}
-                          alt={msg.fileName || "image"}
-                          style={{ maxWidth: 200, borderRadius: 8 }}
-                        />
-                      ) : msg.fileType && msg.fileType.startsWith("audio") ? (
-                        <audio controls src={msg.fileUrl} />
-                      ) : msg.fileType && msg.fileType.startsWith("video") ? (
-                        <video controls style={{ maxWidth: 300 }}>
-                          <source src={msg.fileUrl} type={msg.fileType} />
-                          הדפדפן שלך לא תומך בווידאו.
-                        </video>
-                      ) : (
-                        <a
-                          href={msg.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          download
-                        >
-                          {msg.fileName || "קובץ להורדה"}
-                        </a>
-                      )
-                    ) : (
-                      <Box>{msg.text}</Box>
-                    )}
+                    <Box>{msg.text}</Box>
                     <Box
                       sx={{
                         fontSize: 11,
@@ -653,27 +490,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               borderRadius: "0 0 18px 18px",
             }}
           >
-            <Button
-              type="button"
-              onClick={handleAttach}
-              sx={{
-                minWidth: 40,
-                minHeight: 40,
-                fontSize: "1.6rem",
-                borderRadius: "50%",
-                backgroundColor: "#e3dffc",
-                color: "#7153dd",
-                boxShadow: "0 6px 15px rgba(111, 94, 203, 0.4)",
-                "&:hover": {
-                  backgroundColor: "#c7bcf8",
-                  boxShadow: "0 8px 20px rgba(111, 94, 203, 0.7)",
-                },
-              }}
-              title="צרף קובץ"
-            >
-              📎
-            </Button>
-
             <TextField
               fullWidth
               size="medium"
@@ -697,7 +513,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 height: 40,
               }}
             />
-
             <Button
               type="submit"
               variant="contained"
@@ -715,18 +530,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   boxShadow: "0 8px 20px rgba(92, 62, 199, 0.8)",
                 },
               }}
-              disabled={!input.trim() && !attachedFile}
+              disabled={!input.trim()}
             >
               שלח
             </Button>
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-              accept="image/*,audio/*,video/*,application/pdf"
-            />
           </form>
         )}
 
