@@ -147,7 +147,6 @@ const DashboardPage = () => {
     });
   }, []);
 
-  // טען סטטיסטיקות ידנית
   const loadStats = async () => {
     if (!businessId) return;
     setLoading(true);
@@ -166,7 +165,6 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (!initialized || !businessId) return;
-    // טען נתונים ראשוניים
     loadStats();
 
     let isMounted = true;
@@ -202,20 +200,17 @@ const DashboardPage = () => {
         });
       });
 
-      // קבלת עדכון סטטיסטיקות בזמן אמת
       sock.on("dashboardUpdate", (newStats) => {
         console.log("dashboardUpdate received", newStats);
         setStats(newStats);
         localStorage.setItem("dashboardStats", JSON.stringify(newStats));
       });
 
-      // עדכון ספירת צפיות פרופיל
       sock.on('profileViewsUpdated', (data) => {
         if (!data || typeof data.views_count !== 'number') return;
         setStats((oldStats) => oldStats ? { ...oldStats, views_count: data.views_count } : oldStats);
       });
 
-      // עדכון פגישות
       sock.on("appointmentCreated", (newAppointment) => {
         if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
         setStats((oldStats) => {
@@ -277,7 +272,6 @@ const DashboardPage = () => {
         });
       });
 
-      // עדכון ביקורות
       sock.on('allReviewsUpdated', (allReviews) => {
         setStats((oldStats) => {
           if (!oldStats) return oldStats;
@@ -289,12 +283,14 @@ const DashboardPage = () => {
         });
       });
 
+      // כאן השינוי החשוב: הוספת ביקורת חדשה למערך ולהגדלת הספירה
       sock.on('reviewCreated', (reviewNotification) => {
         setStats((oldStats) => {
           if (!oldStats) return oldStats;
           return {
             ...oldStats,
             reviews_count: (oldStats.reviews_count || 0) + 1,
+            reviews: [reviewNotification, ...(oldStats.reviews || [])],
           };
         });
       });
