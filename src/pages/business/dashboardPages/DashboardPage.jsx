@@ -283,9 +283,17 @@ const DashboardPage = () => {
         });
       });
 
-      sock.on('reviewCreated', () => {
-  toast.success('⭐ נוספה ביקורת חדשה!');
-});
+      // כאן השינוי החשוב: הוספת ביקורת חדשה למערך ולהגדלת הספירה
+      sock.on('reviewCreated', (reviewNotification) => {
+        setStats((oldStats) => {
+          if (!oldStats) return oldStats;
+          return {
+            ...oldStats,
+            reviews_count: (oldStats.reviews_count || 0) + 1,
+            reviews: [reviewNotification, ...(oldStats.reviews || [])],
+          };
+        });
+      });
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
