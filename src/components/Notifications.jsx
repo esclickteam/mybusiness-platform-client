@@ -8,6 +8,7 @@ export default function Notifications({ onClose }) {
     clearAll,
     clearRead,
     markAsRead,
+    markAllAsRead, // הוספת הפונקציה לסימון כל ההתראות כנקראות
   } = useNotifications();
 
   const navigate = useNavigate();
@@ -131,7 +132,7 @@ export default function Notifications({ onClose }) {
               נקה נקראו
             </button>
             <button
-              onClick={clearAll}
+              onClick={markAllAsRead}  // קריאה לסימון כל ההתראות כנקראות
               style={{
                 background: "none",
                 border: "none",

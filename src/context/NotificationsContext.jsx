@@ -204,6 +204,32 @@ export function NotificationsProvider({ children }) {
     }
   }, []);
 
+  const markAllAsRead = useCallback(async () => {
+    try {
+      const response = await fetch("/api/business/my/notifications/readAll", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await response.json();
+      if (data.ok) {
+        dispatch({
+          type: "SET_NOTIFICATIONS",
+          payload: state.notifications.map((n) => ({
+            ...n,
+            read: true,
+            unreadCount: 0,
+          })),
+        });
+      } else {
+        console.warn("Failed to mark all notifications as read:", data);
+      }
+    } catch (err) {
+      console.error("markAllAsRead error:", err);
+    }
+  }, [state.notifications]);
+
   return (
     <NotificationsContext.Provider
       value={{
@@ -213,6 +239,7 @@ export function NotificationsProvider({ children }) {
         markAsRead,
         clearAll,
         clearRead,
+        markAllAsRead,
       }}
     >
       {children}
