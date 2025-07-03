@@ -12,6 +12,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 import "../../../styles/dashboard.css";
+import { toast } from "react-toastify";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
@@ -200,6 +201,7 @@ const DashboardPage = () => {
         });
       });
 
+      // 📌 מקור אמת יחיד
       sock.on("dashboardUpdate", (newStats) => {
         console.log("dashboardUpdate received", newStats);
         setStats(newStats);
@@ -283,17 +285,10 @@ const DashboardPage = () => {
         });
       });
 
-      // כאן השינוי החשוב: הוספת ביקורת חדשה למערך ולהגדלת הספירה
-      sock.on('reviewCreated', (reviewNotification) => {
-        setStats((oldStats) => {
-          if (!oldStats) return oldStats;
-          return {
-            ...oldStats,
-            reviews_count: (oldStats.reviews_count || 0) + 1,
-            reviews: [reviewNotification, ...(oldStats.reviews || [])],
-          };
-        });
-      });
+      // Toast בלבד – לא משנים את ה-state כאן
+sock.on('reviewCreated', () => {
+  toast.success('⭐ נוספה ביקורת חדשה!');
+});
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
