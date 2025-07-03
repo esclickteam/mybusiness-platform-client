@@ -1,26 +1,28 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
 
 export default function Notifications({ onClose }) {
+  const { user } = useAuth();
+  const businessId = user?.businessId;
+
   const {
     notifications,
     clearAll,
     clearRead,
     markAsRead,
-    markAllAsRead, // הוספת הפונקציה לסימון כל ההתראות כנקראות
+    markAllAsRead,
   } = useNotifications();
 
-  const navigate = useNavigate();
-
-  // איחוד התראות צ'אט לפי threadId (כמו בפייסבוק)
+  // איחוד התראות צ'אט לפי threadId
   const dedupedNotifications = React.useMemo(() => {
     const seenThreads = new Set();
     const filtered = [];
 
     for (const notif of notifications) {
       if (notif.type === "message" && notif.threadId) {
-        const threadIdStr = notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
+        const threadIdStr =
+          notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
         if (!seenThreads.has(threadIdStr)) {
           filtered.push(notif);
           seenThreads.add(threadIdStr);
@@ -33,54 +35,16 @@ export default function Notifications({ onClose }) {
   }, [notifications]);
 
   const handleClick = async (notif) => {
-    console.log("Notification clicked:", notif);
-
     const id = notif.id || notif._id;
     const idStr = id && (id.toString ? id.toString() : id);
 
-    // סמן כהתראה נקראה לפני הניווט
+    // סמן כהתראה נקראה
     if (!notif.read && idStr) {
-      console.log("Marking notification as read:", idStr);
       await markAsRead(idStr);
     }
 
-    if (notif.type === "message" && notif.threadId) {
-      const clientId = notif.clientId || notif.partnerId;
-      const threadIdStr = notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
-
-      console.log("Navigating to chat with clientId:", clientId, "and threadId:", threadIdStr);
-
-      // ודא שהמשתנה businessId מוגדר ומגיע מהקשר נכון
-      const businessId = notif.businessId || (notif.userBusinessId) || window?.businessId; // תעדכן לפי הצורך
-      console.log("Using businessId:", businessId);
-
-      if (!businessId) {
-        console.error("businessId is undefined, cannot navigate to chat");
-        return;
-      }
-
-      const url = clientId
-        ? `/business/${businessId}/chat/${clientId}?threadId=${threadIdStr}`
-        : `/business/${businessId}/chat`;
-
-      console.log("Navigating to URL:", url);
-      navigate(url);
-    } else {
-      const url =
-        notif.targetUrl ||
-        {
-          collaboration: "/collaborations",
-          meeting: "/meetings",
-          review: "/reviews",
-        }[notif.type] ||
-        "/";
-      console.log("Navigating to URL:", url);
-      navigate(url);
-    }
-
-    if (onClose) {
-      onClose();
-    }
+    // אין ניווט, רק התראות
+    if (onClose) onClose();
   };
 
   const formatDate = (ts) =>
@@ -127,12 +91,11 @@ export default function Notifications({ onClose }) {
                 fontSize: "0.9rem",
                 marginLeft: 10,
               }}
-              aria-label="נקה את כל ההתראות שכבר נקראו"
             >
               נקה נקראו
             </button>
             <button
-              onClick={markAllAsRead}  // קריאה לסימון כל ההתראות כנקראות
+              onClick={markAllAsRead}
               style={{
                 background: "none",
                 border: "none",
@@ -140,7 +103,6 @@ export default function Notifications({ onClose }) {
                 cursor: "pointer",
                 fontSize: "0.9rem",
               }}
-              aria-label="סמן את כל ההתראות כנקראות"
             >
               סמן כנקראות
             </button>
@@ -152,7 +114,8 @@ export default function Notifications({ onClose }) {
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
         dedupedNotifications.map((notif) => {
-          const key = notif.id || notif._id || (notif.threadId ? notif.threadId.toString() : null);
+          const key = notif.id || notif._id ||
+            (notif.threadId ? notif.threadId.toString() : null);
           return (
             <div
               key={key}
