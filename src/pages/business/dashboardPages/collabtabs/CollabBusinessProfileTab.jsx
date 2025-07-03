@@ -260,20 +260,9 @@ export default function CollabBusinessProfileTab({ socket }) {
         onClose={() => setShowBusinessChat(false)}
         className="chat-modal"
       >
-        <Box className="chat-box" sx={{
-          p: 0,
-          display: "flex",
-          flexDirection: "column",
-          height: { xs: "80vh", sm: "80vh", md: "75vh" },
-          width: { xs: "98vw", sm: "95vw", md: 900 },
-          maxWidth: 900,
-          maxHeight: "90vh",
-          minHeight: 350,
-          overflow: "auto"
-
-        }}>
+        <Box className="chat-box">
           {myBusinessId && (
-            <div className="collab-chat-root" style={{ flex: 1, minHeight: 0, height: "100%", display: "flex", flexDirection: "column" }}>
+            <div className="collab-chat-root">
               <CollabChat
                 token={API.token || localStorage.getItem("token")}
                 myBusinessId={myBusinessId}

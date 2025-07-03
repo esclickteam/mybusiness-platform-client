@@ -299,30 +299,33 @@
   background: white;
   border-radius: 20px;
   box-shadow: 0 30px 50px rgba(120, 81, 169, 0.15);
-  padding: 0;
+  padding: 12px 16px; /* הוספתי padding פנימי */
   outline: none;
   display: flex;
   flex-direction: column;
-  overflow: visible; /* שונה מ-hidden ל-visible */
+  overflow: hidden; /* חשוב לשנות מ-visible ל-hidden */
+  box-sizing: border-box; /* חשוב לכלול padding בגודל */
 }
+
 .collab-chat-root {
-  flex: 1;
+  flex: 1 1 auto; /* להתאים ל-flex-grow ול-flex-shrink */
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 0;
+  min-height: 0; /* קריטי לגלילה בפלקס */
   min-width: 0;
   overflow: hidden;
 }
 
-/* גלילה נוחה בעמודת הודעות פנימית (בתוך CollabChat.jsx) */
+/* גלילה נוחה בעמודת הודעות פנימית */
 .collab-chat-messages {
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 100%;
   overflow-y: auto;
   background: #f8f7ff;
+  box-sizing: border-box;
+  padding-right: 8px; /* מניעת חיתוך גלילה */
 }
+
 
 /* ----- רספונסיביות ----- */
 @media (max-width: 900px) {
