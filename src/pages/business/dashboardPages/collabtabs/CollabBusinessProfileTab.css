@@ -285,9 +285,10 @@
 /* ----- מודאל צ'אט (עודכן, כולל רספונסיביות) ----- */
 .chat-modal {
   display: flex !important;
-  align-items: center;
+  align-items: flex-start;       /* משנים מ־center ל־flex-start */
   justify-content: center;
-  z-index: 1300;
+  padding-top: 100px;            /* גובה ה־header + מרווח קטן */
+  z-index: 1300;                 /* כבר גבוה, אבל אם צריך אפשר להגדיל */
 }
 .chat-box {
   width: 100vw;
