@@ -269,7 +269,8 @@ export default function CollabBusinessProfileTab({ socket }) {
           maxWidth: 900,
           maxHeight: "90vh",
           minHeight: 350,
-          overflow: "hidden"
+          overflow: "auto"
+
         }}>
           {myBusinessId && (
             <div className="collab-chat-root" style={{ flex: 1, minHeight: 0, height: "100%", display: "flex", flexDirection: "column" }}>

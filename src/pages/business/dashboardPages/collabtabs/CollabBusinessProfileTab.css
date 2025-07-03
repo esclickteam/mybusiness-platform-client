@@ -303,7 +303,7 @@
   outline: none;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible; /* שונה מ-hidden ל-visible */
 }
 .collab-chat-root {
   flex: 1;
