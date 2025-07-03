@@ -85,18 +85,16 @@ function notificationsReducer(state, action) {
       return { ...state, notifications: updated };
     }
 
-    case "CLEAR_ALL": {
+    case "CLEAR_ALL":
       return { ...state, notifications: [] };
-    }
 
     case "CLEAR_READ": {
       const filtered = state.notifications.filter((n) => !n.read);
       return { ...state, notifications: filtered };
     }
 
-    case "SET_DASHBOARD_STATS": {
+    case "SET_DASHBOARD_STATS":
       return { ...state, dashboardStats: action.payload };
-    }
 
     default:
       return state;
@@ -105,7 +103,6 @@ function notificationsReducer(state, action) {
 
 export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
-
   const [state, dispatch] = useReducer(notificationsReducer, initialState);
 
   const unreadCount = state.notifications.reduce(
@@ -113,6 +110,7 @@ export function NotificationsProvider({ children }) {
     0
   );
 
+  // Fetch initial notifications
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
@@ -129,20 +127,28 @@ export function NotificationsProvider({ children }) {
       .catch((err) => console.error("Notifications fetch failed:", err));
   }, [user?.businessId]);
 
+  // Subscribe to Socket.IO events
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    const handleConnect = () => {
-      socket.emit("joinBusinessRoom", user.businessId);
+    const roomName = `business:${user.businessId}`;
+    const handleConnect = () => socket.emit("joinRoom", roomName);
+
+    const handleNewNotification = (notif) => {
+      dispatch({ type: "ADD_NOTIFICATION", payload: notif });
     };
 
-    const handleBundle = ({ count, lastNotification }) => {
-      if (lastNotification) {
-        dispatch({ type: "ADD_NOTIFICATION", payload: lastNotification });
-      }
-    };
-
-    const handleNew = (notif) => {
+    const handleNewProposalAsNotification = (proposal) => {
+      const notif = {
+        id: proposal._id.toString(),
+        lastMessage: `הצעת שיתוף פעולה: ${proposal.title}`,
+        timestamp: new Date().toISOString(),
+        read: false,
+        unreadCount: 1,
+        clientId: proposal.fromBusinessId,
+        type: "collaboration",
+        payload: { proposal },
+      };
       dispatch({ type: "ADD_NOTIFICATION", payload: notif });
     };
 
@@ -153,14 +159,14 @@ export function NotificationsProvider({ children }) {
     socket.on("connect", handleConnect);
     if (socket.connected) handleConnect();
 
-    socket.on("notificationBundle", handleBundle);
-    socket.on("newNotification", handleNew);
+    socket.on("newNotification", handleNewNotification);
+    socket.on("newProposal", handleNewProposalAsNotification);
     socket.on("dashboardUpdate", handleDashboard);
 
     return () => {
       socket.off("connect", handleConnect);
-      socket.off("notificationBundle", handleBundle);
-      socket.off("newNotification", handleNew);
+      socket.off("newNotification", handleNewNotification);
+      socket.off("newProposal", handleNewProposalAsNotification);
       socket.off("dashboardUpdate", handleDashboard);
     };
   }, [socket, user?.businessId]);
@@ -181,24 +187,17 @@ export function NotificationsProvider({ children }) {
     }
   }, []);
 
-  const clearAll = useCallback(() => {
-    dispatch({ type: "CLEAR_ALL" });
-  }, []);
+  const clearAll = useCallback(() => dispatch({ type: "CLEAR_ALL" }), []);
 
   const clearRead = useCallback(async () => {
     try {
       const response = await fetch("/api/business/my/notifications/clearRead", {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       const data = await response.json();
-      if (data.ok) {
-        dispatch({ type: "CLEAR_READ" });
-      } else {
-        console.warn("Failed to clear read notifications:", data);
-      }
+      if (data.ok) dispatch({ type: "CLEAR_READ" });
+      else console.warn("Failed to clear read notifications:", data);
     } catch (err) {
       console.error("clearRead error:", err);
     }
@@ -208,12 +207,10 @@ export function NotificationsProvider({ children }) {
     try {
       const response = await fetch("/api/business/my/notifications/readAll", {
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       const data = await response.json();
-      if (data.ok) {
+      if (data.ok)
         dispatch({
           type: "SET_NOTIFICATIONS",
           payload: state.notifications.map((n) => ({
@@ -222,9 +219,7 @@ export function NotificationsProvider({ children }) {
             unreadCount: 0,
           })),
         });
-      } else {
-        console.warn("Failed to mark all notifications as read:", data);
-      }
+      else console.warn("Failed to mark all notifications as read:", data);
     } catch (err) {
       console.error("markAllAsRead error:", err);
     }
