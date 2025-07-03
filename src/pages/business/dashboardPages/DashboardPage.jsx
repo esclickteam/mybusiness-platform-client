@@ -284,16 +284,14 @@ const DashboardPage = () => {
       });
 
       // כאן השינוי החשוב: הוספת ביקורת חדשה למערך ולהגדלת הספירה
-      sock.on('reviewCreated', (reviewNotification) => {
-        setStats((oldStats) => {
-          if (!oldStats) return oldStats;
-          return {
-            ...oldStats,
-            reviews_count: (oldStats.reviews_count || 0) + 1,
-            reviews: [reviewNotification, ...(oldStats.reviews || [])],
-          };
-        });
-      });
+      sock.on('reviewCreated', (review) => {
+  console.log('reviewCreated arrived', review);
+  setStats(old => ({
+    ...old,
+    reviews_count: review.newCount ?? ((old.reviews_count||0) + 1),
+    reviews: [review, ...(old.reviews||[])],
+  }));
+});
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
@@ -313,7 +311,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, selectedDate]);
+  }, [initialized, businessId, logout, refreshAccessToken]);
 
   useEffect(() => {
     if (!socketRef.current) return;
