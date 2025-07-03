@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API from "@api"; // השתמש ב־API במקום axios
+import API from "@api";
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
 
@@ -12,11 +12,17 @@ const AffiliatePage = () => {
   const [selectedMonth, setSelectedMonth] = useState("2025-04");
   const [businessId, setBusinessId] = useState(null);
 
+  // מצב למשיכת כספים
+  const [withdrawAmount, setWithdrawAmount] = useState(0);
+  const [withdrawStatus, setWithdrawStatus] = useState(null); // הודעות למשתמש
+  const [receiptFile, setReceiptFile] = useState(null);
+  const [withdrawalId, setWithdrawalId] = useState(null); // מזהה משיכה שנוצרה בשרת
+
   useEffect(() => {
     async function fetchBusinessId() {
       try {
         const res = await API.get("/business/my");
-        setBusinessId(res.data.business._id); // תיקון לפי מבנה הנתונים מהשרת
+        setBusinessId(res.data.business._id);
       } catch (error) {
         console.error("Error fetching businessId:", error);
         setErrorStats("לא הצלחנו לקבל מזהה עסק");
@@ -46,13 +52,61 @@ const AffiliatePage = () => {
   }, [businessId, selectedMonth]);
 
   const affiliateLink = businessId
-    ? `https://esclick.co.il/register?ref=${businessId}`  // <-- שונה מ-/signup ל-/register
+    ? `https://esclick.co.il/register?ref=${businessId}`
     : "לא זוהה מזהה עסק";
 
-  const handleReceiptSubmit = (e) => {
+  // בקשת משיכה
+  const handleWithdrawRequest = async () => {
+    if (withdrawAmount < 200) {
+      alert("סכום מינימום למשיכה הוא 200 ש\"ח");
+      return;
+    }
+    if (withdrawAmount > (stats?.totalCommissions || 0)) {
+      alert("סכום המשיכה גבוה מהיתרה הזמינה");
+      return;
+    }
+    try {
+      const res = await API.post("/affiliate/request-withdrawal", {
+        affiliateId: businessId,
+        amount: withdrawAmount,
+      });
+      setWithdrawStatus(res.data.message || "בקשת המשיכה התקבלה.");
+      if (res.data.withdrawalId) setWithdrawalId(res.data.withdrawalId);
+      setShowReceiptForm(true);
+    } catch (error) {
+      alert(error.response?.data?.message || "שגיאה בבקשת המשיכה");
+    }
+  };
+
+  // העלאת קבלה
+  const handleReceiptUpload = async (e) => {
     e.preventDefault();
-    alert("קבלה הועלתה בהצלחה!");
-    setShowReceiptForm(false);
+    if (!receiptFile) {
+      alert("בחר קובץ קבלה");
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append("receipt", receiptFile);
+      formData.append("affiliateId", businessId);
+      if (withdrawalId) formData.append("withdrawalId", withdrawalId);
+
+      const res = await API.post("/affiliate/upload-receipt", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert(res.data.message || "הקבלה הועלתה בהצלחה");
+      setWithdrawStatus("קבלה הועלתה וממתינה לאישור.");
+      setShowReceiptForm(false);
+      setReceiptFile(null);
+      setLoadingStats(true);
+      const response = await API.get("/affiliate/stats", {
+        params: { affiliateId: businessId, month: selectedMonth },
+      });
+      setStats(response.data);
+      setLoadingStats(false);
+    } catch (error) {
+      alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
+    }
   };
 
   return (
@@ -119,7 +173,7 @@ const AffiliatePage = () => {
           <select
             id="month"
             value={selectedMonth}
-            onChange={(e) =>  setSelectedMonth(e.target.value)}
+            onChange={(e) => setSelectedMonth(e.target.value)}
           >
             <option value="2025-04">אפריל 2025</option>
             <option value="2025-03">מרץ 2025</option>
@@ -137,10 +191,10 @@ const AffiliatePage = () => {
           <li>כאשר בעל עסק נרשם דרך הקישור ורוכש חבילה – תקבל עמלה.</li>
         </ol>
         <h3>📌 חשוב לדעת:</h3>
-        <ul> 
+        <ul>
           <li>✅ העמלה תינתן רק עבור רכישות שבוצעו דרך הקישור האישי שלך.</li>
           <li>⏳ העמלה תינתן רק בתנאי שהרוכש לא ביטל את העסקה בתוך 14 ימים.</li>
-          <li>❌ אם המשתמש רכש דרך קישור אחר או ביטל את העסקה בתוך 14 ימים – לא תינתן עמלה.</li> 
+          <li>❌ אם המשתמש רכש דרך קישור אחר או ביטל את העסקה בתוך 14 ימים – לא תינתן עמלה.</li>
           <li>💳 תשלומי עמלות מתבצעים אחת לחודש, לאחר אישור הרכישות.</li>
           <li>🧾 לאחר קבלת התשלום, יש להעלות קבלה דרך הטופס למטה.</li>
         </ul>
@@ -160,98 +214,21 @@ const AffiliatePage = () => {
             </tr>
           </thead>
           <tbody>
-            {/* חבילה חודשית */}
-            <tr>
-              <td>חבילה חודשית</td>
-              <td>1 חודש</td>
-              <td>3%</td>
-              <td>10</td>
-              <td>200</td>
-            </tr>
-            <tr>
-              <td>חבילה חודשית</td>
-              <td>1 חודש</td>
-              <td>3%</td>
-              <td>30</td>
-              <td>400</td>
-            </tr>
-            <tr>
-              <td>חבילה חודשית</td>
-              <td>1 חודש</td>
-              <td>3%</td>
-              <td>60</td>
-              <td>1000</td>
-            </tr>
-            <tr>
-              <td>חבילה חודשית</td>
-              <td>1 חודש</td>
-              <td>3%</td>
-              <td>100</td>
-              <td>2200</td>
-            </tr>
-
-            {/* חבילה רבעונית */}
-            <tr>
-              <td>חבילה רבעונית</td>
-              <td>3 חודשים</td>
-              <td>5%</td>
-              <td>10</td>
-              <td>450</td>
-            </tr>
-            <tr>
-              <td>חבילה רבעונית</td>
-              <td>3 חודשים</td>
-              <td>5%</td>
-              <td>30</td>
-              <td>600</td>
-            </tr>
-            <tr>
-              <td>חבילה רבעונית</td>
-              <td>3 חודשים</td>
-              <td>5%</td>
-              <td>60</td>
-              <td>1500</td>
-            </tr>
-            <tr>
-              <td>חבילה רבעונית</td>
-              <td>3 חודשים</td>
-              <td>5%</td>
-              <td>100</td>
-              <td>3300</td>
-            </tr>
-
-            {/* חבילה שנתית */}
-            <tr>
-              <td>חבילה שנתית</td>
-              <td>12 חודשים</td>
-              <td>7%</td>
-              <td>10</td>
-              <td>900</td>
-            </tr>
-            <tr>
-              <td>חבילה שנתית</td>
-              <td>12 חודשים</td>
-              <td>7%</td>
-              <td>30</td>
-              <td>1200</td>
-            </tr>
-            <tr>
-              <td>חבילה שנתית</td>
-              <td>12 חודשים</td>
-              <td>7%</td>
-              <td>60</td>
-              <td>3000</td>
-            </tr>
-            <tr>
-              <td>חבילה שנתית</td>
-              <td>12 חודשים</td>
-              <td>7%</td>
-              <td>100</td>
-              <td>6600</td>
-            </tr>
+            <tr><td>חבילה חודשית</td><td>1 חודש</td><td>3%</td><td>10</td><td>200</td></tr>
+            <tr><td>חבילה חודשית</td><td>1 חודש</td><td>3%</td><td>30</td><td>400</td></tr>
+            <tr><td>חבילה חודשית</td><td>1 חודש</td><td>3%</td><td>60</td><td>1000</td></tr>
+            <tr><td>חבילה חודשית</td><td>1 חודש</td><td>3%</td><td>100</td><td>2200</td></tr>
+            <tr><td>חבילה רבעונית</td><td>3 חודשים</td><td>5%</td><td>10</td><td>450</td></tr>
+            <tr><td>חבילה רבעונית</td><td>3 חודשים</td><td>5%</td><td>30</td><td>600</td></tr>
+            <tr><td>חבילה רבעונית</td><td>3 חודשים</td><td>5%</td><td>60</td><td>1500</td></tr>
+            <tr><td>חבילה רבעונית</td><td>3 חודשים</td><td>5%</td><td>100</td><td>3300</td></tr>
+            <tr><td>חבילה שנתית</td><td>12 חודשים</td><td>7%</td><td>10</td><td>900</td></tr>
+            <tr><td>חבילה שנתית</td><td>12 חודשים</td><td>7%</td><td>30</td><td>1200</td></tr>
+            <tr><td>חבילה שנתית</td><td>12 חודשים</td><td>7%</td><td>60</td><td>3000</td></tr>
+            <tr><td>חבילה שנתית</td><td>12 חודשים</td><td>7%</td><td>100</td><td>6600</td></tr>
           </tbody>
         </table>
-        <p style={{marginTop: "1rem", fontWeight: "bold", color: "#444"}}>
+        <p style={{ marginTop: "1rem", fontWeight: "bold", color: "#444" }}>
           ⚠️ הבונוס האקסטרה יינתן רק פעם אחת בחודש, לפי הרף הגבוה ביותר של עסקאות שהושג באותו חודש.
         </p>
       </section>
@@ -259,36 +236,46 @@ const AffiliatePage = () => {
       {/* פעולות תשלום */}
       <section className="affiliate-bank-section">
         <h2>💵 פעולות תשלום</h2>
-        <div className="payment-actions">
-          <div className="payment-actions-buttons">
-            <button
-              className="payment-button"
-              onClick={() => setShowBankForm((prev) => !prev)}
-            >
-              ⚙️ ניהול פרטי חשבון בנק
-            </button>
-            <button
-              className="payment-button"
-              onClick={() => setShowReceiptForm((prev) => !prev)}
-            >
-              📎 העלאת קבלה לחודש הנוכחי
-            </button>
-          </div>
-          {showBankForm && (
-            <div className="bank-form-wrapper">
-              <BankDetailsForm />
-            </div>
-          )}
-          {showReceiptForm && (
-            <form className="receipt-upload-form" onSubmit={handleReceiptSubmit}>
-              <label>בחר קובץ קבלה (PDF / תמונה):</label>
-              <input type="file" accept=".pdf,image/*" required />
-              <button type="submit" className="payment-button">
-                🚀 שלח קבלה
-              </button>
-            </form>
-          )}
+        <div>
+          <p>יתרתך הזמינה למשיכה: ₪{stats?.totalCommissions ?? 0}</p>
+          <input
+            type="number"
+            min="200"
+            max={stats?.totalCommissions ?? 0}
+            value={withdrawAmount}
+            onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+            placeholder={`סכום למשיכה (מינימום 200 ש"ח)`}
+          />
+          <button onClick={handleWithdrawRequest} disabled={withdrawAmount < 200}>
+            בקש משיכה
+          </button>
+          {withdrawStatus && <p>{withdrawStatus}</p>}
         </div>
+
+        {showReceiptForm && (
+          <form className="receipt-upload-form" onSubmit={handleReceiptUpload}>
+            <label>בחר קובץ קבלה (PDF או תמונה):</label>
+            <input
+              type="file"
+              accept=".pdf,image/*"
+              onChange={(e) => setReceiptFile(e.target.files[0])}
+              required
+            />
+            <button type="submit">🚀 העלאת קבלה</button>
+          </form>
+        )}
+
+        <button
+          className="payment-button"
+          onClick={() => setShowBankForm((prev) => !prev)}
+        >
+          ⚙️ ניהול פרטי חשבון בנק
+        </button>
+        {showBankForm && (
+          <div className="bank-form-wrapper">
+            <BankDetailsForm />
+          </div>
+        )}
       </section>
     </div>
   );
