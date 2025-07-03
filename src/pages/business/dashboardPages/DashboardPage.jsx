@@ -12,7 +12,6 @@ import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
 import "../../../styles/dashboard.css";
-import { toast } from "react-toastify";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
@@ -201,7 +200,6 @@ const DashboardPage = () => {
         });
       });
 
-      // 📌 מקור אמת יחיד
       sock.on("dashboardUpdate", (newStats) => {
         console.log("dashboardUpdate received", newStats);
         setStats(newStats);
@@ -285,8 +283,7 @@ const DashboardPage = () => {
         });
       });
 
-      // Toast בלבד – לא משנים את ה-state כאן
-sock.on('reviewCreated', () => {
+      sock.on('reviewCreated', () => {
   toast.success('⭐ נוספה ביקורת חדשה!');
 });
 
