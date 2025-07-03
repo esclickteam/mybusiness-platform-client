@@ -20,7 +20,14 @@ export default function CollabBusinessProfileTab({ socket }) {
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [myBusinessName, setMyBusinessName] = useState("");
 
-  const { addSuggestion, activeSuggestion, approveSuggestion, rejectSuggestion, closeModal, loading: aiLoading } = useAi();
+  const {
+    addSuggestion,
+    activeSuggestion,
+    approveSuggestion,
+    rejectSuggestion,
+    closeModal,
+    loading: aiLoading,
+  } = useAi();
 
   useEffect(() => {
     fetchProfile();
@@ -188,9 +195,15 @@ export default function CollabBusinessProfileTab({ socket }) {
 
           <div className="profile-section profile-contact">
             <h3>📞 פרטי קשר</h3>
-            <p><strong>איש קשר:</strong> {safeProfile.contact}</p>
-            <p><strong>טלפון:</strong> {safeProfile.phone}</p>
-            <p><strong>אימייל:</strong> {safeProfile.email}</p>
+            <p>
+              <strong>איש קשר:</strong> {safeProfile.contact}
+            </p>
+            <p>
+              <strong>טלפון:</strong> {safeProfile.phone}
+            </p>
+            <p>
+              <strong>אימייל:</strong> {safeProfile.email}
+            </p>
           </div>
         </article>
       </section>
@@ -247,14 +260,26 @@ export default function CollabBusinessProfileTab({ socket }) {
         onClose={() => setShowBusinessChat(false)}
         className="chat-modal"
       >
-        <Box className="chat-box">
+        <Box className="chat-box" sx={{
+          p: 0,
+          display: "flex",
+          flexDirection: "column",
+          height: { xs: "80vh", sm: "80vh", md: "75vh" },
+          width: { xs: "98vw", sm: "95vw", md: 900 },
+          maxWidth: 900,
+          maxHeight: "90vh",
+          minHeight: 350,
+          overflow: "hidden"
+        }}>
           {myBusinessId && (
-            <CollabChat
-              token={API.token || localStorage.getItem("token")}
-              myBusinessId={myBusinessId}
-              myBusinessName={myBusinessName}
-              onClose={() => setShowBusinessChat(false)}
-            />
+            <div className="collab-chat-root" style={{ flex: 1, minHeight: 0, height: "100%", display: "flex", flexDirection: "column" }}>
+              <CollabChat
+                token={API.token || localStorage.getItem("token")}
+                myBusinessId={myBusinessId}
+                myBusinessName={myBusinessName}
+                onClose={() => setShowBusinessChat(false)}
+              />
+            </div>
           )}
         </Box>
       </Modal>
