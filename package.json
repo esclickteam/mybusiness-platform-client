@@ -67,6 +67,7 @@
     "react-time-picker": "^7.0.0",
     "react-transition-group": "^4.4.5",
     "recharts": "^2.15.2",
+    "redis": "^5.5.6",
     "rollup": "^4.40.2",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",

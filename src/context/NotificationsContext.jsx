@@ -39,6 +39,10 @@ function normalizeNotification(notif) {
   };
 }
 
+function calculateUnreadCount(notifications) {
+  return notifications.reduce((count, n) => count + (n.unreadCount || 0), 0);
+}
+
 function notificationsReducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
@@ -60,7 +64,8 @@ function notificationsReducer(state, action) {
       const merged = Array.from(map.values()).sort(
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );
-      return { ...state, notifications: merged };
+      const unreadCount = calculateUnreadCount(merged);
+      return { ...state, notifications: merged, unreadCount };
     }
     case "ADD_NOTIFICATION": {
       const n = normalizeNotification(action.payload);
@@ -81,26 +86,24 @@ function notificationsReducer(state, action) {
         list = [{ ...n, unreadCount: 1 }, ...state.notifications];
       }
       list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      return { ...state, notifications: list };
+      const unreadCount = calculateUnreadCount(list);
+      return { ...state, notifications: list, unreadCount };
     }
-    case "SET_UNREAD_COUNT":
-      return { ...state, unreadCount: action.payload };
     case "MARK_AS_READ": {
       const id = action.payload;
-      return {
-        ...state,
-        notifications: state.notifications.map((n) =>
-          n.id === id ? { ...n, read: true, unreadCount: 0 } : n
-        ),
-      };
+      const updatedNotifications = state.notifications.map((n) =>
+        n.id === id ? { ...n, read: true, unreadCount: 0 } : n
+      );
+      const unreadCount = calculateUnreadCount(updatedNotifications);
+      return { ...state, notifications: updatedNotifications, unreadCount };
     }
     case "CLEAR_ALL":
-      return { ...state, notifications: [] };
-    case "CLEAR_READ":
-      return {
-        ...state,
-        notifications: state.notifications.filter((n) => !n.read),
-      };
+      return { ...state, notifications: [], unreadCount: 0 };
+    case "CLEAR_READ": {
+      const filtered = state.notifications.filter((n) => !n.read);
+      const unreadCount = calculateUnreadCount(filtered);
+      return { ...state, notifications: filtered, unreadCount };
+    }
     case "SET_DASHBOARD_STATS":
       return { ...state, dashboardStats: action.payload };
     default:
@@ -145,7 +148,8 @@ export function NotificationsProvider({ children }) {
       const notification = {
         ...data,
         text: typeof data.text === "string" ? data.text : "",
-        lastMessage: data.lastMessage || (typeof data.text === "string" ? data.text : ""),
+        lastMessage:
+          data.lastMessage || (typeof data.text === "string" ? data.text : ""),
         id: data.threadId || data.chatId || data.id || data._id?.toString(),
         read: data.read ?? false,
         timestamp: data.timestamp || data.createdAt || new Date().toISOString(),
@@ -153,29 +157,15 @@ export function NotificationsProvider({ children }) {
       dispatch({ type: "ADD_NOTIFICATION", payload: notification });
     };
 
-    const handleNotificationBundle = (data) => {
-      if (typeof data.count === "number") {
-        dispatch({ type: "SET_UNREAD_COUNT", payload: data.count });
-      }
-    };
-
-    const handleDashboard = (stats) => {
-      dispatch({ type: "SET_DASHBOARD_STATS", payload: stats });
-    };
-
     socket.on("connect", handleConnect);
     if (socket.connected) handleConnect();
     socket.on("newNotification", handleNewNotification);
     socket.on("newMessage", handleNewMessage);
-    socket.on("notificationBundle", handleNotificationBundle);
-    socket.on("dashboardUpdate", handleDashboard);
 
     return () => {
       socket.off("connect", handleConnect);
       socket.off("newNotification", handleNewNotification);
       socket.off("newMessage", handleNewMessage);
-      socket.off("notificationBundle", handleNotificationBundle);
-      socket.off("dashboardUpdate", handleDashboard);
     };
   }, [socket, user?.businessId]);
 
@@ -194,53 +184,12 @@ export function NotificationsProvider({ children }) {
     }
   }, []);
 
-  const clearAll = useCallback(() => dispatch({ type: "CLEAR_ALL" }), []);
-
-  const clearRead = useCallback(async () => {
-    try {
-      const res = await fetch("/api/business/my/notifications/clearRead", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const data = await res.json();
-      if (data.ok) dispatch({ type: "CLEAR_READ" });
-    } catch (err) {
-      console.error("clearRead error:", err);
-    }
-  }, []);
-
-  const markAllAsRead = useCallback(async () => {
-    try {
-      const res = await fetch("/api/business/my/notifications/readAll", {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const data = await res.json();
-      if (data.ok) {
-        dispatch({
-          type: "SET_NOTIFICATIONS",
-          payload: state.notifications.map((n) => ({
-            ...n,
-            read: true,
-            unreadCount: 0,
-          })),
-        });
-      }
-    } catch (err) {
-      console.error("markAllAsRead error:", err);
-    }
-  }, [state.notifications]);
-
   return (
     <NotificationsContext.Provider
       value={{
         notifications: state.notifications,
         unreadCount: state.unreadCount,
-        dashboardStats: state.dashboardStats,
         markAsRead,
-        clearAll,
-        clearRead,
-        markAllAsRead,
       }}
     >
       {children}
