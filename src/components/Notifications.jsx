@@ -4,34 +4,46 @@ import { useNotifications } from "../context/NotificationsContext";
 
 export default function Notifications({ onClose }) {
   const { user } = useAuth();
-  const { notifications, markAsRead, markAllAsRead, clearRead, clearAll } = useNotifications();
+  const {
+    notifications,
+    markAsRead,
+    markAllAsRead,
+    clearRead,
+    clearAll,
+  } = useNotifications();
 
-  // 1. פילוח הודעות צ'אט מלקוח/שותף עסקי ושאר ההתראות
-  const messageNotifications = notifications.filter(n =>
-    n.type === "message" &&
-    (n.senderType === "client" || n.senderType === "businessPartner")
+  // 1. פילוח הודעות צ'אט מלקוח/שותף עסקי (יש להן clientId) ושאר ההתראות
+  const messageNotifications = React.useMemo(
+    () =>
+      notifications.filter(
+        (n) => n.type === "message" && n.clientId !== null
+      ),
+    [notifications]
   );
-  const otherNotifications = notifications.filter(n =>
-    !(n.type === "message" &&
-      (n.senderType === "client" || n.senderType === "businessPartner"))
+  const otherNotifications = React.useMemo(
+    () =>
+      notifications.filter(
+        (n) => !(n.type === "message" && n.clientId !== null)
+      ),
+    [notifications]
   );
 
-  // 2. חישוב סך ההודעות הלא־נקראו והתאריך העדכני ביותר רק עבור ה־messageNotifications
+  // 2. חישוב סך ההודעות הלא־נקראו והתאריך העדכני ביותר עבור ה־messageNotifications
   const { totalUnread, latestTimestamp } = React.useMemo(() => {
-    return messageNotifications.reduce(
-      (acc, n) => {
-        const cnt = n.unreadCount || 0;
-        const ts = new Date(n.timestamp);
-        return {
-          totalUnread: acc.totalUnread + cnt,
-          latestTimestamp: ts > acc.latestDate ? ts : acc.latestDate,
-        };
-      },
-      { totalUnread: 0, latestDate: new Date(0) }
-    );
+    const acc = { totalUnread: 0, latestDate: new Date(0) };
+    for (const n of messageNotifications) {
+      const cnt = n.unreadCount || 0;
+      const ts = new Date(n.timestamp);
+      acc.totalUnread += cnt;
+      if (ts > acc.latestDate) acc.latestDate = ts;
+    }
+    return {
+      totalUnread: acc.totalUnread,
+      latestTimestamp: acc.latestDate,
+    };
   }, [messageNotifications]);
 
-  // 3. בניית התראה מסכמת בודדת רק אם יש הודעות מלקוח/שותף עסקי לא־נקראו
+  // 3. בניית התראה מסכמת יחידה
   const summaryNotification =
     totalUnread > 0
       ? [
@@ -46,18 +58,16 @@ export default function Notifications({ onClose }) {
         ]
       : [];
 
+  // 4. טיפול בלחיצה על הסיכום
   const handleSummaryClick = async () => {
-    // מסמן את כל הודעות ה־messageNotifications כנקראו
+    // מסמן כל הודעות ה-chat כנקראו
     for (const n of messageNotifications) {
-      if (!n.read) {
-        const id = n.id || n._id;
-        await markAsRead(id.toString());
-      }
+      if (!n.read) await markAsRead(n.id);
     }
     if (onClose) onClose();
   };
 
-  const formatDate = ts =>
+  const formatDate = (ts) =>
     new Date(ts).toLocaleString(undefined, {
       dateStyle: "short",
       timeStyle: "short",
@@ -86,13 +96,14 @@ export default function Notifications({ onClose }) {
         </div>
       </div>
 
-      {/* אם אין כל סוג של התראות */}
-      {summaryNotification.length === 0 && otherNotifications.length === 0 && (
-        <div style={styles.empty}>אין התראות חדשות</div>
-      )}
+      {/* אין כל התראות */}
+      {summaryNotification.length === 0 &&
+        otherNotifications.length === 0 && (
+          <div style={styles.empty}>אין התראות חדשות</div>
+        )}
 
-      {/* קודם מציגים את הסיכום (אם קיים) */}
-      {summaryNotification.map(notif => (
+      {/* התראה מסכמת */}
+      {summaryNotification.map((notif) => (
         <div
           key={notif.id}
           onClick={handleSummaryClick}
@@ -101,38 +112,35 @@ export default function Notifications({ onClose }) {
         >
           <div>{notif.text}</div>
           <div style={styles.meta}>
-            <div style={styles.time}>{formatDate(notif.timestamp)}</div>
+            <div style={styles.time}>
+              {formatDate(notif.timestamp)}
+            </div>
             <div style={styles.bubble}>{notif.unreadCount}</div>
           </div>
         </div>
       ))}
 
-      {/* אחר כך מייצרים את שאר ההתראות כפי שהיו */}
-      {otherNotifications.map(n => {
-        const id = n.id || n._id;
-        return (
-          <div
-            key={id}
-            onClick={async () => {
-              if (!n.read) {
-                await markAsRead(id.toString());
-              }
-              if (onClose) onClose();
-            }}
-            style={{
-              ...styles.item,
-              fontWeight: n.read ? "normal" : 700,
-              backgroundColor: n.read ? "white" : "#e8f4ff",
-            }}
-            title={n.text}
-          >
-            <div>{n.text}</div>
-            <div style={styles.meta}>
-              <div style={styles.time}>{formatDate(n.timestamp)}</div>
-            </div>
+      {/* שאר ההתראות */}
+      {otherNotifications.map((n) => (
+        <div
+          key={n.id}
+          onClick={async () => {
+            if (!n.read) await markAsRead(n.id);
+            if (onClose) onClose();
+          }}
+          style={{
+            ...styles.item,
+            fontWeight: n.read ? "normal" : 700,
+            backgroundColor: n.read ? "white" : "#e8f4ff",
+          }}
+          title={n.text}
+        >
+          <div>{n.text}</div>
+          <div style={styles.meta}>
+            <div style={styles.time}>{formatDate(n.timestamp)}</div>
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }
