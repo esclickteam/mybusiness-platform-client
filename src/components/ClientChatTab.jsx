@@ -386,12 +386,7 @@ export default function ClientChatTab({
                     });
                   })()}
                 </span>
-                {m.fileDuration && (
-                  <span className="audio-length">
-                    {String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:
-                    {String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}
-                  </span>
-                )}
+                {/* הסרנו את הצגת זמן האודיו */}
               </div>
             </div>
           );
