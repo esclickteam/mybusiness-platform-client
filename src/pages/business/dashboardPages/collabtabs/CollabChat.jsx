@@ -365,10 +365,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               conv.participantsInfo?.find((b) => b._id.toString() === otherId) || {
                 businessName: "עסק",
               };
-            const lastMsg =
-              conv.messages.length > 0
-                ? conv.messages[conv.messages.length - 1].text || ""
-                : "";
+            // תיקון קריאת ה-text עם Optional Chaining:
+            const lastMsg = conv.messages?.[conv.messages.length - 1]?.text || "";
+
             return (
               <Box
                 key={conv._id}
