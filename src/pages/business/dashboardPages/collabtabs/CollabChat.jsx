@@ -476,8 +476,8 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                         textAlign: "left",
                       }}
                     >
-                      {msg.timestamp &&
-                        new Date(msg.timestamp).toLocaleTimeString("he-IL", {
+                      {(msg.timestamp || msg.createdAt) &&
+                        new Date(msg.timestamp || msg.createdAt).toLocaleTimeString("he-IL", {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
