@@ -12,6 +12,11 @@ export default function Notifications({ onClose }) {
     markAllAsRead,
   } = useNotifications();
 
+  // הוסף לוגים לפני הדה-דופ
+  React.useEffect(() => {
+    console.log("🔔 raw notifications:", notifications);
+  }, [notifications]);
+
   // דה-דופ מלא: כרטיס אחד לכל threadId, עם סכימת הודעות ונתונים הכי עדכניים
   const dedupedNotifications = React.useMemo(() => {
     const map = new Map();
@@ -31,7 +36,7 @@ export default function Notifications({ onClose }) {
           text: isNewer ? notif.text : prev.text,
           lastMessage: isNewer ? notif.lastMessage : prev.lastMessage,
           timestamp: isNewer ? notif.timestamp : prev.timestamp,
-          unreadCount: (prev.unreadCount || 0) + (notif.unreadCount || 0),
+          unreadCount: Math.max(prev.unreadCount || 0, notif.unreadCount || 0),
           read: prev.read && notif.read, // ייחשב כ"נקרא" רק אם כל ההתראות נקראו
           type: notif.type, // להשאיר ליתר ביטחון
         });
@@ -40,8 +45,12 @@ export default function Notifications({ onClose }) {
       }
     }
 
-    // החזר מערך ממויין מהחדש לישן
-    return Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    const result = Array.from(map.values()).sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    );
+    // הוסף לוג אחרי הדה-דופ
+    console.log("✅ deduped notifications:", result);
+    return result;
   }, [notifications]);
 
   const handleClick = async (notif) => {
