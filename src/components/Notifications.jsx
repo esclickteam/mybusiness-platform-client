@@ -11,9 +11,10 @@ export default function Notifications({ onClose }) {
     clearRead,
     markAsRead,
     markAllAsRead,
+    unreadCount, // סך כל ההודעות שלא נקראו מהקונטקסט (bundle)
   } = useNotifications();
 
-  // איחוד התראות מסוג "message" לפי threadId וסכימת unreadCount
+  // איחוד התראות מסוג "message" לפי threadId, אך לא מציגים בועות ליד כל הודעה
   const dedupedNotifications = React.useMemo(() => {
     const map = new Map();
 
@@ -26,7 +27,6 @@ export default function Notifications({ onClose }) {
           const existing = map.get(threadIdStr);
           map.set(threadIdStr, {
             ...existing,
-            unreadCount: (existing.unreadCount || 0) + (notif.unreadCount || 0),
             timestamp:
               new Date(notif.timestamp) > new Date(existing.timestamp)
                 ? notif.timestamp
@@ -36,6 +36,7 @@ export default function Notifications({ onClose }) {
                 ? notif.text
                 : existing.text,
             read: existing.read && notif.read,
+            // לא משנים unreadCount כאן כי לא נציג בועות ליד הודעות
           });
         } else {
           map.set(threadIdStr, { ...notif });
@@ -47,13 +48,6 @@ export default function Notifications({ onClose }) {
 
     return Array.from(map.values()).filter(n => n.id || n._id);
   }, [notifications]);
-
-  // חישוב סך כל ההודעות שלא נקראו
-  const totalUnreadCount = React.useMemo(() => {
-    return dedupedNotifications.reduce((sum, notif) => {
-      return sum + (notif.unreadCount || (notif.read ? 0 : 1));
-    }, 0);
-  }, [dedupedNotifications]);
 
   const handleClick = async (notif) => {
     const id = notif.id || notif._id;
@@ -98,7 +92,7 @@ export default function Notifications({ onClose }) {
         }}
       >
         התראות
-        {totalUnreadCount > 0 && (
+        {unreadCount > 0 && (
           <div
             style={{
               backgroundColor: "#d00",
@@ -113,9 +107,9 @@ export default function Notifications({ onClose }) {
               marginLeft: 10,
               userSelect: "none",
             }}
-            title={`${totalUnreadCount} הודעות שלא נקראו`}
+            title={`${unreadCount} הודעות שלא נקראו`}
           >
-            {totalUnreadCount}
+            {unreadCount}
           </div>
         )}
         {dedupedNotifications.length > 0 && (

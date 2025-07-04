@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useReducer,
   useCallback,
+  useState,
 } from "react";
 import { useAuth } from "./AuthContext.jsx";
 
@@ -19,32 +20,23 @@ const initialState = {
 };
 
 function normalizeNotification(notif) {
-  const rawText =
-    typeof notif.text === "string" ? notif.text : notif.data?.text || "";
+  const rawText = typeof notif.text === "string" ? notif.text : notif.data?.text || "";
   const rawLast = notif.lastMessage || rawText;
 
   return {
     id:
-      notif.threadId ||
-      notif.chatId ||
-      notif.id ||
-      notif._id?.toString(),
+      notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
     text: rawText,
     lastMessage: rawLast,
     read: notif.read ?? false,
     timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
     unreadCount:
-      notif.unreadCount != null
+      notif.unreadCount !== undefined && notif.unreadCount !== null
         ? notif.unreadCount
         : notif.read
         ? 0
         : 1,
-    // מפה גם את fromId לשדה clientId
-    clientId:
-      notif.clientId ||
-      notif.partnerId ||
-      notif.fromId ||
-      null,
+    clientId: notif.clientId || notif.partnerId || null,
     type: notif.type || "message",
   };
 }
@@ -128,12 +120,12 @@ export function NotificationsProvider({ children }) {
     notificationsReducer,
     initialState
   );
+  // סטייט חדש לאגירת סך ההתראות שלא נקראו (מספר כללי)
+  const [bundleUnreadCount, setBundleUnreadCount] = useState(0);
 
-  const unreadCount = state.notifications
-    .filter((n) => n.type === "message")
-    .reduce((acc, n) => acc + (n.unreadCount || 0), 0);
+  // השתמש בסך הכל מה־bundle, לא מחשב מהתראות בודדות
+  const unreadCount = bundleUnreadCount;
 
-  // שליפה ראשונית
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
@@ -148,56 +140,76 @@ export function NotificationsProvider({ children }) {
       .catch((err) => console.error("Notifications fetch failed:", err));
   }, [user?.businessId]);
 
-  // חיבור ל־socket
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    const joinRoom = () => {
+    const handleConnect = () => {
       socket.emit("joinBusinessRoom", user.businessId);
     };
 
     const handleNewNotification = (payload) => {
       const data = payload?.data ?? payload;
-      if (data && typeof data.text === "string") {
-        dispatch({ type: "ADD_NOTIFICATION", payload: data });
-      }
+      if (!data || typeof data.text !== "string") return;
+      dispatch({ type: "ADD_NOTIFICATION", payload: data });
     };
 
     const handleNewMessage = (msg) => {
       const data = msg.data || msg;
-      if (data && typeof data.text === "string") {
-        dispatch({ type: "ADD_NOTIFICATION", payload: data });
-      }
+      if (!data || typeof data.text !== "string") return;
+
+      const notification = {
+        ...data,
+        text: typeof data.text === "string" ? data.text : "",
+        lastMessage: data.lastMessage || (typeof data.text === "string" ? data.text : ""),
+        id: data.threadId || data.chatId || data.id || data._id?.toString(),
+        read: data.read ?? false,
+        timestamp: data.timestamp || data.createdAt || new Date().toISOString(),
+        type: data.type || "message",
+      };
+
+      dispatch({ type: "ADD_NOTIFICATION", payload: notification });
     };
 
     const handleDashboard = (stats) => {
       dispatch({ type: "SET_DASHBOARD_STATS", payload: stats });
     };
 
-    socket.on("connect", joinRoom);
-    if (socket.connected) joinRoom();
+    // *** טיפול באירוע bundle שמכיל את סך כל ההתראות שלא נקראו ***
+    const handleNotificationBundle = (data) => {
+      if (data && typeof data.count === "number") {
+        setBundleUnreadCount(data.count);
+      }
+    };
+
+    socket.on("connect", handleConnect);
+    if (socket.connected) handleConnect();
 
     socket.on("newNotification", handleNewNotification);
     socket.on("newMessage", handleNewMessage);
     socket.on("dashboardUpdate", handleDashboard);
+    socket.on("notificationBundle", handleNotificationBundle);
 
     return () => {
-      socket.off("connect", joinRoom);
+      socket.off("connect", handleConnect);
       socket.off("newNotification", handleNewNotification);
       socket.off("newMessage", handleNewMessage);
       socket.off("dashboardUpdate", handleDashboard);
+      socket.off("notificationBundle", handleNotificationBundle);
     };
   }, [socket, user?.businessId]);
 
   const markAsRead = useCallback(async (id) => {
     try {
-      await fetch(`/api/business/my/notifications/${id}/read`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await fetch(
+        `/api/business/my/notifications/${id}/read`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       dispatch({ type: "MARK_AS_READ", payload: id });
     } catch (err) {
       console.error("markAsRead error:", err);
@@ -205,24 +217,32 @@ export function NotificationsProvider({ children }) {
   }, []);
 
   const clearAll = useCallback(() => dispatch({ type: "CLEAR_ALL" }), []);
+
   const clearRead = useCallback(async () => {
     try {
-      const res = await fetch("/api/business/my/notifications/clearRead", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res = await fetch(
+        "/api/business/my/notifications/clearRead",
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       const data = await res.json();
       if (data.ok) dispatch({ type: "CLEAR_READ" });
     } catch (err) {
       console.error("clearRead error:", err);
     }
   }, []);
+
   const markAllAsRead = useCallback(async () => {
     try {
-      const res = await fetch("/api/business/my/notifications/readAll", {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res = await fetch(
+        "/api/business/my/notifications/readAll",
+        {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       const data = await res.json();
       if (data.ok) {
         dispatch({
@@ -243,7 +263,7 @@ export function NotificationsProvider({ children }) {
     <NotificationsContext.Provider
       value={{
         notifications: state.notifications,
-        unreadCount,
+        unreadCount, // עכשיו מקבל את מספר ההודעות הלא נקראות הכולל מה-bundle
         dashboardStats: state.dashboardStats,
         markAsRead,
         clearAll,
