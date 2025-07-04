@@ -11,6 +11,7 @@ const NotificationsContext = createContext();
 
 const initialState = {
   notifications: [],
+  unreadCount: 0,
   dashboardStats: {
     appointments_count: 0,
     reviews_count: 0,
@@ -23,8 +24,7 @@ function normalizeNotification(notif) {
   const rawLast = notif.lastMessage || rawText;
 
   return {
-    id:
-      notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
+    id: notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
     text: rawText,
     lastMessage: rawLast,
     read: notif.read ?? false,
@@ -62,7 +62,6 @@ function notificationsReducer(state, action) {
       );
       return { ...state, notifications: merged };
     }
-
     case "ADD_NOTIFICATION": {
       const n = normalizeNotification(action.payload);
       const exists = state.notifications.find((x) => x.id === n.id);
@@ -84,7 +83,8 @@ function notificationsReducer(state, action) {
       list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       return { ...state, notifications: list };
     }
-
+    case "SET_UNREAD_COUNT":
+      return { ...state, unreadCount: action.payload };
     case "MARK_AS_READ": {
       const id = action.payload;
       return {
@@ -94,19 +94,15 @@ function notificationsReducer(state, action) {
         ),
       };
     }
-
     case "CLEAR_ALL":
       return { ...state, notifications: [] };
-
     case "CLEAR_READ":
       return {
         ...state,
         notifications: state.notifications.filter((n) => !n.read),
       };
-
     case "SET_DASHBOARD_STATS":
       return { ...state, dashboardStats: action.payload };
-
     default:
       return state;
   }
@@ -114,15 +110,7 @@ function notificationsReducer(state, action) {
 
 export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
-  const [state, dispatch] = useReducer(
-    notificationsReducer,
-    initialState
-  );
-
-  const unreadCount = state.notifications.reduce(
-    (acc, n) => acc + (n.unreadCount > 0 ? 1 : 0),
-    0
-  );
+  const [state, dispatch] = useReducer(notificationsReducer, initialState);
 
   useEffect(() => {
     if (!user?.businessId) return;
@@ -132,10 +120,6 @@ export function NotificationsProvider({ children }) {
       .then((res) => res.json())
       .then((data) => {
         if (data.ok) {
-          console.log(
-            "Initial notifications loaded:",
-            data.notifications
-          );
           dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
         }
       })
@@ -145,36 +129,19 @@ export function NotificationsProvider({ children }) {
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    console.log(
-      "Setting up socket listeners in NotificationsProvider"
-    );
-
     const handleConnect = () => {
-      console.log(
-        "Socket connected, joining business room:",
-        user.businessId
-      );
       socket.emit("joinBusinessRoom", user.businessId);
     };
 
     const handleNewNotification = (payload) => {
       const data = payload?.data ?? payload;
-      if (!data || typeof data.text !== "string") {
-        console.warn("Invalid notification data received:", payload);
-        return;
-      }
-      console.log("🔔 newNotification received:", data);
+      if (!data || typeof data.text !== "string") return;
       dispatch({ type: "ADD_NOTIFICATION", payload: data });
     };
 
     const handleNewMessage = (msg) => {
       const data = msg.data || msg;
-      if (!data || typeof data.text !== "string") {
-        console.warn("Invalid message data received:", msg);
-        return;
-      }
-      console.log("💬 newMessage received:", data);
-
+      if (!data || typeof data.text !== "string") return;
       const notification = {
         ...data,
         text: typeof data.text === "string" ? data.text : "",
@@ -183,65 +150,58 @@ export function NotificationsProvider({ children }) {
         read: data.read ?? false,
         timestamp: data.timestamp || data.createdAt || new Date().toISOString(),
       };
-
       dispatch({ type: "ADD_NOTIFICATION", payload: notification });
     };
 
+    const handleNotificationBundle = (data) => {
+      if (typeof data.count === "number") {
+        dispatch({ type: "SET_UNREAD_COUNT", payload: data.count });
+      }
+    };
+
     const handleDashboard = (stats) => {
-      console.log("📊 dashboardUpdate received:", stats);
       dispatch({ type: "SET_DASHBOARD_STATS", payload: stats });
     };
 
     socket.on("connect", handleConnect);
     if (socket.connected) handleConnect();
-
     socket.on("newNotification", handleNewNotification);
     socket.on("newMessage", handleNewMessage);
+    socket.on("notificationBundle", handleNotificationBundle);
     socket.on("dashboardUpdate", handleDashboard);
 
     return () => {
-      console.log(
-        "Cleaning up socket listeners in NotificationsProvider"
-      );
       socket.off("connect", handleConnect);
       socket.off("newNotification", handleNewNotification);
       socket.off("newMessage", handleNewMessage);
+      socket.off("notificationBundle", handleNotificationBundle);
       socket.off("dashboardUpdate", handleDashboard);
     };
   }, [socket, user?.businessId]);
 
   const markAsRead = useCallback(async (id) => {
     try {
-      await fetch(
-        `/api/business/my/notifications/${id}/read`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      await fetch(`/api/business/my/notifications/${id}/read`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       dispatch({ type: "MARK_AS_READ", payload: id });
     } catch (err) {
       console.error("markAsRead error:", err);
     }
   }, []);
 
-  const clearAll = useCallback(
-    () => dispatch({ type: "CLEAR_ALL" }),
-    []
-  );
+  const clearAll = useCallback(() => dispatch({ type: "CLEAR_ALL" }), []);
 
   const clearRead = useCallback(async () => {
     try {
-      const res = await fetch(
-        "/api/business/my/notifications/clearRead",
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
+      const res = await fetch("/api/business/my/notifications/clearRead", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       const data = await res.json();
       if (data.ok) dispatch({ type: "CLEAR_READ" });
     } catch (err) {
@@ -251,13 +211,10 @@ export function NotificationsProvider({ children }) {
 
   const markAllAsRead = useCallback(async () => {
     try {
-      const res = await fetch(
-        "/api/business/my/notifications/readAll",
-        {
-          method: "PUT",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
+      const res = await fetch("/api/business/my/notifications/readAll", {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       const data = await res.json();
       if (data.ok) {
         dispatch({
@@ -278,7 +235,7 @@ export function NotificationsProvider({ children }) {
     <NotificationsContext.Provider
       value={{
         notifications: state.notifications,
-        unreadCount,
+        unreadCount: state.unreadCount,
         dashboardStats: state.dashboardStats,
         markAsRead,
         clearAll,
