@@ -4,7 +4,6 @@ import { useNotifications } from "../context/NotificationsContext";
 
 export default function Notifications({ onClose }) {
   const { user } = useAuth();
-  const businessId = user?.businessId;
 
   const {
     notifications,
@@ -13,47 +12,43 @@ export default function Notifications({ onClose }) {
     markAllAsRead,
   } = useNotifications();
 
-  // איחוד התראות צ'אט לפי threadId עם מיזוג הודעות מאותו תזמון והצגת טקסט כללי
+  // דה-דופ מלא: כרטיס אחד לכל threadId, עם סכימת הודעות ונתונים הכי עדכניים
   const dedupedNotifications = React.useMemo(() => {
-    console.log("🚀 raw notifications:", notifications);
-
     const map = new Map();
 
     for (const notif of notifications) {
-      if (notif.type === "message" && notif.threadId) {
-        const threadIdStr = notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
-        const existing = map.get(threadIdStr);
+      const key = notif.threadId || notif.id || notif._id;
+      if (!key) continue;
 
-        if (existing) {
-          map.set(threadIdStr, {
-            ...existing,
-            text: `✉️ יש לך ${existing.unreadCount + (notif.unreadCount || 0)} הודעות חדשות`,
-            timestamp: new Date(notif.timestamp) > new Date(existing.timestamp) ? notif.timestamp : existing.timestamp,
-            unreadCount: (existing.unreadCount || 0) + (notif.unreadCount || 0),
-            read: existing.read && notif.read,
-          });
-        } else {
-          map.set(threadIdStr, { ...notif });
-        }
+      if (map.has(key)) {
+        const prev = map.get(key);
+
+        // בחר הודעה אחרונה
+        const isNewer = new Date(notif.timestamp) > new Date(prev.timestamp);
+
+        map.set(key, {
+          ...prev,
+          text: isNewer ? notif.text : prev.text,
+          lastMessage: isNewer ? notif.lastMessage : prev.lastMessage,
+          timestamp: isNewer ? notif.timestamp : prev.timestamp,
+          unreadCount: (prev.unreadCount || 0) + (notif.unreadCount || 0),
+          read: prev.read && notif.read, // ייחשב כ"נקרא" רק אם כל ההתראות נקראו
+          type: notif.type, // להשאיר ליתר ביטחון
+        });
       } else {
-        const id = notif.id || notif._id;
-        map.set(id, { ...notif });
+        map.set(key, { ...notif });
       }
     }
 
-    const result = Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    console.log("✅ deduped notifications:", result);
-    return result;
+    // החזר מערך ממויין מהחדש לישן
+    return Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   }, [notifications]);
 
   const handleClick = async (notif) => {
-    const id = notif.id || notif._id;
-    const idStr = id && (id.toString ? id.toString() : id);
-
-    if (!notif.read && idStr) {
-      await markAsRead(idStr);
+    const id = notif.threadId || notif.id || notif._id;
+    if (!notif.read && id) {
+      await markAsRead(id);
     }
-
     if (onClose) onClose();
   };
 
@@ -124,10 +119,7 @@ export default function Notifications({ onClose }) {
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
         dedupedNotifications.map((notif) => {
-          const key =
-            notif.id ||
-            notif._id ||
-            (notif.threadId ? notif.threadId.toString() : null);
+          const key = notif.threadId || notif.id || notif._id;
           return (
             <div
               key={key}
@@ -145,7 +137,11 @@ export default function Notifications({ onClose }) {
               }}
               title={notif.text}
             >
-              <div>{notif.text}</div>
+              <div>
+                {notif.type === "message"
+                  ? `✉️ יש לך ${notif.unreadCount} הודעות חדשות`
+                  : notif.text}
+              </div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
@@ -171,7 +167,7 @@ export default function Notifications({ onClose }) {
                       fontSize: 14,
                       fontWeight: "bold",
                     }}
-                    aria-label={`${notif.unreadCount} התראות לא נקראו`}
+                    aria-label={`${notif.unreadCount} הודעות לא נקראו`}
                   >
                     {notif.unreadCount}
                   </div>
