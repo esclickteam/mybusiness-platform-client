@@ -12,62 +12,47 @@ export default function Notifications({ onClose }) {
     clearAll,
   } = useNotifications();
 
-  // 1. פילוח הודעות צ'אט מלקוח/שותף עסקי (יש להן clientId) ושאר ההתראות
+  // פילוח הודעות צ'אט מלקוח/שותף עסקי (clientId != null) ושאר ההתראות
   const messageNotifications = React.useMemo(
-    () =>
-      notifications.filter(
-        (n) => n.type === "message" && n.clientId !== null
-      ),
+    () => notifications.filter(n => n.type === "message" && n.clientId !== null),
     [notifications]
   );
   const otherNotifications = React.useMemo(
-    () =>
-      notifications.filter(
-        (n) => !(n.type === "message" && n.clientId !== null)
-      ),
+    () => notifications.filter(n => !(n.type === "message" && n.clientId !== null)),
     [notifications]
   );
 
-  // 2. חישוב סך ההודעות הלא־נקראו והתאריך העדכני ביותר עבור ה־messageNotifications
+  // חישוב סך הלא־נקראים והתאריך האחרון
   const { totalUnread, latestTimestamp } = React.useMemo(() => {
-    const acc = { totalUnread: 0, latestDate: new Date(0) };
+    let acc = { totalUnread: 0, latestDate: new Date(0) };
     for (const n of messageNotifications) {
-      const cnt = n.unreadCount || 0;
+      acc.totalUnread += n.unreadCount || 0;
       const ts = new Date(n.timestamp);
-      acc.totalUnread += cnt;
       if (ts > acc.latestDate) acc.latestDate = ts;
     }
-    return {
-      totalUnread: acc.totalUnread,
-      latestTimestamp: acc.latestDate,
-    };
+    return { totalUnread: acc.totalUnread, latestTimestamp: acc.latestDate };
   }, [messageNotifications]);
 
-  // 3. בניית התראה מסכמת יחידה
-  const summaryNotification =
-    totalUnread > 0
-      ? [
-          {
-            id: "summary-messages",
-            text: `יש לך ${totalUnread} הודעות צ’אט מלקוח/שותף עסקי שלא נקראו`,
-            unreadCount: totalUnread,
-            timestamp: latestTimestamp.toISOString(),
-            read: false,
-            isSummary: true,
-          },
-        ]
-      : [];
+  // בניית הסיכום
+  const summaryNotification = totalUnread > 0
+    ? [{
+        id: "summary-messages",
+        text: `יש לך ${totalUnread} הודעות צ’אט מלקוח/שותף עסקי שלא נקראו`,
+        unreadCount: totalUnread,
+        timestamp: latestTimestamp.toISOString(),
+        read: false,
+        isSummary: true,
+      }]
+    : [];
 
-  // 4. טיפול בלחיצה על הסיכום
   const handleSummaryClick = async () => {
-    // מסמן כל הודעות ה-chat כנקראו
     for (const n of messageNotifications) {
       if (!n.read) await markAsRead(n.id);
     }
     if (onClose) onClose();
   };
 
-  const formatDate = (ts) =>
+  const formatDate = ts =>
     new Date(ts).toLocaleString(undefined, {
       dateStyle: "short",
       timeStyle: "short",
@@ -96,13 +81,10 @@ export default function Notifications({ onClose }) {
         </div>
       </div>
 
-      {/* אין כל התראות */}
-      {summaryNotification.length === 0 &&
-        otherNotifications.length === 0 && (
-          <div style={styles.empty}>אין התראות חדשות</div>
-        )}
+      {summaryNotification.length === 0 && otherNotifications.length === 0 && (
+        <div style={styles.empty}>אין התראות חדשות</div>
+      )}
 
-      {/* התראה מסכמת */}
       {summaryNotification.map((notif) => (
         <div
           key={notif.id}
@@ -112,15 +94,12 @@ export default function Notifications({ onClose }) {
         >
           <div>{notif.text}</div>
           <div style={styles.meta}>
-            <div style={styles.time}>
-              {formatDate(notif.timestamp)}
-            </div>
+            <div style={styles.time}>{formatDate(notif.timestamp)}</div>
             <div style={styles.bubble}>{notif.unreadCount}</div>
           </div>
         </div>
       ))}
 
-      {/* שאר ההתראות */}
       {otherNotifications.map((n) => (
         <div
           key={n.id}
