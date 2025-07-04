@@ -19,13 +19,14 @@ const initialState = {
   },
 };
 
+// פונקציה שמבצעת נירמול ומבטיחה אחידות keys
 function normalizeNotification(notif) {
   const rawText = typeof notif.text === "string" ? notif.text : notif.data?.text || "";
   const rawLast = notif.lastMessage || rawText;
 
   return {
     id: notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
-    threadId: notif.threadId || null,  // חשוב להוסיף
+    threadId: notif.threadId || null,
     text: rawText,
     lastMessage: rawLast,
     read: notif.read ?? false,
@@ -49,17 +50,20 @@ function notificationsReducer(state, action) {
     case "SET_NOTIFICATIONS": {
       const incoming = action.payload.map(normalizeNotification);
       const map = new Map();
-      state.notifications.forEach((n) => map.set(n.id, n));
+      // דה-דופ לפי threadId (אם יש), אחרת לפי id
       incoming.forEach((n) => {
-        const existing = map.get(n.id);
+        const key = n.threadId || n.id;
+        const existing = map.get(key);
         if (existing) {
-          const unreadCount = Math.max(
-            existing.unreadCount || 0,
-            n.unreadCount || 0
-          );
-          map.set(n.id, { ...existing, ...n, unreadCount });
+          // בחר ערכים עדכניים/מצטברים
+          map.set(key, {
+            ...existing,
+            ...n,
+            unreadCount: Math.max(existing.unreadCount || 0, n.unreadCount || 0),
+            timestamp: new Date(n.timestamp) > new Date(existing.timestamp) ? n.timestamp : existing.timestamp,
+          });
         } else {
-          map.set(n.id, n);
+          map.set(key, n);
         }
       });
       const merged = Array.from(map.values()).sort(
@@ -71,9 +75,10 @@ function notificationsReducer(state, action) {
     case "ADD_NOTIFICATION": {
       const n = normalizeNotification(action.payload);
 
-      // בדיקה אם יש התראה קיימת עם אותו threadId
+      // דה-דופ לפי threadId (אם יש), אחרת id
+      const key = n.threadId || n.id;
       const existsIndex = state.notifications.findIndex(
-        (x) => x.threadId && n.threadId && x.threadId === n.threadId
+        x => (x.threadId || x.id) === key
       );
 
       let list;
@@ -85,22 +90,10 @@ function notificationsReducer(state, action) {
           ...n,
           read: false,
           unreadCount: (existing.unreadCount || 0) + (n.unreadCount || 1),
+          timestamp: new Date(n.timestamp) > new Date(existing.timestamp) ? n.timestamp : existing.timestamp,
         };
       } else {
-        // אם אין threadId, נבדוק לפי id רגיל
-        const existsByIdIndex = state.notifications.findIndex(x => x.id === n.id);
-        if (existsByIdIndex !== -1) {
-          list = [...state.notifications];
-          const existing = list[existsByIdIndex];
-          list[existsByIdIndex] = {
-            ...existing,
-            ...n,
-            read: false,
-            unreadCount: (existing.unreadCount || 0) + (n.unreadCount || 1),
-          };
-        } else {
-          list = [n, ...state.notifications];
-        }
+        list = [n, ...state.notifications];
       }
 
       list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -110,7 +103,7 @@ function notificationsReducer(state, action) {
     case "MARK_AS_READ": {
       const id = action.payload;
       const updatedNotifications = state.notifications.map((n) =>
-        n.id === id ? { ...n, read: true, unreadCount: 0 } : n
+        (n.id === id || n.threadId === id) ? { ...n, read: true, unreadCount: 0 } : n
       );
       const unreadCount = calculateUnreadCount(updatedNotifications);
       return { ...state, notifications: updatedNotifications, unreadCount };
@@ -169,7 +162,7 @@ export function NotificationsProvider({ children }) {
         lastMessage:
           data.lastMessage || (typeof data.text === "string" ? data.text : ""),
         id: data.threadId || data.chatId || data.id || data._id?.toString(),
-        threadId: data.threadId || null,  // חשוב להוסיף כאן
+        threadId: data.threadId || null,
         read: data.read ?? false,
         timestamp: data.timestamp || data.createdAt || new Date().toISOString(),
       };
@@ -195,6 +188,7 @@ export function NotificationsProvider({ children }) {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
+
         },
       });
       dispatch({ type: "MARK_AS_READ", payload: id });
