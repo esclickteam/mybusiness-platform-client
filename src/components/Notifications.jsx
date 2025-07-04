@@ -50,6 +50,14 @@ export default function Notifications({ onClose }) {
     return Array.from(map.values()).filter(n => n.id || n._id);
   }, [notifications]);
 
+  // חישוב סך כל ההודעות שלא נקראו
+  const totalUnreadCount = React.useMemo(() => {
+    return dedupedNotifications.reduce((sum, notif) => {
+      // אם יש unreadCount משתמשים בו, אחרת אם לא נקראים מוסיפים 1
+      return sum + (notif.unreadCount || (notif.read ? 0 : 1));
+    }, 0);
+  }, [dedupedNotifications]);
+
   const handleClick = async (notif) => {
     const id = notif.id || notif._id;
     const idStr = id && (id.toString ? id.toString() : id);
@@ -93,6 +101,26 @@ export default function Notifications({ onClose }) {
         }}
       >
         התראות
+        {totalUnreadCount > 0 && (
+          <div
+            style={{
+              backgroundColor: "#d00",
+              color: "white",
+              borderRadius: "50%",
+              width: 24,
+              height: 24,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontWeight: "bold",
+              marginLeft: 10,
+              userSelect: "none",
+            }}
+            title={`${totalUnreadCount} הודעות שלא נקראו`}
+          >
+            {totalUnreadCount}
+          </div>
+        )}
         {dedupedNotifications.length > 0 && (
           <>
             <button
@@ -128,8 +156,8 @@ export default function Notifications({ onClose }) {
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
         dedupedNotifications.map((notif) => {
-          const key = notif.id || notif._id ||
-            (notif.threadId ? notif.threadId.toString() : null);
+          const key =
+            notif.id || notif._id || (notif.threadId ? notif.threadId.toString() : null);
           return (
             <div
               key={key}
@@ -148,35 +176,14 @@ export default function Notifications({ onClose }) {
               title={notif.text}
             >
               <div>{notif.text}</div>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <div
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "#666",
-                    opacity: 0.7,
-                    marginRight: 10,
-                  }}
-                >
-                  {formatDate(notif.timestamp)}
-                </div>
-                {!notif.read && notif.unreadCount > 1 && (
-                  <div
-                    style={{
-                      backgroundColor: "#d00",
-                      color: "white",
-                      borderRadius: "50%",
-                      width: 22,
-                      height: 22,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      fontSize: 14,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {notif.unreadCount}
-                  </div>
-                )}
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "#666",
+                  opacity: 0.7,
+                }}
+              >
+                {formatDate(notif.timestamp)}
               </div>
             </div>
           );
