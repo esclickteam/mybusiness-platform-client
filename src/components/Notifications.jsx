@@ -46,6 +46,15 @@ export default function Notifications({ onClose }) {
     onClose?.();
   };
 
+  const handleClearRead = async () => {
+    try {
+      await clearRead(); // מניח שזה קורא ל־DELETE /api/notifications/clear
+      // לאחר מחיקה אפשר לרענן את הרשימה דרך ה־context
+    } catch (err) {
+      console.error("Error clearing read notifications:", err);
+    }
+  };
+
   const formatDate = (ts) =>
     new Date(ts).toLocaleString(undefined, {
       dateStyle: "short",
@@ -93,7 +102,7 @@ export default function Notifications({ onClose }) {
             <button onClick={markAllAsRead} style={buttonStyle}>
               סימון כל התראות כנקראה
             </button>
-            <button onClick={clearRead} style={buttonStyle}>
+            <button onClick={handleClearRead} style={buttonStyle}>
               ניקוי התראות נקראו
             </button>
           </div>
@@ -163,26 +172,6 @@ export default function Notifications({ onClose }) {
           );
         })
       )}
-
-      {/* קישור להיסטוריה בתחתית */}
-      <div
-        style={{
-          padding: 12,
-          textAlign: "center",
-          borderTop: "1px solid #ddd",
-        }}
-      >
-        <a
-          href="/notifications"
-          style={{
-            textDecoration: "none",
-            color: "#007bff",
-            fontSize: "0.9rem",
-          }}
-        >
-          הצגת התראות קודמות
-        </a>
-      </div>
     </div>
   );
 }
