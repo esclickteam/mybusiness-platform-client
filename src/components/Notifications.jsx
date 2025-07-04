@@ -4,12 +4,11 @@ import { useNotifications } from "../context/NotificationsContext";
 export default function Notifications({ onClose }) {
   const { notifications, markAsRead, clearRead } = useNotifications();
 
-  // לוג של הרשימה לפני הדה-דופ
   React.useEffect(() => {
     console.log("🔔 raw notifications:", notifications);
   }, [notifications]);
 
-  // די-דופ לפי threadId, סכימה ועדכון זמן
+  // dedupe לפי threadId/ id
   const dedupedNotifications = React.useMemo(() => {
     const map = new Map();
     for (const notif of notifications) {
@@ -20,12 +19,9 @@ export default function Notifications({ onClose }) {
         const isNewer = new Date(notif.timestamp) > new Date(prev.timestamp);
         map.set(key, {
           ...prev,
-          text: isNewer ? notif.text : prev.text,
-          lastMessage: isNewer ? notif.lastMessage : prev.lastMessage,
+          ...notif,
           timestamp: isNewer ? notif.timestamp : prev.timestamp,
           unreadCount: Math.max(prev.unreadCount || 0, notif.unreadCount || 0),
-          read: prev.read && notif.read,
-          type: notif.type,
         });
       } else {
         map.set(key, { ...notif });
@@ -81,7 +77,7 @@ export default function Notifications({ onClose }) {
         zIndex: 1000,
       }}
     >
-      {/* כותרת + כפתור ניקוי */}
+      {/* Header */}
       <div
         style={{
           padding: "8px 12px",
@@ -100,7 +96,7 @@ export default function Notifications({ onClose }) {
         )}
       </div>
 
-      {/* תוכן ההודעות */}
+      {/* Body */}
       {dedupedNotifications.length === 0 ? (
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות</div>
       ) : (
@@ -123,11 +119,9 @@ export default function Notifications({ onClose }) {
               }}
               title={notif.text}
             >
-              <div>
-                {notif.type === "message"
-                  ? `✉️ יש לך ${notif.unreadCount} הודעות`
-                  : notif.text}
-              </div>
+              {/* מציג בדיוק את ה-text שמגיע מהמונגו */}
+              <div>{notif.text}</div>
+
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
@@ -153,7 +147,7 @@ export default function Notifications({ onClose }) {
                       fontSize: 14,
                       fontWeight: "bold",
                     }}
-                    aria-label={`${notif.unreadCount} הודעות לא נקראו`}
+                    aria-label={`${notif.unreadCount} התראות לא נקראו`}
                   >
                     {notif.unreadCount}
                   </div>
