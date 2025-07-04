@@ -19,12 +19,9 @@ const initialState = {
   },
 };
 
-// נירמול הודעה (שומר על קונסיסטנטיות במקרה שצריך לתצוגה מלאה)
 function normalizeNotification(notif) {
-  const rawText =
-    typeof notif.text === "string" ? notif.text : notif.data?.text || "";
+  const rawText = typeof notif.text === "string" ? notif.text : notif.data?.text || "";
   const rawLast = notif.lastMessage || rawText;
-
   return {
     id: notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
     threadId: notif.threadId || null,
@@ -33,7 +30,7 @@ function normalizeNotification(notif) {
     read: notif.read ?? false,
     timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
     unreadCount:
-      notif.unreadCount !== undefined && notif.unreadCount !== null
+      notif.unreadCount != null
         ? notif.unreadCount
         : notif.read
         ? 0
@@ -42,56 +39,48 @@ function normalizeNotification(notif) {
   };
 }
 
-function calculateUnreadCount(notifications) {
-  return notifications.reduce((count, n) => count + (n.unreadCount || 0), 0);
+function calculateUnreadCount(notifs) {
+  return notifs.reduce((sum, n) => sum + (n.unreadCount || 0), 0);
 }
 
-function notificationsReducer(state, action) {
+function reducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
       const incoming = action.payload.map(normalizeNotification);
       const map = new Map();
-      incoming.forEach((n) => {
+      for (const n of incoming) {
         const key = n.threadId || n.id;
-        const existing = map.get(key);
-        if (existing) {
+        const ex = map.get(key);
+        if (ex) {
           map.set(key, {
-            ...existing,
+            ...ex,
             ...n,
-            unreadCount: Math.max(existing.unreadCount || 0, n.unreadCount || 0),
+            unreadCount: Math.max(ex.unreadCount, n.unreadCount),
             timestamp:
-              new Date(n.timestamp) > new Date(existing.timestamp)
+              new Date(n.timestamp) > new Date(ex.timestamp)
                 ? n.timestamp
-                : existing.timestamp,
+                : ex.timestamp,
           });
         } else {
           map.set(key, n);
         }
-      });
+      }
       const merged = Array.from(map.values()).sort(
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );
-      const unreadCount = calculateUnreadCount(merged);
-      return { ...state, notifications: merged, unreadCount };
+      return {
+        ...state,
+        notifications: merged,
+        unreadCount: calculateUnreadCount(merged),
+      };
     }
 
-    case "UPDATE_UNREAD_COUNT": {
+    case "UPDATE_UNREAD_COUNT":
       return { ...state, unreadCount: action.payload };
-    }
-
-    case "CLEAR_READ": {
-      // מסיר רק את ההודעות שכבר נקראו
-      const filtered = state.notifications.filter((n) => !n.read);
-      const unreadCount = calculateUnreadCount(filtered);
-      return { ...state, notifications: filtered, unreadCount };
-    }
 
     case "CLEAR_ALL":
-      // מסיר את כל ההודעות ומאפס מונה
+      // מוחק את כל ההתראות
       return { ...state, notifications: [], unreadCount: 0 };
-
-    case "SET_DASHBOARD_STATS":
-      return { ...state, dashboardStats: action.payload };
 
     default:
       return state;
@@ -100,9 +89,9 @@ function notificationsReducer(state, action) {
 
 export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
-  const [state, dispatch] = useReducer(notificationsReducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  // טען את הרשימה הראשונית של ההודעות
+  // טעינת התראות ראשונית
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
@@ -110,94 +99,68 @@ export function NotificationsProvider({ children }) {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.ok) {
-          dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
-        }
+        if (data.ok) dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
       })
-      .catch((err) => console.error("Notifications fetch failed:", err));
+      .catch(console.error);
   }, [user?.businessId]);
 
-  // מאזין לעדכוני מונה התראות
+  // עדכוני מונה מה-socket
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    const handleConnect = () => {
-      socket.emit("joinBusinessRoom", user.businessId);
-    };
-    const handleBundle = (payload) => {
-      // payload = { count: X }
-      if (payload && typeof payload.count === "number") {
-        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: payload.count });
-      }
+    const join = () => socket.emit("joinBusinessRoom", user.businessId);
+    const onBundle = (p) => {
+      if (p?.count != null) dispatch({ type: "UPDATE_UNREAD_COUNT", payload: p.count });
     };
 
-    socket.on("connect", handleConnect);
-    if (socket.connected) handleConnect();
-    socket.on("notificationBundle", handleBundle);
+    socket.on("connect", join);
+    if (socket.connected) join();
+    socket.on("notificationBundle", onBundle);
 
     return () => {
-      socket.off("connect", handleConnect);
-      socket.off("notificationBundle", handleBundle);
+      socket.off("connect", join);
+      socket.off("notificationBundle", onBundle);
     };
   }, [socket, user?.businessId]);
 
-  // סימון הודעה אחת כנקראה (יוריד מונה ב-1)
+  // סימון יחיד כנקרא
   const markAsRead = useCallback(
     async (id) => {
-      try {
-        await fetch(`/api/business/my/notifications/${id}/read`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: state.unreadCount - 1 });
-      } catch (err) {
-        console.error("markAsRead error:", err);
-      }
-    },
-    [state.unreadCount]
-  );
-
-  // סימון כל ההתראות כנקראו
-  const markAllAsRead = useCallback(async () => {
-    try {
-      const res = await fetch("/api/business/my/notifications/readAll", {
+      await fetch(`/api/business/my/notifications/${id}/read`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      const data = await res.json();
-      if (data.ok) {
-        dispatch({ type: "CLEAR_ALL" });
-      }
-    } catch (err) {
-      console.error("markAllAsRead error:", err);
-    }
+      dispatch({ type: "UPDATE_UNREAD_COUNT", payload: state.unreadCount - 1 });
+    },
+    [state.unreadCount]
+  );
+
+  // סימון כל ההתראות כנקראו (ומוחק את כולן)
+  const markAllAsRead = useCallback(async () => {
+    await fetch("/api/business/my/notifications/readAll", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    dispatch({ type: "CLEAR_ALL" });
   }, []);
 
-  // מחיקת כל ההודעות שכבר נקראו גם בשרת וגם בלוקלי
+  // ניקוי כל ההתראות
   const clearRead = useCallback(async () => {
-    try {
-      const res = await fetch("/api/business/my/notifications/clearRead", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      const data = await res.json();
-      if (data.ok) {
-        dispatch({ type: "CLEAR_READ" });
-      } else {
-        console.error("clearRead failed:", data.error);
-      }
-    } catch (err) {
-      console.error("clearRead error:", err);
-    }
+    const res = await fetch("/api/business/my/notifications/clearRead", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    const data = await res.json();
+    if (data.ok) dispatch({ type: "CLEAR_ALL" });
   }, []);
 
   return (

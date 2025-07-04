@@ -50,7 +50,7 @@ export default function Notifications({ onClose }) {
     try {
       await clearRead();
     } catch (err) {
-      console.error("Error clearing read notifications:", err);
+      console.error("Error clearing notifications:", err);
     }
   };
 
@@ -98,14 +98,14 @@ export default function Notifications({ onClose }) {
         התראות
         {dedupedNotifications.length > 0 && (
           <button onClick={handleClearRead} style={buttonStyle}>
-            ניקוי התראות נקראו
+            ניקוי התראות
           </button>
         )}
       </div>
 
       {/* תוכן ההודעות */}
       {dedupedNotifications.length === 0 ? (
-        <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
+        <div style={{ padding: 15, textAlign: "center" }}>אין התראות</div>
       ) : (
         dedupedNotifications.map((notif) => {
           const key = notif.threadId || notif.id;
@@ -128,7 +128,7 @@ export default function Notifications({ onClose }) {
             >
               <div>
                 {notif.type === "message"
-                  ? `✉️ יש לך ${notif.unreadCount} הודעות חדשות`
+                  ? `✉️ יש לך ${notif.unreadCount} הודעות`
                   : notif.text}
               </div>
               <div style={{ display: "flex", alignItems: "center" }}>
