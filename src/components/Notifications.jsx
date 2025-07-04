@@ -14,36 +14,50 @@ export default function Notifications({ onClose }) {
     markAllAsRead,
   } = useNotifications();
 
-  // איחוד התראות צ'אט לפי threadId
+  // איחוד התראות צ'אט מסוג "message" לפי threadId וסכימת unreadCount
   const dedupedNotifications = React.useMemo(() => {
-    const seenThreads = new Set();
-    const filtered = [];
+    const map = new Map();
 
     for (const notif of notifications) {
       if (notif.type === "message" && notif.threadId) {
         const threadIdStr =
           notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
-        if (!seenThreads.has(threadIdStr)) {
-          filtered.push(notif);
-          seenThreads.add(threadIdStr);
+        if (map.has(threadIdStr)) {
+          const existing = map.get(threadIdStr);
+          map.set(threadIdStr, {
+            ...existing,
+            unreadCount: (existing.unreadCount || 0) + (notif.unreadCount || 0),
+            timestamp:
+              new Date(notif.timestamp) > new Date(existing.timestamp)
+                ? notif.timestamp
+                : existing.timestamp,
+            text:
+              new Date(notif.timestamp) > new Date(existing.timestamp)
+                ? notif.text
+                : existing.text,
+            read: existing.read && notif.read, // רק אם שתיהן נקראו
+          });
+        } else {
+          map.set(threadIdStr, { ...notif });
         }
       } else {
-        filtered.push(notif);
+        // התראות אחרות נשארות כפי שהן
+        map.set(notif.id || notif._id || Math.random().toString(), { ...notif });
       }
     }
-    return filtered;
+
+    // הסרת התראות עם id לא תקין במקרה שהיו
+    return Array.from(map.values()).filter(n => n.id || n._id);
   }, [notifications]);
 
   const handleClick = async (notif) => {
     const id = notif.id || notif._id;
     const idStr = id && (id.toString ? id.toString() : id);
 
-    // סמן כהתראה נקראה
     if (!notif.read && idStr) {
       await markAsRead(idStr);
     }
 
-    // אין ניווט, רק התראות
     if (onClose) onClose();
   };
 
