@@ -4,189 +4,184 @@ import { useNotifications } from "../context/NotificationsContext";
 
 export default function Notifications({ onClose }) {
   const { user } = useAuth();
+  const businessId = user?.businessId;
+
   const {
     notifications,
+    clearAll,
+    clearRead,
     markAsRead,
     markAllAsRead,
-    clearRead,
-    clearAll,
   } = useNotifications();
 
-  // פילוח הודעות צ'אט מלקוח/שותף עסקי (clientId != null) ושאר ההתראות
-  const messageNotifications = React.useMemo(
-    () => notifications.filter(n => n.type === "message" && n.clientId !== null),
-    [notifications]
-  );
-  const otherNotifications = React.useMemo(
-    () => notifications.filter(n => !(n.type === "message" && n.clientId !== null)),
-    [notifications]
-  );
+  // איחוד התראות צ'אט מסוג "message" לפי threadId וסכימת unreadCount
+  const dedupedNotifications = React.useMemo(() => {
+    const map = new Map();
 
-  // חישוב סך הלא־נקראים והתאריך האחרון
-  const { totalUnread, latestTimestamp } = React.useMemo(() => {
-    let acc = { totalUnread: 0, latestDate: new Date(0) };
-    for (const n of messageNotifications) {
-      acc.totalUnread += n.unreadCount || 0;
-      const ts = new Date(n.timestamp);
-      if (ts > acc.latestDate) acc.latestDate = ts;
+    for (const notif of notifications) {
+      if (notif.type === "message" && notif.threadId) {
+        const threadIdStr =
+          notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
+        if (map.has(threadIdStr)) {
+          const existing = map.get(threadIdStr);
+          map.set(threadIdStr, {
+            ...existing,
+            unreadCount: (existing.unreadCount || 0) + (notif.unreadCount || 0),
+            timestamp:
+              new Date(notif.timestamp) > new Date(existing.timestamp)
+                ? notif.timestamp
+                : existing.timestamp,
+            text:
+              new Date(notif.timestamp) > new Date(existing.timestamp)
+                ? notif.text
+                : existing.text,
+            read: existing.read && notif.read, // רק אם שתיהן נקראו
+          });
+        } else {
+          map.set(threadIdStr, { ...notif });
+        }
+      } else {
+        // התראות אחרות נשארות כפי שהן
+        map.set(notif.id || notif._id || Math.random().toString(), { ...notif });
+      }
     }
-    return { totalUnread: acc.totalUnread, latestTimestamp: acc.latestDate };
-  }, [messageNotifications]);
 
-  // בניית הסיכום
-  const summaryNotification = totalUnread > 0
-    ? [{
-        id: "summary-messages",
-        text: `יש לך ${totalUnread} הודעות צ’אט מלקוח/שותף עסקי שלא נקראו`,
-        unreadCount: totalUnread,
-        timestamp: latestTimestamp.toISOString(),
-        read: false,
-        isSummary: true,
-      }]
-    : [];
+    // הסרת התראות עם id לא תקין במקרה שהיו
+    return Array.from(map.values()).filter(n => n.id || n._id);
+  }, [notifications]);
 
-  const handleSummaryClick = async () => {
-    for (const n of messageNotifications) {
-      if (!n.read) await markAsRead(n.id);
+  const handleClick = async (notif) => {
+    const id = notif.id || notif._id;
+    const idStr = id && (id.toString ? id.toString() : id);
+
+    if (!notif.read && idStr) {
+      await markAsRead(idStr);
     }
+
     if (onClose) onClose();
   };
 
-  const formatDate = ts =>
+  const formatDate = (ts) =>
     new Date(ts).toLocaleString(undefined, {
       dateStyle: "short",
       timeStyle: "short",
     });
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
+    <div
+      style={{
+        position: "absolute",
+        top: 40,
+        right: 10,
+        width: 320,
+        maxHeight: 400,
+        overflowY: "auto",
+        backgroundColor: "white",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        borderRadius: 8,
+        zIndex: 1000,
+      }}
+    >
+      <div
+        style={{
+          padding: "8px 12px",
+          borderBottom: "1px solid #ddd",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontWeight: 700,
+        }}
+      >
         התראות
-        <div>
-          {summaryNotification.length > 0 && (
-            <button onClick={handleSummaryClick} style={styles.actionBtn}>
-              סמן הודעות צ’אט כנקראו
+        {dedupedNotifications.length > 0 && (
+          <>
+            <button
+              onClick={clearRead}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#007bff",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+                marginLeft: 10,
+              }}
+            >
+              נקה נקראו
             </button>
-          )}
-          {otherNotifications.length > 0 && (
-            <>
-              <button onClick={clearRead} style={styles.actionBtn}>
-                נקה נקראו
-              </button>
-              <button onClick={clearAll} style={styles.actionBtn}>
-                נקה הכל
-              </button>
-            </>
-          )}
-        </div>
+            <button
+              onClick={markAllAsRead}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#007bff",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+              }}
+            >
+              סמן כנקראות
+            </button>
+          </>
+        )}
       </div>
 
-      {summaryNotification.length === 0 && otherNotifications.length === 0 && (
-        <div style={styles.empty}>אין התראות חדשות</div>
+      {dedupedNotifications.length === 0 ? (
+        <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
+      ) : (
+        dedupedNotifications.map((notif) => {
+          const key = notif.id || notif._id ||
+            (notif.threadId ? notif.threadId.toString() : null);
+          return (
+            <div
+              key={key}
+              onClick={() => handleClick(notif)}
+              style={{
+                padding: "10px 15px",
+                borderBottom: "1px solid #eee",
+                fontWeight: notif.read ? "normal" : "700",
+                backgroundColor: notif.read ? "white" : "#e8f4ff",
+                cursor: "pointer",
+                userSelect: "none",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+              title={notif.text}
+            >
+              <div>{notif.text}</div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#666",
+                    opacity: 0.7,
+                    marginRight: 10,
+                  }}
+                >
+                  {formatDate(notif.timestamp)}
+                </div>
+                {!notif.read && notif.unreadCount > 1 && (
+                  <div
+                    style={{
+                      backgroundColor: "#d00",
+                      color: "white",
+                      borderRadius: "50%",
+                      width: 22,
+                      height: 22,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      fontSize: 14,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {notif.unreadCount}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })
       )}
-
-      {summaryNotification.map((notif) => (
-        <div
-          key={notif.id}
-          onClick={handleSummaryClick}
-          style={styles.item}
-          title={notif.text}
-        >
-          <div>{notif.text}</div>
-          <div style={styles.meta}>
-            <div style={styles.time}>{formatDate(notif.timestamp)}</div>
-            <div style={styles.bubble}>{notif.unreadCount}</div>
-          </div>
-        </div>
-      ))}
-
-      {otherNotifications.map((n) => (
-        <div
-          key={n.id}
-          onClick={async () => {
-            if (!n.read) await markAsRead(n.id);
-            if (onClose) onClose();
-          }}
-          style={{
-            ...styles.item,
-            fontWeight: n.read ? "normal" : 700,
-            backgroundColor: n.read ? "white" : "#e8f4ff",
-          }}
-          title={n.text}
-        >
-          <div>{n.text}</div>
-          <div style={styles.meta}>
-            <div style={styles.time}>{formatDate(n.timestamp)}</div>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }
-
-const styles = {
-  container: {
-    position: "absolute",
-    top: 40,
-    right: 10,
-    width: 360,
-    maxHeight: 480,
-    overflowY: "auto",
-    backgroundColor: "white",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-    borderRadius: 8,
-    zIndex: 1000,
-  },
-  header: {
-    padding: "8px 12px",
-    borderBottom: "1px solid #ddd",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    fontWeight: 700,
-  },
-  actionBtn: {
-    background: "none",
-    border: "none",
-    color: "#007bff",
-    cursor: "pointer",
-    fontSize: "0.85rem",
-    marginLeft: 8,
-  },
-  empty: {
-    padding: 15,
-    textAlign: "center",
-    color: "#666",
-  },
-  item: {
-    padding: "10px 15px",
-    borderBottom: "1px solid #eee",
-    cursor: "pointer",
-    userSelect: "none",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  meta: {
-    display: "flex",
-    alignItems: "center",
-  },
-  time: {
-    fontSize: "0.75rem",
-    color: "#666",
-    opacity: 0.7,
-    marginRight: 10,
-  },
-  bubble: {
-    backgroundColor: "#d00",
-    color: "white",
-    borderRadius: "50%",
-    width: 22,
-    height: 22,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-};
