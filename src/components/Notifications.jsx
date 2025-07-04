@@ -4,7 +4,7 @@ import { useNotifications } from "../context/NotificationsContext";
 
 export default function Notifications({ onClose }) {
   const { user } = useAuth();
-  const { notifications, markAsRead, markAllAsRead, clearRead } = useNotifications();
+  const { notifications, markAsRead, clearRead } = useNotifications();
 
   // לוג של הרשימה לפני הדה-דופ
   React.useEffect(() => {
@@ -48,8 +48,7 @@ export default function Notifications({ onClose }) {
 
   const handleClearRead = async () => {
     try {
-      await clearRead(); // מניח שזה קורא ל־DELETE /api/notifications/clear
-      // לאחר מחיקה אפשר לרענן את הרשימה דרך ה־context
+      await clearRead();
     } catch (err) {
       console.error("Error clearing read notifications:", err);
     }
@@ -98,14 +97,9 @@ export default function Notifications({ onClose }) {
       >
         התראות
         {dedupedNotifications.length > 0 && (
-          <div>
-            <button onClick={markAllAsRead} style={buttonStyle}>
-              סימון כל התראות כנקראה
-            </button>
-            <button onClick={handleClearRead} style={buttonStyle}>
-              ניקוי התראות נקראו
-            </button>
-          </div>
+          <button onClick={handleClearRead} style={buttonStyle}>
+            ניקוי התראות נקראו
+          </button>
         )}
       </div>
 
