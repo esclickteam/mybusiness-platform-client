@@ -124,6 +124,7 @@ export function NotificationsProvider({ children }) {
       .then((res) => res.json())
       .then((data) => {
         if (data.ok) {
+          console.log("Initial notifications loaded:", data.notifications);
           dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
         } else {
           console.warn("Fetch notifications returned not ok:", data);
@@ -136,23 +137,20 @@ export function NotificationsProvider({ children }) {
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    // חדר לפי תקן backend: business-<id>
-    const businessRoom = `business-${user.businessId}`;
-    const dashboardRoom = `dashboard-${user.businessId}`;
+    console.log("Setting up socket listeners in NotificationsProvider");
 
-    // האירוע הנכון הוא joinBusinessRoom
     const handleConnect = () => {
+      console.log("Socket connected, joining business room:", user.businessId);
       socket.emit("joinBusinessRoom", user.businessId);
-      // אופציונלי: להתחבר גם לדשבורד
-      // socket.emit("joinDashboardRoom", user.businessId);
     };
 
     const handleNewNotification = (notif) => {
-      console.log('🔔 newNotification received:', notif); // לעזור בדיבאגינג
+      console.log("🔔 newNotification received:", notif);
       dispatch({ type: "ADD_NOTIFICATION", payload: notif });
     };
 
     const handleNewProposalAsNotification = (proposal) => {
+      console.log("💡 newProposal received:", proposal);
       const notif = {
         id: proposal._id?.toString() || proposal.id,
         lastMessage: `הצעת שיתוף פעולה: ${proposal.title}`,
@@ -167,6 +165,7 @@ export function NotificationsProvider({ children }) {
     };
 
     const handleDashboard = (stats) => {
+      console.log("📊 dashboardUpdate received:", stats);
       dispatch({ type: "SET_DASHBOARD_STATS", payload: stats });
     };
 
@@ -178,6 +177,7 @@ export function NotificationsProvider({ children }) {
     socket.on("dashboardUpdate", handleDashboard);
 
     return () => {
+      console.log("Cleaning up socket listeners in NotificationsProvider");
       socket.off("connect", handleConnect);
       socket.off("newNotification", handleNewNotification);
       socket.off("newProposal", handleNewProposalAsNotification);
