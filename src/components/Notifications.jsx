@@ -13,24 +13,33 @@ export default function Notifications({ onClose }) {
     markAllAsRead,
   } = useNotifications();
 
-  // איחוד התראות צ'אט לפי threadId
+  // איחוד התראות צ'אט לפי threadId עם מיזוג הודעות מאותו תזמון
   const dedupedNotifications = React.useMemo(() => {
-    const seenThreads = new Set();
-    const filtered = [];
+    const map = new Map();
 
     for (const notif of notifications) {
       if (notif.type === "message" && notif.threadId) {
-        const threadIdStr =
-          notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
-        if (!seenThreads.has(threadIdStr)) {
-          filtered.push(notif);
-          seenThreads.add(threadIdStr);
+        const threadIdStr = notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
+        const existing = map.get(threadIdStr);
+
+        if (existing) {
+          map.set(threadIdStr, {
+            ...existing,
+            text: new Date(notif.timestamp) > new Date(existing.timestamp) ? notif.text : existing.text,
+            timestamp: new Date(notif.timestamp) > new Date(existing.timestamp) ? notif.timestamp : existing.timestamp,
+            unreadCount: (existing.unreadCount || 0) + (notif.unreadCount || 0),
+            read: existing.read && notif.read,
+          });
+        } else {
+          map.set(threadIdStr, { ...notif });
         }
       } else {
-        filtered.push(notif);
+        const id = notif.id || notif._id;
+        map.set(id, { ...notif });
       }
     }
-    return filtered;
+
+    return Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   }, [notifications]);
 
   const handleClick = async (notif) => {
