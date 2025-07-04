@@ -1,64 +1,42 @@
 import React from "react";
-import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { useNotifications } from "../context/NotificationsContext";
 
 export default function Notifications({ onClose }) {
-  const { user } = useAuth();
-
   const {
     notifications,
-    clearRead,
+    clearAllNotifications,
+    clearReadNotifications,
     markAsRead,
-    markAllAsRead,
   } = useNotifications();
 
-  // הוסף לוגים לפני הדה-דופ
-  React.useEffect(() => {
-    console.log("🔔 raw notifications:", notifications);
-  }, [notifications]);
+  const navigate = useNavigate();
 
-  // דה-דופ מלא: כרטיס אחד לכל threadId, עם סכימת הודעות ונתונים הכי עדכניים
-  const dedupedNotifications = React.useMemo(() => {
-    const map = new Map();
+  console.log("[Notifications] Rendered with notifications:", notifications);
 
-    for (const notif of notifications) {
-      const key = notif.threadId || notif.id || notif._id;
-      if (!key) continue;
+  const handleClick = (notif) => {
+    const id = notif.id || notif._id;
 
-      if (map.has(key)) {
-        const prev = map.get(key);
+    console.log("[Notifications] Clicked notification:", notif);
+    console.log(`[Notifications] Marking notification ${id} as read`);
 
-        // בחר הודעה אחרונה
-        const isNewer = new Date(notif.timestamp) > new Date(prev.timestamp);
-
-        map.set(key, {
-          ...prev,
-          text: isNewer ? notif.text : prev.text,
-          lastMessage: isNewer ? notif.lastMessage : prev.lastMessage,
-          timestamp: isNewer ? notif.timestamp : prev.timestamp,
-          unreadCount: Math.max(prev.unreadCount || 0, notif.unreadCount || 0),
-          read: prev.read && notif.read, // ייחשב כ"נקרא" רק אם כל ההתראות נקראו
-          type: notif.type, // להשאיר ליתר ביטחון
-        });
-      } else {
-        map.set(key, { ...notif });
-      }
+    if (!notif.read) {
+      markAsRead(id);
     }
 
-    const result = Array.from(map.values()).sort(
-      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-    );
-    // הוסף לוג אחרי הדה-דופ
-    console.log("✅ deduped notifications:", result);
-    return result;
-  }, [notifications]);
+    const url =
+      notif.targetUrl ||
+      {
+        message: "/messages",
+        collaboration: "/collaborations",
+        meeting: "/meetings",
+        review: "/reviews",
+      }[notif.type] ||
+      "/";
+    console.log(`[Notifications] Navigating to ${url}`);
 
-  const handleClick = async (notif) => {
-    const id = notif.threadId || notif.id || notif._id;
-    if (!notif.read && id) {
-      await markAsRead(id);
-    }
-    if (onClose) onClose();
+    navigate(url);
+    onClose();
   };
 
   const formatDate = (ts) =>
@@ -93,10 +71,13 @@ export default function Notifications({ onClose }) {
         }}
       >
         התראות
-        {dedupedNotifications.length > 0 && (
+        {notifications.length > 0 && (
           <>
             <button
-              onClick={clearRead}
+              onClick={() => {
+                console.log("[Notifications] Clearing read notifications");
+                clearReadNotifications();
+              }}
               style={{
                 background: "none",
                 border: "none",
@@ -105,11 +86,15 @@ export default function Notifications({ onClose }) {
                 fontSize: "0.9rem",
                 marginLeft: 10,
               }}
+              aria-label="נקה את כל ההתראות שכבר נקראו"
             >
               נקה נקראו
             </button>
             <button
-              onClick={markAllAsRead}
+              onClick={() => {
+                console.log("[Notifications] Clearing all notifications");
+                clearAllNotifications();
+              }}
               style={{
                 background: "none",
                 border: "none",
@@ -117,6 +102,7 @@ export default function Notifications({ onClose }) {
                 cursor: "pointer",
                 fontSize: "0.9rem",
               }}
+              aria-label="סמן את כל ההתראות כנקראות"
             >
               סמן כנקראות
             </button>
@@ -124,11 +110,11 @@ export default function Notifications({ onClose }) {
         )}
       </div>
 
-      {dedupedNotifications.length === 0 ? (
+      {notifications.length === 0 ? (
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
-        dedupedNotifications.map((notif) => {
-          const key = notif.threadId || notif.id || notif._id;
+        notifications.map((notif) => {
+          const key = notif.id || notif._id;
           return (
             <div
               key={key}
@@ -140,47 +126,19 @@ export default function Notifications({ onClose }) {
                 backgroundColor: notif.read ? "white" : "#e8f4ff",
                 cursor: "pointer",
                 userSelect: "none",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
               }}
               title={notif.text}
             >
-              <div>
-                {notif.type === "message"
-                  ? `✉️ יש לך ${notif.unreadCount} הודעות חדשות`
-                  : notif.text}
-              </div>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <div
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "#666",
-                    opacity: 0.7,
-                    marginRight: 10,
-                  }}
-                >
-                  {formatDate(notif.timestamp)}
-                </div>
-                {!notif.read && notif.unreadCount > 0 && (
-                  <div
-                    style={{
-                      backgroundColor: "#d00",
-                      color: "white",
-                      borderRadius: "50%",
-                      width: 22,
-                      height: 22,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      fontSize: 14,
-                      fontWeight: "bold",
-                    }}
-                    aria-label={`${notif.unreadCount} הודעות לא נקראו`}
-                  >
-                    {notif.unreadCount}
-                  </div>
-                )}
+              <div>{notif.text}</div>
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "#666",
+                  opacity: 0.7,
+                  marginTop: 4,
+                }}
+              >
+                {formatDate(notif.timestamp)}
               </div>
             </div>
           );
