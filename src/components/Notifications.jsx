@@ -4,61 +4,46 @@ import { useNotifications } from "../context/NotificationsContext";
 
 export default function Notifications({ onClose }) {
   const { user } = useAuth();
+  const { notifications, markAsRead, markAllAsRead, clearRead } = useNotifications();
 
-  const {
-    notifications,
-    clearRead,
-    markAsRead,
-    markAllAsRead,
-  } = useNotifications();
-
-  // הוסף לוגים לפני הדה-דופ
+  // לוג של הרשימה לפני הדה-דופ
   React.useEffect(() => {
     console.log("🔔 raw notifications:", notifications);
   }, [notifications]);
 
-  // דה-דופ מלא: כרטיס אחד לכל threadId, עם סכימת הודעות ונתונים הכי עדכניים
+  // די-דופ לפי threadId, סכימה ועדכון זמן
   const dedupedNotifications = React.useMemo(() => {
     const map = new Map();
-
     for (const notif of notifications) {
-      const key = notif.threadId || notif.id || notif._id;
+      const key = notif.threadId || notif.id;
       if (!key) continue;
-
       if (map.has(key)) {
         const prev = map.get(key);
-
-        // בחר הודעה אחרונה
         const isNewer = new Date(notif.timestamp) > new Date(prev.timestamp);
-
         map.set(key, {
           ...prev,
           text: isNewer ? notif.text : prev.text,
           lastMessage: isNewer ? notif.lastMessage : prev.lastMessage,
           timestamp: isNewer ? notif.timestamp : prev.timestamp,
           unreadCount: Math.max(prev.unreadCount || 0, notif.unreadCount || 0),
-          read: prev.read && notif.read, // ייחשב כ"נקרא" רק אם כל ההתראות נקראו
-          type: notif.type, // להשאיר ליתר ביטחון
+          read: prev.read && notif.read,
+          type: notif.type,
         });
       } else {
         map.set(key, { ...notif });
       }
     }
-
-    const result = Array.from(map.values()).sort(
+    return Array.from(map.values()).sort(
       (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
     );
-    // הוסף לוג אחרי הדה-דופ
-    console.log("✅ deduped notifications:", result);
-    return result;
   }, [notifications]);
 
   const handleClick = async (notif) => {
-    const id = notif.threadId || notif.id || notif._id;
+    const id = notif.threadId || notif.id;
     if (!notif.read && id) {
       await markAsRead(id);
     }
-    if (onClose) onClose();
+    onClose?.();
   };
 
   const formatDate = (ts) =>
@@ -66,6 +51,15 @@ export default function Notifications({ onClose }) {
       dateStyle: "short",
       timeStyle: "short",
     });
+
+  const buttonStyle = {
+    background: "none",
+    border: "none",
+    color: "#007bff",
+    cursor: "pointer",
+    fontSize: "0.9rem",
+    marginLeft: 10,
+  };
 
   return (
     <div
@@ -82,6 +76,7 @@ export default function Notifications({ onClose }) {
         zIndex: 1000,
       }}
     >
+      {/* כותרת + כפתורי פעולה */}
       <div
         style={{
           padding: "8px 12px",
@@ -94,41 +89,23 @@ export default function Notifications({ onClose }) {
       >
         התראות
         {dedupedNotifications.length > 0 && (
-          <>
-            <button
-              onClick={clearRead}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#007bff",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-                marginLeft: 10,
-              }}
-            >
-              נקה נקראו
+          <div>
+            <button onClick={markAllAsRead} style={buttonStyle}>
+              סימון כל התראות כנקראה
             </button>
-            <button
-              onClick={markAllAsRead}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#007bff",
-                cursor: "pointer",
-                fontSize: "0.9rem",
-              }}
-            >
-              סמן כנקראות
+            <button onClick={clearRead} style={buttonStyle}>
+              ניקוי התראות נקראו
             </button>
-          </>
+          </div>
         )}
       </div>
 
+      {/* תוכן ההודעות */}
       {dedupedNotifications.length === 0 ? (
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
         dedupedNotifications.map((notif) => {
-          const key = notif.threadId || notif.id || notif._id;
+          const key = notif.threadId || notif.id;
           return (
             <div
               key={key}
@@ -186,6 +163,26 @@ export default function Notifications({ onClose }) {
           );
         })
       )}
+
+      {/* קישור להיסטוריה בתחתית */}
+      <div
+        style={{
+          padding: 12,
+          textAlign: "center",
+          borderTop: "1px solid #ddd",
+        }}
+      >
+        <a
+          href="/notifications"
+          style={{
+            textDecoration: "none",
+            color: "#007bff",
+            fontSize: "0.9rem",
+          }}
+        >
+          הצגת התראות קודמות
+        </a>
+      </div>
     </div>
   );
 }
