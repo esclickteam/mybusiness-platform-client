@@ -19,9 +19,9 @@ const initialState = {
 };
 
 function normalizeNotification(notif) {
-  // Extract text (from notif.text or notif.data?.text) and map to lastMessage if missing
-  const rawText = notif.text ?? notif.data?.text ?? "";
-  const rawLast = notif.lastMessage ?? rawText;
+  // Extract text safely and map to lastMessage if missing
+  const rawText = typeof notif.text === "string" ? notif.text : notif.data?.text || "";
+  const rawLast = notif.lastMessage || rawText;
 
   return {
     id:
@@ -167,10 +167,21 @@ export function NotificationsProvider({ children }) {
       dispatch({ type: "ADD_NOTIFICATION", payload: data });
     };
 
-    // 3. אירוע newMessage
+    // 3. אירוע newMessage - עם נורמליזציה ובדיקת שדה טקסט
     const handleNewMessage = (msg) => {
       console.log("💬 newMessage received:", msg);
-      dispatch({ type: "ADD_NOTIFICATION", payload: msg.data });
+
+      const data = msg.data || msg;
+      const notification = {
+        ...data,
+        text: typeof data.text === "string" ? data.text : "",
+        lastMessage: data.lastMessage || (typeof data.text === "string" ? data.text : ""),
+        id: data.threadId || data.chatId || data.id || data._id?.toString(),
+        read: data.read ?? false,
+        timestamp: data.timestamp || data.createdAt || new Date().toISOString(),
+      };
+
+      dispatch({ type: "ADD_NOTIFICATION", payload: notification });
     };
 
     // 4. עדכוני דשבורד
