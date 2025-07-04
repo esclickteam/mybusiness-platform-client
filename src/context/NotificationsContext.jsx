@@ -19,7 +19,6 @@ const initialState = {
 };
 
 function normalizeNotification(notif) {
-  // Extract text safely and map to lastMessage if missing
   const rawText = typeof notif.text === "string" ? notif.text : notif.data?.text || "";
   const rawLast = notif.lastMessage || rawText;
 
@@ -120,13 +119,11 @@ export function NotificationsProvider({ children }) {
     initialState
   );
 
-  // סופר הודעות לא נקראות
   const unreadCount = state.notifications.reduce(
     (acc, n) => acc + (n.unreadCount > 0 ? 1 : 0),
     0
   );
 
-  // טעינת התראות ראשונית מה־API
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
@@ -145,7 +142,6 @@ export function NotificationsProvider({ children }) {
       .catch((err) => console.error("Notifications fetch failed:", err));
   }, [user?.businessId]);
 
-  // חיבור לסוקט והגדרת listeners
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -161,17 +157,24 @@ export function NotificationsProvider({ children }) {
       socket.emit("joinBusinessRoom", user.businessId);
     };
 
-    // 2. אירוע newNotification
-    const handleNewNotification = ({ data }) => {
+    const handleNewNotification = (payload) => {
+      const data = payload?.data ?? payload;
+      if (!data || typeof data.text !== "string") {
+        console.warn("Invalid notification data received:", payload);
+        return;
+      }
       console.log("🔔 newNotification received:", data);
       dispatch({ type: "ADD_NOTIFICATION", payload: data });
     };
 
-    // 3. אירוע newMessage - עם נורמליזציה ובדיקת שדה טקסט
     const handleNewMessage = (msg) => {
-      console.log("💬 newMessage received:", msg);
-
       const data = msg.data || msg;
+      if (!data || typeof data.text !== "string") {
+        console.warn("Invalid message data received:", msg);
+        return;
+      }
+      console.log("💬 newMessage received:", data);
+
       const notification = {
         ...data,
         text: typeof data.text === "string" ? data.text : "",
@@ -184,7 +187,6 @@ export function NotificationsProvider({ children }) {
       dispatch({ type: "ADD_NOTIFICATION", payload: notification });
     };
 
-    // 4. עדכוני דשבורד
     const handleDashboard = (stats) => {
       console.log("📊 dashboardUpdate received:", stats);
       dispatch({ type: "SET_DASHBOARD_STATS", payload: stats });
