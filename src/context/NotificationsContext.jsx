@@ -35,8 +35,19 @@ function reducer(state, action) {
     }
     case "UPDATE_UNREAD_COUNT":
       return { ...state, unreadCount: action.payload };
+    case "ADD_NOTIFICATION": {
+      const newNotif = normalizeNotification(action.payload);
+      // אל תוסיף כפילויות
+      const exists = state.notifications.some(
+        (n) => n.id === newNotif.id || (n.threadId && n.threadId === newNotif.threadId)
+      );
+      const list = exists
+        ? state.notifications
+        : [newNotif, ...state.notifications];
+      const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
+      return { notifications: list, unreadCount };
+    }
     case "CLEAR_ALL":
-      // מוחק את כל ההתראות
       return { notifications: [], unreadCount: 0 };
     default:
       return state;
@@ -47,7 +58,7 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // שליפת התראות ראשונית
+  // 1) Fetch initial notifications
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
@@ -62,7 +73,7 @@ export function NotificationsProvider({ children }) {
       .catch(console.error);
   }, [user?.businessId]);
 
-  // מאזין לעדכוני מונה דרך Socket.IO
+  // 2) Listen for unread-count bundles
   useEffect(() => {
     if (!socket || !user?.businessId) return;
     const join = () => socket.emit("joinBusinessRoom", user.businessId);
@@ -80,7 +91,19 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId]);
 
-  // סימון התראה כנקראה (מוריד מונה ב-1)
+  // 3) Listen for new notifications in real time
+  useEffect(() => {
+    if (!socket || !user?.businessId) return;
+    const onNew = (notif) => {
+      dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+    };
+    socket.on("newNotification", onNew);
+    return () => {
+      socket.off("newNotification", onNew);
+    };
+  }, [socket, user?.businessId]);
+
+  // 4) Mark single as read
   const markAsRead = useCallback(
     async (id) => {
       try {
@@ -98,7 +121,7 @@ export function NotificationsProvider({ children }) {
     [state.unreadCount]
   );
 
-  // ניקוי כל ההתראות — מוחק גם בשרת וגם בלקוח
+  // 5) Clear all notifications
   const clearRead = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications/clearRead", {
