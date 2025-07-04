@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
 
@@ -13,8 +12,6 @@ export default function Notifications({ onClose }) {
     markAsRead,
     markAllAsRead,
   } = useNotifications();
-
-  const navigate = useNavigate();
 
   // איחוד התראות צ'אט לפי threadId
   const dedupedNotifications = React.useMemo(() => {
@@ -44,38 +41,7 @@ export default function Notifications({ onClose }) {
       await markAsRead(idStr);
     }
 
-    if (notif.type === "message" && notif.threadId) {
-      const clientId = notif.clientId || notif.partnerId;
-      const threadIdStr =
-        notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
-
-      const url = clientId
-        ? `/business/${businessId}/chat/${clientId}?threadId=${threadIdStr}`
-        : `/business/${businessId}/chat`;
-
-      navigate(url);
-    } else {
-      let url = "/";
-      switch (notif.type) {
-        case "collaboration": {
-          const proposal = notif.payload?.proposal;
-          const proposalId = proposal?._id || notif.payload?.proposalId;
-          url = proposalId
-            ? `/business/${businessId}/collaborations/${proposalId}`
-            : `/business/${businessId}/collaborations`;
-          break;
-        }
-        case "meeting":
-          url = `/business/${businessId}/meetings`;
-          break;
-        case "review":
-          url = `/business/${businessId}/reviews`;
-          break;
-        default:
-          url = notif.targetUrl || "/";
-      }
-      navigate(url);
-    }
+    // לא מבצעים ניווט
 
     if (onClose) onClose();
   };

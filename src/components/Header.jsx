@@ -24,7 +24,7 @@ import Notifications from "./Notifications";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
-  const { clearAll, clearRead, unreadCount } = useNotifications();
+  const { clearAll, clearRead, unreadCount, markAllAsRead } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -38,6 +38,13 @@ export default function Header() {
     if (notifOpen) window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [notifOpen]);
+
+  // סמון כל ההתראות כנקראות בעת פתיחת חלונית ההתראות
+  useEffect(() => {
+    if (notifOpen && unreadCount > 0) {
+      markAllAsRead();
+    }
+  }, [notifOpen, unreadCount, markAllAsRead]);
 
   if (loading) return null;
 
@@ -77,15 +84,6 @@ export default function Header() {
     }
     setMenuOpen(false);
   };
-
-  // טיפול בסימון כל ההתראות כנקראות בעת פתיחת החלונית
-  useEffect(() => {
-    if (notifOpen && unreadCount > 0) {
-      // קריאה לפונקציה לסימון התראות כנקראות (אם יש פונקציה מתאימה)
-      // לדוגמה: markAllAsRead();
-      // כאן ניתן להוסיף קוד בהתאם למימוש NotificationsContext שלך
-    }
-  }, [notifOpen, unreadCount]);
 
   return (
     <>
