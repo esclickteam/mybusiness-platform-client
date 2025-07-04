@@ -204,13 +204,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     };
   }, [selectedConversation, refreshAccessToken, uniqueMessages]);
 
-  // טיפול בהודעות נכנסות בזמן אמת
   const handleNewMessage = useCallback(
     (msg) => {
       const fullMsg = msg.fullMsg || msg;
       if (!fullMsg) return;
 
-      // נורמליזציה עם וידוא טקסט
       const normalized = {
         ...fullMsg,
         text: typeof fullMsg.text === "string" ? fullMsg.text : "",
@@ -262,7 +260,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת הודעה טקסט בלבד
   const sendMessage = () => {
     if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
@@ -275,7 +272,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         ? otherIdRaw._id.toString()
         : otherIdRaw.toString();
 
-    const conversationType = selectedConversation.conversationType || "user-business";
     const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
 
     const payload = {
@@ -301,9 +297,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
 
+    const timeoutId = setTimeout(() => {
+      dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
+      alert("שליחת ההודעה לקחה יותר מדי זמן. אנא נסה שנית.");
+    }, 10000);
+
     socketRef.current.emit("sendMessage", payload, (ack) => {
-      if (!ack.ok) {
-        alert("שליחת הודעה נכשלה: " + ack.error);
+      clearTimeout(timeoutId);
+      console.log("sendMessage ack:", ack);
+
+      if (!ack?.ok) {
+        alert("שליחת הודעה נכשלה: " + (ack?.error || "שגיאה לא ידועה"));
         dispatchMessages({ type: "remove", payload: tempId });
       } else if (ack.message?._id) {
         const real = {
@@ -332,7 +336,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         overflow: "hidden",
       }}
     >
-      {/* עמודת שיחות */}
       <Box
         sx={{
           width: 270,
@@ -365,7 +368,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               conv.participantsInfo?.find((b) => b._id.toString() === otherId) || {
                 businessName: "עסק",
               };
-            // תיקון קריאת ה-text עם Optional Chaining:
             const lastMsg = conv.messages?.[conv.messages.length - 1]?.text || "";
 
             return (
@@ -400,7 +402,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           })}
       </Box>
 
-      {/* עמודת הודעות */}
       <Box
         sx={{
           flex: 1,
