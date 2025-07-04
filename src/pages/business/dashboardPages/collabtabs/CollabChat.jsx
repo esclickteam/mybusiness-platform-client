@@ -38,11 +38,7 @@ function messagesReducer(state, action) {
       return [...state, action.payload];
     }
     case "replace":
-      return state.map((m) =>
-        m._id === action.payload._id || m._id === action.payload.tempId
-          ? action.payload
-          : m
-      );
+      return state.map((m) => (m._id === action.payload._id ? action.payload : m));
     case "remove":
       return state.filter((m) => m._id !== action.payload);
     default:
@@ -188,6 +184,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        // נורמליזציה: וידוא שכל הודעה מכילה שדה טקסט תקין
         const normMsgs = (res.data.messages || []).map((msg) => ({
           ...msg,
           text: typeof msg.text === "string" ? msg.text : "",
@@ -286,7 +283,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
     const optimistic = {
       ...payload,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString(), // חשוב: תמיד קיים
       _id: tempId,
       fromBusinessId: payload.from,
       toBusinessId: payload.to,
@@ -317,7 +314,6 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           ...ack.message,
           fromBusinessId: ack.message.fromBusinessId || ack.message.from,
           toBusinessId: ack.message.toBusinessId || ack.message.to,
-          tempId, // חשוב להוסיף tempId כדי להחליף את ההודעה הזמנית
         };
         dispatchMessages({
           type: "replace",
@@ -459,11 +455,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                         textAlign: "left",
                       }}
                     >
-                      {msg.timestamp &&
-                        new Date(msg.timestamp).toLocaleTimeString("he-IL", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                      {(msg.timestamp || (msg.sending && new Date())) &&
+                        new Date(msg.timestamp || Date.now()).toLocaleTimeString(
+                          "he-IL",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}
                       {msg.sending && <span> ⏳</span>}
                       {msg.failed && <span> ❌</span>}
                     </Box>
