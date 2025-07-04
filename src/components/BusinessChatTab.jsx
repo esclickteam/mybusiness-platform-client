@@ -147,10 +147,12 @@ export default function BusinessChatTab({
         tempId: m.tempId || null,
         from: m.from,
       }));
-      // filter business-sent messages in client-business tab
+
+      // סינון הודעות ב-client-business tab: רק הודעות שהן לא מהעסק (user-business)
       if (conversationType === "user-business") {
         msgs = msgs.filter((m) => String(m.from) !== String(businessId));
       }
+
       return msgs;
     } catch (error) {
       console.error("Failed to fetch messages:", error);
@@ -186,7 +188,7 @@ export default function BusinessChatTab({
       )
         return;
 
-      // filter business-sent in client tab
+      // סינון הודעות מהעסק בזמן שצופים בשיחות מסוג user-business
       if (
         conversationType === "user-business" &&
         String(msg.from) === String(businessId)
