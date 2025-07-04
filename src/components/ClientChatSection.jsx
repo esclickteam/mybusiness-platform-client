@@ -6,12 +6,10 @@ import { useAuth } from "../context/AuthContext";
 import { io } from "socket.io-client";
 
 export default function ClientChatSection() {
-  /* ─── Route params & Auth ───────────────────────────────────────── */
   const { businessId: businessIdFromParams, clientId, threadId } = useParams();
   const { user, initialized } = useAuth();
   const userId = user?.userId || null;
 
-  /* ─── Local state ──────────────────────────────────────────────── */
   const [conversationId, setConversationId] = useState(threadId || null);
   const [businessName, setBusinessName] = useState("");
   const [businessId, setBusinessId] = useState(businessIdFromParams || null);
@@ -19,15 +17,15 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
 
-  /* ─── Helper: don't לדרוס ערך תקף ב-null/undefined ────────────── */
+  // מונע דריסת ערכים תקפים ב-null/undefined
   const safeSetBusinessId = (newId) => setBusinessId((prev) => newId ?? prev);
 
   const socketRef = useRef(null);
 
-  /* ─── Create socket once ───────────────────────────────────────── */
+  // יצירת חיבור סוקטון
   useEffect(() => {
     if (!initialized || !userId) return;
-    if (socketRef.current) return; // already connected
+    if (socketRef.current) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
@@ -58,16 +56,17 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId]);
 
-  /* ─── Load specific conversation if threadId & clientId present ───────── */
+  // טעינת שיחות לפי פרמטרים
   useEffect(() => {
+    setLoading(true);
+    setError("");
+
+    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
+    const token = localStorage.getItem("token");
+
     if (!threadId || !clientId) {
-      setLoading(true);
-      setError("");
-
-      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
-
       fetch(`${baseUrl}/api/messages/user-conversations`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
         .then((data) => {
@@ -96,13 +95,8 @@ export default function ClientChatSection() {
           setLoading(false);
         });
     } else {
-      setLoading(true);
-      setError("");
-
-      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
-
       fetch(`${baseUrl}/api/conversations/${threadId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
         .then((data) => {
@@ -124,19 +118,24 @@ export default function ClientChatSection() {
     }
   }, [threadId, clientId, businessIdFromParams]);
 
-  /* ─── Fetch business name separately if missing ──────────────────── */
+  // טעינת שם העסק אם חסר
   useEffect(() => {
     if (businessId && !businessName) {
       const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
-      fetch(`${baseUrl}/api/businesses/${businessId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      const token = localStorage.getItem("token");
+
+      fetch(`${baseUrl}/api/business/${businessId}`, {
+        headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => {
           if (!res.ok) throw new Error("Failed to fetch business name");
           return res.json();
         })
         .then((data) => {
-          if (data.businessName) {
+          // בהתאם למבנה התגובה מהשרת
+          if (data.business?.businessName) {
+            setBusinessName(data.business.businessName);
+          } else if (data.businessName) {
             setBusinessName(data.businessName);
           } else {
             setBusinessName("עסק לא ידוע");
@@ -149,7 +148,7 @@ export default function ClientChatSection() {
     }
   }, [businessId, businessName]);
 
-  /* ─── WS: history + realtime listeners ─────────────────────────── */
+  // מאזין להודעות בסוקט והיסטוריה
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !socket.connected || !conversationId) {
@@ -205,7 +204,6 @@ export default function ClientChatSection() {
     };
   }, [conversationId, businessId]);
 
-  /* ─── UI ───────────────────────────────────────────────────────── */
   if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
 
