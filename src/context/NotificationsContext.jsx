@@ -40,18 +40,19 @@ function notificationsReducer(state, action) {
     case "SET_NOTIFICATIONS": {
       const incoming = action.payload.map(normalizeNotification);
       const map = new Map();
-
       state.notifications.forEach((n) => map.set(n.id, n));
       incoming.forEach((n) => {
         const existing = map.get(n.id);
         if (existing) {
-          const unreadCount = Math.max(existing.unreadCount || 0, n.unreadCount || 0);
+          const unreadCount = Math.max(
+            existing.unreadCount || 0,
+            n.unreadCount || 0
+          );
           map.set(n.id, { ...existing, ...n, unreadCount });
         } else {
           map.set(n.id, n);
         }
       });
-
       const merged = Array.from(map.values()).sort(
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );
@@ -59,44 +60,45 @@ function notificationsReducer(state, action) {
     }
 
     case "ADD_NOTIFICATION": {
-      const normalized = normalizeNotification(action.payload);
-      const exists = state.notifications.find((n) => n.id === normalized.id);
-      let newNotifications;
-
+      const n = normalizeNotification(action.payload);
+      const exists = state.notifications.find((x) => x.id === n.id);
+      let list;
       if (exists) {
-        newNotifications = state.notifications.map((n) =>
-          n.id === normalized.id
+        list = state.notifications.map((x) =>
+          x.id === n.id
             ? {
+                ...x,
                 ...n,
-                ...normalized,
                 read: false,
-                unreadCount: (n.unreadCount || 0) + 1,
+                unreadCount: (x.unreadCount || 0) + 1,
               }
-            : n
+            : x
         );
       } else {
-        newNotifications = [{ ...normalized, unreadCount: 1 }, ...state.notifications];
+        list = [{ ...n, unreadCount: 1 }, ...state.notifications];
       }
-
-      newNotifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      return { ...state, notifications: newNotifications };
+      list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      return { ...state, notifications: list };
     }
 
     case "MARK_AS_READ": {
       const id = action.payload;
-      const updated = state.notifications.map((n) =>
-        n.id === id ? { ...n, read: true, unreadCount: 0 } : n
-      );
-      return { ...state, notifications: updated };
+      return {
+        ...state,
+        notifications: state.notifications.map((n) =>
+          n.id === id ? { ...n, read: true, unreadCount: 0 } : n
+        ),
+      };
     }
 
     case "CLEAR_ALL":
       return { ...state, notifications: [] };
 
-    case "CLEAR_READ": {
-      const filtered = state.notifications.filter((n) => !n.read);
-      return { ...state, notifications: filtered };
-    }
+    case "CLEAR_READ":
+      return {
+        ...state,
+        notifications: state.notifications.filter((n) => !n.read),
+      };
 
     case "SET_DASHBOARD_STATS":
       return { ...state, dashboardStats: action.payload };
@@ -110,12 +112,13 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(notificationsReducer, initialState);
 
+  // סופר הודעות לא נקראות
   const unreadCount = state.notifications.reduce(
     (acc, n) => acc + (n.unreadCount > 0 ? 1 : 0),
     0
   );
 
-  // Fetch initial notifications
+  // טעינת התראות ראשונית מה־API
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
@@ -126,76 +129,80 @@ export function NotificationsProvider({ children }) {
         if (data.ok) {
           console.log("Initial notifications loaded:", data.notifications);
           dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
-        } else {
-          console.warn("Fetch notifications returned not ok:", data);
         }
       })
       .catch((err) => console.error("Notifications fetch failed:", err));
   }, [user?.businessId]);
 
-  // Subscribe to Socket.IO events
+  // חיבור לסוקט והגדרת listeners
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
     console.log("Setting up socket listeners in NotificationsProvider");
 
+    // 1. מוודא שהלקוח מצטרף לחדר העסק אחרי חיבור מלא
     const handleConnect = () => {
       console.log("Socket connected, joining business room:", user.businessId);
       socket.emit("joinBusinessRoom", user.businessId);
     };
 
+    // 2. אירוע תראה חדשה
     const handleNewNotification = (notif) => {
       console.log("🔔 newNotification received:", notif);
       dispatch({ type: "ADD_NOTIFICATION", payload: notif });
     };
 
-    const handleNewProposalAsNotification = (proposal) => {
-      console.log("💡 newProposal received:", proposal);
-      const notif = {
-        id: proposal._id?.toString() || proposal.id,
-        lastMessage: `הצעת שיתוף פעולה: ${proposal.title}`,
-        timestamp: new Date().toISOString(),
+    // 3. אירוע שיגור הודעה חדשה בצ׳אט
+    const handleNewMessage = (msg) => {
+      console.log("💬 newMessage received:", msg);
+      // אם רוצים לנהל הודעות צ׳אט בנפרד, אפשר לשלוח ל־ADD_NOTIFICATION
+      dispatch({ type: "ADD_NOTIFICATION", payload: {
+        id: msg._id,
+        lastMessage: msg.text,
+        timestamp: msg.createdAt,
         read: false,
         unreadCount: 1,
-        clientId: proposal.fromBusinessId,
-        type: "collaboration",
-        payload: { proposal },
-      };
-      dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+        clientId: msg.fromId,
+        threadId: msg.conversationId,
+        type: "chat",
+      } });
     };
 
+    // 4. עדכוני דשבורד
     const handleDashboard = (stats) => {
       console.log("📊 dashboardUpdate received:", stats);
       dispatch({ type: "SET_DASHBOARD_STATS", payload: stats });
     };
 
+    // רישום הליסנרים
     socket.on("connect", handleConnect);
     if (socket.connected) handleConnect();
 
     socket.on("newNotification", handleNewNotification);
-    socket.on("newProposal", handleNewProposalAsNotification);
+    socket.on("newMessage", handleNewMessage);
     socket.on("dashboardUpdate", handleDashboard);
 
+    // cleanup רק בסגירת הקומפוננט
     return () => {
       console.log("Cleaning up socket listeners in NotificationsProvider");
       socket.off("connect", handleConnect);
       socket.off("newNotification", handleNewNotification);
-      socket.off("newProposal", handleNewProposalAsNotification);
+      socket.off("newMessage", handleNewMessage);
       socket.off("dashboardUpdate", handleDashboard);
     };
   }, [socket, user?.businessId]);
 
-  const markAsRead = useCallback(async (threadId) => {
-    const idStr = threadId.toString ? threadId.toString() : threadId;
+  // פעולות נוספות על התראות
+  const markAsRead = useCallback(async (id) => {
     try {
-      await fetch(`/api/business/my/notifications/${idStr}/read`, {
+      await fetch(`/api/business/my/notifications/${id}/read`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      dispatch({ type: "MARK_AS_READ", payload: idStr });
+      dispatch({ type: "MARK_AS_READ", payload: id });
     } catch (err) {
       console.error("markAsRead error:", err);
     }
@@ -205,13 +212,12 @@ export function NotificationsProvider({ children }) {
 
   const clearRead = useCallback(async () => {
     try {
-      const response = await fetch("/api/business/my/notifications/clearRead", {
+      const res = await fetch("/api/business/my/notifications/clearRead", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      const data = await response.json();
+      const data = await res.json();
       if (data.ok) dispatch({ type: "CLEAR_READ" });
-      else console.warn("Failed to clear read notifications:", data);
     } catch (err) {
       console.error("clearRead error:", err);
     }
@@ -219,12 +225,12 @@ export function NotificationsProvider({ children }) {
 
   const markAllAsRead = useCallback(async () => {
     try {
-      const response = await fetch("/api/business/my/notifications/readAll", {
+      const res = await fetch("/api/business/my/notifications/readAll", {
         method: "PUT",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      const data = await response.json();
-      if (data.ok)
+      const data = await res.json();
+      if (data.ok) {
         dispatch({
           type: "SET_NOTIFICATIONS",
           payload: state.notifications.map((n) => ({
@@ -233,7 +239,7 @@ export function NotificationsProvider({ children }) {
             unreadCount: 0,
           })),
         });
-      else console.warn("Failed to mark all notifications as read:", data);
+      }
     } catch (err) {
       console.error("markAllAsRead error:", err);
     }
