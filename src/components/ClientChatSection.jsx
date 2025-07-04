@@ -127,6 +127,31 @@ export default function ClientChatSection() {
     }
   }, [threadId, clientId, businessIdFromParams]);
 
+  /* ─── Fetch business name separately if missing ──────────────────── */
+  useEffect(() => {
+    if (businessId && !businessName) {
+      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
+      fetch(`${baseUrl}/api/businesses/${businessId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch business name");
+          return res.json();
+        })
+        .then((data) => {
+          if (data.businessName) {
+            setBusinessName(data.businessName);
+          } else {
+            setBusinessName("עסק לא ידוע");
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching business name:", err);
+          setBusinessName("עסק לא ידוע");
+        });
+    }
+  }, [businessId, businessName]);
+
   /* ─── WS: history + realtime listeners ─────────────────────────── */
   useEffect(() => {
     const socket = socketRef.current;
