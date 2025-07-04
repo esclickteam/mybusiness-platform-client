@@ -25,6 +25,7 @@ function normalizeNotification(notif) {
 
   return {
     id: notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
+    threadId: notif.threadId || null,  // חשוב להוסיף
     text: rawText,
     lastMessage: rawLast,
     read: notif.read ?? false,
@@ -69,22 +70,39 @@ function notificationsReducer(state, action) {
     }
     case "ADD_NOTIFICATION": {
       const n = normalizeNotification(action.payload);
-      const exists = state.notifications.find((x) => x.id === n.id);
+
+      // בדיקה אם יש התראה קיימת עם אותו threadId
+      const existsIndex = state.notifications.findIndex(
+        (x) => x.threadId && n.threadId && x.threadId === n.threadId
+      );
+
       let list;
-      if (exists) {
-        list = state.notifications.map((x) =>
-          x.id === n.id
-            ? {
-                ...x,
-                ...n,
-                read: false,
-                unreadCount: (x.unreadCount || 0) + 1,
-              }
-            : x
-        );
+      if (existsIndex !== -1) {
+        list = [...state.notifications];
+        const existing = list[existsIndex];
+        list[existsIndex] = {
+          ...existing,
+          ...n,
+          read: false,
+          unreadCount: (existing.unreadCount || 0) + (n.unreadCount || 1),
+        };
       } else {
-        list = [{ ...n, unreadCount: 1 }, ...state.notifications];
+        // אם אין threadId, נבדוק לפי id רגיל
+        const existsByIdIndex = state.notifications.findIndex(x => x.id === n.id);
+        if (existsByIdIndex !== -1) {
+          list = [...state.notifications];
+          const existing = list[existsByIdIndex];
+          list[existsByIdIndex] = {
+            ...existing,
+            ...n,
+            read: false,
+            unreadCount: (existing.unreadCount || 0) + (n.unreadCount || 1),
+          };
+        } else {
+          list = [n, ...state.notifications];
+        }
       }
+
       list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       const unreadCount = calculateUnreadCount(list);
       return { ...state, notifications: list, unreadCount };
@@ -151,6 +169,7 @@ export function NotificationsProvider({ children }) {
         lastMessage:
           data.lastMessage || (typeof data.text === "string" ? data.text : ""),
         id: data.threadId || data.chatId || data.id || data._id?.toString(),
+        threadId: data.threadId || null,  // חשוב להוסיף כאן
         read: data.read ?? false,
         timestamp: data.timestamp || data.createdAt || new Date().toISOString(),
       };
