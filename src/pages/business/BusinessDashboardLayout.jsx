@@ -4,7 +4,7 @@ import {
   Outlet,
   useNavigate,
   useParams,
-  useLocation
+  useLocation,
 } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
@@ -13,6 +13,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
+
+import { io } from "socket.io-client";
 
 const tabs = [
   { path: "dashboard", label: "📊 דשבורד" },
@@ -25,6 +27,12 @@ const tabs = [
   { path: "help-center", label: "❓ מרכז העזרה" },
 ];
 
+// החלף כאן לכתובת השרת שלך
+const SOCKET_URL = "https://api.esclick.co.il";
+
+// יצירת חיבור socket מחוץ לרכיב
+const socket = io(SOCKET_URL, { autoConnect: false });
+
 export default function BusinessDashboardLayout({ children }) {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -32,22 +40,46 @@ export default function BusinessDashboardLayout({ children }) {
   const location = useLocation();
   const queryClient = useQueryClient();
 
-  // Context של socket וספירה ראשונית
-  const { socket, unreadMessagesCount } = useNotifications();
+  const { unreadMessagesCount: unreadFromContext } = useNotifications();
 
-  // סטייט מקומי לניהול הספירה והעדכון שלה
-  const [messagesCount, setMessagesCount] = useState(unreadMessagesCount);
+  const [messagesCount, setMessagesCount] = useState(unreadFromContext || 0);
+
   useEffect(() => {
-    setMessagesCount(unreadMessagesCount);
-  }, [unreadMessagesCount]);
+    setMessagesCount(unreadFromContext || 0);
+  }, [unreadFromContext]);
 
   const updateMessagesCount = (newCount) => {
     setMessagesCount(newCount);
-    // אם רוצים גם לדווח ל־NotificationsContext:
-    // socket.emit("update-unread-count", newCount);
   };
 
-  // Prefetch לנתונים חשובים
+  useEffect(() => {
+    if (!user?.businessId) return;
+
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    const roomName = "businessbusiness-" + user.businessId;
+
+    socket.emit("joinRoom", roomName);
+
+    const handleNewMessage = (message) => {
+      console.log("התקבלה הודעה חדשה:", message);
+
+      if (message.toId === user.businessId) {
+        setMessagesCount((count) => count + 1);
+        alert(`הודעה חדשה מ-${message.fromId}`);
+      }
+    };
+
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.emit("leaveRoom", roomName);
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [user?.businessId]);
+
   useEffect(() => {
     if (!user?.businessId) return;
     queryClient.prefetchQuery(
@@ -70,7 +102,6 @@ export default function BusinessDashboardLayout({ children }) {
     );
   }, [user?.businessId, queryClient]);
 
-  // ניווט ברירת מחדל לפי role ו־query params
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -86,7 +117,6 @@ export default function BusinessDashboardLayout({ children }) {
     }
   }, [user, loading, location.search, location.state, navigate]);
 
-  // מצב מובייל ולכידת גודל מסך
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(!isMobileInit);
@@ -102,7 +132,6 @@ export default function BusinessDashboardLayout({ children }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Trap focus בתפריט מובייל
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
     const sel =
@@ -203,9 +232,7 @@ export default function BusinessDashboardLayout({ children }) {
                 }
                 className="mobile-toggle-button"
               >
-                <span className="icon">
-                  {showSidebar ? "×" : "☰"}
-                </span>
+                <span className="icon">{showSidebar ? "×" : "☰"}</span>
                 <span className="label">
                   {showSidebar ? "סגור ניווט" : "פתח ניווט"}
                 </span>
