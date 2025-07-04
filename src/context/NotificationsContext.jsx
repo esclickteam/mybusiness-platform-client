@@ -2,231 +2,209 @@ import React, {
   createContext,
   useContext,
   useEffect,
-  useState,
-  useRef,
-  useCallback
+  useReducer,
+  useCallback,
 } from "react";
-import { io } from "socket.io-client";
-// חשוב: ייבוא בשם עם ה־.jsx כדי שההרכבה תמצא את הייצוא
 import { useAuth } from "./AuthContext.jsx";
 
-// ————————————————————————————
-// Notifications Context
-// ————————————————————————————
 const NotificationsContext = createContext();
 
-export function NotificationsProvider({ children }) {
-  const { user, token } = useAuth();
-
-  // Debug: authentication values
-  console.log("[NotificationsProvider] auth values:", { user, token });
-
-  // ——— STATE ———
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [dashboardStats, setDashboardStats] = useState({
+const initialState = {
+  notifications: [],
+  unreadCount: 0,
+  dashboardStats: {
     appointments_count: 0,
     reviews_count: 0,
-    views_count: 0
-  });
+    views_count: 0,
+  },
+};
 
-  // ——— SOCKET REF (למניעת כפל חיבורים) ———
-  const socketRef = useRef(null);
+// פונקציה שמבצעת נירמול ומבטיחה אחידות keys
+function normalizeNotification(notif) {
+  const rawText = typeof notif.text === "string" ? notif.text : notif.data?.text || "";
+  const rawLast = notif.lastMessage || rawText;
 
-  // ————————————————————————————
-  // Helpers
-  // ————————————————————————————
-  const addNotification = useCallback((n) => {
-    const id = n.id || n._id;
-    console.log("[NotificationsProvider] Adding notification:", n);
+  return {
+    id: notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
+    threadId: notif.threadId || null,
+    text: rawText,
+    lastMessage: rawLast,
+    read: notif.read ?? false,
+    timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
+    unreadCount:
+      notif.unreadCount !== undefined && notif.unreadCount !== null
+        ? notif.unreadCount
+        : notif.read
+        ? 0
+        : 1,
+    clientId: notif.clientId || notif.partnerId || null,
+  };
+}
 
-    if (!id) {
-      console.warn("[NotificationsProvider] Notification missing id or _id:", n);
-    }
+function calculateUnreadCount(notifications) {
+  return notifications.reduce((count, n) => count + (n.unreadCount || 0), 0);
+}
 
-    setNotifications((prev) =>
-      prev.some((x) => (x.id || x._id) === id) ? prev : [n, ...prev]
-    );
-  }, []);
-
-  const markAsRead = useCallback(
-    async (id) => {
-      if (!token) {
-        console.warn("[NotificationsProvider] markAsRead called without token");
-        return;
-      }
-      console.log(`[NotificationsProvider] Marking notification ${id} as read`);
-
-      try {
-        await fetch(`/api/business/my/notifications/${id}/read`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        setNotifications((prev) =>
-          prev.map((n) => ((n.id || n._id) === id ? { ...n, read: true } : n))
-        );
-      } catch (err) {
-        console.error("[NotificationsProvider] Error marking as read:", err);
-      }
-    },
-    [token]
-  );
-
-  const clearReadNotifications = useCallback(() => {
-    console.log("[NotificationsProvider] Clearing read notifications");
-    setNotifications((prev) => prev.filter((n) => !n.read));
-  }, []);
-
-  const clearAllNotifications = useCallback(() => {
-    console.log("[NotificationsProvider] Clearing all notifications");
-    setNotifications([]);
-    setUnreadCount(0);
-  }, []);
-
-  // ————————————————————————————
-  // Effect: initial fetch + socket
-  // ————————————————————————————
-  useEffect(() => {
-    console.log(
-      "[NotificationsProvider] useEffect fired with:",
-      user?.businessId,
-      token
-    );
-
-    if (!user?.businessId || !token) {
-      console.log(
-        "[NotificationsProvider] Missing user.businessId or token, skipping setup"
-      );
-      return;
-    }
-
-    // 1. Fetch initial list (סינכרון ראשוני)
-    fetch("/api/business/my/notifications", {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.ok) {
-          console.log(
-            "[NotificationsProvider] Initial notifications fetched:",
-            d.notifications
-          );
-          setNotifications(d.notifications);
-          setUnreadCount(d.notifications.filter((n) => !n.read).length);
+function notificationsReducer(state, action) {
+  switch (action.type) {
+    case "SET_NOTIFICATIONS": {
+      const incoming = action.payload.map(normalizeNotification);
+      const map = new Map();
+      // דה-דופ לפי threadId (אם יש), אחרת לפי id
+      incoming.forEach((n) => {
+        const key = n.threadId || n.id;
+        const existing = map.get(key);
+        if (existing) {
+          // בחר ערכים עדכניים/מצטברים
+          map.set(key, {
+            ...existing,
+            ...n,
+            unreadCount: Math.max(existing.unreadCount || 0, n.unreadCount || 0),
+            timestamp: new Date(n.timestamp) > new Date(existing.timestamp) ? n.timestamp : existing.timestamp,
+          });
         } else {
-          console.error(
-            "[NotificationsProvider] Failed fetching initial notifications:",
-            d
-          );
+          map.set(key, n);
+        }
+      });
+      const merged = Array.from(map.values()).sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
+      const unreadCount = calculateUnreadCount(merged);
+      return { ...state, notifications: merged, unreadCount };
+    }
+    case "ADD_NOTIFICATION": {
+      const n = normalizeNotification(action.payload);
+
+      // דה-דופ לפי threadId (אם יש), אחרת id
+      const key = n.threadId || n.id;
+      const existsIndex = state.notifications.findIndex(
+        x => (x.threadId || x.id) === key
+      );
+
+      let list;
+      if (existsIndex !== -1) {
+        list = [...state.notifications];
+        const existing = list[existsIndex];
+        list[existsIndex] = {
+          ...existing,
+          ...n,
+          read: false,
+          unreadCount: (existing.unreadCount || 0) + (n.unreadCount || 1),
+          timestamp: new Date(n.timestamp) > new Date(existing.timestamp) ? n.timestamp : existing.timestamp,
+        };
+      } else {
+        list = [n, ...state.notifications];
+      }
+
+      list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      const unreadCount = calculateUnreadCount(list);
+      return { ...state, notifications: list, unreadCount };
+    }
+    case "MARK_AS_READ": {
+      const id = action.payload;
+      const updatedNotifications = state.notifications.map((n) =>
+        (n.id === id || n.threadId === id) ? { ...n, read: true, unreadCount: 0 } : n
+      );
+      const unreadCount = calculateUnreadCount(updatedNotifications);
+      return { ...state, notifications: updatedNotifications, unreadCount };
+    }
+    case "CLEAR_ALL":
+      return { ...state, notifications: [], unreadCount: 0 };
+    case "CLEAR_READ": {
+      const filtered = state.notifications.filter((n) => !n.read);
+      const unreadCount = calculateUnreadCount(filtered);
+      return { ...state, notifications: filtered, unreadCount };
+    }
+    case "SET_DASHBOARD_STATS":
+      return { ...state, dashboardStats: action.payload };
+    default:
+      return state;
+  }
+}
+
+export function NotificationsProvider({ children }) {
+  const { user, socket } = useAuth();
+  const [state, dispatch] = useReducer(notificationsReducer, initialState);
+
+  useEffect(() => {
+    if (!user?.businessId) return;
+    fetch("/api/business/my/notifications", {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
         }
       })
-      .catch((e) => {
-        console.error("[NotificationsProvider] Fetch error:", e);
-      });
+      .catch((err) => console.error("Notifications fetch failed:", err));
+  }, [user?.businessId]);
 
-    // 2. Disconnect any previous socket before creating a new one
-    if (socketRef.current) {
-      console.log(
-        "[NotificationsProvider] Disposing previous socket instance"
-      );
-      socketRef.current.disconnect();
-      socketRef.current = null;
-    }
+  useEffect(() => {
+    if (!socket || !user?.businessId) return;
 
-    // 3. Create socket
-    const s = io(import.meta.env.VITE_SOCKET_URL, {
-      auth: { token },
-      transports: ["websocket"]
-    });
-    socketRef.current = s;
-
-    // ——— SOCKET EVENT HANDLERS ———
-    const joinRooms = () => {
-      const rooms = [
-        `business-${user.businessId}`,
-        `dashboard-${user.businessId}`
-      ];
-      console.log(
-        "[NotificationsProvider] Socket connected, joining rooms:",
-        rooms
-      );
-      rooms.forEach((room) => s.emit("joinRoom", room));
+    const handleConnect = () => {
+      socket.emit("joinBusinessRoom", user.businessId);
     };
 
-    const onBundle = ({ count, lastNotification }) => {
-      console.log(
-        "[NotificationsProvider] Received notificationBundle:",
-        { count, lastNotification }
-      );
-      if (lastNotification) addNotification(lastNotification);
-      setUnreadCount(count);
+    const handleNewNotification = (payload) => {
+      const data = payload?.data ?? payload;
+      if (!data || typeof data.text !== "string") return;
+      dispatch({ type: "ADD_NOTIFICATION", payload: data });
     };
 
-    const onNewNotification = (notification) => {
-      console.log(
-        "[NotificationsProvider] Received newNotification:",
-        notification
-      );
-      if (notification) addNotification(notification);
-      setUnreadCount((count) => count + 1);
+    const handleNewMessage = (msg) => {
+      const data = msg.data || msg;
+      if (!data || typeof data.text !== "string") return;
+      const notification = {
+        ...data,
+        text: typeof data.text === "string" ? data.text : "",
+        lastMessage:
+          data.lastMessage || (typeof data.text === "string" ? data.text : ""),
+        id: data.threadId || data.chatId || data.id || data._id?.toString(),
+        threadId: data.threadId || null,
+        read: data.read ?? false,
+        timestamp: data.timestamp || data.createdAt || new Date().toISOString(),
+      };
+      dispatch({ type: "ADD_NOTIFICATION", payload: notification });
     };
 
-    const onDashboard = (stats) => {
-      console.log(
-        "[NotificationsProvider] Received dashboardUpdate:",
-        stats
-      );
-      setDashboardStats(stats);
-    };
-
-    s.on("connect", joinRooms);
-    s.on("reconnect", joinRooms);
-    s.on("notificationBundle", onBundle);
-    s.on("newNotification", onNewNotification);
-    s.on("unreadMessagesCount", (count) => {
-      console.log(
-        "[NotificationsProvider] Received unreadMessagesCount:",
-        count
-      );
-      setUnreadCount(count);
-    });
-    s.on("dashboardUpdate", onDashboard);
+    socket.on("connect", handleConnect);
+    if (socket.connected) handleConnect();
+    socket.on("newNotification", handleNewNotification);
+    socket.on("newMessage", handleNewMessage);
 
     return () => {
-      console.log(
-        "[NotificationsProvider] Cleaning up socket listeners and disconnecting"
-      );
-      s.off("connect", joinRooms);
-      s.off("reconnect", joinRooms);
-      s.off("notificationBundle", onBundle);
-      s.off("newNotification", onNewNotification);
-      s.off("unreadMessagesCount");
-      s.off("dashboardUpdate", onDashboard);
-      s.disconnect();
-      socketRef.current = null;
+      socket.off("connect", handleConnect);
+      socket.off("newNotification", handleNewNotification);
+      socket.off("newMessage", handleNewMessage);
     };
-  }, [user?.businessId, token, addNotification]);
+  }, [socket, user?.businessId]);
 
-  // ————————————————————————————
-  // Provider Value
-  // ————————————————————————————
-  const value = {
-    notifications,
-    unreadMessagesCount: unreadCount,
-    dashboardStats,
-    socket: socketRef.current,
-    addNotification,
-    markAsRead,
-    clearReadNotifications,
-    clearAllNotifications
-  };
+  const markAsRead = useCallback(async (id) => {
+    try {
+      await fetch(`/api/business/my/notifications/${id}/read`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+
+        },
+      });
+      dispatch({ type: "MARK_AS_READ", payload: id });
+    } catch (err) {
+      console.error("markAsRead error:", err);
+    }
+  }, []);
 
   return (
-    <NotificationsContext.Provider value={value}>
+    <NotificationsContext.Provider
+      value={{
+        notifications: state.notifications,
+        unreadCount: state.unreadCount,
+        markAsRead,
+      }}
+    >
       {children}
     </NotificationsContext.Provider>
   );
