@@ -193,7 +193,7 @@ export default function ClientChatSection() {
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
           <div className={styles.convItemActive}>
-            {businessName || businessId || "עסק לא ידוע"}
+            {businessName || "עסק לא ידוע"}
           </div>
         </aside>
         <section className={styles.chatArea}>
