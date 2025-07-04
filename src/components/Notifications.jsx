@@ -8,20 +8,20 @@ export default function Notifications({ onClose }) {
 
   const {
     notifications,
-    clearAll,
     clearRead,
     markAsRead,
     markAllAsRead,
   } = useNotifications();
 
-  // איחוד התראות צ'אט מסוג "message" לפי threadId וסכימת unreadCount
+  // איחוד התראות מסוג "message" לפי threadId וסכימת unreadCount
   const dedupedNotifications = React.useMemo(() => {
     const map = new Map();
 
     for (const notif of notifications) {
       if (notif.type === "message" && notif.threadId) {
-        const threadIdStr =
-          notif.threadId.toString ? notif.threadId.toString() : notif.threadId;
+        const threadIdStr = notif.threadId.toString
+          ? notif.threadId.toString()
+          : notif.threadId;
         if (map.has(threadIdStr)) {
           const existing = map.get(threadIdStr);
           map.set(threadIdStr, {
@@ -35,25 +35,22 @@ export default function Notifications({ onClose }) {
               new Date(notif.timestamp) > new Date(existing.timestamp)
                 ? notif.text
                 : existing.text,
-            read: existing.read && notif.read, // רק אם שתיהן נקראו
+            read: existing.read && notif.read,
           });
         } else {
           map.set(threadIdStr, { ...notif });
         }
       } else {
-        // התראות אחרות נשארות כפי שהן
         map.set(notif.id || notif._id || Math.random().toString(), { ...notif });
       }
     }
 
-    // הסרת התראות עם id לא תקין במקרה שהיו
     return Array.from(map.values()).filter(n => n.id || n._id);
   }, [notifications]);
 
   // חישוב סך כל ההודעות שלא נקראו
   const totalUnreadCount = React.useMemo(() => {
     return dedupedNotifications.reduce((sum, notif) => {
-      // אם יש unreadCount משתמשים בו, אחרת אם לא נקראים מוסיפים 1
       return sum + (notif.unreadCount || (notif.read ? 0 : 1));
     }, 0);
   }, [dedupedNotifications]);
