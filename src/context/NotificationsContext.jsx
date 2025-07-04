@@ -75,9 +75,20 @@ function notificationsReducer(state, action) {
     }
 
     case "UPDATE_UNREAD_COUNT": {
-      // רק עדכון המונה
+      // רק עדכון מונה
       return { ...state, unreadCount: action.payload };
     }
+
+    case "CLEAR_READ": {
+      // מסיר רק את ההודעות שכבר נקראו
+      const filtered = state.notifications.filter((n) => !n.read);
+      const unreadCount = calculateUnreadCount(filtered);
+      return { ...state, notifications: filtered, unreadCount };
+    }
+
+    case "CLEAR_ALL":
+      // מסיר את כל ההודעות ומאפס מונה
+      return { ...state, notifications: [], unreadCount: 0 };
 
     case "SET_DASHBOARD_STATS":
       return { ...state, dashboardStats: action.payload };
@@ -132,21 +143,51 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId]);
 
-  const markAsRead = useCallback(async (id) => {
+  // סימון הודעה אחת כנקראה (יוריד מונה ב-1)
+  const markAsRead = useCallback(
+    async (id) => {
+      try {
+        await fetch(`/api/business/my/notifications/${id}/read`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: state.unreadCount - 1 });
+      } catch (err) {
+        console.error("markAsRead error:", err);
+      }
+    },
+    [state.unreadCount]
+  );
+
+  // סימון כל ההתראות כנקראו (כפתור "סמן הכול כנקראו")
+  const markAllAsRead = useCallback(async () => {
     try {
-      await fetch(`/api/business/my/notifications/${id}/read`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      // אם תרצו לאפס ברגע סימון כנקרא:
-      dispatch({ type: "UPDATE_UNREAD_COUNT", payload: state.unreadCount - 1 });
+      const res = await fetch(
+        "/api/business/my/notifications/readAll",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const data = await res.json();
+      if (data.ok) {
+        dispatch({ type: "CLEAR_ALL" });
+      }
     } catch (err) {
-      console.error("markAsRead error:", err);
+      console.error("markAllAsRead error:", err);
     }
-  }, [state.unreadCount]);
+  }, []);
+
+  // ניגוי של הודעות שכבר נקראו
+  const clearRead = useCallback(() => {
+    dispatch({ type: "CLEAR_READ" });
+  }, []);
 
   return (
     <NotificationsContext.Provider
@@ -154,6 +195,8 @@ export function NotificationsProvider({ children }) {
         notifications: state.notifications,
         unreadCount: state.unreadCount,
         markAsRead,
+        markAllAsRead,
+        clearRead,
       }}
     >
       {children}
