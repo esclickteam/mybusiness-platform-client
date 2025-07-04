@@ -61,7 +61,6 @@ export default function ClientChatSection() {
   /* ─── Load specific conversation if threadId & clientId present ───────── */
   useEffect(() => {
     if (!threadId || !clientId) {
-      // במקרה שאין פרמטרים, נטען שיחות רגילות
       setLoading(true);
       setError("");
 
@@ -97,7 +96,6 @@ export default function ClientChatSection() {
           setLoading(false);
         });
     } else {
-      // נטען שיחה ספציפית לפי threadId וודאות שקיימת שיחה עם clientId
       setLoading(true);
       setError("");
 
@@ -110,7 +108,6 @@ export default function ClientChatSection() {
         .then((data) => {
           if (!data.ok) throw new Error(data.error || "שגיאה בטעינת שיחה");
           const participants = data.conversation.participants || [];
-          // בדיקה שהלקוח הוא חלק מהשיחה
           if (!participants.includes(clientId)) {
             throw new Error("השיחה לא מכילה את הלקוח המבוקש");
           }
