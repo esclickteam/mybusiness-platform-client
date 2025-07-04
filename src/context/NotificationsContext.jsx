@@ -36,6 +36,7 @@ function normalizeNotification(notif) {
         ? 0
         : 1,
     clientId: notif.clientId || notif.partnerId || null,
+    type: notif.type || "message", // כאן חשוב לוודא שיש type
   };
 }
 
@@ -119,10 +120,10 @@ export function NotificationsProvider({ children }) {
     initialState
   );
 
-  const unreadCount = state.notifications.reduce(
-    (acc, n) => acc + (n.unreadCount > 0 ? 1 : 0),
-    0
-  );
+  // ספירת כל ההודעות הלא נקראות מסוג message בלבד
+  const unreadCount = state.notifications
+    .filter((n) => n.type === "message")
+    .reduce((acc, n) => acc + (n.unreadCount || 0), 0);
 
   useEffect(() => {
     if (!user?.businessId) return;
@@ -132,10 +133,6 @@ export function NotificationsProvider({ children }) {
       .then((res) => res.json())
       .then((data) => {
         if (data.ok) {
-          console.log(
-            "Initial notifications loaded:",
-            data.notifications
-          );
           dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
         }
       })
@@ -145,35 +142,19 @@ export function NotificationsProvider({ children }) {
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    console.log(
-      "Setting up socket listeners in NotificationsProvider"
-    );
-
     const handleConnect = () => {
-      console.log(
-        "Socket connected, joining business room:",
-        user.businessId
-      );
       socket.emit("joinBusinessRoom", user.businessId);
     };
 
     const handleNewNotification = (payload) => {
       const data = payload?.data ?? payload;
-      if (!data || typeof data.text !== "string") {
-        console.warn("Invalid notification data received:", payload);
-        return;
-      }
-      console.log("🔔 newNotification received:", data);
+      if (!data || typeof data.text !== "string") return;
       dispatch({ type: "ADD_NOTIFICATION", payload: data });
     };
 
     const handleNewMessage = (msg) => {
       const data = msg.data || msg;
-      if (!data || typeof data.text !== "string") {
-        console.warn("Invalid message data received:", msg);
-        return;
-      }
-      console.log("💬 newMessage received:", data);
+      if (!data || typeof data.text !== "string") return;
 
       const notification = {
         ...data,
@@ -182,13 +163,13 @@ export function NotificationsProvider({ children }) {
         id: data.threadId || data.chatId || data.id || data._id?.toString(),
         read: data.read ?? false,
         timestamp: data.timestamp || data.createdAt || new Date().toISOString(),
+        type: data.type || "message",
       };
 
       dispatch({ type: "ADD_NOTIFICATION", payload: notification });
     };
 
     const handleDashboard = (stats) => {
-      console.log("📊 dashboardUpdate received:", stats);
       dispatch({ type: "SET_DASHBOARD_STATS", payload: stats });
     };
 
@@ -200,9 +181,6 @@ export function NotificationsProvider({ children }) {
     socket.on("dashboardUpdate", handleDashboard);
 
     return () => {
-      console.log(
-        "Cleaning up socket listeners in NotificationsProvider"
-      );
       socket.off("connect", handleConnect);
       socket.off("newNotification", handleNewNotification);
       socket.off("newMessage", handleNewMessage);
@@ -228,10 +206,7 @@ export function NotificationsProvider({ children }) {
     }
   }, []);
 
-  const clearAll = useCallback(
-    () => dispatch({ type: "CLEAR_ALL" }),
-    []
-  );
+  const clearAll = useCallback(() => dispatch({ type: "CLEAR_ALL" }), []);
 
   const clearRead = useCallback(async () => {
     try {
