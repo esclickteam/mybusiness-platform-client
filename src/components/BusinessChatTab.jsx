@@ -80,7 +80,6 @@ function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
       return action.payload;
-
     case "append": {
       const idx = state.findIndex(
         (m) =>
@@ -134,128 +133,124 @@ export default function BusinessChatTab({
     });
   };
 
-  // טעינת היסטוריית הודעות מה-API
+  // fetch message history
   async function fetchMessagesByConversationId(conversationId, page = 0, limit = 50) {
     try {
       const res = await API.get(`/messages/${conversationId}/history`, {
         params: { page, limit },
       });
-      return res.data.messages.map((m) => ({
+      let msgs = res.data.messages.map((m) => ({
         ...m,
         _id: String(m._id),
         timestamp: m.createdAt || new Date().toISOString(),
         text: m.text || "",
         tempId: m.tempId || null,
+        from: m.from,
       }));
+      // filter business-sent messages in client-business tab
+      if (conversationType === "user-business") {
+        msgs = msgs.filter((m) => String(m.from) !== String(businessId));
+      }
+      return msgs;
     } catch (error) {
       console.error("Failed to fetch messages:", error);
       return [];
     }
   }
 
+  // load on conversation change
   useEffect(() => {
     if (!conversationId) {
       dispatch({ type: "set", payload: [] });
       return;
     }
-
     let didCancel = false;
-
     async function loadMessages() {
       const msgs = await fetchMessagesByConversationId(conversationId);
       if (!didCancel) dispatch({ type: "set", payload: msgs });
     }
-
     loadMessages();
-
     return () => {
       didCancel = true;
     };
-  }, [conversationId]);
+  }, [conversationId, conversationType, businessId]);
 
+  // real-time socket handlers
   useEffect(() => {
     if (!socket) return;
 
     const handleNew = (msg) => {
-      if (msg.conversationId !== conversationId || msg.conversationType !== conversationType) return;
+      if (
+        msg.conversationId !== conversationId ||
+        msg.conversationType !== conversationType
+      )
+        return;
 
-      msg._id = String(msg._id);
-
-      const exists = messagesRef.current.some(
-        (m) =>
-          String(m._id) === msg._id ||
-          (msg.tempId && m.tempId === msg.tempId) ||
-          (m.tempId && msg._id && m.tempId === msg._id)
-      );
-      if (exists) return;
+      // filter business-sent in client tab
+      if (
+        conversationType === "user-business" &&
+        String(msg.from) === String(businessId)
+      ) {
+        return;
+      }
 
       const safeMsg = {
         ...msg,
+        _id: String(msg._id),
         timestamp: msg.createdAt || new Date().toISOString(),
-        text: (msg.text || msg.content || "") === "0" ? "" : (msg.text || msg.content || ""),
-        fileUrl: msg.fileUrl || msg.file?.url || null,
-        fileType: msg.fileType || msg.file?.mimeType || null,
-        fileName: msg.fileName || msg.file?.name || "",
-        fileDuration: msg.fileDuration ?? msg.file?.duration ?? 0,
+        text: msg.text || "",
+        fileUrl: msg.fileUrl || null,
+        fileType: msg.fileType || null,
+        fileName: msg.fileName || "",
+        fileDuration: msg.fileDuration || 0,
         tempId: msg.tempId || null,
       };
+
+      const exists = messagesRef.current.some(
+        (m) =>
+          String(m._id) === safeMsg._id ||
+          (safeMsg.tempId && m.tempId === safeMsg.tempId)
+      );
+      if (exists) return;
 
       dispatch({ type: "append", payload: safeMsg });
     };
 
     const handleTyping = ({ from }) => {
-      if (from !== customerId) return;
+      if (String(from) !== String(customerId)) return;
       setIsTyping(true);
       clearTimeout(handleTyping._t);
-      handleTyping._t = setTimeout(() => {
-        setIsTyping(false);
-      }, 1800);
+      handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
     };
 
     socket.on("newMessage", handleNew);
     socket.on("typing", handleTyping);
-
     return () => {
       socket.off("newMessage", handleNew);
       socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
     };
-  }, [socket, conversationId, customerId, conversationType]);
+  }, [socket, conversationId, customerId, conversationType, businessId]);
 
+  // auto-scroll
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
-
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
-    if (nearBottom) {
-      el.scrollTop = el.scrollHeight;
-    }
+    if (nearBottom) el.scrollTop = el.scrollHeight;
   }, [messages, isTyping]);
 
+  // input handlers
   const handleInput = (e) => {
     setInput(e.target.value);
-    if (socket) {
-      socket.emit("typing", { conversationId, from: businessId });
-    }
+    socket?.emit("typing", { conversationId, from: businessId });
   };
 
   const sendMessage = () => {
     if (sending) return;
     const text = input.trim();
-    if (!text || text === "0") return;
-
-    if (!socket) {
-      console.warn("Socket לא מאותחל עדיין");
-      return;
-    }
-
-    if (!socket.connected) {
-      console.warn("Socket לא מחובר, מחכה להתחברות...");
-      socket.once("connect", () => {
-        sendMessage();
-      });
-      return;
-    }
+    if (!text) return;
+    if (!socket) return;
 
     setSending(true);
     const tempId = uuidv4();
@@ -277,7 +272,6 @@ export default function BusinessChatTab({
       { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
       (ack) => {
         setSending(false);
-
         dispatch({
           type: "updateStatus",
           payload: {
@@ -300,10 +294,9 @@ export default function BusinessChatTab({
         <h3>{customerName}</h3>
       </div>
 
-      {/* רשימת הודעות */}
+      {/* Message list */}
       <div className="message-list" ref={listRef}>
         {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-
         {messages.map((m, i) =>
           m.system ? (
             <div key={m._id || `sys-${i}`} className="system-message">
@@ -312,14 +305,13 @@ export default function BusinessChatTab({
           ) : (
             <div
               key={`${m._id || m.tempId}-${m.fileUrl || ""}`}
-              className={`message${m.from === businessId ? " mine" : " theirs"}${
+              className={`message${String(m.from) === String(businessId) ? " mine" : " theirs"}${
                 m.sending ? " sending" : ""
               }${m.failed ? " failed" : ""}`}
             >
-              {/* תוכן ההודעה */}
               {m.fileUrl ? (
                 m.fileType?.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} />
+                  <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} userAvatar={null} />
                 ) : m.fileType?.startsWith("image") ? (
                   <img
                     src={m.fileUrl}
@@ -335,8 +327,6 @@ export default function BusinessChatTab({
               ) : (
                 <div className="text">{m.text}</div>
               )}
-
-              {/* מטאדאטה */}
               <div className="meta">
                 <span className="time">{formatTime(m.timestamp)}</span>
                 {m.fileDuration > 0 && (
@@ -354,11 +344,10 @@ export default function BusinessChatTab({
             </div>
           )
         )}
-
         {isTyping && <div className="typing-indicator">הלקוח מקליד…</div>}
       </div>
 
-      {/* סרגל קלט */}
+      {/* Input bar */}
       <div className="inputBar">
         <textarea
           className="inputField"
