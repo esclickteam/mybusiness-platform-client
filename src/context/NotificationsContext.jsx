@@ -19,10 +19,15 @@ const initialState = {
 };
 
 function normalizeNotification(notif) {
+  // Extract text (from notif.text or notif.data?.text) and map to lastMessage if missing
+  const rawText = notif.text ?? notif.data?.text ?? "";
+  const rawLast = notif.lastMessage ?? rawText;
+
   return {
-    ...notif,
-    id: notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
-    lastMessage: notif.lastMessage,
+    id:
+      notif.threadId || notif.chatId || notif.id || notif._id?.toString(),
+    text: rawText,
+    lastMessage: rawLast,
     read: notif.read ?? false,
     timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
     unreadCount:
@@ -110,7 +115,10 @@ function notificationsReducer(state, action) {
 
 export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
-  const [state, dispatch] = useReducer(notificationsReducer, initialState);
+  const [state, dispatch] = useReducer(
+    notificationsReducer,
+    initialState
+  );
 
   // סופר הודעות לא נקראות
   const unreadCount = state.notifications.reduce(
@@ -127,7 +135,10 @@ export function NotificationsProvider({ children }) {
       .then((res) => res.json())
       .then((data) => {
         if (data.ok) {
-          console.log("Initial notifications loaded:", data.notifications);
+          console.log(
+            "Initial notifications loaded:",
+            data.notifications
+          );
           dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
         }
       })
@@ -138,34 +149,28 @@ export function NotificationsProvider({ children }) {
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    console.log("Setting up socket listeners in NotificationsProvider");
+    console.log(
+      "Setting up socket listeners in NotificationsProvider"
+    );
 
-    // 1. מוודא שהלקוח מצטרף לחדר העסק אחרי חיבור מלא
     const handleConnect = () => {
-      console.log("Socket connected, joining business room:", user.businessId);
+      console.log(
+        "Socket connected, joining business room:",
+        user.businessId
+      );
       socket.emit("joinBusinessRoom", user.businessId);
     };
 
-    // 2. אירוע תראה חדשה
-    const handleNewNotification = (notif) => {
-      console.log("🔔 newNotification received:", notif);
-      dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+    // 2. אירוע newNotification
+    const handleNewNotification = ({ data }) => {
+      console.log("🔔 newNotification received:", data);
+      dispatch({ type: "ADD_NOTIFICATION", payload: data });
     };
 
-    // 3. אירוע שיגור הודעה חדשה בצ׳אט
+    // 3. אירוע newMessage
     const handleNewMessage = (msg) => {
       console.log("💬 newMessage received:", msg);
-      // אם רוצים לנהל הודעות צ׳אט בנפרד, אפשר לשלוח ל־ADD_NOTIFICATION
-      dispatch({ type: "ADD_NOTIFICATION", payload: {
-        id: msg._id,
-        lastMessage: msg.text,
-        timestamp: msg.createdAt,
-        read: false,
-        unreadCount: 1,
-        clientId: msg.fromId,
-        threadId: msg.conversationId,
-        type: "chat",
-      } });
+      dispatch({ type: "ADD_NOTIFICATION", payload: msg.data });
     };
 
     // 4. עדכוני דשבורד
@@ -174,7 +179,6 @@ export function NotificationsProvider({ children }) {
       dispatch({ type: "SET_DASHBOARD_STATS", payload: stats });
     };
 
-    // רישום הליסנרים
     socket.on("connect", handleConnect);
     if (socket.connected) handleConnect();
 
@@ -182,9 +186,10 @@ export function NotificationsProvider({ children }) {
     socket.on("newMessage", handleNewMessage);
     socket.on("dashboardUpdate", handleDashboard);
 
-    // cleanup רק בסגירת הקומפוננט
     return () => {
-      console.log("Cleaning up socket listeners in NotificationsProvider");
+      console.log(
+        "Cleaning up socket listeners in NotificationsProvider"
+      );
       socket.off("connect", handleConnect);
       socket.off("newNotification", handleNewNotification);
       socket.off("newMessage", handleNewMessage);
@@ -192,30 +197,38 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId]);
 
-  // פעולות נוספות על התראות
   const markAsRead = useCallback(async (id) => {
     try {
-      await fetch(`/api/business/my/notifications/${id}/read`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await fetch(
+        `/api/business/my/notifications/${id}/read`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       dispatch({ type: "MARK_AS_READ", payload: id });
     } catch (err) {
       console.error("markAsRead error:", err);
     }
   }, []);
 
-  const clearAll = useCallback(() => dispatch({ type: "CLEAR_ALL" }), []);
+  const clearAll = useCallback(
+    () => dispatch({ type: "CLEAR_ALL" }),
+    []
+  );
 
   const clearRead = useCallback(async () => {
     try {
-      const res = await fetch("/api/business/my/notifications/clearRead", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res = await fetch(
+        "/api/business/my/notifications/clearRead",
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       const data = await res.json();
       if (data.ok) dispatch({ type: "CLEAR_READ" });
     } catch (err) {
@@ -225,10 +238,13 @@ export function NotificationsProvider({ children }) {
 
   const markAllAsRead = useCallback(async () => {
     try {
-      const res = await fetch("/api/business/my/notifications/readAll", {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res = await fetch(
+        "/api/business/my/notifications/readAll",
+        {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       const data = await res.json();
       if (data.ok) {
         dispatch({
