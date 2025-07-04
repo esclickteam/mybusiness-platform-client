@@ -148,7 +148,13 @@ export default function BusinessChatTab({
       if (conversationType === "user-business") {
         const bizStr = String(businessId).trim();
         msgs = msgs.filter((m) => {
-          const fromStr = String(m.from).trim();
+          const fromId =
+            typeof m.from === "string"
+              ? m.from
+              : m.from && (m.from._id || m.from.id)
+              ? String(m.from._id || m.from.id)
+              : "";
+          const fromStr = fromId.trim();
           const keep = fromStr !== bizStr;
           if (!keep) console.log("Filtering out business message:", m);
           return keep;
@@ -192,10 +198,14 @@ export default function BusinessChatTab({
         return;
 
       const bizStr = String(businessId).trim();
-      if (
-        conversationType === "user-business" &&
-        String(msg.from).trim() === bizStr
-      ) {
+      const fromId =
+        typeof msg.from === "string"
+          ? msg.from
+          : msg.from && (msg.from._id || msg.from.id)
+          ? String(msg.from._id || msg.from.id)
+          : "";
+
+      if (conversationType === "user-business" && fromId.trim() === bizStr) {
         console.log("Filtered out business message in user-business conversation:", msg);
         return;
       }
