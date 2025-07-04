@@ -13,8 +13,10 @@ export default function Notifications({ onClose }) {
     markAllAsRead,
   } = useNotifications();
 
-  // איחוד התראות צ'אט לפי threadId עם מיזוג הודעות מאותו תזמון
+  // איחוד התראות צ'אט לפי threadId עם מיזוג הודעות מאותו תזמון והצגת טקסט כללי
   const dedupedNotifications = React.useMemo(() => {
+    console.log("🚀 raw notifications:", notifications);
+
     const map = new Map();
 
     for (const notif of notifications) {
@@ -25,7 +27,7 @@ export default function Notifications({ onClose }) {
         if (existing) {
           map.set(threadIdStr, {
             ...existing,
-            text: new Date(notif.timestamp) > new Date(existing.timestamp) ? notif.text : existing.text,
+            text: `✉️ יש לך ${existing.unreadCount + (notif.unreadCount || 0)} הודעות חדשות`,
             timestamp: new Date(notif.timestamp) > new Date(existing.timestamp) ? notif.timestamp : existing.timestamp,
             unreadCount: (existing.unreadCount || 0) + (notif.unreadCount || 0),
             read: existing.read && notif.read,
@@ -39,7 +41,9 @@ export default function Notifications({ onClose }) {
       }
     }
 
-    return Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    const result = Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    console.log("✅ deduped notifications:", result);
+    return result;
   }, [notifications]);
 
   const handleClick = async (notif) => {
@@ -49,8 +53,6 @@ export default function Notifications({ onClose }) {
     if (!notif.read && idStr) {
       await markAsRead(idStr);
     }
-
-    // לא מבצעים ניווט
 
     if (onClose) onClose();
   };
