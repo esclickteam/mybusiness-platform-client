@@ -264,68 +264,85 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = () => {
-    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+  if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
-    const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
-    if (!otherIdRaw) return;
-    const otherId =
-      typeof otherIdRaw === "string"
-        ? otherIdRaw
-        : otherIdRaw._id
-        ? otherIdRaw._id.toString()
-        : otherIdRaw.toString();
+  const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
+  if (!otherIdRaw) return;
+  const otherId =
+    typeof otherIdRaw === "string"
+      ? otherIdRaw
+      : otherIdRaw._id
+      ? otherIdRaw._id.toString()
+      : otherIdRaw.toString();
 
-    const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
+  const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
 
-    const payload = {
-      conversationId: selectedConversation._id.toString(),
-      from: myBusinessId.toString(),
-      to: otherId,
-      text: input.trim(),
-    };
+  const payload = {
+    conversationId: selectedConversation._id.toString(),
+    from: myBusinessId.toString(),
+    to: otherId,
+    text: input.trim(),
+  };
 
-    const optimistic = {
-      ...payload,
-      timestamp: new Date().toISOString(),
-      _id: tempId,
-      fromBusinessId: payload.from,
-      toBusinessId: payload.to,
-      sending: true,
-    };
+  const optimistic = {
+    ...payload,
+    timestamp: new Date().toISOString(),
+    _id: tempId,
+    fromBusinessId: payload.from,
+    toBusinessId: payload.to,
+    sending: true,
+  };
 
-    dispatchMessages({ type: "append", payload: optimistic });
-    setInput("");
+  dispatchMessages({ type: "append", payload: optimistic });
+  setInput("");
 
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 50);
+  setTimeout(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, 50);
 
-    const timeoutId = setTimeout(() => {
+  let ackReceived = false;
+
+  const timeoutId = setTimeout(() => {
+    if (!ackReceived) {
       dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
       alert("שליחת ההודעה לקחה יותר מדי זמן. אנא נסה שנית.");
-    }, 10000);
+    }
+  }, 10000);
 
-    socketRef.current.emit("sendMessage", payload, (ack) => {
-      clearTimeout(timeoutId);
-      console.log("sendMessage ack:", ack);
+  socketRef.current.emit("sendMessage", payload, (ack) => {
+    ackReceived = true;
+    clearTimeout(timeoutId);
+    console.log("sendMessage ack:", ack);
 
-      if (!ack?.ok) {
-        alert("שליחת הודעה נכשלה: " + (ack?.error || "שגיאה לא ידועה"));
-        dispatchMessages({ type: "remove", payload: tempId });
-      } else if (ack.message?._id) {
-        const real = {
-          ...ack.message,
-          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-          toBusinessId: ack.message.toBusinessId || ack.message.to,
-          tempId, // חשוב להוסיף tempId כדי להחליף את ההודעה הזמנית
-        };
-        dispatchMessages({
-          type: "replace",
-          payload: real,
-        });
-      }
-    });
-  };
+    if (!ack) {
+      alert("קיבלנו תשובה ריקה מהשרת. אנא נסה שנית.");
+      dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
+      return;
+    }
+
+    if (!ack.ok) {
+      alert("שליחת הודעה נכשלה: " + (ack.error || "שגיאה לא ידועה"));
+      dispatchMessages({ type: "remove", payload: tempId });
+      return;
+    }
+
+    if (ack.message?._id) {
+      const real = {
+        ...ack.message,
+        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+        toBusinessId: ack.message.toBusinessId || ack.message.to,
+        tempId, // לשימוש להחלפת ההודעה הזמנית
+        sending: false,
+        failed: false,
+      };
+      dispatchMessages({
+        type: "replace",
+        payload: real,
+      });
+    }
+  });
+};
+
 
   return (
     <Box
