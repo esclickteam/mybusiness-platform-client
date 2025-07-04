@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import {
@@ -24,16 +24,20 @@ import Notifications from "./Notifications";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
-  const {
-    clearAll,
-    clearRead,
-    unreadCount,           // <-- המונה הנכון
-  } = useNotifications();
+  const { clearAll, clearRead, unreadCount } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+
+  useEffect(() => {
+    function onKeyDown(e) {
+      if (e.key === "Escape") setNotifOpen(false);
+    }
+    if (notifOpen) window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [notifOpen]);
 
   if (loading) return null;
 
@@ -74,6 +78,15 @@ export default function Header() {
     setMenuOpen(false);
   };
 
+  // טיפול בסימון כל ההתראות כנקראות בעת פתיחת החלונית
+  useEffect(() => {
+    if (notifOpen && unreadCount > 0) {
+      // קריאה לפונקציה לסימון התראות כנקראות (אם יש פונקציה מתאימה)
+      // לדוגמה: markAllAsRead();
+      // כאן ניתן להוסיף קוד בהתאם למימוש NotificationsContext שלך
+    }
+  }, [notifOpen, unreadCount]);
+
   return (
     <>
       <nav
@@ -104,8 +117,7 @@ export default function Header() {
             </button>
           )}
 
-          {(user?.role === "business" ||
-            user?.role === "business-dashboard") && (
+          {(user?.role === "business" || user?.role === "business-dashboard") && (
             <>
               <button
                 className="notification-button"
@@ -140,9 +152,12 @@ export default function Header() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
+                      userSelect: "none",
                     }}
+                    aria-live="polite"
+                    aria-atomic="true"
                   >
-                    {unreadCount}
+                    {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
                 )}
               </button>
@@ -191,16 +206,10 @@ export default function Header() {
       {/* DRAWER */}
       {menuOpen && (
         <>
-          <div
-            className="menu-backdrop"
-            onClick={() => setMenuOpen(false)}
-          />
+          <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
           <div className="side-menu open">
             <div className="drawer-header">
-              <button
-                className="back-button"
-                onClick={() => setMenuOpen(false)}
-              >
+              <button className="back-button" onClick={() => setMenuOpen(false)}>
                 <FaChevronLeft size={20} />
                 <span className="back-text">חזור</span>
               </button>
@@ -252,10 +261,7 @@ export default function Header() {
                   >
                     אזור אישי
                   </button>
-                  <button
-                    className="logout-button"
-                    onClick={handleLogout}
-                  >
+                  <button className="logout-button" onClick={handleLogout}>
                     <FaSignOutAlt style={{ marginLeft: 6 }} />
                     התנתק
                   </button>

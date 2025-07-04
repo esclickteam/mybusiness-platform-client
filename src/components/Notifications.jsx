@@ -9,7 +9,6 @@ export default function Notifications({ onClose }) {
 
   const {
     notifications,
-    clearAll,
     clearRead,
     markAsRead,
     markAllAsRead,
@@ -41,12 +40,10 @@ export default function Notifications({ onClose }) {
     const id = notif.id || notif._id;
     const idStr = id && (id.toString ? id.toString() : id);
 
-    // סמן כהתראה נקראה
     if (!notif.read && idStr) {
       await markAsRead(idStr);
     }
 
-    // ניווט לפי סוג
     if (notif.type === "message" && notif.threadId) {
       const clientId = notif.clientId || notif.partnerId;
       const threadIdStr =
@@ -150,7 +147,9 @@ export default function Notifications({ onClose }) {
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
         dedupedNotifications.map((notif) => {
-          const key = notif.id || notif._id ||
+          const key =
+            notif.id ||
+            notif._id ||
             (notif.threadId ? notif.threadId.toString() : null);
           return (
             <div
@@ -181,7 +180,7 @@ export default function Notifications({ onClose }) {
                 >
                   {formatDate(notif.timestamp)}
                 </div>
-                {!notif.read && notif.unreadCount > 1 && (
+                {!notif.read && notif.unreadCount > 0 && (
                   <div
                     style={{
                       backgroundColor: "#d00",
@@ -195,6 +194,7 @@ export default function Notifications({ onClose }) {
                       fontSize: 14,
                       fontWeight: "bold",
                     }}
+                    aria-label={`${notif.unreadCount} התראות לא נקראו`}
                   >
                     {notif.unreadCount}
                   </div>
