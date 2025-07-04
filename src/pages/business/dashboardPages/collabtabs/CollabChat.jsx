@@ -184,8 +184,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         const res = await API.get(`/business-chat/${convId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        // נורמליזציה: וידוא שכל הודעה מכילה שדה טקסט תקין
         const normMsgs = (res.data.messages || []).map((msg) => ({
           ...msg,
+          text: typeof msg.text === "string" ? msg.text : "",
           fromBusinessId: msg.fromBusinessId || msg.from,
           toBusinessId: msg.toBusinessId || msg.to,
         }));
@@ -206,8 +208,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const handleNewMessage = useCallback(
     (msg) => {
       const fullMsg = msg.fullMsg || msg;
+      if (!fullMsg) return;
+
+      // נורמליזציה עם וידוא טקסט
       const normalized = {
         ...fullMsg,
+        text: typeof fullMsg.text === "string" ? fullMsg.text : "",
         fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
         toBusinessId: fullMsg.toBusinessId || fullMsg.to,
         conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
@@ -361,7 +367,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               };
             const lastMsg =
               conv.messages.length > 0
-                ? conv.messages[conv.messages.length - 1].text
+                ? conv.messages[conv.messages.length - 1].text || ""
                 : "";
             return (
               <Box
@@ -424,7 +430,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 </Box>
                 {messages.map((msg, i) => (
                   <Box
-                    key={msg._id ? msg._id.toString() : `pending-${i}`}
+                    key={msg?._id ? msg._id.toString() : `pending-${i}`}
                     sx={{
                       background:
                         msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
@@ -440,7 +446,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                       wordBreak: "break-word",
                     }}
                   >
-                    <Box>{msg.text}</Box>
+                    <Box>{msg?.text ?? "[אין טקסט להציג]"}</Box>
                     <Box
                       sx={{
                         fontSize: 11,
