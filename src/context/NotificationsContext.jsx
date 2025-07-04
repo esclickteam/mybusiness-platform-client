@@ -19,7 +19,7 @@ const initialState = {
   },
 };
 
-// פונקציה שמבצעת נירמול ומבטיחה אחידות keys
+// נירמול הודעה (שומר על קונסיסטנטיות במקרה שצריך לתצוגה מלאה)
 function normalizeNotification(notif) {
   const rawText = typeof notif.text === "string" ? notif.text : notif.data?.text || "";
   const rawLast = notif.lastMessage || rawText;
@@ -50,17 +50,18 @@ function notificationsReducer(state, action) {
     case "SET_NOTIFICATIONS": {
       const incoming = action.payload.map(normalizeNotification);
       const map = new Map();
-      // דה-דופ לפי threadId (אם יש), אחרת לפי id
       incoming.forEach((n) => {
         const key = n.threadId || n.id;
         const existing = map.get(key);
         if (existing) {
-          // בחר ערכים עדכניים/מצטברים
           map.set(key, {
             ...existing,
             ...n,
             unreadCount: Math.max(existing.unreadCount || 0, n.unreadCount || 0),
-            timestamp: new Date(n.timestamp) > new Date(existing.timestamp) ? n.timestamp : existing.timestamp,
+            timestamp:
+              new Date(n.timestamp) > new Date(existing.timestamp)
+                ? n.timestamp
+                : existing.timestamp,
           });
         } else {
           map.set(key, n);
@@ -72,51 +73,15 @@ function notificationsReducer(state, action) {
       const unreadCount = calculateUnreadCount(merged);
       return { ...state, notifications: merged, unreadCount };
     }
-    case "ADD_NOTIFICATION": {
-      const n = normalizeNotification(action.payload);
 
-      // דה-דופ לפי threadId (אם יש), אחרת id
-      const key = n.threadId || n.id;
-      const existsIndex = state.notifications.findIndex(
-        x => (x.threadId || x.id) === key
-      );
+    case "UPDATE_UNREAD_COUNT": {
+      // רק עדכון המונה
+      return { ...state, unreadCount: action.payload };
+    }
 
-      let list;
-      if (existsIndex !== -1) {
-        list = [...state.notifications];
-        const existing = list[existsIndex];
-        list[existsIndex] = {
-          ...existing,
-          ...n,
-          read: false,
-          unreadCount: (existing.unreadCount || 0) + (n.unreadCount || 1),
-          timestamp: new Date(n.timestamp) > new Date(existing.timestamp) ? n.timestamp : existing.timestamp,
-        };
-      } else {
-        list = [n, ...state.notifications];
-      }
-
-      list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      const unreadCount = calculateUnreadCount(list);
-      return { ...state, notifications: list, unreadCount };
-    }
-    case "MARK_AS_READ": {
-      const id = action.payload;
-      const updatedNotifications = state.notifications.map((n) =>
-        (n.id === id || n.threadId === id) ? { ...n, read: true, unreadCount: 0 } : n
-      );
-      const unreadCount = calculateUnreadCount(updatedNotifications);
-      return { ...state, notifications: updatedNotifications, unreadCount };
-    }
-    case "CLEAR_ALL":
-      return { ...state, notifications: [], unreadCount: 0 };
-    case "CLEAR_READ": {
-      const filtered = state.notifications.filter((n) => !n.read);
-      const unreadCount = calculateUnreadCount(filtered);
-      return { ...state, notifications: filtered, unreadCount };
-    }
     case "SET_DASHBOARD_STATS":
       return { ...state, dashboardStats: action.payload };
+
     default:
       return state;
   }
@@ -126,6 +91,7 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(notificationsReducer, initialState);
 
+  // טען את הרשימה הראשונית של ההודעות (אם צריך)
   useEffect(() => {
     if (!user?.businessId) return;
     fetch("/api/business/my/notifications", {
@@ -140,6 +106,7 @@ export function NotificationsProvider({ children }) {
       .catch((err) => console.error("Notifications fetch failed:", err));
   }, [user?.businessId]);
 
+  // מאזינים רק ל-notificationBundle
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -147,37 +114,21 @@ export function NotificationsProvider({ children }) {
       socket.emit("joinBusinessRoom", user.businessId);
     };
 
-    const handleNewNotification = (payload) => {
-      const data = payload?.data ?? payload;
-      if (!data || typeof data.text !== "string") return;
-      dispatch({ type: "ADD_NOTIFICATION", payload: data });
-    };
-
-    const handleNewMessage = (msg) => {
-      const data = msg.data || msg;
-      if (!data || typeof data.text !== "string") return;
-      const notification = {
-        ...data,
-        text: typeof data.text === "string" ? data.text : "",
-        lastMessage:
-          data.lastMessage || (typeof data.text === "string" ? data.text : ""),
-        id: data.threadId || data.chatId || data.id || data._id?.toString(),
-        threadId: data.threadId || null,
-        read: data.read ?? false,
-        timestamp: data.timestamp || data.createdAt || new Date().toISOString(),
-      };
-      dispatch({ type: "ADD_NOTIFICATION", payload: notification });
+    const handleBundle = (payload) => {
+      // payload = { count: X }
+      if (payload && typeof payload.count === "number") {
+        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: payload.count });
+      }
     };
 
     socket.on("connect", handleConnect);
     if (socket.connected) handleConnect();
-    socket.on("newNotification", handleNewNotification);
-    socket.on("newMessage", handleNewMessage);
+
+    socket.on("notificationBundle", handleBundle);
 
     return () => {
       socket.off("connect", handleConnect);
-      socket.off("newNotification", handleNewNotification);
-      socket.off("newMessage", handleNewMessage);
+      socket.off("notificationBundle", handleBundle);
     };
   }, [socket, user?.businessId]);
 
@@ -188,14 +139,14 @@ export function NotificationsProvider({ children }) {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-
         },
       });
-      dispatch({ type: "MARK_AS_READ", payload: id });
+      // אם תרצו לאפס ברגע סימון כנקרא:
+      dispatch({ type: "UPDATE_UNREAD_COUNT", payload: state.unreadCount - 1 });
     } catch (err) {
       console.error("markAsRead error:", err);
     }
-  }, []);
+  }, [state.unreadCount]);
 
   return (
     <NotificationsContext.Provider
