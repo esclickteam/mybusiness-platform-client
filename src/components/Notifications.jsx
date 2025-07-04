@@ -12,36 +12,40 @@ export default function Notifications({ onClose }) {
     markAllAsRead,
   } = useNotifications();
 
-  // איחוד לפי threadId: כרטיס אחד בלבד לשיחה, טקסט קבוע, מספר הודעות לא נקראו
+  // דה-דופ מלא: כרטיס אחד לכל threadId, עם סכימת הודעות ונתונים הכי עדכניים
   const dedupedNotifications = React.useMemo(() => {
     const map = new Map();
 
     for (const notif of notifications) {
-      // רק הודעות מהסוג הרלוונטי (לדוג' הודעות צ'אט)
-      if (notif.type === "message" && notif.threadId) {
-        const key = notif.threadId.toString();
-        if (map.has(key)) {
-          const prev = map.get(key);
-          map.set(key, {
-            ...prev,
-            unreadCount: (prev.unreadCount || 0) + (notif.unreadCount || 0),
-            timestamp: new Date(notif.timestamp) > new Date(prev.timestamp) ? notif.timestamp : prev.timestamp,
-            read: prev.read && notif.read,
-          });
-        } else {
-          map.set(key, {
-            ...notif,
-            text: "✉️ הודעה חדשה מלקוח", // טקסט אחיד לכל שיחה!
-          });
-        }
+      const key = notif.threadId || notif.id || notif._id;
+      if (!key) continue;
+
+      if (map.has(key)) {
+        const prev = map.get(key);
+
+        // בחר הודעה אחרונה
+        const isNewer = new Date(notif.timestamp) > new Date(prev.timestamp);
+
+        map.set(key, {
+          ...prev,
+          text: isNewer ? notif.text : prev.text,
+          lastMessage: isNewer ? notif.lastMessage : prev.lastMessage,
+          timestamp: isNewer ? notif.timestamp : prev.timestamp,
+          unreadCount: (prev.unreadCount || 0) + (notif.unreadCount || 0),
+          read: prev.read && notif.read, // ייחשב כ"נקרא" רק אם כל ההתראות נקראו
+          type: notif.type, // להשאיר ליתר ביטחון
+        });
+      } else {
+        map.set(key, { ...notif });
       }
     }
 
+    // החזר מערך ממויין מהחדש לישן
     return Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   }, [notifications]);
 
   const handleClick = async (notif) => {
-    const id = notif.threadId;
+    const id = notif.threadId || notif.id || notif._id;
     if (!notif.read && id) {
       await markAsRead(id);
     }
@@ -115,7 +119,7 @@ export default function Notifications({ onClose }) {
         <div style={{ padding: 15, textAlign: "center" }}>אין התראות חדשות</div>
       ) : (
         dedupedNotifications.map((notif) => {
-          const key = notif.threadId;
+          const key = notif.threadId || notif.id || notif._id;
           return (
             <div
               key={key}
@@ -133,7 +137,11 @@ export default function Notifications({ onClose }) {
               }}
               title={notif.text}
             >
-              <div>{notif.text}</div>
+              <div>
+                {notif.type === "message"
+                  ? `✉️ יש לך ${notif.unreadCount} הודעות חדשות`
+                  : notif.text}
+              </div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
