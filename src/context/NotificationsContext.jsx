@@ -70,13 +70,15 @@ function notificationsReducer(state, action) {
       const exists = state.notifications.find((x) => x.id === n.id);
       let list;
       if (exists) {
+        // בודקים אם unreadCount חדש גבוה יותר מהקיים - רק אז מעדכנים אותו
+        const shouldUpdateUnreadCount = (n.unreadCount || 0) > (exists.unreadCount || 0);
         list = state.notifications.map((x) =>
           x.id === n.id
             ? {
                 ...x,
                 ...n,
                 read: false,
-                unreadCount: (x.unreadCount || 0) + 1,
+                unreadCount: shouldUpdateUnreadCount ? n.unreadCount : (x.unreadCount || 0),
               }
             : x
         );
@@ -113,6 +115,7 @@ function notificationsReducer(state, action) {
       return state;
   }
 }
+
 
 export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
