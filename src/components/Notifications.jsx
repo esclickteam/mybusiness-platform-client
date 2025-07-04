@@ -1,9 +1,7 @@
 import React from "react";
-import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
 
 export default function Notifications({ onClose }) {
-  const { user } = useAuth();
   const { notifications, markAsRead, clearRead } = useNotifications();
 
   // לוג של הרשימה לפני הדה-דופ
@@ -46,7 +44,7 @@ export default function Notifications({ onClose }) {
     onClose?.();
   };
 
-  const handleClearRead = async () => {
+  const handleClear = async () => {
     try {
       await clearRead();
     } catch (err) {
@@ -66,7 +64,6 @@ export default function Notifications({ onClose }) {
     color: "#007bff",
     cursor: "pointer",
     fontSize: "0.9rem",
-    marginLeft: 10,
   };
 
   return (
@@ -84,7 +81,7 @@ export default function Notifications({ onClose }) {
         zIndex: 1000,
       }}
     >
-      {/* כותרת + כפתורי פעולה */}
+      {/* כותרת + כפתור ניקוי */}
       <div
         style={{
           padding: "8px 12px",
@@ -97,8 +94,8 @@ export default function Notifications({ onClose }) {
       >
         התראות
         {dedupedNotifications.length > 0 && (
-          <button onClick={handleClearRead} style={buttonStyle}>
-            ניקוי התראות
+          <button onClick={handleClear} style={buttonStyle}>
+            ניקוי כל ההתראות
           </button>
         )}
       </div>
