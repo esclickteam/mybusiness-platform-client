@@ -4,9 +4,6 @@ import API from "../api"; // axios עם token מוגדר מראש
 import { useSocket } from "../context/socketContext";
 import "./BusinessChatTab.css";
 
-/**
- * קומפוננטת נגן אודיו בסגנון WhatsApp
- */
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   if (!src) return null;
 
@@ -73,9 +70,6 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   );
 }
 
-/**
- * reducer לניהול היסטוריית ההודעות
- */
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
@@ -133,7 +127,6 @@ export default function BusinessChatTab({
     });
   };
 
-  // fetch message history
   async function fetchMessagesByConversationId(conversationId, page = 0, limit = 50) {
     try {
       const res = await API.get(`/messages/${conversationId}/history`, {
@@ -148,10 +141,21 @@ export default function BusinessChatTab({
         from: m.from,
       }));
 
-      // סינון הודעות ב-client-business tab: רק הודעות שהן לא מהעסק (user-business)
+      console.log("businessId:", businessId);
+      console.log("conversationType:", conversationType);
+      console.log("Messages before filter:", msgs);
+
       if (conversationType === "user-business") {
-        msgs = msgs.filter((m) => String(m.from) !== String(businessId));
+        const bizStr = String(businessId).trim();
+        msgs = msgs.filter((m) => {
+          const fromStr = String(m.from).trim();
+          const keep = fromStr !== bizStr;
+          if (!keep) console.log("Filtering out business message:", m);
+          return keep;
+        });
       }
+
+      console.log("Messages after filter:", msgs);
 
       return msgs;
     } catch (error) {
@@ -160,7 +164,6 @@ export default function BusinessChatTab({
     }
   }
 
-  // load on conversation change
   useEffect(() => {
     if (!conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -177,22 +180,23 @@ export default function BusinessChatTab({
     };
   }, [conversationId, conversationType, businessId]);
 
-  // real-time socket handlers
   useEffect(() => {
     if (!socket) return;
 
     const handleNew = (msg) => {
+      console.log("New message received:", msg);
       if (
         msg.conversationId !== conversationId ||
         msg.conversationType !== conversationType
       )
         return;
 
-      // סינון הודעות מהעסק בזמן שצופים בשיחות מסוג user-business
+      const bizStr = String(businessId).trim();
       if (
         conversationType === "user-business" &&
-        String(msg.from) === String(businessId)
+        String(msg.from).trim() === bizStr
       ) {
+        console.log("Filtered out business message in user-business conversation:", msg);
         return;
       }
 
@@ -234,7 +238,6 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId, customerId, conversationType, businessId]);
 
-  // auto-scroll
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
@@ -242,7 +245,6 @@ export default function BusinessChatTab({
     if (nearBottom) el.scrollTop = el.scrollHeight;
   }, [messages, isTyping]);
 
-  // input handlers
   const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
@@ -291,12 +293,10 @@ export default function BusinessChatTab({
 
   return (
     <div className="chat-container business">
-      {/* Header */}
       <div className="chat-header">
         <h3>{customerName}</h3>
       </div>
 
-      {/* Message list */}
       <div className="message-list" ref={listRef}>
         {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {messages.map((m, i) =>
@@ -349,7 +349,6 @@ export default function BusinessChatTab({
         {isTyping && <div className="typing-indicator">הלקוח מקליד…</div>}
       </div>
 
-      {/* Input bar */}
       <div className="inputBar">
         <textarea
           className="inputField"
