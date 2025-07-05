@@ -1,46 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
-const AiRecommendations = ({ businessId, token }) => {
+const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [loadingIds, setLoadingIds] = useState(new Set());
   const [error, setError] = useState(null);
 
+  // נשמור את ה-socket ב-ref כדי לא ליצור חדש בכל render
+  const socketRef = useRef(null);
+
+  // init וחיבור ראשוני
   useEffect(() => {
-    if (!businessId || !token) {
-      console.warn(
-        "AiRecommendations: missing businessId or token, skipping socket connection"
-      );
-      return;
-    }
+    if (!businessId || !token) return;
 
     console.log("[Socket] initializing…");
+
     const socket = io(SOCKET_URL, {
       auth: { token, businessId },
       transports: ["websocket"],
+      autoConnect: false,
+      reconnection: true,
     });
+    socketRef.current = socket;
 
-    socket.on("connect", () => {
+    // handlers משותפים
+    const onConnect = () => {
       console.log(`[Socket] connected (${socket.id}), joining rooms`);
       socket.emit("joinRoom", `business-${businessId}`);
       socket.emit("joinRoom", `dashboard-${businessId}`);
-      console.log(
-        `[Socket] Emitted joinRoom for business-${businessId} and dashboard-${businessId}`
-      );
-    });
-
-    socket.on("connect_error", (err) => {
+    };
+    const onConnectError = (err) => {
       console.error("[Socket] connection error:", err);
-      setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
-    });
-
-    socket.on("disconnect", (reason) => {
+      // זיהוי בעיית אימות
+      if (err.message.includes("401") && typeof onTokenExpired === "function") {
+        console.warn("[Socket] unauthorized – token expired, calling onTokenExpired()");
+        onTokenExpired();
+      } else {
+        setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
+      }
+    };
+    const onDisconnect = (reason) => {
       console.log("[Socket] disconnected:", reason);
-    });
-
-    socket.on("newAiSuggestion", (rec) => {
+    };
+    const onNewAiSuggestion = (rec) => {
       console.log("[Socket] <<newAiSuggestion>> received:", rec);
       setRecommendations((prev) => {
         const idx = prev.findIndex(
@@ -50,18 +54,14 @@ const AiRecommendations = ({ businessId, token }) => {
           if (prev[idx].text !== rec.text || prev[idx].status !== rec.status) {
             const copy = [...prev];
             copy[idx] = rec;
-            console.log(`[Socket] updated recommendation ${rec._id}`);
             return copy;
           }
           return prev;
         }
-        console.log(`[Socket] adding recommendation ${rec._id}`);
         return [...prev, rec];
       });
-    });
-
-    socket.on("messageApproved", ({ recommendationId }) => {
-      console.log("[Socket] messageApproved:", recommendationId);
+    };
+    const onMessageApproved = ({ recommendationId }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
           r._id === recommendationId || r.id === recommendationId
@@ -74,10 +74,8 @@ const AiRecommendations = ({ businessId, token }) => {
         next.delete(recommendationId);
         return next;
       });
-    });
-
-    socket.on("recommendationRejected", ({ recommendationId }) => {
-      console.log("[Socket] recommendationRejected:", recommendationId);
+    };
+    const onRecommendationRejected = ({ recommendationId }) => {
       setRecommendations((prev) =>
         prev.filter((r) => r._id !== recommendationId && r.id !== recommendationId)
       );
@@ -86,13 +84,42 @@ const AiRecommendations = ({ businessId, token }) => {
         next.delete(recommendationId);
         return next;
       });
-    });
+    };
 
+    // רישום מאזינים
+    socket.on("connect", onConnect);
+    socket.on("connect_error", onConnectError);
+    socket.on("disconnect", onDisconnect);
+    socket.on("newAiSuggestion", onNewAiSuggestion);
+    socket.on("messageApproved", onMessageApproved);
+    socket.on("recommendationRejected", onRecommendationRejected);
+
+    // התחלת החיבור
+    socket.connect();
+
+    // ניקוי בסיום
     return () => {
-      console.log("[Socket] cleanup & disconnect");
+      socket.off("connect", onConnect);
+      socket.off("connect_error", onConnectError);
+      socket.off("disconnect", onDisconnect);
+      socket.off("newAiSuggestion", onNewAiSuggestion);
+      socket.off("messageApproved", onMessageApproved);
+      socket.off("recommendationRejected", onRecommendationRejected);
       socket.disconnect();
     };
-  }, [businessId, token]);
+  }, [businessId, token, onTokenExpired]);
+
+  // במקרה שה-token מתעדכן (למשל אחרי רענון), נחבר מחדש עם ה-token החדש
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (socket && socket.auth) {
+      socket.auth.token = token;
+      if (socket.connected) {
+        socket.disconnect();
+        socket.connect();
+      }
+    }
+  }, [token]);
 
   const approveRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
