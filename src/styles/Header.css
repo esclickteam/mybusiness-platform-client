@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   padding: 6px 20px;
-  min-height: 120px;
+  min-height: 90px;
   justify-content: space-between; /* מיישר את התוכן */
   background-color: rgba(255, 255, 255, 0.95); /* רקע לבן עם שקיפות קלה */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* צל עדין למטה */
