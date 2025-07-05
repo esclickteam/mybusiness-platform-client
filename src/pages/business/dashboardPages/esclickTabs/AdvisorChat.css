@@ -11,7 +11,6 @@
 
 .chat-box-wrapper {
   flex-grow: 1;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
@@ -23,9 +22,22 @@
   border: 1px solid #ccc;
   border-radius: 16px;
   padding: 1rem;
-  padding-bottom: 0 !important;
   box-sizing: border-box;
   scroll-behavior: smooth;
+
+  /* גובה מקסימלי וגלילה פנימית */
+  max-height: 400px;    /* ניתן לשנות לפי הצורך */
+  overflow-y: auto;     /* גלילה אנכית כשהתוכן גבוה מדי */
+  resize: vertical;     /* אופציונלי: מאפשר למשתמש לגרור אנכית */
+}
+
+/* עיצוב פסי גלילה בדפדפני WebKit */
+.chat-box::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-box::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .bubble {
