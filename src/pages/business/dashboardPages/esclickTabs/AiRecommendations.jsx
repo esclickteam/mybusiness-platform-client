@@ -5,90 +5,90 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
 const AiRecommendations = ({ businessId, token }) => {
   const [recommendations, setRecommendations] = useState([]);
-  const [socket, setSocket] = useState(null);
   const [loadingIds, setLoadingIds] = useState(new Set());
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!businessId || !token) {
-      console.warn("AiRecommendations: missing businessId or token, skipping socket connection");
+      console.warn(
+        "AiRecommendations: missing businessId or token, skipping socket connection"
+      );
       return;
     }
 
-    console.log("[Socket] Initializing socket connection...");
-
-    const s = io(SOCKET_URL, {
+    const socket = io(SOCKET_URL, {
       auth: { token, businessId },
       transports: ["websocket"],
     });
 
-    s.on("connect", () => {
-      console.log(`[Socket] Connected with id: ${s.id}`);
-      s.emit("joinRoom", businessId);
-      console.log(`[Socket] Emitted joinRoom for businessId: ${businessId}`);
+    socket.on("connect", () => {
+      socket.emit("joinRoom", businessId);
     });
 
-    s.on("connect_error", (err) => {
-      console.error("[Socket] Connection error:", err);
+    socket.on("connect_error", (err) => {
+      console.error("Socket connection error:", err);
       setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
     });
 
-    s.on("disconnect", (reason) => {
-      console.log("[Socket] Disconnected, reason:", reason);
+    socket.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
     });
 
-    s.on("newAiSuggestion", (rec) => {
-      console.log("[Socket] Received newAiSuggestion:", rec);
+    // מאזין רק להמלצות AI
+    socket.on("newAiSuggestion", (rec) => {
+      // אם backend מביא שדות נוספים, אפשר לסנן כאן:
+      // אם אתה מוסיף rec.isGenerated = true מהשרת, אפשר לבדוק: if (!rec.isGenerated) return;
+
       setRecommendations((prev) => {
-        if (prev.find((r) => r._id === rec._id)) {
-          console.log(`[Socket] Recommendation with id ${rec._id} already exists, skipping`);
+        const idx = prev.findIndex((r) => r._id === rec._id || r.id === rec._id);
+        if (idx !== -1) {
+          // עדכון אם השתנה
+          if (prev[idx].text !== rec.text || prev[idx].status !== rec.status) {
+            const updated = [...prev];
+            updated[idx] = rec;
+            return updated;
+          }
           return prev;
         }
-        console.log(`[Socket] Adding new recommendation with id ${rec._id}`);
+        // הוספה ראשונה
         return [...prev, rec];
       });
     });
 
-    s.on("messageApproved", ({ recommendationId }) => {
-      console.log(`[Socket] Received messageApproved for recommendationId: ${recommendationId}`);
+    socket.on("messageApproved", ({ recommendationId }) => {
       setRecommendations((prev) =>
-        prev.map((r) => {
-          if (r._id === recommendationId || r.id === recommendationId) {
-            console.log(`[Socket] Updating recommendation ${recommendationId} status to approved`);
-            return { ...r, status: "approved" };
-          }
-          return r;
-        })
+        prev.map((r) =>
+          r._id === recommendationId || r.id === recommendationId
+            ? { ...r, status: "approved" }
+            : r
+        )
       );
       setLoadingIds((ids) => {
-        const newIds = new Set(ids);
-        newIds.delete(recommendationId);
-        return newIds;
+        const next = new Set(ids);
+        next.delete(recommendationId);
+        return next;
       });
     });
 
-    s.on("recommendationRejected", ({ recommendationId }) => {
-      console.log(`[Socket] Received recommendationRejected for recommendationId: ${recommendationId}`);
-      setRecommendations((prev) => prev.filter((r) => r._id !== recommendationId && r.id !== recommendationId));
+    socket.on("recommendationRejected", ({ recommendationId }) => {
+      setRecommendations((prev) =>
+        prev.filter((r) => r._id !== recommendationId && r.id !== recommendationId)
+      );
       setLoadingIds((ids) => {
-        const newIds = new Set(ids);
-        newIds.delete(recommendationId);
-        return newIds;
+        const next = new Set(ids);
+        next.delete(recommendationId);
+        return next;
       });
     });
-
-    setSocket(s);
 
     return () => {
-      console.log("[Socket] Disconnecting socket...");
-      s.disconnect();
+      socket.disconnect();
     };
   }, [businessId, token]);
 
   const approveRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
-    console.log(`[Action] Approving recommendation: ${id}`);
     try {
       const res = await fetch("/api/chat/send-approved", {
         method: "POST",
@@ -99,23 +99,20 @@ const AiRecommendations = ({ businessId, token }) => {
         body: JSON.stringify({ businessId, recommendationId: id }),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to approve");
 
-      if (!res.ok) {
-        console.error(`[Action] Approval failed: ${data.error || "Unknown error"}`);
-        throw new Error(data.error || "Failed to approve");
-      }
-
-      // סטטוס יתעדכן גם משידור ה-Socket.IO (messageApproved), אבל נשמור פה לצורך מיידיות UI
       setRecommendations((prev) =>
-        prev.map((r) => (r.id === id || r._id === id ? { ...r, status: "approved" } : r))
+        prev.map((r) =>
+          r._id === id || r.id === id ? { ...r, status: "approved" } : r
+        )
       );
     } catch (err) {
-      console.error(`[Action] Error approving recommendation: ${err.message}`);
       setError("שגיאה באישור ההמלצה: " + err.message);
+    } finally {
       setLoadingIds((ids) => {
-        const newIds = new Set(ids);
-        newIds.delete(id);
-        return newIds;
+        const next = new Set(ids);
+        next.delete(id);
+        return next;
       });
     }
   };
@@ -123,7 +120,6 @@ const AiRecommendations = ({ businessId, token }) => {
   const rejectRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
-    console.log(`[Action] Rejecting recommendation: ${id}`);
     try {
       const res = await fetch("/api/chat/rejectRecommendation", {
         method: "POST",
@@ -133,51 +129,63 @@ const AiRecommendations = ({ businessId, token }) => {
         },
         body: JSON.stringify({ recommendationId: id }),
       });
+      if (!res.ok) throw new Error("Failed to reject");
 
-      if (!res.ok) {
-        console.error("[Action] Reject failed");
-        throw new Error("Failed to reject");
-      }
-
-      setRecommendations((prev) => prev.filter((r) => r.id !== id && r._id !== id));
+      setRecommendations((prev) =>
+        prev.filter((r) => r._id !== id && r.id !== id)
+      );
     } catch (err) {
-      console.error(`[Action] Error rejecting recommendation: ${err.message}`);
       setError("שגיאה בדחיית ההמלצה: " + err.message);
+    } finally {
       setLoadingIds((ids) => {
-        const newIds = new Set(ids);
-        newIds.delete(id);
-        return newIds;
+        const next = new Set(ids);
+        next.delete(id);
+        return next;
       });
     }
   };
+
+  // מציגים רק המלצות במצב 'pending'
+  const pending = recommendations.filter((r) => r.status === "pending");
 
   return (
     <div>
       <h3>המלצות AI ממתינות לאישור</h3>
       {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
-      {recommendations.filter((r) => r.status === "pending").length === 0 && <p>אין המלצות חדשות.</p>}
-      <ul>
-        {recommendations
-          .filter((r) => r.status === "pending")
-          .map(({ _id, id, text }) => {
+      {pending.length === 0 ? (
+        <p>אין המלצות חדשות.</p>
+      ) : (
+        <ul>
+          {pending.map(({ _id, id, text }) => {
             const recId = _id || id;
             const isLoading = loadingIds.has(recId);
             return (
               <li
                 key={recId}
-                style={{ marginBottom: "1rem", border: "1px solid #ccc", padding: "0.5rem" }}
+                style={{
+                  marginBottom: "1rem",
+                  border: "1px solid #ccc",
+                  padding: "0.5rem",
+                }}
               >
                 <p>{text}</p>
-                <button onClick={() => approveRecommendation(recId)} disabled={isLoading}>
+                <button
+                  onClick={() => approveRecommendation(recId)}
+                  disabled={isLoading}
+                >
                   {isLoading ? "טוען..." : "אשר ושלח"}
-                </button>
-                <button onClick={() => rejectRecommendation(recId)} disabled={isLoading}>
+                </button>{" "}
+                <button
+                  onClick={() => rejectRecommendation(recId)}
+                  disabled={isLoading}
+                >
                   {isLoading ? "טוען..." : "דחה"}
                 </button>
               </li>
             );
           })}
-      </ul>
+        </ul>
+      )}
     </div>
   );
 };
