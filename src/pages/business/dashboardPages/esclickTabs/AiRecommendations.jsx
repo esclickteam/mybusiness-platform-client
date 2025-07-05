@@ -5,7 +5,6 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
 const AiRecommendations = ({ businessId, token }) => {
   const [recommendations, setRecommendations] = useState([]);
-  const [socket, setSocket] = useState(null);
   const [loadingIds, setLoadingIds] = useState(new Set());
   const [error, setError] = useState(null);
 
@@ -18,31 +17,31 @@ const AiRecommendations = ({ businessId, token }) => {
     }
 
     console.log("[Socket] initializing…");
-    const s = io(SOCKET_URL, {
+    const socket = io(SOCKET_URL, {
       auth: { token, businessId },
       transports: ["websocket"],
     });
-    setSocket(s);
 
-    s.on("connect", () => {
-      console.log(`[Socket] connected (${s.id}), joining room ${businessId}`);
-      s.emit("joinRoom", businessId);
+    socket.on("connect", () => {
+      console.log(`[Socket] connected (${socket.id}), joining rooms`);
+      socket.emit("joinRoom", `business-${businessId}`);
+      socket.emit("joinRoom", `dashboard-${businessId}`);
+      console.log(
+        `[Socket] Emitted joinRoom for business-${businessId} and dashboard-${businessId}`
+      );
     });
 
-    s.on("connect_error", (err) => {
+    socket.on("connect_error", (err) => {
       console.error("[Socket] connection error:", err);
       setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
     });
 
-    s.on("disconnect", (reason) => {
+    socket.on("disconnect", (reason) => {
       console.log("[Socket] disconnected:", reason);
     });
 
-    s.on("newAiSuggestion", (rec) => {
+    socket.on("newAiSuggestion", (rec) => {
       console.log("[Socket] <<newAiSuggestion>> received:", rec);
-      // אם ה-backend שולח שדה isGenerated, אפשר לסנן: 
-      // if (!rec.isGenerated) return;
-
       setRecommendations((prev) => {
         const idx = prev.findIndex(
           (r) => r._id === rec._id || r.id === rec._id
@@ -61,7 +60,7 @@ const AiRecommendations = ({ businessId, token }) => {
       });
     });
 
-    s.on("messageApproved", ({ recommendationId }) => {
+    socket.on("messageApproved", ({ recommendationId }) => {
       console.log("[Socket] messageApproved:", recommendationId);
       setRecommendations((prev) =>
         prev.map((r) =>
@@ -77,7 +76,7 @@ const AiRecommendations = ({ businessId, token }) => {
       });
     });
 
-    s.on("recommendationRejected", ({ recommendationId }) => {
+    socket.on("recommendationRejected", ({ recommendationId }) => {
       console.log("[Socket] recommendationRejected:", recommendationId);
       setRecommendations((prev) =>
         prev.filter((r) => r._id !== recommendationId && r.id !== recommendationId)
@@ -91,7 +90,7 @@ const AiRecommendations = ({ businessId, token }) => {
 
     return () => {
       console.log("[Socket] cleanup & disconnect");
-      s.disconnect();
+      socket.disconnect();
     };
   }, [businessId, token]);
 
