@@ -5,6 +5,7 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
 const AiRecommendations = ({ businessId, token }) => {
   const [recommendations, setRecommendations] = useState([]);
+  const [socket, setSocket] = useState(null);
   const [loadingIds, setLoadingIds] = useState(new Set());
   const [error, setError] = useState(null);
 
@@ -16,46 +17,52 @@ const AiRecommendations = ({ businessId, token }) => {
       return;
     }
 
-    const socket = io(SOCKET_URL, {
+    console.log("[Socket] initializing…");
+    const s = io(SOCKET_URL, {
       auth: { token, businessId },
       transports: ["websocket"],
     });
+    setSocket(s);
 
-    socket.on("connect", () => {
-      socket.emit("joinRoom", businessId);
+    s.on("connect", () => {
+      console.log(`[Socket] connected (${s.id}), joining room ${businessId}`);
+      s.emit("joinRoom", businessId);
     });
 
-    socket.on("connect_error", (err) => {
-      console.error("Socket connection error:", err);
+    s.on("connect_error", (err) => {
+      console.error("[Socket] connection error:", err);
       setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
     });
 
-    socket.on("disconnect", (reason) => {
-      console.log("Socket disconnected:", reason);
+    s.on("disconnect", (reason) => {
+      console.log("[Socket] disconnected:", reason);
     });
 
-    // מאזין רק להמלצות AI
-    socket.on("newAiSuggestion", (rec) => {
-      // אם backend מביא שדות נוספים, אפשר לסנן כאן:
-      // אם אתה מוסיף rec.isGenerated = true מהשרת, אפשר לבדוק: if (!rec.isGenerated) return;
+    s.on("newAiSuggestion", (rec) => {
+      console.log("[Socket] <<newAiSuggestion>> received:", rec);
+      // אם ה-backend שולח שדה isGenerated, אפשר לסנן: 
+      // if (!rec.isGenerated) return;
 
       setRecommendations((prev) => {
-        const idx = prev.findIndex((r) => r._id === rec._id || r.id === rec._id);
+        const idx = prev.findIndex(
+          (r) => r._id === rec._id || r.id === rec._id
+        );
         if (idx !== -1) {
-          // עדכון אם השתנה
           if (prev[idx].text !== rec.text || prev[idx].status !== rec.status) {
-            const updated = [...prev];
-            updated[idx] = rec;
-            return updated;
+            const copy = [...prev];
+            copy[idx] = rec;
+            console.log(`[Socket] updated recommendation ${rec._id}`);
+            return copy;
           }
           return prev;
         }
-        // הוספה ראשונה
+        console.log(`[Socket] adding recommendation ${rec._id}`);
         return [...prev, rec];
       });
     });
 
-    socket.on("messageApproved", ({ recommendationId }) => {
+    s.on("messageApproved", ({ recommendationId }) => {
+      console.log("[Socket] messageApproved:", recommendationId);
       setRecommendations((prev) =>
         prev.map((r) =>
           r._id === recommendationId || r.id === recommendationId
@@ -70,7 +77,8 @@ const AiRecommendations = ({ businessId, token }) => {
       });
     });
 
-    socket.on("recommendationRejected", ({ recommendationId }) => {
+    s.on("recommendationRejected", ({ recommendationId }) => {
+      console.log("[Socket] recommendationRejected:", recommendationId);
       setRecommendations((prev) =>
         prev.filter((r) => r._id !== recommendationId && r.id !== recommendationId)
       );
@@ -82,7 +90,8 @@ const AiRecommendations = ({ businessId, token }) => {
     });
 
     return () => {
-      socket.disconnect();
+      console.log("[Socket] cleanup & disconnect");
+      s.disconnect();
     };
   }, [businessId, token]);
 
@@ -107,6 +116,7 @@ const AiRecommendations = ({ businessId, token }) => {
         )
       );
     } catch (err) {
+      console.error("[Action] approve error:", err);
       setError("שגיאה באישור ההמלצה: " + err.message);
     } finally {
       setLoadingIds((ids) => {
@@ -135,6 +145,7 @@ const AiRecommendations = ({ businessId, token }) => {
         prev.filter((r) => r._id !== id && r.id !== id)
       );
     } catch (err) {
+      console.error("[Action] reject error:", err);
       setError("שגיאה בדחיית ההמלצה: " + err.message);
     } finally {
       setLoadingIds((ids) => {
@@ -145,7 +156,6 @@ const AiRecommendations = ({ businessId, token }) => {
     }
   };
 
-  // מציגים רק המלצות במצב 'pending'
   const pending = recommendations.filter((r) => r.status === "pending");
 
   return (
