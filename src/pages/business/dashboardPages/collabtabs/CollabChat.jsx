@@ -221,54 +221,61 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [selectedConversation, refreshAccessToken, uniqueMessages, myBusinessId]);
 
   const handleNewMessage = useCallback(
-    (msg) => {
-      const fullMsg = msg.fullMsg || msg;
-      if (!fullMsg) return;
+  (msg) => {
+    const fullMsg = msg.fullMsg || msg;
+    if (!fullMsg) return;
 
-      const normalized = {
-        ...fullMsg,
-        text: typeof fullMsg.text === "string" ? fullMsg.text : "",
-        fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-        toBusinessId: fullMsg.toBusinessId || fullMsg.to,
-        conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
-      };
+    const normalized = {
+      ...fullMsg,
+      text: typeof fullMsg.text === "string" ? fullMsg.text : "",
+      fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+      toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+      conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
+    };
 
-      if (!selectedConversation || normalized.conversationId !== selectedConversation._id) {
-        return;
+    if (!selectedConversation || normalized.conversationId !== selectedConversation._id) {
+      return;
+    }
+
+    // הוספת role להודעה
+    const msgWithRole = {
+      ...normalized,
+      role: String(normalized.fromBusinessId) === String(myBusinessId) ? "mine" : "theirs",
+    };
+
+    dispatchMessages((prevMessages) => {
+      const exists = prevMessages.some((m) => m._id === msgWithRole._id);
+      if (exists) return prevMessages;
+      return [...prevMessages, msgWithRole];
+    });
+
+    setSelectedConversation((prev) => {
+      if (prev && prev._id === msgWithRole.conversationId) {
+        return {
+          ...prev,
+          messages: uniqueMessages([...(prev.messages || []), msgWithRole]),
+        };
       }
+      return prev;
+    });
 
-      // הוסף role כאן
-      const msgWithRole = {
-        ...normalized,
-        role: String(normalized.fromBusinessId) === String(myBusinessId) ? "mine" : "theirs",
-      };
+    // הוספת העדכון הבא:
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv._id === msgWithRole.conversationId
+          ? {
+              ...conv,
+              messages: uniqueMessages([...(conv.messages || []), msgWithRole]),
+              lastMessage: msgWithRole.text,  // או כל שדה להצגת ההודעה האחרונה
+              updatedAt: msgWithRole.timestamp || new Date().toISOString(),
+            }
+          : conv
+      )
+    );
+  },
+  [selectedConversation, uniqueMessages, myBusinessId]
+);
 
-      dispatchMessages((prevMessages) => {
-        const exists = prevMessages.some((m) => m._id === msgWithRole._id);
-        if (exists) return prevMessages;
-        return [...prevMessages, msgWithRole];
-      });
-
-      setSelectedConversation((prev) => {
-        if (prev && prev._id === msgWithRole.conversationId) {
-          return {
-            ...prev,
-            messages: uniqueMessages([...(prev.messages || []), msgWithRole]),
-          };
-        }
-        return prev;
-      });
-
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === msgWithRole.conversationId
-            ? { ...conv, messages: uniqueMessages([...(conv.messages || []), msgWithRole]) }
-            : conv
-        )
-      );
-    },
-    [selectedConversation, uniqueMessages, myBusinessId]
-  );
 
   useEffect(() => {
     if (!socketRef.current) return;
