@@ -1,12 +1,20 @@
-const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
-  const [recommendations, setRecommendations] = React.useState([]);
-  const [loadingIds, setLoadingIds] = React.useState(new Set());
-  const [error, setError] = React.useState(null);
-  const [editingId, setEditingId] = React.useState(null);
-  const [editText, setEditText] = React.useState("");
-  const socketRef = React.useRef(null);
+import React, { useState, useEffect, useRef } from "react";
+import { io } from "socket.io-client";
 
-  React.useEffect(() => {
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+
+const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
+  const [recommendations, setRecommendations] = useState([]);
+  const [loadingIds, setLoadingIds] = useState(new Set());
+  const [error, setError] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editText, setEditText] = useState("");
+  const socketRef = useRef(null);
+
+  // פונקציה לניקוי טקסט מכל **, #, *
+  const cleanText = (text) => text.replace(/(\*\*|#|\*)/g, "").trim();
+
+  useEffect(() => {
     if (!businessId || !token) return;
 
     setError(null);
@@ -24,7 +32,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
   }, [businessId, token]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!businessId || !token) return;
 
     const socket = io(SOCKET_URL, {
@@ -55,18 +63,12 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         if (idx !== -1) {
           if (prev[idx].text !== rec.text || prev[idx].status !== rec.status) {
             const copy = [...prev];
-            copy[idx] = {
-              ...rec,
-              text: rec.text.replace(/\*\*/g, "").replace(/#/g, ""),
-            };
+            copy[idx] = rec;
             return copy;
           }
           return prev;
         }
-        return [...prev, {
-          ...rec,
-          text: rec.text.replace(/\*\*/g, "").replace(/#/g, ""),
-        }];
+        return [...prev, rec];
       });
     };
     const onMessageApproved = ({ recommendationId }) => {
@@ -118,7 +120,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     };
   }, [businessId, token, onTokenExpired]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const socket = socketRef.current;
     if (socket && socket.auth) {
       socket.auth.token = token;
@@ -192,7 +194,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
   const startEditing = (rec) => {
     setEditingId(rec._id || rec.id);
-    setEditText(rec.text.replace(/\*\*/g, "").replace(/#/g, ""));
+    setEditText(cleanText(rec.text));
   };
 
   const cancelEditing = () => {
@@ -204,14 +206,14 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
-      const cleanText = editText.replace(/\*\*/g, "").replace(/#/g, "").trim();
+      const newText = cleanText(editText);
       const res = await fetch("/api/chat/editRecommendation", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ recommendationId: id, newText: cleanText }),
+        body: JSON.stringify({ recommendationId: id, newText }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to edit");
@@ -219,7 +221,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
           (r._id === id || r.id === id)
-            ? { ...r, text: cleanText, isEdited: true, editedText: cleanText }
+            ? { ...r, text: newText, isEdited: true, editedText: newText }
             : r
         )
       );
@@ -265,9 +267,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   <>
                     <textarea
                       value={editText}
-                      onChange={(e) =>
-                        setEditText(e.target.value.replace(/\*\*/g, "").replace(/#/g, ""))
-                      }
+                      onChange={(e) => setEditText(e.target.value.replace(/(\*\*|#|\*)/g, ""))}
                       rows={10}
                       style={{ width: "100%", resize: "vertical" }}
                     />
@@ -280,7 +280,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   </>
                 ) : (
                   <>
-                    <p>{text.replace(/\*\*/g, "").replace(/#/g, "")}</p>
+                    <p>{cleanText(text)}</p>
                     <button onClick={() => startEditing({ _id: recId, text })}>
                       ערוך
                     </button>{" "}
@@ -323,7 +323,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   opacity: 0.7,
                 }}
               >
-                <p>{text.replace(/\*\*/g, "").replace(/#/g, "")}</p>
+                <p>{cleanText(text)}</p>
                 <p>סטטוס: {status === "approved" ? "מאושר" : "נדחה"}</p>
               </li>
             );
@@ -333,3 +333,5 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     </div>
   );
 };
+
+export default AiRecommendations;
