@@ -33,8 +33,6 @@ const AiPartnerTab = ({
 
   const [reminderText, setReminderText] = useState("");
   const [sendingReminder, setSendingReminder] = useState(false);
-
-  // מצב ושליחה של תזכורת לכל הלקוחות למחר
   const [sendingReminderTomorrow, setSendingReminderTomorrow] = useState(false);
 
   const bottomRef = useRef(null);
@@ -324,7 +322,7 @@ const AiPartnerTab = ({
     }
   }, [activeSuggestion]);
 
-  // פונקציה לשליחת תזכורת, לפי appointmentId בלבד
+  // פונקציה לשליחת תזכורת לפי appointmentId
   const sendReminder = async () => {
     if (!reminderText.trim()) return;
     if (!appointmentId) {
@@ -355,7 +353,42 @@ const AiPartnerTab = ({
     }
   };
 
-  // פונקציה לשליחת תזכורת לכל הלקוחות שיש להם פגישה מחר
+  // פונקציה לשליחת תזכורת וואטסאפ לכל הלקוחות שיש להם תיאום מחר
+  const sendWhatsAppReminder = (phone, clientName, date, time) => {
+    if (!phone) {
+      console.warn("מספר טלפון של הלקוח לא זמין");
+      return;
+    }
+    let cleanPhone = phone.replace(/\D/g, "");
+    if (!cleanPhone.startsWith("972")) {
+      if (cleanPhone.startsWith("0")) {
+        cleanPhone = "972" + cleanPhone.substring(1);
+      } else {
+        cleanPhone = "972" + cleanPhone;
+      }
+    }
+
+    const formattedDate = new Date(date).toLocaleDateString("he-IL", {
+      weekday: "long",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+    });
+
+    const businessDisplayName = businessName || "העסק שלך";
+
+    const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך בתאריך ${formattedDate} בשעה ${time}.\nמחכים לך ב${businessDisplayName}.`;
+    const encodedMessage = encodeURIComponent(message);
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const url = isMobile
+      ? `https://wa.me/${cleanPhone}?text=${encodedMessage}`
+      : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
+
+    window.open(url, "_blank");
+  };
+
+  // פונקציה לשליחת תזכורת וואטסאפ לכל הלקוחות עם פגישות מחר
   const sendReminderToTomorrow = async () => {
     if (!reminderText.trim()) {
       alert("יש לכתוב טקסט תזכורת לשליחה לכל הלקוחות.");
@@ -363,23 +396,28 @@ const AiPartnerTab = ({
     }
     setSendingReminderTomorrow(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/reminder/send-to-tomorrow`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          businessId,
-          text: reminderText.trim(),
-        }),
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/appointments/tomorrow`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to send reminders");
-      alert(`התזכורת נשלחה בהצלחה ל-${data.count} לקוחות עם פגישות מחר.`);
+      if (!res.ok) throw new Error("Failed to fetch tomorrow appointments");
+      const appointments = await res.json();
+
+      if (!appointments.length) {
+        alert("לא נמצאו תיאומים למחר.");
+        setSendingReminderTomorrow(false);
+        return;
+      }
+
+      appointments.forEach((appt) => {
+        if (appt.clientPhone && appt.clientName && appt.date && appt.time) {
+          sendWhatsAppReminder(appt.clientPhone, appt.clientName, appt.date, appt.time);
+        }
+      });
+
+      alert(`נמצאו ${appointments.length} תיאומים למחר, הודעות וואטסאפ נפתחו לשליחה.`);
       setReminderText("");
     } catch (err) {
-      alert("שגיאה בשליחת התזכורת: " + err.message);
+      alert("שגיאה בשליחת התזכורות: " + err.message);
     } finally {
       setSendingReminderTomorrow(false);
     }
@@ -400,33 +438,7 @@ const AiPartnerTab = ({
           className="ai-command-history"
           style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ccc", padding: "1rem" }}
         >
-          <h3>היסטוריית פקודות AI</h3>
-          {loadingHistory && <p>טוען היסטוריה...</p>}
-          {historyError && <p style={{ color: "red" }}>שגיאה: {historyError}</p>}
-          {!loadingHistory && !historyError && (
-            <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
-              {aiCommandHistory.length === 0 && <li>לא נמצאו פקודות AI בעבר</li>}
-              {aiCommandHistory.map((cmd) => (
-                <li key={cmd._id} style={{ marginBottom: "1rem", borderBottom: "1px solid #ccc", paddingBottom: "0.5rem" }}>
-                  <strong>פקודה:</strong> {cmd.commandText}
-                  <br />
-                  <strong>תגובה:</strong> {cmd.responseText}
-                  <br />
-                  {cmd.action && (
-                    <>
-                      <strong>פעולה:</strong> <pre>{JSON.stringify(cmd.action, null, 2)}</pre>
-                    </>
-                  )}
-                  {cmd.actionResult && (
-                    <>
-                      <strong>תוצאת פעולה:</strong> <pre>{JSON.stringify(cmd.actionResult, null, 2)}</pre>
-                    </>
-                  )}
-                  <small>נרשמה ב: {new Date(cmd.createdAt).toLocaleString("he-IL")}</small>
-                </li>
-              ))}
-            </ul>
-          )}
+          {/* כאן תוכל לממש הצגת היסטוריית הפקודות */}
         </div>
       ) : (
         <div className="center-textareas">
@@ -458,7 +470,7 @@ const AiPartnerTab = ({
               rows={5}
               value={reminderText}
               onChange={(e) => setReminderText(e.target.value)}
-              placeholder="כתוב כאן את טקסט התזכורת, כולל תאריך ושעה, למשל: תזכורת לפגישה ב-10/07/2025 בשעה 15:00"
+              placeholder="כתוב כאן את טקסט התזכורת, למשל: תזכורת לפגישה ב-10/07/2025 בשעה 15:00"
               disabled={sendingReminder || sendingReminderTomorrow}
             />
             <button
