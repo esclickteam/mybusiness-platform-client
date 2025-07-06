@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import "./AiPartnerTab.css";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
-const SHORTEN_LENGTH = 200;
 
 const AiPartnerTab = ({
   businessId,
   token,
   conversationId = null,
+  appointmentId,  // מזהה הפגישה הנבחר לשליחת תזכורת
   onNewRecommendation,
   businessName,
   businessType,
@@ -19,30 +19,22 @@ const AiPartnerTab = ({
 }) => {
   const navigate = useNavigate();
 
-  const [dailyTip, setDailyTip] = useState("");
   const [chat, setChat] = useState([]);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [activeSuggestion, setActiveSuggestion] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(true);
-  const [commandText, setCommandText] = useState("");
-  const [commandResponse, setCommandResponse] = useState(null);
-
-  const [aiCommandHistory, setAiCommandHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [aiCommandHistory, setAiCommandHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyError, setHistoryError] = useState(null);
 
-  // מצב ושליחת תזכורת - איחוד טקסט, תאריך ושעה בתיבת טקסט אחת
   const [reminderText, setReminderText] = useState("");
   const [sendingReminder, setSendingReminder] = useState(false);
 
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
-  const [socket, setSocket] = useState(null);
-  const [clientId, setClientId] = useState(null);
 
   const filterText = useCallback(
     (text) =>
@@ -57,11 +49,11 @@ const AiPartnerTab = ({
     const filtered = recs.filter(
       (r) => r._id && typeof r._id === "string" && r._id.length === 24
     );
-    const uniqueMap = new Map();
+    const map = new Map();
     filtered.forEach((r) => {
-      if (!uniqueMap.has(r._id)) uniqueMap.set(r._id, r);
+      if (!map.has(r._id)) map.set(r._id, r);
     });
-    return Array.from(uniqueMap.values());
+    return Array.from(map.values());
   }, []);
 
   useEffect(() => {
@@ -74,8 +66,8 @@ const AiPartnerTab = ({
         });
         if (!res.ok) throw new Error("Failed to load recommendations");
         const recs = await res.json();
-        const validUniqueRecs = filterValidUniqueRecommendations(recs);
-        const formatted = validUniqueRecs.map((r) => ({
+        const valid = filterValidUniqueRecommendations(recs);
+        const formatted = valid.map((r) => ({
           id: r._id,
           text: r.text,
           status: r.status,
@@ -89,33 +81,9 @@ const AiPartnerTab = ({
         console.error("Error fetching recommendations:", err);
       }
     }
-    if (!showHistory) {
-      fetchRecommendations();
-    }
+    if (!showHistory) fetchRecommendations();
   }, [businessId, token, filterValidUniqueRecommendations, showHistory]);
 
-  useEffect(() => {
-    async function fetchClientId() {
-      if (!conversationId || !businessId || !token) return;
-      try {
-        const apiBaseUrl = import.meta.env.VITE_API_URL;
-        const convRes = await fetch(`${apiBaseUrl}/conversations?businessId=${businessId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!convRes.ok) throw new Error("Failed to load conversations");
-        const conversations = await convRes.json();
-        const conv = conversations.find((c) => c.conversationId === conversationId);
-        if (!conv) throw new Error("Conversation not found");
-        const otherId = conv.participants.find((p) => p !== businessId);
-        setClientId(otherId);
-      } catch (err) {
-        console.error("Error fetching client ID:", err);
-      }
-    }
-    fetchClientId();
-  }, [conversationId, businessId, token]);
-
-  // טעינת היסטוריית פקודות AI
   const fetchAiCommandHistory = useCallback(async () => {
     if (!businessId || !token) return;
     setLoadingHistory(true);
@@ -136,9 +104,7 @@ const AiPartnerTab = ({
   }, [businessId, token]);
 
   useEffect(() => {
-    if (showHistory) {
-      fetchAiCommandHistory();
-    }
+    if (showHistory) fetchAiCommandHistory();
   }, [showHistory, fetchAiCommandHistory]);
 
   useEffect(() => {
@@ -155,9 +121,7 @@ const AiPartnerTab = ({
 
     s.on("connect", () => {
       s.emit("joinRoom", businessId);
-      if (conversationId) {
-        s.emit("joinConversation", conversationId);
-      }
+      if (conversationId) s.emit("joinConversation", conversationId);
     });
 
     s.on("connect_error", (err) => {
@@ -224,7 +188,6 @@ const AiPartnerTab = ({
       console.log("Socket disconnected");
     });
 
-    setSocket(s);
     return () => {
       if (s.connected) {
         if (conversationId) s.emit("leaveConversation", conversationId);
@@ -375,21 +338,24 @@ const AiPartnerTab = ({
     }
   }, [activeSuggestion]);
 
+  // פונקציה לשליחת תזכורת, לפי appointmentId בלבד
   const sendReminder = async () => {
     if (!reminderText.trim()) return;
+    if (!appointmentId) {
+      alert("לא נבחרה פגישה לשליחת תזכורת.");
+      return;
+    }
     setSendingReminder(true);
     try {
-      const url = `${import.meta.env.VITE_API_URL}/reminder/send`;
-      const res = await fetch(url, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/reminder/send`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          businessId,
-          clientId,
-          text: reminderText,
+          appointmentId,
+          text: reminderText.trim(),
         }),
       });
       const data = await res.json();
