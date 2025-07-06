@@ -1,11 +1,6 @@
 /* src/components/ClientChatTab.css */
 
-/* כללי הצ'אט */
-.chat-container.client,
-.message-list {
-  direction: ltr !important;
-}
-
+/* קונטיינר הצ'אט */
 .chat-container.client {
   display: flex;
   flex-direction: column;
@@ -14,6 +9,7 @@
   background: #f6f1fb;
 }
 
+/* רשימת ההודעות */
 .message-list {
   flex: 1;
   overflow-y: auto;
@@ -24,6 +20,13 @@
   background: none;
 }
 
+/* אנימציית fadeIn */
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(30%); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* בועה כללית */
 .message {
   max-width: 72%;
   padding: 11px 16px 8px 12px;
@@ -38,22 +41,25 @@
   animation: fadeIn 0.42s cubic-bezier(.77,0,.18,1) both;
 }
 
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(30%); }
-  100% { opacity: 1; transform: none; }
-}
-
+/* הודעת המשתמש (לקוח) – לימין */
 .message.mine {
-  align-self: flex-start !important;
-  margin-right: 32px !important;
-  margin-left: 0 !important;
-}
-.message.theirs {
-  align-self: flex-end !important;
-  margin-left: 32px !important;
-  margin-right: 0 !important;
+  align-self: flex-end;
+  margin-left: auto;
+  margin-right: 16px;
+  background: #dcf8c6;
+  text-align: right;
 }
 
+/* הודעת העסק – לשמאל */
+.message.theirs {
+  align-self: flex-start;
+  margin-right: auto;
+  margin-left: 16px;
+  background: #fff;
+  text-align: left;
+}
+
+/* זמן בתוך הבועה */
 .message .time {
   font-size: 11px;
   color: #878787;
@@ -64,6 +70,7 @@
   padding-left: 4px;
 }
 
+/* מטא־מידע בתוך הבועה */
 .message .meta {
   display: flex;
   align-items: center;
@@ -75,7 +82,6 @@
 /* סימון קריאה - נקראה */
 .read-indicator {
   font-size: 14px;
-  color: #25d366;
   user-select: none;
   margin-left: 6px;
   align-self: center;
@@ -92,6 +98,7 @@
   margin: 10px 0;
 }
 
+/* אינדיקטור “הלקוח מקליד…” */
 .typing-indicator {
   padding: 0 20px 10px;
   color: #7c43bd;
@@ -105,12 +112,14 @@
   50% { opacity: 0.48; }
 }
 
+/* הודעה ריקה */
 .empty {
   color: #aaa;
   text-align: center;
   padding: 22px 0 0;
 }
 
+/* אינדיקטור טעינה */
 .loading {
   text-align: center;
   color: #777;
@@ -118,6 +127,7 @@
   padding: 12px 0;
 }
 
+/* שורת הקלט */
 .inputBar {
   display: flex;
   flex-direction: row;
@@ -130,6 +140,7 @@
   flex-wrap: nowrap;
 }
 
+/* שדה הקלדה */
 .inputBar textarea,
 .inputField {
   flex: 1 1 auto;
@@ -161,24 +172,22 @@
   align-items: center;
   gap: 4px;
 }
-
 .wave-dot {
   width: 4px;
   height: 16px;
   background: #34b7f1;
   animation: wave 1s infinite ease-in-out;
 }
-
 .wave-dot:nth-child(2) { animation-delay: 0.1s; }
 .wave-dot:nth-child(3) { animation-delay: 0.2s; }
 .wave-dot:nth-child(4) { animation-delay: 0.3s; }
 .wave-dot:nth-child(5) { animation-delay: 0.4s; }
-
 @keyframes wave {
   0%, 100% { transform: scaleY(0.4); }
   50% { transform: scaleY(1); }
 }
 
+/* אינטראקציות קול */
 .preview-timer {
   font-size: 16px;
   font-weight: 600;
@@ -213,18 +222,9 @@
   transition: background 0.16s;
   min-width: 60px;
 }
-
-.send-btn:hover {
-  background: #5d2997;
-}
-
-.discard-btn {
-  background: #e53935;
-}
-
-.discard-btn:hover {
-  background: #ad1c1a;
-}
+.send-btn:hover { background: #5d2997; }
+.discard-btn { background: #e53935; }
+.discard-btn:hover { background: #ad1c1a; }
 
 .preview-btn.trash {
   color: #d93025;
@@ -237,10 +237,7 @@
   flex-shrink: 0;
   transition: color 0.2s ease;
 }
-
-.preview-btn.trash:hover {
-  color: #a52714;
-}
+.preview-btn.trash:hover { color: #a52714; }
 
 .recordBtn {
   order: 4;
@@ -259,16 +256,12 @@
   margin: 0;
   flex-shrink: 0;
 }
-
 .recordBtn.recording {
   background: #d93025;
   color: white;
   box-shadow: 0 0 10px #d93025aa;
 }
-
-.recordBtn:hover {
-  background: #ede7f6;
-}
+.recordBtn:hover { background: #ede7f6; }
 
 .sendButtonFlat {
   order: -1;
@@ -290,12 +283,10 @@
   font-weight: bold;
   flex-shrink: 0;
 }
-
 .sendButtonFlat:disabled {
   opacity: 0.33;
   cursor: not-allowed;
 }
-
 .sendButtonFlat:hover:enabled,
 .sendButtonFlat:focus:enabled {
   background: #f4f7fa;
@@ -318,14 +309,9 @@
   margin: 0;
   flex-shrink: 0;
 }
+.attachBtn:hover { background: #ede7f6; }
 
-.attachBtn:hover {
-  background: #ede7f6;
-}
-
-.fileInput {
-  display: none;
-}
+.fileInput { display: none; }
 
 .error-alert {
   width: 100%;
@@ -356,8 +342,7 @@
   max-width: 220px;
 }
 
-/* --- עיצוב נגן אודיו בסגנון וואטסאפ --- */
-
+/* עיצוב נגן אודיו בסגנון וואטסאפ */
 .custom-audio-player {
   display: flex;
   align-items: center;
@@ -368,17 +353,12 @@
   gap: 6px;
   user-select: none;
 }
-
-.custom-audio-player .avatar-wrapper {
-  position: relative;
-}
-
+.custom-audio-player .avatar-wrapper { position: relative; }
 .custom-audio-player .avatar-wrapper img {
   width: 32px;
   height: 32px;
   border-radius: 50%;
 }
-
 .custom-audio-player .mic-icon {
   position: absolute;
   bottom: 0;
@@ -396,7 +376,6 @@
   box-sizing: content-box;
   user-select: none;
 }
-
 .custom-audio-player button.play-pause {
   border-radius: 50%;
   border: none;
@@ -412,17 +391,14 @@
   user-select: none;
   transition: background-color 0.2s;
 }
-
 .custom-audio-player button.play-pause.playing {
   background-color: #25d366;
 }
-
 .custom-audio-player .progress-dots {
   display: flex;
   gap: 3px;
   flex-grow: 1;
 }
-
 .custom-audio-player .progress-dots .dot {
   width: 5px;
   height: 5px;
@@ -431,12 +407,10 @@
   opacity: 0.5;
   transition: background-color 0.2s, opacity 0.2s;
 }
-
 .custom-audio-player .progress-dots .dot.active {
   background-color: #25d366;
   opacity: 1;
 }
-
 .custom-audio-player .time-display {
   font-size: 11px;
   color: #555;
@@ -445,118 +419,48 @@
   user-select: none;
 }
 
-/* רספונסיביות קטנות במיוחד למובייל */
-
+/* רספונסיביות קטנות */
 @media (max-width: 480px) {
   .custom-audio-player {
     max-width: 200px;
     padding: 3px 8px;
     gap: 5px;
   }
-
-  .custom-audio-player .avatar-wrapper img {
-    width: 24px;
-    height: 24px;
-  }
-
+  .custom-audio-player .avatar-wrapper img { width: 24px; height: 24px; }
   .custom-audio-player .mic-icon {
-    width: 10px;
-    height: 10px;
-    font-size: 8px;
-    border: 1px solid white;
+    width: 10px; height: 10px; font-size: 8px; border: 1px solid white;
   }
-
   .custom-audio-player button.play-pause {
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
+    width: 24px; height: 24px; font-size: 14px;
   }
-
   .custom-audio-player .progress-dots .dot {
-    width: 4px;
-    height: 4px;
+    width: 4px; height: 4px;
   }
-
   .custom-audio-player .time-display {
-    font-size: 10px;
-    min-width: 30px;
+    font-size: 10px; min-width: 30px;
   }
 }
 
 /* רספונסיביות כללית */
-
 @media (max-width: 768px) {
-  .message {
-    max-width: 90%;
-    padding: 8px 12px 6px 10px;
-    font-size: 14px;
+  .message { max-width: 90%; padding: 8px 12px 6px 10px; font-size: 14px; }
+  .message.mine { margin-right: 12px; margin-left: auto; }
+  .message.theirs { margin-left: 12px; margin-right: auto; }
+  .inputBar { padding: 8px 10px 8px 8px; min-height: 56px; gap: 6px; }
+  .inputBar textarea, .inputField {
+    font-size: 14px; padding: 10px 12px; border-radius: 22px;
   }
-  .message.mine {
-    margin-left: 16px;
-  }
-  .message.theirs {
-    margin-right: 16px;
-  }
-  .inputBar {
-    padding: 8px 10px 8px 8px;
-    min-height: 56px;
-    gap: 6px;
-  }
-  .inputBar textarea,
-  .inputField {
-    font-size: 14px;
-    padding: 10px 12px;
-    border-radius: 22px;
-  }
-  .sendButtonFlat,
-  .attachBtn,
-  .recordBtn {
-    width: 32px;
-    height: 32px;
-    font-size: 20px;
-  }
+  .sendButtonFlat, .attachBtn, .recordBtn { width: 32px; height: 32px; font-size: 20px; }
 }
 
 @media (max-width: 400px) {
-  .message {
-    max-width: 100%;
-    padding: 6px 10px 5px 8px;
-    font-size: 13px;
+  .message { max-width: 100%; padding: 6px 10px 5px 8px; font-size: 13px; }
+  .message.mine { margin-right: 8px; margin-left: auto; }
+  .message.theirs { margin-left: 8px; margin-right: auto; }
+  .inputBar textarea, .inputField {
+    font-size: 13px; padding: 8px 10px;
   }
-  .message.mine {
-    margin-left: 8px;
+  .sendButtonFlat, .attachBtn, .recordBtn {
+    width: 28px; height: 28px; font-size: 18px;
   }
-  .message.theirs {
-    margin-right: 8px;
-  }
-  .inputBar textarea,
-  .inputField {
-    font-size: 13px;
-    padding: 8px 10px;
-  }
-  .sendButtonFlat,
-  .attachBtn,
-  .recordBtn {
-    width: 28px;
-    height: 28px;
-    font-size: 18px;
-  }
-}
-
-/* סימון קריאה עם שני וי */
-.read-indicator {
-  font-size: 14px;
-  user-select: none;
-  margin-left: 6px;
-  align-self: center;
-  letter-spacing: -2px; /* מצמיד את שני הסימנים */
-  font-weight: 600;
-}
-
-.read-indicator.sent {
-  color: gray; /* הודעה נשלחה אך לא נקראה */
-}
-
-.read-indicator.read {
-  color: #4fc3f7; /* הודעה נקראה - כחול וואטסאפ */
 }
