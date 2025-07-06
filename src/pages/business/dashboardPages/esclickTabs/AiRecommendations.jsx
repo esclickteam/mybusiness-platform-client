@@ -250,7 +250,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         <p>אין המלצות חדשות.</p>
       ) : (
         <ul>
-          {pending.map(({ _id, id, text }) => {
+          {pending.map(({ _id, id, text, commandText }) => {
             const recId = _id || id;
             const isLoading = loadingIds.has(recId);
             const isEditing = editingId === recId;
@@ -280,6 +280,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   </>
                 ) : (
                   <>
+                    {commandText && (
+                      <p style={{ fontStyle: "italic", color: "#555" }}>
+                        <strong>שאלה/פקודה:</strong> {cleanText(commandText)}
+                      </p>
+                    )}
                     <p>{cleanText(text)}</p>
                     <button onClick={() => startEditing({ _id: recId, text })}>
                       ערוך
@@ -330,7 +335,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
             <p>אין המלצות בעבר.</p>
           ) : (
             <ul>
-              {history.map(({ _id, id, text, status }) => {
+              {history.map(({ _id, id, text, status, commandText }) => {
                 const recId = _id || id;
                 return (
                   <li
@@ -342,6 +347,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                       opacity: 0.7,
                     }}
                   >
+                    {commandText && (
+                      <p style={{ fontStyle: "italic", color: "#555" }}>
+                        <strong>שאלה/פקודה:</strong> {cleanText(commandText)}
+                      </p>
+                    )}
                     <p>{cleanText(text)}</p>
                     <p>סטטוס: {status === "approved" ? "מאושר" : "נדחה"}</p>
                   </li>
