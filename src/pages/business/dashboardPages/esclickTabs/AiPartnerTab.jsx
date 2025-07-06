@@ -35,10 +35,9 @@ const AiPartnerTab = ({
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyError, setHistoryError] = useState(null);
 
-  const [reminderText, setReminderText] = useState("");          // טקסט תזכורת
-  const [reminderDate, setReminderDate] = useState("");          // תאריך תזכורת
-  const [reminderTime, setReminderTime] = useState("");          // שעה תזכורת
-  const [sendingReminder, setSendingReminder] = useState(false); // סטטוס שליחה תזכורת
+  // מצב ושליחת תזכורת - איחוד טקסט, תאריך ושעה בתיבת טקסט אחת
+  const [reminderText, setReminderText] = useState("");
+  const [sendingReminder, setSendingReminder] = useState(false);
 
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
@@ -276,46 +275,6 @@ const AiPartnerTab = ({
     }
   };
 
-  // פונקציה לשליחת תזכורת ללקוח
-  const sendReminder = async () => {
-    if (!reminderText.trim() || !reminderDate || !reminderTime) {
-      alert("אנא מלא טקסט, תאריך ושעה לתזכורת");
-      return;
-    }
-    if (!clientId) {
-      alert("לא נמצא לקוח לשיגור התזכורת");
-      return;
-    }
-    setSendingReminder(true);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/reminder/send`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          businessId,
-          clientId,
-          text: reminderText,
-          date: reminderDate,
-          time: reminderTime,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to send reminder");
-
-      alert("התזכורת נשלחה בהצלחה!");
-      setReminderText("");
-      setReminderDate("");
-      setReminderTime("");
-    } catch (err) {
-      alert("שגיאה בשליחת התזכורת: " + err.message);
-    } finally {
-      setSendingReminder(false);
-    }
-  };
-
   const approveSuggestion = useCallback(
     async ({ id, conversationId, text }) => {
       setLoading(true);
@@ -416,6 +375,35 @@ const AiPartnerTab = ({
       setEditing(false);
     }
   }, [activeSuggestion]);
+
+  // פונקציה לשליחת תזכורת ללקוח (השתמש בתיבת טקסט משולבת)
+  const sendReminder = async () => {
+    if (!reminderText.trim()) return;
+    setSendingReminder(true);
+    try {
+      const url = `${import.meta.env.VITE_API_URL}/reminder/send`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          businessId,
+          clientId,
+          reminderText,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send reminder");
+      alert("התזכורת נשלחה בהצלחה!");
+      setReminderText("");
+    } catch (err) {
+      alert("שגיאה בשליחת התזכורת: " + err.message);
+    } finally {
+      setSendingReminder(false);
+    }
+  };
 
   return (
     <div className="ai-partner-container">
@@ -528,35 +516,6 @@ const AiPartnerTab = ({
                   })}
               </div>
             )}
-
-            {/* --- ממשק לשליחת תזכורת --- */}
-            <div className="reminder-section" style={{ marginTop: "2rem", padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}>
-              <h3>שלח תזכורת ללקוח</h3>
-              <textarea
-                rows={3}
-                value={reminderText}
-                onChange={(e) => setReminderText(e.target.value)}
-                placeholder="כתוב כאן את טקסט התזכורת..."
-                disabled={sendingReminder}
-                style={{ width: "100%", marginBottom: "0.5rem" }}
-              />
-              <input
-                type="date"
-                value={reminderDate}
-                onChange={(e) => setReminderDate(e.target.value)}
-                disabled={sendingReminder}
-                style={{ marginRight: "0.5rem" }}
-              />
-              <input
-                type="time"
-                value={reminderTime}
-                onChange={(e) => setReminderTime(e.target.value)}
-                disabled={sendingReminder}
-              />
-              <button onClick={sendReminder} disabled={sendingReminder || !reminderText.trim() || !reminderDate || !reminderTime} style={{ display: "block", marginTop: "0.5rem" }}>
-                {sendingReminder ? "שולח..." : "שלח תזכורת"}
-              </button>
-            </div>
           </div>
         </div>
       )}
@@ -633,6 +592,34 @@ const AiPartnerTab = ({
           </div>
         </div>
       )}
+
+      {/* תיבת טקסט משולבת לתזכורת אחת הכוללת טקסט, תאריך ושעה */}
+      <div
+        style={{
+          marginTop: "2rem",
+          padding: "1rem",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          maxWidth: "600px",
+        }}
+      >
+        <h3>שלח תזכורת ללקוח</h3>
+        <textarea
+          rows={5}
+          value={reminderText}
+          onChange={(e) => setReminderText(e.target.value)}
+          placeholder="כתוב כאן את טקסט התזכורת, כולל תאריך ושעה, למשל: תזכורת לפגישה ב-10/07/2025 בשעה 15:00"
+          disabled={sendingReminder}
+          style={{ width: "100%", fontSize: "1rem" }}
+        />
+        <button
+          onClick={sendReminder}
+          disabled={sendingReminder || !reminderText.trim()}
+          style={{ marginTop: "0.5rem", padding: "0.5rem 1rem" }}
+        >
+          {sendingReminder ? "שולח..." : "שלח תזכורת"}
+        </button>
+      </div>
 
       <audio ref={notificationSound} src="/notification.mp3" preload="auto" />
       <div ref={bottomRef} />
