@@ -89,14 +89,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
       <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
 
       {!startedChat && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.5rem",
-            marginBottom: "1.5rem",
-          }}
-        >
+        <div className="preset-questions-container">
           {presetQuestions.map((q, index) => (
             <button
               key={index}
@@ -121,6 +114,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
                       p: {
                         component: (props) => (
                           <div
+                            className="markdown-message"
                             style={{
                               margin: "0.2em 0",
                               direction: "rtl",
