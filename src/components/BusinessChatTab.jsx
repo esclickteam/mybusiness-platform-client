@@ -141,10 +141,6 @@ export default function BusinessChatTab({
         from: m.from,
       }));
 
-      console.log("businessId:", businessId);
-      console.log("conversationType:", conversationType);
-      console.log("Messages before filter:", msgs);
-
       if (conversationType === "user-business") {
         const bizStr = String(businessId).trim();
         msgs = msgs.filter((m) => {
@@ -155,13 +151,9 @@ export default function BusinessChatTab({
               ? String(m.from._id || m.from.id)
               : "";
           const fromStr = fromId.trim();
-          const keep = fromStr !== bizStr;
-          if (!keep) console.log("Filtering out business message:", m);
-          return keep;
+          return fromStr !== bizStr;
         });
       }
-
-      console.log("Messages after filter:", msgs);
 
       return msgs;
     } catch (error) {
@@ -190,7 +182,6 @@ export default function BusinessChatTab({
     if (!socket) return;
 
     const handleNew = (msg) => {
-      console.log("New message received:", msg);
       if (
         msg.conversationId !== conversationId ||
         msg.conversationType !== conversationType
@@ -206,7 +197,6 @@ export default function BusinessChatTab({
           : "";
 
       if (conversationType === "user-business" && fromId.trim() === bizStr) {
-        console.log("Filtered out business message in user-business conversation:", msg);
         return;
       }
 
@@ -301,6 +291,9 @@ export default function BusinessChatTab({
     );
   };
 
+  // מיון ההודעות לפי זמן לפני הצגה
+  const sortedMessages = [...messages].sort((a, b) => new Date(a.timestamp || a.createdAt) - new Date(b.timestamp || b.createdAt));
+
   return (
     <div className="chat-container business">
       <div className="chat-header">
@@ -308,8 +301,8 @@ export default function BusinessChatTab({
       </div>
 
       <div className="message-list" ref={listRef}>
-        {messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map((m, i) =>
+        {sortedMessages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {sortedMessages.map((m, i) =>
           m.system ? (
             <div key={m._id || `sys-${i}`} className="system-message">
               {m.content}
