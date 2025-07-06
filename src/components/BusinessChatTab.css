@@ -498,3 +498,18 @@
   user-select: none;
   line-height: 1;
 }
+
+/* ==== תיקון סופי לביזנס בלבד ==== */
+.chat-container.business .message.mine {
+  align-self: flex-start !important;
+  margin-right: 32px !important;
+  margin-left: 0 !important;
+  text-align: right;
+}
+
+.chat-container.business .message.theirs {
+  align-self: flex-end !important;
+  margin-left: 32px !important;
+  margin-right: 0 !important;
+  text-align: right;
+}
