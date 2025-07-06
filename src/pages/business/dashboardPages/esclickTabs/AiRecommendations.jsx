@@ -11,30 +11,24 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [editText, setEditText] = useState("");
   const socketRef = useRef(null);
 
-  // טען המלצות (כולל היסטוריה)
   useEffect(() => {
     if (!businessId || !token) return;
 
     setError(null);
     fetch(`/api/chat/recommendations?businessId=${businessId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load recommendations");
         return res.json();
       })
-      .then((data) => {
-        setRecommendations(data);
-      })
+      .then((data) => setRecommendations(data))
       .catch((err) => {
         console.error("[Load] error:", err);
         setError("שגיאה בטעינת ההמלצות: " + err.message);
       });
   }, [businessId, token]);
 
-  // התחברות ל-socket (ללא מאזין לאירוע עריכה)
   useEffect(() => {
     if (!businessId || !token) return;
 
@@ -134,7 +128,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   }, [token]);
 
-  // פונקציות אישור ודחייה
   const approveRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -196,7 +189,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
-  // פונקציות עריכה
   const startEditing = (rec) => {
     setEditingId(rec._id || rec.id);
     setEditText(rec.text);
