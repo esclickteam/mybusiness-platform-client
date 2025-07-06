@@ -14,16 +14,20 @@ const EsclickAdvisor = () => {
   const [activeTab, setActiveTab] = useState("business");
   const [hasBusinessNotification, setHasBusinessNotification] = useState(false);
   const [businessDetails, setBusinessDetails] = useState(null);
+  const [appointments, setAppointments] = useState([]); // שמירת רשימת פגישות
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null); // מזהה פגישה נבחרת
   const { user, loading } = useAuth();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!user?.businessId || !token) {
-      setBusinessDetails(null); // איפוס פרטי העסק כשאין משתמש או טוקן
+      setBusinessDetails(null);
+      setAppointments([]);
+      setSelectedAppointmentId(null);
       return;
     }
 
-    // חיבור לסוקט עם אישור
+    // חיבור לסוקט
     const socket = io(SOCKET_URL, {
       auth: { token, businessId: user.businessId },
       transports: ["websocket"],
@@ -40,11 +44,13 @@ const EsclickAdvisor = () => {
 
   useEffect(() => {
     if (!user?.businessId || !token) {
-      setBusinessDetails(null); // איפוס במקרה של שינוי/יציאה
+      setBusinessDetails(null);
+      setAppointments([]);
+      setSelectedAppointmentId(null);
       return;
     }
 
-    // בקשה לקבלת פרטי העסק מהשרת
+    // בקשה לקבלת פרטי העסק
     fetch(`/api/business/${user.businessId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -59,6 +65,24 @@ const EsclickAdvisor = () => {
         console.error(err);
         setBusinessDetails(null);
       });
+
+    // בקשה לקבלת רשימת פגישות לעסק (צריך לוודא שהנתיב תקין)
+    fetch(`/api/appointments?businessId=${user.businessId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch appointments");
+        return res.json();
+      })
+      .then(data => {
+        setAppointments(data);
+        if (data.length > 0) setSelectedAppointmentId(data[0]._id); // בחר פגישה ראשונה כברירת מחדל
+      })
+      .catch(err => {
+        console.error(err);
+        setAppointments([]);
+        setSelectedAppointmentId(null);
+      });
   }, [user?.businessId, token]);
 
   useEffect(() => {
@@ -69,6 +93,10 @@ const EsclickAdvisor = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+  };
+
+  const handleAppointmentChange = (e) => {
+    setSelectedAppointmentId(e.target.value);
   };
 
   const renderTab = () => {
@@ -83,7 +111,28 @@ const EsclickAdvisor = () => {
       case "marketing":
         return <MarketingAdvisorTab businessId={user?.businessId} />;
       case "partner":
-        return <AiPartnerTab businessId={user?.businessId} token={token} />;
+        return (
+          <>
+            {/* בחירת פגישה לשליחת תזכורת */}
+            <label>
+              בחר פגישה לשליחת תזכורת:
+              <select value={selectedAppointmentId || ""} onChange={handleAppointmentChange}>
+                <option value="" disabled>בחר פגישה</option>
+                {appointments.map((appt) => (
+                  <option key={appt._id} value={appt._id}>
+                    {appt.clientName} - {appt.date} {appt.time}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <AiPartnerTab
+              businessId={user?.businessId}
+              token={token}
+              appointmentId={selectedAppointmentId}
+            />
+          </>
+        );
       case "recommendations":
         return <AiRecommendations businessId={user?.businessId} token={token} />;
       default:
