@@ -50,6 +50,11 @@ const AiPartnerTab = ({
   const [commandText, setCommandText] = useState("");
   const [commandResponse, setCommandResponse] = useState(null);
 
+  // הוספה חדשה: סיכום פגישות שבועי לכל העסקים
+  const [weeklySummaries, setWeeklySummaries] = useState([]);
+  const [loadingSummaries, setLoadingSummaries] = useState(false);
+  const [showWeeklySummaries, setShowWeeklySummaries] = useState(false);
+
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
 
@@ -98,8 +103,8 @@ const AiPartnerTab = ({
         console.error("Error fetching recommendations:", err);
       }
     }
-    if (!showHistory) fetchRecommendations();
-  }, [businessId, token, filterValidUniqueRecommendations, showHistory]);
+    if (!showHistory && !showWeeklySummaries) fetchRecommendations();
+  }, [businessId, token, filterValidUniqueRecommendations, showHistory, showWeeklySummaries]);
 
   const fetchAiCommandHistory = useCallback(async () => {
     if (!businessId || !token) return;
@@ -123,6 +128,32 @@ const AiPartnerTab = ({
   useEffect(() => {
     if (showHistory) fetchAiCommandHistory();
   }, [showHistory, fetchAiCommandHistory]);
+
+  // הפונקציה החדשה לטעינת סיכום פגישות שבועי לכל העסקים
+  const fetchWeeklySummaries = useCallback(async () => {
+    if (!token) return;
+    setLoadingSummaries(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/appointments/summary-weekly`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch weekly summaries");
+      const data = await res.json();
+      if (data.success && Array.isArray(data.summaries)) {
+        setWeeklySummaries(data.summaries);
+      }
+    } catch (err) {
+      console.error("Error fetching weekly summaries:", err);
+    } finally {
+      setLoadingSummaries(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (showWeeklySummaries) {
+      fetchWeeklySummaries();
+    }
+  }, [showWeeklySummaries, fetchWeeklySummaries]);
 
   useEffect(() => {
     if (!businessId || !token) return;
@@ -349,9 +380,40 @@ const AiPartnerTab = ({
         <button onClick={() => setShowHistory((prev) => !prev)}>
           {showHistory ? "הצג המלצות" : "הצג היסטוריית פקודות AI"}
         </button>
+
+        <button
+          style={{ marginLeft: "1rem" }}
+          onClick={() => setShowWeeklySummaries((prev) => !prev)}
+        >
+          {showWeeklySummaries ? "הסתר סיכום פגישות שבועי" : "הצג סיכום פגישות שבועי לכל העסקים"}
+        </button>
       </div>
 
-      {showHistory ? (
+      {showWeeklySummaries ? (
+        <div
+          className="weekly-summary-container"
+          style={{
+            whiteSpace: "pre-wrap",
+            border: "1px solid #ccc",
+            padding: "1rem",
+            maxHeight: "400px",
+            overflowY: "auto",
+          }}
+        >
+          {loadingSummaries ? (
+            <p>טוען סיכום פגישות...</p>
+          ) : weeklySummaries.length === 0 ? (
+            <p>אין סיכומים להצגה.</p>
+          ) : (
+            weeklySummaries.map(({ businessName, summary }, idx) => (
+              <div key={idx} style={{ marginBottom: "1.5rem" }}>
+                <h3>{businessName}</h3>
+                <p>{summary}</p>
+              </div>
+            ))
+          )}
+        </div>
+      ) : showHistory ? (
         <div
           className="ai-command-history"
           style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ccc", padding: "1rem" }}
