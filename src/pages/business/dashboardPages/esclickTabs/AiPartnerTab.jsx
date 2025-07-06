@@ -396,7 +396,7 @@ const AiPartnerTab = ({
   }
   setSendingReminderTomorrow(true);
   try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/reminder/send-to-tomorrow`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/reminder/send-whatsapp-to-tomorrow`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -404,11 +404,11 @@ const AiPartnerTab = ({
       },
       body: JSON.stringify({ businessId, text: reminderText.trim() }),
     });
-    if (!res.ok) throw new Error("Failed to send reminders for tomorrow");
+    if (!res.ok) throw new Error("Failed to send WhatsApp reminders for tomorrow");
 
     const data = await res.json();
 
-    alert(`נשלחו תזכורות ל-${data.count} לקוחות למחר.`);
+    alert(`נשלחו תזכורות וואטסאפ ל-${data.count} לקוחות למחר.`);
     setReminderText("");
   } catch (err) {
     alert("שגיאה בשליחת התזכורות: " + err.message);
@@ -416,6 +416,7 @@ const AiPartnerTab = ({
     setSendingReminderTomorrow(false);
   }
 };
+
 
 
   return (
