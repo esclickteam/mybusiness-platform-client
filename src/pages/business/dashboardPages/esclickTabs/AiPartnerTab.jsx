@@ -343,7 +343,7 @@ const AiPartnerTab = ({
 
       <div style={{ margin: "1rem 0" }}>
         <button onClick={() => setShowHistory((prev) => !prev)}>
-          {showHistory ? "הצג המלצות" : "הצג היסטוריית פקודות AI"}
+            היסטוריית פקודות AI
         </button>
       </div>
 
@@ -352,7 +352,64 @@ const AiPartnerTab = ({
           className="ai-command-history"
           style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ccc", padding: "1rem" }}
         >
-          {/* כאן תוכל לממש הצגת היסטוריית הפקודות */}
+          {loadingHistory && <p>טוען היסטוריה...</p>}
+          {historyError && <p style={{ color: "red" }}>שגיאה בטעינת היסטוריה: {historyError}</p>}
+          {!loadingHistory && !historyError && aiCommandHistory.length === 0 && (
+            <p>אין פקודות AI קודמות.</p>
+          )}
+          {!loadingHistory && !historyError && aiCommandHistory.length > 0 && (
+            <ul>
+              {aiCommandHistory.map((cmd) => (
+                <li
+                  key={cmd._id}
+                  style={{
+                    marginBottom: "1rem",
+                    borderBottom: "1px solid #ddd",
+                    paddingBottom: "0.5rem",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "0.9rem",
+                      color: "#666",
+                      marginBottom: "0.3rem",
+                    }}
+                  >
+                    {new Date(cmd.createdAt).toLocaleString("he-IL", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    })}
+                  </div>
+                  <div>
+                    <strong>פקודה:</strong>
+                    <pre
+                      style={{
+                        whiteSpace: "pre-wrap",
+                        backgroundColor: "#f0f0f0",
+                        padding: "0.5rem",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {cmd.role === "user" ? cmd.content : null}
+                    </pre>
+                  </div>
+                  <div>
+                    <strong>תשובת AI:</strong>
+                    <pre
+                      style={{
+                        whiteSpace: "pre-wrap",
+                        backgroundColor: "#e6f7ff",
+                        padding: "0.5rem",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {cmd.role === "ai" ? cmd.content : null}
+                    </pre>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       ) : (
         <>
@@ -390,7 +447,10 @@ const AiPartnerTab = ({
 
       {activeSuggestion && (
         <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
-          <div className="modal-content approve-recommendation-box" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-content approve-recommendation-box"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h4>הודעת AI חדשה</h4>
 
             {editing ? (

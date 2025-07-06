@@ -408,3 +408,21 @@
   gap: 1.5rem;         /* רווח בין האלמנטים */
   margin-top: 2rem;
 }
+
+/* כפתור הצג/הסתר המלצות */
+.toggle-suggestions-btn {
+  background-color: #7e57c2;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 1rem 0;
+  transition: background-color 0.3s ease;
+  align-self: flex-start;
+}
+
+.toggle-suggestions-btn:hover {
+  background-color: #6843bb;
+}
