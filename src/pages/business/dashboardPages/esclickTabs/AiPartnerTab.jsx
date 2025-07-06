@@ -389,7 +389,7 @@ const AiPartnerTab = ({
         body: JSON.stringify({
           businessId,
           clientId,
-          reminderText,
+          text: reminderText,
         }),
       });
       const data = await res.json();
