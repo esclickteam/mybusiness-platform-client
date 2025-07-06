@@ -162,6 +162,9 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
             }
           }}
           rows={5}
+          dir="rtl"
+          style={{ resize: "vertical", borderRadius: "8px", padding: "10px", fontSize: "1rem", flexGrow: 1 }}
+          disabled={loading}
         />
         <button onClick={handleSend} disabled={loading || !userInput.trim()}>
           שליחה
