@@ -191,7 +191,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
   const startEditing = (rec) => {
     setEditingId(rec._id || rec.id);
-    setEditText(rec.text);
+    setEditText(rec.text.replace(/\*\*/g, ""));
   };
 
   const cancelEditing = () => {
@@ -203,7 +203,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
-      const cleanText = editText.replace(/\*\*/g, "");
+      const cleanText = editText.replace(/\*\*/g, "").trim();
       const res = await fetch("/api/chat/editRecommendation", {
         method: "POST",
         headers: {
@@ -264,7 +264,9 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   <>
                     <textarea
                       value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
+                      onChange={(e) =>
+                        setEditText(e.target.value.replace(/\*\*/g, ""))
+                      }
                       rows={4}
                       style={{ width: "100%" }}
                     />
