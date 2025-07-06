@@ -94,20 +94,20 @@
 
 /* הודעה שלך */
 .message.mine {
-  align-self: flex-end;
+  align-self: flex-start;   /* משמאל */
   background: #e3ffe5;
   text-align: right;
-  margin-right: 0;
-  margin-left: 32px;
+  margin-right: 32px;       /* רווח מימין */
+  margin-left: 0;
 }
 
 /* הודעה מהצד השני */
 .message.theirs {
-  align-self: flex-start;
+  align-self: flex-end;     /* מימין */
   background: #fff;
   text-align: left;
-  margin-left: 0;
-  margin-right: 32px;
+  margin-left: 32px;        /* רווח משמאל */
+  margin-right: 0;
 }
 
 /* מטה של ההודעה (זמן וסטטוס) */
