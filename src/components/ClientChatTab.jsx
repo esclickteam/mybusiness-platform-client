@@ -322,12 +322,15 @@ export default function ClientChatTab({
     }
   };
 
+  // מיון ההודעות לפי תאריך יצירה לפני הצגה
+  const sortedMessages = [...messages].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
   return (
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
         {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {messages.map((m) => {
+        {sortedMessages.map((m) => {
           const key = getMessageKey(m);
           if (!key) return null;
 
