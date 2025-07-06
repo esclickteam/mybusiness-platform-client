@@ -284,7 +284,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   </>
                 ) : (
                   <>
-                    <p>{text}</p>
+                    <p>{text.replace(/\*\*/g, "")}</p>
                     <button onClick={() => startEditing({ _id: recId, text })}>
                       ערוך
                     </button>{" "}
@@ -327,7 +327,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   opacity: 0.7,
                 }}
               >
-                <p>{text}</p>
+                <p>{text.replace(/\*\*/g, "")}</p>
                 <p>סטטוס: {status === "approved" ? "מאושר" : "נדחה"}</p>
               </li>
             );
