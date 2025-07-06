@@ -44,19 +44,14 @@
 }
 
 .message.mine {
-  align-self: flex-start; /* משמאל */
-  background: #e3ffe5;
-  text-align: right;
-  margin-left: 0;
-  margin-right: 32px; /* רווח מימין */
+  align-self: flex-start !important;
+  margin-right: 32px !important;
+  margin-left: 0 !important;
 }
-
 .message.theirs {
-  align-self: flex-end; /* מימין */
-  background: #fff;
-  text-align: left;
-  margin-right: 0;
-  margin-left: 32px; /* רווח משמאל */
+  align-self: flex-end !important;
+  margin-left: 32px !important;
+  margin-right: 0 !important;
 }
 
 .message .time {
