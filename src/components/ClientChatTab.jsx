@@ -68,12 +68,14 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
-// מוסיף role = "client" או "business"
+// מוסיף role = "client" או "business" עם לוג
 const addRole = (msg, userId) => {
   const fromId = typeof msg.from === "object"
     ? msg.from._id || msg.from.id
     : msg.from;
-  msg.role = String(fromId) === String(userId) ? "client" : "business";
+  const role = String(fromId) === String(userId) ? "client" : "business";
+  console.log("addRole:", { fromId, userId, role, msg });
+  msg.role = role;
   return msg;
 };
 
