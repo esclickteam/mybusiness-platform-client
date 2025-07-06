@@ -106,16 +106,26 @@ const EsclickAdvisor = () => {
           <BusinessAdvisorTab
             businessId={user?.businessId}
             businessDetails={businessDetails}
+            appointments={appointments}
+            selectedAppointmentId={selectedAppointmentId}
+            onAppointmentChange={handleAppointmentChange}
           />
         );
       case "marketing":
-        return <MarketingAdvisorTab businessId={user?.businessId} />;
+        return (
+          <MarketingAdvisorTab
+            businessId={user?.businessId}
+            businessDetails={businessDetails}
+            appointments={appointments}
+            selectedAppointmentId={selectedAppointmentId}
+            onAppointmentChange={handleAppointmentChange}
+          />
+        );
       case "partner":
         return (
           <AiPartnerTab
             businessId={user?.businessId}
             token={token}
-            // אם אין שימוש ב-appointmentId בתוך AiPartnerTab, אפשר להסיר שורה זו
           />
         );
       case "recommendations":
