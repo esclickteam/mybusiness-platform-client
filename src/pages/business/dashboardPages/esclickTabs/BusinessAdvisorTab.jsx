@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Markdown from "markdown-to-jsx";
-import './AdvisorChat.css';
+import "./AdvisorChat.css";
 
 const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetails }) => {
   const [userInput, setUserInput] = useState("");
@@ -30,7 +30,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     const payload = {
       businessId,
       prompt: promptText,
-      businessDetails,          // <-- העבר מידע על העסק כאן
+      businessDetails,
       profile: {
         conversationId: conversationId || null,
         userId: userId || null,
@@ -64,7 +64,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     }
   };
 
-  // טיפול בשליחת הודעה חדשה מהמשתמש
   const handleSubmit = () => {
     if (!userInput.trim() || loading) return;
 
@@ -76,7 +75,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setStartedChat(true);
   };
 
-  // טיפול בבחירת שאלה מוכנה
   const handlePresetQuestion = (question) => {
     if (loading) return;
 
@@ -87,11 +85,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setStartedChat(true);
   };
 
-  // גלילה לתחתית התכתבות בכל שינוי
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   return (
@@ -100,13 +95,14 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
 
       {!startedChat && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.5rem" }}>
+        <div className="preset-questions-container">
           {presetQuestions.map((q, index) => (
             <button
               key={index}
               className="preset-question-btn"
               onClick={() => handlePresetQuestion(q)}
               type="button"
+              disabled={loading}
             >
               {q}
             </button>
@@ -163,8 +159,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           disabled={loading}
+          dir="rtl"
         />
-        <button onClick={handleSubmit} disabled={loading}>
+        <button onClick={handleSubmit} disabled={loading || !userInput.trim()}>
           שליחה
         </button>
       </div>

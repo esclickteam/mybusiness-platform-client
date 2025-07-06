@@ -5,10 +5,6 @@
   font-family: inherit;
   direction: rtl;
   color: #333;
-
-  height: 100vh;           /* גובה מלא של חלון הדפדפן */
-  overflow: visible;       /* לא לחסום גלילה פנימית */
-  box-sizing: border-box;
 }
 
 .ai-partner-container h2 {
@@ -341,8 +337,8 @@
 
 /* ======= AI Command History ======= */
 .ai-command-history {
-  max-height: none;      /* ביטול הגבלת גובה */
-  overflow-y: visible;   /* לא להסתיר תוכן עם גלילה */
+  max-height: 400px;
+  overflow-y: auto;
   border: 1px solid #ccc;
   padding: 1rem;
   background-color: #faf9ff;
