@@ -31,9 +31,11 @@ const AiPartnerTab = ({
   const [historyError, setHistoryError] = useState(null);
   const [commandText, setCommandText] = useState("");
 
-
   const [reminderText, setReminderText] = useState("");
   const [sendingReminder, setSendingReminder] = useState(false);
+
+  // מצב ושליחה של תזכורת לכל הלקוחות למחר
+  const [sendingReminderTomorrow, setSendingReminderTomorrow] = useState(false);
 
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
@@ -353,6 +355,36 @@ const AiPartnerTab = ({
     }
   };
 
+  // פונקציה לשליחת תזכורת לכל הלקוחות שיש להם פגישה מחר
+  const sendReminderToTomorrow = async () => {
+    if (!reminderText.trim()) {
+      alert("יש לכתוב טקסט תזכורת לשליחה לכל הלקוחות.");
+      return;
+    }
+    setSendingReminderTomorrow(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/reminder/send-to-tomorrow`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          businessId,
+          text: reminderText.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send reminders");
+      alert(`התזכורת נשלחה בהצלחה ל-${data.count} לקוחות עם פגישות מחר.`);
+      setReminderText("");
+    } catch (err) {
+      alert("שגיאה בשליחת התזכורת: " + err.message);
+    } finally {
+      setSendingReminderTomorrow(false);
+    }
+  };
+
   return (
     <div className="ai-partner-container">
       <h2>🤖 שותף AI אישי לעסק</h2>
@@ -427,14 +459,21 @@ const AiPartnerTab = ({
               value={reminderText}
               onChange={(e) => setReminderText(e.target.value)}
               placeholder="כתוב כאן את טקסט התזכורת, כולל תאריך ושעה, למשל: תזכורת לפגישה ב-10/07/2025 בשעה 15:00"
-              disabled={sendingReminder}
+              disabled={sendingReminder || sendingReminderTomorrow}
             />
             <button
               onClick={sendReminder}
               disabled={sendingReminder || !reminderText.trim()}
               style={{ marginTop: "0.5rem", padding: "0.5rem 1rem" }}
             >
-              {sendingReminder ? "שולח..." : "שלח תזכורת"}
+              {sendingReminder ? "שולח..." : "שלח תזכורת לפגישה"}
+            </button>
+            <button
+              onClick={sendReminderToTomorrow}
+              disabled={sendingReminderTomorrow || !reminderText.trim()}
+              style={{ marginTop: "0.5rem", padding: "0.5rem 1rem", marginLeft: "1rem" }}
+            >
+              {sendingReminderTomorrow ? "שולח לכולם..." : "שלח תזכורת לכל הלקוחות למחר"}
             </button>
           </div>
         </div>
