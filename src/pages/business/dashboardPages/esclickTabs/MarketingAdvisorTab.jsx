@@ -89,12 +89,14 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
       <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
 
       {!startedChat && (
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.5rem",
-          marginBottom: "1.5rem"
-        }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem",
+            marginBottom: "1.5rem",
+          }}
+        >
           {presetQuestions.map((q, index) => (
             <button
               key={index}
@@ -118,19 +120,21 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
                     overrides: {
                       p: {
                         component: (props) => (
-                          <div style={{
-                            margin: "0.2em 0",
-                            direction: "rtl",
-                            whiteSpace: "normal",
-                            wordBreak: "break-word",
-                            overflowWrap: "break-word",
-                            textAlign: "right"
-                          }}>
+                          <div
+                            style={{
+                              margin: "0.2em 0",
+                              direction: "rtl",
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
+                              overflowWrap: "break-word",
+                              textAlign: "right",
+                            }}
+                          >
                             {props.children}
                           </div>
-                        )
-                      }
-                    }
+                        ),
+                      },
+                    },
                   }}
                 >
                   {msg.content}
@@ -141,9 +145,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
             </div>
           ))}
 
-          {loading && (
-            <div className="bubble assistant">⌛ מחשב תשובה...</div>
-          )}
+          {loading && <div className="bubble assistant">⌛ מחשב תשובה...</div>}
 
           <div style={{ minHeight: "80px" }} />
           <div ref={bottomRef} />
@@ -151,20 +153,14 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
       </div>
 
       <div className="chat-input">
-        <textarea
+        <input
+          type="text"
           placeholder="כתבי שאלה שיווקית..."
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSend();
-            }
-          }}
-          rows={5}
-          dir="rtl"
-          style={{ resize: "vertical", borderRadius: "8px", padding: "10px", fontSize: "1rem", flexGrow: 1 }}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
           disabled={loading}
+          dir="rtl"
         />
         <button onClick={handleSend} disabled={loading || !userInput.trim()}>
           שליחה
