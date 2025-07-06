@@ -7,9 +7,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [loadingIds, setLoadingIds] = useState(new Set());
   const [error, setError] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editText, setEditText] = useState("");
   const socketRef = useRef(null);
 
-  // טען המלצות (כולל היסטוריה) בתחילת הרכיב או כש businessId/token משתנים
+  // טען המלצות (כולל היסטוריה)
   useEffect(() => {
     if (!businessId || !token) return;
 
@@ -24,7 +26,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         return res.json();
       })
       .then((data) => {
-        // מצפים לקבל מערך של המלצות כולל סטטוס
         setRecommendations(data);
       })
       .catch((err) => {
@@ -33,6 +34,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
   }, [businessId, token]);
 
+  // התחברות ל-socket (ללא מאזין לאירוע עריכה)
   useEffect(() => {
     if (!businessId || !token) return;
 
@@ -45,12 +47,10 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     socketRef.current = socket;
 
     const onConnect = () => {
-      console.log(`[Socket] connected (${socket.id}), joining rooms`);
       socket.emit("joinRoom", `business-${businessId}`);
       socket.emit("joinRoom", `dashboard-${businessId}`);
     };
     const onConnectError = (err) => {
-      console.error("[Socket] connection error:", err);
       if (err.message.includes("401") && typeof onTokenExpired === "function") {
         onTokenExpired();
       } else {
@@ -134,6 +134,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   }, [token]);
 
+  // פונקציות אישור ודחייה
   const approveRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -195,10 +196,52 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
-  // המלצות שממתינות לאישור
-  const pending = recommendations.filter((r) => r.status === "pending");
+  // פונקציות עריכה
+  const startEditing = (rec) => {
+    setEditingId(rec._id || rec.id);
+    setEditText(rec.text);
+  };
 
-  // היסטוריית המלצות (אושרו או נדחו)
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditText("");
+  };
+
+  const saveEdit = async (id) => {
+    setLoadingIds((ids) => new Set(ids).add(id));
+    setError(null);
+    try {
+      const res = await fetch("/api/chat/editRecommendation", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ recommendationId: id, newText: editText }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to edit");
+
+      setRecommendations((prev) =>
+        prev.map((r) =>
+          (r._id === id || r.id === id)
+            ? { ...r, text: editText, isEdited: true, editedText: editText }
+            : r
+        )
+      );
+      cancelEditing();
+    } catch (err) {
+      setError("שגיאה בעריכת ההמלצה: " + err.message);
+    } finally {
+      setLoadingIds((ids) => {
+        const next = new Set(ids);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
+
+  const pending = recommendations.filter((r) => r.status === "pending");
   const history = recommendations.filter(
     (r) => r.status === "approved" || r.status === "rejected"
   );
@@ -214,6 +257,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
           {pending.map(({ _id, id, text }) => {
             const recId = _id || id;
             const isLoading = loadingIds.has(recId);
+            const isEditing = editingId === recId;
             return (
               <li
                 key={recId}
@@ -223,19 +267,41 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   padding: "0.5rem",
                 }}
               >
-                <p>{text}</p>
-                <button
-                  onClick={() => approveRecommendation(recId)}
-                  disabled={isLoading}
-                >
-                  {isLoading ? "טוען..." : "אשר ושלח"}
-                </button>{" "}
-                <button
-                  onClick={() => rejectRecommendation(recId)}
-                  disabled={isLoading}
-                >
-                  {isLoading ? "טוען..." : "דחה"}
-                </button>
+                {isEditing ? (
+                  <>
+                    <textarea
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      rows={4}
+                      style={{ width: "100%" }}
+                    />
+                    <button onClick={() => saveEdit(recId)} disabled={isLoading}>
+                      {isLoading ? "שומר..." : "שמור"}
+                    </button>
+                    <button onClick={cancelEditing} disabled={isLoading}>
+                      ביטול
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p>{text}</p>
+                    <button onClick={() => startEditing({ _id: recId, text })}>
+                      ערוך
+                    </button>{" "}
+                    <button
+                      onClick={() => approveRecommendation(recId)}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "טוען..." : "אשר ושלח"}
+                    </button>{" "}
+                    <button
+                      onClick={() => rejectRecommendation(recId)}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "טוען..." : "דחה"}
+                    </button>
+                  </>
+                )}
               </li>
             );
           })}
