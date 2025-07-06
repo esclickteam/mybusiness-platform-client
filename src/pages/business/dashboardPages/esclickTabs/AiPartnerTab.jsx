@@ -29,6 +29,8 @@ const AiPartnerTab = ({
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyError, setHistoryError] = useState(null);
   const [commandText, setCommandText] = useState("");
+  const [commandResponse, setCommandResponse] = useState(null);
+
 
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
