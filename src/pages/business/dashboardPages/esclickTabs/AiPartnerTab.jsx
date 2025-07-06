@@ -390,38 +390,33 @@ const AiPartnerTab = ({
 
   // פונקציה לשליחת תזכורת וואטסאפ לכל הלקוחות עם פגישות מחר
   const sendReminderToTomorrow = async () => {
-    if (!reminderText.trim()) {
-      alert("יש לכתוב טקסט תזכורת לשליחה לכל הלקוחות.");
-      return;
-    }
-    setSendingReminderTomorrow(true);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/appointments/tomorrow`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Failed to fetch tomorrow appointments");
-      const appointments = await res.json();
+  if (!reminderText.trim()) {
+    alert("יש לכתוב טקסט תזכורת לשליחה לכל הלקוחות.");
+    return;
+  }
+  setSendingReminderTomorrow(true);
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/reminder/send-to-tomorrow`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ businessId, text: reminderText.trim() }),
+    });
+    if (!res.ok) throw new Error("Failed to send reminders for tomorrow");
 
-      if (!appointments.length) {
-        alert("לא נמצאו תיאומים למחר.");
-        setSendingReminderTomorrow(false);
-        return;
-      }
+    const data = await res.json();
 
-      appointments.forEach((appt) => {
-        if (appt.clientPhone && appt.clientName && appt.date && appt.time) {
-          sendWhatsAppReminder(appt.clientPhone, appt.clientName, appt.date, appt.time);
-        }
-      });
+    alert(`נשלחו תזכורות ל-${data.count} לקוחות למחר.`);
+    setReminderText("");
+  } catch (err) {
+    alert("שגיאה בשליחת התזכורות: " + err.message);
+  } finally {
+    setSendingReminderTomorrow(false);
+  }
+};
 
-      alert(`נמצאו ${appointments.length} תיאומים למחר, הודעות וואטסאפ נפתחו לשליחה.`);
-      setReminderText("");
-    } catch (err) {
-      alert("שגיאה בשליחת התזכורות: " + err.message);
-    } finally {
-      setSendingReminderTomorrow(false);
-    }
-  };
 
   return (
     <div className="ai-partner-container">
