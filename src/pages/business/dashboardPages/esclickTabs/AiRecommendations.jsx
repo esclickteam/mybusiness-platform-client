@@ -1,17 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { io } from "socket.io-client";
-
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
-
 const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
-  const [recommendations, setRecommendations] = useState([]);
-  const [loadingIds, setLoadingIds] = useState(new Set());
-  const [error, setError] = useState(null);
-  const [editingId, setEditingId] = useState(null);
-  const [editText, setEditText] = useState("");
-  const socketRef = useRef(null);
+  const [recommendations, setRecommendations] = React.useState([]);
+  const [loadingIds, setLoadingIds] = React.useState(new Set());
+  const [error, setError] = React.useState(null);
+  const [editingId, setEditingId] = React.useState(null);
+  const [editText, setEditText] = React.useState("");
+  const socketRef = React.useRef(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!businessId || !token) return;
 
     setError(null);
@@ -29,7 +24,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
   }, [businessId, token]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!businessId || !token) return;
 
     const socket = io(SOCKET_URL, {
@@ -60,12 +55,18 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         if (idx !== -1) {
           if (prev[idx].text !== rec.text || prev[idx].status !== rec.status) {
             const copy = [...prev];
-            copy[idx] = rec;
+            copy[idx] = {
+              ...rec,
+              text: rec.text.replace(/\*\*/g, "").replace(/#/g, ""),
+            };
             return copy;
           }
           return prev;
         }
-        return [...prev, rec];
+        return [...prev, {
+          ...rec,
+          text: rec.text.replace(/\*\*/g, "").replace(/#/g, ""),
+        }];
       });
     };
     const onMessageApproved = ({ recommendationId }) => {
@@ -117,7 +118,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     };
   }, [businessId, token, onTokenExpired]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const socket = socketRef.current;
     if (socket && socket.auth) {
       socket.auth.token = token;
@@ -191,7 +192,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
   const startEditing = (rec) => {
     setEditingId(rec._id || rec.id);
-    setEditText(rec.text.replace(/\*\*/g, ""));
+    setEditText(rec.text.replace(/\*\*/g, "").replace(/#/g, ""));
   };
 
   const cancelEditing = () => {
@@ -203,7 +204,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
-      const cleanText = editText.replace(/\*\*/g, "").trim();
+      const cleanText = editText.replace(/\*\*/g, "").replace(/#/g, "").trim();
       const res = await fetch("/api/chat/editRecommendation", {
         method: "POST",
         headers: {
@@ -265,7 +266,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                     <textarea
                       value={editText}
                       onChange={(e) =>
-                        setEditText(e.target.value.replace(/\*\*/g, ""))
+                        setEditText(e.target.value.replace(/\*\*/g, "").replace(/#/g, ""))
                       }
                       rows={10}
                       style={{ width: "100%", resize: "vertical" }}
@@ -279,7 +280,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   </>
                 ) : (
                   <>
-                    <p>{text.replace(/\*\*/g, "")}</p>
+                    <p>{text.replace(/\*\*/g, "").replace(/#/g, "")}</p>
                     <button onClick={() => startEditing({ _id: recId, text })}>
                       ערוך
                     </button>{" "}
@@ -322,7 +323,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   opacity: 0.7,
                 }}
               >
-                <p>{text.replace(/\*\*/g, "")}</p>
+                <p>{text.replace(/\*\*/g, "").replace(/#/g, "")}</p>
                 <p>סטטוס: {status === "approved" ? "מאושר" : "נדחה"}</p>
               </li>
             );
@@ -332,5 +333,3 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     </div>
   );
 };
-
-export default AiRecommendations;
