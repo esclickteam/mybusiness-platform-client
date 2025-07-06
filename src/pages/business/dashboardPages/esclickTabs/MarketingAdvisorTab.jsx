@@ -25,7 +25,6 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
 
   const sendMessage = async (newMessages) => {
     setLoading(true);
-    // שולחים רק את הטקסט האחרון של המשתמש כ-prompt
     const lastUserMessage = newMessages.filter(m => m.role === "user").slice(-1)[0]?.content || "";
 
     const payload = {
@@ -152,14 +151,19 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
       </div>
 
       <div className="chat-input">
-        <input
-          type="text"
+        <textarea
           placeholder="כתבי שאלה שיווקית..."
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
+          rows={5}
         />
-        <button onClick={handleSend} disabled={loading}>
+        <button onClick={handleSend} disabled={loading || !userInput.trim()}>
           שליחה
         </button>
       </div>
