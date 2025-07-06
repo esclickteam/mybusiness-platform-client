@@ -384,15 +384,23 @@
 }
 
 .uniform-textarea {
-  width: 100%;         /* תופס את כל רוחב הקונטיינר */
-  max-width: 600px;    /* רוחב מקסימלי אם רוצים */
-  min-height: 140px;   /* גובה מינימלי אחיד */
+  width: 100%;
+  max-width: 600px;
+  min-height: 140px;
   font-size: 1rem;
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #ccc;
   box-sizing: border-box;
-  resize: vertical;    /* מאפשר שינוי גובה בלבד */
-  overflow: auto;
+  resize: vertical;
   font-family: inherit;
+  overflow: auto;
+}
+
+.center-textareas {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* מרכז אופקית */
+  gap: 1.5rem;         /* רווח בין האלמנטים */
+  margin-top: 2rem;
 }

@@ -447,74 +447,45 @@ const AiPartnerTab = ({
           )}
         </div>
       ) : (
-        <div className="partner-layout">
-          <div className="chat-section">
-            {dailyTip && <div className="daily-tip">💡 {dailyTip}</div>}
+        <div className="center-textareas">
+          <textarea
+            className="uniform-textarea"
+            rows={3}
+            value={commandText}
+            onChange={(e) => setCommandText(e.target.value)}
+            placeholder="כתוב פקודה ל-AI, למשל: תאם תור ביום שני ב-10 בבוקר"
+            disabled={loading}
+          />
+          <button onClick={sendAiCommand} disabled={loading || !commandText.trim()}>
+            שלח ל-AI
+          </button>
 
-            <button onClick={() => setShowSuggestions((prev) => !prev)} className="toggle-suggestions-btn">
-              {showSuggestions ? "הסתר המלצות" : "הצג המלצות"}
+          <div
+            style={{
+              marginTop: "2rem",
+              padding: "1rem",
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+              maxWidth: "600px",
+              width: "100%",
+            }}
+          >
+            <h3>שלח תזכורת ללקוח</h3>
+            <textarea
+              className="uniform-textarea"
+              rows={5}
+              value={reminderText}
+              onChange={(e) => setReminderText(e.target.value)}
+              placeholder="כתוב כאן את טקסט התזכורת, כולל תאריך ושעה, למשל: תזכורת לפגישה ב-10/07/2025 בשעה 15:00"
+              disabled={sendingReminder}
+            />
+            <button
+              onClick={sendReminder}
+              disabled={sendingReminder || !reminderText.trim()}
+              style={{ marginTop: "0.5rem", padding: "0.5rem 1rem" }}
+            >
+              {sendingReminder ? "שולח..." : "שלח תזכורת"}
             </button>
-
-            {/* פאנל פקודות AI */}
-            <div className="ai-command-panel">
-              <textarea
-                className="uniform-textarea"
-                rows={3}
-                value={commandText}
-                onChange={(e) => setCommandText(e.target.value)}
-                placeholder="כתוב פקודה ל-AI, למשל: תאם תור ביום שני ב-10 בבוקר"
-                disabled={loading}
-              />
-              <button onClick={sendAiCommand} disabled={loading || !commandText.trim()}>
-                שלח ל-AI
-              </button>
-
-              {commandResponse && (
-                <div className="command-response">
-                  <h4>תשובת השותף AI:</h4>
-                  <p>{commandResponse}</p>
-                </div>
-              )}
-            </div>
-
-            {showSuggestions && (
-              <div className="suggestions-list">
-                {suggestions
-                  .slice()
-                  .sort((a, b) => {
-                    if (a.timestamp && b.timestamp) {
-                      return new Date(b.timestamp) - new Date(a.timestamp);
-                    }
-                    return 0;
-                  })
-                  .map((s) => {
-                    const isLong = s.text.length > SHORTEN_LENGTH;
-                    const filteredTextForDisplay = filterText(s.text);
-                    const shortText = isLong ? filteredTextForDisplay.slice(0, SHORTEN_LENGTH) + "..." : filteredTextForDisplay;
-
-                    return (
-                      <div key={s.id} className={`suggestion ${s.status}`}>
-                        <p>{shortText}</p>
-                        {isLong && (
-                          <button className="read-more-btn" onClick={() => setActiveSuggestion(s)}>
-                            קרא עוד
-                          </button>
-                        )}
-                        <small>
-                          סטטוס: {s.status} |{" "}
-                          {s.timestamp
-                            ? new Date(s.timestamp).toLocaleString("he-IL", {
-                                dateStyle: "short",
-                                timeStyle: "short",
-                              })
-                            : "תאריך לא זמין"}
-                          {s.isEdited && <span> (נערך)</span>}
-                        </small>
-                      </div>
-                    );
-                  })}
-              </div>
-            )}
           </div>
         </div>
       )}
@@ -592,34 +563,6 @@ const AiPartnerTab = ({
           </div>
         </div>
       )}
-
-      {/* תיבת טקסט משולבת לתזכורת אחת הכוללת טקסט, תאריך ושעה */}
-      <div
-        style={{
-          marginTop: "2rem",
-          padding: "1rem",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          maxWidth: "600px",
-        }}
-      >
-        <h3>שלח תזכורת ללקוח</h3>
-        <textarea
-          className="uniform-textarea"
-          rows={5}
-          value={reminderText}
-          onChange={(e) => setReminderText(e.target.value)}
-          placeholder="כתוב כאן את טקסט התזכורת, כולל תאריך ושעה, למשל: תזכורת לפגישה ב-10/07/2025 בשעה 15:00"
-          disabled={sendingReminder}
-        />
-        <button
-          onClick={sendReminder}
-          disabled={sendingReminder || !reminderText.trim()}
-          style={{ marginTop: "0.5rem", padding: "0.5rem 1rem" }}
-        >
-          {sendingReminder ? "שולח..." : "שלח תזכורת"}
-        </button>
-      </div>
 
       <audio ref={notificationSound} src="/notification.mp3" preload="auto" />
       <div ref={bottomRef} />
