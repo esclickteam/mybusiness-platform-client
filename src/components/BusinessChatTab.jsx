@@ -132,7 +132,7 @@ export default function BusinessChatTab({
       const res = await API.get(`/messages/${conversationId}/history`, {
         params: { page, limit },
       });
-      let msgs = res.data.messages.map((m) => ({
+      const msgs = res.data.messages.map((m) => ({
         ...m,
         _id: String(m._id),
         timestamp: m.createdAt || new Date().toISOString(),
@@ -140,21 +140,7 @@ export default function BusinessChatTab({
         tempId: m.tempId || null,
         from: m.from,
       }));
-
-      if (conversationType === "user-business") {
-        const bizStr = String(businessId).trim();
-        msgs = msgs.filter((m) => {
-          const fromId =
-            typeof m.from === "string"
-              ? m.from
-              : m.from && (m.from._id || m.from.id)
-              ? String(m.from._id || m.from.id)
-              : "";
-          const fromStr = fromId.trim();
-          return fromStr !== bizStr;
-        });
-      }
-
+      // הוסר ה-filter שהסיר הודעות של העסק
       return msgs;
     } catch (error) {
       console.error("Failed to fetch messages:", error);
@@ -176,7 +162,7 @@ export default function BusinessChatTab({
     return () => {
       didCancel = true;
     };
-  }, [conversationId, conversationType, businessId]);
+  }, [conversationId]);
 
   useEffect(() => {
     if (!socket) return;
@@ -188,18 +174,7 @@ export default function BusinessChatTab({
       )
         return;
 
-      const bizStr = String(businessId).trim();
-      const fromId =
-        typeof msg.from === "string"
-          ? msg.from
-          : msg.from && (msg.from._id || msg.from.id)
-          ? String(msg.from._id || msg.from.id)
-          : "";
-
-      if (conversationType === "user-business" && fromId.trim() === bizStr) {
-        return;
-      }
-
+      // הוסר ה-return שחוסם הודעות מהעסק
       const safeMsg = {
         ...msg,
         _id: String(msg._id),
@@ -236,7 +211,7 @@ export default function BusinessChatTab({
       socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
     };
-  }, [socket, conversationId, customerId, conversationType, businessId]);
+  }, [socket, conversationId, customerId, conversationType]);
 
   useEffect(() => {
     const el = listRef.current;
@@ -253,8 +228,7 @@ export default function BusinessChatTab({
   const sendMessage = () => {
     if (sending) return;
     const text = input.trim();
-    if (!text) return;
-    if (!socket) return;
+    if (!text || !socket) return;
 
     setSending(true);
     const tempId = uuidv4();
@@ -291,8 +265,9 @@ export default function BusinessChatTab({
     );
   };
 
-  // מיון ההודעות לפי זמן לפני הצגה
-  const sortedMessages = [...messages].sort((a, b) => new Date(a.timestamp || a.createdAt) - new Date(b.timestamp || b.createdAt));
+  const sortedMessages = [...messages].sort(
+    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+  );
 
   return (
     <div className="chat-container business">
@@ -336,11 +311,9 @@ export default function BusinessChatTab({
                 <span className="time">{formatTime(m.timestamp)}</span>
                 {m.fileDuration > 0 && (
                   <span className="audio-length">
-                    {`${Math.floor(m.fileDuration / 60)
-                      .toString()
-                      .padStart(2, "0")}:${Math.floor(m.fileDuration % 60)
-                      .toString()
-                      .padStart(2, "0")}`}
+                    {`${String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:${String(
+                      Math.floor(m.fileDuration % 60)
+                    ).padStart(2, "0")}`}
                   </span>
                 )}
                 {m.sending && <span className="sending-indicator">⏳</span>}
