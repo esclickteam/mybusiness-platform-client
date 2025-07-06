@@ -70,14 +70,25 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
 
 // מוסיף role = "client" או "business" עם לוג
 const addRole = (msg, userId) => {
-  const fromId = typeof msg.from === "object"
-    ? msg.from._id || msg.from.id
-    : msg.from;
+  // בדוק קודם אם יש fromId ישיר
+  const fromIdDirect = msg.fromId;
+
+  // אם אין, בדוק אם יש from שהוא אובייקט או מחרוזת
+  const fromField = msg.from;
+  const fromId =
+    fromIdDirect ||
+    (typeof fromField === "object"
+      ? fromField._id || fromField.id
+      : fromField);
+
   const role = String(fromId) === String(userId) ? "client" : "business";
+
   console.log("addRole:", { fromId, userId, role, msg });
+
   msg.role = role;
   return msg;
 };
+
 
 const getMessageKey = (m) => {
   if (m.recommendationId) return `rec_${m.recommendationId}`;
