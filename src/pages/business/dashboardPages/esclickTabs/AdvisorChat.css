@@ -10,19 +10,21 @@
   border-radius: 12px;
   padding: 1rem;
   box-sizing: border-box;
+  overflow: hidden; /* מונע גלילה כללית במיכל הראשי */
 }
 
 .chat-box-wrapper {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* גלילה רק כאן */
+  overflow-y: auto; /* גלילה רק באזור ההודעות */
   border: 1px solid #ccc;
   border-radius: 16px;
   padding: 1rem;
   box-sizing: border-box;
   scroll-behavior: smooth;
   max-height: 100%; /* תופס את כל הגובה שנותר */
+  gap: 0.5rem;
 }
 
 .chat-box {
@@ -96,6 +98,11 @@
 
 .chat-input button:hover {
   background-color: #6843bb;
+}
+
+.chat-input button:disabled {
+  background-color: #b39ddb;
+  cursor: not-allowed;
 }
 
 .markdown-message ol,
