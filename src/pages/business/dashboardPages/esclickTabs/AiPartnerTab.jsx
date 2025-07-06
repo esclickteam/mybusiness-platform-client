@@ -342,8 +342,8 @@ const AiPartnerTab = ({
       <h2>🤖 שותף AI אישי לעסק</h2>
 
       <div style={{ margin: "1rem 0" }}>
-        <button onClick={() => setShowHistory((prev) => !prev)}>
-            היסטוריית פקודות AI
+        <button className="toggle-suggestions-btn" onClick={() => setShowHistory((prev) => !prev)}>
+          ראה היסטוריית המלצות
         </button>
       </div>
 
@@ -366,6 +366,8 @@ const AiPartnerTab = ({
                     marginBottom: "1rem",
                     borderBottom: "1px solid #ddd",
                     paddingBottom: "0.5rem",
+                    direction: "rtl",
+                    textAlign: "right",
                   }}
                 >
                   <div
@@ -388,9 +390,10 @@ const AiPartnerTab = ({
                         backgroundColor: "#f0f0f0",
                         padding: "0.5rem",
                         borderRadius: "4px",
+                        overflowX: "auto",
                       }}
                     >
-                      {cmd.role === "user" ? cmd.content : null}
+                      {cmd.commandText}
                     </pre>
                   </div>
                   <div>
@@ -401,9 +404,10 @@ const AiPartnerTab = ({
                         backgroundColor: "#e6f7ff",
                         padding: "0.5rem",
                         borderRadius: "4px",
+                        overflowX: "auto",
                       }}
                     >
-                      {cmd.role === "ai" ? cmd.content : null}
+                      {cmd.responseText}
                     </pre>
                   </div>
                 </li>

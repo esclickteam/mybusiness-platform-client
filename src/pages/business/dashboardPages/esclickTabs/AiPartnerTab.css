@@ -414,13 +414,14 @@
   background-color: #7e57c2;
   color: white;
   border: none;
-  padding: 10px 16px;
-  border-radius: 12px;
+  padding: 10px 20px;
+  border-radius: 25px;
   cursor: pointer;
-  font-weight: 600;
-  margin: 1rem 0;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(126, 87, 194, 0.6);
   transition: background-color 0.3s ease;
-  align-self: flex-start;
+  user-select: none;
 }
 
 .toggle-suggestions-btn:hover {
