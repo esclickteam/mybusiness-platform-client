@@ -66,6 +66,13 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
+// פונקציה שמוסיפה role לפי השולח
+const addRole = (msg, userId) => {
+  const fromId = typeof msg.from === "object" ? msg.from._id || msg.from.id : msg.from;
+  msg.role = String(fromId) === String(userId) ? "client" : "business";
+  return msg;
+};
+
 const getMessageKey = (m) => {
   if (m.recommendationId) return `rec_${m.recommendationId}`;
   if (m._id) return `msg_${m._id}`;
@@ -149,7 +156,9 @@ export default function ClientChatTab({
               const normalizedMessages = (Array.isArray(response.messages)
                 ? response.messages
                 : []
-              ).map(normalizeMessageFileFields);
+              )
+                .map(normalizeMessageFileFields)
+                .map((m) => addRole(m, userId)); // הוספת role כאן
               setMessages(normalizedMessages);
               setError("");
             } else {
@@ -167,7 +176,7 @@ export default function ClientChatTab({
         socket.emit("leaveConversation", conversationId, conversationType === "business-business");
       }
     };
-  }, [socket, conversationId, conversationType, setMessages, businessId]);
+  }, [socket, conversationId, conversationType, setMessages, businessId, userId]);
 
   useEffect(() => {
     if (!socket || !conversationId) return;
@@ -175,7 +184,7 @@ export default function ClientChatTab({
     const handleIncomingMessage = (msg) => {
       if (msg.isRecommendation && msg.status === "pending") return;
 
-      msg = normalizeMessageFileFields(msg);
+      msg = addRole(normalizeMessageFileFields(msg), userId); // הוספת role
 
       setMessages((prev) => {
         const idx = prev.findIndex(
@@ -195,7 +204,7 @@ export default function ClientChatTab({
     const handleMessageApproved = (msg) => {
       if (msg.conversationId !== conversationId) return;
 
-      msg = normalizeMessageFileFields(msg);
+      msg = addRole(normalizeMessageFileFields(msg), userId); // הוספת role
 
       setMessages((prev) => {
         const idx = prev.findIndex(
@@ -225,7 +234,7 @@ export default function ClientChatTab({
       socket.off("messageApproved", handleMessageApproved);
       socket.emit("leaveConversation", conversationId, conversationType === "business-business");
     };
-  }, [socket, conversationId, setMessages, conversationType]);
+  }, [socket, conversationId, setMessages, conversationType, userId]);
 
   useEffect(() => {
     if (!messageListRef.current) return;
@@ -272,7 +281,7 @@ export default function ClientChatTab({
           setSending(false);
           if (ack?.ok && ack.conversationId && ack.message) {
             setConversationId(ack.conversationId);
-            setMessages([normalizeMessageFileFields(ack.message)]);
+            setMessages([addRole(normalizeMessageFileFields(ack.message), userId)]);
             setInput("");
             socket.emit("joinConversation", ack.conversationId, conversationType === "business-business");
           } else {
@@ -310,7 +319,7 @@ export default function ClientChatTab({
           if (ack?.ok) {
             setMessages((prev) =>
               prev.map((msg) =>
-                msg.tempId === tempId && ack.message ? normalizeMessageFileFields(ack.message) : msg
+                msg.tempId === tempId && ack.message ? addRole(normalizeMessageFileFields(ack.message), userId) : msg
               )
             );
           } else {
