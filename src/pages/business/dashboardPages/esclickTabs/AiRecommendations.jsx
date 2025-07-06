@@ -200,11 +200,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   };
 
   const saveEdit = async (id) => {
-    if (editText.trim().length > 1000) {
-      setError("הטקסט ארוך מדי. מקסימום 1000 תווים.");
-      return;
-    }
-
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
@@ -269,14 +264,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   <>
                     <textarea
                       value={editText}
-                      onChange={(e) => {
-                        if (e.target.value.length <= 1000) {
-                          setEditText(e.target.value.replace(/\*\*/g, ""));
-                        }
-                      }}
+                      onChange={(e) =>
+                        setEditText(e.target.value.replace(/\*\*/g, ""))
+                      }
                       rows={4}
                       style={{ width: "100%" }}
-                      maxLength={1000}
                     />
                     <button onClick={() => saveEdit(recId)} disabled={isLoading}>
                       {isLoading ? "שומר..." : "שמור"}
