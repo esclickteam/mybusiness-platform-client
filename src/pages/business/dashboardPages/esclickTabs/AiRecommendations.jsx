@@ -7,15 +7,34 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [loadingIds, setLoadingIds] = useState(new Set());
   const [error, setError] = useState(null);
-
-  // נשמור את ה-socket ב-ref כדי לא ליצור חדש בכל render
   const socketRef = useRef(null);
 
-  // init וחיבור ראשוני
+  // טען המלצות (כולל היסטוריה) בתחילת הרכיב או כש businessId/token משתנים
   useEffect(() => {
     if (!businessId || !token) return;
 
-    console.log("[Socket] initializing…");
+    setError(null);
+    fetch(`/api/chat/recommendations?businessId=${businessId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load recommendations");
+        return res.json();
+      })
+      .then((data) => {
+        // מצפים לקבל מערך של המלצות כולל סטטוס
+        setRecommendations(data);
+      })
+      .catch((err) => {
+        console.error("[Load] error:", err);
+        setError("שגיאה בטעינת ההמלצות: " + err.message);
+      });
+  }, [businessId, token]);
+
+  useEffect(() => {
+    if (!businessId || !token) return;
 
     const socket = io(SOCKET_URL, {
       auth: { token, businessId },
@@ -25,7 +44,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     });
     socketRef.current = socket;
 
-    // handlers משותפים
     const onConnect = () => {
       console.log(`[Socket] connected (${socket.id}), joining rooms`);
       socket.emit("joinRoom", `business-${businessId}`);
@@ -33,9 +51,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     };
     const onConnectError = (err) => {
       console.error("[Socket] connection error:", err);
-      // זיהוי בעיית אימות
       if (err.message.includes("401") && typeof onTokenExpired === "function") {
-        console.warn("[Socket] unauthorized – token expired, calling onTokenExpired()");
         onTokenExpired();
       } else {
         setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
@@ -45,11 +61,8 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       console.log("[Socket] disconnected:", reason);
     };
     const onNewAiSuggestion = (rec) => {
-      console.log("[Socket] <<newAiSuggestion>> received:", rec);
       setRecommendations((prev) => {
-        const idx = prev.findIndex(
-          (r) => r._id === rec._id || r.id === rec._id
-        );
+        const idx = prev.findIndex((r) => r._id === rec._id || r.id === rec._id);
         if (idx !== -1) {
           if (prev[idx].text !== rec.text || prev[idx].status !== rec.status) {
             const copy = [...prev];
@@ -77,7 +90,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     };
     const onRecommendationRejected = ({ recommendationId }) => {
       setRecommendations((prev) =>
-        prev.filter((r) => r._id !== recommendationId && r.id !== recommendationId)
+        prev.map((r) =>
+          (r._id === recommendationId || r.id === recommendationId)
+            ? { ...r, status: "rejected" }
+            : r
+        )
       );
       setLoadingIds((ids) => {
         const next = new Set(ids);
@@ -86,7 +103,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
     };
 
-    // רישום מאזינים
     socket.on("connect", onConnect);
     socket.on("connect_error", onConnectError);
     socket.on("disconnect", onDisconnect);
@@ -94,10 +110,8 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     socket.on("messageApproved", onMessageApproved);
     socket.on("recommendationRejected", onRecommendationRejected);
 
-    // התחלת החיבור
     socket.connect();
 
-    // ניקוי בסיום
     return () => {
       socket.off("connect", onConnect);
       socket.off("connect_error", onConnectError);
@@ -109,7 +123,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     };
   }, [businessId, token, onTokenExpired]);
 
-  // במקרה שה-token מתעדכן (למשל אחרי רענון), נחבר מחדש עם ה-token החדש
   useEffect(() => {
     const socket = socketRef.current;
     if (socket && socket.auth) {
@@ -142,7 +155,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         )
       );
     } catch (err) {
-      console.error("[Action] approve error:", err);
       setError("שגיאה באישור ההמלצה: " + err.message);
     } finally {
       setLoadingIds((ids) => {
@@ -168,10 +180,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       if (!res.ok) throw new Error("Failed to reject");
 
       setRecommendations((prev) =>
-        prev.filter((r) => r._id !== id && r.id !== id)
+        prev.map((r) =>
+          (r._id === id || r.id === id) ? { ...r, status: "rejected" } : r
+        )
       );
     } catch (err) {
-      console.error("[Action] reject error:", err);
       setError("שגיאה בדחיית ההמלצה: " + err.message);
     } finally {
       setLoadingIds((ids) => {
@@ -182,7 +195,13 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
+  // המלצות שממתינות לאישור
   const pending = recommendations.filter((r) => r.status === "pending");
+
+  // היסטוריית המלצות (אושרו או נדחו)
+  const history = recommendations.filter(
+    (r) => r.status === "approved" || r.status === "rejected"
+  );
 
   return (
     <div>
@@ -217,6 +236,33 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                 >
                   {isLoading ? "טוען..." : "דחה"}
                 </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <hr />
+
+      <h3>היסטוריית המלצות</h3>
+      {history.length === 0 ? (
+        <p>אין המלצות בעבר.</p>
+      ) : (
+        <ul>
+          {history.map(({ _id, id, text, status }) => {
+            const recId = _id || id;
+            return (
+              <li
+                key={recId}
+                style={{
+                  marginBottom: "1rem",
+                  border: "1px solid #eee",
+                  padding: "0.5rem",
+                  opacity: 0.7,
+                }}
+              >
+                <p>{text}</p>
+                <p>סטטוס: {status === "approved" ? "מאושר" : "נדחה"}</p>
               </li>
             );
           })}
