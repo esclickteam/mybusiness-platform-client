@@ -9,11 +9,13 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [error, setError] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
-  const [showHistory, setShowHistory] = useState(false); // סטייט להצגת ההיסטוריה
+  const [showHistory, setShowHistory] = useState(false);
   const socketRef = useRef(null);
 
+  // פונקציה לניקוי טקסט מסמלים לא רצויים
   const cleanText = (text) => text.replace(/(\*\*|#|\*)/g, "").trim();
 
+  // טעינת המלצות מהשרת בעת טעינת הרכיב או שינוי ב-businessId/token
   useEffect(() => {
     if (!businessId || !token) return;
 
@@ -32,6 +34,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
   }, [businessId, token]);
 
+  // התחברות ל-Socket.IO לניטור אירועים חיים
   useEffect(() => {
     if (!businessId || !token) return;
 
@@ -43,10 +46,12 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     });
     socketRef.current = socket;
 
+    // הצטרפות לחדרים רלוונטיים
     const onConnect = () => {
       socket.emit("joinRoom", `business-${businessId}`);
       socket.emit("joinRoom", `dashboard-${businessId}`);
     };
+
     const onConnectError = (err) => {
       if (err.message.includes("401") && typeof onTokenExpired === "function") {
         onTokenExpired();
@@ -54,12 +59,15 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
       }
     };
+
     const onDisconnect = (reason) => {
       console.log("[Socket] disconnected:", reason);
     };
+
+    // עדכון המלצות חדשות
     const onNewAiSuggestion = (rec) => {
       setRecommendations((prev) => {
-        const idx = prev.findIndex((r) => r._id === rec._id || r.id === rec._id);
+        const idx = prev.findIndex((r) => (r._id === rec._id || r.id === rec._id));
         if (idx !== -1) {
           if (prev[idx].text !== rec.text || prev[idx].status !== rec.status) {
             const copy = [...prev];
@@ -71,6 +79,8 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         return [...prev, rec];
       });
     };
+
+    // עדכון סטטוס לאישור
     const onMessageApproved = ({ recommendationId }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
@@ -85,10 +95,12 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         return next;
       });
     };
+
+    // עדכון סטטוס לדחייה
     const onRecommendationRejected = ({ recommendationId }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
-          (r._id === recommendationId || r.id === recommendationId)
+          r._id === recommendationId || r.id === recommendationId
             ? { ...r, status: "rejected" }
             : r
         )
@@ -120,6 +132,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     };
   }, [businessId, token, onTokenExpired]);
 
+  // עדכון טוקן בסוקט במקרה של שינוי
   useEffect(() => {
     const socket = socketRef.current;
     if (socket && socket.auth) {
@@ -131,6 +144,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   }, [token]);
 
+  // אישור המלצה (send-approved)
   const approveRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -162,6 +176,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
+  // דחיית המלצה (rejectRecommendation)
   const rejectRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -178,7 +193,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
       setRecommendations((prev) =>
         prev.map((r) =>
-          (r._id === id || r.id === id) ? { ...r, status: "rejected" } : r
+          r._id === id || r.id === id ? { ...r, status: "rejected" } : r
         )
       );
     } catch (err) {
@@ -192,17 +207,20 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
+  // התחלת עריכה
   const startEditing = (rec) => {
     setEditingId(rec._id || rec.id);
     setEditText(cleanText(rec.text));
   };
 
+  // ביטול עריכה
   const cancelEditing = () => {
     setEditingId(null);
     setEditText("");
   };
 
-  const saveEdit = async (id) => {
+  // שמירת טיוטה בלבד
+  const saveDraft = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
@@ -215,19 +233,18 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         },
         body: JSON.stringify({ recommendationId: id, newText }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to edit");
+      if (!res.ok) throw new Error("Failed to save draft");
 
       setRecommendations((prev) =>
         prev.map((r) =>
-          (r._id === id || r.id === id)
+          r._id === id || r.id === id
             ? { ...r, text: newText, isEdited: true, editedText: newText }
             : r
         )
       );
       cancelEditing();
     } catch (err) {
-      setError("שגיאה בעריכת ההמלצה: " + err.message);
+      setError("שגיאה בשמירת טיוטה: " + err.message);
     } finally {
       setLoadingIds((ids) => {
         const next = new Set(ids);
@@ -237,6 +254,49 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
+  // שמירה ואישור יחד (שמירת הטיוטה + שליחת ההמלצה לעסק)
+  const saveAndApprove = async (id) => {
+    setLoadingIds((ids) => new Set(ids).add(id));
+    setError(null);
+    try {
+      const newText = cleanText(editText);
+      // 1. שמירת הטיוטה
+      const res1 = await fetch("/api/chat/editRecommendation", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ recommendationId: id, newText }),
+      });
+      if (!res1.ok) {
+        const err = await res1.json();
+        throw new Error(err.error || "Failed to edit");
+      }
+      // 2. אישור והשליחה
+      await approveRecommendation(id);
+
+      // עדכון סטייט מקומי באופן מיידי
+      setRecommendations((prev) =>
+        prev.map((r) =>
+          r._id === id || r.id === id
+            ? { ...r, text: newText, status: "approved", isEdited: true, editedText: newText }
+            : r
+        )
+      );
+      cancelEditing();
+    } catch (err) {
+      setError("שגיאה בשמירה ואישור: " + err.message);
+    } finally {
+      setLoadingIds((ids) => {
+        const next = new Set(ids);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
+
+  // סינון המלצות ממתינות והיסטוריית המלצות
   const pending = recommendations.filter((r) => r.status === "pending");
   const history = recommendations.filter(
     (r) => r.status === "approved" || r.status === "rejected"
@@ -246,6 +306,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     <div>
       <h3>המלצות AI ממתינות לאישור</h3>
       {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
+
       {pending.length === 0 ? (
         <p>אין המלצות חדשות.</p>
       ) : (
@@ -254,6 +315,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
             const recId = _id || id;
             const isLoading = loadingIds.has(recId);
             const isEditing = editingId === recId;
+
             return (
               <li
                 key={recId}
@@ -267,16 +329,26 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   <>
                     <textarea
                       value={editText}
-                      onChange={(e) => setEditText(e.target.value.replace(/(\*\*|#|\*)/g, ""))}
+                      onChange={(e) =>
+                        setEditText(e.target.value.replace(/(\*\*|#|\*)/g, ""))
+                      }
                       rows={10}
                       style={{ width: "100%", resize: "vertical" }}
                     />
-                    <button onClick={() => saveEdit(recId)} disabled={isLoading}>
-                      {isLoading ? "שומר..." : "שמור"}
-                    </button>
-                    <button onClick={cancelEditing} disabled={isLoading}>
-                      ביטול
-                    </button>
+                    <div style={{ marginTop: 10 }}>
+                      <button onClick={() => saveDraft(recId)} disabled={isLoading}>
+                        {isLoading ? "שומר טיוטה..." : "שמור טיוטה"}
+                      </button>{" "}
+                      <button
+                        onClick={() => saveAndApprove(recId)}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? "מטמיע ושולח..." : "שמור ואשר"}
+                      </button>{" "}
+                      <button onClick={cancelEditing} disabled={isLoading}>
+                        ביטול
+                      </button>
+                    </div>
                   </>
                 ) : (
                   <>
@@ -311,7 +383,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
       <hr />
 
-      {/* כפתור לסירוגין להראות/להסתיר את ההיסטוריה */}
+      {/* כפתור לסירוגין להראות או להסתיר את ההיסטוריה */}
       <button
         onClick={() => setShowHistory((show) => !show)}
         style={{
