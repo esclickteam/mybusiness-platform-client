@@ -50,17 +50,6 @@ function messagesReducer(state, action) {
   }
 }
 
-// פונקציה שמוסיפה role לכל הודעה לפי מזהה השולח
-function addRoleToMessages(messages, myBusinessId) {
-  return messages.map(msg => {
-    const isMine = String(msg.fromBusinessId) === String(myBusinessId);
-    return {
-      ...msg,
-      role: isMine ? "mine" : "theirs",
-    };
-  });
-}
-
 export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const socketRef = useRef(null);
   const socketInitializedRef = useRef(false);
@@ -205,9 +194,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           fromBusinessId: msg.fromBusinessId || msg.from,
           toBusinessId: msg.toBusinessId || msg.to,
         }));
-        // הוסף role פה
-        const msgsWithRole = addRoleToMessages(normMsgs, myBusinessId);
-        dispatchMessages({ type: "set", payload: uniqueMessages(msgsWithRole) });
+        dispatchMessages({ type: "set", payload: uniqueMessages(normMsgs) });
       } catch {
         dispatchMessages({ type: "set", payload: [] });
       }
@@ -218,64 +205,51 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       socketRef.current.emit("leaveConversation", convId, isBusinessConversation);
       socketRef.current.off("connect", joinHandler);
     };
-  }, [selectedConversation, refreshAccessToken, uniqueMessages, myBusinessId]);
+  }, [selectedConversation, refreshAccessToken, uniqueMessages]);
 
   const handleNewMessage = useCallback(
-  (msg) => {
-    const fullMsg = msg.fullMsg || msg;
-    if (!fullMsg) return;
+    (msg) => {
+      const fullMsg = msg.fullMsg || msg;
+      if (!fullMsg) return;
 
-    const normalized = {
-      ...fullMsg,
-      text: typeof fullMsg.text === "string" ? fullMsg.text : "",
-      fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
-      toBusinessId: fullMsg.toBusinessId || fullMsg.to,
-      conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
-    };
+      const normalized = {
+        ...fullMsg,
+        text: typeof fullMsg.text === "string" ? fullMsg.text : "",
+        fromBusinessId: fullMsg.fromBusinessId || fullMsg.from,
+        toBusinessId: fullMsg.toBusinessId || fullMsg.to,
+        conversationId: fullMsg.conversationId || fullMsg.conversation || fullMsg.chatId,
+      };
 
-    if (!selectedConversation || normalized.conversationId !== selectedConversation._id) {
-      return;
-    }
-
-    // הוספת role להודעה
-    const msgWithRole = {
-      ...normalized,
-      role: String(normalized.fromBusinessId) === String(myBusinessId) ? "mine" : "theirs",
-    };
-
-    dispatchMessages((prevMessages) => {
-      const exists = prevMessages.some((m) => m._id === msgWithRole._id);
-      if (exists) return prevMessages;
-      return [...prevMessages, msgWithRole];
-    });
-
-    setSelectedConversation((prev) => {
-      if (prev && prev._id === msgWithRole.conversationId) {
-        return {
-          ...prev,
-          messages: uniqueMessages([...(prev.messages || []), msgWithRole]),
-        };
+      if (!selectedConversation || normalized.conversationId !== selectedConversation._id) {
+        return;
       }
-      return prev;
-    });
 
-    // הוספת העדכון הבא:
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv._id === msgWithRole.conversationId
-          ? {
-              ...conv,
-              messages: uniqueMessages([...(conv.messages || []), msgWithRole]),
-              lastMessage: msgWithRole.text,  // או כל שדה להצגת ההודעה האחרונה
-              updatedAt: msgWithRole.timestamp || new Date().toISOString(),
-            }
-          : conv
-      )
-    );
-  },
-  [selectedConversation, uniqueMessages, myBusinessId]
-);
+      dispatchMessages((prevMessages) => {
+        const exists = prevMessages.some((m) => m._id === normalized._id);
+        if (exists) return prevMessages;
+        return [...prevMessages, normalized];
+      });
 
+      setSelectedConversation((prev) => {
+        if (prev && prev._id === normalized.conversationId) {
+          return {
+            ...prev,
+            messages: uniqueMessages([...(prev.messages || []), normalized]),
+          };
+        }
+        return prev;
+      });
+
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === normalized.conversationId
+            ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
+            : conv
+        )
+      );
+    },
+    [selectedConversation, uniqueMessages]
+  );
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -290,86 +264,85 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, [messages]);
 
   const sendMessage = () => {
-    if (!input.trim() || !selectedConversation || !socketRef.current) return;
+  if (!input.trim() || !selectedConversation || !socketRef.current) return;
 
-    const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
-    if (!otherIdRaw) return;
-    const otherId =
-      typeof otherIdRaw === "string"
-        ? otherIdRaw
-        : otherIdRaw._id
-        ? otherIdRaw._id.toString()
-        : otherIdRaw.toString();
+  const otherIdRaw = getOtherBusinessId(selectedConversation, myBusinessId);
+  if (!otherIdRaw) return;
+  const otherId =
+    typeof otherIdRaw === "string"
+      ? otherIdRaw
+      : otherIdRaw._id
+      ? otherIdRaw._id.toString()
+      : otherIdRaw.toString();
 
-    const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
+  const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
 
-    const payload = {
-      conversationId: selectedConversation._id.toString(),
-      from: myBusinessId.toString(),
-      to: otherId,
-      text: input.trim(),
-    };
-
-    const optimistic = {
-      ...payload,
-      timestamp: new Date().toISOString(),
-      _id: tempId,
-      fromBusinessId: payload.from,
-      toBusinessId: payload.to,
-      sending: true,
-      role: "mine",
-    };
-
-    dispatchMessages({ type: "append", payload: optimistic });
-    setInput("");
-
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 50);
-
-    let ackReceived = false;
-
-    const timeoutId = setTimeout(() => {
-      if (!ackReceived) {
-        dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
-        alert("שליחת ההודעה לקחה יותר מדי זמן. אנא נסה שנית.");
-      }
-    }, 10000);
-
-    socketRef.current.emit("sendMessage", payload, (ack) => {
-      ackReceived = true;
-      clearTimeout(timeoutId);
-      console.log("sendMessage ack:", ack);
-
-      if (!ack) {
-        alert("קיבלנו תשובה ריקה מהשרת. אנא נסה שנית.");
-        dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
-        return;
-      }
-
-      if (!ack.ok) {
-        alert("שליחת הודעה נכשלה: " + (ack.error || "שגיאה לא ידועה"));
-        dispatchMessages({ type: "remove", payload: tempId });
-        return;
-      }
-
-      if (ack.message?._id) {
-        const real = {
-          ...ack.message,
-          fromBusinessId: ack.message.fromBusinessId || ack.message.from,
-          toBusinessId: ack.message.toBusinessId || ack.message.to,
-          tempId, // לשימוש להחלפת ההודעה הזמנית
-          sending: false,
-          failed: false,
-          role: "mine",
-        };
-        dispatchMessages({
-          type: "replace",
-          payload: real,
-        });
-      }
-    });
+  const payload = {
+    conversationId: selectedConversation._id.toString(),
+    from: myBusinessId.toString(),
+    to: otherId,
+    text: input.trim(),
   };
+
+  const optimistic = {
+    ...payload,
+    timestamp: new Date().toISOString(),
+    _id: tempId,
+    fromBusinessId: payload.from,
+    toBusinessId: payload.to,
+    sending: true,
+  };
+
+  dispatchMessages({ type: "append", payload: optimistic });
+  setInput("");
+
+  setTimeout(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, 50);
+
+  let ackReceived = false;
+
+  const timeoutId = setTimeout(() => {
+    if (!ackReceived) {
+      dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
+      alert("שליחת ההודעה לקחה יותר מדי זמן. אנא נסה שנית.");
+    }
+  }, 10000);
+
+  socketRef.current.emit("sendMessage", payload, (ack) => {
+    ackReceived = true;
+    clearTimeout(timeoutId);
+    console.log("sendMessage ack:", ack);
+
+    if (!ack) {
+      alert("קיבלנו תשובה ריקה מהשרת. אנא נסה שנית.");
+      dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
+      return;
+    }
+
+    if (!ack.ok) {
+      alert("שליחת הודעה נכשלה: " + (ack.error || "שגיאה לא ידועה"));
+      dispatchMessages({ type: "remove", payload: tempId });
+      return;
+    }
+
+    if (ack.message?._id) {
+      const real = {
+        ...ack.message,
+        fromBusinessId: ack.message.fromBusinessId || ack.message.from,
+        toBusinessId: ack.message.toBusinessId || ack.message.to,
+        tempId, // לשימוש להחלפת ההודעה הזמנית
+        sending: false,
+        failed: false,
+      };
+      dispatchMessages({
+        type: "replace",
+        payload: real,
+      });
+    }
+  });
+};
+
 
   return (
     <Box
@@ -481,9 +454,9 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                     key={msg?._id ? msg._id.toString() : `pending-${i}`}
                     sx={{
                       background:
-                        msg.role === "mine" ? "#e6ddff" : "#fff",
+                        msg.fromBusinessId === myBusinessId ? "#e6ddff" : "#fff",
                       alignSelf:
-                        msg.role === "mine"
+                        msg.fromBusinessId === myBusinessId
                           ? "flex-end"
                           : "flex-start",
                       p: 1.2,
