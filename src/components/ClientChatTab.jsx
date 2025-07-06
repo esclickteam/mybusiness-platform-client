@@ -389,7 +389,6 @@ export default function ClientChatTab({
                     });
                   })()}
                 </span>
-                {/* הסרנו את הצגת זמן האודיו */}
               </div>
             </div>
           );
