@@ -9,7 +9,7 @@ const AiPartnerTab = ({
   businessId,
   token,
   conversationId = null,
-  appointmentId,  // מזהה הפגישה הנבחר לשליחת תזכורת
+  appointmentId, // מזהה הפגישה הנבחר לשליחת תזכורת
   onNewRecommendation,
   businessName,
   businessType,
@@ -238,7 +238,7 @@ const AiPartnerTab = ({
   };
 
   const approveSuggestion = useCallback(
-    async ({ id, conversationId, text }) => {
+    async ({ id, text }) => {
       setLoading(true);
       try {
         const filteredText = filterText(text);
@@ -255,24 +255,6 @@ const AiPartnerTab = ({
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to approve");
 
-        if (conversationId && clientId) {
-          await fetch(`${import.meta.env.VITE_API_URL}/conversations/${conversationId}/add-message`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              text: filteredText,
-              from: businessId,
-              to: clientId,
-              role: "business",
-              timestamp: new Date().toISOString(),
-              isRecommendation: true,
-            }),
-          });
-        }
-
         setSuggestions((prev) =>
           prev.map((s) => (s.id === id ? { ...s, status: "sent", text: filteredText } : s))
         );
@@ -285,7 +267,7 @@ const AiPartnerTab = ({
         setLoading(false);
       }
     },
-    [businessId, clientId, token, filterText]
+    [businessId, token, filterText]
   );
 
   const rejectSuggestion = useCallback((id) => {
@@ -506,7 +488,6 @@ const AiPartnerTab = ({
                       onClick={() => {
                         approveSuggestion({
                           id: activeSuggestion.id,
-                          conversationId: activeSuggestion.conversationId,
                           text: editedText.trim() || activeSuggestion.text,
                         });
                       }}
