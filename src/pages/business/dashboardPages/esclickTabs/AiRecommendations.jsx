@@ -9,9 +9,9 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [error, setError] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
+  const [showHistory, setShowHistory] = useState(false); // סטייט להצגת ההיסטוריה
   const socketRef = useRef(null);
 
-  // פונקציה לניקוי טקסט מכל **, #, *
   const cleanText = (text) => text.replace(/(\*\*|#|\*)/g, "").trim();
 
   useEffect(() => {
@@ -306,29 +306,50 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
       <hr />
 
-      <h3>היסטוריית המלצות</h3>
-      {history.length === 0 ? (
-        <p>אין המלצות בעבר.</p>
-      ) : (
-        <ul>
-          {history.map(({ _id, id, text, status }) => {
-            const recId = _id || id;
-            return (
-              <li
-                key={recId}
-                style={{
-                  marginBottom: "1rem",
-                  border: "1px solid #eee",
-                  padding: "0.5rem",
-                  opacity: 0.7,
-                }}
-              >
-                <p>{cleanText(text)}</p>
-                <p>סטטוס: {status === "approved" ? "מאושר" : "נדחה"}</p>
-              </li>
-            );
-          })}
-        </ul>
+      {/* כפתור לסירוגין להראות/להסתיר את ההיסטוריה */}
+      <button
+        onClick={() => setShowHistory((show) => !show)}
+        style={{
+          margin: "1rem 0",
+          backgroundColor: "#7c43bd",
+          color: "white",
+          border: "none",
+          borderRadius: "20px",
+          padding: "8px 20px",
+          cursor: "pointer",
+          fontWeight: "600",
+        }}
+      >
+        {showHistory ? "הסתר היסטוריית המלצות" : "ראה היסטוריית המלצות"}
+      </button>
+
+      {showHistory && (
+        <>
+          <h3>היסטוריית המלצות</h3>
+          {history.length === 0 ? (
+            <p>אין המלצות בעבר.</p>
+          ) : (
+            <ul>
+              {history.map(({ _id, id, text, status }) => {
+                const recId = _id || id;
+                return (
+                  <li
+                    key={recId}
+                    style={{
+                      marginBottom: "1rem",
+                      border: "1px solid #eee",
+                      padding: "0.5rem",
+                      opacity: 0.7,
+                    }}
+                  >
+                    <p>{cleanText(text)}</p>
+                    <p>סטטוס: {status === "approved" ? "מאושר" : "נדחה"}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );
