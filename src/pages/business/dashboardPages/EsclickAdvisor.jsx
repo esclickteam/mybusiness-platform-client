@@ -66,7 +66,7 @@ const EsclickAdvisor = () => {
         setBusinessDetails(null);
       });
 
-    // בקשה לקבלת רשימת פגישות לעסק (צריך לוודא שהנתיב תקין)
+    // בקשה לקבלת רשימת פגישות לעסק (אפשר להשאיר או למחוק את זה לפי הצורך)
     fetch(`/api/appointments?businessId=${user.businessId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -76,7 +76,7 @@ const EsclickAdvisor = () => {
       })
       .then(data => {
         setAppointments(data);
-        if (data.length > 0) setSelectedAppointmentId(data[0]._id); // בחר פגישה ראשונה כברירת מחדל
+        if (data.length > 0) setSelectedAppointmentId(data[0]._id);
       })
       .catch(err => {
         console.error(err);
@@ -112,26 +112,11 @@ const EsclickAdvisor = () => {
         return <MarketingAdvisorTab businessId={user?.businessId} />;
       case "partner":
         return (
-          <>
-            {/* בחירת פגישה לשליחת תזכורת */}
-            <label>
-              בחר פגישה לשליחת תזכורת:
-              <select value={selectedAppointmentId || ""} onChange={handleAppointmentChange}>
-                <option value="" disabled>בחר פגישה</option>
-                {appointments.map((appt) => (
-                  <option key={appt._id} value={appt._id}>
-                    {appt.clientName} - {appt.date} {appt.time}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <AiPartnerTab
-              businessId={user?.businessId}
-              token={token}
-              appointmentId={selectedAppointmentId}
-            />
-          </>
+          <AiPartnerTab
+            businessId={user?.businessId}
+            token={token}
+            // אם אין שימוש ב-appointmentId בתוך AiPartnerTab, אפשר להסיר שורה זו
+          />
         );
       case "recommendations":
         return <AiRecommendations businessId={user?.businessId} token={token} />;

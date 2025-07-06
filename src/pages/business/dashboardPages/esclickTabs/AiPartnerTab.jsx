@@ -9,7 +9,6 @@ const AiPartnerTab = ({
   businessId,
   token,
   conversationId = null,
-  appointmentId, // מזהה הפגישה הנבחר לשליחת תזכורת
   onNewRecommendation,
   businessName,
   businessType,
@@ -30,10 +29,6 @@ const AiPartnerTab = ({
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyError, setHistoryError] = useState(null);
   const [commandText, setCommandText] = useState("");
-
-  const [reminderText, setReminderText] = useState("");
-  const [sendingReminder, setSendingReminder] = useState(false);
-  const [sendingReminderTomorrow, setSendingReminderTomorrow] = useState(false);
 
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
@@ -322,103 +317,6 @@ const AiPartnerTab = ({
     }
   }, [activeSuggestion]);
 
-  // פונקציה לשליחת תזכורת לפי appointmentId
-  const sendReminder = async () => {
-    if (!reminderText.trim()) return;
-    if (!appointmentId) {
-      alert("לא נבחרה פגישה לשליחת תזכורת.");
-      return;
-    }
-    setSendingReminder(true);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/reminder/send`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          appointmentId,
-          text: reminderText.trim(),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to send reminder");
-      alert("התזכורת נשלחה בהצלחה!");
-      setReminderText("");
-    } catch (err) {
-      alert("שגיאה בשליחת התזכורת: " + err.message);
-    } finally {
-      setSendingReminder(false);
-    }
-  };
-
-  // פונקציה לשליחת תזכורת וואטסאפ לכל הלקוחות שיש להם תיאום מחר
-  const sendWhatsAppReminder = (phone, clientName, date, time) => {
-    if (!phone) {
-      console.warn("מספר טלפון של הלקוח לא זמין");
-      return;
-    }
-    let cleanPhone = phone.replace(/\D/g, "");
-    if (!cleanPhone.startsWith("972")) {
-      if (cleanPhone.startsWith("0")) {
-        cleanPhone = "972" + cleanPhone.substring(1);
-      } else {
-        cleanPhone = "972" + cleanPhone;
-      }
-    }
-
-    const formattedDate = new Date(date).toLocaleDateString("he-IL", {
-      weekday: "long",
-      day: "numeric",
-      month: "numeric",
-      year: "numeric",
-    });
-
-    const businessDisplayName = businessName || "העסק שלך";
-
-    const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך בתאריך ${formattedDate} בשעה ${time}.\nמחכים לך ב${businessDisplayName}.`;
-    const encodedMessage = encodeURIComponent(message);
-
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const url = isMobile
-      ? `https://wa.me/${cleanPhone}?text=${encodedMessage}`
-      : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
-
-    window.open(url, "_blank");
-  };
-
-  // פונקציה לשליחת תזכורת וואטסאפ לכל הלקוחות עם פגישות מחר
-  const sendReminderToTomorrow = async () => {
-  if (!reminderText.trim()) {
-    alert("יש לכתוב טקסט תזכורת לשליחה לכל הלקוחות.");
-    return;
-  }
-  setSendingReminderTomorrow(true);
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/reminder/send-whatsapp-to-tomorrow`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ businessId, text: reminderText.trim() }),
-    });
-    if (!res.ok) throw new Error("Failed to send WhatsApp reminders for tomorrow");
-
-    const data = await res.json();
-
-    alert(`נשלחו תזכורות וואטסאפ ל-${data.count} לקוחות למחר.`);
-    setReminderText("");
-  } catch (err) {
-    alert("שגיאה בשליחת התזכורות: " + err.message);
-  } finally {
-    setSendingReminderTomorrow(false);
-  }
-};
-
-
-
   return (
     <div className="ai-partner-container">
       <h2>🤖 שותף AI אישי לעסק</h2>
@@ -443,47 +341,12 @@ const AiPartnerTab = ({
             rows={3}
             value={commandText}
             onChange={(e) => setCommandText(e.target.value)}
-            placeholder="כתוב פקודה ל-AI, למשל: תאם תור ביום שני ב-10 בבוקר"
+            placeholder="כתוב פקודה ל-AI"
             disabled={loading}
           />
           <button onClick={sendAiCommand} disabled={loading || !commandText.trim()}>
             שלח ל-AI
           </button>
-
-          <div
-            style={{
-              marginTop: "2rem",
-              padding: "1rem",
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              maxWidth: "600px",
-              width: "100%",
-            }}
-          >
-            <h3>שלח תזכורת ללקוח</h3>
-            <textarea
-              className="uniform-textarea"
-              rows={5}
-              value={reminderText}
-              onChange={(e) => setReminderText(e.target.value)}
-              placeholder="כתוב כאן את טקסט התזכורת, למשל: תזכורת לפגישה ב-10/07/2025 בשעה 15:00"
-              disabled={sendingReminder || sendingReminderTomorrow}
-            />
-            <button
-              onClick={sendReminder}
-              disabled={sendingReminder || !reminderText.trim()}
-              style={{ marginTop: "0.5rem", padding: "0.5rem 1rem" }}
-            >
-              {sendingReminder ? "שולח..." : "שלח תזכורת לפגישה"}
-            </button>
-            <button
-              onClick={sendReminderToTomorrow}
-              disabled={sendingReminderTomorrow || !reminderText.trim()}
-              style={{ marginTop: "0.5rem", padding: "0.5rem 1rem", marginLeft: "1rem" }}
-            >
-              {sendingReminderTomorrow ? "שולח לכולם..." : "שלח תזכורת לכל הלקוחות למחר"}
-            </button>
-          </div>
         </div>
       )}
 
