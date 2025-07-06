@@ -343,7 +343,7 @@ const AiPartnerTab = ({
 
       <div style={{ margin: "1rem 0" }}>
         <button className="toggle-suggestions-btn" onClick={() => setShowHistory((prev) => !prev)}>
-          ראה היסטוריית המלצות
+          ראה היסטוריית פקודות
         </button>
       </div>
 
