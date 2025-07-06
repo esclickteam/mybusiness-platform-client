@@ -499,17 +499,19 @@
   line-height: 1;
 }
 
-/* ==== תיקון סופי לביזנס בלבד ==== */
+/* התאמה למצב business בלבד */
 .chat-container.business .message.mine {
-  align-self: flex-start !important;
-  margin-right: 32px !important;
-  margin-left: 0 !important;
+  /* העסק – לימין */
+  align-self: flex-end;
+  margin-left: 32px;
+  margin-right: 0;
   text-align: right;
 }
 
 .chat-container.business .message.theirs {
-  align-self: flex-end !important;
-  margin-left: 32px !important;
-  margin-right: 0 !important;
-  text-align: right;
+  /* הלקוח – לשמאל */
+  align-self: flex-start;
+  margin-right: 32px;
+  margin-left: 0;
+  text-align: left;
 }
