@@ -5,6 +5,25 @@ import "./AiPartnerTab.css";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 
+// המרת תאריכים טבעיים (כמו "מחר") לפורמט ISO
+function convertNaturalDateToISO(text) {
+  const now = new Date();
+  const lowerText = text.toLowerCase();
+
+  if (lowerText.includes("מחר")) {
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const yyyy = tomorrow.getFullYear();
+    const mm = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const dd = String(tomorrow.getDate()).padStart(2, "0");
+    return text.replace(/מחר/gi, `${yyyy}-${mm}-${dd}`);
+  }
+
+  // אפשר להוסיף כאן חוקי המרה נוספים אם רוצים
+
+  return text;
+}
+
 const AiPartnerTab = ({
   businessId,
   token,
@@ -30,7 +49,6 @@ const AiPartnerTab = ({
   const [historyError, setHistoryError] = useState(null);
   const [commandText, setCommandText] = useState("");
   const [commandResponse, setCommandResponse] = useState(null);
-
 
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
@@ -197,6 +215,10 @@ const AiPartnerTab = ({
 
   const sendAiCommand = async () => {
     if (!commandText.trim()) return;
+
+    // המר תאריכים טבעיים לפני השליחה
+    const convertedCommandText = convertNaturalDateToISO(commandText);
+
     setLoading(true);
     setCommandResponse(null);
     try {
@@ -208,7 +230,7 @@ const AiPartnerTab = ({
         },
         body: JSON.stringify({
           businessId,
-          prompt: commandText,
+          prompt: convertedCommandText,
           profile: {
             name: businessName,
             type: businessType,
