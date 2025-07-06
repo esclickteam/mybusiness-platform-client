@@ -29,6 +29,8 @@ const AiPartnerTab = ({
   const [aiCommandHistory, setAiCommandHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyError, setHistoryError] = useState(null);
+  const [commandText, setCommandText] = useState("");
+
 
   const [reminderText, setReminderText] = useState("");
   const [sendingReminder, setSendingReminder] = useState(false);
