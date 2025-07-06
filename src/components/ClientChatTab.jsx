@@ -148,11 +148,7 @@ export default function ClientChatTab({
           return;
         }
 
-        // ================================
-        // כאן עשינו את השינוי: 
-        // הסרנו את businessId מתוך הפרמטרים
-        // כדי לקבל גם את הודעות שני הצדדים
-        // ================================
+        // הסרנו את businessId כדי לקבל גם הודעות של שני הצדדים
         socket.emit(
           "getHistory",
           { conversationId, limit: 50, conversationType },
@@ -192,7 +188,6 @@ export default function ClientChatTab({
     if (!socket || !conversationId) return;
 
     const handleIncomingMessage = (msg) => {
-      // משאירים רק skip להמלצות ממתינות
       if (msg.isRecommendation && msg.status === "pending") return;
 
       msg = addRole(normalizeMessageFileFields(msg), userId);
@@ -237,7 +232,7 @@ export default function ClientChatTab({
     socket.on("newMessage", handleIncomingMessage);
     socket.on("messageApproved", handleMessageApproved);
 
-    // ה־join השני אינו מסננת שום הודעה
+    // join בלי סינון — מקבל את כל ההודעות
     socket.emit(
       "joinConversation",
       conversationId,
@@ -285,7 +280,6 @@ export default function ClientChatTab({
     const tempId = uuidv4();
 
     if (!conversationId) {
-      // יצירת שיחה חדשה עם ההודעה
       socket.emit(
         "createConversationAndSendMessage",
         {
@@ -314,7 +308,6 @@ export default function ClientChatTab({
         }
       );
     } else {
-      // הודעה אופטימיסטית
       const optimisticMsg = {
         _id: tempId,
         tempId,
@@ -344,10 +337,7 @@ export default function ClientChatTab({
             setMessages((prev) =>
               prev.map((msg) =>
                 msg.tempId === tempId
-                  ? addRole(
-                      normalizeMessageFileFields(ack.message),
-                      userId
-                    )
+                  ? addRole(normalizeMessageFileFields(ack.message), userId)
                   : msg
               )
             );
@@ -380,11 +370,8 @@ export default function ClientChatTab({
           return (
             <div
               key={key}
-              className={`message${
-                m.role === "client" ? " mine" : " theirs"
-              }${m.isRecommendation ? " ai-recommendation" : ""}`}
+              className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
             >
-              {/* גוף ההודעה */}
               {m.image ? (
                 <img
                   src={m.image}
@@ -416,12 +403,9 @@ export default function ClientChatTab({
                 )
               ) : (
                 <div className="text">
-                  {m.isEdited && m.editedText
-                    ? m.editedText
-                    : m.content || m.text}
+                  {m.isEdited && m.editedText ? m.editedText : m.content || m.text}
                 </div>
               )}
-              {/* תאריך ושעה */}
               <div className="meta">
                 <span className="time">
                   {new Date(m.createdAt).toLocaleTimeString("he-IL", {
