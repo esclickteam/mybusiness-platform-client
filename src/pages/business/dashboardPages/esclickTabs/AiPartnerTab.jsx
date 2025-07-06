@@ -359,19 +359,37 @@ const AiPartnerTab = ({
           {/* כאן תוכל לממש הצגת היסטוריית הפקודות */}
         </div>
       ) : (
-        <div className="center-textareas">
-          <textarea
-            className="uniform-textarea"
-            rows={3}
-            value={commandText}
-            onChange={(e) => setCommandText(e.target.value)}
-            placeholder="כתוב פקודה ל-AI"
-            disabled={loading}
-          />
-          <button onClick={sendAiCommand} disabled={loading || !commandText.trim()}>
-            שלח ל-AI
-          </button>
-        </div>
+        <>
+          <div className="center-textareas">
+            <textarea
+              className="uniform-textarea"
+              rows={3}
+              value={commandText}
+              onChange={(e) => setCommandText(e.target.value)}
+              placeholder="כתוב פקודה ל-AI"
+              disabled={loading}
+            />
+            <button onClick={sendAiCommand} disabled={loading || !commandText.trim()}>
+              שלח ל-AI
+            </button>
+          </div>
+
+          {commandResponse && (
+            <div
+              className="ai-response-box"
+              style={{
+                whiteSpace: "pre-wrap",
+                marginTop: "1rem",
+                padding: "1rem",
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                backgroundColor: "#f9f9f9",
+              }}
+            >
+              {commandResponse}
+            </div>
+          )}
+        </>
       )}
 
       {activeSuggestion && (
