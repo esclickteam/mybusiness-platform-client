@@ -203,13 +203,14 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
+      const cleanText = editText.replace(/\*\*/g, "");
       const res = await fetch("/api/chat/editRecommendation", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ recommendationId: id, newText: editText }),
+        body: JSON.stringify({ recommendationId: id, newText: cleanText }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to edit");
@@ -217,7 +218,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
           (r._id === id || r.id === id)
-            ? { ...r, text: editText, isEdited: true, editedText: editText }
+            ? { ...r, text: cleanText, isEdited: true, editedText: cleanText }
             : r
         )
       );
