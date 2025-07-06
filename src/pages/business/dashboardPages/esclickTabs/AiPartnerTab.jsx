@@ -265,7 +265,6 @@ const AiPartnerTab = ({
 
       if (data.actionResult) {
         console.log("Action result:", data.actionResult);
-        // אפשר להוסיף UI או התראות לפי הצורך
       }
     } catch (err) {
       alert("שגיאה בשליחת פקודת AI: " + err.message);
@@ -376,7 +375,6 @@ const AiPartnerTab = ({
     }
   }, [activeSuggestion]);
 
-  // פונקציה לשליחת תזכורת ללקוח (השתמש בתיבת טקסט משולבת)
   const sendReminder = async () => {
     if (!reminderText.trim()) return;
     setSendingReminder(true);
@@ -460,6 +458,7 @@ const AiPartnerTab = ({
             {/* פאנל פקודות AI */}
             <div className="ai-command-panel">
               <textarea
+                className="uniform-textarea"
                 rows={3}
                 value={commandText}
                 onChange={(e) => setCommandText(e.target.value)}
@@ -532,6 +531,7 @@ const AiPartnerTab = ({
                   value={editedText}
                   onChange={(e) => setEditedText(e.target.value)}
                   disabled={loading}
+                  className="uniform-textarea"
                 />
                 <div className="buttons-row">
                   <button
@@ -605,12 +605,12 @@ const AiPartnerTab = ({
       >
         <h3>שלח תזכורת ללקוח</h3>
         <textarea
+          className="uniform-textarea"
           rows={5}
           value={reminderText}
           onChange={(e) => setReminderText(e.target.value)}
           placeholder="כתוב כאן את טקסט התזכורת, כולל תאריך ושעה, למשל: תזכורת לפגישה ב-10/07/2025 בשעה 15:00"
           disabled={sendingReminder}
-          style={{ width: "100%", fontSize: "1rem" }}
         />
         <button
           onClick={sendReminder}

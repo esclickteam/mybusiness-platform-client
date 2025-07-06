@@ -382,3 +382,17 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.uniform-textarea {
+  width: 100%;         /* תופס את כל רוחב הקונטיינר */
+  max-width: 600px;    /* רוחב מקסימלי אם רוצים */
+  min-height: 140px;   /* גובה מינימלי אחיד */
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  resize: vertical;    /* מאפשר שינוי גובה בלבד */
+  overflow: auto;
+  font-family: inherit;
+}
