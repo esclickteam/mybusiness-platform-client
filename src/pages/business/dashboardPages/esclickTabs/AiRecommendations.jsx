@@ -267,8 +267,8 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                       onChange={(e) =>
                         setEditText(e.target.value.replace(/\*\*/g, ""))
                       }
-                      rows={4}
-                      style={{ width: "100%" }}
+                      rows={10}
+                      style={{ width: "100%", resize: "vertical" }}
                     />
                     <button onClick={() => saveEdit(recId)} disabled={isLoading}>
                       {isLoading ? "שומר..." : "שמור"}
