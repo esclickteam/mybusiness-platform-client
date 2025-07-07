@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import API from "@api";
+import API from "@api"; // נניח שה-API מוגדר עם axios
 import "./BankDetailsForm.css";
 
 const BankDetailsForm = () => {
@@ -59,12 +59,8 @@ const BankDetailsForm = () => {
         formData.append("receipt", form.receipt);
       }
 
-      const response = await API.put("/business/my/bank-details", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
+      const response = await API.put("/business/my/bank-details", formData);
+      
       if (response.status !== 200) {
         throw new Error("שגיאה בשמירת הפרטים");
       }
