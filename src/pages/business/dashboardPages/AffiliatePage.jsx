@@ -233,6 +233,10 @@ const AffiliatePage = () => {
             onChange={(e) => setWithdrawAmount(Number(e.target.value))}
             placeholder={`סכום למשיכה (מינימום 200 ש"ח)`}
           />
+          {/* הודעת סכום מינימום */}
+          <p style={{ color: "red", fontWeight: "bold", marginTop: "4px" }}>
+            סכום מינימום למשיכה הוא 200 ש"ח
+          </p>
           <button onClick={handleWithdrawRequest} disabled={withdrawAmount < 200}>
             בקש משיכה
           </button>
