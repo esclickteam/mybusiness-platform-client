@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import "./BankDetailsForm.css";
 
 const BankDetailsForm = () => {
-  const { user } = useAuth(); // מושך את המשתמש עם פרטי העסק מהקונטקסט
+  const { user } = useAuth();
 
   const [form, setForm] = useState({
     bankName: "",
@@ -16,6 +16,19 @@ const BankDetailsForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      setForm((f) => ({
+        ...f,
+        bankName: user.bankName || "",
+        branchNumber: user.branch || "",
+        accountNumber: user.account || "",
+        fullName: user.fullName || "",
+        idNumber: user.idNumber || "",
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -31,7 +44,7 @@ const BankDetailsForm = () => {
     setError(null);
 
     try {
-      if (!user || !user.businessId) {
+      if (!user) {
         throw new Error("פרטי העסק אינם זמינים. יש להתחבר מחדש.");
       }
 
@@ -41,15 +54,14 @@ const BankDetailsForm = () => {
       formData.append("account", form.accountNumber);
       formData.append("fullName", form.fullName);
       formData.append("idNumber", form.idNumber);
-      formData.append("businessId", user.businessId); // מוסיף את ה-businessId
       if (form.receipt) {
         formData.append("receipt", form.receipt);
       }
 
-      const response = await fetch("/api/business/bank-details", {
-        method: "PUT", // או POST לפי ה-API שלך
+      const response = await fetch("/api/business/my/bank-details", {
+        method: "PUT",
         body: formData,
-        credentials: "include", // אם צריך להעביר עוגיות או token
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -57,14 +69,10 @@ const BankDetailsForm = () => {
       }
 
       alert("הפרטים נשמרו בהצלחה!");
-      setForm({
-        bankName: "",
-        branchNumber: "",
-        accountNumber: "",
-        fullName: "",
-        idNumber: "",
+      setForm((f) => ({
+        ...f,
         receipt: null,
-      });
+      }));
     } catch (err) {
       setError(err.message);
     } finally {
