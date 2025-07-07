@@ -1,8 +1,10 @@
-// src/pages/business/dashboardPages/components/BankDetailsForm.jsx
 import React, { useState } from "react";
+import { useAuth } from "../../../context/AuthContext";
 import "./BankDetailsForm.css";
 
 const BankDetailsForm = () => {
+  const { user } = useAuth(); // מושך את המשתמש עם פרטי העסק מהקונטקסט
+
   const [form, setForm] = useState({
     bankName: "",
     branchNumber: "",
@@ -12,6 +14,9 @@ const BankDetailsForm = () => {
     receipt: null,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setForm({
@@ -20,11 +25,51 @@ const BankDetailsForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("📤 נתוני חשבון בנק נשלחו:", form);
-    alert("הפרטים נשמרו בהצלחה!");
-    // כאן תכתבי בעתיד שליחה לשרת
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (!user || !user.businessId) {
+        throw new Error("פרטי העסק אינם זמינים. יש להתחבר מחדש.");
+      }
+
+      const formData = new FormData();
+      formData.append("bankName", form.bankName);
+      formData.append("branch", form.branchNumber);
+      formData.append("account", form.accountNumber);
+      formData.append("fullName", form.fullName);
+      formData.append("idNumber", form.idNumber);
+      formData.append("businessId", user.businessId); // מוסיף את ה-businessId
+      if (form.receipt) {
+        formData.append("receipt", form.receipt);
+      }
+
+      const response = await fetch("/api/businesses/bank-details", {
+        method: "PUT", // או POST לפי ה-API שלך
+        body: formData,
+        credentials: "include", // אם צריך להעביר עוגיות או token
+      });
+
+      if (!response.ok) {
+        throw new Error("שגיאה בשמירת הפרטים");
+      }
+
+      alert("הפרטים נשמרו בהצלחה!");
+      setForm({
+        bankName: "",
+        branchNumber: "",
+        accountNumber: "",
+        fullName: "",
+        idNumber: "",
+        receipt: null,
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,62 +79,77 @@ const BankDetailsForm = () => {
         באחריותך לעדכן את הפרטים במקרה של שינוי. לאחר התשלום, יש לצרף קבלה.
       </p>
 
-      <form onSubmit={handleSubmit}>
-        <label>שם הבנק:</label>
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
+        <label htmlFor="bankName">שם הבנק:</label>
         <input
           type="text"
+          id="bankName"
           name="bankName"
           placeholder="בנק הפועלים"
           required
+          value={form.bankName}
           onChange={handleChange}
         />
 
-        <label>מספר סניף:</label>
+        <label htmlFor="branchNumber">מספר סניף:</label>
         <input
           type="text"
+          id="branchNumber"
           name="branchNumber"
           placeholder="123"
           required
+          value={form.branchNumber}
           onChange={handleChange}
         />
 
-        <label>מספר חשבון:</label>
+        <label htmlFor="accountNumber">מספר חשבון:</label>
         <input
           type="text"
+          id="accountNumber"
           name="accountNumber"
           placeholder="12345678"
           required
+          value={form.accountNumber}
           onChange={handleChange}
         />
 
-        <label>שם מלא:</label>
+        <label htmlFor="fullName">שם מלא:</label>
         <input
           type="text"
+          id="fullName"
           name="fullName"
           placeholder="השם כפי שמופיע בבנק"
           required
+          value={form.fullName}
           onChange={handleChange}
         />
 
-        <label>תעודת זהות / ח.פ:</label>
+        <label htmlFor="idNumber">תעודת זהות / ח.פ:</label>
         <input
           type="text"
+          id="idNumber"
           name="idNumber"
           placeholder="302114567"
           required
+          value={form.idNumber}
           onChange={handleChange}
         />
 
-        <label>📎 העלאת קבלה על תשלום:</label>
+        <label htmlFor="receipt">📎 העלאת קבלה על תשלום:</label>
         <input
           type="file"
+          id="receipt"
           name="receipt"
           accept=".pdf,image/*"
           onChange={handleChange}
         />
 
-        <button type="submit">💾 שמור פרטים</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "שומר..." : "💾 שמור פרטים"}
+        </button>
       </form>
+
+      {error && <p className="error">{error}</p>}
     </section>
   );
 };
