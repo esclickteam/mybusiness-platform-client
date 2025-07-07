@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "../../api";
-import "./AdminPayoutPage.css"; // אפשר להשתמש באותו CSS
+import "./AdminPayoutPage.css";
 
 const AdminWithdrawalsPage = () => {
   const [withdrawals, setWithdrawals] = useState([]);
@@ -26,6 +26,7 @@ const AdminWithdrawalsPage = () => {
   const handleApprove = async (id) => {
     try {
       await API.put(`/admin/withdrawals/${id}/approve`);
+      // סינון לפי המפתח המתאים (כאן _id assumed)
       setWithdrawals(withdrawals.filter(w => w._id !== id));
       alert("המשיכה אושרה בהצלחה");
     } catch (err) {
@@ -53,8 +54,8 @@ const AdminWithdrawalsPage = () => {
             </tr>
           </thead>
           <tbody>
-            {withdrawals.map((w, idx) => (
-              <tr key={w._id || idx}>
+            {withdrawals.map((w) => (
+              <tr key={w._id}>
                 <td>{w.businessName}</td>
                 <td>₪{w.amount.toFixed(2)}</td>
                 <td>{w.status}</td>
