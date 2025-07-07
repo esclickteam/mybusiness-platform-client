@@ -4,7 +4,8 @@ import API from "../../api";
 import "./AdminPayoutPage.css";
 
 const AdminPayoutPage = () => {
-  const [month, setMonth] = useState("2025-04");
+  const [months, setMonths] = useState([]);
+  const [month, setMonth] = useState("");
   const [payouts, setPayouts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -20,12 +21,31 @@ const AdminPayoutPage = () => {
     { label: "קובץ קבלה", key: "receiptUrl" },
   ];
 
+  // טעינת רשימת החודשים הזמינים מהשרת
   useEffect(() => {
+    async function fetchMonths() {
+      try {
+        const res = await API.get("/admin/payout-months");
+        setMonths(res.data.months || []);
+        if (res.data.months && res.data.months.length > 0) {
+          setMonth(res.data.months[0]); // ברירת מחדל: החודש החדש ביותר
+        }
+      } catch (err) {
+        console.error("Error fetching months:", err);
+        setError("שגיאה בטעינת רשימת חודשים");
+      }
+    }
+    fetchMonths();
+  }, []);
+
+  // טעינת דוח התשלומים לפי חודש שנבחר
+  useEffect(() => {
+    if (!month) return;
+
     async function fetchPayouts() {
       setLoading(true);
       setError(null);
       try {
-        // קריאה ל-API לקבלת נתוני תשלומים לפי החודש הנבחר
         const res = await API.get("/admin/payouts", {
           params: { month },
         });
@@ -46,10 +66,18 @@ const AdminPayoutPage = () => {
       <h1>דו"ח תשלומים לשותפים</h1>
 
       <label htmlFor="month">בחר חודש:</label>
-      <select id="month" value={month} onChange={(e) => setMonth(e.target.value)}>
-        <option value="2025-04">אפריל 2025</option>
-        <option value="2025-03">מרץ 2025</option>
-        <option value="2025-02">פברואר 2025</option>
+      <select
+        id="month"
+        value={month}
+        onChange={(e) => setMonth(e.target.value)}
+        disabled={months.length === 0}
+      >
+        {months.length === 0 && <option>טוען חודשים...</option>}
+        {months.map((m) => (
+          <option key={m} value={m}>
+            {m}
+          </option>
+        ))}
       </select>
 
       {loading && <p>טוען נתונים...</p>}
@@ -71,33 +99,34 @@ const AdminPayoutPage = () => {
               </tr>
             </thead>
             <tbody>
-              {payouts.length === 0 && (
+              {payouts.length === 0 ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: "center" }}>
                     אין נתוני תשלומים לחודש זה
                   </td>
                 </tr>
+              ) : (
+                payouts.map((partner, idx) => (
+                  <tr key={idx}>
+                    <td>{partner.businessName}</td>
+                    <td>{partner.phone}</td>
+                    <td>₪{partner.amount}</td>
+                    <td>{partner.bankName}</td>
+                    <td>{partner.branch}</td>
+                    <td>{partner.account}</td>
+                    <td>{partner.idNumber}</td>
+                    <td>
+                      {partner.receiptUrl ? (
+                        <a href={partner.receiptUrl} target="_blank" rel="noreferrer">
+                          📎 צפייה
+                        </a>
+                      ) : (
+                        "אין קבלה"
+                      )}
+                    </td>
+                  </tr>
+                ))
               )}
-              {payouts.map((partner, idx) => (
-                <tr key={idx}>
-                  <td>{partner.businessName}</td>
-                  <td>{partner.phone}</td>
-                  <td>₪{partner.amount}</td>
-                  <td>{partner.bankName}</td>
-                  <td>{partner.branch}</td>
-                  <td>{partner.account}</td>
-                  <td>{partner.idNumber}</td>
-                  <td>
-                    {partner.receiptUrl ? (
-                      <a href={partner.receiptUrl} target="_blank" rel="noreferrer">
-                        📎 צפייה
-                      </a>
-                    ) : (
-                      "אין קבלה"
-                    )}
-                  </td>
-                </tr>
-              ))}
             </tbody>
           </table>
 
