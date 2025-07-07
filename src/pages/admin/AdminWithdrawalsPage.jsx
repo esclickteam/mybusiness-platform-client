@@ -13,7 +13,7 @@ const AdminWithdrawalsPage = () => {
       setError(null);
       try {
         const res = await API.get("/admin/withdrawals/pending");
-        setWithdrawals(res.data.withdrawals || []);
+        setWithdrawals(res.data || []); // במידה והשרת מחזיר מערך ישיר
       } catch (err) {
         setError("שגיאה בטעינת משיכות ממתינות");
       } finally {
@@ -26,8 +26,7 @@ const AdminWithdrawalsPage = () => {
   const handleApprove = async (id) => {
     try {
       await API.put(`/admin/withdrawals/${id}/approve`);
-      // סינון לפי המפתח המתאים (כאן _id assumed)
-      setWithdrawals(withdrawals.filter(w => w._id !== id));
+      setWithdrawals(withdrawals.filter(w => w.id !== id)); // שימוש ב-id במקום _id
       alert("המשיכה אושרה בהצלחה");
     } catch (err) {
       alert("שגיאה באישור המשיכה");
@@ -55,12 +54,12 @@ const AdminWithdrawalsPage = () => {
           </thead>
           <tbody>
             {withdrawals.map((w) => (
-              <tr key={w._id}>
+              <tr key={w.id}>
                 <td>{w.businessName}</td>
                 <td>₪{w.amount.toFixed(2)}</td>
                 <td>{w.status}</td>
                 <td>
-                  <button onClick={() => handleApprove(w._id)}>אשר משיכה</button>
+                  <button onClick={() => handleApprove(w.id)}>אשר משיכה</button>
                 </td>
               </tr>
             ))}
