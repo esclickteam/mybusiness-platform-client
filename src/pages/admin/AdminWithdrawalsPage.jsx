@@ -2,19 +2,11 @@ import React, { useState, useEffect } from "react";
 import API from "../../api";
 import "./AdminPayoutPage.css";
 
-const BASE_RECEIPT_URL = "https://api.esclick.co.il/";
-
-const getReceiptUrl = (url) => {
-  if (!url) return null;
-  if (url.startsWith("http")) return url;
-  return BASE_RECEIPT_URL + url.replace(/^\/+/, '');
-};
-
 const AdminWithdrawalsPage = () => {
   const [withdrawals, setWithdrawals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [uploadingId, setUploadingId] = useState(null); 
+  const [uploadingId, setUploadingId] = useState(null);
 
   useEffect(() => {
     async function fetchPendingWithdrawals() {
@@ -42,7 +34,6 @@ const AdminWithdrawalsPage = () => {
     }
   };
 
-  // טיפול בהעלאת הקבלה
   const handleReceiptUpload = async (e, withdrawalId) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -55,7 +46,7 @@ const AdminWithdrawalsPage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // עדכון הרשומה במצב המקומי
+      // עדכון הכתובת של הקבלה שהתקבלה מהשרת (URL מלא מ-Cloudinary)
       setWithdrawals(prev =>
         prev.map(w =>
           w.id === withdrawalId ? { ...w, receiptUrl: res.data.receiptUrl } : w
@@ -107,22 +98,26 @@ const AdminWithdrawalsPage = () => {
                 <td>{w.idNumber}</td>
                 <td>
                   {w.receiptUrl ? (
-                    <a href={getReceiptUrl(w.receiptUrl)} target="_blank" rel="noreferrer">
+                    <a href={w.receiptUrl} target="_blank" rel="noreferrer">
                       📎 צפייה
                     </a>
                   ) : (
-                    <>
-                      <label style={{cursor: "pointer", color: "#007bff", textDecoration: "underline"}}>
-                        {uploadingId === w.id ? "טוען..." : "העלה קבלה"}
-                        <input
-                          type="file"
-                          accept="image/*,.pdf"
-                          style={{ display: "none" }}
-                          onChange={(e) => handleReceiptUpload(e, w.id)}
-                          disabled={uploadingId === w.id}
-                        />
-                      </label>
-                    </>
+                    <label
+                      style={{
+                        cursor: "pointer",
+                        color: "#007bff",
+                        textDecoration: "underline"
+                      }}
+                    >
+                      {uploadingId === w.id ? "טוען..." : "העלה קבלה"}
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        style={{ display: "none" }}
+                        onChange={(e) => handleReceiptUpload(e, w.id)}
+                        disabled={uploadingId === w.id}
+                      />
+                    </label>
                   )}
                 </td>
                 <td>{w.status || "ממתין"}</td>
