@@ -2,6 +2,14 @@ import React, { useState, useEffect } from "react";
 import API from "../../api";
 import "./AdminPayoutPage.css";
 
+const BASE_RECEIPT_URL = "https://api.esclick.co.il/"; 
+
+const getReceiptUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith("http")) return url;
+  return BASE_RECEIPT_URL + url.replace(/^\/+/, '');
+};
+
 const AdminWithdrawalsPage = () => {
   const [withdrawals, setWithdrawals] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -13,7 +21,7 @@ const AdminWithdrawalsPage = () => {
       setError(null);
       try {
         const res = await API.get("/admin/withdrawals/pending");
-        setWithdrawals(res.data || []); // במידה והשרת מחזיר מערך ישיר
+        setWithdrawals(res.data || []);
       } catch (err) {
         setError("שגיאה בטעינת משיכות ממתינות");
       } finally {
@@ -26,7 +34,7 @@ const AdminWithdrawalsPage = () => {
   const handleApprove = async (id) => {
     try {
       await API.put(`/admin/withdrawals/${id}/approve`);
-      setWithdrawals(withdrawals.filter(w => w.id !== id)); // שימוש ב-id במקום _id
+      setWithdrawals(withdrawals.filter(w => w.id !== id));
       alert("המשיכה אושרה בהצלחה");
     } catch (err) {
       alert("שגיאה באישור המשיכה");
@@ -61,23 +69,23 @@ const AdminWithdrawalsPage = () => {
           <tbody>
             {withdrawals.map((w) => (
               <tr key={w.id}>
-                <td>{w.businessName}</td>
+                <td>{w.businessName || w.name || "—"}</td>
                 <td>{w.phone}</td>
-                <td>₪{w.amount.toFixed(2)}</td>
+                <td>₪{Number(w.amount).toFixed(2)}</td>
                 <td>{w.bankName}</td>
                 <td>{w.branch}</td>
                 <td>{w.account}</td>
                 <td>{w.idNumber}</td>
                 <td>
                   {w.receiptUrl ? (
-                    <a href={w.receiptUrl} target="_blank" rel="noreferrer">
+                    <a href={getReceiptUrl(w.receiptUrl)} target="_blank" rel="noreferrer">
                       📎 צפייה
                     </a>
                   ) : (
                     "אין קבלה"
                   )}
                 </td>
-                <td>{w.status}</td>
+                <td>{w.status || "ממתין"}</td>
                 <td>
                   <button onClick={() => handleApprove(w.id)}>אשר משיכה</button>
                 </td>
