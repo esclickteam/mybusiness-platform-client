@@ -47,7 +47,13 @@ const AdminWithdrawalsPage = () => {
           <thead>
             <tr>
               <th>שם עסק</th>
+              <th>טלפון</th>
               <th>סכום</th>
+              <th>בנק</th>
+              <th>סניף</th>
+              <th>חשבון</th>
+              <th>ת.ז / ח.פ</th>
+              <th>קבלה</th>
               <th>סטטוס</th>
               <th>פעולות</th>
             </tr>
@@ -56,7 +62,21 @@ const AdminWithdrawalsPage = () => {
             {withdrawals.map((w) => (
               <tr key={w.id}>
                 <td>{w.businessName}</td>
+                <td>{w.phone}</td>
                 <td>₪{w.amount.toFixed(2)}</td>
+                <td>{w.bankName}</td>
+                <td>{w.branch}</td>
+                <td>{w.account}</td>
+                <td>{w.idNumber}</td>
+                <td>
+                  {w.receiptUrl ? (
+                    <a href={w.receiptUrl} target="_blank" rel="noreferrer">
+                      📎 צפייה
+                    </a>
+                  ) : (
+                    "אין קבלה"
+                  )}
+                </td>
                 <td>{w.status}</td>
                 <td>
                   <button onClick={() => handleApprove(w.id)}>אשר משיכה</button>
