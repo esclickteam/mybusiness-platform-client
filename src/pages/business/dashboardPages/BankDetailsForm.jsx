@@ -4,7 +4,7 @@ import API from "@api"; // נניח שה-API מוגדר עם axios
 import "./BankDetailsForm.css";
 
 const BankDetailsForm = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
 
   const [form, setForm] = useState({
     bankName: "",
@@ -60,12 +60,16 @@ const BankDetailsForm = () => {
       }
 
       const response = await API.put("/business/my/bank-details", formData);
-      
+
       if (response.status !== 200) {
         throw new Error("שגיאה בשמירת הפרטים");
       }
 
       alert("הפרטים נשמרו בהצלחה!");
+
+      // עדכון ה-user בקונטקסט עם הפרטים המעודכנים מהשרת
+      setUser(response.data.business);
+
       setForm((f) => ({
         ...f,
         receipt: null,
