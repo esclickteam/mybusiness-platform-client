@@ -423,7 +423,7 @@ const AiPartnerTab = ({
               rows={3}
               value={commandText}
               onChange={(e) => setCommandText(e.target.value)}
-              placeholder="כתוב פקודה ל-AI"
+              placeholder="כתוב פקודה ל-AI (למשל: תאם פגישה או סכם לי פגישות השבוע)"
               disabled={loading}
             />
             <button onClick={sendAiCommand} disabled={loading || !commandText.trim()}>
