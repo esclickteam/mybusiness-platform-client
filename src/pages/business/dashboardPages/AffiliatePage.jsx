@@ -6,18 +6,16 @@ import BankDetailsForm from "./BankDetailsForm";
 const AffiliatePage = () => {
   const [showBankForm, setShowBankForm] = useState(false);
   const [showReceiptForm, setShowReceiptForm] = useState(false);
-  const [stats, setStats] = useState(null);
+  const [allStats, setAllStats] = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState("2025-04");
   const [businessId, setBusinessId] = useState(null);
-  const [packageDuration, setPackageDuration] = useState("3 חודשים"); // ניתן לשנות בהתאם
 
   // מצב למשיכת כספים
   const [withdrawAmount, setWithdrawAmount] = useState(0);
-  const [withdrawStatus, setWithdrawStatus] = useState(null); // הודעות למשתמש
+  const [withdrawStatus, setWithdrawStatus] = useState(null);
   const [receiptFile, setReceiptFile] = useState(null);
-  const [withdrawalId, setWithdrawalId] = useState(null); // מזהה משיכה שנוצרה בשרת
+  const [withdrawalId, setWithdrawalId] = useState(null);
 
   useEffect(() => {
     async function fetchBusinessId() {
@@ -32,47 +30,16 @@ const AffiliatePage = () => {
     fetchBusinessId();
   }, []);
 
-  // פונקציה לעדכון סטטוס תשלום (mark-paid)
-  const updatePaymentStatus = async (affiliateId, month, packageDur) => {
-    try {
-      const res = await API.post("/affiliate/mark-paid", {
-        affiliateId,
-        month,
-        packageDuration: packageDur,
-      });
-      return res.data;
-    } catch (err) {
-      console.error("Error updating payment status:", err);
-      return null;
-    }
-  };
-
   useEffect(() => {
     if (!businessId) return;
 
-    async function fetchAndUpdateStats() {
+    async function fetchAllStats() {
       try {
         setLoadingStats(true);
-        // קודם מביאים את הנתונים הקיימים
-        const response = await API.get("/affiliate/stats", {
-          params: { affiliateId: businessId, month: selectedMonth },
+        const response = await API.get("/affiliate/stats/all", {
+          params: { affiliateId: businessId },
         });
-
-        // אם הסטטוס עדיין לא שולם, מבצעים עדכון סטטוס תשלום
-        if (response.data.paymentStatus !== "paid") {
-          const updateResult = await updatePaymentStatus(
-            businessId,
-            selectedMonth,
-            packageDuration
-          );
-          if (updateResult && updateResult.stat) {
-            setStats(updateResult.stat);
-          } else {
-            setStats(response.data);
-          }
-        } else {
-          setStats(response.data);
-        }
+        setAllStats(response.data);
         setErrorStats(null);
       } catch (error) {
         setErrorStats("שגיאה בטעינת הנתונים");
@@ -81,8 +48,8 @@ const AffiliatePage = () => {
       }
     }
 
-    fetchAndUpdateStats();
-  }, [businessId, selectedMonth, packageDuration]);
+    fetchAllStats();
+  }, [businessId]);
 
   const affiliateLink = businessId
     ? `https://esclick.co.il/register?ref=${businessId}`
@@ -90,11 +57,17 @@ const AffiliatePage = () => {
 
   // בקשת משיכה
   const handleWithdrawRequest = async () => {
+    // חשב סכום זמין כולל מכל החודשים
+    const totalAvailable = allStats.reduce(
+      (acc, stat) => acc + (stat.totalCommissions || 0),
+      0
+    );
+
     if (withdrawAmount < 200) {
       alert('סכום מינימום למשיכה הוא 200 ש"ח');
       return;
     }
-    if (withdrawAmount > (stats?.totalCommissions || 0)) {
+    if (withdrawAmount > totalAvailable) {
       alert("סכום המשיכה גבוה מהיתרה הזמינה");
       return;
     }
@@ -134,10 +107,10 @@ const AffiliatePage = () => {
 
       // ריענון הסטטיסטיקות לאחר העלאת הקבלה
       setLoadingStats(true);
-      const response = await API.get("/affiliate/stats", {
-        params: { affiliateId: businessId, month: selectedMonth },
+      const response = await API.get("/affiliate/stats/all", {
+        params: { affiliateId: businessId },
       });
-      setStats(response.data);
+      setAllStats(response.data);
       setLoadingStats(false);
     } catch (error) {
       alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
@@ -175,64 +148,36 @@ const AffiliatePage = () => {
         )}
       </section>
 
-      {/* סטטיסטיקות */}
+      {/* טבלה של כל החודשים */}
       <section className="affiliate-stats">
-        <h2>📊 סטטיסטיקות לחודש נוכחי</h2>
+        <h2>📊 סטטיסטיקות לכל החודשים</h2>
         {loadingStats && <p>טוען נתונים...</p>}
         {errorStats && <p className="error">{errorStats}</p>}
-        {stats && (
-          <div className="stats-grid">
-            <div className="stat-card">
-              <h4>הפניות</h4>
-              <p>{stats.referrals} משתמשים</p>
-            </div>
-            <div className="stat-card">
-              <h4>רכישות שבוצעו</h4>
-              <p>{stats.purchases} עסקאות</p>
-            </div>
-            <div className="stat-card">
-              <h4>סה״כ עמלות</h4>
-              <p>₪{stats.totalCommissions}</p>
-            </div>
-            <div className="stat-card">
-              <h4>סטטוס תשלום</h4>
-              <p className={stats.paymentStatus === "paid" ? "paid" : "unpaid"}>
-                {stats.paymentStatus === "paid" ? "שולם ✅" : "ממתין"}
-              </p>
-            </div>
-          </div>
+        {!loadingStats && allStats.length === 0 && <p>לא נמצאו נתונים להצגה.</p>}
+        {allStats.length > 0 && (
+          <table className="stats-table">
+            <thead>
+              <tr>
+                <th>חודש</th>
+                <th>מספר רכישות</th>
+                <th>סה"כ עמלות (₪)</th>
+                <th>סטטוס תשלום</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allStats.map((stat) => (
+                <tr key={stat._id}>
+                  <td>{stat.month}</td>
+                  <td>{stat.purchases}</td>
+                  <td>{stat.totalCommissions.toFixed(2)}</td>
+                  <td className={stat.paymentStatus === "paid" ? "paid" : "unpaid"}>
+                    {stat.paymentStatus === "paid" ? "שולם ✅" : "ממתין"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
-
-        <div className="month-selector">
-          <label htmlFor="month">בחר חודש:</label>
-          <select
-            id="month"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-          >
-            <option value="2025-04">אפריל 2025</option>
-            <option value="2025-03">מרץ 2025</option>
-            <option value="2025-02">פברואר 2025</option>
-          </select>
-        </div>
-      </section>
-
-      {/* הסבר איך זה עובד */}
-      <section className="affiliate-info">
-        <h2>💡 איך זה עובד?</h2>
-        <ol>
-          <li>העתק את הקישור האישי שלך.</li>
-          <li>שתף אותו עם חברים, קולגות או ברשתות החברתיות.</li>
-          <li>כאשר בעל עסק נרשם דרך הקישור ורוכש חבילה – תקבל עמלה.</li>
-        </ol>
-        <h3>📌 חשוב לדעת:</h3>
-        <ul>
-          <li>✅ העמלה תינתן רק עבור רכישות שבוצעו דרך הקישור האישי שלך.</li>
-          <li>⏳ העמלה תינתן רק בתנאי שהרוכש לא ביטל את העסקה בתוך 14 ימים.</li>
-          <li>❌ אם המשתמש רכש דרך קישור אחר או ביטל את העסקה בתוך 14 ימים – לא תינתן עמלה.</li>
-          <li>💳 תשלומי עמלות מתבצעים אחת לחודש, לאחר אישור הרכישות.</li>
-          <li>🧾 לאחר קבלת התשלום, יש להעלות קבלה דרך הטופס למטה.</li>
-        </ul>
       </section>
 
       {/* מדרגות עמלות לפי תקופת חבילה עם בונוסים לפי עסקאות */}
@@ -272,11 +217,20 @@ const AffiliatePage = () => {
       <section className="affiliate-bank-section">
         <h2>💵 פעולות תשלום</h2>
         <div>
-          <p>יתרתך הזמינה למשיכה: ₪{stats?.totalCommissions ?? 0}</p>
+          {/* סך כל היתרה הזמינה מכל החודשים */}
+          <p>
+            יתרתך הזמינה למשיכה: ₪
+            {allStats
+              .reduce((acc, stat) => acc + (stat.totalCommissions || 0), 0)
+              .toFixed(2)}
+          </p>
           <input
             type="number"
             min="200"
-            max={stats?.totalCommissions ?? 0}
+            max={
+              allStats.reduce((acc, stat) => acc + (stat.totalCommissions || 0), 0) ||
+              0
+            }
             value={withdrawAmount}
             onChange={(e) => setWithdrawAmount(Number(e.target.value))}
             placeholder={`סכום למשיכה (מינימום 200 ש"ח)`}
