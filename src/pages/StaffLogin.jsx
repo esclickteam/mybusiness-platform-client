@@ -88,6 +88,7 @@ export default function StaffLogin() {
         <span
           className="forgot-password"
           onClick={() => navigate("/forgot-password")}
+          style={{cursor: "pointer"}}
         >
           שכחת את הסיסמה?
         </span>

@@ -66,7 +66,7 @@ export function AuthProvider({ children }) {
 
     setAuthToken(null);
     localStorage.removeItem("token");
-    localStorage.removeItem("businessDetails");  // שים לב למפתח החדש
+    localStorage.removeItem("businessDetails");
     setToken(null);
     setUser(null);
 
@@ -116,6 +116,39 @@ export function AuthProvider({ children }) {
   };
 
   /* -------------------------------------------------------------- */
+  /*  Staff Login (עובדים)                                          */
+  /* -------------------------------------------------------------- */
+  const staffLogin = async (username, password) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await API.post(
+        "/auth/staff-login",
+        { username: username.trim(), password },
+        { withCredentials: true }
+      );
+      if (!data.accessToken) throw new Error("No access token received");
+
+      localStorage.setItem("token", data.accessToken);
+      setAuthToken(data.accessToken);
+      setToken(data.accessToken);
+
+      setUser(data.user || null);
+
+      return data.user;
+    } catch (e) {
+      setError(
+        e.response?.status >= 400 && e.response?.status < 500
+          ? "❌ שם משתמש או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסה שוב"
+      );
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* -------------------------------------------------------------- */
   /*  Fetch wrapper                                                 */
   /* -------------------------------------------------------------- */
   const fetchWithAuth = async (fn) => {
@@ -141,7 +174,7 @@ export function AuthProvider({ children }) {
       socketRef.current = null;
       setSocket(null);
       setUser(null);
-      localStorage.removeItem("businessDetails");  // ניקוי פרטי משתמש לפי המפתח החדש
+      localStorage.removeItem("businessDetails");
       setInitialized(true);
       return;
     }
@@ -153,7 +186,7 @@ export function AuthProvider({ children }) {
       try {
         const { data } = await API.get("/auth/me", { withCredentials: true });
         setUser(data);
-        localStorage.setItem("businessDetails", JSON.stringify(data)); // שמירת פרטי משתמש תחת המפתח החדש
+        localStorage.setItem("businessDetails", JSON.stringify(data));
 
         const s = await createSocket(singleFlightRefresh, logout, data.businessId);
         socketRef.current = s;
@@ -165,7 +198,7 @@ export function AuthProvider({ children }) {
           sessionStorage.removeItem("postLoginRedirect");
         }
       } catch (err) {
-        localStorage.removeItem("businessDetails");  // ניקוי במקרה של שגיאה לפי המפתח החדש
+        localStorage.removeItem("businessDetails");
         await logout();
       } finally {
         setLoading(false);
@@ -198,6 +231,7 @@ export function AuthProvider({ children }) {
     refreshAccessToken: singleFlightRefresh,
     socket,
     setUser,
+    staffLogin,  // פונקציית staffLogin זמינה בקונטקסט
   };
 
   return (
