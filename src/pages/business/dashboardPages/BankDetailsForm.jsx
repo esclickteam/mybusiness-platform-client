@@ -46,7 +46,7 @@ const BankDetailsForm = () => {
         formData.append("receipt", form.receipt);
       }
 
-      const response = await fetch("/api/businesses/bank-details", {
+      const response = await fetch("/api/business/bank-details", {
         method: "PUT", // או POST לפי ה-API שלך
         body: formData,
         credentials: "include", // אם צריך להעביר עוגיות או token
