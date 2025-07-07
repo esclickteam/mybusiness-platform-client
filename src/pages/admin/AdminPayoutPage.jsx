@@ -25,15 +25,12 @@ const AdminPayoutPage = () => {
     async function fetchMonths() {
       try {
         const res = await API.get("/admin/payout-months");
-        console.log("Response months:", res.data.months); // לוג של החודשים מהשרת
         const monthsList = res.data.months || [];
         setMonths(monthsList);
 
         if (monthsList.length > 0) {
           setMonth((currentMonth) => {
-            console.log("Current month before setting:", currentMonth);
             if (!currentMonth || !monthsList.includes(currentMonth)) {
-              console.log("Setting month to first in list:", monthsList[0]);
               return monthsList[0];
             }
             return currentMonth;
@@ -78,7 +75,6 @@ const AdminPayoutPage = () => {
         id="month"
         value={month}
         onChange={(e) => {
-          console.log("User selected month:", e.target.value);
           setMonth(e.target.value);
         }}
         disabled={months.length === 0}
@@ -121,7 +117,7 @@ const AdminPayoutPage = () => {
                   <tr key={idx}>
                     <td>{partner.businessName}</td>
                     <td>{partner.phone}</td>
-                    <td>₪{partner.amount}</td>
+                    <td>₪{partner.amount.toFixed(2)}</td>
                     <td>{partner.bankName}</td>
                     <td>{partner.branch}</td>
                     <td>{partner.account}</td>
