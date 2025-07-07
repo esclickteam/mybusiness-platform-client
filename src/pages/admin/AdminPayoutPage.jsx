@@ -26,7 +26,7 @@ const AdminPayoutPage = () => {
       setError(null);
       try {
         // קריאה ל-API לקבלת נתוני תשלומים לפי החודש הנבחר
-        const res = await API.get("/affiliate/admin/payouts", {
+        const res = await API.get("/admin/payouts", {
           params: { month },
         });
         setPayouts(res.data.payouts || []);
