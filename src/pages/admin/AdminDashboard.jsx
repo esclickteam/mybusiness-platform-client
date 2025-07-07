@@ -137,6 +137,9 @@ function AdminDashboard() {
         <Link to="/admin/affiliate-payouts" className="admin-link">
           💸 דו"ח תשלומים לשותפים
         </Link>
+        <Link to="/admin/withdrawals" className="admin-link">
+          🏧 בקשות משיכה לשותפים
+        </Link>
       </div>
     </div>
   );
