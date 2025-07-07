@@ -69,6 +69,7 @@ const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
 const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
+import AdminWithdrawalsPage from './pages/admin/AdminWithdrawalsPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -137,6 +138,8 @@ export default function App() {
               <Route path="/staff-login" element={<StaffLogin />} />
               <Route path="/business/:businessId" element={<BusinessProfileView />} />
               <Route path="/book/:businessId" element={<BookingPage />} />
+              <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
+
 
               <Route
                 path="/business/collaborations/:tab?"
