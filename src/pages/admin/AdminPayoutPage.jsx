@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { CSVLink } from "react-csv";
-import API from "../api"; // ייבוא API מותאם לפרויקט שלך
+import API from "../../api";
 import "./AdminPayoutPage.css";
 
 const AdminPayoutPage = () => {
