@@ -21,14 +21,23 @@ const AdminPayoutPage = () => {
     { label: "קובץ קבלה", key: "receiptUrl" },
   ];
 
-  // טעינת רשימת החודשים הזמינים מהשרת
   useEffect(() => {
     async function fetchMonths() {
       try {
         const res = await API.get("/admin/payout-months");
-        setMonths(res.data.months || []);
-        if (res.data.months && res.data.months.length > 0) {
-          setMonth(res.data.months[0]); // ברירת מחדל: החודש החדש ביותר
+        console.log("Response months:", res.data.months); // לוג של החודשים מהשרת
+        const monthsList = res.data.months || [];
+        setMonths(monthsList);
+
+        if (monthsList.length > 0) {
+          setMonth((currentMonth) => {
+            console.log("Current month before setting:", currentMonth);
+            if (!currentMonth || !monthsList.includes(currentMonth)) {
+              console.log("Setting month to first in list:", monthsList[0]);
+              return monthsList[0];
+            }
+            return currentMonth;
+          });
         }
       } catch (err) {
         console.error("Error fetching months:", err);
@@ -38,7 +47,6 @@ const AdminPayoutPage = () => {
     fetchMonths();
   }, []);
 
-  // טעינת דוח התשלומים לפי חודש שנבחר
   useEffect(() => {
     if (!month) return;
 
@@ -69,7 +77,10 @@ const AdminPayoutPage = () => {
       <select
         id="month"
         value={month}
-        onChange={(e) => setMonth(e.target.value)}
+        onChange={(e) => {
+          console.log("User selected month:", e.target.value);
+          setMonth(e.target.value);
+        }}
         disabled={months.length === 0}
       >
         {months.length === 0 && <option>טוען חודשים...</option>}
