@@ -11,6 +11,7 @@ const AffiliatePage = () => {
   const [errorStats, setErrorStats] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState("2025-04");
   const [businessId, setBusinessId] = useState(null);
+  const [packageDuration, setPackageDuration] = useState("3 חודשים"); // ניתן לשנות בהתאם
 
   // מצב למשיכת כספים
   const [withdrawAmount, setWithdrawAmount] = useState(0);
@@ -31,16 +32,48 @@ const AffiliatePage = () => {
     fetchBusinessId();
   }, []);
 
+  // פונקציה לעדכון סטטוס תשלום (mark-paid)
+  const updatePaymentStatus = async (affiliateId, month, packageDur) => {
+    try {
+      const res = await API.post("/affiliate/mark-paid", {
+        affiliateId,
+        month,
+        packageDuration: packageDur,
+      });
+      return res.data;
+    } catch (err) {
+      console.error("Error updating payment status:", err);
+      return null;
+    }
+  };
+
   useEffect(() => {
     if (!businessId) return;
 
-    async function fetchAffiliateStats() {
+    async function fetchAndUpdateStats() {
       try {
         setLoadingStats(true);
+        // קודם מביאים את הנתונים הקיימים
         const response = await API.get("/affiliate/stats", {
           params: { affiliateId: businessId, month: selectedMonth },
         });
-        setStats(response.data);
+
+        // אם הסטטוס עדיין לא שולם, מבצעים עדכון סטטוס תשלום
+        if (response.data.paymentStatus !== "paid") {
+          const updateResult = await updatePaymentStatus(
+            businessId,
+            selectedMonth,
+            packageDuration
+          );
+          if (updateResult && updateResult.stat) {
+            setStats(updateResult.stat);
+          } else {
+            setStats(response.data);
+          }
+        } else {
+          setStats(response.data);
+        }
+        setErrorStats(null);
       } catch (error) {
         setErrorStats("שגיאה בטעינת הנתונים");
       } finally {
@@ -48,8 +81,8 @@ const AffiliatePage = () => {
       }
     }
 
-    fetchAffiliateStats();
-  }, [businessId, selectedMonth]);
+    fetchAndUpdateStats();
+  }, [businessId, selectedMonth, packageDuration]);
 
   const affiliateLink = businessId
     ? `https://esclick.co.il/register?ref=${businessId}`
@@ -58,7 +91,7 @@ const AffiliatePage = () => {
   // בקשת משיכה
   const handleWithdrawRequest = async () => {
     if (withdrawAmount < 200) {
-      alert("סכום מינימום למשיכה הוא 200 ש\"ח");
+      alert('סכום מינימום למשיכה הוא 200 ש"ח');
       return;
     }
     if (withdrawAmount > (stats?.totalCommissions || 0)) {
@@ -98,6 +131,8 @@ const AffiliatePage = () => {
       setWithdrawStatus("קבלה הועלתה וממתינה לאישור.");
       setShowReceiptForm(false);
       setReceiptFile(null);
+
+      // ריענון הסטטיסטיקות לאחר העלאת הקבלה
       setLoadingStats(true);
       const response = await API.get("/affiliate/stats", {
         params: { affiliateId: businessId, month: selectedMonth },
