@@ -86,7 +86,8 @@ const Register = () => {
           password,
           userType,
           businessName: userType === "business" ? businessName.trim() : undefined,
-          referralCode: userType === "customer" ? referralCode || undefined : undefined,
+          referralCode: userType === "business" ? referralCode || undefined : undefined,
+
         },
         { withCredentials: true }
       );
