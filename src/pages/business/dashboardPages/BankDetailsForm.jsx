@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
+import API from "@api";
 import "./BankDetailsForm.css";
 
 const BankDetailsForm = () => {
@@ -58,13 +59,13 @@ const BankDetailsForm = () => {
         formData.append("receipt", form.receipt);
       }
 
-      const response = await fetch("/api/business/my/bank-details", {
-        method: "PUT",
-        body: formData,
-        credentials: "include",
+      const response = await API.put("/business/my/bank-details", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("שגיאה בשמירת הפרטים");
       }
 
