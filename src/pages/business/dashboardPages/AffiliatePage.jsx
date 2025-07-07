@@ -57,7 +57,6 @@ const AffiliatePage = () => {
 
   // בקשת משיכה
   const handleWithdrawRequest = async () => {
-    // חשב סכום זמין כולל מכל החודשים
     const totalAvailable = allStats.reduce(
       (acc, stat) => acc + (stat.totalCommissions || 0),
       0
@@ -217,7 +216,6 @@ const AffiliatePage = () => {
       <section className="affiliate-bank-section">
         <h2>💵 פעולות תשלום</h2>
         <div>
-          {/* סך כל היתרה הזמינה מכל החודשים */}
           <p>
             יתרתך הזמינה למשיכה: ₪
             {allStats
