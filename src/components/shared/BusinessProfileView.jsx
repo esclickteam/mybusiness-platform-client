@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import React, { useState, useEffect, useRef, Suspense, lazy, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
@@ -9,7 +9,6 @@ import "react-calendar/dist/Calendar.css";
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
 import "./BusinessProfileView.css";
 
-// טאב ראשי
 const TABS = [
   "ראשי",
   "גלריה",
@@ -23,13 +22,11 @@ const ReviewForm = lazy(() => import("../../pages/business/dashboardPages/buildT
 const ServicesSelector = lazy(() => import("../ServicesSelector"));
 const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar"));
 
-// מיפוי תוויות דירוג
-// מיפוי תוויות דירוג
 const ratingLabels = {
   cleanliness: "ניקיון",
   punctuality: "עמידה בזמנים",
   professionalism: "מקצועיות",
-  professional: "מקצועיות",  
+  professional: "מקצועיות",
   communication: "תקשורת",
   value: "תמורה למחיר",
   service: "שירות",
@@ -39,8 +36,6 @@ const ratingLabels = {
   availability: "זמינות",
 };
 
-
-// קומפוננטה להצגת כוכבים לפי דירוג (StarDisplay)
 function StarDisplay({ rating }) {
   const fullStars = Math.floor(rating);
   const halfStar = rating - fullStars >= 0.5;
@@ -53,6 +48,21 @@ function StarDisplay({ rating }) {
     stars.push(<span key="half">⭐</span>);
   }
   return <>{stars}</>;
+}
+
+// Hook IntersectionObserver
+function useOnScreen(ref) {
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [ref]);
+  return isVisible;
 }
 
 export default function BusinessProfileView() {
@@ -124,9 +134,11 @@ export default function BusinessProfileView() {
     });
   }, [socket, bizId]);
 
-  const sortedReviews = [...reviews].sort(
-    (a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
-  );
+  const sortedReviews = useMemo(() => {
+    return [...reviews].sort(
+      (a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)
+    );
+  }, [reviews]);
 
   const toggleFavorite = async () => {
     if (!user) {
@@ -167,6 +179,31 @@ export default function BusinessProfileView() {
     }));
   };
 
+  // Refs and onScreen hooks for lazy loading tab content
+  const galleryRef = useRef(null);
+  const reviewsRef = useRef(null);
+  const calendarRef = useRef(null);
+
+  const galleryVisible = useOnScreen(galleryRef);
+  const reviewsVisible = useOnScreen(reviewsRef);
+  const calendarVisible = useOnScreen(calendarRef);
+
+  const [galleryLoaded, setGalleryLoaded] = useState(false);
+  const [reviewsLoaded, setReviewsLoaded] = useState(false);
+  const [calendarLoaded, setCalendarLoaded] = useState(false);
+
+  useEffect(() => {
+    if (galleryVisible) setGalleryLoaded(true);
+  }, [galleryVisible]);
+
+  useEffect(() => {
+    if (reviewsVisible) setReviewsLoaded(true);
+  }, [reviewsVisible]);
+
+  useEffect(() => {
+    if (calendarVisible) setCalendarLoaded(true);
+  }, [calendarVisible]);
+
   if (isLoading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">שגיאה בטעינת הנתונים</div>;
   if (!data) return <div className="error">העסק לא נמצא</div>;
@@ -196,23 +233,23 @@ export default function BusinessProfileView() {
     <div className="profile-page">
       <div className="business-profile-view full-style">
         <div className="profile-inner">
-          {/* כפתור עריכת העסק במידה ומנהל */}
           {isOwner && (
             <Link to={`/business/${bizId}/dashboard/edit`} className="edit-profile-btn">
               ✏️ ערוך פרטי העסק
             </Link>
           )}
 
-          {/* לוגו העסק */}
           {logoUrl && (
             <div className="profile-logo-wrapper">
               <img className="profile-logo" src={logoUrl} alt="לוגו העסק" loading="lazy" />
             </div>
           )}
 
-          {/* שם העסק וכפתור מועדפים */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <h1 className="business-name" style={{ fontSize: "2rem", color: "#5c2d91", fontWeight: "bold" }}>
+            <h1
+              className="business-name"
+              style={{ fontSize: "2rem", color: "#5c2d91", fontWeight: "bold" }}
+            >
               {businessName}
             </h1>
             <button
@@ -238,7 +275,6 @@ export default function BusinessProfileView() {
             </button>
           </div>
 
-          {/* פרטים כלליים */}
           <div className="about-phone" style={{ marginBottom: "1rem" }}>
             {category && <p><strong>🏷️ קטגוריה:</strong> {category}</p>}
             {description && <p><strong>📝 תיאור:</strong> {description}</p>}
@@ -246,8 +282,10 @@ export default function BusinessProfileView() {
             {city && <p><strong>🏙️ עיר:</strong> {city}</p>}
           </div>
 
-          {/* דירוג כללי */}
-          <div className="reviews-summary" aria-label={`דירוג ממוצע: ${roundedAvg.toFixed(1)} מתוך 5, מבוסס על ${reviews.length} ביקורות`}>
+          <div
+            className="reviews-summary"
+            aria-label={`דירוג ממוצע: ${roundedAvg.toFixed(1)} מתוך 5, מבוסס על ${reviews.length} ביקורות`}
+          >
             <span className="reviews-average">
               {roundedAvg.toFixed(1)}
               <span className="star">⭐</span>
@@ -257,7 +295,6 @@ export default function BusinessProfileView() {
 
           <hr className="profile-divider" style={{ marginTop: "1rem", borderColor: "#4A148C" }} />
 
-          {/* טאבים */}
           <div className="profile-tabs" role="tablist">
             {TABS.map((tab) => (
               <button
@@ -267,24 +304,23 @@ export default function BusinessProfileView() {
                 role="tab"
                 aria-selected={tab === currentTab}
                 style={{
-  padding: "10px 20px",
-  fontSize: "1rem",
-  background: "#5c2d91",   
-  color: "white",          
-  border: "none",
-  cursor: "pointer",
-  margin: "0 5px",
-  borderRadius: "8px",
-  boxShadow: "0 4px 12px rgba(92, 45, 145, 0.6)",  // צל לכל הטאבים
-  transition: "background-color 0.3s ease, color 0.3s ease",
-}}
+                  padding: "10px 20px",
+                  fontSize: "1rem",
+                  background: "#5c2d91",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                  margin: "0 5px",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 12px rgba(92, 45, 145, 0.6)",
+                  transition: "background-color 0.3s ease, color 0.3s ease",
+                }}
               >
                 {tab}
               </button>
             ))}
           </div>
 
-          {/* תוכן לפי טאבים */}
           <div className="tab-content" role="tabpanel">
             {/* ראשי */}
             {currentTab === "ראשי" && (
@@ -292,7 +328,19 @@ export default function BusinessProfileView() {
                 <div className="public-main-images">
                   {mainImages.length ? (
                     mainImages.slice(0, 6).map((url, i) => (
-                      <img key={i} src={url} alt={`תמונה ראשית ${i + 1}`} loading="lazy" style={{ margin: "10px", width: "100%", height: "auto", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }} />
+                      <img
+                        key={i}
+                        src={url}
+                        alt={`תמונה ראשית ${i + 1}`}
+                        loading="lazy"
+                        style={{
+                          margin: "10px",
+                          width: "100%",
+                          height: "auto",
+                          borderRadius: "8px",
+                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                        }}
+                      />
                     ))
                   ) : (
                     <p className="no-data">אין תמונות להצגה</p>
@@ -369,103 +417,111 @@ export default function BusinessProfileView() {
 
             {/* גלריה */}
             {currentTab === "גלריה" && (
-              <div className="public-main-images">
-                {gallery.length ? (
-                  gallery.map((url, i) => (
-                    <img key={i} src={url} alt={`גלריה ${i + 1}`} loading="lazy" />
-                  ))
+              <div ref={galleryRef} className="public-main-images">
+                {galleryLoaded ? (
+                  gallery.length ? (
+                    gallery.map((url, i) => (
+                      <img key={i} src={url} alt={`גלריה ${i + 1}`} loading="lazy" />
+                    ))
+                  ) : (
+                    <p className="no-data">אין תמונות בגלריה</p>
+                  )
                 ) : (
-                  <p className="no-data">אין תמונות בגלריה</p>
+                  <p>טוען גלריה…</p>
                 )}
               </div>
             )}
 
             {/* ביקורות */}
             {currentTab === "ביקורות" && (
-              <div className="reviews" dir="rtl">
-                {!isOwner && user && (
-                  <button className="add-review-btn" onClick={() => setShowReviewModal(true)}>
-                    הוסף ביקורת
-                  </button>
-                )}
-                {showReviewModal && (
-                  <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
-                    <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
-                      <Suspense fallback={<div>טוען טופס ביקורת...</div>}>
-                        <ReviewForm
-                          businessId={bizId}
-                          onSubmit={handleReviewSubmit}
-                          isSubmitting={isSubmitting}
-                        />
-                      </Suspense>
-                      <button className="modal-close" onClick={() => setShowReviewModal(false)}>
-                        סגור
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {sortedReviews.length ? (
-                  sortedReviews.map((r, i) => {
-                    const avg = r.rating || r.averageScore || 0;
-                    const dateStr = new Date(r.createdAt || r.date).toLocaleDateString("he-IL", {
-                      day: "numeric",
-                      month: "numeric",
-                      year: "numeric",
-                    });
-                    const isExpanded = expandedReviews[r._id || i] || false;
-
-                    return (
-                      <div key={r._id || i} className="review-card improved">
-                        <p><strong>⭐ דירוג ממוצע:</strong> {avg.toFixed(1)}</p>
-                        {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
-                        <p><strong>🗓️ תאריך:</strong> {dateStr}</p>
-                        {r.client && <p><strong>👤 מאת:</strong> {r.client.name}</p>}
-
-                        <button
-                          style={{
-                            marginTop: "8px",
-                            backgroundColor: "#c5a3ff",
-                            border: "none",
-                            borderRadius: "6px",
-                            padding: "6px 12px",
-                            cursor: "pointer",
-                            fontWeight: "bold",
-                            color: "#4a148c",
-                          }}
-                          onClick={() => toggleReviewDetails(r._id || i)}
-                          aria-expanded={isExpanded}
-                          aria-controls={`review-details-full-${r._id || i}`}
-                        >
-                          {isExpanded ? "הסתר פירוט דירוג 📋" : "פירוט דירוג 📋"}
+              <div ref={reviewsRef} className="reviews" dir="rtl">
+                {reviewsLoaded ? (
+                  !isOwner && user && (
+                    <button className="add-review-btn" onClick={() => setShowReviewModal(true)}>
+                      הוסף ביקורת
+                    </button>
+                  ),
+                  showReviewModal && (
+                    <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
+                      <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
+                        <Suspense fallback={<div>טוען טופס ביקורת...</div>}>
+                          <ReviewForm
+                            businessId={bizId}
+                            onSubmit={handleReviewSubmit}
+                            isSubmitting={isSubmitting}
+                          />
+                        </Suspense>
+                        <button className="modal-close" onClick={() => setShowReviewModal(false)}>
+                          סגור
                         </button>
-
-                        {isExpanded && r.ratings && (
-                          <div
-                            id={`review-details-full-${r._id || i}`}
-                            className="rating-details"
-                            style={{ marginTop: "8px" }}
-                          >
-                            {Object.entries(r.ratings).map(([key, val]) => (
-                              <div
-                                key={key}
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  fontSize: "0.9rem",
-                                  direction: "rtl",
-                                }}
-                              >
-                                <span>{ratingLabels[key] || key}</span>
-                                <span>{val.toFixed(1)} <StarDisplay rating={val} /></span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
                       </div>
-                    );
-                  })
+                    </div>
+                  ),
+                  sortedReviews.length ? (
+                    sortedReviews.map((r, i) => {
+                      const avg = r.rating || r.averageScore || 0;
+                      const dateStr = new Date(r.createdAt || r.date).toLocaleDateString("he-IL", {
+                        day: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                      });
+                      const isExpanded = expandedReviews[r._id || i] || false;
+
+                      return (
+                        <div key={r._id || i} className="review-card improved">
+                          <p><strong>⭐ דירוג ממוצע:</strong> {avg.toFixed(1)}</p>
+                          {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
+                          <p><strong>🗓️ תאריך:</strong> {dateStr}</p>
+                          {r.client && <p><strong>👤 מאת:</strong> {r.client.name}</p>}
+
+                          <button
+                            style={{
+                              marginTop: "8px",
+                              backgroundColor: "#c5a3ff",
+                              border: "none",
+                              borderRadius: "6px",
+                              padding: "6px 12px",
+                              cursor: "pointer",
+                              fontWeight: "bold",
+                              color: "#4a148c",
+                            }}
+                            onClick={() => toggleReviewDetails(r._id || i)}
+                            aria-expanded={isExpanded}
+                            aria-controls={`review-details-full-${r._id || i}`}
+                          >
+                            {isExpanded ? "הסתר פירוט דירוג 📋" : "פירוט דירוג 📋"}
+                          </button>
+
+                          {isExpanded && r.ratings && (
+                            <div
+                              id={`review-details-full-${r._id || i}`}
+                              className="rating-details"
+                              style={{ marginTop: "8px" }}
+                            >
+                              {Object.entries(r.ratings).map(([key, val]) => (
+                                <div
+                                  key={key}
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    fontSize: "0.9rem",
+                                    direction: "rtl",
+                                  }}
+                                >
+                                  <span>{ratingLabels[key] || key}</span>
+                                  <span>{val.toFixed(1)} <StarDisplay rating={val} /></span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="no-data">אין ביקורות</p>
+                  )
                 ) : (
-                  <p className="no-data">אין ביקורות</p>
+                  <p>טוען ביקורות…</p>
                 )}
               </div>
             )}
@@ -504,28 +560,34 @@ export default function BusinessProfileView() {
 
             {/* יומן */}
             {currentTab === "יומן" && (
-              <>
-                <Suspense fallback={<div>טוען בחירת שירות...</div>}>
-                  <ServicesSelector services={services} onSelect={(svc) => setSelectedService(svc)} />
-                </Suspense>
-                {!selectedService ? (
-                  <p className="choose-prompt" dir="rtl">אנא בחרי שירות כדי להציג את היומן</p>
-                ) : (
+              <div ref={calendarRef}>
+                {calendarLoaded ? (
                   <>
-                    <button className="back-btn" onClick={() => setSelectedService(null)} dir="rtl">
-                      ← שנה שירות
-                    </button>
-                    <Suspense fallback={<div>טוען יומן תורים...</div>}>
-                      <ClientCalendar
-                        workHours={schedule}
-                        selectedService={selectedService}
-                        onBackToList={() => setSelectedService(null)}
-                        businessId={bizId}
-                      />
+                    <Suspense fallback={<div>טוען בחירת שירות...</div>}>
+                      <ServicesSelector services={services} onSelect={(svc) => setSelectedService(svc)} />
                     </Suspense>
+                    {!selectedService ? (
+                      <p className="choose-prompt" dir="rtl">אנא בחרי שירות כדי להציג את היומן</p>
+                    ) : (
+                      <>
+                        <button className="back-btn" onClick={() => setSelectedService(null)} dir="rtl">
+                          ← שנה שירות
+                        </button>
+                        <Suspense fallback={<div>טוען יומן תורים...</div>}>
+                          <ClientCalendar
+                            workHours={schedule}
+                            selectedService={selectedService}
+                            onBackToList={() => setSelectedService(null)}
+                            businessId={bizId}
+                          />
+                        </Suspense>
+                      </>
+                    )}
                   </>
+                ) : (
+                  <p>טוען יומן…</p>
                 )}
-              </>
+              </div>
             )}
           </div>
         </div>
