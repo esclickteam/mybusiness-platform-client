@@ -2,9 +2,9 @@ import React, {
   useEffect,
   useState,
   useRef,
-  createRef,
   Suspense,
   useCallback,
+  useMemo,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../api";
@@ -283,15 +283,14 @@ const DashboardPage = () => {
         });
       });
 
-      // כאן השינוי החשוב: הוספת ביקורת חדשה למערך ולהגדלת הספירה
       sock.on('reviewCreated', (review) => {
-  console.log('reviewCreated arrived', review);
-  setStats(old => ({
-    ...old,
-    reviews_count: review.newCount ?? ((old.reviews_count||0) + 1),
-    reviews: [review, ...(old.reviews||[])],
-  }));
-});
+        console.log('reviewCreated arrived', review);
+        setStats(old => ({
+          ...old,
+          reviews_count: review.newCount ?? ((old.reviews_count||0) + 1),
+          reviews: [review, ...(old.reviews||[])],
+        }));
+      });
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
@@ -311,7 +310,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken]);
+  }, [initialized, businessId, logout, refreshAccessToken, selectedDate]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -325,7 +324,7 @@ const DashboardPage = () => {
         });
       }
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.state]);
 
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
@@ -334,11 +333,16 @@ const DashboardPage = () => {
   if (error) return <p className="error-text">{alert || error}</p>;
 
   const effectiveStats = stats || {};
-  const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
-    enrichAppointment(appt, effectiveStats)
-  );
 
-  const getUpcomingAppointmentsCount = (appointments) => {
+  // useMemo לחישוב enrichedAppointments
+  const enrichedAppointments = useMemo(() => {
+    return (effectiveStats.appointments || []).map((appt) =>
+      enrichAppointment(appt, effectiveStats)
+    );
+  }, [effectiveStats.appointments, effectiveStats]);
+
+  // useMemo לחישוב ספירת פגישות קרובות
+  const getUpcomingAppointmentsCount = useCallback((appointments) => {
     const now = new Date();
     const endOfWeek = new Date();
     endOfWeek.setDate(now.getDate() + 7);
@@ -346,19 +350,24 @@ const DashboardPage = () => {
       const apptDate = new Date(appt.date);
       return apptDate >= now && apptDate <= endOfWeek;
     }).length;
-  };
+  }, []);
+
+  const upcomingAppointmentsCount = useMemo(() => {
+    return getUpcomingAppointmentsCount(enrichedAppointments);
+  }, [enrichedAppointments, getUpcomingAppointmentsCount]);
 
   const syncedStats = {
     ...effectiveStats,
     messages_count: effectiveStats.messages_count || 0,
   };
 
-  const cardsRef = createRef();
-  const insightsRef = createRef();
-  const chartsRef = createRef();
-  const appointmentsRef = createRef();
-  const nextActionsRef = createRef();
-  const weeklySummaryRef = createRef();
+  // useRef במקום createRef
+  const cardsRef = useRef();
+  const insightsRef = useRef();
+  const chartsRef = useRef();
+  const appointmentsRef = useRef();
+  const nextActionsRef = useRef();
+  const weeklySummaryRef = useRef();
 
   return (
     <div className="dashboard-container">
@@ -371,7 +380,6 @@ const DashboardPage = () => {
 
       {alert && <p className="alert-text">{alert}</p>}
 
-      {/* המלצות AI אם יש */}
       {recommendations.length > 0 && (
         <section
           className="recommendations-section"
@@ -443,7 +451,7 @@ const DashboardPage = () => {
           <MemoizedInsights
             stats={{
               ...syncedStats,
-              upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
+              upcoming_appointments: upcomingAppointmentsCount,
             }}
           />
         </div>
