@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import API from "../../../../api";
@@ -29,100 +29,122 @@ export default function CollabBusinessProfileTab({ socket }) {
     loading: aiLoading,
   } = useAi();
 
-  useEffect(() => {
-    fetchProfile();
-    fetchMyBusinessId();
+  // טעינת פרופיל ו־myBusinessId במקביל
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [profileRes, businessIdRes] = await Promise.all([
+        API.get("/business/my"),
+        API.get("/business-chat/me"),
+      ]);
+
+      if (profileRes.data.business) {
+        setProfileData(profileRes.data.business);
+        setLogoPreview(profileRes.data.business.logo || null);
+        setMyBusinessName(profileRes.data.business.businessName || "עסק שלי");
+      }
+      if (businessIdRes.data.myBusinessId) {
+        setMyBusinessId(businessIdRes.data.myBusinessId);
+      }
+    } catch (err) {
+      alert("שגיאה בטעינת פרטי העסק");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleNewRecommendation = useCallback(
+    (rec) => addSuggestion(rec),
+    [addSuggestion]
+  );
+
+  useEffect(() => {
     if (!socket) return;
-
-    const handleNewRecommendation = (rec) => addSuggestion(rec);
-
     socket.on("newRecommendation", handleNewRecommendation);
+    return () => socket.off("newRecommendation", handleNewRecommendation);
+  }, [socket, handleNewRecommendation]);
 
+  // שחרור URL של ה־logoPreview כשמשתנה הקובץ או כשהרכיב מתפרק
+  useEffect(() => {
     return () => {
-      socket.off("newRecommendation", handleNewRecommendation);
-    };
-  }, [socket, addSuggestion]);
-
-  const fetchProfile = async () => {
-    setLoading(true);
-    try {
-      const { data } = await API.get("/business/my");
-      if (data.business) {
-        setProfileData(data.business);
-        setLogoPreview(data.business.logo || null);
-        setMyBusinessName(data.business.businessName || "עסק שלי");
+      if (logoPreview && logoFile) {
+        URL.revokeObjectURL(logoPreview);
       }
-    } catch {
-      alert("שגיאה בטעינת פרטי העסק");
-    }
-    setLoading(false);
-  };
+    };
+  }, [logoPreview, logoFile]);
 
-  const fetchMyBusinessId = async () => {
-    try {
-      const { data } = await API.get("/business-chat/me");
-      if (data.myBusinessId) setMyBusinessId(data.myBusinessId);
-    } catch {}
-  };
-
-  const handleLogoChange = (e) => {
+  const handleLogoChange = useCallback((e) => {
     const file = e.target.files[0];
     if (file) {
+      if (logoPreview && logoFile) {
+        URL.revokeObjectURL(logoPreview);
+      }
       setLogoFile(file);
       setLogoPreview(URL.createObjectURL(file));
     }
-  };
+  }, [logoPreview, logoFile]);
 
-  const handleSaveProfile = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    const formData = new FormData(e.target);
-    const updatedData = {
-      businessName: formData.get("businessName"),
-      category: formData.get("category"),
-      area: formData.get("area"),
-      description: formData.get("about"),
-      collabPref: formData.get("collabPref"),
-      contact: formData.get("contact"),
-      phone: formData.get("phone"),
-      email: formData.get("email"),
-    };
-    try {
-      if (logoFile) {
-        const logoFormData = new FormData();
-        logoFormData.append("logo", logoFile);
-        const logoRes = await API.put("/business/my/logo", logoFormData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        updatedData.logo = logoRes.data.logo;
+  const handleSaveProfile = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setSaving(true);
+      const formData = new FormData(e.target);
+      const updatedData = {
+        businessName: formData.get("businessName"),
+        category: formData.get("category"),
+        area: formData.get("area"),
+        description: formData.get("about"),
+        collabPref: formData.get("collabPref"),
+        contact: formData.get("contact"),
+        phone: formData.get("phone"),
+        email: formData.get("email"),
+      };
+      try {
+        if (logoFile) {
+          const logoFormData = new FormData();
+          logoFormData.append("logo", logoFile);
+          const logoRes = await API.put("/business/my/logo", logoFormData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          updatedData.logo = logoRes.data.logo;
+        }
+        await API.put("/business/profile", updatedData);
+        await fetchData();
+        setShowEditProfile(false);
+        setLogoFile(null);
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        setSaving(false);
       }
-      await API.put("/business/profile", updatedData);
-      await fetchProfile();
-      setShowEditProfile(false);
-      setLogoFile(null);
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
+    },
+    [logoFile, fetchData]
+  );
 
-  if (loading || !profileData) {
-    return <div className="loading-text">טוען...</div>;
-  }
+  const collabPrefLines = useMemo(() => {
+    if (!profileData?.collabPref) return [];
+    return profileData.collabPref
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+  }, [profileData]);
+
+  if (loading || !profileData) return <div className="loading-text">טוען...</div>;
 
   const safeProfile = {
-    businessName: profileData?.businessName || "שם לא זמין",
-    category: profileData?.category || "קטגוריה לא זמינה",
-    area: profileData?.area || "אזור לא זמין",
-    about: profileData?.description || "אין תיאור",
-    collabPref: profileData?.collabPref || "",
-    contact: profileData?.contact || "-",
-    phone: profileData?.phone || "-",
-    email: profileData?.email || "-",
+    businessName: profileData.businessName || "שם לא זמין",
+    category: profileData.category || "קטגוריה לא זמינה",
+    area: profileData.area || "אזור לא זמין",
+    about: profileData.description || "אין תיאור",
+    collabPref: collabPrefLines,
+    contact: profileData.contact || "-",
+    phone: profileData.phone || "-",
+    email: profileData.email || "-",
   };
 
   return (
@@ -182,11 +204,11 @@ export default function CollabBusinessProfileTab({ socket }) {
 
           <div className="profile-section">
             <h3>🤝 שיתופי פעולה רצויים</h3>
-            {safeProfile.collabPref ? (
+            {safeProfile.collabPref.length > 0 ? (
               <ul className="profile-collab-list">
-                {safeProfile.collabPref.split("\n").map((line, i) =>
-                  line.trim() ? <li key={i}>{line}</li> : null
-                )}
+                {safeProfile.collabPref.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
               </ul>
             ) : (
               <p>אין שיתופי פעולה מוזנים.</p>
@@ -226,7 +248,7 @@ export default function CollabBusinessProfileTab({ socket }) {
             <textarea name="about" defaultValue={safeProfile.about} rows="3" />
 
             <label>שיתופי פעולה רצויים</label>
-            <textarea name="collabPref" defaultValue={safeProfile.collabPref} rows="3" />
+            <textarea name="collabPref" defaultValue={profileData.collabPref || ""} rows="3" />
 
             <label>שם איש קשר</label>
             <input name="contact" defaultValue={safeProfile.contact} required />

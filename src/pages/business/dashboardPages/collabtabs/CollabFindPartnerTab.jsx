@@ -1,137 +1,128 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../../../api";
 import "./CollabFindPartnerTab.css";
 
-export default function CollabFindPartnerTab({
-  searchMode,
-  setSearchMode,
-  searchCategory,
-  setSearchCategory,
-  freeText,
-  setFreeText,
-  categories,
-  setSelectedBusiness,
-  setOpenModal,
-  isDevUser,
-  handleSendProposal,
-}) {
+function PartnerCard({ business, isMine, onOpenProfile }) {
+  const logoUrl = business.logo || "/default-logo.png";
+
+  return (
+    <div key={business._id} className={`collab-card${isMine ? " my-business" : ""}`}>
+      <div className="collab-card-inner">
+        <div className="collab-card-content">
+          <h3 className="business-name">
+            {business.businessName}
+            {isMine && <span className="my-business-badge">העסק שלי</span>}
+          </h3>
+          <p className="business-category">{business.category}</p>
+          <p className="business-desc">{business.description}</p>
+          <div className="collab-card-buttons">
+            {isMine ? (
+              <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
+            ) : (
+              <button
+                className="message-box-button secondary"
+                onClick={() => onOpenProfile(business)}
+              >
+                צפייה בפרופיל
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="business-logo-left">
+          <img src={logoUrl} alt={`${business.businessName} לוגו`} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function CollabFindPartnerTab({ searchMode, searchCategory, freeText }) {
   const navigate = useNavigate();
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [partners, setPartners] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function fetchMyBusiness() {
-      try {
-        const res = await API.get("/business/my");
-        setMyBusinessId(res.data.business._id);
-      } catch (err) {
-        console.error("Error fetching my business:", err);
-      }
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [myBusinessRes, partnersRes] = await Promise.all([
+        API.get("/business/my"),
+        API.get("/business/findPartners"),
+      ]);
+      setMyBusinessId(myBusinessRes.data.business._id);
+      setPartners(partnersRes.data.relevant || []);
+    } catch (err) {
+      setError("שגיאה בטעינת נתונים");
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-    fetchMyBusiness();
   }, []);
 
   useEffect(() => {
-    async function fetchPartners() {
-      try {
-        const res = await API.get("/business/findPartners");
-        setPartners(res.data.relevant || []);
-      } catch (err) {
-        console.error("Error fetching partners", err);
-      }
-    }
-    fetchPartners();
-    const intervalId = setInterval(fetchPartners, 10000);
-    return () => clearInterval(intervalId);
-  }, []);
+    fetchData();
+    // אם רוצה רענון תקופתי, אפשר פה להוסיף setInterval עם ניקוי
+  }, [fetchData]);
 
-  const filteredPartners = partners.filter((business) => {
+  const filteredPartners = useMemo(() => {
+    if (!partners.length) return [];
+
     if (searchMode === "category" && searchCategory) {
-      return (
-        business.category.toLowerCase().includes(searchCategory.toLowerCase()) ||
-        (business.complementaryCategories || []).some((cat) =>
-          cat.toLowerCase().includes(searchCategory.toLowerCase())
-        )
+      const catLower = searchCategory.toLowerCase();
+      return partners.filter(
+        (b) =>
+          b.category.toLowerCase().includes(catLower) ||
+          (b.complementaryCategories || []).some((cat) => cat.toLowerCase().includes(catLower))
       );
     }
+
     if (searchMode === "free" && freeText) {
       const text = freeText.toLowerCase();
-      return (
-        business.businessName.toLowerCase().includes(text) ||
-        business.description.toLowerCase().includes(text) ||
-        business.category.toLowerCase().includes(text)
+      return partners.filter(
+        (b) =>
+          b.businessName.toLowerCase().includes(text) ||
+          b.description.toLowerCase().includes(text) ||
+          b.category.toLowerCase().includes(text)
       );
     }
-    return true;
-  });
 
-  const handleOpenProfile = (business) => {
-    if (business._id) {
-      navigate(`/business-profile/${business._id}`);
-    }
-  };
+    return partners;
+  }, [partners, searchMode, searchCategory, freeText]);
+
+  const handleOpenProfile = useCallback(
+    (business) => {
+      if (business._id) {
+        navigate(`/business-profile/${business._id}`);
+      }
+    },
+    [navigate]
+  );
+
+  if (loading) return <p>טוען שותפים...</p>;
+  if (error) return <p className="error-text">{error}</p>;
+
+  if (filteredPartners.length === 0) {
+    return <p>לא נמצאו שותפים.</p>;
+  }
 
   return (
     <div>
       <div className="search-container">{/* שדות חיפוש בעתיד */}</div>
 
-      {filteredPartners.length === 0 ? (
-        <p>לא נמצאו שותפים.</p>
-      ) : (
-        <div className="partners-grid">
-          {filteredPartners.map((business) => {
-            const isMine = business._id === myBusinessId;
-            const logoUrl = business.logo || "/default-logo.png";
-
-            return (
-              <div
-                key={business._id || business.id}
-                className={`collab-card${isMine ? " my-business" : ""}`}
-              >
-                <div className="collab-card-inner">
-                  <div className="collab-card-content">
-                    <h3 className="business-name">
-                      {business.businessName}
-                      {isMine && <span className="my-business-badge">העסק שלי</span>}
-                    </h3>
-                    <p className="business-category">{business.category}</p>
-                    <p className="business-desc">{business.description}</p>
-                    <div className="collab-card-buttons">
-                      {isMine ? (
-                        <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
-                      ) : (
-                        <button
-                          className="message-box-button secondary"
-                          onClick={() => handleOpenProfile(business)}
-                        >
-                          צפייה בפרופיל
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="business-logo-left">
-                    <img src={logoUrl} alt={`${business.businessName} לוגו`} />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <div className="partners-grid">
+        {filteredPartners.map((business) => (
+          <PartnerCard
+            key={business._id}
+            business={business}
+            isMine={business._id === myBusinessId}
+            onOpenProfile={handleOpenProfile}
+          />
+        ))}
+      </div>
     </div>
   );
 }
-
-const modalStyle = {
-  backgroundColor: "#fff",
-  p: 4,
-  borderRadius: 2,
-  maxWidth: 420,
-  m: "10% auto",
-  maxHeight: "80vh",
-  overflowY: "auto",
-  display: "flex",
-  flexDirection: "column",
-};

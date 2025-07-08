@@ -1,63 +1,85 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import API from "../../../../api";
 import "./CollabMarketTab.css";
 import { useNavigate } from "react-router-dom";
 
 function CreateCollabForm({ onSuccess }) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [needs, setNeeds] = useState("");
-  const [offers, setOffers] = useState("");
-  const [contactName, setContactName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [budget, setBudget] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    needs: "",
+    offers: "",
+    contactName: "",
+    phone: "",
+    budget: "",
+    expiryDate: "",
+  });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError(null);
-    if (!title.trim() || !description.trim() || !contactName.trim() || !phone.trim()) {
-      setError("אנא מלא את כותרת ההצעה, תיאור, איש קשר וטלפון");
-      return;
-    }
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  }, []);
 
-    setLoading(true);
-    try {
-      const message = {
-        title: title.trim(),
-        description: description.trim(),
-        needs: needs.split(",").map(s => s.trim()).filter(Boolean),
-        offers: offers.split(",").map(s => s.trim()).filter(Boolean),
-        budget: budget ? Number(budget) : undefined,
-        expiryDate: expiryDate ? new Date(expiryDate).toISOString() : undefined,
-      };
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setError(null);
+      const { title, description, contactName, phone } = formData;
+      if (!title.trim() || !description.trim() || !contactName.trim() || !phone.trim()) {
+        setError("אנא מלא את כותרת ההצעה, תיאור, איש קשר וטלפון");
+        return;
+      }
 
-      await API.post("/business/my/proposals", {
-        toBusinessId: null,
-        message,
-        contactName: contactName.trim(),
-        phone: phone.trim(),
-      });
+      setLoading(true);
+      try {
+        const message = {
+          title: formData.title.trim(),
+          description: formData.description.trim(),
+          needs: formData.needs
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          offers: formData.offers
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          budget: formData.budget ? Number(formData.budget) : undefined,
+          expiryDate:
+            formData.expiryDate && !isNaN(new Date(formData.expiryDate).getTime())
+              ? new Date(formData.expiryDate).toISOString()
+              : undefined,
+        };
 
-      setTitle("");
-      setDescription("");
-      setNeeds("");
-      setOffers("");
-      setContactName("");
-      setPhone("");
-      setBudget("");
-      setExpiryDate("");
+        await API.post("/business/my/proposals", {
+          toBusinessId: null,
+          message,
+          contactName: formData.contactName.trim(),
+          phone: formData.phone.trim(),
+        });
 
-      if (onSuccess) onSuccess();
-    } catch (err) {
-      console.error(err);
-      setError("❌ שגיאה בפרסום ההצעה");
-    } finally {
-      setLoading(false);
-    }
-  }
+        setFormData({
+          title: "",
+          description: "",
+          needs: "",
+          offers: "",
+          contactName: "",
+          phone: "",
+          budget: "",
+          expiryDate: "",
+        });
+
+        if (onSuccess) onSuccess();
+      } catch (err) {
+        console.error(err);
+        setError("❌ שגיאה בפרסום ההצעה");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [formData, onSuccess]
+  );
 
   return (
     <form onSubmit={handleSubmit} className="proposal-form">
@@ -67,8 +89,9 @@ function CreateCollabForm({ onSuccess }) {
         כותרת*:
         <input
           type="text"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
           required
           placeholder="כותרת ההצעה"
         />
@@ -77,8 +100,9 @@ function CreateCollabForm({ onSuccess }) {
       <label>
         תיאור*:
         <textarea
-          value={description}
-          onChange={e => setDescription(e.target.value)}
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
           required
           placeholder="תיאור מפורט"
         />
@@ -88,8 +112,9 @@ function CreateCollabForm({ onSuccess }) {
         מה העסק צריך (מופרד בפסיקים):
         <input
           type="text"
-          value={needs}
-          onChange={e => setNeeds(e.target.value)}
+          name="needs"
+          value={formData.needs}
+          onChange={handleChange}
           placeholder="למשל: שותף שיווק, משקיע"
         />
       </label>
@@ -98,8 +123,9 @@ function CreateCollabForm({ onSuccess }) {
         מה העסק נותן (מופרד בפסיקים):
         <input
           type="text"
-          value={offers}
-          onChange={e => setOffers(e.target.value)}
+          name="offers"
+          value={formData.offers}
+          onChange={handleChange}
           placeholder="למשל: שותפות ברווח, פרסום משותף"
         />
       </label>
@@ -108,8 +134,9 @@ function CreateCollabForm({ onSuccess }) {
         איש קשר*:
         <input
           type="text"
-          value={contactName}
-          onChange={e => setContactName(e.target.value)}
+          name="contactName"
+          value={formData.contactName}
+          onChange={handleChange}
           required
           placeholder="שם איש קשר"
         />
@@ -119,8 +146,9 @@ function CreateCollabForm({ onSuccess }) {
         טלפון*:
         <input
           type="tel"
-          value={phone}
-          onChange={e => setPhone(e.target.value)}
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
           required
           placeholder="טלפון ליצירת קשר"
         />
@@ -130,8 +158,9 @@ function CreateCollabForm({ onSuccess }) {
         תקציב (₪):
         <input
           type="number"
-          value={budget}
-          onChange={e => setBudget(e.target.value)}
+          name="budget"
+          value={formData.budget}
+          onChange={handleChange}
           min="0"
           placeholder="תקציב משוער"
         />
@@ -141,8 +170,9 @@ function CreateCollabForm({ onSuccess }) {
         תוקף עד:
         <input
           type="date"
-          value={expiryDate}
-          onChange={e => setExpiryDate(e.target.value)}
+          name="expiryDate"
+          value={formData.expiryDate}
+          onChange={handleChange}
         />
       </label>
 
@@ -163,48 +193,57 @@ export default function CollabMarketTab({ isDevUser }) {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function fetchCollabs() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await API.get("/business/proposals/market");
-        console.log("Response from /api/business/proposals/market:", res.data);
+  const fetchCollabs = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await API.get("/business/proposals/market");
+      console.log("Response from /api/business/proposals/market:", res.data);
 
-        if (Array.isArray(res.data.proposals)) {
-          const collabs = res.data.proposals.map(item => {
-            const msg = item.message || {};
-            return {
-              _id: item._id,
-              businessId: item.fromBusinessId,
-              title: msg.title,
-              description: msg.description,
-              needs: msg.needs || [],
-              offers: msg.offers || [],
-              budget: msg.budget,
-              expiryDate: item.expiryDate || msg.expiryDate,
-              contactName: item.contactName,
-              phone: item.phone,
-              // הסרתי את הלוגו
-            };
-          });
-          setCollabMarket(collabs);
-        } else {
-          setError("שגיאה בטעינת שיתופי פעולה");
-        }
-      } catch (err) {
-        console.error(err);
+      if (Array.isArray(res.data.proposals)) {
+        const collabs = res.data.proposals.map((item) => {
+          const msg = item.message || {};
+          return {
+            _id: item._id,
+            businessId: item.fromBusinessId,
+            title: msg.title,
+            description: msg.description,
+            needs: msg.needs || [],
+            offers: msg.offers || [],
+            budget: msg.budget,
+            expiryDate: item.expiryDate || msg.expiryDate,
+            contactName: item.contactName,
+            phone: item.phone,
+          };
+        });
+        setCollabMarket(collabs);
+      } else {
         setError("שגיאה בטעינת שיתופי פעולה");
-      } finally {
-        setLoading(false);
       }
+    } catch (err) {
+      console.error(err);
+      setError("שגיאה בטעינת שיתופי פעולה");
+    } finally {
+      setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
     fetchCollabs();
-  }, [refreshFlag]);
+  }, [fetchCollabs, refreshFlag]);
+
+  const handleViewProfile = useCallback(
+    (businessId) => {
+      if (businessId) {
+        navigate(`/business-profile/${businessId}`);
+      }
+    },
+    [navigate]
+  );
 
   return (
     <div className="collab-market-container">
-      <CreateCollabForm onSuccess={() => setRefreshFlag(f => !f)} />
+      <CreateCollabForm onSuccess={() => setRefreshFlag((f) => !f)} />
 
       <h3 className="collab-title">📣 מרקט שיתופים</h3>
 
@@ -214,27 +253,35 @@ export default function CollabMarketTab({ isDevUser }) {
       {!loading && collabMarket.length === 0 && <div>אין שיתופי פעולה להצגה</div>}
 
       <div className="partners-grid">
-        {collabMarket.map(item => (
+        {collabMarket.map((item) => (
           <div key={item._id} className="collab-card">
             <div className="collab-card-inner">
               <div className="collab-card-content">
                 <h3 className="business-name">{item.contactName}</h3>
                 <p className="business-category">{item.title}</p>
                 <p className="business-desc">{item.description}</p>
-                <p><strong>מה העסק צריך:</strong> {item.needs.join(", ")}</p>
-                <p><strong>מה העסק נותן:</strong> {item.offers.join(", ")}</p>
-                <p><strong>תקציב:</strong> ₪{item.budget}</p>
-                <p><strong>תוקף עד:</strong> {new Date(item.expiryDate).toLocaleDateString()}</p>
+                <p>
+                  <strong>מה העסק צריך:</strong> {item.needs.join(", ")}
+                </p>
+                <p>
+                  <strong>מה העסק נותן:</strong> {item.offers.join(", ")}
+                </p>
+                <p>
+                  <strong>תקציב:</strong> ₪{item.budget}
+                </p>
+                <p>
+                  <strong>תוקף עד:</strong>{" "}
+                  {item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : "-"}
+                </p>
                 <div className="collab-card-buttons">
                   <button
                     className="message-box-button secondary"
-                    onClick={() => navigate(`/business-profile/${item.businessId}`)}
+                    onClick={() => handleViewProfile(item.businessId)}
                   >
                     צפייה בפרופיל
                   </button>
                 </div>
               </div>
-
               {/* הלוגו הוסר לפי בקשה */}
             </div>
           </div>

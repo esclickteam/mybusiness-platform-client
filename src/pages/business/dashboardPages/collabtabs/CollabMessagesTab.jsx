@@ -1,14 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import API from "../../../../api";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
 
+const buttonStyleBase = {
+  border: "none",
+  padding: "8px 16px",
+  borderRadius: 8,
+  cursor: "pointer",
+  fontWeight: "bold",
+};
+
+const buttonStylePurple = {
+  ...buttonStyleBase,
+  backgroundColor: "#6b46c1",
+  color: "white",
+  marginTop: 12,
+};
+
+const buttonStylePink = {
+  ...buttonStyleBase,
+  backgroundColor: "#d53f8c",
+  color: "white",
+};
+
+const filterButtonStyle = (active) => ({
+  padding: "8px 20px",
+  borderRadius: 8,
+  border: "none",
+  cursor: "pointer",
+  fontWeight: "bold",
+  backgroundColor: active ? "#6b46c1" : "#ccc",
+  color: active ? "white" : "black",
+});
+
 export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange, userBusinessId }) {
-  const [sentMessages, setSentMessages] = useState([]);
-  const [receivedMessages, setReceivedMessages] = useState([]);
+  const [messages, setMessages] = useState({ sent: [], received: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("sent"); // 'sent', 'received', 'accepted'
-
   const [selectedAgreement, setSelectedAgreement] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -19,8 +48,10 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
         API.get("/business/my/proposals/sent"),
         API.get("/business/my/proposals/received"),
       ]);
-      setSentMessages(sentRes.data.proposalsSent || []);
-      setReceivedMessages(receivedRes.data.proposalsReceived || []);
+      setMessages({
+        sent: sentRes.data.proposalsSent || [],
+        received: receivedRes.data.proposalsReceived || [],
+      });
       setError(null);
     } catch (err) {
       console.error("Error loading proposals:", err);
@@ -37,31 +68,41 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
   useEffect(() => {
     if (!socket) return;
 
-    const handleNewNotification = (notification) => {
-      console.log("New notification received:", notification);
-      fetchMessages();
+    let timeoutId = null;
+    const fetchWithDebounce = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(fetchMessages, 500);
     };
 
-    const handleNewProposal = (proposal) => {
-      console.log("New proposal received:", proposal);
-      fetchMessages();
-    };
-
-    socket.on("newNotification", handleNewNotification);
-    socket.on("newProposalCreated", handleNewProposal);
+    socket.on("newNotification", fetchWithDebounce);
+    socket.on("newProposalCreated", fetchWithDebounce);
 
     return () => {
-      socket.off("newNotification", handleNewNotification);
-      socket.off("newProposalCreated", handleNewProposal);
+      socket.off("newNotification", fetchWithDebounce);
+      socket.off("newProposalCreated", fetchWithDebounce);
+      if (timeoutId) clearTimeout(timeoutId);
     };
   }, [socket]);
+
+  const updateMessageStatus = (proposalId, status) => {
+    setMessages((prev) => ({
+      sent: prev.sent.map((p) =>
+        p.proposalId === proposalId || p._id === proposalId ? { ...p, status } : p
+      ),
+      received: prev.received.map((p) =>
+        p.proposalId === proposalId || p._id === proposalId ? { ...p, status } : p
+      ),
+    }));
+  };
 
   const handleCancelProposal = async (proposalId) => {
     if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
       await API.delete(`/business/my/proposals/${proposalId}`);
-      setSentMessages((prev) => prev.filter((p) => p.proposalId !== proposalId && p._id !== proposalId));
-      setReceivedMessages((prev) => prev.filter((p) => p.proposalId !== proposalId && p._id !== proposalId));
+      setMessages((prev) => ({
+        sent: prev.sent.filter((p) => p.proposalId !== proposalId && p._id !== proposalId),
+        received: prev.received.filter((p) => p.proposalId !== proposalId && p._id !== proposalId),
+      }));
       alert("ההצעה בוטלה בהצלחה");
       onStatusChange?.();
     } catch (err) {
@@ -73,12 +114,7 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
   const handleAccept = async (proposalId) => {
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
-      setSentMessages((prev) =>
-        prev.map((p) => (p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "accepted" } : p))
-      );
-      setReceivedMessages((prev) =>
-        prev.map((p) => (p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "accepted" } : p))
-      );
+      updateMessageStatus(proposalId, "accepted");
       alert("ההצעה אושרה בהצלחה");
       onStatusChange?.();
     } catch (err) {
@@ -90,12 +126,7 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
   const handleReject = async (proposalId) => {
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "rejected" });
-      setSentMessages((prev) =>
-        prev.map((p) => (p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "rejected" } : p))
-      );
-      setReceivedMessages((prev) =>
-        prev.map((p) => (p.proposalId === proposalId || p._id === proposalId ? { ...p, status: "rejected" } : p))
-      );
+      updateMessageStatus(proposalId, "rejected");
       alert("ההצעה נדחתה בהצלחה");
       onStatusChange?.();
     } catch (err) {
@@ -119,22 +150,13 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
     setSelectedAgreement(null);
   };
 
-  let messagesToShow = [];
-  if (filter === "sent") messagesToShow = sentMessages;
-  else if (filter === "received") messagesToShow = receivedMessages;
-  else if (filter === "accepted")
-    messagesToShow = [...sentMessages, ...receivedMessages].filter((m) => m.status === "accepted");
-
-  const buttonStylePurple = {
-    marginTop: 12,
-    backgroundColor: "#6b46c1",
-    color: "white",
-    padding: "8px 16px",
-    borderRadius: 8,
-    border: "none",
-    cursor: "pointer",
-    fontWeight: "bold",
-  };
+  const messagesToShow = useMemo(() => {
+    if (filter === "sent") return messages.sent;
+    if (filter === "received") return messages.received;
+    if (filter === "accepted")
+      return [...messages.sent, ...messages.received].filter((m) => m.status === "accepted");
+    return [];
+  }, [filter, messages]);
 
   if (loading) {
     return <div style={{ textAlign: "center", padding: 20 }}>🔄 טוען הצעות...</div>;
@@ -147,46 +169,13 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
   return (
     <div style={{ direction: "rtl", fontFamily: "Arial, sans-serif", maxWidth: 700, margin: "auto" }}>
       <div style={{ marginBottom: 20, display: "flex", gap: 12, justifyContent: "center" }}>
-        <button
-          onClick={() => setFilter("sent")}
-          style={{
-            padding: "8px 20px",
-            borderRadius: 8,
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-            backgroundColor: filter === "sent" ? "#6b46c1" : "#ccc",
-            color: filter === "sent" ? "white" : "black",
-          }}
-        >
+        <button onClick={() => setFilter("sent")} style={filterButtonStyle(filter === "sent")}>
           הצעות שנשלחו
         </button>
-        <button
-          onClick={() => setFilter("received")}
-          style={{
-            padding: "8px 20px",
-            borderRadius: 8,
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-            backgroundColor: filter === "received" ? "#6b46c1" : "#ccc",
-            color: filter === "received" ? "white" : "black",
-          }}
-        >
+        <button onClick={() => setFilter("received")} style={filterButtonStyle(filter === "received")}>
           הצעות שהתקבלו
         </button>
-        <button
-          onClick={() => setFilter("accepted")}
-          style={{
-            padding: "8px 20px",
-            borderRadius: 8,
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-            backgroundColor: filter === "accepted" ? "#6b46c1" : "#ccc",
-            color: filter === "accepted" ? "white" : "black",
-          }}
-        >
+        <button onClick={() => setFilter("accepted")} style={filterButtonStyle(filter === "accepted")}>
           הצעות שאושרו
         </button>
       </div>
@@ -205,15 +194,6 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
           const fromIdStr = String(msg.fromBusinessId?._id);
           const toIdStr = String(msg.toBusinessId?._id);
           const isUserParty = userIdStr === fromIdStr || userIdStr === toIdStr;
-
-          console.log("בדיקת IDs להצגה:", {
-            userBusinessId: userIdStr,
-            fromBusinessId: fromIdStr,
-            toBusinessId: toIdStr,
-            agreementId: msg.agreementId,
-            _id: msg._id,
-            isUserParty,
-          });
 
           return (
             <div
@@ -240,9 +220,7 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
               {msg.message && (
                 <>
                   {msg.message.title && (
-                    <p style={{ fontWeight: "bold", marginBottom: 4 }}>
-                      כותרת: {msg.message.title}
-                    </p>
+                    <p style={{ fontWeight: "bold", marginBottom: 4 }}>כותרת: {msg.message.title}</p>
                   )}
                   {msg.message.description && (
                     <p style={{ marginBottom: 4, whiteSpace: "pre-line" }}>
@@ -297,29 +275,13 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
                 {filter === "sent" ? (
                   <>
                     <button
-                      style={{
-                        backgroundColor: "#6b46c1",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
+                      style={buttonStylePurple}
                       onClick={() => alert("שלח שוב (טרם מיושם)")}
                     >
                       📨 שלח שוב
                     </button>
                     <button
-                      style={{
-                        backgroundColor: "#d53f8c",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
+                      style={buttonStylePink}
                       onClick={() => handleCancelProposal(msg.proposalId || msg._id)}
                     >
                       🗑️ ביטול
@@ -328,29 +290,13 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
                 ) : filter === "received" && msg.status === "pending" ? (
                   <>
                     <button
-                      style={{
-                        backgroundColor: "#6b46c1",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
+                      style={buttonStylePurple}
                       onClick={() => handleAccept(msg.proposalId || msg._id)}
                     >
                       ✅ אשר
                     </button>
                     <button
-                      style={{
-                        backgroundColor: "#d53f8c",
-                        color: "white",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
+                      style={buttonStylePink}
                       onClick={() => handleReject(msg.proposalId || msg._id)}
                     >
                       ❌ דחה
