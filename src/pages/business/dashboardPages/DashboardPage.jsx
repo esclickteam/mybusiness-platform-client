@@ -108,6 +108,18 @@ const MemoizedCalendarView = React.memo(CalendarView);
 const MemoizedDailyAgenda = React.memo(DailyAgenda);
 const MemoizedDashboardNav = React.memo(DashboardNav);
 
+export function preloadDashboardComponents() {
+  DashboardCards.preload();
+  BarChartComponent.preload();
+  RecentActivityTable.preload();
+  Insights.preload();
+  NextActions.preload();
+  WeeklySummary.preload();
+  CalendarView.preload();
+  DailyAgenda.preload();
+  DashboardNav.preload();
+}
+
 const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken } = useAuth();
   const businessId = getBusinessId();
@@ -268,7 +280,6 @@ const DashboardPage = () => {
             appointments_count: updatedAppointments.length,
           };
         });
-        // Force refresh for the selected date view if needed
         if (newAppointment.date) {
           const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
           if (apptDate === selectedDate) {
@@ -278,7 +289,7 @@ const DashboardPage = () => {
         }
       });
 
-      // Similar handling for other socket events ...
+      // Similar handling for other socket events...
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
