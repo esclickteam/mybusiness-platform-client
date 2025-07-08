@@ -37,7 +37,6 @@ function reducer(state, action) {
       return { ...state, unreadCount: action.payload };
     case "ADD_NOTIFICATION": {
       const newNotif = normalizeNotification(action.payload);
-      // אל תוסיף כפילויות
       const exists = state.notifications.some(
         (n) => n.id === newNotif.id || (n.threadId && n.threadId === newNotif.threadId)
       );
@@ -58,20 +57,7 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // 1) Fetch initial notifications
-  useEffect(() => {
-    if (!user?.businessId) return;
-    fetch("/api/business/my/notifications", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.ok) {
-          dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
-        }
-      })
-      .catch(console.error);
-  }, [user?.businessId]);
+  // *** הוסר fetch ראשוני ***
 
   // 2) Listen for unread-count bundles
   useEffect(() => {
