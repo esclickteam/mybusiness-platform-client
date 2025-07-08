@@ -18,7 +18,6 @@ import DashboardSkeleton from "../../../components/DashboardSkeleton";
 
 import { useQuery } from "@tanstack/react-query";
 
-
 const DashboardCards = lazyWithPreload(() =>
   import("../../../components/DashboardCards")
 );
@@ -131,25 +130,23 @@ const DashboardPage = () => {
   const chartsRef = useRef();
   const chartsVisible = useOnScreen(chartsRef);
 
-  // React Query לטעינת הנתונים
+  // React Query בגרסה 5+ עם אובייקט
   const {
     data: stats,
     error,
     isLoading,
     refetch,
-  } = useQuery(
-    ["dashboardStats", businessId],
-    () => fetchDashboardStats(businessId, refreshAccessToken),
-    {
-      enabled: initialized && !!businessId,
-      staleTime: 60 * 1000,
-      cacheTime: 5 * 60 * 1000,
-      onError: (err) => {
-        if (err.message === "No token") logout();
-        else setAlert("❌ שגיאה בטעינת נתונים מהשרת");
-      },
-    }
-  );
+  } = useQuery({
+    queryKey: ["dashboardStats", businessId || ""],
+    queryFn: () => fetchDashboardStats(businessId, refreshAccessToken),
+    enabled: initialized && !!businessId,
+    staleTime: 60 * 1000,
+    cacheTime: 5 * 60 * 1000,
+    onError: (err) => {
+      if (err.message === "No token") logout();
+      else setAlert("❌ שגיאה בטעינת נתונים מהשרת");
+    },
+  });
 
   // טעינה מוקדמת מתוזמנת של רכיבי הדשבורד
   useEffect(() => {
