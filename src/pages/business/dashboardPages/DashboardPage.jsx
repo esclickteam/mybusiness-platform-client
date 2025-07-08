@@ -98,6 +98,7 @@ const MemoizedDailyAgenda = React.memo(DailyAgenda);
 const MemoizedDashboardNav = React.memo(DashboardNav);
 
 const DashboardPage = () => {
+  // כל ה-hooks קרואים בראש הקומפוננטה
   const { user, initialized, logout, refreshAccessToken } = useAuth();
   const businessId = getBusinessId();
   const socketRef = useRef(null);
@@ -112,7 +113,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // שמירת refs יציבים עם useRef
+  // refs יציבים
   const cardsRef = useRef(null);
   const insightsRef = useRef(null);
   const chartsRef = useRef(null);
@@ -132,12 +133,8 @@ const DashboardPage = () => {
   }, []);
 
   const handleApproveRecommendation = useCallback((recommendationId) => {
-    if (!socketRef.current) {
-      alert("Socket לא מחובר, נסה שוב מאוחר יותר");
-      return;
-    }
-    if (socketRef.current.disconnected) {
-      alert("Socket מנותק, נסה שוב מאוחר יותר");
+    if (!socketRef.current || socketRef.current.disconnected) {
+      alert("Socket לא מחובר או מנותק, נסה שוב מאוחר יותר");
       return;
     }
     safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
@@ -334,6 +331,7 @@ const DashboardPage = () => {
     }
   }, [location.pathname, location.state]);
 
+  // return מוקדם רק אחרי כל ה-hooks
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
@@ -342,7 +340,6 @@ const DashboardPage = () => {
 
   const effectiveStats = stats || {};
 
-  // useMemo לחישוב appointments עם העשרה, רק כש- stats משתנה
   const enrichedAppointments = useMemo(
     () => (effectiveStats.appointments || []).map((appt) => enrichAppointment(appt, effectiveStats)),
     [effectiveStats]
