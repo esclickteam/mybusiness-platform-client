@@ -12,7 +12,8 @@ export default function MessagesPage() {
     async function fetchConversations() {
       try {
         setLoading(true);
-        const res = await API.get("/user-conversations", { withCredentials: true });
+        const res = await API.get("/messages/user-conversations", { withCredentials: true });
+
         // מניח שהשרת מחזיר: { conversations: [...] }
         setConversations(res.data.conversations || []);
       } catch (error) {
