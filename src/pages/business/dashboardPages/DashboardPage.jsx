@@ -98,19 +98,28 @@ const MemoizedDailyAgenda = React.memo(DailyAgenda);
 const MemoizedDashboardNav = React.memo(DashboardNav);
 
 const DashboardPage = () => {
+  // כל קריאות ה-hooks למעלה לפני כל return מוקדם
   const { user, initialized, logout, refreshAccessToken } = useAuth();
   const businessId = getBusinessId();
   const socketRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [selectedDate, setSelectedDate] = useState(today);
   const [alert, setAlert] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // refs עם useRef
+  const cardsRef = useRef(null);
+  const insightsRef = useRef(null);
+  const chartsRef = useRef(null);
+  const appointmentsRef = useRef(null);
+  const nextActionsRef = useRef(null);
+  const weeklySummaryRef = useRef(null);
 
   const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
@@ -326,6 +335,7 @@ const DashboardPage = () => {
     }
   }, [location.pathname]);
 
+  // early returns לאחר קריאות ה-hooks למעלה
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
@@ -351,14 +361,6 @@ const DashboardPage = () => {
     ...effectiveStats,
     messages_count: effectiveStats.messages_count || 0,
   };
-
-  // השינוי החשוב פה - שימוש ב useRef במקום createRef
-  const cardsRef = useRef();
-  const insightsRef = useRef();
-  const chartsRef = useRef();
-  const appointmentsRef = useRef();
-  const nextActionsRef = useRef();
-  const weeklySummaryRef = useRef();
 
   return (
     <div className="dashboard-container">
