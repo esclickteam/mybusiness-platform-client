@@ -1,9 +1,11 @@
-// src/hooks/useFavorites.js
-import { useState, useEffect } from "react";
-import API from "../api";
-import { useAuth } from "../context/AuthContext";
+// src/pages/client/FavoritesPage.jsx
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "../../api";
+import { useAuth } from "../../context/AuthContext";
 
-export function useFavorites() {
+// Hook מובנה בתוך הקובץ
+function useFavorites() {
   const { user, setUser } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,12 +59,6 @@ export function useFavorites() {
 
   return { favorites, loading, error };
 }
-
-
-// src/pages/client/FavoritesPage.jsx
-import React from "react";
-import { useFavorites } from "../../hooks/useFavorites";
-import { useNavigate } from "react-router-dom";
 
 export default function FavoritesPage() {
   const { favorites, loading, error } = useFavorites();
