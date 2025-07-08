@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../../api"; // הנח שיש לך API מוגדר
+import API from "../../api"; 
 
 export default function MessagesPage() {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchConversations() {
       try {
-        // שים לב שהנתיב הוא '/api/conversations' בשרת - לכן כאן צריך להיות '/conversations'
-        const res = await API.get("/conversations", { withCredentials: true });
-        setConversations(res.data);
+        setLoading(true);
+        const res = await API.get("/user-conversations", { withCredentials: true });
+        // מניח שהשרת מחזיר: { conversations: [...] }
+        setConversations(res.data.conversations || []);
       } catch (error) {
         console.error("Failed to fetch conversations:", error);
+        setError("שגיאה בטעינת השיחות, נסה שוב מאוחר יותר");
       } finally {
         setLoading(false);
       }
@@ -23,6 +26,7 @@ export default function MessagesPage() {
   }, []);
 
   if (loading) return <div>טוען שיחות...</div>;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
   if (conversations.length === 0) return <div>אין לך הודעות.</div>;
 
   return (
@@ -33,7 +37,7 @@ export default function MessagesPage() {
           <li
             key={conv.conversationId}
             onClick={() =>
-              navigate(`/business/${conv.participants.find(p => p !== conv.businessId)}/messages/${conv.conversationId}`)
+              navigate(`/business/${conv.businessId}/messages/${conv.conversationId}`)
             }
             style={{
               cursor: "pointer",
@@ -42,12 +46,26 @@ export default function MessagesPage() {
               marginBottom: "8px",
               borderRadius: "6px",
               backgroundColor: "#f9f9f9",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px"
             }}
             title={`לחץ כדי לפתוח את הצ'אט עם ${conv.businessName || "העסק"}`}
           >
-            <strong>{conv.businessName || "עסק"}</strong>
-            <p style={{ margin: "4px 0" }}>{conv.lastMessage?.text || "אין הודעות"}</p>
-            <small>{new Date(conv.updatedAt).toLocaleString()}</small>
+            {conv.businessLogo && (
+              <img
+                src={conv.businessLogo}
+                alt={`${conv.businessName} לוגו`}
+                style={{ width: 40, height: 40, borderRadius: 6 }}
+              />
+            )}
+            <div>
+              <strong>{conv.businessName || "עסק"}</strong>
+              <p style={{ margin: "4px 0" }}>
+                {conv.lastMessage?.text || "אין הודעות"}
+              </p>
+              <small>{new Date(conv.lastMessageDate || conv.updatedAt).toLocaleString()}</small>
+            </div>
           </li>
         ))}
       </ul>
