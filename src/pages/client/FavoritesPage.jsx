@@ -1,4 +1,3 @@
-// src/pages/client/FavoritesPage.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../api";
@@ -42,12 +41,31 @@ function useFavorites() {
     };
   }, [user]);
 
-  return { favorites, loading, error };
+  return { favorites, setFavorites, loading, error };
 }
 
 export default function FavoritesPage() {
-  const { favorites, loading, error } = useFavorites();
+  const { favorites, setFavorites, loading, error } = useFavorites();
   const navigate = useNavigate();
+  const { setUser, user } = useAuth();
+  const [removingId, setRemovingId] = useState(null);
+
+  const handleRemoveFavorite = async (businessId) => {
+    if (removingId) return; // מונע לחיצות כפולות
+    setRemovingId(businessId);
+    try {
+      await API.delete(`/users/favorites/${businessId}`, { withCredentials: true });
+      // רענון מועדפים אחרי הסרה
+      const updatedUser = await API.get("/auth/me", { withCredentials: true });
+      setUser(updatedUser.data);
+      // עדכון רשימת המועדפים מקומית
+      setFavorites((prev) => prev.filter((biz) => biz._id !== businessId));
+    } catch (err) {
+      alert("שגיאה בהסרת המועדף, נסה שוב");
+    } finally {
+      setRemovingId(null);
+    }
+  };
 
   if (loading) return <div>טוען מועדפים...</div>;
   if (error)
@@ -68,9 +86,7 @@ export default function FavoritesPage() {
         {favorites.map((biz) => (
           <li
             key={biz._id}
-            onClick={() => navigate(`/business/${biz._id}`)}
             style={{
-              cursor: "pointer",
               padding: "10px",
               borderBottom: "1px solid #ccc",
               marginBottom: "8px",
@@ -78,20 +94,43 @@ export default function FavoritesPage() {
               backgroundColor: "#f9f9f9",
               display: "flex",
               alignItems: "center",
+              justifyContent: "space-between",
+              cursor: "default",
             }}
             title={`לחץ לפרופיל העסק ${biz.businessName}`}
           >
-            {biz.logo && (
-              <img
-                src={biz.logo}
-                alt={`${biz.businessName} logo`}
-                style={{ width: 40, height: 40, marginRight: 10 }}
-              />
-            )}
-            <div>
-              <strong>{biz.businessName}</strong>
-              <p>{biz.description?.slice(0, 100) || "אין תיאור"}</p>
+            <div
+              style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+              onClick={() => navigate(`/business/${biz._id}`)}
+            >
+              {biz.logo && (
+                <img
+                  src={biz.logo}
+                  alt={`${biz.businessName} logo`}
+                  style={{ width: 40, height: 40, marginRight: 10 }}
+                />
+              )}
+              <div>
+                <strong>{biz.businessName}</strong>
+                <p>{biz.description?.slice(0, 100) || "אין תיאור"}</p>
+              </div>
             </div>
+            <button
+              onClick={() => handleRemoveFavorite(biz._id)}
+              disabled={removingId === biz._id}
+              style={{
+                backgroundColor: "#ff4d4d",
+                border: "none",
+                color: "white",
+                padding: "6px 12px",
+                borderRadius: "6px",
+                cursor: "pointer",
+                marginLeft: "10px",
+              }}
+              aria-label={`הסר את ${biz.businessName} מהמועדפים`}
+            >
+              {removingId === biz._id ? "מוסר..." : "הסר"}
+            </button>
           </li>
         ))}
       </ul>
