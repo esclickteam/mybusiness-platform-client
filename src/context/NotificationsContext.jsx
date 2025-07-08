@@ -57,31 +57,32 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // 1) Fetch unread/pending notifications when business connects or user changes
-  useEffect(() => {
-    if (!user?.businessId) return;
-
-    async function fetchNotifications() {
-      try {
-        const res = await fetch("/api/business/my/notifications", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        if (!res.ok) throw new Error("Failed to fetch notifications");
-        const data = await res.json();
-        if (data.ok && data.notifications) {
-          dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
-        }
-      } catch (err) {
-        console.error("Failed to fetch notifications:", err);
+  // ✅ פונקציית שליפה ידנית – נגיש גם מבחוץ
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await fetch("/api/business/my/notifications", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch notifications");
+      const data = await res.json();
+      if (data.ok && data.notifications) {
+        dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
       }
+    } catch (err) {
+      console.error("Failed to fetch notifications:", err);
     }
+  }, []);
 
-    fetchNotifications();
-  }, [user?.businessId]);
+  // 1) שליפה אוטומטית עם שינוי user
+  useEffect(() => {
+    if (user?.businessId) {
+      fetchNotifications();
+    }
+  }, [user?.businessId, fetchNotifications]);
 
-  // 2) Listen for unread-count bundles
+  // 2) האזנה לספירת הודעות לא נקראו (bundle)
   useEffect(() => {
     if (!socket || !user?.businessId) return;
     const join = () => socket.emit("joinBusinessRoom", user.businessId);
@@ -99,7 +100,7 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId]);
 
-  // 3) Listen for new notifications in real time
+  // 3) האזנה להתראה חדשה
   useEffect(() => {
     if (!socket || !user?.businessId) return;
     const onNew = (notif) => {
@@ -111,7 +112,7 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId]);
 
-  // 4) Mark single as read
+  // 4) סימון הודעה כנקראה
   const markAsRead = useCallback(
     async (id) => {
       try {
@@ -129,7 +130,7 @@ export function NotificationsProvider({ children }) {
     [state.unreadCount]
   );
 
-  // 5) Clear all notifications
+  // 5) ניקוי כל ההתראות
   const clearRead = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications/clearRead", {
@@ -156,6 +157,7 @@ export function NotificationsProvider({ children }) {
         unreadCount: state.unreadCount,
         markAsRead,
         clearRead,
+        fetchNotifications, // ✅ נגיש לצרכנים חיצוניים
       }}
     >
       {children}

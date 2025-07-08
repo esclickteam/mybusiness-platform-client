@@ -1,5 +1,6 @@
 import React, { useState, lazy, Suspense, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useNotifications } from "../context/NotificationsContext";
 import { lazyWithPreload } from "../utils/lazyWithPreload";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
@@ -19,6 +20,7 @@ export function LoginSkeleton() {
 
 export default function Login() {
   const { login, error: authError } = useAuth();
+  const { fetchNotifications } = useNotifications();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,13 +53,10 @@ export default function Login() {
       const cleanEmail = email.trim().toLowerCase();
       const { user: loggedInUser, redirectUrl } = await login(cleanEmail, password);
 
-      console.log("loggedInUser:", loggedInUser);
       const hasPaid =
         loggedInUser?.hasPaid === true ||
         loggedInUser?.hasPaid === "true" ||
         loggedInUser?.hasPaid === 1;
-
-      console.log("hasPaid value and type:", loggedInUser?.hasPaid, typeof loggedInUser?.hasPaid);
 
       if (redirectUrl) {
         navigate(redirectUrl, { replace: true });
@@ -68,6 +67,14 @@ export default function Login() {
       } else {
         navigate("/client/dashboard", { replace: true });
       }
+
+      // ✅ שליפת התראות לאחר התחברות – דחייה של שנייה
+      setTimeout(() => {
+        if (typeof fetchNotifications === "function") {
+          fetchNotifications();
+        }
+      }, 1000);
+
     } catch (err) {
       setLoginError(authError || err?.message || "אימייל או סיסמה שגויים");
     } finally {
