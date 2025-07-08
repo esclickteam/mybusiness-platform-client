@@ -49,7 +49,10 @@ export function AuthProvider({ children }) {
   const [socket, setSocket] = useState(null);
 
   const [token, setToken] = useState(() => localStorage.getItem("token") || null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("businessDetails");
+    return saved ? JSON.parse(saved) : null;
+  });
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
@@ -88,7 +91,7 @@ export function AuthProvider({ children }) {
 
     try {
       const {
-        data: { accessToken, redirectUrl },
+        data: { accessToken, user: loggedInUser, redirectUrl },
       } = await API.post(
         "/auth/login",
         { email: email.trim().toLowerCase(), password },
@@ -100,6 +103,11 @@ export function AuthProvider({ children }) {
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
+
+      if (loggedInUser) {
+        setUser(loggedInUser);
+        localStorage.setItem("businessDetails", JSON.stringify(loggedInUser));
+      }
 
       if (!skipRedirect) sessionStorage.setItem("postLoginRedirect", redirectUrl || "");
 
@@ -184,11 +192,13 @@ export function AuthProvider({ children }) {
 
     (async () => {
       try {
-        const { data } = await API.get("/auth/me", { withCredentials: true });
-        setUser(data);
-        localStorage.setItem("businessDetails", JSON.stringify(data));
+        if (!user) {
+          const { data } = await API.get("/auth/me", { withCredentials: true });
+          setUser(data);
+          localStorage.setItem("businessDetails", JSON.stringify(data));
+        }
 
-        const s = await createSocket(singleFlightRefresh, logout, data.businessId);
+        const s = await createSocket(singleFlightRefresh, logout, user?.businessId);
         socketRef.current = s;
         setSocket(s);
 
@@ -231,7 +241,7 @@ export function AuthProvider({ children }) {
     refreshAccessToken: singleFlightRefresh,
     socket,
     setUser,
-    staffLogin,  // פונקציית staffLogin זמינה בקונטקסט
+    staffLogin,
   };
 
   return (
