@@ -7,7 +7,7 @@ export default function FavoritesPage() {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user, setUser } = useAuth();
+  const { user, setUser } = useAuth(); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,36 +16,40 @@ export default function FavoritesPage() {
       setLoading(true);
       setError(null);
 
-      const hasLocalUser = !!user?._id;
-      console.log("👤 hasLocalUser:", hasLocalUser, "user:", user);
+      // משתמש מקומי מאומת אם יש user.userId
+      let gotUser = !!user?.userId;
+      console.log("👤 gotUser:", gotUser, "user:", user);
 
       let res;
       try {
-        if (hasLocalUser) {
-          console.log("🚀 Sending request with Bearer token");
+        if (gotUser) {
+          console.log("🚀 שולח /auth/me עם טוקן");
           res = await API.get("/auth/me", {
             headers: { Authorization: `Bearer ${user.token}` },
             withCredentials: true,
           });
         } else {
-          console.log("🌐 No local token, trying cookie-based auth");
+          console.log("🌐 אין טוקן במרחב, מנסה auth דרך cookie");
           res = await API.get("/auth/me", { withCredentials: true });
-
-          if (res.data?._id) {
-            console.log("✅ Cookie auth succeeded, setting user in context:", res.data);
+          // השרת מחזיר userId (ולא _id)
+          if (res.data?.userId) {
+            console.log("✅ Cookie auth הצליח, setUser:", res.data);
             setUser(res.data);
+            gotUser = true;
           }
         }
 
         console.log("📥 /auth/me response data:", res.data);
-        if (res.data?.favorites) {
-          console.log("⭐ Favorites loaded:", res.data.favorites);
+
+        // נניח שה-favorites מוחזרים עכשיו במפתח favorites
+        if (gotUser && Array.isArray(res.data.favorites)) {
+          console.log("⭐ Loaded favorites:", res.data.favorites);
           setFavorites(res.data.favorites);
-        } else if (!hasLocalUser) {
-          console.warn("⚠️ User not authenticated, throwing login error");
+        } else if (!gotUser) {
+          console.warn("⚠️ לא מזוהה, זורק שגיאת התחברות");
           throw new Error("אנא התחבר כדי לראות את המועדפים שלך.");
         } else {
-          console.log("ℹ️ No favorites found");
+          console.log("ℹ️ אין מועדפים להציג");
           setFavorites([]);
         }
       } catch (err) {
@@ -61,8 +65,15 @@ export default function FavoritesPage() {
   }, [user, setUser]);
 
   if (loading) return <div>טוען מועדפים...</div>;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
-  if (favorites.length === 0) return <div>אין לך עסקים במועדפים כרגע.</div>;
+  if (error)
+    return (
+      <div style={{ color: "red" }}>
+        {error}
+        <br />
+        <button onClick={() => window.location.reload()}>נסה שוב</button>
+      </div>
+    );
+  if (!favorites.length) return <div>אין לך עסקים במועדפים כרגע.</div>;
 
   return (
     <div style={{ padding: 20 }}>
@@ -72,7 +83,7 @@ export default function FavoritesPage() {
           <li
             key={biz._id}
             onClick={() => {
-              console.log("➡️ Navigating to business:", biz._id);
+              console.log("➡️ navigating to business:", biz._id);
               navigate(`/business/${biz._id}`);
             }}
             style={{
