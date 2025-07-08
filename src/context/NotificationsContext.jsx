@@ -57,7 +57,29 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // *** הוסר fetch ראשוני ***
+  // 1) Fetch unread/pending notifications when business connects or user changes
+  useEffect(() => {
+    if (!user?.businessId) return;
+
+    async function fetchNotifications() {
+      try {
+        const res = await fetch("/api/business/my/notifications", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (!res.ok) throw new Error("Failed to fetch notifications");
+        const data = await res.json();
+        if (data.ok && data.notifications) {
+          dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
+        }
+      } catch (err) {
+        console.error("Failed to fetch notifications:", err);
+      }
+    }
+
+    fetchNotifications();
+  }, [user?.businessId]);
 
   // 2) Listen for unread-count bundles
   useEffect(() => {
