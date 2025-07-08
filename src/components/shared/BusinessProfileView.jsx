@@ -41,7 +41,6 @@ function StarDisplay({ rating }) {
   return <>{stars}</>;
 }
 
-// Hook IntersectionObserver
 function useOnScreen(ref) {
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
@@ -63,12 +62,14 @@ export default function BusinessProfileView() {
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
 
+  const messagesTabName = user?.role === "customer" ? "הודעות עם העסק" : "הודעות מלקוחות";
+
   const TABS = [
     "ראשי",
     "גלריה",
     "ביקורות",
     "שאלות תשובות",
-    user?.role === "customer" ? "הודעות עם העסק" : "הודעות מלקוחות",
+    messagesTabName,
     "יומן",
   ];
 
@@ -323,7 +324,7 @@ export default function BusinessProfileView() {
             ))}
           </div>
 
-          <div className="tab-content" role="tabpanel">
+          <div className="tab-content" role="tabpanel" dir="rtl">
             {/* ראשי */}
             {currentTab === "ראשי" && (
               <>
@@ -544,9 +545,9 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* הודעות מלקוחות */}
-            {currentTab === "הודעות מלקוחות" && (
-              <div style={{ textAlign: "center", margin: "36px 0" }} dir="rtl">
+            {/* הודעות מלקוחות / הודעות עם העסק */}
+            {currentTab === messagesTabName && (
+              <div style={{ textAlign: "center", margin: "36px 0" }}>
                 {user?.role === "customer" && (
                   <Link to={`/business/${bizId}/messages`} className="chat-link-btn">
                     💬 שלח הודעה לעסק
