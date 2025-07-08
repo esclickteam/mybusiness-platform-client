@@ -1,29 +1,63 @@
-import React, { useState, useRef, useEffect, Suspense, lazy } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  Suspense,
+  lazy,
+  useCallback,
+  useMemo,
+} from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
 import "./Build.css";
-import { dedupeByPreview } from "../../../../utils/dedupe";
 
 import { useAuth } from "../../../../context/AuthContext";
 
-const MainSection    = lazy(() => import("../buildTabs/buildSections/MainSection"));
-const GallerySection = lazy(() => import("../buildTabs/buildSections/GallerySection"));
-const ReviewsSection = lazy(() => import("../buildTabs/buildSections/ReviewsSection"));
-const ShopSection    = lazy(() => import("../buildTabs/buildSections/ShopSection"));
-const ChatSection    = lazy(() => import("../buildTabs/buildSections/ChatSection"));
-const FaqSection     = lazy(() => import("../buildTabs/buildSections/FaqSection"));
+const MainSection = lazy(() =>
+  import("../buildTabs/buildSections/MainSection")
+);
+const GallerySection = lazy(() =>
+  import("../buildTabs/buildSections/GallerySection")
+);
+const ReviewsSection = lazy(() =>
+  import("../buildTabs/buildSections/ReviewsSection")
+);
+const ShopSection = lazy(() => import("../buildTabs/buildSections/ShopSection"));
+const ChatSection = lazy(() => import("../buildTabs/buildSections/ChatSection"));
+const FaqSection = lazy(() => import("../buildTabs/buildSections/FaqSection"));
 
 const TABS = [
   "ראשי",
   "גלריה",
   "ביקורות",
-  " יומן",
+  "יומן",
   "צ'אט עם העסק",
   "שאלות ותשובות",
 ];
 
-// המקסימום המותרים בגלריה
+// מקסימום תמונות בגלריה
 const GALLERY_MAX = 5;
+
+// Hook לשימוש ב-Intersection Observer לטעינה עצלה
+function useOnScreen(ref, threshold = 0.1) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold }
+    );
+    observer.observe(ref.current);
+    return () => {
+      observer.disconnect();
+    };
+  }, [ref, threshold]);
+
+  return isVisible;
+}
 
 export default function Build() {
   const { user: currentUser } = useAuth();
@@ -31,20 +65,20 @@ export default function Build() {
 
   const [currentTab, setCurrentTab] = useState("ראשי");
   const [businessDetails, setBusinessDetails] = useState({
-    businessName:    "",
-    description:     "",
-    phone:           "",
-    email:           "",       
-    category:        "",
-    address:         { city: "" },
-    logo:            null,
-    gallery:         [],
+    businessName: "",
+    description: "",
+    phone: "",
+    email: "",
+    category: "",
+    address: { city: "" },
+    logo: null,
+    gallery: [],
     galleryImageIds: [],
-    mainImages:      [],
-    mainImageIds:    [],
-    reviews:         [],
-    faqs:            [],
-    workHours:       {},
+    mainImages: [],
+    mainImageIds: [],
+    reviews: [],
+    faqs: [],
+    workHours: {},
   });
 
   const [workHours, setWorkHours] = useState({});
@@ -53,265 +87,235 @@ export default function Build() {
   const [editIndex, setEditIndex] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  // Autosave setup
-  const [firstLoad, setFirstLoad] = useState(true);
-  const saveTimeout = useRef(null);
+  // מצב טעינת טאבים (למנוע טעינה חוזרת מיותרת)
+  const [galleryLoaded, setGalleryLoaded] = useState(false);
+  const [reviewsLoaded, setReviewsLoaded] = useState(false);
+  const [shopLoaded, setShopLoaded] = useState(false);
 
-  const logoInputRef       = useRef();
+  // רפרנסים ל־inputים
+  const logoInputRef = useRef();
   const mainImagesInputRef = useRef();
-  const galleryInputRef    = useRef();
-  const pendingUploadsRef  = useRef([]);
+  const galleryInputRef = useRef();
 
-  // הוספת סטייט עבור shopMode
-  const [shopMode, setShopMode] = useState(null);
+  // לחצן לוגו
+  const handleLogoClick = useCallback(() => {
+    logoInputRef.current?.click();
+  }, []);
 
-   const setGalleryOrder = (newOrder) => {
-    setBusinessDetails(prev => ({
-      ...prev,
-      gallery: newOrder.map(item => item.preview),
-      galleryImageIds: newOrder.map(item => item.publicId),
-    }));
-  };
-
-
-  function extractPublicIdFromUrl(url) {
+  // חילוץ publicId מכתובת URL
+  const extractPublicIdFromUrl = useCallback((url) => {
     const filename = url.split("/").pop().split("?")[0];
     return filename.substring(0, filename.lastIndexOf("."));
-  }
+  }, []);
 
-  const track = p => {
-    pendingUploadsRef.current.push(p);
-    p.finally(() => {
-      pendingUploadsRef.current = pendingUploadsRef.current.filter(x => x !== p);
-    });
-    return p;
-  };
-
-  // טעינת הנתונים הראשונית
+  // טעינת נתונים ראשונית
   useEffect(() => {
-    // Load business details
     API.get("/business/my")
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           const data = res.data.business || res.data;
           const rawAddress = data.address;
-          const city = typeof rawAddress === "string"
-            ? rawAddress
-            : rawAddress?.city || "";
+          const city =
+            typeof rawAddress === "string"
+              ? rawAddress
+              : rawAddress?.city || "";
 
-          const urls        = data.mainImages     || [];
-          const galleryUrls = data.gallery        || [];
-          const mainIds = Array.isArray(data.mainImageIds) && data.mainImageIds.length === urls.length
-            ? data.mainImageIds
-            : urls.map(extractPublicIdFromUrl);
-          const galleryIds = Array.isArray(data.galleryImageIds) && data.galleryImageIds.length === galleryUrls.length
-            ? data.galleryImageIds
-            : galleryUrls.map(extractPublicIdFromUrl);
+          const urls = data.mainImages || [];
+          const galleryUrls = data.gallery || [];
+          const mainIds =
+            Array.isArray(data.mainImageIds) &&
+            data.mainImageIds.length === urls.length
+              ? data.mainImageIds
+              : urls.map(extractPublicIdFromUrl);
+          const galleryIds =
+            Array.isArray(data.galleryImageIds) &&
+            data.galleryImageIds.length === galleryUrls.length
+              ? data.galleryImageIds
+              : galleryUrls.map(extractPublicIdFromUrl);
 
           const logoObj = data.logo
             ? { preview: data.logo, publicId: data.logoId }
             : null;
 
-          setBusinessDetails(prev => ({
+          setBusinessDetails((prev) => ({
             ...prev,
-            businessName:    data.businessName    || "",
-            description:     data.description     || "",
-            phone:           data.phone           || "",
-            email:           data.email           || "",
-            category:        data.category        || "",
-            address:         { city },
-            logo:            logoObj,
-            logoId:          data.logoId          || null,
-            gallery:         galleryUrls,
+            businessName: data.businessName || "",
+            description: data.description || "",
+            phone: data.phone || "",
+            email: data.email || "",
+            category: data.category || "",
+            address: { city },
+            logo: logoObj,
+            logoId: data.logoId || null,
+            gallery: galleryUrls,
             galleryImageIds: galleryIds,
-            mainImages:      urls,
-            mainImageIds:    mainIds,
-            faqs:            data.faqs            || [],
-            reviews:         data.reviews         || [],
-            workHours:       data.workHours       || {}
+            mainImages: urls,
+            mainImageIds: mainIds,
+            faqs: data.faqs || [],
+            reviews: data.reviews || [],
+            workHours: data.workHours || {},
           }));
         }
       })
-      .catch(console.error)
-      .finally(() => setFirstLoad(false));
+      .catch(console.error);
 
-    // Load work hours correctly - לא לעשות reduce!
-    API.get('/appointments/get-work-hours', {
-      params: { businessId: currentUser?.businessId || "" }
+    // טעינת שעות עבודה
+    API.get("/appointments/get-work-hours", {
+      params: { businessId: currentUser?.businessId || "" },
     })
-    .then(res => {
-      let map = {};
-      // אם המידע הגיע כמערך
-      if (Array.isArray(res.data.workHours)) {
-        res.data.workHours.forEach(item => {
-          map[Number(item.day)] = item;
-        });
-      }
-      // אם המידע הגיע כאובייקט (ולא מערך)
-      else if (
-        res.data.workHours &&
-        typeof res.data.workHours === "object" &&
-        !Array.isArray(res.data.workHours)
-      ) {
-        map = res.data.workHours;
-      }
-      // fallback: אולי כל התשובה היא מערך (נדיר אבל אפשרי)
-      else if (Array.isArray(res.data)) {
-        res.data.forEach(item => {
-          map[Number(item.day)] = item;
-        });
-      }
-      // אחרת (שום דבר תקין): משאירים map ריק
+      .then((res) => {
+        let map = {};
+        if (Array.isArray(res.data.workHours)) {
+          res.data.workHours.forEach((item) => {
+            map[Number(item.day)] = item;
+          });
+        } else if (
+          res.data.workHours &&
+          typeof res.data.workHours === "object" &&
+          !Array.isArray(res.data.workHours)
+        ) {
+          map = res.data.workHours;
+        } else if (Array.isArray(res.data)) {
+          res.data.forEach((item) => {
+            map[Number(item.day)] = item;
+          });
+        }
+        setWorkHours(map);
+        setBusinessDetails((prev) => ({ ...prev, workHours: map }));
+      })
+      .catch((err) => console.warn("Error loading work-hours:", err));
+  }, [currentUser?.businessId, extractPublicIdFromUrl]);
 
-      setWorkHours(map);
-      setBusinessDetails(prev => ({ ...prev, workHours: map }));
-    })
-    .catch(err => console.warn('Error loading work-hours:', err));
-  }, []);
+  // Autosave עם debounce
+  const saveTimeout = useRef(null);
+  const firstLoad = useRef(true);
 
-
-  // Autosave business details debounce
   useEffect(() => {
-    if (firstLoad) return;
+    if (firstLoad.current) {
+      firstLoad.current = false;
+      return;
+    }
     clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(async () => {
       setIsSaving(true);
       try {
         const payload = {
           businessName: businessDetails.businessName,
-          category:     businessDetails.category,
-          description:  businessDetails.description,
-          phone:        businessDetails.phone,
-          email:        businessDetails.email,
-          address:      { city: businessDetails.address.city },
+          category: businessDetails.category,
+          description: businessDetails.description,
+          phone: businessDetails.phone,
+          email: businessDetails.email,
+          address: { city: businessDetails.address.city },
         };
-        const res = await API.patch('/business/my', payload);
+        const res = await API.patch("/business/my", payload);
         if (res.status === 200) {
-          setBusinessDetails(prev => ({
+          setBusinessDetails((prev) => ({
             ...prev,
             ...res.data,
             logo: prev.logo,
-            logoId: prev.logoId
+            logoId: prev.logoId,
           }));
         }
       } catch (err) {
-        console.error('Autosave failed:', err);
+        console.error("Autosave failed:", err);
       } finally {
         setIsSaving(false);
       }
     }, 1000);
 
     return () => clearTimeout(saveTimeout.current);
-  }, [firstLoad,
+  }, [
     businessDetails.businessName,
     businessDetails.category,
     businessDetails.description,
     businessDetails.phone,
     businessDetails.email,
-    businessDetails.address.city
+    businessDetails.address.city,
   ]);
 
-          
-
-  // ===== INPUT CHANGE (supports nested fields) =====
-  const handleInputChange = ({ target: { name, value } }) => {
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setBusinessDetails(prev => ({
+  // שינוי שדות קלט
+  const handleInputChange = useCallback(({ target: { name, value } }) => {
+    if (name.includes(".")) {
+      const [parent, child] = name.split(".");
+      setBusinessDetails((prev) => ({
         ...prev,
         [parent]: {
           ...prev[parent],
-          [child]: value
-        }
+          [child]: value,
+        },
       }));
     } else {
-      setBusinessDetails(prev => ({ ...prev, [name]: value }));
+      setBusinessDetails((prev) => ({ ...prev, [name]: value }));
     }
-  };
+  }, []);
 
-  // ===== LOGO UPLOAD =====
-  const handleLogoClick = () => {
-    logoInputRef.current?.click();
-  };
+  // טיפול בלוגו - העלאה ושחרור זיכרון
+  const handleLogoChange = useCallback(
+    async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      e.target.value = null;
 
-  const handleLogoChange = async e => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = null;
-
-    // שחרור הזכרון של preview קודם אם היה blob
-    if (businessDetails.logo?.preview?.startsWith('blob:')) {
-      URL.revokeObjectURL(businessDetails.logo.preview);
-    }
-
-    // יצירת preview חדש
-    const preview = URL.createObjectURL(file);
-    setBusinessDetails(prev => ({
-      ...prev,
-      logo: { preview }
-    }));
-
-    // בניית FormData והעלאה לשרת
-    const fd = new FormData();
-    fd.append('logo', file);
-
-    try {
-      const res = await API.put('/business/my/logo', fd);
-      if (res.status === 200) {
-        // לאחר העלאה מוצלחת, עדכון preview ו-publicId מהשרת
-        setBusinessDetails(prev => ({
-          ...prev,
-          logo: {
-            preview:  res.data.logo,
-            publicId: res.data.logoId
-          }
-        }));
-      } else {
-        console.warn('Logo upload failed:', res);
+      if (businessDetails.logo?.preview?.startsWith("blob:")) {
+        URL.revokeObjectURL(businessDetails.logo.preview);
       }
-    } catch (err) {
-      console.error('Error uploading logo:', err);
-    } finally {
-      // שחרור הזכרון של ה-blob URL שנוצר
-      URL.revokeObjectURL(preview);
-    }
-  };
 
+      const preview = URL.createObjectURL(file);
+      setBusinessDetails((prev) => ({
+        ...prev,
+        logo: { preview },
+      }));
 
-  // ===== MAIN IMAGES =====
-  // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
+      const fd = new FormData();
+      fd.append("logo", file);
 
-  const handleMainImagesChange = async e => {
-    // 1) קבצים (עד 5)
+      try {
+        const res = await API.put("/business/my/logo", fd);
+        if (res.status === 200) {
+          setBusinessDetails((prev) => ({
+            ...prev,
+            logo: {
+              preview: res.data.logo,
+              publicId: res.data.logoId,
+            },
+          }));
+        } else {
+          console.warn("Logo upload failed:", res);
+        }
+      } catch (err) {
+        console.error("Error uploading logo:", err);
+      } finally {
+        URL.revokeObjectURL(preview);
+      }
+    },
+    [businessDetails.logo]
+  );
+
+  // שינוי תמונות ראשיות
+  const handleMainImagesChange = useCallback(async (e) => {
     const files = Array.from(e.target.files || []).slice(0, 6);
     if (!files.length) return;
     e.target.value = null;
 
-    // 2) פריוויו מקומי - עדכון state עם התמונות החדשות
-    const tempPreviews = files.map(f => URL.createObjectURL(f));
-    setBusinessDetails(prev => ({
+    const tempPreviews = files.map((f) => URL.createObjectURL(f));
+    setBusinessDetails((prev) => ({
       ...prev,
-      mainImages: [...prev.mainImages, ...tempPreviews]  // הוספת התמונות לפריוויו
+      mainImages: [...prev.mainImages, ...tempPreviews],
     }));
 
-    // 3) בניית FormData לשליחה לשרת
     const fd = new FormData();
-    files.forEach(f => fd.append("main-images", f));
+    files.forEach((f) => fd.append("main-images", f));
 
     try {
-      // 4) שליחה לשרת
       const res = await API.put("/business/my/main-images", fd);
-
       if (res.status === 200) {
-        // 5) חילוץ URL-ים ו־publicIds מה-response
         const urls = (res.data.mainImages || []).slice(0, 6);
         const ids = (res.data.mainImageIds || []).slice(0, 6);
 
-        // 6) עדכון ה-state עם התוצאות מהשרת
-        setBusinessDetails(prev => ({
+        setBusinessDetails((prev) => ({
           ...prev,
-          mainImages: urls,  // עדכון עם הכתובות שהתקבלו מהשרת
-          mainImageIds: ids  // עדכון עם ה-publicIds
+          mainImages: urls,
+          mainImageIds: ids,
         }));
       } else {
         console.warn("העלאת תמונות ראשיות נכשלה:", res);
@@ -319,44 +323,34 @@ export default function Build() {
     } catch (err) {
       console.error("שגיאה בהעלאת תמונות ראשיות:", err);
     } finally {
-      // 7) שחרור הזיכרון של ה־blob URLs (לאחר סיום)
       tempPreviews.forEach(URL.revokeObjectURL);
     }
-  };
+  }, []);
 
-  // Build.jsx
-
-  // קודם כל, נשנה את החתימה כך שהפונקציה תקבל כבר את ה-publicId
-  const handleDeleteMainImage = async publicId => {
-    console.log("🔴 Deleting publicId:", publicId);
+  // מחיקת תמונת ראשית לפי publicId
+  const handleDeleteMainImage = useCallback(async (publicId) => {
     if (!publicId) {
       console.warn("⚠️ No publicId passed");
       return;
     }
-
     try {
-      // encodeURIComponent ימיר "/" ל־"%2F" כך שניתן לשלוח ל־path פרמטר עם תת־תיקיה
       const encodedId = encodeURIComponent(publicId);
       const res = await API.delete(`/business/my/main-images/${encodedId}`);
 
-      console.log("🟢 DELETE status:", res.status);
       if (res.status === 204) {
-        setBusinessDetails(prev => {
-          // מצא את האינדקס של התמונה שנמחקה
+        setBusinessDetails((prev) => {
           const idx = prev.mainImageIds.indexOf(publicId);
           if (idx === -1) return prev;
-          // העתק שני המערכים ושחרר את הפריט המתאים בכל אחד
-          const mainImages   = [...prev.mainImages];
+          const mainImages = [...prev.mainImages];
           const mainImageIds = [...prev.mainImageIds];
           mainImages.splice(idx, 1);
           mainImageIds.splice(idx, 1);
           return {
             ...prev,
             mainImages,
-            mainImageIds
+            mainImageIds,
           };
         });
-        console.log("✅ Removed:", publicId);
       } else {
         console.warn("❌ DELETE failed:", res);
         alert("שגיאה במחיקת תמונה");
@@ -365,150 +359,138 @@ export default function Build() {
       console.error("🚨 Error:", err);
       alert("שגיאה במחיקת תמונה");
     }
-  };
+  }, []);
 
-
-  const openMainImageEdit = idx => {
+  // פתיחת פופאפ עריכת תמונה
+  const openMainImageEdit = useCallback((idx) => {
     setEditIndex(idx);
     setIsPopupOpen(true);
-  };
-  
-  // סוגר את הפופאפ ומאפס את האינדקס
-  const closePopup = () => {
+  }, []);
+
+  // סגירת פופאפ
+  const closePopup = useCallback(() => {
     setEditIndex(null);
     setIsPopupOpen(false);
-  };
-  
-  // עדכון גודל התמונה לפי סוג ('full' או 'custom')
-  const updateImageSize = sizeType => {
-    if (editIndex === null) return;
-  
-    setBusinessDetails(prev => ({
-      ...prev,
-      mainImages: prev.mainImages.map((img, i) =>
-        i === editIndex ? { ...img, size: sizeType } : img
-      )
-    }));
-  
-    closePopup();
-  };
+  }, []);
 
-  // ===== GALLERY =====
-  // בתוך Build.jsx
+  // עדכון גודל תמונה
+  const updateImageSize = useCallback(
+    (sizeType) => {
+      if (editIndex === null) return;
+      setBusinessDetails((prev) => ({
+        ...prev,
+        mainImages: prev.mainImages.map((img, i) =>
+          i === editIndex ? { ...img, size: sizeType } : img
+        ),
+      }));
+      closePopup();
+    },
+    [editIndex, closePopup]
+  );
 
-  const handleGalleryChange = async e => {
+  // שינוי תמונות גלריה
+  const handleGalleryChange = useCallback(async (e) => {
     const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
     if (!files.length) return;
     e.target.value = null;
 
-    // 1️⃣ פריוויו מקומי
-    const tempPreviews = files.map(f => URL.createObjectURL(f));
-    setBusinessDetails(prev => ({
+    const tempPreviews = files.map((f) => URL.createObjectURL(f));
+    setBusinessDetails((prev) => ({
       ...prev,
-      gallery: [...prev.gallery, ...tempPreviews]
+      gallery: [...prev.gallery, ...tempPreviews],
     }));
 
-    // 2️⃣ ממשיכים להעלות לשרת
     const fd = new FormData();
-    files.forEach(f => fd.append("gallery", f));
+    files.forEach((f) => fd.append("gallery", f));
+
     try {
       const res = await API.put("/business/my/gallery", fd, {
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: { "Content-Type": "multipart/form-data" },
       });
       if (res.status === 200) {
-        // 3️⃣ קבלת כתובות מהשרת + cache-busting
-        const urls = (res.data.gallery || []).map(u => `${u}?v=${Date.now()}`);
-        const ids  = res.data.galleryImageIds || [];
-        setBusinessDetails(prev => ({
+        const urls = (res.data.gallery || []).map(
+          (u) => `${u}?v=${Date.now()}`
+        );
+        const ids = res.data.galleryImageIds || [];
+        setBusinessDetails((prev) => ({
           ...prev,
-          gallery:         urls,
-          galleryImageIds: ids
+          gallery: urls,
+          galleryImageIds: ids,
         }));
       }
     } catch (err) {
       console.error(err);
       alert("❌ שגיאה בהעלאת גלריה");
     } finally {
-      // 4️⃣ שחרור הזכרון של הפריוויוים המקומיים
       tempPreviews.forEach(URL.revokeObjectURL);
     }
-  };
+  }, []);
 
-    
-  // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
-  
-
-  const handleDeleteGalleryImage = async publicId => {
+  // מחיקת תמונת גלריה
+  const handleDeleteGalleryImage = useCallback(async (publicId) => {
     if (!publicId) return;
 
-    console.log("🔴 Deleting gallery publicId:", publicId);
-
     try {
-      const res = await API.delete(`/business/my/gallery/${encodeURIComponent(publicId)}`);
+      const res = await API.delete(
+        `/business/my/gallery/${encodeURIComponent(publicId)}`
+      );
 
-      console.log("🟢 DELETE status:", res.status);
       if (res.status === 204) {
-        setBusinessDetails(prev => {
-          // מצא את האינדקס של התמונה בגלריה
+        setBusinessDetails((prev) => {
           const idx = prev.galleryImageIds.indexOf(publicId);
           if (idx === -1) return prev;
-          // העתק שני המערכים ושחרר את הפריט המתאים בכל אחד
-          const gallery         = [...prev.gallery];
+          const gallery = [...prev.gallery];
           const galleryImageIds = [...prev.galleryImageIds];
           gallery.splice(idx, 1);
           galleryImageIds.splice(idx, 1);
           return {
             ...prev,
             gallery,
-            galleryImageIds
+            galleryImageIds,
           };
         });
-        console.log("✅ Gallery image removed:", publicId);
       } else {
-        console.warn("❌ DELETE failed:", res);
         alert("שגיאה במחיקת תמונה בגלריה");
       }
     } catch (err) {
       console.error("🚨 Error deleting gallery image:", err);
       alert("שגיאה במחיקת תמונה בגלריה");
     }
-  };
+  }, []);
 
-
-  const handleEditImage = idx => {
+  // עריכת תמונת גלריה (לדוגמא, כרגע רק לוג)
+  const handleEditImage = useCallback((idx) => {
     console.log("Edit gallery image:", idx);
-  };
+  }, []);
 
-
-  // ===== SAVE =====
-  const handleSave = async () => {
-    // שמירת כל השדות, כולל המייל
+  // שמירת הנתונים (מנוהל ידנית)
+  const handleSave = useCallback(async () => {
     setIsSaving(true);
     try {
       const payload = {
         businessName: businessDetails.businessName,
-        category:     businessDetails.category,
-        description:  businessDetails.description,
-        phone:        businessDetails.phone,
-        email:        businessDetails.email,
-        address:      { city: businessDetails.address.city }
+        category: businessDetails.category,
+        description: businessDetails.description,
+        phone: businessDetails.phone,
+        email: businessDetails.email,
+        address: { city: businessDetails.address.city },
       };
       const res = await API.patch("/business/my", payload);
       if (res.status === 200) {
         const updated = res.data;
-        setBusinessDetails(prev => ({
+        setBusinessDetails((prev) => ({
           ...prev,
           businessName: updated.businessName ?? prev.businessName,
-          category:     updated.category     ?? prev.category,
-          description:  updated.description  ?? prev.description,
-          phone:        updated.phone        ?? prev.phone,
-          email:        updated.email        ?? prev.email,
+          category: updated.category ?? prev.category,
+          description: updated.description ?? prev.description,
+          phone: updated.phone ?? prev.phone,
+          email: updated.email ?? prev.email,
           address: {
             ...prev.address,
-            city: updated.address?.city ?? prev.address.city
+            city: updated.address?.city ?? prev.address.city,
           },
           logo: prev.logo,
-          logoId: prev.logoId
+          logoId: prev.logoId,
         }));
         setShowViewProfile(true);
         alert("✅ נשמר בהצלחה!");
@@ -521,88 +503,26 @@ export default function Build() {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [businessDetails]);
 
+  // רפרנסים לטעינה עצלה של טאבים
+  const galleryRef = useRef();
+  const reviewsRef = useRef();
+  const shopRef = useRef();
 
-  // ===== TOP BAR =====
-  const renderTopBar = () => {
-    const avg = businessDetails.reviews.length
-      ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
-      : 0;
+  // בודקים אם הטאב נראה על המסך
+  const galleryVisible = useOnScreen(galleryRef);
+  const reviewsVisible = useOnScreen(reviewsRef);
+  const shopVisible = useOnScreen(shopRef);
 
-    return (
-      <div className="topbar-preview">
-        {/* לוגו */}
-        <div className="logo-circle" onClick={handleLogoClick}>
-          {businessDetails.logo?.preview ? (
-            <img src={businessDetails.logo.preview} className="logo-img" />
-          ) : businessDetails.logo ? (
-            <img src={businessDetails.logo} className="logo-img" />
-          ) : (
-            <span>לוגו</span>
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            ref={logoInputRef}
-            onChange={handleLogoChange}
-          />
-        </div>
+  // טוענים תוכן רק כשהטאב נראה או נבחר
+  useEffect(() => {
+    if (currentTab === "גלריה" || galleryVisible) setGalleryLoaded(true);
+    if (currentTab === "ביקורות" || reviewsVisible) setReviewsLoaded(true);
+    if (currentTab === "יומן" || shopVisible) setShopLoaded(true);
+  }, [currentTab, galleryVisible, reviewsVisible, shopVisible]);
 
-        {/* שם העסק + דירוג */}
-        <div className="name-rating">
-          <h2>{businessDetails.businessName || "שם העסק"}</h2> {/* הצגת שם העסק */}
-          <div className="rating-badge">
-            <span className="star">★</span>
-            <span>{avg.toFixed(1)} / 5</span>
-          </div>
-        </div>
-
-        {/* קטגוריה מתחת לשם */}
-        {businessDetails.category && (
-          <p className="preview-category">
-            <strong>קטגוריה:</strong> {businessDetails.category}
-          </p>
-        )}
-
-        {/* תיאור וטלפון מתחת לשם */}
-        {businessDetails.description && (
-          <p className="preview-description">
-            <strong>תיאור:</strong> {businessDetails.description}
-          </p>
-        )}
-        {businessDetails.phone && (
-          <p className="preview-phone">
-            <strong>טלפון:</strong> {businessDetails.phone}
-          </p>
-        )}
-        {businessDetails.address.city && (
-          <p className="preview-city">
-            <strong>עיר:</strong> {businessDetails.address.city}
-          </p>
-        )}
-
-        <hr className="divider" />
-
-        {/* כפתורי הטאבים */}
-        <div className="tabs">
-          {TABS.map(tab => (
-            <button
-              key={tab}
-              type="button"
-              className={`tab ${tab === currentTab ? "active" : ""}`}
-              onClick={() => setCurrentTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-
+  // הצגת הטאב עם טעינה עצלה
   const renderTabContent = () => {
     switch (currentTab) {
       case "ראשי":
@@ -625,6 +545,9 @@ export default function Build() {
           />
         );
       case "גלריה":
+        if (!galleryLoaded) {
+          return <div ref={galleryRef}>טוען גלריה...</div>;
+        }
         return (
           <GallerySection
             businessDetails={businessDetails}
@@ -637,15 +560,23 @@ export default function Build() {
           />
         );
       case "ביקורות":
+        if (!reviewsLoaded) {
+          return <div ref={reviewsRef}>טוען ביקורות...</div>;
+        }
         return (
           <ReviewsSection
             reviews={businessDetails.reviews}
-            setReviews={r => setBusinessDetails(prev => ({ ...prev, reviews: r }))}
+            setReviews={(r) =>
+              setBusinessDetails((prev) => ({ ...prev, reviews: r }))
+            }
             currentUser={currentUser}
             renderTopBar={renderTopBar}
           />
         );
-      case " יומן":
+      case "יומן":
+        if (!shopLoaded) {
+          return <div ref={shopRef}>טוען יומן...</div>;
+        }
         return (
           <ShopSection
             setBusinessDetails={setBusinessDetails}
@@ -666,7 +597,9 @@ export default function Build() {
         return (
           <FaqSection
             faqs={businessDetails.faqs}
-            setFaqs={f => setBusinessDetails(prev => ({ ...prev, faqs: f }))}
+            setFaqs={(f) =>
+              setBusinessDetails((prev) => ({ ...prev, faqs: f }))
+            }
             currentUser={currentUser}
             renderTopBar={renderTopBar}
           />
@@ -676,19 +609,103 @@ export default function Build() {
     }
   };
 
+  // רינדור בר עליון (שם העסק, לוגו, טאבים)
+  const renderTopBar = useCallback(() => {
+    const avg =
+      businessDetails.reviews.length > 0
+        ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) /
+          businessDetails.reviews.length
+        : 0;
+
+    return (
+      <div className="topbar-preview">
+        <div className="logo-circle" onClick={handleLogoClick}>
+          {businessDetails.logo?.preview ? (
+            <img src={businessDetails.logo.preview} className="logo-img" />
+          ) : businessDetails.logo ? (
+            <img src={businessDetails.logo} className="logo-img" />
+          ) : (
+            <span>לוגו</span>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            ref={logoInputRef}
+            onChange={handleLogoChange}
+          />
+        </div>
+
+        <div className="name-rating">
+          <h2>{businessDetails.businessName || "שם העסק"}</h2>
+          <div className="rating-badge">
+            <span className="star">★</span>
+            <span>{avg.toFixed(1)} / 5</span>
+          </div>
+        </div>
+
+        {businessDetails.category && (
+          <p className="preview-category">
+            <strong>קטגוריה:</strong> {businessDetails.category}
+          </p>
+        )}
+
+        {businessDetails.description && (
+          <p className="preview-description">
+            <strong>תיאור:</strong> {businessDetails.description}
+          </p>
+        )}
+        {businessDetails.phone && (
+          <p className="preview-phone">
+            <strong>טלפון:</strong> {businessDetails.phone}
+          </p>
+        )}
+        {businessDetails.address.city && (
+          <p className="preview-city">
+            <strong>עיר:</strong> {businessDetails.address.city}
+          </p>
+        )}
+
+        <hr className="divider" />
+
+        <div className="tabs">
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              className={`tab ${tab === currentTab ? "active" : ""}`}
+              onClick={() => setCurrentTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }, [
+    businessDetails,
+    currentTab,
+    handleLogoChange,
+    handleLogoClick,
+  ]);
+
   return (
-    <div className="build-wrapper">
-      <Suspense fallback={<div>טוען...</div>}>
-        {renderTabContent()}
-      </Suspense>
+    <div className="build-wrapper" dir="rtl">
+      <Suspense fallback={<div>טוען...</div>}>{renderTabContent()}</Suspense>
 
       {isPopupOpen && (
         <div className="popup-overlay">
           <div className="popup-content">
             <h3>בחר גודל תמונה</h3>
-            <button type="button" onClick={() => updateImageSize("full")}>גודל מלא</button>
-            <button type="button" onClick={() => updateImageSize("custom")}>גודל מותאם</button>
-            <button type="button" onClick={closePopup}>ביטול</button>
+            <button type="button" onClick={() => updateImageSize("full")}>
+              גודל מלא
+            </button>
+            <button type="button" onClick={() => updateImageSize("custom")}>
+              גודל מותאם
+            </button>
+            <button type="button" onClick={closePopup}>
+              ביטול
+            </button>
           </div>
         </div>
       )}
