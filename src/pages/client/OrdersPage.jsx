@@ -24,7 +24,8 @@ function useAppointments() {
 
       try {
         const headers = user?.token ? { Authorization: `Bearer ${user.token}` } : {};
-        const res = await API.get("/appointments-by-user", {
+        // עדכון הנתיב לנתיב המלא כפי שמוגדר בשרת
+        const res = await API.get("/appointments/appointments-by-user", {
           headers,
           withCredentials: true,
         });
