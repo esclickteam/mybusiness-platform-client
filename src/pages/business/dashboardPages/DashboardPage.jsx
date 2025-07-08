@@ -2,9 +2,9 @@ import React, {
   useEffect,
   useState,
   useRef,
-  createRef,
   Suspense,
   useCallback,
+  useMemo,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../api";
@@ -142,6 +142,7 @@ const DashboardPage = () => {
     enabled: initialized && !!businessId,
     staleTime: 60 * 1000,
     cacheTime: 5 * 60 * 1000,
+    keepPreviousData: true,
     onError: (err) => {
       if (err.message === "No token") logout();
       else setAlert("❌ שגיאה בטעינת נתונים מהשרת");
@@ -234,12 +235,12 @@ const DashboardPage = () => {
       };
 
       sock.on("dashboardUpdate", refetchData);
-      sock.on('profileViewsUpdated', refetchData);
+      sock.on("profileViewsUpdated", refetchData);
       sock.on("appointmentCreated", refetchData);
       sock.on("appointmentUpdated", refetchData);
       sock.on("allAppointmentsUpdated", refetchData);
-      sock.on('allReviewsUpdated', refetchData);
-      sock.on('reviewCreated', refetchData);
+      sock.on("allReviewsUpdated", refetchData);
+      sock.on("reviewCreated", refetchData);
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
@@ -282,9 +283,12 @@ const DashboardPage = () => {
   if (error) return <p className="error-text">{alert || error.message}</p>;
 
   const effectiveStats = stats || {};
-  const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
-    enrichAppointment(appt, effectiveStats)
-  );
+
+  const enrichedAppointments = useMemo(() => {
+    return (effectiveStats.appointments || []).map((appt) =>
+      enrichAppointment(appt, effectiveStats)
+    );
+  }, [effectiveStats]);
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
@@ -301,13 +305,12 @@ const DashboardPage = () => {
     messages_count: effectiveStats.messages_count || 0,
   };
 
-  const cardsRef = createRef();
-  const insightsRef = createRef();
-  // השתמש רק ב-useRef ל-chartsRef!
-  // const chartsRef = createRef(); // אין צורך בזה יותר
-  const appointmentsRef = createRef();
-  const nextActionsRef = createRef();
-  const weeklySummaryRef = createRef();
+  // השתמש ב-useRef במקום createRef
+  const cardsRef = useRef();
+  const insightsRef = useRef();
+  const appointmentsRef = useRef();
+  const nextActionsRef = useRef();
+  const weeklySummaryRef = useRef();
 
   return (
     <div className="dashboard-container">
