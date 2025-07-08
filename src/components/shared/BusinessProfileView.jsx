@@ -14,9 +14,10 @@ const TABS = [
   "גלריה",
   "ביקורות",
   "שאלות תשובות",
-  "הודעות מלקוחות",
+  user?.role === "customer" ? "הודעות עם העסק" : "הודעות מלקוחות",
   "יומן",
 ];
+
 
 const ReviewForm = lazy(() => import("../../pages/business/dashboardPages/buildTabs/ReviewForm"));
 const ServicesSelector = lazy(() => import("../ServicesSelector"));
