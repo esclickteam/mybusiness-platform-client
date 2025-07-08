@@ -18,23 +18,14 @@ export default function FavoritesPage() {
         return;
       }
       try {
-        const res = await API.get("/users/me", {
+        // קריאה ישירה ל-API של המועדפים עם הטוקן
+        const res = await API.get("/business/favorites", {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
         });
 
-        const favIds = res.data.favorites || [];
-        if (favIds.length === 0) {
-          setFavorites([]);
-          setLoading(false);
-          return;
-        }
-
-        // הבאת פרטי העסקים המועדפים
-        const promises = favIds.map((id) => API.get(`/business/${id}`));
-        const results = await Promise.all(promises);
-        const favBusinesses = results.map(r => r.data.business || r.data);
+        const favBusinesses = res.data.favorites || [];
         setFavorites(favBusinesses);
       } catch (err) {
         console.error(err);
@@ -49,8 +40,7 @@ export default function FavoritesPage() {
 
   if (loading) return <div>טוען מועדפים...</div>;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
-  if (favorites.length === 0)
-    return <div>אין לך עסקים במועדפים כרגע.</div>;
+  if (favorites.length === 0) return <div>אין לך עסקים במועדפים כרגע.</div>;
 
   return (
     <div style={{ padding: 20 }}>
