@@ -38,7 +38,7 @@ export default function MessagesPage() {
           <li
             key={conv.conversationId}
             onClick={() =>
-              navigate(`/business/${conv.businessId}/messages/${conv.conversationId}`)
+              navigate(`/business/${conv.businessId}/messages`, { state: { conversationId: conv.conversationId } })
             }
             style={{
               cursor: "pointer",
