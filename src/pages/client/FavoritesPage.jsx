@@ -4,66 +4,61 @@ import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 
 export default function FavoritesPage() {
-  /* -------------------- context -------------------- */
-  const { user, token, initialized, setUser } = useAuth();
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { user, setUser } = useAuth(); // הוסף setUser מהקונטקסט!
   const navigate = useNavigate();
 
-  /* -------------------- state ---------------------- */
-  const [favorites, setFavorites] = useState([]);
-  const [loading,   setLoading]   = useState(true);
-  const [error,     setError]     = useState(null);
-
-  /* -------------------- effect --------------------- */
   useEffect(() => {
-    if (!initialized) return;              // מחכים שה-AuthProvider יסיים טעינה
-
-    const controller = new AbortController();
-
-    const fetchFavorites = async () => {
+    async function fetchFavorites() {
       setLoading(true);
       setError(null);
 
+      // בדיקה האם יש token מקומי (user?.token)
+      let gotUser = !!user?._id;
+      let favoritesData = [];
+
       try {
-        const res = await API.get("/auth/me", {
-          signal: controller.signal,
-          withCredentials: true,
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-
-        /* ---------- אם אין משתמש → Login ---------- */
-        if (!res.data?._id) {
-          navigate("/login", { replace: true });
-          return;
+        let res;
+        if (gotUser) {
+          // יש token – שלח בבקשה
+          res = await API.get("/auth/me", {
+            headers: { Authorization: `Bearer ${user.token}` },
+            withCredentials: true,
+          });
+        } else {
+          // אין token, ננסה לקרוא מהמושב (cookie)
+          res = await API.get("/auth/me", { withCredentials: true });
+          if (res.data && res.data._id) {
+            // אם חוזר משתמש, נעדכן את ה־context
+            setUser && setUser(res.data);
+            gotUser = true;
+          }
         }
 
-        /* ---------- עדכון Context (פעם ראשונה) ---- */
-        if (!user?._id) setUser?.(res.data);
+        if (gotUser && res.data && res.data.favorites) {
+          favoritesData = res.data.favorites;
+        } else if (!gotUser) {
+          setError("אנא התחבר כדי לראות את המועדפים שלך.");
+        }
 
-        /* ---------- שמירת מועדפים ------------------ */
-        setFavorites(Array.isArray(res.data.favorites) ? res.data.favorites : []);
-
+        setFavorites(favoritesData);
       } catch (err) {
-        if (err.response?.status === 401) {
-          navigate("/login", { replace: true });
-        } else if (err.name !== "CanceledError") {
-          console.error(err);
-          setError("שגיאה בטעינת המועדפים");
-        }
+        console.error(err);
+        setError("שגיאה בטעינת המועדפים");
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     fetchFavorites();
-    return () => controller.abort();
+    // *** הוספתי תלות גם ב-setUser
+  }, [user, setUser]);
 
-  }, [initialized, user?._id, token, setUser, navigate]);
-
-  /* -------------------- UI ------------------------- */
-  if (loading)  return <div>טוען מועדפים...</div>;
-  if (error)    return <div style={{ color: "red" }}>{error}</div>;
-  if (!favorites.length)
-    return <div>אין לך עסקים במועדפים כרגע.</div>;
+  if (loading) return <div>טוען מועדפים...</div>;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
+  if (favorites.length === 0) return <div>אין לך עסקים במועדפים כרגע.</div>;
 
   return (
     <div style={{ padding: 20 }}>
