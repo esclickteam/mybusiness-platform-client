@@ -56,12 +56,13 @@ function useOnScreen(ref) {
 }
 
 export default function BusinessProfileView() {
-  const { businessId: paramId } = useParams();
   const { user } = useAuth();
+  const { businessId: paramId } = useParams();
   const socket = useSocket();
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
 
+  // שם הטאב להודעות מותאם לפי תפקיד המשתמש
   const messagesTabName = user?.role === "customer" ? "הודעות עם העסק" : "הודעות מלקוחות";
 
   const TABS = [
@@ -105,6 +106,7 @@ export default function BusinessProfileView() {
     enabled: !!bizId
   });
 
+  // Sync data to state
   useEffect(() => {
     if (!data) return;
     setFaqs(data.faqs || []);
@@ -439,90 +441,93 @@ export default function BusinessProfileView() {
             {currentTab === "ביקורות" && (
               <div ref={reviewsRef} className="reviews" dir="rtl">
                 {reviewsLoaded ? (
-                  !isOwner && user && (
-                    <button className="add-review-btn" onClick={() => setShowReviewModal(true)}>
-                      הוסף ביקורת
-                    </button>
-                  ),
-                  showReviewModal && (
-                    <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
-                      <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
-                        <Suspense fallback={<div>טוען טופס ביקורת...</div>}>
-                          <ReviewForm
-                            businessId={bizId}
-                            onSubmit={handleReviewSubmit}
-                            isSubmitting={isSubmitting}
-                          />
-                        </Suspense>
-                        <button className="modal-close" onClick={() => setShowReviewModal(false)}>
-                          סגור
-                        </button>
-                      </div>
-                    </div>
-                  ),
-                  sortedReviews.length ? (
-                    sortedReviews.map((r, i) => {
-                      const avg = r.rating || r.averageScore || 0;
-                      const dateStr = new Date(r.createdAt || r.date).toLocaleDateString("he-IL", {
-                        day: "numeric",
-                        month: "numeric",
-                        year: "numeric",
-                      });
-                      const isExpanded = expandedReviews[r._id || i] || false;
-
-                      return (
-                        <div key={r._id || i} className="review-card improved">
-                          <p><strong>⭐ דירוג ממוצע:</strong> {avg.toFixed(1)}</p>
-                          {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
-                          <p><strong>🗓️ תאריך:</strong> {dateStr}</p>
-                          {r.client && <p><strong>👤 מאת:</strong> {r.client.name}</p>}
-
-                          <button
-                            style={{
-                              marginTop: "8px",
-                              backgroundColor: "#c5a3ff",
-                              border: "none",
-                              borderRadius: "6px",
-                              padding: "6px 12px",
-                              cursor: "pointer",
-                              fontWeight: "bold",
-                              color: "#4a148c",
-                            }}
-                            onClick={() => toggleReviewDetails(r._id || i)}
-                            aria-expanded={isExpanded}
-                            aria-controls={`review-details-full-${r._id || i}`}
-                          >
-                            {isExpanded ? "הסתר פירוט דירוג 📋" : "פירוט דירוג 📋"}
+                  <>
+                    {!isOwner && user && (
+                      <button className="add-review-btn" onClick={() => setShowReviewModal(true)}>
+                        הוסף ביקורת
+                      </button>
+                    )}
+                    {showReviewModal && (
+                      <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
+                        <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
+                          <Suspense fallback={<div>טוען טופס ביקורת...</div>}>
+                            <ReviewForm
+                              businessId={bizId}
+                              onSubmit={handleReviewSubmit}
+                              isSubmitting={isSubmitting}
+                            />
+                          </Suspense>
+                          <button className="modal-close" onClick={() => setShowReviewModal(false)}>
+                            סגור
                           </button>
-
-                          {isExpanded && r.ratings && (
-                            <div
-                              id={`review-details-full-${r._id || i}`}
-                              className="rating-details"
-                              style={{ marginTop: "8px" }}
-                            >
-                              {Object.entries(r.ratings).map(([key, val]) => (
-                                <div
-                                  key={key}
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    fontSize: "0.9rem",
-                                    direction: "rtl",
-                                  }}
-                                >
-                                  <span>{ratingLabels[key] || key}</span>
-                                  <span>{val.toFixed(1)} <StarDisplay rating={val} /></span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
                         </div>
-                      );
-                    })
-                  ) : (
-                    <p className="no-data">אין ביקורות</p>
-                  )
+                      </div>
+                    )}
+
+                    {sortedReviews.length ? (
+                      sortedReviews.map((r, i) => {
+                        const avg = r.rating || r.averageScore || 0;
+                        const dateStr = new Date(r.createdAt || r.date).toLocaleDateString("he-IL", {
+                          day: "numeric",
+                          month: "numeric",
+                          year: "numeric",
+                        });
+                        const isExpanded = expandedReviews[r._id || i] || false;
+
+                        return (
+                          <div key={r._id || i} className="review-card improved">
+                            <p><strong>⭐ דירוג ממוצע:</strong> {avg.toFixed(1)}</p>
+                            {r.comment && <p><strong>💬 חוות דעת:</strong> {r.comment}</p>}
+                            <p><strong>🗓️ תאריך:</strong> {dateStr}</p>
+                            {r.client && <p><strong>👤 מאת:</strong> {r.client.name}</p>}
+
+                            <button
+                              style={{
+                                marginTop: "8px",
+                                backgroundColor: "#c5a3ff",
+                                border: "none",
+                                borderRadius: "6px",
+                                padding: "6px 12px",
+                                cursor: "pointer",
+                                fontWeight: "bold",
+                                color: "#4a148c",
+                              }}
+                              onClick={() => toggleReviewDetails(r._id || i)}
+                              aria-expanded={isExpanded}
+                              aria-controls={`review-details-full-${r._id || i}`}
+                            >
+                              {isExpanded ? "הסתר פירוט דירוג 📋" : "פירוט דירוג 📋"}
+                            </button>
+
+                            {isExpanded && r.ratings && (
+                              <div
+                                id={`review-details-full-${r._id || i}`}
+                                className="rating-details"
+                                style={{ marginTop: "8px" }}
+                              >
+                                {Object.entries(r.ratings).map(([key, val]) => (
+                                  <div
+                                    key={key}
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      fontSize: "0.9rem",
+                                      direction: "rtl",
+                                    }}
+                                  >
+                                    <span>{ratingLabels[key] || key}</span>
+                                    <span>{val.toFixed(1)} <StarDisplay rating={val} /></span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="no-data">אין ביקורות</p>
+                    )}
+                  </>
                 ) : (
                   <p>טוען ביקורות…</p>
                 )}
@@ -545,15 +550,15 @@ export default function BusinessProfileView() {
               </div>
             )}
 
-            {/* הודעות מלקוחות / הודעות עם העסק */}
+            {/* הודעות עם העסק / הודעות מלקוחות */}
             {currentTab === messagesTabName && (
-              <div style={{ textAlign: "center", margin: "36px 0" }}>
+              <div style={{ textAlign: "center", margin: "36px 0" }} dir="rtl">
                 {user?.role === "customer" && (
                   <Link to={`/business/${bizId}/messages`} className="chat-link-btn">
                     💬 שלח הודעה לעסק
                   </Link>
                 )}
-                {isOwner && (
+                {user?.role === "business" && (
                   <Link to={`/business/${bizId}/dashboard/messages`} className="chat-link-btn">
                     ▶️ ניהול הודעות מלקוחות
                   </Link>
@@ -567,7 +572,7 @@ export default function BusinessProfileView() {
                 {calendarLoaded ? (
                   <>
                     <Suspense fallback={<div>טוען בחירת שירות...</div>}>
-                      <ServicesSelector services={services} onSelect={(svc) => setSelectedService(svc)} />
+                      <ServicesSelector services={services} onSelect={setSelectedService} />
                     </Suspense>
                     {!selectedService ? (
                       <p className="choose-prompt" dir="rtl">אנא בחרי שירות כדי להציג את היומן</p>
