@@ -1,79 +1,71 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import API from "../../api";
-import { useAuth } from "../../context/AuthContext";
+/* useFavorites.js */
+import { useState, useEffect } from "react";
+import API from "../api";
+import { useAuth } from "../context/AuthContext";
 
-export default function FavoritesPage() {
+export function useFavorites() {
+  const { user, setUser } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user, setUser } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchFavorites() {
-      console.log("🔄 fetchFavorites started");
+    let isMounted = true;
+    async function load() {
+      console.log("🔄 load favorites started");
       setLoading(true);
       setError(null);
 
-      let gotUser = !!user?.userId;
-      console.log("👤 gotUser:", gotUser, "user:", user);
-
       try {
-        // 1️⃣ ראשון – קבלת פרטי המשתמש
-        let res = gotUser
-          ? await API.get("/auth/me", {
-              headers: { Authorization: `Bearer ${user.token}` },
-              withCredentials: true,
-            })
-          : await API.get("/auth/me", { withCredentials: true });
+        // Always include credentials and header if user.token exists
+        const headers = user?.token
+          ? { Authorization: `Bearer ${user.token}` }
+          : {};
 
+        const res = await API.get("/auth/me", {
+          headers,
+          withCredentials: true,
+        });
         console.log("📥 /auth/me response data:", res.data);
 
-        // אם זרימת cookie הצליחה, עדכון ה־context
-        if (!gotUser && res.data?.userId) {
-          console.log("✅ Cookie auth הצליח, setUser:", res.data);
+        // If cookie flow returned userId, update context
+        if (!user?.userId && res.data?.userId) {
+          console.log("✅ setting user from cookie:", res.data);
           setUser(res.data);
-          gotUser = true;
         }
 
-        if (!gotUser) {
-          console.warn("⚠️ לא מזוהה, דורש התחברות");
+        // Validate auth
+        if (!res.data?.userId) {
           throw new Error("אנא התחבר כדי לראות את המועדפים שלך.");
         }
 
-        // 2️⃣ שנית – האם השרת כבר החזיר לנו favorites?
-        const favIds = res.data.favorites;
-        console.log("🔗 raw favorites IDs:", favIds);
-
-        let favoritesData = [];
-        if (Array.isArray(favIds) && favIds.length > 0) {
-          console.log("🚀 fetching details for each favorite business...");
-          // נחמם את כל הפרטים של העסקים במועדפים
-          const detailPromises = favIds.map((bizId) =>
-            API.get(`/business/${bizId}`, {
-              headers: { Authorization: `Bearer ${user.token}` },
-              withCredentials: true,
-            }).then((r) => r.data)
-          );
-          favoritesData = await Promise.all(detailPromises);
-          console.log("⭐ favorites details loaded:", favoritesData);
-        } else {
-          console.log("ℹ️ אין פרטי favorites להורדה (מסד הנתונים ריק)");
-        }
-
-        setFavorites(favoritesData);
+        // Use favorites array directly from backend response
+        const favs = Array.isArray(res.data.favorites) ? res.data.favorites : [];
+        console.log("⭐ favorites loaded:", favs);
+        isMounted && setFavorites(favs);
       } catch (err) {
-        console.error("❌ Error fetching favorites:", err);
-        setError(err.message || "שגיאה בטעינת המועדפים");
+        console.error("❌ error loading favorites:", err);
+        isMounted && setError(err.message || "שגיאה בטעינת המועדפים");
       } finally {
-        console.log("✅ fetchFavorites finished");
-        setLoading(false);
+        console.log("✅ load favorites finished");
+        isMounted && setLoading(false);
       }
     }
-
-    fetchFavorites();
+    load();
+    return () => { isMounted = false; };
   }, [user, setUser]);
+
+  return { favorites, loading, error };
+}
+
+/* FavoritesPage.js */
+import React from "react";
+import { useFavorites } from "../../hooks/useFavorites";
+import { useNavigate } from "react-router-dom";
+
+export default function FavoritesPage() {
+  const { favorites, loading, error } = useFavorites();
+  const navigate = useNavigate();
 
   if (loading) return <div>טוען מועדפים...</div>;
   if (error)
@@ -84,7 +76,9 @@ export default function FavoritesPage() {
         <button onClick={() => window.location.reload()}>נסה שוב</button>
       </div>
     );
-  if (!favorites.length) return <div>אין לך עסקים במועדפים כרגע.</div>;
+
+  if (favorites.length === 0)
+    return <div>אין לך עסקים במועדפים כרגע.</div>;
 
   return (
     <div style={{ padding: 20 }}>
@@ -107,6 +101,11 @@ export default function FavoritesPage() {
             }}
             title={`לחץ לפרופיל העסק ${biz.businessName}`}
           >
+            <img
+              src={biz.logo}
+              alt={`${biz.businessName} logo`}
+              style={{ width: 40, height: 40, marginRight: 10 }}
+            />
             <strong>{biz.businessName}</strong>
             <p>{biz.description?.slice(0, 100) || "אין תיאור"}</p>
           </li>
