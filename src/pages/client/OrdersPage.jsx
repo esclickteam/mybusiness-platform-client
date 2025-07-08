@@ -13,8 +13,8 @@ function useAppointments() {
     let isMounted = true;
 
     async function fetchAppointments() {
-      if (!user || !user.businessId) {
-        setError("פרטי העסק לא זמינים");
+      if (!user || !user.userId) {
+        setError("פרטי המשתמש לא זמינים");
         setLoading(false);
         return;
       }
@@ -24,14 +24,9 @@ function useAppointments() {
 
       try {
         const headers = user?.token ? { Authorization: `Bearer ${user.token}` } : {};
-        const res = await API.get("/appointments/by-client", {
+        const res = await API.get("/appointments-by-user", {
           headers,
           withCredentials: true,
-          params: {
-            businessId: user.businessId,
-            email: user.email,
-            phone: user.phone,
-          },
         });
 
         if (isMounted) {
