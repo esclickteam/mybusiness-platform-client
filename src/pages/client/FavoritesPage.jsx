@@ -7,25 +7,43 @@ export default function FavoritesPage() {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useAuth();
+  const { user, setUser } = useAuth(); // הוסף setUser מהקונטקסט!
   const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchFavorites() {
-      if (!user || !user.token) {
-        setError("אנא התחבר כדי לראות את המועדפים שלך.");
-        setLoading(false);
-        return;
-      }
+      setLoading(true);
+      setError(null);
+
+      // בדיקה האם יש token מקומי (user?.token)
+      let gotUser = user && user.token;
+      let favoritesData = [];
 
       try {
-        // קריאה ל- /me שמחזיר גם את המועדפים
-        const res = await API.get("/auth/me", {
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
+        let res;
+        if (gotUser) {
+          // יש token – שלח בבקשה
+          res = await API.get("/auth/me", {
+            headers: { Authorization: `Bearer ${user.token}` },
+            withCredentials: true,
+          });
+        } else {
+          // אין token, ננסה לקרוא מהמושב (cookie)
+          res = await API.get("/auth/me", { withCredentials: true });
+          if (res.data && res.data._id) {
+            // אם חוזר משתמש, נעדכן את ה־context
+            setUser && setUser(res.data);
+            gotUser = true;
+          }
+        }
 
-        const favBusinesses = res.data.favorites || [];
-        setFavorites(favBusinesses);
+        if (gotUser && res.data && res.data.favorites) {
+          favoritesData = res.data.favorites;
+        } else if (!gotUser) {
+          setError("אנא התחבר כדי לראות את המועדפים שלך.");
+        }
+
+        setFavorites(favoritesData);
       } catch (err) {
         console.error(err);
         setError("שגיאה בטעינת המועדפים");
@@ -35,7 +53,8 @@ export default function FavoritesPage() {
     }
 
     fetchFavorites();
-  }, [user]);
+    // *** הוספתי תלות גם ב-setUser
+  }, [user, setUser]);
 
   if (loading) return <div>טוען מועדפים...</div>;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
