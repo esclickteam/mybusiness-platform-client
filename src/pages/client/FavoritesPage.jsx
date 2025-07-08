@@ -1,4 +1,4 @@
-/* useFavorites.js */
+// src/hooks/useFavorites.js
 import { useState, useEffect } from "react";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
@@ -17,7 +17,7 @@ export function useFavorites() {
       setError(null);
 
       try {
-        // Always include credentials and header if user.token exists
+        // Include token header if available
         const headers = user?.token
           ? { Authorization: `Bearer ${user.token}` }
           : {};
@@ -28,18 +28,18 @@ export function useFavorites() {
         });
         console.log("📥 /auth/me response data:", res.data);
 
-        // If cookie flow returned userId, update context
+        // Update context on cookie-based auth
         if (!user?.userId && res.data?.userId) {
           console.log("✅ setting user from cookie:", res.data);
           setUser(res.data);
         }
 
-        // Validate auth
+        // Validate authentication
         if (!res.data?.userId) {
           throw new Error("אנא התחבר כדי לראות את המועדפים שלך.");
         }
 
-        // Use favorites array directly from backend response
+        // Load favorites array from response
         const favs = Array.isArray(res.data.favorites) ? res.data.favorites : [];
         console.log("⭐ favorites loaded:", favs);
         isMounted && setFavorites(favs);
@@ -58,7 +58,8 @@ export function useFavorites() {
   return { favorites, loading, error };
 }
 
-/* FavoritesPage.js */
+
+// src/pages/client/FavoritesPage.jsx
 import React from "react";
 import { useFavorites } from "../../hooks/useFavorites";
 import { useNavigate } from "react-router-dom";
@@ -87,10 +88,7 @@ export default function FavoritesPage() {
         {favorites.map((biz) => (
           <li
             key={biz._id}
-            onClick={() => {
-              console.log("➡️ navigating to business:", biz._id);
-              navigate(`/business/${biz._id}`);
-            }}
+            onClick={() => navigate(`/business/${biz._id}`)}
             style={{
               cursor: "pointer",
               padding: "10px",
@@ -98,16 +96,22 @@ export default function FavoritesPage() {
               marginBottom: "8px",
               borderRadius: "6px",
               backgroundColor: "#f9f9f9",
+              display: "flex",
+              alignItems: "center"
             }}
             title={`לחץ לפרופיל העסק ${biz.businessName}`}
           >
-            <img
-              src={biz.logo}
-              alt={`${biz.businessName} logo`}
-              style={{ width: 40, height: 40, marginRight: 10 }}
-            />
-            <strong>{biz.businessName}</strong>
-            <p>{biz.description?.slice(0, 100) || "אין תיאור"}</p>
+            {biz.logo && (
+              <img
+                src={biz.logo}
+                alt={`${biz.businessName} logo`}
+                style={{ width: 40, height: 40, marginRight: 10 }}
+              />
+            )}
+            <div>
+              <strong>{biz.businessName}</strong>
+              <p>{biz.description?.slice(0, 100) || "אין תיאור"}</p>
+            </div>
           </li>
         ))}
       </ul>
