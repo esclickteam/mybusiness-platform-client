@@ -12,10 +12,8 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [showHistory, setShowHistory] = useState(false);
   const socketRef = useRef(null);
 
-  // פונקציה לניקוי טקסט מסמלים לא רצויים
   const cleanText = (text) => text.replace(/(\*\*|#|\*)/g, "").trim();
 
-  // טעינת המלצות מהשרת בעת טעינת הרכיב או שינוי ב-businessId/token
   useEffect(() => {
     if (!businessId || !token) return;
 
@@ -34,7 +32,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
   }, [businessId, token]);
 
-  // התחברות ל-Socket.IO לניטור אירועים חיים
   useEffect(() => {
     if (!businessId || !token) return;
 
@@ -46,7 +43,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     });
     socketRef.current = socket;
 
-    // הצטרפות לחדרים רלוונטיים
     const onConnect = () => {
       socket.emit("joinRoom", `business-${businessId}`);
       socket.emit("joinRoom", `dashboard-${businessId}`);
@@ -64,7 +60,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       console.log("[Socket] disconnected:", reason);
     };
 
-    // עדכון המלצות חדשות
     const onNewAiSuggestion = (rec) => {
       setRecommendations((prev) => {
         const idx = prev.findIndex((r) => (r._id === rec._id || r.id === rec._id));
@@ -80,7 +75,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
     };
 
-    // עדכון סטטוס לאישור
     const onMessageApproved = ({ recommendationId }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
@@ -96,7 +90,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
     };
 
-    // עדכון סטטוס לדחייה
     const onRecommendationRejected = ({ recommendationId }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
@@ -132,7 +125,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     };
   }, [businessId, token, onTokenExpired]);
 
-  // עדכון טוקן בסוקט במקרה של שינוי
   useEffect(() => {
     const socket = socketRef.current;
     if (socket && socket.auth) {
@@ -144,7 +136,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   }, [token]);
 
-  // אישור המלצה (send-approved)
   const approveRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -176,7 +167,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
-  // דחיית המלצה (rejectRecommendation)
   const rejectRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -207,19 +197,16 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
-  // התחלת עריכה
   const startEditing = (rec) => {
     setEditingId(rec._id || rec.id);
     setEditText(cleanText(rec.text));
   };
 
-  // ביטול עריכה
   const cancelEditing = () => {
     setEditingId(null);
     setEditText("");
   };
 
-  // שמירת טיוטה בלבד
   const saveDraft = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -254,13 +241,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
-  // שמירה ואישור יחד (שמירת הטיוטה + שליחת ההמלצה לעסק)
   const saveAndApprove = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
       const newText = cleanText(editText);
-      // 1. שמירת הטיוטה
       const res1 = await fetch("/api/chat/editRecommendation", {
         method: "POST",
         headers: {
@@ -273,10 +258,8 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         const err = await res1.json();
         throw new Error(err.error || "Failed to edit");
       }
-      // 2. אישור והשליחה
       await approveRecommendation(id);
 
-      // עדכון סטייט מקומי באופן מיידי
       setRecommendations((prev) =>
         prev.map((r) =>
           r._id === id || r.id === id
@@ -296,7 +279,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
-  // סינון המלצות ממתינות והיסטוריית המלצות
   const pending = recommendations.filter((r) => r.status === "pending");
   const history = recommendations.filter(
     (r) => r.status === "approved" || r.status === "rejected"
@@ -383,7 +365,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
       <hr />
 
-      {/* כפתור לסירוגין להראות או להסתיר את ההיסטוריה */}
       <button
         onClick={() => setShowHistory((show) => !show)}
         style={{

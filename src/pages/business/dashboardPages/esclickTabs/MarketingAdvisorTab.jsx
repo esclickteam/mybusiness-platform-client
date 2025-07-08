@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Markdown from "markdown-to-jsx";
 import "./AdvisorChat.css";
 
@@ -23,7 +23,8 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
     throw new Error("Missing VITE_API_URL environment variable");
   }
 
-  const sendMessage = async (newMessages) => {
+  const sendMessage = useCallback(async (newMessages) => {
+    if (loading) return;  // מניעת שליחה כפולה
     setLoading(true);
     const lastUserMessage = newMessages.filter(m => m.role === "user").slice(-1)[0]?.content || "";
 
@@ -57,30 +58,32 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [businessId, conversationId, loading, apiBaseUrl]);
 
-  const handleSend = () => {
-    if (!userInput.trim()) return;
+  const handleSend = useCallback(() => {
+    if (!userInput.trim() || loading) return;
     const userMessage = { role: "user", content: userInput };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setUserInput("");
     setStartedChat(true);
     sendMessage(newMessages);
-  };
+  }, [userInput, loading, messages, sendMessage]);
 
-  const handlePresetQuestion = (text) => {
+  const handlePresetQuestion = useCallback((text) => {
+    if (loading) return;
     const userMessage = { role: "user", content: text };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setStartedChat(true);
     sendMessage(newMessages);
-  };
+  }, [loading, messages, sendMessage]);
 
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    const timer = setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+    return () => clearTimeout(timer);
   }, [messages]);
 
   return (
@@ -96,6 +99,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
               className="preset-question-btn"
               onClick={() => handlePresetQuestion(q)}
               type="button"
+              disabled={loading}
             >
               {q}
             </button>
@@ -155,6 +159,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           disabled={loading}
           dir="rtl"
+          autoFocus
         />
         <button onClick={handleSend} disabled={loading || !userInput.trim()}>
           שליחה

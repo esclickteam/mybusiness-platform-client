@@ -50,6 +50,7 @@ const AiPartnerTab = ({
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
 
+  // שמירה על פונקציה ללא שינוי בין רינדורים
   const filterText = useCallback(
     (text) =>
       text
@@ -70,6 +71,7 @@ const AiPartnerTab = ({
     return Array.from(map.values());
   }, []);
 
+  // טעינת המלצות – נפרד
   useEffect(() => {
     async function fetchRecommendations() {
       if (!businessId || !token) return;
@@ -98,6 +100,7 @@ const AiPartnerTab = ({
     if (!showHistory) fetchRecommendations();
   }, [businessId, token, filterValidUniqueRecommendations, showHistory]);
 
+  // טעינת היסטוריית פקודות AI נפרד
   const fetchAiCommandHistory = useCallback(async () => {
     if (!businessId || !token) return;
     setLoadingHistory(true);
@@ -121,6 +124,7 @@ const AiPartnerTab = ({
     if (showHistory) fetchAiCommandHistory();
   }, [showHistory, fetchAiCommandHistory]);
 
+  // התחברות לסוקט והאזנות לאירועים
   useEffect(() => {
     if (!businessId || !token) return;
 
@@ -210,7 +214,8 @@ const AiPartnerTab = ({
     };
   }, [businessId, token, conversationId, onNewRecommendation]);
 
-  const sendAiCommand = async () => {
+  // שליחת פקודת AI - useCallback
+  const sendAiCommand = useCallback(async () => {
     if (!commandText.trim()) return;
 
     const convertedCommandText = convertNaturalDateToISO(commandText);
@@ -252,8 +257,20 @@ const AiPartnerTab = ({
       setLoading(false);
       setCommandText("");
     }
-  };
+  }, [
+    commandText,
+    businessId,
+    token,
+    businessName,
+    businessType,
+    languageTone,
+    targetAudience,
+    businessGoal,
+    conversationId,
+    chat,
+  ]);
 
+  // אישור המלצה - useCallback
   const approveSuggestion = useCallback(
     async ({ id, text }) => {
       setLoading(true);
@@ -287,11 +304,13 @@ const AiPartnerTab = ({
     [businessId, token, filterText]
   );
 
+  // דחיית המלצה - useCallback
   const rejectSuggestion = useCallback((id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
     setActiveSuggestion(null);
   }, []);
 
+  // עריכת המלצה - useCallback
   const editRecommendation = useCallback(
     async ({ id, newText }) => {
       setLoading(true);
@@ -326,10 +345,12 @@ const AiPartnerTab = ({
     [token]
   );
 
+  // גלילה לאוטומטית לתחתית על כל שינוי ב-chat או suggestions
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, suggestions]);
 
+  // עדכון טקסט עריכה כשמשתנה activeSuggestion
   useEffect(() => {
     if (activeSuggestion) {
       setEditedText(activeSuggestion.text);

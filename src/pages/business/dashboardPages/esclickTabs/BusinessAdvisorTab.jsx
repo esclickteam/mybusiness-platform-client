@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Markdown from "markdown-to-jsx";
 import "./AdvisorChat.css";
 
@@ -22,10 +22,19 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     throw new Error("Missing VITE_API_URL environment variable");
   }
 
-  const sendMessage = async (promptText, conversationMessages) => {
+  // שימוש ב־useRef כדי לשמור AbortController בין רינדורים
+  const abortControllerRef = useRef(null);
+
+  const sendMessage = useCallback(async (promptText, conversationMessages) => {
     if (!businessId || !promptText.trim()) return;
+    if (loading) return;  // מניעת בקשה כפולה
 
     setLoading(true);
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();  // מבטל בקשות קודמות במידה ויש
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     const payload = {
       businessId,
@@ -43,6 +52,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
 
       const data = await response.json();
@@ -54,6 +64,10 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
+      if (error.name === "AbortError") {
+        // בקשה בוטלה - לא עושים כלום
+        return;
+      }
       console.error("שגיאה:", error);
       setMessages((prev) => [
         ...prev,
@@ -62,9 +76,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     } finally {
       setLoading(false);
     }
-  };
+  }, [businessId, businessDetails, conversationId, userId, messages, loading, apiBaseUrl]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (!userInput.trim() || loading) return;
 
     const userMessage = { role: "user", content: userInput };
@@ -73,9 +87,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     sendMessage(userInput, newMessages);
     setUserInput("");
     setStartedChat(true);
-  };
+  }, [userInput, loading, messages, sendMessage]);
 
-  const handlePresetQuestion = (question) => {
+  const handlePresetQuestion = useCallback((question) => {
     if (loading) return;
 
     const userMessage = { role: "user", content: question };
@@ -83,10 +97,14 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setMessages(newMessages);
     sendMessage(question, newMessages);
     setStartedChat(true);
-  };
+  }, [loading, messages, sendMessage]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    // גלילה חלקה לאחר עדכון ההודעות, עם דיליי קטן לוודא שהDOM מעודכן
+    const timer = setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+    return () => clearTimeout(timer);
   }, [messages]);
 
   return (
@@ -160,6 +178,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           disabled={loading}
           dir="rtl"
+          autoFocus
         />
         <button onClick={handleSubmit} disabled={loading || !userInput.trim()}>
           שליחה

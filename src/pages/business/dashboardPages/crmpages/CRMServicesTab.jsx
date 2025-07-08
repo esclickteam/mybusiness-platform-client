@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import "./CRMServicesTab.css";
 import API from "@api";
 import { useAuth } from "../../../../context/AuthContext";
@@ -37,11 +37,13 @@ const CRMServicesTab = () => {
     fetchServices();
   }, []);
 
-  const filteredServices = services.filter((service) =>
-    service.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredServices = useMemo(() => {
+    return services.filter((service) =>
+      service.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, services]);
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setNewService({
       name: "",
       description: "",
@@ -51,10 +53,10 @@ const CRMServicesTab = () => {
       imageFile: null,
     });
     setEditingService(null);
-  };
+  }, []);
 
-  const handleAddOrUpdateService = async () => {
-    if (!newService.name || newService.price === "") {
+  const handleAddOrUpdateService = useCallback(async () => {
+    if (!newService.name.trim() || newService.price === "") {
       alert("נא למלא שם שירות ומחיר");
       return;
     }
@@ -65,8 +67,8 @@ const CRMServicesTab = () => {
 
     try {
       const formData = new FormData();
-      formData.append("name", newService.name);
-      formData.append("description", newService.description);
+      formData.append("name", newService.name.trim());
+      formData.append("description", newService.description.trim());
       formData.append("duration", durationTotal.toString());
       formData.append("price", newService.price);
       if (newService.imageFile) {
@@ -96,9 +98,9 @@ const CRMServicesTab = () => {
       alert("שגיאה בשמירת השירות");
       console.error(error);
     }
-  };
+  }, [newService, editingService, resetForm, services]);
 
-  const handleEdit = (service) => {
+  const handleEdit = useCallback((service) => {
     setEditingService(service);
     const hours = Math.floor(service.duration / 60).toString();
     const minutes = (service.duration % 60).toString();
@@ -111,9 +113,9 @@ const CRMServicesTab = () => {
       imageFile: null,
     });
     setShowAddForm(true);
-  };
+  }, []);
 
-  const handleDelete = async (serviceId) => {
+  const handleDelete = useCallback(async (serviceId) => {
     if (!window.confirm("בטוח שברצונך למחוק את השירות?")) return;
 
     try {
@@ -123,7 +125,7 @@ const CRMServicesTab = () => {
       alert("שגיאה במחיקת השירות");
       console.error(err);
     }
-  };
+  }, []);
 
   return (
     <div className="crm-services-tab" dir="rtl">
@@ -162,7 +164,7 @@ const CRMServicesTab = () => {
               type="text"
               value={newService.name}
               onChange={(e) =>
-                setNewService({ ...newService, name: e.target.value })
+                setNewService((prev) => ({ ...prev, name: e.target.value }))
               }
               placeholder="לדוגמה: טיפול פנים"
               required
@@ -175,7 +177,7 @@ const CRMServicesTab = () => {
               type="text"
               value={newService.description}
               onChange={(e) =>
-                setNewService({ ...newService, description: e.target.value })
+                setNewService((prev) => ({ ...prev, description: e.target.value }))
               }
               placeholder="פירוט על השירות..."
             />
@@ -186,7 +188,7 @@ const CRMServicesTab = () => {
             <select
               value={newService.durationHours}
               onChange={(e) =>
-                setNewService({ ...newService, durationHours: e.target.value })
+                setNewService((prev) => ({ ...prev, durationHours: e.target.value }))
               }
             >
               {[...Array(24)].map((_, i) => (
@@ -198,7 +200,7 @@ const CRMServicesTab = () => {
             <select
               value={newService.durationMinutes}
               onChange={(e) =>
-                setNewService({ ...newService, durationMinutes: e.target.value })
+                setNewService((prev) => ({ ...prev, durationMinutes: e.target.value }))
               }
             >
               {[0, 15, 30, 45].map((m) => (
@@ -215,7 +217,7 @@ const CRMServicesTab = () => {
               type="number"
               value={newService.price}
               onChange={(e) =>
-                setNewService({ ...newService, price: e.target.value })
+                setNewService((prev) => ({ ...prev, price: e.target.value }))
               }
               placeholder="לדוגמה: 250"
               min="0"
@@ -229,7 +231,7 @@ const CRMServicesTab = () => {
               type="file"
               accept="image/*"
               onChange={(e) =>
-                setNewService({ ...newService, imageFile: e.target.files[0] })
+                setNewService((prev) => ({ ...prev, imageFile: e.target.files[0] }))
               }
             />
           </label>
@@ -292,13 +294,11 @@ const CRMServicesTab = () => {
                     </div>
                   </div>
                 </td>
-                <td style={{ textAlign: "center", padding: "8px" }}>
-                  {service.duration}
-                </td>
-                <td style={{ textAlign: "center", padding: "8px" }}>
-                  {service.price}
-                </td>
-                <td style={{ textAlign: "center", padding: "8px", whiteSpace: "nowrap" }}>
+                <td style={{ textAlign: "center", padding: "8px" }}>{service.duration}</td>
+                <td style={{ textAlign: "center", padding: "8px" }}>{service.price}</td>
+                <td
+                  style={{ textAlign: "center", padding: "8px", whiteSpace: "nowrap" }}
+                >
                   <button
                     onClick={() => handleEdit(service)}
                     className="action-btn edit-btn"

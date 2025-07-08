@@ -15,7 +15,6 @@ const weekdays = [
 export default function WorkHoursTab() {
   const [weeklyHours, setWeeklyHours] = useState({});
 
-  // טעינת שעות מהשרת בהטמעה ראשונית
   useEffect(() => {
     async function fetchWorkHours() {
       try {
@@ -31,16 +30,17 @@ export default function WorkHoursTab() {
   const handleChange = (dayIdx, field, value) => {
     setWeeklyHours(prev => ({
       ...prev,
-      [dayIdx]: prev[dayIdx]
-        ? { ...prev[dayIdx], [field]: value }
-        : { start: "", end: "" }
+      [dayIdx]: {
+        ...(prev[dayIdx] ?? { start: "", end: "" }),
+        [field]: value,
+      }
     }));
   };
 
   const handleToggleClosed = dayIdx => {
     setWeeklyHours(prev => ({
       ...prev,
-      [dayIdx]: prev[dayIdx] ? null : { start: "", end: "" }
+      [dayIdx]: prev[dayIdx] === null ? { start: "", end: "" } : null,
     }));
   };
 
