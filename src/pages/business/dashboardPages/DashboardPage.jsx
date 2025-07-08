@@ -2,9 +2,9 @@ import React, {
   useEffect,
   useState,
   useRef,
-  createRef,
   Suspense,
   useCallback,
+  useMemo,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../api";
@@ -104,7 +104,7 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [selectedDate, setSelectedDate] = useState(today);
   const [alert, setAlert] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
@@ -112,7 +112,15 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const safeEmit = (socket, event, data, callback) => {
+  // שמירת refs יציבים עם useRef
+  const cardsRef = useRef(null);
+  const insightsRef = useRef(null);
+  const chartsRef = useRef(null);
+  const appointmentsRef = useRef(null);
+  const nextActionsRef = useRef(null);
+  const weeklySummaryRef = useRef(null);
+
+  const safeEmit = useCallback((socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
       console.warn(`Socket disconnected, cannot emit event ${event}`);
       if (typeof callback === "function") callback({ ok: false, error: "Socket disconnected" });
@@ -121,7 +129,7 @@ const DashboardPage = () => {
     socket.emit(event, data, (...args) => {
       if (typeof callback === "function") callback(...args);
     });
-  };
+  }, []);
 
   const handleApproveRecommendation = useCallback((recommendationId) => {
     if (!socketRef.current) {
@@ -145,9 +153,9 @@ const DashboardPage = () => {
         console.error("שגיאה באישור המלצה:", res.error);
       }
     });
-  }, []);
+  }, [safeEmit]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     if (!businessId) return;
     setLoading(true);
     setError(null);
@@ -161,7 +169,7 @@ const DashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [businessId, refreshAccessToken, logout]);
 
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -201,14 +209,15 @@ const DashboardPage = () => {
       });
 
       sock.on("dashboardUpdate", (newStats) => {
-        console.log("dashboardUpdate received", newStats);
         setStats(newStats);
         localStorage.setItem("dashboardStats", JSON.stringify(newStats));
       });
 
       sock.on('profileViewsUpdated', (data) => {
         if (!data || typeof data.views_count !== 'number') return;
-        setStats((oldStats) => oldStats ? { ...oldStats, views_count: data.views_count } : oldStats);
+        setStats((oldStats) =>
+          oldStats ? { ...oldStats, views_count: data.views_count } : oldStats
+        );
       });
 
       sock.on("appointmentCreated", (newAppointment) => {
@@ -283,15 +292,13 @@ const DashboardPage = () => {
         });
       });
 
-      // כאן השינוי החשוב: הוספת ביקורת חדשה למערך ולהגדלת הספירה
       sock.on('reviewCreated', (review) => {
-  console.log('reviewCreated arrived', review);
-  setStats(old => ({
-    ...old,
-    reviews_count: review.newCount ?? ((old.reviews_count||0) + 1),
-    reviews: [review, ...(old.reviews||[])],
-  }));
-});
+        setStats(old => ({
+          ...old,
+          reviews_count: review.newCount ?? ((old.reviews_count || 0) + 1),
+          reviews: [review, ...(old.reviews || [])],
+        }));
+      });
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
@@ -311,7 +318,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken]);
+  }, [initialized, businessId, logout, refreshAccessToken, selectedDate, loadStats]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -325,7 +332,7 @@ const DashboardPage = () => {
         });
       }
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.state]);
 
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
@@ -334,11 +341,14 @@ const DashboardPage = () => {
   if (error) return <p className="error-text">{alert || error}</p>;
 
   const effectiveStats = stats || {};
-  const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
-    enrichAppointment(appt, effectiveStats)
+
+  // useMemo לחישוב appointments עם העשרה, רק כש- stats משתנה
+  const enrichedAppointments = useMemo(
+    () => (effectiveStats.appointments || []).map((appt) => enrichAppointment(appt, effectiveStats)),
+    [effectiveStats]
   );
 
-  const getUpcomingAppointmentsCount = (appointments) => {
+  const getUpcomingAppointmentsCount = useCallback((appointments) => {
     const now = new Date();
     const endOfWeek = new Date();
     endOfWeek.setDate(now.getDate() + 7);
@@ -346,19 +356,14 @@ const DashboardPage = () => {
       const apptDate = new Date(appt.date);
       return apptDate >= now && apptDate <= endOfWeek;
     }).length;
-  };
+  }, []);
 
-  const syncedStats = {
+  const upcomingCount = useMemo(() => getUpcomingAppointmentsCount(enrichedAppointments), [enrichedAppointments, getUpcomingAppointmentsCount]);
+
+  const syncedStats = useMemo(() => ({
     ...effectiveStats,
     messages_count: effectiveStats.messages_count || 0,
-  };
-
-  const cardsRef = createRef();
-  const insightsRef = createRef();
-  const chartsRef = createRef();
-  const appointmentsRef = createRef();
-  const nextActionsRef = createRef();
-  const weeklySummaryRef = createRef();
+  }), [effectiveStats]);
 
   return (
     <div className="dashboard-container">
@@ -371,7 +376,6 @@ const DashboardPage = () => {
 
       {alert && <p className="alert-text">{alert}</p>}
 
-      {/* המלצות AI אם יש */}
       {recommendations.length > 0 && (
         <section
           className="recommendations-section"
@@ -443,7 +447,7 @@ const DashboardPage = () => {
           <MemoizedInsights
             stats={{
               ...syncedStats,
-              upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
+              upcoming_appointments: upcomingCount,
             }}
           />
         </div>
