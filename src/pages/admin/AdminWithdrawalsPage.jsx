@@ -46,7 +46,7 @@ const AdminWithdrawalsPage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // עדכון הכתובת של הקבלה שהתקבלה מהשרת (URL מלא מ-Cloudinary)
+      // עדכון כתובת ה-URL של הקבלה שהתקבלה מהשרת (URL מלא מ-Cloudinary)
       setWithdrawals(prev =>
         prev.map(w =>
           w.id === withdrawalId ? { ...w, receiptUrl: res.data.receiptUrl } : w

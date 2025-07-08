@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,21 +14,43 @@
   <link rel="manifest" href="/manifest.json" />
   <meta http-equiv="Content-Language" content="he" />
 
+  <!-- טעינת פונטים ו- CSS קריטי מראש -->
+  <link rel="preload" href="/fonts/myfont.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" href="/index.css" as="style" />
+  <link rel="preload" href="/styles/accessibility-style.css" as="style" />
+
   <!-- CSS גלובלי -->
   <link rel="stylesheet" href="/index.css" />
   <link rel="stylesheet" href="/styles/accessibility-style.css" />
-  <script type="module" crossorigin src="/assets/index-DgSI46oQ.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-JhrCYaOA.css">
+
+  <!-- אפשר להוסיף כאן CSS קריטי מוטמע ב-inline אם יש -->
+  <style>
+    /* דוגמה לסגנונות קריטיים */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      direction: rtl;
+    }
+  </style>
+
+  <!-- סקריפט CardCom LowProfile SDK -->
+  <script
+    src="https://secure.cardcom.solutions/EasyCheckout/js/Checkout.js"
+    async
+    defer
+  ></script>
+  <script type="module" crossorigin src="/assets/index-B3nJCeaC.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-B29DLvy6.css">
 </head>
 <body>
   <!-- כאן React יטען את האפליקציה -->
   <div id="root"></div>
   <div id="popup-root"></div>
 
-  <!-- סקריפט הראשי של React -->
-  <!-- ב-Vite, הקובץ יתווסף אוטומטית עם hash אחרי הבנייה -->
+  <!-- סקריפט הראשי של React -->
 
-  <!-- קוד נגישות EqualWeb -->
+  <!-- קוד נגישות EqualWeb - דחה טעינת הסקריפט -->
   <script>
     window.interdeal = {
       sitekey: "b060e41b9209f7660ba072aacbc11ef1",
@@ -48,7 +70,7 @@
     (function (doc, head, body) {
       var coreCall = doc.createElement("script");
       coreCall.src = interdeal.domains.js + "core/5.1.0/accessibility.js";
-      coreCall.defer = true;
+      coreCall.defer = true;  /* דחיית טעינה */
       coreCall.integrity = "sha512-TcsprTlCCE0u/G5TN3zikzkynCEIRcfd96+RejMcyd2HFPnTpVUDxumXmFb/rSJ3ogQM+b/yvYWLwV6duAuJQg==";
       coreCall.crossOrigin = "anonymous";
       coreCall.setAttribute("data-cfasync", true);

@@ -25,7 +25,7 @@ export default function ClientDashboard() {
             `client-tab-button ${isActive ? "active" : ""}`
           }
         >
-          📄 ההזמנות שלי
+          📄 הפגישות שלי
         </NavLink>
 
         <NavLink
