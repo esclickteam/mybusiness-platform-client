@@ -78,7 +78,7 @@ function BusinessJoin() {
           <li><Link to="/terms">📜 תקנון</Link></li>
           <li><Link to="/contact">📞 יצירת קשר</Link></li>
         </ul>
-        <p className="copyright">כל הזכויות שמורות © Eshet Asakim</p>
+        <p className="copyright">כל הזכויות שמורות © עסקליק</p>
       </footer>
     </div>
   );

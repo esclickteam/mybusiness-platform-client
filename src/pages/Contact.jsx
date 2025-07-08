@@ -67,7 +67,7 @@ function Contact() {
       </form>
 
       <p className="contact-email">
-        ✉️ ניתן גם לפנות ישירות במייל: <strong>eshetasakim@gmail.com</strong>
+        ✉️ ניתן גם לפנות ישירות במייל: <strong>support@esclick.co.il</strong>
       </p>
 
       {/* תחתית הדף */}
