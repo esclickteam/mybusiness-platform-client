@@ -81,18 +81,9 @@ function countItemsInLastWeek(items, dateKey = "date") {
 async function fetchDashboardStats(businessId, refreshAccessToken) {
   const token = await refreshAccessToken();
   if (!token) throw new Error("No token");
-  const cached = localStorage.getItem("dashboardStats");
-  if (cached) {
-    try {
-      return JSON.parse(cached);
-    } catch {
-      // ignore parsing error
-    }
-  }
   const res = await API.get(`/business/${businessId}/stats`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  localStorage.setItem("dashboardStats", JSON.stringify(res.data));
   return res.data;
 }
 
@@ -121,66 +112,56 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const safeEmit = useCallback((socket, event, data, callback) => {
+  const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
       console.warn(`Socket disconnected, cannot emit event ${event}`);
-      if (typeof callback === "function")
-        callback({ ok: false, error: "Socket disconnected" });
+      if (typeof callback === "function") callback({ ok: false, error: "Socket disconnected" });
       return;
     }
     socket.emit(event, data, (...args) => {
       if (typeof callback === "function") callback(...args);
     });
+  };
+
+  const handleApproveRecommendation = useCallback((recommendationId) => {
+    if (!socketRef.current) {
+      alert("Socket לא מחובר, נסה שוב מאוחר יותר");
+      return;
+    }
+    if (socketRef.current.disconnected) {
+      alert("Socket מנותק, נסה שוב מאוחר יותר");
+      return;
+    }
+    safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
+      if (!res) {
+        console.error("No response object received in callback");
+        return;
+      }
+      if (res.ok) {
+        alert("ההמלצה אושרה ונשלחה ללקוח");
+        setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
+      } else {
+        alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
+        console.error("שגיאה באישור המלצה:", res.error);
+      }
+    });
   }, []);
 
-  const handleApproveRecommendation = useCallback(
-    (recommendationId) => {
-      if (!socketRef.current) {
-        alert("Socket לא מחובר, נסה שוב מאוחר יותר");
-        return;
-      }
-      if (socketRef.current.disconnected) {
-        alert("Socket מנותק, נסה שוב מאוחר יותר");
-        return;
-      }
-      safeEmit(
-        socketRef.current,
-        "approveRecommendation",
-        { recommendationId },
-        (res) => {
-          if (!res) {
-            console.error("No response object received in callback");
-            return;
-          }
-          if (res.ok) {
-            alert("ההמלצה אושרה ונשלחה ללקוח");
-            setRecommendations((prev) =>
-              prev.filter((r) => r.recommendationId !== recommendationId)
-            );
-          } else {
-            alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
-            console.error("שגיאה באישור המלצה:", res.error);
-          }
-        }
-      );
-    },
-    [safeEmit]
-  );
-
-  const loadStats = useCallback(async () => {
+  const loadStats = async () => {
     if (!businessId) return;
     setLoading(true);
     setError(null);
     try {
       const data = await fetchDashboardStats(businessId, refreshAccessToken);
       setStats(data);
+      localStorage.setItem("dashboardStats", JSON.stringify(data));
     } catch (err) {
       setError("❌ שגיאה בטעינת נתונים מהשרת");
       if (err.message === "No token") logout();
     } finally {
       setLoading(false);
     }
-  }, [businessId, refreshAccessToken, logout]);
+  };
 
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -225,19 +206,13 @@ const DashboardPage = () => {
         localStorage.setItem("dashboardStats", JSON.stringify(newStats));
       });
 
-      sock.on("profileViewsUpdated", (data) => {
-        if (!data || typeof data.views_count !== "number") return;
-        setStats((oldStats) =>
-          oldStats ? { ...oldStats, views_count: data.views_count } : oldStats
-        );
+      sock.on('profileViewsUpdated', (data) => {
+        if (!data || typeof data.views_count !== 'number') return;
+        setStats((oldStats) => oldStats ? { ...oldStats, views_count: data.views_count } : oldStats);
       });
 
       sock.on("appointmentCreated", (newAppointment) => {
-        if (
-          !newAppointment.business ||
-          newAppointment.business.toString() !== businessId.toString()
-        )
-          return;
+        if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
         setStats((oldStats) => {
           if (!oldStats) return oldStats;
           const enriched = enrichAppointment(newAppointment, oldStats);
@@ -258,18 +233,14 @@ const DashboardPage = () => {
       });
 
       sock.on("appointmentUpdated", (updatedAppointment) => {
-        if (
-          !updatedAppointment.business ||
-          updatedAppointment.business.toString() !== businessId.toString()
-        )
-          return;
+        if (!updatedAppointment.business || updatedAppointment.business.toString() !== businessId.toString()) return;
         setStats((oldStats) => {
           if (!oldStats) return oldStats;
           const enriched = enrichAppointment(updatedAppointment, oldStats);
-          const updatedAppointments = (oldStats.appointments || []).map((appt) =>
+          const updatedAppointments = (oldStats.appointments || []).map(appt =>
             appt._id === updatedAppointment._id ? enriched : appt
           );
-          if (!updatedAppointments.find((a) => a._id === updatedAppointment._id)) {
+          if (!updatedAppointments.find(a => a._id === updatedAppointment._id)) {
             updatedAppointments.push(enriched);
           }
           return {
@@ -301,7 +272,7 @@ const DashboardPage = () => {
         });
       });
 
-      sock.on("allReviewsUpdated", (allReviews) => {
+      sock.on('allReviewsUpdated', (allReviews) => {
         setStats((oldStats) => {
           if (!oldStats) return oldStats;
           return {
@@ -312,12 +283,12 @@ const DashboardPage = () => {
         });
       });
 
-      sock.on("reviewCreated", (review) => {
-        console.log("reviewCreated arrived", review);
-        setStats((old) => ({
+      sock.on('reviewCreated', (review) => {
+        console.log('reviewCreated arrived', review);
+        setStats(old => ({
           ...old,
-          reviews_count: review.newCount ?? (old.reviews_count || 0) + 1,
-          reviews: [review, ...(old.reviews || [])],
+          reviews_count: review.newCount ?? ((old.reviews_count||0) + 1),
+          reviews: [review, ...(old.reviews||[])],
         }));
       });
 
@@ -339,7 +310,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, selectedDate, loadStats]);
+  }, [initialized, businessId, logout, refreshAccessToken]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -353,7 +324,7 @@ const DashboardPage = () => {
         });
       }
     }
-  }, [location.pathname, location.state]);
+  }, [location.pathname]);
 
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
@@ -362,32 +333,26 @@ const DashboardPage = () => {
   if (error) return <p className="error-text">{alert || error}</p>;
 
   const effectiveStats = stats || {};
+  const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
+    enrichAppointment(appt, effectiveStats)
+  );
 
-  // השתמש ב־useMemo לעיבוד פגישות
-  const enrichedAppointments = useMemo(() => {
-    return (effectiveStats.appointments || []).map((appt) =>
-      enrichAppointment(appt, effectiveStats)
-    );
-  }, [effectiveStats.appointments, effectiveStats]);
-
-  // ספירת פגישות קרובות לשבוע הקרוב
-  const upcomingAppointmentsCount = useMemo(() => {
+  const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
     const endOfWeek = new Date();
     endOfWeek.setDate(now.getDate() + 7);
-    return enrichedAppointments.filter((appt) => {
+    return appointments.filter((appt) => {
       const apptDate = new Date(appt.date);
       return apptDate >= now && apptDate <= endOfWeek;
     }).length;
-  }, [enrichedAppointments]);
+  };
 
-  // סינכרון סטטיסטיקות עם ברירת מחדל ל־messages_count
-  const syncedStats = useMemo(() => ({
+  const syncedStats = {
     ...effectiveStats,
     messages_count: effectiveStats.messages_count || 0,
-  }), [effectiveStats]);
+  };
 
-  // שימוש ב־useRef לשמירת refs יציבים בין רינדורים
+  // השינוי החשוב פה - שימוש ב useRef במקום createRef
   const cardsRef = useRef();
   const insightsRef = useRef();
   const chartsRef = useRef();
@@ -396,7 +361,7 @@ const DashboardPage = () => {
   const weeklySummaryRef = useRef();
 
   return (
-    <div className="dashboard-container" dir="rtl">
+    <div className="dashboard-container">
       <h2 className="business-dashboard-header">
         📊 דשבורד העסק
         <span className="greeting">
@@ -406,6 +371,7 @@ const DashboardPage = () => {
 
       {alert && <p className="alert-text">{alert}</p>}
 
+      {/* המלצות AI אם יש */}
       {recommendations.length > 0 && (
         <section
           className="recommendations-section"
@@ -468,10 +434,7 @@ const DashboardPage = () => {
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
         <div ref={cardsRef}>
-          <MemoizedDashboardCards
-            stats={syncedStats}
-            unreadCount={syncedStats.messages_count}
-          />
+          <MemoizedDashboardCards stats={syncedStats} unreadCount={syncedStats.messages_count} />
         </div>
       </Suspense>
 
@@ -480,17 +443,14 @@ const DashboardPage = () => {
           <MemoizedInsights
             stats={{
               ...syncedStats,
-              upcoming_appointments: upcomingAppointmentsCount,
+              upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
             }}
           />
         </div>
       </Suspense>
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
-        <div
-          ref={chartsRef}
-          style={{ marginTop: 20, width: "100%", minWidth: 320 }}
-        >
+        <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
           <MemoizedBarChartComponent
             appointments={enrichedAppointments}
             title="לקוחות שהזמינו פגישות לפי חודשים 📊"
