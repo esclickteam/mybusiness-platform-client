@@ -4,50 +4,45 @@ import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 
 export default function FavoritesPage() {
-  /* -------------------- state -------------------- */
+  /* -------------------- context -------------------- */
+  const { user, token, initialized, setUser } = useAuth();
+  const navigate = useNavigate();
+
+  /* -------------------- state ---------------------- */
   const [favorites, setFavorites] = useState([]);
   const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState(null);
 
-  /* -------------------- context & nav ------------ */
-  const { user, setUser } = useAuth();   // getUser + setter מה-Context
-  const navigate = useNavigate();
-
-  /* -------------------- effect ------------------- */
+  /* -------------------- effect --------------------- */
   useEffect(() => {
-    const controller = new AbortController();  // ביטול אם component מתפרק
+    if (!initialized) return;              // מחכים שה-AuthProvider יסיים טעינה
+
+    const controller = new AbortController();
 
     const fetchFavorites = async () => {
       setLoading(true);
       setError(null);
 
-      let isLoggedIn = !!user?._id;
-      let res;
-
       try {
-        /* --- קריאה יחידה ל-/auth/me (ה-Axios-Interceptor מוסיף JWT) --- */
-        res = await API.get("/auth/me", {
+        const res = await API.get("/auth/me", {
           signal: controller.signal,
           withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
-        /* --- אם אין משתמש בתגובה → הפנייה להתחברות --- */
+        /* ---------- אם אין משתמש → Login ---------- */
         if (!res.data?._id) {
           navigate("/login", { replace: true });
           return;
         }
 
-        /* --- אם context עדיין ריק → עדכון --- */
-        if (!isLoggedIn) {
-          setUser?.(res.data);
-          isLoggedIn = true;
-        }
+        /* ---------- עדכון Context (פעם ראשונה) ---- */
+        if (!user?._id) setUser?.(res.data);
 
-        /* --- שמירת מועדפים (גם אם ריק) --- */
+        /* ---------- שמירת מועדפים ------------------ */
         setFavorites(Array.isArray(res.data.favorites) ? res.data.favorites : []);
 
       } catch (err) {
-        /* 401 → Login ;  אחר→ הודעת שגיאה */
         if (err.response?.status === 401) {
           navigate("/login", { replace: true });
         } else if (err.name !== "CanceledError") {
@@ -62,9 +57,9 @@ export default function FavoritesPage() {
     fetchFavorites();
     return () => controller.abort();
 
-  }, [user?._id]);  // רץ רק כשה-ID משתנה
+  }, [initialized, user?._id, token, setUser, navigate]);
 
-  /* -------------------- UI ----------------------- */
+  /* -------------------- UI ------------------------- */
   if (loading)  return <div>טוען מועדפים...</div>;
   if (error)    return <div style={{ color: "red" }}>{error}</div>;
   if (!favorites.length)
