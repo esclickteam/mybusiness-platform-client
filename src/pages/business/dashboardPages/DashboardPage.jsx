@@ -2,9 +2,9 @@ import React, {
   useEffect,
   useState,
   useRef,
+  createRef,
   Suspense,
   useCallback,
-  useMemo,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../api";
@@ -98,14 +98,13 @@ const MemoizedDailyAgenda = React.memo(DailyAgenda);
 const MemoizedDashboardNav = React.memo(DashboardNav);
 
 const DashboardPage = () => {
-  // כל ה-hooks קרואים בראש הקומפוננטה
   const { user, initialized, logout, refreshAccessToken } = useAuth();
   const businessId = getBusinessId();
   const socketRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const today = new Date().toISOString().split("T")[0];
   const [selectedDate, setSelectedDate] = useState(today);
   const [alert, setAlert] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
@@ -113,15 +112,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // refs יציבים
-  const cardsRef = useRef(null);
-  const insightsRef = useRef(null);
-  const chartsRef = useRef(null);
-  const appointmentsRef = useRef(null);
-  const nextActionsRef = useRef(null);
-  const weeklySummaryRef = useRef(null);
-
-  const safeEmit = useCallback((socket, event, data, callback) => {
+  const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
       console.warn(`Socket disconnected, cannot emit event ${event}`);
       if (typeof callback === "function") callback({ ok: false, error: "Socket disconnected" });
@@ -130,11 +121,15 @@ const DashboardPage = () => {
     socket.emit(event, data, (...args) => {
       if (typeof callback === "function") callback(...args);
     });
-  }, []);
+  };
 
   const handleApproveRecommendation = useCallback((recommendationId) => {
-    if (!socketRef.current || socketRef.current.disconnected) {
-      alert("Socket לא מחובר או מנותק, נסה שוב מאוחר יותר");
+    if (!socketRef.current) {
+      alert("Socket לא מחובר, נסה שוב מאוחר יותר");
+      return;
+    }
+    if (socketRef.current.disconnected) {
+      alert("Socket מנותק, נסה שוב מאוחר יותר");
       return;
     }
     safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
@@ -150,9 +145,9 @@ const DashboardPage = () => {
         console.error("שגיאה באישור המלצה:", res.error);
       }
     });
-  }, [safeEmit]);
+  }, []);
 
-  const loadStats = useCallback(async () => {
+  const loadStats = async () => {
     if (!businessId) return;
     setLoading(true);
     setError(null);
@@ -166,7 +161,7 @@ const DashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [businessId, refreshAccessToken, logout]);
+  };
 
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -206,15 +201,14 @@ const DashboardPage = () => {
       });
 
       sock.on("dashboardUpdate", (newStats) => {
+        console.log("dashboardUpdate received", newStats);
         setStats(newStats);
         localStorage.setItem("dashboardStats", JSON.stringify(newStats));
       });
 
       sock.on('profileViewsUpdated', (data) => {
         if (!data || typeof data.views_count !== 'number') return;
-        setStats((oldStats) =>
-          oldStats ? { ...oldStats, views_count: data.views_count } : oldStats
-        );
+        setStats((oldStats) => oldStats ? { ...oldStats, views_count: data.views_count } : oldStats);
       });
 
       sock.on("appointmentCreated", (newAppointment) => {
@@ -289,13 +283,15 @@ const DashboardPage = () => {
         });
       });
 
+      // כאן השינוי החשוב: הוספת ביקורת חדשה למערך ולהגדלת הספירה
       sock.on('reviewCreated', (review) => {
-        setStats(old => ({
-          ...old,
-          reviews_count: review.newCount ?? ((old.reviews_count || 0) + 1),
-          reviews: [review, ...(old.reviews || [])],
-        }));
-      });
+  console.log('reviewCreated arrived', review);
+  setStats(old => ({
+    ...old,
+    reviews_count: review.newCount ?? ((old.reviews_count||0) + 1),
+    reviews: [review, ...(old.reviews||[])],
+  }));
+});
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
@@ -315,7 +311,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, selectedDate, loadStats]);
+  }, [initialized, businessId, logout, refreshAccessToken]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -329,9 +325,8 @@ const DashboardPage = () => {
         });
       }
     }
-  }, [location.pathname, location.state]);
+  }, [location.pathname]);
 
-  // return מוקדם רק אחרי כל ה-hooks
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
@@ -339,13 +334,11 @@ const DashboardPage = () => {
   if (error) return <p className="error-text">{alert || error}</p>;
 
   const effectiveStats = stats || {};
-
-  const enrichedAppointments = useMemo(
-    () => (effectiveStats.appointments || []).map((appt) => enrichAppointment(appt, effectiveStats)),
-    [effectiveStats]
+  const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
+    enrichAppointment(appt, effectiveStats)
   );
 
-  const getUpcomingAppointmentsCount = useCallback((appointments) => {
+  const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
     const endOfWeek = new Date();
     endOfWeek.setDate(now.getDate() + 7);
@@ -353,14 +346,19 @@ const DashboardPage = () => {
       const apptDate = new Date(appt.date);
       return apptDate >= now && apptDate <= endOfWeek;
     }).length;
-  }, []);
+  };
 
-  const upcomingCount = useMemo(() => getUpcomingAppointmentsCount(enrichedAppointments), [enrichedAppointments, getUpcomingAppointmentsCount]);
-
-  const syncedStats = useMemo(() => ({
+  const syncedStats = {
     ...effectiveStats,
     messages_count: effectiveStats.messages_count || 0,
-  }), [effectiveStats]);
+  };
+
+  const cardsRef = createRef();
+  const insightsRef = createRef();
+  const chartsRef = createRef();
+  const appointmentsRef = createRef();
+  const nextActionsRef = createRef();
+  const weeklySummaryRef = createRef();
 
   return (
     <div className="dashboard-container">
@@ -373,6 +371,7 @@ const DashboardPage = () => {
 
       {alert && <p className="alert-text">{alert}</p>}
 
+      {/* המלצות AI אם יש */}
       {recommendations.length > 0 && (
         <section
           className="recommendations-section"
@@ -444,7 +443,7 @@ const DashboardPage = () => {
           <MemoizedInsights
             stats={{
               ...syncedStats,
-              upcoming_appointments: upcomingCount,
+              upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
             }}
           />
         </div>
