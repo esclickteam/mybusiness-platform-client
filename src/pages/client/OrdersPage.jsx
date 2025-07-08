@@ -92,7 +92,9 @@ export default function OrdersPage() {
           >
             <strong>{appt.serviceName || "שירות לא ידוע"}</strong>
             <p>תאריך: {appt.date} | שעה: {appt.time}</p>
-            <p>משך: {Math.floor(appt.duration / 60)}:{(appt.duration % 60).toString().padStart(2, '0')} דקות</p>
+            <p>
+              משך: {Math.floor(appt.duration / 60)} שעות {appt.duration % 60} דקות
+            </p>
             <p>סטטוס: {appt.status || "לא ידוע"}</p>
           </li>
         ))}
