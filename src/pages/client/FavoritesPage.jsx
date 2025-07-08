@@ -7,53 +7,57 @@ export default function FavoritesPage() {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user, setUser } = useAuth(); // הוסף setUser מהקונטקסט!
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchFavorites() {
+      console.log("🔄 fetchFavorites started");
       setLoading(true);
       setError(null);
 
-      // בדיקה האם יש token מקומי (user?.token)
-      let gotUser = !!user?._id;
-      let favoritesData = [];
+      const hasLocalUser = !!user?._id;
+      console.log("👤 hasLocalUser:", hasLocalUser, "user:", user);
 
+      let res;
       try {
-        let res;
-        if (gotUser) {
-          // יש token – שלח בבקשה
+        if (hasLocalUser) {
+          console.log("🚀 Sending request with Bearer token");
           res = await API.get("/auth/me", {
             headers: { Authorization: `Bearer ${user.token}` },
             withCredentials: true,
           });
         } else {
-          // אין token, ננסה לקרוא מהמושב (cookie)
+          console.log("🌐 No local token, trying cookie-based auth");
           res = await API.get("/auth/me", { withCredentials: true });
-          if (res.data && res.data._id) {
-            // אם חוזר משתמש, נעדכן את ה־context
-            setUser && setUser(res.data);
-            gotUser = true;
+
+          if (res.data?._id) {
+            console.log("✅ Cookie auth succeeded, setting user in context:", res.data);
+            setUser(res.data);
           }
         }
 
-        if (gotUser && res.data && res.data.favorites) {
-          favoritesData = res.data.favorites;
-        } else if (!gotUser) {
-          setError("אנא התחבר כדי לראות את המועדפים שלך.");
+        console.log("📥 /auth/me response data:", res.data);
+        if (res.data?.favorites) {
+          console.log("⭐ Favorites loaded:", res.data.favorites);
+          setFavorites(res.data.favorites);
+        } else if (!hasLocalUser) {
+          console.warn("⚠️ User not authenticated, throwing login error");
+          throw new Error("אנא התחבר כדי לראות את המועדפים שלך.");
+        } else {
+          console.log("ℹ️ No favorites found");
+          setFavorites([]);
         }
-
-        setFavorites(favoritesData);
       } catch (err) {
-        console.error(err);
-        setError("שגיאה בטעינת המועדפים");
+        console.error("❌ Error fetching favorites:", err);
+        setError(err.message || "שגיאה בטעינת המועדפים");
       } finally {
+        console.log("✅ fetchFavorites finished");
         setLoading(false);
       }
     }
 
     fetchFavorites();
-    // *** הוספתי תלות גם ב-setUser
   }, [user, setUser]);
 
   if (loading) return <div>טוען מועדפים...</div>;
@@ -67,7 +71,10 @@ export default function FavoritesPage() {
         {favorites.map((biz) => (
           <li
             key={biz._id}
-            onClick={() => navigate(`/business/${biz._id}`)}
+            onClick={() => {
+              console.log("➡️ Navigating to business:", biz._id);
+              navigate(`/business/${biz._id}`);
+            }}
             style={{
               cursor: "pointer",
               padding: "10px",
