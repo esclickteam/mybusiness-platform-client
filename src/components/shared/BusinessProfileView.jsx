@@ -9,16 +9,6 @@ import "react-calendar/dist/Calendar.css";
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
 import "./BusinessProfileView.css";
 
-const TABS = [
-  "ראשי",
-  "גלריה",
-  "ביקורות",
-  "שאלות תשובות",
-  user?.role === "customer" ? "הודעות עם העסק" : "הודעות מלקוחות",
-  "יומן",
-];
-
-
 const ReviewForm = lazy(() => import("../../pages/business/dashboardPages/buildTabs/ReviewForm"));
 const ServicesSelector = lazy(() => import("../ServicesSelector"));
 const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar"));
@@ -73,6 +63,16 @@ export default function BusinessProfileView() {
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
 
+  const TABS = [
+    "ראשי",
+    "גלריה",
+    "ביקורות",
+    "שאלות תשובות",
+    user?.role === "customer" ? "הודעות עם העסק" : "הודעות מלקוחות",
+    "יומן",
+  ];
+
+  // States
   const [faqs, setFaqs] = useState([]);
   const [services, setServices] = useState([]);
   const [schedule, setSchedule] = useState({});
@@ -84,6 +84,7 @@ export default function BusinessProfileView() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [expandedReviews, setExpandedReviews] = useState({});
 
+  // Queries
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['business', bizId],
     queryFn: () => API.get(`/business/${bizId}`).then(res => res.data.business || res.data),
