@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
 import "../styles/dashboard.css";
 
-const DashboardCards = ({ stats = {} }) => {
+const DashboardCards = React.memo(({ stats = {} }) => {
+  // console.log ניתן להסיר או להוסיף לבדיקה בסביבת פיתוח בלבד
   useEffect(() => {
-    console.log("DashboardCards received stats:", stats);
+    if (process.env.NODE_ENV === "development") {
+      console.log("DashboardCards received stats:", stats);
+    }
   }, [stats]);
 
   const cards = [
@@ -28,20 +31,22 @@ const DashboardCards = ({ stats = {} }) => {
   ];
 
   return (
-    <div className="dashboard-cards-container">
+    <div className="dashboard-cards-container" role="list">
       {cards.map((card, index) => (
         <div
           key={index}
           className="dashboard-card"
           style={{ backgroundColor: card.bgColor, border: "1px solid red" }}
+          role="listitem"
+          aria-label={`${card.label}: ${card.value}`}
         >
-          <div className="card-icon">{card.icon}</div>
+          <div className="card-icon" aria-hidden="true">{card.icon}</div>
           <div className="card-title">{card.label}</div>
           <div className="card-value">{card.value}</div>
         </div>
       ))}
     </div>
   );
-};
+});
 
 export default DashboardCards;

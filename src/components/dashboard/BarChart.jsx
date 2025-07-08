@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useMediaQuery } from "react-responsive";
 import "./BarChartComponent.css";
 import {
@@ -39,19 +39,19 @@ function formatMonthlyData(appointments) {
 }
 
 const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
-  const [data, setData] = useState(() => formatMonthlyData([]));
-  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [viewMode, setViewMode] = useState("bar");
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  useEffect(() => {
-    setData(formatMonthlyData(appointments));
-  }, [appointments]);
+  const data = useMemo(() => formatMonthlyData(appointments), [appointments]);
+
+  const total = useMemo(() => data.reduce((sum, d) => sum + d.customers, 0), [data]);
+  const average = useMemo(() => total / 12, [total]);
+  const maxMonth = useMemo(() =>
+    data.reduce((max, curr) => curr.customers > max.customers ? curr : max, data[0] || {name: "-", customers: 0}),
+    [data]
+  );
 
   const showLegend = data.some(d => d.customers > 0);
-  const total = data.reduce((sum, d) => sum + d.customers, 0);
-  const average = total / 12;
-  const maxMonth = data.reduce((max, curr) =>
-    curr.customers > max.customers ? curr : max, data[0]);
 
   return (
     <div className="graph-box">
@@ -200,7 +200,7 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
         </ResponsiveContainer>
       </div>
 
-      <div style={{ textAlign: "center", fontSize: "0.85rem", color: "#4b0082", marginTop: "1rem" }}>
+      <div className="summary-text" style={{ textAlign: "center", fontSize: "0.85rem", color: "#4b0082", marginTop: "1rem" }}>
         סה"כ פגישות: {total} • ממוצע חודשי: {average.toFixed(1)} • שיא: {maxMonth.name} ({maxMonth.customers})
       </div>
     </div>

@@ -1,5 +1,4 @@
-// src/components/ChartComponent.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Bar } from "react-chartjs-2";
 import API from '../api';
 import DashboardCards from "./DashboardCards";
@@ -10,31 +9,39 @@ function ChartComponent({ businessId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      if (!businessId) {
-        setError("⚠️ מזהה העסק לא זמין.");
-        setLoading(false);
-        return;
-      }
+  const fetchStats = useCallback(async () => {
+    if (!businessId) {
+      setError("⚠️ מזהה העסק לא זמין.");
+      setLoading(false);
+      return;
+    }
 
-      try {
-        // ✅ כאן השתנה הנתיב מ-/businesses ל-/business
-        const response = await API.get(`/business/${businessId}/stats`);
-        setStats(response.data);
-      } catch (err) {
-        console.error("❌ שגיאה בטעינת סטטיסטיקות:", err);
-        setError("⚠️ לא ניתן לטעון נתונים.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    setError(null);
 
-    fetchStats();
+    try {
+      const response = await API.get(`/business/${businessId}/stats`);
+      setStats(response.data);
+    } catch (err) {
+      console.error("❌ שגיאה בטעינת סטטיסטיקות:", err);
+      setError("⚠️ לא ניתן לטעון נתונים.");
+    } finally {
+      setLoading(false);
+    }
   }, [businessId]);
 
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  if (!businessId) return <p className="error-text">⚠️ מזהה העסק לא זמין.</p>;
   if (loading) return <p className="loading-text">⏳ טוען נתונים...</p>;
-  if (error)   return <p className="error-text">{error}</p>;
+  if (error) return (
+    <>
+      <p className="error-text">{error}</p>
+      <button onClick={fetchStats}>נסה שוב</button>
+    </>
+  );
 
   const data = {
     labels: ["לקוחות", "בקשות", "הזמנות"],
@@ -42,9 +49,9 @@ function ChartComponent({ businessId }) {
       {
         label: "נתוני העסק",
         data: [
-          stats.views_count   || 0,
-          stats.requests_count|| 0,
-          stats.orders_count  || 0,
+          stats.views_count || 0,
+          stats.requests_count || 0,
+          stats.orders_count || 0,
         ],
         backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
       },
