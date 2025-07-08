@@ -16,6 +16,8 @@ import "../../../styles/dashboard.css";
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
 
+import { useQuery } from "react-query";
+
 const DashboardCards = lazyWithPreload(() =>
   import("../../../components/DashboardCards")
 );
@@ -54,6 +56,21 @@ export function preloadDashboardComponents() {
   CalendarView.preload();
   DailyAgenda.preload();
   DashboardNav.preload();
+}
+
+function useOnScreen(ref) {
+  const [isIntersecting, setIsIntersecting] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsIntersecting(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return isIntersecting;
 }
 
 function enrichAppointment(appt, business) {
@@ -108,9 +125,39 @@ const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(today);
   const [alert, setAlert] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+
+  // useRef יחיד בלבד עבור chartsRef
+  const chartsRef = useRef();
+  const chartsVisible = useOnScreen(chartsRef);
+
+  // React Query לטעינת הנתונים
+  const {
+    data: stats,
+    error,
+    isLoading,
+    refetch,
+  } = useQuery(
+    ["dashboardStats", businessId],
+    () => fetchDashboardStats(businessId, refreshAccessToken),
+    {
+      enabled: initialized && !!businessId,
+      staleTime: 60 * 1000,
+      cacheTime: 5 * 60 * 1000,
+      onError: (err) => {
+        if (err.message === "No token") logout();
+        else setAlert("❌ שגיאה בטעינת נתונים מהשרת");
+      },
+    }
+  );
+
+  // טעינה מוקדמת מתוזמנת של רכיבי הדשבורד
+  useEffect(() => {
+    if (!initialized) return;
+    const timeout = setTimeout(() => {
+      preloadDashboardComponents();
+    }, 3000);
+    return () => clearTimeout(timeout);
+  }, [initialized]);
 
   const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
@@ -147,25 +194,8 @@ const DashboardPage = () => {
     });
   }, []);
 
-  const loadStats = async () => {
-    if (!businessId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchDashboardStats(businessId, refreshAccessToken);
-      setStats(data);
-      localStorage.setItem("dashboardStats", JSON.stringify(data));
-    } catch (err) {
-      setError("❌ שגיאה בטעינת נתונים מהשרת");
-      if (err.message === "No token") logout();
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (!initialized || !businessId) return;
-    loadStats();
 
     let isMounted = true;
 
@@ -200,98 +230,18 @@ const DashboardPage = () => {
         });
       });
 
-      sock.on("dashboardUpdate", (newStats) => {
-        console.log("dashboardUpdate received", newStats);
-        setStats(newStats);
-        localStorage.setItem("dashboardStats", JSON.stringify(newStats));
-      });
+      // קריאה מחדש של הנתונים לכל אירוע socket רלוונטי
+      const refetchData = () => {
+        refetch();
+      };
 
-      sock.on('profileViewsUpdated', (data) => {
-        if (!data || typeof data.views_count !== 'number') return;
-        setStats((oldStats) => oldStats ? { ...oldStats, views_count: data.views_count } : oldStats);
-      });
-
-      sock.on("appointmentCreated", (newAppointment) => {
-        if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
-        setStats((oldStats) => {
-          if (!oldStats) return oldStats;
-          const enriched = enrichAppointment(newAppointment, oldStats);
-          const updatedAppointments = [...(oldStats.appointments || []), enriched];
-          return {
-            ...oldStats,
-            appointments: updatedAppointments,
-            appointments_count: updatedAppointments.length,
-          };
-        });
-        if (newAppointment.date) {
-          const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
-          if (apptDate === selectedDate) {
-            setSelectedDate(null);
-            setTimeout(() => setSelectedDate(apptDate), 10);
-          }
-        }
-      });
-
-      sock.on("appointmentUpdated", (updatedAppointment) => {
-        if (!updatedAppointment.business || updatedAppointment.business.toString() !== businessId.toString()) return;
-        setStats((oldStats) => {
-          if (!oldStats) return oldStats;
-          const enriched = enrichAppointment(updatedAppointment, oldStats);
-          const updatedAppointments = (oldStats.appointments || []).map(appt =>
-            appt._id === updatedAppointment._id ? enriched : appt
-          );
-          if (!updatedAppointments.find(a => a._id === updatedAppointment._id)) {
-            updatedAppointments.push(enriched);
-          }
-          return {
-            ...oldStats,
-            appointments: updatedAppointments,
-            appointments_count: updatedAppointments.length,
-          };
-        });
-        if (updatedAppointment.date) {
-          const apptDate = new Date(updatedAppointment.date).toISOString().split("T")[0];
-          if (apptDate === selectedDate) {
-            setSelectedDate(null);
-            setTimeout(() => setSelectedDate(apptDate), 10);
-          }
-        }
-      });
-
-      sock.on("allAppointmentsUpdated", (allAppointments) => {
-        setStats((oldStats) => {
-          if (!oldStats) return oldStats;
-          const enriched = Array.isArray(allAppointments)
-            ? allAppointments.map((appt) => enrichAppointment(appt, oldStats))
-            : [];
-          return {
-            ...oldStats,
-            appointments: enriched,
-            appointments_count: enriched.length,
-          };
-        });
-      });
-
-      sock.on('allReviewsUpdated', (allReviews) => {
-        setStats((oldStats) => {
-          if (!oldStats) return oldStats;
-          return {
-            ...oldStats,
-            reviews: allReviews,
-            reviews_count: allReviews.length,
-          };
-        });
-      });
-
-      // כאן השינוי החשוב: הוספת ביקורת חדשה למערך ולהגדלת הספירה
-      sock.on('reviewCreated', (review) => {
-  console.log('reviewCreated arrived', review);
-  setStats(old => ({
-    ...old,
-    reviews_count: review.newCount ?? ((old.reviews_count||0) + 1),
-    reviews: [review, ...(old.reviews||[])],
-  }));
-});
+      sock.on("dashboardUpdate", refetchData);
+      sock.on('profileViewsUpdated', refetchData);
+      sock.on("appointmentCreated", refetchData);
+      sock.on("appointmentUpdated", refetchData);
+      sock.on("allAppointmentsUpdated", refetchData);
+      sock.on('allReviewsUpdated', refetchData);
+      sock.on('reviewCreated', refetchData);
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
@@ -311,7 +261,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken]);
+  }, [initialized, businessId, logout, refreshAccessToken, refetch]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -330,8 +280,8 @@ const DashboardPage = () => {
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-  if (loading && !stats) return <DashboardSkeleton />;
-  if (error) return <p className="error-text">{alert || error}</p>;
+  if (isLoading) return <DashboardSkeleton />;
+  if (error) return <p className="error-text">{alert || error.message}</p>;
 
   const effectiveStats = stats || {};
   const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
@@ -355,7 +305,8 @@ const DashboardPage = () => {
 
   const cardsRef = createRef();
   const insightsRef = createRef();
-  const chartsRef = createRef();
+  // השתמש רק ב-useRef ל-chartsRef!
+  // const chartsRef = createRef(); // אין צורך בזה יותר
   const appointmentsRef = createRef();
   const nextActionsRef = createRef();
   const weeklySummaryRef = createRef();
@@ -371,7 +322,6 @@ const DashboardPage = () => {
 
       {alert && <p className="alert-text">{alert}</p>}
 
-      {/* המלצות AI אם יש */}
       {recommendations.length > 0 && (
         <section
           className="recommendations-section"
@@ -451,10 +401,12 @@ const DashboardPage = () => {
 
       <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
         <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-          <MemoizedBarChartComponent
-            appointments={enrichedAppointments}
-            title="לקוחות שהזמינו פגישות לפי חודשים 📊"
-          />
+          {chartsVisible && (
+            <MemoizedBarChartComponent
+              appointments={enrichedAppointments}
+              title="לקוחות שהזמינו פגישות לפי חודשים 📊"
+            />
+          )}
         </div>
       </Suspense>
 
