@@ -4,61 +4,71 @@ import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 
 export default function FavoritesPage() {
+  /* -------------------- state -------------------- */
   const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { user, setUser } = useAuth(); // הוסף setUser מהקונטקסט!
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState(null);
+
+  /* -------------------- context & nav ------------ */
+  const { user, setUser } = useAuth();   // getUser + setter מה-Context
   const navigate = useNavigate();
 
+  /* -------------------- effect ------------------- */
   useEffect(() => {
-    async function fetchFavorites() {
+    const controller = new AbortController();  // ביטול אם component מתפרק
+
+    const fetchFavorites = async () => {
       setLoading(true);
       setError(null);
 
-      // בדיקה האם יש token מקומי (user?.token)
-      let gotUser = user && user.token;
-      let favoritesData = [];
+      let isLoggedIn = !!user?._id;
+      let res;
 
       try {
-        let res;
-        if (gotUser) {
-          // יש token – שלח בבקשה
-          res = await API.get("/auth/me", {
-            headers: { Authorization: `Bearer ${user.token}` },
-            withCredentials: true,
-          });
-        } else {
-          // אין token, ננסה לקרוא מהמושב (cookie)
-          res = await API.get("/auth/me", { withCredentials: true });
-          if (res.data && res.data._id) {
-            // אם חוזר משתמש, נעדכן את ה־context
-            setUser && setUser(res.data);
-            gotUser = true;
-          }
+        /* --- קריאה יחידה ל-/auth/me (ה-Axios-Interceptor מוסיף JWT) --- */
+        res = await API.get("/auth/me", {
+          signal: controller.signal,
+          withCredentials: true,
+        });
+
+        /* --- אם אין משתמש בתגובה → הפנייה להתחברות --- */
+        if (!res.data?._id) {
+          navigate("/login", { replace: true });
+          return;
         }
 
-        if (gotUser && res.data && res.data.favorites) {
-          favoritesData = res.data.favorites;
-        } else if (!gotUser) {
-          setError("אנא התחבר כדי לראות את המועדפים שלך.");
+        /* --- אם context עדיין ריק → עדכון --- */
+        if (!isLoggedIn) {
+          setUser?.(res.data);
+          isLoggedIn = true;
         }
 
-        setFavorites(favoritesData);
+        /* --- שמירת מועדפים (גם אם ריק) --- */
+        setFavorites(Array.isArray(res.data.favorites) ? res.data.favorites : []);
+
       } catch (err) {
-        console.error(err);
-        setError("שגיאה בטעינת המועדפים");
+        /* 401 → Login ;  אחר→ הודעת שגיאה */
+        if (err.response?.status === 401) {
+          navigate("/login", { replace: true });
+        } else if (err.name !== "CanceledError") {
+          console.error(err);
+          setError("שגיאה בטעינת המועדפים");
+        }
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchFavorites();
-    // *** הוספתי תלות גם ב-setUser
-  }, [user, setUser]);
+    return () => controller.abort();
 
-  if (loading) return <div>טוען מועדפים...</div>;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
-  if (favorites.length === 0) return <div>אין לך עסקים במועדפים כרגע.</div>;
+  }, [user?._id]);  // רץ רק כשה-ID משתנה
+
+  /* -------------------- UI ----------------------- */
+  if (loading)  return <div>טוען מועדפים...</div>;
+  if (error)    return <div style={{ color: "red" }}>{error}</div>;
+  if (!favorites.length)
+    return <div>אין לך עסקים במועדפים כרגע.</div>;
 
   return (
     <div style={{ padding: 20 }}>
