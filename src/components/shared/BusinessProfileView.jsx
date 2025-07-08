@@ -209,6 +209,13 @@ export default function BusinessProfileView() {
     if (calendarVisible) setCalendarLoaded(true);
   }, [calendarVisible]);
 
+  // טען מיידית את התוכן בטאבים פעילים כדי למנוע בעיות טעינה
+  useEffect(() => {
+    if (currentTab === "גלריה") setGalleryLoaded(true);
+    if (currentTab === "ביקורות") setReviewsLoaded(true);
+    if (currentTab === "יומן") setCalendarLoaded(true);
+  }, [currentTab]);
+
   if (isLoading) return <div className="loading">טוען…</div>;
   if (error) return <div className="error">שגיאה בטעינת הנתונים</div>;
   if (!data) return <div className="error">העסק לא נמצא</div>;
