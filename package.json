@@ -22,7 +22,7 @@
     "@mui/material": "^6.4.7",
     "@mui/system": "^6.4.7",
     "@reach/dialog": "^0.18.0",
-    "@tanstack/react-query": "^5.80.7",
+    "@tanstack/react-query": "^5.81.5",
     "ajv": "^8.11.0",
     "ajv-keywords": "^5.1.0",
     "assert": "^2.1.0",

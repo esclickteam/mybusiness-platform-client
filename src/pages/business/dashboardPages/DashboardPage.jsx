@@ -16,7 +16,8 @@ import "../../../styles/dashboard.css";
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
 
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
+
 
 const DashboardCards = lazyWithPreload(() =>
   import("../../../components/DashboardCards")
