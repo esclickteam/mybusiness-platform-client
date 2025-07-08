@@ -24,7 +24,6 @@ function useAppointments() {
 
       try {
         const headers = user?.token ? { Authorization: `Bearer ${user.token}` } : {};
-        // עדכון הנתיב לנתיב המלא כפי שמוגדר בשרת
         const res = await API.get("/appointments/appointments-by-user", {
           headers,
           withCredentials: true,
@@ -92,10 +91,7 @@ export default function OrdersPage() {
           >
             <strong>{appt.serviceName || "שירות לא ידוע"}</strong>
             <p>תאריך: {appt.date} | שעה: {appt.time}</p>
-            <p>
-              משך: {Math.floor(appt.duration / 60)} שעות {appt.duration % 60} דקות
-            </p>
-            <p>סטטוס: {appt.status || "לא ידוע"}</p>
+            <p>משך: {Math.floor(appt.duration / 60)} שעות {appt.duration % 60} דקות</p>
           </li>
         ))}
       </ul>
