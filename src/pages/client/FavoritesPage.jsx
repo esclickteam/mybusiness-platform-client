@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../../api"; // וודא שה־API מוגדר נכון
+import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 
 export default function FavoritesPage() {
@@ -17,12 +17,11 @@ export default function FavoritesPage() {
         setLoading(false);
         return;
       }
+
       try {
-        // קריאה ישירה ל-API של המועדפים עם הטוקן
-        const res = await API.get("/business/favorites", {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
+        // קריאה ל- /me שמחזיר גם את המועדפים
+        const res = await API.get("/auth/me", {
+          headers: { Authorization: `Bearer ${user.token}` },
         });
 
         const favBusinesses = res.data.favorites || [];
