@@ -151,6 +151,38 @@ const DashboardPage = () => {
   const nextActionsVisible = useOnScreen(nextActionsRef);
   const weeklySummaryVisible = useOnScreen(weeklySummaryRef);
 
+  // State to keep track if each section was loaded once (to avoid rerendering/remounting)
+  const [cardsLoaded, setCardsLoaded] = useState(false);
+  const [insightsLoaded, setInsightsLoaded] = useState(false);
+  const [chartsLoaded, setChartsLoaded] = useState(false);
+  const [appointmentsLoaded, setAppointmentsLoaded] = useState(false);
+  const [nextActionsLoaded, setNextActionsLoaded] = useState(false);
+  const [weeklySummaryLoaded, setWeeklySummaryLoaded] = useState(false);
+
+  useEffect(() => {
+    if (cardsVisible) setCardsLoaded(true);
+  }, [cardsVisible]);
+
+  useEffect(() => {
+    if (insightsVisible) setInsightsLoaded(true);
+  }, [insightsVisible]);
+
+  useEffect(() => {
+    if (chartsVisible) setChartsLoaded(true);
+  }, [chartsVisible]);
+
+  useEffect(() => {
+    if (appointmentsVisible) setAppointmentsLoaded(true);
+  }, [appointmentsVisible]);
+
+  useEffect(() => {
+    if (nextActionsVisible) setNextActionsLoaded(true);
+  }, [nextActionsVisible]);
+
+  useEffect(() => {
+    if (weeklySummaryVisible) setWeeklySummaryLoaded(true);
+  }, [weeklySummaryVisible]);
+
   const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
       console.warn(`Socket disconnected, cannot emit event ${event}`);
@@ -267,7 +299,6 @@ const DashboardPage = () => {
         );
       });
 
-      // Handle appointment updates, enriched and optimized similarly (not debounced)
       sock.on("appointmentCreated", (newAppointment) => {
         if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
         setStats((oldStats) => {
@@ -288,8 +319,6 @@ const DashboardPage = () => {
           }
         }
       });
-
-      // Similar handling for other socket events...
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
@@ -423,7 +452,7 @@ const DashboardPage = () => {
       </Suspense>
 
       <div ref={cardsRef}>
-        {cardsVisible && (
+        {(cardsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
             <MemoizedDashboardCards
               stats={syncedStats}
@@ -434,7 +463,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={insightsRef}>
-        {insightsVisible && (
+        {(insightsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
             <MemoizedInsights
               stats={{
@@ -447,7 +476,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-        {chartsVisible && (
+        {(chartsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
             <MemoizedBarChartComponent
               appointments={enrichedAppointments}
@@ -458,7 +487,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={nextActionsRef} className="actions-container full-width">
-        {nextActionsVisible && (
+        {(nextActionsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
             <MemoizedNextActions
               stats={{
@@ -473,7 +502,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={appointmentsRef} className="calendar-row">
-        {appointmentsVisible && (
+        {(appointmentsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
             <div className="day-agenda-box">
               <MemoizedDailyAgenda
@@ -495,7 +524,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={weeklySummaryRef}>
-        {weeklySummaryVisible && (
+        {(weeklySummaryLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
             <MemoizedWeeklySummary stats={syncedStats} />
           </Suspense>
