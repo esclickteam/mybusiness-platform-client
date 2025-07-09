@@ -7,9 +7,9 @@ function Plans() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // תקופות מנוי עם מחירים תואמים
+  // תקופות מנוי עם מחירים תואמים, כולל חבילת ניסיון יומית
   const [selectedDuration, setSelectedDuration] = useState("1");
-  const prices = { "1": 10, "3": 769, "12": 699 };
+  const prices = { "0.0416": 1, "1": 10, "3": 769, "12": 699 }; // 0.0416 ~ יום (1/24 חודש)
 
   const handleDurationChange = (duration) => setSelectedDuration(duration);
 
@@ -18,10 +18,14 @@ function Plans() {
       navigate("/login");
       return;
     }
+    // חישוב המחיר הכולל לפי המחיר לחודש כפול מספר החודשים
+    // במקרה של יום, duration הוא 0.0416 (כ-1/24 של חודש)
+    const totalPrice = prices[selectedDuration] * Number(selectedDuration);
+
     navigate("/checkout", {
       state: {
         planName: "חבילת מנוי עסקליק",
-        totalPrice: prices[selectedDuration] * parseInt(selectedDuration, 10),
+        totalPrice: totalPrice.toFixed(2), // לשמור על 2 ספרות אחרי הנקודה
         duration: selectedDuration,
       },
     });
@@ -65,21 +69,24 @@ function Plans() {
           role="radiogroup"
           aria-label="בחירת תקופת מנוי"
         >
-          {["1", "3", "12"].map((d) => (
+          {[
+            { id: "0.0416", label: "ניסיון", price: 1, priceLabel: "ליום" },
+            { id: "1", label: "חודשי", price: 10, priceLabel: "לחודש" },
+            { id: "3", label: "3 חודשים", price: 769, priceLabel: "לשלושה חודשים" },
+            { id: "12", label: "שנתי", price: 699, priceLabel: "לשנה" },
+          ].map(({ id, label, price, priceLabel }) => (
             <button
-              key={d}
-              onClick={() => handleDurationChange(d)}
-              className={`duration-btn ${selectedDuration === d ? "active" : ""}`}
+              key={id}
+              onClick={() => handleDurationChange(id)}
+              className={`duration-btn ${selectedDuration === id ? "active" : ""}`}
               role="radio"
-              aria-checked={selectedDuration === d}
-              tabIndex={selectedDuration === d ? 0 : -1}
-              aria-label={`מנוי ${
-                d === "1" ? "חודשי" : d === "3" ? "3 חודשים" : "שנתי"
-              } במחיר ${prices[d]} שקלים לחודש`}
+              aria-checked={selectedDuration === id}
+              tabIndex={selectedDuration === id ? 0 : -1}
+              aria-label={`מנוי ${label} במחיר ${price} שקלים ${priceLabel}`}
               type="button"
             >
-              {d === "1" ? "חודשי" : d === "3" ? "3 חודשים" : "שנתי"}
-              <span className="duration-price">{prices[d]} ₪ לחודש</span>
+              {label}
+              <span className="duration-price">{price} ₪ {priceLabel}</span>
             </button>
           ))}
         </div>
