@@ -1,5 +1,5 @@
-// src/pages/Home.jsx
 import React, { useState } from "react";
+import { Helmet } from "react-helmet";
 import "../styles/Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
@@ -32,6 +32,13 @@ export default function Home() {
 
   return (
     <div className="home-container">
+      <Helmet>
+        <title>עסקליק – מצא עסקים לפי תחום ועיר | עסקליק</title>
+        <meta name="description" content="פלטפורמה למציאת עסקים ושירותים לפי תחום ועיר. פתיחת דף עסקי, יצירת קשר, ותיאום שירות – הכל במקום אחד!" />
+        <meta name="keywords" content="עסקים, חיפוש עסקים, שירותים בתל אביב, אינדקס עסקים, עסקליק, לקוחות, פרסום לעסקים" />
+        <link rel="canonical" href="https://yourdomain.co.il/" />
+      </Helmet>
+
       {/* Hero */}
       <section className="hero-section">
         <h1 className="main-title">

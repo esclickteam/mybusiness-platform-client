@@ -1,10 +1,24 @@
 import React from "react";
-import "../styles/HowItWorks.css";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import "../styles/HowItWorks.css";
 
 function HowItWorks() {
   return (
     <div className="howitworks-container">
+      <Helmet>
+        <title>איך זה עובד - עסקליק | מדריך לשימוש בפלטפורמה</title>
+        <meta
+          name="description"
+          content="הסבר פשוט איך עסקליק מחברת בין עסקים ללקוחות, איך לנהל עסק, לתאם שירותים ולשפר תקשורת בין עסקים ולקוחות."
+        />
+        <meta
+          name="keywords"
+          content="עסקליק, איך זה עובד, מדריך שימוש, ניהול עסק, קביעת תורים, תקשורת בין עסקים ללקוחות"
+        />
+        <link rel="canonical" href="https://yourdomain.co.il/how-it-works" />
+      </Helmet>
+
       <h1 className="howitworks-title">איך זה עובד - עסקליק</h1>
       <p className="howitworks-subtitle">
         נסביר בצורה פשוטה איך הפלטפורמה שלנו עובדת, איך היא יכולה לעזור לך לנהל את העסק שלך, לתאם שירותים ולשפר את התקשורת בין עסקים ללקוחות.
@@ -100,4 +114,4 @@ function HowItWorks() {
   );
 }
 
-export default HowItWorks;
+export default HowItWorks;

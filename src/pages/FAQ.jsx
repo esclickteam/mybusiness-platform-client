@@ -1,10 +1,24 @@
 import React from "react";
-import "../styles/FAQ.css";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import "../styles/FAQ.css";
 
 function FAQ() {
   return (
     <div className="faq-container">
+      <Helmet>
+        <title>שאלות נפוצות - עסקליק | כל מה שחשוב לדעת</title>
+        <meta
+          name="description"
+          content="שאלות נפוצות בעסקליק – מדריך לשימוש בפלטפורמה, הרשמה, חיפוש עסקים, קביעת תורים, קידום ושיתופי פעולה עסקיים, אבטחה ותמיכה."
+        />
+        <meta
+          name="keywords"
+          content="שאלות נפוצות, עסקליק, חיפוש עסקים, קביעת תורים, תמיכה, הרשמה, שיתופי פעולה עסקיים, אבטחה"
+        />
+        <link rel="canonical" href="https://yourdomain.co.il/faq" />
+      </Helmet>
+
       <h1 className="faq-title">שאלות נפוצות - עסקליק</h1>
 
       <div className="faq-section">

@@ -1,10 +1,24 @@
 import React from "react";
-import "../styles/About.css";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import "../styles/About.css";
 
 function About() {
   return (
     <div className="about-container">
+      <Helmet>
+        <title>קצת עלינו - עסקליק | הפלטפורמה לחיבור עסקים ולקוחות</title>
+        <meta
+          name="description"
+          content="עסקליק – הפלטפורמה המובילה בישראל לחיבור עסקים ללקוחות. ניהול חכם, שירותים דיגיטליים ושיתופי פעולה לעסקים קטנים ובינוניים."
+        />
+        <meta
+          name="keywords"
+          content="עסקליק, עסקים, חיבור עסקים ולקוחות, ניהול פניות, שירותים דיגיטליים, שיתופי פעולה עסקיים, פלטפורמה לעסקים"
+        />
+        <link rel="canonical" href="https://yourdomain.co.il/about" />
+      </Helmet>
+
       <h1 className="about-title">קצת עלינו - עסקליק</h1>
       <p className="about-paragraph">
         ברוכים הבאים ל*עסקליק* — הפלטפורמה המובילה בישראל לחיבור בין עסקים ללקוחות, המאפשרת לנהל, לקדם ולהגדיל את העסק בצורה חכמה, יעילה ומתקדמת.  
@@ -44,7 +58,7 @@ function About() {
         תוך מתן דגש על מקצועיות, חדשנות ושירות ללא פשרות.
       </p>
 
-      {/* תחתית הדף */}
+      {/* Footer */}
       <footer className="footer">
         <ul className="footer-links">
           <li><Link to="/search">📋 חיפוש עסקים</Link></li>
@@ -61,4 +75,4 @@ function About() {
   );
 }
 
-export default About;
+export default About;

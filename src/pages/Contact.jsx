@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import "../styles/Contact.css";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import "../styles/Contact.css";
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -22,6 +23,19 @@ function Contact() {
 
   return (
     <div className="contact-container">
+      <Helmet>
+        <title>יצירת קשר - עסקליק | נשמח לעמוד לשירותך</title>
+        <meta
+          name="description"
+          content="צור קשר עם צוות עסקליק לשאלות, תמיכה והצטרפות. מלא טופס פשוט ונחזור אליך בהקדם."
+        />
+        <meta
+          name="keywords"
+          content="צור קשר, תמיכה, עסקליק, שאלות, הצטרפות, שירות לקוחות"
+        />
+        <link rel="canonical" href="https://yourdomain.co.il/contact" />
+      </Helmet>
+
       <h1 className="contact-title">📞 יצירת קשר</h1>
       <p className="contact-subtitle">
         יש לכם שאלה או רוצים שנחזור אליכם? מלאו את הטופס וניצור קשר בהקדם!
@@ -70,7 +84,7 @@ function Contact() {
         ✉️ ניתן גם לפנות ישירות במייל: <strong>support@esclick.co.il</strong>
       </p>
 
-      {/* תחתית הדף */}
+      {/* Footer */}
       <footer className="footer">
         <ul className="footer-links">
           <li><Link to="/search">📋 חיפוש עסקים</Link></li>

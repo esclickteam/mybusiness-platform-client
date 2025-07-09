@@ -1,10 +1,24 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import "../../styles/Business.css";
 
 function BusinessJoin() {
   return (
     <div className="business-join-container">
+      <Helmet>
+        <title>הצטרפות עסקים - הפלטפורמה העסקית המובילה | עסקליק</title>
+        <meta
+          name="description"
+          content="הצטרפו לעסקליק וקבלו פניות מלקוחות אמיתיים, ניהול חכם של העסק, שיתופי פעולה וקידום דיגיטלי. כל הכלים להגדלת העסק במקום אחד."
+        />
+        <meta
+          name="keywords"
+          content="הצטרפות עסקים, פניות מלקוחות, ניהול עסק, שיתופי פעולה, קידום דיגיטלי, עסקליק"
+        />
+        <link rel="canonical" href="https://yourdomain.co.il/join" />
+      </Helmet>
+
       {/* כותרת */}
       <div className="header-section">
         <h1 className="title">הצטרפו לפלטפורמת העסקים המובילה!</h1>
@@ -84,4 +98,4 @@ function BusinessJoin() {
   );
 }
 
-export default BusinessJoin;
+export default BusinessJoin;

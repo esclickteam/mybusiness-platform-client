@@ -5,6 +5,7 @@ import BusinessCard from '../components/BusinessCard';
 import BusinessCardSkeleton from '../components/BusinessCardSkeleton';
 import ALL_CATEGORIES from '../data/categories';
 import ALL_CITIES from '../data/cities';
+import { Helmet } from 'react-helmet';
 import './BusinessList.css';
 
 const ITEMS_PER_PAGE = 9;
@@ -41,7 +42,6 @@ export default function SearchBusinesses() {
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // Fetch businesses
   useEffect(() => {
     API.get('/business')
       .then(r => {
@@ -51,7 +51,6 @@ export default function SearchBusinesses() {
       .catch(console.error);
   }, []);
 
-  // Close dropdowns on outside click
   useEffect(() => {
     const handler = e => {
       if (wrapperCatRef.current && !wrapperCatRef.current.contains(e.target)) setOpenCat(false);
@@ -61,7 +60,6 @@ export default function SearchBusinesses() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Sync URL params
   useEffect(() => {
     const params = new URLSearchParams();
     if (cat) params.set('category', cat);
@@ -70,7 +68,6 @@ export default function SearchBusinesses() {
     setSearchParams(params, { replace: true });
   }, [cat, city, page, setSearchParams]);
 
-  // Search handler
   const handleSearch = () => {
     const normCat = normalize(cat);
     const normCity = normalize(city);
@@ -84,12 +81,10 @@ export default function SearchBusinesses() {
     setSearched(true);
   };
 
-  // Pagination
   const start = (page - 1) * ITEMS_PER_PAGE;
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  // Suggestions
   const catSuggestions = cat.trim()
     ? ALL_CATEGORIES.filter(c => normalize(c).includes(normalize(cat)))
     : [];
@@ -97,12 +92,40 @@ export default function SearchBusinesses() {
     ? ALL_CITIES.filter(c => normalize(c).startsWith(normalize(city)))
     : [];
 
+  // SEO דינמי
+  const seoTitleParts = [];
+  if (cat) seoTitleParts.push(cat);
+  if (city) seoTitleParts.push(city);
+  const seoTitle =
+    seoTitleParts.length > 0
+      ? `${seoTitleParts.join(" - ")} | חיפוש עסקים - עסקליק`
+      : "חיפוש עסקים | עסקליק";
+
+  const seoDescription =
+    seoTitleParts.length > 0
+      ? `מצא עסקים בתחום ${cat ? cat : ""} ${city ? "בעיר " + city : ""} בפלטפורמת עסקליק. חיפוש נוח, דירוגים אמיתיים, וקבלת פניות מהירות.`
+      : "חפש עסקים לפי תחום ועיר בפלטפורמת עסקליק. קבל פניות, קרא חוות דעת ותאם שירות בקלות.";
+
   return (
     <div className="list-page">
+      <Helmet>
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
+        <meta
+          name="keywords"
+          content={`עסקים, חיפוש עסקים, ${cat ? cat + "," : ""} ${
+            city ? city + "," : ""
+          } עסקליק, לקוחות, שירותים`}
+        />
+        <link
+          rel="canonical"
+          href={`https://yourdomain.co.il/search?category=${encodeURIComponent(cat)}&city=${encodeURIComponent(city)}${page > 1 ? `&page=${page}` : ''}`}
+        />
+      </Helmet>
+
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        {/* Filter chips */}
         {(cat || city) && (
           <div className="filter-chips">
             {cat && (
@@ -120,9 +143,7 @@ export default function SearchBusinesses() {
           </div>
         )}
 
-        {/* Filters */}
         <div className="filters-wrapper">
-          {/* Category */}
           <div className="dropdown-wrapper input-clearable" ref={wrapperCatRef}>
             <input
               type="text"
@@ -133,7 +154,6 @@ export default function SearchBusinesses() {
               onChange={e => { setCat(e.target.value); setOpenCat(true); }}
               disabled={loading}
             />
-            
             {openCat && catSuggestions.length > 0 && (
               <ul className="suggestions-list">
                 {catSuggestions.map((c, i) => (
@@ -143,7 +163,6 @@ export default function SearchBusinesses() {
             )}
           </div>
 
-          {/* City */}
           <div className="dropdown-wrapper input-clearable" ref={wrapperCityRef}>
             <input
               type="text"
@@ -154,7 +173,6 @@ export default function SearchBusinesses() {
               onChange={e => { setCity(e.target.value); setOpenCity(true); }}
               disabled={loading}
             />
-            
             {openCity && citySuggestions.length > 0 && (
               <ul className="suggestions-list">
                 {citySuggestions.map((c, i) => (
@@ -164,7 +182,6 @@ export default function SearchBusinesses() {
             )}
           </div>
 
-          {/* Search */}
           <button
             className="search-btn"
             onClick={handleSearch}
@@ -185,7 +202,6 @@ export default function SearchBusinesses() {
           </button>
         </div>
 
-        {/* Results */}
         <div className="business-list">
           {loading
             ? Array(ITEMS_PER_PAGE).fill().map((_, i) => <BusinessCardSkeleton key={i} />)
@@ -203,7 +219,6 @@ export default function SearchBusinesses() {
           }
         </div>
 
-        {/* Pagination */}
         {searched && totalPages > 1 && (
           <div className="pagination">
             <button onClick={() => setPage(prev => Math.max(prev - 1, 1))} disabled={page === 1}>

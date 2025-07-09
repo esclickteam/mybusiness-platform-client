@@ -5,6 +5,7 @@ import BusinessCard from "../components/BusinessCard";
 import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES from "../data/cities";
 import { FaSearch } from "react-icons/fa";
+import { Helmet } from "react-helmet";
 import "./BusinessList.css";
 
 const BusinessesList = () => {
@@ -40,8 +41,39 @@ const BusinessesList = () => {
     });
   };
 
+  // יצירת טקסט SEO דינמי לכותרת ותיאור
+  const seoTitleParts = [];
+  if (category) seoTitleParts.push(category.label);
+  if (city) seoTitleParts.push(city.label);
+  const seoTitle =
+    seoTitleParts.length > 0
+      ? `${seoTitleParts.join(" - ")} | עסקים בעסקליק`
+      : "רשימת עסקים | עסקליק";
+
+  const seoDescription =
+    seoTitleParts.length > 0
+      ? `מצא עסקים בתחום ${category ? category.label : ""} ${
+          city ? "בעיר " + city.label : ""
+        } בפלטפורמת עסקליק. חיפוש נוח, דירוגים אמיתיים, וקבלת פניות מהירות.`
+      : "חפש עסקים לפי תחום ועיר בפלטפורמת עסקליק. קבל פניות, קרא חוות דעת ותאם שירות בקלות.";
+
   return (
     <div className="list-page">
+      <Helmet>
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
+        <meta
+          name="keywords"
+          content={`עסקים, חיפוש עסקים, ${category ? category.label + "," : ""} ${
+            city ? city.label + "," : ""
+          } עסקליק, לקוחות, שירותים`}
+        />
+        <link
+          rel="canonical"
+          href={`https://yourdomain.co.il/businesses${category ? `?category=${category.value}` : ""}${city ? `&city=${city.value}` : ""}`}
+        />
+      </Helmet>
+
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
