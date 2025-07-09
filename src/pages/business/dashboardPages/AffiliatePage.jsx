@@ -320,20 +320,33 @@ const AffiliatePage = () => {
               שימו לב: סך העמלות גבוה מיתרת המשיכה הזמינה.
             </p>
           )}
-          <input
-            type="number"
-            min="200"
-            max={currentBalance || 0}
-            value={withdrawAmount}
-            onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-            placeholder="סכום למשיכה (מינימום 200 ש&quot;ח)"
-          />
-          <p style={{ color: "red", fontWeight: "bold", marginTop: "4px" }}>
-            סכום מינימום למשיכה הוא 200 ש"ח
-          </p>
-          <button onClick={handleWithdrawRequest} disabled={withdrawAmount < 200}>
-            בקש משיכה
-          </button>
+
+          {/* הודעת מינימום למשיכה אם היתרה קטנה מ-200 */}
+          {currentBalance < 200 ? (
+            <p style={{ color: "red", fontWeight: "bold" }}>
+              סכום מינימום למשיכה הוא 200 ש"ח. אנא המתן שיצטבר סכום מינימלי למשיכה.
+            </p>
+          ) : (
+            <>
+              <input
+                type="number"
+                min="200"
+                max={currentBalance || 0}
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+                placeholder="סכום למשיכה (מינימום 200 ש&quot;ח)"
+              />
+              <p style={{ color: "red", fontWeight: "bold", marginTop: "4px" }}>
+                סכום מינימום למשיכה הוא 200 ש"ח
+              </p>
+              <button
+                onClick={handleWithdrawRequest}
+                disabled={withdrawAmount < 200}
+              >
+                בקש משיכה
+              </button>
+            </>
+          )}
           {withdrawStatus && <p>{withdrawStatus}</p>}
         </div>
 
