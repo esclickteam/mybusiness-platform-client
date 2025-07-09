@@ -99,7 +99,7 @@ const Register = () => {
       if (userType === "business") {
         navigate("/plans");
       } else {
-        navigate(redirectUrl || "/");
+        navigate("/client/dashboard");
       }
     } catch (err) {
       console.error("❌ Registration error:", err.response?.data || err.message);
