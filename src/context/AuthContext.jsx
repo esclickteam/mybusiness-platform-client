@@ -201,7 +201,8 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     })();
-  }, [token, user, navigate]);
+  // הוסר user מהתלות
+  }, [token, navigate]);
 
   useEffect(() => {
     if (!successMessage) return;
