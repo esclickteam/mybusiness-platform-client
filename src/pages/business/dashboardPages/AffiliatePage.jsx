@@ -20,6 +20,11 @@ const AffiliatePage = () => {
   // מצב ליתרת המשיכה המעודכנת
   const [currentBalance, setCurrentBalance] = useState(0);
 
+  // סכום כולל עמלות לתשלום (כל הסטטוסים לא שולם)
+  const totalUnpaidCommissions = allStats
+    .filter((stat) => stat.paymentStatus !== "paid")
+    .reduce((sum, stat) => sum + stat.totalCommissions, 0);
+
   // פונקציה לריענון הסטטיסטיקות והיתרה
   const refreshStats = async (affiliateId) => {
     try {
@@ -209,6 +214,7 @@ const AffiliatePage = () => {
             </tr>
           </thead>
           <tbody>
+            {/* שורות טבלה כפי שקיים בקוד המקורי */}
             <tr>
               <td>חבילה חודשית</td>
               <td>1 חודש</td>
@@ -305,7 +311,15 @@ const AffiliatePage = () => {
       <section className="affiliate-bank-section">
         <h2>💵 פעולות תשלום</h2>
         <div>
-          <p>יתרתך הזמינה למשיכה: ₪{currentBalance.toFixed(2)}</p>
+          <p>יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong></p>
+          <p>
+            סך כל העמלות להשלמה: <strong>₪{totalUnpaidCommissions.toFixed(2)}</strong>
+          </p>
+          {totalUnpaidCommissions > currentBalance && (
+            <p style={{ color: "orange", fontWeight: "bold" }}>
+              שימו לב: סך העמלות גבוה מיתרת המשיכה הזמינה.
+            </p>
+          )}
           <input
             type="number"
             min="200"
