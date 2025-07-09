@@ -76,7 +76,6 @@ const Register = () => {
     }
 
     try {
-      // 1. קריאת API ליצירת המשתמש
       const response = await API.post(
         "/auth/register",
         {
@@ -86,19 +85,22 @@ const Register = () => {
           password,
           userType,
           businessName: userType === "business" ? businessName.trim() : undefined,
-          referralCode: userType === "business" ? referralCode || undefined : undefined,
-
+          referralCode:
+            userType === "business" ? referralCode || undefined : undefined,
         },
         { withCredentials: true }
       );
 
-      // 2. התחברות מידית עם login מהקונטקסט (שמחזיר redirectUrl)
       const { redirectUrl } = await login(email.trim().toLowerCase(), password, {
         skipRedirect: true,
       });
 
-      // 3. ניווט לפי מה שהשרת החזיר
-      navigate(redirectUrl || "/");
+      // ניתוב מותנה אחרי הרשמה
+      if (userType === "business") {
+        navigate("/plans");
+      } else {
+        navigate(redirectUrl || "/");
+      }
     } catch (err) {
       console.error("❌ Registration error:", err.response?.data || err.message);
       if (err.response?.status === 400) {
