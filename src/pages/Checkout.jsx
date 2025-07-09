@@ -92,6 +92,9 @@ export default function Checkout() {
     }
   };
 
+  // קביעה של התצוגה של משך המנוי: יום או חודשים
+  const durationLabel = Number(duration) === 1 ? "יום" : "חודשים";
+
   return (
     <div className="checkout-container">
       <div className="checkout-card">
@@ -100,7 +103,7 @@ export default function Checkout() {
           מחיר סופי: <strong>{totalPrice} ₪</strong>
         </p>
         <p className="checkout-duration">
-          משך המנוי: <strong>{duration} חודשים</strong>
+          משך המנוי: <strong>{duration} {durationLabel}</strong>
         </p>
 
         <label htmlFor="paymentCountSelect">מספר תשלומים:</label>
