@@ -11,6 +11,12 @@ function Plans() {
   const [selectedDuration, setSelectedDuration] = useState("1");
   const prices = { "1": 1, "3": 769, "12": 699 }; // חבילת ניסיון 1 ש"ח ליום
 
+  const planLabels = {
+    "1": "חבילת מנוי עסקליק - ניסיון ליום",
+    "3": "חבילת מנוי עסקליק - 3 חודשים",
+    "12": "חבילת מנוי עסקליק - שנתי",
+  };
+
   const handleDurationChange = (duration) => setSelectedDuration(duration);
 
   const handleSelectPlan = () => {
@@ -23,7 +29,7 @@ function Plans() {
 
     navigate("/checkout", {
       state: {
-        planName: "חבילת מנוי עסקליק",
+        planName: planLabels[selectedDuration],
         totalPrice: totalPrice.toFixed(2), // לשמור על 2 ספרות אחרי הנקודה
         duration: selectedDuration,
       },
