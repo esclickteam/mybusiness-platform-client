@@ -11,12 +11,11 @@ export default function ProtectedRoute({
   const { user, loading, initialized } = useAuth();
   const location = useLocation();
 
-  // לוגים לניטור
   console.log("ProtectedRoute: user =", user);
   console.log("ProtectedRoute: loading =", loading, "initialized =", initialized);
   console.log("ProtectedRoute: required roles =", roles);
 
-  // 1. Loading - מחכים לטעינת המשתמש
+  // 1. מחכים לטעינת המשתמש
   if (loading || !initialized) {
     return (
       <div style={{ textAlign: "center", padding: "2rem" }}>
@@ -49,19 +48,22 @@ export default function ProtectedRoute({
     }
   }
 
-  // 3.5. בדיקה שעסק ששילם בלבד יוכל לגשת לדפים מוגנים
+  // 4. בדיקה שעסק עם תפקיד "business" יש מנוי בתוקף, אחרת מפנה לעמוד חבילות
   if (
     roles.map((r) => r.toLowerCase()).includes("business") &&
     (user.role || "").toLowerCase() === "business"
   ) {
-    const hasPaid = user.hasPaid === true || user.hasPaid === "true";
-    if (!hasPaid) {
-      console.log("ProtectedRoute: business user has not paid, redirect to /plans");
+    const now = new Date();
+    const subscriptionEnd = user.subscriptionEnd ? new Date(user.subscriptionEnd) : null;
+    const isSubscriptionValid = subscriptionEnd && now <= subscriptionEnd;
+
+    if (!isSubscriptionValid) {
+      console.log("ProtectedRoute: subscription expired or not valid, redirect to /plans");
       return <Navigate to="/plans" replace />;
     }
   }
 
-  // 4. בדיקת חבילת מנוי נדרשת (אם צוין)
+  // 5. בדיקת חבילת מנוי נדרשת (אם צוין)
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
     console.log(
       `ProtectedRoute: user subscription (${user.subscriptionPlan}) does not match required package (${requiredPackage}), redirect to /plans`
@@ -69,7 +71,7 @@ export default function ProtectedRoute({
     return <Navigate to="/plans" replace />;
   }
 
-  // 5. במידה והמשתמש הוא בעל עסק ללא פרופיל עסק קיים, הפנה ליצירת עסק
+  // 6. במידה והמשתמש הוא בעל עסק ללא פרופיל עסק קיים, הפנה ליצירת עסק
   if (
     roles.map((r) => r.toLowerCase()).includes("business") &&
     (user.role || "").toLowerCase() === "business" &&
@@ -79,7 +81,7 @@ export default function ProtectedRoute({
     return <Navigate to="/create-business" replace />;
   }
 
-  // 6. הכול תקין - הצג את הילדים (הרכיבים המוגנים)
+  // 7. הכול תקין - הצג את הילדים (הרכיבים המוגנים)
   console.log("ProtectedRoute: access granted");
   return <>{children}</>;
 }
