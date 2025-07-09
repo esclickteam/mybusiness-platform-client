@@ -75,11 +75,11 @@ const AffiliatePage = () => {
   // בקשת משיכה
   const handleWithdrawRequest = async () => {
     if (withdrawAmount < 200) {
-      alert("סכום מינימום למשיכה הוא 200 ש\"ח");
+      alert('סכום מינימום למשיכה הוא 200 ש"ח');
       return;
     }
     if (withdrawAmount > currentBalance) {
-      alert("סכום המשיכה גבוה מהיתרה הזמינה");
+      alert('סכום המשיכה גבוה מהיתרה הזמינה');
       return;
     }
     try {
@@ -92,11 +92,9 @@ const AffiliatePage = () => {
       if (res.data.withdrawalId) setWithdrawalId(res.data.withdrawalId);
       setShowReceiptForm(true);
 
-      // עדכון ביתרת הלקוח בהתאם לתשובת השרת
       if (res.data.currentBalance !== undefined) {
         setCurrentBalance(res.data.currentBalance);
       } else {
-        // fallback: ריענון מלא
         refreshStats(businessId);
       }
     } catch (error) {
@@ -126,7 +124,6 @@ const AffiliatePage = () => {
       setShowReceiptForm(false);
       setReceiptFile(null);
 
-      // ריענון הסטטיסטיקות (לרבות balance)
       refreshStats(businessId);
     } catch (error) {
       alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
@@ -185,7 +182,7 @@ const AffiliatePage = () => {
               </tr>
             </thead>
             <tbody>
-              {allStats.map((stat) => {
+              {allStats.map((stat, index) => {
                 const paid = stat.paidCommissions || 0;
                 const unpaid = stat.totalCommissions - paid;
                 return (
@@ -193,7 +190,14 @@ const AffiliatePage = () => {
                     <td>{stat.month}</td>
                     <td>{stat.purchases}</td>
                     <td>₪{paid.toFixed(2)}</td>
-                    <td>₪{unpaid.toFixed(2)}</td>
+                    <td>
+                      ₪{unpaid.toFixed(2)}
+                      {index === allStats.length - 1 && (
+                        <span style={{ fontWeight: "bold", marginLeft: "10px" }}>
+                          סה"כ עמלה {totalUnpaidCommissions.toFixed(2)}
+                        </span>
+                      )}
+                    </td>
                     <td className={stat.paymentStatus === "paid" ? "paid" : "unpaid"}>
                       {stat.paymentStatus === "paid" ? "שולם ✅" : "ממתין"}
                     </td>
