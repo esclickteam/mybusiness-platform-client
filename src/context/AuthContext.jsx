@@ -39,6 +39,7 @@ export async function singleFlightRefresh() {
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
           localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+          // לא ניתן לעדכן setUser כאן ישירות, אפשר להעביר callback ל-AuthProvider אם רוצים
         }
 
         return accessToken;
@@ -106,7 +107,12 @@ export function AuthProvider({ children }) {
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
       if (!skipRedirect && redirectUrl) {
-        navigate(redirectUrl, { replace: true });
+        // תיקון ניתוב ל־dashboard עם businessId
+        if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
+          navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+        } else {
+          navigate(redirectUrl, { replace: true });
+        }
       }
 
       setLoading(false);
@@ -201,8 +207,7 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     })();
-  // הוסר user מהתלות
-  }, [token, navigate]);
+  }, [token, navigate]); // user הוסר מהרשימת תלויות
 
   useEffect(() => {
     if (!successMessage) return;
