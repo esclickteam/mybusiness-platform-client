@@ -201,6 +201,29 @@ const AffiliatePage = () => {
                 );
               })}
             </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan="2" style={{ fontWeight: "bold", textAlign: "right" }}>
+                  סה"כ עמלות:
+                </td>
+                <td style={{ fontWeight: "bold" }}>
+                  ₪
+                  {allStats
+                    .reduce((sum, stat) => sum + (stat.paidCommissions || 0), 0)
+                    .toFixed(2)}
+                </td>
+                <td style={{ fontWeight: "bold" }}>
+                  ₪
+                  {allStats
+                    .reduce(
+                      (sum, stat) => sum + (stat.totalCommissions - (stat.paidCommissions || 0)),
+                      0
+                    )
+                    .toFixed(2)}
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
           </table>
         )}
       </section>
