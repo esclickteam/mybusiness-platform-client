@@ -17,7 +17,7 @@ export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
     ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then((res) => {
-        const { accessToken, user: refreshedUser, redirectUrl } = res.data;
+        const { accessToken, user: refreshedUser /*, redirectUrl*/ } = res.data;
         if (!accessToken) throw new Error("No new token");
         // עדכון ה־token
         localStorage.setItem("token", accessToken);
@@ -26,10 +26,7 @@ export async function singleFlightRefresh() {
         if (refreshedUser) {
           localStorage.setItem("businessDetails", JSON.stringify(refreshedUser));
         }
-        // שמירת ה-redirectUrl לניווט חד-פעמי
-        if (redirectUrl) {
-          sessionStorage.setItem("postLoginRedirect", redirectUrl);
-        }
+        // ** אין יותר ניווט מפה **
         return accessToken;
       })
       .finally(() => {
@@ -92,7 +89,7 @@ export function AuthProvider({ children }) {
       const { accessToken, user: loggedInUser, redirectUrl } = data;
       if (!accessToken) throw new Error("No access token received");
 
-      // שמירת token ו-user
+      // שמירת token ו־user
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
@@ -169,7 +166,7 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   useEffect(() => {
     if (!token) {
-      // אין token → לא מאופסן
+      // אין token → מצב לא מאופסן
       socketRef.current?.disconnect();
       socketRef.current = null;
       setUser(null);
@@ -178,20 +175,23 @@ export function AuthProvider({ children }) {
       return;
     }
 
+    // יש token → טען פרטים
     setLoading(true);
     setAuthToken(token);
 
     (async () => {
       try {
+        // אם אין לנו user עדיין, קרא ל־/auth/me
         if (!user) {
           const { data } = await API.get("/auth/me", { withCredentials: true });
           setUser(data);
           localStorage.setItem("businessDetails", JSON.stringify(data));
         }
 
+        // חיבור socket
         socketRef.current = await createSocket(singleFlightRefresh, logout, user?.businessId);
 
-        // ניווט חד-פעמי לפי redirectUrl מ-sessionStorage
+        // ניווט חד-פעמי לפי redirectUrl מ־sessionStorage (אם נשמר)
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
           navigate(savedRedirect, { replace: true });
