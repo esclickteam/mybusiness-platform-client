@@ -10,24 +10,27 @@ import API, { setAuthToken } from "../api";
 import createSocket from "../socket"; // singleton socket helper
 
 /* ------------------------------------------------------------------ */
-/*  Utility: single‑flight refresh (local)                            */
+/*  Utility: single-flight refresh (local)                            */
 /* ------------------------------------------------------------------ */
 let ongoingRefresh = null;
-let isRefreshing = false;
-
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
-    isRefreshing = true;
     ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then((res) => {
-        const newToken = res.data.accessToken;
-        if (!newToken) throw new Error("No new token");
-        localStorage.setItem("token", newToken);
-        setAuthToken(newToken);
-        return newToken;
+        const { accessToken, user: refreshedUser, redirectUrl } = res.data;
+        if (!accessToken) throw new Error("No new token");
+        // עדכון ה־token
+        localStorage.setItem("token", accessToken);
+        setAuthToken(accessToken);
+        // עדכון המשתמש
+        if (refreshedUser) {
+          localStorage.setItem("businessDetails", JSON.stringify(refreshedUser));
+        }
+        // ניווט לפי מה שהשרת שולח
+        if (redirectUrl) window.location.replace(redirectUrl);
+        return accessToken;
       })
       .finally(() => {
-        isRefreshing = false;
         ongoingRefresh = null;
       });
   }
@@ -41,14 +44,9 @@ export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-
-  /* -------------------------------------------------------------- */
-  /*  State                                                         */
-  /* -------------------------------------------------------------- */
   const socketRef = useRef(null);
-  const [socket, setSocket] = useState(null);
 
-  const [token, setToken] = useState(() => localStorage.getItem("token") || null);
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("businessDetails");
     return saved ? JSON.parse(saved) : null;
@@ -66,18 +64,13 @@ export function AuthProvider({ children }) {
     try {
       await API.post("/auth/logout", {}, { withCredentials: true });
     } catch {}
-
     setAuthToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("businessDetails");
     setToken(null);
     setUser(null);
-
-    socketRef.current?.removeAllListeners();
     socketRef.current?.disconnect();
     socketRef.current = null;
-    setSocket(null);
-
     setLoading(false);
     navigate("/login", { replace: true });
   };
@@ -88,32 +81,29 @@ export function AuthProvider({ children }) {
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
     setError(null);
-
     try {
-      const {
-        data: { accessToken, user: loggedInUser, redirectUrl },
-      } = await API.post(
+      const { data } = await API.post(
         "/auth/login",
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
       );
-
+      const { accessToken, user: loggedInUser, redirectUrl } = data;
       if (!accessToken) throw new Error("No access token received");
 
+      // שמירת token ו־user
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      if (loggedInUser) {
-        setUser(loggedInUser);
-        localStorage.setItem("businessDetails", JSON.stringify(loggedInUser));
+      setUser(loggedInUser);
+      localStorage.setItem("businessDetails", JSON.stringify(loggedInUser));
+
+      // נווט לפי מה שהשרת שולח
+      if (!skipRedirect && redirectUrl) {
+        navigate(redirectUrl, { replace: true });
       }
 
-      if (!skipRedirect) sessionStorage.setItem("postLoginRedirect", redirectUrl || "");
-
       setLoading(false);
-
-      // מחזיר את המשתמש וה-redirectUrl לשימוש חיצוני
       return { user: loggedInUser, redirectUrl };
     } catch (e) {
       setError(
@@ -127,7 +117,7 @@ export function AuthProvider({ children }) {
   };
 
   /* -------------------------------------------------------------- */
-  /*  Staff Login (עובדים)                                          */
+  /*  Staff Login                                                   */
   /* -------------------------------------------------------------- */
   const staffLogin = async (username, password) => {
     setLoading(true);
@@ -138,24 +128,22 @@ export function AuthProvider({ children }) {
         { username: username.trim(), password },
         { withCredentials: true }
       );
-      if (!data.accessToken) throw new Error("No access token received");
-
-      localStorage.setItem("token", data.accessToken);
-      setAuthToken(data.accessToken);
-      setToken(data.accessToken);
-
-      setUser(data.user || null);
-
-      return data.user;
+      const { accessToken, user: staffUser } = data;
+      localStorage.setItem("token", accessToken);
+      setAuthToken(accessToken);
+      setToken(accessToken);
+      setUser(staffUser);
+      localStorage.setItem("businessDetails", JSON.stringify(staffUser));
+      setLoading(false);
+      return staffUser;
     } catch (e) {
       setError(
         e.response?.status >= 400 && e.response?.status < 500
           ? "❌ שם משתמש או סיסמה שגויים"
           : "❌ שגיאה בשרת, נסה שוב"
       );
-      throw e;
-    } finally {
       setLoading(false);
+      throw e;
     }
   };
 
@@ -169,8 +157,6 @@ export function AuthProvider({ children }) {
       if ([401, 403].includes(err.response?.status)) {
         await logout();
         setError("❌ יש להתחבר מחדש");
-        navigate("/login", { replace: true });
-        throw new Error("Session expired");
       }
       throw err;
     }
@@ -181,37 +167,39 @@ export function AuthProvider({ children }) {
   /* -------------------------------------------------------------- */
   useEffect(() => {
     if (!token) {
+      // אין token → מצב לא מאופסן
       socketRef.current?.disconnect();
       socketRef.current = null;
-      setSocket(null);
       setUser(null);
       localStorage.removeItem("businessDetails");
       setInitialized(true);
       return;
     }
 
+    // יש token → טען פרטים
     setLoading(true);
     setAuthToken(token);
 
     (async () => {
       try {
+        // אם אין לנו user עדיין, קרא ל־/auth/me
         if (!user) {
           const { data } = await API.get("/auth/me", { withCredentials: true });
           setUser(data);
           localStorage.setItem("businessDetails", JSON.stringify(data));
         }
 
+        // חיבור socket
         const s = await createSocket(singleFlightRefresh, logout, user?.businessId);
         socketRef.current = s;
-        setSocket(s);
 
-        const redirectUrl = sessionStorage.getItem("postLoginRedirect") || "";
-        if (redirectUrl) {
-          navigate(redirectUrl || "/", { replace: true });
+        // ניווט לפי redirectUrl מ־session (אם נשמר)
+        const savedRedirect = sessionStorage.getItem("postLoginRedirect");
+        if (savedRedirect) {
+          navigate(savedRedirect, { replace: true });
           sessionStorage.removeItem("postLoginRedirect");
         }
-      } catch (err) {
-        localStorage.removeItem("businessDetails");
+      } catch {
         await logout();
       } finally {
         setLoading(false);
@@ -221,7 +209,7 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   /* -------------------------------------------------------------- */
-  /*  Toast auto‑dismiss                                            */
+  /*  Toast auto-dismiss                                            */
   /* -------------------------------------------------------------- */
   useEffect(() => {
     if (!successMessage) return;
@@ -242,7 +230,7 @@ export function AuthProvider({ children }) {
     logout,
     fetchWithAuth,
     refreshAccessToken: singleFlightRefresh,
-    socket,
+    socket: socketRef.current,
     setUser,
     staffLogin,
   };
