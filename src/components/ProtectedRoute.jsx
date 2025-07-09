@@ -36,9 +36,9 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     console.log("now:", now.toISOString());
     console.log("isPaid:", isPaid);
     console.log("subscription end date:", end ? end.toISOString() : null);
-    console.log("subscription valid:", !!(end && now <= end && isPaid));
+    console.log("subscription valid:", !!(isPaid && (!end || now <= end)));
 
-    return !!(end && now <= end && isPaid);
+    return !!(isPaid && (!end || now <= end));
   }, [isBusiness, user?.subscriptionEnd, isPaid]);
 
   const normalizedRoles = useMemo(() => roles.map((r) => r.toLowerCase()), [roles]);
@@ -76,13 +76,8 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     console.log("now > subscriptionEndDate?", subscriptionEndDate ? now > subscriptionEndDate : false);
 
     if (subscriptionEndDate && now > subscriptionEndDate) {
-      // מנוי פג תוקף → הפניה לעמוד החבילות
       return <Navigate to="/plans" replace />;
     } else {
-      // מנוי תקין, אבל אולי יש סיבה אחרת לחסום, אפשר לשנות בהתאם
-      // לדוגמה: להמשיך לדשבורד
-      // return <Navigate to="/dashboard" replace />;
-      // או להציג Unauthorized עם הסבר
       return <Unauthorized message="המנוי שלך אינו פעיל כרגע." />;
     }
   }
