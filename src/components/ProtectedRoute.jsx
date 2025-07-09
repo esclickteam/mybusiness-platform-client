@@ -15,7 +15,6 @@ export default function ProtectedRoute({
   console.log("ProtectedRoute: loading =", loading, "initialized =", initialized);
   console.log("ProtectedRoute: required roles =", roles);
 
-  // 1. מחכים לטעינת המשתמש
   if (loading || !initialized) {
     return (
       <div style={{ textAlign: "center", padding: "2rem" }}>
@@ -24,7 +23,6 @@ export default function ProtectedRoute({
     );
   }
 
-  // 2. אם לא מחובר, הפנה לדף ההתחברות המתאים (עובדים/לקוחות)
   if (!user) {
     const staffRoles = ["worker", "manager", "מנהל", "admin"];
     const needsStaffLogin = roles
@@ -36,7 +34,10 @@ export default function ProtectedRoute({
     return <Navigate to={loginPath} replace state={{ from: location }} />;
   }
 
-  // 3. בדיקת הרשאות תפקיד - האם יש למשתמש את התפקיד הנדרש?
+  // נרמול hasPaid
+  const normalizedHasPaid =
+    user.hasPaid === true || user.hasPaid === "true" || user.hasPaid === 1;
+
   if (roles.length > 0) {
     const normalizedRoles = roles.map((r) => r.toLowerCase());
     const userRole = (user.role || "").toLowerCase();
@@ -48,7 +49,6 @@ export default function ProtectedRoute({
     }
   }
 
-  // 4. בדיקה שעסק עם תפקיד "business" יש מנוי בתוקף, אחרת מפנה לעמוד חבילות
   if (
     roles.map((r) => r.toLowerCase()).includes("business") &&
     (user.role || "").toLowerCase() === "business"
@@ -56,16 +56,15 @@ export default function ProtectedRoute({
     const now = new Date();
     const subscriptionEnd = user.subscriptionEnd ? new Date(user.subscriptionEnd) : null;
 
-    // לוגים למעקב
     console.log("Now:", now);
     console.log("SubscriptionEnd:", subscriptionEnd);
-    console.log("HasPaid:", user.hasPaid);
+    console.log("HasPaid (normalized):", normalizedHasPaid);
     console.log("PaymentStatus:", user.paymentStatus);
 
     const isSubscriptionValid =
       subscriptionEnd &&
       now <= subscriptionEnd &&
-      user.hasPaid === true &&
+      normalizedHasPaid &&
       user.paymentStatus === "approved";
 
     console.log("Is subscription valid?", isSubscriptionValid);
@@ -76,7 +75,6 @@ export default function ProtectedRoute({
     }
   }
 
-  // 5. בדיקת חבילת מנוי נדרשת (אם צוין)
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
     console.log(
       `ProtectedRoute: user subscription (${user.subscriptionPlan}) does not match required package (${requiredPackage}), redirect to /plans`
@@ -84,7 +82,6 @@ export default function ProtectedRoute({
     return <Navigate to="/plans" replace />;
   }
 
-  // 6. במידה והמשתמש הוא בעל עסק ללא פרופיל עסק קיים, הפנה ליצירת עסק
   if (
     roles.map((r) => r.toLowerCase()).includes("business") &&
     (user.role || "").toLowerCase() === "business" &&
@@ -94,7 +91,6 @@ export default function ProtectedRoute({
     return <Navigate to="/create-business" replace />;
   }
 
-  // 7. הכול תקין - הצג את הילדים (הרכיבים המוגנים)
   console.log("ProtectedRoute: access granted");
   return <>{children}</>;
 }

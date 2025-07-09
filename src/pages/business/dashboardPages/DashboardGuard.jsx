@@ -6,15 +6,19 @@ export default function DashboardGuard({ children }) {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
+  // נרמול hasPaid
+  const normalizedHasPaid =
+    user?.hasPaid === true || user?.hasPaid === "true" || user?.hasPaid === 1;
+
   React.useEffect(() => {
     if (!loading) {
-      if (!user || !user.hasPaid) {
+      if (!user || !normalizedHasPaid) {
         navigate("/checkout");
       }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, normalizedHasPaid]);
 
-  if (loading || !user || !user.hasPaid) return null;
+  if (loading || !user || !normalizedHasPaid) return null;
 
   return children;
 }

@@ -53,14 +53,15 @@ export default function Login() {
       const cleanEmail = email.trim().toLowerCase();
       const { user: loggedInUser, redirectUrl } = await login(cleanEmail, password);
 
-      const hasPaid =
+      // ✅ נרמול hasPaid לכל מקרה (boolean, string או מספר)
+      const normalizedHasPaid =
         loggedInUser?.hasPaid === true ||
         loggedInUser?.hasPaid === "true" ||
         loggedInUser?.hasPaid === 1;
 
       if (redirectUrl) {
         navigate(redirectUrl, { replace: true });
-      } else if (loggedInUser?.role === "business" && hasPaid) {
+      } else if (loggedInUser?.role === "business" && normalizedHasPaid) {
         navigate("/business-dashboard", { replace: true });
       } else if (loggedInUser?.role === "business") {
         navigate("/plans", { replace: true });
