@@ -55,7 +55,20 @@ export default function ProtectedRoute({
   ) {
     const now = new Date();
     const subscriptionEnd = user.subscriptionEnd ? new Date(user.subscriptionEnd) : null;
-    const isSubscriptionValid = subscriptionEnd && now <= subscriptionEnd;
+
+    // לוגים למעקב
+    console.log("Now:", now);
+    console.log("SubscriptionEnd:", subscriptionEnd);
+    console.log("HasPaid:", user.hasPaid);
+    console.log("PaymentStatus:", user.paymentStatus);
+
+    const isSubscriptionValid =
+      subscriptionEnd &&
+      now <= subscriptionEnd &&
+      user.hasPaid === true &&
+      user.paymentStatus === "approved";
+
+    console.log("Is subscription valid?", isSubscriptionValid);
 
     if (!isSubscriptionValid) {
       console.log("ProtectedRoute: subscription expired or not valid, redirect to /plans");
