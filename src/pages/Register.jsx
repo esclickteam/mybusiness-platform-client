@@ -91,8 +91,8 @@ const Register = () => {
         { withCredentials: true }
       );
 
-      // התחברות מיידית לאחר הרשמה, מחכים לסיום
-      const user = await login(email.trim().toLowerCase(), password, {
+      // התחברות מיידית לאחר הרשמה, מחכים לתוצאה
+      const { user } = await login(email.trim().toLowerCase(), password, {
         skipRedirect: true,
       });
 

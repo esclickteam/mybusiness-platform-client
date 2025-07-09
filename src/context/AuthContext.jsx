@@ -112,6 +112,9 @@ export function AuthProvider({ children }) {
       if (!skipRedirect) sessionStorage.setItem("postLoginRedirect", redirectUrl || "");
 
       setLoading(false);
+
+      // מחזיר את המשתמש וה-redirectUrl לשימוש חיצוני
+      return { user: loggedInUser, redirectUrl };
     } catch (e) {
       setError(
         e.response?.status >= 400 && e.response?.status < 500
