@@ -23,7 +23,10 @@ const AffiliatePage = () => {
   // סכום כולל עמלות לתשלום (כל הסטטוסים לא שולם)
   const totalUnpaidCommissions = allStats
     .filter((stat) => stat.paymentStatus !== "paid")
-    .reduce((sum, stat) => sum + stat.totalCommissions, 0);
+    .reduce(
+      (sum, stat) => sum + (stat.totalCommissions - (stat.paidCommissions || 0)),
+      0
+    );
 
   // פונקציה לריענון הסטטיסטיקות והיתרה
   const refreshStats = async (affiliateId) => {
@@ -72,7 +75,7 @@ const AffiliatePage = () => {
   // בקשת משיכה
   const handleWithdrawRequest = async () => {
     if (withdrawAmount < 200) {
-      alert('סכום מינימום למשיכה הוא 200 ש"ח');
+      alert("סכום מינימום למשיכה הוא 200 ש\"ח");
       return;
     }
     if (withdrawAmount > currentBalance) {
@@ -143,9 +146,7 @@ const AffiliatePage = () => {
       {/* קישור אישי */}
       <section className="affiliate-section">
         <h2>🎯 קישור השותף האישי שלך</h2>
-        <p>
-          העתיקו את הקישור ושתפו אותו כדי לצרף לקוחות חדשים ולקבל עמלות:
-        </p>
+        <p>העתיקו את הקישור ושתפו אותו כדי לצרף לקוחות חדשים ולקבל עמלות:</p>
         <input
           type="text"
           value={affiliateLink}
@@ -154,9 +155,7 @@ const AffiliatePage = () => {
           className="affiliate-link-input"
         />
         <button
-          onClick={() =>
-            businessId && navigator.clipboard.writeText(affiliateLink)
-          }
+          onClick={() => businessId && navigator.clipboard.writeText(affiliateLink)}
           disabled={!businessId}
         >
           📋 העתק קישור
@@ -180,21 +179,27 @@ const AffiliatePage = () => {
               <tr>
                 <th>חודש</th>
                 <th>מספר רכישות</th>
-                <th>סה"כ עמלות (₪)</th>
+                <th>שולם (₪)</th>
+                <th>לא שולם (₪)</th>
                 <th>סטטוס תשלום</th>
               </tr>
             </thead>
             <tbody>
-              {allStats.map((stat) => (
-                <tr key={stat._id}>
-                  <td>{stat.month}</td>
-                  <td>{stat.purchases}</td>
-                  <td>{stat.totalCommissions.toFixed(2)}</td>
-                  <td className={stat.paymentStatus === "paid" ? "paid" : "unpaid"}>
-                    {stat.paymentStatus === "paid" ? "שולם ✅" : "ממתין"}
-                  </td>
-                </tr>
-              ))}
+              {allStats.map((stat) => {
+                const paid = stat.paidCommissions || 0;
+                const unpaid = stat.totalCommissions - paid;
+                return (
+                  <tr key={stat._id}>
+                    <td>{stat.month}</td>
+                    <td>{stat.purchases}</td>
+                    <td>₪{paid.toFixed(2)}</td>
+                    <td>₪{unpaid.toFixed(2)}</td>
+                    <td className={stat.paymentStatus === "paid" ? "paid" : "unpaid"}>
+                      {stat.paymentStatus === "paid" ? "שולם ✅" : "ממתין"}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
@@ -214,7 +219,6 @@ const AffiliatePage = () => {
             </tr>
           </thead>
           <tbody>
-            {/* שורות טבלה כפי שקיים בקוד המקורי */}
             <tr>
               <td>חבילה חודשית</td>
               <td>1 חודש</td>
@@ -311,9 +315,12 @@ const AffiliatePage = () => {
       <section className="affiliate-bank-section">
         <h2>💵 פעולות תשלום</h2>
         <div>
-          <p>יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong></p>
           <p>
-            סך כל העמלות להשלמה: <strong>₪{totalUnpaidCommissions.toFixed(2)}</strong>
+            יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong>
+          </p>
+          <p>
+            סך כל העמלות להשלמה:{" "}
+            <strong>₪{totalUnpaidCommissions.toFixed(2)}</strong>
           </p>
           {totalUnpaidCommissions > currentBalance && (
             <p style={{ color: "orange", fontWeight: "bold" }}>
@@ -321,10 +328,10 @@ const AffiliatePage = () => {
             </p>
           )}
 
-          {/* הודעת מינימום למשיכה אם היתרה קטנה מ-200 */}
           {currentBalance < 200 ? (
             <p style={{ color: "red", fontWeight: "bold" }}>
-              סכום מינימום למשיכה הוא 200 ש"ח. אנא המתן שיצטבר סכום מינימלי למשיכה.
+              סכום מינימום למשיכה הוא 200 ש"ח. אנא המתן שיצטבר סכום מינימלי
+              למשיכה.
             </p>
           ) : (
             <>
@@ -339,10 +346,7 @@ const AffiliatePage = () => {
               <p style={{ color: "red", fontWeight: "bold", marginTop: "4px" }}>
                 סכום מינימום למשיכה הוא 200 ש"ח
               </p>
-              <button
-                onClick={handleWithdrawRequest}
-                disabled={withdrawAmount < 200}
-              >
+              <button onClick={handleWithdrawRequest} disabled={withdrawAmount < 200}>
                 בקש משיכה
               </button>
             </>
