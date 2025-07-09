@@ -17,6 +17,32 @@ const AffiliatePage = () => {
   const [receiptFile, setReceiptFile] = useState(null);
   const [withdrawalId, setWithdrawalId] = useState(null);
 
+  // מצב ליתרת המשיכה המעודכנת
+  const [currentBalance, setCurrentBalance] = useState(0);
+
+  // פונקציה לריענון הסטטיסטיקות והיתרה
+  const refreshStats = async (affiliateId) => {
+    try {
+      setLoadingStats(true);
+      const response = await API.get("/affiliate/stats/all", {
+        params: { affiliateId },
+      });
+      setAllStats(response.data);
+
+      // חישוב יתרה עדכנית לפי העמלות הכוללות
+      const balance = response.data.reduce(
+        (acc, stat) => acc + (stat.totalCommissions || 0),
+        0
+      );
+      setCurrentBalance(balance);
+      setErrorStats(null);
+    } catch (error) {
+      setErrorStats("שגיאה בטעינת הנתונים");
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
   useEffect(() => {
     async function fetchBusinessId() {
       try {
@@ -32,41 +58,16 @@ const AffiliatePage = () => {
 
   useEffect(() => {
     if (!businessId) return;
-
-    async function fetchAllStats() {
-      try {
-        setLoadingStats(true);
-        const response = await API.get("/affiliate/stats/all", {
-          params: { affiliateId: businessId },
-        });
-        setAllStats(response.data);
-        setErrorStats(null);
-      } catch (error) {
-        setErrorStats("שגיאה בטעינת הנתונים");
-      } finally {
-        setLoadingStats(false);
-      }
-    }
-
-    fetchAllStats();
+    refreshStats(businessId);
   }, [businessId]);
-
-  const affiliateLink = businessId
-    ? `https://esclick.co.il/register?ref=${businessId}`
-    : "לא זוהה מזהה עסק";
 
   // בקשת משיכה
   const handleWithdrawRequest = async () => {
-    const totalAvailable = allStats.reduce(
-      (acc, stat) => acc + (stat.totalCommissions || 0),
-      0
-    );
-
     if (withdrawAmount < 200) {
       alert('סכום מינימום למשיכה הוא 200 ש"ח');
       return;
     }
-    if (withdrawAmount > totalAvailable) {
+    if (withdrawAmount > currentBalance) {
       alert("סכום המשיכה גבוה מהיתרה הזמינה");
       return;
     }
@@ -78,6 +79,14 @@ const AffiliatePage = () => {
       setWithdrawStatus(res.data.message || "בקשת המשיכה התקבלה.");
       if (res.data.withdrawalId) setWithdrawalId(res.data.withdrawalId);
       setShowReceiptForm(true);
+
+      // אם השרת מחזיר יתרה עדכנית (אפשר להוסיף את זה בשרת), נעדכן גם בצד לקוח
+      if (res.data.currentBalance !== undefined) {
+        setCurrentBalance(res.data.currentBalance);
+      } else {
+        // אחרת, נעשה ריענון נתונים מלא
+        refreshStats(businessId);
+      }
     } catch (error) {
       alert(error.response?.data?.message || "שגיאה בבקשת המשיכה");
     }
@@ -105,16 +114,15 @@ const AffiliatePage = () => {
       setReceiptFile(null);
 
       // ריענון הסטטיסטיקות לאחר העלאת הקבלה
-      setLoadingStats(true);
-      const response = await API.get("/affiliate/stats/all", {
-        params: { affiliateId: businessId },
-      });
-      setAllStats(response.data);
-      setLoadingStats(false);
+      refreshStats(businessId);
     } catch (error) {
       alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
     }
   };
+
+  const affiliateLink = businessId
+    ? `https://esclick.co.il/register?ref=${businessId}`
+    : "לא זוהה מזהה עסק";
 
   return (
     <div className="affiliate-page">
@@ -217,18 +225,12 @@ const AffiliatePage = () => {
         <h2>💵 פעולות תשלום</h2>
         <div>
           <p>
-            יתרתך הזמינה למשיכה: ₪
-            {allStats
-              .reduce((acc, stat) => acc + (stat.totalCommissions || 0), 0)
-              .toFixed(2)}
+            יתרתך הזמינה למשיכה: ₪{currentBalance.toFixed(2)}
           </p>
           <input
             type="number"
             min="200"
-            max={
-              allStats.reduce((acc, stat) => acc + (stat.totalCommissions || 0), 0) ||
-              0
-            }
+            max={currentBalance || 0}
             value={withdrawAmount}
             onChange={(e) => setWithdrawAmount(Number(e.target.value))}
             placeholder={`סכום למשיכה (מינימום 200 ש"ח)`}
