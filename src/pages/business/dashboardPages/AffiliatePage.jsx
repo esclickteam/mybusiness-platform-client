@@ -24,17 +24,17 @@ const AffiliatePage = () => {
   const refreshStats = async (affiliateId) => {
     try {
       setLoadingStats(true);
-      const response = await API.get("/affiliate/stats/all", {
+
+      // 1. קבלת הסטטיסטיקות
+      const statsRes = await API.get("/affiliate/stats/all", {
         params: { affiliateId },
       });
-      setAllStats(response.data);
+      setAllStats(statsRes.data);
 
-      // חישוב יתרה עדכנית לפי העמלות הכוללות
-      const balance = response.data.reduce(
-        (acc, stat) => acc + (stat.totalCommissions || 0),
-        0
-      );
-      setCurrentBalance(balance);
+      // 2. קבלת ה-balance המעודכן מהשרת
+      const bizRes = await API.get("/business/my");
+      setCurrentBalance(bizRes.data.business.balance);
+
       setErrorStats(null);
     } catch (error) {
       setErrorStats("שגיאה בטעינת הנתונים");
@@ -43,19 +43,22 @@ const AffiliatePage = () => {
     }
   };
 
+  // ניסיון ראשון לקבלת מזהה העסק והיתרה
   useEffect(() => {
-    async function fetchBusinessId() {
+    async function fetchBusinessIdAndBalance() {
       try {
         const res = await API.get("/business/my");
         setBusinessId(res.data.business._id);
+        setCurrentBalance(res.data.business.balance);
       } catch (error) {
         console.error("Error fetching businessId:", error);
         setErrorStats("לא הצלחנו לקבל מזהה עסק");
       }
     }
-    fetchBusinessId();
+    fetchBusinessIdAndBalance();
   }, []);
 
+  // ריענון לסטטיסטיקות וליתרה ברגע שיש businessId
   useEffect(() => {
     if (!businessId) return;
     refreshStats(businessId);
@@ -76,15 +79,16 @@ const AffiliatePage = () => {
         affiliateId: businessId,
         amount: withdrawAmount,
       });
+
       setWithdrawStatus(res.data.message || "בקשת המשיכה התקבלה.");
       if (res.data.withdrawalId) setWithdrawalId(res.data.withdrawalId);
       setShowReceiptForm(true);
 
-      // אם השרת מחזיר יתרה עדכנית (אפשר להוסיף את זה בשרת), נעדכן גם בצד לקוח
+      // עדכון ביתרת הלקוח בהתאם לתשובת השרת
       if (res.data.currentBalance !== undefined) {
         setCurrentBalance(res.data.currentBalance);
       } else {
-        // אחרת, נעשה ריענון נתונים מלא
+        // fallback: ריענון מלא
         refreshStats(businessId);
       }
     } catch (error) {
@@ -108,18 +112,20 @@ const AffiliatePage = () => {
       const res = await API.post("/affiliate/upload-receipt", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+
       alert(res.data.message || "הקבלה הועלתה בהצלחה");
       setWithdrawStatus("קבלה הועלתה וממתינה לאישור.");
       setShowReceiptForm(false);
       setReceiptFile(null);
 
-      // ריענון הסטטיסטיקות לאחר העלאת הקבלה
+      // ריענון הסטטיסטיקות (לרבות balance)
       refreshStats(businessId);
     } catch (error) {
       alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
     }
   };
 
+  // קישור השותף
   const affiliateLink = businessId
     ? `https://esclick.co.il/register?ref=${businessId}`
     : "לא זוהה מזהה עסק";
@@ -132,7 +138,9 @@ const AffiliatePage = () => {
       {/* קישור אישי */}
       <section className="affiliate-section">
         <h2>🎯 קישור השותף האישי שלך</h2>
-        <p>העתק את הקישור ושתף אותו כדי לצרף לקוחות חדשים ולקבל עמלות:</p>
+        <p>
+          העתיקו את הקישור ושתפו אותו כדי לצרף לקוחות חדשים ולקבל עמלות:
+        </p>
         <input
           type="text"
           value={affiliateLink}
@@ -155,7 +163,7 @@ const AffiliatePage = () => {
         )}
       </section>
 
-      {/* טבלה של כל החודשים */}
+      {/* טבלת סטטיסטיקות */}
       <section className="affiliate-stats">
         <h2>📊 סטטיסטיקות לכל החודשים</h2>
         {loadingStats && <p>טוען נתונים...</p>}
@@ -187,7 +195,7 @@ const AffiliatePage = () => {
         )}
       </section>
 
-      {/* מדרגות עמלות לפי תקופת חבילה עם בונוסים לפי עסקאות */}
+      {/* מדרגות עמלות ובונוסים */}
       <section className="affiliate-commission-rules">
         <h2>💰 מדרגות עמלות לפי תקופת חבילה ובונוסים לפי עסקאות</h2>
         <table>
@@ -201,22 +209,95 @@ const AffiliatePage = () => {
             </tr>
           </thead>
           <tbody>
-            <tr><td>חבילה חודשית</td><td>1 חודש</td><td>3%</td><td>10</td><td>200</td></tr>
-            <tr><td>חבילה חודשית</td><td>1 חודש</td><td>3%</td><td>30</td><td>400</td></tr>
-            <tr><td>חבילה חודשית</td><td>1 חודש</td><td>3%</td><td>60</td><td>1000</td></tr>
-            <tr><td>חבילה חודשית</td><td>1 חודש</td><td>3%</td><td>100</td><td>2200</td></tr>
-            <tr><td>חבילה רבעונית</td><td>3 חודשים</td><td>5%</td><td>10</td><td>450</td></tr>
-            <tr><td>חבילה רבעונית</td><td>3 חודשים</td><td>5%</td><td>30</td><td>600</td></tr>
-            <tr><td>חבילה רבעונית</td><td>3 חודשים</td><td>5%</td><td>60</td><td>1500</td></tr>
-            <tr><td>חבילה רבעונית</td><td>3 חודשים</td><td>5%</td><td>100</td><td>3300</td></tr>
-            <tr><td>חבילה שנתית</td><td>12 חודשים</td><td>7%</td><td>10</td><td>900</td></tr>
-            <tr><td>חבילה שנתית</td><td>12 חודשים</td><td>7%</td><td>30</td><td>1200</td></tr>
-            <tr><td>חבילה שנתית</td><td>12 חודשים</td><td>7%</td><td>60</td><td>3000</td></tr>
-            <tr><td>חבילה שנתית</td><td>12 חודשים</td><td>7%</td><td>100</td><td>6600</td></tr>
+            <tr>
+              <td>חבילה חודשית</td>
+              <td>1 חודש</td>
+              <td>3%</td>
+              <td>10</td>
+              <td>200</td>
+            </tr>
+            <tr>
+              <td>חבילה חודשית</td>
+              <td>1 חודש</td>
+              <td>3%</td>
+              <td>30</td>
+              <td>400</td>
+            </tr>
+            <tr>
+              <td>חבילה חודשית</td>
+              <td>1 חודש</td>
+              <td>3%</td>
+              <td>60</td>
+              <td>1000</td>
+            </tr>
+            <tr>
+              <td>חבילה חודשית</td>
+              <td>1 חודש</td>
+              <td>3%</td>
+              <td>100</td>
+              <td>2200</td>
+            </tr>
+            <tr>
+              <td>חבילה רבעונית</td>
+              <td>3 חודשים</td>
+              <td>5%</td>
+              <td>10</td>
+              <td>450</td>
+            </tr>
+            <tr>
+              <td>חבילה רבעונית</td>
+              <td>3 חודשים</td>
+              <td>5%</td>
+              <td>30</td>
+              <td>600</td>
+            </tr>
+            <tr>
+              <td>חבילה רבעונית</td>
+              <td>3 חודשים</td>
+              <td>5%</td>
+              <td>60</td>
+              <td>1500</td>
+            </tr>
+            <tr>
+              <td>חבילה רבעונית</td>
+              <td>3 חודשים</td>
+              <td>5%</td>
+              <td>100</td>
+              <td>3300</td>
+            </tr>
+            <tr>
+              <td>חבילה שנתית</td>
+              <td>12 חודשים</td>
+              <td>7%</td>
+              <td>10</td>
+              <td>900</td>
+            </tr>
+            <tr>
+              <td>חבילה שנתית</td>
+              <td>12 חודשים</td>
+              <td>7%</td>
+              <td>30</td>
+              <td>1200</td>
+            </tr>
+            <tr>
+              <td>חבילה שנתית</td>
+              <td>12 חודשים</td>
+              <td>7%</td>
+              <td>60</td>
+              <td>3000</td>
+            </tr>
+            <tr>
+              <td>חבילה שנתית</td>
+              <td>12 חודשים</td>
+              <td>7%</td>
+              <td>100</td>
+              <td>6600</td>
+            </tr>
           </tbody>
         </table>
         <p style={{ marginTop: "1rem", fontWeight: "bold", color: "#444" }}>
-          ⚠️ הבונוס האקסטרה יינתן רק פעם אחת בחודש, לפי הרף הגבוה ביותר של עסקאות שהושג באותו חודש.
+          ⚠️ הבונוס האקסטרה יינתן רק פעם אחת בחודש, לפי הרף הגבוה ביותר
+          של עסקאות שהושג באותו חודש.
         </p>
       </section>
 
@@ -224,18 +305,15 @@ const AffiliatePage = () => {
       <section className="affiliate-bank-section">
         <h2>💵 פעולות תשלום</h2>
         <div>
-          <p>
-            יתרתך הזמינה למשיכה: ₪{currentBalance.toFixed(2)}
-          </p>
+          <p>יתרתך הזמינה למשיכה: ₪{currentBalance.toFixed(2)}</p>
           <input
             type="number"
             min="200"
             max={currentBalance || 0}
             value={withdrawAmount}
             onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-            placeholder={`סכום למשיכה (מינימום 200 ש"ח)`}
+            placeholder="סכום למשיכה (מינימום 200 ש&quot;ח)"
           />
-          {/* הודעת סכום מינימום */}
           <p style={{ color: "red", fontWeight: "bold", marginTop: "4px" }}>
             סכום מינימום למשיכה הוא 200 ש"ח
           </p>
