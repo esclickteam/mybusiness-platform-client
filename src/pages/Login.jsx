@@ -75,13 +75,18 @@ export default function Login() {
         loggedInUser?.hasPaid === 1;
 
       const isPaymentApproved =
-        loggedInUser?.paymentStatus === "approved" || normalizedHasPaid;
+        loggedInUser?.paymentStatus === "approved" && normalizedHasPaid;
 
-      // ─── Routing matrix ──────────────────────────────────────────────────
+      // ─── Routing matrix with fix for redirectUrl ───────────────────────
       if (redirectUrl) {
-        navigate(redirectUrl, { replace: true });
+        // תיקון: אם redirectUrl הוא "/dashboard", נווט עם businessId ב-URL
+        if (redirectUrl === "/dashboard" && loggedInUser?.businessId) {
+          navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
+        } else {
+          navigate(redirectUrl, { replace: true });
+        }
       } else if (loggedInUser?.role === "business" && isPaymentApproved) {
-        navigate("/business-dashboard", { replace: true });
+        navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
       } else if (loggedInUser?.role === "business") {
         navigate("/plans", { replace: true });
       } else {
