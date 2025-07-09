@@ -17,7 +17,7 @@ export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
     ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then((res) => {
-        const { accessToken, user: refreshedUser, redirectUrl } = res.data;
+        const { accessToken, user: refreshedUser /*, redirectUrl*/ } = res.data;
         if (!accessToken) throw new Error("No new token");
         // עדכון ה־token
         localStorage.setItem("token", accessToken);
@@ -26,8 +26,7 @@ export async function singleFlightRefresh() {
         if (refreshedUser) {
           localStorage.setItem("businessDetails", JSON.stringify(refreshedUser));
         }
-        // ניווט לפי מה שהשרת שולח
-        if (redirectUrl) window.location.replace(redirectUrl);
+        // ** אין יותר ניווט מפה **
         return accessToken;
       })
       .finally(() => {
@@ -190,10 +189,9 @@ export function AuthProvider({ children }) {
         }
 
         // חיבור socket
-        const s = await createSocket(singleFlightRefresh, logout, user?.businessId);
-        socketRef.current = s;
+        socketRef.current = await createSocket(singleFlightRefresh, logout, user?.businessId);
 
-        // ניווט לפי redirectUrl מ־session (אם נשמר)
+        // ניווט חד-פעמי לפי redirectUrl מ־sessionStorage (אם נשמר)
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
           navigate(savedRedirect, { replace: true });
@@ -206,7 +204,7 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     })();
-  }, [token]);
+  }, [token, user, navigate]);
 
   /* -------------------------------------------------------------- */
   /*  Toast auto-dismiss                                            */
