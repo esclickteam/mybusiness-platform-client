@@ -30,6 +30,14 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
 
     const end = user?.subscriptionEnd ? new Date(user.subscriptionEnd) : null;
     const now = new Date();
+
+    console.log("🔍 ProtectedRoute logs:");
+    console.log("user.subscriptionEnd:", user?.subscriptionEnd);
+    console.log("now:", now.toISOString());
+    console.log("isPaid:", isPaid);
+    console.log("subscription end date:", end ? end.toISOString() : null);
+    console.log("subscription valid:", !!(end && now <= end && isPaid));
+
     return !!(end && now <= end && isPaid);
   }, [isBusiness, user?.subscriptionEnd, isPaid]);
 
@@ -59,9 +67,24 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return <Unauthorized />;
   }
 
-  // 3. Business subscription checks
+  // 3. Business subscription checks with enhanced logic
   if (isBusiness && !isSubscriptionValid) {
-    return <Navigate to="/plans" replace />;
+    const now = new Date();
+    const subscriptionEndDate = user?.subscriptionEnd ? new Date(user.subscriptionEnd) : null;
+
+    console.log("Redirect check:");
+    console.log("now > subscriptionEndDate?", subscriptionEndDate ? now > subscriptionEndDate : false);
+
+    if (subscriptionEndDate && now > subscriptionEndDate) {
+      // מנוי פג תוקף → הפניה לעמוד החבילות
+      return <Navigate to="/plans" replace />;
+    } else {
+      // מנוי תקין, אבל אולי יש סיבה אחרת לחסום, אפשר לשנות בהתאם
+      // לדוגמה: להמשיך לדשבורד
+      // return <Navigate to="/dashboard" replace />;
+      // או להציג Unauthorized עם הסבר
+      return <Unauthorized message="המנוי שלך אינו פעיל כרגע." />;
+    }
   }
 
   // 4. Package‑specific guard
