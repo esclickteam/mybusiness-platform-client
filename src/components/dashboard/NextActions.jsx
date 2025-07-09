@@ -2,9 +2,9 @@ import React from "react";
 import "./NextActions.css";
 
 const THRESHOLDS = {
-  views: 40,
-  appointments: 1,
-  reviews: 1,
+  views: 10,
+  appointments: 2,
+  reviews: 2,
   messages: 1,  
 };
 
@@ -21,19 +21,19 @@ const NextActions = ({ stats }) => {
   const actions = [];
 
   if (weekly_views_count < THRESHOLDS.views) {
-    actions.push({ text: "אין הרבה צפיות השבוע – כדאי לפרסם שירות חדש או מבצע", type: "info" });
+    actions.push({ text: "שבוע שקט? זו הזדמנות מצוינת לפרסם שירות חדש", type: "info" });
   } else {
     actions.push({ text: "👀 צפיות בפרופיל השבוע במצב טוב", type: "success" });
   }
 
   if (weekly_appointments_count < THRESHOLDS.appointments) {
-    actions.push({ text: "📅 מעט פגישות השבוע – שקלי לקבוע שיחות ייעוץ", type: "warning" });
+    actions.push({ text: "📅 שבוע רגוע? זו הזדמנות לקבוע שיחות ייעוץ חדשות", type: "warning" });
   } else {
     actions.push({ text: "📅 מספר הפגישות השבועי תקין", type: "success" });
   }
 
   if (weekly_reviews_count < THRESHOLDS.reviews) {
-    actions.push({ text: "⭐ מעט ביקורות השבוע – בקשי מלקוחות לדרג אותך", type: "warning" });
+    actions.push({ text: "⭐ לא קיבלת הרבה ביקורות השבוע? תזכירי ללקוחות מרוצים לדרג אותך", type: "warning" });
   } else {
     actions.push({ text: "⭐ יש ביקורות טובות ומספיקות השבוע", type: "success" });
   }
