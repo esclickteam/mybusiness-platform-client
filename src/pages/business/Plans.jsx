@@ -9,7 +9,7 @@ function Plans() {
 
   // תקופות מנוי עם מחירים תואמים, כולל חבילת ניסיון יומית
   const [selectedDuration, setSelectedDuration] = useState("1");
-  const prices = { "0.0416": 1, "1": 10, "3": 769, "12": 699 }; // 0.0416 ~ יום (1/24 חודש)
+  const prices = { "1": 1, "3": 769, "12": 699 }; // חבילת ניסיון 1 ש"ח ליום
 
   const handleDurationChange = (duration) => setSelectedDuration(duration);
 
@@ -19,7 +19,6 @@ function Plans() {
       return;
     }
     // חישוב המחיר הכולל לפי המחיר לחודש כפול מספר החודשים
-    // במקרה של יום, duration הוא 0.0416 (כ-1/24 של חודש)
     const totalPrice = prices[selectedDuration] * Number(selectedDuration);
 
     navigate("/checkout", {
@@ -70,8 +69,7 @@ function Plans() {
           aria-label="בחירת תקופת מנוי"
         >
           {[
-            { id: "0.0416", label: "ניסיון", price: 1, priceLabel: "ליום" },
-            { id: "1", label: "חודשי", price: 10, priceLabel: "לחודש" },
+            { id: "1", label: "ניסיון", price: 1, priceLabel: "ליום" },
             { id: "3", label: "3 חודשים", price: 769, priceLabel: "לשלושה חודשים" },
             { id: "12", label: "שנתי", price: 699, priceLabel: "לשנה" },
           ].map(({ id, label, price, priceLabel }) => (
