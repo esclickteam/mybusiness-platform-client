@@ -76,7 +76,7 @@ const Register = () => {
     }
 
     try {
-      const response = await API.post(
+      await API.post(
         "/auth/register",
         {
           name: name.trim(),
@@ -91,16 +91,21 @@ const Register = () => {
         { withCredentials: true }
       );
 
-      const { redirectUrl } = await login(email.trim().toLowerCase(), password, {
+      // התחברות מיידית לאחר הרשמה, מחכים לסיום
+      const user = await login(email.trim().toLowerCase(), password, {
         skipRedirect: true,
       });
 
-      // ניתוב מותנה אחרי הרשמה
+      if (!user) {
+        setError("❌ לא הצלחנו להתחבר לאחר ההרשמה, נסה שוב בבקשה");
+        return;
+      }
+
+      // ניתוב מותנה אחרי הרשמה והתחברות
       if (userType === "business") {
         navigate("/plans");
       } else {
         navigate("/client/dashboard/messages");
-
       }
     } catch (err) {
       console.error("❌ Registration error:", err.response?.data || err.message);
