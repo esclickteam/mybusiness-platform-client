@@ -9,6 +9,7 @@ export default function AffiliateDashboardPage() {
   const affiliateId = user?.affiliateId;
 
   const [showBankForm, setShowBankForm] = useState(false);
+  const [showReceiptForm, setShowReceiptForm] = useState(false);
   const [allStats, setAllStats] = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState(null);
