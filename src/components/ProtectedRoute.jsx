@@ -24,6 +24,7 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }, [user?.hasPaid, user?.paymentStatus]);
 
   const isBusiness = useMemo(() => (user?.role || "").toLowerCase() === "business", [user?.role]);
+  const isAffiliate = useMemo(() => (user?.role || "").toLowerCase() === "affiliate", [user?.role]);
 
   const isSubscriptionValid = useMemo(() => {
     if (!isBusiness) return true; // only business users require an active subscription
@@ -63,7 +64,12 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }
 
   // 2. Role mismatch → show Unauthorized component (403)
-  if (normalizedRoles.length && !normalizedRoles.includes((user.role || "").toLowerCase())) {
+  // Allow affiliate role if roles includes it or no roles specified
+  if (
+    normalizedRoles.length &&
+    !normalizedRoles.includes((user.role || "").toLowerCase()) &&
+    !(isAffiliate && normalizedRoles.includes("affiliate"))
+  ) {
     return <Unauthorized />;
   }
 
