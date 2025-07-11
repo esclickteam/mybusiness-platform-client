@@ -134,6 +134,12 @@ function AdminDashboard() {
         <Link to="/reset-password" className="admin-link">
           🔒 שינוי סיסמה
         </Link>
+
+        {/* הקישור החדש לניהול משווקים */}
+        <Link to="/admin/affiliates" className="admin-link">
+          🤝 ניהול משווקים (שותפים)
+        </Link>
+
         <Link to="/admin/affiliate-payouts" className="admin-link">
           💸 דו"ח תשלומים לשותפים
         </Link>

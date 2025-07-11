@@ -17,6 +17,7 @@ import { useAuth } from "./context/AuthContext";
 import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
 import { LoginSkeleton } from "./components/LoginSkeleton";
+import AdminWithdrawalsPage from './pages/admin/AdminWithdrawalsPage';
 
 import { AiProvider } from "./context/AiContext";
 import AiModal from "./components/AiModal";
@@ -66,10 +67,10 @@ const AdminUsers          = lazy(() => import("./pages/admin/AdminUsers"));
 const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
+const AdminAffiliates     = lazy(() => import("./pages/admin/AdminAffiliates")); // <-- הוסף כאן
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
 const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
-import AdminWithdrawalsPage from './pages/admin/AdminWithdrawalsPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -139,7 +140,6 @@ export default function App() {
               <Route path="/business/:businessId" element={<BusinessProfileView />} />
               <Route path="/book/:businessId" element={<BookingPage />} />
               <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
-
 
               <Route
                 path="/business/collaborations/:tab?"
@@ -313,6 +313,14 @@ export default function App() {
                 }
               />
               <Route
+                path="/admin/affiliates"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <AdminAffiliates />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/admin/affiliate-payouts"
                 element={
                   <ProtectedRoute roles={["admin"]}>
@@ -341,7 +349,7 @@ export default function App() {
   );
 }
 
-// ------ כאן נשארים ה־wrappers שלך (BusinessChatListWrapper, BusinessChatWrapper) כפי שהם ------
+// נשארים ה־wrappers שלך כפי שהם
 export function BusinessChatListWrapper() {
   const { businessId } = useParams();
   const [convos, setConvos] = useState([]);
