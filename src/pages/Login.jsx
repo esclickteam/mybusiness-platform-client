@@ -5,17 +5,12 @@ import { lazyWithPreload } from "../utils/lazyWithPreload";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
-// ────────────────────────────────────────────────────────────────────────────────
-//  Dynamic imports & pre‑loading
-// ────────────────────────────────────────────────────────────────────────────────
+// Dynamic imports & preloading
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
 );
 
-// ────────────────────────────────────────────────────────────────────────────────
-//  Skeleton Loader (Shimmer)
-// ────────────────────────────────────────────────────────────────────────────────
 export function LoginSkeleton() {
   return (
     <div className="login-skeleton">
@@ -26,27 +21,21 @@ export function LoginSkeleton() {
   );
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-//  Login Component
-// ────────────────────────────────────────────────────────────────────────────────
 export default function Login() {
   const { login, error: authError } = useAuth();
   const { fetchNotifications } = useNotifications();
   const navigate = useNavigate();
 
-  // ─── State ────────────────────────────────────────────────────────────────
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [dashPreloadDone, setDashPreloadDone] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
 
-  // ─── Pre‑load Dashboard bundle once on mount ───────────────────────────────
   useEffect(() => {
     DashboardPage.preload().finally(() => setDashPreloadDone(true));
   }, []);
 
-  // ─── Handlers ─────────────────────────────────────────────────────────────
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
@@ -54,7 +43,6 @@ export default function Login() {
     e.preventDefault();
     setLoginError("");
 
-    // Basic client‑side validation
     if (!form.email.trim() || !form.password) {
       setLoginError("יש למלא אימייל וסיסמה");
       return;
@@ -68,7 +56,6 @@ export default function Login() {
         form.password
       );
 
-      // ─── Payment / Subscription Normalisation ────────────────────────────
       const normalizedHasPaid =
         loggedInUser?.hasPaid === true ||
         loggedInUser?.hasPaid === "true" ||
@@ -77,14 +64,15 @@ export default function Login() {
       const isPaymentApproved =
         loggedInUser?.paymentStatus === "approved" && normalizedHasPaid;
 
-      // ─── Routing matrix with fix for redirectUrl ───────────────────────
+      // ניתוב לפי redirectUrl או לפי role
       if (redirectUrl) {
-        // תיקון: אם redirectUrl הוא "/dashboard", נווט עם businessId ב-URL
         if (redirectUrl === "/dashboard" && loggedInUser?.businessId) {
           navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
         } else {
           navigate(redirectUrl, { replace: true });
         }
+      } else if (loggedInUser?.role === "affiliate") {
+        navigate("/affiliate/dashboard", { replace: true });
       } else if (loggedInUser?.role === "business" && isPaymentApproved) {
         navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
       } else if (loggedInUser?.role === "business") {
@@ -93,7 +81,6 @@ export default function Login() {
         navigate("/client/dashboard", { replace: true });
       }
 
-      // ─── Deferred notification fetch ( UX – allow redirect first ) ──────
       setTimeout(() => {
         if (typeof fetchNotifications === "function") fetchNotifications();
       }, 1000);
@@ -104,12 +91,10 @@ export default function Login() {
     }
   };
 
-  // ─── LOADING STATES ───────────────────────────────────────────────────────
   if (!dashPreloadDone || loading) {
     return <LoginSkeleton />;
   }
 
-  // ─── RENDER ───────────────────────────────────────────────────────────────
   return (
     <div className="login-container">
       <div className="login-box" aria-live="polite" aria-busy={loading}>
@@ -156,7 +141,6 @@ export default function Login() {
           </p>
         )}
 
-        {/* ─── Extra options ─────────────────────────────────────────────── */}
         <div className="login-extra-options">
           <span
             className="forgot-password"
