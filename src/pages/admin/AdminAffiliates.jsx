@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import API from "../../api"; // לוודא שהנתיב נכון
+import "./AdminAffiliates.css"; // ייבוא קובץ CSS
 
 function AdminAffiliates() {
   const [form, setForm] = useState({
@@ -29,9 +30,6 @@ function AdminAffiliates() {
     setError(null);
     setAffiliateUrl(null);
 
-    console.log("[UI] Submit form", form);
-
-    // בדיקות בסיסיות
     if (!form.name.trim() || !form.affiliateId.trim()) {
       setError("נא למלא שם ומשתמש ייחודי (affiliateId)");
       setLoading(false);
@@ -44,10 +42,7 @@ function AdminAffiliates() {
     }
 
     try {
-      // הקריאה ל-API מתבצעת באמצעות axios שהגדרת עם baseURL נכון
       const res = await API.post("/admin/affiliates", form);
-      console.log("[UI] Server response", res.data);
-
       if (res.data.success) {
         setMessage("✅ המשווק נוצר בהצלחה!");
         setAffiliateUrl(`https://yourdomain.com/affiliate/${res.data.affiliate.publicToken}`);
@@ -61,7 +56,6 @@ function AdminAffiliates() {
         setError("שגיאה ביצירת המשווק");
       }
     } catch (err) {
-      console.error("[UI] Error creating affiliate", err);
       setError(err.response?.data?.error || "שגיאה בשרת");
     } finally {
       setLoading(false);
@@ -69,20 +63,13 @@ function AdminAffiliates() {
   };
 
   return (
-    <div
-      className="admin-affiliates-container"
-      style={{ maxWidth: 500, margin: "2rem auto" }}
-    >
-      <h2>יצירת משווק חדש</h2>
+    <div className="admin-affiliates-container">
+      <h2 className="title">יצירת משווק חדש</h2>
 
-      {message && (
-        <div style={{ color: "green", marginBottom: "1rem" }}>{message}</div>
-      )}
-      {error && (
-        <div style={{ color: "red", marginBottom: "1rem" }}>{error}</div>
-      )}
+      {message && <div className="message success">{message}</div>}
+      {error && <div className="message error">{error}</div>}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="affiliate-form">
         <label>
           שם המשווק*:
           <input
@@ -135,15 +122,15 @@ function AdminAffiliates() {
           />
         </label>
 
-        <button type="submit" disabled={loading} style={{ marginTop: "1rem" }}>
+        <button type="submit" disabled={loading} className="submit-btn">
           {loading ? "שומר..." : "צור משווק"}
         </button>
       </form>
 
       {affiliateUrl && (
-        <div style={{ marginTop: "1rem" }}>
+        <div className="affiliate-url-container">
           כתובת המשווק:{" "}
-          <a href={affiliateUrl} target="_blank" rel="noopener noreferrer">
+          <a href={affiliateUrl} target="_blank" rel="noopener noreferrer" className="affiliate-link">
             {affiliateUrl}
           </a>
         </div>
