@@ -27,8 +27,6 @@ import { preloadDashboardComponents } from "./pages/business/dashboardPages/Dash
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
 
-
-
 // טעינה עצלה (lazy) של כל הרכיבים
 const HomePage            = lazy(() => import("./pages/Home"));
 const About               = lazy(() => import("./pages/About"));
@@ -86,6 +84,7 @@ function ScrollToTop() {
 export default function App() {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useOnceLogger("App render - user", user);
   useOnceLogger("App render - loading", loading);
@@ -106,6 +105,21 @@ export default function App() {
   useEffect(() => {
     preloadDashboardComponents();
   }, []);
+
+  // הפניה אוטומטית לפי role לאחר התחברות
+  useEffect(() => {
+    if (user) {
+      if (user.role === "affiliate") {
+        if (!location.pathname.startsWith("/affiliate/dashboard")) {
+          navigate("/affiliate/dashboard", { replace: true });
+        }
+      } else {
+        if (!location.pathname.startsWith("/client/dashboard")) {
+          navigate("/client/dashboard", { replace: true });
+        }
+      }
+    }
+  }, [user, navigate, location.pathname]);
 
   if (loading) return <LoginSkeleton />;
 
@@ -144,9 +158,7 @@ export default function App() {
               <Route path="/business/:businessId" element={<BusinessProfileView />} />
               <Route path="/book/:businessId" element={<BookingPage />} />
               <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
-=             <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
-
-
+              <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
 
               <Route
                 path="/business/collaborations/:tab?"
@@ -343,15 +355,13 @@ export default function App() {
               />
 
               <Route
-  path="/affiliate/dashboard/*"
-  element={
-    <ProtectedRoute roles={["affiliate"]}>
-      <AffiliateDashboardPage />
-    </ProtectedRoute>
-  }
-/>
-
-
+                path="/affiliate/dashboard/*"
+                element={
+                  <ProtectedRoute roles={["affiliate"]}>
+                    <AffiliateDashboardPage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
@@ -421,7 +431,7 @@ export function BusinessChatWrapper() {
   }
 
   return (
-    <ChatPage
+    <BusinessChatPage
       isBusiness={true}
       userId={businessId}
       partnerId={clientId}
