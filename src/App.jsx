@@ -25,7 +25,8 @@ import Notifications from "./components/Notifications";
 import { NotificationsProvider } from "./context/NotificationsContext";
 import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
-import AffiliateDashboardPage from "./pages/affiliate/AffiliateDashboardPage"; 
+import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
+
 
 
 // טעינה עצלה (lazy) של כל הרכיבים
