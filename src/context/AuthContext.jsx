@@ -77,7 +77,8 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       // קריאה לשרת לקבלת העוגיה (HttpOnly JWT)
-      const { data } = await API.get(`/login/${publicToken}`, { withCredentials: true });
+      const { data } = await API.get(`/affiliate/login/${publicToken}`, { withCredentials: true });
+
       if (!data.success) throw new Error("משווק לא נמצא");
 
       // בקשה לפרטי המשתמש עם הטוקן שבעוגיה
