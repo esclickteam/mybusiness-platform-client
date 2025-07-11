@@ -39,7 +39,8 @@
 
 .affiliate-form input[type="text"],
 .affiliate-form input[type="email"],
-.affiliate-form input[type="number"] {
+.affiliate-form input[type="number"],
+.affiliate-form input[type="password"] {
   width: 100%;
   padding: 0.5rem 0.75rem;
   font-size: 1rem;
@@ -51,7 +52,8 @@
 
 .affiliate-form input[type="text"]:focus,
 .affiliate-form input[type="email"]:focus,
-.affiliate-form input[type="number"]:focus {
+.affiliate-form input[type="number"]:focus,
+.affiliate-form input[type="password"]:focus {
   border-color: #007bff;
   outline: none;
 }
