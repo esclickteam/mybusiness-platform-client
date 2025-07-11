@@ -24,6 +24,7 @@ import AiModal from "./components/AiModal";
 import Notifications from "./components/Notifications";
 import { NotificationsProvider } from "./context/NotificationsContext";
 import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
+import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 
 // טעינה עצלה (lazy) של כל הרכיבים
 const HomePage            = lazy(() => import("./pages/Home"));
@@ -140,6 +141,8 @@ export default function App() {
               <Route path="/business/:businessId" element={<BusinessProfileView />} />
               <Route path="/book/:businessId" element={<BookingPage />} />
               <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
+              <Route path="/affiliate/auto-login/:publicToken" element={<AffiliateAutoLogin />} />
+
 
               <Route
                 path="/business/collaborations/:tab?"
