@@ -177,23 +177,26 @@ export function AuthProvider({ children }) {
     async function init() {
       setLoading(true);
       try {
+        let normalizedUser = null;
+
         if (token) {
           setAuthToken(token);
           if (!user) {
             const { data } = await API.get("/auth/me", { withCredentials: true });
-            const normalized = normalizeUser(data);
-            setUser(normalized);
-            localStorage.setItem("businessDetails", JSON.stringify(normalized));
+            normalizedUser = normalizeUser(data);
+            setUser(normalizedUser);
+            localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
           }
         } else {
           // אין token ב-localStorage, ננסה לבדוק session דרך cookie
           const { data } = await API.get("/auth/me", { withCredentials: true });
-          const normalized = normalizeUser(data);
-          setUser(normalized);
+          normalizedUser = normalizeUser(data);
+          setUser(normalizedUser);
           // לא שומרים token כי הוא בעוגיה HttpOnly
         }
 
-        socketRef.current = await createSocket(singleFlightRefresh, logout, user?.businessId);
+        const userForSocket = normalizedUser || user;
+        socketRef.current = await createSocket(singleFlightRefresh, logout, userForSocket?.businessId);
 
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
