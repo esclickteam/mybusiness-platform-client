@@ -27,6 +27,8 @@ function AdminAffiliates() {
     setMessage(null);
     setError(null);
 
+    console.log("[UI] Submit form", form);
+
     // בדיקות בסיסיות
     if (!form.name.trim() || !form.affiliateId.trim()) {
       setError("נא למלא שם ומשתמש ייחודי (affiliateId)");
@@ -42,6 +44,8 @@ function AdminAffiliates() {
     try {
       // הקריאה ל-API מתבצעת באמצעות axios שהגדרת עם baseURL נכון
       const res = await API.post("/admin/affiliates", form);
+      console.log("[UI] Server response", res.data);
+
       if (res.data.success) {
         setMessage("✅ המשווק נוצר בהצלחה!");
         setForm({
@@ -54,6 +58,7 @@ function AdminAffiliates() {
         setError("שגיאה ביצירת המשווק");
       }
     } catch (err) {
+      console.error("[UI] Error creating affiliate", err);
       setError(err.response?.data?.error || "שגיאה בשרת");
     } finally {
       setLoading(false);
@@ -61,11 +66,18 @@ function AdminAffiliates() {
   };
 
   return (
-    <div className="admin-affiliates-container" style={{ maxWidth: 500, margin: "2rem auto" }}>
+    <div
+      className="admin-affiliates-container"
+      style={{ maxWidth: 500, margin: "2rem auto" }}
+    >
       <h2>יצירת משווק חדש</h2>
 
-      {message && <div style={{ color: "green", marginBottom: "1rem" }}>{message}</div>}
-      {error && <div style={{ color: "red", marginBottom: "1rem" }}>{error}</div>}
+      {message && (
+        <div style={{ color: "green", marginBottom: "1rem" }}>{message}</div>
+      )}
+      {error && (
+        <div style={{ color: "red", marginBottom: "1rem" }}>{error}</div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <label>
