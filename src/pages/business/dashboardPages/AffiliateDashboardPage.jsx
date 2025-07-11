@@ -31,11 +31,11 @@ export default function AffiliateDashboardPage() {
     setLoadingStats(true);
     try {
       const [{ data: stats }, { data: balanceData }] = await Promise.all([
-        API.get("/affiliate-marketer/stats/all", {  // <-- שים לב לשינוי כאן
+        API.get("/affiliate-marketer/stats/all", {
           params: { affiliateId },
           withCredentials: true,
         }),
-        API.get("/affiliate-marketer/balance", {   // <-- וגם כאן
+        API.get("/affiliate-marketer/balance", {
           params: { affiliateId },
           withCredentials: true,
         }),
@@ -65,7 +65,7 @@ export default function AffiliateDashboardPage() {
     }
     try {
       const { data } = await API.post(
-        "/affiliate-marketer/request-withdrawal", // <-- שינוי כתובת כאן
+        "/affiliate-marketer/request-withdrawal",
         { affiliateId, amount: withdrawAmount },
         { withCredentials: true }
       );
@@ -91,7 +91,7 @@ export default function AffiliateDashboardPage() {
       formData.append("affiliateId", affiliateId);
       if (withdrawalId) formData.append("withdrawalId", withdrawalId);
 
-      const { data } = await API.post("/affiliate-marketer/upload-receipt", formData, { // <-- ושם
+      const { data } = await API.post("/affiliate-marketer/upload-receipt", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
@@ -106,7 +106,7 @@ export default function AffiliateDashboardPage() {
     }
   };
 
-  // קישור השותף האישי
+  // ** הוספת קישור השותף האישי עם אפשרות העתקה **
   const affiliateLink = affiliateId
     ? `https://esclick.co.il/register?ref=${affiliateId}`
     : "לא זוהה מזהה שותף";
