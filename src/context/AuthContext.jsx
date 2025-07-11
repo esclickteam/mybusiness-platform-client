@@ -174,26 +174,25 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    if (!token) {
-      socketRef.current?.disconnect();
-      socketRef.current = null;
-      setUser(null);
-      localStorage.removeItem("businessDetails");
-      setInitialized(true);
-      return;
-    }
-
-    setLoading(true);
-    setAuthToken(token);
-
-    (async () => {
+    async function init() {
+      setLoading(true);
       try {
-        if (!user) {
+        if (token) {
+          setAuthToken(token);
+          if (!user) {
+            const { data } = await API.get("/auth/me", { withCredentials: true });
+            const normalized = normalizeUser(data);
+            setUser(normalized);
+            localStorage.setItem("businessDetails", JSON.stringify(normalized));
+          }
+        } else {
+          // אין token ב-localStorage, ננסה לבדוק session דרך cookie
           const { data } = await API.get("/auth/me", { withCredentials: true });
           const normalized = normalizeUser(data);
           setUser(normalized);
-          localStorage.setItem("businessDetails", JSON.stringify(normalized));
+          // לא שומרים token כי הוא בעוגיה HttpOnly
         }
+
         socketRef.current = await createSocket(singleFlightRefresh, logout, user?.businessId);
 
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
@@ -207,7 +206,8 @@ export function AuthProvider({ children }) {
         setLoading(false);
         setInitialized(true);
       }
-    })();
+    }
+    init();
   }, [token, navigate]);
 
   useEffect(() => {
