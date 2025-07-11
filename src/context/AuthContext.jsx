@@ -1,17 +1,10 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useRef,
-} from "react";
+/* context/AuthContext.jsx */
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
-import createSocket from "../socket"; // singleton socket helper
+import createSocket from "../socket";
 
-/* ------------------------------------------------------------------ */
-/* Utility: normalize user fields                                     */
-/* ------------------------------------------------------------------ */
+// Normalize user fields
 function normalizeUser(user) {
   return {
     ...user,
@@ -22,9 +15,7 @@ function normalizeUser(user) {
   };
 }
 
-/* ------------------------------------------------------------------ */
-/*  Utility: single-flight refresh (local)                            */
-/* ------------------------------------------------------------------ */
+// Single-flight token refresh
 let ongoingRefresh = null;
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
@@ -39,9 +30,7 @@ export async function singleFlightRefresh() {
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
           localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
-          // לא ניתן לעדכן setUser כאן ישירות, אפשר להעביר callback ל-AuthProvider אם רוצים
         }
-
         return accessToken;
       })
       .finally(() => {
@@ -51,9 +40,7 @@ export async function singleFlightRefresh() {
   return ongoingRefresh;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Context init                                                      */
-/* ------------------------------------------------------------------ */
+// AuthContext setup
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -107,7 +94,6 @@ export function AuthProvider({ children }) {
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
       if (!skipRedirect && redirectUrl) {
-        // תיקון ניתוב ל־dashboard עם businessId
         if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
           navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
         } else {
@@ -171,6 +157,22 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Affiliate auto-login method
+  const affiliateLogin = async (publicToken) => {
+    const res = await API.get(
+      `/affiliate/login/${publicToken}`,
+      { withCredentials: true }
+    );
+    if (res.status !== 200) {
+      throw new Error("לא הצלחנו להתחבר כמשווק");
+    }
+    // re-fetch current user
+    const me = await API.get("/auth/me", { withCredentials: true });
+    const normalized = normalizeUser(me.data);
+    setUser(normalized);
+    return normalized;
+  };
+
   useEffect(() => {
     if (!token) {
       socketRef.current?.disconnect();
@@ -192,7 +194,6 @@ export function AuthProvider({ children }) {
           setUser(normalized);
           localStorage.setItem("businessDetails", JSON.stringify(normalized));
         }
-
         socketRef.current = await createSocket(singleFlightRefresh, logout, user?.businessId);
 
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
@@ -207,7 +208,7 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     })();
-  }, [token, navigate]); // user הוסר מהרשימת תלויות
+  }, [token, navigate]);
 
   useEffect(() => {
     if (!successMessage) return;
@@ -228,6 +229,7 @@ export function AuthProvider({ children }) {
     socket: socketRef.current,
     setUser,
     staffLogin,
+    affiliateLogin,
   };
 
   return (

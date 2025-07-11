@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import API from "@api";
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
 
 export default function AffiliateDashboardPage() {
+  const { user } = useAuth();
+  const affiliateId = user?.affiliateId;
+
   const [showBankForm, setShowBankForm] = useState(false);
   const [showReceiptForm, setShowReceiptForm] = useState(false);
   const [allStats, setAllStats] = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState(null);
-  const [affiliateId, setAffiliateId] = useState(null);
-
   const [withdrawAmount, setWithdrawAmount] = useState(0);
   const [withdrawStatus, setWithdrawStatus] = useState(null);
   const [receiptFile, setReceiptFile] = useState(null);
   const [withdrawalId, setWithdrawalId] = useState(null);
-  const [currentBalance, setCurrentBalance] = useState(0);
+  const [currentBalance, setCurrentBalance] = useState(user?.balance || 0);
 
   // חישוב סך כל העמלות שלא שולם
   const totalUnpaidCommissions = allStats
@@ -23,45 +25,32 @@ export default function AffiliateDashboardPage() {
     .reduce((sum, stat) => sum + (stat.totalCommissions - (stat.paidCommissions || 0)), 0);
 
   // טען סטטיסטיקות ויתרה
-  const refreshStats = async (affiliateId) => {
+  const refreshStats = async () => {
+    if (!affiliateId) return;
+    setErrorStats(null);
+    setLoadingStats(true);
     try {
-      setLoadingStats(true);
-      const statsRes = await API.get("/affiliate/stats/all", {
-        params: { affiliateId },
-      });
-      setAllStats(statsRes.data);
-
-      const balanceRes = await API.get("/affiliate/balance", {
-        params: { affiliateId },
-      });
-      setCurrentBalance(balanceRes.data.balance);
-
-      setErrorStats(null);
-    } catch (error) {
+      const [{ data: stats }, { data: balanceData }] = await Promise.all([
+        API.get("/affiliate/stats/all", {
+          params: { affiliateId },
+          withCredentials: true,
+        }),
+        API.get("/affiliate/balance", {
+          params: { affiliateId },
+          withCredentials: true,
+        }),
+      ]);
+      setAllStats(stats);
+      setCurrentBalance(balanceData.balance);
+    } catch {
       setErrorStats("שגיאה בטעינת הנתונים");
     } finally {
       setLoadingStats(false);
     }
   };
 
-  // טען affiliateId ונתונים ראשוניים
   useEffect(() => {
-    async function fetchAffiliateInfo() {
-      try {
-        const res = await API.get("/affiliate/me");
-        setAffiliateId(res.data.affiliateId);
-        setCurrentBalance(res.data.balance);
-      } catch (error) {
-        setErrorStats("לא הצלחנו לקבל נתוני שותף");
-      }
-    }
-    fetchAffiliateInfo();
-  }, []);
-
-  // עדכן נתונים ברגע שיש affiliateId
-  useEffect(() => {
-    if (!affiliateId) return;
-    refreshStats(affiliateId);
+    refreshStats();
   }, [affiliateId]);
 
   // טיפול בבקשת משיכה
@@ -75,22 +64,17 @@ export default function AffiliateDashboardPage() {
       return;
     }
     try {
-      const res = await API.post("/affiliate/request-withdrawal", {
-        affiliateId,
-        amount: withdrawAmount,
-      });
-      setWithdrawStatus(res.data.message || "בקשת המשיכה התקבלה.");
-      if (res.data.withdrawalId) setWithdrawalId(res.data.withdrawalId);
+      const { data } = await API.post(
+        "/affiliate/request-withdrawal",
+        { affiliateId, amount: withdrawAmount },
+        { withCredentials: true }
+      );
+      setWithdrawStatus(data.message || "בקשת המשיכה התקבלה.");
+      setWithdrawalId(data.withdrawalId || null);
       setShowReceiptForm(true);
-
-      // עדכון היתרה בהתאם לתשובה
-      if (res.data.currentBalance !== undefined) {
-        setCurrentBalance(res.data.currentBalance);
-      } else {
-        refreshStats(affiliateId);
-      }
-    } catch (error) {
-      alert(error.response?.data?.message || "שגיאה בבקשת המשיכה");
+      setCurrentBalance(data.currentBalance !== undefined ? data.currentBalance : currentBalance - withdrawAmount);
+    } catch {
+      alert("שגיאה בבקשת המשיכה");
     }
   };
 
@@ -107,18 +91,18 @@ export default function AffiliateDashboardPage() {
       formData.append("affiliateId", affiliateId);
       if (withdrawalId) formData.append("withdrawalId", withdrawalId);
 
-      const res = await API.post("/affiliate/upload-receipt", formData, {
+      const { data } = await API.post("/affiliate/upload-receipt", formData, {
         headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
       });
 
-      alert(res.data.message || "הקבלה הועלתה בהצלחה");
+      alert(data.message || "הקבלה הועלתה בהצלחה");
       setWithdrawStatus("קבלה הועלתה וממתינה לאישור.");
       setShowReceiptForm(false);
       setReceiptFile(null);
-
-      refreshStats(affiliateId);
-    } catch (error) {
-      alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
+      refreshStats();
+    } catch {
+      alert("שגיאה בהעלאת הקבלה");
     }
   };
 
@@ -130,11 +114,10 @@ export default function AffiliateDashboardPage() {
   return (
     <div className="affiliate-page">
       <h1>תכנית השותפים</h1>
-      <p>כאן תוכל לעקוב אחרי הפניות, עמלות והכנסות מתכנית השותפים שלך.</p>
+      <p>כאן תוכל לעקוב אחרי הפניות, עמלות והכנסות שלך.</p>
 
       <section className="affiliate-section">
         <h2>🎯 קישור השותף האישי שלך</h2>
-        <p>העתיקו את הקישור ושתפו אותו כדי לצרף לקוחות חדשים ולקבל עמלות:</p>
         <input
           type="text"
           value={affiliateLink}
@@ -143,32 +126,27 @@ export default function AffiliateDashboardPage() {
           className="affiliate-link-input"
         />
         <button
-          onClick={() => affiliateId && navigator.clipboard.writeText(affiliateLink)}
+          onClick={() => navigator.clipboard.writeText(affiliateLink)}
           disabled={!affiliateId}
         >
           📋 העתק קישור
         </button>
-        {!affiliateId && (
-          <p style={{ color: "red", marginTop: 8 }}>
-            לא זוהה מזהה שותף. התחבר כדי לקבל קישור אישי.
-          </p>
-        )}
       </section>
 
       <section className="affiliate-stats">
         <h2>📊 סטטיסטיקות לכל החודשים</h2>
         {loadingStats && <p>טוען נתונים...</p>}
         {errorStats && <p className="error">{errorStats}</p>}
-        {!loadingStats && allStats.length === 0 && <p>לא נמצאו נתונים להצגה.</p>}
+        {!loadingStats && allStats.length === 0 && <p>אין נתונים להצגה.</p>}
         {allStats.length > 0 && (
           <table className="stats-table">
             <thead>
               <tr>
                 <th>חודש</th>
-                <th>מספר רכישות</th>
+                <th>רכישות</th>
                 <th>שולם (₪)</th>
                 <th>לא שולם (₪)</th>
-                <th>סטטוס תשלום</th>
+                <th>סטטוס</th>
               </tr>
             </thead>
             <tbody>
@@ -192,68 +170,31 @@ export default function AffiliateDashboardPage() {
         )}
       </section>
 
-      <section className="affiliate-commission-rules">
-        <h2>💰 מדרגות עמלות לפי תקופת חבילה ובונוסים לפי עסקאות</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>סוג חבילה</th>
-              <th>תקופת התחייבות</th>
-              <th>אחוז עמלה</th>
-              <th>עסקאות מינימום לבונוס</th>
-              <th>בונוס (₪)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* שים כאן את הנתונים כפי שכתבת */}
-            <tr><td>חבילה חודשית</td><td>1 חודש</td><td>3%</td><td>10</td><td>200</td></tr>
-            {/* שאר הטבלה */}
-          </tbody>
-        </table>
-        <p style={{ marginTop: "1rem", fontWeight: "bold", color: "#444" }}>
-          ⚠️ הבונוס האקסטרה יינתן רק פעם אחת בחודש, לפי הרף הגבוה ביותר של עסקאות שהושג באותו חודש.
-        </p>
-      </section>
-
       <section className="affiliate-bank-section">
         <h2>💵 פעולות תשלום</h2>
-        <div>
-          <p>יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong></p>
-          <p>סך כל העמלות להשלמה: <strong>₪{totalUnpaidCommissions.toFixed(2)}</strong></p>
-          {totalUnpaidCommissions > currentBalance && (
-            <p style={{ color: "orange", fontWeight: "bold" }}>
-              שימו לב: סך העמלות גבוה מיתרת המשיכה הזמינה.
-            </p>
-          )}
-
-          {currentBalance < 200 ? (
-            <p style={{ color: "red", fontWeight: "bold" }}>
-              סכום מינימום למשיכה הוא 200 ש"ח. אנא המתן שיצטבר סכום מינימלי למשיכה.
-            </p>
-          ) : (
-            <>
-              <input
-                type="number"
-                min="200"
-                max={currentBalance || 0}
-                value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-                placeholder="סכום למשיכה (מינימום 200 ש&quot;ח)"
-              />
-              <p style={{ color: "red", fontWeight: "bold", marginTop: "4px" }}>
-                סכום מינימום למשיכה הוא 200 ש"ח
-              </p>
-              <button onClick={handleWithdrawRequest} disabled={withdrawAmount < 200}>
-                בקש משיכה
-              </button>
-            </>
-          )}
-          {withdrawStatus && <p>{withdrawStatus}</p>}
-        </div>
+        <p>יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong></p>
+        <p>עמלות לא משולמות: <strong>₪{totalUnpaidCommissions.toFixed(2)}</strong></p>
+        {currentBalance < 200 ? (
+          <p className="error">סכום מינימום למשיכה: 200 ₪</p>
+        ) : (
+          <>
+            <input
+              type="number"
+              min="200"
+              max={currentBalance}
+              value={withdrawAmount}
+              onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+              placeholder="סכום למשיכה"
+            />
+            <button onClick={handleWithdrawRequest} disabled={withdrawAmount < 200}>
+              בקש משיכה
+            </button>
+          </>
+        )}
+        {withdrawStatus && <p>{withdrawStatus}</p>}
 
         {showReceiptForm && (
           <form className="receipt-upload-form" onSubmit={handleReceiptUpload}>
-            <label>בחר קובץ קבלה (PDF או תמונה):</label>
             <input
               type="file"
               accept=".pdf,image/*"
@@ -264,17 +205,10 @@ export default function AffiliateDashboardPage() {
           </form>
         )}
 
-        <button
-          className="payment-button"
-          onClick={() => setShowBankForm((prev) => !prev)}
-        >
+        <button className="payment-button" onClick={() => setShowBankForm((p) => !p)}>
           ⚙️ ניהול פרטי חשבון בנק
         </button>
-        {showBankForm && (
-          <div className="bank-form-wrapper">
-            <BankDetailsForm />
-          </div>
-        )}
+        {showBankForm && <BankDetailsForm />}
       </section>
     </div>
   );

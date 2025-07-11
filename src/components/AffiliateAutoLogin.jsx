@@ -1,11 +1,12 @@
+/* components/AffiliateAutoLogin.jsx */
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { loginWithPublicToken } from "../affiliateService";
-
+import { useAuth } from "../context/AuthContext";
 
 export default function AffiliateAutoLogin() {
   const { publicToken } = useParams();
   const navigate = useNavigate();
+  const { affiliateLogin } = useAuth();
 
   useEffect(() => {
     async function doLogin() {
@@ -15,25 +16,19 @@ export default function AffiliateAutoLogin() {
       }
 
       try {
-        const token = await loginWithPublicToken(publicToken);
-        if (token) {
-          // אפשר גם להגדיר כאן מצב גלובלי של משתמש מחובר אם יש צורך
-          navigate("/affiliate/dashboard");
-        } else {
-          alert("לא הצלחנו להתחבר עם publicToken");
-          navigate("/login");
-        }
+        await affiliateLogin(publicToken);
+        navigate("/affiliate/dashboard");
       } catch (err) {
-        alert(err.message || "שגיאה בכניסה");
+        alert(err.message || "שגיאה בכניסה כמשווק");
         navigate("/login");
       }
     }
     doLogin();
-  }, [publicToken, navigate]);
+  }, [publicToken, navigate, affiliateLogin]);
 
   return (
     <div style={{ padding: 20, textAlign: "center" }}>
-      <h2>טוען את דף המשווק...</h2>
+      <h2>טוען את דף המשווק…</h2>
     </div>
   );
 }
