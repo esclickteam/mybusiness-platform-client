@@ -31,11 +31,11 @@ export default function AffiliateDashboardPage() {
     setLoadingStats(true);
     try {
       const [{ data: stats }, { data: balanceData }] = await Promise.all([
-        API.get("/affiliate/stats/all", {
+        API.get("/affiliate-marketer/stats/all", {  // <-- שים לב לשינוי כאן
           params: { affiliateId },
           withCredentials: true,
         }),
-        API.get("/affiliate/balance", {
+        API.get("/affiliate-marketer/balance", {   // <-- וגם כאן
           params: { affiliateId },
           withCredentials: true,
         }),
@@ -65,7 +65,7 @@ export default function AffiliateDashboardPage() {
     }
     try {
       const { data } = await API.post(
-        "/affiliate/request-withdrawal",
+        "/affiliate-marketer/request-withdrawal", // <-- שינוי כתובת כאן
         { affiliateId, amount: withdrawAmount },
         { withCredentials: true }
       );
@@ -91,7 +91,7 @@ export default function AffiliateDashboardPage() {
       formData.append("affiliateId", affiliateId);
       if (withdrawalId) formData.append("withdrawalId", withdrawalId);
 
-      const { data } = await API.post("/affiliate/upload-receipt", formData, {
+      const { data } = await API.post("/affiliate-marketer/upload-receipt", formData, { // <-- ושם
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
