@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import API from "../../api"; // לוודא שהנתיב נכון
-import "./AdminAffiliates.css"; // ייבוא קובץ CSS
+import API from "../../api";
+import "./AdminAffiliates.css";
 
 function AdminAffiliates() {
   const [form, setForm] = useState({
