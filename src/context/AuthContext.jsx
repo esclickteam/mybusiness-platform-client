@@ -39,7 +39,6 @@ export async function singleFlightRefresh() {
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
           localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
-          // לא ניתן לעדכן setUser כאן ישירות, אפשר להעביר callback ל-AuthProvider אם רוצים
         }
 
         return accessToken;
@@ -60,7 +59,9 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const socketRef = useRef(null);
 
+  // טוקן מה-localStorage (מקרים של login רגיל)
   const [token, setToken] = useState(() => localStorage.getItem("token"));
+  // משתמש מאוחסן
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("businessDetails");
     return saved ? normalizeUser(JSON.parse(saved)) : null;
@@ -70,6 +71,34 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  // פונקציית affiliateLogin - כניסת משווק לפי publicToken עם עוגיית JWT HttpOnly
+  const affiliateLogin = async (publicToken) => {
+    setLoading(true);
+    setError(null);
+    try {
+      // קריאה לשרת לקבלת העוגיה (HttpOnly JWT)
+      const { data } = await API.get(`/login/${publicToken}`, { withCredentials: true });
+      if (!data.success) throw new Error("משווק לא נמצא");
+
+      // בקשה לפרטי המשתמש עם הטוקן שבעוגיה
+      const userData = await API.get("/auth/me", { withCredentials: true });
+      const normalizedUser = normalizeUser(userData.data);
+      setUser(normalizedUser);
+      localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+
+      // בטיפול affiliate אין טוקן ב-localStorage כי HttpOnly, לכן נשאיר token כ-null
+      setToken(null);
+
+      setLoading(false);
+      return normalizedUser;
+    } catch (e) {
+      setError(e.message || "שגיאה בכניסה כמשווק");
+      setLoading(false);
+      throw e;
+    }
+  };
+
+  // פונקציות login רגיל, logout, staffLogin, fetchWithAuth - כמו קודם
   const logout = async () => {
     setLoading(true);
     try {
@@ -107,7 +136,6 @@ export function AuthProvider({ children }) {
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
       if (!skipRedirect && redirectUrl) {
-        // תיקון ניתוב ל־dashboard עם businessId
         if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
           navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
         } else {
@@ -171,6 +199,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // אפקט לאתחול משתמש בטוקן רגיל (login רגיל)
   useEffect(() => {
     if (!token) {
       socketRef.current?.disconnect();
@@ -209,6 +238,7 @@ export function AuthProvider({ children }) {
     })();
   }, [token, navigate]); // user הוסר מהרשימת תלויות
 
+  // נקה הודעות הצלחה אחרי 4 שניות
   useEffect(() => {
     if (!successMessage) return;
     const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -228,6 +258,7 @@ export function AuthProvider({ children }) {
     socket: socketRef.current,
     setUser,
     staffLogin,
+    affiliateLogin, // הוספנו פה
   };
 
   return (
