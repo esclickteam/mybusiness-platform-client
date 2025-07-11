@@ -25,6 +25,8 @@ import Notifications from "./components/Notifications";
 import { NotificationsProvider } from "./context/NotificationsContext";
 import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
+import AffiliateDashboardPage from "./pages/affiliate/AffiliateDashboardPage"; 
+
 
 // טעינה עצלה (lazy) של כל הרכיבים
 const HomePage            = lazy(() => import("./pages/Home"));
@@ -337,6 +339,15 @@ export default function App() {
                 path="/affiliate/:affiliateId"
                 element={<AffiliatePage />}
               />
+
+              <Route
+  path="/affiliate/dashboard/*"
+  element={
+    <ProtectedRoute roles={["affiliate"]}>
+      <AffiliateDashboardPage />
+    </ProtectedRoute>
+  }
+/>
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
