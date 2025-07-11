@@ -68,7 +68,7 @@ const EditSiteContent     = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles         = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage     = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const AdminAffiliates     = lazy(() => import("./pages/admin/AdminAffiliates"));
-const AffiliatePage       = lazy(() => import("./pages/AffiliatePage"));  // דף משווק ייעודי
+const AffiliatePage = lazy(() => import("./pages/business/dashboardPages/AffiliatePage"));
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
 const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
