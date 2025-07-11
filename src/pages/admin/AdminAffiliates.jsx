@@ -12,6 +12,7 @@ function AdminAffiliates() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+  const [affiliateUrl, setAffiliateUrl] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,6 +27,7 @@ function AdminAffiliates() {
     setLoading(true);
     setMessage(null);
     setError(null);
+    setAffiliateUrl(null);
 
     console.log("[UI] Submit form", form);
 
@@ -48,6 +50,7 @@ function AdminAffiliates() {
 
       if (res.data.success) {
         setMessage("✅ המשווק נוצר בהצלחה!");
+        setAffiliateUrl(`https://yourdomain.com/affiliate/${res.data.affiliate.publicToken}`);
         setForm({
           name: "",
           email: "",
@@ -136,6 +139,15 @@ function AdminAffiliates() {
           {loading ? "שומר..." : "צור משווק"}
         </button>
       </form>
+
+      {affiliateUrl && (
+        <div style={{ marginTop: "1rem" }}>
+          כתובת המשווק:{" "}
+          <a href={affiliateUrl} target="_blank" rel="noopener noreferrer">
+            {affiliateUrl}
+          </a>
+        </div>
+      )}
     </div>
   );
 }
