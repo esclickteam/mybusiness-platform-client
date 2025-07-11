@@ -7,6 +7,7 @@ function AdminAffiliates() {
     name: "",
     email: "",
     affiliateId: "",
+    password: "",           // הוספתי שדה סיסמה
     commissionRate: 0.2,
   });
 
@@ -30,8 +31,8 @@ function AdminAffiliates() {
     setError(null);
     setAffiliateUrl(null);
 
-    if (!form.name.trim() || !form.affiliateId.trim()) {
-      setError("נא למלא שם ומשתמש ייחודי (affiliateId)");
+    if (!form.name.trim() || !form.affiliateId.trim() || !form.password.trim()) {
+      setError("נא למלא שם, מזהה ייחודי וסיסמה");
       setLoading(false);
       return;
     }
@@ -51,6 +52,7 @@ function AdminAffiliates() {
           name: "",
           email: "",
           affiliateId: "",
+          password: "",           // איפוס הסיסמה גם
           commissionRate: 0.2,
         });
       } else {
@@ -106,6 +108,19 @@ function AdminAffiliates() {
             required
             placeholder="לדוגמה: yael123"
             autoComplete="off"
+          />
+        </label>
+
+        <label>
+          סיסמה*:
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            placeholder="הכנס סיסמה"
+            autoComplete="new-password"
           />
         </label>
 
