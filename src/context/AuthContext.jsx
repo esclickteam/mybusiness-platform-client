@@ -1,9 +1,17 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
-import createSocket from "../socket";
+import createSocket from "../socket"; // singleton socket helper
 
-// Normalize user fields
+/* ------------------------------------------------------------------ */
+/* Utility: normalize user fields                                     */
+/* ------------------------------------------------------------------ */
 function normalizeUser(user) {
   return {
     ...user,
@@ -14,7 +22,9 @@ function normalizeUser(user) {
   };
 }
 
-// Single-flight token refresh
+/* ------------------------------------------------------------------ */
+/*  Utility: single-flight refresh (local)                            */
+/* ------------------------------------------------------------------ */
 let ongoingRefresh = null;
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
@@ -29,7 +39,9 @@ export async function singleFlightRefresh() {
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
           localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+          // לא ניתן לעדכן setUser כאן ישירות, אפשר להעביר callback ל-AuthProvider אם רוצים
         }
+
         return accessToken;
       })
       .finally(() => {
@@ -39,6 +51,9 @@ export async function singleFlightRefresh() {
   return ongoingRefresh;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Context init                                                      */
+/* ------------------------------------------------------------------ */
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -92,6 +107,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
       if (!skipRedirect && redirectUrl) {
+        // תיקון ניתוב ל־dashboard עם businessId
         if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
           navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
         } else {
@@ -155,47 +171,29 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Affiliate auto-login method
-  const affiliateLogin = async (publicToken) => {
-    const res = await API.get(
-      `/affiliate/login/${publicToken}`,
-      { withCredentials: true }
-    );
-    if (res.status !== 200) {
-      throw new Error("לא הצלחנו להתחבר כמשווק");
-    }
-    // re-fetch current user
-    const me = await API.get("/auth/me", { withCredentials: true });
-    const normalized = normalizeUser(me.data);
-    setUser(normalized);
-    localStorage.setItem("businessDetails", JSON.stringify(normalized));
-    return normalized;
-  };
-
   useEffect(() => {
-    async function init() {
-      setLoading(true);
-      try {
-        let normalizedUser = null;
+    if (!token) {
+      socketRef.current?.disconnect();
+      socketRef.current = null;
+      setUser(null);
+      localStorage.removeItem("businessDetails");
+      setInitialized(true);
+      return;
+    }
 
-        if (token) {
-          setAuthToken(token);
-          if (!user) {
-            const { data } = await API.get("/auth/me", { withCredentials: true });
-            normalizedUser = normalizeUser(data);
-            setUser(normalizedUser);
-            localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
-          }
-        } else {
-          // אין token ב-localStorage, ננסה לבדוק session דרך cookie
+    setLoading(true);
+    setAuthToken(token);
+
+    (async () => {
+      try {
+        if (!user) {
           const { data } = await API.get("/auth/me", { withCredentials: true });
-          normalizedUser = normalizeUser(data);
-          setUser(normalizedUser);
-          // לא שומרים token כי הוא בעוגיה HttpOnly
+          const normalized = normalizeUser(data);
+          setUser(normalized);
+          localStorage.setItem("businessDetails", JSON.stringify(normalized));
         }
 
-        const userForSocket = normalizedUser || user;
-        socketRef.current = await createSocket(singleFlightRefresh, logout, userForSocket?.businessId);
+        socketRef.current = await createSocket(singleFlightRefresh, logout, user?.businessId);
 
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
@@ -208,9 +206,8 @@ export function AuthProvider({ children }) {
         setLoading(false);
         setInitialized(true);
       }
-    }
-    init();
-  }, [token, navigate]);
+    })();
+  }, [token, navigate]); // user הוסר מהרשימת תלויות
 
   useEffect(() => {
     if (!successMessage) return;
@@ -231,7 +228,6 @@ export function AuthProvider({ children }) {
     socket: socketRef.current,
     setUser,
     staffLogin,
-    affiliateLogin,
   };
 
   return (
