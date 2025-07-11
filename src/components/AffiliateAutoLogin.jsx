@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { loginWithPublicToken } from "../affiliateService";
+import { loginWithPublicToken } from "./affiliateService";
+
 
 export default function AffiliateAutoLogin() {
   const { publicToken } = useParams();
