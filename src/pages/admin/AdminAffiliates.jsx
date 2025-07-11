@@ -45,7 +45,8 @@ function AdminAffiliates() {
       const res = await API.post("/admin/affiliates", form);
       if (res.data.success) {
         setMessage("✅ המשווק נוצר בהצלחה!");
-        setAffiliateUrl(`https://esclick.co.il/affiliate/${res.data.affiliate.publicToken}`); // עדכון כאן
+        setAffiliateUrl(`https://esclick.co.il/affiliate/auto-login/${res.data.affiliate.publicToken}`);
+
         setForm({
           name: "",
           email: "",
