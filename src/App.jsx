@@ -145,6 +145,8 @@ export default function App() {
               <Route path="/book/:businessId" element={<BookingPage />} />
               <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
               <Route path="/affiliate/auto-login/:publicToken" element={<AffiliateAutoLogin />} />
+              <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
+
 
 
               <Route
@@ -349,6 +351,8 @@ export default function App() {
     </ProtectedRoute>
   }
 />
+
+
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
