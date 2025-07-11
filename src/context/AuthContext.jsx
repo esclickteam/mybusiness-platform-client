@@ -1,4 +1,3 @@
-/* context/AuthContext.jsx */
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
@@ -40,7 +39,6 @@ export async function singleFlightRefresh() {
   return ongoingRefresh;
 }
 
-// AuthContext setup
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -170,6 +168,7 @@ export function AuthProvider({ children }) {
     const me = await API.get("/auth/me", { withCredentials: true });
     const normalized = normalizeUser(me.data);
     setUser(normalized);
+    localStorage.setItem("businessDetails", JSON.stringify(normalized));
     return normalized;
   };
 
