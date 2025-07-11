@@ -9,7 +9,6 @@ export default function AffiliateDashboardPage() {
   const affiliateId = user?.affiliateId;
 
   const [showBankForm, setShowBankForm] = useState(false);
-  const [showReceiptForm, setShowReceiptForm] = useState(false);
   const [allStats, setAllStats] = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState(null);
@@ -72,7 +71,11 @@ export default function AffiliateDashboardPage() {
       setWithdrawStatus(data.message || "בקשת המשיכה התקבלה.");
       setWithdrawalId(data.withdrawalId || null);
       setShowReceiptForm(true);
-      setCurrentBalance(data.currentBalance !== undefined ? data.currentBalance : currentBalance - withdrawAmount);
+      setCurrentBalance(
+        data.currentBalance !== undefined
+          ? data.currentBalance
+          : currentBalance - withdrawAmount
+      );
     } catch {
       alert("שגיאה בבקשת המשיכה");
     }
@@ -125,10 +128,7 @@ export default function AffiliateDashboardPage() {
           onClick={(e) => e.target.select()}
           className="affiliate-link-input"
         />
-        <button
-          onClick={() => navigator.clipboard.writeText(affiliateLink)}
-          disabled={!affiliateId}
-        >
+        <button onClick={() => navigator.clipboard.writeText(affiliateLink)} disabled={!affiliateId}>
           📋 העתק קישור
         </button>
       </section>
@@ -172,8 +172,12 @@ export default function AffiliateDashboardPage() {
 
       <section className="affiliate-bank-section">
         <h2>💵 פעולות תשלום</h2>
-        <p>יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong></p>
-        <p>עמלות לא משולמות: <strong>₪{totalUnpaidCommissions.toFixed(2)}</strong></p>
+        <p>
+          יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong>
+        </p>
+        <p>
+          עמלות לא משולמות: <strong>₪{totalUnpaidCommissions.toFixed(2)}</strong>
+        </p>
         {currentBalance < 200 ? (
           <p className="error">סכום מינימום למשיכה: 200 ₪</p>
         ) : (
