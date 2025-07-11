@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import API from "../../api"; // שנה בהתאם למיקום הקובץ שלך
+import API from "../../api"; // לוודא שהנתיב נכון
 
 function AdminAffiliates() {
   const [form, setForm] = useState({
@@ -40,6 +40,7 @@ function AdminAffiliates() {
     }
 
     try {
+      // הקריאה ל-API מתבצעת באמצעות axios שהגדרת עם baseURL נכון
       const res = await API.post("/admin/affiliates", form);
       if (res.data.success) {
         setMessage("✅ המשווק נוצר בהצלחה!");
