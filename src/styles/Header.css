@@ -118,7 +118,7 @@
 .logo-wrapper {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: calc(50% + 8px);
   transform: translate(-50%, -50%);
   order: 2;
   padding: 0;
