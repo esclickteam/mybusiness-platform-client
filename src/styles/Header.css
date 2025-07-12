@@ -286,11 +286,8 @@ a.active-link {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
-  z-index: 1602;
-  max-height: 120px;       /* להגדיר גובה מקסימלי */
-  overflow-y: auto;        /* לאפשר גלילה אם התוכן גדול */
-  scroll-behavior: smooth; /* גלילה חלקה */
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, .04);
+  z-index: 1602; /* מעל התפריט */
 }
 
 /* גלילה וגלילה חלקה */
