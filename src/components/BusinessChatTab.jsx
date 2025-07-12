@@ -7,11 +7,11 @@ import "./BusinessChatTab.css";
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   if (!src) return null;
 
-  const audioRef = useRef(null);
-  const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const audioRef = React.useRef(null);
+  const [playing, setPlaying] = React.useState(false);
+  const [progress, setProgress] = React.useState(0);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -139,6 +139,7 @@ export default function BusinessChatTab({
         text: m.text || "",
         tempId: m.tempId || null,
         from: m.from,
+        to: m.to,
       }));
       // הוסר ה-filter שהסיר הודעות של העסק
       return msgs;
@@ -174,27 +175,36 @@ export default function BusinessChatTab({
       )
         return;
 
-      // הוסר ה-return שחוסם הודעות מהעסק
-      const safeMsg = {
-        ...msg,
-        _id: String(msg._id),
-        timestamp: msg.createdAt || new Date().toISOString(),
-        text: msg.text || "",
-        fileUrl: msg.fileUrl || null,
-        fileType: msg.fileType || null,
-        fileName: msg.fileName || "",
-        fileDuration: msg.fileDuration || 0,
-        tempId: msg.tempId || null,
-      };
+      // סינון הודעות לפי שולח ומקבל
+      const senderIsBusiness = String(msg.from) === String(businessId);
+      const receiverIsBusiness = String(msg.to) === String(businessId);
 
-      const exists = messagesRef.current.some(
-        (m) =>
-          String(m._id) === safeMsg._id ||
-          (safeMsg.tempId && m.tempId === safeMsg.tempId)
-      );
-      if (exists) return;
+      // התראה רק אם הלקוח שולח לעסק או עסק שולח לעסק
+      if (
+        (!senderIsBusiness && receiverIsBusiness) || // לקוח -> עסק
+        (senderIsBusiness && receiverIsBusiness)    // עסק -> עסק
+      ) {
+        const safeMsg = {
+          ...msg,
+          _id: String(msg._id),
+          timestamp: msg.createdAt || new Date().toISOString(),
+          text: msg.text || "",
+          fileUrl: msg.fileUrl || null,
+          fileType: msg.fileType || null,
+          fileName: msg.fileName || "",
+          fileDuration: msg.fileDuration || 0,
+          tempId: msg.tempId || null,
+        };
 
-      dispatch({ type: "append", payload: safeMsg });
+        const exists = messagesRef.current.some(
+          (m) =>
+            String(m._id) === safeMsg._id ||
+            (safeMsg.tempId && m.tempId === safeMsg.tempId)
+        );
+        if (exists) return;
+
+        dispatch({ type: "append", payload: safeMsg });
+      }
     };
 
     const handleTyping = ({ from }) => {
@@ -211,7 +221,7 @@ export default function BusinessChatTab({
       socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
     };
-  }, [socket, conversationId, customerId, conversationType]);
+  }, [socket, conversationId, customerId, conversationType, businessId]);
 
   useEffect(() => {
     const el = listRef.current;
