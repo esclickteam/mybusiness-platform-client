@@ -67,7 +67,6 @@
   outline: none;
   box-shadow: 0 0 0 3px rgba(94, 23, 235, 0.4);
 }
-/* הבועה למספר ההתראות הלא נקראות */
 .notification-button > span {
   position: absolute;
   top: -5px;
@@ -162,7 +161,10 @@
   background: #4315c7;
 }
 
-/* Drawer */
+/* =================================================================== */
+/*                                Drawer                                */
+/* =================================================================== */
+/* קונטיינר גנרי של ה-drawer */
 .side-menu {
   position: fixed;
   top: 0;
@@ -171,23 +173,20 @@
   max-width: 300px;
   height: 100vh;
   background: #fff;
-  box-shadow: -4px 0 16px rgba(0, 0, 0, .1);
+  box-shadow: -4px 0 16px rgba(0,0,0,.1);
+
   display: flex;
   flex-direction: column;
+  overflow: hidden;          /* מסתיר גלילה חיצונית */
   transform: translateX(100%);
   transition: transform .3s;
   z-index: 1501;
-  /* הכפתורים יוכלו לצוף מעל */
-  overflow: visible;
-  /* רווח תחתון לפי safe-area */
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom);
 }
 .side-menu.open {
   transform: translateX(0);
 }
 
-/* Drawer header */
+/* כותרת קבועה בראש ה־drawer */
 .drawer-header {
   height: 64px;
   display: flex;
@@ -211,13 +210,14 @@
   background: #e8dbff;
 }
 
-/* אזור גלילה פנימי לתפריט */
+/* =================================================================== */
+/*                            אזור הגלילה                              */
+/* =================================================================== */
 .menu-scroll {
-  flex: 1 1 auto;
+  flex: 1 1 auto;               /* יתפוס את השטח בין ההדר לפוטר */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* מספיק מרווח כדי לא לחתוך את הכפתורים */
-  padding-bottom: 16px;
+  padding: 0;                   /* לא צריך רווח תחתון */
 }
 
 /* פרטי משתמש */
@@ -266,29 +266,34 @@ a.active-link {
   color: #2d006e;
 }
 .link-icon {
-  margin-left: 4px;
   display: inline-flex;
   align-items: center;
+  margin-left: 4px;
 }
 
-/* אזור אישי והתנתקות – פוטר מוחלט */
+/* =================================================================== */
+/*            אזור אישי והתנתקות (פוטר) – תמיד בתחתית               */
+/* =================================================================== */
 .auth-menu {
-  position: absolute;
-  left: 0;
-  right: 0;
-  /* מדביק ממש מעל שורת הניווט של המובייל */
-  bottom: constant(safe-area-inset-bottom);
-  bottom: env(safe-area-inset-bottom);
+  position: relative;           /* סטטי בתוך flex */
+  margin-top: auto;             /* ידחוף את עצמו לתחתית */
   background: #fff;
-  padding: 16px;
+  padding: 16px calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, .04);
+  box-shadow: 0 -2px 8px rgba(0,0,0,.04);
   z-index: 1602;
 }
+.auth-menu .personal-area-button,
+.auth-menu .logout-button {
+  width: 100%;
+  text-align: center;
+}
 
-/* גלילה וגלילה חלקה */
+/* =================================================================== */
+/*                           גלילה חלקה ודקורציה                       */
+/* =================================================================== */
 .side-menu::-webkit-scrollbar {
   width: 6px;
 }
@@ -304,12 +309,20 @@ a.active-link {
 .menu-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, .5);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1500;
   animation: fadeInBackdrop .3s forwards;
 }
 
-/* רספונסיב – מובייל */
+/* אנימציות */
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* =================================================================== */
+/*                            רספונסיב – מובייל                         */
+/* =================================================================== */
 @media (max-width: 768px) {
   .app-header {
     padding: 0 12px;
@@ -324,21 +337,17 @@ a.active-link {
   .auth-controls.desktop-only {
     display: none !important;
   }
-  .side-menu {
-    max-width: 300px;
-  }
   .menu-toggle {
     right: 12px;
   }
+  .side-menu {
+    max-width: 300px;
+  }
 }
 
-/* אנימציות */
-@keyframes fadeInBackdrop {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* Toast הצלחה גלובלי */
+/* =================================================================== */
+/*                          Toast הצלחה גלובלי                         */
+/* =================================================================== */
 .global-success-toast {
   position: fixed;
   top: 16px;
@@ -361,7 +370,9 @@ a.active-link {
   100% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
 }
 
-/* כפתור התחברות מובייל בתוך Drawer */
+/* =================================================================== */
+/*                 כפתור התחברות מובייל בתוך Drawer                   */
+/* =================================================================== */
 .mobile-auth {
   padding: 16px;
   border-bottom: 1px solid #e0d3f2;
