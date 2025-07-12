@@ -32,7 +32,6 @@
   box-shadow: 0 0 8px rgba(0,0,0,0.1);
 }
 
-
 /* כפתור המבורגר */
 .menu-button {
   background: none;
@@ -290,6 +289,7 @@ a.active-link {
   flex-direction: column;
   gap: 12px;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, .04);
+  z-index: 10;
 }
 
 /* =================================================================== */
@@ -334,9 +334,12 @@ a.active-link {
   .auth-controls.desktop-only {
     display: none !important;
   }
-
   .side-menu {
     max-width: 300px;
+  }
+  .menu-toggle {
+    right: 12px;
+    padding: 6px 10px;
   }
 }
 
