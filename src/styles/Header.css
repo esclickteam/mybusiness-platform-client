@@ -60,16 +60,13 @@
   user-select: none;
   transition: opacity 0.2s;
 }
-
 .notification-button:hover {
   opacity: 0.8;
 }
-
 .notification-button:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(94, 23, 235, 0.4);
 }
-
 /* הבועה למספר ההתראות הלא נקראות */
 .notification-button > span {
   position: absolute;
@@ -100,8 +97,6 @@
   border-radius: 8px;
   z-index: 2000;
 }
-
-/* פריט התראה */
 .notification-item {
   padding: 10px 15px;
   border-bottom: 1px solid #eee;
@@ -109,15 +104,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-weight: normal;
-  background-color: white;
   transition: background-color 0.2s;
 }
 .notification-item:hover {
   background-color: #f0f4ff;
 }
-
-/* התראה חדשה מודגשת */
 .notification-item.new {
   font-weight: 700;
   background-color: #e8f4ff;
@@ -129,9 +120,9 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  order: 2;
   padding: 0;
   margin: 0;
-  order: 2;
 }
 .logo-link .logo {
   height: 120px;
@@ -186,7 +177,11 @@
   transform: translateX(100%);
   transition: transform .3s;
   z-index: 1501;
-  overflow: hidden;
+  /* הכפתורים יוכלו לצוף מעל */
+  overflow: visible;
+  /* רווח תחתון לפי safe-area */
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 .side-menu.open {
   transform: translateX(0);
@@ -197,11 +192,9 @@
   height: 64px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   background: #f3e8ff;
   padding: 0 16px;
 }
-
 .back-button {
   display: inline-flex;
   align-items: center;
@@ -223,7 +216,8 @@
   flex: 1 1 auto;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 120px; /* רווח תחתון לאזור אישי */
+  /* מספיק מרווח כדי לא לחתוך את הכפתורים */
+  padding-bottom: 16px;
 }
 
 /* פרטי משתמש */
@@ -272,24 +266,26 @@ a.active-link {
   color: #2d006e;
 }
 .link-icon {
+  margin-left: 4px;
   display: inline-flex;
   align-items: center;
-  margin-left: 4px;
 }
 
-/* אזור אישי והתנתקות - פוטר sticky */
+/* אזור אישי והתנתקות – פוטר מוחלט */
 .auth-menu {
-  /* הסרנו את ה-sticky וה-bottom */
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* מדביק ממש מעל שורת הניווט של המובייל */
+  bottom: constant(safe-area-inset-bottom);
+  bottom: env(safe-area-inset-bottom);
   background: #fff;
-  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, .04);
-  z-index: 1602; /* מעל התפריט */
-  
-  /* השורה החדשה: */
-  margin-top: auto;
+  z-index: 1602;
 }
 
 /* גלילה וגלילה חלקה */
@@ -313,7 +309,7 @@ a.active-link {
   animation: fadeInBackdrop .3s forwards;
 }
 
-/* רספונסיב - מובייל */
+/* רספונסיב – מובייל */
 @media (max-width: 768px) {
   .app-header {
     padding: 0 12px;
@@ -328,7 +324,6 @@ a.active-link {
   .auth-controls.desktop-only {
     display: none !important;
   }
-
   .side-menu {
     max-width: 300px;
   }
@@ -339,12 +334,8 @@ a.active-link {
 
 /* אנימציות */
 @keyframes fadeInBackdrop {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* Toast הצלחה גלובלי */
@@ -363,24 +354,11 @@ a.active-link {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   animation: fadeInOut 4s ease-in-out;
 }
-
 @keyframes fadeInOut {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-12px);
-  }
-  10% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  90% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-12px);
-  }
+  0%   { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  10%  { opacity: 1; transform: translateX(-50%) translateY(0);     }
+  90%  { opacity: 1; transform: translateX(-50%) translateY(0);     }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
 }
 
 /* כפתור התחברות מובייל בתוך Drawer */
@@ -388,7 +366,6 @@ a.active-link {
   padding: 16px;
   border-bottom: 1px solid #e0d3f2;
 }
-
 .mobile-auth .login-button {
   display: block;
   width: 100%;
@@ -401,7 +378,6 @@ a.active-link {
   text-decoration: none;
   transition: background .2s;
 }
-
 .mobile-auth .login-button:hover {
   background: #4315c7;
 }
