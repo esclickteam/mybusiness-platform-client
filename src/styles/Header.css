@@ -279,8 +279,7 @@ a.active-link {
 
 /* אזור אישי והתנתקות - פוטר sticky */
 .auth-menu {
-  position: sticky;
-  bottom: 0;
+  /* הסרנו את ה-sticky וה-bottom */
   background: #fff;
   padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
   display: flex;
@@ -288,6 +287,9 @@ a.active-link {
   gap: 12px;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, .04);
   z-index: 1602; /* מעל התפריט */
+  
+  /* השורה החדשה: */
+  margin-top: auto;
 }
 
 /* גלילה וגלילה חלקה */
