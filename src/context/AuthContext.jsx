@@ -9,9 +9,6 @@ import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import createSocket from "../socket"; // singleton socket helper
 
-/* ------------------------------------------------------------------ */
-/* Utility: normalize user fields                                     */
-/* ------------------------------------------------------------------ */
 function normalizeUser(user) {
   return {
     ...user,
@@ -22,9 +19,6 @@ function normalizeUser(user) {
   };
 }
 
-/* ------------------------------------------------------------------ */
-/*  Utility: single-flight refresh (local)                            */
-/* ------------------------------------------------------------------ */
 let ongoingRefresh = null;
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
@@ -50,18 +44,13 @@ export async function singleFlightRefresh() {
   return ongoingRefresh;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Context init                                                      */
-/* ------------------------------------------------------------------ */
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const socketRef = useRef(null);
 
-  // טוקן מה-localStorage (מקרים של login רגיל)
   const [token, setToken] = useState(() => localStorage.getItem("token"));
-  // משתמש מאוחסן
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("businessDetails");
     return saved ? normalizeUser(JSON.parse(saved)) : null;
@@ -71,23 +60,18 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // פונקציית affiliateLogin - כניסת משווק לפי publicToken עם עוגיית JWT HttpOnly
   const affiliateLogin = async (publicToken) => {
     setLoading(true);
     setError(null);
     try {
-      // קריאה לשרת לקבלת העוגיה (HttpOnly JWT)
       const { data } = await API.get(`/affiliate/login/${publicToken}`, { withCredentials: true });
-
       if (!data.success) throw new Error("משווק לא נמצא");
 
-      // בקשה לפרטי המשתמש עם הטוקן שבעוגיה
       const userData = await API.get("/auth/me", { withCredentials: true });
       const normalizedUser = normalizeUser(userData.data);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // בטיפול affiliate אין טוקן ב-localStorage כי HttpOnly, לכן נשאיר token כ-null
       setToken(null);
 
       setLoading(false);
@@ -99,7 +83,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // פונקציות login רגיל, logout, staffLogin, fetchWithAuth - כמו קודם
   const logout = async () => {
     setLoading(true);
     try {
@@ -200,9 +183,10 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // אפקט לאתחול משתמש בטוקן רגיל (login רגיל)
   useEffect(() => {
+    console.log("AuthContext useEffect - token:", token);
     if (!token) {
+      console.log("Token missing, resetting user...");
       socketRef.current?.disconnect();
       socketRef.current = null;
       setUser(null);
@@ -237,9 +221,8 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     })();
-  }, [token, navigate]); // user הוסר מהרשימת תלויות
+  }, [token, navigate]);
 
-  // נקה הודעות הצלחה אחרי 4 שניות
   useEffect(() => {
     if (!successMessage) return;
     const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -259,7 +242,7 @@ export function AuthProvider({ children }) {
     socket: socketRef.current,
     setUser,
     staffLogin,
-    affiliateLogin, // הוספנו פה
+    affiliateLogin,
   };
 
   return (
