@@ -104,7 +104,7 @@
   content: "📧 ";
 }
 
-/* ----------- פוטר חדש ----------- */
+/* ----------- פוטר מעוצב לשתי שורות בלבד ----------- */
 .footer-links-box {
   background: #f8f6fd;
   border-radius: 24px;
@@ -119,7 +119,7 @@
   display: flex;
   justify-content: center;
   gap: 54px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
@@ -149,7 +149,7 @@
   text-align: center;
   color: #b7b5c6;
   font-size: 1em;
-  margin-top: 16px;
+  margin-top: 10px;
   font-weight: 500;
 }
 
@@ -185,6 +185,7 @@
   .contact-email {
     font-size: 15px;
   }
+
   .footer-links-row {
     gap: 15px;
     font-size: 0.97em;

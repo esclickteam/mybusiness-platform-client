@@ -89,15 +89,15 @@ function Contact() {
       {/* Footer בעיצוב כפול שורה */}
       <footer className="footer-links-box">
         <div className="footer-links-row">
-          <Link to="/search"><span role="img" aria-label="">📝</span> חיפוש עסקים</Link>
-          <Link to="/about"><span role="img" aria-label="">📖</span> קצת עלינו</Link>
-          <Link to="/how-it-works"><span role="img" aria-label="">⚙️</span> איך זה עובד</Link>
-          <Link to="/join"><span role="img" aria-label="">➥</span> הצטרפות עסקים</Link>
+          <Link to="/search"><span role="img" aria-label="מסמך">📝</span> חיפוש עסקים</Link>
+          <Link to="/about"><span role="img" aria-label="ספר">📖</span> קצת עלינו</Link>
+          <Link to="/how-it-works"><span role="img" aria-label="הגדרות">⚙️</span> איך זה עובד</Link>
+          <Link to="/join"><span role="img" aria-label="חץ ימני">➥</span> הצטרפות עסקים</Link>
         </div>
         <div className="footer-links-row">
-          <Link to="/faq"><span role="img" aria-label="">❓</span> שאלות נפוצות</Link>
-          <Link to="/terms"><span role="img" aria-label="">📜</span> תקנון</Link>
-          <Link to="/contact"><span role="img" aria-label="">📞</span> יצירת קשר</Link>
+          <Link to="/faq"><span role="img" aria-label="סימן שאלה">❓</span> שאלות נפוצות</Link>
+          <Link to="/terms"><span role="img" aria-label="גליון">📜</span> תקנון</Link>
+          <Link to="/contact"><span role="img" aria-label="טלפון">📞</span> יצירת קשר</Link>
         </div>
         <div className="footer-copyright">
           כל הזכויות שמורות © עסקליק
