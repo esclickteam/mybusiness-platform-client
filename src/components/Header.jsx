@@ -78,33 +78,10 @@ export default function Header() {
     setMenuOpen(false);
   };
 
-  useEffect(() => {
-    if (notifOpen && unreadCount > 0) {
-      // אפשר לממש סימון התראות כנקראות כאן
-    }
-  }, [notifOpen, unreadCount]);
-
   return (
     <>
-      <nav
-        className="app-header"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
-          className="menu-toggle"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            position: "relative",
-            right: 20,
-            zIndex: 1600,
-          }}
-        >
+      <nav className="app-header">
+        <div className="menu-toggle">
           <button
             className="menu-button"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -119,40 +96,10 @@ export default function Header() {
                 className="notification-button"
                 onClick={() => setNotifOpen(!notifOpen)}
                 aria-label="התראות"
-                style={{
-                  fontSize: 24,
-                  position: "relative",
-                  cursor: "pointer",
-                  background: "none",
-                  border: "none",
-                  color: "inherit",
-                  padding: 4,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
               >
                 🔔
                 {unreadCount > 0 && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      background: "red",
-                      borderRadius: "50%",
-                      width: "16px",
-                      height: "16px",
-                      color: "white",
-                      fontSize: "12px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      userSelect: "none",
-                    }}
-                    aria-live="polite"
-                    aria-atomic="true"
-                  >
+                  <span aria-live="polite" aria-atomic="true">
                     {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
                 )}
@@ -197,7 +144,6 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* DRAWER */}
       {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
