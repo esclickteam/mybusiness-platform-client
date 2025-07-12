@@ -227,115 +227,118 @@ const DashboardPage = () => {
   ).current;
 
   const loadStats = async () => {
-  if (!businessId) return;
-  setLoading(true);
-  setError(null);
+    if (!businessId) return;
+    setLoading(true);
+    setError(null);
 
-  localStorage.removeItem("dashboardStats");
-
-  try {
-    const data = await fetchDashboardStats(businessId, refreshAccessToken);
-    setStats(data);
-    localStorage.setItem("dashboardStats", JSON.stringify(data));
-  } catch (err) {
-    setError("❌ שגיאה בטעינת נתונים מהשרת");
-    if (err.message === "No token") logout();
-  } finally {
-    setLoading(false);
-  }
-};
-
-useEffect(() => {
-  if (!initialized || !businessId) return;
-  loadStats();
-
-  let isMounted = true;
-
-  async function setupSocket() {
-    const token = await refreshAccessToken();
-    if (!token) {
-      logout();
-      return;
+    // Try to load cached stats first for instant display (stale-while-revalidate)
+    const cached = localStorage.getItem("dashboardStats");
+    if (cached) {
+      setStats(JSON.parse(cached));
     }
-    const sock = await createSocket(refreshAccessToken, logout, businessId);
-    if (!sock || !isMounted) return;
-    socketRef.current = sock;
 
-    sock.on("connect", () => {
-      console.log("Dashboard socket connected:", sock.id);
-      sock.emit("joinBusinessRoom", businessId);
-    });
+    try {
+      const data = await fetchDashboardStats(businessId, refreshAccessToken);
+      setStats(data);
+      localStorage.setItem("dashboardStats", JSON.stringify(data));
+    } catch (err) {
+      setError("❌ שגיאה בטעינת נתונים מהשרת");
+      if (err.message === "No token") logout();
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    sock.on("tokenExpired", async () => {
-      const newToken = await refreshAccessToken();
-      if (!newToken) {
-        alert("Session expired. Please log in again.");
+  useEffect(() => {
+    if (!initialized || !businessId) return;
+    loadStats();
+
+    let isMounted = true;
+
+    async function setupSocket() {
+      const token = await refreshAccessToken();
+      if (!token) {
         logout();
         return;
       }
-      sock.auth.token = newToken;
-      sock.emit("authenticate", { token: newToken }, (ack) => {
-        if (!ack?.ok) {
+      const sock = await createSocket(refreshAccessToken, logout, businessId);
+      if (!sock || !isMounted) return;
+      socketRef.current = sock;
+
+      sock.on("connect", () => {
+        console.log("Dashboard socket connected:", sock.id);
+        sock.emit("joinBusinessRoom", businessId);
+      });
+
+      sock.on("tokenExpired", async () => {
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
           alert("Session expired. Please log in again.");
           logout();
+          return;
+        }
+        sock.auth.token = newToken;
+        sock.emit("authenticate", { token: newToken }, (ack) => {
+          if (!ack?.ok) {
+            alert("Session expired. Please log in again.");
+            logout();
+          }
+        });
+      });
+
+      sock.on("dashboardUpdate", (newStats) => {
+        debouncedSetStats(newStats);
+      });
+
+      sock.on('profileViewsUpdated', (data) => {
+        if (!data || typeof data.views_count !== 'number') return;
+        setStats((oldStats) =>
+          oldStats
+            ? { ...oldStats, views_count: data.views_count }
+            : oldStats
+        );
+      });
+
+      sock.on("appointmentCreated", (newAppointment) => {
+        if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
+        setStats((oldStats) => {
+          if (!oldStats) return oldStats;
+          const enriched = enrichAppointment(newAppointment, oldStats);
+          const updatedAppointments = [...(oldStats.appointments || []), enriched];
+          return {
+            ...oldStats,
+            appointments: updatedAppointments,
+            appointments_count: updatedAppointments.length,
+          };
+        });
+        if (newAppointment.date) {
+          const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
+          if (apptDate === selectedDate) {
+            setSelectedDate(null);
+            setTimeout(() => setSelectedDate(apptDate), 10);
+          }
         }
       });
-    });
 
-    sock.on("dashboardUpdate", (newStats) => {
-      debouncedSetStats(newStats);
-    });
-
-    sock.on('profileViewsUpdated', (data) => {
-      if (!data || typeof data.views_count !== 'number') return;
-      setStats((oldStats) =>
-        oldStats
-          ? { ...oldStats, views_count: data.views_count }
-          : oldStats
-      );
-    });
-
-    sock.on("appointmentCreated", (newAppointment) => {
-      if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
-      setStats((oldStats) => {
-        if (!oldStats) return oldStats;
-        const enriched = enrichAppointment(newAppointment, oldStats);
-        const updatedAppointments = [...(oldStats.appointments || []), enriched];
-        return {
-          ...oldStats,
-          appointments: updatedAppointments,
-          appointments_count: updatedAppointments.length,
-        };
+      sock.on("disconnect", (reason) => {
+        console.log("Dashboard socket disconnected:", reason);
       });
-      if (newAppointment.date) {
-        const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
-        if (apptDate === selectedDate) {
-          setSelectedDate(null);
-          setTimeout(() => setSelectedDate(apptDate), 10);
-        }
-      }
-    });
 
-    sock.on("disconnect", (reason) => {
-      console.log("Dashboard socket disconnected:", reason);
-    });
-
-    sock.on("connect_error", (err) => {
-      console.error("Socket connection error:", err);
-    });
-  }
-
-  setupSocket();
-
-  return () => {
-    isMounted = false;
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-      socketRef.current = null;
+      sock.on("connect_error", (err) => {
+        console.error("Socket connection error:", err);
+      });
     }
-  };
-}, [initialized, businessId, logout, refreshAccessToken, debouncedSetStats, selectedDate]);
 
+    setupSocket();
+
+    return () => {
+      isMounted = false;
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, [initialized, businessId, logout, refreshAccessToken, debouncedSetStats, selectedDate]);
 
   useEffect(() => {
     if (!socketRef.current) return;
