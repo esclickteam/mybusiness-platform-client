@@ -102,7 +102,8 @@ export default function BusinessProfileView() {
 
   const { data: reviews = [], refetch: refetchReviews } = useQuery({
     queryKey: ['reviews', bizId],
-    queryFn: () => API.get(`/reviews/business/${bizId}`).then(res => res.data.reviews || []),
+    queryFn: () => API.get(`/reviews/${bizId}`).then(res => res.data.reviews || []),
+
     enabled: !!bizId
   });
 
