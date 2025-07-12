@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import "../styles/Contact.css";  // import מעודכן מהתיקייה styles
+import "../styles/Contact.css"; // ודא שה- CSS העדכני
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -77,29 +77,31 @@ function Contact() {
           required
         ></textarea>
 
-        <button type="submit" className="submit-button">שליחת טופס</button>
+        <button type="submit" className="submit-button">
+          שליחת טופס
+        </button>
       </form>
 
       <p className="contact-email">
         ✉️ ניתן גם לפנות ישירות במייל: <strong>support@esclick.co.il</strong>
       </p>
 
-      {/* Footer */}
-      <footer className="footer">
-        <nav className="footer-top">
-          <Link to="/search">📋 חיפוש עסקים</Link>
-          <Link to="/about">📖 קצת עלינו</Link>
-          <Link to="/how-it-works">⚙️ איך זה עובד</Link>
-          <Link to="/join">✏️ הצטרפות עסקים</Link>
-        </nav>
-
-        <nav className="footer-bottom">
-          <Link to="/faq">❓ שאלות נפוצות</Link>
-          <Link to="/terms">📜 תקנון</Link>
-          <Link to="/contact">📞 יצירת קשר</Link>
-        </nav>
-
-        <p className="copyright">כל הזכויות שמורות © עסקליק</p>
+      {/* Footer בעיצוב כפול שורה */}
+      <footer className="footer-links-box">
+        <div className="footer-links-row">
+          <Link to="/search"><span role="img" aria-label="">📝</span> חיפוש עסקים</Link>
+          <Link to="/about"><span role="img" aria-label="">📖</span> קצת עלינו</Link>
+          <Link to="/how-it-works"><span role="img" aria-label="">⚙️</span> איך זה עובד</Link>
+          <Link to="/join"><span role="img" aria-label="">➥</span> הצטרפות עסקים</Link>
+        </div>
+        <div className="footer-links-row">
+          <Link to="/faq"><span role="img" aria-label="">❓</span> שאלות נפוצות</Link>
+          <Link to="/terms"><span role="img" aria-label="">📜</span> תקנון</Link>
+          <Link to="/contact"><span role="img" aria-label="">📞</span> יצירת קשר</Link>
+        </div>
+        <div className="footer-copyright">
+          כל הזכויות שמורות © עסקליק
+        </div>
       </footer>
     </div>
   );

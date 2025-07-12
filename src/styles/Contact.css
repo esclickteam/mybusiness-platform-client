@@ -104,62 +104,56 @@
   content: "📧 ";
 }
 
-/* Footer Styles */
-.footer {
-  background-color: #d6ccf9;
-  padding: 20px;
-  font-weight: 700;
-  color: #4b2cb7;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  border-radius: 18px;
-  max-width: 900px;
-  margin: 40px auto 0 auto;
-  text-align: right;
+/* ----------- פוטר חדש ----------- */
+.footer-links-box {
+  background: #f8f6fd;
+  border-radius: 24px;
+  padding: 32px 10px 14px 10px;
+  max-width: 98%;
+  margin: 0 auto 0 auto;
   direction: rtl;
+  box-shadow: none;
 }
 
-.footer-top,
-.footer-bottom {
-  display: inline-flex;
-  gap: 20px;
-  flex-wrap: nowrap;
-  justify-content: flex-end;
-  width: 100%;
-  margin-bottom: 8px;
-  font-weight: 700;
-  font-size: 16px;
+.footer-links-row {
+  display: flex;
+  justify-content: center;
+  gap: 54px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
-.footer a {
+.footer-links-row a {
+  color: #7a32c2;
+  font-weight: 800;
+  font-size: 1.28em;
   text-decoration: none;
-  color: #4b2cb7;
-  user-select: none;
+  transition: color 0.18s;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  transition: color 0.3s ease;
+  gap: 5px;
+  letter-spacing: 0.03em;
 }
 
-.footer a[href$="/contact"] .icon {
-  color: red;
-  font-size: 20px;
-  line-height: 1;
-  display: inline-block;
+.footer-links-row a span[role="img"] {
+  font-size: 1.15em;
+  margin-left: 2px;
+  margin-right: 2px;
 }
 
-.footer a:hover {
-  color: #3a1a9e;
+.footer-links-row a:hover {
+  color: #a35be0;
 }
 
-.footer p {
-  font-size: 12px;
-  color: #bfbfdc;
+.footer-copyright {
   text-align: center;
-  margin-top: 10px;
-  font-weight: 400;
+  color: #b7b5c6;
+  font-size: 1em;
+  margin-top: 16px;
+  font-weight: 500;
 }
 
-/* Responsive Adjustments */
+/* ----------- רספונסיביות ----------- */
 @media (max-width: 768px) {
   .contact-container {
     padding: 25px 15px;
@@ -190,6 +184,19 @@
 
   .contact-email {
     font-size: 15px;
+  }
+  .footer-links-row {
+    gap: 15px;
+    font-size: 0.97em;
+    flex-wrap: wrap;
+    padding-bottom: 4px;
+  }
+  .footer-links-box {
+    padding: 18px 3px 8px 3px;
+  }
+  .footer-links-row a {
+    font-size: 1em;
+    padding: 2px 0;
   }
 }
 
