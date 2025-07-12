@@ -4,15 +4,15 @@
 
 /* ===== Header (Desktop) ===== */
 .app-header {
-  position: relative;       /* בשביל הלוגו האבסולוטי */
+  position: relative;
   display: flex;
   align-items: center;
   padding: 6px 20px;
   min-height: 90px;
-  justify-content: space-between; /* מיישר את התוכן */
-  background-color: rgba(255, 255, 255, 0.95); /* רקע לבן עם שקיפות קלה */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* צל עדין למטה */
-  backdrop-filter: saturate(180%) blur(12px); /* מטשטש את הרקע מאחור */
+  justify-content: space-between;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  backdrop-filter: saturate(180%) blur(12px);
   z-index: 1502;
 }
 
@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: white; /* רקע לבן כדי לכסות תוכן מתחת */
+  background: white;
   border-radius: 8px;
   padding: 4px 8px;
   box-shadow: 0 0 8px rgba(0,0,0,0.1);
@@ -52,7 +52,7 @@
   border: none;
   cursor: pointer;
   color: #5e17eb;
-  font-size: 22px;            /* מעט קטן מההמבורגר */
+  font-size: 22px;
   padding: 4px 6px 4px 4px;
   display: flex;
   align-items: center;
@@ -87,11 +87,11 @@
   line-height: 1;
 }
 
-/* תפריט התראות נפתח מתחת לפעמון */
+/* תפריט התראות */
 .notification-dropdown {
   position: absolute;
-  top: 40px;     /* מעט מתחת לפעמון */
-  right: 0;      /* מיושר לימין האייקון */
+  top: 40px;
+  right: 0;
   width: 320px;
   max-height: 400px;
   overflow-y: auto;
@@ -131,7 +131,7 @@
   transform: translate(-50%, -50%);
   padding: 0;
   margin: 0;
-  order: 2;       /* אין חשיבות רבה, כי הוא אבסולוטי */
+  order: 2;
 }
 .logo-link .logo {
   height: 120px;
@@ -139,15 +139,15 @@
   transition: transform .3s;
 }
 .logo-link:hover .logo {
-  transform: scale(1.05);  /* אפקט הגדלה בלחיצה */
+  transform: scale(1.05);
 }
 
-/* ===== כפתורי דסקטופ – לשמאל ===== */
+/* כפתורי דסקטופ – לשמאל */
 .auth-controls.desktop-only {
   position: absolute;
-  left: 20px;                    /* מרחק משמאל */
+  left: 20px;
   top: 50%;
-  transform: translateY(-50%);   /* למרכז אנכית */
+  transform: translateY(-50%);
   display: flex;
   gap: 12px;
 }
@@ -171,10 +171,7 @@
   background: #4315c7;
 }
 
-/* =================================================================== */
-/*                                Drawer                               */
-/* =================================================================== */
-
+/* Drawer */
 .side-menu {
   position: fixed;
   top: 0;
@@ -189,12 +186,13 @@
   transform: translateX(100%);
   transition: transform .3s;
   z-index: 1501;
+  overflow: hidden;
 }
 .side-menu.open {
   transform: translateX(0);
 }
 
-/* Drawer header – כפתור חזור */
+/* Drawer header */
 .drawer-header {
   height: 64px;
   display: flex;
@@ -220,15 +218,15 @@
   background: #e8dbff;
 }
 
-/* ===== אזור גלילה ===== */
+/* אזור גלילה פנימי לתפריט */
 .menu-scroll {
   flex: 1 1 auto;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 120px;
+  padding-bottom: 120px; /* רווח תחתון לאזור אישי */
 }
 
-/* פרטי משתמש (תמיד בתחילת הגלילה) */
+/* פרטי משתמש */
 .menu-user {
   display: flex;
   align-items: center;
@@ -240,7 +238,7 @@
   font-weight: 500;
 }
 
-/* קטעי קישורים */
+/* קישורים בתפריט */
 .menu-section {
   margin-top: 24px;
 }
@@ -279,7 +277,7 @@ a.active-link {
   margin-left: 4px;
 }
 
-/* ===== פוטר Sticky – אזור אישי / התנתק ===== */
+/* אזור אישי והתנתקות - פוטר sticky */
 .auth-menu {
   position: sticky;
   bottom: 0;
@@ -289,12 +287,10 @@ a.active-link {
   flex-direction: column;
   gap: 12px;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, .04);
-  z-index: 10;
+  z-index: 1602; /* מעל התפריט */
 }
 
-/* =================================================================== */
-/*                        גלילה – עיצוב VScrollbar                      */
-/* =================================================================== */
+/* גלילה וגלילה חלקה */
 .side-menu::-webkit-scrollbar {
   width: 6px;
 }
@@ -306,9 +302,7 @@ a.active-link {
   border-radius: 3px;
 }
 
-/* =================================================================== */
-/*                              Overlay                                */
-/* =================================================================== */
+/* Overlay כהה */
 .menu-backdrop {
   position: fixed;
   inset: 0;
@@ -317,9 +311,7 @@ a.active-link {
   animation: fadeInBackdrop .3s forwards;
 }
 
-/* =================================================================== */
-/*                          Responsive – Mobile                         */
-/* =================================================================== */
+/* רספונסיב - מובייל */
 @media (max-width: 768px) {
   .app-header {
     padding: 0 12px;
@@ -334,18 +326,16 @@ a.active-link {
   .auth-controls.desktop-only {
     display: none !important;
   }
+
   .side-menu {
     max-width: 300px;
   }
   .menu-toggle {
     right: 12px;
-    padding: 6px 10px;
   }
 }
 
-/* =================================================================== */
-/*                             Animations                              */
-/* =================================================================== */
+/* אנימציות */
 @keyframes fadeInBackdrop {
   0% {
     opacity: 0;
@@ -355,9 +345,7 @@ a.active-link {
   }
 }
 
-/* =================================================================== */
-/*                       Global Success Toast                          */
-/* =================================================================== */
+/* Toast הצלחה גלובלי */
 .global-success-toast {
   position: fixed;
   top: 16px;
@@ -393,7 +381,7 @@ a.active-link {
   }
 }
 
-/* כפתור התחברות במובייל בתוך ה־Drawer */
+/* כפתור התחברות מובייל בתוך Drawer */
 .mobile-auth {
   padding: 16px;
   border-bottom: 1px solid #e0d3f2;
@@ -414,11 +402,4 @@ a.active-link {
 
 .mobile-auth .login-button:hover {
   background: #4315c7;
-}
-
-/* תבטל החבאה של הכפתור בקשיחות */
-@media (max-width: 768px) {
-  .mobile-auth {
-    display: block;
-  }
 }
