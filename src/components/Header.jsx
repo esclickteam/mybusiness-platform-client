@@ -102,18 +102,16 @@ export default function Header() {
             gap: "8px",
             position: "relative",
             right: 20,
-            zIndex: 1600, // שימו לב לשינוי כאן!
+            zIndex: 1600,
           }}
         >
-          {!menuOpen && (
-            <button
-              className="menu-button"
-              onClick={() => setMenuOpen(true)}
-              aria-label="תפריט ראשי"
-            >
-              <FaBars size={24} />
-            </button>
-          )}
+          <button
+            className="menu-button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "סגור תפריט" : "תפריט ראשי"}
+          >
+            {menuOpen ? <FaChevronLeft size={24} /> : <FaBars size={24} />}
+          </button>
 
           {(user?.role === "business" || user?.role === "business-dashboard") && (
             <>
@@ -207,7 +205,7 @@ export default function Header() {
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
           <div
             className="side-menu open"
-            onClick={(e) => e.stopPropagation()} // עצירת הפצת אירועי קליק בתוך התפריט
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="drawer-header">
               <button className="back-button" onClick={() => setMenuOpen(false)}>

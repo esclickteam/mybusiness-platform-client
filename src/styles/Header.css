@@ -23,10 +23,15 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 1600;
-  display: flex;               /* שורה אחת */
+  display: flex;
   align-items: center;
-  gap: 8px;                   /* ריווח קטן בין הכפתורים */
+  gap: 8px;
+  background: white; /* רקע לבן כדי לכסות תוכן מתחת */
+  border-radius: 8px;
+  padding: 4px 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
 }
+
 
 /* כפתור המבורגר */
 .menu-button {
