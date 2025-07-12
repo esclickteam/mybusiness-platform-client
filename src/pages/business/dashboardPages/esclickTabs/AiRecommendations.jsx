@@ -334,12 +334,12 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   </>
                 ) : (
                   <>
+                    <p><strong>שאלה:</strong> {cleanText(text)}</p>
                     {commandText && (
                       <p style={{ fontStyle: "italic", color: "#555" }}>
-                        <strong>שאלה/פקודה:</strong> {cleanText(commandText)}
+                        <strong>תשובה/המלצה:</strong> {cleanText(commandText)}
                       </p>
                     )}
-                    <p>{cleanText(text)}</p>
                     <button onClick={() => startEditing({ _id: recId, text })}>
                       ערוך
                     </button>{" "}
@@ -400,12 +400,12 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                       opacity: 0.7,
                     }}
                   >
+                    <p><strong>שאלה:</strong> {cleanText(text)}</p>
                     {commandText && (
                       <p style={{ fontStyle: "italic", color: "#555" }}>
-                        <strong>שאלה/פקודה:</strong> {cleanText(commandText)}
+                        <strong>תשובה/המלצה:</strong> {cleanText(commandText)}
                       </p>
                     )}
-                    <p>{cleanText(text)}</p>
                     <p>סטטוס: {status === "approved" ? "מאושר" : "נדחה"}</p>
                   </li>
                 );
