@@ -18,9 +18,9 @@
 
 /* מיכל המבורגר + התראות */
 .menu-toggle {
-  position: fixed;
-  top: 50%;
-  right: 12px; /* אפשר לשנות לפי צורך */
+  position: absolute;      /* השתנה מ־fixed ל־absolute ביחס ל־.app-header */
+  top: calc(50% + 8px);               /* מרכז אנכי בתוכו */
+  right: 12px;             /* מיקום אופקי ללא שינוי */
   transform: translateY(-50%);
   z-index: 1600;
   display: flex;
