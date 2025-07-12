@@ -15,25 +15,26 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
     return text.replace(/\*\*/g, "");
   }
 
-  async function ask(question) {
-    if (!question.trim()) return;
+  async function sendMessage() {
+    if (!chatInput.trim()) return;
 
-    // הוספת הודעת משתמש
-    const userMessage = { sender: "user", text: question };
+    const userMessage = { sender: "user", text: chatInput };
     setChatMessages((msgs) => [...msgs, userMessage]);
+    setChatInput("");
 
     try {
       const response = await fetch("/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question: chatInput }),
       });
+
       const data = await response.json();
+
       const botMessage = {
         sender: "bot",
         text: cleanText(data.answer || "מצטערים, לא נמצאה תשובה מתאימה."),
         source: data.source || "עסקליק AI",
-        suggestions: data.suggestions || [],
       };
       setChatMessages((msgs) => [...msgs, botMessage]);
     } catch (error) {
@@ -42,15 +43,6 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
         { sender: "bot", text: "אירעה שגיאה, נסה שנית מאוחר יותר." },
       ]);
     }
-  }
-
-  function sendMessage() {
-    ask(chatInput);
-    setChatInput("");
-  }
-
-  function handleSuggestionClick(sug) {
-    ask(sug);
   }
 
   if (!chatOpen) {
@@ -180,35 +172,6 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
               title={msg.source ? `מקור התשובה: ${msg.source}` : ""}
             >
               {msg.text}
-              {msg.suggestions?.length > 0 && (
-                <div
-                  style={{
-                    marginTop: 8,
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "8px",
-                  }}
-                >
-                  {msg.suggestions.map((sug, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSuggestionClick(sug)}
-                      style={{
-                        padding: "6px 12px",
-                        border: "1px solid #007bff",
-                        borderRadius: 12,
-                        background: "white",
-                        cursor: "pointer",
-                        fontSize: 13,
-                        marginTop: 4,
-                        direction: "rtl",
-                      }}
-                    >
-                      {sug}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         ))}
