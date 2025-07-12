@@ -104,6 +104,7 @@ export default function BusinessProfileView() {
     queryKey: ['reviews', bizId],
     queryFn: () => API.get(`/reviews/${bizId}`).then(res => res.data.reviews || []),
 
+
     enabled: !!bizId
   });
 
