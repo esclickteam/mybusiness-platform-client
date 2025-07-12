@@ -214,59 +214,63 @@ export default function Header() {
               </button>
             </div>
 
-            {!user ? (
-              <div className="mobile-auth">
-                <Link
-                  to="/login"
-                  className="login-button"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  התחברות
-                </Link>
-              </div>
-            ) : (
-              <>
-                <div className="menu-user">
-                  <FaUserCircle size={20} />
-                  <span>{user.name || user.email}</span>
-                </div>
-                <div className="menu-section">
-                  <h4>לעסקים</h4>
-                  {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
-                  {link("/how-it-works", <FaCogs />, "איך זה עובד")}
-                </div>
-                <div className="menu-section">
-                  <h4>ללקוחות</h4>
-                  {link("/businesses", <FaListUl />, "רשימת עסקים")}
-                  {link("/categories", <FaTags />, "קטגוריות")}
-                  {link("/search", <FaSearch />, "חיפוש מתקדם")}
-                </div>
-                <div className="menu-section">
-                  <h4>כללי</h4>
-                  {link("/", <FaHome />, "דף הבית")}
-                  {link("/about", <FaInfoCircle />, "אודות")}
-                  {link("/contact", <FaPhone />, "צור קשר")}
-                  {link("/faq", <FaQuestionCircle />, "שאלות נפוצות")}
-                  {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")}
-                  {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")}
-                </div>
-                <div className="auth-menu">
-                  <button
-                    className="personal-area-button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      navigate(getDashboardPath());
-                    }}
+            {/* מיכל גלילה פנימי */}
+            <div className="menu-scroll">
+              {!user ? (
+                <div className="mobile-auth">
+                  <Link
+                    to="/login"
+                    className="login-button"
+                    onClick={() => setMenuOpen(false)}
                   >
-                    אזור אישי
-                  </button>
-                  <button className="logout-button" onClick={handleLogout}>
-                    <FaSignOutAlt style={{ marginLeft: 6 }} />
-                    התנתק
-                  </button>
+                    התחברות
+                  </Link>
                 </div>
-              </>
-            )}
+              ) : (
+                <>
+                  <div className="menu-user">
+                    <FaUserCircle size={20} />
+                    <span>{user.name || user.email}</span>
+                  </div>
+                  <div className="menu-section">
+                    <h4>לעסקים</h4>
+                    {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
+                    {link("/how-it-works", <FaCogs />, "איך זה עובד")}
+                  </div>
+                  <div className="menu-section">
+                    <h4>ללקוחות</h4>
+                    {link("/businesses", <FaListUl />, "רשימת עסקים")}
+                    {link("/categories", <FaTags />, "קטגוריות")}
+                    {link("/search", <FaSearch />, "חיפוש מתקדם")}
+                  </div>
+                  <div className="menu-section">
+                    <h4>כללי</h4>
+                    {link("/", <FaHome />, "דף הבית")}
+                    {link("/about", <FaInfoCircle />, "אודות")}
+                    {link("/contact", <FaPhone />, "צור קשר")}
+                    {link("/faq", <FaQuestionCircle />, "שאלות נפוצות")}
+                    {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")}
+                    {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")}
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="auth-menu">
+              <button
+                className="personal-area-button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate(getDashboardPath());
+                }}
+              >
+                אזור אישי
+              </button>
+              <button className="logout-button" onClick={handleLogout}>
+                <FaSignOutAlt style={{ marginLeft: 6 }} />
+                התנתק
+              </button>
+            </div>
           </div>
         </>
       )}
