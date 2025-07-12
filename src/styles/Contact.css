@@ -1,3 +1,4 @@
+/* Contact.css */
 .contact-container {
   text-align: center;
   max-width: 600px;
@@ -102,6 +103,57 @@
 
 .contact-email::before {
   content: "📧 ";
+}
+
+/* Footer Styles */
+.footer {
+  background-color: #d6ccf9;
+  padding: 20px;
+  font-weight: 700;
+  color: #4b2cb7;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border-radius: 18px;
+  max-width: 900px;
+  margin: 40px auto 0 auto;
+  text-align: right;
+  direction: rtl;
+}
+
+.footer-top,
+.footer-bottom {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  font-size: 16px;
+}
+
+.footer-top {
+  justify-content: flex-end; /* שורה עליונה מיושרת לימין */
+  margin-bottom: 10px;
+}
+
+.footer-bottom {
+  justify-content: center; /* שורה תחתונה במרכז */
+  margin-bottom: 15px;
+}
+
+.footer a {
+  text-decoration: none;
+  color: #4b2cb7;
+  transition: color 0.3s ease;
+}
+
+.footer a:hover {
+  color: #3a1a9e;
+}
+
+.footer p {
+  color: #aaa;
+  font-weight: 400;
+  font-size: 13px;
+  user-select: none;
+  text-align: center;
+  margin: 0;
 }
 
 /* התאמה למובייל ולטאבלטים */

@@ -86,15 +86,19 @@ function Contact() {
 
       {/* Footer */}
       <footer className="footer">
-        <ul className="footer-links">
-          <li><Link to="/search">📋 חיפוש עסקים</Link></li>
-          <li><Link to="/about">📖 קצת עלינו</Link></li>
-          <li><Link to="/how-it-works">⚙️ איך זה עובד</Link></li>
-          <li><Link to="/join">✏️ הצטרפות עסקים</Link></li>
-          <li><Link to="/faq">❓ שאלות נפוצות</Link></li>
-          <li><Link to="/terms">📜 תקנון</Link></li>
-          <li><Link to="/contact">📞 יצירת קשר</Link></li>
-        </ul>
+        <nav className="footer-top">
+          <Link to="/search">📋 חיפוש עסקים</Link>
+          <Link to="/about">📖 קצת עלינו</Link>
+          <Link to="/how-it-works">⚙️ איך זה עובד</Link>
+          <Link to="/join">✏️ הצטרפות עסקים</Link>
+        </nav>
+
+        <nav className="footer-bottom">
+          <Link to="/faq">❓ שאלות נפוצות</Link>
+          <Link to="/terms">📜 תקנון</Link>
+          <Link to="/contact">📞 יצירת קשר</Link>
+        </nav>
+
         <p className="copyright">כל הזכויות שמורות © עסקליק</p>
       </footer>
     </div>
