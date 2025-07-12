@@ -78,12 +78,9 @@ export default function Header() {
     setMenuOpen(false);
   };
 
-  // טיפול בסימון כל ההתראות כנקראות בעת פתיחת החלונית
   useEffect(() => {
     if (notifOpen && unreadCount > 0) {
-      // קריאה לפונקציה לסימון התראות כנקראות (אם יש פונקציה מתאימה)
-      // לדוגמה: markAllAsRead();
-      // כאן ניתן להוסיף קוד בהתאם למימוש NotificationsContext שלך
+      // אפשר לממש סימון התראות כנקראות כאן
     }
   }, [notifOpen, unreadCount]);
 
@@ -105,6 +102,7 @@ export default function Header() {
             gap: "8px",
             position: "relative",
             right: 20,
+            zIndex: 1600, // שימו לב לשינוי כאן!
           }}
         >
           {!menuOpen && (
@@ -207,7 +205,10 @@ export default function Header() {
       {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
-          <div className="side-menu open">
+          <div
+            className="side-menu open"
+            onClick={(e) => e.stopPropagation()} // עצירת הפצת אירועי קליק בתוך התפריט
+          >
             <div className="drawer-header">
               <button className="back-button" onClick={() => setMenuOpen(false)}>
                 <FaChevronLeft size={20} />
