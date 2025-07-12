@@ -1,7 +1,8 @@
+// Contact.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import "../styles/Contact.css";
+import "./Contact.css";
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -84,7 +85,6 @@ function Contact() {
         ✉️ ניתן גם לפנות ישירות במייל: <strong>support@esclick.co.il</strong>
       </p>
 
-      {/* Footer */}
       <footer className="footer">
         <nav className="footer-top">
           <Link to="/search">📋 חיפוש עסקים</Link>
@@ -96,7 +96,9 @@ function Contact() {
         <nav className="footer-bottom">
           <Link to="/faq">❓ שאלות נפוצות</Link>
           <Link to="/terms">📜 תקנון</Link>
-          <Link to="/contact">📞 יצירת קשר</Link>
+          <Link to="/contact">
+            <span className="icon">📞</span> יצירת קשר
+          </Link>
         </nav>
 
         <p className="copyright">כל הזכויות שמורות © עסקליק</p>
