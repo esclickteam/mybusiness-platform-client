@@ -176,13 +176,11 @@ export default function Header() {
         </div>
 
         <div className="auth-controls desktop-only">
-          {!user && (
+          {!user ? (
             <Link to="/login" className="login-button">
               התחברות
             </Link>
-          )}
-
-          {user && (
+          ) : (
             <>
               <button
                 className="personal-area-button"
@@ -203,10 +201,7 @@ export default function Header() {
       {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
-          <div
-            className="side-menu open"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="side-menu open" onClick={(e) => e.stopPropagation()}>
             <div className="drawer-header">
               <button className="back-button" onClick={() => setMenuOpen(false)}>
                 <FaChevronLeft size={20} />
@@ -214,7 +209,6 @@ export default function Header() {
               </button>
             </div>
 
-            {/* מיכל גלילה פנימי */}
             <div className="menu-scroll">
               {!user ? (
                 <div className="mobile-auth">
@@ -256,21 +250,23 @@ export default function Header() {
               )}
             </div>
 
-            <div className="auth-menu">
-              <button
-                className="personal-area-button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate(getDashboardPath());
-                }}
-              >
-                אזור אישי
-              </button>
-              <button className="logout-button" onClick={handleLogout}>
-                <FaSignOutAlt style={{ marginLeft: 6 }} />
-                התנתק
-              </button>
-            </div>
+            {user && (
+              <div className="auth-menu">
+                <button
+                  className="personal-area-button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate(getDashboardPath());
+                  }}
+                >
+                  אזור אישי
+                </button>
+                <button className="logout-button" onClick={handleLogout}>
+                  <FaSignOutAlt style={{ marginLeft: 6 }} />
+                  התנתק
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}
