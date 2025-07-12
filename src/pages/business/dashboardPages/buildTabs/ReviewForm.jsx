@@ -12,7 +12,7 @@ const ratingFields = [
   { key: "experience", label: "🎉 חוויה כללית" },
 ];
 
-const ReviewForm = ({ businessId, socket, onSuccess }) => {
+const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
   const [ratings, setRatings] = useState({});
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,6 +26,36 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
     const values = ratingFields.map(({ key }) => parseFloat(ratings[key] || 0));
     const sum = values.reduce((acc, val) => acc + val, 0);
     return (sum / ratingFields.length).toFixed(1);
+  };
+
+  const sendRecommendation = async (avgRating, clientId, reviewText) => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("אין טוקן אימות, אנא התחבר מחדש");
+
+    const payload = {
+      businessId,
+      clientId,
+      conversationId,
+      text: reviewText,
+      reviewRating: parseFloat(avgRating),
+    };
+
+    const res = await fetch("/api/chat/createRecommendation", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "שגיאה ביצירת המלצה");
+    }
+
+    const data = await res.json();
+    console.log("Recommendation created:", data);
   };
 
   const handleSubmit = async (e) => {
@@ -57,12 +87,15 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
         comment: text,
       };
 
-      console.log("🟢 [DEBUG] Sending reviewData:", reviewData);
-
       if (socket && socket.connected) {
         // שליחה דרך socket
-        socket.emit("createReview", reviewData, (res) => {
+        socket.emit("createReview", reviewData, async (res) => {
           if (res.ok) {
+            try {
+              await sendRecommendation(reviewData.averageScore, clientId, text);
+            } catch (recErr) {
+              console.error("Error creating recommendation:", recErr);
+            }
             onSuccess && onSuccess(res.review);
             setRatings({});
             setText("");
@@ -91,6 +124,12 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
 
         const data = await response.json();
         onSuccess && onSuccess(data.review);
+
+        try {
+          await sendRecommendation(reviewData.averageScore, clientId, text);
+        } catch (recErr) {
+          console.error("Error creating recommendation:", recErr);
+        }
 
         setRatings({});
         setText("");
