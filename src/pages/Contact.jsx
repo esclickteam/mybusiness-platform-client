@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import "./Contact.css";
+import "./styles/Contact.css";
 
 function Contact() {
   const [formData, setFormData] = useState({
