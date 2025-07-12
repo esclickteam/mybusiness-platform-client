@@ -199,7 +199,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
   const startEditing = (rec) => {
     setEditingId(rec._id || rec.id);
-    setEditText(cleanText(rec.text));
+    setEditText(cleanText(rec.isEdited ? rec.editedText : rec.commandText || ""));
   };
 
   const cancelEditing = () => {
@@ -225,7 +225,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
           r._id === id || r.id === id
-            ? { ...r, text: newText, isEdited: true, editedText: newText }
+            ? { ...r, isEdited: true, editedText: newText }
             : r
         )
       );
@@ -263,7 +263,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
           r._id === id || r.id === id
-            ? { ...r, text: newText, status: "approved", isEdited: true, editedText: newText }
+            ? { ...r, status: "approved", isEdited: true, editedText: newText }
             : r
         )
       );
@@ -337,10 +337,9 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                     <p><strong>שאלה:</strong> {cleanText(text)}</p>
                     {commandText && (
                       <p style={{ fontStyle: "italic", color: "#555" }}>
-                        <strong>תשובה/המלצה:</strong> {cleanText(commandText)}
-                      </p>
+                        <strong>תשובה/המלצה:</strong> {cleanText(commandText)}</p>
                     )}
-                    <button onClick={() => startEditing({ _id: recId, text })}>
+                    <button onClick={() => startEditing({ _id: recId, text, commandText, editedText: recommendations.find(r => (r._id === recId || r.id === recId))?.editedText, isEdited: recommendations.find(r => (r._id === recId || r.id === recId))?.isEdited })}>
                       ערוך
                     </button>{" "}
                     <button
