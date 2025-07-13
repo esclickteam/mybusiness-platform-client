@@ -28,11 +28,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     { id: 500, label: "חבילת 500 שאלות נוספות", price: 199 }
   ];
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL;
-  if (!apiBaseUrl) {
-    throw new Error("Missing VITE_API_URL environment variable");
-  }
-
   const abortControllerRef = useRef(null);
 
   useEffect(() => {
@@ -144,9 +139,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
       setSelectedPackage(null);
 
-      // אם תרצה לפתוח את קישור התשלום אוטומטית, תוכל להשתמש בקוד הבא:
+      // לפתוח את קישור התשלום בחלון חדש אם תרצה:
       // window.open(res.data.paymentUrl, "_blank");
-
     } catch (e) {
       setPurchaseError(e.message || "שגיאה ברכישת החבילה");
     } finally {
