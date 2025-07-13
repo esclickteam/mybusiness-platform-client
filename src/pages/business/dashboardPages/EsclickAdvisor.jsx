@@ -105,6 +105,7 @@ const EsclickAdvisor = () => {
         return (
           <BusinessAdvisorTab
             businessId={user?.businessId}
+            userId={user?._id}  
             businessDetails={businessDetails}
             appointments={appointments}
             selectedAppointmentId={selectedAppointmentId}
@@ -115,6 +116,7 @@ const EsclickAdvisor = () => {
         return (
           <MarketingAdvisorTab
             businessId={user?.businessId}
+            userId={user?._id}  
             businessDetails={businessDetails}
             appointments={appointments}
             selectedAppointmentId={selectedAppointmentId}
