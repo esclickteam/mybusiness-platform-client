@@ -41,7 +41,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         const res = await API.get("/business/my");
         const business = res.data.business;
         const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
-        const left = maxQuestions - (business.monthlyQuestionCount || 0);
+        const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
+        const left = maxQuestions - usedQuestions;
         setRemainingQuestions(left);
       } catch (e) {
         console.error("Failed to fetch remaining questions:", e);
@@ -133,15 +134,21 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setPurchaseError("");
 
     try {
-      const res = await API.post("/business/my/purchase-extra-questions", {
-        extraQuestions: selectedPackage.id,
+      const res = await API.post("/purchase-package", {
+        packageId: selectedPackage.id,
+        userId,
+        packageType: "regular",
       });
 
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
       setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
       setSelectedPackage(null);
+
+      // אם תרצה לפתוח את קישור התשלום אוטומטית, תוכל להשתמש בקוד הבא:
+      // window.open(res.data.paymentUrl, "_blank");
+
     } catch (e) {
-      setPurchaseError(e.message);
+      setPurchaseError(e.message || "שגיאה ברכישת החבילה");
     } finally {
       setPurchaseLoading(false);
     }
