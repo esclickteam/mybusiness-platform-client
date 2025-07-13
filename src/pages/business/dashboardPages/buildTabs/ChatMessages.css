@@ -95,3 +95,26 @@
   bottom: 5px;
   right: 10px;
 }
+.chat-message-row.from-customer {
+  justify-content: flex-end;
+}
+
+.chat-message-row.from-business {
+  justify-content: flex-start;
+}
+
+.chat-bubble {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 15px;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.chat-message-row.from-customer .chat-bubble {
+  background-color: #d7c9ff; /* סגול בהיר */
+}
+
+.chat-message-row.from-business .chat-bubble {
+  background-color: #fff;
+}
