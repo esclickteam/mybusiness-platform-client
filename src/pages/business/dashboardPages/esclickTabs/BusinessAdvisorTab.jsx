@@ -24,8 +24,13 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   ];
 
   const questionPackages = [
-    { id: 200, label: "חבילת 200 שאלות נוספות", price: 99 },
-    { id: 500, label: "חבילת 500 שאלות נוספות", price: 199 }
+    { id: 200, label: "חבילת 200 שאלות נוספות", price: 99, type: "regular" },
+    { id: 500, label: "חבילת 500 שאלות נוספות", price: 199, type: "regular" }
+  ];
+
+  const aiPackages = [
+    { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 99, type: "ai-package" },
+    { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 199, type: "ai-package" }
   ];
 
   const abortControllerRef = useRef(null);
@@ -129,18 +134,28 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setPurchaseError("");
 
     try {
-      const res = await API.post("/purchase-package", {
+      // קריאה לראוט שונה לפי סוג החבילה
+      let url = "/purchase-package";
+      if (selectedPackage.type === "ai-package") {
+        url = "/ai-package";
+      }
+
+      const res = await API.post(url, {
         packageId: selectedPackage.id,
         userId,
-        packageType: "regular",
+        packageType: selectedPackage.type,
       });
 
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
-      setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
+      // אם זו חבילת שאלות רגילה מוסיפים את כמות השאלות, אם AI - אפשר לטפל בנפרד
+      if (selectedPackage.type === "regular") {
+        setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
+      }
       setSelectedPackage(null);
 
-      // לפתוח את קישור התשלום בחלון חדש אם תרצה:
+      // אם תרצה לפתוח את קישור התשלום בחלון חדש, תוכל להשתמש בקוד הבא:
       // window.open(res.data.paymentUrl, "_blank");
+
     } catch (e) {
       setPurchaseError(e.message || "שגיאה ברכישת החבילה");
     } finally {
@@ -161,22 +176,63 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
 
       {!startedChat && (
-        <div className="preset-questions-container">
-          {presetQuestions.map((q, index) => (
+        <>
+          <div className="preset-questions-container">
+            {presetQuestions.map((q, index) => (
+              <button
+                key={index}
+                className="preset-question-btn"
+                onClick={() => handlePresetQuestion(q)}
+                type="button"
+                disabled={loading}
+              >
+                {q}
+              </button>
+            ))}
+          </div>
+
+          <hr style={{ margin: "1em 0" }} />
+
+          <div className="purchase-extra-container" style={{ padding: "1em", border: "1px solid #ccc", borderRadius: "8px" }}>
+            <p>ניתן לרכוש חבילת שאלות רגילה או חבילת AI:</p>
+
+            {[...questionPackages, ...aiPackages].map((pkg) => (
+              <label
+                key={pkg.id}
+                style={{
+                  display: "block",
+                  marginBottom: "0.3em",
+                  cursor: purchaseLoading ? "not-allowed" : "pointer",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="question-package"
+                  value={pkg.id}
+                  disabled={purchaseLoading}
+                  checked={selectedPackage?.id === pkg.id}
+                  onChange={() => setSelectedPackage(pkg)}
+                  style={{ marginLeft: "0.5em" }}
+                />
+                {pkg.label} - {pkg.price} ש"ח
+              </label>
+            ))}
+
             <button
-              key={index}
-              className="preset-question-btn"
-              onClick={() => handlePresetQuestion(q)}
-              type="button"
-              disabled={loading}
+              onClick={handlePurchaseExtra}
+              disabled={purchaseLoading || !selectedPackage}
+              style={{ marginTop: "0.5em" }}
             >
-              {q}
+              {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
             </button>
-          ))}
-        </div>
+
+            {purchaseMessage && <p style={{ color: "green", marginTop: "0.5em" }}>{purchaseMessage}</p>}
+            {purchaseError && <p style={{ color: "red", marginTop: "0.5em" }}>{purchaseError}</p>}
+          </div>
+        </>
       )}
 
-      <div className="chat-box-wrapper">
+      <div className="chat-box-wrapper" style={{ marginTop: "1em" }}>
         <div className="chat-box">
           {messages.map((msg, index) => (
             <div key={index} className={`bubble ${msg.role}`}>
@@ -225,41 +281,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           <p style={{ color: "red", marginBottom: "0.5em" }}>
             הגעת למגבלת השאלות החודשית (60). ניתן לרכוש שאלות נוספות במסגרת המנוי.
           </p>
-
-          <div style={{ marginBottom: "0.5em" }}>
-            {questionPackages.map((pkg) => (
-              <label
-                key={pkg.id}
-                style={{
-                  display: "block",
-                  marginBottom: "0.3em",
-                  cursor: purchaseLoading ? "not-allowed" : "pointer",
-                }}
-              >
-                <input
-                  type="radio"
-                  name="question-package"
-                  value={pkg.id}
-                  disabled={purchaseLoading}
-                  checked={selectedPackage?.id === pkg.id}
-                  onChange={() => setSelectedPackage(pkg)}
-                  style={{ marginLeft: "0.5em" }}
-                />
-                {pkg.label} - {pkg.price} ש"ח
-              </label>
-            ))}
-          </div>
-
-          <button
-            onClick={handlePurchaseExtra}
-            disabled={purchaseLoading || !selectedPackage}
-            style={{ marginTop: "0.5em" }}
-          >
-            {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
-          </button>
-
-          {purchaseMessage && <p style={{ color: "green", marginTop: "0.5em" }}>{purchaseMessage}</p>}
-          {purchaseError && <p style={{ color: "red", marginTop: "0.5em" }}>{purchaseError}</p>}
         </div>
       )}
 
