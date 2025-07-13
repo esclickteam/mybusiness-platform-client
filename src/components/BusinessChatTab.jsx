@@ -223,9 +223,9 @@ export default function BusinessChatTab({
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
-    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
-    if (nearBottom) el.scrollTop = el.scrollHeight;
-  }, [messages, isTyping]);
+    // גלילה אוטומטית תמיד לסוף כשהודעות משתנות
+    el.scrollTop = el.scrollHeight;
+  }, [messages]);
 
   const handleInput = (e) => {
     setInput(e.target.value);
