@@ -179,11 +179,8 @@ export default function BusinessChatTab({
       const senderIsBusiness = String(msg.from) === String(businessId);
       const receiverIsBusiness = String(msg.to) === String(businessId);
 
-      // התראה רק אם הלקוח שולח לעסק או עסק שולח לעסק
-      if (
-        (!senderIsBusiness && receiverIsBusiness) || // לקוח -> עסק
-        (senderIsBusiness && receiverIsBusiness)    // עסק -> עסק
-      ) {
+      // תיקון: התראה רק אם הלקוח שולח לעסק
+      if (!senderIsBusiness && receiverIsBusiness) {
         const safeMsg = {
           ...msg,
           _id: String(msg._id),
