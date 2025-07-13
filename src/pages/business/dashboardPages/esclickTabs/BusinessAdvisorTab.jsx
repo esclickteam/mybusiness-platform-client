@@ -41,11 +41,13 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     async function fetchRemaining() {
       try {
         const res = await API.get("/business/my");
+        console.log("fetchRemaining response:", res.data);
         const business = res.data.business;
         const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
         const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
         const left = maxQuestions - usedQuestions;
         setRemainingQuestions(left);
+        console.log("Remaining questions set to:", left);
       } catch (e) {
         console.error("Failed to fetch remaining questions:", e);
         setRemainingQuestions(null);
@@ -81,8 +83,11 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       messages: conversationMessages || messages,
     };
 
+    console.log("Sending message payload:", payload);
+
     try {
       const response = await API.post("/chat/business-advisor", payload, { signal: controller.signal });
+      console.log("sendMessage response:", response.data);
 
       if (response.status === 403) {
         setRemainingQuestions(0);
@@ -97,7 +102,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       }
     } catch (error) {
       if (error.name === "AbortError") return;
-      console.error("שגיאה:", error);
+      console.error("שגיאה ב-sendMessage:", error);
       setMessages(prev => [
         ...prev,
         { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." },
@@ -135,6 +140,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setPurchaseMessage("");
     setPurchaseError("");
 
+    console.log("Purchasing package:", selectedPackage, "for userId:", userId);
+
     try {
       // קריאה לראוט שונה לפי סוג החבילה
       let url = "/purchase-package";
@@ -148,6 +155,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         packageType: selectedPackage.type,
       });
 
+      console.log("Purchase response:", res.data);
+
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
       // עדכון שנותר רק לחבילות רגילות (אפשר להוסיף טיפול לחבילות AI לפי צורך)
       if (selectedPackage.type === "regular") {
@@ -159,6 +168,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       // window.open(res.data.paymentUrl, "_blank");
 
     } catch (e) {
+      console.error("שגיאה ברכישת חבילה:", e);
       setPurchaseError(e.message || "שגיאה ברכישת החבילה");
     } finally {
       setPurchaseLoading(false);
