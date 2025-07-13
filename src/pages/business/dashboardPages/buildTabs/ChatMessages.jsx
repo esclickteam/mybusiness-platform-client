@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import './ChatMessages.css';
-import VoiceBubble from './VoiceBubble'; // ✅ הוספת קומפוננטת נגן
+import VoiceBubble from './VoiceBubble'; // נגן אודיו
 
 const ChatMessages = ({ messages, currentClientId }) => {
+  const endRef = useRef(null);
+
+  // גלילה אוטומטית לתחתית כשל הודעות מתעדכנות
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   return (
     <div className="chat-box" dir="rtl">
       {messages.map((msg) => {
         const safeClientId = msg.clientId?.toString().trim();
         const safeCurrentId = currentClientId?.toString().trim();
 
-        const isSelf =
-          safeClientId && safeCurrentId && safeClientId === safeCurrentId;
+        // האם ההודעה מהלקוח הנוכחי (משתמש בצד שלו)
+        const isSelf = safeClientId && safeCurrentId && safeClientId === safeCurrentId;
 
         const fromClass = isSelf
           ? 'from-customer'
@@ -29,10 +36,10 @@ const ChatMessages = ({ messages, currentClientId }) => {
                   : 'מערכת'}
               </span>
 
-              {/* טקסט רגיל */}
+              {/* טקסט */}
               {msg.text && <p>{msg.text}</p>}
 
-              {/* קובץ - תמונה / וידאו / אודיו / אחר */}
+              {/* קובץ - תמונה, וידאו, אודיו, או קישור */}
               {msg.file && (
                 msg.file.type?.startsWith('image') ||
                 /\.(png|jpe?g|gif|webp)$/i.test(msg.file.url) ? (
@@ -42,7 +49,7 @@ const ChatMessages = ({ messages, currentClientId }) => {
                     <source src={msg.file.url} type={msg.file.type} />
                   </video>
                 ) : msg.file.type?.startsWith('audio') ? (
-                  <VoiceBubble url={msg.file.url} /> // ✅ תצוגת נגן כמו וואטסאפ
+                  <VoiceBubble url={msg.file.url} />
                 ) : (
                   <a href={msg.file.url} download>{`📎 ${msg.file.name}`}</a>
                 )
@@ -55,6 +62,7 @@ const ChatMessages = ({ messages, currentClientId }) => {
           </div>
         );
       })}
+      <div ref={endRef} />
     </div>
   );
 };
