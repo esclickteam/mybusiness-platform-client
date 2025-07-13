@@ -8,7 +8,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   const [messages, setMessages] = useState([]);
   const [startedChat, setStartedChat] = useState(false);
   const [remainingQuestions, setRemainingQuestions] = useState(null);
-  const [extraPurchaseCount, setExtraPurchaseCount] = useState(1);
+  const [selectedPackage, setSelectedPackage] = useState(null); // לחבילת שאלות נבחרת
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [purchaseMessage, setPurchaseMessage] = useState("");
   const [purchaseError, setPurchaseError] = useState("");
@@ -22,6 +22,11 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     "איך בונים תוכנית עסקית פשוטה?"
   ];
 
+  const questionPackages = [
+    { id: 200, label: "חבילת 200 שאלות נוספות", price: 140 },
+    { id: 500, label: "חבילת 500 שאלות נוספות", price: 350 }
+  ];
+
   const apiBaseUrl = import.meta.env.VITE_API_URL;
   if (!apiBaseUrl) {
     throw new Error("Missing VITE_API_URL environment variable");
@@ -30,7 +35,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   // Abort controller לשיחות
   const abortControllerRef = useRef(null);
 
-  // טען ספירת שאלות ראשונית
   useEffect(() => {
     async function fetchRemaining() {
       try {
@@ -87,7 +91,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       const data = await response.json();
 
       if (response.status === 403) {
-        // השרת הודיע על מגבלה
         setRemainingQuestions(0);
         setMessages(prev => [...prev, { role: "assistant", content: data.error || "❗ הגעת למגבלת השאלות החודשית." }]);
       } else {
@@ -96,7 +99,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
         };
         setMessages(prev => [...prev, botMessage]);
-        // עדכן ספירת שאלות פנימית
         setRemainingQuestions(prev => (prev !== null ? prev - 1 : null));
       }
     } catch (error) {
@@ -132,9 +134,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setStartedChat(true);
   }, [loading, messages, sendMessage]);
 
-  // רכישת שאלות נוספות
+  // רכישת שאלות נוספות - מעודכן לפי חבילות
   const handlePurchaseExtra = async () => {
-    if (purchaseLoading || extraPurchaseCount <= 0) return;
+    if (purchaseLoading || !selectedPackage) return;
 
     setPurchaseLoading(true);
     setPurchaseMessage("");
@@ -144,7 +146,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       const res = await fetch(`${apiBaseUrl}/business/my/purchase-extra-questions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ extraQuestions: Number(extraPurchaseCount) }),
+        body: JSON.stringify({ extraQuestions: selectedPackage.id }),
         credentials: "include",
       });
 
@@ -154,10 +156,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         throw new Error(data.error || "שגיאה ברכישת שאלות נוספות");
       }
 
-      setPurchaseMessage(`נרכשו ${extraPurchaseCount} שאלות נוספות בהצלחה.`);
-      // עדכון ספירת שאלות פנימית
-      setRemainingQuestions(prev => (prev !== null ? prev + Number(extraPurchaseCount) : null));
-      setExtraPurchaseCount(1);
+      setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
+      setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
+      setSelectedPackage(null);
     } catch (e) {
       setPurchaseError(e.message);
     } finally {
@@ -235,28 +236,46 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       </div>
 
       {remainingQuestions !== null && remainingQuestions <= 0 && (
-        <div className="purchase-extra-container" style={{ marginTop: "1em", padding: "1em", border: "1px solid #ccc", borderRadius: "8px" }}>
+        <div
+          className="purchase-extra-container"
+          style={{ marginTop: "1em", padding: "1em", border: "1px solid #ccc", borderRadius: "8px" }}
+        >
           <p style={{ color: "red", marginBottom: "0.5em" }}>
             הגעת למגבלת השאלות החודשית (60). ניתן לרכוש שאלות נוספות במסגרת המנוי.
           </p>
-          <label>
-            כמה שאלות נוספות תרצה/י לרכוש?&nbsp;
-            <input
-              type="number"
-              min="1"
-              value={extraPurchaseCount}
-              onChange={(e) => setExtraPurchaseCount(Number(e.target.value))}
-              disabled={purchaseLoading}
-              style={{ width: "60px", textAlign: "center" }}
-            />
-          </label>
+
+          <div style={{ marginBottom: "0.5em" }}>
+            {questionPackages.map((pkg) => (
+              <label
+                key={pkg.id}
+                style={{
+                  display: "block",
+                  marginBottom: "0.3em",
+                  cursor: purchaseLoading ? "not-allowed" : "pointer",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="question-package"
+                  value={pkg.id}
+                  disabled={purchaseLoading}
+                  checked={selectedPackage?.id === pkg.id}
+                  onChange={() => setSelectedPackage(pkg)}
+                  style={{ marginLeft: "0.5em" }}
+                />
+                {pkg.label} - {pkg.price} ש"ח
+              </label>
+            ))}
+          </div>
+
           <button
             onClick={handlePurchaseExtra}
-            disabled={purchaseLoading || extraPurchaseCount <= 0}
-            style={{ marginLeft: "1em" }}
+            disabled={purchaseLoading || !selectedPackage}
+            style={{ marginTop: "0.5em" }}
           >
-            {purchaseLoading ? "רוכש..." : "רכוש שאלות נוספות"}
+            {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
           </button>
+
           {purchaseMessage && <p style={{ color: "green", marginTop: "0.5em" }}>{purchaseMessage}</p>}
           {purchaseError && <p style={{ color: "red", marginTop: "0.5em" }}>{purchaseError}</p>}
         </div>
