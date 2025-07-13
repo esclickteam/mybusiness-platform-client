@@ -29,8 +29,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   ];
 
   const aiPackages = [
-    { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 99, type: "ai-package" },
-    { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 199, type: "ai-package" }
+    { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 1, type: "ai-package" },
+    { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 1, type: "ai-package" }
   ];
 
   const abortControllerRef = useRef(null);
