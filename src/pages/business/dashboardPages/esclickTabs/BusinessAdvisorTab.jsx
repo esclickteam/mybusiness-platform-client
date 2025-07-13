@@ -8,7 +8,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   const [messages, setMessages] = useState([]);
   const [startedChat, setStartedChat] = useState(false);
   const [remainingQuestions, setRemainingQuestions] = useState(null);
-  const [selectedPackage, setSelectedPackage] = useState(null); // לחבילת שאלות נבחרת
+  const [selectedPackage, setSelectedPackage] = useState(null);
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [purchaseMessage, setPurchaseMessage] = useState("");
   const [purchaseError, setPurchaseError] = useState("");
@@ -23,8 +23,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   ];
 
   const questionPackages = [
-    { id: 200, label: "חבילת 200 שאלות נוספות", price: 140 },
-    { id: 500, label: "חבילת 500 שאלות נוספות", price: 350 }
+    { id: 200, label: "חבילת 200 שאלות נוספות", price: 99 },
+    { id: 500, label: "חבילת 500 שאלות נוספות", price: 199 }
   ];
 
   const apiBaseUrl = import.meta.env.VITE_API_URL;
@@ -32,7 +32,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     throw new Error("Missing VITE_API_URL environment variable");
   }
 
-  // Abort controller לשיחות
   const abortControllerRef = useRef(null);
 
   useEffect(() => {
@@ -134,7 +133,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setStartedChat(true);
   }, [loading, messages, sendMessage]);
 
-  // רכישת שאלות נוספות - מעודכן לפי חבילות
   const handlePurchaseExtra = async () => {
     if (purchaseLoading || !selectedPackage) return;
 
