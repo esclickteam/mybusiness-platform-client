@@ -9,14 +9,16 @@ import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import createSocket from "../socket"; // singleton socket helper
 
+// ממיר שדות משתמש וודא Boolean אמיתי ל־hasPaid
 function normalizeUser(user) {
   return {
     ...user,
-    hasPaid: Boolean(user?.hasPaid),  // המרה ברורה ל־Boolean אמיתי
+    hasPaid: Boolean(user?.hasPaid),
   };
 }
 
 let ongoingRefresh = null;
+// מוודא קריאה אחת בלבד ל־refresh-token ברמת אפליקציה
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
     ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
@@ -57,45 +59,7 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  const affiliateLogin = async (publicToken) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await API.get(`/affiliate/login/${publicToken}`, { withCredentials: true });
-      if (!data.success) throw new Error("משווק לא נמצא");
-
-      const userData = await API.get("/auth/me", { withCredentials: true });
-      const normalizedUser = normalizeUser(userData.data);
-      setUser(normalizedUser);
-      localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
-
-      setToken(null);
-
-      setLoading(false);
-      return normalizedUser;
-    } catch (e) {
-      setError(e.message || "שגיאה בכניסה כמשווק");
-      setLoading(false);
-      throw e;
-    }
-  };
-
-  const logout = async () => {
-    setLoading(true);
-    try {
-      await API.post("/auth/logout", {}, { withCredentials: true });
-    } catch {}
-    setAuthToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("businessDetails");
-    setToken(null);
-    setUser(null);
-    socketRef.current?.disconnect();
-    socketRef.current = null;
-    setLoading(false);
-    navigate("/login", { replace: true });
-  };
-
+  // כניסה ללקוח (business)
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
     setError(null);
@@ -108,19 +72,26 @@ export function AuthProvider({ children }) {
       const { accessToken, user: loggedInUser, redirectUrl } = data;
       if (!accessToken) throw new Error("No access token received");
 
+      // שמירת טוקן
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
 
+      // שמירת פרטי משתמש
       const normalizedUser = normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
+      // ניתוב: דילוג על '/plans' אם כבר שילם
       if (!skipRedirect && redirectUrl) {
-        if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
-          navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
-        } else {
-          navigate(redirectUrl, { replace: true });
+        const isPlans = redirectUrl === "/plans";
+        const shouldSkip = isPlans && normalizedUser.hasPaid;
+        if (!shouldSkip) {
+          if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
+            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+          } else {
+            navigate(redirectUrl, { replace: true });
+          }
         }
       }
 
@@ -137,6 +108,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // כניסה כמשתמש צוות
   const staffLogin = async (username, password) => {
     setLoading(true);
     setError(null);
@@ -168,6 +140,47 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // כניסה כמשווק
+  const affiliateLogin = async (publicToken) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await API.get(`/affiliate/login/${publicToken}`, { withCredentials: true });
+      if (!data.success) throw new Error("משווק לא נמצא");
+
+      const userData = await API.get("/auth/me", { withCredentials: true });
+      const normalized = normalizeUser(userData.data);
+      setUser(normalized);
+      localStorage.setItem("businessDetails", JSON.stringify(normalized));
+
+      setToken(null);
+      setLoading(false);
+      return normalized;
+    } catch (e) {
+      setError(e.message || "שגיאה בכניסה כמשווק");
+      setLoading(false);
+      throw e;
+    }
+  };
+
+  // התנתקות
+  const logout = async () => {
+    setLoading(true);
+    try {
+      await API.post("/auth/logout", {}, { withCredentials: true });
+    } catch {}
+    setAuthToken(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("businessDetails");
+    setToken(null);
+    setUser(null);
+    socketRef.current?.disconnect();
+    socketRef.current = null;
+    setLoading(false);
+    navigate("/login", { replace: true });
+  };
+
+  // fetch with auth ו־refresh אוטומטי
   const fetchWithAuth = async (fn) => {
     try {
       return await fn();
@@ -204,11 +217,17 @@ export function AuthProvider({ children }) {
           localStorage.setItem("businessDetails", JSON.stringify(normalized));
         }
 
+        // חיבור WebSocket
         socketRef.current = await createSocket(singleFlightRefresh, logout, user?.businessId);
 
+        // ניתוב לאחר לוגין
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
-          navigate(savedRedirect, { replace: true });
+          const isPlans = savedRedirect === "/plans";
+          const shouldSkip = isPlans && user?.hasPaid;
+          if (!shouldSkip) {
+            navigate(savedRedirect, { replace: true });
+          }
           sessionStorage.removeItem("postLoginRedirect");
         }
       } catch {
@@ -220,6 +239,7 @@ export function AuthProvider({ children }) {
     })();
   }, [token, navigate]);
 
+  // Toast להודעות הצלחה
   useEffect(() => {
     if (!successMessage) return;
     const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -234,12 +254,12 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
+    staffLogin,
+    affiliateLogin,
     fetchWithAuth,
     refreshAccessToken: singleFlightRefresh,
     socket: socketRef.current,
     setUser,
-    staffLogin,
-    affiliateLogin,
   };
 
   return (
