@@ -142,8 +142,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
   const handlePurchaseExtra = async () => {
     if (purchaseLoading || !selectedPackage) return;
-    if (!userId) {
-      setPurchaseError("לא נמצא מזהה משתמש. אנא היכנס מחדש.");
+    if (!businessId) {
+      setPurchaseError("לא נמצא מזהה עסק. אנא היכנס מחדש.");
       return;
     }
 
@@ -151,14 +151,14 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setPurchaseMessage("");
     setPurchaseError("");
 
-    console.log("Purchasing package:", selectedPackage, "for userId:", userId);
+    console.log("Purchasing package:", selectedPackage, "for businessId:", businessId);
 
     try {
       let url = selectedPackage.type === "ai-package" ? "/ai-package" : "/purchase-package";
 
       const res = await API.post(url, {
         packageId: selectedPackage.id,
-        userId,
+        businessId,
         packageType: selectedPackage.type,
       });
 
