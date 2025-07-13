@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Markdown from "markdown-to-jsx";
+import API from "@api";
 import "./AdvisorChat.css";
 
 const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetails }) => {
@@ -37,10 +38,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   useEffect(() => {
     async function fetchRemaining() {
       try {
-        const res = await fetch(`${apiBaseUrl}/business/my`, { credentials: "include" });
-        if (!res.ok) throw new Error("Error fetching business info");
-        const data = await res.json();
-        const business = data.business;
+        const res = await API.get("/business/my");
+        const business = res.data.business;
         const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
         const left = maxQuestions - (business.monthlyQuestionCount || 0);
         setRemainingQuestions(left);
@@ -50,7 +49,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       }
     }
     fetchRemaining();
-  }, [apiBaseUrl]);
+  }, []);
 
   const sendMessage = useCallback(async (promptText, conversationMessages) => {
     if (!businessId || !promptText.trim()) return;
@@ -80,22 +79,15 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     };
 
     try {
-      const response = await fetch(`${apiBaseUrl}/chat/business-advisor`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-
-      const data = await response.json();
+      const response = await API.post("/chat/business-advisor", payload, { signal: controller.signal });
 
       if (response.status === 403) {
         setRemainingQuestions(0);
-        setMessages(prev => [...prev, { role: "assistant", content: data.error || "❗ הגעת למגבלת השאלות החודשית." }]);
+        setMessages(prev => [...prev, { role: "assistant", content: response.data.error || "❗ הגעת למגבלת השאלות החודשית." }]);
       } else {
         const botMessage = {
           role: "assistant",
-          content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
+          content: response.data.answer || "❌ לא התקבלה תשובה מהשרת.",
         };
         setMessages(prev => [...prev, botMessage]);
         setRemainingQuestions(prev => (prev !== null ? prev - 1 : null));
@@ -110,7 +102,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     } finally {
       setLoading(false);
     }
-  }, [businessId, businessDetails, conversationId, userId, messages, loading, apiBaseUrl, remainingQuestions]);
+  }, [businessId, businessDetails, conversationId, userId, messages, loading, remainingQuestions]);
 
   const handleSubmit = useCallback(() => {
     if (!userInput.trim() || loading) return;
@@ -141,18 +133,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setPurchaseError("");
 
     try {
-      const res = await fetch(`${apiBaseUrl}/business/my/purchase-extra-questions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ extraQuestions: selectedPackage.id }),
-        credentials: "include",
+      const res = await API.post("/business/my/purchase-extra-questions", {
+        extraQuestions: selectedPackage.id,
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "שגיאה ברכישת שאלות נוספות");
-      }
 
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
       setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
