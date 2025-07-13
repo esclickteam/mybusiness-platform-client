@@ -10,7 +10,7 @@
   border-radius: 12px;
   padding: 1rem;
   box-sizing: border-box;
-  overflow: hidden; /* מונע גלילה כללית במיכל הראשי */
+  overflow-y: auto; /* מונע גלילה כללית במיכל הראשי */
 }
 
 .chat-box-wrapper {
