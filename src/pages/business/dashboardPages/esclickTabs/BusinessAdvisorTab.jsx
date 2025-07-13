@@ -23,13 +23,11 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     "איך בונים תוכנית עסקית פשוטה?"
   ];
 
-  // חבילות שאלות רגילות (לא מוצגות, נשארות להרחבה עתידית אם תרצה)
   const questionPackages = [
     { id: 200, label: "חבילת 200 שאלות נוספות", price: 99, type: "regular" },
     { id: 500, label: "חבילת 500 שאלות נוספות", price: 199, type: "regular" }
   ];
 
-  // רק חבילות AI מוצגות למשתמש
   const aiPackages = [
     { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 99, type: "ai-package" },
     { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 199, type: "ai-package" }
@@ -57,8 +55,14 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   }, []);
 
   const sendMessage = useCallback(async (promptText, conversationMessages) => {
-    if (!businessId || !promptText.trim()) return;
-    if (loading) return;
+    if (!businessId || !promptText.trim()) {
+      console.warn("sendMessage aborted: missing businessId or promptText");
+      return;
+    }
+    if (loading) {
+      console.warn("sendMessage aborted: loading in progress");
+      return;
+    }
 
     if (remainingQuestions !== null && remainingQuestions <= 0) {
       setMessages(prev => [...prev, { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש שאלות נוספות." }]);
@@ -101,7 +105,10 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         setRemainingQuestions(prev => (prev !== null ? prev - 1 : null));
       }
     } catch (error) {
-      if (error.name === "AbortError") return;
+      if (error.name === "AbortError") {
+        console.log("sendMessage aborted by user");
+        return;
+      }
       console.error("שגיאה ב-sendMessage:", error);
       setMessages(prev => [
         ...prev,
@@ -134,41 +141,40 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   }, [loading, messages, sendMessage]);
 
   const handlePurchaseExtra = async () => {
-  if (purchaseLoading || !selectedPackage) return;
-  if (!userId) {
-    setPurchaseError("לא נמצא מזהה משתמש. אנא היכנס מחדש.");
-    return;
-  }
-
-  setPurchaseLoading(true);
-  setPurchaseMessage("");
-  setPurchaseError("");
-
-  console.log("Purchasing package:", selectedPackage, "for userId:", userId);
-
-  try {
-    let url = selectedPackage.type === "ai-package" ? "/ai-package" : "/purchase-package";
-
-    const res = await API.post(url, {
-      packageId: selectedPackage.id,
-      userId,
-      packageType: selectedPackage.type,
-    });
-
-    setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
-    if (selectedPackage.type === "regular") {
-      setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
+    if (purchaseLoading || !selectedPackage) return;
+    if (!userId) {
+      setPurchaseError("לא נמצא מזהה משתמש. אנא היכנס מחדש.");
+      return;
     }
-    setSelectedPackage(null);
 
-  } catch (e) {
-    console.error("Error purchasing package:", e);
-    setPurchaseError(e.message || "שגיאה ברכישת החבילה");
-  } finally {
-    setPurchaseLoading(false);
-  }
-};
+    setPurchaseLoading(true);
+    setPurchaseMessage("");
+    setPurchaseError("");
 
+    console.log("Purchasing package:", selectedPackage, "for userId:", userId);
+
+    try {
+      let url = selectedPackage.type === "ai-package" ? "/ai-package" : "/purchase-package";
+
+      const res = await API.post(url, {
+        packageId: selectedPackage.id,
+        userId,
+        packageType: selectedPackage.type,
+      });
+
+      setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
+      if (selectedPackage.type === "regular") {
+        setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
+      }
+      setSelectedPackage(null);
+
+    } catch (e) {
+      console.error("Error purchasing package:", e);
+      setPurchaseError(e.message || "שגיאה ברכישת החבילה");
+    } finally {
+      setPurchaseLoading(false);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -14,8 +14,8 @@ const EsclickAdvisor = () => {
   const [activeTab, setActiveTab] = useState("business");
   const [hasBusinessNotification, setHasBusinessNotification] = useState(false);
   const [businessDetails, setBusinessDetails] = useState(null);
-  const [appointments, setAppointments] = useState([]); // שמירת רשימת פגישות
-  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null); // מזהה פגישה נבחרת
+  const [appointments, setAppointments] = useState([]);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const { user, loading } = useAuth();
   const token = localStorage.getItem("token");
 
@@ -27,7 +27,6 @@ const EsclickAdvisor = () => {
       return;
     }
 
-    // חיבור לסוקט
     const socket = io(SOCKET_URL, {
       auth: { token, businessId: user.businessId },
       transports: ["websocket"],
@@ -50,7 +49,6 @@ const EsclickAdvisor = () => {
       return;
     }
 
-    // בקשה לקבלת פרטי העסק
     fetch(`/api/business/${user.businessId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -66,7 +64,6 @@ const EsclickAdvisor = () => {
         setBusinessDetails(null);
       });
 
-    // בקשה לקבלת רשימת פגישות לעסק (אפשר להשאיר או למחוק את זה לפי הצורך)
     fetch(`/api/appointments?businessId=${user.businessId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -105,7 +102,7 @@ const EsclickAdvisor = () => {
         return (
           <BusinessAdvisorTab
             businessId={user?.businessId}
-            userId={user?._id}  
+            userId={user?._id}
             businessDetails={businessDetails}
             appointments={appointments}
             selectedAppointmentId={selectedAppointmentId}
@@ -116,7 +113,7 @@ const EsclickAdvisor = () => {
         return (
           <MarketingAdvisorTab
             businessId={user?.businessId}
-            userId={user?._id}  
+            userId={user?._id}
             businessDetails={businessDetails}
             appointments={appointments}
             selectedAppointmentId={selectedAppointmentId}
