@@ -12,10 +12,7 @@ import createSocket from "../socket"; // singleton socket helper
 function normalizeUser(user) {
   return {
     ...user,
-    hasPaid:
-      user?.hasPaid === true ||
-      user?.hasPaid === "true" ||
-      user?.hasPaid === 1,
+    hasPaid: Boolean(user?.hasPaid),  // המרה ברורה ל־Boolean אמיתי
   };
 }
 
