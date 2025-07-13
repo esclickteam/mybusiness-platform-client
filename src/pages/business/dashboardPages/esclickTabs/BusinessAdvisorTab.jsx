@@ -23,7 +23,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     "איך בונים תוכנית עסקית פשוטה?"
   ];
 
-
   const aiPackages = [
     { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 1, type: "ai-package" },
     { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 1, type: "ai-package" }

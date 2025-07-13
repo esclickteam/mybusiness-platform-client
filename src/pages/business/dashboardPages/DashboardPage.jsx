@@ -222,27 +222,26 @@ const DashboardPage = () => {
   const debouncedSetStats = useRef(
     debounce((newStats) => {
       setStats(newStats);
-      localStorage.setItem("dashboardStats", JSON.stringify(newStats));
+      // Removed localStorage saving
     }, 300)
   ).current;
 
   const loadStats = async () => {
-  if (!businessId) return;
-  setLoading(true);
-  setError(null);
+    if (!businessId) return;
+    setLoading(true);
+    setError(null);
 
-  try {
-    const data = await fetchDashboardStats(businessId, refreshAccessToken);
-    setStats(data);
-    localStorage.setItem("dashboardStats", JSON.stringify(data));
-  } catch (err) {
-    setError("❌ שגיאה בטעינת נתונים מהשרת");
-    if (err.message === "No token") logout();
-  } finally {
-    setLoading(false);
-  }
-};
-
+    try {
+      const data = await fetchDashboardStats(businessId, refreshAccessToken);
+      setStats(data);
+      // Removed localStorage saving
+    } catch (err) {
+      setError("❌ שגיאה בטעינת נתונים מהשרת");
+      if (err.message === "No token") logout();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!initialized || !businessId) return;
