@@ -23,11 +23,13 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     "איך בונים תוכנית עסקית פשוטה?"
   ];
 
+  // חבילות שאלות רגילות (לא מוצגות, נשארות להרחבה עתידית אם תרצה)
   const questionPackages = [
     { id: 200, label: "חבילת 200 שאלות נוספות", price: 99, type: "regular" },
     { id: 500, label: "חבילת 500 שאלות נוספות", price: 199, type: "regular" }
   ];
 
+  // רק חבילות AI מוצגות למשתמש
   const aiPackages = [
     { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 99, type: "ai-package" },
     { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 199, type: "ai-package" }
@@ -147,7 +149,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       });
 
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
-      // אם זו חבילת שאלות רגילה מוסיפים את כמות השאלות, אם AI - אפשר לטפל בנפרד
+      // עדכון שנותר רק לחבילות רגילות (אפשר להוסיף טיפול לחבילות AI לפי צורך)
       if (selectedPackage.type === "regular") {
         setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
       }
@@ -194,9 +196,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           <hr style={{ margin: "1em 0" }} />
 
           <div className="purchase-extra-container" style={{ padding: "1em", border: "1px solid #ccc", borderRadius: "8px" }}>
-            <p>ניתן לרכוש חבילת שאלות רגילה או חבילת AI:</p>
+            <p>ניתן לרכוש חבילת AI בלבד:</p>
 
-            {[...questionPackages, ...aiPackages].map((pkg) => (
+            {aiPackages.map((pkg) => (
               <label
                 key={pkg.id}
                 style={{
