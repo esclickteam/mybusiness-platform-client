@@ -134,46 +134,41 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   }, [loading, messages, sendMessage]);
 
   const handlePurchaseExtra = async () => {
-    if (purchaseLoading || !selectedPackage) return;
+  if (purchaseLoading || !selectedPackage) return;
+  if (!userId) {
+    setPurchaseError("לא נמצא מזהה משתמש. אנא היכנס מחדש.");
+    return;
+  }
 
-    setPurchaseLoading(true);
-    setPurchaseMessage("");
-    setPurchaseError("");
+  setPurchaseLoading(true);
+  setPurchaseMessage("");
+  setPurchaseError("");
 
-    console.log("Purchasing package:", selectedPackage, "for userId:", userId);
+  console.log("Purchasing package:", selectedPackage, "for userId:", userId);
 
-    try {
-      // קריאה לראוט שונה לפי סוג החבילה
-      let url = "/purchase-package";
-      if (selectedPackage.type === "ai-package") {
-        url = "/ai-package";
-      }
+  try {
+    let url = selectedPackage.type === "ai-package" ? "/ai-package" : "/purchase-package";
 
-      const res = await API.post(url, {
-        packageId: selectedPackage.id,
-        userId,
-        packageType: selectedPackage.type,
-      });
+    const res = await API.post(url, {
+      packageId: selectedPackage.id,
+      userId,
+      packageType: selectedPackage.type,
+    });
 
-      console.log("Purchase response:", res.data);
-
-      setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
-      // עדכון שנותר רק לחבילות רגילות (אפשר להוסיף טיפול לחבילות AI לפי צורך)
-      if (selectedPackage.type === "regular") {
-        setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
-      }
-      setSelectedPackage(null);
-
-      // אם תרצה לפתוח את קישור התשלום בחלון חדש, תוכל להשתמש בקוד הבא:
-      // window.open(res.data.paymentUrl, "_blank");
-
-    } catch (e) {
-      console.error("שגיאה ברכישת חבילה:", e);
-      setPurchaseError(e.message || "שגיאה ברכישת החבילה");
-    } finally {
-      setPurchaseLoading(false);
+    setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
+    if (selectedPackage.type === "regular") {
+      setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
     }
-  };
+    setSelectedPackage(null);
+
+  } catch (e) {
+    console.error("Error purchasing package:", e);
+    setPurchaseError(e.message || "שגיאה ברכישת החבילה");
+  } finally {
+    setPurchaseLoading(false);
+  }
+};
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
