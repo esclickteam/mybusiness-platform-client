@@ -7,6 +7,11 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [startedChat, setStartedChat] = useState(false);
+  const [remainingQuestions, setRemainingQuestions] = useState(null);
+  const [extraPurchaseCount, setExtraPurchaseCount] = useState(1);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
+  const [purchaseMessage, setPurchaseMessage] = useState("");
+  const [purchaseError, setPurchaseError] = useState("");
   const bottomRef = useRef(null);
 
   const presetQuestions = [
@@ -22,16 +27,40 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     throw new Error("Missing VITE_API_URL environment variable");
   }
 
-  // שימוש ב־useRef כדי לשמור AbortController בין רינדורים
+  // Abort controller לשיחות
   const abortControllerRef = useRef(null);
+
+  // טען ספירת שאלות ראשונית
+  useEffect(() => {
+    async function fetchRemaining() {
+      try {
+        const res = await fetch(`${apiBaseUrl}/business/my`, { credentials: "include" });
+        if (!res.ok) throw new Error("Error fetching business info");
+        const data = await res.json();
+        const business = data.business;
+        const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
+        const left = maxQuestions - (business.monthlyQuestionCount || 0);
+        setRemainingQuestions(left);
+      } catch (e) {
+        console.error("Failed to fetch remaining questions:", e);
+        setRemainingQuestions(null);
+      }
+    }
+    fetchRemaining();
+  }, [apiBaseUrl]);
 
   const sendMessage = useCallback(async (promptText, conversationMessages) => {
     if (!businessId || !promptText.trim()) return;
-    if (loading) return;  // מניעת בקשה כפולה
+    if (loading) return;
+
+    if (remainingQuestions !== null && remainingQuestions <= 0) {
+      setMessages(prev => [...prev, { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש שאלות נוספות." }]);
+      return;
+    }
 
     setLoading(true);
     if (abortControllerRef.current) {
-      abortControllerRef.current.abort();  // מבטל בקשות קודמות במידה ויש
+      abortControllerRef.current.abort();
     }
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -57,26 +86,30 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
       const data = await response.json();
 
-      const botMessage = {
-        role: "assistant",
-        content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
-      };
-
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
-      if (error.name === "AbortError") {
-        // בקשה בוטלה - לא עושים כלום
-        return;
+      if (response.status === 403) {
+        // השרת הודיע על מגבלה
+        setRemainingQuestions(0);
+        setMessages(prev => [...prev, { role: "assistant", content: data.error || "❗ הגעת למגבלת השאלות החודשית." }]);
+      } else {
+        const botMessage = {
+          role: "assistant",
+          content: data.answer || "❌ לא התקבלה תשובה מהשרת.",
+        };
+        setMessages(prev => [...prev, botMessage]);
+        // עדכן ספירת שאלות פנימית
+        setRemainingQuestions(prev => (prev !== null ? prev - 1 : null));
       }
+    } catch (error) {
+      if (error.name === "AbortError") return;
       console.error("שגיאה:", error);
-      setMessages((prev) => [
+      setMessages(prev => [
         ...prev,
         { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." },
       ]);
     } finally {
       setLoading(false);
     }
-  }, [businessId, businessDetails, conversationId, userId, messages, loading, apiBaseUrl]);
+  }, [businessId, businessDetails, conversationId, userId, messages, loading, apiBaseUrl, remainingQuestions]);
 
   const handleSubmit = useCallback(() => {
     if (!userInput.trim() || loading) return;
@@ -99,8 +132,40 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setStartedChat(true);
   }, [loading, messages, sendMessage]);
 
+  // רכישת שאלות נוספות
+  const handlePurchaseExtra = async () => {
+    if (purchaseLoading || extraPurchaseCount <= 0) return;
+
+    setPurchaseLoading(true);
+    setPurchaseMessage("");
+    setPurchaseError("");
+
+    try {
+      const res = await fetch(`${apiBaseUrl}/business/my/purchase-extra-questions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ extraQuestions: Number(extraPurchaseCount) }),
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "שגיאה ברכישת שאלות נוספות");
+      }
+
+      setPurchaseMessage(`נרכשו ${extraPurchaseCount} שאלות נוספות בהצלחה.`);
+      // עדכון ספירת שאלות פנימית
+      setRemainingQuestions(prev => (prev !== null ? prev + Number(extraPurchaseCount) : null));
+      setExtraPurchaseCount(1);
+    } catch (e) {
+      setPurchaseError(e.message);
+    } finally {
+      setPurchaseLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // גלילה חלקה לאחר עדכון ההודעות, עם דיליי קטן לוודא שהDOM מעודכן
     const timer = setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
@@ -169,18 +234,49 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         </div>
       </div>
 
-      <div className="chat-input">
+      {remainingQuestions !== null && remainingQuestions <= 0 && (
+        <div className="purchase-extra-container" style={{ marginTop: "1em", padding: "1em", border: "1px solid #ccc", borderRadius: "8px" }}>
+          <p style={{ color: "red", marginBottom: "0.5em" }}>
+            הגעת למגבלת השאלות החודשית (60). ניתן לרכוש שאלות נוספות במסגרת המנוי.
+          </p>
+          <label>
+            כמה שאלות נוספות תרצה/י לרכוש?&nbsp;
+            <input
+              type="number"
+              min="1"
+              value={extraPurchaseCount}
+              onChange={(e) => setExtraPurchaseCount(Number(e.target.value))}
+              disabled={purchaseLoading}
+              style={{ width: "60px", textAlign: "center" }}
+            />
+          </label>
+          <button
+            onClick={handlePurchaseExtra}
+            disabled={purchaseLoading || extraPurchaseCount <= 0}
+            style={{ marginLeft: "1em" }}
+          >
+            {purchaseLoading ? "רוכש..." : "רכוש שאלות נוספות"}
+          </button>
+          {purchaseMessage && <p style={{ color: "green", marginTop: "0.5em" }}>{purchaseMessage}</p>}
+          {purchaseError && <p style={{ color: "red", marginTop: "0.5em" }}>{purchaseError}</p>}
+        </div>
+      )}
+
+      <div className="chat-input" style={{ marginTop: "1em" }}>
         <input
           type="text"
           placeholder="כתבי שאלה משלך..."
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          disabled={loading}
+          disabled={loading || (remainingQuestions !== null && remainingQuestions <= 0)}
           dir="rtl"
           autoFocus
         />
-        <button onClick={handleSubmit} disabled={loading || !userInput.trim()}>
+        <button
+          onClick={handleSubmit}
+          disabled={loading || !userInput.trim() || (remainingQuestions !== null && remainingQuestions <= 0)}
+        >
           שליחה
         </button>
       </div>
