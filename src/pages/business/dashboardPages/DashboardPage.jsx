@@ -227,27 +227,22 @@ const DashboardPage = () => {
   ).current;
 
   const loadStats = async () => {
-    if (!businessId) return;
-    setLoading(true);
-    setError(null);
+  if (!businessId) return;
+  setLoading(true);
+  setError(null);
 
-    // Try to load cached stats first for instant display (stale-while-revalidate)
-    const cached = localStorage.getItem("dashboardStats");
-    if (cached) {
-      setStats(JSON.parse(cached));
-    }
+  try {
+    const data = await fetchDashboardStats(businessId, refreshAccessToken);
+    setStats(data);
+    localStorage.setItem("dashboardStats", JSON.stringify(data));
+  } catch (err) {
+    setError("❌ שגיאה בטעינת נתונים מהשרת");
+    if (err.message === "No token") logout();
+  } finally {
+    setLoading(false);
+  }
+};
 
-    try {
-      const data = await fetchDashboardStats(businessId, refreshAccessToken);
-      setStats(data);
-      localStorage.setItem("dashboardStats", JSON.stringify(data));
-    } catch (err) {
-      setError("❌ שגיאה בטעינת נתונים מהשרת");
-      if (err.message === "No token") logout();
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (!initialized || !businessId) return;
