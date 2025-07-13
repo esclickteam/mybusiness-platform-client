@@ -39,15 +39,12 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     async function fetchRemaining() {
       try {
         const res = await API.get("/business/my");
-        console.log("fetchRemaining response:", res.data);
         const business = res.data.business;
         const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
         const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
         const left = maxQuestions - usedQuestions;
         setRemainingQuestions(left);
-        console.log("Remaining questions set to:", left);
       } catch (e) {
-        console.error("Failed to fetch remaining questions:", e);
         setRemainingQuestions(null);
       }
     }
@@ -55,14 +52,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   }, []);
 
   const sendMessage = useCallback(async (promptText, conversationMessages) => {
-    if (!businessId || !promptText.trim()) {
-      console.warn("sendMessage aborted: missing businessId or promptText");
-      return;
-    }
-    if (loading) {
-      console.warn("sendMessage aborted: loading in progress");
-      return;
-    }
+    if (!businessId || !promptText.trim()) return;
+    if (loading) return;
 
     if (remainingQuestions !== null && remainingQuestions <= 0) {
       setMessages(prev => [...prev, { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש שאלות נוספות." }]);
@@ -87,11 +78,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       messages: conversationMessages || messages,
     };
 
-    console.log("Sending message payload:", payload);
-
     try {
       const response = await API.post("/chat/business-advisor", payload, { signal: controller.signal });
-      console.log("sendMessage response:", response.data);
 
       if (response.status === 403) {
         setRemainingQuestions(0);
@@ -105,11 +93,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         setRemainingQuestions(prev => (prev !== null ? prev - 1 : null));
       }
     } catch (error) {
-      if (error.name === "AbortError") {
-        console.log("sendMessage aborted by user");
-        return;
-      }
-      console.error("שגיאה ב-sendMessage:", error);
+      if (error.name === "AbortError") return;
       setMessages(prev => [
         ...prev,
         { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." },
@@ -151,16 +135,20 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setPurchaseMessage("");
     setPurchaseError("");
 
-    console.log("Purchasing package:", selectedPackage, "for businessId:", businessId);
-
     try {
-      let url = selectedPackage.type === "ai-package" ? "/ai-package" : "/purchase-package";
+      const url = selectedPackage.type === "ai-package" ? "/ai-package" : "/purchase-package";
 
       const res = await API.post(url, {
         packageId: selectedPackage.id,
         businessId,
         packageType: selectedPackage.type,
       });
+
+      // הפניה אוטומטית לדף תשלום קארדקום
+      if (res.data.paymentUrl) {
+        window.location.href = res.data.paymentUrl;
+        return;
+      }
 
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
       if (selectedPackage.type === "regular") {
@@ -169,7 +157,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       setSelectedPackage(null);
 
     } catch (e) {
-      console.error("Error purchasing package:", e);
       setPurchaseError(e.message || "שגיאה ברכישת החבילה");
     } finally {
       setPurchaseLoading(false);
