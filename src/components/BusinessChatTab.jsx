@@ -139,6 +139,7 @@ export default function BusinessChatTab({
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [firstMessageAlert, setFirstMessageAlert] = useState(null);
 
   const [unreadCounts, setUnreadCounts] = useState({});
   const unreadCount = unreadCounts[conversationId] || 0;
@@ -214,6 +215,16 @@ export default function BusinessChatTab({
       handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
     };
 
+    // הוספת מאזין לאירוע הודעה ראשונה של הלקוח
+    const handleFirstClientMessage = (data) => {
+      if (data.conversationId === conversationId) return; // אם כבר בשיחה, לא להציג
+      setFirstMessageAlert({
+        conversationId: data.conversationId,
+        text: data.text,
+        timestamp: data.timestamp,
+      });
+    };
+
     const handleConnect = () => {
       // join global business room
       socket.emit("joinConversation", "user-business", businessId, false);
@@ -229,11 +240,13 @@ export default function BusinessChatTab({
     socket.on("connect", handleConnect);
     socket.on("newMessage", handleMessage);
     socket.on("typing", handleTyping);
+    socket.on("firstClientMessage", handleFirstClientMessage);
 
     return () => {
       socket.off("connect", handleConnect);
       socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
+      socket.off("firstClientMessage", handleFirstClientMessage);
       socket.emit("leaveConversation", "user-business", businessId);
       socket.emit(
         "leaveConversation",
@@ -345,6 +358,12 @@ export default function BusinessChatTab({
         ))}
         {isTyping && <div className="typing-indicator">הלקוח מקליד…</div>}
       </div>
+      {firstMessageAlert && (
+        <div className="first-message-alert">
+          הודעה ראשונה חדשה: "{firstMessageAlert.text}"
+          <button onClick={() => setFirstMessageAlert(null)}>×</button>
+        </div>
+      )}
       <div className="inputBar">
         <textarea
           className="inputField"
