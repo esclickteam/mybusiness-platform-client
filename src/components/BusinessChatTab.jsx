@@ -74,7 +74,6 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
-      // Replace entire list (dedup)
       const unique = [];
       action.payload.forEach((msg) => {
         if (
@@ -90,7 +89,6 @@ function messagesReducer(state, action) {
       return unique;
 
     case "append":
-      // Update or push
       const idx = state.findIndex(
         (m) =>
           (m._id && (m._id === action.payload._id || m._id === action.payload.tempId)) ||
@@ -128,7 +126,6 @@ export default function BusinessChatTab({
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  // unread badge
   const [unreadCount, setUnreadCount] = useState(0);
 
   const messagesRef = useRef(messages);
@@ -138,33 +135,33 @@ export default function BusinessChatTab({
     messagesRef.current = messages;
   }, [messages]);
 
-  // 1️⃣ הצטרפות גלובלית לחדר העסק ומאזין גלובלי
+  // 1. מאזין גלובלי ל־newMessage בכל השיחות של העסק
   useEffect(() => {
     if (!socket || !businessId) return;
-    // אין צורך ב־emit אם בשרת מצרפים כבר בקונקשן
-    const handleGlobal = (msg) => {
+
+    const handleGlobalNewMessage = (msg) => {
       if (
         msg.conversationType === "user-business" &&
         String(msg.to || msg.toId) === String(businessId)
       ) {
-        // אם זו לא השיחה הפתוחה כרגע, נספור אותה כ-unread
         if (msg.conversationId !== conversationId) {
           setUnreadCount((c) => c + 1);
         }
       }
     };
-    socket.on("newMessage", handleGlobal);
+
+    socket.on("newMessage", handleGlobalNewMessage);
     return () => {
-      socket.off("newMessage", handleGlobal);
+      socket.off("newMessage", handleGlobalNewMessage);
     };
   }, [socket, businessId, conversationId]);
 
-  // 2️⃣ איפוס badge בכל מעבר שיחה
+  // 2. איפוס ספירת הודעות לא נקראו כשעוברים בין שיחות
   useEffect(() => {
     setUnreadCount(0);
   }, [conversationId]);
 
-  // 3️⃣ fetch history when conversation changes
+  // 3. טען היסטוריית הודעות בשיחה הנבחרת
   useEffect(() => {
     if (!conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -193,7 +190,7 @@ export default function BusinessChatTab({
     };
   }, [conversationId]);
 
-  // 4️⃣ handlers for in-conversation events
+  // 4. מאזינים לאירועים ספציפיים לשיחה פתוחה
   const handleNew = (msg) => {
     if (
       msg.conversationId !== conversationId ||
@@ -211,8 +208,6 @@ export default function BusinessChatTab({
     };
 
     dispatch({ type: "append", payload: safeMsg });
-    // השורה הבאה כבר מטופלת בגלובלי, לכן ניתן להסירה או להשאיר
-    // if (String(msg.from) !== String(businessId)) setUnreadCount(c=>c+1);
   };
 
   const handleTyping = ({ from }) => {
@@ -222,7 +217,6 @@ export default function BusinessChatTab({
     handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
   };
 
-  // join / leave conversation room
   useEffect(() => {
     if (!socket || !conversationId) return;
     socket.on("newMessage", handleNew);
@@ -254,13 +248,13 @@ export default function BusinessChatTab({
     };
   }, [socket, conversationId, conversationType, businessId, customerId]);
 
-  // auto-scroll
+  // גלילה אוטומטית לתחתית ההודעות
   useEffect(() => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  // send & input
+  // ניהול שדה הקלט ושליחת הודעה
   const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
@@ -308,7 +302,7 @@ export default function BusinessChatTab({
     );
   };
 
-  // render
+  // רינדור ההודעות והרכיב
   const sorted = [...messages].sort(
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
   );
@@ -365,9 +359,7 @@ export default function BusinessChatTab({
               <div className="text">{m.text}</div>
             )}
             <div className="meta">
-              <span className="time">
-                {formatTime(m.timestamp)}
-              </span>
+              <span className="time">{formatTime(m.timestamp)}</span>
               {m.fileDuration > 0 && (
                 <span className="audio-length">{`${String(
                   Math.floor(m.fileDuration / 60)
