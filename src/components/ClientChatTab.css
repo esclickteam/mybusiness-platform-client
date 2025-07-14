@@ -41,27 +41,26 @@
   animation: fadeIn 0.42s cubic-bezier(.77,0,.18,1) both;
 }
 
+/* יישור והפרדה של הודעות בצד הלקוח */
+
 /* הודעת המשתמש (לקוח) – לימין */
-.message.mine {
-  align-self: flex-start;
-  margin-right: auto;
-  margin-left: 16px;
+.chat-container.client .message.mine {
+  align-self: flex-end; /* לימין */
+  margin-left: 32px;
+  margin-right: 0;
   background: #dcf8c6;
   text-align: right;
-  border-bottom-right-radius: 4px;
-  border-bottom-left-radius: 18px;
+  border-radius: 18px 18px 4px 18px;
 }
 
-
 /* הודעת העסק – לשמאל */
-.message.theirs {
-  align-self: flex-end;
-  margin-left: auto;
-  margin-right: 16px;
+.chat-container.client .message.theirs {
+  align-self: flex-start; /* לשמאל */
+  margin-right: 32px;
+  margin-left: 0;
   background: #fff;
   text-align: left;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 18px;
+  border-radius: 18px 18px 18px 4px;
 }
 
 /* זמן בתוך הבועה */
@@ -449,8 +448,8 @@
 /* רספונסיביות כללית */
 @media (max-width: 768px) {
   .message { max-width: 90%; padding: 8px 12px 6px 10px; font-size: 14px; }
-  .message.mine { margin-right: 12px; margin-left: auto; }
-  .message.theirs { margin-left: 12px; margin-right: auto; }
+  .chat-container.client .message.mine { margin-left: 16px; margin-right: 0; }
+  .chat-container.client .message.theirs { margin-right: 16px; margin-left: 0; }
   .inputBar { padding: 8px 10px 8px 8px; min-height: 56px; gap: 6px; }
   .inputBar textarea, .inputField {
     font-size: 14px; padding: 10px 12px; border-radius: 22px;
@@ -460,10 +459,11 @@
 
 @media (max-width: 400px) {
   .message { max-width: 100%; padding: 6px 10px 5px 8px; font-size: 13px; }
-  .message.mine { margin-right: 8px; margin-left: auto; }
-  .message.theirs { margin-left: 8px; margin-right: auto; }
+  .chat-container.client .message.mine { margin-left: 8px; margin-right: 0; }
+  .chat-container.client .message.theirs { margin-right: 8px; margin-left: 0; }
   .inputBar textarea, .inputField {
-    font-size: 13px; padding: 8px 10px;
+    font-size: 13px;
+    padding: 8px 10px;
   }
   .sendButtonFlat, .attachBtn, .recordBtn {
     width: 28px; height: 28px; font-size: 18px;
