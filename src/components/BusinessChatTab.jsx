@@ -255,7 +255,8 @@ export default function BusinessChatTab({
         {sorted.map((m, i) => (
           <div
             key={`${m._id}-${m.tempId}-${i}`}
-            className={`message${String(m.from) === String(businessId) ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
+            className={`message${String(m.from || m.fromId) === String(businessId) ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
+
           >
             {m.fileUrl ? (
               m.fileType.startsWith("audio") ? (
