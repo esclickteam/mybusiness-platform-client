@@ -230,7 +230,7 @@ export default function BusinessChatTab({
     socket.on("notificationBundle", handleBundle);
 
     const isBiz = conversationType === "business-business";
-    socket.emit("joinConversation", conversationId, isBiz, (ack) => {
+    socket.emit("joinConversation", conversationType, conversationId, isBiz, (ack) => {
       console.log("joinConversation ACK:", ack);
     });
 
@@ -240,7 +240,7 @@ export default function BusinessChatTab({
       socket.off("newNotification", handleNotification);
       socket.off("notificationBundle", handleBundle);
 
-      socket.emit("leaveConversation", conversationId, isBiz, (ack) => {
+      socket.emit("leaveConversation", conversationType, conversationId, isBiz, (ack) => {
         console.log("leaveConversation ACK:", ack);
       });
       clearTimeout(handleTyping._t);
