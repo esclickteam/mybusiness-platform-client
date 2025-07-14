@@ -193,12 +193,19 @@ export default function BusinessChatTab({
           tempId: msg.tempId || null,
         };
 
-        const exists = messagesRef.current.some(
+        // סינון כפילויות
+        const idx = messagesRef.current.findIndex(
           (m) =>
             String(m._id) === safeMsg._id ||
             (safeMsg.tempId && m.tempId === safeMsg.tempId)
         );
-        if (exists) return;
+        if (idx !== -1) {
+          // עדכון במקום הוספה כפולה
+          const newMessages = [...messagesRef.current];
+          newMessages[idx] = { ...newMessages[idx], ...safeMsg };
+          dispatch({ type: "set", payload: newMessages });
+          return;
+        }
 
         dispatch({ type: "append", payload: safeMsg });
       }
