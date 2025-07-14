@@ -224,6 +224,7 @@ export default function BusinessChatTab({
 
     // הוספת מאזין לאירוע הודעה ראשונה של הלקוח
     const handleFirstClientMessage = (data) => {
+      console.log("[Socket] Received firstClientMessage:", data);
       if (data.conversationId === conversationId) return; // אם כבר בשיחה, לא להציג
       setFirstMessageAlert({
         conversationId: data.conversationId,
