@@ -109,20 +109,25 @@ export default function ChatComponent({
 
   return isBusiness ? (
     <BusinessChatTab
+      socket={socket}
       conversationId={conversationId}
       businessId={businessId}
       customerId={currentCustomerId}
-      socket={socket}
+      customerName={
+        // השם של הלקוח, אם ידוע לכם כבר ב–conversations תוכלו לחלץ אותו
+        conversations.find(c => (c._id ?? c.conversationId) === conversationId)
+          ?.otherParty?.name || ""
+      }
       userRole="business"
       conversationType="user-business"
       authToken={authToken}
     />
   ) : (
     <ClientChatTab
+      socket={socket}
       conversationId={conversationId}
       businessId={partnerId}
       userId={businessId}
-      socket={socket}
       userRole="client"
       conversationType="user-business"
     />
