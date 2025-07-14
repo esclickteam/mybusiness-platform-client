@@ -72,8 +72,24 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 
 function messagesReducer(state, action) {
   switch (action.type) {
-    case "set":
-      return action.payload;
+    case "set": {
+      // מסנן כפילויות (tempId, _id)
+      const msgs = action.payload;
+      const unique = [];
+      msgs.forEach(msg => {
+        // נמצא אם יש כבר הודעה עם אותו tempId או _id
+        if (
+          !unique.some(
+            m =>
+              (m._id && (m._id === msg._id || m._id === msg.tempId)) ||
+              (m.tempId && (m.tempId === msg._id || m.tempId === msg.tempId))
+          )
+        ) {
+          unique.push(msg);
+        }
+      });
+      return unique;
+    }
     case "append": {
       const idx = state.findIndex(
         m =>
@@ -97,6 +113,7 @@ function messagesReducer(state, action) {
       return state;
   }
 }
+
 
 
 export default function BusinessChatTab({
