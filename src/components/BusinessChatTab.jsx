@@ -214,26 +214,28 @@ export default function BusinessChatTab({
       }
     };
 
-    const handleUnreadCount = (count) => {
-      console.log("Received unreadMessagesCount:", count);
-      setUnreadCount(count);
-      // כאן תוכל להוסיף קוד לעדכון UI התראות, לדוגמה:
-      // show notification badge עם unreadCount
-    };
+    const handleUnreadCount = (data) => {
+  // data: { count: number }
+  if (!data || typeof data.count !== "number") return;
+  console.log("Received unreadMessagesCount:", data.count);
+  setUnreadCount(data.count);
+  // כאן תוכל להוסיף קוד לעדכון UI התראות, לדוגמה:
+  // הצגת תג מונה התראות עם unreadCount
+};
 
-    socket.on("newMessage", handleNew);
-    socket.on("typing", handleTyping);
-    socket.on("newNotification", handleNotification);
-    socket.on("unreadMessagesCount", handleUnreadCount); // מאזין לאירוע ספירת הודעות לא נקראות
+     socket.on("newMessage", handleNew);
+  socket.on("typing", handleTyping);
+  socket.on("newNotification", handleNotification);
+  socket.on("notificationBundle", handleUnreadCount);
 
-    return () => {
-      socket.off("newMessage", handleNew);
-      socket.off("typing", handleTyping);
-      socket.off("newNotification", handleNotification);
-      socket.off("unreadMessagesCount", handleUnreadCount);
-      clearTimeout(handleTyping._t);
-    };
-  }, [socket, conversationId, conversationType, businessId, customerId]);
+  return () => {
+    socket.off("newMessage", handleNew);
+    socket.off("typing", handleTyping);
+    socket.off("newNotification", handleNotification);
+    socket.off("notificationBundle", handleUnreadCount);
+    clearTimeout(handleTyping._t);
+  };
+}, [socket, conversationId, conversationType, businessId, customerId]);
 
   useEffect(() => {
     const el = listRef.current;
