@@ -9,6 +9,16 @@ import API from "../api"; // axios עם token מוגדר מראש
 import { useSocket } from "../context/socketContext";
 import "./BusinessChatTab.css";
 
+// עזר לנירמול הודעות
+function normalize(msg) {
+  return {
+    ...msg,
+    _id: String(msg._id),
+    tempId: msg.tempId || null,
+    timestamp: msg.createdAt || new Date().toISOString(),
+  };
+}
+
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   if (!src) return null;
   const audioRef = useRef(null);
@@ -140,64 +150,7 @@ export default function BusinessChatTab({
     messagesRef.current = messages;
   }, [messages]);
 
-  // הצטרפות לחדר הגלובלי של העסק
-  useEffect(() => {
-    if (!socket || !businessId) return;
-    console.log("[Socket] מצטרף לחדר הגלובלי של העסק:", businessId);
-    socket.emit(
-      "joinConversation",
-      "business-business",
-      businessId,
-      true,
-      (ack) => {
-        if (ack?.ok) {
-          console.log("[Socket] הצטרפות לחדר הגלובלי הצליחה");
-        } else {
-          console.error("[Socket] failed to join global business room:", ack?.error);
-        }
-      }
-    );
-  }, [socket, businessId]);
-
-  // מאזין גלובלי להודעות חדשות
-  useEffect(() => {
-    if (!socket || !businessId) return;
-
-    const handleGlobalNewMessage = (msg) => {
-      console.log("[Socket] הודעה גלובלית חדשה התקבלה:", msg);
-      if (
-        msg.conversationType === "user-business" &&
-        String(msg.to || msg.toId) === String(businessId)
-      ) {
-        if (msg.conversationId !== conversationId) {
-          console.log(`[Unread] הודעה מחוץ לשיחה הנוכחית, מעלה מונה עבור שיחה ${msg.conversationId}`);
-          setUnreadCounts((prev) => ({
-            ...prev,
-            [msg.conversationId]: (prev[msg.conversationId] || 0) + 1,
-          }));
-        } else {
-          console.log("[Unread] הודעה בתוך שיחה נוכחית - לא מעלה מונה");
-        }
-      }
-    };
-
-    socket.on("newMessage", handleGlobalNewMessage);
-    return () => {
-      socket.off("newMessage", handleGlobalNewMessage);
-    };
-  }, [socket, businessId, conversationId]);
-
-  // איפוס ספירת הודעות שלא נקראו בשיחה הנוכחית
-  useEffect(() => {
-    if (!conversationId) return;
-    console.log("[Unread] איפוס מונה הודעות לשיחה", conversationId);
-    setUnreadCounts((prev) => ({
-      ...prev,
-      [conversationId]: 0,
-    }));
-  }, [conversationId]);
-
-  // טעינת היסטוריית ההודעות בשיחה
+  // טען היסטוריית הודעות
   useEffect(() => {
     if (!conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -211,12 +164,7 @@ export default function BusinessChatTab({
           params: { page: 0, limit: 50 },
         });
         if (cancelled) return;
-        const msgs = res.data.messages.map((m) => ({
-          ...m,
-          _id: String(m._id),
-          tempId: m.tempId || null,
-          timestamp: m.createdAt || new Date().toISOString(),
-        }));
+        const msgs = res.data.messages.map(normalize);
         console.log("[API] היסטוריית הודעות נטענה, מס'", msgs.length);
         dispatch({ type: "set", payload: msgs });
       } catch (err) {
@@ -228,66 +176,76 @@ export default function BusinessChatTab({
     };
   }, [conversationId]);
 
-  // מאזינים ספציפיים לשיחה פתוחה (newMessage ו-typing)
-  const handleNew = (msg) => {
-    if (
-      msg.conversationId !== conversationId ||
-      msg.conversationType !== conversationType
-    )
-      return;
-    const to = msg.to || msg.toId;
-    if (String(to) !== String(businessId)) return;
+  // אפס מונה הודעות שלא נקראו לשיחה זו
+  useEffect(() => {
+    if (!conversationId) return;
+    console.log("[Unread] איפוס מונה הודעות לשיחה", conversationId);
+    setUnreadCounts((prev) => ({ ...prev, [conversationId]: 0 }));
+  }, [conversationId]);
 
-    const safeMsg = {
-      ...msg,
-      _id: String(msg._id),
-      tempId: msg.tempId || null,
-      timestamp: msg.createdAt || new Date().toISOString(),
+  // Socket listeners and joins
+  useEffect(() => {
+    if (!socket || !businessId) return;
+
+    const isBizConv = conversationType === "business-business";
+
+    // Handlers
+    const handleMessage = (msg) => {
+      if (
+        msg.conversationType !== conversationType && msg.conversationType !== "user-business"
+      ) return;
+      if (String(msg.to || msg.toId) !== String(businessId)) return;
+
+      const safeMsg = normalize(msg);
+      if (msg.conversationId === conversationId) {
+        dispatch({ type: "append", payload: safeMsg });
+      } else {
+        setUnreadCounts((prev) => ({
+          ...prev,
+          [msg.conversationId]: (prev[msg.conversationId] || 0) + 1,
+        }));
+      }
     };
 
-    console.log("[Socket] הודעה חדשה בשיחה הנוכחית:", safeMsg);
-    dispatch({ type: "append", payload: safeMsg });
-  };
+    const handleTyping = ({ from }) => {
+      if (String(from) !== String(customerId)) return;
+      setIsTyping(true);
+      clearTimeout(handleTyping._t);
+      handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
+    };
 
-  const handleTyping = ({ from }) => {
-    if (String(from) !== String(customerId)) return;
-    setIsTyping(true);
-    clearTimeout(handleTyping._t);
-    handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
-  };
+    const handleConnect = () => {
+      // join global business room
+      socket.emit("joinConversation", "business-business", businessId, true);
+      // join specific conversation room
+      socket.emit(
+        "joinConversation",
+        conversationType,
+        conversationId,
+        isBizConv
+      );
+    };
 
-  useEffect(() => {
-    if (!socket || !conversationId) return;
-    socket.on("newMessage", handleNew);
+    socket.on("connect", handleConnect);
+    socket.on("newMessage", handleMessage);
     socket.on("typing", handleTyping);
 
-    const isBiz = conversationType === "business-business";
-    socket.emit(
-      "joinConversation",
-      conversationType,
-      conversationId,
-      isBiz,
-      (ack) => {
-        console.log("[Socket] joinConversation ACK:", ack);
-      }
-    );
     return () => {
-      socket.off("newMessage", handleNew);
+      socket.off("connect", handleConnect);
+      socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
+      socket.emit("leaveConversation", "business-business", businessId);
       socket.emit(
         "leaveConversation",
         conversationType,
         conversationId,
-        isBiz,
-        (ack) => {
-          console.log("[Socket] leaveConversation ACK:", ack);
-        }
+        isBizConv
       );
       clearTimeout(handleTyping._t);
     };
-  }, [socket, conversationId, conversationType, businessId, customerId]);
+  }, [socket, businessId, conversationId, conversationType, customerId]);
 
-  // גלילה אוטומטית לתחתית ההודעות
+  // גלילה לתחתית
   useEffect(() => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
@@ -303,7 +261,7 @@ export default function BusinessChatTab({
     setSending(true);
     const tempId = uuidv4();
     const text = input.trim();
-    console.log("[SendMessage] שולח הודעה עם tempId:", tempId, "טקסט:", text);
+
     dispatch({
       type: "append",
       payload: {
@@ -318,23 +276,12 @@ export default function BusinessChatTab({
       },
     });
     setInput("");
+
     socket.emit(
       "sendMessage",
-      {
-        conversationId,
-        from: businessId,
-        to: customerId,
-        text,
-        tempId,
-        conversationType,
-      },
+      { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
       (ack) => {
         setSending(false);
-        if (ack?.ok) {
-          console.log("[SendMessage] הודעה נשלחה בהצלחה, tempId:", tempId);
-        } else {
-          console.error("[SendMessage] הודעה נכשלה, tempId:", tempId, "Error:", ack?.error);
-        }
         dispatch({
           type: "updateStatus",
           payload: {
@@ -342,6 +289,7 @@ export default function BusinessChatTab({
             updates: { sending: false, failed: !ack.ok, ...(ack.message || {}) },
           },
         });
+        if (!ack.ok) console.error("[SendMessage] failed", ack.error);
       }
     );
   };
@@ -354,50 +302,31 @@ export default function BusinessChatTab({
     const d = new Date(ts);
     return isNaN(d)
       ? ""
-      : d.toLocaleTimeString("he-IL", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+      : d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
     <div className="chat-container business">
       <div className="chat-header">
         <h3>{customerName}</h3>
-        {unreadCount > 0 && (
-          <div className="unread-badge">{unreadCount}</div>
-        )}
+        {unreadCount > 0 && <div className="unread-badge">{unreadCount}</div>}
       </div>
       <div className="message-list" ref={listRef}>
-        {sorted.length === 0 && (
-          <div className="empty">עדיין אין הודעות</div>
-        )}
+        {sorted.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {sorted.map((m, i) => (
           <div
             key={`${m._id}-${m.tempId}-${i}`}
             className={`message${
-              String(m.from || m.fromId) === String(businessId)
-                ? " mine"
-                : " theirs"
+              String(m.from || m.fromId) === String(businessId) ? " mine" : " theirs"
             }${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
           >
             {m.fileUrl ? (
               m.fileType?.startsWith("audio") ? (
-                <WhatsAppAudioPlayer
-                  src={m.fileUrl}
-                  duration={m.fileDuration}
-                  userAvatar={null}
-                />
+                <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} userAvatar={null} />
               ) : m.fileType?.startsWith("image") ? (
-                <img
-                  src={m.fileUrl}
-                  alt={m.fileName}
-                  className="msg-image"
-                />
+                <img src={m.fileUrl} alt={m.fileName} className="msg-image" />
               ) : (
-                <a href={m.fileUrl} download>
-                  {m.fileName}
-                </a>
+                <a href={m.fileUrl} download>{m.fileName}</a>
               )
             ) : (
               <div className="text">{m.text}</div>
@@ -414,9 +343,7 @@ export default function BusinessChatTab({
             </div>
           </div>
         ))}
-        {isTyping && (
-          <div className="typing-indicator">הלקוח מקליד…</div>
-        )}
+        {isTyping && <div className="typing-indicator">הלקוח מקליד…</div>}
       </div>
       <div className="inputBar">
         <textarea
@@ -433,11 +360,7 @@ export default function BusinessChatTab({
           rows={1}
           disabled={sending}
         />
-        <button
-          onClick={sendMessage}
-          disabled={sending || !input.trim()}
-          className="sendButtonFlat"
-        >
+        <button onClick={sendMessage} disabled={sending || !input.trim()} className="sendButtonFlat">
           ◀
         </button>
       </div>
