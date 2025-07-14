@@ -164,17 +164,29 @@ const DashboardPage = () => {
   const [nextActionsLoaded, setNextActionsLoaded] = useState(false);
   const [weeklySummaryLoaded, setWeeklySummaryLoaded] = useState(false);
 
-  // הפעל טעינת כל הרכיבים מיד אחרי שהנתונים נטענים
   useEffect(() => {
-    if (stats) {
-      setCardsLoaded(true);
-      setInsightsLoaded(true);
-      setChartsLoaded(true);
-      setAppointmentsLoaded(true);
-      setNextActionsLoaded(true);
-      setWeeklySummaryLoaded(true);
-    }
-  }, [stats]);
+    if (cardsVisible) setCardsLoaded(true);
+  }, [cardsVisible]);
+
+  useEffect(() => {
+    if (insightsVisible) setInsightsLoaded(true);
+  }, [insightsVisible]);
+
+  useEffect(() => {
+    if (chartsVisible) setChartsLoaded(true);
+  }, [chartsVisible]);
+
+  useEffect(() => {
+    if (appointmentsVisible) setAppointmentsLoaded(true);
+  }, [appointmentsVisible]);
+
+  useEffect(() => {
+    if (nextActionsVisible) setNextActionsLoaded(true);
+  }, [nextActionsVisible]);
+
+  useEffect(() => {
+    if (weeklySummaryVisible) setWeeklySummaryLoaded(true);
+  }, [weeklySummaryVisible]);
 
   const safeEmit = (socket, event, data, callback) => {
     if (!socket || socket.disconnected) {
@@ -220,22 +232,23 @@ const DashboardPage = () => {
   ).current;
 
   const loadStats = async () => {
-    if (!businessId) return;
-    setLoading(true);
-    setError(null);
+  if (!businessId) return;
+  setLoading(true);
+  setError(null);
 
-    try {
-      const data = await fetchDashboardStats(businessId, refreshAccessToken);
-      console.log("Loaded stats from API:", data);
-      setStats(data);
-    } catch (err) {
-      console.error("Error loading stats:", err);
-      setError("❌ שגיאה בטעינת נתונים מהשרת");
-      if (err.message === "No token") logout();
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const data = await fetchDashboardStats(businessId, refreshAccessToken);
+    console.log("Loaded stats from API:", data);
+    setStats(data);
+  } catch (err) {
+    console.error("Error loading stats:", err);
+    setError("❌ שגיאה בטעינת נתונים מהשרת");
+    if (err.message === "No token") logout();
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -278,19 +291,17 @@ const DashboardPage = () => {
         debouncedSetStats(newStats);
       });
 
-      sock.on("profileViewsUpdated", (data) => {
-        if (!data || typeof data.views_count !== "number") return;
+      sock.on('profileViewsUpdated', (data) => {
+        if (!data || typeof data.views_count !== 'number') return;
         setStats((oldStats) =>
-          oldStats ? { ...oldStats, views_count: data.views_count } : oldStats
+          oldStats
+            ? { ...oldStats, views_count: data.views_count }
+            : oldStats
         );
       });
 
       sock.on("appointmentCreated", (newAppointment) => {
-        if (
-          !newAppointment.business ||
-          newAppointment.business.toString() !== businessId.toString()
-        )
-          return;
+        if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
         setStats((oldStats) => {
           if (!oldStats) return oldStats;
           const enriched = enrichAppointment(newAppointment, oldStats);
@@ -302,9 +313,7 @@ const DashboardPage = () => {
           };
         });
         if (newAppointment.date) {
-          const apptDate = new Date(newAppointment.date)
-            .toISOString()
-            .split("T")[0];
+          const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
           if (apptDate === selectedDate) {
             setSelectedDate(null);
             setTimeout(() => setSelectedDate(apptDate), 10);
@@ -444,7 +453,7 @@ const DashboardPage = () => {
       </Suspense>
 
       <div ref={cardsRef}>
-        {cardsLoaded && (
+        {(cardsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
             <MemoizedDashboardCards
               stats={syncedStats}
@@ -455,7 +464,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={insightsRef}>
-        {insightsLoaded && (
+        {(insightsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
             <MemoizedInsights
               stats={{
@@ -468,7 +477,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-        {chartsLoaded && (
+        {(chartsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
             <MemoizedBarChartComponent
               appointments={enrichedAppointments}
@@ -479,7 +488,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={nextActionsRef} className="actions-container full-width">
-        {nextActionsLoaded && (
+        {(nextActionsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
             <MemoizedNextActions
               stats={{
@@ -494,7 +503,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={appointmentsRef} className="calendar-row">
-        {appointmentsLoaded && (
+        {(appointmentsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
             <div className="day-agenda-box">
               <MemoizedDailyAgenda
@@ -516,7 +525,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={weeklySummaryRef}>
-        {weeklySummaryLoaded && (
+        {(weeklySummaryLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
             <MemoizedWeeklySummary stats={syncedStats} />
           </Suspense>
