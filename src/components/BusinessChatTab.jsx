@@ -154,14 +154,16 @@ export default function BusinessChatTab({
     if (!socket) return;
 
     const handleNew = msg => {
-      if (msg.conversationId !== conversationId || msg.conversationType !== conversationType) return;
-      if (String(msg.to) !== String(businessId)) return;
-      const safeMsg = {
-        ...msg,
-        _id: String(msg._id),
-        tempId: msg.tempId || null,
-        timestamp: msg.createdAt || new Date().toISOString(),
-      };
+  if (msg.conversationId !== conversationId || msg.conversationType !== conversationType) return;
+  // קח את msg.toId אם קיים, אחרת msg.to
+  const to = msg.to || msg.toId;
+  if (String(to) !== String(businessId)) return;
+  const safeMsg = {
+    ...msg,
+    _id: String(msg._id),
+    tempId: msg.tempId || null,
+    timestamp: msg.createdAt || new Date().toISOString(),
+  };
       const idx = messagesRef.current.findIndex(m => m._id === safeMsg._id || m.tempId === safeMsg.tempId);
       if (idx !== -1) {
         const arr = [...messagesRef.current];
