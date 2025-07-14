@@ -154,8 +154,8 @@ export default function BusinessChatTab({
   // הצטרפות לחדר הגלובלי של העסק (חשוב)
   useEffect(() => {
     if (!socket || !businessId) return;
-    socket.emit("joinBusinessRoom", businessId);
-    console.log(`Joined global business room business-${businessId}`);
+    socket.emit("joinRoom", `business-${businessId}`);
+    console.log(`Joined room via joinRoom: business-${businessId}`);
   }, [socket, businessId]);
 
   // טען היסטוריית הודעות
