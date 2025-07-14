@@ -53,6 +53,20 @@ function debounce(func, wait) {
   };
 }
 
+function useOnScreen(ref) {
+  const [isVisible, setVisible] = useState(false);
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [ref]);
+  return isVisible;
+}
+
 function enrichAppointment(appt, business) {
   const service = business.services?.find(
     (s) => s._id.toString() === appt.serviceId.toString()
@@ -78,10 +92,8 @@ function countItemsInLastWeek(items, dateKey = "date") {
 async function fetchDashboardStats(businessId, refreshAccessToken) {
   const token = await refreshAccessToken();
   if (!token) throw new Error("No token");
-  const res = await API.get(`/business/${businessId}/stats?t=${Date.now()}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  const res = await API.get(`/business/${businessId}/stats`, {
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
 }
@@ -123,10 +135,94 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // debounce helper
+  // Refs for lazy loading with intersection observer
+  const cardsRef = useRef(null);
+  const insightsRef = useRef(null);
+  const chartsRef = useRef(null);
+  const appointmentsRef = useRef(null);
+  const nextActionsRef = useRef(null);
+  const weeklySummaryRef = useRef(null);
+
+  // IntersectionObserver states
+  const cardsVisible = useOnScreen(cardsRef);
+  const insightsVisible = useOnScreen(insightsRef);
+  const chartsVisible = useOnScreen(chartsRef);
+  const appointmentsVisible = useOnScreen(appointmentsRef);
+  const nextActionsVisible = useOnScreen(nextActionsRef);
+  const weeklySummaryVisible = useOnScreen(weeklySummaryRef);
+
+  // State to keep track if each section was loaded once (to avoid rerendering/remounting)
+  const [cardsLoaded, setCardsLoaded] = useState(false);
+  const [insightsLoaded, setInsightsLoaded] = useState(false);
+  const [chartsLoaded, setChartsLoaded] = useState(false);
+  const [appointmentsLoaded, setAppointmentsLoaded] = useState(false);
+  const [nextActionsLoaded, setNextActionsLoaded] = useState(false);
+  const [weeklySummaryLoaded, setWeeklySummaryLoaded] = useState(false);
+
+  useEffect(() => {
+    if (cardsVisible) setCardsLoaded(true);
+  }, [cardsVisible]);
+
+  useEffect(() => {
+    if (insightsVisible) setInsightsLoaded(true);
+  }, [insightsVisible]);
+
+  useEffect(() => {
+    if (chartsVisible) setChartsLoaded(true);
+  }, [chartsVisible]);
+
+  useEffect(() => {
+    if (appointmentsVisible) setAppointmentsLoaded(true);
+  }, [appointmentsVisible]);
+
+  useEffect(() => {
+    if (nextActionsVisible) setNextActionsLoaded(true);
+  }, [nextActionsVisible]);
+
+  useEffect(() => {
+    if (weeklySummaryVisible) setWeeklySummaryLoaded(true);
+  }, [weeklySummaryVisible]);
+
+  const safeEmit = (socket, event, data, callback) => {
+    if (!socket || socket.disconnected) {
+      console.warn(`Socket disconnected, cannot emit event ${event}`);
+      if (typeof callback === "function") callback({ ok: false, error: "Socket disconnected" });
+      return;
+    }
+    socket.emit(event, data, (...args) => {
+      if (typeof callback === "function") callback(...args);
+    });
+  };
+
+  const handleApproveRecommendation = useCallback((recommendationId) => {
+    if (!socketRef.current) {
+      alert("Socket לא מחובר, נסה שוב מאוחר יותר");
+      return;
+    }
+    if (socketRef.current.disconnected) {
+      alert("Socket מנותק, נסה שוב מאוחר יותר");
+      return;
+    }
+    safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
+      if (!res) {
+        console.error("No response object received in callback");
+        return;
+      }
+      if (res.ok) {
+        alert("ההמלצה אושרה ונשלחה ללקוח");
+        setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
+      } else {
+        alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
+        console.error("שגיאה באישור המלצה:", res.error);
+      }
+    });
+  }, []);
+
+  // Debounced stats setter to limit rerenders on frequent WebSocket events
   const debouncedSetStats = useRef(
     debounce((newStats) => {
       setStats(newStats);
+      localStorage.setItem("dashboardStats", JSON.stringify(newStats));
     }, 300)
   ).current;
 
@@ -135,9 +231,16 @@ const DashboardPage = () => {
     setLoading(true);
     setError(null);
 
+    // Try to load cached stats first for instant display (stale-while-revalidate)
+    const cached = localStorage.getItem("dashboardStats");
+    if (cached) {
+      setStats(JSON.parse(cached));
+    }
+
     try {
       const data = await fetchDashboardStats(businessId, refreshAccessToken);
       setStats(data);
+      localStorage.setItem("dashboardStats", JSON.stringify(data));
     } catch (err) {
       setError("❌ שגיאה בטעינת נתונים מהשרת");
       if (err.message === "No token") logout();
@@ -187,19 +290,17 @@ const DashboardPage = () => {
         debouncedSetStats(newStats);
       });
 
-      sock.on("profileViewsUpdated", (data) => {
-        if (!data || typeof data.views_count !== "number") return;
+      sock.on('profileViewsUpdated', (data) => {
+        if (!data || typeof data.views_count !== 'number') return;
         setStats((oldStats) =>
-          oldStats ? { ...oldStats, views_count: data.views_count } : oldStats
+          oldStats
+            ? { ...oldStats, views_count: data.views_count }
+            : oldStats
         );
       });
 
       sock.on("appointmentCreated", (newAppointment) => {
-        if (
-          !newAppointment.business ||
-          newAppointment.business.toString() !== businessId.toString()
-        )
-          return;
+        if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
         setStats((oldStats) => {
           if (!oldStats) return oldStats;
           const enriched = enrichAppointment(newAppointment, oldStats);
@@ -211,9 +312,7 @@ const DashboardPage = () => {
           };
         });
         if (newAppointment.date) {
-          const apptDate = new Date(newAppointment.date)
-            .toISOString()
-            .split("T")[0];
+          const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
           if (apptDate === selectedDate) {
             setSelectedDate(null);
             setTimeout(() => setSelectedDate(apptDate), 10);
@@ -353,68 +452,83 @@ const DashboardPage = () => {
       </Suspense>
 
       <div ref={cardsRef}>
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
-          <MemoizedDashboardCards stats={syncedStats} unreadCount={syncedStats.messages_count} />
-        </Suspense>
+        {(cardsLoaded) && (
+          <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
+            <MemoizedDashboardCards
+              stats={syncedStats}
+              unreadCount={syncedStats.messages_count}
+            />
+          </Suspense>
+        )}
       </div>
 
       <div ref={insightsRef}>
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
-          <MemoizedInsights
-            stats={{
-              ...syncedStats,
-              upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
-            }}
-          />
-        </Suspense>
+        {(insightsLoaded) && (
+          <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
+            <MemoizedInsights
+              stats={{
+                ...syncedStats,
+                upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
+              }}
+            />
+          </Suspense>
+        )}
       </div>
 
       <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
-          <MemoizedBarChartComponent
-            appointments={enrichedAppointments}
-            title="לקוחות שהזמינו פגישות לפי חודשים 📊"
-          />
-        </Suspense>
+        {(chartsLoaded) && (
+          <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
+            <MemoizedBarChartComponent
+              appointments={enrichedAppointments}
+              title="לקוחות שהזמינו פגישות לפי חודשים 📊"
+            />
+          </Suspense>
+        )}
       </div>
 
       <div ref={nextActionsRef} className="actions-container full-width">
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
-          <MemoizedNextActions
-            stats={{
-              weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
-              weekly_appointments_count: countItemsInLastWeek(enrichedAppointments),
-              weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
-              weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
-            }}
-          />
-        </Suspense>
+        {(nextActionsLoaded) && (
+          <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
+            <MemoizedNextActions
+              stats={{
+                weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
+                weekly_appointments_count: countItemsInLastWeek(enrichedAppointments),
+                weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
+                weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
+              }}
+            />
+          </Suspense>
+        )}
       </div>
 
       <div ref={appointmentsRef} className="calendar-row">
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
-          <div className="day-agenda-box">
-            <MemoizedDailyAgenda
-              date={selectedDate}
-              appointments={enrichedAppointments}
-              businessName={syncedStats.businessName}
-              businessId={businessId}
-            />
-          </div>
-          <div className="calendar-container">
-            <MemoizedCalendarView
-              appointments={enrichedAppointments}
-              onDateClick={setSelectedDate}
-              selectedDate={selectedDate}
-            />
-          </div>
-        </Suspense>
+        {(appointmentsLoaded) && (
+          <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
+            <div className="day-agenda-box">
+              <MemoizedDailyAgenda
+                date={selectedDate}
+                appointments={enrichedAppointments}
+                businessName={syncedStats.businessName}
+                businessId={businessId}
+              />
+            </div>
+            <div className="calendar-container">
+              <MemoizedCalendarView
+                appointments={enrichedAppointments}
+                onDateClick={setSelectedDate}
+                selectedDate={selectedDate}
+              />
+            </div>
+          </Suspense>
+        )}
       </div>
 
       <div ref={weeklySummaryRef}>
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
-          <MemoizedWeeklySummary stats={syncedStats} />
-        </Suspense>
+        {(weeklySummaryLoaded) && (
+          <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
+            <MemoizedWeeklySummary stats={syncedStats} />
+          </Suspense>
+        )}
       </div>
     </div>
   );
