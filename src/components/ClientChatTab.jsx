@@ -92,9 +92,12 @@ const addRole = (msg, userId) => {
 
   const role = String(fromId) === String(userId) ? "client" : "business";
 
+  console.log("Message fromId:", fromId, "userId:", userId, "assigned role:", role);
+  
   msg.role = role;
   return msg;
 };
+
 
 const getMessageKey = (m) => {
   if (m.recommendationId) return `rec_${m.recommendationId}`;
