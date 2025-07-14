@@ -30,20 +30,22 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
   const abortControllerRef = useRef(null);
 
-  useEffect(() => {
-    async function fetchRemaining() {
-      try {
-        const res = await API.get("/business/my");
-        const business = res.data.business;
-        const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
-        const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
-        setRemainingQuestions(maxQuestions - usedQuestions);
-      } catch {
-        setRemainingQuestions(null);
-      }
+  // פונקציה לרענון קרדיטים
+  const refreshRemainingQuestions = useCallback(async () => {
+    try {
+      const res = await API.get("/business/my");
+      const business = res.data.business;
+      const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
+      const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
+      setRemainingQuestions(Math.max(maxQuestions - usedQuestions, 0));
+    } catch {
+      setRemainingQuestions(null);
     }
-    fetchRemaining();
   }, []);
+
+  useEffect(() => {
+    refreshRemainingQuestions();
+  }, [refreshRemainingQuestions]);
 
   const sendMessage = useCallback(async (promptText, conversationMessages) => {
     if (!businessId || !promptText.trim() || loading) return;
@@ -71,18 +73,21 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
     try {
       const response = await API.post("/chat/business-advisor", payload, { signal: controller.signal });
+
       if (response.status === 403) {
         setRemainingQuestions(0);
+        const errorMsg = response.data?.error || "❗ הגעת למגבלת השאלות החודשית.";
         setMessages(prev => [
           ...prev,
-          { role: "assistant", content: response.data.error || "❗ הגעת למגבלת השאלות החודשית." }
+          { role: "assistant", content: errorMsg }
         ]);
       } else {
         setMessages(prev => [
           ...prev,
           { role: "assistant", content: response.data.answer || "❌ לא התקבלה תשובה מהשרת." }
         ]);
-        setRemainingQuestions(prev => (prev !== null ? prev - 1 : null));
+        // הקטנת הקרדיטים עם הגנה שלא תיפול מתחת ל-0
+        setRemainingQuestions(prev => (prev !== null ? Math.max(prev - 1, 0) : null));
       }
     } catch (error) {
       if (error.name !== "AbortError") {
@@ -145,6 +150,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
       setSelectedPackage(null);
+
+      // רענון מספר הקרדיטים לאחר רכישה
+      await refreshRemainingQuestions();
     } catch (e) {
       setPurchaseError(e.message || "שגיאה ברכישת החבילה");
     } finally {
@@ -180,7 +188,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           </div>
           <hr style={{ margin: "1em 0" }} />
 
-          {/* רק אם נגמרו השאלות נציג את תיבת הרכישה */}
           {remainingQuestions !== null && remainingQuestions <= 0 && (
             <div className="purchase-extra-container">
               <p>ניתן לרכוש חבילת AI בלבד:</p>
@@ -222,7 +229,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
                       <p style={{ margin: "0.2em 0", direction: "rtl", textAlign: "right" }}>
                         {props.children}
                       </p>
-                    )}
+                    ) }
                   }
                 }}>
                   {msg.content}
