@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 import API from "../api"; // axios עם token מוגדר מראש
+import { useSocket } from "../context/socketContext";
 import "./BusinessChatTab.css";
 
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
@@ -113,13 +114,13 @@ function messagesReducer(state, action) {
 }
 
 export default function BusinessChatTab({
-  socket,              // <-- קיבלנו את socket כ-prop
   conversationId,
   businessId,
   customerId,
   customerName,
   conversationType = "user-business",
 }) {
+  const socket = useSocket();
   const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -128,7 +129,7 @@ export default function BusinessChatTab({
   const messagesRef = useRef(messages);
   const listRef = useRef(null);
 
-  // keep ref in sync for duplicate checks
+  // keep ref in sync to check duplicates
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
@@ -177,6 +178,7 @@ export default function BusinessChatTab({
     };
 
     dispatch({ type: "append", payload: safeMsg });
+
     if (String(msg.from) !== String(businessId)) {
       setUnreadCount((c) => c + 1);
     }
@@ -229,7 +231,7 @@ export default function BusinessChatTab({
 
     const isBiz = conversationType === "business-business";
     socket.emit("joinConversation", conversationId, isBiz, (ack) => {
-      console.log("📥 joinConversation ACK:", ack, "rooms:", [...socket.rooms]);
+      console.log("joinConversation ACK:", ack);
     });
 
     return () => {
@@ -239,7 +241,7 @@ export default function BusinessChatTab({
       socket.off("notificationBundle", handleBundle);
 
       socket.emit("leaveConversation", conversationId, isBiz, (ack) => {
-        console.log("📤 leaveConversation ACK:", ack, "rooms:", [...socket.rooms]);
+        console.log("leaveConversation ACK:", ack);
       });
       clearTimeout(handleTyping._t);
     };
@@ -253,7 +255,7 @@ export default function BusinessChatTab({
 
   const handleInput = (e) => {
     setInput(e.target.value);
-    socket.emit("typing", { conversationId, from: businessId });
+    socket?.emit("typing", { conversationId, from: businessId });
   };
 
   const sendMessage = () => {
