@@ -9,19 +9,111 @@ import API from "../api"; // axios עם token מוגדר מראש
 import { useSocket } from "../context/socketContext";
 import "./BusinessChatTab.css";
 
-// נגן אודיו, כמו בקוד שלך (ללא שינוי)
-
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
-  // ... (כמו בקוד שלך)
+  if (!src) return null;
+  const audioRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onTime = () => setProgress(audio.currentTime);
+    const onEnded = () => {
+      setPlaying(false);
+      setProgress(0);
+    };
+    audio.addEventListener("timeupdate", onTime);
+    audio.addEventListener("ended", onEnded);
+    return () => {
+      audio.removeEventListener("timeupdate", onTime);
+      audio.removeEventListener("ended", onEnded);
+    };
+  }, [src]);
+
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    playing ? audio.pause() : audio.play();
+    setPlaying((p) => !p);
+  };
+
+  const formatTime = (t) =>
+    `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+  const totalDots = 20;
+  const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
+
+  return (
+    <div className={`custom-audio-player ${userAvatar ? "with-avatar" : "no-avatar"}`}>
+      {userAvatar && (
+        <div className="avatar-wrapper">
+          <img src={userAvatar} alt="avatar" />
+          <div className="mic-icon">🎤</div>
+        </div>
+      )}
+      <button
+        onClick={togglePlay}
+        className={`play-pause ${playing ? "playing" : ""}`}
+        aria-label={playing ? "Pause" : "Play"}
+      >
+        {playing ? "❚❚" : "▶"}
+      </button>
+      <div className="progress-dots">
+        {[...Array(totalDots)].map((_, i) => (
+          <div key={i} className={`dot${i <= activeDot ? " active" : ""}`} />
+        ))}
+      </div>
+      <div className="time-display">
+        {formatTime(progress)} / {formatTime(duration)}
+      </div>
+      <audio ref={audioRef} src={src} preload="metadata" />
+    </div>
+  );
 }
 
-// Reducer להודעות (כמו בקוד שלך)
 function messagesReducer(state, action) {
   switch (action.type) {
-    case "set": { /* ... */ }
-    case "append": { /* ... */ }
-    case "updateStatus": { /* ... */ }
-    default: return state;
+    case "set": {
+      const unique = [];
+      action.payload.forEach((msg) => {
+        if (
+          !unique.some(
+            (m) =>
+              (m._id && (m._id === msg._id || m._id === msg.tempId)) ||
+              (m.tempId && (m.tempId === msg._id || m.tempId === msg.tempId))
+          )
+        ) {
+          unique.push(msg);
+        }
+      });
+      console.log("[Reducer] set messages, total:", unique.length);
+      return unique;
+    }
+    case "append": {
+      const idx = state.findIndex(
+        (m) =>
+          (m._id && (m._id === action.payload._id || m._id === action.payload.tempId)) ||
+          (m.tempId && (m.tempId === action.payload._id || m.tempId === action.payload.tempId))
+      );
+      if (idx !== -1) {
+        const next = [...state];
+        next[idx] = { ...next[idx], ...action.payload };
+        console.log("[Reducer] append: updated existing message", action.payload._id);
+        return next;
+      }
+      console.log("[Reducer] append: new message", action.payload._id);
+      return [...state, action.payload];
+    }
+    case "updateStatus": {
+      console.log("[Reducer] updateStatus for message id", action.payload.id);
+      return state.map((m) =>
+        m._id === action.payload.id || m.tempId === action.payload.id
+          ? { ...m, ...action.payload.updates }
+          : m
+      );
+    }
+    default:
+      return state;
   }
 }
 
@@ -38,9 +130,7 @@ export default function BusinessChatTab({
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  // ספירת הודעות לא נקראו לכל שיחה (object, לפי conversationId)
   const [unreadCounts, setUnreadCounts] = useState({});
-  // ספירת הודעות לא נקראו לשיחה הנוכחית בלבד
   const unreadCount = unreadCounts[conversationId] || 0;
 
   const messagesRef = useRef(messages);
@@ -50,39 +140,43 @@ export default function BusinessChatTab({
     messagesRef.current = messages;
   }, [messages]);
 
-  // 🚩 1. התחברות לחדר גלובלי של העסק לקבלת כל ההתראות
+  // הצטרפות לחדר הגלובלי של העסק
   useEffect(() => {
     if (!socket || !businessId) return;
+    console.log("[Socket] מצטרף לחדר הגלובלי של העסק:", businessId);
     socket.emit(
       "joinConversation",
       "business-business",
       businessId,
       true,
       (ack) => {
-        if (!ack?.ok) {
-          console.error("חיבור לחדר הגלובלי נכשל:", ack?.error);
+        if (ack?.ok) {
+          console.log("[Socket] הצטרפות לחדר הגלובלי הצליחה");
+        } else {
+          console.error("[Socket] failed to join global business room:", ack?.error);
         }
       }
     );
-    // אין צורך ב-off - לא עוזבים את החדר הגלובלי אף פעם
   }, [socket, businessId]);
 
-  // 🚩 2. מאזין גלובלי ל־newMessage עבור כל השיחות של העסק
+  // מאזין גלובלי להודעות חדשות
   useEffect(() => {
     if (!socket || !businessId) return;
 
-    // מגדיל את מונה ההודעות הלא נקראו לכל שיחה
     const handleGlobalNewMessage = (msg) => {
+      console.log("[Socket] הודעה גלובלית חדשה התקבלה:", msg);
       if (
         msg.conversationType === "user-business" &&
         String(msg.to || msg.toId) === String(businessId)
       ) {
-        // אם זו לא השיחה הנוכחית – העלה מונה
         if (msg.conversationId !== conversationId) {
+          console.log(`[Unread] הודעה מחוץ לשיחה הנוכחית, מעלה מונה עבור שיחה ${msg.conversationId}`);
           setUnreadCounts((prev) => ({
             ...prev,
-            [msg.conversationId]: (prev[msg.conversationId] || 0) + 1
+            [msg.conversationId]: (prev[msg.conversationId] || 0) + 1,
           }));
+        } else {
+          console.log("[Unread] הודעה בתוך שיחה נוכחית - לא מעלה מונה");
         }
       }
     };
@@ -93,15 +187,17 @@ export default function BusinessChatTab({
     };
   }, [socket, businessId, conversationId]);
 
-  // 🚩 3. איפוס ספירת הודעות לא נקראו כאשר נכנסים לשיחה
+  // איפוס ספירת הודעות שלא נקראו בשיחה הנוכחית
   useEffect(() => {
+    if (!conversationId) return;
+    console.log("[Unread] איפוס מונה הודעות לשיחה", conversationId);
     setUnreadCounts((prev) => ({
       ...prev,
-      [conversationId]: 0
+      [conversationId]: 0,
     }));
   }, [conversationId]);
 
-  // 🚩 4. טען היסטוריית הודעות בשיחה הנבחרת
+  // טעינת היסטוריית ההודעות בשיחה
   useEffect(() => {
     if (!conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -110,6 +206,7 @@ export default function BusinessChatTab({
     let cancelled = false;
     (async () => {
       try {
+        console.log("[API] טוען היסטוריית הודעות לשיחה", conversationId);
         const res = await API.get(`/messages/${conversationId}/history`, {
           params: { page: 0, limit: 50 },
         });
@@ -120,9 +217,10 @@ export default function BusinessChatTab({
           tempId: m.tempId || null,
           timestamp: m.createdAt || new Date().toISOString(),
         }));
+        console.log("[API] היסטוריית הודעות נטענה, מס'", msgs.length);
         dispatch({ type: "set", payload: msgs });
       } catch (err) {
-        console.error(err);
+        console.error("[API] שגיאה בטעינת היסטוריית הודעות:", err);
       }
     })();
     return () => {
@@ -130,7 +228,7 @@ export default function BusinessChatTab({
     };
   }, [conversationId]);
 
-  // 🚩 5. מאזינים לאירועים ספציפיים לשיחה פתוחה (כולל newMessage, typing)
+  // מאזינים ספציפיים לשיחה פתוחה (newMessage ו-typing)
   const handleNew = (msg) => {
     if (
       msg.conversationId !== conversationId ||
@@ -147,6 +245,7 @@ export default function BusinessChatTab({
       timestamp: msg.createdAt || new Date().toISOString(),
     };
 
+    console.log("[Socket] הודעה חדשה בשיחה הנוכחית:", safeMsg);
     dispatch({ type: "append", payload: safeMsg });
   };
 
@@ -169,7 +268,7 @@ export default function BusinessChatTab({
       conversationId,
       isBiz,
       (ack) => {
-        // console.log("joinConversation ACK:", ack);
+        console.log("[Socket] joinConversation ACK:", ack);
       }
     );
     return () => {
@@ -181,7 +280,7 @@ export default function BusinessChatTab({
         conversationId,
         isBiz,
         (ack) => {
-          // console.log("leaveConversation ACK:", ack);
+          console.log("[Socket] leaveConversation ACK:", ack);
         }
       );
       clearTimeout(handleTyping._t);
@@ -194,7 +293,6 @@ export default function BusinessChatTab({
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  // ניהול שדה הקלט ושליחת הודעה
   const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
@@ -205,6 +303,7 @@ export default function BusinessChatTab({
     setSending(true);
     const tempId = uuidv4();
     const text = input.trim();
+    console.log("[SendMessage] שולח הודעה עם tempId:", tempId, "טקסט:", text);
     dispatch({
       type: "append",
       payload: {
@@ -231,6 +330,11 @@ export default function BusinessChatTab({
       },
       (ack) => {
         setSending(false);
+        if (ack?.ok) {
+          console.log("[SendMessage] הודעה נשלחה בהצלחה, tempId:", tempId);
+        } else {
+          console.error("[SendMessage] הודעה נכשלה, tempId:", tempId, "Error:", ack?.error);
+        }
         dispatch({
           type: "updateStatus",
           payload: {
@@ -242,10 +346,10 @@ export default function BusinessChatTab({
     );
   };
 
-  // רינדור ההודעות והרכיב
   const sorted = [...messages].sort(
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
   );
+
   const formatTime = (ts) => {
     const d = new Date(ts);
     return isNaN(d)
@@ -256,7 +360,6 @@ export default function BusinessChatTab({
         });
   };
 
-  // --- UI ראשי ---
   return (
     <div className="chat-container business">
       <div className="chat-header">
