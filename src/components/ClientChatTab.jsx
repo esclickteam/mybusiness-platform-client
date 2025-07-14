@@ -68,27 +68,33 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
+// פונקציה לסינון כפילויות הודעות
+function filterUniqueMessages(msgs) {
+  const unique = [];
+  return msgs.filter((msg) => {
+    const exists = unique.some(
+      (m) =>
+        (m._id && (m._id === msg._id || m._id === msg.tempId)) ||
+        (m.tempId && (m.tempId === msg._id || m.tempId === msg.tempId))
+    );
+    if (!exists) unique.push(msg);
+    return !exists;
+  });
+}
+
 // מוסיף role = "client" או "business" עם לוג
 const addRole = (msg, userId) => {
-  // בדוק קודם אם יש fromId ישיר
   const fromIdDirect = msg.fromId;
-
-  // אם אין, בדוק אם יש from שהוא אובייקט או מחרוזת
   const fromField = msg.from;
   const fromId =
     fromIdDirect ||
-    (typeof fromField === "object"
-      ? fromField._id || fromField.id
-      : fromField);
+    (typeof fromField === "object" ? fromField._id || fromField.id : fromField);
 
   const role = String(fromId) === String(userId) ? "client" : "business";
-
-  console.log("addRole:", { fromId, userId, role, msg });
 
   msg.role = role;
   return msg;
 };
-
 
 const getMessageKey = (m) => {
   if (m.recommendationId) return `rec_${m.recommendationId}`;
@@ -106,10 +112,8 @@ function normalizeMessageFileFields(message) {
     if (!message.fileDuration) message.fileDuration = message.file.duration || 0;
   } else {
     if (!message.fileUrl && message.url) message.fileUrl = message.url;
-    if (!message.fileName && message.originalName)
-      message.fileName = message.originalName;
-    if (!message.fileType && message.mimeType)
-      message.fileType = message.mimeType;
+    if (!message.fileName && message.originalName) message.fileName = message.originalName;
+    if (!message.fileType && message.mimeType) message.fileType = message.mimeType;
   }
   return message;
 }
@@ -161,18 +165,16 @@ export default function ClientChatTab({
           return;
         }
 
-        // הסרנו את businessId כדי לקבל גם הודעות של שני הצדדים
         socket.emit(
           "getHistory",
           { conversationId, limit: 50, conversationType },
           (response) => {
             if (response.ok) {
-              const normalizedMessages = (Array.isArray(response.messages)
-                ? response.messages
-                : []
-              )
-                .map(normalizeMessageFileFields)
-                .map((m) => addRole(m, userId));
+              const normalizedMessages = filterUniqueMessages(
+                (Array.isArray(response.messages) ? response.messages : [])
+                  .map(normalizeMessageFileFields)
+                  .map((m) => addRole(m, userId))
+              );
               setMessages(normalizedMessages);
               setError("");
             } else {
@@ -306,9 +308,7 @@ export default function ClientChatTab({
           setSending(false);
           if (ack.ok && ack.conversationId && ack.message) {
             setConversationId(ack.conversationId);
-            setMessages([
-              addRole(normalizeMessageFileFields(ack.message), userId),
-            ]);
+            setMessages([addRole(normalizeMessageFileFields(ack.message), userId)]);
             setInput("");
             socket.emit(
               "joinConversation",
@@ -356,9 +356,7 @@ export default function ClientChatTab({
             );
           } else {
             setError("שגיאה בשליחת ההודעה: " + (ack.error || "לא ידוע"));
-            setMessages((prev) =>
-              prev.filter((msg) => msg.tempId !== tempId)
-            );
+            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
           }
         }
       );
@@ -373,9 +371,7 @@ export default function ClientChatTab({
     <div className="chat-container client">
       <div className="message-list" ref={messageListRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && (
-          <div className="empty">עדיין אין הודעות</div>
-        )}
+        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {sortedMessages.map((m) => {
           const key = getMessageKey(m);
           if (!key) return null;
@@ -405,19 +401,12 @@ export default function ClientChatTab({
                     duration={m.fileDuration}
                   />
                 ) : (
-                  <a
-                    href={m.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                  >
+                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
                     {m.fileName || "קובץ להורדה"}
                   </a>
                 )
               ) : (
-                <div className="text">
-                  {m.isEdited && m.editedText ? m.editedText : m.content || m.text}
-                </div>
+                <div className="text">{m.isEdited && m.editedText ? m.editedText : m.content || m.text}</div>
               )}
               <div className="meta">
                 <span className="time">
