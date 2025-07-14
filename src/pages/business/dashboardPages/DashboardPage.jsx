@@ -95,9 +95,10 @@ async function fetchDashboardStats(businessId, refreshAccessToken) {
   const res = await API.get(`/business/${businessId}/stats?t=${Date.now()}`, {
     headers: {
       Authorization: `Bearer ${token}`,
-      "Cache-Control": "no-cache",
-      Pragma: "no-cache",
-      Expires: "0",
+      // הסרנו את כותרות המטמון למניעת בעיות CORS
+      // "Cache-Control": "no-cache",
+      // Pragma: "no-cache",
+      // Expires: "0",
     },
   });
   return res.data;
@@ -227,7 +228,6 @@ const DashboardPage = () => {
   const debouncedSetStats = useRef(
     debounce((newStats) => {
       setStats(newStats);
-      // Removed localStorage saving
     }, 300)
   ).current;
 
@@ -239,7 +239,6 @@ const DashboardPage = () => {
     try {
       const data = await fetchDashboardStats(businessId, refreshAccessToken);
       setStats(data);
-      // Removed localStorage saving
     } catch (err) {
       setError("❌ שגיאה בטעינת נתונים מהשרת");
       if (err.message === "No token") logout();
@@ -289,17 +288,19 @@ const DashboardPage = () => {
         debouncedSetStats(newStats);
       });
 
-      sock.on('profileViewsUpdated', (data) => {
-        if (!data || typeof data.views_count !== 'number') return;
+      sock.on("profileViewsUpdated", (data) => {
+        if (!data || typeof data.views_count !== "number") return;
         setStats((oldStats) =>
-          oldStats
-            ? { ...oldStats, views_count: data.views_count }
-            : oldStats
+          oldStats ? { ...oldStats, views_count: data.views_count } : oldStats
         );
       });
 
       sock.on("appointmentCreated", (newAppointment) => {
-        if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
+        if (
+          !newAppointment.business ||
+          newAppointment.business.toString() !== businessId.toString()
+        )
+          return;
         setStats((oldStats) => {
           if (!oldStats) return oldStats;
           const enriched = enrichAppointment(newAppointment, oldStats);
@@ -311,7 +312,9 @@ const DashboardPage = () => {
           };
         });
         if (newAppointment.date) {
-          const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
+          const apptDate = new Date(newAppointment.date)
+            .toISOString()
+            .split("T")[0];
           if (apptDate === selectedDate) {
             setSelectedDate(null);
             setTimeout(() => setSelectedDate(apptDate), 10);
@@ -451,18 +454,15 @@ const DashboardPage = () => {
       </Suspense>
 
       <div ref={cardsRef}>
-        {(cardsLoaded) && (
+        {cardsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
-            <MemoizedDashboardCards
-              stats={syncedStats}
-              unreadCount={syncedStats.messages_count}
-            />
+            <MemoizedDashboardCards stats={syncedStats} unreadCount={syncedStats.messages_count} />
           </Suspense>
         )}
       </div>
 
       <div ref={insightsRef}>
-        {(insightsLoaded) && (
+        {insightsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
             <MemoizedInsights
               stats={{
@@ -475,7 +475,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-        {(chartsLoaded) && (
+        {chartsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
             <MemoizedBarChartComponent
               appointments={enrichedAppointments}
@@ -486,7 +486,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={nextActionsRef} className="actions-container full-width">
-        {(nextActionsLoaded) && (
+        {nextActionsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
             <MemoizedNextActions
               stats={{
@@ -501,7 +501,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={appointmentsRef} className="calendar-row">
-        {(appointmentsLoaded) && (
+        {appointmentsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
             <div className="day-agenda-box">
               <MemoizedDailyAgenda
@@ -523,7 +523,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={weeklySummaryRef}>
-        {(weeklySummaryLoaded) && (
+        {weeklySummaryLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
             <MemoizedWeeklySummary stats={syncedStats} />
           </Suspense>
