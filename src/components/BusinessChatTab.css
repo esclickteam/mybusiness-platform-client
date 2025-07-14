@@ -358,6 +358,8 @@
   text-align: left;
   direction: ltr;
 }
+
+/* עיצוב אבטאר */
 .avatar-wrapper {
   width: 32px;
   height: 32px;
