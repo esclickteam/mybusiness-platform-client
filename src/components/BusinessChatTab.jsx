@@ -76,8 +76,9 @@ function messagesReducer(state, action) {
       return action.payload;
     case "append": {
       const idx = state.findIndex(
-        m => (m._id && m._id === action.payload._id) ||
-             (m.tempId && m.tempId === action.payload.tempId)
+        m =>
+          (m._id && (m._id === action.payload._id || m._id === action.payload.tempId)) ||
+          (m.tempId && (m.tempId === action.payload._id || m.tempId === action.payload.tempId))
       );
       if (idx !== -1) {
         const next = [...state];
@@ -96,6 +97,7 @@ function messagesReducer(state, action) {
       return state;
   }
 }
+
 
 export default function BusinessChatTab({
   conversationId,
