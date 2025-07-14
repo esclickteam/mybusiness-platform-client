@@ -37,9 +37,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         const business = res.data.business;
         const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
         const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
-        const left = maxQuestions - usedQuestions;
-        setRemainingQuestions(left);
-      } catch (e) {
+        setRemainingQuestions(maxQuestions - usedQuestions);
+      } catch {
         setRemainingQuestions(null);
       }
     }
@@ -47,18 +46,18 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   }, []);
 
   const sendMessage = useCallback(async (promptText, conversationMessages) => {
-    if (!businessId || !promptText.trim()) return;
-    if (loading) return;
+    if (!businessId || !promptText.trim() || loading) return;
 
     if (remainingQuestions !== null && remainingQuestions <= 0) {
-      setMessages(prev => [...prev, { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש שאלות נוספות." }]);
+      setMessages(prev => [
+        ...prev,
+        { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש שאלות נוספות." }
+      ]);
       return;
     }
 
     setLoading(true);
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
+    if (abortControllerRef.current) abortControllerRef.current.abort();
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
@@ -66,33 +65,32 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       businessId,
       prompt: promptText,
       businessDetails,
-      profile: {
-        conversationId: conversationId || null,
-        userId: userId || null,
-      },
+      profile: { conversationId: conversationId || null, userId: userId || null },
       messages: conversationMessages || messages,
     };
 
     try {
       const response = await API.post("/chat/business-advisor", payload, { signal: controller.signal });
-
       if (response.status === 403) {
         setRemainingQuestions(0);
-        setMessages(prev => [...prev, { role: "assistant", content: response.data.error || "❗ הגעת למגבלת השאלות החודשית." }]);
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", content: response.data.error || "❗ הגעת למגבלת השאלות החודשית." }
+        ]);
       } else {
-        const botMessage = {
-          role: "assistant",
-          content: response.data.answer || "❌ לא התקבלה תשובה מהשרת.",
-        };
-        setMessages(prev => [...prev, botMessage]);
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", content: response.data.answer || "❌ לא התקבלה תשובה מהשרת." }
+        ]);
         setRemainingQuestions(prev => (prev !== null ? prev - 1 : null));
       }
     } catch (error) {
-      if (error.name === "AbortError") return;
-      setMessages(prev => [
-        ...prev,
-        { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." },
-      ]);
+      if (error.name !== "AbortError") {
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." }
+        ]);
+      }
     } finally {
       setLoading(false);
     }
@@ -100,7 +98,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
   const handleSubmit = useCallback(() => {
     if (!userInput.trim() || loading) return;
-
     const userMessage = { role: "user", content: userInput };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
@@ -111,7 +108,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
   const handlePresetQuestion = useCallback((question) => {
     if (loading) return;
-
     const userMessage = { role: "user", content: question };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
@@ -131,7 +127,12 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setPurchaseError("");
 
     try {
-      const url = selectedPackage.type === "ai-package" ? "/ai-package" : "/purchase-package";
+      // === שים לב: כאן התיקון ===
+      // הקריאה ל-AI package תעבור ל-POST /api/cardcomAI/ai-package
+      const url =
+        selectedPackage.type === "ai-package"
+          ? "/cardcomAI/ai-package"
+          : "/purchase-package";
 
       const res = await API.post(url, {
         packageId: selectedPackage.id,
@@ -139,18 +140,13 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         packageType: selectedPackage.type,
       });
 
-      // הפניה אוטומטית לדף תשלום קארדקום
       if (res.data.paymentUrl) {
         window.location.href = res.data.paymentUrl;
         return;
       }
 
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
-      if (selectedPackage.type === "regular") {
-        setRemainingQuestions(prev => (prev !== null ? prev + selectedPackage.id : null));
-      }
       setSelectedPackage(null);
-
     } catch (e) {
       setPurchaseError(e.message || "שגיאה ברכישת החבילה");
     } finally {
@@ -173,33 +169,23 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       {!startedChat && (
         <>
           <div className="preset-questions-container">
-            {presetQuestions.map((q, index) => (
+            {presetQuestions.map((q, i) => (
               <button
-                key={index}
+                key={i}
                 className="preset-question-btn"
                 onClick={() => handlePresetQuestion(q)}
-                type="button"
                 disabled={loading}
               >
                 {q}
               </button>
             ))}
           </div>
-
           <hr style={{ margin: "1em 0" }} />
 
-          <div className="purchase-extra-container" style={{ padding: "1em", border: "1px solid #ccc", borderRadius: "8px" }}>
+          <div className="purchase-extra-container">
             <p>ניתן לרכוש חבילת AI בלבד:</p>
-
             {aiPackages.map((pkg) => (
-              <label
-                key={pkg.id}
-                style={{
-                  display: "block",
-                  marginBottom: "0.3em",
-                  cursor: purchaseLoading ? "not-allowed" : "pointer",
-                }}
-              >
+              <label key={pkg.id} className="radio-label">
                 <input
                   type="radio"
                   name="question-package"
@@ -207,7 +193,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
                   disabled={purchaseLoading}
                   checked={selectedPackage?.id === pkg.id}
                   onChange={() => setSelectedPackage(pkg)}
-                  style={{ marginLeft: "0.5em" }}
                 />
                 {pkg.label} - {pkg.price} ש"ח
               </label>
@@ -216,44 +201,30 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
             <button
               onClick={handlePurchaseExtra}
               disabled={purchaseLoading || !selectedPackage}
-              style={{ marginTop: "0.5em" }}
             >
               {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
             </button>
 
-            {purchaseMessage && <p style={{ color: "green", marginTop: "0.5em" }}>{purchaseMessage}</p>}
-            {purchaseError && <p style={{ color: "red", marginTop: "0.5em" }}>{purchaseError}</p>}
+            {purchaseMessage && <p className="success">{purchaseMessage}</p>}
+            {purchaseError && <p className="error">{purchaseError}</p>}
           </div>
         </>
       )}
 
-      <div className="chat-box-wrapper" style={{ marginTop: "1em" }}>
+      <div className="chat-box-wrapper">
         <div className="chat-box">
-          {messages.map((msg, index) => (
-            <div key={index} className={`bubble ${msg.role}`}>
+          {messages.map((msg, idx) => (
+            <div key={idx} className={`bubble ${msg.role}`}>
               {msg.role === "assistant" ? (
-                <Markdown
-                  options={{
-                    overrides: {
-                      p: {
-                        component: (props) => (
-                          <p
-                            style={{
-                              margin: "0.2em 0",
-                              direction: "rtl",
-                              whiteSpace: "normal",
-                              wordBreak: "break-word",
-                              overflowWrap: "break-word",
-                              textAlign: "right",
-                            }}
-                          >
-                            {props.children}
-                          </p>
-                        ),
-                      },
-                    },
-                  }}
-                >
+                <Markdown options={{
+                  overrides: {
+                    p: { component: (props) => (
+                      <p style={{ margin: "0.2em 0", direction: "rtl", textAlign: "right" }}>
+                        {props.children}
+                      </p>
+                    )}
+                  }
+                }}>
                   {msg.content}
                 </Markdown>
               ) : (
@@ -261,25 +232,20 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
               )}
             </div>
           ))}
-
           {loading && <div className="bubble assistant">⌛ מחשב תשובה...</div>}
-
-          <div style={{ height: "1px" }} ref={bottomRef}></div>
+          <div ref={bottomRef} style={{ height: 1 }} />
         </div>
       </div>
 
       {remainingQuestions !== null && remainingQuestions <= 0 && (
-        <div
-          className="purchase-extra-container"
-          style={{ marginTop: "1em", padding: "1em", border: "1px solid #ccc", borderRadius: "8px" }}
-        >
-          <p style={{ color: "red", marginBottom: "0.5em" }}>
+        <div className="purchase-extra-container">
+          <p className="error">
             הגעת למגבלת השאלות החודשית (60). ניתן לרכוש שאלות נוספות במסגרת המנוי.
           </p>
         </div>
       )}
 
-      <div className="chat-input" style={{ marginTop: "1em" }}>
+      <div className="chat-input">
         <input
           type="text"
           placeholder="כתבי שאלה משלך..."
@@ -288,7 +254,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           disabled={loading || (remainingQuestions !== null && remainingQuestions <= 0)}
           dir="rtl"
-          autoFocus
         />
         <button
           onClick={handleSubmit}
