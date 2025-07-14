@@ -164,8 +164,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       <h2>יועץ עסקי 🤝</h2>
       <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
 
-      {/* הצגת תיבת רכישת חבילה רק אם לא התחילו שיחה ויש שאלות שנותרו פחות או שוות 0 */}
-      {!startedChat && remainingQuestions !== null && remainingQuestions <= 0 && (
+      {!startedChat && (
         <>
           <div className="preset-questions-container">
             {presetQuestions.map((q, i) => (
@@ -180,31 +179,35 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
             ))}
           </div>
           <hr style={{ margin: "1em 0" }} />
-          <div className="purchase-extra-container">
-            <p>ניתן לרכוש חבילת AI בלבד:</p>
-            {aiPackages.map((pkg) => (
-              <label key={pkg.id} className="radio-label">
-                <input
-                  type="radio"
-                  name="question-package"
-                  value={pkg.id}
-                  disabled={purchaseLoading}
-                  checked={selectedPackage?.id === pkg.id}
-                  onChange={() => setSelectedPackage(pkg)}
-                />
-                {pkg.label} - {pkg.price} ש"ח
-              </label>
-            ))}
-            <button
-              onClick={handlePurchaseExtra}
-              disabled={purchaseLoading || !selectedPackage}
-            >
-              {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
-            </button>
 
-            {purchaseMessage && <p className="success">{purchaseMessage}</p>}
-            {purchaseError && <p className="error">{purchaseError}</p>}
-          </div>
+          {/* רק אם נגמרו השאלות נציג את תיבת הרכישה */}
+          {remainingQuestions !== null && remainingQuestions <= 0 && (
+            <div className="purchase-extra-container">
+              <p>ניתן לרכוש חבילת AI בלבד:</p>
+              {aiPackages.map((pkg) => (
+                <label key={pkg.id} className="radio-label">
+                  <input
+                    type="radio"
+                    name="question-package"
+                    value={pkg.id}
+                    disabled={purchaseLoading}
+                    checked={selectedPackage?.id === pkg.id}
+                    onChange={() => setSelectedPackage(pkg)}
+                  />
+                  {pkg.label} - {pkg.price} ש"ח
+                </label>
+              ))}
+              <button
+                onClick={handlePurchaseExtra}
+                disabled={purchaseLoading || !selectedPackage}
+              >
+                {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
+              </button>
+
+              {purchaseMessage && <p className="success">{purchaseMessage}</p>}
+              {purchaseError && <p className="error">{purchaseError}</p>}
+            </div>
+          )}
         </>
       )}
 
