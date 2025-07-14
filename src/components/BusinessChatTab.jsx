@@ -216,7 +216,7 @@ export default function BusinessChatTab({
 
     const handleConnect = () => {
       // join global business room
-      socket.emit("joinConversation", "business-business", businessId, true);
+      socket.emit("joinConversation", "user-business", businessId, false);
       // join specific conversation room
       socket.emit(
         "joinConversation",
@@ -234,7 +234,7 @@ export default function BusinessChatTab({
       socket.off("connect", handleConnect);
       socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
-      socket.emit("leaveConversation", "business-business", businessId);
+      socket.emit("leaveConversation", "user-business", businessId);
       socket.emit(
         "leaveConversation",
         conversationType,
