@@ -138,8 +138,8 @@ export default function BusinessChatTab({
         timestamp: m.createdAt || new Date().toISOString(),
         text: m.text || "",
         tempId: m.tempId || null,
-        from: m.from,
-        to: m.to,
+        from: m.fromId,
+        to: m.toId,
       }));
       // הוסר ה-filter שהסיר הודעות של העסק
       return msgs;
