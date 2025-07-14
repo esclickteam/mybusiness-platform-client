@@ -229,22 +229,20 @@ export default function BusinessChatTab({
     socket.on("newNotification", handleNotification);
     socket.on("notificationBundle", handleBundle);
 
-    socket.emit(
-      "joinConversation",
-      conversationId,
-      conversationType === "business-business"
-    );
+    const isBiz = conversationType === "business-business";
+    socket.emit("joinConversation", conversationId, isBiz, (ack) => {
+      console.log("joinConversation ACK:", ack);
+    });
 
     return () => {
       socket.off("newMessage", handleNew);
       socket.off("typing", handleTyping);
       socket.off("newNotification", handleNotification);
       socket.off("notificationBundle", handleBundle);
-      socket.emit(
-        "leaveConversation",
-        conversationId,
-        conversationType === "business-business"
-      );
+
+      socket.emit("leaveConversation", conversationId, isBiz, (ack) => {
+        console.log("leaveConversation ACK:", ack);
+      });
       clearTimeout(handleTyping._t);
     };
   }, [socket, conversationId, conversationType, businessId, customerId]);
@@ -334,9 +332,10 @@ export default function BusinessChatTab({
             <div className="meta">
               <span className="time">{formatTime(m.timestamp)}</span>
               {m.fileDuration > 0 && (
-                <span className="audio-length">{`${String(
-                  Math.floor(m.fileDuration / 60)
-                ).padStart(2, "0")}:${String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}`}</span>
+                <span className="audio-length">{`${String(Math.floor(m.fileDuration / 60)).padStart(
+                  2,
+                  "0"
+                )}:${String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}`}</span>
               )}
             </div>
           </div>
