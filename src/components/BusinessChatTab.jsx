@@ -151,6 +151,13 @@ export default function BusinessChatTab({
     messagesRef.current = messages;
   }, [messages]);
 
+  // הצטרפות לחדר הגלובלי של העסק (חשוב)
+  useEffect(() => {
+    if (!socket || !businessId) return;
+    socket.emit("joinBusinessRoom", businessId);
+    console.log(`Joined global business room business-${businessId}`);
+  }, [socket, businessId]);
+
   // טען היסטוריית הודעות
   useEffect(() => {
     if (!conversationId) {
