@@ -141,6 +141,8 @@ export default function BusinessChatTab({
   const [isTyping, setIsTyping] = useState(false);
   const [firstMessageAlert, setFirstMessageAlert] = useState(null);
 
+  // מונה התראות חדש
+  const [notifications, setNotifications] = useState([]);
   const [unreadCounts, setUnreadCounts] = useState({});
   const unreadCount = unreadCounts[conversationId] || 0;
 
@@ -222,7 +224,6 @@ export default function BusinessChatTab({
       handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
     };
 
-    // הוספת מאזין לאירוע הודעה ראשונה של הלקוח
     const handleFirstClientMessage = (data) => {
       console.log("[Socket] Received firstClientMessage:", data);
       if (data.conversationId === conversationId) return; // אם כבר בשיחה, לא להציג
@@ -233,35 +234,39 @@ export default function BusinessChatTab({
       });
     };
 
+    // הוספת מאזין חדש ל־newNotification
+    const handleNotification = (notif) => {
+      console.log("[Socket] Received newNotification:", notif);
+      // אפשר להוסיף לליסט התראות
+      setNotifications((prev) => [...prev, notif]);
+      // או לעדכן מונה הודעות שלא נקראו
+      if (notif.threadId) {
+        setUnreadCounts((prev) => ({
+          ...prev,
+          [notif.threadId]: (prev[notif.threadId] || 0) + 1,
+        }));
+      }
+    };
+
     const handleConnect = () => {
-      // join global business room
       socket.emit("joinConversation", "user-business", businessId, false);
-      // join specific conversation room
-      socket.emit(
-        "joinConversation",
-        conversationType,
-        conversationId,
-        isBizConv
-      );
+      socket.emit("joinConversation", conversationType, conversationId, isBizConv);
     };
 
     socket.on("connect", handleConnect);
     socket.on("newMessage", handleMessage);
     socket.on("typing", handleTyping);
     socket.on("firstClientMessage", handleFirstClientMessage);
+    socket.on("newNotification", handleNotification);
 
     return () => {
       socket.off("connect", handleConnect);
       socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
       socket.off("firstClientMessage", handleFirstClientMessage);
+      socket.off("newNotification", handleNotification);
       socket.emit("leaveConversation", "user-business", businessId);
-      socket.emit(
-        "leaveConversation",
-        conversationType,
-        conversationId,
-        isBizConv
-      );
+      socket.emit("leaveConversation", conversationType, conversationId, isBizConv);
       clearTimeout(handleTyping._t);
     };
   }, [socket, businessId, conversationId, conversationType, customerId]);
@@ -372,6 +377,16 @@ export default function BusinessChatTab({
           <button onClick={() => setFirstMessageAlert(null)}>×</button>
         </div>
       )}
+
+      {/* אפשר להוסיף UI להצגת התראות אם רוצים */}
+      {/* <div className="notifications-list">
+        {notifications.map((notif, idx) => (
+          <div key={idx} className="notification-item">
+            {notif.text}
+          </div>
+        ))}
+      </div> */}
+
       <div className="inputBar">
         <textarea
           className="inputField"
