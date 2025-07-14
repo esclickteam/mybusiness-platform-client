@@ -234,12 +234,16 @@ export default function BusinessChatTab({
       });
     };
 
-    // הוספת מאזין חדש ל־newNotification
+    // חשוב! שימוש בפונקציית עדכון עם prevState כדי למנוע בעיות סינכרון
     const handleNotification = (notif) => {
       console.log("[Socket] Received newNotification:", notif);
-      // אפשר להוסיף לליסט התראות
-      setNotifications((prev) => [...prev, notif]);
-      // או לעדכן מונה הודעות שלא נקראו
+
+      setNotifications((prev) => {
+        const exists = prev.some(n => n.id === notif.id || n.threadId === notif.threadId);
+        if (exists) return prev;
+        return [notif, ...prev];
+      });
+
       if (notif.threadId) {
         setUnreadCounts((prev) => ({
           ...prev,
