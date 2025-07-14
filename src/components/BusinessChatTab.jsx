@@ -117,6 +117,18 @@ export default function BusinessChatTab({
     messagesRef.current = messages;
   }, [messages]);
 
+  // *** הוספת useEffect להצטרפות לעזיבת חדר ***
+  useEffect(() => {
+    if (!socket || !conversationId) return;
+
+    const room = `user-business-${conversationId}`;
+    socket.emit("joinRoom", room);
+
+    return () => {
+      socket.emit("leaveRoom", room);
+    };
+  }, [socket, conversationId]);
+
   const formatTime = (ts) => {
     if (!ts) return "";
     const d = new Date(ts);
@@ -141,7 +153,6 @@ export default function BusinessChatTab({
         from: m.fromId,
         to: m.toId,
       }));
-      // הוסר ה-filter שהסיר הודעות של העסק
       return msgs;
     } catch (error) {
       console.error("Failed to fetch messages:", error);
@@ -175,11 +186,9 @@ export default function BusinessChatTab({
       )
         return;
 
-      // סינון הודעות לפי שולח ומקבל
       const senderIsBusiness = String(msg.from) === String(businessId);
       const receiverIsBusiness = String(msg.to) === String(businessId);
 
-      // תיקון: התראה רק אם הלקוח שולח לעסק
       if (!senderIsBusiness && receiverIsBusiness) {
         const safeMsg = {
           ...msg,
@@ -193,14 +202,12 @@ export default function BusinessChatTab({
           tempId: msg.tempId || null,
         };
 
-        // סינון כפילויות
         const idx = messagesRef.current.findIndex(
           (m) =>
             String(m._id) === safeMsg._id ||
             (safeMsg.tempId && m.tempId === safeMsg.tempId)
         );
         if (idx !== -1) {
-          // עדכון במקום הוספה כפולה
           const newMessages = [...messagesRef.current];
           newMessages[idx] = { ...newMessages[idx], ...safeMsg };
           dispatch({ type: "set", payload: newMessages });
@@ -230,7 +237,6 @@ export default function BusinessChatTab({
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
-    // גלילה אוטומטית תמיד לסוף כשהודעות משתנות
     el.scrollTop = el.scrollHeight;
   }, [messages]);
 
