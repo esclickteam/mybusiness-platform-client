@@ -32,11 +32,12 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (playing) audio.pause(); else audio.play();
-    setPlaying(p => !p);
+    if (playing) audio.pause();
+    else audio.play();
+    setPlaying((p) => !p);
   };
 
-  const formatTime = t =>
+  const formatTime = (t) =>
     `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
 
   const totalDots = 20;
@@ -76,11 +77,10 @@ function messagesReducer(state, action) {
       // מסנן כפילויות (tempId, _id)
       const msgs = action.payload;
       const unique = [];
-      msgs.forEach(msg => {
-        // נמצא אם יש כבר הודעה עם אותו tempId או _id
+      msgs.forEach((msg) => {
         if (
           !unique.some(
-            m =>
+            (m) =>
               (m._id && (m._id === msg._id || m._id === msg.tempId)) ||
               (m.tempId && (m.tempId === msg._id || m.tempId === msg.tempId))
           )
@@ -92,7 +92,7 @@ function messagesReducer(state, action) {
     }
     case "append": {
       const idx = state.findIndex(
-        m =>
+        (m) =>
           (m._id && (m._id === action.payload._id || m._id === action.payload.tempId)) ||
           (m.tempId && (m.tempId === action.payload._id || m.tempId === action.payload.tempId))
       );
@@ -104,7 +104,7 @@ function messagesReducer(state, action) {
       return [...state, action.payload];
     }
     case "updateStatus":
-      return state.map(m =>
+      return state.map((m) =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
           : m
@@ -113,8 +113,6 @@ function messagesReducer(state, action) {
       return state;
   }
 }
-
-
 
 export default function BusinessChatTab({
   conversationId,
@@ -128,22 +126,20 @@ export default function BusinessChatTab({
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0); // סטייט לספירת הודעות לא נקראות
   const messagesRef = useRef(messages);
   const listRef = useRef(null);
 
-  // Sync messages ref
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
-  // Join & leave conversation
   useEffect(() => {
     if (!socket || !conversationId) return;
     socket.emit("joinConversation", conversationId, conversationType === "business-business");
     return () => socket.emit("leaveConversation", conversationId, conversationType === "business-business");
   }, [socket, conversationId, conversationType]);
 
-  // Load history once
   useEffect(() => {
     if (!conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -154,7 +150,7 @@ export default function BusinessChatTab({
       try {
         const res = await API.get(`/messages/${conversationId}/history`, { params: { page: 0, limit: 50 } });
         if (cancelled) return;
-        const msgs = res.data.messages.map(m => ({
+        const msgs = res.data.messages.map((m) => ({
           ...m,
           _id: String(m._id),
           tempId: m.tempId || null,
@@ -165,25 +161,25 @@ export default function BusinessChatTab({
         console.error(err);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [conversationId]);
 
-  // Handle socket events
   useEffect(() => {
     if (!socket) return;
 
-    const handleNew = msg => {
-  if (msg.conversationId !== conversationId || msg.conversationType !== conversationType) return;
-  // קח את msg.toId אם קיים, אחרת msg.to
-  const to = msg.to || msg.toId;
-  if (String(to) !== String(businessId)) return;
-  const safeMsg = {
-    ...msg,
-    _id: String(msg._id),
-    tempId: msg.tempId || null,
-    timestamp: msg.createdAt || new Date().toISOString(),
-  };
-      const idx = messagesRef.current.findIndex(m => m._id === safeMsg._id || m.tempId === safeMsg.tempId);
+    const handleNew = (msg) => {
+      if (msg.conversationId !== conversationId || msg.conversationType !== conversationType) return;
+      const to = msg.to || msg.toId;
+      if (String(to) !== String(businessId)) return;
+      const safeMsg = {
+        ...msg,
+        _id: String(msg._id),
+        tempId: msg.tempId || null,
+        timestamp: msg.createdAt || new Date().toISOString(),
+      };
+      const idx = messagesRef.current.findIndex((m) => m._id === safeMsg._id || m.tempId === safeMsg.tempId);
       if (idx !== -1) {
         const arr = [...messagesRef.current];
         arr[idx] = { ...arr[idx], ...safeMsg, sending: false };
@@ -200,7 +196,7 @@ export default function BusinessChatTab({
       handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
     };
 
-    const handleNotification = notification => {
+    const handleNotification = (notification) => {
       if (
         notification.type === "message" &&
         notification.threadId === conversationId &&
@@ -209,7 +205,7 @@ export default function BusinessChatTab({
         const messageId = notification.extra?.messageId;
         if (messageId) {
           API.get(`/messages/${conversationId}/history`, { params: { limit: 1, messageId } })
-            .then(res => {
+            .then((res) => {
               const newMsg = res.data.messages[0];
               handleNew({ ...newMsg, conversationId, conversationType });
             })
@@ -218,25 +214,33 @@ export default function BusinessChatTab({
       }
     };
 
+    const handleUnreadCount = (count) => {
+      console.log("Received unreadMessagesCount:", count);
+      setUnreadCount(count);
+      // כאן תוכל להוסיף קוד לעדכון UI התראות, לדוגמה:
+      // show notification badge עם unreadCount
+    };
+
     socket.on("newMessage", handleNew);
     socket.on("typing", handleTyping);
     socket.on("newNotification", handleNotification);
+    socket.on("unreadMessagesCount", handleUnreadCount); // מאזין לאירוע ספירת הודעות לא נקראות
 
     return () => {
       socket.off("newMessage", handleNew);
       socket.off("typing", handleTyping);
       socket.off("newNotification", handleNotification);
+      socket.off("unreadMessagesCount", handleUnreadCount);
       clearTimeout(handleTyping._t);
     };
   }, [socket, conversationId, conversationType, businessId, customerId]);
 
-  // Scroll to bottom
   useEffect(() => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  const handleInput = e => {
+  const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
   };
@@ -246,20 +250,35 @@ export default function BusinessChatTab({
     setSending(true);
     const tempId = uuidv4();
     const text = input.trim();
-    dispatch({ type: "append", payload: { _id: tempId, tempId, conversationId, from: businessId, to: customerId, text, timestamp: new Date().toISOString(), sending: true } });
+    dispatch({
+      type: "append",
+      payload: {
+        _id: tempId,
+        tempId,
+        conversationId,
+        from: businessId,
+        to: customerId,
+        text,
+        timestamp: new Date().toISOString(),
+        sending: true,
+      },
+    });
     setInput("");
 
     socket.emit(
       "sendMessage",
       { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
-      ack => {
+      (ack) => {
         setSending(false);
-        dispatch({ type: "updateStatus", payload: { id: tempId, updates: { sending: false, failed: !ack.ok, ...(ack.message || {}) } } });
+        dispatch({
+          type: "updateStatus",
+          payload: { id: tempId, updates: { sending: false, failed: !ack.ok, ...(ack.message || {}) } },
+        });
       }
     );
   };
 
-  const formatTime = ts => {
+  const formatTime = (ts) => {
     const d = new Date(ts);
     return isNaN(d) ? "" : d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
   };
@@ -268,14 +287,18 @@ export default function BusinessChatTab({
 
   return (
     <div className="chat-container business">
-      <div className="chat-header"><h3>{customerName}</h3></div>
+      <div className="chat-header">
+        <h3>{customerName}</h3>
+        {unreadCount > 0 && <div className="unread-badge">{unreadCount}</div>}
+      </div>
       <div className="message-list" ref={listRef}>
         {sorted.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {sorted.map((m, i) => (
           <div
             key={`${m._id}-${m.tempId}-${i}`}
-            className={`message${String(m.from || m.fromId) === String(businessId) ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
-
+            className={`message${
+              String(m.from || m.fromId) === String(businessId) ? " mine" : " theirs"
+            }${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
           >
             {m.fileUrl ? (
               m.fileType.startsWith("audio") ? (
@@ -283,14 +306,21 @@ export default function BusinessChatTab({
               ) : m.fileType.startsWith("image") ? (
                 <img src={m.fileUrl} alt={m.fileName} className="msg-image" />
               ) : (
-                <a href={m.fileUrl} download>{m.fileName}</a>
+                <a href={m.fileUrl} download>
+                  {m.fileName}
+                </a>
               )
             ) : (
               <div className="text">{m.text}</div>
             )}
             <div className="meta">
               <span className="time">{formatTime(m.timestamp)}</span>
-              {m.fileDuration > 0 && <span className="audio-length">{`${String(Math.floor(m.fileDuration/60)).padStart(2,"0")}:{String(Math.floor(m.fileDuration%60)).padStart(2,"0")}`}</span>}
+              {m.fileDuration > 0 && (
+                <span className="audio-length">{`${String(Math.floor(m.fileDuration / 60)).padStart(
+                  2,
+                  "0"
+                )}:${String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}`}</span>
+              )}
             </div>
           </div>
         ))}
@@ -302,11 +332,18 @@ export default function BusinessChatTab({
           placeholder="הקלד הודעה..."
           value={input}
           onChange={handleInput}
-          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              sendMessage();
+            }
+          }}
           rows={1}
           disabled={sending}
         />
-        <button onClick={sendMessage} disabled={sending || !input.trim()} className="sendButtonFlat">◀</button>
+        <button onClick={sendMessage} disabled={sending || !input.trim()} className="sendButtonFlat">
+          ◀
+        </button>
       </div>
     </div>
   );
