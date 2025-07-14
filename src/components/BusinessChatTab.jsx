@@ -32,11 +32,11 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    playing ? audio.pause() : audio.play();
-    setPlaying((p) => !p);
+    if (playing) audio.pause(); else audio.play();
+    setPlaying(p => !p);
   };
 
-  const formatTime = (t) =>
+  const formatTime = t =>
     `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
 
   const totalDots = 20;
@@ -76,9 +76,8 @@ function messagesReducer(state, action) {
       return action.payload;
     case "append": {
       const idx = state.findIndex(
-        (m) =>
-          (m._id && m._id === action.payload._id) ||
-          (m.tempId && m.tempId === action.payload.tempId)
+        m => (m._id && m._id === action.payload._id) ||
+             (m.tempId && m.tempId === action.payload.tempId)
       );
       if (idx !== -1) {
         const next = [...state];
@@ -88,7 +87,7 @@ function messagesReducer(state, action) {
       return [...state, action.payload];
     }
     case "updateStatus":
-      return state.map((m) =>
+      return state.map(m =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
           : m
@@ -113,80 +112,64 @@ export default function BusinessChatTab({
   const messagesRef = useRef(messages);
   const listRef = useRef(null);
 
-  // Sync ref
+  // Sync messages ref
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
-  // Join & leave conversation room once per conversationId
+  // Join & leave conversation
   useEffect(() => {
     if (!socket || !conversationId) return;
-    socket.emit(
-      "joinConversation",
-      conversationId,
-      conversationType === "business-business"
-    );
-    return () =>
-      socket.emit(
-        "leaveConversation",
-        conversationId,
-        conversationType === "business-business"
-      );
+    socket.emit("joinConversation", conversationId, conversationType === "business-business");
+    return () => socket.emit("leaveConversation", conversationId, conversationType === "business-business");
   }, [socket, conversationId, conversationType]);
 
   // Load history once
   useEffect(() => {
-    if (!conversationId) return dispatch({ type: "set", payload: [] });
+    if (!conversationId) {
+      dispatch({ type: "set", payload: [] });
+      return;
+    }
     let cancelled = false;
-
     (async () => {
-      const res = await API.get(`/messages/${conversationId}/history`, {
-        params: { page: 0, limit: 50 },
-      });
-      if (cancelled) return;
-      const msgs = res.data.messages.map((m) => ({
-        ...m,
-        _id: String(m._id),
-        tempId: m.tempId || null,
-        timestamp: m.createdAt || new Date().toISOString(),
-      }));
-      dispatch({ type: "set", payload: msgs });
+      try {
+        const res = await API.get(`/messages/${conversationId}/history`, { params: { page: 0, limit: 50 } });
+        if (cancelled) return;
+        const msgs = res.data.messages.map(m => ({
+          ...m,
+          _id: String(m._id),
+          tempId: m.tempId || null,
+          timestamp: m.createdAt || new Date().toISOString(),
+        }));
+        dispatch({ type: "set", payload: msgs });
+      } catch (err) {
+        console.error(err);
+      }
     })();
-
-    return () => (cancelled = true);
+    return () => { cancelled = true; };
   }, [conversationId]);
 
-  // Handle incoming socket events once
+  // Handle socket events
   useEffect(() => {
     if (!socket) return;
 
-    const handleNew = (msg) => {
-      if (
-        msg.conversationId !== conversationId ||
-        msg.conversationType !== conversationType
-      )
-        return;
-
-      // Only incoming to business
+    const handleNew = msg => {
+      if (msg.conversationId !== conversationId || msg.conversationType !== conversationType) return;
       if (String(msg.to) !== String(businessId)) return;
-
       const safeMsg = {
         ...msg,
         _id: String(msg._id),
         tempId: msg.tempId || null,
         timestamp: msg.createdAt || new Date().toISOString(),
       };
-
-      // Replace optimistic or append
-      const idx = messagesRef.current.findIndex(
-        (m) => String(m._id) === safeMsg._id || m.tempId === safeMsg.tempId
-      );
-      if (idx > -1) {
+      const idx = messagesRef.current.findIndex(m => m._id === safeMsg._id || m.tempId === safeMsg.tempId);
+      if (idx !== -1) {
         const arr = [...messagesRef.current];
         arr[idx] = { ...arr[idx], ...safeMsg, sending: false };
-        return dispatch({ type: "set", payload: arr });
+        dispatch({ type: "set", payload: arr });
+      } else {
+        dispatch({ type: "append", payload: safeMsg });
       }
-      dispatch({ type: "append", payload: safeMsg });
     };
 
     const handleTyping = ({ from }) => {
@@ -196,11 +179,32 @@ export default function BusinessChatTab({
       handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
     };
 
+    const handleNotification = notification => {
+      if (
+        notification.type === "message" &&
+        notification.threadId === conversationId &&
+        String(notification.businessId) === String(businessId)
+      ) {
+        const messageId = notification.extra?.messageId;
+        if (messageId) {
+          API.get(`/messages/${conversationId}/history`, { params: { limit: 1, messageId } })
+            .then(res => {
+              const newMsg = res.data.messages[0];
+              handleNew({ ...newMsg, conversationId, conversationType });
+            })
+            .catch(console.error);
+        }
+      }
+    };
+
     socket.on("newMessage", handleNew);
     socket.on("typing", handleTyping);
+    socket.on("newNotification", handleNotification);
+
     return () => {
       socket.off("newMessage", handleNew);
       socket.off("typing", handleTyping);
+      socket.off("newNotification", handleNotification);
       clearTimeout(handleTyping._t);
     };
   }, [socket, conversationId, conversationType, businessId, customerId]);
@@ -211,7 +215,7 @@ export default function BusinessChatTab({
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  const handleInput = (e) => {
+  const handleInput = e => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
   };
@@ -221,35 +225,20 @@ export default function BusinessChatTab({
     setSending(true);
     const tempId = uuidv4();
     const text = input.trim();
-    dispatch({ type: "append", payload: {
-      _id: tempId,
-      tempId,
-      conversationId,
-      from: businessId,
-      to: customerId,
-      text,
-      timestamp: new Date().toISOString(),
-      sending: true,
-    }});
+    dispatch({ type: "append", payload: { _id: tempId, tempId, conversationId, from: businessId, to: customerId, text, timestamp: new Date().toISOString(), sending: true } });
     setInput("");
 
     socket.emit(
       "sendMessage",
       { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
-      (ack) => {
+      ack => {
         setSending(false);
-        dispatch({
-          type: "updateStatus",
-          payload: {
-            id: tempId,
-            updates: { sending: false, failed: !ack.ok, ...ack.message },
-          },
-        });
+        dispatch({ type: "updateStatus", payload: { id: tempId, updates: { sending: false, failed: !ack.ok, ...(ack.message || {}) } } });
       }
     );
   };
 
-  const formatTime = (ts) => {
+  const formatTime = ts => {
     const d = new Date(ts);
     return isNaN(d) ? "" : d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
   };
@@ -258,23 +247,18 @@ export default function BusinessChatTab({
 
   return (
     <div className="chat-container business">
-      <div className="chat-header">
-        <h3>{customerName}</h3>
-      </div>
-
+      <div className="chat-header"><h3>{customerName}</h3></div>
       <div className="message-list" ref={listRef}>
         {sorted.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {sorted.map((m, i) => (
           <div
             key={`${m._id}-${m.tempId}-${i}`}
-            className={`message${String(m.from) === String(businessId) ? " mine" : " theirs"}${
-              m.sending ? " sending" : ""
-            }${m.failed ? " failed" : ""}`}
+            className={`message${String(m.from) === String(businessId) ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
           >
             {m.fileUrl ? (
-              m.fileType?.startsWith("audio") ? (
+              m.fileType.startsWith("audio") ? (
                 <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} userAvatar={null} />
-              ) : m.fileType?.startsWith("image") ? (
+              ) : m.fileType.startsWith("image") ? (
                 <img src={m.fileUrl} alt={m.fileName} className="msg-image" />
               ) : (
                 <a href={m.fileUrl} download>{m.fileName}</a>
@@ -284,39 +268,23 @@ export default function BusinessChatTab({
             )}
             <div className="meta">
               <span className="time">{formatTime(m.timestamp)}</span>
-              {m.fileDuration > 0 && (
-                <span className="audio-length">
-                  {`${String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:${String(
-                    Math.floor(m.fileDuration % 60)
-                  ).padStart(2, "00")}`}
-                </span>
-              )}
-              {m.sending && <span className="sending-indicator">⏳</span>}
-              {m.failed && <span className="failed-indicator">❌</span>}
+              {m.fileDuration > 0 && <span className="audio-length">{`${String(Math.floor(m.fileDuration/60)).padStart(2,"0")}:{String(Math.floor(m.fileDuration%60)).padStart(2,"0")}`}</span>}
             </div>
           </div>
         ))}
         {isTyping && <div className="typing-indicator">הלקוח מקליד…</div>}
       </div>
-
       <div className="inputBar">
         <textarea
-          value={input}
-          onChange={handleInput}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
           className="inputField"
           placeholder="הקלד הודעה..."
+          value={input}
+          onChange={handleInput}
+          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
           rows={1}
           disabled={sending}
         />
-        <button onClick={sendMessage} disabled={sending || !input.trim()} className="sendButtonFlat">
-          ◀
-        </button>
+        <button onClick={sendMessage} disabled={sending || !input.trim()} className="sendButtonFlat">◀</button>
       </div>
     </div>
   );
