@@ -127,8 +127,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setPurchaseError("");
 
     try {
-      // === שים לב: כאן התיקון ===
-      // הקריאה ל-AI package תעבור ל-POST /api/cardcomAI/ai-package
       const url =
         selectedPackage.type === "ai-package"
           ? "/cardcomAI/ai-package"
@@ -166,7 +164,8 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       <h2>יועץ עסקי 🤝</h2>
       <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
 
-      {!startedChat && (
+      {/* הצגת תיבת רכישת חבילה רק אם לא התחילו שיחה ויש שאלות שנותרו פחות או שוות 0 */}
+      {!startedChat && remainingQuestions !== null && remainingQuestions <= 0 && (
         <>
           <div className="preset-questions-container">
             {presetQuestions.map((q, i) => (
@@ -181,7 +180,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
             ))}
           </div>
           <hr style={{ margin: "1em 0" }} />
-
           <div className="purchase-extra-container">
             <p>ניתן לרכוש חבילת AI בלבד:</p>
             {aiPackages.map((pkg) => (
@@ -197,7 +195,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
                 {pkg.label} - {pkg.price} ש"ח
               </label>
             ))}
-
             <button
               onClick={handlePurchaseExtra}
               disabled={purchaseLoading || !selectedPackage}
