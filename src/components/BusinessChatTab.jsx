@@ -118,13 +118,21 @@ export default function BusinessChatTab({
     messagesRef.current = messages;
   }, [messages]);
 
-  // Join & leave room once per conversationId
+  // Join & leave conversation room once per conversationId
   useEffect(() => {
     if (!socket || !conversationId) return;
-    const room = `user-business-${conversationId}`;
-    socket.emit("joinRoom", room);
-    return () => socket.emit("leaveRoom", room);
-  }, [socket, conversationId]);
+    socket.emit(
+      "joinConversation",
+      conversationId,
+      conversationType === "business-business"
+    );
+    return () =>
+      socket.emit(
+        "leaveConversation",
+        conversationId,
+        conversationType === "business-business"
+      );
+  }, [socket, conversationId, conversationType]);
 
   // Load history once
   useEffect(() => {
@@ -280,7 +288,7 @@ export default function BusinessChatTab({
                 <span className="audio-length">
                   {`${String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:${String(
                     Math.floor(m.fileDuration % 60)
-                  ).padStart(2, "0")}`}
+                  ).padStart(2, "00")}`}
                 </span>
               )}
               {m.sending && <span className="sending-indicator">⏳</span>}
