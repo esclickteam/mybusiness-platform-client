@@ -92,8 +92,13 @@ function countItemsInLastWeek(items, dateKey = "date") {
 async function fetchDashboardStats(businessId, refreshAccessToken) {
   const token = await refreshAccessToken();
   if (!token) throw new Error("No token");
-  const res = await API.get(`/business/${businessId}/stats`, {
-    headers: { Authorization: `Bearer ${token}` },
+  const res = await API.get(`/business/${businessId}/stats?t=${Date.now()}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
   });
   return res.data;
 }
@@ -227,21 +232,23 @@ const DashboardPage = () => {
   ).current;
 
   const loadStats = async () => {
-    if (!businessId) return;
-    setLoading(true);
-    setError(null);
+  if (!businessId) return;
+  setLoading(true);
+  setError(null);
 
-    try {
-      const data = await fetchDashboardStats(businessId, refreshAccessToken);
-      setStats(data);
-      // Removed localStorage saving
-    } catch (err) {
-      setError("❌ שגיאה בטעינת נתונים מהשרת");
-      if (err.message === "No token") logout();
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const data = await fetchDashboardStats(businessId, refreshAccessToken);
+    console.log("Loaded stats from API:", data);
+    setStats(data);
+  } catch (err) {
+    console.error("Error loading stats:", err);
+    setError("❌ שגיאה בטעינת נתונים מהשרת");
+    if (err.message === "No token") logout();
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     if (!initialized || !businessId) return;
