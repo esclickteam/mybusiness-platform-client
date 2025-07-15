@@ -74,7 +74,26 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   );
 }
 
-function normalize(msg, userId) {
+// normalize מעודכן כולל businessId
+function normalize(msg, userId, businessId) {
+  const fromId = String(msg.fromId || msg.from || "");
+  const userIdStr = String(userId);
+  const businessIdStr = String(businessId);
+
+  let role = "business"; // ברירת מחדל
+
+  if (msg.client && String(msg.client) === userIdStr) {
+    role = "client";
+  } else if (msg.business && String(msg.business) === businessIdStr) {
+    role = "business";
+  } else if (fromId === userIdStr) {
+    role = "client";
+  } else if (fromId === businessIdStr) {
+    role = "business";
+  } else {
+    role = "unknown";
+  }
+
   return {
     ...msg,
     _id: String(msg._id),
@@ -85,7 +104,7 @@ function normalize(msg, userId) {
     fileType: msg.fileType || msg.mimeType || "",
     fileDuration: msg.fileDuration || msg.duration || 0,
     text: msg.text || msg.content || "",
-    role: String(msg.from) === String(userId) ? "client" : "business",
+    role,
   };
 }
 
@@ -177,7 +196,9 @@ export default function ClientChatTab({
           params: { page: 0, limit: 50 },
         });
         if (cancelled) return;
-        const msgs = (res.data.messages || []).map((msg) => normalize(msg, userId));
+        const msgs = (res.data.messages || []).map((msg) =>
+          normalize(msg, userId, businessId)
+        );
         dispatch({ type: "set", payload: msgs });
         setError("");
       } catch (err) {
@@ -192,14 +213,14 @@ export default function ClientChatTab({
       socket.emit("leaveConversation", conversationId, isBizConv);
       socket.emit("leaveRoom", `client-${userId}`);
     };
-  }, [socket, conversationId, userId, conversationType]);
+  }, [socket, conversationId, userId, conversationType, businessId]);
 
   useEffect(() => {
     if (!socket || !conversationId) return;
 
     const handleNewMessage = (msg) => {
       if (msg.conversationId !== conversationId) return;
-      dispatch({ type: "append", payload: normalize(msg, userId) });
+      dispatch({ type: "append", payload: normalize(msg, userId, businessId) });
     };
 
     const handleMessageApproved = (msg) => {
@@ -220,7 +241,7 @@ export default function ClientChatTab({
       socket.off("newMessage", handleNewMessage);
       socket.off("messageApproved", handleMessageApproved);
     };
-  }, [socket, conversationId, userId]);
+  }, [socket, conversationId, userId, businessId]);
 
   useEffect(() => {
     if (!listRef.current) return;
@@ -257,7 +278,7 @@ export default function ClientChatTab({
           setSending(false);
           if (ack.ok && ack.conversationId && ack.message) {
             setConversationId && setConversationId(ack.conversationId);
-            dispatch({ type: "set", payload: [normalize(ack.message, userId)] });
+            dispatch({ type: "set", payload: [normalize(ack.message, userId, businessId)] });
             setInput("");
           } else {
             setError("שגיאה ביצירת השיחה");
@@ -294,7 +315,7 @@ export default function ClientChatTab({
               type: "updateStatus",
               payload: {
                 id: tempId,
-                updates: { sending: false, ...normalize(ack.message, userId) },
+                updates: { sending: false, ...normalize(ack.message, userId, businessId) },
               },
             });
           } else {
