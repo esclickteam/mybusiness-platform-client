@@ -210,6 +210,7 @@ export default function BusinessChatTab({
   } else {
     // 1. אם זו הפעם הראשונה בשיחה זו – מציגים התראה:
     if (!alertedConversationsRef.current.has(msg.conversationId)) {
+      console.log("Setting first message alert for conversation:", msg.conversationId);
       setFirstMessageAlert({
         conversationId: msg.conversationId,
         text: msg.text,
