@@ -3,13 +3,11 @@ import React, {
   useContext,
   useState,
   useEffect,
-  useRef,
 } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import createSocket from "../socket"; // singleton socket helper
 
-// ממיר שדות משתמש וודא Boolean אמיתי ל־hasPaid
 function normalizeUser(user) {
   return {
     ...user,
@@ -18,7 +16,6 @@ function normalizeUser(user) {
 }
 
 let ongoingRefresh = null;
-// מוודא קריאה אחת בלבד ל־refresh-token ברמת אפליקציה
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
     ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
@@ -47,8 +44,7 @@ export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const socketRef = useRef(null);
-
+  const [socket, setSocket] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("businessDetails");
@@ -59,7 +55,6 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // כניסה ללקוח (business)
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
     setError(null);
@@ -72,17 +67,14 @@ export function AuthProvider({ children }) {
       const { accessToken, user: loggedInUser, redirectUrl } = data;
       if (!accessToken) throw new Error("No access token received");
 
-      // שמירת טוקן
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      // שמירת פרטי משתמש
       const normalizedUser = normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // ניתוב: דילוג על '/plans' אם כבר שילם
       if (!skipRedirect && redirectUrl) {
         const isPlans = redirectUrl === "/plans";
         const shouldSkip = isPlans && normalizedUser.hasPaid;
@@ -108,7 +100,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // כניסה כמשתמש צוות
   const staffLogin = async (username, password) => {
     setLoading(true);
     setError(null);
@@ -140,7 +131,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // כניסה כמשווק
   const affiliateLogin = async (publicToken) => {
     setLoading(true);
     setError(null);
@@ -163,7 +153,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // התנתקות
   const logout = async () => {
     setLoading(true);
     try {
@@ -174,13 +163,12 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("businessDetails");
     setToken(null);
     setUser(null);
-    socketRef.current?.disconnect();
-    socketRef.current = null;
+    socket?.disconnect();
+    setSocket(null);
     setLoading(false);
     navigate("/login", { replace: true });
   };
 
-  // fetch with auth ו־refresh אוטומטי
   const fetchWithAuth = async (fn) => {
     try {
       return await fn();
@@ -194,11 +182,10 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    console.log("AuthContext useEffect - token:", token);
     if (!token) {
       console.log("Token missing, resetting user...");
-      socketRef.current?.disconnect();
-      socketRef.current = null;
+      socket?.disconnect();
+      setSocket(null);
       setUser(null);
       localStorage.removeItem("businessDetails");
       setInitialized(true);
@@ -217,10 +204,9 @@ export function AuthProvider({ children }) {
           localStorage.setItem("businessDetails", JSON.stringify(normalized));
         }
 
-        // חיבור WebSocket
-        socketRef.current = await createSocket(singleFlightRefresh, logout, user?.businessId);
+        const newSocket = await createSocket(singleFlightRefresh, logout, user?.businessId);
+        setSocket(newSocket);
 
-        // ניתוב לאחר לוגין
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
           const isPlans = savedRedirect === "/plans";
@@ -239,7 +225,6 @@ export function AuthProvider({ children }) {
     })();
   }, [token, navigate]);
 
-  // Toast להודעות הצלחה
   useEffect(() => {
     if (!successMessage) return;
     const t = setTimeout(() => setSuccessMessage(null), 4000);
@@ -258,7 +243,7 @@ export function AuthProvider({ children }) {
     affiliateLogin,
     fetchWithAuth,
     refreshAccessToken: singleFlightRefresh,
-    socket: socketRef.current,
+    socket,
     setUser,
   };
 
