@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
+import API from "../api"; // axios עם token מוגדר מראש
+import { useSocket } from "../context/socketContext";
 import "./ClientChatTab.css";
 
-function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
+function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   if (!src) return null;
 
   const audioRef = useRef(null);
@@ -30,8 +32,12 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    playing ? audio.pause() : audio.play();
-    setPlaying((p) => !p);
+    if (playing) {
+      audio.pause();
+    } else {
+      audio.play();
+    }
+    setPlaying(!playing);
   };
 
   const formatTime = (t) =>
@@ -68,57 +74,64 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration }) {
   );
 }
 
-// פונקציה לסינון כפילויות הודעות
-function filterUniqueMessages(msgs) {
-  const unique = [];
-  return msgs.filter((msg) => {
-    const exists = unique.some(
-      (m) =>
-        (m._id && (m._id === msg._id || m._id === msg.tempId)) ||
-        (m.tempId && (m.tempId === msg._id || m.tempId === msg.tempId))
-    );
-    if (!exists) unique.push(msg);
-    return !exists;
-  });
+function normalize(msg) {
+  return {
+    ...msg,
+    _id: String(msg._id),
+    tempId: msg.tempId || null,
+    timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
+    fileUrl: msg.fileUrl || msg.url || "",
+    fileName: msg.fileName || msg.originalName || "",
+    fileType: msg.fileType || msg.mimeType || "",
+    fileDuration: msg.fileDuration || msg.duration || 0,
+    text: msg.text || msg.content || "",
+  };
 }
 
-// מוסיף role = "client" או "business" עם לוג
-const addRole = (msg, userId) => {
-  const fromIdDirect = msg.fromId;
-  const fromField = msg.from;
-  const fromId =
-    fromIdDirect ||
-    (typeof fromField === "object" ? fromField._id || fromField.id : fromField);
-
-  const role = String(fromId) === String(userId) ? "client" : "business";
-
-  console.log("Message fromId:", fromId, "userId:", userId, "assigned role:", role);
-  
-  msg.role = role;
-  return msg;
-};
-
-
-const getMessageKey = (m) => {
-  if (m.recommendationId) return `rec_${m.recommendationId}`;
-  if (m._id) return `msg_${m._id}`;
-  if (m.tempId) return `temp_${m.tempId}`;
-  if (!m.__uniqueKey) m.__uniqueKey = uuidv4();
-  return `uniq_${m.__uniqueKey}`;
-};
-
-function normalizeMessageFileFields(message) {
-  if (message.file) {
-    if (!message.fileUrl) message.fileUrl = message.file.url || "";
-    if (!message.fileName) message.fileName = message.file.name || "";
-    if (!message.fileType) message.fileType = message.file.type || "";
-    if (!message.fileDuration) message.fileDuration = message.file.duration || 0;
-  } else {
-    if (!message.fileUrl && message.url) message.fileUrl = message.url;
-    if (!message.fileName && message.originalName) message.fileName = message.originalName;
-    if (!message.fileType && message.mimeType) message.fileType = message.mimeType;
+function messagesReducer(state, action) {
+  switch (action.type) {
+    case "set": {
+      const unique = [];
+      action.payload.forEach((msg) => {
+        if (
+          !unique.some(
+            (m) =>
+              (m._id && (m._id === msg._id || m._id === msg.tempId)) ||
+              (m.tempId && (m.tempId === msg._id || m.tempId === msg.tempId))
+          )
+        ) {
+          unique.push(msg);
+        }
+      });
+      console.log("[Reducer] set messages, total:", unique.length);
+      return unique;
+    }
+    case "append": {
+      const idx = state.findIndex(
+        (m) =>
+          (m._id && (m._id === action.payload._id || m._id === action.payload.tempId)) ||
+          (m.tempId && (m.tempId === action.payload._id || m.tempId === action.payload.tempId))
+      );
+      if (idx !== -1) {
+        const next = [...state];
+        next[idx] = { ...next[idx], ...action.payload };
+        console.log("[Reducer] append: updated existing message", action.payload._id);
+        return next;
+      }
+      console.log("[Reducer] append: new message", action.payload._id);
+      return [...state, action.payload];
+    }
+    case "updateStatus": {
+      console.log("[Reducer] updateStatus for message id", action.payload.id);
+      return state.map((m) =>
+        m._id === action.payload.id || m.tempId === action.payload.id
+          ? { ...m, ...action.payload.updates }
+          : m
+      );
+    }
+    default:
+      return state;
   }
-  return message;
 }
 
 export default function ClientChatTab({
@@ -127,165 +140,100 @@ export default function ClientChatTab({
   setConversationId,
   businessId,
   userId,
-  messages,
-  setMessages,
-  userRole,
   conversationType = "user-business",
 }) {
+  const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const messageListRef = useRef(null);
-  const textareaRef = useRef(null);
-
-  // עדכון ref עם המערך ההכי עדכני
   const messagesRef = useRef(messages);
+  const listRef = useRef(null);
+
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
-  // הצטרפות וטעינת היסטוריה
+  // הצטרפות ל-room גלובלי ו-joinConversation + טעינת היסטוריה דרך API
   useEffect(() => {
-    if (!socket || !conversationId) {
+    if (!socket || !conversationId || !userId) {
+      dispatch({ type: "set", payload: [] });
       setLoading(false);
-      setMessages([]);
       return;
     }
 
     setLoading(true);
     setError("");
 
-    socket.emit(
-      "joinConversation",
-      conversationId,
-      conversationType === "business-business",
-      (ack) => {
-        if (!ack.ok) {
-          setError("כשל בהצטרפות לשיחה: " + (ack.error || ""));
-          setLoading(false);
-          return;
-        }
+    socket.emit("joinRoom", `client-${userId}`);
+    const isBizConv = conversationType === "business-business";
+    socket.emit("joinConversation", conversationId, isBizConv);
 
-        socket.emit(
-          "getHistory",
-          { conversationId, limit: 50, conversationType },
-          (response) => {
-            if (response.ok) {
-              const normalizedMessages = filterUniqueMessages(
-                (Array.isArray(response.messages) ? response.messages : [])
-                  .map(normalizeMessageFileFields)
-                  .map((m) => addRole(m, userId))
-              );
-              setMessages(normalizedMessages);
-              setError("");
-            } else {
-              setError("שגיאה בטעינת ההיסטוריה: " + (response.error || ""));
-              setMessages([]);
-            }
-            setLoading(false);
-          }
-        );
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await API.get(`/messages/${conversationId}/history`, {
+          params: { page: 0, limit: 50 },
+        });
+        if (cancelled) return;
+        const msgs = (res.data.messages || []).map(normalize);
+        dispatch({ type: "set", payload: msgs });
+        setError("");
+      } catch (err) {
+        setError("שגיאה בטעינת ההיסטוריה: " + (err.message || err));
+        dispatch({ type: "set", payload: [] });
       }
-    );
+      setLoading(false);
+    })();
 
     return () => {
-      if (conversationId) {
-        socket.emit(
-          "leaveConversation",
-          conversationId,
-          conversationType === "business-business"
-        );
-      }
+      cancelled = true;
+      socket.emit("leaveConversation", conversationId, isBizConv);
+      socket.emit("leaveRoom", `client-${userId}`);
     };
-  }, [socket, conversationId, conversationType, setMessages, userId]);
+  }, [socket, conversationId, userId, conversationType]);
 
-  // קבלת הודעות נכנסות
+  // מאזינים לאירועים
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    const handleIncomingMessage = (msg) => {
-      if (msg.isRecommendation && msg.status === "pending") return;
-
-      msg = addRole(normalizeMessageFileFields(msg), userId);
-
-      setMessages((prev) => {
-        const idx = prev.findIndex(
-          (m) =>
-            (m._id && msg._id && m._id === msg._id) ||
-            (m.tempId && msg.tempId && m.tempId === msg.tempId)
-        );
-        if (idx !== -1) {
-          const copy = [...prev];
-          copy[idx] = { ...copy[idx], ...msg };
-          return copy;
-        }
-        return [...prev, msg];
-      });
+    const handleNewMessage = (msg) => {
+      if (msg.conversationId !== conversationId) return;
+      dispatch({ type: "append", payload: normalize(msg) });
     };
 
     const handleMessageApproved = (msg) => {
       if (msg.conversationId !== conversationId) return;
-      msg = addRole(normalizeMessageFileFields(msg), userId);
-
-      setMessages((prev) => {
-        const idx = prev.findIndex(
-          (m) =>
-            m._id === msg._id ||
-            (m.tempId && msg.tempId && m.tempId === msg.tempId) ||
-            (m.isRecommendation &&
-              msg.recommendationId &&
-              m.recommendationId === msg.recommendationId)
-        );
-        if (idx !== -1) {
-          const copy = [...prev];
-          copy[idx] = { ...copy[idx], ...msg, status: "approved" };
-          return copy;
-        }
-        return [...prev, msg];
+      dispatch({
+        type: "updateStatus",
+        payload: {
+          id: msg._id,
+          updates: { status: "approved", ...msg },
+        },
       });
     };
 
-    socket.on("newMessage", handleIncomingMessage);
+    socket.on("newMessage", handleNewMessage);
     socket.on("messageApproved", handleMessageApproved);
 
-    // join בלי סינון — מקבל את כל ההודעות
-    socket.emit(
-      "joinConversation",
-      conversationId,
-      conversationType === "business-business"
-    );
-
     return () => {
-      socket.off("newMessage", handleIncomingMessage);
+      socket.off("newMessage", handleNewMessage);
       socket.off("messageApproved", handleMessageApproved);
-      socket.emit(
-        "leaveConversation",
-        conversationId,
-        conversationType === "business-business"
-      );
     };
-  }, [socket, conversationId, setMessages, conversationType, userId]);
+  }, [socket, conversationId]);
 
   // גלילה אוטומטית לתחתית
   useEffect(() => {
-    if (!messageListRef.current) return;
-    const el = messageListRef.current;
+    if (!listRef.current) return;
+    const el = listRef.current;
     const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
     if (isNearBottom) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  // שינוי גובה של הטקסטאריאה
-  const resizeTextarea = () => {
-    if (!textareaRef.current) return;
-    textareaRef.current.style.height = "auto";
-    textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
-  };
-
   const sendMessage = () => {
     if (!businessId) {
-      setError("businessId לא מוגדר, לא ניתן לשלוח הודעה");
+      setError("businessId לא מוגדר");
       return;
     }
     if (!input.trim() || sending || !socket || !socket.connected) {
@@ -310,14 +258,9 @@ export default function ClientChatTab({
         (ack) => {
           setSending(false);
           if (ack.ok && ack.conversationId && ack.message) {
-            setConversationId(ack.conversationId);
-            setMessages([addRole(normalizeMessageFileFields(ack.message), userId)]);
+            setConversationId && setConversationId(ack.conversationId);
+            dispatch({ type: "set", payload: [normalize(ack.message)] });
             setInput("");
-            socket.emit(
-              "joinConversation",
-              ack.conversationId,
-              conversationType === "business-business"
-            );
           } else {
             setError("שגיאה ביצירת השיחה");
           }
@@ -329,11 +272,11 @@ export default function ClientChatTab({
         tempId,
         conversationId,
         from: userId,
-        role: "client",
-        content: input.trim(),
-        createdAt: new Date().toISOString(),
+        text: input.trim(),
+        timestamp: new Date().toISOString(),
+        sending: true,
       };
-      setMessages((prev) => [...prev, optimisticMsg]);
+      dispatch({ type: "append", payload: optimisticMsg });
       setInput("");
 
       socket.emit(
@@ -342,24 +285,26 @@ export default function ClientChatTab({
           conversationId,
           from: userId,
           to: businessId,
-          role: "client",
-          text: optimisticMsg.content,
+          text: optimisticMsg.text,
           tempId,
           conversationType,
         },
         (ack) => {
           setSending(false);
           if (ack.ok && ack.message) {
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.tempId === tempId
-                  ? addRole(normalizeMessageFileFields(ack.message), userId)
-                  : msg
-              )
-            );
+            dispatch({
+              type: "updateStatus",
+              payload: {
+                id: tempId,
+                updates: { sending: false, ...normalize(ack.message) },
+              },
+            });
           } else {
             setError("שגיאה בשליחת ההודעה: " + (ack.error || "לא ידוע"));
-            setMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
+            dispatch({
+              type: "updateStatus",
+              payload: { id: tempId, updates: { sending: false, failed: true } },
+            });
           }
         }
       );
@@ -367,78 +312,58 @@ export default function ClientChatTab({
   };
 
   const sortedMessages = [...messages].sort(
-    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
   );
 
   return (
     <div className="chat-container client">
-      <div className="message-list" ref={messageListRef}>
+      <div className="message-list" ref={listRef}>
         {loading && <div className="loading">טוען...</div>}
-        {!loading && messages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {sortedMessages.map((m) => {
-          const key = getMessageKey(m);
-          if (!key) return null;
-
-          return (
-            <div
-              key={key}
-              className={`message${m.role === "client" ? " mine" : " theirs"}${m.isRecommendation ? " ai-recommendation" : ""}`}
-            >
-              {m.image ? (
-                <img
-                  src={m.image}
-                  alt={m.fileName || "image"}
-                  style={{ maxWidth: 200, borderRadius: 8 }}
-                />
-              ) : m.fileUrl ? (
-                /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
-                  <img
-                    src={m.fileUrl}
-                    alt={m.fileName || "image"}
-                    style={{ maxWidth: 200, borderRadius: 8 }}
-                  />
-                ) : m.fileType?.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer
-                    src={m.fileUrl}
-                    userAvatar={m.userAvatar}
-                    duration={m.fileDuration}
-                  />
-                ) : (
-                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
-                    {m.fileName || "קובץ להורדה"}
-                  </a>
-                )
+        {!loading && sortedMessages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {sortedMessages.map((m) => (
+          <div
+            key={m._id || m.tempId}
+            className={`message${m.from === userId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
+          >
+            {m.fileUrl ? (
+              /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
+                <img src={m.fileUrl} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
+              ) : m.fileType?.startsWith("audio") ? (
+                <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} userAvatar={null} />
               ) : (
-                <div className="text">{m.isEdited && m.editedText ? m.editedText : m.content || m.text}</div>
-              )}
-              <div className="meta">
-                <span className="time">
-                  {new Date(m.createdAt).toLocaleTimeString("he-IL", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-              </div>
+                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                  {m.fileName || "קובץ להורדה"}
+                </a>
+              )
+            ) : (
+              <div className="text">{m.text}</div>
+            )}
+            <div className="meta">
+              <span className="time">
+                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       <div className="inputBar">
         {error && <div className="error-alert">⚠ {error}</div>}
 
         <textarea
-          ref={textareaRef}
           className="inputField"
           placeholder="הקלד הודעה..."
           value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-            resizeTextarea();
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              sendMessage();
+            }
           }}
-          onKeyDown={(e) =>
-            e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())
-          }
           disabled={sending}
           rows={1}
         />
