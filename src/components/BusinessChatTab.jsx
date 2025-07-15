@@ -162,7 +162,8 @@ export default function BusinessChatTab({
 
   useEffect(() => {
     if (!socket || !businessId) return;
-    socket.emit("joinRoom", `business-${businessId}`);
+    socket.emit("joinBusinessRoom", businessId);
+
   }, [socket, businessId]);
 
   useEffect(() => {
