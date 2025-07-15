@@ -223,7 +223,6 @@ const DashboardPage = () => {
     debounce((newStats) => {
       setStats(newStats);
       localStorage.setItem("dashboardStats", JSON.stringify(newStats));
-      localStorage.setItem("dashboardStatsTime", Date.now().toString());
     }, 300)
   ).current;
 
@@ -234,26 +233,14 @@ const DashboardPage = () => {
 
     // Try to load cached stats first for instant display (stale-while-revalidate)
     const cached = localStorage.getItem("dashboardStats");
-    let cachedData = null;
     if (cached) {
-      cachedData = JSON.parse(cached);
-      // בדיקה אם המטמון ישן מ-10 דקות
-      const cacheTime = localStorage.getItem("dashboardStatsTime");
-      if (cacheTime) {
-        const age = Date.now() - Number(cacheTime);
-        if (age < 10 * 60 * 1000) {
-          setStats(cachedData);
-        } else {
-          cachedData = null; // התעלם מהמטמון כי הוא ישן מדי
-        }
-      }
+      setStats(JSON.parse(cached));
     }
 
     try {
       const data = await fetchDashboardStats(businessId, refreshAccessToken);
       setStats(data);
       localStorage.setItem("dashboardStats", JSON.stringify(data));
-      localStorage.setItem("dashboardStatsTime", Date.now().toString());
     } catch (err) {
       setError("❌ שגיאה בטעינת נתונים מהשרת");
       if (err.message === "No token") logout();
@@ -465,7 +452,7 @@ const DashboardPage = () => {
       </Suspense>
 
       <div ref={cardsRef}>
-        {cardsLoaded && (
+        {(cardsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
             <MemoizedDashboardCards
               stats={syncedStats}
@@ -476,7 +463,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={insightsRef}>
-        {insightsLoaded && (
+        {(insightsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
             <MemoizedInsights
               stats={{
@@ -489,7 +476,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-        {chartsLoaded && (
+        {(chartsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
             <MemoizedBarChartComponent
               appointments={enrichedAppointments}
@@ -500,7 +487,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={nextActionsRef} className="actions-container full-width">
-        {nextActionsLoaded && (
+        {(nextActionsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
             <MemoizedNextActions
               stats={{
@@ -515,7 +502,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={appointmentsRef} className="calendar-row">
-        {appointmentsLoaded && (
+        {(appointmentsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
             <div className="day-agenda-box">
               <MemoizedDailyAgenda
@@ -537,7 +524,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={weeklySummaryRef}>
-        {weeklySummaryLoaded && (
+        {(weeklySummaryLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
             <MemoizedWeeklySummary stats={syncedStats} />
           </Suspense>
