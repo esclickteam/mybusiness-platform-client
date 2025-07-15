@@ -44,7 +44,11 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    playing ? audio.pause() : audio.play();
+    if (playing) {
+      audio.pause();
+    } else {
+      audio.play();
+    }
     setPlaying((p) => !p);
   };
 
@@ -148,6 +152,7 @@ export default function BusinessChatTab({
   const messagesRef = useRef(messages);
   const listRef = useRef(null);
 
+  // סנכרון messagesRef
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
@@ -191,36 +196,43 @@ export default function BusinessChatTab({
     setUnreadCounts((prev) => ({ ...prev, [conversationId]: 0 }));
   }, [conversationId]);
 
-  // Listeners של Socket
+  // Socket listeners and joins
   useEffect(() => {
     if (!socket || !businessId) return;
-    const isBizConv = conversationType === "business-business";
 
     const handleMessage = (msg) => {
       const safeMsg = normalize(msg);
       const convId = msg.conversationId;
 
       if (convId === conversationId) {
-        // לשיחה פתוחה כרגע
+        // הודעה לשיחה פתוחה כרגע
         dispatch({ type: "append", payload: safeMsg });
-        return;
+      } else {
+        // עדכון מונה ושליחת התראה על ההודעה הראשונה
+        setUnreadCounts((prev) => {
+          const prevCount = prev[convId] || 0;
+          const newCount = prevCount + 1;
+
+          if (prevCount === 0) {
+            setFirstMessageAlert({
+              conversationId: convId,
+              text: msg.text,
+              timestamp: msg.timestamp,
+            });
+          }
+
+          return { ...prev, [convId]: newCount };
+        });
       }
+    };
 
-      // עדכון מונה ושליחת התראה רק בכניסה של ההודעה הראשונה
-      setUnreadCounts((prev) => {
-        const prevCount = prev[convId] || 0;
-        const newCount = prevCount + 1;
-
-        if (prevCount === 0) {
-          setFirstMessageAlert({
-            conversationId: convId,
-            text: msg.text,
-            timestamp: msg.timestamp,
-          });
-        }
-
-        return { ...prev, [convId]: newCount };
-      });
+    const handleFirstClientMessage = ({ conversationId: convId, text, timestamp }) => {
+      // תמיד לשלוח התראה ראשונה גם אם העסק בתוך השיחה
+      setFirstMessageAlert({ conversationId: convId, text, timestamp });
+      setUnreadCounts((prev) => ({
+        ...prev,
+        [convId]: (prev[convId] || 0) + 1,
+      }));
     };
 
     const handleTyping = ({ from }) => {
@@ -231,21 +243,34 @@ export default function BusinessChatTab({
     };
 
     const handleConnect = () => {
+      const isBizConv = conversationType === "business-business";
       socket.emit("joinConversation", "user-business", businessId, false);
-      socket.emit("joinConversation", conversationType, conversationId, isBizConv);
+      socket.emit(
+        "joinConversation",
+        conversationType,
+        conversationId,
+        isBizConv
+      );
     };
 
     socket.on("connect", handleConnect);
+    socket.on("firstClientMessage", handleFirstClientMessage);
     socket.on("newMessage", handleMessage);
     socket.on("typing", handleTyping);
 
     return () => {
       socket.off("connect", handleConnect);
+      socket.off("firstClientMessage", handleFirstClientMessage);
       socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
-      socket.emit("leaveConversation", "user-business", businessId);
-      socket.emit("leaveConversation", conversationType, conversationId, isBizConv);
       clearTimeout(handleTyping._t);
+      socket.emit("leaveConversation", "user-business", businessId);
+      socket.emit(
+        "leaveConversation",
+        conversationType,
+        conversationId,
+        conversationType === "business-business"
+      );
     };
   }, [socket, businessId, conversationId, conversationType, customerId]);
 
@@ -266,6 +291,7 @@ export default function BusinessChatTab({
     const tempId = uuidv4();
     const text = input.trim();
 
+    // הוספה אופטימיסטית לרשימה
     dispatch({
       type: "append",
       payload: {
@@ -283,7 +309,7 @@ export default function BusinessChatTab({
 
     socket.emit(
       "sendMessage",
-      { conversationId, from: businessId, to: customerId, text, tempId, conversationType },
+      { conversationId, from: businessId, to: customerId, text, tempId },
       (ack) => {
         setSending(false);
         dispatch({
@@ -298,9 +324,7 @@ export default function BusinessChatTab({
     );
   };
 
-  const sorted = [...messages].sort(
-    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-  );
+  const sorted = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
   const formatTime = (ts) => {
     const d = new Date(ts);
@@ -334,9 +358,7 @@ export default function BusinessChatTab({
               ) : m.fileType?.startsWith("image") ? (
                 <img src={m.fileUrl} alt={m.fileName} className="msg-image" />
               ) : (
-                <a href={m.fileUrl} download>
-                  {m.fileName}
-                </a>
+                <a href={m.fileUrl} download>{m.fileName}</a>
               )
             ) : (
               <div className="text">{m.text}</div>
@@ -344,11 +366,11 @@ export default function BusinessChatTab({
             <div className="meta">
               <span className="time">{formatTime(m.timestamp)}</span>
               {m.fileDuration > 0 && (
-                <span className="audio-length">
-                  {`${String(Math.floor(m.fileDuration / 60)).padStart(2, "0")}:${String(
-                    Math.floor(m.fileDuration % 60)
-                  ).padStart(2, "0")}`}
-                </span>
+                <span className="audio-length">{`${String(
+                  Math.floor(m.fileDuration / 60)
+                ).padStart(2, "0")} : ${String(
+                  Math.floor(m.fileDuration % 60)
+                ).padStart(2, "0")}`}</span>
               )}
             </div>
           </div>
@@ -361,7 +383,6 @@ export default function BusinessChatTab({
           <button onClick={() => setFirstMessageAlert(null)}>×</button>
         </div>
       )}
-
       <div className="inputBar">
         <textarea
           className="inputField"
