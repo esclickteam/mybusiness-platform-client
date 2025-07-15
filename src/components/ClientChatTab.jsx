@@ -74,7 +74,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   );
 }
 
-function normalize(msg) {
+function normalize(msg, userId) {
   return {
     ...msg,
     _id: String(msg._id),
@@ -85,6 +85,7 @@ function normalize(msg) {
     fileType: msg.fileType || msg.mimeType || "",
     fileDuration: msg.fileDuration || msg.duration || 0,
     text: msg.text || msg.content || "",
+    role: String(msg.from) === String(userId) ? "client" : "business", // הוספת role
   };
 }
 
@@ -177,7 +178,7 @@ export default function ClientChatTab({
           params: { page: 0, limit: 50 },
         });
         if (cancelled) return;
-        const msgs = (res.data.messages || []).map(normalize);
+        const msgs = (res.data.messages || []).map((msg) => normalize(msg, userId));
         dispatch({ type: "set", payload: msgs });
         setError("");
       } catch (err) {
@@ -200,7 +201,7 @@ export default function ClientChatTab({
 
     const handleNewMessage = (msg) => {
       if (msg.conversationId !== conversationId) return;
-      dispatch({ type: "append", payload: normalize(msg) });
+      dispatch({ type: "append", payload: normalize(msg, userId) });
     };
 
     const handleMessageApproved = (msg) => {
@@ -221,7 +222,7 @@ export default function ClientChatTab({
       socket.off("newMessage", handleNewMessage);
       socket.off("messageApproved", handleMessageApproved);
     };
-  }, [socket, conversationId]);
+  }, [socket, conversationId, userId]);
 
   // גלילה אוטומטית לתחתית
   useEffect(() => {
@@ -259,7 +260,7 @@ export default function ClientChatTab({
           setSending(false);
           if (ack.ok && ack.conversationId && ack.message) {
             setConversationId && setConversationId(ack.conversationId);
-            dispatch({ type: "set", payload: [normalize(ack.message)] });
+            dispatch({ type: "set", payload: [normalize(ack.message, userId)] });
             setInput("");
           } else {
             setError("שגיאה ביצירת השיחה");
@@ -296,7 +297,7 @@ export default function ClientChatTab({
               type: "updateStatus",
               payload: {
                 id: tempId,
-                updates: { sending: false, ...normalize(ack.message) },
+                updates: { sending: false, ...normalize(ack.message, userId) },
               },
             });
           } else {
@@ -323,7 +324,7 @@ export default function ClientChatTab({
         {sortedMessages.map((m) => (
           <div
             key={m._id || m.tempId}
-            className={`message${String(m.from) === String(userId) ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
+            className={`message${m.role === "client" ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
           >
             {m.fileUrl ? (
               /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
