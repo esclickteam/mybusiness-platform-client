@@ -198,21 +198,32 @@ export default function BusinessChatTab({
     if (!socket || !businessId) return;
 
     const handleMessage = msg => {
-      const safeMsg = normalize(msg);
-      const convId = msg.conversationId;
-      if (convId === conversationId) {
-        dispatch({ type: "append", payload: safeMsg });
-      } else {
-        setUnreadCounts(prev => {
-          const prevCount = prev[convId] || 0;
-          const newCount = prevCount + 1;
-          if (prevCount === 0) {
-            setFirstMessageAlert({ conversationId: convId, text: msg.text, timestamp: msg.timestamp });
-          }
-          return { ...prev, [convId]: newCount };
+  const safeMsg = normalize(msg);
+  const convId = msg.conversationId;
+
+  if (convId === conversationId) {
+    dispatch({ type: "append", payload: safeMsg });
+  } else {
+    // הוספת ההודעה גם לשיחות אחרות – חשוב אם הן יוצגו בהמשך
+    dispatch({ type: "append", payload: safeMsg });
+
+    setUnreadCounts(prev => {
+      const prevCount = prev[convId] || 0;
+      const newCount = prevCount + 1;
+
+      if (prevCount === 0) {
+        setFirstMessageAlert({
+          conversationId: convId,
+          text: msg.text,
+          timestamp: msg.timestamp,
         });
       }
-    };
+
+      return { ...prev, [convId]: newCount };
+    });
+  }
+};
+
 
     const handleFirstClientMessage = ({ conversationId: convId, text, timestamp }) => {
       setFirstMessageAlert({ conversationId: convId, text, timestamp });
