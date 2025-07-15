@@ -57,7 +57,6 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // fetch initial list
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications", {
@@ -80,68 +79,68 @@ export function NotificationsProvider({ children }) {
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    // handlers
-    const onBundle = (payload) =>
-      dispatch({ type: "UPDATE_UNREAD_COUNT", payload: payload.count });
-    const onNew = (notif) =>
-      dispatch({ type: "ADD_NOTIFICATION", payload: notif });
-    const onCount = (count) =>
-      dispatch({ type: "UPDATE_UNREAD_COUNT", payload: count });
-    const logAll = (event, ...args) =>
-      console.log("📡 socket event:", event, ...args);
-
-    // on connect/reconnect
     const onConnect = () => {
-      console.log("[Notifications] connected, joining:", user.businessId);
       socket.emit("joinBusinessRoom", user.businessId);
 
-      socket.on("notificationBundle", onBundle);
-      socket.on("newNotification", onNew);
-      socket.on("unreadMessagesCount", onCount);
-      socket.onAny(logAll);
+      // אירוע התראות ייעודי
+      socket.on("newNotification", notif => {
+        dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+      });
+
+      // אם התקבלת newMessage – נייצר ממנו התראה
+      socket.on("newMessage", msg => {
+        dispatch({
+          type: "ADD_NOTIFICATION",
+          payload: {
+            threadId: msg.conversationId,
+            text: `✉️ הודעה חדשה: ${msg.text || msg.content}`,
+            timestamp: msg.timestamp || msg.createdAt,
+            read: false,
+            unreadCount: 1,
+            type: "message",
+          }
+        });
+      });
+
+      // עדכון ספירת שלא נקראו
+      socket.on("unreadMessagesCount", count => {
+        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: count });
+      });
     };
 
     socket.on("connect", onConnect);
     if (socket.connected) onConnect();
 
+    // נקיון
     return () => {
       socket.off("connect", onConnect);
-      socket.off("notificationBundle", onBundle);
-      socket.off("newNotification", onNew);
-      socket.off("unreadMessagesCount", onCount);
-      socket.offAny(logAll);
+      socket.off("newNotification");
+      socket.off("newMessage");
+      socket.off("unreadMessagesCount");
     };
   }, [socket, user?.businessId]);
 
   const markAsRead = useCallback(
-    async (id) => {
-      try {
-        await fetch(`/api/business/my/notifications/${id}/read`, {
-          method: "PUT",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        dispatch({
-          type: "UPDATE_UNREAD_COUNT",
-          payload: Math.max(state.unreadCount - 1, 0),
-        });
-      } catch (err) {
-        console.error(err);
-      }
+    async id => {
+      await fetch(`/api/business/my/notifications/${id}/read`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      dispatch({
+        type: "UPDATE_UNREAD_COUNT",
+        payload: Math.max(state.unreadCount - 1, 0),
+      });
     },
     [state.unreadCount]
   );
 
   const clearRead = useCallback(async () => {
-    try {
-      const res = await fetch("/api/business/my/notifications/clearRead", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const data = await res.json();
-      if (data.ok) dispatch({ type: "CLEAR_ALL" });
-    } catch (err) {
-      console.error(err);
-    }
+    const res = await fetch("/api/business/my/notifications/clearRead", {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    const data = await res.json();
+    if (data.ok) dispatch({ type: "CLEAR_ALL" });
   }, []);
 
   return (
