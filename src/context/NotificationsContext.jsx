@@ -16,7 +16,7 @@ const initialState = {
 
 function normalizeNotification(notif) {
   return {
-    id: notif.threadId || notif.id || notif._id?.toString(),
+    id: notif.id || notif._id?.toString(),
     threadId: notif.threadId || null,
     text: notif.text,
     read: notif.read ?? false,
