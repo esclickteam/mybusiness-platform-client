@@ -137,20 +137,18 @@ export default function BusinessChatTab({
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [firstMessageAlert, setFirstMessageAlert] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
-  // מונה הודעות שלא נקראו לכל שיחה
   const [unreadCounts, setUnreadCounts] = useState({});
   const unreadCount = unreadCounts[conversationId] || 0;
 
   const messagesRef = useRef(messages);
   const listRef = useRef(null);
 
-  // סנכרון messagesRef
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
-  // סימון קריאה ב־DB כשרוצים "לפתוח" שיחה
   const openConversation = async id => {
     try {
       const res = await API.post(`/api/conversations/${id}/mark-read`);
@@ -162,13 +160,11 @@ export default function BusinessChatTab({
     }
   };
 
-  // הצטרפות לחדר העסק
   useEffect(() => {
     if (!socket || !businessId) return;
     socket.emit("joinRoom", `business-${businessId}`);
   }, [socket, businessId]);
 
-  // טעינת היסטוריית הודעות וסימון קריאה אוטומטי
   useEffect(() => {
     if (!conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -193,37 +189,31 @@ export default function BusinessChatTab({
     };
   }, [conversationId]);
 
-  // Listeners ו-joins ל-Socket.IO
   useEffect(() => {
     if (!socket || !businessId) return;
 
     const handleMessage = msg => {
-  const safeMsg = normalize(msg);
-  const convId = msg.conversationId;
+      const safeMsg = normalize(msg);
+      const convId = msg.conversationId;
 
-  if (convId === conversationId) {
-    dispatch({ type: "append", payload: safeMsg });
-  } else {
-    // הוספת ההודעה גם לשיחות אחרות – חשוב אם הן יוצגו בהמשך
-    dispatch({ type: "append", payload: safeMsg });
-
-    setUnreadCounts(prev => {
-      const prevCount = prev[convId] || 0;
-      const newCount = prevCount + 1;
-
-      if (prevCount === 0) {
-        setFirstMessageAlert({
-          conversationId: convId,
-          text: msg.text,
-          timestamp: msg.timestamp,
+      if (convId === conversationId) {
+        dispatch({ type: "append", payload: safeMsg });
+      } else {
+        dispatch({ type: "append", payload: safeMsg });
+        setUnreadCounts(prev => {
+          const prevCount = prev[convId] || 0;
+          const newCount = prevCount + 1;
+          if (prevCount === 0) {
+            setFirstMessageAlert({
+              conversationId: convId,
+              text: msg.text,
+              timestamp: msg.timestamp,
+            });
+          }
+          return { ...prev, [convId]: newCount };
         });
       }
-
-      return { ...prev, [convId]: newCount };
-    });
-  }
-};
-
+    };
 
     const handleFirstClientMessage = ({ conversationId: convId, text, timestamp }) => {
       setFirstMessageAlert({ conversationId: convId, text, timestamp });
@@ -237,6 +227,11 @@ export default function BusinessChatTab({
       handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
     };
 
+    const handleNewNotification = notification => {
+      setNotifications(prev => [notification, ...prev]);
+      console.log("New notification received:", notification);
+    };
+
     const handleConnect = () => {
       const isBizConv = conversationType === "business-business";
       socket.emit("joinConversation", "user-business", businessId, false);
@@ -247,31 +242,30 @@ export default function BusinessChatTab({
     socket.on("firstClientMessage", handleFirstClientMessage);
     socket.on("newMessage", handleMessage);
     socket.on("typing", handleTyping);
+    socket.on("newNotification", handleNewNotification);
 
     return () => {
       socket.off("connect", handleConnect);
       socket.off("firstClientMessage", handleFirstClientMessage);
       socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
+      socket.off("newNotification", handleNewNotification);
       clearTimeout(handleTyping._t);
       socket.emit("leaveConversation", "user-business", businessId);
       socket.emit("leaveConversation", conversationType, conversationId, conversationType === "business-business");
     };
   }, [socket, businessId, conversationId, conversationType, customerId]);
 
-  // גלילה אוטומטית לתחתית כאשר יש הודעות חדשות
   useEffect(() => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  // טיפול בשינוי שדה הטקסט
   const handleInput = e => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
   };
 
-  // שליחת הודעה
   const sendMessage = () => {
     if (sending || !input.trim()) return;
     setSending(true);
@@ -294,10 +288,8 @@ export default function BusinessChatTab({
     });
   };
 
-  // מיון הודעות לפי תאריך
   const sorted = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-  // עיצוב תאריך להציג בשיחה
   const formatTime = ts => {
     const d = new Date(ts);
     return isNaN(d) ? "" : d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
@@ -343,6 +335,17 @@ export default function BusinessChatTab({
           <button onClick={() => setFirstMessageAlert(null)}>×</button>
         </div>
       )}
+
+      {notifications.length > 0 && (
+        <div className="notifications-container">
+          {notifications.map((notif, idx) => (
+            <div key={idx} className="notification-item">
+              {notif.text || "התראה חדשה"}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="inputBar">
         <textarea
           className="inputField"
