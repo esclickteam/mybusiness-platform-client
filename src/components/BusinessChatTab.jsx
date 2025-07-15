@@ -44,15 +44,12 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (playing) {
-      audio.pause();
-    } else {
-      audio.play();
-    }
-    setPlaying((p) => !p);
+    if (playing) audio.pause();
+    else audio.play();
+    setPlaying(p => !p);
   };
 
-  const formatTime = (t) =>
+  const formatTime = t =>
     `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
   const totalDots = 20;
   const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
@@ -89,10 +86,10 @@ function messagesReducer(state, action) {
   switch (action.type) {
     case "set": {
       const unique = [];
-      action.payload.forEach((msg) => {
+      action.payload.forEach(msg => {
         if (
           !unique.some(
-            (m) =>
+            m =>
               (m._id && (m._id === msg._id || m._id === msg.tempId)) ||
               (m.tempId && (m.tempId === msg._id || m.tempId === msg.tempId))
           )
@@ -100,27 +97,23 @@ function messagesReducer(state, action) {
           unique.push(msg);
         }
       });
-      console.log("[Reducer] set messages, total:", unique.length);
       return unique;
     }
     case "append": {
       const idx = state.findIndex(
-        (m) =>
+        m =>
           (m._id && (m._id === action.payload._id || m._id === action.payload.tempId)) ||
           (m.tempId && (m.tempId === action.payload._id || m.tempId === action.payload.tempId))
       );
       if (idx !== -1) {
         const next = [...state];
         next[idx] = { ...next[idx], ...action.payload };
-        console.log("[Reducer] append: updated existing message", action.payload._id);
         return next;
       }
-      console.log("[Reducer] append: new message", action.payload._id);
       return [...state, action.payload];
     }
     case "updateStatus": {
-      console.log("[Reducer] updateStatus for message id", action.payload.id);
-      return state.map((m) =>
+      return state.map(m =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
           : m
@@ -157,11 +150,22 @@ export default function BusinessChatTab({
     messagesRef.current = messages;
   }, [messages]);
 
+  // סימון קריאה ב־DB כשרוצים "לפתוח" שיחה
+  const openConversation = async id => {
+    try {
+      const res = await API.post(`/api/conversations/${id}/mark-read`);
+      if (res.data.ok) {
+        setUnreadCounts(prev => ({ ...prev, [id]: 0 }));
+      }
+    } catch (err) {
+      console.error("Failed to mark messages read", err);
+    }
+  };
+
   // הצטרפות לחדר העסק
   useEffect(() => {
     if (!socket || !businessId) return;
     socket.emit("joinRoom", `business-${businessId}`);
-    console.log(`Joined room: business-${businessId}`);
   }, [socket, businessId]);
 
   // טעינת היסטוריית הודעות
@@ -170,10 +174,10 @@ export default function BusinessChatTab({
       dispatch({ type: "set", payload: [] });
       return;
     }
+    openConversation(conversationId);
     let cancelled = false;
     (async () => {
       try {
-        console.log("[API] טוען היסטוריה של שיחה", conversationId);
         const res = await API.get(`/messages/${conversationId}/history`, {
           params: { page: 0, limit: 50 },
         });
@@ -181,7 +185,7 @@ export default function BusinessChatTab({
         const msgs = res.data.messages.map(normalize);
         dispatch({ type: "set", payload: msgs });
       } catch (err) {
-        console.error("[API] שגיאה בטעינת ההיסטוריה:", err);
+        console.error("Error loading history:", err);
       }
     })();
     return () => {
@@ -189,50 +193,30 @@ export default function BusinessChatTab({
     };
   }, [conversationId]);
 
-  // איפוס מונה הודעות לא נקראות כשעוברים שיחה
-  useEffect(() => {
-    if (!conversationId) return;
-    console.log("[Unread] איפוס מונה לשיחה", conversationId);
-    setUnreadCounts((prev) => ({ ...prev, [conversationId]: 0 }));
-  }, [conversationId]);
-
-  // Socket listeners and joins
+  // Listeners and joins
   useEffect(() => {
     if (!socket || !businessId) return;
 
-    const handleMessage = (msg) => {
+    const handleMessage = msg => {
       const safeMsg = normalize(msg);
       const convId = msg.conversationId;
-
       if (convId === conversationId) {
-        // הודעה לשיחה פתוחה כרגע
         dispatch({ type: "append", payload: safeMsg });
       } else {
-        // עדכון מונה ושליחת התראה על ההודעה הראשונה
-        setUnreadCounts((prev) => {
+        setUnreadCounts(prev => {
           const prevCount = prev[convId] || 0;
           const newCount = prevCount + 1;
-
           if (prevCount === 0) {
-            setFirstMessageAlert({
-              conversationId: convId,
-              text: msg.text,
-              timestamp: msg.timestamp,
-            });
+            setFirstMessageAlert({ conversationId: convId, text: msg.text, timestamp: msg.timestamp });
           }
-
           return { ...prev, [convId]: newCount };
         });
       }
     };
 
     const handleFirstClientMessage = ({ conversationId: convId, text, timestamp }) => {
-      // תמיד לשלוח התראה ראשונה גם אם העסק בתוך השיחה
       setFirstMessageAlert({ conversationId: convId, text, timestamp });
-      setUnreadCounts((prev) => ({
-        ...prev,
-        [convId]: (prev[convId] || 0) + 1,
-      }));
+      setUnreadCounts(prev => ({ ...prev, [convId]: (prev[convId] || 0) + 1 }));
     };
 
     const handleTyping = ({ from }) => {
@@ -245,12 +229,7 @@ export default function BusinessChatTab({
     const handleConnect = () => {
       const isBizConv = conversationType === "business-business";
       socket.emit("joinConversation", "user-business", businessId, false);
-      socket.emit(
-        "joinConversation",
-        conversationType,
-        conversationId,
-        isBizConv
-      );
+      socket.emit("joinConversation", conversationType, conversationId, isBizConv);
     };
 
     socket.on("connect", handleConnect);
@@ -265,12 +244,7 @@ export default function BusinessChatTab({
       socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
       socket.emit("leaveConversation", "user-business", businessId);
-      socket.emit(
-        "leaveConversation",
-        conversationType,
-        conversationId,
-        conversationType === "business-business"
-      );
+      socket.emit("leaveConversation", conversationType, conversationId, conversationType === "business-business");
     };
   }, [socket, businessId, conversationId, conversationType, customerId]);
 
@@ -280,7 +254,7 @@ export default function BusinessChatTab({
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  const handleInput = (e) => {
+  const handleInput = e => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
   };
@@ -291,46 +265,27 @@ export default function BusinessChatTab({
     const tempId = uuidv4();
     const text = input.trim();
 
-    // הוספה אופטימיסטית לרשימה
     dispatch({
       type: "append",
-      payload: {
-        _id: tempId,
-        tempId,
-        conversationId,
-        from: businessId,
-        to: customerId,
-        text,
-        timestamp: new Date().toISOString(),
-        sending: true,
-      },
+      payload: { _id: tempId, tempId, conversationId, from: businessId, to: customerId, text, timestamp: new Date().toISOString(), sending: true },
     });
     setInput("");
 
-    socket.emit(
-      "sendMessage",
-      { conversationId, from: businessId, to: customerId, text, tempId },
-      (ack) => {
-        setSending(false);
-        dispatch({
-          type: "updateStatus",
-          payload: {
-            id: tempId,
-            updates: { sending: false, failed: !ack.ok, ...(ack.message || {}) },
-          },
-        });
-        if (!ack.ok) console.error("[SendMessage] failed", ack.error);
-      }
-    );
+    socket.emit("sendMessage", { conversationId, from: businessId, to: customerId, text, tempId }, ack => {
+      setSending(false);
+      dispatch({
+        type: "updateStatus",
+        payload: { id: tempId, updates: { sending: false, failed: !ack.ok, ...(ack.message || {}) } },
+      });
+      if (!ack.ok) console.error("[SendMessage] failed", ack.error);
+    });
   };
 
   const sorted = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-  const formatTime = (ts) => {
+  const formatTime = ts => {
     const d = new Date(ts);
-    return isNaN(d)
-      ? ""
-      : d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+    return isNaN(d) ? "" : d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
@@ -344,17 +299,11 @@ export default function BusinessChatTab({
         {sorted.map((m, i) => (
           <div
             key={`${m._id}-${m.tempId}-${i}`}
-            className={`message${
-              String(m.from) === String(businessId) ? " mine" : " theirs"
-            }${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
+            className={`message${String(m.from) === String(businessId) ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
           >
             {m.fileUrl ? (
               m.fileType?.startsWith("audio") ? (
-                <WhatsAppAudioPlayer
-                  src={m.fileUrl}
-                  duration={m.fileDuration}
-                  userAvatar={null}
-                />
+                <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} userAvatar={null} />
               ) : m.fileType?.startsWith("image") ? (
                 <img src={m.fileUrl} alt={m.fileName} className="msg-image" />
               ) : (
@@ -366,11 +315,7 @@ export default function BusinessChatTab({
             <div className="meta">
               <span className="time">{formatTime(m.timestamp)}</span>
               {m.fileDuration > 0 && (
-                <span className="audio-length">{`${String(
-                  Math.floor(m.fileDuration / 60)
-                ).padStart(2, "0")} : ${String(
-                  Math.floor(m.fileDuration % 60)
-                ).padStart(2, "0")}`}</span>
+                <span className="audio-length">{`${String(Math.floor(m.fileDuration / 60)).padStart(2, "0")} : ${String(Math.floor(m.fileDuration % 60)).padStart(2, "0")}`}</span>
               )}
             </div>
           </div>
@@ -389,7 +334,7 @@ export default function BusinessChatTab({
           placeholder="הקלד הודעה..."
           value={input}
           onChange={handleInput}
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               sendMessage();
@@ -398,11 +343,7 @@ export default function BusinessChatTab({
           rows={1}
           disabled={sending}
         />
-        <button
-          onClick={sendMessage}
-          disabled={sending || !input.trim()}
-          className="sendButtonFlat"
-        >
+        <button onClick={sendMessage} disabled={sending || !input.trim()} className="sendButtonFlat">
           ◀
         </button>
       </div>
