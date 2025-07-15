@@ -57,73 +57,55 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // fetch initial list
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      if (!res.ok) throw new Error("Failed to fetch notifications");
+      if (!res.ok) throw new Error();
       const data = await res.json();
       if (data.ok && data.notifications) {
         dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
       }
     } catch (err) {
-      console.error("[NotificationsContext] Failed to fetch notifications:", err);
+      console.error(err);
     }
-  }, []);
-
-  const addNotification = useCallback((notif) => {
-    dispatch({ type: "ADD_NOTIFICATION", payload: notif });
   }, []);
 
   useEffect(() => {
-    if (user?.businessId) {
-      fetchNotifications();
-    }
+    if (user?.businessId) fetchNotifications();
   }, [user?.businessId, fetchNotifications]);
 
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    const join = () => {
-      console.log("[NotificationsContext] Joining business room:", user.businessId);
-      socket.emit("joinBusinessRoom", user.businessId);
-    };
-
-    const onBundle = (payload) => {
-      console.log("[NotificationsContext] notificationBundle received:", payload);
-      if (typeof payload.count === "number") {
-        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: payload.count });
-      }
-    };
-
-    const onNew = (notif) => {
-      console.log("[NotificationsContext] newNotification received:", notif);
+    // handlers
+    const onBundle = (payload) =>
+      dispatch({ type: "UPDATE_UNREAD_COUNT", payload: payload.count });
+    const onNew = (notif) =>
       dispatch({ type: "ADD_NOTIFICATION", payload: notif });
-    };
-
-    const onCount = (count) => {
-      console.log("[NotificationsContext] unreadMessagesCount received:", count);
+    const onCount = (count) =>
       dispatch({ type: "UPDATE_UNREAD_COUNT", payload: count });
-    };
-
-    socket.on("connect", join);
-    if (socket.connected) join();
-
-    socket.on("notificationBundle", onBundle);
-    socket.on("newNotification", onNew);
-    socket.on("unreadMessagesCount", onCount);
-
-    // DEBUG: לוג על כל אירוע שמתקבל מה־socket
-    const logAll = (event, ...args) => {
+    const logAll = (event, ...args) =>
       console.log("📡 socket event:", event, ...args);
+
+    // on connect/reconnect
+    const onConnect = () => {
+      console.log("[Notifications] connected, joining:", user.businessId);
+      socket.emit("joinBusinessRoom", user.businessId);
+
+      socket.on("notificationBundle", onBundle);
+      socket.on("newNotification", onNew);
+      socket.on("unreadMessagesCount", onCount);
+      socket.onAny(logAll);
     };
-    socket.onAny(logAll);
+
+    socket.on("connect", onConnect);
+    if (socket.connected) onConnect();
 
     return () => {
-      socket.off("connect", join);
+      socket.off("connect", onConnect);
       socket.off("notificationBundle", onBundle);
       socket.off("newNotification", onNew);
       socket.off("unreadMessagesCount", onCount);
@@ -136,13 +118,14 @@ export function NotificationsProvider({ children }) {
       try {
         await fetch(`/api/business/my/notifications/${id}/read`, {
           method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: Math.max(state.unreadCount - 1, 0) });
+        dispatch({
+          type: "UPDATE_UNREAD_COUNT",
+          payload: Math.max(state.unreadCount - 1, 0),
+        });
       } catch (err) {
-        console.error("[NotificationsContext] markAsRead error:", err);
+        console.error(err);
       }
     },
     [state.unreadCount]
@@ -152,18 +135,12 @@ export function NotificationsProvider({ children }) {
     try {
       const res = await fetch("/api/business/my/notifications/clearRead", {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       const data = await res.json();
-      if (data.ok) {
-        dispatch({ type: "CLEAR_ALL" });
-      } else {
-        console.error("[NotificationsContext] clearRead failed:", data.error);
-      }
+      if (data.ok) dispatch({ type: "CLEAR_ALL" });
     } catch (err) {
-      console.error("[NotificationsContext] clearRead error:", err);
+      console.error(err);
     }
   }, []);
 
@@ -174,8 +151,6 @@ export function NotificationsProvider({ children }) {
         unreadCount: state.unreadCount,
         markAsRead,
         clearRead,
-        addNotification,
-        fetchNotifications,
       }}
     >
       {children}
