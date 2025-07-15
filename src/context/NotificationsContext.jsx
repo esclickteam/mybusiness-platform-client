@@ -57,7 +57,6 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // Fetch notifications from API
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications", {
@@ -68,7 +67,6 @@ export function NotificationsProvider({ children }) {
       if (!res.ok) throw new Error("Failed to fetch notifications");
       const data = await res.json();
       if (data.ok && data.notifications) {
-        console.log("[NotificationsContext] Fetched notifications:", data.notifications);
         dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
       }
     } catch (err) {
@@ -76,19 +74,16 @@ export function NotificationsProvider({ children }) {
     }
   }, []);
 
-  // addNotification function
   const addNotification = useCallback((notif) => {
     dispatch({ type: "ADD_NOTIFICATION", payload: notif });
   }, []);
 
-  // Fetch on user/businessId change
   useEffect(() => {
     if (user?.businessId) {
       fetchNotifications();
     }
   }, [user?.businessId, fetchNotifications]);
 
-  // Join room and listen for notificationBundle and newNotification
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -115,14 +110,20 @@ export function NotificationsProvider({ children }) {
     socket.on("notificationBundle", onBundle);
     socket.on("newNotification", onNew);
 
+    // ✅ DEBUG: לוג על כל אירוע שמתקבל מה־socket
+    const logAll = (event, ...args) => {
+      console.log("📡 socket event:", event, ...args);
+    };
+    socket.onAny(logAll);
+
     return () => {
       socket.off("connect", join);
       socket.off("notificationBundle", onBundle);
       socket.off("newNotification", onNew);
+      socket.offAny(logAll);
     };
   }, [socket, user?.businessId]);
 
-  // Mark notification as read
   const markAsRead = useCallback(
     async (id) => {
       try {
@@ -140,7 +141,6 @@ export function NotificationsProvider({ children }) {
     [state.unreadCount]
   );
 
-  // Clear all notifications
   const clearRead = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications/clearRead", {
