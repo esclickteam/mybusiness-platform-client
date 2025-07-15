@@ -146,6 +146,7 @@ export default function BusinessChatTab({
   const [unreadCounts, setUnreadCounts] = useState({});
   const unreadCount = unreadCounts[conversationId] || 0;
 
+  const alertedConversationsRef = useRef(new Set());
   const messagesRef = useRef(messages);
   const listRef = useRef(null);
 
@@ -191,6 +192,8 @@ export default function BusinessChatTab({
     if (!conversationId) return;
     console.log("[Unread] איפוס מונה הודעות לשיחה", conversationId);
     setUnreadCounts((prev) => ({ ...prev, [conversationId]: 0 }));
+    // מנקה גם את ה-Set של ההתראות עבור שיחה זו, כדי לאפשר התראה חדשה אם תגיע בעתיד
+    alertedConversationsRef.current.delete(conversationId);
   }, [conversationId]);
 
   // Socket listeners and joins
@@ -198,12 +201,6 @@ export default function BusinessChatTab({
     if (!socket || !businessId) return;
 
     const isBizConv = conversationType === "business-business";
-
-    // Handlers
-
-    // כאן נשמור unreadCounts במשתנה useRef כדי לגשת תמיד לגרסה עדכנית בלי להוסיף תלות ל-useEffect
-    const unreadCountsRef = { current: unreadCounts };
-    unreadCountsRef.current = unreadCounts;
 
     const handleMessage = (msg) => {
       if (
@@ -216,14 +213,13 @@ export default function BusinessChatTab({
       if (msg.conversationId === conversationId) {
         dispatch({ type: "append", payload: safeMsg });
       } else {
-        // השתמש ב-unreadCountsRef.current כדי לגשת למונה הנכון
-        const hasUnread = unreadCountsRef.current[msg.conversationId];
-        if (!hasUnread) {
+        if (!alertedConversationsRef.current.has(msg.conversationId)) {
           setFirstMessageAlert({
             conversationId: msg.conversationId,
             text: msg.text,
             timestamp: msg.timestamp,
           });
+          alertedConversationsRef.current.add(msg.conversationId);
         }
 
         setUnreadCounts((prev) => ({
@@ -288,7 +284,7 @@ export default function BusinessChatTab({
       socket.emit("leaveConversation", conversationType, conversationId, isBizConv);
       clearTimeout(handleTyping._t);
     };
-  }, [socket, businessId, conversationId, conversationType, customerId, unreadCounts]);
+  }, [socket, businessId, conversationId, conversationType, customerId]);
 
   // גלילה לתחתית
   useEffect(() => {
