@@ -104,13 +104,19 @@ export function NotificationsProvider({ children }) {
       dispatch({ type: "ADD_NOTIFICATION", payload: notif });
     };
 
+    const onCount = (count) => {
+      console.log("[NotificationsContext] unreadMessagesCount received:", count);
+      dispatch({ type: "UPDATE_UNREAD_COUNT", payload: count });
+    };
+
     socket.on("connect", join);
     if (socket.connected) join();
 
     socket.on("notificationBundle", onBundle);
     socket.on("newNotification", onNew);
+    socket.on("unreadMessagesCount", onCount);
 
-    // ✅ DEBUG: לוג על כל אירוע שמתקבל מה־socket
+    // DEBUG: לוג על כל אירוע שמתקבל מה־socket
     const logAll = (event, ...args) => {
       console.log("📡 socket event:", event, ...args);
     };
@@ -120,6 +126,7 @@ export function NotificationsProvider({ children }) {
       socket.off("connect", join);
       socket.off("notificationBundle", onBundle);
       socket.off("newNotification", onNew);
+      socket.off("unreadMessagesCount", onCount);
       socket.offAny(logAll);
     };
   }, [socket, user?.businessId]);
