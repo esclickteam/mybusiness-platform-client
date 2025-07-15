@@ -87,17 +87,20 @@ export function NotificationsProvider({ children }) {
         dispatch({ type: "ADD_NOTIFICATION", payload: notif });
       });
 
-      // אם התקבלת newMessage – נייצר ממנו התראה
+      // אם התקבלה הודעה חדשה – יוצרים התראה עם טקסט כללי
       socket.on("newMessage", msg => {
+        // נניח שיש בשדה msg.role את תפקיד השולח ('client' או 'business')
+        const senderRole = msg.role || 'client'; // ברירת מחדל 'client' אם אין
         dispatch({
           type: "ADD_NOTIFICATION",
           payload: {
             threadId: msg.conversationId,
-            text: `✉️ הודעה חדשה: ${msg.text || msg.content}`,
+            text: `✉️ הודעה חדשה מ${senderRole === 'client' ? 'לקוח' : 'עסק'}`,
             timestamp: msg.timestamp || msg.createdAt,
             read: false,
             unreadCount: 1,
             type: "message",
+            actorName: senderRole === 'client' ? 'לקוח' : 'עסק',
           }
         });
       });
