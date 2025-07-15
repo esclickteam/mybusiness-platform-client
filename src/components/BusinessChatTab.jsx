@@ -2,11 +2,12 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useReducer
+  useReducer,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 import API from "../api"; // axios עם token מוגדר מראש
 import { useSocket } from "../context/socketContext";
+import { useNotifications } from "../context/NotificationsContext"; // ייבוא הקונטקסט של ההתראות
 import "./BusinessChatTab.css";
 
 // עזר לנירמול הודעות
@@ -132,12 +133,13 @@ export default function BusinessChatTab({
   conversationType = "user-business",
 }) {
   const socket = useSocket();
+  const { addNotification } = useNotifications(); // שימוש ב-context של ההתראות
+
   const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [firstMessageAlert, setFirstMessageAlert] = useState(null);
-  const [notifications, setNotifications] = useState([]);
 
   const [unreadCounts, setUnreadCounts] = useState({});
   const unreadCount = unreadCounts[conversationId] || 0;
@@ -163,7 +165,6 @@ export default function BusinessChatTab({
   useEffect(() => {
     if (!socket || !businessId) return;
     socket.emit("joinBusinessRoom", businessId);
-
   }, [socket, businessId]);
 
   useEffect(() => {
@@ -229,7 +230,7 @@ export default function BusinessChatTab({
     };
 
     const handleNewNotification = notification => {
-      setNotifications(prev => [notification, ...prev]);
+      addNotification(notification); // עדכון דרך Context ולא state מקומי
       console.log("New notification received:", notification);
     };
 
@@ -255,7 +256,7 @@ export default function BusinessChatTab({
       socket.emit("leaveConversation", "user-business", businessId);
       socket.emit("leaveConversation", conversationType, conversationId, conversationType === "business-business");
     };
-  }, [socket, businessId, conversationId, conversationType, customerId]);
+  }, [socket, businessId, conversationId, conversationType, customerId, addNotification]);
 
   useEffect(() => {
     const el = listRef.current;
@@ -334,16 +335,6 @@ export default function BusinessChatTab({
         <div className="first-message-alert">
           הודעה ראשונה חדשה: "{firstMessageAlert.text}"
           <button onClick={() => setFirstMessageAlert(null)}>×</button>
-        </div>
-      )}
-
-      {notifications.length > 0 && (
-        <div className="notifications-container">
-          {notifications.map((notif, idx) => (
-            <div key={idx} className="notification-item">
-              {notif.text || "התראה חדשה"}
-            </div>
-          ))}
         </div>
       )}
 

@@ -1,4 +1,3 @@
-// src/context/NotificationsContext.jsx
 import React, {
   createContext,
   useContext,
@@ -77,14 +76,19 @@ export function NotificationsProvider({ children }) {
     }
   }, []);
 
-  // 1) Fetch on user/businessId change
+  // addNotification function
+  const addNotification = useCallback((notif) => {
+    dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+  }, []);
+
+  // Fetch on user/businessId change
   useEffect(() => {
     if (user?.businessId) {
       fetchNotifications();
     }
   }, [user?.businessId, fetchNotifications]);
 
-  // 2) Join room and listen for notificationBundle and newNotification
+  // Join room and listen for notificationBundle and newNotification
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -118,7 +122,7 @@ export function NotificationsProvider({ children }) {
     };
   }, [socket, user?.businessId]);
 
-  // 3) Mark notification as read
+  // Mark notification as read
   const markAsRead = useCallback(
     async (id) => {
       try {
@@ -136,7 +140,7 @@ export function NotificationsProvider({ children }) {
     [state.unreadCount]
   );
 
-  // 4) Clear all notifications
+  // Clear all notifications
   const clearRead = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications/clearRead", {
@@ -163,7 +167,8 @@ export function NotificationsProvider({ children }) {
         unreadCount: state.unreadCount,
         markAsRead,
         clearRead,
-        fetchNotifications, // accessible externally if needed
+        addNotification,
+        fetchNotifications,
       }}
     >
       {children}
