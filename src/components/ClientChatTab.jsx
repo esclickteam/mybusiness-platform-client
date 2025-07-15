@@ -318,34 +318,37 @@ export default function ClientChatTab({
       <div className="message-list" ref={listRef}>
         {loading && <div className="loading">טוען...</div>}
         {!loading && sortedMessages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
-        {sortedMessages.map((m) => (
-          <div
-            key={m._id || m.tempId}
-            className={`message${m.role === "client" ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
-          >
-            {m.fileUrl ? (
-              /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
-                <img src={m.fileUrl} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
-              ) : m.fileType?.startsWith("audio") ? (
-                <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} userAvatar={null} />
+        {sortedMessages.map((m) => {
+          console.log("Message role:", m.role, m); // בדיקה של role
+          return (
+            <div
+              key={m._id || m.tempId}
+              className={`message${m.role === "client" ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
+            >
+              {m.fileUrl ? (
+                /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
+                  <img src={m.fileUrl} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
+                ) : m.fileType?.startsWith("audio") ? (
+                  <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} userAvatar={null} />
+                ) : (
+                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                    {m.fileName || "קובץ להורדה"}
+                  </a>
+                )
               ) : (
-                <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
-                  {m.fileName || "קובץ להורדה"}
-                </a>
-              )
-            ) : (
-              <div className="text">{m.text}</div>
-            )}
-            <div className="meta">
-              <span className="time">
-                {new Date(m.timestamp).toLocaleTimeString("he-IL", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
+                <div className="text">{m.text}</div>
+              )}
+              <div className="meta">
+                <span className="time">
+                  {new Date(m.timestamp).toLocaleTimeString("he-IL", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="inputBar">
