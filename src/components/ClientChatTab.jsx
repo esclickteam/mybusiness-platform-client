@@ -85,7 +85,7 @@ function normalize(msg, userId) {
     fileType: msg.fileType || msg.mimeType || "",
     fileDuration: msg.fileDuration || msg.duration || 0,
     text: msg.text || msg.content || "",
-    role: String(msg.from) === String(userId) ? "client" : "business", // הוספת role
+    role: String(msg.from) === String(userId) ? "client" : "business",
   };
 }
 
@@ -156,7 +156,6 @@ export default function ClientChatTab({
     messagesRef.current = messages;
   }, [messages]);
 
-  // הצטרפות ל-room גלובלי ו-joinConversation + טעינת היסטוריה דרך API
   useEffect(() => {
     if (!socket || !conversationId || !userId) {
       dispatch({ type: "set", payload: [] });
@@ -195,7 +194,6 @@ export default function ClientChatTab({
     };
   }, [socket, conversationId, userId, conversationType]);
 
-  // מאזינים לאירועים
   useEffect(() => {
     if (!socket || !conversationId) return;
 
@@ -224,7 +222,6 @@ export default function ClientChatTab({
     };
   }, [socket, conversationId, userId]);
 
-  // גלילה אוטומטית לתחתית
   useEffect(() => {
     if (!listRef.current) return;
     const el = listRef.current;
