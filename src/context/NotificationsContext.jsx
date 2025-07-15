@@ -1,3 +1,4 @@
+// src/context/NotificationsContext.jsx
 import React, {
   createContext,
   useContext,
@@ -57,7 +58,7 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // ✅ פונקציית שליפה ידנית – נגיש גם מבחוץ
+  // Fetch notifications from API
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications", {
@@ -68,51 +69,56 @@ export function NotificationsProvider({ children }) {
       if (!res.ok) throw new Error("Failed to fetch notifications");
       const data = await res.json();
       if (data.ok && data.notifications) {
+        console.log("[NotificationsContext] Fetched notifications:", data.notifications);
         dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
       }
     } catch (err) {
-      console.error("Failed to fetch notifications:", err);
+      console.error("[NotificationsContext] Failed to fetch notifications:", err);
     }
   }, []);
 
-  // 1) שליפה אוטומטית עם שינוי user
+  // 1) Fetch on user/businessId change
   useEffect(() => {
     if (user?.businessId) {
       fetchNotifications();
     }
   }, [user?.businessId, fetchNotifications]);
 
-  // 2) האזנה לספירת הודעות לא נקראו (bundle)
+  // 2) Join room and listen for notificationBundle and newNotification
   useEffect(() => {
     if (!socket || !user?.businessId) return;
-    const join = () => socket.emit("joinBusinessRoom", user.businessId);
+
+    const join = () => {
+      console.log("[NotificationsContext] Joining business room:", user.businessId);
+      socket.emit("joinBusinessRoom", user.businessId);
+    };
+
     const onBundle = (payload) => {
+      console.log("[NotificationsContext] notificationBundle received:", payload);
       if (typeof payload.count === "number") {
         dispatch({ type: "UPDATE_UNREAD_COUNT", payload: payload.count });
       }
     };
+
+    const onNew = (notif) => {
+      console.log("[NotificationsContext] newNotification received:", notif);
+      dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+    };
+
     socket.on("connect", join);
     if (socket.connected) join();
+
     socket.on("notificationBundle", onBundle);
+    socket.on("newNotification", onNew);
+
     return () => {
       socket.off("connect", join);
       socket.off("notificationBundle", onBundle);
-    };
-  }, [socket, user?.businessId]);
-
-  // 3) האזנה להתראה חדשה
-  useEffect(() => {
-    if (!socket || !user?.businessId) return;
-    const onNew = (notif) => {
-      dispatch({ type: "ADD_NOTIFICATION", payload: notif });
-    };
-    socket.on("newNotification", onNew);
-    return () => {
       socket.off("newNotification", onNew);
     };
   }, [socket, user?.businessId]);
 
-  // 4) סימון הודעה כנקראה
+  // 3) Mark notification as read
   const markAsRead = useCallback(
     async (id) => {
       try {
@@ -122,15 +128,15 @@ export function NotificationsProvider({ children }) {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: state.unreadCount - 1 });
+        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: Math.max(state.unreadCount - 1, 0) });
       } catch (err) {
-        console.error("markAsRead error:", err);
+        console.error("[NotificationsContext] markAsRead error:", err);
       }
     },
     [state.unreadCount]
   );
 
-  // 5) ניקוי כל ההתראות
+  // 4) Clear all notifications
   const clearRead = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications/clearRead", {
@@ -143,10 +149,10 @@ export function NotificationsProvider({ children }) {
       if (data.ok) {
         dispatch({ type: "CLEAR_ALL" });
       } else {
-        console.error("clearRead failed:", data.error);
+        console.error("[NotificationsContext] clearRead failed:", data.error);
       }
     } catch (err) {
-      console.error("clearRead error:", err);
+      console.error("[NotificationsContext] clearRead error:", err);
     }
   }, []);
 
@@ -157,7 +163,7 @@ export function NotificationsProvider({ children }) {
         unreadCount: state.unreadCount,
         markAsRead,
         clearRead,
-        fetchNotifications, // ✅ נגיש לצרכנים חיצוניים
+        fetchNotifications, // accessible externally if needed
       }}
     >
       {children}

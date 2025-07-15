@@ -452,7 +452,7 @@ const DashboardPage = () => {
       </Suspense>
 
       <div ref={cardsRef}>
-        {(cardsLoaded) && (
+        {cardsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
             <MemoizedDashboardCards
               stats={syncedStats}
@@ -463,7 +463,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={insightsRef}>
-        {(insightsLoaded) && (
+        {insightsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
             <MemoizedInsights
               stats={{
@@ -476,7 +476,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-        {(chartsLoaded) && (
+        {chartsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
             <MemoizedBarChartComponent
               appointments={enrichedAppointments}
@@ -487,7 +487,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={nextActionsRef} className="actions-container full-width">
-        {(nextActionsLoaded) && (
+        {nextActionsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
             <MemoizedNextActions
               stats={{
@@ -502,7 +502,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={appointmentsRef} className="calendar-row">
-        {(appointmentsLoaded) && (
+        {appointmentsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
             <div className="day-agenda-box">
               <MemoizedDailyAgenda
@@ -524,7 +524,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={weeklySummaryRef}>
-        {(weeklySummaryLoaded) && (
+        {weeklySummaryLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
             <MemoizedWeeklySummary stats={syncedStats} />
           </Suspense>
