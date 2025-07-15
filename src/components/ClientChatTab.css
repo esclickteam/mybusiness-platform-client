@@ -45,9 +45,9 @@
 
 /* הודעת המשתמש (לקוח) – לימין */
 .chat-container.client .message.mine {
-  align-self: flex-end; /* לימין */
-  margin-left: 32px;
-  margin-right: 0;
+  /* מוחקים/מתעלמים מ־align-self */
+  margin-left: auto;    /* דוחף את הבועה לימין */
+  margin-right: 32px;   /* רווח רציף משמאל */
   background: #dcf8c6;
   text-align: right;
   border-radius: 18px 18px 4px 18px;
@@ -55,9 +55,9 @@
 
 /* הודעת העסק – לשמאל */
 .chat-container.client .message.theirs {
-  align-self: flex-start; /* לשמאל */
-  margin-right: 32px;
-  margin-left: 0;
+  /* מוחקים/מתעלמים מ־align-self */
+  margin-right: auto;   /* דוחף את הבועה לשמאל */
+  margin-left: 32px;    /* רווח רציף מימין */
   background: #fff;
   text-align: left;
   border-radius: 18px 18px 18px 4px;
