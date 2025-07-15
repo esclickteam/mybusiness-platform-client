@@ -323,7 +323,7 @@ export default function ClientChatTab({
         {sortedMessages.map((m) => (
           <div
             key={m._id || m.tempId}
-            className={`message${m.from === userId ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
+            className={`message${String(m.from) === String(userId) ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
           >
             {m.fileUrl ? (
               /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
