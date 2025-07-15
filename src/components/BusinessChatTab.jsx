@@ -200,6 +200,11 @@ export default function BusinessChatTab({
     const isBizConv = conversationType === "business-business";
 
     // Handlers
+
+    // כאן נשמור unreadCounts במשתנה useRef כדי לגשת תמיד לגרסה עדכנית בלי להוסיף תלות ל-useEffect
+    const unreadCountsRef = { current: unreadCounts };
+    unreadCountsRef.current = unreadCounts;
+
     const handleMessage = (msg) => {
       if (
         msg.conversationType !== conversationType && msg.conversationType !== "user-business"
@@ -207,9 +212,20 @@ export default function BusinessChatTab({
       if (String(msg.to || msg.toId) !== String(businessId)) return;
 
       const safeMsg = normalize(msg);
+
       if (msg.conversationId === conversationId) {
         dispatch({ type: "append", payload: safeMsg });
       } else {
+        // השתמש ב-unreadCountsRef.current כדי לגשת למונה הנכון
+        const hasUnread = unreadCountsRef.current[msg.conversationId];
+        if (!hasUnread) {
+          setFirstMessageAlert({
+            conversationId: msg.conversationId,
+            text: msg.text,
+            timestamp: msg.timestamp,
+          });
+        }
+
         setUnreadCounts((prev) => ({
           ...prev,
           [msg.conversationId]: (prev[msg.conversationId] || 0) + 1,
@@ -234,7 +250,6 @@ export default function BusinessChatTab({
       });
     };
 
-    // חשוב! שימוש בפונקציית עדכון עם prevState כדי למנוע בעיות סינכרון
     const handleNotification = (notif) => {
       console.log("[Socket] Received newNotification:", notif);
 
@@ -273,7 +288,7 @@ export default function BusinessChatTab({
       socket.emit("leaveConversation", conversationType, conversationId, isBizConv);
       clearTimeout(handleTyping._t);
     };
-  }, [socket, businessId, conversationId, conversationType, customerId]);
+  }, [socket, businessId, conversationId, conversationType, customerId, unreadCounts]);
 
   // גלילה לתחתית
   useEffect(() => {
@@ -381,15 +396,6 @@ export default function BusinessChatTab({
           <button onClick={() => setFirstMessageAlert(null)}>×</button>
         </div>
       )}
-
-      {/* אפשר להוסיף UI להצגת התראות אם רוצים */}
-      {/* <div className="notifications-list">
-        {notifications.map((notif, idx) => (
-          <div key={idx} className="notification-item">
-            {notif.text}
-          </div>
-        ))}
-      </div> */}
 
       <div className="inputBar">
         <textarea
