@@ -203,32 +203,29 @@ export default function BusinessChatTab({
     const isBizConv = conversationType === "business-business";
 
     const handleMessage = (msg) => {
-      if (
-        msg.conversationType !== conversationType && msg.conversationType !== "user-business"
-      ) return;
-      if (String(msg.to || msg.toId) !== String(businessId)) return;
+  const safeMsg = normalize(msg);
 
-      const safeMsg = normalize(msg);
+  if (msg.conversationId === conversationId) {
+    dispatch({ type: "append", payload: safeMsg });
+  } else {
+    // 1. אם זו הפעם הראשונה בשיחה זו – מציגים התראה:
+    if (!alertedConversationsRef.current.has(msg.conversationId)) {
+      setFirstMessageAlert({
+        conversationId: msg.conversationId,
+        text: msg.text,
+        timestamp: msg.timestamp,
+      });
+      alertedConversationsRef.current.add(msg.conversationId);
+    }
 
-      if (msg.conversationId === conversationId) {
-        dispatch({ type: "append", payload: safeMsg });
-      } else {
-        // אם לשיחה זו לא הוצגה התראה עדיין, הצג התראה
-        if (!alertedConversationsRef.current.has(msg.conversationId)) {
-          setFirstMessageAlert({
-            conversationId: msg.conversationId,
-            text: msg.text,
-            timestamp: msg.timestamp,
-          });
-          alertedConversationsRef.current.add(msg.conversationId);
-        }
+    // 2. תמיד מעדכנים את המונה
+    setUnreadCounts((prev) => ({
+      ...prev,
+      [msg.conversationId]: (prev[msg.conversationId] || 0) + 1,
+    }));
+  }
+};
 
-        setUnreadCounts((prev) => ({
-          ...prev,
-          [msg.conversationId]: (prev[msg.conversationId] || 0) + 1,
-        }));
-      }
-    };
 
     const handleTyping = ({ from }) => {
       if (String(from) !== String(customerId)) return;
