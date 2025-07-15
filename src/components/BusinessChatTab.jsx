@@ -154,7 +154,7 @@ export default function BusinessChatTab({
   const openConversation = async id => {
     try {
       const res = await API.post(`/api/conversations/${id}/mark-read`);
-      if (res.data.ok) {
+      if (res.data.unreadCount !== undefined) {
         setUnreadCounts(prev => ({ ...prev, [id]: 0 }));
       }
     } catch (err) {
@@ -168,7 +168,7 @@ export default function BusinessChatTab({
     socket.emit("joinRoom", `business-${businessId}`);
   }, [socket, businessId]);
 
-  // טעינת היסטוריית הודעות
+  // טעינת היסטוריית הודעות וסימון קריאה אוטומטי
   useEffect(() => {
     if (!conversationId) {
       dispatch({ type: "set", payload: [] });
@@ -193,7 +193,7 @@ export default function BusinessChatTab({
     };
   }, [conversationId]);
 
-  // Listeners and joins
+  // Listeners ו-joins ל-Socket.IO
   useEffect(() => {
     if (!socket || !businessId) return;
 
@@ -248,17 +248,19 @@ export default function BusinessChatTab({
     };
   }, [socket, businessId, conversationId, conversationType, customerId]);
 
-  // גלילה אוטומטית לתחתית
+  // גלילה אוטומטית לתחתית כאשר יש הודעות חדשות
   useEffect(() => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
+  // טיפול בשינוי שדה הטקסט
   const handleInput = e => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
   };
 
+  // שליחת הודעה
   const sendMessage = () => {
     if (sending || !input.trim()) return;
     setSending(true);
@@ -281,8 +283,10 @@ export default function BusinessChatTab({
     });
   };
 
+  // מיון הודעות לפי תאריך
   const sorted = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
+  // עיצוב תאריך להציג בשיחה
   const formatTime = ts => {
     const d = new Date(ts);
     return isNaN(d) ? "" : d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
