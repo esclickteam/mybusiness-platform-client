@@ -146,6 +146,7 @@ export default function BusinessChatTab({
   const [unreadCounts, setUnreadCounts] = useState({});
   const unreadCount = unreadCounts[conversationId] || 0;
 
+  // Set לשיחות שהוצגה להן התראה, כדי לא להציג שוב בהודעות נוספות
   const alertedConversationsRef = useRef(new Set());
   const messagesRef = useRef(messages);
   const listRef = useRef(null);
@@ -187,12 +188,11 @@ export default function BusinessChatTab({
     };
   }, [conversationId]);
 
-  // אפס מונה הודעות שלא נקראו לשיחה זו
+  // אפס מונה הודעות שלא נקראו לשיחה זו ונקה התראות מוקדמות
   useEffect(() => {
     if (!conversationId) return;
     console.log("[Unread] איפוס מונה הודעות לשיחה", conversationId);
     setUnreadCounts((prev) => ({ ...prev, [conversationId]: 0 }));
-    // מנקה גם את ה-Set של ההתראות עבור שיחה זו, כדי לאפשר התראה חדשה אם תגיע בעתיד
     alertedConversationsRef.current.delete(conversationId);
   }, [conversationId]);
 
@@ -213,6 +213,7 @@ export default function BusinessChatTab({
       if (msg.conversationId === conversationId) {
         dispatch({ type: "append", payload: safeMsg });
       } else {
+        // אם לשיחה זו לא הוצגה התראה עדיין, הצג התראה
         if (!alertedConversationsRef.current.has(msg.conversationId)) {
           setFirstMessageAlert({
             conversationId: msg.conversationId,
