@@ -221,30 +221,31 @@ const DashboardPage = () => {
   // Debounced stats setter to limit rerenders on frequent WebSocket events
   const debouncedSetStats = useRef(
     debounce((newStats) => {
+      console.log("Debounced setStats called with:", newStats);
       setStats(newStats);
       localStorage.setItem("dashboardStats", JSON.stringify(newStats));
     }, 300)
   ).current;
 
   const loadStats = async () => {
-  if (!businessId) return;
-  setLoading(true);
-  setError(null);
+    if (!businessId) return;
+    setLoading(true);
+    setError(null);
 
-  // לא לקרוא לסטטס מה-localStorage
-
-  try {
-    const data = await fetchDashboardStats(businessId, refreshAccessToken);
-    setStats(data);
-    localStorage.setItem("dashboardStats", JSON.stringify(data)); // אפשר להשאיר לשימוש עתידי אם תרצה
-  } catch (err) {
-    setError("❌ שגיאה בטעינת נתונים מהשרת");
-    if (err.message === "No token") logout();
-  } finally {
-    setLoading(false);
-  }
-};
-
+    console.log("Loading stats from server...");
+    try {
+      const data = await fetchDashboardStats(businessId, refreshAccessToken);
+      console.log("Loaded stats from server:", data);
+      setStats(data);
+      localStorage.setItem("dashboardStats", JSON.stringify(data));
+    } catch (err) {
+      console.error("Error loading stats:", err);
+      setError("❌ שגיאה בטעינת נתונים מהשרת");
+      if (err.message === "No token") logout();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!initialized || !businessId) return;
@@ -284,29 +285,35 @@ const DashboardPage = () => {
       });
 
       sock.on("dashboardUpdate", (newStats) => {
+        console.log("Received dashboardUpdate via socket:", newStats);
         debouncedSetStats(newStats);
       });
 
       sock.on('profileViewsUpdated', (data) => {
         if (!data || typeof data.views_count !== 'number') return;
-        setStats((oldStats) =>
-          oldStats
+        setStats((oldStats) => {
+          const updatedStats = oldStats
             ? { ...oldStats, views_count: data.views_count }
-            : oldStats
-        );
+            : oldStats;
+          console.log("Profile views updated:", updatedStats);
+          return updatedStats;
+        });
       });
 
       sock.on("appointmentCreated", (newAppointment) => {
+        console.log("New appointment created:", newAppointment);
         if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
         setStats((oldStats) => {
           if (!oldStats) return oldStats;
           const enriched = enrichAppointment(newAppointment, oldStats);
           const updatedAppointments = [...(oldStats.appointments || []), enriched];
-          return {
+          const updatedStats = {
             ...oldStats,
             appointments: updatedAppointments,
             appointments_count: updatedAppointments.length,
           };
+          console.log("Stats updated with new appointment:", updatedStats);
+          return updatedStats;
         });
         if (newAppointment.date) {
           const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
@@ -361,6 +368,8 @@ const DashboardPage = () => {
   const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
     enrichAppointment(appt, effectiveStats)
   );
+
+  console.log("Rendering with enrichedAppointments:", enrichedAppointments);
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
@@ -511,6 +520,7 @@ const DashboardPage = () => {
             </div>
             <div className="calendar-container">
               <MemoizedCalendarView
+                key={JSON.stringify(enrichedAppointments.map(a => a._id))}
                 appointments={enrichedAppointments}
                 onDateClick={setSelectedDate}
                 selectedDate={selectedDate}
