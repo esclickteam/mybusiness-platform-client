@@ -76,8 +76,8 @@ function Plans() {
         >
           {[
             { id: "1", label: "ניסיון", price: 1, priceLabel: "ליום" },
-            { id: "3", label: "3 חודשים", price: 769, priceLabel: "לשלושה חודשים" },
-            { id: "12", label: "שנתי", price: 699, priceLabel: "לשנה" },
+            { id: "3", label: "3 חודשים", price: 1, priceLabel: "לשלושה חודשים" },
+            { id: "12", label: "שנתי", price: 1, priceLabel: "לשנה" },
           ].map(({ id, label, price, priceLabel }) => (
             <button
               key={id}
