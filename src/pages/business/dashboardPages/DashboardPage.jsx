@@ -44,15 +44,6 @@ const DashboardNav = lazyWithPreload(() =>
   import("../../../components/dashboard/DashboardNav")
 );
 
-// debounce helper
-function debounce(func, wait) {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-}
-
 function useOnScreen(ref) {
   const [isVisible, setVisible] = useState(false);
   useEffect(() => {
@@ -135,7 +126,6 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Refs for lazy loading with intersection observer
   const cardsRef = useRef(null);
   const insightsRef = useRef(null);
   const chartsRef = useRef(null);
@@ -143,7 +133,6 @@ const DashboardPage = () => {
   const nextActionsRef = useRef(null);
   const weeklySummaryRef = useRef(null);
 
-  // IntersectionObserver states
   const cardsVisible = useOnScreen(cardsRef);
   const insightsVisible = useOnScreen(insightsRef);
   const chartsVisible = useOnScreen(chartsRef);
@@ -151,7 +140,6 @@ const DashboardPage = () => {
   const nextActionsVisible = useOnScreen(nextActionsRef);
   const weeklySummaryVisible = useOnScreen(weeklySummaryRef);
 
-  // State to keep track if each section was loaded once (to avoid rerendering/remounting)
   const [cardsLoaded, setCardsLoaded] = useState(false);
   const [insightsLoaded, setInsightsLoaded] = useState(false);
   const [chartsLoaded, setChartsLoaded] = useState(false);
@@ -218,14 +206,16 @@ const DashboardPage = () => {
     });
   }, []);
 
-  // Debounced stats setter to limit rerenders on frequent WebSocket events
-  const debouncedSetStats = useRef(
-    debounce((newStats) => {
-      console.log("Debounced setStats called with:", newStats);
-      setStats(newStats);
+  // העדכון הישיר של סטטיסטיקות בלי debounce
+  const updateStats = (newStats) => {
+    console.log("Updating stats:", newStats);
+    setStats(newStats);
+    try {
       localStorage.setItem("dashboardStats", JSON.stringify(newStats));
-    }, 300)
-  ).current;
+    } catch {
+      // מונע שגיאות באחסון
+    }
+  };
 
   const loadStats = async () => {
     if (!businessId) return;
@@ -236,8 +226,7 @@ const DashboardPage = () => {
     try {
       const data = await fetchDashboardStats(businessId, refreshAccessToken);
       console.log("Loaded stats from server:", data);
-      setStats(data);
-      localStorage.setItem("dashboardStats", JSON.stringify(data));
+      updateStats(data);
     } catch (err) {
       console.error("Error loading stats:", err);
       setError("❌ שגיאה בטעינת נתונים מהשרת");
@@ -249,6 +238,20 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (!initialized || !businessId) return;
+
+    // טען נתונים מה-localStorage אם קיימים - לטעינה מהירה, אך תעדכן מהשרת מיד
+    try {
+      const cached = localStorage.getItem("dashboardStats");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === "object") {
+          setStats(parsed);
+        }
+      }
+    } catch {
+      // לא עשה כלום במקרה של שגיאה
+    }
+
     loadStats();
 
     let isMounted = true;
@@ -286,16 +289,16 @@ const DashboardPage = () => {
 
       sock.on("dashboardUpdate", (newStats) => {
         console.log("Received dashboardUpdate via socket:", newStats);
-        debouncedSetStats(newStats);
+        updateStats(newStats);
       });
 
       sock.on('profileViewsUpdated', (data) => {
         if (!data || typeof data.views_count !== 'number') return;
         setStats((oldStats) => {
-          const updatedStats = oldStats
-            ? { ...oldStats, views_count: data.views_count }
-            : oldStats;
+          if (!oldStats) return oldStats;
+          const updatedStats = { ...oldStats, views_count: data.views_count };
           console.log("Profile views updated:", updatedStats);
+          localStorage.setItem("dashboardStats", JSON.stringify(updatedStats));
           return updatedStats;
         });
       });
@@ -313,6 +316,7 @@ const DashboardPage = () => {
             appointments_count: updatedAppointments.length,
           };
           console.log("Stats updated with new appointment:", updatedStats);
+          localStorage.setItem("dashboardStats", JSON.stringify(updatedStats));
           return updatedStats;
         });
         if (newAppointment.date) {
@@ -342,7 +346,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, debouncedSetStats, selectedDate]);
+  }, [initialized, businessId, logout, refreshAccessToken, selectedDate]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -368,8 +372,6 @@ const DashboardPage = () => {
   const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
     enrichAppointment(appt, effectiveStats)
   );
-
-  console.log("Rendering with enrichedAppointments:", enrichedAppointments);
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
