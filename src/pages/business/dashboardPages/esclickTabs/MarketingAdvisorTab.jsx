@@ -24,9 +24,13 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
   }
 
   const sendMessage = useCallback(async (newMessages) => {
-    if (loading) return;  // מניעת שליחה כפולה
+    if (loading) {
+      console.log("sendMessage aborted: already loading");
+      return;  // מניעת שליחה כפולה
+    }
     setLoading(true);
     const lastUserMessage = newMessages.filter(m => m.role === "user").slice(-1)[0]?.content || "";
+    console.log("Sending message:", lastUserMessage);
 
     const payload = {
       businessId,
@@ -35,13 +39,16 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
     };
 
     try {
+      console.log("Calling API:", `${apiBaseUrl}/chat/marketing-advisor`, payload);
       const response = await fetch(`${apiBaseUrl}/chat/marketing-advisor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
+      console.log("API response status:", response.status);
       const data = await response.json();
+      console.log("API response data:", data);
 
       const botMessage = {
         role: "assistant",
@@ -57,13 +64,22 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
       ]);
     } finally {
       setLoading(false);
+      console.log("sendMessage finished");
     }
   }, [businessId, conversationId, loading, apiBaseUrl]);
 
   const handleSend = useCallback(() => {
-    if (!userInput.trim() || loading) return;
+    if (!userInput.trim()) {
+      console.log("handleSend aborted: empty user input");
+      return;
+    }
+    if (loading) {
+      console.log("handleSend aborted: loading");
+      return;
+    }
     const userMessage = { role: "user", content: userInput };
     const newMessages = [...messages, userMessage];
+    console.log("handleSend userMessage:", userMessage);
     setMessages(newMessages);
     setUserInput("");
     setStartedChat(true);
@@ -71,20 +87,30 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
   }, [userInput, loading, messages, sendMessage]);
 
   const handlePresetQuestion = useCallback((text) => {
-    if (loading) return;
+    if (loading) {
+      console.log("handlePresetQuestion aborted: loading");
+      return;
+    }
     const userMessage = { role: "user", content: text };
     const newMessages = [...messages, userMessage];
+    console.log("handlePresetQuestion:", text);
     setMessages(newMessages);
     setStartedChat(true);
     sendMessage(newMessages);
   }, [loading, messages, sendMessage]);
 
   useEffect(() => {
+    console.log("Messages updated:", messages);
     const timer = setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
     return () => clearTimeout(timer);
   }, [messages]);
+
+  // לוג של props חשובים
+  useEffect(() => {
+    console.log("MarketingAdvisorTab mounted with props:", { businessId, conversationId });
+  }, [businessId, conversationId]);
 
   return (
     <div className="advisor-chat-container">
