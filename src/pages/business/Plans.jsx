@@ -63,8 +63,8 @@ function Plans() {
         >
           {[
             { id: "1", label: "חודש", price: monthlyPrices["1"], priceLabel: "לחודש" },
-            { id: "3", label: "3 חודשים", price: monthlyPrices["3"], priceLabel: "לשלושה חודשים" },
-            { id: "12", label: "שנתי", price: monthlyPrices["12"], priceLabel: "לשנה" },
+            { id: "3", label: "3 חודשים", price: monthlyPrices["1"], priceLabel: "לשלושה חודשים" },
+            { id: "12", label: "שנתי", price: monthlyPrices["1"], priceLabel: "לשנה" },
           ].map(({ id, label, price, priceLabel }) => (
             <button
               key={id}
