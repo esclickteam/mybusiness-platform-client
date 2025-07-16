@@ -93,7 +93,8 @@ export default function Checkout() {
   };
 
   // קביעה של התצוגה של משך המנוי: יום או חודשים
-  const durationLabel = Number(duration) === 1 ? "יום" : "חודשים";
+  const durationLabel = Number(duration) === 1 ? "חודש" : "חודשים";
+
 
   return (
     <div className="checkout-container">
