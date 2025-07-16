@@ -32,25 +32,36 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
   // פונקציה לרענון קרדיטים
   const refreshRemainingQuestions = useCallback(async () => {
+    console.log("Refreshing remaining questions...");
     try {
       const res = await API.get("/business/my");
+      console.log("Refresh response:", res);
       const business = res.data.business;
       const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
       const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
-      setRemainingQuestions(Math.max(maxQuestions - usedQuestions, 0));
-    } catch {
+      const remaining = Math.max(maxQuestions - usedQuestions, 0);
+      console.log("Remaining questions calculated:", remaining);
+      setRemainingQuestions(remaining);
+    } catch (error) {
+      console.error("Error refreshing remaining questions:", error);
       setRemainingQuestions(null);
     }
   }, []);
 
   useEffect(() => {
+    console.log("Component mounted or refreshRemainingQuestions changed");
     refreshRemainingQuestions();
   }, [refreshRemainingQuestions]);
 
   const sendMessage = useCallback(async (promptText, conversationMessages) => {
-    if (!businessId || !promptText.trim() || loading) return;
+    console.log("sendMessage called with:", { promptText, conversationMessages });
+    if (!businessId || !promptText.trim() || loading) {
+      console.log("sendMessage aborted: invalid conditions", { businessId, promptText, loading });
+      return;
+    }
 
     if (remainingQuestions !== null && remainingQuestions <= 0) {
+      console.log("No remaining questions. Showing limit message.");
       setMessages(prev => [
         ...prev,
         { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש שאלות נוספות." }
@@ -59,7 +70,10 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     }
 
     setLoading(true);
-    if (abortControllerRef.current) abortControllerRef.current.abort();
+    if (abortControllerRef.current) {
+      console.log("Aborting previous request");
+      abortControllerRef.current.abort();
+    }
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
@@ -70,11 +84,14 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       profile: { conversationId: conversationId || null, userId: userId || null },
       messages: conversationMessages || messages,
     };
+    console.log("Sending payload:", payload);
 
     try {
       const response = await API.post("/chat/business-advisor", payload, { signal: controller.signal });
+      console.log("API response:", response);
 
       if (response.status === 403) {
+        console.warn("Reached question limit according to API");
         setRemainingQuestions(0);
         const errorMsg = response.data?.error || "❗ הגעת למגבלת השאלות החודשית.";
         setMessages(prev => [
@@ -86,10 +103,10 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           ...prev,
           { role: "assistant", content: response.data.answer || "❌ לא התקבלה תשובה מהשרת." }
         ]);
-        // הקטנת הקרדיטים עם הגנה שלא תיפול מתחת ל-0
         setRemainingQuestions(prev => (prev !== null ? Math.max(prev - 1, 0) : null));
       }
     } catch (error) {
+      console.error("Error sending message:", error);
       if (error.name !== "AbortError") {
         setMessages(prev => [
           ...prev,
@@ -102,7 +119,11 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   }, [businessId, businessDetails, conversationId, userId, messages, loading, remainingQuestions]);
 
   const handleSubmit = useCallback(() => {
-    if (!userInput.trim() || loading) return;
+    console.log("handleSubmit called with userInput:", userInput);
+    if (!userInput.trim() || loading) {
+      console.log("handleSubmit aborted");
+      return;
+    }
     const userMessage = { role: "user", content: userInput };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
@@ -112,7 +133,11 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   }, [userInput, loading, messages, sendMessage]);
 
   const handlePresetQuestion = useCallback((question) => {
-    if (loading) return;
+    console.log("handlePresetQuestion called with:", question);
+    if (loading) {
+      console.log("handlePresetQuestion aborted, loading in progress");
+      return;
+    }
     const userMessage = { role: "user", content: question };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
@@ -121,7 +146,11 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   }, [loading, messages, sendMessage]);
 
   const handlePurchaseExtra = async () => {
-    if (purchaseLoading || !selectedPackage) return;
+    console.log("handlePurchaseExtra called");
+    if (purchaseLoading || !selectedPackage) {
+      console.log("handlePurchaseExtra aborted", { purchaseLoading, selectedPackage });
+      return;
+    }
     if (!businessId) {
       setPurchaseError("לא נמצא מזהה עסק. אנא היכנס מחדש.");
       return;
@@ -137,13 +166,16 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           ? "/cardcomAI/ai-package"
           : "/purchase-package";
 
+      console.log("Purchasing package:", selectedPackage);
       const res = await API.post(url, {
         packageId: selectedPackage.id,
         businessId,
         packageType: selectedPackage.type,
       });
+      console.log("Purchase response:", res);
 
       if (res.data.paymentUrl) {
+        console.log("Redirecting to payment URL:", res.data.paymentUrl);
         window.location.href = res.data.paymentUrl;
         return;
       }
@@ -151,9 +183,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
       setSelectedPackage(null);
 
-      // רענון מספר הקרדיטים לאחר רכישה
       await refreshRemainingQuestions();
     } catch (e) {
+      console.error("Purchase error:", e);
       setPurchaseError(e.message || "שגיאה ברכישת החבילה");
     } finally {
       setPurchaseLoading(false);
@@ -161,11 +193,17 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   };
 
   useEffect(() => {
+    console.log("Messages updated, scrolling to bottom");
     const timer = setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
     return () => clearTimeout(timer);
   }, [messages]);
+
+  // --- לוגים ראשוניים לבדיקת פרופס וסטייט ---
+  useEffect(() => {
+    console.log("BusinessAdvisorTab mounted with props:", { businessId, conversationId, userId, businessDetails });
+  }, [businessId, conversationId, userId, businessDetails]);
 
   return (
     <div className="advisor-chat-container">
