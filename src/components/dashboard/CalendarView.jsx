@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./CalendarView.css";
 
 const weekDays = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
@@ -13,6 +13,11 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
   const today = new Date();
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+
+  // לוג שמראה מתי הקומפוננטה מרנדרת ומה המידע שמתקבל
+  useEffect(() => {
+    console.log("CalendarView render - appointments:", appointments);
+  }, [appointments]);
 
   const goToPreviousMonth = () => {
     setCurrentMonth((prev) => {
@@ -113,9 +118,6 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
                 <div className="day-number">{day}</div>
                 {events.map((e, i) => {
                   const clientName = e.clientName?.trim() || "לא ידוע";
-
-
-
                   const fullDate = getDateTime(e.date, e.time);
 
                   return (
