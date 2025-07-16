@@ -26,6 +26,7 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
+import PaymentSuccess from "./components/PaymentSuccess";
 
 
 
@@ -144,7 +145,10 @@ export default function App() {
               <Route path="/business/:businessId" element={<BusinessProfileView />} />
               <Route path="/book/:businessId" element={<BookingPage />} />
               <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
-=             <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
+            <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+
+
 
 
 
