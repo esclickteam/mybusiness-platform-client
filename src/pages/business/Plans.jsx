@@ -8,7 +8,7 @@ function Plans() {
   const navigate = useNavigate();
 
   // מחירים לחודש עבור כל חבילה
-  const monthlyPrices = { "1": 99, "3": 89, "12": 79 }; // דוגמה במחירים שווים (ניתן לעדכן)
+  const monthlyPrices = { "1": 1, "3": 1, "12": 1 }; // דוגמה במחירים שווים (ניתן לעדכן)
 
   const planLabels = {
     "1": "חבילת מנוי עסקליק - חודש",
