@@ -7,8 +7,8 @@ function Plans() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // מחירים לחודש עבור כל חבילה
-  const monthlyPrices = { "1": 1, "3": 1, "12": 1 }; // דוגמה במחירים שווים (ניתן לעדכן)
+  // מחיר קבוע לכל חבילה
+  const pricePerPeriod = 1;
 
   const planLabels = {
     "1": "חבילת מנוי עסקליק - חודש",
@@ -16,16 +16,18 @@ function Plans() {
     "12": "חבילת מנוי עסקליק - שנתי",
   };
 
-  const handleDurationChange = (duration) => setSelectedDuration(duration);
   const [selectedDuration, setSelectedDuration] = useState("1");
+
+  const handleDurationChange = (duration) => setSelectedDuration(duration);
 
   const handleSelectPlan = () => {
     if (!user) {
       navigate("/login");
       return;
     }
-    const durationNum = Number(selectedDuration);
-    const totalPrice = monthlyPrices[selectedDuration] * durationNum;
+
+    // מחיר קבוע, לא כופלים במספר החודשים
+    const totalPrice = pricePerPeriod;
 
     navigate("/checkout", {
       state: {
@@ -61,25 +63,29 @@ function Plans() {
           role="radiogroup"
           aria-label="בחירת תקופת מנוי"
         >
-          {[
-            { id: "1", label: "חודש", price: monthlyPrices["1"], priceLabel: "לחודש" },
-            { id: "3", label: "3 חודשים", price: monthlyPrices["1"], priceLabel: "לשלושה חודשים" },
-            { id: "12", label: "שנתי", price: monthlyPrices["1"], priceLabel: "לשנה" },
-          ].map(({ id, label, price, priceLabel }) => (
-            <button
-              key={id}
-              onClick={() => handleDurationChange(id)}
-              className={`duration-btn ${selectedDuration === id ? "active" : ""}`}
-              role="radio"
-              aria-checked={selectedDuration === id}
-              tabIndex={selectedDuration === id ? 0 : -1}
-              aria-label={`מנוי ${label} במחיר ${price} שקלים ${priceLabel}`}
-              type="button"
-            >
-              {label}
-              <span className="duration-price">{price} ₪ {priceLabel}</span>
-            </button>
-          ))}
+          {[1, 3, 12].map((id) => {
+            const labels = {
+              1: "לחודש",
+              3: "לשלושה חודשים",
+              12: "לשנה",
+            };
+            const planLabel = planLabels[id.toString()] || "";
+            return (
+              <button
+                key={id}
+                onClick={() => handleDurationChange(id.toString())}
+                className={`duration-btn ${selectedDuration === id.toString() ? "active" : ""}`}
+                role="radio"
+                aria-checked={selectedDuration === id.toString()}
+                tabIndex={selectedDuration === id.toString() ? 0 : -1}
+                aria-label={`מנוי ${planLabel} במחיר ${pricePerPeriod} שקלים ${labels[id]}`}
+                type="button"
+              >
+                {planLabel}
+                <span className="duration-price">{pricePerPeriod} ₪ {labels[id]}</span>
+              </button>
+            );
+          })}
         </div>
 
         <button className="subscribe-btn" onClick={handleSelectPlan} type="button">
