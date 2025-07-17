@@ -121,9 +121,10 @@ body {
 
 /* === כרטיסיות עם קו דק וסגול מצד ימין === */
 .cards-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2.5rem;
+  display: flex;           /* מפעיל Flexbox */
+  flex-direction: row;     /* שורה אופקית */
+  flex-wrap: nowrap;       /* שורה אחת בלבד */
+  gap: 2.5rem;             /* רווח קבוע בין הכרטיסיות */
   padding: 0 1rem;
   margin-bottom: 4rem;
 }
