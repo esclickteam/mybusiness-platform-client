@@ -44,7 +44,6 @@ const DashboardNav = lazyWithPreload(() =>
   import("../../../components/dashboard/DashboardNav")
 );
 
-// debounce helper
 function debounce(func, wait) {
   let timeout;
   return (...args) => {
@@ -105,7 +104,6 @@ async function fetchDashboardStats(businessId, refreshAccessToken) {
   return res.data;
 }
 
-// פונקציה חדשה לטעינת פגישות עדכניות דרך API
 const fetchAppointments = async (businessId, refreshAccessToken) => {
   const token = await refreshAccessToken();
   if (!token) throw new Error("No token");
@@ -141,6 +139,9 @@ const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken } = useAuth();
   const businessId = getBusinessId();
   const socketRef = useRef(null);
+  const reconnectAttempts = useRef(0);
+  const maxReconnectAttempts = 5;
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -256,7 +257,6 @@ const DashboardPage = () => {
     }
   };
 
-  // פונקציה לטעינת פגישות דרך API ועדכון סטייט
   const refreshAppointmentsFromAPI = useCallback(async () => {
     if (!businessId) return;
     try {
@@ -271,15 +271,14 @@ const DashboardPage = () => {
     }
   }, [businessId, refreshAccessToken]);
 
+  // ניהול WebSocket עם חיבור מחדש אוטומטי:
   useEffect(() => {
     if (!initialized || !businessId) return;
-    loadStats();
-
-    refreshAppointmentsFromAPI();
 
     let isMounted = true;
+    let reconnectTimeout = null;
 
-    async function setupSocket() {
+    const setupSocket = async () => {
       const token = await refreshAccessToken();
       if (!token) {
         logout();
@@ -287,11 +286,29 @@ const DashboardPage = () => {
       }
       const sock = await createSocket(refreshAccessToken, logout, businessId);
       if (!sock || !isMounted) return;
+
       socketRef.current = sock;
+      reconnectAttempts.current = 0;
 
       sock.on("connect", () => {
         console.log("Dashboard socket connected:", sock.id);
         sock.emit("joinBusinessRoom", businessId);
+      });
+
+      sock.on("disconnect", (reason) => {
+        console.log("Dashboard socket disconnected:", reason);
+        if (isMounted && reconnectAttempts.current < maxReconnectAttempts) {
+          const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000); // exponential backoff
+          reconnectTimeout = setTimeout(() => {
+            reconnectAttempts.current += 1;
+            console.log(`Attempting to reconnect (#${reconnectAttempts.current})...`);
+            setupSocket();
+          }, delay);
+        }
+      });
+
+      sock.on("connect_error", (err) => {
+        console.error("Socket connection error:", err);
       });
 
       sock.on("tokenExpired", async () => {
@@ -321,24 +338,18 @@ const DashboardPage = () => {
         );
       });
 
-      // כאן, במקום לעדכן ידנית, קוראים שוב ל-API ומרעננים את הפגישות
       sock.on("appointmentCreated", refreshAppointmentsFromAPI);
       sock.on("appointmentUpdated", refreshAppointmentsFromAPI);
       sock.on("appointmentDeleted", refreshAppointmentsFromAPI);
+    };
 
-      sock.on("disconnect", (reason) => {
-        console.log("Dashboard socket disconnected:", reason);
-      });
-
-      sock.on("connect_error", (err) => {
-        console.error("Socket connection error:", err);
-      });
-    }
-
+    loadStats();
+    refreshAppointmentsFromAPI();
     setupSocket();
 
     return () => {
       isMounted = false;
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
