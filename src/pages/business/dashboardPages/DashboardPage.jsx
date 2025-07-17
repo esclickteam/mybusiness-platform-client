@@ -16,54 +16,28 @@ import "../../../styles/dashboard.css";
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
 
-const DashboardCards = lazyWithPreload(() =>
-  import("../../../components/DashboardCards")
-);
-const BarChartComponent = lazyWithPreload(() =>
-  import("../../../components/dashboard/BarChart")
-);
-const RecentActivityTable = lazyWithPreload(() =>
-  import("../../../components/dashboard/RecentActivityTable")
-);
-const Insights = lazyWithPreload(() =>
-  import("../../../components/dashboard/Insights")
-);
-const NextActions = lazyWithPreload(() =>
-  import("../../../components/dashboard/NextActions")
-);
-const WeeklySummary = lazyWithPreload(() =>
-  import("../../../components/dashboard/WeeklySummary")
-);
-const CalendarView = lazyWithPreload(() =>
-  import("../../../components/dashboard/CalendarView")
-);
-const DailyAgenda = lazyWithPreload(() =>
-  import("../../../components/dashboard/DailyAgenda")
-);
-const DashboardNav = lazyWithPreload(() =>
-  import("../../../components/dashboard/DashboardNav")
-);
+/*************************
+ * Lazy‑loaded components
+ *************************/
+const DashboardCards       = lazyWithPreload(() => import("../../../components/DashboardCards"));
+const BarChartComponent    = lazyWithPreload(() => import("../../../components/dashboard/BarChart"));
+const RecentActivityTable  = lazyWithPreload(() => import("../../../components/dashboard/RecentActivityTable"));
+const Insights             = lazyWithPreload(() => import("../../../components/dashboard/Insights"));
+const NextActions          = lazyWithPreload(() => import("../../../components/dashboard/NextActions"));
+const WeeklySummary        = lazyWithPreload(() => import("../../../components/dashboard/WeeklySummary"));
+const CalendarView         = lazyWithPreload(() => import("../../../components/dashboard/CalendarView"));
+const DailyAgenda          = lazyWithPreload(() => import("../../../components/dashboard/DailyAgenda"));
+const DashboardNav         = lazyWithPreload(() => import("../../../components/dashboard/DashboardNav"));
 
+/*************************
+ * Helpers
+ *************************/
 function debounce(func, wait) {
   let timeout;
   return (...args) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
-}
-
-function useOnScreen(ref) {
-  const [isVisible, setVisible] = useState(false);
-  useEffect(() => {
-    if (!ref.current) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setVisible(entry.isIntersecting),
-      { threshold: 0.1 }
-    );
-    observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [ref]);
-  return isVisible;
 }
 
 function enrichAppointment(appt, business = {}) {
@@ -107,22 +81,16 @@ async function fetchDashboardStats(businessId, refreshAccessToken) {
 const fetchAppointments = async (businessId, refreshAccessToken) => {
   const token = await refreshAccessToken();
   if (!token) throw new Error("No token");
-  const res = await API.get(`/appointments/all-with-services?businessId=${businessId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await API.get(
+    `/appointments/all-with-services?businessId=${businessId}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
   return res.data;
 };
 
-const MemoizedDashboardCards = React.memo(DashboardCards);
-const MemoizedInsights = React.memo(Insights);
-const MemoizedNextActions = React.memo(NextActions);
-const MemoizedBarChartComponent = React.memo(BarChartComponent);
-const MemoizedRecentActivityTable = React.memo(RecentActivityTable);
-const MemoizedWeeklySummary = React.memo(WeeklySummary);
-const MemoizedCalendarView = React.memo(CalendarView);
-const MemoizedDailyAgenda = React.memo(DailyAgenda);
-const MemoizedDashboardNav = React.memo(DashboardNav);
-
+/*************************
+ * Pre‑load all chunks on mount
+ *************************/
 export function preloadDashboardComponents() {
   DashboardCards.preload();
   BarChartComponent.preload();
@@ -135,99 +103,49 @@ export function preloadDashboardComponents() {
   DashboardNav.preload();
 }
 
+/*************************
+ * Main component
+ *************************/
 const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken } = useAuth();
   const businessId = getBusinessId();
+
+  /* sockets */
   const socketRef = useRef(null);
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  /* navigation helpers */
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
+  /* state */
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [selectedDate, setSelectedDate] = useState(today);
-  const [alert, setAlert] = useState(null);
+  const [alert, setAlert]               = useState(null);
   const [recommendations, setRecommendations] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [stats, setStats]               = useState(null);
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState(null);
 
-  const cardsRef = useRef(null);
-  const insightsRef = useRef(null);
-  const chartsRef = useRef(null);
-  const appointmentsRef = useRef(null);
-  const nextActionsRef = useRef(null);
+  /* refs for scrolling via DashboardNav */
+  const cardsRef         = useRef(null);
+  const insightsRef      = useRef(null);
+  const chartsRef        = useRef(null);
+  const appointmentsRef  = useRef(null);
+  const nextActionsRef   = useRef(null);
   const weeklySummaryRef = useRef(null);
 
-  const cardsVisible = useOnScreen(cardsRef);
-  const insightsVisible = useOnScreen(insightsRef);
-  const chartsVisible = useOnScreen(chartsRef);
-  const appointmentsVisible = useOnScreen(appointmentsRef);
-  const nextActionsVisible = useOnScreen(nextActionsRef);
-  const weeklySummaryVisible = useOnScreen(weeklySummaryRef);
-
-  const [cardsLoaded, setCardsLoaded] = useState(false);
-  const [insightsLoaded, setInsightsLoaded] = useState(false);
-  const [chartsLoaded, setChartsLoaded] = useState(false);
-  const [appointmentsLoaded, setAppointmentsLoaded] = useState(false);
-  const [nextActionsLoaded, setNextActionsLoaded] = useState(false);
-  const [weeklySummaryLoaded, setWeeklySummaryLoaded] = useState(false);
-
+  /*******************
+   * Pre‑load chunks once
+   *******************/
   useEffect(() => {
-    if (cardsVisible) setCardsLoaded(true);
-  }, [cardsVisible]);
-  useEffect(() => {
-    if (insightsVisible) setInsightsLoaded(true);
-  }, [insightsVisible]);
-  useEffect(() => {
-    if (chartsVisible) setChartsLoaded(true);
-  }, [chartsVisible]);
-  useEffect(() => {
-    if (appointmentsVisible) setAppointmentsLoaded(true);
-  }, [appointmentsVisible]);
-  useEffect(() => {
-    if (nextActionsVisible) setNextActionsLoaded(true);
-  }, [nextActionsVisible]);
-  useEffect(() => {
-    if (weeklySummaryVisible) setWeeklySummaryLoaded(true);
-  }, [weeklySummaryVisible]);
-
-  const safeEmit = (socket, event, data, callback) => {
-    if (!socket || socket.disconnected) {
-      console.warn(`Socket disconnected, cannot emit event ${event}`);
-      if (typeof callback === "function") callback({ ok: false, error: "Socket disconnected" });
-      return;
-    }
-    socket.emit(event, data, (...args) => {
-      if (typeof callback === "function") callback(...args);
-    });
-  };
-
-  const handleApproveRecommendation = useCallback((recommendationId) => {
-    if (!socketRef.current) {
-      alert("Socket לא מחובר, נסה שוב מאוחר יותר");
-      return;
-    }
-    if (socketRef.current.disconnected) {
-      alert("Socket מנותק, נסה שוב מאוחר יותר");
-      return;
-    }
-    safeEmit(socketRef.current, "approveRecommendation", { recommendationId }, (res) => {
-      if (!res) {
-        console.error("No response object received in callback");
-        return;
-      }
-      if (res.ok) {
-        alert("ההמלצה אושרה ונשלחה ללקוח");
-        setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
-      } else {
-        alert("שגיאה באישור המלצה: " + (res.error || "שגיאה לא ידועה"));
-        console.error("שגיאה באישור המלצה:", res.error);
-      }
-    });
+    preloadDashboardComponents();
   }, []);
 
+  /*******************
+   * Debounced setter → localStorage cache
+   *******************/
   const debouncedSetStats = useRef(
     debounce((newStats) => {
       setStats(newStats);
@@ -235,15 +153,17 @@ const DashboardPage = () => {
     }, 300)
   ).current;
 
+  /*******************
+   * Fetch stats once (and refresh on demand)
+   *******************/
   const loadStats = async () => {
     if (!businessId) return;
     setLoading(true);
     setError(null);
 
+    /* optimistic – show cache first */
     const cached = localStorage.getItem("dashboardStats");
-    if (cached) {
-      setStats(JSON.parse(cached));
-    }
+    if (cached) setStats(JSON.parse(cached));
 
     try {
       const data = await fetchDashboardStats(businessId, refreshAccessToken);
@@ -257,6 +177,9 @@ const DashboardPage = () => {
     }
   };
 
+  /*******************
+   * Refresh appointments whenever server notifies us
+   *******************/
   const refreshAppointmentsFromAPI = useCallback(async () => {
     if (!businessId) return;
     try {
@@ -266,17 +189,28 @@ const DashboardPage = () => {
         appointments: appts,
         appointments_count: appts.length,
       }));
-    } catch (error) {
-      console.error("Error refreshing appointments from API:", error);
+    } catch (err) {
+      console.error("Error refreshing appointments from API:", err);
     }
   }, [businessId, refreshAccessToken]);
 
-  // ניהול WebSocket עם חיבור מחדש אוטומטי:
+  /*******************
+   * WebSocket lifecycle
+   *******************/
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    let isMounted = true;
+    let isMounted        = true;
     let reconnectTimeout = null;
+
+    const safeEmit = (socket, event, data, cb) => {
+      if (!socket || socket.disconnected) {
+        console.warn(`Socket disconnected, cannot emit ${event}`);
+        cb?.({ ok: false, error: "Socket disconnected" });
+        return;
+      }
+      socket.emit(event, data, cb);
+    };
 
     const setupSocket = async () => {
       const token = await refreshAccessToken();
@@ -284,65 +218,57 @@ const DashboardPage = () => {
         logout();
         return;
       }
+
       const sock = await createSocket(refreshAccessToken, logout, businessId);
       if (!sock || !isMounted) return;
 
-      socketRef.current = sock;
+      socketRef.current     = sock;
       reconnectAttempts.current = 0;
 
+      /* ───────── connect / disconnect ───────── */
       sock.on("connect", () => {
-        console.log("Dashboard socket connected:", sock.id);
+        console.log("Dashboard socket connected", sock.id);
         sock.emit("joinBusinessRoom", businessId);
       });
 
       sock.on("disconnect", (reason) => {
-        console.log("Dashboard socket disconnected:", reason);
+        console.log("Dashboard socket disconnected", reason);
         if (isMounted && reconnectAttempts.current < maxReconnectAttempts) {
-          const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000); // exponential backoff
+          const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
           reconnectTimeout = setTimeout(() => {
             reconnectAttempts.current += 1;
-            console.log(`Attempting to reconnect (#${reconnectAttempts.current})...`);
+            console.log(`Attempt #${reconnectAttempts.current} reconnecting…`);
             setupSocket();
           }, delay);
         }
       });
 
-      sock.on("connect_error", (err) => {
-        console.error("Socket connection error:", err);
-      });
-
+      /* ───────── token refresh ───────── */
       sock.on("tokenExpired", async () => {
         const newToken = await refreshAccessToken();
-        if (!newToken) {
-          alert("Session expired. Please log in again.");
-          logout();
-          return;
-        }
+        if (!newToken) return logout();
         sock.auth.token = newToken;
-        sock.emit("authenticate", { token: newToken }, (ack) => {
-          if (!ack?.ok) {
-            alert("Session expired. Please log in again.");
-            logout();
-          }
-        });
+        sock.emit("authenticate", { token: newToken });
       });
 
-      sock.on("dashboardUpdate", (newStats) => {
-        debouncedSetStats(newStats);
+      /* ───────── business updates ───────── */
+      sock.on("dashboardUpdate", (newStats) => debouncedSetStats(newStats));
+      sock.on("profileViewsUpdated", ({ views_count }) => {
+        setStats((s) => (s ? { ...s, views_count } : s));
       });
 
-      sock.on("profileViewsUpdated", (data) => {
-        if (!data || typeof data.views_count !== "number") return;
-        setStats((oldStats) =>
-          oldStats ? { ...oldStats, views_count: data.views_count } : oldStats
-        );
-      });
-
+      /* ───────── appointment events ───────── */
       sock.on("appointmentCreated", refreshAppointmentsFromAPI);
       sock.on("appointmentUpdated", refreshAppointmentsFromAPI);
       sock.on("appointmentDeleted", refreshAppointmentsFromAPI);
+
+      /* ───────── AI recommendations ───────── */
+      sock.on("newRecommendation", (rec) =>
+        setRecommendations((prev) => [...prev, rec])
+      );
     };
 
+    /* initial load */
     loadStats();
     refreshAppointmentsFromAPI();
     setupSocket();
@@ -350,42 +276,44 @@ const DashboardPage = () => {
     return () => {
       isMounted = false;
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+      socketRef.current?.disconnect();
+      socketRef.current = null;
     };
   }, [initialized, businessId, logout, refreshAccessToken, debouncedSetStats, refreshAppointmentsFromAPI]);
 
+  /*******************
+   * mark messages read when route changes
+   *******************/
   useEffect(() => {
     if (!socketRef.current) return;
     if (location.pathname.includes("/messages")) {
-      const conversationId = location.state?.conversationId || null;
+      const conversationId = location.state?.conversationId;
       if (conversationId) {
-        socketRef.current.emit("markMessagesRead", conversationId, (response) => {
-          if (!response.ok) {
-            console.error("Failed to mark messages as read:", response.error);
-          }
-        });
+        socketRef.current.emit("markMessagesRead", conversationId);
       }
     }
   }, [location.pathname, location.state]);
 
-  if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
+  /*******************
+   * Guard‑clauses
+   *******************/
+  if (!initialized)         return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-  if (loading && !stats) return <DashboardSkeleton />;
-  if (error) return <p className="error-text">{alert || error}</p>;
+  if (loading && !stats)    return <DashboardSkeleton />;
+  if (error)                return <p className="error-text">{alert || error}</p>;
 
-  const effectiveStats = stats || {};
-
+  /*******************
+   * Derived data
+   *******************/
+  const effectiveStats      = stats || {};
   const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
     enrichAppointment(appt, effectiveStats)
   );
 
   const getUpcomingAppointmentsCount = (appointments) => {
-    const now = new Date();
-    const endOfWeek = new Date();
+    const now        = new Date();
+    const endOfWeek  = new Date();
     endOfWeek.setDate(now.getDate() + 7);
     return appointments.filter((appt) => {
       const apptDate = new Date(appt.date);
@@ -398,6 +326,9 @@ const DashboardPage = () => {
     messages_count: effectiveStats.messages_count || 0,
   };
 
+  /*******************
+   * Render
+   *******************/
   return (
     <div className="dashboard-container">
       <h2 className="business-dashboard-header">
@@ -409,55 +340,34 @@ const DashboardPage = () => {
 
       {alert && <p className="alert-text">{alert}</p>}
 
+      {/* ───────── AI recommendations banner ───────── */}
       {recommendations.length > 0 && (
-        <section
-          className="recommendations-section"
-          style={{
-            marginBottom: 20,
-            padding: 15,
-            border: "1px solid #ccc",
-            borderRadius: 6,
-            backgroundColor: "#f9f9f9",
-          }}
-        >
+        <section className="recommendations-section">
           <h3>המלצות AI חדשות לקבלת אישור</h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
+          <ul>
             {recommendations.map(({ recommendationId, message, recommendation }) => (
-              <li
-                key={recommendationId}
-                style={{
-                  marginBottom: 15,
-                  paddingBottom: 10,
-                  borderBottom: "1px solid #ddd",
-                }}
-              >
-                <p>
-                  <b>הודעת לקוח:</b> {message}
-                </p>
-                <p>
-                  <b>המלצה AI:</b> {recommendation}
-                </p>
-                <button
-                  style={{
-                    backgroundColor: "#4caf50",
-                    color: "white",
-                    border: "none",
-                    padding: "8px 12px",
-                    borderRadius: 4,
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleApproveRecommendation(recommendationId)}
-                >
-                  אשר ושלח
-                </button>
+              <li key={recommendationId}>
+                <p><b>הודעת לקוח:</b> {message}</p>
+                <p><b>המלצה AI:</b> {recommendation}</p>
+                <button onClick={() => {
+                  if (!socketRef.current) return alert("Socket לא מחובר");
+                  socketRef.current.emit("approveRecommendation", { recommendationId }, (res) => {
+                    if (res?.ok) {
+                      setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
+                    } else {
+                      alert("שגיאה: " + (res?.error || ""));
+                    }
+                  });
+                }}>אשר ושלח</button>
               </li>
             ))}
           </ul>
         </section>
       )}
 
-      <Suspense fallback={<div className="loading-spinner">🔄 טוען ניווט...</div>}>
-        <MemoizedDashboardNav
+      {/* ───────── Navigation bar ───────── */}
+      <Suspense fallback={<div className="loading-spinner">🔄 טוען ניווט…</div>}>
+        <DashboardNav
           refs={{
             cardsRef,
             insightsRef,
@@ -469,84 +379,75 @@ const DashboardPage = () => {
         />
       </Suspense>
 
+      {/* ───────── Cards ───────── */}
       <div ref={cardsRef}>
-        {cardsLoaded && (
-          <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
-            <MemoizedDashboardCards
-              stats={syncedStats}
-              unreadCount={syncedStats.messages_count}
-            />
-          </Suspense>
-        )}
+        <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים…</div>}>
+          <DashboardCards stats={syncedStats} unreadCount={syncedStats.messages_count} />
+        </Suspense>
       </div>
 
+      {/* ───────── Insights ───────── */}
       <div ref={insightsRef}>
-        {insightsLoaded && (
-          <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
-            <MemoizedInsights
-              stats={{
-                ...syncedStats,
-                upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
-              }}
-            />
-          </Suspense>
-        )}
+        <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות…</div>}>
+          <Insights
+            stats={{
+              ...syncedStats,
+              upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
+            }}
+          />
+        </Suspense>
       </div>
 
+      {/* ───────── Bar chart ───────── */}
       <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-        {chartsLoaded && (
-          <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
-            <MemoizedBarChartComponent
-              appointments={enrichedAppointments}
-              title="לקוחות שהזמינו פגישות לפי חודשים 📊"
-            />
-          </Suspense>
-        )}
+        <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף…</div>}>
+          <BarChartComponent
+            appointments={enrichedAppointments}
+            title="לקוחות שהזמינו פגישות לפי חודשים 📊"
+          />
+        </Suspense>
       </div>
 
+      {/* ───────── Next actions ───────── */}
       <div ref={nextActionsRef} className="actions-container full-width">
-        {nextActionsLoaded && (
-          <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
-            <MemoizedNextActions
-              stats={{
-                weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
-                weekly_appointments_count: countItemsInLastWeek(enrichedAppointments),
-                weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
-                weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
-              }}
-            />
-          </Suspense>
-        )}
+        <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות…</div>}>
+          <NextActions
+            stats={{
+              weekly_views_count:       countItemsInLastWeek(syncedStats.views, "date"),
+              weekly_appointments_count: countItemsInLastWeek(enrichedAppointments),
+              weekly_reviews_count:     countItemsInLastWeek(syncedStats.reviews, "date"),
+              weekly_messages_count:    countItemsInLastWeek(syncedStats.messages, "date"),
+            }}
+          />
+        </Suspense>
       </div>
 
+      {/* ───────── Calendar + Daily agenda ───────── */}
       <div ref={appointmentsRef} className="calendar-row">
-        {appointmentsLoaded && (
-          <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
-            <div className="day-agenda-box">
-              <MemoizedDailyAgenda
-                date={selectedDate}
-                appointments={enrichedAppointments}
-                businessName={syncedStats.businessName}
-                businessId={businessId}
-              />
-            </div>
-            <div className="calendar-container">
-              <MemoizedCalendarView
-                appointments={enrichedAppointments}
-                onDateClick={setSelectedDate}
-                selectedDate={selectedDate}
-              />
-            </div>
-          </Suspense>
-        )}
+        <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן…</div>}>
+          <div className="day-agenda-box">
+            <DailyAgenda
+              date={selectedDate}
+              appointments={enrichedAppointments}
+              businessName={syncedStats.businessName}
+              businessId={businessId}
+            />
+          </div>
+          <div className="calendar-container">
+            <CalendarView
+              appointments={enrichedAppointments}
+              onDateClick={setSelectedDate}
+              selectedDate={selectedDate}
+            />
+          </div>
+        </Suspense>
       </div>
 
+      {/* ───────── Weekly summary ───────── */}
       <div ref={weeklySummaryRef}>
-        {weeklySummaryLoaded && (
-          <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
-            <MemoizedWeeklySummary stats={syncedStats} />
-          </Suspense>
-        )}
+        <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי…</div>}>
+          <WeeklySummary stats={syncedStats} />
+        </Suspense>
       </div>
     </div>
   );
