@@ -176,7 +176,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
           {remainingQuestions !== null && remainingQuestions <= 0 && (
             <div className="purchase-extra-container">
-              <p>ניתן לרכוש חבילת AI בלבד:</p>
+              <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
               {aiPackages.map((pkg) => (
                 <label key={pkg.id} className="radio-label">
                   <input
@@ -229,8 +229,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           <div ref={bottomRef} style={{ height: 1 }} />
         </div>
       </div>
-
-      {/* מחקתי את הבלוק של ההודעה הטקסטואלית כאן */}
 
       <div className="chat-input">
         <input
