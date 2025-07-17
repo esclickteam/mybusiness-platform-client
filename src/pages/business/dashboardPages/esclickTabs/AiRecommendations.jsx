@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
-const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
 const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [recommendations, setRecommendations] = useState([]);
@@ -11,26 +10,15 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
   const [showHistory, setShowHistory] = useState(false);
-  const [remainingQuestions, setRemainingQuestions] = useState(null);
-  const [selectedPackage, setSelectedPackage] = useState(null);
-  const [purchaseLoading, setPurchaseLoading] = useState(false);
-  const [purchaseMessage, setPurchaseMessage] = useState("");
-  const [purchaseError, setPurchaseError] = useState("");
   const socketRef = useRef(null);
 
   const cleanText = (text) => text.replace(/(\*\*|#|\*)/g, "").trim();
-
-  const aiPackages = [
-    { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 1, type: "ai-package" },
-    { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 1, type: "ai-package" },
-  ];
 
   useEffect(() => {
     if (!businessId || !token) return;
 
     setError(null);
-
-    fetch(`${API_BASE_URL}/chat/recommendations?businessId=${businessId}`, {
+    fetch(`/chat/recommendations?businessId=${businessId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
@@ -41,25 +29,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       .catch((err) => {
         console.error("[Load] error:", err);
         setError("שגיאה בטעינת ההמלצות: " + err.message);
-      });
-
-    fetch(`${API_BASE_URL}/business/my`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load business data");
-        return res.json();
-      })
-      .then((data) => {
-        const business = data.business;
-        if (!business) return;
-        const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
-        const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
-        setRemainingQuestions(Math.max(maxQuestions - usedQuestions, 0));
-      })
-      .catch((err) => {
-        console.error("Error loading business data:", err);
-        setRemainingQuestions(null);
       });
   }, [businessId, token]);
 
@@ -87,13 +56,71 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       }
     };
 
+    const onDisconnect = (reason) => {
+      console.log("[Socket] disconnected:", reason);
+    };
+
+    const onNewAiSuggestion = (rec) => {
+      setRecommendations((prev) => {
+        const idx = prev.findIndex((r) => (r._id === rec._id || r.id === rec._id));
+        if (idx !== -1) {
+          if (prev[idx].text !== rec.text || prev[idx].status !== rec.status) {
+            const copy = [...prev];
+            copy[idx] = rec;
+            return copy;
+          }
+          return prev;
+        }
+        return [...prev, rec];
+      });
+    };
+
+    const onMessageApproved = ({ recommendationId }) => {
+      setRecommendations((prev) =>
+        prev.map((r) =>
+          r._id === recommendationId || r.id === recommendationId
+            ? { ...r, status: "approved" }
+            : r
+        )
+      );
+      setLoadingIds((ids) => {
+        const next = new Set(ids);
+        next.delete(recommendationId);
+        return next;
+      });
+    };
+
+    const onRecommendationRejected = ({ recommendationId }) => {
+      setRecommendations((prev) =>
+        prev.map((r) =>
+          r._id === recommendationId || r.id === recommendationId
+            ? { ...r, status: "rejected" }
+            : r
+        )
+      );
+      setLoadingIds((ids) => {
+        const next = new Set(ids);
+        next.delete(recommendationId);
+        return next;
+      });
+    };
+
     socket.on("connect", onConnect);
     socket.on("connect_error", onConnectError);
+    socket.on("disconnect", onDisconnect);
+    socket.on("newAiSuggestion", onNewAiSuggestion);
+    socket.on("messageApproved", onMessageApproved);
+    socket.on("recommendationRejected", onRecommendationRejected);
+
     socket.connect();
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("connect_error", onConnectError);
+      socket.off("disconnect", onDisconnect);
+      socket.off("newAiSuggestion", onNewAiSuggestion);
+      socket.off("messageApproved", onMessageApproved);
+      socket.off("recommendationRejected", onRecommendationRejected);
       socket.disconnect();
     };
   }, [businessId, token, onTokenExpired]);
@@ -110,10 +137,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   }, [token]);
 
   const approveRecommendation = async (id) => {
-    if (remainingQuestions !== null && remainingQuestions <= 0) {
-      setError("❗ הגעת למגבלת השאלות החודשית. יש לרכוש חבילה נוספת.");
-      return;
-    }
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
@@ -133,7 +156,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
           r._id === id || r.id === id ? { ...r, status: "approved" } : r
         )
       );
-      setRemainingQuestions((prev) => (prev !== null ? Math.max(prev - 1, 0) : null));
     } catch (err) {
       setError("שגיאה באישור ההמלצה: " + err.message);
     } finally {
@@ -220,10 +242,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   };
 
   const saveAndApprove = async (id) => {
-    if (remainingQuestions !== null && remainingQuestions <= 0) {
-      setError("❗ הגעת למגבלת השאלות החודשית. יש לרכוש חבילה נוספת.");
-      return;
-    }
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
@@ -261,60 +279,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
-  const handlePurchaseExtra = async () => {
-    if (purchaseLoading || !selectedPackage) return;
-    if (!businessId) {
-      setPurchaseError("לא נמצא מזהה עסק. אנא היכנס מחדש.");
-      return;
-    }
-
-    setPurchaseLoading(true);
-    setPurchaseMessage("");
-    setPurchaseError("");
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/cardcomAI/ai-package`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          packageId: selectedPackage.id,
-          businessId,
-          packageType: selectedPackage.type,
-          price: selectedPackage.price,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl;
-        return;
-      }
-
-      setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
-      setSelectedPackage(null);
-
-      // רענון כמות שאלות שנותרה לאחר הרכישה
-      fetch(`${API_BASE_URL}/api/business/my`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          const business = data.business;
-          const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
-          const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
-          setRemainingQuestions(Math.max(maxQuestions - usedQuestions, 0));
-        });
-    } catch (e) {
-      setPurchaseError(e.message || "שגיאה ברכישת החבילה");
-    } finally {
-      setPurchaseLoading(false);
-    }
-  };
-
   const pending = recommendations.filter((r) => r.status === "pending");
   const history = recommendations.filter(
     (r) => r.status === "approved" || r.status === "rejected"
@@ -325,24 +289,9 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       <h3>המלצות AI ממתינות לאישור</h3>
       {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
 
-      {/* הודעה ברורה אם הגיע למגבלת השאלות */}
-      {remainingQuestions !== null && remainingQuestions <= 0 && (
-        <div style={{ padding: "1rem", backgroundColor: "#ffcccc", marginBottom: "1rem" }}>
-          ❗ הגעת למגבלת השאלות החודשית (60). יש לרכוש חבילת AI נוספת כדי להמשיך.
-        </div>
-      )}
-
-      {/* הפרדה בין חוסר המלצות לבין חוסר שאלות */}
-      {pending.length === 0 && remainingQuestions > 0 && (
-        <p>כרגע אין המלצות חדשות, אנא המתן להמלצות נוספות.</p>
-      )}
-
-      {pending.length === 0 && remainingQuestions <= 0 && (
-        <p>אין אפשרות להמשיך כרגע. יש לרכוש חבילת שאלות נוספת.</p>
-      )}
-
-      {/* רשימת המלצות רק אם יש המלצות וטרם הגעת למגבלה */}
-      {pending.length > 0 && (remainingQuestions === null || remainingQuestions > 0) && (
+      {pending.length === 0 ? (
+        <p>אין המלצות חדשות.</p>
+      ) : (
         <ul>
           {pending.map(({ _id, id, text, commandText }) => {
             const recId = _id || id;
@@ -367,15 +316,14 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                       }
                       rows={10}
                       style={{ width: "100%", resize: "vertical" }}
-                      disabled={remainingQuestions !== null && remainingQuestions <= 0}
                     />
                     <div style={{ marginTop: 10 }}>
-                      <button onClick={() => saveDraft(recId)} disabled={isLoading || (remainingQuestions !== null && remainingQuestions <= 0)}>
+                      <button onClick={() => saveDraft(recId)} disabled={isLoading}>
                         {isLoading ? "שומר טיוטה..." : "שמור טיוטה"}
                       </button>{" "}
                       <button
                         onClick={() => saveAndApprove(recId)}
-                        disabled={isLoading || (remainingQuestions !== null && remainingQuestions <= 0)}
+                        disabled={isLoading}
                       >
                         {isLoading ? "מטמיע ושולח..." : "שמור ואשר"}
                       </button>{" "}
@@ -391,18 +339,18 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                       <p style={{ fontStyle: "italic", color: "#555" }}>
                         <strong>תשובה/המלצה:</strong> {cleanText(commandText)}</p>
                     )}
-                    <button onClick={() => startEditing({ _id: recId, text, commandText, editedText: recommendations.find(r => (r._id === recId || r.id === recId))?.editedText, isEdited: recommendations.find(r => (r._id === recId || r.id === recId))?.isEdited })} disabled={remainingQuestions !== null && remainingQuestions <= 0}>
+                    <button onClick={() => startEditing({ _id: recId, text, commandText, editedText: recommendations.find(r => (r._id === recId || r.id === recId))?.editedText, isEdited: recommendations.find(r => (r._id === recId || r.id === recId))?.isEdited })}>
                       ערוך
                     </button>{" "}
                     <button
                       onClick={() => approveRecommendation(recId)}
-                      disabled={isLoading || (remainingQuestions !== null && remainingQuestions <= 0)}
+                      disabled={isLoading}
                     >
                       {isLoading ? "טוען..." : "אשר ושלח"}
                     </button>{" "}
                     <button
                       onClick={() => rejectRecommendation(recId)}
-                      disabled={isLoading || (remainingQuestions !== null && remainingQuestions <= 0)}
+                      disabled={isLoading}
                     >
                       {isLoading ? "טוען..." : "דחה"}
                     </button>
@@ -412,59 +360,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
             );
           })}
         </ul>
-      )}
-
-      <hr />
-
-      {/* תיבת רכישת חבילת שאלות כשהמגבלה הגיעה */}
-      {remainingQuestions !== null && remainingQuestions <= 0 && (
-        <div style={{
-          border: "1px solid #a46",
-          padding: "1rem",
-          marginTop: "1rem",
-          borderRadius: "12px",
-          boxShadow: "0 4px 14px rgba(164,70,102,0.25)",
-          direction: "rtl",
-          textAlign: "right",
-          fontWeight: "600",
-          fontSize: "16px",
-          backgroundColor: "white",
-        }}>
-          <p>❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
-          {aiPackages.map((pkg) => (
-            <label key={pkg.id} style={{ display: "block", marginBottom: "0.5rem", cursor: purchaseLoading ? "not-allowed" : "pointer" }}>
-              <input
-                type="radio"
-                name="ai-package"
-                value={pkg.id}
-                disabled={purchaseLoading}
-                checked={selectedPackage?.id === pkg.id}
-                onChange={() => setSelectedPackage(pkg)}
-                style={{ marginLeft: "8px" }}
-              />
-              {pkg.label} - {pkg.price} ש"ח
-            </label>
-          ))}
-          <button
-            onClick={handlePurchaseExtra}
-            disabled={purchaseLoading || !selectedPackage}
-            style={{
-              marginTop: "0.5rem",
-              backgroundColor: purchaseLoading ? "#ccc" : "#b399e6",
-              color: "white",
-              border: "none",
-              borderRadius: "20px",
-              padding: "10px 25px",
-              fontSize: "16px",
-              cursor: purchaseLoading ? "not-allowed" : "pointer",
-              transition: "background-color 0.3s ease",
-            }}
-          >
-            {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
-          </button>
-          {purchaseMessage && <p style={{ color: "green", marginTop: "0.5rem" }}>{purchaseMessage}</p>}
-          {purchaseError && <p style={{ color: "red", marginTop: "0.5rem" }}>{purchaseError}</p>}
-        </div>
       )}
 
       <hr />
