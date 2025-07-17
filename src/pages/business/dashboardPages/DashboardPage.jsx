@@ -67,16 +67,27 @@ function useOnScreen(ref) {
   return isVisible;
 }
 
-function enrichAppointment(appt, business) {
-  const service = business.services?.find(
-    (s) => s._id.toString() === appt.serviceId.toString()
-  );
+function enrichAppointment(appt, business = {}) {
+  // קודם כל – אם יש serviceName בפגישה, זה הערך!
+  let serviceName = appt.serviceName?.trim();
+  if (!serviceName && business.services) {
+    // fallback: נסה להשלים מהעסק
+    const service = business.services.find(
+      (s) => s._id.toString() === appt.serviceId?.toString()
+    );
+    serviceName = service?.name;
+  }
+
+  let clientName = appt.clientName?.trim();
+  // תוכל להוסיף פה לוגיקה לשלוף שם מ-business.clients אם צריך
+
   return {
     ...appt,
-    clientName: appt.clientName?.trim() || "לא ידוע",
-    serviceName: service ? service.name : "לא ידוע",
+    clientName: clientName || "לא ידוע",
+    serviceName: serviceName || "לא ידוע",
   };
 }
+
 
 function countItemsInLastWeek(items, dateKey = "date") {
   if (!Array.isArray(items)) return 0;
@@ -361,9 +372,10 @@ const DashboardPage = () => {
   if (error) return <p className="error-text">{alert || error}</p>;
 
   const effectiveStats = stats || {};
-  const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
-    enrichAppointment(appt, effectiveStats)
-  );
+
+const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
+  enrichAppointment(appt, effectiveStats)
+);
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
