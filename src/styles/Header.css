@@ -19,7 +19,7 @@
 /* מיכל המבורגר + התראות */
 .menu-toggle {
   position: absolute;      /* השתנה מ־fixed ל־absolute ביחס ל־.app-header */
-  top: calc(50% + 8px);               /* מרכז אנכי בתוכו */
+  top: calc(50% + 8px);   /* מרכז אנכי בתוכו */
   right: 12px;             /* מיקום אופקי ללא שינוי */
   transform: translateY(-50%);
   z-index: 1600;
@@ -31,7 +31,6 @@
   padding: 4px 8px;
   box-shadow: 0 0 8px rgba(0,0,0,0.1);
 }
-
 
 /* כפתור המבורגר */
 .menu-button {
@@ -165,7 +164,6 @@
 /* =================================================================== */
 /*                                Drawer                                */
 /* =================================================================== */
-/* קונטיינר גנרי של ה-drawer */
 .side-menu {
   position: fixed;
   top: 0;
@@ -187,7 +185,6 @@
   transform: translateX(0);
 }
 
-/* כותרת קבועה בראש ה־drawer */
 .drawer-header {
   height: 64px;
   display: flex;
@@ -211,17 +208,13 @@
   background: #e8dbff;
 }
 
-/* =================================================================== */
-/*                            אזור הגלילה                              */
-/* =================================================================== */
 .menu-scroll {
-  flex: 1 1 auto;               /* יתפוס את השטח בין ההדר לפוטר */
+  flex: 1 1 auto;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0;                   /* לא צריך רווח תחתון */
+  padding: 0;
 }
 
-/* פרטי משתמש */
 .menu-user {
   display: flex;
   align-items: center;
@@ -233,7 +226,6 @@
   font-weight: 500;
 }
 
-/* קישורים בתפריט */
 .menu-section {
   margin-top: 24px;
 }
@@ -272,12 +264,9 @@ a.active-link {
   margin-left: 4px;
 }
 
-/* =================================================================== */
-/*            אזור אישי והתנתקות (פוטר) – תמיד בתחתית               */
-/* =================================================================== */
 .auth-menu {
-  position: relative;           /* סטטי בתוך flex */
-  margin-top: auto;             /* ידחוף את עצמו לתחתית */
+  position: relative;
+  margin-top: auto;
   background: #fff;
   padding: 16px calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
   display: flex;
@@ -292,9 +281,7 @@ a.active-link {
   text-align: center;
 }
 
-/* =================================================================== */
-/*                           גלילה חלקה ודקורציה                       */
-/* =================================================================== */
+/* גלילה חלקה */
 .side-menu::-webkit-scrollbar {
   width: 6px;
 }
@@ -306,7 +293,6 @@ a.active-link {
   border-radius: 3px;
 }
 
-/* Overlay כהה */
 .menu-backdrop {
   position: fixed;
   inset: 0;
@@ -314,16 +300,12 @@ a.active-link {
   z-index: 1500;
   animation: fadeInBackdrop .3s forwards;
 }
-
-/* אנימציות */
 @keyframes fadeInBackdrop {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-/* =================================================================== */
-/*                            רספונסיב – מובייל                         */
-/* =================================================================== */
+/* רספונסיב – מובייל */
 @media (max-width: 768px) {
   .app-header {
     padding: 0 12px;
@@ -343,12 +325,20 @@ a.active-link {
   }
   .side-menu {
     max-width: 300px;
+    display: flex;
+    flex-direction: column;
   }
+
+  /* סדר התוכן בתוך המגירה */
+  .drawer-header { order: 0; }
+  .auth-menu {
+    order: 1;
+    margin-top: 0;
+  }
+  .menu-scroll { order: 2; }
 }
 
-/* =================================================================== */
-/*                          Toast הצלחה גלובלי                         */
-/* =================================================================== */
+/* Toast גלובלי */
 .global-success-toast {
   position: fixed;
   top: 16px;
@@ -371,9 +361,7 @@ a.active-link {
   100% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
 }
 
-/* =================================================================== */
-/*                 כפתור התחברות מובייל בתוך Drawer                   */
-/* =================================================================== */
+/* לחצן התחברות מובייל */
 .mobile-auth {
   padding: 16px;
   border-bottom: 1px solid #e0d3f2;
