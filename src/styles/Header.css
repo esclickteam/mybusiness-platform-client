@@ -2,38 +2,27 @@
 /*                             Header.css                              */
 /* =================================================================== */
 
-/* ===== Header (Desktop & Mobile) ===== */
+/* ===== Header (Desktop) ===== */
 .app-header {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 6px 20px;
   min-height: 90px;
+  justify-content: space-between;
   background-color: rgba(255, 255, 255, 0.95);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   backdrop-filter: saturate(180%) blur(12px);
   z-index: 1502;
 }
 
-/* כפתורי התחברות, לוח בקרה והתנתקות – משמאל */
-.auth-controls {
-  order: 0;
-  display: flex;
-  gap: 12px;
-}
-
-/* הלוגו במרכז */
-.logo-wrapper {
-  order: 1;
-  flex: 1;
-  text-align: center;
-  padding: 0;
-  margin: 0;
-}
-
-/* מיכל המבורגר + התראות – מימין */
+/* מיכל המבורגר + התראות */
 .menu-toggle {
-  order: 2;
+  position: absolute;      /* השתנה מ־fixed ל־absolute ביחס ל־.app-header */
+  top: calc(50% + 8px);               /* מרכז אנכי בתוכו */
+  right: 12px;             /* מיקום אופקי ללא שינוי */
+  transform: translateY(-50%);
+  z-index: 1600;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -41,8 +30,8 @@
   border-radius: 8px;
   padding: 4px 8px;
   box-shadow: 0 0 8px rgba(0,0,0,0.1);
-  z-index: 1600;
 }
+
 
 /* כפתור המבורגר */
 .menu-button {
@@ -126,6 +115,15 @@
 }
 
 /* הלוגו */
+.logo-wrapper {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 8px);
+  transform: translate(-50%, -50%);
+  order: 2;
+  padding: 0;
+  margin: 0;
+}
 .logo-link .logo {
   height: 120px;
   object-fit: contain;
@@ -133,6 +131,16 @@
 }
 .logo-link:hover .logo {
   transform: scale(1.05);
+}
+
+/* כפתורי דסקטופ – לשמאל */
+.auth-controls.desktop-only {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
 }
 
 /* כפתורי פעולה */
@@ -157,6 +165,7 @@
 /* =================================================================== */
 /*                                Drawer                                */
 /* =================================================================== */
+/* קונטיינר גנרי של ה-drawer */
 .side-menu {
   position: fixed;
   top: 0;
@@ -166,9 +175,10 @@
   height: 100vh;
   background: #fff;
   box-shadow: -4px 0 16px rgba(0,0,0,.1);
+
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden;          /* מסתיר גלילה חיצונית */
   transform: translateX(100%);
   transition: transform .3s;
   z-index: 1501;
@@ -177,6 +187,7 @@
   transform: translateX(0);
 }
 
+/* כותרת קבועה בראש ה־drawer */
 .drawer-header {
   height: 64px;
   display: flex;
@@ -188,24 +199,26 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
+  padding: 8px 14px;
   background: #fff;
   border: 1px solid #bfa2e1;
   border-radius: 20px;
   color: #5e17eb;
-  font-size: .9rem;
+  font-size: .95rem;
   cursor: pointer;
 }
 .back-button:hover {
   background: #e8dbff;
 }
 
-/* אזור הגלילה */
+/* =================================================================== */
+/*                            אזור הגלילה                              */
+/* =================================================================== */
 .menu-scroll {
-  flex: 1 1 auto;
+  flex: 1 1 auto;               /* יתפוס את השטח בין ההדר לפוטר */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0;
+  padding: 0;                   /* לא צריך רווח תחתון */
 }
 
 /* פרטי משתמש */
@@ -259,11 +272,12 @@ a.active-link {
   margin-left: 4px;
 }
 
-/* אזור אישי והתנתקות (פוטר) */
+/* =================================================================== */
+/*            אזור אישי והתנתקות (פוטר) – תמיד בתחתית               */
+/* =================================================================== */
 .auth-menu {
-  position: relative;
-  margin-top: 0;        /* בטל את margin-top: auto שמזיז למטה */
-  margin-bottom: 16px;  /* רווח מתחת */
+  position: relative;           /* סטטי בתוך flex */
+  margin-top: auto;             /* ידחוף את עצמו לתחתית */
   background: #fff;
   padding: 16px calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
   display: flex;
@@ -272,14 +286,15 @@ a.active-link {
   box-shadow: 0 -2px 8px rgba(0,0,0,.04);
   z-index: 1602;
 }
-
 .auth-menu .personal-area-button,
 .auth-menu .logout-button {
   width: 100%;
   text-align: center;
 }
 
-/* גלילה חלקה ודקורציה */
+/* =================================================================== */
+/*                           גלילה חלקה ודקורציה                       */
+/* =================================================================== */
 .side-menu::-webkit-scrollbar {
   width: 6px;
 }
@@ -299,57 +314,41 @@ a.active-link {
   z-index: 1500;
   animation: fadeInBackdrop .3s forwards;
 }
+
+/* אנימציות */
 @keyframes fadeInBackdrop {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-/* רספונסיב – מובייל */
+/* =================================================================== */
+/*                            רספונסיב – מובייל                         */
+/* =================================================================== */
 @media (max-width: 768px) {
   .app-header {
     padding: 0 12px;
     height: 90px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: saturate(180%) blur(12px);
   }
   .logo-link .logo {
     height: 90px;
   }
-  .auth-menu {
-    display: none;
+  .auth-controls.desktop-only {
+    display: none !important;
+  }
+  .menu-toggle {
+    right: 12px;
   }
   .side-menu {
     max-width: 300px;
   }
 }
 
-/* טאבלטים גדולים */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .app-header {
-    padding: 0 16px;
-    min-height: 80px;
-  }
-  .logo-link .logo {
-    height: 100px;
-  }
-  .side-menu {
-    max-width: 280px;
-  }
-}
-
-/* מסכים קטנים מאוד */
-@media (max-width: 360px) {
-  .app-header {
-    padding: 0 8px;
-    min-height: 70px;
-  }
-  .logo-link .logo {
-    height: 70px;
-  }
-  .side-menu {
-    max-width: 260px;
-  }
-}
-
-/* Toast הצלחה גלובלי */
+/* =================================================================== */
+/*                          Toast הצלחה גלובלי                         */
+/* =================================================================== */
 .global-success-toast {
   position: fixed;
   top: 16px;
@@ -372,7 +371,9 @@ a.active-link {
   100% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
 }
 
-/* כפתור התחברות מובייל בתוך Drawer */
+/* =================================================================== */
+/*                 כפתור התחברות מובייל בתוך Drawer                   */
+/* =================================================================== */
 .mobile-auth {
   padding: 16px;
   border-bottom: 1px solid #e0d3f2;
