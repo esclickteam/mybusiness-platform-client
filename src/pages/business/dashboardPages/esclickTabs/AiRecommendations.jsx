@@ -18,7 +18,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     if (!businessId || !token) return;
 
     setError(null);
-    fetch(`/chat/recommendations?businessId=${businessId}`, {
+    fetch(`/api/chat/recommendations?businessId=${businessId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
