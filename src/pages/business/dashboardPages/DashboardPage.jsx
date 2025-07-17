@@ -68,10 +68,8 @@ function useOnScreen(ref) {
 }
 
 function enrichAppointment(appt, business = {}) {
-  // קודם כל – אם יש serviceName בפגישה, זה הערך!
   let serviceName = appt.serviceName?.trim();
   if (!serviceName && business.services) {
-    // fallback: נסה להשלים מהעסק
     const service = business.services.find(
       (s) => s._id.toString() === appt.serviceId?.toString()
     );
@@ -79,7 +77,6 @@ function enrichAppointment(appt, business = {}) {
   }
 
   let clientName = appt.clientName?.trim();
-  // תוכל להוסיף פה לוגיקה לשלוף שם מ-business.clients אם צריך
 
   return {
     ...appt,
@@ -87,7 +84,6 @@ function enrichAppointment(appt, business = {}) {
     serviceName: serviceName || "לא ידוע",
   };
 }
-
 
 function countItemsInLastWeek(items, dateKey = "date") {
   if (!Array.isArray(items)) return 0;
@@ -108,6 +104,16 @@ async function fetchDashboardStats(businessId, refreshAccessToken) {
   });
   return res.data;
 }
+
+// פונקציה חדשה לטעינת פגישות עדכניות דרך API
+const fetchAppointments = async (businessId, refreshAccessToken) => {
+  const token = await refreshAccessToken();
+  if (!token) throw new Error("No token");
+  const res = await API.get(`/appointments/all-with-services?businessId=${businessId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
 
 const MemoizedDashboardCards = React.memo(DashboardCards);
 const MemoizedInsights = React.memo(Insights);
@@ -146,7 +152,6 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Refs for lazy loading with intersection observer
   const cardsRef = useRef(null);
   const insightsRef = useRef(null);
   const chartsRef = useRef(null);
@@ -154,7 +159,6 @@ const DashboardPage = () => {
   const nextActionsRef = useRef(null);
   const weeklySummaryRef = useRef(null);
 
-  // IntersectionObserver states
   const cardsVisible = useOnScreen(cardsRef);
   const insightsVisible = useOnScreen(insightsRef);
   const chartsVisible = useOnScreen(chartsRef);
@@ -162,7 +166,6 @@ const DashboardPage = () => {
   const nextActionsVisible = useOnScreen(nextActionsRef);
   const weeklySummaryVisible = useOnScreen(weeklySummaryRef);
 
-  // State to keep track if each section was loaded once (to avoid rerendering/remounting)
   const [cardsLoaded, setCardsLoaded] = useState(false);
   const [insightsLoaded, setInsightsLoaded] = useState(false);
   const [chartsLoaded, setChartsLoaded] = useState(false);
@@ -173,23 +176,18 @@ const DashboardPage = () => {
   useEffect(() => {
     if (cardsVisible) setCardsLoaded(true);
   }, [cardsVisible]);
-
   useEffect(() => {
     if (insightsVisible) setInsightsLoaded(true);
   }, [insightsVisible]);
-
   useEffect(() => {
     if (chartsVisible) setChartsLoaded(true);
   }, [chartsVisible]);
-
   useEffect(() => {
     if (appointmentsVisible) setAppointmentsLoaded(true);
   }, [appointmentsVisible]);
-
   useEffect(() => {
     if (nextActionsVisible) setNextActionsLoaded(true);
   }, [nextActionsVisible]);
-
   useEffect(() => {
     if (weeklySummaryVisible) setWeeklySummaryLoaded(true);
   }, [weeklySummaryVisible]);
@@ -229,7 +227,6 @@ const DashboardPage = () => {
     });
   }, []);
 
-  // Debounced stats setter to limit rerenders on frequent WebSocket events
   const debouncedSetStats = useRef(
     debounce((newStats) => {
       setStats(newStats);
@@ -242,7 +239,6 @@ const DashboardPage = () => {
     setLoading(true);
     setError(null);
 
-    // Try to load cached stats first for instant display (stale-while-revalidate)
     const cached = localStorage.getItem("dashboardStats");
     if (cached) {
       setStats(JSON.parse(cached));
@@ -260,9 +256,26 @@ const DashboardPage = () => {
     }
   };
 
+  // פונקציה לטעינת פגישות דרך API ועדכון סטייט
+  const refreshAppointmentsFromAPI = useCallback(async () => {
+    if (!businessId) return;
+    try {
+      const appts = await fetchAppointments(businessId, refreshAccessToken);
+      setStats((oldStats) => ({
+        ...oldStats,
+        appointments: appts,
+        appointments_count: appts.length,
+      }));
+    } catch (error) {
+      console.error("Error refreshing appointments from API:", error);
+    }
+  }, [businessId, refreshAccessToken]);
+
   useEffect(() => {
     if (!initialized || !businessId) return;
     loadStats();
+
+    refreshAppointmentsFromAPI();
 
     let isMounted = true;
 
@@ -301,35 +314,17 @@ const DashboardPage = () => {
         debouncedSetStats(newStats);
       });
 
-      sock.on('profileViewsUpdated', (data) => {
-        if (!data || typeof data.views_count !== 'number') return;
+      sock.on("profileViewsUpdated", (data) => {
+        if (!data || typeof data.views_count !== "number") return;
         setStats((oldStats) =>
-          oldStats
-            ? { ...oldStats, views_count: data.views_count }
-            : oldStats
+          oldStats ? { ...oldStats, views_count: data.views_count } : oldStats
         );
       });
 
-      sock.on("appointmentCreated", (newAppointment) => {
-        if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
-        setStats((oldStats) => {
-          if (!oldStats) return oldStats;
-          const enriched = enrichAppointment(newAppointment, oldStats);
-          const updatedAppointments = [...(oldStats.appointments || []), enriched];
-          return {
-            ...oldStats,
-            appointments: updatedAppointments,
-            appointments_count: updatedAppointments.length,
-          };
-        });
-        if (newAppointment.date) {
-          const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
-          if (apptDate === selectedDate) {
-            setSelectedDate(null);
-            setTimeout(() => setSelectedDate(apptDate), 10);
-          }
-        }
-      });
+      // כאן, במקום לעדכן ידנית, קוראים שוב ל-API ומרעננים את הפגישות
+      sock.on("appointmentCreated", refreshAppointmentsFromAPI);
+      sock.on("appointmentUpdated", refreshAppointmentsFromAPI);
+      sock.on("appointmentDeleted", refreshAppointmentsFromAPI);
 
       sock.on("disconnect", (reason) => {
         console.log("Dashboard socket disconnected:", reason);
@@ -349,7 +344,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, debouncedSetStats, selectedDate]);
+  }, [initialized, businessId, logout, refreshAccessToken, debouncedSetStats, refreshAppointmentsFromAPI]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -373,9 +368,9 @@ const DashboardPage = () => {
 
   const effectiveStats = stats || {};
 
-const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
-  enrichAppointment(appt, effectiveStats)
-);
+  const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
+    enrichAppointment(appt, effectiveStats)
+  );
 
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
@@ -464,7 +459,7 @@ const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
       </Suspense>
 
       <div ref={cardsRef}>
-        {(cardsLoaded) && (
+        {cardsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
             <MemoizedDashboardCards
               stats={syncedStats}
@@ -475,7 +470,7 @@ const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
       </div>
 
       <div ref={insightsRef}>
-        {(insightsLoaded) && (
+        {insightsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
             <MemoizedInsights
               stats={{
@@ -488,7 +483,7 @@ const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
       </div>
 
       <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-        {(chartsLoaded) && (
+        {chartsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
             <MemoizedBarChartComponent
               appointments={enrichedAppointments}
@@ -499,7 +494,7 @@ const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
       </div>
 
       <div ref={nextActionsRef} className="actions-container full-width">
-        {(nextActionsLoaded) && (
+        {nextActionsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
             <MemoizedNextActions
               stats={{
@@ -514,7 +509,7 @@ const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
       </div>
 
       <div ref={appointmentsRef} className="calendar-row">
-        {(appointmentsLoaded) && (
+        {appointmentsLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
             <div className="day-agenda-box">
               <MemoizedDailyAgenda
@@ -536,7 +531,7 @@ const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
       </div>
 
       <div ref={weeklySummaryRef}>
-        {(weeklySummaryLoaded) && (
+        {weeklySummaryLoaded && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
             <MemoizedWeeklySummary stats={syncedStats} />
           </Suspense>
