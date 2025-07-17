@@ -1,12 +1,12 @@
-// src/main.jsx (entrypoint)
 import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 /* Contexts */
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
+import useIdleLogout from "./hooks/useIdleLogout";  
 import "./styles/index.css";
 
 // Polyfill ל‑Buffer (חלק מהספריות דורשות)
@@ -16,6 +16,13 @@ if (!window.Buffer) window.Buffer = Buffer;
 const queryClient = new QueryClient();
 const App = lazy(() => import("./App"));
 
+// קומפוננטה לעטיפת ה-App עם idle logout
+function AppWithIdleLogout() {
+  const { logout } = useAuth();
+  useIdleLogout(logout, 10 * 60 * 1000); // יציאה אחרי 10 דקות אי פעילות
+  return <App />;
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
@@ -23,7 +30,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <AuthProvider>
           <NotificationsProvider>
             <Suspense fallback={<div className="spinner" />}>
-              <App />
+              <AppWithIdleLogout />
             </Suspense>
           </NotificationsProvider>
         </AuthProvider>
