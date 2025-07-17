@@ -239,18 +239,19 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!initialized || !businessId) return;
 
-    // טען נתונים מה-localStorage אם קיימים - לטעינה מהירה, אך תעדכן מהשרת מיד
-    try {
-      const cached = localStorage.getItem("dashboardStats");
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (parsed && typeof parsed === "object") {
-          setStats(parsed);
-        }
-      }
-    } catch {
-      // לא עשה כלום במקרה של שגיאה
-    }
+    // מחק את הטעינה מ־localStorage כדי להבטיח טעינה ישירה מהשרת בלבד
+    // אפשר להשאיר את זה להשוואה או טעינה מהירה אם רוצים, אך כרגע מבטלים זאת:
+    // try {
+    //   const cached = localStorage.getItem("dashboardStats");
+    //   if (cached) {
+    //     const parsed = JSON.parse(cached);
+    //     if (parsed && typeof parsed === "object") {
+    //       setStats(parsed);
+    //     }
+    //   }
+    // } catch {
+    //   // לא עשה כלום במקרה של שגיאה
+    // }
 
     loadStats();
 
@@ -365,8 +366,9 @@ const DashboardPage = () => {
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-  if (loading && !stats) return <DashboardSkeleton />;
+  if (loading) return <DashboardSkeleton />;
   if (error) return <p className="error-text">{alert || error}</p>;
+  if (!stats) return <p className="loading-text">⏳ טוען נתונים…</p>;
 
   const effectiveStats = stats || {};
   const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
