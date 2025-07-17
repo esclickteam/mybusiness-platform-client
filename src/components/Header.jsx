@@ -134,6 +134,25 @@ export default function Header() {
               </button>
             </div>
 
+            {/* כפתורי התחברות ולוח בקרה מתחת לכפתור חזור */}
+            {user && (
+              <div className="auth-menu" style={{ marginBottom: '16px' }}>
+                <button
+                  className="personal-area-button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate(getDashboardPath());
+                  }}
+                >
+                  אזור אישי
+                </button>
+                <button className="logout-button" onClick={handleLogout}>
+                  <FaSignOutAlt style={{ marginLeft: 6 }} />
+                  התנתק
+                </button>
+              </div>
+            )}
+
             <div className="menu-scroll">
               {!user ? (
                 <div className="mobile-auth">
@@ -174,24 +193,6 @@ export default function Header() {
                 </>
               )}
             </div>
-
-            {user && (
-              <div className="auth-menu">
-                <button
-                  className="personal-area-button"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    navigate(getDashboardPath());
-                  }}
-                >
-                  אזור אישי
-                </button>
-                <button className="logout-button" onClick={handleLogout}>
-                  <FaSignOutAlt style={{ marginLeft: 6 }} />
-                  התנתק
-                </button>
-              </div>
-            )}
           </div>
         </>
       )}
