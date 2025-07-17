@@ -145,8 +145,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
-  // שאר הפונקציות ללא שינוי (rejectRecommendation, startEditing, cancelEditing, saveDraft, saveAndApprove)
-
   const rejectRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -327,15 +325,20 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       <h3>המלצות AI ממתינות לאישור</h3>
       {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
 
-      {remainingQuestions !== null && remainingQuestions <= 0 && (
+      {/* הודעה ברורה אם הגיע למגבלת השאלות */}
+      {(remainingQuestions !== null && remainingQuestions <= 0) && (
         <div style={{ padding: "1rem", backgroundColor: "#ffcccc", marginBottom: "1rem" }}>
           ❗ הגעת למגבלת השאלות החודשית (60). יש לרכוש חבילת AI נוספת כדי להמשיך.
         </div>
       )}
 
-      {pending.length === 0 ? (
-        <p>אין המלצות חדשות.</p>
-      ) : (
+      {/* הודעה אם אין המלצות חדשות או שהמגבלה חלה */}
+      {((pending.length === 0) || (remainingQuestions !== null && remainingQuestions <= 0)) && (
+        <p>אין אפשרות להמשיך כרגע. יש להמתין להמלצות חדשות או לרכוש חבילת שאלות נוספת.</p>
+      )}
+
+      {/* רשימת המלצות רק אם יש המלצות וטרם הגעת למגבלה */}
+      {(pending.length > 0 && (remainingQuestions === null || remainingQuestions > 0)) && (
         <ul>
           {pending.map(({ _id, id, text, commandText }) => {
             const recId = _id || id;
@@ -349,8 +352,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                   marginBottom: "1rem",
                   border: "1px solid #ccc",
                   padding: "0.5rem",
-                  opacity: remainingQuestions !== null && remainingQuestions <= 0 ? 0.5 : 1,
-                  pointerEvents: remainingQuestions !== null && remainingQuestions <= 0 ? "none" : "auto",
                 }}
               >
                 {isEditing ? (
