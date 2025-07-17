@@ -258,6 +258,25 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
           <div ref={bottomRef} style={{ height: 1 }} />
         </div>
       </div>
+
+      {/* שורת הקלט המעודכנת, כמו ביועץ העסקי */}
+      <div className="chat-input">
+        <input
+          type="text"
+          placeholder="כתבי שאלה משלך..."
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          disabled={loading || (remainingQuestions !== null && remainingQuestions <= 0)}
+          dir="rtl"
+        />
+        <button
+          onClick={handleSend}
+          disabled={loading || !userInput.trim() || (remainingQuestions !== null && remainingQuestions <= 0)}
+        >
+          שליחה
+        </button>
+      </div>
     </div>
   );
 };
