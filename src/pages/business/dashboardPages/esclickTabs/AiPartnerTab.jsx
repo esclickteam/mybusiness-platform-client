@@ -54,13 +54,15 @@ const AiPartnerTab = ({
   const [purchaseMessage, setPurchaseMessage] = useState("");
   const [purchaseError, setPurchaseError] = useState("");
 
-  // ניהול חבילות AI
-  const [aiPackages, setAiPackages] = useState([]);
+  // חבילות AI קבועות (כמו ביועץ עסקי ושיווקי)
+  const aiPackages = [
+    { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 1, type: "ai-package" },
+    { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 1, type: "ai-package" },
+  ];
 
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
 
-  // ניקוי טקסט מהמלצות
   const filterText = useCallback(
     (text) =>
       text
@@ -81,7 +83,6 @@ const AiPartnerTab = ({
     return Array.from(map.values());
   }, []);
 
-  // רענון קרדיטים - עדכון שארית השאלות הזמינות
   const refreshRemainingQuestions = useCallback(async () => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/business/my`, {
@@ -94,17 +95,9 @@ const AiPartnerTab = ({
       const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
       const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
       setRemainingQuestions(Math.max(maxQuestions - usedQuestions, 0));
-
-      // טוען גם חבילות AI
-      if (business.aiPackages) {
-        setAiPackages(business.aiPackages);
-      } else {
-        setAiPackages([]);
-      }
     } catch (err) {
-      console.error("Error refreshing remaining questions and loading packages:", err);
+      console.error("Error refreshing remaining questions:", err);
       setRemainingQuestions(null);
-      setAiPackages([]);
     }
   }, [token]);
 
@@ -112,7 +105,6 @@ const AiPartnerTab = ({
     refreshRemainingQuestions();
   }, [refreshRemainingQuestions]);
 
-  // טעינת המלצות מהשרת
   useEffect(() => {
     async function fetchRecommendations() {
       if (!businessId || !token) return;
@@ -141,7 +133,6 @@ const AiPartnerTab = ({
     if (!showHistory) fetchRecommendations();
   }, [businessId, token, filterValidUniqueRecommendations, showHistory]);
 
-  // טעינת היסטוריית פקודות AI
   const fetchAiCommandHistory = useCallback(async () => {
     if (!businessId || !token) return;
     setLoadingHistory(true);
@@ -165,7 +156,6 @@ const AiPartnerTab = ({
     if (showHistory) fetchAiCommandHistory();
   }, [showHistory, fetchAiCommandHistory]);
 
-  // התחברות לסוקט והאזנות לאירועים
   useEffect(() => {
     if (!businessId || !token) return;
 
@@ -255,7 +245,6 @@ const AiPartnerTab = ({
     };
   }, [businessId, token, conversationId, onNewRecommendation]);
 
-  // שליחת פקודת AI - כולל בדיקת קרדיטים
   const sendAiCommand = useCallback(async () => {
     if (!commandText.trim() || (remainingQuestions !== null && remainingQuestions <= 0)) return;
 
@@ -293,7 +282,6 @@ const AiPartnerTab = ({
         console.log("Action result:", data.actionResult);
       }
 
-      // הפחתת קרדיט אחד מהיתרה אחרי כל שליחה מוצלחת
       setRemainingQuestions((prev) => (prev !== null ? Math.max(prev - 1, 0) : null));
     } catch (err) {
       alert("שגיאה בשליחת פקודת AI: " + err.message);
@@ -315,7 +303,6 @@ const AiPartnerTab = ({
     remainingQuestions,
   ]);
 
-  // אישור המלצה
   const approveSuggestion = useCallback(
     async ({ id, text }) => {
       setLoading(true);
@@ -349,13 +336,11 @@ const AiPartnerTab = ({
     [businessId, token, filterText]
   );
 
-  // דחיית המלצה
   const rejectSuggestion = useCallback((id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
     setActiveSuggestion(null);
   }, []);
 
-  // עריכת המלצה
   const editRecommendation = useCallback(
     async ({ id, newText }) => {
       setLoading(true);
@@ -390,12 +375,10 @@ const AiPartnerTab = ({
     [token]
   );
 
-  // גלילה אוטומטית לתחתית
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, suggestions]);
 
-  // עדכון טקסט העריכה כאשר משנה המלצה פעילה
   useEffect(() => {
     if (activeSuggestion) {
       setEditedText(activeSuggestion.text);
@@ -403,7 +386,6 @@ const AiPartnerTab = ({
     }
   }, [activeSuggestion]);
 
-  // רכישת חבילות נוספות
   const handlePurchaseExtra = async () => {
     if (purchaseLoading || !selectedPackage) return;
 
@@ -418,7 +400,7 @@ const AiPartnerTab = ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           packageId: selectedPackage.id,
@@ -462,9 +444,7 @@ const AiPartnerTab = ({
         >
           {loadingHistory && <p>טוען היסטוריה...</p>}
           {historyError && <p style={{ color: "red" }}>שגיאה בטעינת היסטוריה: {historyError}</p>}
-          {!loadingHistory && !historyError && aiCommandHistory.length === 0 && (
-            <p>אין פקודות AI קודמות.</p>
-          )}
+          {!loadingHistory && !historyError && aiCommandHistory.length === 0 && <p>אין פקודות AI קודמות.</p>}
           {!loadingHistory && !historyError && aiCommandHistory.length > 0 && (
             <ul>
               {aiCommandHistory.map((cmd) => (
@@ -558,10 +538,7 @@ const AiPartnerTab = ({
                   {pkg.label} - {pkg.price} ש"ח
                 </label>
               ))}
-              <button
-                onClick={handlePurchaseExtra}
-                disabled={purchaseLoading || !selectedPackage}
-              >
+              <button onClick={handlePurchaseExtra} disabled={purchaseLoading || !selectedPackage}>
                 {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
               </button>
 
@@ -590,10 +567,7 @@ const AiPartnerTab = ({
 
       {activeSuggestion && (
         <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
-          <div
-            className="modal-content approve-recommendation-box"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="modal-content approve-recommendation-box" onClick={(e) => e.stopPropagation()}>
             <h4>הודעת AI חדשה</h4>
 
             {editing ? (
