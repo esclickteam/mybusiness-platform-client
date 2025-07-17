@@ -128,6 +128,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         packageId: selectedPackage.id,
         businessId,
         packageType: selectedPackage.type,
+        price: selectedPackage.price,
       });
 
       if (res.data.paymentUrl) {

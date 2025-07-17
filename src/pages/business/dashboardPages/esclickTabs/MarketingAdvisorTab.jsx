@@ -150,6 +150,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId }) => {
           packageId: selectedPackage.id,
           businessId,
           packageType: selectedPackage.type,
+          price: selectedPackage.price,
         }),
       });
 

@@ -406,6 +406,7 @@ const AiPartnerTab = ({
           packageId: selectedPackage.id,
           businessId,
           packageType: selectedPackage.type,
+          price: selectedPackage.price,
         }),
       });
 
