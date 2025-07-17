@@ -262,7 +262,8 @@ a.active-link {
 /* אזור אישי והתנתקות (פוטר) */
 .auth-menu {
   position: relative;
-  margin-top: auto;
+  margin-top: 0;        /* בטל את margin-top: auto שמזיז למטה */
+  margin-bottom: 16px;  /* רווח מתחת */
   background: #fff;
   padding: 16px calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
   display: flex;
@@ -271,6 +272,7 @@ a.active-link {
   box-shadow: 0 -2px 8px rgba(0,0,0,.04);
   z-index: 1602;
 }
+
 .auth-menu .personal-area-button,
 .auth-menu .logout-button {
   width: 100%;
