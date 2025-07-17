@@ -43,7 +43,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         setError("שגיאה בטעינת ההמלצות: " + err.message);
       });
 
-    fetch(`${API_BASE_URL}/api/business/my`, {
+    fetch(`${API_BASE_URL}/business/my`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
