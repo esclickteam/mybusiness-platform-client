@@ -122,7 +122,8 @@ export default function Header() {
           </Link>
         </div>
 
-        <div className="auth-controls desktop-only">
+        {/* כפתורי התחברות, לוח בקרה והתנתקות - מופיעים תמיד בצד שמאל */}
+        <div className="auth-controls">
           {!user ? (
             <Link to="/login" className="login-button">
               התחברות

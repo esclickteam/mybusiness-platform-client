@@ -133,14 +133,15 @@
   transform: scale(1.05);
 }
 
-/* כפתורי דסקטופ – לשמאל */
-.auth-controls.desktop-only {
+/* כפתורי דסקטופ ומובייל – מיקום בצד שמאל תמיד */
+.auth-controls {
+  display: flex;
+  gap: 12px;
   position: absolute;
   left: 20px;
   top: 50%;
   transform: translateY(-50%);
-  display: flex;
-  gap: 12px;
+  z-index: 1700;
 }
 
 /* כפתורי פעולה */
@@ -335,8 +336,9 @@ a.active-link {
   .logo-link .logo {
     height: 90px;
   }
-  .auth-controls.desktop-only {
-    display: none !important;
+  /* הסתרת אזור התפריט התחתון בנייד כי הכפתורים בצד שמאל */
+  .auth-menu {
+    display: none;
   }
   .menu-toggle {
     right: 12px;
