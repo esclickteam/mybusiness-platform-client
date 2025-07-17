@@ -54,6 +54,9 @@ const AiPartnerTab = ({
   const [purchaseMessage, setPurchaseMessage] = useState("");
   const [purchaseError, setPurchaseError] = useState("");
 
+  // ניהול חבילות AI
+  const [aiPackages, setAiPackages] = useState([]);
+
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
 
@@ -87,12 +90,21 @@ const AiPartnerTab = ({
       if (!res.ok) throw new Error("Failed to fetch business data");
       const data = await res.json();
       const business = data.business;
+
       const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
       const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
       setRemainingQuestions(Math.max(maxQuestions - usedQuestions, 0));
+
+      // טוען גם חבילות AI
+      if (business.aiPackages) {
+        setAiPackages(business.aiPackages);
+      } else {
+        setAiPackages([]);
+      }
     } catch (err) {
-      console.error("Error refreshing remaining questions:", err);
+      console.error("Error refreshing remaining questions and loading packages:", err);
       setRemainingQuestions(null);
+      setAiPackages([]);
     }
   }, [token]);
 
