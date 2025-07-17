@@ -412,11 +412,23 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
       <hr />
 
+      {/* תיבת רכישת חבילת שאלות כשהמגבלה הגיעה */}
       {remainingQuestions !== null && remainingQuestions <= 0 && (
-        <div style={{ border: "1px solid #a46", padding: "1rem", marginTop: "1rem" }}>
+        <div style={{
+          border: "1px solid #a46",
+          padding: "1rem",
+          marginTop: "1rem",
+          borderRadius: "12px",
+          boxShadow: "0 4px 14px rgba(164,70,102,0.25)",
+          direction: "rtl",
+          textAlign: "right",
+          fontWeight: "600",
+          fontSize: "16px",
+          backgroundColor: "white",
+        }}>
           <p>❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
           {aiPackages.map((pkg) => (
-            <label key={pkg.id} style={{ display: "block", marginBottom: "0.5rem" }}>
+            <label key={pkg.id} style={{ display: "block", marginBottom: "0.5rem", cursor: purchaseLoading ? "not-allowed" : "pointer" }}>
               <input
                 type="radio"
                 name="ai-package"
@@ -424,19 +436,30 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                 disabled={purchaseLoading}
                 checked={selectedPackage?.id === pkg.id}
                 onChange={() => setSelectedPackage(pkg)}
+                style={{ marginLeft: "8px" }}
               />
-              {" "}{pkg.label} - {pkg.price} ש"ח
+              {pkg.label} - {pkg.price} ש"ח
             </label>
           ))}
           <button
             onClick={handlePurchaseExtra}
             disabled={purchaseLoading || !selectedPackage}
-            style={{ marginTop: "0.5rem" }}
+            style={{
+              marginTop: "0.5rem",
+              backgroundColor: purchaseLoading ? "#ccc" : "#b399e6",
+              color: "white",
+              border: "none",
+              borderRadius: "20px",
+              padding: "10px 25px",
+              fontSize: "16px",
+              cursor: purchaseLoading ? "not-allowed" : "pointer",
+              transition: "background-color 0.3s ease",
+            }}
           >
             {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
           </button>
-          {purchaseMessage && <p style={{ color: "green" }}>{purchaseMessage}</p>}
-          {purchaseError && <p style={{ color: "red" }}>{purchaseError}</p>}
+          {purchaseMessage && <p style={{ color: "green", marginTop: "0.5rem" }}>{purchaseMessage}</p>}
+          {purchaseError && <p style={{ color: "red", marginTop: "0.5rem" }}>{purchaseError}</p>}
         </div>
       )}
 
