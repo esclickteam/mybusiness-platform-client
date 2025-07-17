@@ -125,3 +125,44 @@
 .sidebarInner {
   box-shadow: none !important;
 }
+/* מובייל קטן מאוד - למשל אייפון SE */
+@media (max-width: 360px) {
+  .sidebarInner {
+    padding: 10px 6px;
+    font-size: 13px;
+  }
+  .convItemActive {
+    font-size: 13px;
+    padding: 10px 8px;
+  }
+  .emptyMessage {
+    font-size: 1rem;
+  }
+}
+
+/* טאבלטים - אייפד, גלקסי טאבלט וכד' */
+@media (min-width: 700px) and (max-width: 1024px) {
+  .chatContainer {
+    height: 90vh;
+    max-width: 100%;
+    flex-direction: row;
+  }
+  .sidebarInner {
+    width: 220px;
+    font-size: 14px;
+  }
+  .convItemActive {
+    font-size: 14px;
+  }
+}
+
+/* מסכים רחבים מאוד */
+@media (min-width: 1280px) {
+  .chatContainer {
+    max-width: 1150px;
+    height: 85vh;
+  }
+  .sidebarInner {
+    width: 260px;
+  }
+}

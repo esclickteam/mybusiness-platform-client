@@ -62,3 +62,62 @@
 .collab-form-button-danger:hover {
   background-color: #b83279;
 }
+@media (max-width: 480px) {
+  .collab-card {
+    padding: 12px 14px;
+    max-width: 100%;
+    font-size: 0.9rem;
+  }
+  .collab-card p {
+    font-size: 0.9rem;
+  }
+  .collab-form-button {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .collab-card {
+    padding: 14px 18px;
+    max-width: 90%;
+    font-size: 0.95rem;
+  }
+  .collab-card p {
+    font-size: 0.95rem;
+  }
+  .collab-form-button {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.9rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .collab-card {
+    padding: 15px 19px;
+    max-width: 700px;
+    font-size: 1rem;
+  }
+  .collab-card p {
+    font-size: 1rem;
+  }
+  .collab-form-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .collab-card {
+    padding: 16px 20px;
+    max-width: 700px;
+    font-size: 1rem;
+  }
+  .collab-card p {
+    font-size: 1rem;
+  }
+  .collab-form-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}

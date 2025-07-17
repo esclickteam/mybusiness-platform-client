@@ -392,3 +392,90 @@
   background: #e1bee7;
   color: #4a148c;
 }
+/* רספונסיביות לכל המכשירים */
+
+@media (max-width: 1024px) {
+  .product-cards-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .shop-type-btns {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .payment-methods .options,
+  .shipping-settings .options {
+    gap: 2em;
+  }
+}
+
+@media (max-width: 768px) {
+  .shop-preview,
+  .shop-editor,
+  .payment-settings,
+  .shipping-settings {
+    padding: 1.5rem 1rem;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .product-cards-list {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-type-btns {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mode-btn {
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+  }
+
+  .payment-methods .options,
+  .shipping-settings .options {
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+  }
+
+  .provider-select {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-manager,
+  .category-list {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-form {
+    padding: 1rem;
+  }
+
+  .payment-methods,
+  .shipping-settings {
+    padding: 1.2rem 1rem;
+  }
+
+  .payment-methods h4,
+  .shipping-settings h4 {
+    font-size: 1.1em;
+  }
+
+  .coupon-section button {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .coupon-section input {
+    font-size: 15px;
+  }
+}

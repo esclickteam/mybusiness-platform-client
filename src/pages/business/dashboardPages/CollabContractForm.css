@@ -142,3 +142,45 @@
     font-size: 0.9rem;
   }
 }
+/* טלפונים קטנים עד 480px */
+@media screen and (max-width: 480px) {
+  .contract-form-container {
+    max-width: 95vw;
+    padding: 0.8rem 1rem;
+    max-height: 80vh;
+    margin: 1rem 0.5rem;
+  }
+
+  .contract-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .form-sigCanvas,
+  .form-signature-image {
+    max-width: 100%;
+    height: 60px !important;
+  }
+
+  .collab-form-button {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+
+  .flex {
+    flex-direction: column;
+  }
+}
+
+/* טאבלטים קטנים בין 481px ל-768px - שיפור קל */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  .contract-form-container {
+    max-height: 85vh;
+    padding: 1rem 1.5rem;
+  }
+
+  .collab-form-button {
+    width: auto; /* לשמור על רוחב מותאם */
+  }
+}

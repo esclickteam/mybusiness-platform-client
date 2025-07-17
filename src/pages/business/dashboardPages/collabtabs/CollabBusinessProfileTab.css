@@ -356,3 +356,261 @@
   .profile-category { font-size: 1.1rem; }
   .profile-section { padding: 1.5rem 1rem; font-size: 1.1rem; min-height: 100px; }
 }
+/* התאמות רספונסיביות נוספות לפי רוחב מסך */
+
+/* Extra Small (עד 480px) */
+@media (max-width: 480px) {
+  .page-container {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 1rem 0.5rem;
+    border-radius: 16px;
+  }
+  .sidebar ul li {
+    display: inline-block;
+    margin: 0 0.6rem 0 0;
+  }
+  .sidebar ul li a {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.6rem;
+  }
+  .main-content {
+    max-width: 100%;
+    padding: 1rem;
+    border-radius: 20px;
+  }
+  .profile-card {
+    padding: 1.5rem 1rem;
+  }
+  .profile-top {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .profile-logo-label,
+  .profile-logo {
+    width: 100px;
+    height: 100px;
+  }
+  .profile-business-name {
+    font-size: 1.8rem;
+  }
+  .profile-category {
+    font-size: 1rem;
+  }
+  .profile-section {
+    padding: 1rem;
+    font-size: 1rem;
+    min-height: 90px;
+  }
+  .chat-box {
+    max-width: 100vw;
+    width: 100vw;
+    height: 90vh;
+    border-radius: 0;
+    padding: 0.5rem;
+  }
+}
+
+/* Small (481px עד 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .page-container {
+    flex-direction: column;
+    padding: 1.2rem;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 1rem 1rem;
+    border-radius: 18px;
+  }
+  .sidebar ul li a {
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+  }
+  .main-content {
+    max-width: 100%;
+    padding: 1.8rem 1.2rem;
+    border-radius: 24px;
+  }
+  .profile-card {
+    padding: 2rem 1.5rem;
+  }
+  .profile-top {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .profile-logo-label,
+  .profile-logo {
+    width: 120px;
+    height: 120px;
+  }
+  .profile-business-name {
+    font-size: 2.2rem;
+  }
+  .profile-category {
+    font-size: 1.2rem;
+  }
+  .profile-section {
+    padding: 1.5rem 1.2rem;
+    font-size: 1.1rem;
+    min-height: 110px;
+  }
+  .chat-box {
+    max-width: 99vw;
+    width: 99vw;
+    height: 85vh;
+  }
+}
+
+/* Medium (769px עד 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .page-container {
+    flex-direction: row;
+    padding: 1.5rem 2rem;
+  }
+  .sidebar {
+    width: 220px;
+    height: calc(100vh - 40px);
+    padding: 1.5rem 1rem;
+    border-radius: 20px;
+  }
+  .sidebar ul li a {
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+  }
+  .main-content {
+    max-width: 600px;
+    padding: 2rem 2.5rem;
+    border-radius: 32px;
+  }
+  .profile-card {
+    padding: 2.5rem 2rem;
+  }
+  .profile-top {
+    flex-direction: row;
+    gap: 2rem;
+  }
+  .profile-logo-label,
+  .profile-logo {
+    width: 140px;
+    height: 140px;
+  }
+  .profile-business-name {
+    font-size: 2.6rem;
+  }
+  .profile-category {
+    font-size: 1.3rem;
+  }
+  .profile-section {
+    padding: 2rem 2rem;
+    font-size: 1.2rem;
+    min-height: 130px;
+  }
+  .chat-box {
+    max-width: 900px;
+    height: 75vh;
+  }
+}
+
+/* Large (1025px עד 1440px) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .page-container {
+    flex-direction: row;
+    padding: 2rem 3rem;
+  }
+  .sidebar {
+    width: 240px;
+    padding: 1.8rem 1.2rem;
+    border-radius: 22px;
+  }
+  .sidebar ul li a {
+    font-size: 1.15rem;
+    padding: 0.6rem 1.2rem;
+  }
+  .main-content {
+    max-width: 700px;
+    padding: 2.5rem 3rem;
+    border-radius: 40px;
+  }
+  .profile-card {
+    padding: 3rem 3rem;
+  }
+  .profile-top {
+    gap: 2.5rem;
+  }
+  .profile-logo-label,
+  .profile-logo {
+    width: 160px;
+    height: 160px;
+  }
+  .profile-business-name {
+    font-size: 3rem;
+  }
+  .profile-category {
+    font-size: 1.5rem;
+  }
+  .profile-section {
+    padding: 2.5rem 3rem;
+    font-size: 1.4rem;
+    min-height: 150px;
+  }
+  .chat-box {
+    max-width: 900px;
+    height: 75vh;
+  }
+}
+
+/* Extra Large (מעל 1440px) */
+@media (min-width: 1441px) {
+  .page-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 3rem 4rem;
+  }
+  .sidebar {
+    width: 260px;
+    padding: 2rem 1.5rem;
+    border-radius: 24px;
+  }
+  .sidebar ul li a {
+    font-size: 1.2rem;
+    padding: 0.7rem 1.4rem;
+  }
+  .main-content {
+    max-width: 800px;
+    padding: 3rem 4rem;
+    border-radius: 48px;
+  }
+  .profile-card {
+    padding: 3.5rem 4rem;
+  }
+  .profile-top {
+    gap: 3rem;
+  }
+  .profile-logo-label,
+  .profile-logo {
+    width: 180px;
+    height: 180px;
+  }
+  .profile-business-name {
+    font-size: 3.2rem;
+  }
+  .profile-category {
+    font-size: 1.6rem;
+  }
+  .profile-section {
+    padding: 3rem 4rem;
+    font-size: 1.5rem;
+    min-height: 160px;
+  }
+  .chat-box {
+    max-width: 900px;
+    height: 75vh;
+  }
+}

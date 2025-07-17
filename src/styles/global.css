@@ -117,3 +117,54 @@ body {
         padding: 12px 30px;
     }
 }
+/* טאבלטים גדולים (769px עד 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .cards-container {
+    gap: 20px;
+  }
+
+  .card {
+    width: 60%;
+    min-width: auto;
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 19px;
+  }
+
+  .btn-primary {
+    font-size: 20px;
+    padding: 14px 32px;
+  }
+}
+
+/* מסכים קטנים מאוד (עד 480px) */
+@media (max-width: 480px) {
+  .cards-container {
+    gap: 15px;
+  }
+
+  .card {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .btn-primary {
+    font-size: 16px;
+    padding: 10px 25px;
+  }
+}

@@ -74,3 +74,47 @@
       width: 90%;
     }
   }
+  @media (max-width: 480px) {
+  .client-dashboard {
+    padding: 20px 10px;
+  }
+
+  .client-dashboard-title {
+    font-size: 28px;
+  }
+
+  .client-dashboard-subtitle {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .client-tab-button {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+
+  .client-tab-content {
+    width: 100%;
+    padding: 20px;
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .client-dashboard {
+    padding: 30px 15px;
+  }
+
+  .client-dashboard-title {
+    font-size: 32px;
+  }
+
+  .client-dashboard-subtitle {
+    font-size: 18px;
+  }
+
+  .client-tab-content {
+    max-width: 90%;
+  }
+}

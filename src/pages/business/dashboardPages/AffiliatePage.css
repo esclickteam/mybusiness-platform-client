@@ -292,3 +292,78 @@ input[type="number"]:focus {
 .payment-button svg {
   font-size: 1.4rem;
 }
+@media (max-width: 900px) {
+  .affiliate-page {
+    padding: 2rem 1.5rem;
+    max-width: 95%;
+  }
+  .affiliate-section,
+  .affiliate-stats,
+  .affiliate-info,
+  .affiliate-commission-rules,
+  .affiliate-bank-section {
+    padding: 1.5rem 1.2rem;
+  }
+  table th,
+  table td {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+  .stat-card {
+    font-size: 1rem;
+  }
+  .month-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .month-selector label,
+  .month-selector select {
+    font-size: 1rem;
+    width: 100%;
+  }
+  button,
+  .payment-button {
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+    width: 100%;
+    justify-content: center;
+  }
+  .payment-actions-buttons {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .affiliate-page {
+    padding: 1.5rem 1rem;
+  }
+  .affiliate-section,
+  .affiliate-stats,
+  .affiliate-info,
+  .affiliate-commission-rules,
+  .affiliate-bank-section {
+    padding: 1rem;
+  }
+  table th,
+  table td {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.85rem;
+  }
+  .stat-card {
+    font-size: 0.9rem;
+  }
+  .month-selector label,
+  .month-selector select {
+    font-size: 0.9rem;
+  }
+  button,
+  .payment-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.8rem;
+  }
+}

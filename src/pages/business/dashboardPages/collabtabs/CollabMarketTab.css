@@ -267,3 +267,141 @@
   font-weight: 900;
   margin: 2rem 0 1.5rem 0;
 }
+/* רספונסיביות עבור טאב 5 - מרקט שיתופים */
+
+/* Extra Small (עד 480px) */
+@media (max-width: 480px) {
+  .collab-market-container {
+    padding: 1rem;
+  }
+  .proposal-form {
+    max-width: 100%;
+    margin-bottom: 1rem;
+  }
+  .partners-grid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    gap: 1rem;
+  }
+  .collab-card {
+    max-width: 100%;
+    flex-direction: column;
+    padding: 0.8rem;
+    gap: 0.6rem;
+    text-align: center;
+  }
+  .collab-card .content {
+    font-size: 0.85rem;
+  }
+  .collab-card .content h4 {
+    font-size: 1rem;
+  }
+  .collab-card img.profile-image {
+    width: 48px;
+    height: 48px;
+    border-width: 1.5px;
+  }
+  .message-box-button.secondary,
+  .collab-card .contact-button {
+    font-size: 0.85rem;
+    padding: 0.4rem 1rem;
+    border-radius: 12px;
+  }
+  .add-collab-button {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+  .collab-market-image {
+    max-height: 140px;
+  }
+}
+
+/* Small (481px עד 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .collab-market-container {
+    padding: 1.5rem 2rem;
+  }
+  .proposal-form {
+    max-width: 90%;
+    margin-bottom: 1.5rem;
+  }
+  .partners-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    max-width: 600px;
+    gap: 1.2rem;
+  }
+  .collab-card {
+    max-width: 100%;
+    padding: 1rem;
+    gap: 0.8rem;
+  }
+  .collab-card .content {
+    font-size: 0.9rem;
+  }
+  .collab-card .content h4 {
+    font-size: 1.05rem;
+  }
+  .collab-card img.profile-image {
+    width: 54px;
+    height: 54px;
+    border-width: 2px;
+  }
+  .message-box-button.secondary,
+  .collab-card .contact-button {
+    font-size: 0.95rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 14px;
+  }
+  .add-collab-button {
+    font-size: 15px;
+    padding: 11px 18px;
+  }
+  .collab-market-image {
+    max-height: 170px;
+  }
+}
+
+/* Medium ומעלה (769px ומעלה) */
+@media (min-width: 769px) {
+  .collab-market-container {
+    padding: 2rem;
+  }
+  .proposal-form {
+    max-width: 600px;
+    margin-bottom: 2rem;
+  }
+  .partners-grid {
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    max-width: 600px;
+    gap: 1.5rem;
+  }
+  .collab-card {
+    max-width: 480px;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .collab-card .content {
+    font-size: 0.9rem;
+  }
+  .collab-card .content h4 {
+    font-size: 1.1rem;
+  }
+  .collab-card img.profile-image {
+    width: 60px;
+    height: 60px;
+    border-width: 2px;
+  }
+  .message-box-button.secondary,
+  .collab-card .contact-button {
+    font-size: 1rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: 16px;
+  }
+  .add-collab-button {
+    font-size: 16px;
+    padding: 12px 20px;
+  }
+  .collab-market-image {
+    max-height: 200px;
+  }
+}

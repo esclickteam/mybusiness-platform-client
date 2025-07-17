@@ -64,3 +64,100 @@
     width: 100% !important;
   }
 }
+/* Extra Small (XS) - טלפונים קטנים עד 480px */
+@media (max-width: 480px) {
+  .contract-view-container {
+    padding: 1rem;
+    max-width: 100vw;
+    margin: 1rem 0.5rem;
+  }
+
+  .view-signature-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .view-sigCanvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .contract-view-container .signature-actions {
+    justify-content: flex-start;
+    gap: 0.7rem;
+  }
+}
+
+/* Small (SM) - טלפונים סטנדרטיים 481px עד 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .contract-view-container {
+    max-width: 600px;
+    padding: 1.5rem;
+    margin: 1.5rem auto;
+  }
+
+  .view-signature-image {
+    width: 80%;
+    max-width: 300px;
+  }
+
+  .view-sigCanvas {
+    width: 100%;
+    height: 150px !important;
+  }
+
+  .contract-view-container .signature-actions {
+    gap: 1rem;
+  }
+}
+
+/* Medium (MD) - טאבלטים 769px עד 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .contract-view-container {
+    max-width: 650px;
+    padding: 2rem;
+  }
+
+  .view-signature-image {
+    width: 300px;
+  }
+
+  .view-sigCanvas {
+    width: 100%;
+    height: 180px !important;
+  }
+}
+
+/* Large (LG) - מחשבים סטנדרטיים 1025px עד 1440px */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .contract-view-container {
+    max-width: 700px;
+    padding: 2.5rem;
+  }
+
+  .view-signature-image {
+    width: 300px;
+  }
+
+  .view-sigCanvas {
+    width: 100%;
+    height: 200px !important;
+  }
+}
+
+/* Extra Large (XL) - מסכים רחבים מעל 1441px */
+@media (min-width: 1441px) {
+  .contract-view-container {
+    max-width: 700px;
+    padding: 2.5rem;
+  }
+
+  .view-signature-image {
+    width: 300px;
+  }
+
+  .view-sigCanvas {
+    width: 100%;
+    height: 200px !important;
+  }
+}

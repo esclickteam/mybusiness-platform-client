@@ -239,3 +239,54 @@
     margin-top: 18px;
   }
 }
+@media (max-width: 360px) {
+  .contact-container {
+    padding: 15px 12px;
+    margin: 15px auto 40px auto;
+  }
+
+  .contact-title {
+    font-size: 20px;
+  }
+
+  .contact-subtitle {
+    font-size: 13px;
+    margin-bottom: 15px;
+  }
+
+  .contact-form label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    font-size: 12px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+  }
+
+  .submit-button {
+    font-size: 14px;
+    padding: 12px 0;
+  }
+
+  .contact-email {
+    font-size: 12px;
+    margin-top: 12px;
+  }
+
+  .footer-links-row {
+    gap: 10px;
+    font-size: 0.9em;
+  }
+
+  .footer-links-box {
+    padding: 12px 5px 6px 5px;
+  }
+
+  .footer-links-row a {
+    font-size: 0.9em;
+    padding: 1px 0;
+  }
+}

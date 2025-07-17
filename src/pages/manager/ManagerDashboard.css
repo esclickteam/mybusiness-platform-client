@@ -97,3 +97,57 @@
       font-size: 13px;
     }
   }
+  @media (max-width: 1024px) {
+  .top-summary {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .dashboard-actions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .team-table th,
+  .team-table td {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .manager-dashboard {
+    padding: 20px 10px;
+  }
+
+  .manager-dashboard h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .summary-box {
+    font-size: 14px;
+    padding: 15px;
+  }
+
+  .action-link {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .team-table th,
+  .team-table td {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}

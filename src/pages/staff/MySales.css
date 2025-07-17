@@ -89,3 +89,74 @@
   .sales-list button:hover {
     background-color: #c2a6f7;
   }
+  @media (max-width: 1024px) {
+  .my-sales {
+    padding: 20px;
+    max-width: 90%;
+    margin: 30px auto;
+  }
+
+  .sale-form button {
+    padding: 10px 14px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .my-sales {
+    padding: 15px 12px;
+    max-width: 100%;
+    margin: 20px auto;
+  }
+
+  .sale-form input,
+  .sale-form select,
+  .sale-form textarea {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .sale-form button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .sales-list li {
+    font-size: 14px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .my-sales {
+    padding: 12px 10px;
+    margin: 15px 10px;
+  }
+
+  .my-sales h1 {
+    font-size: 1.5rem;
+  }
+
+  .sale-form input,
+  .sale-form select,
+  .sale-form textarea {
+    font-size: 12px;
+    padding: 7px;
+  }
+
+  .sale-form button {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 14px;
+  }
+
+  .sales-list li {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .sales-list button {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+}

@@ -98,3 +98,138 @@
   color: #0056b3;
   text-decoration: none;
 }
+/* רספונסיביות - התאמה לכל סוגי המכשירים */
+@media (max-width: 768px) {
+  .admin-affiliates-container {
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+
+  .submit-btn {
+    font-size: 1rem;
+    padding: 0.65rem;
+  }
+
+  .affiliate-form input[type="text"],
+  .affiliate-form input[type="email"],
+  .affiliate-form input[type="number"],
+  .affiliate-form input[type="password"] {
+    font-size: 0.95rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-affiliates-container {
+    padding: 0.75rem;
+  }
+
+  .submit-btn {
+    font-size: 0.95rem;
+    padding: 0.6rem;
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .message {
+    font-size: 0.95rem;
+  }
+
+  .affiliate-url-container {
+    font-size: 0.9rem;
+  }
+}
+/* --- רספונסיביות לכל סוגי המכשירים --- */
+
+/* מסכים קטנים במיוחד (320px ומטה) */
+@media (max-width: 320px) {
+  .admin-affiliates-container {
+    padding: 0.5rem;
+  }
+
+  .submit-btn {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .message {
+    font-size: 0.85rem;
+  }
+
+  .affiliate-form input {
+    font-size: 0.85rem;
+  }
+}
+
+/* מובייל רגיל (480px ומטה) */
+@media (max-width: 480px) {
+  .admin-affiliates-container {
+    padding: 0.75rem;
+  }
+
+  .submit-btn {
+    font-size: 0.95rem;
+    padding: 0.6rem;
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .message {
+    font-size: 0.95rem;
+  }
+
+  .affiliate-url-container {
+    font-size: 0.9rem;
+  }
+}
+
+/* טאבלטים וסמארטפונים בינוניים */
+@media (max-width: 768px) {
+  .admin-affiliates-container {
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+
+  .submit-btn {
+    font-size: 1rem;
+    padding: 0.65rem;
+  }
+
+  .affiliate-form input[type="text"],
+  .affiliate-form input[type="email"],
+  .affiliate-form input[type="number"],
+  .affiliate-form input[type="password"] {
+    font-size: 0.95rem;
+    padding: 0.5rem;
+  }
+}
+
+/* מחשבים ניידים / דסקטופים סטנדרטיים */
+@media (min-width: 1024px) {
+  .admin-affiliates-container {
+    max-width: 600px;
+  }
+
+  .submit-btn {
+    font-size: 1.15rem;
+  }
+}
+
+/* מסכים רחבים מאוד (4K ומעלה) */
+@media (min-width: 1440px) {
+  .admin-affiliates-container {
+    max-width: 700px;
+  }
+
+  .submit-btn {
+    font-size: 1.2rem;
+  }
+}

@@ -133,3 +133,76 @@
     font-size: 0.95rem;
   }
 }
+@media (max-width: 360px) {
+  .business-card {
+    padding: 1rem 0.75rem;
+  }
+
+  .business-card__media {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 0.75rem;
+  }
+
+  .business-card__title {
+    font-size: 1.1rem;
+  }
+
+  .business-card__info {
+    font-size: 0.9rem;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .business-card__btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1.25rem;
+  }
+}
+@media (min-width: 1024px) {
+  .business-card {
+    max-width: 380px;
+    padding: 2rem 1.5rem;
+  }
+
+  .business-card__media {
+    width: 100px;
+    height: 100px;
+  }
+
+  .business-card__title {
+    font-size: 1.6rem;
+  }
+
+  .business-card__info {
+    font-size: 1.05rem;
+  }
+
+  .business-card__description {
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+  }
+
+  .business-card__btn {
+    font-size: 1.05rem;
+    padding: 0.7rem 1.75rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .business-card {
+    max-width: 420px;
+  }
+
+  .business-card__title {
+    font-size: 1.75rem;
+  }
+
+  .business-card__info {
+    font-size: 1.1rem;
+  }
+
+  .business-card__btn {
+    font-size: 1.1rem;
+  }
+}

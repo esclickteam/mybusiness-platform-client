@@ -470,3 +470,51 @@
   background: #fff;
   border-radius: 18px 18px 18px 4px;
 }
+@media (max-width: 768px) {
+  .chat-container {
+    height: 100vh;
+    max-width: 100vw;
+    border-radius: 0;
+  }
+  .message {
+    max-width: 90%;
+    font-size: 14px;
+    padding: 8px 12px 6px 10px;
+  }
+  .inputBar {
+    padding: 8px 10px;
+    min-height: 56px;
+    gap: 6px;
+  }
+  .inputField {
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 22px;
+  }
+  .sendButtonFlat,
+  .attachBtn,
+  .recordBtn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 24px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .message {
+    max-width: 100%;
+    font-size: 13px;
+    padding: 6px 10px 5px 8px;
+  }
+  .inputField {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+  .sendButtonFlat,
+  .attachBtn,
+  .recordBtn {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 20px !important;
+  }
+}

@@ -338,3 +338,47 @@ body::after {
     font-size: 1rem;
   }
 }
+@media (max-width: 480px) {
+  .business-list-container {
+    padding: 10px;
+  }
+
+  .business-list-container h1 {
+    font-size: 1.6rem;
+  }
+
+  .filters-wrapper {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dropdown-wrapper,
+  .search-btn {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .chip {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .business-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .business-card {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+
+  .business-card__info {
+    font-size: 0.9rem;
+  }
+
+  .pagination button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}

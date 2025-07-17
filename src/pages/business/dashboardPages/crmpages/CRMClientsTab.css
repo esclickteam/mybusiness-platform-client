@@ -157,3 +157,154 @@
   margin-left: 1rem;
   cursor: pointer;
 }
+/* רספונסיביות Clients Tab */
+
+/* Extra Small - עד 480px */
+@media (max-width: 480px) {
+  .clients-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .search-input {
+    flex: none;
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+  .add-client-btn {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+  }
+  .add-client-form {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .add-client-form input,
+  .add-client-form input.address-input {
+    min-width: 100%;
+    flex: none;
+  }
+  .save-client-btn {
+    width: 100%;
+    padding: 0.6rem;
+  }
+  .clients-table th,
+  .clients-table td {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  .clients-table td.phone-cell,
+  .clients-table td.email-cell,
+  .clients-table td.address-cell {
+    max-width: 120px;
+  }
+  .show-history-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+  }
+  .status-filter {
+    font-size: 0.9rem;
+    padding: 0.35rem 0.7rem;
+    margin-left: 0;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+}
+
+/* Small - 481px עד 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .clients-header {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .search-input {
+    max-width: 300px;
+    font-size: 0.95rem;
+    padding: 0.45rem 0.9rem;
+  }
+  .add-client-btn {
+    width: auto;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  .add-client-form {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .add-client-form input,
+  .add-client-form input.address-input {
+    min-width: 200px;
+    flex: 1;
+  }
+  .save-client-btn {
+    width: auto;
+  }
+  .clients-table th,
+  .clients-table td {
+    padding: 0.65rem 0.9rem;
+    font-size: 0.9rem;
+  }
+  .clients-table td.phone-cell,
+  .clients-table td.email-cell,
+  .clients-table td.address-cell {
+    max-width: 180px;
+  }
+  .show-history-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.95rem;
+  }
+  .status-filter {
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+    margin-left: 1rem;
+    width: auto;
+  }
+}
+
+/* Medium ומעלה - 769px ומעלה */
+@media (min-width: 769px) {
+  .clients-header {
+    flex-wrap: nowrap;
+  }
+  .search-input {
+    max-width: 300px;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  .add-client-btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+  .add-client-form {
+    gap: 0.5rem;
+  }
+  .add-client-form input,
+  .add-client-form input.address-input {
+    min-width: 200px;
+    flex: 1;
+  }
+  .save-client-btn {
+    width: auto;
+  }
+  .clients-table th,
+  .clients-table td {
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+  .clients-table td.phone-cell,
+  .clients-table td.email-cell,
+  .clients-table td.address-cell {
+    max-width: 200px;
+  }
+  .show-history-btn {
+    padding: 0.3rem 0.7rem;
+    font-size: 1rem;
+  }
+  .status-filter {
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+    margin-left: 1rem;
+  }
+}

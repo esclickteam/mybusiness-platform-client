@@ -330,3 +330,74 @@ p {
     max-height: 400px !important;
   }
 }
+/* מסכים גדולים מאוד (לרוחב מעל 1200px) */
+@media (min-width: 1201px) {
+  .help-center-container {
+    max-width: 1100px;
+    padding: 30px 40px;
+  }
+  .articles-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .categories-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .chatbot-section {
+    width: 400px !important;
+    max-height: 600px !important;
+    bottom: 30px !important;
+    left: 30px !important;
+  }
+}
+
+/* מסכים בינוניים (769px עד 1200px) */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .help-center-container {
+    max-width: 900px;
+    padding: 25px 30px;
+  }
+  .articles-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .categories-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .chatbot-section {
+    width: 350px !important;
+    max-height: 500px !important;
+    bottom: 20px !important;
+    left: 20px !important;
+  }
+}
+
+/* מסכים קטנים (601px עד 768px) */
+@media (min-width: 601px) and (max-width: 768px) {
+  .articles-grid,
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .chatbot-section {
+    width: 300px !important;
+    max-height: 450px !important;
+    bottom: 15px !important;
+    left: 15px !important;
+  }
+}
+
+/* מובייל (עד 600px) */
+@media (max-width: 600px) {
+  .articles-grid,
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+  .help-center-container {
+    padding: 15px 10px;
+    margin: 20px 10px;
+  }
+  .chatbot-section {
+    width: 90% !important;
+    max-height: 400px !important;
+    bottom: 10px !important;
+    left: 5% !important;
+  }
+}

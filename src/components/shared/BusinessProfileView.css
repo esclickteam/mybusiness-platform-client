@@ -662,3 +662,105 @@ html, body, #root {
   color: #7c57c9;
 }
 
+/* רספונסיביות נוספת למסכים קטנים מאוד */
+@media (max-width: 360px) {
+  .profile-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .public-main-images {
+    grid-template-columns: 1fr;
+  }
+
+  .products-list-public {
+    grid-template-columns: 1fr;
+  }
+
+  .review-card.improved,
+  .faq-card,
+  .public-shop,
+  .calendar-fullwidth,
+  .booking-tab {
+    padding: 0.5rem;
+  }
+
+  .add-review-btn,
+  .edit-profile-btn,
+  .back-btn {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .product-title {
+    font-size: 1rem;
+  }
+
+  .reviews-summary {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .reviews-average {
+    font-size: 2rem;
+  }
+
+  .star {
+    font-size: 2rem;
+  }
+
+  .reviews-count {
+    font-size: 0.9rem;
+  }
+
+  .service-card h5 {
+    font-size: 0.95rem;
+  }
+
+  .service-card__desc {
+    font-size: 0.8rem;
+  }
+}
+/* טאבלטים בגודל בינוני (769px–1024px) */
+@media (max-width: 1024px) {
+  .profile-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .public-main-images {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .products-list-public {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .review-card.improved,
+  .faq-card,
+  .calendar-fullwidth,
+  .booking-tab {
+    padding: 1rem;
+  }
+}
+
+/* מחשבים ניידים קטנים ומסכים בינוניים (1025px–1280px) */
+@media (max-width: 1280px) {
+  .products-list-public {
+    gap: 1rem;
+  }
+
+  .profile-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .reviews-summary {
+    padding: 1rem;
+    gap: 12px;
+  }
+
+  .add-review-btn,
+  .edit-profile-btn,
+  .back-btn {
+    font-size: 0.9rem;
+  }
+}

@@ -8,14 +8,15 @@
 
   display: flex;
   flex-direction: column;
-  align-items: center;     /* מרכז אופקי */
-  justify-content: center; /* מרכז אנכי */
-  text-align: center;      /* מרכז טקסט */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .actions-container.full-width {
   max-width: 100% !important;
-  margin: 0;          /* במצב full-width בלי מרג'ין */
+  margin: 0;
 }
 
 .actions-container h4 {
@@ -26,12 +27,14 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  word-break: break-word;
 }
 
 .actions-container ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  width: 100%;
 }
 
 .actions-container li {
@@ -43,6 +46,7 @@
   border-bottom: 1px solid #eee;
   cursor: default;
   transition: background-color 0.2s ease;
+  word-break: break-word;
 }
 
 .actions-container li:last-child {
@@ -73,4 +77,66 @@
   content: "•";
   font-size: 1.4rem;
   line-height: 1;
+}
+
+/* התאמות מובייל */
+@media (max-width: 480px) {
+  .actions-container {
+    padding: 1rem;
+    max-width: 100%;
+    border-radius: 0;
+  }
+
+  .actions-container h4 {
+    font-size: 1.1rem;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .actions-container li {
+    font-size: 0.95rem;
+    padding: 6px 0;
+  }
+}
+
+/* מסכים קטנים במיוחד */
+@media (max-width: 360px) {
+  .actions-container h4 {
+    font-size: 1rem;
+  }
+
+  .actions-container li {
+    font-size: 0.85rem;
+  }
+}
+/* טאבלטים (עד 768px) */
+@media (max-width: 768px) {
+  .actions-container {
+    padding: 1.25rem;
+    max-width: 90%;
+  }
+
+  .actions-container h4 {
+    font-size: 1.15rem;
+  }
+
+  .actions-container li {
+    font-size: 0.95rem;
+  }
+}
+
+/* מחשבים ניידים קטנים (עד 1024px) */
+@media (max-width: 1024px) {
+  .actions-container {
+    padding: 1.5rem;
+    max-width: 600px;
+  }
+
+  .actions-container h4 {
+    font-size: 1.2rem;
+  }
+
+  .actions-container li {
+    font-size: 1rem;
+  }
 }

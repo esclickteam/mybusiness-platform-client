@@ -40,6 +40,9 @@
   flex-shrink: 0; /* לא יתכווץ */
   box-shadow: 0 0 20px rgb(124 77 255 / 0.35);
   border-radius: 12px !important;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
 }
 
 /* במובייל – Slide-in/out לפי class */
@@ -56,7 +59,11 @@
   z-index: 9002 !important; /* מעל האופרליי */
   border-radius: 0 12px 12px 0; /* עיגול בפינות במובייל */
   transition: transform 0.35s ease !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch; /* גלילה חלקה במובייל */
 }
+
+/* סיידבר פתוח במובייל */
 .sidebar.mobile.open {
   transform: translateX(0) !important; /* כשלוחצים: פותח */
 }
@@ -85,6 +92,8 @@
   display: flex !important;
   flex-direction: column !important;
   gap: 0.5rem !important;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .sidebar a {
   padding: 0.75rem 1rem !important;
@@ -94,6 +103,11 @@
   transition: background 0.2s !important;
   display: block !important; /* כדי שהעיגול יכסה את כל הרוחב */
   margin-bottom: 0.3rem !important; /* רווח בין הטאבים */
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  font-size: 1rem !important;
+  user-select: none;
 }
 .sidebar a.active {
   background: var(--primary) !important;
@@ -111,6 +125,8 @@
   overflow-y: auto;
   box-sizing: border-box;
   transition: filter 0.3s ease;
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 /* כפתור יחיד ☰/✕ לסיידבר */
@@ -190,5 +206,30 @@
   }
   .sidebar-overlay {
     display: none !important;
+  }
+}
+
+/* מובייל קטן במיוחד */
+@media (max-width: 480px) {
+  .sidebar.mobile {
+    width: 100vw !important; /* סיידבר תופס את כל המסך במובייל קטן */
+    max-width: none !important;
+    border-radius: 0 !important;
+  }
+  
+  .dashboard-content {
+    padding: 1rem !important;
+    padding-top: 70px !important; /* מותאם לכפתור Toggle גדול יותר */
+  }
+  
+  .sidebar-toggle-button {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+  
+  .sidebar a {
+    font-size: 1.1rem !important;
+    padding: 1rem !important;
   }
 }

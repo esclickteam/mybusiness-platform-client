@@ -73,4 +73,49 @@
     text-align: center;
     padding: 2rem;
   }
-  
+  @media (max-width: 768px) {
+  .xray-tab-container {
+    padding: 1.5rem 1rem;
+    max-width: 95%;
+  }
+  .xray-tab-container h2 {
+    font-size: 1.5rem;
+  }
+  .xray-tab-container p {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .xray-form h3,
+  .xray-form h4 {
+    font-size: 1rem;
+    margin-top: 1rem;
+  }
+  select,
+  textarea {
+    font-size: 0.95rem;
+  }
+  textarea {
+    min-height: 80px;
+  }
+  .submit-button {
+    font-size: 0.95rem;
+    padding: 0.7rem 1.3rem;
+  }
+  .submitted-message {
+    padding: 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .xray-tab-container h2 {
+    font-size: 1.3rem;
+  }
+  .xray-tab-container p {
+    font-size: 0.85rem;
+  }
+  .submit-button {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+  }
+}

@@ -191,3 +191,42 @@
     font-size: 1.2rem;
   }
 }
+/* רספונסיביות למסכי טבלט גדולים (901px - 1024px) */
+@media (min-width: 901px) and (max-width: 1024px) {
+  .plans-wrapper {
+    max-width: 450px;
+    padding: 25px 20px;
+  }
+
+  .plans-header {
+    font-size: 1.8rem;
+  }
+
+  .plans-subheader {
+    font-size: 1.1rem;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+  }
+}
+
+/* רספונסיביות למסכי דסקטופ קטנים (1025px - 1200px) */
+@media (min-width: 1025px) and (max-width: 1200px) {
+  .plans-wrapper {
+    max-width: 500px;
+    padding: 30px 25px;
+  }
+
+  .plans-header {
+    font-size: 2rem;
+  }
+
+  .plans-subheader {
+    font-size: 1.15rem;
+  }
+
+  .card-title {
+    font-size: 1.3rem;
+  }
+}

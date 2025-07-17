@@ -60,3 +60,36 @@
     color: #22c55e;
     font-weight: bold;
   }
+  @media (max-width: 768px) {
+  .edit-box textarea {
+    font-size: 14px;
+    min-height: 80px;
+  }
+
+  .edit-box button {
+    font-size: 14px;
+    padding: 7px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .editable-span {
+    font-size: 14px;
+    gap: 4px;
+  }
+
+  .edit-box textarea {
+    font-size: 13px;
+    padding: 8px;
+    min-height: 60px;
+  }
+
+  .edit-box button {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  .saved-message {
+    font-size: 13px;
+  }
+}

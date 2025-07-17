@@ -14,3 +14,24 @@
     font-size: 1.5rem !important;
     cursor: pointer !important;
 }
+@media (max-width: 480px) {
+  .aw-toggle-button {
+    top: auto !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    left: auto !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.3rem !important;
+    padding: 0.6rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .aw-toggle-button {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 1.1rem !important;
+    padding: 0.5rem !important;
+  }
+}

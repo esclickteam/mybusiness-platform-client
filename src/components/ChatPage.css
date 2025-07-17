@@ -78,3 +78,45 @@
 .input-bar button:hover {
   background: #357ABD;
 }
+@media (max-width: 768px) {
+  .chat-container {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .message {
+    max-width: 85%;
+    font-size: 0.95rem;
+  }
+
+  .input-bar {
+    padding: 10px;
+  }
+
+  .input-bar input {
+    font-size: 0.95rem;
+  }
+
+  .input-bar button {
+    font-size: 0.95rem;
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .message {
+    max-width: 95%;
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .input-bar input {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
+
+  .input-bar button {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+  }
+}

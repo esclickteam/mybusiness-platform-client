@@ -123,3 +123,39 @@ hr {
   opacity: 0.6;
   cursor: not-allowed;
 }
+@media (max-width: 600px) {
+  .agreement-view-container {
+    padding: 14px;
+    margin: 10px;
+  }
+
+  .agreement-title {
+    font-size: 1.4rem;
+  }
+
+  .signatures-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .signature-image {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .sign-button {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .signature-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .signature-buttons button {
+    width: 100%;
+    margin-right: 0;
+  }
+}

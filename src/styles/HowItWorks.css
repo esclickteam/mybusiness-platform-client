@@ -234,3 +234,179 @@ b {
     padding-right: 28px;
   }
 }
+/* מסכים גדולים מאוד (1200px ומעלה) */
+@media (min-width: 1200px) {
+  .howitworks-container {
+    max-width: 1000px;
+    padding: 60px 50px;
+  }
+
+  .howitworks-title {
+    font-size: 4rem;
+  }
+
+  .howitworks-subtitle {
+    font-size: 1.6rem;
+    max-width: 800px;
+    margin-bottom: 70px;
+  }
+
+  .howitworks-section {
+    padding: 40px 50px;
+    margin-bottom: 60px;
+  }
+
+  .howitworks-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+  }
+
+  .howitworks-section h3 {
+    font-size: 1.5rem;
+    margin-top: 40px;
+    margin-bottom: 20px;
+  }
+
+  .howitworks-section ul li {
+    font-size: 1.25rem;
+    padding-right: 40px;
+    margin-bottom: 22px;
+  }
+
+  .howitworks-section ul li::before {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 1.6rem;
+    top: 5px;
+  }
+}
+
+/* מסכים בינוניים (769px עד 1199px) */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .howitworks-container {
+    max-width: 900px;
+    padding: 50px 40px;
+  }
+
+  .howitworks-title {
+    font-size: 3.2rem;
+  }
+
+  .howitworks-subtitle {
+    font-size: 1.3rem;
+    max-width: 720px;
+  }
+
+  .howitworks-section {
+    padding: 35px 40px;
+    margin-bottom: 50px;
+  }
+
+  .howitworks-section h2 {
+    font-size: 2.1rem;
+    margin-bottom: 35px;
+  }
+
+  .howitworks-section h3 {
+    font-size: 1.3rem;
+    margin-top: 35px;
+    margin-bottom: 18px;
+  }
+
+  .howitworks-section ul li {
+    font-size: 1.15rem;
+    padding-right: 35px;
+    margin-bottom: 20px;
+  }
+
+  .howitworks-section ul li::before {
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    font-size: 1.4rem;
+    top: 4px;
+  }
+}
+
+/* טאבלט ומובייל גדול (עד 768px) */
+@media (max-width: 768px) {
+  .howitworks-container {
+    padding: 40px 25px;
+    margin: 40px 15px;
+  }
+
+  .howitworks-title {
+    font-size: 2.8rem;
+  }
+
+  .howitworks-subtitle {
+    font-size: 1.15rem;
+  }
+
+  .howitworks-section {
+    padding: 30px 30px;
+    margin-bottom: 40px;
+  }
+
+  .howitworks-section h2 {
+    font-size: 1.9rem;
+  }
+
+  .howitworks-section h3 {
+    font-size: 1.2rem;
+  }
+
+  .howitworks-section ul li {
+    font-size: 1.1rem;
+    padding-right: 28px;
+  }
+}
+
+/* מובייל קטן (עד 480px) */
+@media (max-width: 480px) {
+  .howitworks-container {
+    padding: 30px 15px;
+    margin: 30px 10px;
+  }
+
+  .howitworks-title {
+    font-size: 2.2rem;
+    margin-bottom: 25px;
+  }
+
+  .howitworks-subtitle {
+    font-size: 1rem;
+    margin-bottom: 40px;
+  }
+
+  .howitworks-section {
+    padding: 25px 20px;
+    margin-bottom: 30px;
+  }
+
+  .howitworks-section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+  }
+
+  .howitworks-section h3 {
+    font-size: 1.1rem;
+    margin-top: 18px;
+    margin-bottom: 12px;
+  }
+
+  .howitworks-section ul li {
+    font-size: 1rem;
+    padding-right: 22px;
+    margin-bottom: 12px;
+  }
+
+  .howitworks-section ul li::before {
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 1.1rem;
+    top: 3px;
+  }
+}

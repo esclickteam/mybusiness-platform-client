@@ -78,3 +78,38 @@
       align-items: center;
     }
   }
+  @media (max-width: 480px) {
+  .staff-dashboard {
+    padding: 15px 10px;
+  }
+
+  .dashboard-title {
+    font-size: 22px;
+    margin: 15px 0;
+  }
+
+  .stat-card {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .stat-card h3 {
+    font-size: 14px;
+  }
+
+  .stat-card p {
+    font-size: 18px;
+  }
+
+  .dashboard-links {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-link {
+    width: 100%;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 16px;
+  }
+}

@@ -30,3 +30,35 @@
 .collab-card .collab-form-button:hover {
   background-color: #6c5ce7;
 }
+@media (max-width: 480px) {
+  .collab-tag {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+  }
+  .collab-card .collab-form-button {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .collab-tag {
+    font-size: 0.82rem;
+    padding: 3.5px 9px;
+  }
+  .collab-card .collab-form-button {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.9rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .collab-tag {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+  }
+  .collab-card .collab-form-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}

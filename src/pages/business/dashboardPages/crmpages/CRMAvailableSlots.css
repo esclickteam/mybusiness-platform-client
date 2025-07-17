@@ -14,4 +14,35 @@
     padding: 0.5rem;
     border-bottom: 1px solid #eee;
   }
-  
+  @media (max-width: 480px) {
+  .crm-available-slots {
+    padding: 0.75rem;
+    border-radius: 10px;
+  }
+  .slot-list li {
+    padding: 0.4rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .crm-available-slots {
+    padding: 0.9rem;
+    border-radius: 11px;
+  }
+  .slot-list li {
+    padding: 0.45rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .crm-available-slots {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  .slot-list li {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+}

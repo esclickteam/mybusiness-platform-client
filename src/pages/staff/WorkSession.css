@@ -61,3 +61,19 @@
       width: 100%;
     }
   }
+  @media (max-width: 400px) {
+  .work-session {
+    padding: 15px;
+    margin: 15px;
+  }
+
+  .work-session h1 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+  }
+
+  .session-button {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}

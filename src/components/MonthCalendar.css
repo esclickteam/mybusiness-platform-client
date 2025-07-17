@@ -132,3 +132,26 @@
     font-size: 1rem;
   }
 }
+@media (max-width: 768px) {
+  .calendar-container {
+    padding: 12px;
+  }
+
+  .date-cell {
+    min-height: 80px;
+  }
+
+  .date-number {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .date-cell {
+    min-height: 60px;
+  }
+
+  .date-number {
+    font-size: 0.95rem;
+  }
+}

@@ -60,3 +60,43 @@
     background-color: #e0e0e0;
   }
 }
+/* רספונסיביות למובייל קטן */
+@media (max-width: 480px) {
+  .login-skeleton {
+    padding: 16px;
+    max-width: 90%;
+    gap: 12px;
+  }
+
+  .skeleton-title {
+    width: 80%;
+    height: 20px;
+  }
+
+  .skeleton-input,
+  .skeleton-button {
+    height: 36px;
+  }
+
+  .skeleton-button-small {
+    height: 28px;
+    width: 40%;
+  }
+
+  .skeleton-link {
+    width: 60%;
+    height: 14px;
+  }
+
+  .skeleton-extra-options {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+/* טאבלט (עד 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+  .login-skeleton {
+    max-width: 350px;
+  }
+}

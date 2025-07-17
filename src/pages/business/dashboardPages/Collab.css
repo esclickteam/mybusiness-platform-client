@@ -239,3 +239,69 @@ body {
 .status-denied {
   background-color: #d63031;
 }
+/* רספונסיביות כללית */
+
+/* טלפונים קטנים עד 480px */
+@media (max-width: 480px) {
+  .business-profile-card {
+    padding: 1.5rem;
+    max-width: 100%;
+  }
+  .business-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .business-logo {
+    width: 70px;
+    height: 70px;
+    margin-left: 0;
+    margin-bottom: 1rem;
+  }
+  .business-name {
+    font-size: 1.4rem;
+  }
+  .business-category {
+    font-size: 0.9rem;
+  }
+  .message-box textarea {
+    font-size: 0.9rem;
+  }
+  .message-box button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* טלפונים סטנדרטיים עד 768px */
+@media (max-width: 768px) {
+  .business-profile-card {
+    padding: 2rem;
+    max-width: 100%;
+  }
+  .business-header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .business-logo {
+    width: 80px;
+    height: 80px;
+    margin-left: 0.5rem;
+  }
+  .business-name {
+    font-size: 1.6rem;
+  }
+  .business-category {
+    font-size: 1rem;
+  }
+}
+
+/* טאבלטים עד 1024px */
+@media (max-width: 1024px) {
+  .business-profile-card {
+    max-width: 700px;
+  }
+}
+
+/* מחשבים סטנדרטיים ומעלה */
+/* לא צריך שינוי, נשאר כפי שהוא */

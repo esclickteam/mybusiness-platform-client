@@ -469,3 +469,50 @@
     width: 28px; height: 28px; font-size: 18px;
   }
 }
+/* טאבלטים: בין 768 ל־1024 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .inputBar {
+    gap: 10px;
+    padding: 12px;
+  }
+  .inputBar textarea, .inputField {
+    font-size: 15px;
+    padding: 12px 14px;
+  }
+  .sendButtonFlat, .attachBtn, .recordBtn {
+    width: 36px;
+    height: 36px;
+    font-size: 22px;
+  }
+}
+
+/* מסכים רחבים מאוד */
+@media (min-width: 1440px) {
+  .chat-container.client {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .message {
+    font-size: 16px;
+  }
+  .inputField {
+    font-size: 16px;
+  }
+}
+
+/* מובייל קטנטן: מתחת ל־350px */
+@media (max-width: 350px) {
+  .message {
+    font-size: 12.5px;
+    padding: 5px 8px;
+  }
+  .inputField {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+  .sendButtonFlat, .attachBtn, .recordBtn {
+    width: 26px;
+    height: 26px;
+    font-size: 16px;
+  }
+}

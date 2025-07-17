@@ -629,3 +629,24 @@
   padding: 10px;
   text-align: center;
 }
+@media (max-width: 400px) {
+  .dashboard-cards-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .graph-box,
+  .appointments-box {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+    min-width: auto !important;
+  }
+
+  .calendar-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .dashboard-nav button {
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+}

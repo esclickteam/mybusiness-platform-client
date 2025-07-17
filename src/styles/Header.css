@@ -393,3 +393,61 @@ a.active-link {
 .mobile-auth .login-button:hover {
   background: #4315c7;
 }
+/* ===== רספונסיביות לטאבלטים גדולים ומסכים בינוניים ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-header {
+    padding: 0 16px;
+    min-height: 80px;
+  }
+  .logo-link .logo {
+    height: 100px;
+  }
+  .auth-controls.desktop-only {
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .menu-toggle {
+    right: 16px;
+    top: 50%;
+  }
+  .side-menu {
+    max-width: 280px;
+  }
+}
+
+/* ===== רספונסיביות למסכים קטנים מאוד (פחות מ-360px) ===== */
+@media (max-width: 360px) {
+  .app-header {
+    padding: 0 8px;
+    min-height: 70px;
+  }
+  .logo-link .logo {
+    height: 70px;
+  }
+  .menu-toggle {
+    right: 8px;
+    top: 50%;
+    padding: 2px 6px;
+    font-size: 20px;
+  }
+  .auth-controls.desktop-only {
+    display: none !important;
+  }
+  .side-menu {
+    max-width: 260px;
+  }
+}
+
+/* ===== שיפור גלילה במובייל ===== */
+.side-menu {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== התאמה לכפתור חזרה ב־drawer למובייל ===== */
+@media (max-width: 768px) {
+  .back-button {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+}

@@ -1,12 +1,14 @@
+/* עיצוב קיים נשמר */
 .service-list {
   background-color: #f8ecff;
   padding: 20px;
   border-radius: 16px;
   margin-top: 20px;
   text-align: right;
+  direction: rtl;
+  box-sizing: border-box;
 }
 
-/* תוויות לשדות */
 .service-list label {
   font-weight: bold;
   margin-top: 1rem;
@@ -14,7 +16,6 @@
   font-size: 14px;
 }
 
-/* שדות טקסט */
 .service-list input,
 .service-list textarea,
 .service-list select {
@@ -28,14 +29,13 @@
   box-sizing: border-box;
 }
 
-/* שורת זמן */
 .time-row {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
-/* תמונה בתצוגה מקדימה */
 .preview-img {
   width: 100%;
   height: auto;
@@ -45,7 +45,6 @@
   margin: 10px 0;
 }
 
-/* כפתור הוספה */
 .service-list button {
   background-color: #a36eff;
   color: white;
@@ -61,7 +60,6 @@
   background-color: #8c55e6;
 }
 
-/* גריד כרטיסים */
 .services-grid {
   display: grid;
   gap: 16px;
@@ -69,7 +67,6 @@
   margin-top: 1rem;
 }
 
-/* כרטיס שירות */
 .service-card {
   position: relative;
   background: white;
@@ -96,7 +93,6 @@
   font-size: 14px;
 }
 
-/* כפתור מחיקה קטן בפינה */
 .delete-btn {
   position: absolute;
   top: 8px;
@@ -112,6 +108,7 @@
 .delete-btn:hover {
   color: #c9302c;
 }
+
 .next-btn {
   background: linear-gradient(90deg, #6f44c6, #a07ff5);
   color: white;
@@ -130,11 +127,12 @@
 .next-btn:hover {
   background: #5d39a6;
 }
-/* כפתורי סוג השירות */
+
 .appointment-type-selector {
   display: flex;
   gap: 12px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .appointment-type-selector button {
@@ -142,7 +140,7 @@
   border-radius: 10px;
   border: 2px solid #ccc;
   background-color: #fff;
-  color: #000; /* טקסט שחור כברירת מחדל */
+  color: #000;
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s ease;
@@ -152,10 +150,42 @@
   background-color: #f0f0f0;
 }
 
-/* מצב נבחר */
 .appointment-type-selector button.active {
   background-color: #e6d6ff;
   border-color: #8e44ad;
-  color: #000; /* גם כשהכפתור נבחר – טקסט שחור */
+  color: #000;
   font-weight: 900;
+}
+
+/* רספונסיביות בלבד - ללא שינוי עיצוב */
+@media (max-width: 480px) {
+  .time-row,
+  .appointment-type-selector {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .next-btn {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+  .services-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .services-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

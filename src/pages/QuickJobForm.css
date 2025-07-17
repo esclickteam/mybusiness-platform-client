@@ -72,3 +72,55 @@
       align-items: stretch;
     }
   }
+  @media (max-width: 900px) {
+  .quick-job-form-container {
+    padding: 30px 15px;
+    max-width: 100%;
+  }
+
+  .quick-job-form-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .quick-job-form input,
+  .quick-job-form textarea,
+  .quick-job-form select {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .quick-job-form button {
+    font-size: 15px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-job-form-container {
+    padding: 20px 10px;
+    margin: 0 10px;
+  }
+
+  .quick-job-form-container h1 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .quick-job-form input,
+  .quick-job-form textarea,
+  .quick-job-form select {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .quick-job-form button {
+    font-size: 14px;
+    padding: 10px;
+  }
+  
+  .price-range {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

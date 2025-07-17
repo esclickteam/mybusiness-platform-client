@@ -36,3 +36,24 @@
   text-align: center;
   color: #888;
 }
+@media (max-width: 600px) {
+  .cat-tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cat-tabs button {
+    flex: 1 1 40%;
+    min-width: 120px;
+    font-size: 0.95rem;
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .services-search {
+    font-size: 1rem;
+  }
+}

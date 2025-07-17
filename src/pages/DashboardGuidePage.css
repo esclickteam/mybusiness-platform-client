@@ -121,3 +121,55 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+@media (max-width: 900px) {
+  .dashboard-guide-container {
+    max-width: 100%;
+    margin: 30px 15px;
+    padding: 15px;
+  }
+
+  .dashboard-guide-container h1 {
+    font-size: 2rem;
+  }
+
+  .dashboard-guide-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .dashboard-guide-container h3 {
+    font-size: 1.3rem;
+  }
+
+  .dashboard-guide-container p,
+  .dashboard-guide-container li {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-guide-container {
+    padding: 10px;
+    margin: 15px 10px;
+  }
+
+  .dashboard-guide-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-guide-container h2 {
+    font-size: 1.2rem;
+  }
+
+  .dashboard-guide-container h3 {
+    font-size: 1rem;
+  }
+
+  .dashboard-guide-container p,
+  .dashboard-guide-container li {
+    font-size: 0.9rem;
+  }
+
+  .dashboard-guide-container table {
+    font-size: 1rem;
+  }
+}

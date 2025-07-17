@@ -120,3 +120,52 @@
 .xray-reset-btn:hover {
   background: #6843bb;
 }
+@media (max-width: 768px) {
+  .report-container {
+    padding: 1.5rem 1rem;
+    max-width: 95%;
+    font-size: 0.95rem;
+  }
+  .report-container h2 {
+    font-size: 1.5rem;
+  }
+  .chart-wrapper {
+    padding: 1rem;
+  }
+  .insights-box {
+    padding: 1rem 1rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  .restart-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+  }
+  .xray-wrapper {
+    padding: 16px 6px 30px;
+    max-width: 100%;
+  }
+  .xray-reset-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .report-container h2 {
+    font-size: 1.3rem;
+  }
+  .insights-box h3 {
+    font-size: 1.1rem;
+  }
+  .insights-box {
+    font-size: 0.85rem;
+  }
+  .restart-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+  .xray-reset-btn {
+    font-size: 0.9rem;
+    padding: 8px 18px;
+  }
+}

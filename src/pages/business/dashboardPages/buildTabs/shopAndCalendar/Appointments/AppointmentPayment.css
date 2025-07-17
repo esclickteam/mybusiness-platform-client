@@ -197,4 +197,91 @@
       font-size: 0.95rem;
     }
   }
-  
+@media (max-width: 360px) {
+  .appointment-payment {
+    padding: 1rem;
+  }
+
+  .appointment-payment h4 {
+    font-size: 1.2rem;
+  }
+
+  .base-button {
+    font-size: 0.85rem;
+    height: 44px;
+  }
+
+  .pay-btn,
+  .action-buttons button {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .appointment-payment {
+    max-width: 95%;
+    padding: 2rem 1.5rem;
+  }
+
+  .payment-methods {
+    padding: 1.2rem;
+  }
+
+  .credit-card-form,
+  .phone-form {
+    padding: 1.8rem 1rem;
+    gap: 0.7rem;
+  }
+
+  .credit-card-form input,
+  .phone-form input {
+    font-size: 0.9rem;
+  }
+
+  .pay-btn {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .appointment-payment h4 {
+    font-size: 1.6rem;
+  }
+
+  .base-button {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .appointment-payment {
+    max-width: 480px;
+  }
+
+  .credit-card-form input,
+  .phone-form input {
+    height: 46px;
+  }
+
+  .base-button,
+  .pay-btn {
+    font-size: 1.05rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .appointment-payment {
+    max-width: 520px;
+  }
+
+  .credit-card-form,
+  .phone-form {
+    padding: 2rem;
+  }
+
+  .credit-card-form input,
+  .phone-form input {
+    font-size: 1rem;
+  }
+}

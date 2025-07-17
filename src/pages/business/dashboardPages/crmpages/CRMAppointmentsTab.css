@@ -284,3 +284,168 @@
 .action-reminder:hover {
   background-color: #6a3edb;
 }
+/* רספונסיביות CRM Appointments Tab */
+
+/* Extra Small - עד 480px */
+@media (max-width: 480px) {
+  .crm-appointments-tab {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+  .search-input {
+    max-width: 100%;
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+  .appointments-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+  .add-btn {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.6rem 0;
+  }
+  .add-form {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .add-form input,
+  .add-form textarea,
+  .add-form select {
+    max-width: 100%;
+    min-width: 100%;
+    flex-grow: 0;
+  }
+  .add-form input[type="date"],
+  .add-form select {
+    max-width: 100%;
+    min-width: 100%;
+  }
+  .add-form textarea {
+    min-height: 100px;
+  }
+  .add-form button {
+    min-width: 100%;
+  }
+  .appointments-table {
+    font-size: 0.85rem;
+  }
+  .appointments-table th,
+  .appointments-table td {
+    padding: 0.4rem 0.6rem;
+  }
+  .actions-cell {
+    justify-content: flex-start;
+    gap: 0.3rem;
+  }
+  .status-btn {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
+
+/* Small - 481px עד 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .crm-appointments-tab {
+    max-width: 90%;
+    padding: 0 1.5rem;
+  }
+  .search-input {
+    max-width: 300px;
+    font-size: 0.95rem;
+    padding: 0.45rem 0.9rem;
+  }
+  .appointments-header {
+    flex-wrap: wrap;
+    gap: 0.9rem;
+  }
+  .add-btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  .add-form {
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+  .add-form input,
+  .add-form textarea,
+  .add-form select {
+    max-width: 280px;
+    min-width: 150px;
+  }
+  .add-form textarea {
+    min-height: 90px;
+  }
+  .add-form button {
+    min-width: 160px;
+  }
+  .appointments-table {
+    font-size: 0.9rem;
+  }
+  .appointments-table th,
+  .appointments-table td {
+    padding: 0.5rem 0.8rem;
+  }
+  .actions-cell {
+    gap: 0.4rem;
+    justify-content: center;
+  }
+  .status-btn {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.6rem;
+  }
+}
+
+/* Medium ומעלה - 769px ומעלה */
+@media (min-width: 769px) {
+  .crm-appointments-tab {
+    max-width: 1100px;
+    padding: 0 2rem;
+  }
+  .search-input {
+    max-width: 300px;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  .appointments-header {
+    flex-wrap: nowrap;
+  }
+  .add-btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+  .add-form {
+    gap: 0.75rem;
+  }
+  .add-form input,
+  .add-form textarea,
+  .add-form select {
+    max-width: 280px;
+    min-width: 150px;
+  }
+  .add-form textarea {
+    min-height: 80px;
+  }
+  .add-form button {
+    min-width: 150px;
+  }
+  .appointments-table {
+    font-size: 0.95rem;
+  }
+  .appointments-table th,
+  .appointments-table td {
+    padding: 0.55rem 0.9rem;
+  }
+  .actions-cell {
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  .status-btn {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.8rem;
+  }
+}

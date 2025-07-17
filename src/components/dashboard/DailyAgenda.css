@@ -26,11 +26,13 @@
 .agenda-client {
   font-weight: 600;
   margin-bottom: 4px;
+  word-break: break-word;
 }
 
 .agenda-actions {
   margin-top: 8px;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -43,6 +45,8 @@
   color: white;
   font-weight: 600;
   transition: background-color 0.2s ease;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .agenda-btn:hover {
@@ -69,5 +73,53 @@
   .agenda-btn {
     padding: 8px 14px;
     font-size: 14px;
+  }
+}
+
+/* מסכים קטנים במיוחד */
+@media (max-width: 360px) {
+  .agenda-btn {
+    font-size: 13px;
+    padding: 7px 12px;
+  }
+
+  .agenda-time,
+  .agenda-service,
+  .agenda-client {
+    font-size: 0.85rem;
+  }
+}
+/* טאבלטים (מסכים בינוניים) */
+@media (max-width: 768px) {
+  .daily-agenda-container {
+    padding: 14px 20px;
+  }
+
+  .agenda-btn {
+    padding: 10px 16px;
+    font-size: 15px;
+  }
+
+  .agenda-time,
+  .agenda-service,
+  .agenda-client {
+    font-size: 0.95rem;
+  }
+}
+
+/* מחשבים ניידים קטנים (מסכים עד 1024px) */
+@media (max-width: 1024px) {
+  .daily-agenda-container {
+    padding: 16px 24px;
+  }
+
+  .agenda-btn {
+    font-size: 15px;
+  }
+
+  .agenda-time,
+  .agenda-service,
+  .agenda-client {
+    font-size: 1rem;
   }
 }

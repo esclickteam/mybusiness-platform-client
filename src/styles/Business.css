@@ -224,3 +224,69 @@
     font-size: 1.1rem;
   }
 }
+/* רספונסיביות נוספת לניידים קטנים */
+@media (max-width: 480px) {
+  .business-join-container {
+    margin: 40px 10px 60px;
+    padding: 0 10px;
+  }
+
+  .title {
+    font-size: 2.4rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    max-width: 100%;
+    padding: 0 10px;
+  }
+
+  .info-section {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 0 5px;
+  }
+
+  .info-box {
+    min-height: auto;
+    padding: 20px 15px;
+  }
+
+  .info-box h2 {
+    font-size: 1.25rem;
+    padding-bottom: 6px;
+  }
+
+  .info-box ul {
+    max-width: 100%;
+    font-size: 1rem;
+  }
+
+  .cta-section {
+    padding: 30px 20px;
+    font-size: 1rem;
+    max-width: 100%;
+  }
+
+  .cta-section h2 {
+    font-size: 1.8rem;
+  }
+
+  .cta-section p {
+    font-size: 1rem;
+  }
+
+  .join-button {
+    padding: 14px 40px;
+    font-size: 1.3rem;
+  }
+
+  .footer {
+    font-size: 0.85rem;
+    padding: 20px 10px 15px;
+  }
+
+  .footer-links {
+    gap: 14px;
+  }
+}

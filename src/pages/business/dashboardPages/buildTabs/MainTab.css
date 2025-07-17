@@ -312,3 +312,92 @@
 .preview-section .gallery-placeholder {
   display: none !important;
 }
+/* רספונסיביות מלאה לכל המכשירים */
+
+@media (max-width: 1024px) {
+  .gallery-item-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  .modal-media {
+    width: 85vmin;
+    height: 85vmin;
+  }
+
+  .phone-display-button {
+    font-size: 0.95rem;
+    padding: 9px 18px;
+  }
+
+  .review-text {
+    font-size: 0.92rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-item-wrapper {
+    width: 90px;
+    height: 90px;
+  }
+
+  .gallery-preview {
+    gap: 0.4rem;
+    padding-bottom: 0.4rem;
+  }
+
+  .modal-media {
+    width: 90vmin;
+    height: 90vmin;
+  }
+
+  .nav-btn {
+    font-size: 1.8rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .review-user {
+    font-size: 0.95rem;
+  }
+
+  .review-text {
+    font-size: 0.88rem;
+  }
+
+  .phone-display-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .gallery-item-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+
+  .modal-media {
+    width: 95vmin;
+    height: 95vmin;
+  }
+
+  .fit-select-popup.global {
+    width: 92%;
+    padding: 10px;
+  }
+
+  .confirm-btn {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .nav-btn {
+    font-size: 1.6rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .review-text {
+    font-size: 0.85rem;
+  }
+}

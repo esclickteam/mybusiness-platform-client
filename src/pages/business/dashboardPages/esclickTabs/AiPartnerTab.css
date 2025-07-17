@@ -427,3 +427,65 @@
 .toggle-suggestions-btn:hover {
   background-color: #6843bb;
 }
+@media (max-width: 900px) {
+  .ai-partner-container {
+    padding: 1rem;
+  }
+  .partner-layout {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .profile-section,
+  .chat-section {
+    min-width: 100%;
+    flex: none;
+  }
+  .chat-section {
+    min-height: 400px;
+  }
+  .save-profile-button {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+  }
+  .toggle-suggestions-btn {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-partner-container h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+  }
+  .profile-section input,
+  .chat-input textarea {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+  .chat-input button {
+    padding: 8px 16px;
+    font-size: 0.95rem;
+  }
+  .daily-tip {
+    font-size: 0.9rem;
+    padding: 0.8rem 1rem;
+  }
+  .quick-button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+  .suggestion {
+    font-size: 0.9rem;
+    padding: 12px;
+  }
+  .modal-content {
+    padding: 20px 15px;
+    width: 95vw;
+  }
+  .modal-content textarea {
+    min-width: 100%;
+  }
+}

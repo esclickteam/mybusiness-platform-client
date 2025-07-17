@@ -280,3 +280,35 @@
     padding: 1rem;
   }
 }
+/* רספונסיביות מלאה לפי קטגוריות רוחב מסך */
+
+@media (max-width: 480px) { /* Extra Small - טלפונים קטנים */
+  .section-title { font-size: 1.4rem; }
+  .review-card.enhanced { padding: 1rem; }
+  .info-box { padding: 0.8rem; font-size: 0.9rem; }
+  .review-comment { font-size: 0.95rem; }
+}
+
+@media (min-width: 481px) and (max-width: 768px) { /* Small - טלפונים סטנדרטיים */
+  .section-title { font-size: 1.6rem; }
+  .review-card.enhanced { padding: 1.2rem; }
+  .info-box { padding: 1rem; }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) { /* Medium - טאבלטים */
+  .section-title { font-size: 1.8rem; }
+  .review-card.enhanced { padding: 1.5rem; }
+  .info-box { padding: 1.2rem; }
+}
+
+@media (min-width: 1025px) and (max-width: 1440px) { /* Large - מחשבים סטנדרטיים */
+  .section-title { font-size: 2rem; }
+  .review-card.enhanced { padding: 1.8rem; }
+  .info-box { padding: 1.4rem; }
+}
+
+@media (min-width: 1441px) { /* Extra Large - מסכים רחבים/4K */
+  .section-title { font-size: 2.4rem; }
+  .review-card.enhanced { padding: 2rem; }
+  .info-box { padding: 1.6rem; max-width: 1000px; }
+}

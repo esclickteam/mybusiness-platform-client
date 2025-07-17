@@ -1,28 +1,79 @@
 .progress-box {
-    width: 100%;
-    max-width: 600px;
-    margin: 30px auto;
-    text-align: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 30px auto;
+  text-align: center;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.progress-label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #555;
+  word-break: break-word;
+}
+
+.progress-bar-outer {
+  height: 18px;
+  background-color: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.progress-bar-inner {
+  height: 100%;
+  background: linear-gradient(to right, #6a5acd, #8e7cff);
+  transition: width 0.5s ease;
+  border-radius: 10px;
+}
+
+/* התאמות מובייל */
+@media (max-width: 480px) {
+  .progress-label {
+    font-size: 14px;
   }
-  
+
+  .progress-bar-outer {
+    height: 16px;
+  }
+}
+
+/* מסכים קטנים במיוחד */
+@media (max-width: 360px) {
+  .progress-label {
+    font-size: 13px;
+  }
+
+  .progress-box {
+    padding: 0 0.5rem;
+  }
+}
+/* טאבלטים (עד 768px) */
+@media (max-width: 768px) {
+  .progress-label {
+    font-size: 15px;
+  }
+
+  .progress-bar-outer {
+    height: 17px;
+  }
+
+  .progress-box {
+    padding: 0 1.25rem;
+  }
+}
+
+/* מחשבים ניידים קטנים (עד 1024px) */
+@media (max-width: 1024px) {
   .progress-label {
     font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #555;
   }
-  
-  .progress-bar-outer {
-    height: 18px;
-    background-color: #eee;
-    border-radius: 10px;
-    overflow: hidden;
+
+  .progress-box {
+    max-width: 90%;
+    padding: 0 1.5rem;
   }
-  
-  .progress-bar-inner {
-    height: 100%;
-    background: linear-gradient(to right, #6a5acd, #8e7cff);
-    transition: width 0.5s ease;
-    border-radius: 10px;
-  }
-  
+}

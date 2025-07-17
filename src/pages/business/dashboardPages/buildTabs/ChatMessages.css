@@ -118,3 +118,101 @@
 .chat-message-row.from-business .chat-bubble {
   background-color: #fff;
 }
+/* רספונסיביות מלאה לתצוגת צ'אט בכל המכשירים */
+
+@media (max-width: 768px) {
+  .chat-box {
+    max-height: 50vh;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .chat-bubble {
+    max-width: 85%;
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .timestamp {
+    font-size: 9px;
+    bottom: 4px;
+    right: 8px;
+  }
+
+  .sender-label {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-box {
+    max-height: 45vh;
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .chat-bubble {
+    max-width: 95%;
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .timestamp {
+    font-size: 8px;
+    bottom: 3px;
+    right: 6px;
+  }
+
+  .sender-label {
+    font-size: 8px;
+  }
+}
+/* 4K מסכים גדולים מאוד */
+@media (min-width: 1400px) {
+  .chat-box {
+    max-width: 70%;
+    margin: auto;
+  }
+}
+
+/* דסקטופ רגיל */
+@media (min-width: 1025px) and (max-width: 1399px) {
+  .chat-box {
+    max-width: 90%;
+  }
+}
+
+/* טאבלטים ו־iPad אנכי/אופקי */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .chat-box {
+    max-height: 55vh;
+    padding: 8px;
+  }
+}
+
+/* סמארטפונים רגילים */
+@media (min-width: 481px) and (max-width: 767px) {
+  .chat-box {
+    max-height: 50vh;
+    padding: 6px;
+  }
+}
+
+/* מסכים קטנים במיוחד */
+@media (max-width: 480px) {
+  .chat-box {
+    max-height: 45vh;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .chat-bubble {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .timestamp,
+  .sender-label {
+    font-size: 8px;
+  }
+}

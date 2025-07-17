@@ -159,3 +159,104 @@
     padding: 0.5rem;
   }
 }
+/* טלפונים קטנים - Extra Small (XS) עד 480px */
+@media (max-width: 480px) {
+  .business-chat-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+  .chat-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .chat-main {
+    padding: 0.5rem;
+  }
+  .chat-input-bar input {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+/* טלפונים סטנדרטיים - Small (SM) מ-481px עד 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .business-chat-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+  .chat-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+  .chat-main {
+    padding: 1rem;
+  }
+  .chat-input-bar input {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* טאבלטים - Medium (MD) מ-769px עד 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .business-chat-wrapper {
+    flex-direction: row;
+    height: 80vh;
+  }
+  .chat-sidebar {
+    width: 35%;
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  .chat-main {
+    padding: 1rem;
+  }
+  .chat-input-bar input {
+    font-size: 1rem;
+  }
+}
+
+/* מחשב סטנדרטי - Large (LG) מ-1025px עד 1440px */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .business-chat-wrapper {
+    flex-direction: row;
+    height: 80vh;
+  }
+  .chat-sidebar {
+    width: 30%;
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+  .chat-main {
+    padding: 1.5rem;
+  }
+  .chat-input-bar input {
+    font-size: 1.1rem;
+  }
+}
+
+/* מסכים רחבים - Extra Large (XL) מ-1441px ומעלה */
+@media (min-width: 1441px) {
+  .business-chat-wrapper {
+    flex-direction: row;
+    height: 80vh;
+    max-width: 1200px;
+  }
+  .chat-sidebar {
+    width: 25%;
+    padding: 1.5rem;
+    font-size: 1.15rem;
+  }
+  .chat-main {
+    padding: 2rem;
+  }
+  .chat-input-bar input {
+    font-size: 1.15rem;
+  }
+}

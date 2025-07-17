@@ -149,3 +149,70 @@
     align-items: center;
     gap: 6px;
   }
+  @media (max-width: 768px) {
+  .admin-plans {
+    padding: 20px;
+  }
+
+  .plan-form input,
+  .plan-form select,
+  .coupon-section input,
+  .coupon-section select {
+    width: 100%;
+    font-size: 13px;
+  }
+
+  .plan-form,
+  .coupon-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .plans-table th,
+  .plans-table td {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .delete-btn,
+  .edit-btn {
+    padding: 5px 8px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-plans h1 {
+    font-size: 20px;
+  }
+
+  .plans-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .back-dashboard {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .admin-plans {
+    max-width: 1300px;
+  }
+
+  .plan-form input,
+  .plan-form select,
+  .coupon-section input,
+  .coupon-section select {
+    font-size: 15px;
+  }
+
+  .plans-table th,
+  .plans-table td {
+    font-size: 15px;
+    padding: 14px;
+  }
+}

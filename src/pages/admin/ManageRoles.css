@@ -1,113 +1,246 @@
 /* ManageRoles.css */
-
 .manage-roles {
-    padding: 40px;
-    max-width: 900px;
-    margin: auto;
-    font-family: Arial, sans-serif;
-    text-align: right;
-  }
-  
+  padding: 40px;
+  max-width: 900px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+  text-align: right;
+}
+
+.manage-roles h1 {
+  font-size: 26px;
+  color: #4a148c;
+  margin-bottom: 30px;
+}
+
+.role-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.role-form input,
+.role-form select {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 180px;
+}
+
+.role-form button {
+  background-color: #7c3aed;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.role-form button:hover {
+  background-color: #5b21b6;
+}
+
+.user-search-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.user-search-box input {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 200px;
+}
+
+.user-search-box button {
+  background-color: #4c1d95;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.user-search-box button:hover {
+  background-color: #6d28d9;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.users-table th,
+.users-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.users-table th {
+  background-color: #f3e8ff;
+  color: #4a148c;
+  font-size: 14px;
+}
+
+.users-table td {
+  font-size: 14px;
+  color: #333;
+}
+
+.users-table button {
+  background-color: #f87171;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.users-table button:hover {
+  background-color: #dc2626;
+}
+
+/* רספונסיביות – כל המכשירים */
+@media (max-width: 360px) {
   .manage-roles h1 {
-    font-size: 26px;
-    color: #4a148c;
-    margin-bottom: 30px;
+    font-size: 18px;
   }
-  
-  .role-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 30px;
-  }
-  
+
   .role-form input,
-  .role-form select {
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    width: 180px;
-  }
-  
-  .role-form button {
-    background-color: #7c3aed;
-    color: white;
-    padding: 10px 16px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  .role-form button:hover {
-    background-color: #5b21b6;
-  }
-  
-  .user-search-box {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  
   .user-search-box input {
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    width: 200px;
+    font-size: 12px;
+    padding: 7px;
   }
-  
+
+  .role-form button,
   .user-search-box button {
-    background-color: #4c1d95;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
+    font-size: 12px;
+    padding: 8px 12px;
   }
-  
-  .user-search-box button:hover {
-    background-color: #6d28d9;
-  }
-  
-  .users-table {
-    width: 100%;
-    border-collapse: collapse;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  }
-  
+
   .users-table th,
   .users-table td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #eee;
+    font-size: 11px;
+    padding: 8px;
   }
-  
-  .users-table th {
-    background-color: #f3e8ff;
-    color: #4a148c;
-    font-size: 14px;
+}
+
+@media (min-width: 361px) and (max-width: 480px) {
+  .manage-roles {
+    padding: 20px;
   }
-  
+
+  .manage-roles h1 {
+    font-size: 20px;
+  }
+
+  .role-form,
+  .user-search-box {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .role-form input,
+  .role-form select,
+  .user-search-box input {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .role-form button,
+  .user-search-box button {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .users-table th,
   .users-table td {
-    font-size: 14px;
-    color: #333;
+    font-size: 12px;
+    padding: 10px;
   }
-  
+
   .users-table button {
-    background-color: #f87171;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 10px;
-    cursor: pointer;
-    font-weight: bold;
+    font-size: 12px;
+    padding: 6px 8px;
   }
-  
-  .users-table button:hover {
-    background-color: #dc2626;
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .manage-roles {
+    padding: 30px;
   }
+
+  .manage-roles h1 {
+    font-size: 22px;
+  }
+
+  .role-form input,
+  .user-search-box input {
+    width: 100%;
+    font-size: 13.5px;
+  }
+
+  .role-form button,
+  .user-search-box button {
+    font-size: 13.5px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .manage-roles h1 {
+    font-size: 28px;
+  }
+
+  .users-table th,
+  .users-table td {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .manage-roles {
+    max-width: 1100px;
+  }
+
+  .users-table th,
+  .users-table td {
+    font-size: 16px;
+    padding: 14px;
+  }
+
+  .role-form button,
+  .user-search-box button {
+    font-size: 15px;
+    padding: 12px 18px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .manage-roles {
+    max-width: 1200px;
+    padding: 60px;
+  }
+
+  .manage-roles h1 {
+    font-size: 32px;
+  }
+
+  .users-table th,
+  .users-table td {
+    font-size: 17px;
+    padding: 16px;
+  }
+}

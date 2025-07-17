@@ -207,3 +207,54 @@ input:focus {
 .login-container .accessibility-btn:hover {
   transform: scale(1.1);
 }
+/* טאבלט (481px עד 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .login-box {
+    max-width: 90%;
+    padding: 25px;
+  }
+
+  .login-box h2 {
+    font-size: 24px;
+  }
+
+  .login-button {
+    font-size: 17px;
+    padding: 13px;
+  }
+
+  .staff-login-btn {
+    font-size: 15px;
+    padding: 11px 18px;
+  }
+
+  .bottom-links {
+    font-size: 13px;
+  }
+}
+
+/* מסכים גדולים יותר (מעל 1200px) */
+@media (min-width: 1200px) {
+  .login-container {
+    padding: 40px;
+  }
+
+  .login-box {
+    max-width: 400px;
+    padding: 40px;
+  }
+
+  .login-box h2 {
+    font-size: 30px;
+  }
+
+  .login-button {
+    font-size: 20px;
+    padding: 16px;
+  }
+
+  .staff-login-btn {
+    font-size: 18px;
+    padding: 14px 24px;
+  }
+}

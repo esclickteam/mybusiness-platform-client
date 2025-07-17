@@ -86,3 +86,100 @@
 .close-btn:hover:not(:disabled) {
   background-color: #5a6268;
 }
+@media (max-width: 480px) {
+  .ai-modal-content {
+    padding: 16px;
+    max-width: 95%;
+  }
+
+  .ai-modal-title {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+  }
+
+  .ai-modal-textarea {
+    min-height: 140px;
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+
+  .ai-modal-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ai-modal-button {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .ai-modal-title {
+    font-size: 1.15rem;
+  }
+
+  .ai-modal-textarea {
+    font-size: 0.9rem;
+  }
+
+  .ai-modal-button {
+    font-size: 0.9rem;
+    padding: 7px 12px;
+  }
+}
+@media (max-width: 768px) {
+  .ai-modal-content {
+    padding: 20px;
+    max-width: 92%;
+  }
+
+  .ai-modal-title {
+    font-size: 1.4rem;
+  }
+
+  .ai-modal-textarea {
+    min-height: 160px;
+    font-size: 0.96rem;
+  }
+
+  .ai-modal-button {
+    font-size: 0.95rem;
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .ai-modal-content {
+    max-width: 500px;
+  }
+
+  .ai-modal-title {
+    font-size: 1.6rem;
+  }
+
+  .ai-modal-textarea {
+    font-size: 1.05rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ai-modal-content {
+    max-width: 600px;
+    padding: 32px;
+  }
+
+  .ai-modal-title {
+    font-size: 1.8rem;
+  }
+
+  .ai-modal-textarea {
+    font-size: 1.1rem;
+    min-height: 200px;
+  }
+
+  .ai-modal-button {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+}

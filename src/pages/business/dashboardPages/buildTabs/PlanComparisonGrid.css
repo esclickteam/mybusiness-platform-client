@@ -85,4 +85,67 @@
   .select-button:hover {
       background-color: #5412aa;
   }
-  
+  /* רספונסיביות לכרטיסי השוואה */
+
+@media (max-width: 768px) {
+  .comparison-cards-wrapper {
+    padding: 0 5px;
+    gap: 16px;
+  }
+
+  .comparison-card {
+    padding: 16px;
+  }
+
+  .comparison-card h3 {
+    font-size: 18px;
+  }
+
+  .comparison-card .price {
+    font-size: 16px;
+  }
+
+  .comparison-card li {
+    font-size: 14px;
+  }
+
+  .select-button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .comparison-title {
+    font-size: 1.4rem;
+  }
+
+  .comparison-table-wrapper {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .comparison-card h3 {
+    font-size: 16px;
+  }
+
+  .comparison-card .price {
+    font-size: 15px;
+  }
+
+  .comparison-card li {
+    font-size: 13px;
+  }
+
+  .select-button {
+    font-size: 13px;
+    padding: 7px 10px;
+  }
+
+  .comparison-title {
+    font-size: 1.2rem;
+  }
+
+  .comparison-table-wrapper {
+    padding: 0.75rem;
+  }
+}

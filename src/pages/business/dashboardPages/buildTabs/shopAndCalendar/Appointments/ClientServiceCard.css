@@ -70,3 +70,29 @@
 .go-to-calendar-btn:active {
   transform: scale(0.97);
 }
+@media (max-width: 600px) {
+  .client-service-card {
+    padding: 16px 12px 20px;
+    min-height: 320px;
+  }
+
+  .client-service-card__img {
+    width: 80%;
+    max-width: 100px;
+    margin-bottom: 12px;
+  }
+
+  .client-service-card h4 {
+    font-size: 18px;
+  }
+
+  .client-service-card p {
+    font-size: 14px;
+  }
+
+  .go-to-calendar-btn {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 0;
+  }
+}

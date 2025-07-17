@@ -1,14 +1,15 @@
 /* מבנה עמוד כללי */
 .build-wrapper {
   display: flex;
-  flex-direction: row-reverse; /* ✅ תצוגה מקדימה בצד ימין */
+  flex-direction: row-reverse;
   justify-content: space-between;
   padding: 2rem;
   background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
   min-height: 100vh;
   flex-wrap: wrap;
   gap: 2rem;
-  direction: rtl; /* ✅ תצוגת טקסט ואלמנטים בעברית */
+  direction: rtl;
+  box-sizing: border-box;
 }
 
 /* צד ימין - תצוגה */
@@ -18,10 +19,11 @@
   border: 8px solid black;
   border-radius: 40px;
   padding: 1.5rem;
-  position: relative; /* מאפשר למקם popup בתוך העמודה */
+  position: relative;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
   margin: 0 auto;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 /* צד שמאל - טופס / עיצוב */
@@ -34,6 +36,7 @@
   margin: 0 auto;
   flex-grow: 1;
   min-width: 300px;
+  box-sizing: border-box;
 }
 
 .form-column label {
@@ -186,8 +189,6 @@
   border-radius: 10px;
 }
 
-
-
 /* רספונסיביות */
 @media (max-width: 768px) {
   .build-wrapper {
@@ -221,5 +222,66 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
     padding: 0 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .form-column,
+  .preview-column {
+    padding: 1rem;
+    border-radius: 20px;
+  }
+
+  .tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .save-btn {
+    font-size: 0.95rem;
+    padding: 0.8rem 1.5rem;
+  }
+
+  .gallery-preview-wrapper .gallery-instagram-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* טאבלטים גדולים / מחשבים ניידים קטנים (769px–1024px) */
+@media (max-width: 1024px) {
+  .form-column {
+    width: 90%;
+    padding: 1.75rem;
+  }
+
+  .preview-column {
+    width: 400px;
+  }
+
+  .save-btn {
+    font-size: 1.05rem;
+  }
+
+  .gallery-preview-wrapper .gallery-instagram-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* מסכים בינוניים (1025px–1280px) */
+@media (max-width: 1280px) {
+  .build-wrapper {
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .form-column {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .preview-column {
+    width: 440px;
+  }
+
+  .tabs {
+    gap: 0.3rem;
   }
 }

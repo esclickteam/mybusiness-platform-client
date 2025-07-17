@@ -184,3 +184,108 @@
   transform: translateY(0);
   transition: opacity 400ms ease, transform 400ms ease;
 }
+/* מובייל קטן (עד 480px) */
+@media (max-width: 480px) {
+  .goals-container {
+    padding: 20px 12px;
+  }
+
+  .goals-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .goals-header h1 {
+    font-size: 22px;
+  }
+
+  .add-goal-btn {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1rem;
+  }
+
+  .new-goal-form {
+    max-width: 100%;
+    padding: 20px 15px;
+  }
+
+  .new-goal-form input,
+  .new-goal-form select {
+    font-size: 16px;
+  }
+
+  .goals-list {
+    gap: 15px;
+  }
+
+  .goal-card {
+    padding: 15px;
+  }
+
+  .goal-card h3 {
+    font-size: 18px;
+  }
+
+  .summary-box {
+    max-width: 90%;
+    padding: 20px;
+  }
+}
+
+/* טאבלטים קטנים (481px עד 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .goals-container {
+    padding: 30px 20px;
+  }
+
+  .goals-header h1 {
+    font-size: 24px;
+  }
+
+  .add-goal-btn {
+    padding: 11px 18px;
+    font-size: 1.1rem;
+  }
+
+  .new-goal-form {
+    max-width: 100%;
+  }
+
+  .goal-card h3 {
+    font-size: 19px;
+  }
+
+  .summary-box {
+    max-width: 400px;
+    padding: 25px;
+  }
+}
+
+/* מחשבים קטנים ובינוניים (769px עד 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .goals-container {
+    padding: 40px 30px;
+  }
+
+  .goals-header h1 {
+    font-size: 26px;
+  }
+
+  .add-goal-btn {
+    padding: 10px 20px;
+    font-size: 1.15rem;
+  }
+
+  .new-goal-form {
+    max-width: 500px;
+  }
+}
+
+/* מחשבים גדולים (מעל 1025px) */
+@media (min-width: 1025px) {
+  .goals-container {
+    padding: 40px 40px;
+  }
+}

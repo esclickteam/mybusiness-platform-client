@@ -367,3 +367,80 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+/* === התאמה מלאה לכל המכשירים === */
+
+/* טלפונים קטנים במיוחד (למשל 320px) */
+@media (max-width: 360px) {
+  .build-wrapper {
+    padding: 0.5rem;
+  }
+  .form-column, .preview-column {
+    padding: 1rem;
+  }
+  .tabs {
+    grid-template-columns: 1fr;
+  }
+  .save-btn {
+    font-size: 0.9rem;
+    padding: 0.8rem 1.5rem;
+  }
+  .popup-content {
+    padding: 15px;
+  }
+}
+
+/* טלפונים קטנים (361–480px) */
+@media (min-width: 361px) and (max-width: 480px) {
+  .tabs {
+    grid-template-columns: 1fr 1fr;
+  }
+  .save-btn {
+    font-size: 1rem;
+    padding: 1rem 2rem;
+  }
+}
+
+/* טלפונים בינוניים ורחבים (481–768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .form-column, .preview-column {
+    padding: 1.5rem;
+  }
+}
+
+/* טאבלטים ומסכים בינוניים (769–1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .build-wrapper {
+    padding: 2rem;
+  }
+  .preview-column {
+    max-width: 400px;
+  }
+}
+
+/* מסכי מחשב רגילים (1025–1439px) */
+@media (min-width: 1025px) and (max-width: 1439px) {
+  .preview-column {
+    max-width: 450px;
+  }
+}
+
+/* מסכים גדולים (1440px ומעלה) */
+@media (min-width: 1440px) {
+  .build-wrapper {
+    padding: 3rem;
+  }
+  .form-column {
+    max-width: 800px;
+  }
+}
+
+/* מסכי 4K ומעלה */
+@media (min-width: 1920px) {
+  .build-wrapper {
+    max-width: 1600px;
+    margin: auto;
+  }
+  .form-column {
+    padding: 3rem;
+  }
+}

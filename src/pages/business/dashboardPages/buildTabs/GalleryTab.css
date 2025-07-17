@@ -211,3 +211,89 @@
     transform: rotate(360deg);
   }
 }
+/* רספונסיביות מלאה לתצוגת גלריה */
+
+@media (max-width: 1024px) {
+  .gallery-form-wrapper {
+    flex-direction: column;
+    padding: 1rem 0.5rem;
+    gap: 16px;
+  }
+
+  .upload-btn,
+  .save-btn {
+    width: 100%;
+    max-width: 280px;
+    font-size: 1rem;
+  }
+
+  .gallery-item-square {
+    height: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 0.7rem;
+  }
+
+  .modal-media {
+    max-width: 100%;
+    max-height: 70vh;
+  }
+
+  .gallery-item-square {
+    height: 200px;
+  }
+
+  .upload-btn,
+  .save-btn {
+    font-size: 0.95rem;
+    padding: 0.7rem 1.2rem;
+  }
+
+  .info-note {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-instagram-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-media {
+    max-width: 100%;
+    max-height: 60vh;
+  }
+
+  .nav-btn {
+    font-size: 1.5rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .nav-btn.left {
+    left: -30px;
+  }
+
+  .nav-btn.right {
+    right: -30px;
+  }
+
+  .upload-btn,
+  .save-btn {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    max-width: 100%;
+  }
+
+  .gallery-item-square {
+    height: 180px;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    width: 28px;
+    height: 28px;
+  }
+}

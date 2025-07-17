@@ -39,3 +39,55 @@
     text-decoration: none;
     font-weight: bold;
   }
+  @media (max-width: 768px) {
+  .admin-payout-page {
+    padding: 1rem;
+  }
+
+  .admin-payout-page table,
+  .admin-payout-page th,
+  .admin-payout-page td {
+    font-size: 14px;
+    padding: 0.5rem;
+  }
+
+  .export-button a {
+    padding: 0.5rem 1rem;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-payout-page table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .export-button {
+    text-align: center;
+  }
+
+  .export-button a {
+    display: inline-block;
+    font-size: 13px;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .admin-payout-page {
+    max-width: 1200px;
+  }
+
+  .admin-payout-page table th,
+  .admin-payout-page table td {
+    font-size: 16px;
+    padding: 1rem;
+  }
+
+  .export-button a {
+    font-size: 16px;
+    padding: 0.8rem 1.4rem;
+  }
+}

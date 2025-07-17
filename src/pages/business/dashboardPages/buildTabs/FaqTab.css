@@ -194,3 +194,64 @@
 .save-all-button:hover {
   background: linear-gradient(to right, #8e44ad, #6c3483);
 }
+/* רספונסיביות מלאה לתצוגת FAQ */
+
+@media (max-width: 1024px) {
+  .faq-tab {
+    padding: 30px 20px;
+  }
+
+  .faq-form input,
+  .faq-form textarea {
+    max-width: 100%;
+  }
+
+  .faq-form button,
+  .save-all-button {
+    width: 100%;
+    max-width: 250px;
+  }
+
+  .faq-footer-actions,
+  .faq-actions-inline {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .faq-tab {
+    padding: 20px 15px;
+  }
+
+  .faq-header {
+    font-size: 15px;
+  }
+
+  .faq-form input,
+  .faq-form textarea {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .faq-form button,
+  .save-all-button {
+    font-size: 15px;
+    padding: 10px 16px;
+  }
+
+  .edit-btn,
+  .delete-btn,
+  .save-edit-btn,
+  .inline-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .faq-footer-actions,
+  .faq-actions-inline {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+}

@@ -62,3 +62,69 @@
   .back-dashboard:hover {
     background-color: #dcd0fa;
   }
+  @media (max-width: 480px) {
+  .admin-logs {
+    padding: 20px;
+  }
+
+  .admin-logs h1 {
+    font-size: 20px;
+  }
+
+  .log-search {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+  .admin-logs h1 {
+    font-size: 22px;
+  }
+
+  .log-search {
+    font-size: 14px;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .admin-logs {
+    padding: 30px;
+  }
+
+  .admin-logs h1 {
+    font-size: 24px;
+  }
+
+  .log-search {
+    font-size: 15px;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .admin-logs {
+    max-width: 1400px;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    font-size: 15px;
+    padding: 14px 18px;
+  }
+}

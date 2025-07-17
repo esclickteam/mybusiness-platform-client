@@ -95,3 +95,64 @@
   color: #888;
   padding: 1rem;
 }
+/* === רספונסיביות === */
+@media (max-width: 480px) {
+  .gallery-grid-container.view {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .gallery-grid-container.edit {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+
+  .gallery-item-wrapper {
+    height: 100px;
+  }
+
+  .save-btn {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .gallery-grid-container.view {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gallery-item-wrapper {
+    height: 120px;
+  }
+
+  .save-btn {
+    font-size: 0.95rem;
+    padding: 9px 18px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .gallery-grid-container.view {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .gallery-item-wrapper {
+    height: 130px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .gallery-grid-container.view {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .gallery-item-wrapper {
+    height: 160px;
+  }
+
+  .save-btn {
+    font-size: 1.05rem;
+    padding: 12px 24px;
+  }
+}

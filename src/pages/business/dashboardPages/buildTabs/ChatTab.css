@@ -142,3 +142,71 @@
     transform: translateY(0);
   }
 }
+/* רספונסיביות מלאה לכל סוגי המכשירים */
+
+@media (max-width: 1024px) {
+  .chat-tab-container {
+    flex-direction: column;
+    padding: 30px 20px;
+    gap: 30px;
+  }
+
+  .chat-settings,
+  .chat-preview {
+    width: 100%;
+    padding: 24px;
+  }
+
+  .chat-preview h2 {
+    font-size: 22px;
+  }
+
+  .chat-message {
+    font-size: 14px;
+  }
+
+  .chat-input-row input {
+    font-size: 13px;
+  }
+
+  .chat-input-row button {
+    font-size: 13px;
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .chat-tab-container {
+    padding: 20px 10px;
+  }
+
+  .chat-settings,
+  .chat-preview {
+    padding: 16px;
+  }
+
+  .chat-preview h2 {
+    font-size: 20px;
+  }
+
+  .chat-message {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .chat-input-row {
+    flex-direction: column;
+  }
+
+  .chat-input-row input {
+    width: 100%;
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .chat-input-row button {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
+}

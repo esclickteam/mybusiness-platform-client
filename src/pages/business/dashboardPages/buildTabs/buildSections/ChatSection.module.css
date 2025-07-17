@@ -142,3 +142,65 @@
   align-items: center;
   width: 100%;
 }
+/* רספונסיביות מלאה - התאמה לכל סוגי המסכים */
+@media (max-width: 768px) {
+  .chatSection {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .previewColumn,
+  .chatSidebar {
+    width: 100%;
+    border: none;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .chatMain {
+    padding: 1rem 0.5rem;
+    flex: none;
+  }
+
+  .form-column {
+    height: auto;
+    padding: 1rem;
+    align-items: center;
+  }
+
+  .edit-link-button {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-link-button {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+
+  .chatSidebar h3 {
+    font-size: 1rem;
+  }
+
+  .convoItem {
+    padding: 0.5rem;
+  }
+
+  .errorBanner {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .chatSection {
+    max-width: 1400px;
+    margin: auto;
+  }
+
+  .edit-link-button {
+    font-size: 17px;
+    padding: 14px 32px;
+  }
+}

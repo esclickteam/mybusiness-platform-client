@@ -52,3 +52,64 @@
   color: red;
   font-weight: bold;
 }
+/* מובייל קטן - עד 480px */
+@media (max-width: 480px) {
+  .agreements-container {
+    padding: 12px 10px;
+    max-width: 100%;
+  }
+
+  .agreement-btn {
+    font-size: 14px;
+    padding: 12px 10px;
+  }
+
+  .back-btn {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+}
+
+/* טאבלטים וטלפונים בינוניים - 481px עד 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .agreements-container {
+    padding: 15px 15px;
+    max-width: 95%;
+  }
+
+  .agreement-btn {
+    font-size: 15px;
+    padding: 12px 14px;
+  }
+
+  .back-btn {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+}
+
+/* מחשבים קטנים עד בינוניים - 769px עד 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .agreements-container {
+    max-width: 700px;
+    padding: 20px 20px;
+  }
+
+  .agreement-btn {
+    font-size: 16px;
+    padding: 14px 18px;
+  }
+
+  .back-btn {
+    font-size: 14px;
+    padding: 10px 18px;
+  }
+}
+
+/* מחשבים גדולים - מעל 1025px */
+@media (min-width: 1025px) {
+  .agreements-container {
+    max-width: 700px;
+    padding: 20px 20px;
+  }
+}

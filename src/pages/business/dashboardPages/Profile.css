@@ -136,4 +136,116 @@
       height: 90px;
     }
   }
-  
+  /* רספונסיביות - מובייל קטן עד 480px */
+@media (max-width: 480px) {
+  .profile-wrapper {
+    padding: 0.8rem 1rem;
+    gap: 2rem;
+  }
+
+  .logo-img {
+    width: 70px;
+    height: 70px;
+    border-width: 3px;
+  }
+
+  .name-rating h2 {
+    font-size: 1.3rem;
+  }
+
+  .rating-badge {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+  }
+
+  .gallery-grid img {
+    height: 100px;
+  }
+
+  .story-strip {
+    gap: 8px;
+  }
+
+  .story-thumb {
+    height: 90px;
+    width: 60px;
+    border-width: 1.5px;
+  }
+
+  .review-box,
+  .faq-item {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+  }
+
+  .service-list li {
+    font-size: 0.9rem;
+  }
+}
+
+/* טאבלטים ומסכים בינוניים 481px עד 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .profile-wrapper {
+    padding: 1rem 1.5rem;
+  }
+
+  .logo-img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .name-rating h2 {
+    font-size: 1.5rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .gallery-grid img {
+    height: 140px;
+  }
+
+  .story-strip {
+    gap: 10px;
+  }
+
+  .story-thumb {
+    height: 110px;
+    width: 75px;
+  }
+
+  .review-box,
+  .faq-item {
+    font-size: 1rem;
+  }
+
+  .service-list li {
+    font-size: 1rem;
+  }
+}
+
+/* מחשבים בינוניים 769px עד 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .profile-wrapper {
+    max-width: 900px;
+    padding: 1.5rem 2rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
+/* מחשבים גדולים מעל 1025px */
+@media (min-width: 1025px) {
+  .profile-wrapper {
+    max-width: 1200px;
+    padding: 2rem;
+  }
+}

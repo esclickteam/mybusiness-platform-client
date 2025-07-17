@@ -93,3 +93,42 @@
     display: none !important;
   }
 }
+/* טאבלטים */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sidebar {
+    max-width: 240px;
+  }
+  .convItem {
+    padding: 10px 12px;
+    font-size: 0.92rem;
+  }
+}
+
+/* מובייל קטנטן */
+@media (max-width: 350px) {
+  .sidebarTitle {
+    font-size: 1rem;
+    padding: 0 12px;
+  }
+  .convItem {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+  .partnerName {
+    font-size: 0.9rem;
+  }
+  .lastMessage {
+    font-size: 0.75rem;
+  }
+}
+
+/* מסכים רחבים במיוחד */
+@media (min-width: 1440px) {
+  .sidebar {
+    max-width: 300px;
+  }
+  .convItem {
+    padding: 14px 18px;
+    font-size: 1rem;
+  }
+}

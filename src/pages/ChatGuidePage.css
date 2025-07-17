@@ -121,3 +121,56 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+@media (max-width: 900px) {
+  .chat-guide-container {
+    max-width: 100%;
+    margin: 30px 15px;
+    padding: 15px;
+  }
+  
+  .chat-guide-container h1 {
+    font-size: 2rem;
+  }
+
+  .chat-guide-container h2 {
+    font-size: 1.6rem;
+  }
+  
+  .chat-guide-container h3 {
+    font-size: 1.3rem;
+  }
+  
+  .chat-guide-container p,
+  .chat-guide-container li {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-guide-container {
+    padding: 10px;
+    margin: 15px 10px;
+  }
+  
+  .chat-guide-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .chat-guide-container h2 {
+    font-size: 1.2rem;
+  }
+  
+  .chat-guide-container h3 {
+    font-size: 1rem;
+  }
+  
+  .chat-guide-container p,
+  .chat-guide-container li {
+    font-size: 0.9rem;
+  }
+  
+  /* טבלה – גלילה אופקית טובה יותר למובייל קטן */
+  .chat-guide-container table {
+    font-size: 1rem;
+  }
+}

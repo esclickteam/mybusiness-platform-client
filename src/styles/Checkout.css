@@ -6,6 +6,8 @@
     background: #f5f7fa;
     text-align: center;
     direction: rtl; /* RTL לעברית */
+    padding: 20px; /* רווח פנימי למכשירים קטנים */
+    box-sizing: border-box;
 }
 
 .checkout-card {
@@ -16,6 +18,7 @@
     max-width: 400px;
     width: 100%;
     text-align: center;
+    box-sizing: border-box;
 }
 
 .checkout-title {
@@ -114,4 +117,35 @@
 
 .retry-link:hover:not(:disabled) {
     background: #f57c00;
+}
+
+/* רספונסיביות למכשירים קטנים */
+@media (max-width: 480px) {
+    .checkout-container {
+        padding: 10px;
+        height: auto; /* גובה גמיש */
+        min-height: 100vh;
+    }
+
+    .checkout-card {
+        padding: 20px;
+        max-width: 100%;
+    }
+
+    .checkout-title {
+        font-size: 24px;
+    }
+
+    .checkout-content {
+        font-size: 16px;
+    }
+
+    .checkout-price, .checkout-duration {
+        font-size: 18px;
+    }
+
+    .pay-button, .retry-link, .return-link {
+        font-size: 18px;
+        padding: 14px 20px;
+    }
 }

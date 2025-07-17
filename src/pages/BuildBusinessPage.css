@@ -120,3 +120,57 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+/* טאבלטים - מסכים בין 601px ל-900px */
+@media (min-width: 601px) and (max-width: 900px) {
+  .build-business-page-container {
+    max-width: 90vw;
+    padding: 18px 16px;
+    margin: 30px auto;
+  }
+
+  .build-business-page-container h1 {
+    font-size: 2rem;
+  }
+
+  .build-business-page-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .build-business-page-container h3 {
+    font-size: 1.3rem;
+  }
+
+  .build-business-page-container p,
+  .build-business-page-container li {
+    font-size: 1.05rem;
+  }
+}
+
+/* מובייל קטן מאוד - עד 400px */
+@media (max-width: 400px) {
+  .build-business-page-container {
+    padding: 12px 10px;
+    margin: 15px 10px;
+  }
+
+  .build-business-page-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .build-business-page-container h2 {
+    font-size: 1.2rem;
+  }
+
+  .build-business-page-container h3 {
+    font-size: 1rem;
+  }
+
+  .build-business-page-container p,
+  .build-business-page-container li {
+    font-size: 0.9rem;
+  }
+
+  .build-business-page-container table {
+    font-size: 0.9rem;
+  }
+}

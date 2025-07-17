@@ -49,4 +49,54 @@
   .review-form button:hover {
     background: #6b21a8;
   }
-  
+  /* רספונסיביות לטופס ביקורת */
+
+@media (max-width: 768px) {
+  .review-form {
+    padding: 20px;
+    max-width: 90%;
+  }
+
+  .review-form h3 {
+    font-size: 18px;
+  }
+
+  .review-form select,
+  .review-form textarea {
+    font-size: 13px;
+  }
+
+  .review-form .average-score {
+    font-size: 15px;
+  }
+
+  .review-form button {
+    font-size: 15px;
+    padding: 9px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .review-form {
+    padding: 16px;
+  }
+
+  .review-form h3 {
+    font-size: 16px;
+  }
+
+  .review-form select,
+  .review-form textarea {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .review-form .average-score {
+    font-size: 14px;
+  }
+
+  .review-form button {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+}

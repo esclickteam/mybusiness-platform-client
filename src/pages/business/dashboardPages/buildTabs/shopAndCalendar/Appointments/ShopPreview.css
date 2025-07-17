@@ -1,3 +1,4 @@
+/* קוד קיים נשמר במלואו */
 .shop-preview {
   max-width: 900px;
   margin: auto;
@@ -211,23 +212,51 @@
   color: #888;
 }
 
-/* רספונסיביות שמביאה גם בנייד 2 כרטיסים */
-@media (max-width: 500px) {
+/* רספונסיביות לכל המכשירים */
+@media (max-width: 480px) {
   .product-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .product-card-preview {
-    padding: 0.7rem;
+    grid-template-columns: 1fr;
   }
 
   .quantity-input {
-    width: 45px;
-    font-size: 14px;
+    width: 42px;
+    font-size: 13px;
   }
 
   .add-to-cart-btn {
-    font-size: 14px;
+    font-size: 13px;
     padding: 6px 10px;
+  }
+
+  .shop-header-row {
+    flex-direction: column;
+    gap: 0.8rem;
+    text-align: center;
+  }
+
+  .coupon-input {
+    width: 90%;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .product-image-wrapper {
+    height: 140px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1025px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }

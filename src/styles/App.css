@@ -64,3 +64,45 @@ body,
 .login-button:hover {
   color: #ccc;
 }
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 36px;
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  .action-button {
+    font-size: 16px;
+    padding: 8px 20px;
+  }
+
+  .navbar {
+    justify-content: center;
+    margin-left: 0;
+    gap: 10px;
+  }
+
+  .menu-button,
+  .login-button {
+    font-size: 20px;
+    padding: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-title {
+    font-size: 28px;
+    margin-top: 10px;
+  }
+
+  .action-button {
+    font-size: 14px;
+    padding: 6px 16px;
+  }
+
+  .menu-button,
+  .login-button {
+    font-size: 18px;
+    padding: 3px;
+  }
+}

@@ -14,3 +14,53 @@
   font-size: 22px;
   cursor: pointer;
 }
+.voice-bubble {
+  background-color: #dcf8c6;
+  border-radius: 16px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  word-break: break-word; /* למנוע יציאה מחוץ למכולה */
+}
+
+.voice-play-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  flex-shrink: 0; /* לא יתכווץ */
+}
+
+/* רספונסיביות */
+
+@media (max-width: 480px) {
+  .voice-bubble {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .voice-play-btn {
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .voice-bubble {
+    padding: 9px 14px;
+    gap: 9px;
+  }
+  .voice-play-btn {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 769px) {
+  .voice-bubble {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+  .voice-play-btn {
+    font-size: 22px;
+  }
+}

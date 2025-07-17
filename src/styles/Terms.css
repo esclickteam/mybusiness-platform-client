@@ -148,3 +148,24 @@ body {
   font-size: 14px;
   color: #777;
 }
+@media (max-width: 768px) and (min-width: 481px) {
+  .terms-container {
+    padding: 35px 25px;
+    max-width: 90%;
+    margin: 40px auto 50px auto;
+  }
+
+  .terms-title {
+    font-size: 36px;
+  }
+
+  .terms-section h2 {
+    font-size: 26px;
+    border-left-width: 5px;
+  }
+
+  .terms-section p {
+    font-size: 17px;
+    line-height: 1.7;
+  }
+}

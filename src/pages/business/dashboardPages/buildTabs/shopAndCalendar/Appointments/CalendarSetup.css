@@ -164,3 +164,84 @@ div.calendar-setup-container > .summary {
   background: #fff;
   box-shadow: none;
 }
+@media (max-width: 480px) {
+  .calendar-setup-container {
+    padding: 16px;
+    margin: 20px auto;
+    gap: 16px;
+  }
+
+  .calendar-title {
+    font-size: 1.1em;
+  }
+
+  .weekly-hours-table {
+    padding: 12px 8px;
+  }
+
+  .weekly-hours-table table {
+    font-size: 0.85em;
+  }
+
+  .time-input {
+    width: 60px;
+    font-size: 0.9em;
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .save-all-btn.styled,
+  .cancel-btn.styled {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.95em;
+  }
+
+  .summary {
+    padding: 12px 14px;
+  }
+
+  .summary strong {
+    font-size: 1em;
+  }
+
+  .summary-item {
+    font-size: 0.85em;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 1440px) {
+  .calendar-setup-container {
+    max-width: 700px;
+    padding: 32px;
+  }
+
+  .calendar-title {
+    font-size: 1.5em;
+  }
+
+  .time-input {
+    font-size: 1.1em;
+    width: 90px;
+  }
+
+  .save-all-btn.styled,
+  .cancel-btn.styled {
+    font-size: 1.1em;
+    padding: 12px 26px;
+  }
+
+  .summary strong {
+    font-size: 1.3em;
+  }
+
+  .summary-item {
+    font-size: 1.1em;
+  }
+}

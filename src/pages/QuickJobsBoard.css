@@ -87,3 +87,78 @@
       flex-direction: column;
     }
   }
+  @media (max-width: 900px) {
+  .quick-jobs-board {
+    padding: 30px 15px;
+    max-width: 100%;
+  }
+
+  .quick-jobs-board h1 {
+    font-size: 26px;
+    margin-bottom: 25px;
+  }
+
+  .quick-job-publish-button {
+    font-size: 15px;
+    padding: 10px 20px;
+  }
+
+  .job-list h2 {
+    font-size: 22px;
+  }
+
+  .job-card {
+    padding: 16px;
+  }
+
+  .job-card h3 {
+    font-size: 18px;
+  }
+
+  .job-card p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-jobs-board {
+    padding: 20px 10px;
+    margin: 0 10px;
+  }
+
+  .quick-jobs-board h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .quick-job-publish-button {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  .job-list h2 {
+    font-size: 18px;
+  }
+
+  .job-card {
+    padding: 14px;
+  }
+
+  .job-card h3 {
+    font-size: 16px;
+  }
+
+  .job-card p {
+    font-size: 13px;
+  }
+
+  .job-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .job-actions button {
+    width: 100%;
+    padding: 10px;
+  }
+}
