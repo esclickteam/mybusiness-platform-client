@@ -121,28 +121,6 @@ export default function Header() {
             <img src={logo} alt="Logo" className="logo" />
           </Link>
         </div>
-
-        {/* כפתורי התחברות, לוח בקרה והתנתקות - מופיעים תמיד בצד שמאל */}
-        <div className="auth-controls">
-          {!user ? (
-            <Link to="/login" className="login-button">
-              התחברות
-            </Link>
-          ) : (
-            <>
-              <button
-                className="personal-area-button"
-                onClick={() => navigate(getDashboardPath())}
-              >
-                לוח בקרה
-              </button>
-              <button className="logout-button" onClick={handleLogout}>
-                <FaSignOutAlt style={{ marginLeft: 6 }} />
-                התנתק
-              </button>
-            </>
-          )}
-        </div>
       </nav>
 
       {menuOpen && (
