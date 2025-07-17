@@ -47,10 +47,17 @@ const AiPartnerTab = ({
   const [commandText, setCommandText] = useState("");
   const [commandResponse, setCommandResponse] = useState(null);
 
+  // קרדיטים וניהול רכישה
+  const [remainingQuestions, setRemainingQuestions] = useState(null);
+  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
+  const [purchaseMessage, setPurchaseMessage] = useState("");
+  const [purchaseError, setPurchaseError] = useState("");
+
   const bottomRef = useRef(null);
   const notificationSound = useRef(null);
 
-  // שמירה על פונקציה ללא שינוי בין רינדורים
+  // ניקוי טקסט מהמלצות
   const filterText = useCallback(
     (text) =>
       text
@@ -71,7 +78,29 @@ const AiPartnerTab = ({
     return Array.from(map.values());
   }, []);
 
-  // טעינת המלצות – נפרד
+  // רענון קרדיטים - עדכון שארית השאלות הזמינות
+  const refreshRemainingQuestions = useCallback(async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/business/my`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch business data");
+      const data = await res.json();
+      const business = data.business;
+      const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
+      const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
+      setRemainingQuestions(Math.max(maxQuestions - usedQuestions, 0));
+    } catch (err) {
+      console.error("Error refreshing remaining questions:", err);
+      setRemainingQuestions(null);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    refreshRemainingQuestions();
+  }, [refreshRemainingQuestions]);
+
+  // טעינת המלצות מהשרת
   useEffect(() => {
     async function fetchRecommendations() {
       if (!businessId || !token) return;
@@ -100,7 +129,7 @@ const AiPartnerTab = ({
     if (!showHistory) fetchRecommendations();
   }, [businessId, token, filterValidUniqueRecommendations, showHistory]);
 
-  // טעינת היסטוריית פקודות AI נפרד
+  // טעינת היסטוריית פקודות AI
   const fetchAiCommandHistory = useCallback(async () => {
     if (!businessId || !token) return;
     setLoadingHistory(true);
@@ -214,9 +243,9 @@ const AiPartnerTab = ({
     };
   }, [businessId, token, conversationId, onNewRecommendation]);
 
-  // שליחת פקודת AI - useCallback
+  // שליחת פקודת AI - כולל בדיקת קרדיטים
   const sendAiCommand = useCallback(async () => {
-    if (!commandText.trim()) return;
+    if (!commandText.trim() || (remainingQuestions !== null && remainingQuestions <= 0)) return;
 
     const convertedCommandText = convertNaturalDateToISO(commandText);
 
@@ -251,6 +280,9 @@ const AiPartnerTab = ({
       if (data.actionResult) {
         console.log("Action result:", data.actionResult);
       }
+
+      // הפחתת קרדיט אחד מהיתרה אחרי כל שליחה מוצלחת
+      setRemainingQuestions((prev) => (prev !== null ? Math.max(prev - 1, 0) : null));
     } catch (err) {
       alert("שגיאה בשליחת פקודת AI: " + err.message);
     } finally {
@@ -268,9 +300,10 @@ const AiPartnerTab = ({
     businessGoal,
     conversationId,
     chat,
+    remainingQuestions,
   ]);
 
-  // אישור המלצה - useCallback
+  // אישור המלצה
   const approveSuggestion = useCallback(
     async ({ id, text }) => {
       setLoading(true);
@@ -304,13 +337,13 @@ const AiPartnerTab = ({
     [businessId, token, filterText]
   );
 
-  // דחיית המלצה - useCallback
+  // דחיית המלצה
   const rejectSuggestion = useCallback((id) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== id));
     setActiveSuggestion(null);
   }, []);
 
-  // עריכת המלצה - useCallback
+  // עריכת המלצה
   const editRecommendation = useCallback(
     async ({ id, newText }) => {
       setLoading(true);
@@ -345,18 +378,60 @@ const AiPartnerTab = ({
     [token]
   );
 
-  // גלילה לאוטומטית לתחתית על כל שינוי ב-chat או suggestions
+  // גלילה אוטומטית לתחתית
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, suggestions]);
 
-  // עדכון טקסט עריכה כשמשתנה activeSuggestion
+  // עדכון טקסט העריכה כאשר משנה המלצה פעילה
   useEffect(() => {
     if (activeSuggestion) {
       setEditedText(activeSuggestion.text);
       setEditing(false);
     }
   }, [activeSuggestion]);
+
+  // רכישת חבילות נוספות
+  const handlePurchaseExtra = async () => {
+    if (purchaseLoading || !selectedPackage) return;
+
+    setPurchaseLoading(true);
+    setPurchaseMessage("");
+    setPurchaseError("");
+
+    try {
+      const url = selectedPackage.type === "ai-package" ? "/cardcomAI/ai-package" : "/purchase-package";
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}${url}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          packageId: selectedPackage.id,
+          businessId,
+          packageType: selectedPackage.type,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+        return;
+      }
+
+      setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
+      setSelectedPackage(null);
+
+      await refreshRemainingQuestions();
+    } catch (e) {
+      setPurchaseError(e.message || "שגיאה ברכישת החבילה");
+    } finally {
+      setPurchaseLoading(false);
+    }
+  };
 
   return (
     <div className="ai-partner-container">
@@ -445,12 +520,43 @@ const AiPartnerTab = ({
               value={commandText}
               onChange={(e) => setCommandText(e.target.value)}
               placeholder="כתוב פקודה ל-AI (למשל: תאם פגישה או סכם לי פגישות השבוע)"
-              disabled={loading}
+              disabled={loading || (remainingQuestions !== null && remainingQuestions <= 0)}
             />
-            <button onClick={sendAiCommand} disabled={loading || !commandText.trim()}>
+            <button
+              onClick={sendAiCommand}
+              disabled={loading || !commandText.trim() || (remainingQuestions !== null && remainingQuestions <= 0)}
+            >
               שלח ל-AI
             </button>
           </div>
+
+          {remainingQuestions !== null && remainingQuestions <= 0 && (
+            <div className="purchase-extra-container" style={{ marginTop: "1rem" }}>
+              <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
+              {aiPackages.map((pkg) => (
+                <label key={pkg.id} className="radio-label">
+                  <input
+                    type="radio"
+                    name="question-package"
+                    value={pkg.id}
+                    disabled={purchaseLoading}
+                    checked={selectedPackage?.id === pkg.id}
+                    onChange={() => setSelectedPackage(pkg)}
+                  />
+                  {pkg.label} - {pkg.price} ש"ח
+                </label>
+              ))}
+              <button
+                onClick={handlePurchaseExtra}
+                disabled={purchaseLoading || !selectedPackage}
+              >
+                {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
+              </button>
+
+              {purchaseMessage && <p className="success">{purchaseMessage}</p>}
+              {purchaseError && <p className="error">{purchaseError}</p>}
+            </div>
+          )}
 
           {commandResponse && (
             <div
