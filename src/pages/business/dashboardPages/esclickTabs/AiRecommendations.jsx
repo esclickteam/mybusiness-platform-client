@@ -55,7 +55,13 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         if (!business) return;
         const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
         const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
-        setRemainingQuestions(Math.max(maxQuestions - usedQuestions, 0));
+        const remaining = Math.max(maxQuestions - usedQuestions, 0);
+
+        console.log("maxQuestions:", maxQuestions);
+        console.log("usedQuestions:", usedQuestions);
+        console.log("remainingQuestions:", remaining);
+
+        setRemainingQuestions(remaining);
       })
       .catch((err) => {
         console.error("Error loading business data:", err);
@@ -332,9 +338,14 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         </div>
       )}
 
-      {/* הודעה אם אין המלצות חדשות או שהמגבלה חלה */}
-      {((pending.length === 0) || (remainingQuestions !== null && remainingQuestions <= 0)) && (
-        <p>אין אפשרות להמשיך כרגע. יש להמתין להמלצות חדשות או לרכוש חבילת שאלות נוספת.</p>
+      {/* הודעה אם אין המלצות חדשות אך יש שאלות זמינות */}
+      {pending.length === 0 && remainingQuestions !== null && remainingQuestions > 0 && (
+        <p>אין אפשרות להמשיך כרגע. יש להמתין להמלצות חדשות.</p>
+      )}
+
+      {/* הודעה אם אין שאלות זמינות */}
+      {(remainingQuestions !== null && remainingQuestions <= 0) && (
+        <p>אין אפשרות להמשיך כרגע. יש לרכוש חבילת שאלות נוספת.</p>
       )}
 
       {/* רשימת המלצות רק אם יש המלצות וטרם הגעת למגבלה */}
