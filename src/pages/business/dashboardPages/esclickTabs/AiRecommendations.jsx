@@ -332,9 +332,13 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         </div>
       )}
 
-      {/* הודעה אם אין המלצות חדשות וטרם הגענו למגבלה */}
-      {pending.length === 0 && (remainingQuestions === null || remainingQuestions > 0) && (
-        <p>אין אפשרות להמשיך כרגע. יש להמתין להמלצות חדשות או לרכוש חבילת שאלות נוספת.</p>
+      {/* הפרדה בין חוסר המלצות לבין חוסר שאלות */}
+      {pending.length === 0 && remainingQuestions > 0 && (
+        <p>כרגע אין המלצות חדשות, אנא המתן להמלצות נוספות.</p>
+      )}
+
+      {pending.length === 0 && remainingQuestions <= 0 && (
+        <p>אין אפשרות להמשיך כרגע. יש לרכוש חבילת שאלות נוספת.</p>
       )}
 
       {/* רשימת המלצות רק אם יש המלצות וטרם הגעת למגבלה */}
