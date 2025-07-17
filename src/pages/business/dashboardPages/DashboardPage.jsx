@@ -44,6 +44,15 @@ const DashboardNav = lazyWithPreload(() =>
   import("../../../components/dashboard/DashboardNav")
 );
 
+// debounce helper
+function debounce(func, wait) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
 function useOnScreen(ref) {
   const [isVisible, setVisible] = useState(false);
   useEffect(() => {
@@ -126,6 +135,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Refs for lazy loading with intersection observer
   const cardsRef = useRef(null);
   const insightsRef = useRef(null);
   const chartsRef = useRef(null);
@@ -133,6 +143,7 @@ const DashboardPage = () => {
   const nextActionsRef = useRef(null);
   const weeklySummaryRef = useRef(null);
 
+  // IntersectionObserver states
   const cardsVisible = useOnScreen(cardsRef);
   const insightsVisible = useOnScreen(insightsRef);
   const chartsVisible = useOnScreen(chartsRef);
@@ -140,6 +151,7 @@ const DashboardPage = () => {
   const nextActionsVisible = useOnScreen(nextActionsRef);
   const weeklySummaryVisible = useOnScreen(weeklySummaryRef);
 
+  // State to keep track if each section was loaded once (to avoid rerendering/remounting)
   const [cardsLoaded, setCardsLoaded] = useState(false);
   const [insightsLoaded, setInsightsLoaded] = useState(false);
   const [chartsLoaded, setChartsLoaded] = useState(false);
@@ -206,29 +218,30 @@ const DashboardPage = () => {
     });
   }, []);
 
-  // העדכון הישיר של סטטיסטיקות בלי debounce
-  const updateStats = (newStats) => {
-    console.log("Updating stats:", newStats);
-    setStats(newStats);
-    try {
+  // Debounced stats setter to limit rerenders on frequent WebSocket events
+  const debouncedSetStats = useRef(
+    debounce((newStats) => {
+      setStats(newStats);
       localStorage.setItem("dashboardStats", JSON.stringify(newStats));
-    } catch {
-      // מונע שגיאות באחסון
-    }
-  };
+    }, 300)
+  ).current;
 
   const loadStats = async () => {
     if (!businessId) return;
     setLoading(true);
     setError(null);
 
-    console.log("Loading stats from server...");
+    // Try to load cached stats first for instant display (stale-while-revalidate)
+    const cached = localStorage.getItem("dashboardStats");
+    if (cached) {
+      setStats(JSON.parse(cached));
+    }
+
     try {
       const data = await fetchDashboardStats(businessId, refreshAccessToken);
-      console.log("Loaded stats from server:", data);
-      updateStats(data);
+      setStats(data);
+      localStorage.setItem("dashboardStats", JSON.stringify(data));
     } catch (err) {
-      console.error("Error loading stats:", err);
       setError("❌ שגיאה בטעינת נתונים מהשרת");
       if (err.message === "No token") logout();
     } finally {
@@ -238,21 +251,6 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (!initialized || !businessId) return;
-
-    // מחק את הטעינה מ־localStorage כדי להבטיח טעינה ישירה מהשרת בלבד
-    // אפשר להשאיר את זה להשוואה או טעינה מהירה אם רוצים, אך כרגע מבטלים זאת:
-    // try {
-    //   const cached = localStorage.getItem("dashboardStats");
-    //   if (cached) {
-    //     const parsed = JSON.parse(cached);
-    //     if (parsed && typeof parsed === "object") {
-    //       setStats(parsed);
-    //     }
-    //   }
-    // } catch {
-    //   // לא עשה כלום במקרה של שגיאה
-    // }
-
     loadStats();
 
     let isMounted = true;
@@ -289,36 +287,29 @@ const DashboardPage = () => {
       });
 
       sock.on("dashboardUpdate", (newStats) => {
-        console.log("Received dashboardUpdate via socket:", newStats);
-        updateStats(newStats);
+        debouncedSetStats(newStats);
       });
 
       sock.on('profileViewsUpdated', (data) => {
         if (!data || typeof data.views_count !== 'number') return;
-        setStats((oldStats) => {
-          if (!oldStats) return oldStats;
-          const updatedStats = { ...oldStats, views_count: data.views_count };
-          console.log("Profile views updated:", updatedStats);
-          localStorage.setItem("dashboardStats", JSON.stringify(updatedStats));
-          return updatedStats;
-        });
+        setStats((oldStats) =>
+          oldStats
+            ? { ...oldStats, views_count: data.views_count }
+            : oldStats
+        );
       });
 
       sock.on("appointmentCreated", (newAppointment) => {
-        console.log("New appointment created:", newAppointment);
         if (!newAppointment.business || newAppointment.business.toString() !== businessId.toString()) return;
         setStats((oldStats) => {
           if (!oldStats) return oldStats;
           const enriched = enrichAppointment(newAppointment, oldStats);
           const updatedAppointments = [...(oldStats.appointments || []), enriched];
-          const updatedStats = {
+          return {
             ...oldStats,
             appointments: updatedAppointments,
             appointments_count: updatedAppointments.length,
           };
-          console.log("Stats updated with new appointment:", updatedStats);
-          localStorage.setItem("dashboardStats", JSON.stringify(updatedStats));
-          return updatedStats;
         });
         if (newAppointment.date) {
           const apptDate = new Date(newAppointment.date).toISOString().split("T")[0];
@@ -347,7 +338,7 @@ const DashboardPage = () => {
         socketRef.current = null;
       }
     };
-  }, [initialized, businessId, logout, refreshAccessToken, selectedDate]);
+  }, [initialized, businessId, logout, refreshAccessToken, debouncedSetStats, selectedDate]);
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -366,9 +357,8 @@ const DashboardPage = () => {
   if (!initialized) return <p className="loading-text">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
-  if (loading) return <DashboardSkeleton />;
+  if (loading && !stats) return <DashboardSkeleton />;
   if (error) return <p className="error-text">{alert || error}</p>;
-  if (!stats) return <p className="loading-text">⏳ טוען נתונים…</p>;
 
   const effectiveStats = stats || {};
   const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
@@ -462,7 +452,7 @@ const DashboardPage = () => {
       </Suspense>
 
       <div ref={cardsRef}>
-        {cardsLoaded && (
+        {(cardsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים...</div>}>
             <MemoizedDashboardCards
               stats={syncedStats}
@@ -473,7 +463,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={insightsRef}>
-        {insightsLoaded && (
+        {(insightsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות...</div>}>
             <MemoizedInsights
               stats={{
@@ -486,7 +476,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-        {chartsLoaded && (
+        {(chartsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף...</div>}>
             <MemoizedBarChartComponent
               appointments={enrichedAppointments}
@@ -497,7 +487,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={nextActionsRef} className="actions-container full-width">
-        {nextActionsLoaded && (
+        {(nextActionsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות...</div>}>
             <MemoizedNextActions
               stats={{
@@ -512,7 +502,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={appointmentsRef} className="calendar-row">
-        {appointmentsLoaded && (
+        {(appointmentsLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן...</div>}>
             <div className="day-agenda-box">
               <MemoizedDailyAgenda
@@ -524,7 +514,6 @@ const DashboardPage = () => {
             </div>
             <div className="calendar-container">
               <MemoizedCalendarView
-                key={JSON.stringify(enrichedAppointments.map(a => a._id))}
                 appointments={enrichedAppointments}
                 onDateClick={setSelectedDate}
                 selectedDate={selectedDate}
@@ -535,7 +524,7 @@ const DashboardPage = () => {
       </div>
 
       <div ref={weeklySummaryRef}>
-        {weeklySummaryLoaded && (
+        {(weeklySummaryLoaded) && (
           <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי...</div>}>
             <MemoizedWeeklySummary stats={syncedStats} />
           </Suspense>
