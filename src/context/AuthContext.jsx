@@ -161,6 +161,7 @@ export function AuthProvider({ children }) {
     setAuthToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("businessDetails");
+    localStorage.removeItem("dashboardStats");
     setToken(null);
     setUser(null);
     socket?.disconnect();
