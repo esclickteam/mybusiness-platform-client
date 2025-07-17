@@ -32,7 +32,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     setError(null);
 
     // טעינת המלצות
-    fetch(`${API_BASE_URL}/api/chat/recommendations?businessId=${businessId}`, {
+    fetch(`${API_BASE_URL}/chat/recommendations?businessId=${businessId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
