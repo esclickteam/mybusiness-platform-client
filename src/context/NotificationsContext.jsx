@@ -29,16 +29,58 @@ function normalizeNotification(notif) {
 function reducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
-      const list = action.payload.map(normalizeNotification);
-      const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
-      return { notifications: list, unreadCount };
+      // אל תציג רגילה אם יש AI על אותו thread
+      let list = action.payload.map(normalizeNotification);
+
+      // עבור כל thread, שמור רק AI אם קיים, אחרת רגילה
+      const filtered = [];
+      const aiThreads = new Set(
+        list.filter(n => n.type === "recommendation").map(n => n.threadId)
+      );
+      for (const n of list) {
+        if (aiThreads.has(n.threadId)) {
+          if (n.type === "recommendation") filtered.push(n);
+        } else {
+          filtered.push(n);
+        }
+      }
+      const unreadCount = filtered.reduce((sum, n) => sum + n.unreadCount, 0);
+      return { notifications: filtered, unreadCount };
     }
     case "UPDATE_UNREAD_COUNT":
       return { ...state, unreadCount: action.payload };
     case "ADD_NOTIFICATION": {
       const newNotif = normalizeNotification(action.payload);
+
+      // יש כבר AI לאותו thread? (אל תכניס רגילה)
+      if (
+        newNotif.type === "message" &&
+        state.notifications.some(
+          n =>
+            n.threadId === newNotif.threadId &&
+            n.type === "recommendation"
+        )
+      ) {
+        return state;
+      }
+
+      // אם זו המלצת AI – מחק רגילה לאותו thread, והכנס רק אותה
+      if (newNotif.type === "recommendation") {
+        const list = [
+          newNotif,
+          ...state.notifications.filter(
+            n => n.threadId !== newNotif.threadId
+          ),
+        ];
+        const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
+        return { notifications: list, unreadCount };
+      }
+
+      // רגילה – אם כבר קיימת בדיוק התראה זהה לא להוסיף (מניעת כפילות כללית)
       const exists = state.notifications.some(
-        (n) => n.id === newNotif.id || (n.threadId && n.threadId === newNotif.threadId)
+        n =>
+          n.id === newNotif.id ||
+          (n.threadId && n.threadId === newNotif.threadId && n.type === newNotif.type)
       );
       const list = exists
         ? state.notifications
@@ -84,18 +126,18 @@ export function NotificationsProvider({ children }) {
 
       // הודעות חדשות
       socket.on("newMessage", msg => {
-        const senderRole = msg.role || 'client';
+        const senderRole = msg.role || "client";
         dispatch({
           type: "ADD_NOTIFICATION",
           payload: {
             threadId: msg.conversationId,
-            text: `✉️ הודעה חדשה מ${senderRole === 'client' ? 'לקוח' : 'עסק'}`,
+            text: `✉️ הודעה חדשה מ${senderRole === "client" ? "לקוח" : "עסק"}`,
             timestamp: msg.timestamp || msg.createdAt,
             read: false,
             unreadCount: 1,
             type: "message",
-            actorName: senderRole === 'client' ? 'לקוח' : 'עסק',
-          }
+            actorName: senderRole === "client" ? "לקוח" : "עסק",
+          },
         });
       });
 
