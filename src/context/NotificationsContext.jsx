@@ -174,7 +174,7 @@ export function NotificationsProvider({ children }) {
     socket.on("connect", onConnect);
     if (socket.connected) onConnect();
 
-    // נקיון מאזינים
+    // ניקוי מאזינים
     return () => {
       socket.off("connect", onConnect);
       socket.off("newMessage");
