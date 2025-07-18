@@ -220,17 +220,17 @@ const AffiliatePage = () => {
             <tr>
               <td>חבילה חודשית</td>
               <td>1 חודש</td>
-              <td>3%</td>
+              <td>5%</td>
             </tr>
             <tr>
               <td>חבילה רבעונית</td>
               <td>3 חודשים</td>
-              <td>5%</td>
+              <td>7%</td>
             </tr>
             <tr>
               <td>חבילה שנתית</td>
               <td>12 חודשים</td>
-              <td>7%</td>
+              <td>10%</td>
             </tr>
           </tbody>
         </table>
