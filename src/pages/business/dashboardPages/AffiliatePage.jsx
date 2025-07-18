@@ -17,23 +17,22 @@ const AffiliatePage = () => {
   const [receiptFile, setReceiptFile] = useState(null);
   const [withdrawalId, setWithdrawalId] = useState(null);
 
-  // מצב ליתרת המשיכה המעודכנת
+  // יתרה עדכנית מהשרת
   const [currentBalance, setCurrentBalance] = useState(0);
 
-  // סכום כולל עמלות לתשלום (כל הסטטוסים לא שולם)
+  // סכום כולל עמלות לא משולמות (לצורכי מידע בלבד)
   const totalUnpaidCommissions = allStats
     .filter((stat) => stat.paymentStatus !== "paid")
     .reduce(
-      (sum, stat) => sum + (stat.totalCommissions - (stat.paidCommissions || 0)),
+      (sum, stat) => sum + ((stat.totalCommissions || 0) - (stat.paidCommissions || 0)),
       0
     );
 
-  // פונקציה לריענון הסטטיסטיקות והיתרה
+  // פונקציה לריענון סטטיסטיקות ויתרה
   const refreshStats = async (affiliateId) => {
     try {
       setLoadingStats(true);
 
-      // קבלת הסטטיסטיקות + יתרה עדכנית (מבנה חדש)
       const statsRes = await API.get("/affiliate/stats/all", {
         params: { affiliateId },
       });
@@ -49,7 +48,7 @@ const AffiliatePage = () => {
     }
   };
 
-  // ניסיון ראשון לקבלת מזהה העסק בלבד
+  // קבלת מזהה עסק ראשונית
   useEffect(() => {
     async function fetchBusinessInfo() {
       try {
@@ -63,10 +62,11 @@ const AffiliatePage = () => {
     fetchBusinessInfo();
   }, []);
 
-  // ריענון לסטטיסטיקות וליתרה ברגע שיש businessId
+  // ריענון סטטיסטיקות לאחר קבלת מזהה עסק
   useEffect(() => {
-    if (!businessId) return;
-    refreshStats(businessId);
+    if (businessId) {
+      refreshStats(businessId);
+    }
   }, [businessId]);
 
   // בקשת משיכה
@@ -89,11 +89,9 @@ const AffiliatePage = () => {
       if (res.data.withdrawalId) setWithdrawalId(res.data.withdrawalId);
       setShowReceiptForm(true);
 
-      // עדכון ביתרת הלקוח בהתאם לתשובת השרת
       if (res.data.currentBalance !== undefined) {
         setCurrentBalance(res.data.currentBalance);
       } else {
-        // fallback: ריענון מלא
         refreshStats(businessId);
       }
     } catch (error) {
@@ -122,8 +120,6 @@ const AffiliatePage = () => {
       setWithdrawStatus("קבלה הועלתה וממתינה לאישור.");
       setShowReceiptForm(false);
       setReceiptFile(null);
-
-      // ריענון הסטטיסטיקות (לרבות balance)
       refreshStats(businessId);
     } catch (error) {
       alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
@@ -143,7 +139,7 @@ const AffiliatePage = () => {
       {/* קישור אישי */}
       <section className="affiliate-section">
         <h2>🎯 קישור השותף האישי שלך</h2>
-        <p>העתיקו את הקישור ושתפו אותו כדי לצרף לקוחות חדשים ולקבל עמלות:</p>
+        <p>העתק את הקישור ושתף אותו כדי לצרף לקוחות חדשים ולקבל עמלות:</p>
         <input
           type="text"
           value={affiliateLink}
@@ -182,13 +178,15 @@ const AffiliatePage = () => {
               </tr>
             </thead>
             <tbody>
-              {allStats.map((stat) => {
+              {allStats.map((stat, idx) => {
                 const paid = stat.paidCommissions || 0;
-                const unpaid = stat.totalCommissions - paid;
+                const unpaid = (stat.totalCommissions || 0) - paid;
+                // מפתח ייחודי: month או אינדקס (אם אין)
+                const key = stat.month || `row-${idx}`;
                 return (
-                  <tr key={stat.month}>
-                    <td>{stat.month}</td>
-                    <td>{stat.purchases}</td>
+                  <tr key={key}>
+                    <td>{stat.month || "-"}</td>
+                    <td>{stat.purchases || 0}</td>
                     <td>₪{paid.toFixed(2)}</td>
                     <td>₪{unpaid.toFixed(2)}</td>
                     <td className={
@@ -268,7 +266,9 @@ const AffiliatePage = () => {
                 max={currentBalance || 0}
                 value={withdrawAmount}
                 onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-                placeholder="סכום למשיכה (מינימום 200 ש\"ח)"
+                    placeholder='סכום למשיכה (מינימום 200 ש"ח)'
+
+
               />
               <p style={{ color: "red", fontWeight: "bold", marginTop: "4px" }}>
                 סכום מינימום למשיכה הוא 200 ש"ח
