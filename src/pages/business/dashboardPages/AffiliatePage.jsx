@@ -306,7 +306,7 @@ const AffiliatePage = () => {
               onChange={(e) => setReceiptFile(e.target.files[0])}
               required
             />
-            <button type="submit">🚀 העלאת קבלה</button>
+            <button type="submit">🚀  העלאת קבלה</button>
           </form>
         )}
 
