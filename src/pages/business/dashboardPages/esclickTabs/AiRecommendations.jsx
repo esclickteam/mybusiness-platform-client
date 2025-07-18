@@ -40,7 +40,8 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        const count = data.business?.approvedRecommendationsCount || 0;
+        const count = data.business?.monthlyQuestionCount || 0;
+
         setApprovedCount(count);
         setCanApprove(count < RECOMMEND_LIMIT);
       })
