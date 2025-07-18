@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+const RECOMMEND_LIMIT = 60; // סף למניעת אישור
 
 const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [recommendations, setRecommendations] = useState([]);
@@ -10,14 +11,19 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
   const [showHistory, setShowHistory] = useState(false);
+  const [approvedCount, setApprovedCount] = useState(0);
+  const [canApprove, setCanApprove] = useState(true);
   const socketRef = useRef(null);
 
-  const cleanText = (text) => text.replace(/(\*\*|#|\*)/g, "").trim();
+  // עוזר לנקות טקסט (כמו בקוד שלך)
+  const cleanText = (text) => (text || "").replace(/(\*\*|#|\*)/g, "").trim();
 
+  // שלוף את המלצות ה-AI וגם את כמות המאושרות
   useEffect(() => {
     if (!businessId || !token) return;
-
     setError(null);
+
+    // 1. שליפת המלצות
     fetch(`/api/chat/recommendations?businessId=${businessId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -27,14 +33,28 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       })
       .then((data) => setRecommendations(data))
       .catch((err) => {
-        console.error("[Load] error:", err);
         setError("שגיאה בטעינת ההמלצות: " + err.message);
+      });
+
+    // 2. שליפת סטטוס מניעה (כמה המלצות מאושרות)
+    fetch(`/api/business/my`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const count = data.business?.approvedRecommendationsCount || 0;
+        setApprovedCount(count);
+        setCanApprove(count < RECOMMEND_LIMIT);
+      })
+      .catch(() => {
+        setApprovedCount(0);
+        setCanApprove(true); // ברירת מחדל אם אין מידע
       });
   }, [businessId, token]);
 
+  // האזן לסוקט ועדכן בזמן אמת
   useEffect(() => {
     if (!businessId || !token) return;
-
     const socket = io(SOCKET_URL, {
       auth: { token, businessId },
       transports: ["websocket"],
@@ -43,24 +63,20 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     });
     socketRef.current = socket;
 
-    const onConnect = () => {
+    socket.on("connect", () => {
       socket.emit("joinRoom", `business-${businessId}`);
       socket.emit("joinRoom", `dashboard-${businessId}`);
-    };
-
-    const onConnectError = (err) => {
+    });
+    socket.on("connect_error", (err) => {
       if (err.message.includes("401") && typeof onTokenExpired === "function") {
         onTokenExpired();
       } else {
         setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
       }
-    };
+    });
+    socket.on("disconnect", (reason) => {});
 
-    const onDisconnect = (reason) => {
-      console.log("[Socket] disconnected:", reason);
-    };
-
-    const onNewAiSuggestion = (rec) => {
+    socket.on("newAiSuggestion", (rec) => {
       setRecommendations((prev) => {
         const idx = prev.findIndex((r) => (r._id === rec._id || r.id === rec._id));
         if (idx !== -1) {
@@ -73,9 +89,9 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         }
         return [...prev, rec];
       });
-    };
+    });
 
-    const onMessageApproved = ({ recommendationId }) => {
+    socket.on("messageApproved", ({ recommendationId }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
           r._id === recommendationId || r.id === recommendationId
@@ -83,14 +99,16 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
             : r
         )
       );
+      setApprovedCount((count) => count + 1);
+      setCanApprove((count) => count + 1 < RECOMMEND_LIMIT);
       setLoadingIds((ids) => {
         const next = new Set(ids);
         next.delete(recommendationId);
         return next;
       });
-    };
+    });
 
-    const onRecommendationRejected = ({ recommendationId }) => {
+    socket.on("recommendationRejected", ({ recommendationId }) => {
       setRecommendations((prev) =>
         prev.map((r) =>
           r._id === recommendationId || r.id === recommendationId
@@ -103,40 +121,27 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         next.delete(recommendationId);
         return next;
       });
-    };
-
-    socket.on("connect", onConnect);
-    socket.on("connect_error", onConnectError);
-    socket.on("disconnect", onDisconnect);
-    socket.on("newAiSuggestion", onNewAiSuggestion);
-    socket.on("messageApproved", onMessageApproved);
-    socket.on("recommendationRejected", onRecommendationRejected);
+    });
 
     socket.connect();
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("connect_error", onConnectError);
-      socket.off("disconnect", onDisconnect);
-      socket.off("newAiSuggestion", onNewAiSuggestion);
-      socket.off("messageApproved", onMessageApproved);
-      socket.off("recommendationRejected", onRecommendationRejected);
+      socket.off("connect");
+      socket.off("connect_error");
+      socket.off("disconnect");
+      socket.off("newAiSuggestion");
+      socket.off("messageApproved");
+      socket.off("recommendationRejected");
       socket.disconnect();
     };
   }, [businessId, token, onTokenExpired]);
 
-  useEffect(() => {
-    const socket = socketRef.current;
-    if (socket && socket.auth) {
-      socket.auth.token = token;
-      if (socket.connected) {
-        socket.disconnect();
-        socket.connect();
-      }
-    }
-  }, [token]);
-
+  // התנהגות עריכה/אישור/דחייה
   const approveRecommendation = async (id) => {
+    if (!canApprove) {
+      setError("הגעת למכסת האישור החודשית, לא ניתן לאשר המלצות נוספות.");
+      return;
+    }
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
@@ -156,6 +161,8 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
           r._id === id || r.id === id ? { ...r, status: "approved" } : r
         )
       );
+      setApprovedCount((count) => count + 1);
+      setCanApprove((count) => count + 1 < RECOMMEND_LIMIT);
     } catch (err) {
       setError("שגיאה באישור ההמלצה: " + err.message);
     } finally {
@@ -197,16 +204,15 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
+  // התנהגות עריכה:
   const startEditing = (rec) => {
     setEditingId(rec._id || rec.id);
     setEditText(cleanText(rec.isEdited ? rec.editedText : rec.commandText || ""));
   };
-
   const cancelEditing = () => {
     setEditingId(null);
     setEditText("");
   };
-
   const saveDraft = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -240,8 +246,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
     }
   };
-
   const saveAndApprove = async (id) => {
+    if (!canApprove) {
+      setError("הגעת למכסת האישור החודשית, לא ניתן לאשר המלצות נוספות.");
+      return;
+    }
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
@@ -288,7 +297,14 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     <div>
       <h3>המלצות AI ממתינות לאישור</h3>
       {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
-
+      <p>
+        סה"כ אישרת {approvedCount} המלצות מתוך {RECOMMEND_LIMIT}.{" "}
+        {!canApprove && (
+          <span style={{ color: "red", fontWeight: "bold" }}>
+            (הגעת למכסת אישורים! אפשר לצפות בלבד, לא לאשר המלצות נוספות)
+          </span>
+        )}
+      </p>
       {pending.length === 0 ? (
         <p>אין המלצות חדשות.</p>
       ) : (
@@ -297,7 +313,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
             const recId = _id || id;
             const isLoading = loadingIds.has(recId);
             const isEditing = editingId === recId;
-
             return (
               <li
                 key={recId}
@@ -316,14 +331,15 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                       }
                       rows={10}
                       style={{ width: "100%", resize: "vertical" }}
+                      disabled={!canApprove}
                     />
                     <div style={{ marginTop: 10 }}>
-                      <button onClick={() => saveDraft(recId)} disabled={isLoading}>
+                      <button onClick={() => saveDraft(recId)} disabled={isLoading || !canApprove}>
                         {isLoading ? "שומר טיוטה..." : "שמור טיוטה"}
                       </button>{" "}
                       <button
                         onClick={() => saveAndApprove(recId)}
-                        disabled={isLoading}
+                        disabled={isLoading || !canApprove}
                       >
                         {isLoading ? "מטמיע ושולח..." : "שמור ואשר"}
                       </button>{" "}
@@ -339,12 +355,23 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                       <p style={{ fontStyle: "italic", color: "#555" }}>
                         <strong>תשובה/המלצה:</strong> {cleanText(commandText)}</p>
                     )}
-                    <button onClick={() => startEditing({ _id: recId, text, commandText, editedText: recommendations.find(r => (r._id === recId || r.id === recId))?.editedText, isEdited: recommendations.find(r => (r._id === recId || r.id === recId))?.isEdited })}>
+                    <button
+                      onClick={() =>
+                        startEditing({
+                          _id: recId,
+                          text,
+                          commandText,
+                          editedText: recommendations.find(r => (r._id === recId || r.id === recId))?.editedText,
+                          isEdited: recommendations.find(r => (r._id === recId || r.id === recId))?.isEdited
+                        })
+                      }
+                      disabled={!canApprove}
+                    >
                       ערוך
                     </button>{" "}
                     <button
                       onClick={() => approveRecommendation(recId)}
-                      disabled={isLoading}
+                      disabled={isLoading || !canApprove}
                     >
                       {isLoading ? "טוען..." : "אשר ושלח"}
                     </button>{" "}
@@ -354,6 +381,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                     >
                       {isLoading ? "טוען..." : "דחה"}
                     </button>
+                    {!canApprove && (
+                      <div style={{ color: "red", marginTop: 8 }}>
+                        הגבלת אישור הושגה. אפשר להמשיך לקבל המלצות אך לא לאשר.
+                      </div>
+                    )}
                   </>
                 )}
               </li>
@@ -361,9 +393,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
           })}
         </ul>
       )}
-
       <hr />
-
       <button
         onClick={() => setShowHistory((show) => !show)}
         style={{
@@ -379,7 +409,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       >
         {showHistory ? "הסתר היסטוריית המלצות" : "ראה היסטוריית המלצות"}
       </button>
-
       {showHistory && (
         <>
           <h3>היסטוריית המלצות</h3>
