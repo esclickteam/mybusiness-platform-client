@@ -75,11 +75,11 @@ const AffiliatePage = () => {
   // בקשת משיכה
   const handleWithdrawRequest = async () => {
     if (withdrawAmount < 200) {
-      alert("סכום מינימום למשיכה הוא 200 ש\"ח");
+      alert('סכום מינימום למשיכה הוא 200 ש"ח');
       return;
     }
     if (withdrawAmount > currentBalance) {
-      alert("סכום המשיכה גבוה מהיתרה הזמינה");
+      alert('סכום המשיכה גבוה מהיתרה הזמינה');
       return;
     }
     try {
@@ -205,17 +205,15 @@ const AffiliatePage = () => {
         )}
       </section>
 
-      {/* מדרגות עמלות ובונוסים */}
+      {/* מדרגות עמלות ללא בונוסים */}
       <section className="affiliate-commission-rules">
-        <h2>💰 מדרגות עמלות לפי תקופת חבילה ובונוסים לפי עסקאות</h2>
+        <h2>💰 מדרגות עמלות לפי תקופת חבילה</h2>
         <table>
           <thead>
             <tr>
               <th>סוג חבילה</th>
               <th>תקופת התחייבות</th>
               <th>אחוז עמלה</th>
-              <th>עסקאות מינימום לבונוס</th>
-              <th>בונוס (₪)</th>
             </tr>
           </thead>
           <tbody>
@@ -223,92 +221,19 @@ const AffiliatePage = () => {
               <td>חבילה חודשית</td>
               <td>1 חודש</td>
               <td>3%</td>
-              <td>10</td>
-              <td>200</td>
-            </tr>
-            <tr>
-              <td>חבילה חודשית</td>
-              <td>1 חודש</td>
-              <td>3%</td>
-              <td>30</td>
-              <td>400</td>
-            </tr>
-            <tr>
-              <td>חבילה חודשית</td>
-              <td>1 חודש</td>
-              <td>3%</td>
-              <td>60</td>
-              <td>1000</td>
-            </tr>
-            <tr>
-              <td>חבילה חודשית</td>
-              <td>1 חודש</td>
-              <td>3%</td>
-              <td>100</td>
-              <td>2200</td>
             </tr>
             <tr>
               <td>חבילה רבעונית</td>
               <td>3 חודשים</td>
               <td>5%</td>
-              <td>10</td>
-              <td>450</td>
-            </tr>
-            <tr>
-              <td>חבילה רבעונית</td>
-              <td>3 חודשים</td>
-              <td>5%</td>
-              <td>30</td>
-              <td>600</td>
-            </tr>
-            <tr>
-              <td>חבילה רבעונית</td>
-              <td>3 חודשים</td>
-              <td>5%</td>
-              <td>60</td>
-              <td>1500</td>
-            </tr>
-            <tr>
-              <td>חבילה רבעונית</td>
-              <td>3 חודשים</td>
-              <td>5%</td>
-              <td>100</td>
-              <td>3300</td>
             </tr>
             <tr>
               <td>חבילה שנתית</td>
               <td>12 חודשים</td>
               <td>7%</td>
-              <td>10</td>
-              <td>900</td>
-            </tr>
-            <tr>
-              <td>חבילה שנתית</td>
-              <td>12 חודשים</td>
-              <td>7%</td>
-              <td>30</td>
-              <td>1200</td>
-            </tr>
-            <tr>
-              <td>חבילה שנתית</td>
-              <td>12 חודשים</td>
-              <td>7%</td>
-              <td>60</td>
-              <td>3000</td>
-            </tr>
-            <tr>
-              <td>חבילה שנתית</td>
-              <td>12 חודשים</td>
-              <td>7%</td>
-              <td>100</td>
-              <td>6600</td>
             </tr>
           </tbody>
         </table>
-        <p style={{ marginTop: "1rem", fontWeight: "bold", color: "#444" }}>
-          ⚠️ הבונוס האקסטרה יינתן רק פעם אחת בחודש, לפי הרף הגבוה ביותר
-          של עסקאות שהושג באותו חודש.
-        </p>
       </section>
 
       {/* פעולות תשלום */}
