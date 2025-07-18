@@ -33,15 +33,13 @@ const AffiliatePage = () => {
     try {
       setLoadingStats(true);
 
-      // קבלת הסטטיסטיקות (לדוחות בלבד)
+      // קבלת הסטטיסטיקות + יתרה עדכנית (מבנה חדש)
       const statsRes = await API.get("/affiliate/stats/all", {
         params: { affiliateId },
       });
-      setAllStats(statsRes.data);
 
-      // קבלת יתרה אמיתית
-      const businessRes = await API.get("/business/my");
-      setCurrentBalance(businessRes.data.business.balance);
+      setAllStats(statsRes.data.stats || []);
+      setCurrentBalance(statsRes.data.currentBalance || 0);
 
       setErrorStats(null);
     } catch (error) {
@@ -87,8 +85,6 @@ const AffiliatePage = () => {
         amount: withdrawAmount,
       });
 
-      console.log("withdraw request response:", res.data); // לוג תגובת בקשה
-
       setWithdrawStatus(res.data.message || "בקשת המשיכה התקבלה.");
       if (res.data.withdrawalId) setWithdrawalId(res.data.withdrawalId);
       setShowReceiptForm(true);
@@ -101,7 +97,6 @@ const AffiliatePage = () => {
         refreshStats(businessId);
       }
     } catch (error) {
-      console.error("Withdraw request error:", error); // לוג שגיאה
       alert(error.response?.data?.message || "שגיאה בבקשת המשיכה");
     }
   };
@@ -123,8 +118,6 @@ const AffiliatePage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("receipt upload response:", res.data); // לוג תגובה
-
       alert(res.data.message || "הקבלה הועלתה בהצלחה");
       setWithdrawStatus("קבלה הועלתה וממתינה לאישור.");
       setShowReceiptForm(false);
@@ -133,7 +126,6 @@ const AffiliatePage = () => {
       // ריענון הסטטיסטיקות (לרבות balance)
       refreshStats(businessId);
     } catch (error) {
-      console.error("Receipt upload error:", error); // לוג שגיאה
       alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
     }
   };
@@ -194,13 +186,23 @@ const AffiliatePage = () => {
                 const paid = stat.paidCommissions || 0;
                 const unpaid = stat.totalCommissions - paid;
                 return (
-                  <tr key={stat._id}>
+                  <tr key={stat.month}>
                     <td>{stat.month}</td>
                     <td>{stat.purchases}</td>
                     <td>₪{paid.toFixed(2)}</td>
                     <td>₪{unpaid.toFixed(2)}</td>
-                    <td className={stat.paymentStatus === "paid" ? "paid" : "unpaid"}>
-                      {stat.paymentStatus === "paid" ? "שולם ✅" : "ממתין"}
+                    <td className={
+                      stat.paymentStatus === "paid"
+                        ? "paid"
+                        : stat.paymentStatus === "אין נתונים"
+                        ? "no-data"
+                        : "unpaid"
+                    }>
+                      {stat.paymentStatus === "paid"
+                        ? "שולם ✅"
+                        : stat.paymentStatus === "אין נתונים"
+                        ? "אין נתונים"
+                        : "ממתין"}
                     </td>
                   </tr>
                 );
@@ -248,7 +250,6 @@ const AffiliatePage = () => {
           <p>
             יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong>
           </p>
-          {/* השורה של סך כל העמלות להשלמה הוסרה מכאן */}
           {totalUnpaidCommissions > currentBalance && (
             <p style={{ color: "orange", fontWeight: "bold" }}>
               שימו לב: סך העמלות גבוה מיתרת המשיכה הזמינה.
@@ -257,8 +258,7 @@ const AffiliatePage = () => {
 
           {currentBalance < 200 ? (
             <p style={{ color: "red", fontWeight: "bold" }}>
-              סכום מינימום למשיכה הוא 200 ש"ח. אנא המתן שיצטבר סכום מינימלי
-              למשיכה.
+              סכום מינימום למשיכה הוא 200 ש"ח. אנא המתן שיצטבר סכום מינימלי למשיכה.
             </p>
           ) : (
             <>
@@ -268,7 +268,7 @@ const AffiliatePage = () => {
                 max={currentBalance || 0}
                 value={withdrawAmount}
                 onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-                placeholder="סכום למשיכה (מינימום 200 ש&quot;ח)"
+                placeholder="סכום למשיכה (מינימום 200 ש\"ח)"
               />
               <p style={{ color: "red", fontWeight: "bold", marginTop: "4px" }}>
                 סכום מינימום למשיכה הוא 200 ש"ח
@@ -290,7 +290,7 @@ const AffiliatePage = () => {
               onChange={(e) => setReceiptFile(e.target.files[0])}
               required
             />
-            <button type="submit">🚀  העלאת קבלה</button>
+            <button type="submit">🚀 העלאת קבלה</button>
           </form>
         )}
 
