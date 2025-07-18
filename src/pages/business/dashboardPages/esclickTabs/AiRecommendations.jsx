@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
-const AiRecommendations = ({ businessId, token, remainingQuestions, onTokenExpired }) => {
+const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [loadingIds, setLoadingIds] = useState(new Set());
   const [error, setError] = useState(null);
@@ -137,10 +137,6 @@ const AiRecommendations = ({ businessId, token, remainingQuestions, onTokenExpir
   }, [token]);
 
   const approveRecommendation = async (id) => {
-    if (remainingQuestions <= 0) {
-      setError("הגעת למגבלת השאלות החודשית. יש לרכוש חבילת שאלות נוספת כדי לאשר המלצות.");
-      return;
-    }
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
@@ -202,10 +198,6 @@ const AiRecommendations = ({ businessId, token, remainingQuestions, onTokenExpir
   };
 
   const startEditing = (rec) => {
-    if (remainingQuestions <= 0) {
-      setError("הגעת למגבלת השאלות החודשית. יש לרכוש חבילת שאלות נוספת כדי לערוך המלצות.");
-      return;
-    }
     setEditingId(rec._id || rec.id);
     setEditText(cleanText(rec.isEdited ? rec.editedText : rec.commandText || ""));
   };
@@ -216,10 +208,6 @@ const AiRecommendations = ({ businessId, token, remainingQuestions, onTokenExpir
   };
 
   const saveDraft = async (id) => {
-    if (remainingQuestions <= 0) {
-      setError("הגעת למגבלת השאלות החודשית. יש לרכוש חבילת שאלות נוספת כדי לשמור טיוטה.");
-      return;
-    }
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
@@ -254,10 +242,6 @@ const AiRecommendations = ({ businessId, token, remainingQuestions, onTokenExpir
   };
 
   const saveAndApprove = async (id) => {
-    if (remainingQuestions <= 0) {
-      setError("הגעת למגבלת השאלות החודשית. יש לרכוש חבילת שאלות נוספת כדי לאשר המלצות.");
-      return;
-    }
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
     try {
@@ -300,8 +284,6 @@ const AiRecommendations = ({ businessId, token, remainingQuestions, onTokenExpir
     (r) => r.status === "approved" || r.status === "rejected"
   );
 
-  const canApproveOrEdit = remainingQuestions > 0;
-
   return (
     <div>
       <h3>המלצות AI ממתינות לאישור</h3>
@@ -334,15 +316,14 @@ const AiRecommendations = ({ businessId, token, remainingQuestions, onTokenExpir
                       }
                       rows={10}
                       style={{ width: "100%", resize: "vertical" }}
-                      disabled={!canApproveOrEdit}
                     />
                     <div style={{ marginTop: 10 }}>
-                      <button onClick={() => saveDraft(recId)} disabled={isLoading || !canApproveOrEdit}>
+                      <button onClick={() => saveDraft(recId)} disabled={isLoading}>
                         {isLoading ? "שומר טיוטה..." : "שמור טיוטה"}
                       </button>{" "}
                       <button
                         onClick={() => saveAndApprove(recId)}
-                        disabled={isLoading || !canApproveOrEdit}
+                        disabled={isLoading}
                       >
                         {isLoading ? "מטמיע ושולח..." : "שמור ואשר"}
                       </button>{" "}
@@ -358,21 +339,18 @@ const AiRecommendations = ({ businessId, token, remainingQuestions, onTokenExpir
                       <p style={{ fontStyle: "italic", color: "#555" }}>
                         <strong>תשובה/המלצה:</strong> {cleanText(commandText)}</p>
                     )}
-                    <button
-                      onClick={() => startEditing({ _id: recId, text, commandText, editedText: recommendations.find(r => (r._id === recId || r.id === recId))?.editedText, isEdited: recommendations.find(r => (r._id === recId || r.id === recId))?.isEdited })}
-                      disabled={!canApproveOrEdit}
-                    >
+                    <button onClick={() => startEditing({ _id: recId, text, commandText, editedText: recommendations.find(r => (r._id === recId || r.id === recId))?.editedText, isEdited: recommendations.find(r => (r._id === recId || r.id === recId))?.isEdited })}>
                       ערוך
                     </button>{" "}
                     <button
                       onClick={() => approveRecommendation(recId)}
-                      disabled={isLoading || !canApproveOrEdit}
+                      disabled={isLoading}
                     >
                       {isLoading ? "טוען..." : "אשר ושלח"}
                     </button>{" "}
                     <button
                       onClick={() => rejectRecommendation(recId)}
-                      disabled={isLoading || !canApproveOrEdit}
+                      disabled={isLoading}
                     >
                       {isLoading ? "טוען..." : "דחה"}
                     </button>
@@ -382,12 +360,6 @@ const AiRecommendations = ({ businessId, token, remainingQuestions, onTokenExpir
             );
           })}
         </ul>
-      )}
-
-      {!canApproveOrEdit && (
-        <p style={{ color: "red", marginTop: "1em" }}>
-          הגעת למגבלת השאלות החודשית. יש לרכוש חבילת שאלות נוספת כדי לאשר או לערוך המלצות.
-        </p>
       )}
 
       <hr />
