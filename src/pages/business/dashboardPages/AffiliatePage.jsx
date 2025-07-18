@@ -37,6 +37,9 @@ const AffiliatePage = () => {
       const statsRes = await API.get("/affiliate/stats/all", {
         params: { affiliateId },
       });
+
+      console.log("affiliate stats response:", statsRes.data); // לוג נתונים
+
       setAllStats(statsRes.data);
 
       // 2. חישוב balance מתוך הסטטיסטיקות שהרגע קיבלנו
@@ -46,10 +49,14 @@ const AffiliatePage = () => {
           (sum, s) => sum + (s.totalCommissions - (s.paidCommissions || 0)),
           0
         );
+
+      console.log("calculated unpaid balance:", unpaid); // לוג חישוב יתרה
+
       setCurrentBalance(unpaid);
 
       setErrorStats(null);
     } catch (error) {
+      console.error("Error refreshing stats:", error); // לוג שגיאה
       setErrorStats("שגיאה בטעינת הנתונים");
     } finally {
       setLoadingStats(false);
@@ -61,6 +68,7 @@ const AffiliatePage = () => {
     async function fetchBusinessId() {
       try {
         const res = await API.get("/business/my");
+        console.log("business info response:", res.data); // לוג מזהה עסק
         setBusinessId(res.data.business._id);
       } catch (error) {
         console.error("Error fetching businessId:", error);
@@ -92,6 +100,8 @@ const AffiliatePage = () => {
         amount: withdrawAmount,
       });
 
+      console.log("withdraw request response:", res.data); // לוג תגובת בקשה
+
       setWithdrawStatus(res.data.message || "בקשת המשיכה התקבלה.");
       if (res.data.withdrawalId) setWithdrawalId(res.data.withdrawalId);
       setShowReceiptForm(true);
@@ -104,6 +114,7 @@ const AffiliatePage = () => {
         refreshStats(businessId);
       }
     } catch (error) {
+      console.error("Withdraw request error:", error); // לוג שגיאה
       alert(error.response?.data?.message || "שגיאה בבקשת המשיכה");
     }
   };
@@ -125,6 +136,8 @@ const AffiliatePage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
+      console.log("receipt upload response:", res.data); // לוג תגובה
+
       alert(res.data.message || "הקבלה הועלתה בהצלחה");
       setWithdrawStatus("קבלה הועלתה וממתינה לאישור.");
       setShowReceiptForm(false);
@@ -133,6 +146,7 @@ const AffiliatePage = () => {
       // ריענון הסטטיסטיקות (לרבות balance)
       refreshStats(businessId);
     } catch (error) {
+      console.error("Receipt upload error:", error); // לוג שגיאה
       alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
     }
   };
