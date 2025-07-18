@@ -30,42 +30,40 @@ const AffiliatePage = () => {
 
   // פונקציה לריענון הסטטיסטיקות והיתרה
   const refreshStats = async (affiliateId) => {
-  try {
-    setLoadingStats(true);
+    try {
+      setLoadingStats(true);
 
-    // קבלת הסטטיסטיקות (לדוחות בלבד)
-    const statsRes = await API.get("/affiliate/stats/all", {
-      params: { affiliateId },
-    });
-    setAllStats(statsRes.data);
+      // קבלת הסטטיסטיקות (לדוחות בלבד)
+      const statsRes = await API.get("/affiliate/stats/all", {
+        params: { affiliateId },
+      });
+      setAllStats(statsRes.data);
 
-    // קבלת יתרה אמיתית
-    const businessRes = await API.get("/business/my");
-    setCurrentBalance(businessRes.data.business.balance);
+      // קבלת יתרה אמיתית
+      const businessRes = await API.get("/business/my");
+      setCurrentBalance(businessRes.data.business.balance);
 
-    setErrorStats(null);
-  } catch (error) {
-    setErrorStats("שגיאה בטעינת הנתונים");
-  } finally {
-    setLoadingStats(false);
-  }
-};
-
+      setErrorStats(null);
+    } catch (error) {
+      setErrorStats("שגיאה בטעינת הנתונים");
+    } finally {
+      setLoadingStats(false);
+    }
+  };
 
   // ניסיון ראשון לקבלת מזהה העסק בלבד
   useEffect(() => {
-  async function fetchBusinessInfo() {
-    try {
-      const res = await API.get("/business/my");
-      setBusinessId(res.data.business._id);
-      setCurrentBalance(res.data.business.balance); 
-    } catch (error) {
-      setErrorStats("לא הצלחנו לקבל מזהה עסק");
+    async function fetchBusinessInfo() {
+      try {
+        const res = await API.get("/business/my");
+        setBusinessId(res.data.business._id);
+        setCurrentBalance(res.data.business.balance);
+      } catch (error) {
+        setErrorStats("לא הצלחנו לקבל מזהה עסק");
+      }
     }
-  }
-  fetchBusinessInfo();
-}, []);
-
+    fetchBusinessInfo();
+  }, []);
 
   // ריענון לסטטיסטיקות וליתרה ברגע שיש businessId
   useEffect(() => {
@@ -250,10 +248,7 @@ const AffiliatePage = () => {
           <p>
             יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong>
           </p>
-          <p>
-            סך כל העמלות להשלמה:{" "}
-            <strong>₪{totalUnpaidCommissions.toFixed(2)}</strong>
-          </p>
+          {/* השורה של סך כל העמלות להשלמה הוסרה מכאן */}
           {totalUnpaidCommissions > currentBalance && (
             <p style={{ color: "orange", fontWeight: "bold" }}>
               שימו לב: סך העמלות גבוה מיתרת המשיכה הזמינה.
