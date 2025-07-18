@@ -245,6 +245,8 @@ export default function BusinessChatTab({
     socket.on("newMessage", handleMessage);
     socket.on("typing", handleTyping);
     socket.on("newNotification", handleNewNotification);
+    socket.on("newRecommendationNotification", handleNewNotification);
+
 
     return () => {
       socket.off("connect", handleConnect);
@@ -252,6 +254,7 @@ export default function BusinessChatTab({
       socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
       socket.off("newNotification", handleNewNotification);
+      socket.off("newRecommendationNotification", handleNewNotification);
       clearTimeout(handleTyping._t);
       socket.emit("leaveConversation", "user-business", businessId);
       socket.emit("leaveConversation", conversationType, conversationId, conversationType === "business-business");

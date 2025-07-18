@@ -82,15 +82,9 @@ export function NotificationsProvider({ children }) {
     const onConnect = () => {
       socket.emit("joinBusinessRoom", user.businessId);
 
-      // אירוע התראות ייעודי
-      socket.on("newNotification", notif => {
-        dispatch({ type: "ADD_NOTIFICATION", payload: notif });
-      });
-
-      // אם התקבלה הודעה חדשה – יוצרים התראה עם טקסט כללי
+      // הודעות חדשות
       socket.on("newMessage", msg => {
-        // נניח שיש בשדה msg.role את תפקיד השולח ('client' או 'business')
-        const senderRole = msg.role || 'client'; // ברירת מחדל 'client' אם אין
+        const senderRole = msg.role || 'client';
         dispatch({
           type: "ADD_NOTIFICATION",
           payload: {
@@ -105,6 +99,16 @@ export function NotificationsProvider({ children }) {
         });
       });
 
+      // התראות רגילות
+      socket.on("newNotification", notif => {
+        dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+      });
+
+      // התראות AI ייעודיות
+      socket.on("newRecommendationNotification", notif => {
+        dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+      });
+
       // עדכון ספירת שלא נקראו
       socket.on("unreadMessagesCount", count => {
         dispatch({ type: "UPDATE_UNREAD_COUNT", payload: count });
@@ -114,11 +118,12 @@ export function NotificationsProvider({ children }) {
     socket.on("connect", onConnect);
     if (socket.connected) onConnect();
 
-    // נקיון
+    // נקיון מאזינים
     return () => {
       socket.off("connect", onConnect);
-      socket.off("newNotification");
       socket.off("newMessage");
+      socket.off("newNotification");
+      socket.off("newRecommendationNotification");
       socket.off("unreadMessagesCount");
     };
   }, [socket, user?.businessId]);
