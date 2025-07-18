@@ -16,6 +16,8 @@ const EsclickAdvisor = () => {
   const [businessDetails, setBusinessDetails] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const [remainingQuestions, setRemainingQuestions] = useState(null);
+
   const { user, loading } = useAuth();
   const token = localStorage.getItem("token");
 
@@ -24,6 +26,7 @@ const EsclickAdvisor = () => {
       setBusinessDetails(null);
       setAppointments([]);
       setSelectedAppointmentId(null);
+      setRemainingQuestions(null);
       return;
     }
 
@@ -46,6 +49,7 @@ const EsclickAdvisor = () => {
       setBusinessDetails(null);
       setAppointments([]);
       setSelectedAppointmentId(null);
+      setRemainingQuestions(null);
       return;
     }
 
@@ -58,10 +62,17 @@ const EsclickAdvisor = () => {
       })
       .then(data => {
         setBusinessDetails(data);
+
+        // חישוב שאלות שנותרו
+        const maxQuestions = (data.extraQuestionsAllowed || 0) + 60;
+        const usedQuestions = (data.monthlyQuestionCount || 0) + (data.extraQuestionsUsed || 0);
+        const remaining = Math.max(maxQuestions - usedQuestions, 0);
+        setRemainingQuestions(remaining);
       })
       .catch(err => {
         console.error(err);
         setBusinessDetails(null);
+        setRemainingQuestions(null);
       });
 
     fetch(`/api/appointments?businessId=${user.businessId}`, {
@@ -128,7 +139,16 @@ const EsclickAdvisor = () => {
           />
         );
       case "recommendations":
-        return <AiRecommendations businessId={user?.businessId} token={token} />;
+        return (
+          <AiRecommendations
+            businessId={user?.businessId}
+            token={token}
+            remainingQuestions={remainingQuestions}
+            onTokenExpired={() => {
+              // טיפול ב-expired token אם צריך
+            }}
+          />
+        );
       default:
         return null;
     }
