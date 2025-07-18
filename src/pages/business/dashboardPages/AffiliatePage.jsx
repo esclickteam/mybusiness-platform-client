@@ -67,18 +67,18 @@ const AffiliatePage = () => {
 
   // ניסיון ראשון לקבלת מזהה העסק בלבד
   useEffect(() => {
-    async function fetchBusinessId() {
-      try {
-        const res = await API.get("/business/my");
-        console.log("business info response:", res.data); // לוג מזהה עסק
-        setBusinessId(res.data.business._id);
-      } catch (error) {
-        console.error("Error fetching businessId:", error);
-        setErrorStats("לא הצלחנו לקבל מזהה עסק");
-      }
+  async function fetchBusinessInfo() {
+    try {
+      const res = await API.get("/business/my");
+      setBusinessId(res.data.business._id);
+      setCurrentBalance(res.data.business.balance); 
+    } catch (error) {
+      setErrorStats("לא הצלחנו לקבל מזהה עסק");
     }
-    fetchBusinessId();
-  }, []);
+  }
+  fetchBusinessInfo();
+}, []);
+
 
   // ריענון לסטטיסטיקות וליתרה ברגע שיש businessId
   useEffect(() => {
