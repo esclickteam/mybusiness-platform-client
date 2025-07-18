@@ -39,9 +39,14 @@ const AffiliatePage = () => {
       });
       setAllStats(statsRes.data);
 
-      // 2. קבלת ה-balance המעודכן מהשרת
-      const bizRes = await API.get("/business/my");
-      setCurrentBalance(bizRes.data.business.balance);
+      // 2. חישוב balance מתוך הסטטיסטיקות שהרגע קיבלנו
+      const unpaid = statsRes.data
+        .filter((s) => s.paymentStatus !== "paid")
+        .reduce(
+          (sum, s) => sum + (s.totalCommissions - (s.paidCommissions || 0)),
+          0
+        );
+      setCurrentBalance(unpaid);
 
       setErrorStats(null);
     } catch (error) {
@@ -51,19 +56,18 @@ const AffiliatePage = () => {
     }
   };
 
-  // ניסיון ראשון לקבלת מזהה העסק והיתרה
+  // ניסיון ראשון לקבלת מזהה העסק בלבד
   useEffect(() => {
-    async function fetchBusinessIdAndBalance() {
+    async function fetchBusinessId() {
       try {
         const res = await API.get("/business/my");
         setBusinessId(res.data.business._id);
-        setCurrentBalance(res.data.business.balance);
       } catch (error) {
         console.error("Error fetching businessId:", error);
         setErrorStats("לא הצלחנו לקבל מזהה עסק");
       }
     }
-    fetchBusinessIdAndBalance();
+    fetchBusinessId();
   }, []);
 
   // ריענון לסטטיסטיקות וליתרה ברגע שיש businessId
