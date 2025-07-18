@@ -30,40 +30,27 @@ const AffiliatePage = () => {
 
   // פונקציה לריענון הסטטיסטיקות והיתרה
   const refreshStats = async (affiliateId) => {
-      console.log("Using affiliateId for stats:", affiliateId); // <-- כאן
+  try {
+    setLoadingStats(true);
 
-    try {
-      setLoadingStats(true);
+    // קבלת הסטטיסטיקות (לדוחות בלבד)
+    const statsRes = await API.get("/affiliate/stats/all", {
+      params: { affiliateId },
+    });
+    setAllStats(statsRes.data);
 
-      // 1. קבלת הסטטיסטיקות
-      const statsRes = await API.get("/affiliate/stats/all", {
-        params: { affiliateId },
-      });
+    // קבלת יתרה אמיתית
+    const businessRes = await API.get("/business/my");
+    setCurrentBalance(businessRes.data.business.balance);
 
-      console.log("affiliate stats response:", statsRes.data); // לוג נתונים
+    setErrorStats(null);
+  } catch (error) {
+    setErrorStats("שגיאה בטעינת הנתונים");
+  } finally {
+    setLoadingStats(false);
+  }
+};
 
-      setAllStats(statsRes.data);
-
-      // 2. חישוב balance מתוך הסטטיסטיקות שהרגע קיבלנו
-      const unpaid = statsRes.data
-        .filter((s) => s.paymentStatus !== "paid")
-        .reduce(
-          (sum, s) => sum + (s.totalCommissions - (s.paidCommissions || 0)),
-          0
-        );
-
-      console.log("calculated unpaid balance:", unpaid); // לוג חישוב יתרה
-
-      setCurrentBalance(unpaid);
-
-      setErrorStats(null);
-    } catch (error) {
-      console.error("Error refreshing stats:", error); // לוג שגיאה
-      setErrorStats("שגיאה בטעינת הנתונים");
-    } finally {
-      setLoadingStats(false);
-    }
-  };
 
   // ניסיון ראשון לקבלת מזהה העסק בלבד
   useEffect(() => {
