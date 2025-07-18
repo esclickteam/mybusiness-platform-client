@@ -15,6 +15,7 @@ const initialState = {
 };
 
 function normalizeNotification(notif) {
+  console.log('[normalizeNotification] קלט:', notif);
   return {
     id: notif.id || notif._id?.toString(),
     threadId: notif.threadId || null,
@@ -29,9 +30,7 @@ function normalizeNotification(notif) {
 function reducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
-      // אל תציג רגילה אם יש AI על אותו thread
       let list = action.payload.map(normalizeNotification);
-
       // עבור כל thread, שמור רק AI אם קיים, אחרת רגילה
       const filtered = [];
       const aiThreads = new Set(
@@ -45,12 +44,14 @@ function reducer(state, action) {
         }
       }
       const unreadCount = filtered.reduce((sum, n) => sum + n.unreadCount, 0);
+      console.log('[SET_NOTIFICATIONS] filtered:', filtered);
       return { notifications: filtered, unreadCount };
     }
     case "UPDATE_UNREAD_COUNT":
       return { ...state, unreadCount: action.payload };
     case "ADD_NOTIFICATION": {
       const newNotif = normalizeNotification(action.payload);
+      console.log('[ADD_NOTIFICATION] newNotif:', newNotif);
 
       // יש כבר AI לאותו thread? (אל תכניס רגילה)
       if (
@@ -61,6 +62,7 @@ function reducer(state, action) {
             n.type === "recommendation"
         )
       ) {
+        console.log('[ADD_NOTIFICATION] קיימת המלצת AI, מדלג על רגילה');
         return state;
       }
 
@@ -73,6 +75,7 @@ function reducer(state, action) {
           ),
         ];
         const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
+        console.log('[ADD_NOTIFICATION] AI Recommendation נכנסה:', list);
         return { notifications: list, unreadCount };
       }
 
@@ -86,6 +89,11 @@ function reducer(state, action) {
         ? state.notifications
         : [newNotif, ...state.notifications];
       const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
+      if (!exists) {
+        console.log('[ADD_NOTIFICATION] הוספה רגילה:', newNotif);
+      } else {
+        console.log('[ADD_NOTIFICATION] רגילה קיימת, לא נוסף');
+      }
       return { notifications: list, unreadCount };
     }
     case "CLEAR_ALL":
@@ -107,6 +115,7 @@ export function NotificationsProvider({ children }) {
       if (!res.ok) throw new Error();
       const data = await res.json();
       if (data.ok && data.notifications) {
+        console.log('[fetchNotifications] מהשרת:', data.notifications);
         dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
       }
     } catch (err) {
@@ -127,32 +136,37 @@ export function NotificationsProvider({ children }) {
       // הודעות חדשות
       socket.on("newMessage", msg => {
         const senderRole = msg.role || "client";
+        const notif = {
+          threadId: msg.conversationId,
+          text: `✉️ הודעה חדשה מ${senderRole === "client" ? "לקוח" : "עסק"}`,
+          timestamp: msg.timestamp || msg.createdAt,
+          read: false,
+          unreadCount: 1,
+          type: "message",
+          actorName: senderRole === "client" ? "לקוח" : "עסק",
+        };
+        console.log('[socket newMessage]', notif);
         dispatch({
           type: "ADD_NOTIFICATION",
-          payload: {
-            threadId: msg.conversationId,
-            text: `✉️ הודעה חדשה מ${senderRole === "client" ? "לקוח" : "עסק"}`,
-            timestamp: msg.timestamp || msg.createdAt,
-            read: false,
-            unreadCount: 1,
-            type: "message",
-            actorName: senderRole === "client" ? "לקוח" : "עסק",
-          },
+          payload: notif,
         });
       });
 
       // התראות רגילות
       socket.on("newNotification", notif => {
+        console.log('[socket newNotification]', notif);
         dispatch({ type: "ADD_NOTIFICATION", payload: notif });
       });
 
       // התראות AI ייעודיות
       socket.on("newRecommendationNotification", notif => {
+        console.log('[socket newRecommendationNotification]', notif);
         dispatch({ type: "ADD_NOTIFICATION", payload: notif });
       });
 
       // עדכון ספירת שלא נקראו
       socket.on("unreadMessagesCount", count => {
+        console.log('[socket unreadMessagesCount]', count);
         dispatch({ type: "UPDATE_UNREAD_COUNT", payload: count });
       });
     };
