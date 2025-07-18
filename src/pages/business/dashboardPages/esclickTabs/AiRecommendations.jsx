@@ -15,14 +15,15 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [canApprove, setCanApprove] = useState(true);
   const socketRef = useRef(null);
 
-  // עוזר לנקות טקסט
+  // מנקה markdown מסמלים מיותרים
   const cleanText = (text) => (text || "").replace(/(\*\*|#|\*)/g, "").trim();
 
+  // טוען המלצות ונתוני אישורים בהתחלה ובכל שינוי של עסק/טוקן
   useEffect(() => {
     if (!businessId || !token) return;
     setError(null);
 
-    // שליפת המלצות
+    // טען המלצות AI
     fetch(`/api/chat/recommendations?businessId=${businessId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -31,11 +32,9 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         return res.json();
       })
       .then((data) => setRecommendations(data))
-      .catch((err) => {
-        setError("שגיאה בטעינת ההמלצות: " + err.message);
-      });
+      .catch((err) => setError("שגיאה בטעינת ההמלצות: " + err.message));
 
-    // שליפת סטטוס אישורים
+    // טען ספירת אישורים קיימים
     fetch(`/api/business/my`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -51,7 +50,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
   }, [businessId, token]);
 
-  // עדכון בזמן אמת דרך סוקט
+  // התחברות לסוקט לעדכונים בזמן אמת
   useEffect(() => {
     if (!businessId || !token) return;
     const socket = io(SOCKET_URL, {
@@ -73,11 +72,10 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
       }
     });
-    socket.on("disconnect", (reason) => {});
 
     socket.on("newAiSuggestion", (rec) => {
       setRecommendations((prev) => {
-        const idx = prev.findIndex((r) => (r._id === rec._id || r.id === rec._id));
+        const idx = prev.findIndex((r) => r._id === rec._id || r.id === rec._id);
         if (idx !== -1) {
           if (prev[idx].text !== rec.text || prev[idx].status !== rec.status) {
             const copy = [...prev];
@@ -98,13 +96,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
             : r
         )
       );
-
-      setApprovedCount((prevCount) => {
-        const newCount = prevCount + 1;
-        setCanApprove(newCount < RECOMMEND_LIMIT);
-        return newCount;
+      setApprovedCount((c) => {
+        const next = c + 1;
+        setCanApprove(next < RECOMMEND_LIMIT);
+        return next;
       });
-
       setLoadingIds((ids) => {
         const next = new Set(ids);
         next.delete(recommendationId);
@@ -128,18 +124,10 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     });
 
     socket.connect();
-
-    return () => {
-      socket.off("connect");
-      socket.off("connect_error");
-      socket.off("disconnect");
-      socket.off("newAiSuggestion");
-      socket.off("messageApproved");
-      socket.off("recommendationRejected");
-      socket.disconnect();
-    };
+    return () => socket.disconnect();
   }, [businessId, token, onTokenExpired]);
 
+  // אישור המלצה
   const approveRecommendation = async (id) => {
     if (!canApprove) {
       setError("הגעת למכסת האישור החודשית, לא ניתן לאשר המלצות נוספות.");
@@ -164,10 +152,10 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
           r._id === id || r.id === id ? { ...r, status: "approved" } : r
         )
       );
-      setApprovedCount((prevCount) => {
-        const newCount = prevCount + 1;
-        setCanApprove(newCount < RECOMMEND_LIMIT);
-        return newCount;
+      setApprovedCount((c) => {
+        const next = c + 1;
+        setCanApprove(next < RECOMMEND_LIMIT);
+        return next;
       });
     } catch (err) {
       setError("שגיאה באישור ההמלצה: " + err.message);
@@ -180,6 +168,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
+  // דחיית המלצה
   const rejectRecommendation = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -210,15 +199,18 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
-  // עריכה, שמירת טיוטה ואישור משולב
+  // התחלת עריכה
   const startEditing = (rec) => {
-    setEditingId(rec._id || rec.id);
+    const recId = rec._id || rec.id;
+    setEditingId(recId);
     setEditText(cleanText(rec.isEdited ? rec.editedText : rec.commandText || ""));
   };
+  // ביטול עריכה
   const cancelEditing = () => {
     setEditingId(null);
     setEditText("");
   };
+  // שמירת טיוטה
   const saveDraft = async (id) => {
     setLoadingIds((ids) => new Set(ids).add(id));
     setError(null);
@@ -236,9 +228,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 
       setRecommendations((prev) =>
         prev.map((r) =>
-          r._id === id || r.id === id
-            ? { ...r, isEdited: true, editedText: newText }
-            : r
+          r._id === id || r.id === id ? { ...r, isEdited: true, editedText: newText } : r
         )
       );
       cancelEditing();
@@ -252,6 +242,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       });
     }
   };
+  // שמירה ואישור משולב
   const saveAndApprove = async (id) => {
     if (!canApprove) {
       setError("הגעת למכסת האישור החודשית, לא ניתן לאשר המלצות נוספות.");
@@ -295,27 +286,15 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   };
 
   const pending = recommendations.filter((r) => r.status === "pending");
-  const history = recommendations.filter(
-    (r) => r.status === "approved" || r.status === "rejected"
-  );
+  const history = recommendations.filter((r) => r.status !== "pending");
 
   return (
-    <div>
-      <h3>המלצות AI ממתינות לאישור</h3>
-      {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
-      {/* הסר את השורה הזו */}
-      {/* <p>
-        סה"כ אישרת {approvedCount} המלצות מתוך {RECOMMEND_LIMIT}.{" "}
-        {!canApprove && (
-          <span style={{ color: "red", fontWeight: "bold" }}>
-            (הגעת למכסת אישורים! אפשר לצפות בלבד, לא לאשר המלצות נוספות)
-          </span>
-        )}
-      </p> */}
+    <div className="space-y-4">
+      <h3 className="text-xl font-semibold">המלצות AI ממתינות לאישור</h3>
+      {error && <p className="text-red-600">{error}</p>}
 
-      {/* הוסף במקום זה הודעה אדומה במידה ואין אישורים נוספים */}
       {!canApprove && (
-        <p style={{ color: "red", fontWeight: "bold" }}>
+        <p className="text-red-600 font-bold">
           הגעת למכסת אישורים! אפשר לצפות בלבד, לא לאשר המלצות נוספות
         </p>
       )}
@@ -323,20 +302,14 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       {pending.length === 0 ? (
         <p>אין המלצות חדשות.</p>
       ) : (
-        <ul>
-          {pending.map(({ _id, id, text, commandText }) => {
-            const recId = _id || id;
+        <ul className="space-y-4">
+          {pending.map((r) => {
+            const recId = r._id || r.id;
             const isLoading = loadingIds.has(recId);
             const isEditing = editingId === recId;
+
             return (
-              <li
-                key={recId}
-                style={{
-                  marginBottom: "1rem",
-                  border: "1px solid #ccc",
-                  padding: "0.5rem",
-                }}
-              >
+              <li key={recId} className="border p-4 rounded-lg">
                 {isEditing ? (
                   <>
                     <textarea
@@ -344,118 +317,112 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
                       onChange={(e) =>
                         setEditText(e.target.value.replace(/(\*\*|#|\*)/g, ""))
                       }
-                      rows={10}
-                      style={{ width: "100%", resize: "vertical" }}
+                      rows={6}
+                      className="w-full border rounded p-2"
                       disabled={!canApprove}
                     />
-                    <div style={{ marginTop: 10 }}>
-                      <button onClick={() => saveDraft(recId)} disabled={isLoading || !canApprove}>
-                        {isLoading ? "שומר טיוטה..." : "שמור טיוטה"}
-                      </button>{" "}
+                    <div className="mt-2 flex gap-2">
+                      <button
+                        onClick={() => saveDraft(recId)}
+                        disabled={isLoading || !canApprove}
+                        className="px-4 py-1 rounded shadow bg-gray-200 disabled:opacity-50"
+                      >
+                        שמור טיוטה
+                      </button>
                       <button
                         onClick={() => saveAndApprove(recId)}
                         disabled={isLoading || !canApprove}
+                        className="px-4 py-1 rounded shadow bg-purple-600 text-white disabled:opacity-50"
                       >
-                        {isLoading ? "מטמיע ושולח..." : "שמור ואשר"}
-                      </button>{" "}
-                      <button onClick={cancelEditing} disabled={isLoading}>
+                        שמור ואשר
+                      </button>
+                      <button
+                        onClick={cancelEditing}
+                        disabled={isLoading}
+                        className="px-4 py-1 rounded shadow bg-gray-200 disabled:opacity-50"
+                      >
                         ביטול
                       </button>
                     </div>
                   </>
                 ) : (
                   <>
-                    <p><strong>שאלה:</strong> {cleanText(text)}</p>
-                    {commandText && (
-                      <p style={{ fontStyle: "italic", color: "#555" }}>
-                        <strong>תשובה/המלצה:</strong> {cleanText(commandText)}</p>
+                    <p><strong>שאלה:</strong> {cleanText(r.text)}</p>
+                    {r.commandText && (
+                      <p className="italic text-gray-600">
+                        <strong>תשובה:</strong> {cleanText(r.commandText)}
+                      </p>
                     )}
-                    <button
-                      onClick={() =>
-                        startEditing({
-                          _id: recId,
-                          text,
-                          commandText,
-                          editedText: recommendations.find(r => (r._id === recId || r.id === recId))?.editedText,
-                          isEdited: recommendations.find(r => (r._id === recId || r.id === recId))?.isEdited
-                        })
-                      }
-                      disabled={!canApprove}
-                    >
-                      ערוך
-                    </button>{" "}
-                    <button
-                      onClick={() => approveRecommendation(recId)}
-                      disabled={isLoading || !canApprove}
-                    >
-                      {isLoading ? "טוען..." : "אשר ושלח"}
-                    </button>{" "}
-                    <button
-                      onClick={() => rejectRecommendation(recId)}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? "טוען..." : "דחה"}
-                    </button>
-                    {!canApprove && (
-                      <div style={{ color: "red", marginTop: 8 }}>
-                        הגבלת אישור הושגה. אפשר להמשיך לקבל המלצות אך לא לאשר.
-                      </div>
-                    )}
+                    <div className="mt-2 flex gap-2">
+                      <button
+                        onClick={() => startEditing(r)}
+                        disabled={!canApprove}
+                        className="px-4 py-1 rounded shadow bg-gray-200 disabled:opacity-50"
+                      >
+                        ערוך
+                      </button>
+                      <button
+                        onClick={() => approveRecommendation(recId)}
+                        disabled={isLoading || !canApprove}
+                        className="px-4 py-1 rounded shadow bg-purple-600 text-white disabled:opacity-50"
+                      >
+                        {isLoading ? "…" : "אשר ושלח"}
+                      </button>
+                      <button
+                        onClick={() => rejectRecommendation(recId)}
+                        disabled={isLoading}
+                        className="px-4 py-1 rounded shadow bg-gray-200 disabled:opacity-50"
+                      >
+                        {isLoading ? "…" : "דחה"}
+                      </button>
+                    </div>
                   </>
+                )}
+
+                {!canApprove && !isEditing && (
+                  <p className="text-red-500 mt-2 text-sm">
+                    הגבלת אישור הושגה. אפשר להמשיך לקבל המלצות אך לא לאשר.
+                  </p>
                 )}
               </li>
             );
           })}
         </ul>
       )}
+
       <hr />
+
       <button
-        onClick={() => setShowHistory((show) => !show)}
-        style={{
-          margin: "1rem 0",
-          backgroundColor: "#7c43bd",
-          color: "white",
-          border: "none",
-          borderRadius: "20px",
-          padding: "8px 20px",
-          cursor: "pointer",
-          fontWeight: "600",
-        }}
+        onClick={() => setShowHistory((s) => !s)}
+        className="px-6 py-2 bg-purple-600 text-white rounded-2xl shadow"
       >
         {showHistory ? "הסתר היסטוריית המלצות" : "ראה היסטוריית המלצות"}
       </button>
+
       {showHistory && (
-        <>
-          <h3>היסטוריית המלצות</h3>
+        <div className="space-y-4">
+          <h3 className="text-xl font-semibold">היסטוריית המלצות</h3>
           {history.length === 0 ? (
             <p>אין המלצות בעבר.</p>
           ) : (
-            <ul>
-              {history.map(({ _id, id, text, status, commandText }) => {
-                const recId = _id || id;
+            <ul className="space-y-2">
+              {history.map((r) => {
+                const recId = r._id || r.id;
                 return (
-                  <li
-                    key={recId}
-                    style={{
-                      marginBottom: "1rem",
-                      border: "1px solid #eee",
-                      padding: "0.5rem",
-                      opacity: 0.7,
-                    }}
-                  >
-                    <p><strong>שאלה:</strong> {cleanText(text)}</p>
-                    {commandText && (
-                      <p style={{ fontStyle: "italic", color: "#555" }}>
-                        <strong>תשובה/המלצה:</strong> {cleanText(commandText)}
+                  <li key={recId} className="border p-3 rounded opacity-70">
+                    <p><strong>שאלה:</strong> {cleanText(r.text)}</p>
+                    {r.commandText && (
+                      <p className="italic text-gray-600">
+                        <strong>תשובה:</strong> {cleanText(r.commandText)}
                       </p>
                     )}
-                    <p>סטטוס: {status === "approved" ? "מאושר" : "נדחה"}</p>
+                    <p>סטטוס: {r.status === "approved" ? "מאושר" : "נדחה"}</p>
                   </li>
                 );
               })}
             </ul>
           )}
-        </>
+        </div>
       )}
     </div>
   );
