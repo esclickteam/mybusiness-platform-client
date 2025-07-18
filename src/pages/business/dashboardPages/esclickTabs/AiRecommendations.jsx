@@ -15,15 +15,14 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
   const [canApprove, setCanApprove] = useState(true);
   const socketRef = useRef(null);
 
-  // עוזר לנקות טקסט (כמו בקוד שלך)
+  // עוזר לנקות טקסט
   const cleanText = (text) => (text || "").replace(/(\*\*|#|\*)/g, "").trim();
 
-  // שלוף את המלצות ה-AI וגם את כמות המאושרות
   useEffect(() => {
     if (!businessId || !token) return;
     setError(null);
 
-    // 1. שליפת המלצות
+    // שליפת המלצות
     fetch(`/api/chat/recommendations?businessId=${businessId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -36,7 +35,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         setError("שגיאה בטעינת ההמלצות: " + err.message);
       });
 
-    // 2. שליפת סטטוס מניעה (כמה המלצות מאושרות)
+    // שליפת סטטוס אישורים
     fetch(`/api/business/my`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -48,11 +47,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       })
       .catch(() => {
         setApprovedCount(0);
-        setCanApprove(true); // ברירת מחדל אם אין מידע
+        setCanApprove(true);
       });
   }, [businessId, token]);
 
-  // האזן לסוקט ועדכן בזמן אמת
+  // עדכון בזמן אמת דרך סוקט
   useEffect(() => {
     if (!businessId || !token) return;
     const socket = io(SOCKET_URL, {
@@ -99,8 +98,13 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
             : r
         )
       );
-      setApprovedCount((count) => count + 1);
-      setCanApprove((count) => count + 1 < RECOMMEND_LIMIT);
+
+      setApprovedCount((prevCount) => {
+        const newCount = prevCount + 1;
+        setCanApprove(newCount < RECOMMEND_LIMIT);
+        return newCount;
+      });
+
       setLoadingIds((ids) => {
         const next = new Set(ids);
         next.delete(recommendationId);
@@ -136,7 +140,6 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     };
   }, [businessId, token, onTokenExpired]);
 
-  // התנהגות עריכה/אישור/דחייה
   const approveRecommendation = async (id) => {
     if (!canApprove) {
       setError("הגעת למכסת האישור החודשית, לא ניתן לאשר המלצות נוספות.");
@@ -161,8 +164,11 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
           r._id === id || r.id === id ? { ...r, status: "approved" } : r
         )
       );
-      setApprovedCount((count) => count + 1);
-      setCanApprove((count) => count + 1 < RECOMMEND_LIMIT);
+      setApprovedCount((prevCount) => {
+        const newCount = prevCount + 1;
+        setCanApprove(newCount < RECOMMEND_LIMIT);
+        return newCount;
+      });
     } catch (err) {
       setError("שגיאה באישור ההמלצה: " + err.message);
     } finally {
@@ -204,7 +210,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     }
   };
 
-  // התנהגות עריכה:
+  // עריכה, שמירת טיוטה ואישור משולב
   const startEditing = (rec) => {
     setEditingId(rec._id || rec.id);
     setEditText(cleanText(rec.isEdited ? rec.editedText : rec.commandText || ""));
@@ -297,14 +303,23 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
     <div>
       <h3>המלצות AI ממתינות לאישור</h3>
       {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
-      <p>
+      {/* הסר את השורה הזו */}
+      {/* <p>
         סה"כ אישרת {approvedCount} המלצות מתוך {RECOMMEND_LIMIT}.{" "}
         {!canApprove && (
           <span style={{ color: "red", fontWeight: "bold" }}>
             (הגעת למכסת אישורים! אפשר לצפות בלבד, לא לאשר המלצות נוספות)
           </span>
         )}
-      </p>
+      </p> */}
+
+      {/* הוסף במקום זה הודעה אדומה במידה ואין אישורים נוספים */}
+      {!canApprove && (
+        <p style={{ color: "red", fontWeight: "bold" }}>
+          הגעת למכסת אישורים! אפשר לצפות בלבד, לא לאשר המלצות נוספות
+        </p>
+      )}
+
       {pending.length === 0 ? (
         <p>אין המלצות חדשות.</p>
       ) : (
