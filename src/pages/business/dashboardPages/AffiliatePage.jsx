@@ -30,6 +30,8 @@ const AffiliatePage = () => {
 
   // פונקציה לריענון הסטטיסטיקות והיתרה
   const refreshStats = async (affiliateId) => {
+      console.log("Using affiliateId for stats:", affiliateId); // <-- כאן
+
     try {
       setLoadingStats(true);
 
