@@ -18,15 +18,16 @@ export default function Home() {
     const params = new URLSearchParams();
     if (category) params.set("category", category);
     if (city)     params.set("city", city);
-    navigate(`/search?${params.toString()}`);
+    // מפנה עכשיו לדף /businesses במקום /search
+    navigate(`/businesses?${params.toString()}`);
   };
 
   const renderIcon = (type) => {
     switch (type) {
-      case "new_review": return "📝";
+      case "new_review":   return "📝";
       case "new_customer": return "👤";
       case "new_business": return "🏪";
-      default: return "ℹ️";
+      default:             return "ℹ️";
     }
   };
 
@@ -34,28 +35,36 @@ export default function Home() {
     <div className="home-container">
       <Helmet>
         <title>עסקליק – מצא עסקים לפי תחום ועיר | עסקליק</title>
-        <meta name="description" content="פלטפורמה למציאת עסקים ושירותים לפי תחום ועיר. פתיחת דף עסקי, יצירת קשר, ותיאום שירות – הכל במקום אחד!" />
-        <meta name="keywords" content="עסקים, חיפוש עסקים, שירותים בתל אביב, אינדקס עסקים, עסקליק, לקוחות, פרסום לעסקים" />
+        <meta
+          name="description"
+          content="פלטפורמה למציאת עסקים ושירותים לפי תחום ועיר. פתיחת דף עסקי, יצירת קשר, ותיאום שירות – הכל במקום אחד!"
+        />
+        <meta
+          name="keywords"
+          content="עסקים, חיפוש עסקים, שירותים בתל אביב, אינדקס עסקים, עסקליק, לקוחות, פרסום לעסקים"
+        />
         <link rel="canonical" href="https://yourdomain.co.il/" />
       </Helmet>
 
       {/* Hero */}
       <section className="hero-section">
-  <h1 className="main-title">
-    עסקליק<br />
-    <span className="main-subtitle-line">פלטפורמה חכמה לעסקים ולקוחות</span>
-  </h1>
-  <p className="subtitle">
-    חפשו עסקים, תאמו שירותים, פתחו עמוד עסקי – הכל במקום אחד, פשוט ויעיל.
-  </p>
-</section>
+        <h1 className="main-title">
+          עסקליק<br />
+          <span className="main-subtitle-line">
+            פלטפורמה חכמה לעסקים ולקוחות
+          </span>
+        </h1>
+        <p className="subtitle">
+          חפשו עסקים, תאמו שירותים, פתחו עמוד עסקי – הכל במקום אחד, פשוט ויעיל.
+        </p>
+      </section>
 
       {/* Search */}
       <div className="search-section">
         <div className="dropdown-wrapper">
           <Select
             options={categoryOptions}
-            value={categoryOptions.find(o => o.value===category) || null}
+            value={categoryOptions.find(o => o.value === category) || null}
             onChange={opt => setCategory(opt?.value || "")}
             placeholder="תחום (לדוגמה: חשמלאי)"
             isClearable
@@ -69,7 +78,7 @@ export default function Home() {
         <div className="dropdown-wrapper">
           <Select
             options={cityOptions}
-            value={cityOptions.find(o => o.value===city) || null}
+            value={cityOptions.find(o => o.value === city) || null}
             onChange={opt => setCity(opt?.value || "")}
             placeholder="עיר (לדוגמה: תל אביב)"
             isClearable
@@ -81,7 +90,7 @@ export default function Home() {
           />
         </div>
         <button className="search-button" onClick={navigateToSearch}>
-           חפש
+          חפש
         </button>
       </div>
 
@@ -90,29 +99,37 @@ export default function Home() {
         <div className="bookmark-card">
           <h3>לקוחות 🔐</h3>
           <p>מצאו עסקים לפי תחום וצרו קשר בקליק!</p>
-          <Link to="/search"><button>מעבר לחיפוש</button></Link>
+          <Link to="/businesses">
+            <button>מעבר לחיפוש</button>
+          </Link>
         </div>
         <div className="bookmark-card">
           <h3>בעלי עסקים 💼</h3>
           <p>הצטרפו לעסקליק ותקבלו פניות ישירות מלקוחות.</p>
-          <Link to="/business"><button>כניסה לעסקים</button></Link>
+          <Link to="/business">
+            <button>כניסה לעסקים</button>
+          </Link>
         </div>
         <div className="bookmark-card">
           <h3>⚙️ איך זה עובד?</h3>
           <p>כל מה שצריך לדעת כדי להתחיל, בין אם אתה לקוח או בעל עסק.</p>
-          <Link to="/how-it-works"><button>למידע נוסף</button></Link>
+          <Link to="/how-it-works">
+            <button>למידע נוסף</button>
+          </Link>
         </div>
         <div className="bookmark-card">
           <h3>💬 קצת עלינו</h3>
           <p>עסקליק מחברת בין אנשים לעסקים – בקלות וביעילות.</p>
-          <Link to="/about"><button>הכר את הפלטפורמה</button></Link>
+          <Link to="/about">
+            <button>הכר את הפלטפורמה</button>
+          </Link>
         </div>
       </div>
 
       {/* Footer */}
       <footer className="footer">
         <ul className="footer-links">
-          <li><Link to="/search">📋 חיפוש עסקים</Link></li>
+          <li><Link to="/businesses">📋 חיפוש עסקים</Link></li>
           <li><Link to="/about">📖 קצת עלינו</Link></li>
           <li><Link to="/how-it-works">⚙️ איך זה עובד</Link></li>
           <li><Link to="/business">✏️ הצטרפות עסקים</Link></li>

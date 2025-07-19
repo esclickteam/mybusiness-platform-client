@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Select from "react-select";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
@@ -6,102 +7,88 @@ import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES from "../data/cities";
 import { FaSearch } from "react-icons/fa";
 import { Helmet } from "react-helmet";
-import { useLocation, useNavigate } from "react-router-dom";
 import "./BusinessList.css";
 
 const BusinessesList = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  // 1. קריאה לפרמטרים מה-URL
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category") || "";
+  const cityParam     = searchParams.get("city")     || "";
 
+  // 2. סטייט של הפילטרים ושל הנתונים
   const [businesses, setBusinesses] = useState([]);
-  const [category, setCategory] = useState(null);
-  const [city, setCity] = useState(null);
+  const [category, setCategory]     = useState(
+    ALL_CATEGORIES.includes(categoryParam)
+      ? { value: categoryParam, label: categoryParam }
+      : null
+  );
+  const [city, setCity]             = useState(
+    ALL_CITIES.includes(cityParam)
+      ? { value: cityParam, label: cityParam }
+      : null
+  );
   const [loading, setLoading] = useState(false);
-  const [initialized, setInitialized] = useState(false);
 
-  const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
-  const cityOptions = ALL_CITIES.map((c) => ({ value: c, label: c }));
+  const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
+  const cityOptions     = ALL_CITIES.map(c => ({ value: c, label: c }));
 
-  const fetchBusinesses = async (filters = {}) => {
+  // 3. פונקציית הקריאה ל־API
+  const fetchBusinesses = async (cat, city) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (filters.category) params.append("category", filters.category);
-      if (filters.city) params.append("city", filters.city);
-
+      if (cat)  params.append("category", cat);
+      if (city) params.append("city", city);
       const response = await API.get(`/business?${params.toString()}`);
       setBusinesses(response.data.businesses || []);
     } catch (err) {
-      console.error("שגיאה בקבלת עסקים:", err);
+      console.error("Error fetching businesses:", err);
       setBusinesses([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // שלב ראשון: אתחול הסטייטים מה-URL
+  // 4. בכל שינוי בפרמטרים ב-URL – תבצע קריאה
   useEffect(() => {
-    const query = new URLSearchParams(location.search);
-    const categoryParam = query.get("category");
-    const cityParam = query.get("city");
+    fetchBusinesses(categoryParam, cityParam);
+  }, [categoryParam, cityParam]);
 
-    if (categoryParam) {
-      const catOption = categoryOptions.find((o) => o.value === categoryParam);
-      setCategory(catOption || null);
-    }
-    if (cityParam) {
-      const cityOption = cityOptions.find((o) => o.value === cityParam);
-      setCity(cityOption || null);
-    }
-    setInitialized(true); // סמן שהאתחול בוצע
-  }, [location.search]);
-
-  // שלב שני: חיפוש רק אחרי שהסטייטים מאותחלים
-  useEffect(() => {
-    if (!initialized) return; // לא להפעיל חיפוש לפני האתחול
-
-    fetchBusinesses({
-      category: category ? category.value : null,
-      city: city ? city.value : null,
-    });
-
-    // עדכון ה-URL בהתאם
-    const params = new URLSearchParams();
-    if (category) params.set("category", category.value);
-    if (city) params.set("city", city.value);
-    navigate({ search: params.toString() }, { replace: true });
-  }, [category, city, initialized, navigate]);
-
-  const handleSearch = () => {
-    // הכפתור יכול להשאר כדי לאפשר חיפוש ידני,
-    // אבל בפועל החיפוש מתבצע אוטומטית ב-useEffect
+  // 5. עדכון ה-URL בעת בחירה ידנית ב־Select
+  const onCategoryChange = opt => {
+    setCategory(opt);
+    if (opt)   searchParams.set("category", opt.value);
+    else       searchParams.delete("category");
+    setSearchParams(searchParams, { replace: true });
+  };
+  const onCityChange = opt => {
+    setCity(opt);
+    if (opt)   searchParams.set("city", opt.value);
+    else       searchParams.delete("city");
+    setSearchParams(searchParams, { replace: true });
   };
 
+  // 6. SEO כמו בקוד המקורי
   const seoTitleParts = [];
   if (category) seoTitleParts.push(category.label);
-  if (city) seoTitleParts.push(city.label);
-  const seoTitle =
-    seoTitleParts.length > 0
-      ? `${seoTitleParts.join(" - ")} | עסקים בעסקליק`
-      : "רשימת עסקים | עסקליק";
-
-  const seoDescription =
-    seoTitleParts.length > 0
-      ? `מצא עסקים בתחום ${category ? category.label : ""} ${
-          city ? "בעיר " + city.label : ""
-        } בפלטפורמת עסקליק. חיפוש נוח, דירוגים אמיתיים, וקבלת פניות מהירות.`
-      : "חפש עסקים לפי תחום ועיר בפלטפורמת עסקליק. קבל פניות, קרא חוות דעת ותאם שירות בקלות.";
+  if (city)     seoTitleParts.push(city.label);
+  const seoTitle = seoTitleParts.length
+    ? `${seoTitleParts.join(" - ")} | עסקים בעסקליק`
+    : "רשימת עסקים | עסקליק";
 
   return (
     <div className="list-page">
       <Helmet>
         <title>{seoTitle}</title>
-        <meta name="description" content={seoDescription} />
         <meta
-          name="keywords"
-          content={`עסקים, חיפוש עסקים, ${
-            category ? category.label + "," : ""
-          } ${city ? city.label + "," : ""} עסקליק, לקוחות, שירותים`}
+          name="description"
+          content={
+            seoTitleParts.length
+              ? `מצא עסקים בתחום ${category ? category.label : ""} ${
+                  city ? "בעיר " + city.label : ""
+                } בפלטפורמת עסקליק.`
+              : "חפש עסקים לפי תחום ועיר בפלטפורמת עסקליק."
+          }
         />
         <link
           rel="canonical"
@@ -119,13 +106,13 @@ const BusinessesList = () => {
             {category && (
               <div className="chip">
                 <span>{category.label}</span>
-                <button onClick={() => setCategory(null)}>×</button>
+                <button onClick={() => onCategoryChange(null)}>×</button>
               </div>
             )}
             {city && (
               <div className="chip">
                 <span>{city.label}</span>
-                <button onClick={() => setCity(null)}>×</button>
+                <button onClick={() => onCityChange(null)}>×</button>
               </div>
             )}
           </div>
@@ -136,11 +123,9 @@ const BusinessesList = () => {
             <Select
               options={categoryOptions}
               value={category}
-              onChange={setCategory}
+              onChange={onCategoryChange}
               placeholder="תחום (לדוגמה: חשמלאי)"
               isClearable
-              className="react-select-container"
-              classNamePrefix="react-select"
             />
           </div>
 
@@ -148,21 +133,18 @@ const BusinessesList = () => {
             <Select
               options={cityOptions}
               value={city}
-              onChange={setCity}
+              onChange={onCityChange}
               placeholder="עיר (לדוגמה: תל אביב)"
               isClearable
-              className="react-select-container"
-              classNamePrefix="react-select"
             />
           </div>
 
           <button
             className="search-btn"
-            onClick={handleSearch}
+            onClick={() => fetchBusinesses(category && category.value, city && city.value)}
             disabled={loading}
           >
-            <FaSearch className="search-btn__icon" />
-            {loading ? "טוען…" : "חפש"}
+            <FaSearch /> {loading ? "טוען…" : "חפש"}
           </button>
         </div>
 
@@ -170,7 +152,7 @@ const BusinessesList = () => {
           <p className="no-results">טוען תוצאות…</p>
         ) : businesses.length > 0 ? (
           <div className="business-list">
-            {businesses.map((b) => (
+            {businesses.map(b => (
               <BusinessCard key={b._id} business={b} />
             ))}
           </div>
