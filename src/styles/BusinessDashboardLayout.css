@@ -43,12 +43,13 @@
 }
 
 /* במובייל – Slide-in/out לפי class */
+/* רוחב קבוע של 260px במקום 83vw */
 .sidebar.mobile {
   position: fixed !important;
   top: 0;
   right: 0;
-  width: 83vw !important;
-  max-width: 350px !important;
+  width: 260px !important;
+  max-width: 80% !important;
   height: 100vh !important;
   background: #f9edff !important;
   box-shadow: -8px 0 36px #0001 !important;
@@ -113,6 +114,14 @@
   transition: filter 0.3s ease;
 }
 
+/* דוחפים את התוכן כשהסיידבר פתוח (מובייל) */
+@media (max-width: 768px) {
+  .sidebar-open .dashboard-content {
+    margin-right: 260px !important;
+    transition: margin-right 0.35s ease;
+  }
+}
+
 /* כפתור יחיד ☰/✕ לסיידבר */
 .sidebar-toggle-button {
   position: fixed;
@@ -155,24 +164,6 @@
   }
   .sidebar-toggle-button {
     display: flex !important;
-  }
-  /* סיידבר fixed וגלוי כשהוא פתוח */
-  .sidebar.mobile {
-    position: fixed !important;
-    top: 0;
-    right: 0;
-    width: 83vw !important;
-    max-width: 350px !important;
-    height: 100vh !important;
-    background: #f9edff !important;
-    box-shadow: -8px 0 36px #0001 !important;
-    transform: translateX(100%) !important;
-    transition: transform 0.35s ease !important;
-    z-index: 9002 !important;
-    border-radius: 0 12px 12px 0; /* עיגול בפינות */
-  }
-  .sidebar.mobile.open {
-    transform: translateX(0) !important;
   }
 }
 
