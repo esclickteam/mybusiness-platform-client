@@ -10,7 +10,7 @@ const AffiliatePage = () => {
   // States
   const [affiliateId, setAffiliateId]     = useState(null);
   const [businessId, setBusinessId]       = useState(null);
-  const [referralCode, setReferralCode]   = useState(null);   // ← שמירת הקוד
+  const [referralCode, setReferralCode]   = useState(null);
   const [marketerBusiness, setMarketerBusiness] = useState(null);
   const [currentBalance, setCurrentBalance]     = useState(0);
 
@@ -25,28 +25,27 @@ const AffiliatePage = () => {
 
   const [showBankForm, setShowBankForm] = useState(false);
 
-  // חישוב סכום הכולל של עמלות שלא שולמו
+  // סכום העמלות שלא שולמו בכלל
   const totalUnpaidCommissions = allStats
     .filter((s) => s.paymentStatus !== "paid")
     .reduce((sum, s) =>
       sum + ((s.totalCommissions || 0) - (s.paidCommissions || 0))
     , 0);
 
-  // ➊ קבלת פרטי עסק + משווק + referralCode
+  // ➊ קבלת פרטי עסק + קוד שותף
   useEffect(() => {
     (async () => {
       try {
         const { data } = await API.get("/business/my");
         const business = data.business;
-        const marketer = data.referralBusiness || data.marketerBusiness || null;
-
-        if (!business?._id) throw new Error("Missing business ID");
+        const marketer = data.marketerBusiness || null;
 
         setBusinessId(business._id);
-        setReferralCode(business.referralCode || null);           // ← כאן
-        setAffiliateId(marketer?._id || business._id);
+        setReferralCode(business.referralCode || null);
+        // 👉 משנים: affiliateId = העסק עצמו
+        setAffiliateId(business._id);
         setMarketerBusiness(marketer);
-        setCurrentBalance(data.currentBalance ?? business.balance ?? 0);
+        // לא עידכנו את currentBalance כאן
       } catch {
         setErrorStats("לא הצלחנו לקבל פרטי עסק");
       }
@@ -63,6 +62,7 @@ const AffiliatePage = () => {
           params: { affiliateId },
         });
         setAllStats(data.stats || []);
+        // 👉 מקבלים את ה־currentBalance המעודכן מה־API
         setCurrentBalance(data.currentBalance);
         setErrorStats(null);
       } catch {
@@ -88,10 +88,9 @@ const AffiliatePage = () => {
         affiliateId,
         amount,
       });
-
       setWithdrawStatus(data.message || "בקשת המשיכה התקבלה.");
       setWithdrawalId(data.withdrawalId || null);
-      setCurrentBalance(data.currentBalance ?? currentBalance);
+      // ה־API כבר לא מחזיר currentBalance כאן, אבל ניתן להניח שיבצע ריענון
     } catch (err) {
       alert(err.response?.data?.message || "שגיאה בבקשת המשיכה");
     }
@@ -121,7 +120,7 @@ const AffiliatePage = () => {
     }
   };
 
-  // 🔗 קישור השותף – משתמשים ב-referralCode
+  // 🔗 הקישור האישי
   const affiliateLink = referralCode
     ? `${window.location.origin}/register?ref=${referralCode}`
     : "";
@@ -190,7 +189,7 @@ const AffiliatePage = () => {
                     <td>{s.month || "-"}</td>
                     <td>{s.purchases || 0}</td>
                     <td>₪{paid.toFixed(2)}</td>
-                    <td>₪{unpaid.toFixed(2)}</td>
+                    <td>₪{currentBalance.toFixed(2)}</td>
                     <td
                       className={
                         s.paymentStatus === "paid"
