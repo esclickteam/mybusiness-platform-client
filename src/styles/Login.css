@@ -63,17 +63,22 @@ input:focus {
 
 /* עטיפת שדה הסיסמה */
 .password-wrapper {
-  position: relative;
   width: 100%;
   margin-bottom: 15px;
-  text-align: center;          /* ✅ מיישר את כל התוכן הפנימי למרכז */
+  text-align: center;          /* מיישר את התוכן הפנימי */
 }
 
-/* שדה הסיסמה ברוחב מלא, עם מקום לכפתור העין */
-.password-wrapper .password-input {
+/* שורה שמכילה את שדה הסיסמה וכפתור העין */
+.password-row {
+  position: relative;           /* מיקום מוחלט לכפתור העין */
+  width: 100%;
+}
+
+/* שדה הסיסמה ברוחב מלא, עם padding בצד ההתחלתי */
+.password-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 12px 12px 12px 40px; /* padding-left 40px למיקום העין בתוך התיבה */
+  padding-inline-start: 42px;  /* מקום לאייקון העין */
   border-radius: 12px;
   border: 1px solid #c084fc;
   background-color: #f9f9ff;
@@ -83,7 +88,7 @@ input:focus {
   transition: 0.3s;
 }
 
-.password-wrapper .password-input:focus {
+.password-input:focus {
   border-color: #8200ff;
   background-color: #fff;
   outline: none;
@@ -91,9 +96,9 @@ input:focus {
 }
 
 /* כפתור העין בתוך התיבה */
-.password-wrapper .password-toggle-btn {
+.password-toggle-btn {
   position: absolute;
-  left: 12px;               /* בתוך padding-left של השדה */
+  inset-inline-start: 12px; /* מיקום בצד ההתחלתי (RTL/LTR) */
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -107,9 +112,9 @@ input:focus {
 }
 
 /* כפתור “שכחת סיסמה?” מתחת לשדה */
-.password-wrapper .forgot-inside-btn {
+.forgot-inside-btn {
   display: block;              /* אפשר גם inline-block; שניהם יעבדו */
-  margin: 8px auto 0;          /* ⬅️  auto משני הצדדים = מרכז מוחלט */
+  margin: 8px auto 0;          /* מרכז אופקית */
   font-size: 0.95rem;
   text-decoration: underline;
   color: #e53e3e;
@@ -119,7 +124,7 @@ input:focus {
   padding: 0;
 }
 
-.password-wrapper .forgot-inside-btn:hover {
+.forgot-inside-btn:hover {
   color: #c53030;
   transform: scale(1.05);
 }
