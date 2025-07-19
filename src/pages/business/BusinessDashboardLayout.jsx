@@ -222,22 +222,7 @@ export default function BusinessDashboardLayout({ children }) {
               />
             )}
 
-            {isMobile && (
-              <button
-                onClick={() => setShowSidebar((prev) => !prev)}
-                aria-label={
-                  showSidebar
-                    ? "סגור ניווט / חזור לדשבורד"
-                    : "פתח ניווט"
-                }
-                className="mobile-toggle-button"
-              >
-                <span className="icon">{showSidebar ? "×" : "☰"}</span>
-                <span className="label">
-                  {showSidebar ? "סגור ניווט" : "פתח ניווט"}
-                </span>
-              </button>
-            )}
+            {/* כפתור ניווט במובייל הוסר */}
 
             <main
               className="dashboard-content"

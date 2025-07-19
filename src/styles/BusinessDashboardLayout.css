@@ -1,15 +1,11 @@
-/*==========================
-   גרדיאנט גלובלי
-==========================*/
+/* גרדיאנט גלובלי כבר ב־index.css */
 .rtl-wrapper {
   direction: rtl;
   min-height: 100vh;
   box-sizing: border-box;
 }
 
-/*==========================
-   פריסה ראשית
-==========================*/
+/* פריסה ראשית */
 .business-dashboard-layout {
   display: flex;
   width: 100%;
@@ -19,16 +15,19 @@
   transition: filter 0.3s ease;
 }
 
-/* הסרת טשטוש התוכן כשסיידבר פתוח */
+/* הסרה של טשטוש התוכן כשסיידבר פתוח במובייל */
 .sidebar-open .business-dashboard-layout {
-  filter: none;
+  filter: none; /* אין טשטוש */
   pointer-events: auto;
   user-select: auto;
 }
 
-/*==========================
-   הסיידבר
-==========================*/
+/* הסתרה גורפת של כפתור סגירה ישן */
+.close-sidebar-btn {
+  display: none !important;
+}
+
+/* סיידבר (בכל הגדלים – מיקום צד ימין דרך rtl) */
 .sidebar {
   min-width: 240px !important;
   padding: 1rem !important;
@@ -37,38 +36,42 @@
   overflow-y: auto !important;
   transition: transform 0.35s ease !important;
   will-change: transform;
-  z-index: 9002 !important;
-  flex-shrink: 0;
+  z-index: 9002 !important; /* מעל האופרליי */
+  flex-shrink: 0; /* לא יתכווץ */
   box-shadow: 0 0 20px rgb(124 77 255 / 0.35);
   border-radius: 12px !important;
 }
 
-/* Slide-in/out לכל הגדלים (אבל פועל רק במובייל) */
+/* במובייל – Slide-in/out לפי class */
 .sidebar.mobile {
   position: fixed !important;
   top: 0;
   right: 0;
-  width: 260px !important;        /* רוחב קבוע */
-  max-width: 80% !important;
+  width: 83vw !important;
+  max-width: 350px !important;
   height: 100vh !important;
   background: #f9edff !important;
   box-shadow: -8px 0 36px #0001 !important;
-  transform: translateX(100%) !important; /* סגור ב־default */
-  border-radius: 0 12px 12px 0;
+  transform: translateX(100%) !important; /* ברירת מחדל: סגור */
+  z-index: 9002 !important; /* מעל האופרליי */
+  border-radius: 0 12px 12px 0; /* עיגול בפינות במובייל */
   transition: transform 0.35s ease !important;
 }
 .sidebar.mobile.open {
-  transform: translateX(0) !important;   /* כשלוחצים: פותח */
+  transform: translateX(0) !important; /* כשלוחצים: פותח */
 }
 
-/* אופרליי */
+/* אופרליי של רקע כשהסיידבר פתוח במובייל */
 .sidebar-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(44, 18, 85, 0.13) !important;
-  z-index: 9000 !important;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(44, 18, 85, 0.13) !important; /* שקיפות קלה */
+  z-index: 9000 !important; /* מתחת לסיידבר */
   cursor: pointer;
+  backdrop-filter: none; /* אין טשטוש */
   transition: opacity 0.3s ease;
   opacity: 1;
 }
@@ -77,7 +80,7 @@
   pointer-events: none;
 }
 
-/* קישורים בתוך הסיידבר */
+/* קישורים פנימיים */
 .sidebar nav {
   display: flex !important;
   flex-direction: column !important;
@@ -85,68 +88,106 @@
 }
 .sidebar a {
   padding: 0.75rem 1rem !important;
-  border-radius: 16px !important;
+  border-radius: 16px !important; /* עיגול חזק יותר */
   color: var(--text-secondary) !important;
   text-decoration: none !important;
-  display: block !important;
-  margin-bottom: 0.3rem !important;
   transition: background 0.2s !important;
+  display: block !important; /* כדי שהעיגול יכסה את כל הרוחב */
+  margin-bottom: 0.3rem !important; /* רווח בין הטאבים */
 }
 .sidebar a.active {
   background: var(--primary) !important;
   color: #fff !important;
   font-weight: 600;
-  box-shadow: 0 4px 8px rgb(92 70 255 / 0.5);
+  border-radius: 16px !important; /* עיגול חזק גם לטאב פעיל */
+  box-shadow: 0 4px 8px rgb(92 70 255 / 0.5); /* הצללה להדגשה */
 }
 
-/*==========================
-   תוכן הדשבורד
-==========================*/
+/* תוכן הדשבורד */
 .dashboard-content {
   flex: 1;
   padding: 1rem;
-  min-height: 100vh;
+  min-height: 100vh; /* למלא את הגובה */
   overflow-y: auto;
   box-sizing: border-box;
   transition: filter 0.3s ease;
 }
 
+/* כפתור יחיד ☰/✕ לסיידבר */
+.sidebar-toggle-button {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 9999;
+  width: 44px;
+  height: 44px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.7rem;
+  display: none; /* נסתר כברירת מחדל */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 12px #b39ddb55;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.sidebar-toggle-button:hover {
+  background: #5c46ff;
+  box-shadow: 0 4px 20px #a085ffcc;
+}
 
-
-/*==========================
-   עיצוב מובייל
-==========================*/
+/* במובייל בלבד – מציגים את הכפתור ומסדרים פריסה */
 @media (max-width: 768px) {
-  /* פריסת שורה אופקית */
   .business-dashboard-layout {
-    flex-direction: row !important;
+    flex-direction: row !important; /* לשמור על פריסה אופקית */
+    height: 100vh;
   }
-
-  /* מראה הכפתור */
+  .dashboard-content {
+    flex: 1;
+    margin-right: 0; /* יתעדכן דינמית לפי מצב הסיידבר */
+    padding: 1rem !important;
+    padding-top: 60px !important; /* למקם מתחת לכפתור */
+    box-sizing: border-box;
+    height: 100vh !important;
+    overflow-y: auto;
+  }
   .sidebar-toggle-button {
     display: flex !important;
   }
-
-  /* דוחפים את התוכן כשפותחים את הסיידבר */
-  .sidebar-open .business-dashboard-layout .dashboard-content {
-    margin-right: 260px !important;
-    transition: margin-right 0.35s ease;
+  /* סיידבר fixed וגלוי כשהוא פתוח */
+  .sidebar.mobile {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    width: 83vw !important;
+    max-width: 350px !important;
+    height: 100vh !important;
+    background: #f9edff !important;
+    box-shadow: -8px 0 36px #0001 !important;
+    transform: translateX(100%) !important;
+    transition: transform 0.35s ease !important;
+    z-index: 9002 !important;
+    border-radius: 0 12px 12px 0; /* עיגול בפינות */
+  }
+  .sidebar.mobile.open {
+    transform: translateX(0) !important;
   }
 }
 
-/*==========================
-   עיצוב דסקטופ
-==========================*/
+/* בדסקטופ – הסיידבר תמיד גלוי, הכפתור מוסתר */
 @media (min-width: 769px) {
-  /* סיידבר תמיד גלוי */
   .sidebar {
-    transform: none !important;
+    transform: none !important; /* סיידבר תמיד גלוי */
     position: relative !important;
     box-shadow: none !important;
     z-index: auto !important;
+    border-radius: 0 12px 12px 0; /* שמירת עיגול בפינות בצד ימין */
   }
-  /* הכפתור והאופרליי מוסתרים */
-  .sidebar-toggle-button,
+  .sidebar-toggle-button {
+    display: none !important;
+  }
   .sidebar-overlay {
     display: none !important;
   }
