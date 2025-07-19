@@ -234,3 +234,35 @@
     padding: 1rem !important;
   }
 }
+/* כפתור קטן של חץ לפתיחה וסגירה */
+.sidebar-toggle-button {
+  position: fixed;
+  top: 12px;
+  left: 12px; /* משמאל כי RTL */
+  z-index: 9999;
+  width: 36px;
+  height: 36px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.7rem;
+  display: none; /* יוצג רק במובייל */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 12px #b39ddb55;
+  transition: background 0.2s, box-shadow 0.2s;
+  user-select: none;
+}
+.sidebar-toggle-button:hover {
+  background: #5c46ff;
+  box-shadow: 0 4px 20px #a085ffcc;
+}
+
+/* במובייל בלבד – מציגים את הכפתור */
+@media (max-width: 768px) {
+  .sidebar-toggle-button {
+    display: flex !important;
+  }
+}
