@@ -39,17 +39,12 @@ const CRMAppointmentsTab = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  // State לשירותים עם טעינה ראשונית
   const [services, setServices] = useState([]);
-
-  // State ללוח זמנים העסק
   const [businessSchedule, setBusinessSchedule] = useState(null);
 
-  // המרה של businessSchedule לארrray מתאים ל-SelectTimeFromSlots
   const scheduleArray = useMemo(() => {
     if (!businessSchedule) return [];
     if (Array.isArray(businessSchedule)) return businessSchedule;
-    // ממיר אובייקט למערך של אובייקטים עם day, start, end
     return Object.entries(businessSchedule).map(([day, { start, end }]) => ({
       day,
       start,
@@ -57,7 +52,6 @@ const CRMAppointmentsTab = () => {
     }));
   }, [businessSchedule]);
 
-  // טעינת שירותים ראשונית
   useEffect(() => {
     async function fetchServices() {
       if (!businessId) return;
@@ -71,13 +65,11 @@ const CRMAppointmentsTab = () => {
     fetchServices();
   }, [businessId]);
 
-  // טעינת לוח זמנים העסק
   useEffect(() => {
     async function fetchSchedule() {
       if (!businessId) return;
       try {
         const res = await API.get('/appointments/get-work-hours', { params: { businessId } });
-
         setBusinessSchedule(res.data.workHours || {});
       } catch (e) {
         console.error("Error fetching schedule:", e);
@@ -86,14 +78,12 @@ const CRMAppointmentsTab = () => {
     fetchSchedule();
   }, [businessId]);
 
-  // קבלת תיאומים עם react-query
   const { data: appointments = [], refetch: refetchAppointments, isLoading: isLoadingAppointments, isError: isErrorAppointments } = useQuery({
     queryKey: ['appointments', 'all-with-services', businessId],
     queryFn: () => API.get("/appointments/all-with-services").then(res => res.data),
     enabled: !!businessId,
   });
 
-  // מאזינים ל-socket לאירועי תיאומים בזמן אמת
   useEffect(() => {
     if (!socket) return;
 
@@ -127,7 +117,6 @@ const CRMAppointmentsTab = () => {
     };
   }, [socket, queryClient, businessId]);
 
-  // מאזינים ל-socket לאירוע serviceCreated לעדכון שירותים בזמן אמת
   useEffect(() => {
     if (!socket) return;
 
@@ -145,7 +134,6 @@ const CRMAppointmentsTab = () => {
     };
   }, [socket]);
 
-  // סינון כפילויות + חיפוש
   const filteredUniqueAppointments = useMemo(() => {
     const seen = new Set();
     const searchLower = search.toLowerCase().trim();
@@ -171,7 +159,6 @@ const CRMAppointmentsTab = () => {
       });
   }, [appointments, search]);
 
-  // פונקציה לשליחת תזכורת בוואטסאפ
   const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
     if (!phone) {
       alert("מספר טלפון של הלקוח לא זמין");
@@ -205,8 +192,6 @@ const CRMAppointmentsTab = () => {
 
     window.open(url, "_blank");
   };
-
-  // שאר הפונקציות לעריכה, מחיקה, הוספה נשארות כפי שהיו, עם שימוש ב-services מה-state החדש
 
   const handleServiceChange = (serviceId, isEdit = false) => {
     const service = services.find((s) => s._id === serviceId);
@@ -464,6 +449,7 @@ const CRMAppointmentsTab = () => {
         </div>
       )}
 
+      {/* טבלה במחשב */}
       <table className="appointments-table">
         <thead>
           <tr>
@@ -630,6 +616,44 @@ const CRMAppointmentsTab = () => {
           )}
         </tbody>
       </table>
+
+      {/* תצוגת כרטיסים למובייל */}
+      <div className="appointments-cards">
+        {filteredUniqueAppointments.length === 0 ? (
+          <p>לא נמצאו תיאומים</p>
+        ) : (
+          filteredUniqueAppointments.map((appt) => (
+            <div key={appt._id} className="appointment-card">
+              <div><strong>שם:</strong> {appt.clientName || "לא ידוע"}</div>
+              <div><strong>טלפון:</strong> {appt.clientPhone}</div>
+              <div><strong>כתובת:</strong> {appt.address}</div>
+              <div><strong>אימייל:</strong> {appt.email}</div>
+              <div><strong>הערה:</strong> {appt.note || "-"}</div>
+              <div><strong>שירות:</strong> {appt.serviceName || appt.service}</div>
+              <div><strong>תאריך:</strong> {appt.date}</div>
+              <div><strong>שעה:</strong> {appt.time}</div>
+              <div className="card-actions">
+                <button onClick={() => startEdit(appt)} aria-label="ערוך">✏️ ערוך</button>
+                <button onClick={() => handleDelete(appt._id)} aria-label="בטל">❌ בטל</button>
+                <button
+                  onClick={() =>
+                    sendWhatsAppReminder(
+                      appt.clientPhone,
+                      appt.clientName || "לקוח",
+                      appt.date,
+                      appt.time,
+                      appt.serviceName || appt.service
+                    )
+                  }
+                  aria-label="שלח תזכורת"
+                >
+                  📩 שלח תזכורת
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };

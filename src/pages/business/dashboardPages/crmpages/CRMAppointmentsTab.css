@@ -167,7 +167,6 @@
   padding: 0.55rem 0.9rem;
   text-align: right;
   vertical-align: middle;
-  /* הסר max-width כדי לא להגביל רוחב */
   word-wrap: break-word;
   border-radius: 8px;
 }
@@ -284,7 +283,13 @@
 .action-reminder:hover {
   background-color: #6a3edb;
 }
+
 /* רספונסיביות CRM Appointments Tab */
+
+/* ברירת מחדל: טבלה מוצגת, כרטיסים מוסתרים */
+.appointments-cards {
+  display: none;
+}
 
 /* Extra Small - עד 480px */
 @media (max-width: 480px) {
@@ -331,19 +336,43 @@
     min-width: 100%;
   }
   .appointments-table {
-    font-size: 0.85rem;
+    display: none; /* טבלה מוסתרת במובייל */
   }
-  .appointments-table th,
-  .appointments-table td {
-    padding: 0.4rem 0.6rem;
+  .appointments-cards {
+    display: block; /* כרטיסים מוצגים במובייל */
+    padding: 0 10px;
   }
-  .actions-cell {
-    justify-content: flex-start;
-    gap: 0.3rem;
+  .appointment-card {
+    background: #fafafa;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(124, 77, 255, 0.15);
+    padding: 16px;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    color: #222;
   }
-  .status-btn {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.5rem;
+  .appointment-card div {
+    margin-bottom: 8px;
+    word-wrap: break-word;
+  }
+  .card-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .card-actions button {
+    flex: 1;
+    padding: 10px 0;
+    background: linear-gradient(90deg, #7c4dff 0%, #9a67ff 100%);
+    border: none;
+    border-radius: 24px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .card-actions button:hover {
+    background: linear-gradient(90deg, #6a3edb 0%, #804ef8 100%);
   }
 }
 
