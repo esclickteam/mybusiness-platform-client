@@ -129,32 +129,33 @@
   overflow-wrap: break-word;
 }
 
-/* כפתור יחיד ☰/✕ לסיידבר */
+/* כפתור קטן של חץ לפתיחה וסגירה */
 .sidebar-toggle-button {
   position: fixed;
   top: 12px;
-  right: 12px;
+  left: 12px; /* משמאל כי RTL */
   z-index: 9999;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   background: var(--primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  font-size: 1.7rem;
-  display: none; /* נסתר כברירת מחדל */
+  border-radius: 6px;
+  font-size: 1.5rem;
+  display: none; /* יוצג רק במובייל */
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 12px #b39ddb55;
+  box-shadow: 0 2px 10px #b39ddb55;
   transition: background 0.2s, box-shadow 0.2s;
+  user-select: none;
 }
 .sidebar-toggle-button:hover {
   background: #5c46ff;
   box-shadow: 0 4px 20px #a085ffcc;
 }
 
-/* במובייל בלבד – מציגים את הכפתור ומסדרים פריסה */
+/* במובייל בלבד – מציגים את הכפתור */
 @media (max-width: 768px) {
   .business-dashboard-layout {
     flex-direction: row !important; /* לשמור על פריסה אופקית */
@@ -216,18 +217,18 @@
     max-width: none !important;
     border-radius: 0 !important;
   }
-  
+
   .dashboard-content {
     padding: 1rem !important;
     padding-top: 70px !important; /* מותאם לכפתור Toggle גדול יותר */
   }
-  
+
   .sidebar-toggle-button {
     width: 50px;
     height: 50px;
     font-size: 2rem;
   }
-  
+
   .sidebar a {
     font-size: 1.1rem !important;
     padding: 1rem !important;

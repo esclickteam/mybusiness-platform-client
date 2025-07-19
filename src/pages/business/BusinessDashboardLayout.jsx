@@ -226,15 +226,29 @@ export default function BusinessDashboardLayout({ children }) {
               <button
                 onClick={() => setShowSidebar((prev) => !prev)}
                 aria-label={
-                  showSidebar
-                    ? "סגור ניווט / חזור לדשבורד"
-                    : "פתח ניווט"
+                  showSidebar ? "סגור ניווט / חזור לדשבורד" : "פתח ניווט"
                 }
                 className="mobile-toggle-button"
+                style={{
+                  position: "fixed",
+                  top: 15,
+                  left: 15,
+                  width: 40,
+                  height: 40,
+                  fontSize: 24,
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  zIndex: 1001,
+                  padding: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  userSelect: "none",
+                }}
               >
-                <span className="icon">{showSidebar ? "×" : "☰"}</span>
-                <span className="label">
-                  {showSidebar ? "סגור ניווט" : "פתח ניווט"}
+                <span aria-hidden="true" style={{ lineHeight: 1 }}>
+                  {showSidebar ? "←" : "→"}
                 </span>
               </button>
             )}
