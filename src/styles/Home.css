@@ -281,14 +281,26 @@ body {
     margin-bottom: 2rem;
   }
   .search-section {
-    flex-direction: column;
+    flex-direction: column; /* ורטיקלי */
     gap: 15px;
+    padding: 15px 20px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   .dropdown-wrapper {
-    max-width: 100%;
+    min-width: auto;      /* לבטל את המינימום הקבוע */
+    max-width: 100%;      /* להתרחב למלוא רוחב המכולה */
+    flex: 1 1 auto;       /* גמישות מרבית */
+  }
+  .dropdown-wrapper select,
+  .dropdown-wrapper input {
+    padding: 12px 15px;   /* מעט פחות פדינג למובייל */
+    font-size: 1rem;
   }
   .search-button {
-    width: 100%;
-    padding: 16px 0;
+    width: 100%;          /* כפתור במלוא הרוחב */
+    padding: 14px 0;
+    font-size: 1.1rem;
+    box-sizing: border-box;
   }
 }
