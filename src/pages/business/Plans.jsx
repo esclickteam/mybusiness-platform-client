@@ -80,11 +80,12 @@ function Plans() {
               aria-checked={selectedDuration === d}
               tabIndex={selectedDuration === d ? 0 : -1}
               aria-label={`מנוי ${
-                d === "1" ? "חודשי" : d === "3" ? "לשלושה חודשים" : "שנתי"
+                 d === "1" ? "חודשי" : d === "3" ? "שלושה חודשים" : "שנתי"
+
               } במחיר ${prices[d]} שקלים לחודש`}
               type="button"
             >
-              {d === "1" ? "חודשי" : d === "3" ? "לשלושה חודשים" : "שנתי"}
+              {d === "1" ? "חודשי" : d === "3" ? "שלושה חודשים" : "שנתי"}
               <span className="duration-price">{prices[d]} ₪ לחודש</span>
             </button>
           ))}
