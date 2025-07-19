@@ -69,16 +69,17 @@ input:focus {
 }
 
 .password-row {
-  position: relative; /* מאפשר מיקום מוחלט לאייקון */
-  width: 100%;
+  position: relative;     /* כבר היה */
+  display: flex;          /* הוספנו */
+  align-items: center;    /* יישור אנכי מרכזי */
 }
 
 /* ➡️  האייקון בשמאל בכל Breakpoint */
 .password-input {
   width: 100%;
   box-sizing: border-box;
-  padding-left: 40px;  /* מפנה מקום לאייקון בשמאל */
-  padding-right: 12px; /* רווח מינימלי לימין */
+  padding-inline-start: 40px; /* מרווח מצד ימין בשפה RTL */
+  padding-inline-end: 12px;
   border-radius: 12px;
   border: 1px solid #c084fc;
   background-color: #f9f9ff;
@@ -97,24 +98,25 @@ input:focus {
 
 .password-toggle-btn {
   position: absolute;
-  left: 12px;          /* מיקום בשמאל */
-  right: auto;
-  top: 50%;
-  transform: translateY(-50%);
+  inset-inline-start: 12px; /* תומך גם ב־LTR וגם ב־RTL */
+  top: 0;
+  bottom: 0;
+  margin: auto 0;          /* יישור אנכי אוטומטי */
+  
+  width: 1.8em;            /* רוחב */
+  height: 1.8em;           /* גובה זהה - מתאים ל־line-height של השדה */
   background: none;
   border: none;
-  box-shadow: none;
-  padding: 0 8px;       /* רווח פנימי צר לרוחב קטן */
-  height: 100%;         /* גובה מלא של שדה הסיסמה */
-  max-width: 40px;      /* רוחב מקסימלי */
+  padding: 0;
   cursor: pointer;
-  font-size: 18px;
-  color: #222;
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  user-select: none;
+  
   z-index: 2;
+  font-size: 1.2em;
+  color: #222;
 }
 
 
