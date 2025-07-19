@@ -79,10 +79,10 @@
 }
   
   @media (max-width: 500px) {
-    .dashboard-cards-container {
-      grid-template-columns: 1fr;
-    }
+  .dashboard-cards-container {
+    grid-template-columns: repeat(3, 1fr);
   }
+}
   
   .dashboard-card {
     padding: 20px;
