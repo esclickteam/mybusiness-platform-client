@@ -8,7 +8,7 @@ function Plans() {
   const navigate = useNavigate();
 
   // מחירים לפי תקופה (מחיר לחודש)
-  const prices = { "1": 799, "3": 769, "12": 699 };
+  const prices = { "1": 399, "3": 379, "12": 329 };
 
   const [selectedDuration, setSelectedDuration] = useState("1");
 
