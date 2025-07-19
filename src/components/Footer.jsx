@@ -9,6 +9,16 @@ function Footer() {
         <li><Link to="/search" className="footer-link">📋 חיפוש עסקים</Link></li>
         <li><Link to="/about" className="footer-link">📖 קצת עלינו</Link></li>
         <li><Link to="/how-it-works" className="footer-link">⚙️ איך זה עובד</Link></li>
+        <li>
+          <a
+            href="https://esclick.co.il/business"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            💼 בעלי עסקים
+          </a>
+        </li>
         <li><Link to="/join" className="footer-link">✏️ הצטרפות עסקים</Link></li>
         <li><Link to="/faq" className="footer-link">❓ שאלות נפוצות</Link></li>
         <li><Link to="/terms" className="footer-link">📜 תקנון</Link></li>
