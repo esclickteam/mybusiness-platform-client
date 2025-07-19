@@ -108,8 +108,8 @@ input:focus {
 
 /* כפתור “שכחת סיסמה?” מתחת לשדה */
 .password-wrapper .forgot-inside-btn {
-  display: block;
-  margin-top: 8px;
+  display: block;              /* אפשר גם inline-block; שניהם יעבדו */
+  margin: 8px auto 0;          /* ⬅️  auto משני הצדדים = מרכז מוחלט */
   font-size: 0.95rem;
   text-decoration: underline;
   color: #e53e3e;
@@ -117,7 +117,6 @@ input:focus {
   border: none;
   cursor: pointer;
   padding: 0;
-  text-align: center; 
 }
 
 .password-wrapper .forgot-inside-btn:hover {
