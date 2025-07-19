@@ -304,3 +304,15 @@ input:focus {
 .login-container .accessibility-btn:hover {
   transform: scale(1.1);
 }
+
+@media (max-width: 480px) {
+  .password-input {
+    padding-left: 36px;     /* פחות מקום – כי הכל צפוף יותר */
+    font-size: 15px;
+    height: 44px;           /* או כל גובה שנראה לך מתאים */
+  }
+  .password-toggle-btn {
+    left: 8px;              /* קירוב לצד */
+    top: 43%;               /* טיפה יותר גבוה אם צריך */
+  }
+}
