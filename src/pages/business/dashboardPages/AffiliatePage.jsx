@@ -189,7 +189,7 @@ const AffiliatePage = () => {
                     <td>{s.month || "-"}</td>
                     <td>{s.purchases || 0}</td>
                     <td>₪{paid.toFixed(2)}</td>
-                    <td>₪{currentBalance.toFixed(2)}</td>
+                    <td>₪{unpaid.toFixed(2)}</td>
                     <td
                       className={
                         s.paymentStatus === "paid"
@@ -219,11 +219,6 @@ const AffiliatePage = () => {
         <p>
           יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong>
         </p>
-        {totalUnpaidCommissions > currentBalance && (
-          <p style={{ color: "orange", fontWeight: "bold" }}>
-            סכום העמלות גבוה מיתרת המשיכה.
-          </p>
-        )}
 
         {currentBalance < 200 ? (
           <p style={{ color: "red", fontWeight: "bold" }}>
