@@ -113,7 +113,7 @@ input:focus {
   margin: auto 0;
 
   /* הוספת תזוזה קלה כלפי מעלה */
-  transform: translateY(-10%);
+  transform: translateY(-15%);
 
   width: 1.8em;
   height: 1.8em;
