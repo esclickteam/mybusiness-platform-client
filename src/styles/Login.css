@@ -305,3 +305,33 @@ input:focus {
   transform: scale(1.1);
 }
 
+@media (max-width: 480px) {
+  /* מבטל כל יישור מרכזי */
+  .password-wrapper {
+    text-align: left;
+  }
+
+  /* הופך את השורה לפלקס ומיישר שמאלה */
+  .password-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative; /* כדי לשמור על absolute בתוך זה */
+    width: 100%;
+  }
+
+  /* מודיע לכפתור העין להיות משמאל */
+  .password-toggle-btn {
+    position: absolute;
+    left: 12px;
+    right: auto;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* מבטיח שה־input יתפוס את השטח הנותר */
+  .password-input {
+    flex: 1;
+    padding-left: 40px; /* פינה למיקום האייקון */
+  }
+}
