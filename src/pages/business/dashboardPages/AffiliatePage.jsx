@@ -10,6 +10,7 @@ const AffiliatePage = () => {
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState(null);
   const [businessId, setBusinessId] = useState(null);
+  const [marketerBusiness, setMarketerBusiness] = useState(null);
 
   // מצב למשיכת כספים
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -30,43 +31,37 @@ const AffiliatePage = () => {
 
   // פונקציה לריענון סטטיסטיקות ויתרה
   const refreshStats = async (affiliateId) => {
-    console.log("refreshStats: מתחיל ריענון עם affiliateId:", affiliateId);
     try {
       setLoadingStats(true);
-
       const statsRes = await API.get("/affiliate/stats/all", {
         params: { affiliateId },
       });
-
-      console.log("refreshStats: נתונים שהתקבלו מהשרת:", statsRes.data);
-
       setAllStats(statsRes.data.stats || []);
       setCurrentBalance(statsRes.data.currentBalance || 0);
-
       setErrorStats(null);
     } catch (error) {
-      console.error("refreshStats: שגיאה בטעינת הנתונים", error);
       setErrorStats("שגיאה בטעינת הנתונים");
     } finally {
       setLoadingStats(false);
     }
   };
 
-  // קבלת מזהה עסק ראשונית
+  // קבלת מזהה עסק ראשונית + עסק משווק
   useEffect(() => {
     async function fetchBusinessInfo() {
       try {
-        console.log("fetchBusinessInfo: מנסה לקבל מידע עסקי...");
         const res = await API.get("/business/my");
-        if (res.data?.business?._id) {
-          console.log("fetchBusinessInfo: מזהה עסק שהתקבל:", res.data.business._id);
-          setBusinessId(res.data.business._id);
-          setCurrentBalance(res.data.business.balance || 0);
+        const business = res.data.business;
+        const marketer = res.data.marketerBusiness;
+
+        if (business?._id) {
+          setBusinessId(business._id);
+          setCurrentBalance(business.balance || 0);
+          setMarketerBusiness(marketer || null);
         } else {
           setErrorStats("לא נמצא מזהה עסק תקין");
         }
       } catch (error) {
-        console.error("fetchBusinessInfo: שגיאה בקבלת מזהה עסק", error);
         setErrorStats("לא הצלחנו לקבל מזהה עסק");
       }
     }
@@ -76,7 +71,6 @@ const AffiliatePage = () => {
   // ריענון סטטיסטיקות לאחר קבלת מזהה עסק
   useEffect(() => {
     if (businessId) {
-      console.log("useEffect: מזהה עסק התעדכן, מרענן סטטיסטיקות", businessId);
       refreshStats(businessId);
     }
   }, [businessId]);
@@ -84,10 +78,8 @@ const AffiliatePage = () => {
   // בקשת משיכה
   const handleWithdrawRequest = async () => {
     const amount = Number(withdrawAmount);
-    console.log("handleWithdrawRequest: מבקשים משיכה, סכום:", amount);
     if (isNaN(amount) || amount < 200) {
       alert('סכום מינימום למשיכה הוא 200 ש"ח');
-
       return;
     }
     if (amount > currentBalance) {
@@ -99,24 +91,18 @@ const AffiliatePage = () => {
         affiliateId: businessId,
         amount,
       });
-      console.log("handleWithdrawRequest: תגובת השרת:", res.data);
-
       setWithdrawStatus(res.data.message || "בקשת המשיכה התקבלה.");
       if (res.data.withdrawalId) {
         setWithdrawalId(res.data.withdrawalId);
-        console.log("handleWithdrawRequest: זיהוי משיכה (withdrawalId):", res.data.withdrawalId);
       }
       setShowReceiptForm(true);
 
       if (res.data.currentBalance !== undefined) {
         setCurrentBalance(res.data.currentBalance);
-        console.log("handleWithdrawRequest: עדכון יתרה לאחר משיכה:", res.data.currentBalance);
       } else {
-        console.log("handleWithdrawRequest: מרענן סטטיסטיקות לאחר בקשה");
         refreshStats(businessId);
       }
     } catch (error) {
-      console.error("handleWithdrawRequest: שגיאה בבקשת המשיכה", error);
       alert(error.response?.data?.message || "שגיאה בבקשת המשיכה");
     }
   };
@@ -124,7 +110,6 @@ const AffiliatePage = () => {
   // העלאת קבלה
   const handleReceiptUpload = async (e) => {
     e.preventDefault();
-    console.log("handleReceiptUpload: מתחיל העלאת קבלה");
     if (!receiptFile) {
       alert("בחר קובץ קבלה");
       return;
@@ -139,15 +124,12 @@ const AffiliatePage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("handleReceiptUpload: תגובת השרת:", res.data);
-
       alert(res.data.message || "הקבלה הועלתה בהצלחה");
       setWithdrawStatus("קבלה הועלתה וממתינה לאישור.");
       setShowReceiptForm(false);
       setReceiptFile(null);
       refreshStats(businessId);
     } catch (error) {
-      console.error("handleReceiptUpload: שגיאה בהעלאת הקבלה", error);
       alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
     }
   };
@@ -177,7 +159,6 @@ const AffiliatePage = () => {
           onClick={() => {
             if (businessId) {
               navigator.clipboard.writeText(affiliateLink);
-              console.log("קישור השותף הועתק:", affiliateLink);
             }
           }}
           disabled={!businessId}
@@ -190,6 +171,15 @@ const AffiliatePage = () => {
           </p>
         )}
       </section>
+
+      {/* הצגת העסק המשווק, אם יש */}
+      {marketerBusiness && (
+        <section className="marketer-business">
+          <h2>עסק משווק:</h2>
+          <p>שם העסק המשווק: <strong>{marketerBusiness.businessName}</strong></p>
+          {/* אפשר להוסיף פרטים נוספים כאן */}
+        </section>
+      )}
 
       {/* טבלת סטטיסטיקות */}
       <section className="affiliate-stats">
@@ -299,9 +289,7 @@ const AffiliatePage = () => {
                 value={withdrawAmount}
                 onChange={(e) => setWithdrawAmount(e.target.value)}
                 placeholder='סכום מינימום למשיכה 200 ש"ח'
-
               />
-
               <p style={{ color: "red", fontWeight: "bold", marginTop: "4px" }}>
                 סכום מינימום למשיכה הוא 200 ש"ח
               </p>
