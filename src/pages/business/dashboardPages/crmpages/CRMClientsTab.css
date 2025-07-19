@@ -91,11 +91,13 @@
   user-select: none;
 }
 
+/* תיקון חשוב: כותרת "שם" מיושרת לימין כמו שאר הכותרות */
 .clients-table thead th {
   padding: 0.75rem 0.9rem;
   border-bottom: 1.5px solid #ddd;
   border-radius: 10px 10px 0 0;
   white-space: nowrap;
+  text-align: right; /* וידוא יישור לימין */
 }
 
 .clients-table tbody tr {
@@ -166,9 +168,12 @@
     border-bottom: 1px solid #eee;
   }
 
+  /* כאן העדכון המלא לעמודת "שם" */
   .clients-table tbody td:first-child {
-    justify-content: center !important;
-    text-align: center !important;
+    justify-content: flex-end !important;  /* יישור לימין */
+    text-align: right !important;          /* יישור טקסט לימין */
+    flex-direction: row !important;        /* הצגת תוכן בשורה */
+    align-items: center !important;
     font-weight: 700;
     font-size: 1.1rem;
   }
