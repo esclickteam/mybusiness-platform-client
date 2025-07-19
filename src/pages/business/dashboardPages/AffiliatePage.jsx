@@ -5,40 +5,34 @@ import BankDetailsForm from "./BankDetailsForm";
 
 /**
  * AffiliatePage – גרסה מעודכנת מלאה
- * --------------------------------------------------------
- * - משתמש במזהה הנכון (affiliateId) לכל בקשות API
- * - אם המשתמש הוזן כ-referral, נשמור ונשתמש ב-referralBusinessId מבקשת ה-API
- * - אחרת, משתמש במזהה העסק הציבורי שלו (businessId)
  */
 const AffiliatePage = () => {
   // States
-  const [affiliateId, setAffiliateId] = useState(null);
-  const [businessId, setBusinessId] = useState(null);
+  const [affiliateId, setAffiliateId]     = useState(null);
+  const [businessId, setBusinessId]       = useState(null);
+  const [referralCode, setReferralCode]   = useState(null);   // ← שמירת הקוד
   const [marketerBusiness, setMarketerBusiness] = useState(null);
-  const [currentBalance, setCurrentBalance] = useState(0);
+  const [currentBalance, setCurrentBalance]     = useState(0);
 
-  const [allStats, setAllStats] = useState([]);
+  const [allStats, setAllStats]         = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
-  const [errorStats, setErrorStats] = useState(null);
+  const [errorStats, setErrorStats]     = useState(null);
 
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawStatus, setWithdrawStatus] = useState(null);
-  const [receiptFile, setReceiptFile] = useState(null);
-  const [withdrawalId, setWithdrawalId] = useState(null);
+  const [receiptFile, setReceiptFile]       = useState(null);
+  const [withdrawalId, setWithdrawalId]     = useState(null);
 
   const [showBankForm, setShowBankForm] = useState(false);
-
 
   // חישוב סכום הכולל של עמלות שלא שולמו
   const totalUnpaidCommissions = allStats
     .filter((s) => s.paymentStatus !== "paid")
-    .reduce(
-      (sum, s) =>
-        sum + ((s.totalCommissions || 0) - (s.paidCommissions || 0)),
-      0
-    );
+    .reduce((sum, s) =>
+      sum + ((s.totalCommissions || 0) - (s.paidCommissions || 0))
+    , 0);
 
-  // ➊ קבלת פרטי עסק + משווק
+  // ➊ קבלת פרטי עסק + משווק + referralCode
   useEffect(() => {
     (async () => {
       try {
@@ -49,6 +43,7 @@ const AffiliatePage = () => {
         if (!business?._id) throw new Error("Missing business ID");
 
         setBusinessId(business._id);
+        setReferralCode(business.referralCode || null);           // ← כאן
         setAffiliateId(marketer?._id || business._id);
         setMarketerBusiness(marketer);
         setCurrentBalance(data.currentBalance ?? business.balance ?? 0);
@@ -126,9 +121,9 @@ const AffiliatePage = () => {
     }
   };
 
-  // 🔗 קישור השותף – משתמשים ב-businessId
-  const affiliateLink = businessId
-    ? `${window.location.origin}/register?ref=${businessId}`
+  // 🔗 קישור השותף – משתמשים ב-referralCode
+  const affiliateLink = referralCode
+    ? `${window.location.origin}/register?ref=${referralCode}`
     : "";
 
   return (
@@ -148,14 +143,14 @@ const AffiliatePage = () => {
         />
         <button
           onClick={() =>
-            businessId && navigator.clipboard.writeText(affiliateLink)
+            referralCode && navigator.clipboard.writeText(affiliateLink)
           }
-          disabled={!businessId}
+          disabled={!referralCode}
         >
           📋 העתק קישור
         </button>
-        {!businessId && (
-          <p style={{ color: "red", marginTop: 8 }}>לא זוהה מזהה עסק.</p>
+        {!referralCode && (
+          <p style={{ color: "red", marginTop: 8 }}>לא זוהה קוד שותף.</p>
         )}
       </section>
 
@@ -188,7 +183,7 @@ const AffiliatePage = () => {
             </thead>
             <tbody>
               {allStats.map((s, i) => {
-                const paid = s.paidCommissions || 0;
+                const paid   = s.paidCommissions || 0;
                 const unpaid = (s.totalCommissions || 0) - paid;
                 return (
                   <tr key={s.month || i}>
@@ -201,15 +196,15 @@ const AffiliatePage = () => {
                         s.paymentStatus === "paid"
                           ? "paid"
                           : s.paymentStatus === "no-data"
-                          ? "no-data"
-                          : "unpaid"
+                            ? "no-data"
+                            : "unpaid"
                       }
                     >
                       {s.paymentStatus === "paid"
                         ? "שולם ✅"
                         : s.paymentStatus === "no-data"
-                        ? "אין נתונים"
-                        : "ממתין"}
+                          ? "אין נתונים"
+                          : "ממתין"}
                     </td>
                   </tr>
                 );
@@ -245,7 +240,10 @@ const AffiliatePage = () => {
               onChange={(e) => setWithdrawAmount(e.target.value)}
               placeholder='סכום מינימום למשיכה 200 ש"ח'
             />
-            <button onClick={handleWithdrawRequest} disabled={Number(withdrawAmount) < 200}>
+            <button
+              onClick={handleWithdrawRequest}
+              disabled={Number(withdrawAmount) < 200}
+            >
               בקש משיכה
             </button>
           </>
