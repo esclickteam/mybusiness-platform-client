@@ -71,11 +71,11 @@ const CRMClientsTab = ({ businessId }) => {
               ) : (
                 filteredClients.map((client) => (
                   <tr key={client.id}>
-                    <td>{client.fullName}</td>
-                    <td className="phone-cell">{client.phone}</td>
-                    <td className="address-cell">{client.address}</td>
-                    <td className="email-cell">{client.email}</td>
-                    <td>
+                    <td data-label="שם">{client.fullName}</td>
+                    <td data-label="טלפון" className="phone-cell">{client.phone}</td>
+                    <td data-label="כתובת" className="address-cell">{client.address}</td>
+                    <td data-label="אימייל" className="email-cell">{client.email}</td>
+                    <td data-label="היסטוריית תורים">
                       <button
                         className="show-history-btn"
                         onClick={() => setSelectedClient(client)}

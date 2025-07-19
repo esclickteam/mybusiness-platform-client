@@ -12,6 +12,12 @@
   border: 1px solid #ccc;
   font-size: 1rem;
   flex: 1;
+  color: #222;
+  transition: border-color 0.3s ease;
+}
+.search-input:focus {
+  border-color: #7c4dff;
+  outline: none;
 }
 
 .add-client-btn {
@@ -22,9 +28,9 @@
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
 }
-
 .add-client-btn:hover {
   background-color: #6a3edb;
 }
@@ -45,9 +51,10 @@
   border-radius: 6px;
   border: 1px solid #ccc;
   min-width: 200px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #222;
 }
-
-/* הוספת מחלקה מיוחדת לשדה כתובת שיתפוס יותר רוחב */
 .add-client-form input.address-input {
   flex: 2;
   min-width: 300px;
@@ -61,105 +68,136 @@
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
-
 .save-client-btn:hover {
   background: #45a045;
 }
 
 .clients-table {
   width: 100%;
-  border-collapse: collapse;
-  color: black; /* צבע טקסט שחור לכל הטבלה */
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  font-size: 0.95rem;
+  font-family: Arial, sans-serif;
+  color: #222;
 }
 
-.clients-table th,
-.clients-table td {
-  padding: 0.75rem;
-  border-bottom: 1px solid #eee;
-  text-align: right;
-  white-space: normal;
-  word-break: break-word;
-  color: black; /* טקסט שחור בתאים */
-}
-
-.clients-table th {
+.clients-table thead {
   background-color: #f8f8f8;
-  font-weight: bold;
+  color: #222;
+  font-weight: 700;
+  text-align: right;
+  user-select: none;
+}
+
+.clients-table thead th {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1.5px solid #ddd;
+  border-radius: 10px 10px 0 0;
+  white-space: nowrap;
+}
+
+.clients-table tbody tr {
+  background: white;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease;
+  border-radius: 10px;
 }
 
 .clients-table tr:hover {
   background-color: #f1f1f1;
 }
 
-/* מחלקות לתאים של אימייל, טלפון וכתובת */
+.clients-table td {
+  padding: 0.55rem 0.9rem;
+  text-align: right;
+  vertical-align: middle;
+  word-wrap: break-word;
+  border-radius: 8px;
+}
+
+/* תא עם גלישת טלפון, אימייל וכתובת */
 .clients-table td.phone-cell,
 .clients-table td.email-cell,
 .clients-table td.address-cell {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px; /* ניתן להתאים לפי הצורך */
-  color: black;
+  max-width: 200px;
 }
 
-/* סטטוס לסטטוס הושלם */
-.clients-table td.status-cell.completed {
-  color: #2a7a2a; /* ירוק כהה */
-  font-weight: 600;
-}
-
-/* סטטוס לסטטוס לא הושלם */
-.clients-table td.status-cell.incomplete {
-  color: #b33a3a; /* אדום כהה */
-  font-weight: 600;
-}
-
-/* עיצוב כפתור הצגת היסטוריית תורים */
+/* עיצוב כפתור הצגת היסטוריה */
 .show-history-btn {
   background-color: #7c4dff;
   color: white;
-  padding: 0.3rem 0.7rem;
+  padding: 0.5rem 1rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.2s ease-in-out;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
 }
-
 .show-history-btn:hover {
   background-color: #6a3edb;
 }
 
-/* רספונסיביות למסכים קטנים */
-@media (max-width: 480px) {
-  .add-client-form {
-    flex-direction: column;
+/* רספונסיביות - מובייל כמו בתיאומים */
+@media (max-width: 700px) {
+  .clients-table thead {
+    display: none;
   }
 
-  .add-client-form input,
-  .add-client-form input.address-input {
-    min-width: 100%;
-    flex: none;
+  .clients-table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: 0 0 15px rgba(124, 77, 255, 0.15);
+    border-radius: 12px;
   }
 
-  .save-client-btn {
+  .clients-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    text-align: right;
+    white-space: normal;
+    border-bottom: 1px solid #eee;
+  }
+
+  .clients-table tbody td:last-child {
+    border-bottom: none;
+    justify-content: center;
+    padding-top: 1rem;
+  }
+
+  .clients-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #3a0ca3;
+    flex-basis: 40%;
+    text-align: right;
+    padding-left: 0.5rem;
+  }
+
+  .clients-table tbody td.phone-cell,
+  .clients-table tbody td.email-cell,
+  .clients-table tbody td.address-cell {
+    word-break: break-word;
+    max-width: 60%;
+  }
+
+  .show-history-btn {
     width: 100%;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
   }
 }
 
-/* עיצוב כפתור או dropdown לסינון לפי סטטוס */
-.status-filter {
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  margin-left: 1rem;
-  cursor: pointer;
-}
-/* רספונסיביות Clients Tab */
+/* רספונסיביות Clients Tab לפי גדלים נוספים */
 
-/* Extra Small - עד 480px */
+/* עד 480px */
 @media (max-width: 480px) {
   .clients-header {
     flex-direction: column;
@@ -190,11 +228,6 @@
     width: 100%;
     padding: 0.6rem;
   }
-  .clients-table th,
-  .clients-table td {
-    padding: 0.5rem 0.6rem;
-    font-size: 0.85rem;
-  }
   .clients-table td.phone-cell,
   .clients-table td.email-cell,
   .clients-table td.address-cell {
@@ -204,16 +237,9 @@
     padding: 0.25rem 0.5rem;
     font-size: 0.85rem;
   }
-  .status-filter {
-    font-size: 0.9rem;
-    padding: 0.35rem 0.7rem;
-    margin-left: 0;
-    margin-top: 0.5rem;
-    width: 100%;
-  }
 }
 
-/* Small - 481px עד 768px */
+/* 481px - 768px */
 @media (min-width: 481px) and (max-width: 768px) {
   .clients-header {
     flex-wrap: wrap;
@@ -241,11 +267,6 @@
   .save-client-btn {
     width: auto;
   }
-  .clients-table th,
-  .clients-table td {
-    padding: 0.65rem 0.9rem;
-    font-size: 0.9rem;
-  }
   .clients-table td.phone-cell,
   .clients-table td.email-cell,
   .clients-table td.address-cell {
@@ -255,15 +276,9 @@
     padding: 0.3rem 0.6rem;
     font-size: 0.95rem;
   }
-  .status-filter {
-    font-size: 1rem;
-    padding: 0.4rem 0.8rem;
-    margin-left: 1rem;
-    width: auto;
-  }
 }
 
-/* Medium ומעלה - 769px ומעלה */
+/* 769px ומעלה */
 @media (min-width: 769px) {
   .clients-header {
     flex-wrap: nowrap;
@@ -288,11 +303,6 @@
   .save-client-btn {
     width: auto;
   }
-  .clients-table th,
-  .clients-table td {
-    padding: 0.75rem;
-    font-size: 1rem;
-  }
   .clients-table td.phone-cell,
   .clients-table td.email-cell,
   .clients-table td.address-cell {
@@ -301,10 +311,5 @@
   .show-history-btn {
     padding: 0.3rem 0.7rem;
     font-size: 1rem;
-  }
-  .status-filter {
-    font-size: 1rem;
-    padding: 0.4rem 0.8rem;
-    margin-left: 1rem;
   }
 }
