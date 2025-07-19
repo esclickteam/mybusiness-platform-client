@@ -277,6 +277,22 @@
   color: #231c59;
   border-color: #8d7ee5;
 }
+
+@media (max-width: 768px) {
+  .dashboard-nav {
+    flex-wrap: wrap; /* לשבור שורות */
+    max-width: 360px; /* לרכז ולהגביל רוחב */
+    margin: 0 auto;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .dashboard-nav button {
+    flex: 0 0 30%; /* 3 כפתורים בשורה */
+    min-width: 100px; /* אפשר להתאים */
+    box-sizing: border-box;
+  }
+}
   .export-btn {
     padding: 8px 14px;
     margin-bottom: 20px;
