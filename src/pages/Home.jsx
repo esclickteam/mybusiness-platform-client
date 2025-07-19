@@ -40,14 +40,15 @@ export default function Home() {
       </Helmet>
 
       {/* Hero */}
-<section className="hero-section">
-  <h1 className="main-title">
-    עסקליק
-  </h1>
-  <p className="subtitle">
-    פלטפורמה חכמה לעסקים ולקוחות
-  </p>
-</section>
+      <section className="hero-section">
+        <h1 className="main-title">
+        עסקליק
+        פלטפורמה חכמה לעסקים ולקוחות
+        </h1>
+        <p className="subtitle">
+          חפשו עסקים, תאמו שירותים, פתחו עמוד עסקי – הכל במקום אחד, פשוט ויעיל.
+        </p>
+      </section>
 
       {/* Search */}
       <div className="search-section">
