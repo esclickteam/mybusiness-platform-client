@@ -211,10 +211,11 @@
 
 .menu-scroll {
   flex: 1 1 auto;
-  overflow-y: auto;                /* שמור גלילה פנימית */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 0 16px 0;             /* ריווח תחתון למניעת חיתוך */
+  padding-bottom: 80px; /* מספיק מקום לכפתור תחתון */
 }
+
 
 .menu-user {
   display: flex;
