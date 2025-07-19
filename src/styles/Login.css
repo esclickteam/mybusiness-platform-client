@@ -146,12 +146,12 @@ input[name="password"] {
 }
 
 .staff-login-btn:hover {
-  background: #e58e00;
+  background: #6a00f4;
   transform: scale(1.05);
 }
 
 .staff-login-btn:active {
-  background: #cc7a00;
+  background: #6a00f4;
   transform: scale(1);
 }
 
