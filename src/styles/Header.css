@@ -412,8 +412,8 @@ a.active-link {
     display: flex;
   }
 
-  /* להזיז את הלוגו מעט ימינה כדי לפנות מקום לכפתור */
+  /* השאר את הלוגו במרכז בדיוק */
   .logo-wrapper {
-    margin-left: 60px;
+    margin-left: 0;
   }
 }
