@@ -136,24 +136,3 @@
   box-shadow: 0 4px 20px #a085ffcc;
 }
 
-/*==========================
-   עיצוב מובייל
-==========================*/
-@media (max-width: 768px) {
-  /* פריסת שורה אופקית */
-  .business-dashboard-layout {
-    flex-direction: row !important;
-  }
-
-  /* מראה הכפתור */
-  .sidebar-toggle-button {
-    display: flex !important;
-  }
-
-  /* דוחפים את התוכן כשפותחים את הסיידבר */
-  .sidebar-open .business-dashboard-layout .dashboard-content {
-    margin-right: 260px !important;
-    transition: margin-right 0.35s ease;
-  }
-}
-
