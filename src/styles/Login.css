@@ -313,7 +313,7 @@ input[name="password"] {
 /* כפתור הצגת הסיסמה בתוך השדה, מצד שמאל */
 .password-toggle-btn {
   position: absolute;
-  left: 10px; /* מיקום בתוך השדה */
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -324,6 +324,7 @@ input[name="password"] {
   color: #555;
   user-select: none;
   z-index: 10;
+  display: inline-block; /* הוסף שורה זו */
 }
 
 .password-toggle-btn:focus {
