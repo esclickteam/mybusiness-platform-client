@@ -170,13 +170,13 @@
 
   /* כאן העדכון המלא לעמודת "שם" */
   .clients-table tbody td:first-child {
-    justify-content: flex-end !important;  /* יישור לימין */
-    text-align: right !important;          /* יישור טקסט לימין */
-    flex-direction: row !important;        /* הצגת תוכן בשורה */
-    align-items: center !important;
-    font-weight: 700;
-    font-size: 1.1rem;
-  }
+  justify-content: center !important; /* למרכז */
+  text-align: center !important;      /* למרכז */
+  flex-direction: row !important;     /* בשורה */
+  align-items: center !important;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
 
   .clients-table tbody td:last-child {
     border-bottom: none;
