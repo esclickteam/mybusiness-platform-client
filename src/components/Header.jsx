@@ -27,8 +27,9 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // סטייט לפתיחת הסיידבר
+  // שני מצבים נפרדים: תפריט המבורגר וסיידבר דשבורד
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dashboardOpen, setDashboardOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
   useEffect(() => {
@@ -61,7 +62,10 @@ export default function Header() {
   const link = (to, icon, label) => (
     <Link
       to={to}
-      onClick={() => setMenuOpen(false)}
+      onClick={() => {
+        setMenuOpen(false);
+        setDashboardOpen(false);
+      }}
       className={location.pathname === to ? "active-link" : ""}
     >
       <span className="link-icon">{icon}</span>
@@ -76,6 +80,7 @@ export default function Header() {
       console.error("❌ Logout failed:", err);
     }
     setMenuOpen(false);
+    setDashboardOpen(false);
   };
 
   return (
@@ -85,11 +90,11 @@ export default function Header() {
         {(user?.role === "business" || user?.role === "business-dashboard") && (
           <button
             className="mobile-dashboard-button"
-            aria-label={menuOpen ? "סגור ניווט" : "פתח ניווט"}
-            onClick={() => setMenuOpen(!menuOpen)}
-            title={menuOpen ? "סגור ניווט" : "פתח ניווט"}
+            aria-label={dashboardOpen ? "סגור ניווט" : "פתח ניווט"}
+            onClick={() => setDashboardOpen(!dashboardOpen)}
+            title={dashboardOpen ? "סגור ניווט" : "פתח ניווט"}
           >
-            {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
+            {dashboardOpen ? <FaChevronLeft size={22} /> : <FaTachometerAlt size={22} />}
           </button>
         )}
 
@@ -156,7 +161,7 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* סיידבר של הדשבורד שמוצג/מוסתר בהתאם לסטייט menuOpen */}
+      {/* סיידבר המבורגר */}
       {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
@@ -175,6 +180,78 @@ export default function Header() {
                     to="/login"
                     className="login-button"
                     onClick={() => setMenuOpen(false)}
+                  >
+                    התחברות
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  <div className="menu-user">
+                    <FaUserCircle size={20} />
+                    <span>{user.name || user.email}</span>
+                  </div>
+                  <div className="menu-section">
+                    <h4>לעסקים</h4>
+                    {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
+                    {link("/how-it-works", <FaCogs />, "איך זה עובד")}
+                  </div>
+                  <div className="menu-section">
+                    <h4>ללקוחות</h4>
+                    {link("/businesses", <FaListUl />, "רשימת עסקים")}
+                  </div>
+                  <div className="menu-section">
+                    <h4>כללי</h4>
+                    {link("/", <FaHome />, "דף הבית")}
+                    {link("/about", <FaInfoCircle />, "אודות")}
+                    {link("/contact", <FaPhone />, "צור קשר")}
+                    {link("/faq", <FaQuestionCircle />, "שאלות נפוצות")}
+                    {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")}
+                    {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {user && (
+              <div className="auth-menu">
+                <button
+                  className="personal-area-button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate(getDashboardPath());
+                  }}
+                >
+                  אזור אישי
+                </button>
+                <button className="logout-button" onClick={handleLogout}>
+                  <FaSignOutAlt style={{ marginLeft: 6 }} />
+                  התנתק
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* סיידבר דשבורד */}
+      {dashboardOpen && (
+        <>
+          <div className="menu-backdrop" onClick={() => setDashboardOpen(false)} />
+          <div className="side-menu open" onClick={(e) => e.stopPropagation()}>
+            <div className="drawer-header">
+              <button className="back-button" onClick={() => setDashboardOpen(false)}>
+                <FaChevronLeft size={20} />
+                <span className="back-text">חזור</span>
+              </button>
+            </div>
+
+            <div className="menu-scroll">
+              {!user ? (
+                <div className="mobile-auth">
+                  <Link
+                    to="/login"
+                    className="login-button"
+                    onClick={() => setDashboardOpen(false)}
                   >
                     התחברות
                   </Link>
@@ -206,7 +283,7 @@ export default function Header() {
                 <button
                   className="personal-area-button"
                   onClick={() => {
-                    setMenuOpen(false);
+                    setDashboardOpen(false);
                     navigate(getDashboardPath());
                   }}
                 >
