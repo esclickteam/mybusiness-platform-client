@@ -1,4 +1,3 @@
-// src/components/Login.js
 import React, { useState, lazy, Suspense, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
@@ -119,6 +118,39 @@ export default function Login() {
 
           <div className="password-wrapper">
             <div className="password-row">
+              <button
+                type="button"
+                onClick={() => setShowPassword((p) => !p)}
+                className="password-toggle-btn"
+                aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="#222"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#222" />
+                    <circle cx="12" cy="12" r="2" fill="#222" />
+                  </svg>
+                ) : (
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="#222"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#222" />
+                    <circle cx="12" cy="12" r="2" fill="#222" />
+                  </svg>
+                )}
+              </button>
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
@@ -131,28 +163,6 @@ export default function Login() {
                 aria-label="סיסמה"
                 className="password-input"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword((p) => !p)}
-                className="password-toggle-btn"
-                aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
-                tabIndex={-1}
-              >
-                {/* SVG עין שטוחה, תואם אתרים ישראלים */}
-                {showPassword ? (
-                  // עין פתוחה
-                  <svg width="24" height="24" fill="none" stroke="#222" strokeWidth="2" viewBox="0 0 24 24">
-                    <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#222" />
-                    <circle cx="12" cy="12" r="2" fill="#222" />
-                  </svg>
-                ) : (
-                  // עין פתוחה (אפשר גם עין סגורה כאן)
-                  <svg width="24" height="24" fill="none" stroke="#222" strokeWidth="2" viewBox="0 0 24 24">
-                    <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#222" />
-                    <circle cx="12" cy="12" r="2" fill="#222" />
-                  </svg>
-                )}
-              </button>
             </div>
 
             <button
