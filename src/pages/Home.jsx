@@ -18,17 +18,12 @@ export default function Home() {
     const params = new URLSearchParams();
     if (category) params.set("category", category);
     if (city)     params.set("city", city);
-    // מפנה עכשיו לדף /businesses במקום /search
     navigate(`/businesses?${params.toString()}`);
   };
 
-  const renderIcon = (type) => {
-    switch (type) {
-      case "new_review":   return "📝";
-      case "new_customer": return "👤";
-      case "new_business": return "🏪";
-      default:             return "ℹ️";
-    }
+  // סגנון לפורטל של React-Select עם z-index גבוה
+  const portalStyles = {
+    menuPortal: base => ({ ...base, zIndex: 9999 })
   };
 
   return (
@@ -61,7 +56,10 @@ export default function Home() {
 
       {/* Search */}
       <div className="search-section">
-        <div className="dropdown-wrapper">
+        <div
+          className="dropdown-wrapper"
+          style={{ overflow: "visible" }}  /* חשוב: לא לחסום overflow */
+        >
           <Select
             options={categoryOptions}
             value={categoryOptions.find(o => o.value === category) || null}
@@ -72,10 +70,15 @@ export default function Home() {
               label.toLowerCase().includes(input.toLowerCase())
             }
             menuPlacement="bottom"
-            menuPortalTarget={document.body}
+            menuPosition="fixed"              /* מבטיח שהתפריט לא ייחתך */
+            menuPortalTarget={document.body}  /* מפנה את התפריט ל־body */
+            styles={portalStyles}             /* z-index גבוה */
           />
         </div>
-        <div className="dropdown-wrapper">
+        <div
+          className="dropdown-wrapper"
+          style={{ overflow: "visible" }}
+        >
           <Select
             options={cityOptions}
             value={cityOptions.find(o => o.value === city) || null}
@@ -86,7 +89,9 @@ export default function Home() {
               label.toLowerCase().startsWith(input.toLowerCase())
             }
             menuPlacement="bottom"
+            menuPosition="fixed"
             menuPortalTarget={document.body}
+            styles={portalStyles}
           />
         </div>
         <button className="search-button" onClick={navigateToSearch}>
