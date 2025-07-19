@@ -291,42 +291,6 @@
 
 /* רספונסיביות למובייל */
 @media (max-width: 700px) {
-  .services-table thead {
-    display: none;
-  }
-
-  .services-table tbody td {
-    display: block;
-    width: 100%;
-    text-align: right;
-    padding: 10px 8px;
-    border-bottom: 1px solid #ccc;
-    white-space: normal;
-  }
-
-  .services-table tbody tr {
-    margin-bottom: 1rem;
-    display: block;
-    box-shadow: 0 0 15px rgba(124, 77, 255, 0.15);
-    border-radius: 12px;
-  }
-
-  .services-table tbody td:first-child {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    padding-left: 0;
-    text-align: right;
-    max-width: 100%;
-  }
-
-  .services-table tbody td:first-child img {
-    width: 70px;
-    height: 70px;
-    margin-top: 0;
-  }
-}
-@media (max-width: 700px) {
   .crm-services-tab {
     padding: 1rem 0.8rem;
     max-width: 100%;
@@ -347,9 +311,89 @@
     width: 100%;
     border-radius: 24px;
   }
-  .services-table tbody td:first-child img {
+  .services-table thead {
+    display: none;
+  }
+  .services-table,
+  .services-table tbody,
+  .services-table tr,
+  .services-table td {
+    display: block;
+    width: 100%;
+  }
+  .services-table tbody tr {
+    margin-bottom: 1rem;
+    background: #fff;
+    box-shadow: 0 0 15px rgba(124, 77, 255, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .services-table tbody td {
+    position: relative;
+    padding: 0.75rem 1rem 0.25rem;
+    border: none;
+    border-bottom: 1px solid #eee;
+    white-space: normal;
+    text-align: right;
+  }
+  .services-table tbody td:last-child {
+    border-bottom: none;
+    padding-bottom: 0.75rem;
+  }
+  .services-table tbody td:nth-child(1)::before {
+    content: "שירות:";
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .services-table tbody td:nth-child(2)::before {
+    content: "משך (דקות):";
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .services-table tbody td:nth-child(3)::before {
+    content: "מחיר (ש\"ח):";
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .services-table tbody td:nth-child(4)::before {
+    content: "פעולות:";
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .services-table tbody td:nth-child(1) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .services-table tbody td:nth-child(1) img {
     width: 60px;
     height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .services-table tbody td:nth-child(1) .service-name-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .services-table tbody td:nth-child(4) {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    direction: rtl;
+  }
+  .services-table tbody td:first-child img {
+    margin-top: 0;
+  }
+  .services-table tbody td:first-child {
+    padding-left: 0;
+    max-width: 100%;
   }
   .service-name-desc .service-name {
     font-size: 1rem;
