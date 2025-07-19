@@ -1,4 +1,4 @@
-// Login.js
+// src/components/Login.js
 import React, { useState, lazy, Suspense, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
@@ -103,6 +103,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-box" aria-live="polite" aria-busy={loading}>
         <h2>התחברות</h2>
+
         <form onSubmit={handleSubmit} noValidate>
           <input
             type="email"
@@ -117,34 +118,38 @@ export default function Login() {
             className="login-input"
           />
 
-          {/* שורה של סיסמה + הצגה/הסתר + שכחתי סיסמה */}
+          {/* עטיפה של הסיסמה כעמודה */}
           <div className="password-wrapper">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="סיסמה"
-              value={form.password}
-              onChange={handleChange}
-              disabled={loading}
-              required
-              autoComplete="current-password"
-              aria-label="סיסמה"
-              className="password-input"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((p) => !p)}
-              className="password-toggle-btn"
-              aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
-            >
-              👁️
-            </button>
+            {/* שורה של שדה + כפתור עין */}
+            <div className="password-row">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="סיסמה"
+                value={form.password}
+                onChange={handleChange}
+                disabled={loading}
+                required
+                autoComplete="current-password"
+                aria-label="סיסמה"
+                className="password-input"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((p) => !p)}
+                className="password-toggle-btn"
+                aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+              >
+                👁️
+              </button>
+            </div>
+            {/* כפתור שכחתי סיסמה מתחת לשורה */}
             <button
               type="button"
               className="forgot-inside-btn"
               onClick={() => setShowForgot(true)}
             >
-              שכחת את הסיסמה?
+              שכחת סיסמה?
             </button>
           </div>
 

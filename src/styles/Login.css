@@ -1,3 +1,5 @@
+/* Login.css */
+
 /* עיצוב דף ההתחברות */
 .login-container {
   display: flex;
@@ -35,6 +37,7 @@
   color: #3b007d;
 }
 
+/* קלטים כלליים */
 input {
   width: 100%;
   padding: 12px;
@@ -54,87 +57,73 @@ input:focus {
 }
 
 @keyframes inputFocusAnimation {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(1.05);
-  }
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
 }
 
-/* עטיפת שדה הסיסמה וכפתור הצגה + שכחת סיסמה בשורה אחת */
+/* עטיפת שדה הסיסמה */
 .password-wrapper {
-  position: relative;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   margin-bottom: 15px;
 }
 
-/* שדה הסיסמה עם padding פנימי לשני הכפתורים */
-.password-wrapper input[name="password"] {
-  width: 100%;
-  box-sizing: border-box;
-  height: 38px;
-  padding-left: 40px;   /* מקום לכפתור הצגת סיסמה משמאל */
-  padding-right: 120px; /* מקום לכפתור שכחתי סיסמה מימין */
-  direction: ltr;       /* למניעת בלבול בכיוון הטקסט */
-  text-align: right;    /* שמירה על יישור טקסט בעברית */
+/* שורה של שדה + כפתור עין */
+.password-row {
+  display: flex;
+  flex-direction: row-reverse; /* RTL: שדה מימין, עין משמאל */
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.password-row .password-input {
+  flex: 1;
+  padding: 12px;
   border-radius: 12px;
   border: 1px solid #c084fc;
   background-color: #f9f9ff;
   font-size: 16px;
+  direction: ltr;
+  text-align: right;
   transition: 0.3s;
 }
 
-.password-wrapper input[name="password"]:focus {
+.password-row .password-input:focus {
   border-color: #8200ff;
   background-color: #fff;
   outline: none;
   animation: inputFocusAnimation 0.3s ease;
 }
 
-/* כפתור הצגת הסיסמה בתוך השדה, מצד שמאל */
+/* כפתור הצגת/הסתרת סיסמה */
 .password-toggle-btn {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
   font-size: 18px;
   padding: 0;
   color: #555;
-  user-select: none;
-  z-index: 10;
 }
 
-.password-toggle-btn:focus {
-  outline: 2px solid #6a00f4;
-  outline-offset: 2px;
-}
-
-/* כפתור "שכחתי סיסמה" בתוך השדה, מצד ימין */
+/* כפתור “שכחת סיסמה?” מתחת לשורה, מיושר לימין */
 .forgot-inside-btn {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
   font-size: 0.85rem;
-  padding: 0;
   text-decoration: underline;
   color: #e53e3e;
-  user-select: none;
-  z-index: 10;
+  align-self: flex-end;
+  padding: 0;
 }
 
 .forgot-inside-btn:hover {
   color: #c53030;
-  transform: translateY(-50%) scale(1.05);
+  transform: scale(1.05);
 }
 
+/* כפתור התחבר */
 .login-button {
   width: 100%;
   padding: 14px;
@@ -160,6 +149,7 @@ input:focus {
   background: #4b00b8;
 }
 
+/* הודעות שגיאה */
 .error-message {
   color: red;
   font-size: 14px;
@@ -174,6 +164,7 @@ input:focus {
   font-size: 18px;
 }
 
+/* כניסת עובדים */
 .staff-login-btn {
   padding: 12px 20px;
   background: #6a00f4;
@@ -194,11 +185,13 @@ input:focus {
   transform: scale(1);
 }
 
+/* אפשרויות נוספות */
 .login-extra-options {
   margin-top: 20px;
   text-align: center;
 }
 
+/* קישורים תחתונים */
 .bottom-links {
   font-size: 13px;
   color: #666;
@@ -220,68 +213,60 @@ input:focus {
   color: #999;
 }
 
+/* מדיה קווירי: מובייל */
 @media (max-width: 480px) {
   .login-box {
     padding: 20px;
   }
-
   .login-box h2 {
     font-size: 22px;
   }
-
   .login-button {
     font-size: 16px;
   }
-
   .bottom-links {
     font-size: 12px;
   }
 }
 
+/* מדיה קווירי: טאבלט */
 @media (min-width: 481px) and (max-width: 768px) {
   .login-box {
     max-width: 90%;
     padding: 25px;
   }
-
   .login-box h2 {
     font-size: 24px;
   }
-
   .login-button {
     font-size: 17px;
     padding: 13px;
   }
-
   .staff-login-btn {
     font-size: 15px;
     padding: 11px 18px;
   }
-
   .bottom-links {
     font-size: 13px;
   }
 }
 
+/* מדיה קווירי: מחשב רחב */
 @media (min-width: 1200px) {
   .login-container {
     padding: 40px;
   }
-
   .login-box {
     max-width: 400px;
     padding: 40px;
   }
-
   .login-box h2 {
     font-size: 30px;
   }
-
   .login-button {
     font-size: 20px;
     padding: 16px;
   }
-
   .staff-login-btn {
     font-size: 18px;
     padding: 14px 24px;
