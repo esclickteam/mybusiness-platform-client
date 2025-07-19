@@ -26,6 +26,9 @@ const AffiliatePage = () => {
   const [receiptFile, setReceiptFile] = useState(null);
   const [withdrawalId, setWithdrawalId] = useState(null);
 
+  const [showBankForm, setShowBankForm] = useState(false);
+
+
   // חישוב סכום הכולל של עמלות שלא שולמו
   const totalUnpaidCommissions = allStats
     .filter((s) => s.paymentStatus !== "paid")
