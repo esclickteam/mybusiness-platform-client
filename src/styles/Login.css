@@ -262,3 +262,19 @@ input:focus {
 .login-container .accessibility-btn:hover {
   transform: scale(1.1);
 }
+
+/* התאמות למובייל (עד רוחב 480px) */
+@media (max-width: 480px) {
+  /* השורה כולה: "לא רשום? הירשם עכשיו" */
+  .login-extra-options .signup-link {
+    font-size: 1rem;    /* גופן קטן יותר */
+    margin: 12px 0;     /* פחות מרווח למעלה ולמטה */
+  }
+
+  /* רק הקישור עצמו: "הירשם עכשיו" */
+  .login-extra-options .signup-link-text {
+    font-size: 1.2rem;       /* גודל קצת נמוך יותר */
+    padding: 1px 3px;        /* פחות “חלל” מסביב */
+    border-bottom-width: 1px;/* קו תחתון דק יותר */
+  }
+}
