@@ -164,16 +164,9 @@ export default function Login() {
                 className="password-input"
               />
             </div>
-
-            <button
-              type="button"
-              className="forgot-inside-btn"
-              onClick={() => setShowForgot(true)}
-            >
-              שכחת סיסמה?
-            </button>
           </div>
 
+          {/* כפתור התחבר מעל כפתור שכחת סיסמה */}
           <button
             type="submit"
             className="login-button"
@@ -181,6 +174,14 @@ export default function Login() {
             aria-live="polite"
           >
             {loading ? "🔄 מתחבר..." : "התחבר"}
+          </button>
+
+          <button
+            type="button"
+            className="forgot-inside-btn"
+            onClick={() => setShowForgot(true)}
+          >
+            שכחת סיסמה?
           </button>
         </form>
 
