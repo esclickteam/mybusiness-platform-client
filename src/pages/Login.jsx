@@ -117,9 +117,10 @@ export default function Login() {
             required
             autoComplete="email"
             aria-label="אימייל"
+            className="login-input"
           />
 
-          <div style={{ position: "relative" }}>
+          <div className="password-wrapper">
             <input
               type={showPassword ? "text" : "password"}
               name="password"
@@ -130,23 +131,12 @@ export default function Login() {
               required
               autoComplete="current-password"
               aria-label="סיסמה"
-              style={{ paddingLeft: "40px" }} // ריפוד שמאל כי הכפתור שם
+              className="password-input"
             />
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              style={{
-                position: "absolute",
-                left: "10px", // הצבת הכפתור מצד שמאל
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "18px",
-                padding: 0,
-                color: "#555",
-              }}
+              className="password-toggle-btn"
               aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
             >
               👁️

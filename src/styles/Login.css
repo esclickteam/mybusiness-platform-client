@@ -280,3 +280,53 @@ input[name="password"] {
     padding: 14px 24px;
   }
 }
+
+/* עטיפת שדה הסיסמה וכפתור הצגה */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px; /* רווח מתחת */
+}
+
+/* שדה הסיסמה עם padding-left לפנוי מקום לכפתור */
+.password-wrapper input[name="password"] {
+  padding-left: 40px; /* מרחב לכפתור הצגה */
+  direction: ltr; /* למניעת בלבול בכיוון הטקסט */
+  text-align: right; /* שמירה על יישור טקסט בעברית */
+  width: 100%;
+  box-sizing: border-box;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid #c084fc;
+  background-color: #f9f9ff;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.password-wrapper input[name="password"]:focus {
+  border-color: #8200ff;
+  background-color: #fff;
+  outline: none;
+  animation: inputFocusAnimation 0.3s ease;
+}
+
+/* כפתור הצגת הסיסמה בתוך השדה, מצד שמאל */
+.password-toggle-btn {
+  position: absolute;
+  left: 10px; /* מיקום בתוך השדה */
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+  color: #555;
+  user-select: none;
+  z-index: 10;
+}
+
+.password-toggle-btn:focus {
+  outline: 2px solid #6a00f4;
+  outline-offset: 2px;
+}
