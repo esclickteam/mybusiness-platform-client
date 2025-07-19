@@ -100,9 +100,8 @@ input:focus {
 .password-toggle-btn {
   position: absolute;
   inset-inline-end: 12px;
-  top: 4px; /* העלאה קלה של האייקון */
-  /* שאר ההגדרות נשארות כפי שהן */
-  bottom: auto; /* מבטל את הערך הקודם של bottom */
+  top: 4px;
+  bottom: auto;
   margin: 0;
   width: 1.8em;
   height: 1.8em;
@@ -115,7 +114,10 @@ input:focus {
   z-index: 2;
   font-size: 1.2em;
   color: #222;
+  filter: none !important;
+  box-shadow: none !important;
 }
+
 
 
 /* --------------------------- לינקים, כפתורים וסטייטים --------------------------- */
