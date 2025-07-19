@@ -12,7 +12,6 @@ const BankDetailsForm = () => {
     accountNumber: "",
     fullName: "",
     idNumber: "",
-    receipt: null,
   });
 
   const [loading, setLoading] = useState(false);
@@ -32,10 +31,10 @@ const BankDetailsForm = () => {
   }, [user]);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value } = e.target;
     setForm({
       ...form,
-      [name]: files ? files[0] : value,
+      [name]: value,
     });
   };
 
@@ -55,21 +54,14 @@ const BankDetailsForm = () => {
       formData.append("account", form.accountNumber);
       formData.append("fullName", form.fullName);
       formData.append("idNumber", form.idNumber);
-      if (form.receipt) {
-        formData.append("receipt", form.receipt);
-      }
 
       const response = await API.put("/business/my/bank-details", formData);
-      
+
       if (response.status !== 200) {
         throw new Error("שגיאה בשמירת הפרטים");
       }
 
       alert("הפרטים נשמרו בהצלחה!");
-      setForm((f) => ({
-        ...f,
-        receipt: null,
-      }));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -81,7 +73,7 @@ const BankDetailsForm = () => {
     <section className="bank-details-form">
       <h2>🏦 פרטי חשבון בנק לקבלת תשלום</h2>
       <p className="disclaimer">
-        באחריותך לעדכן את הפרטים במקרה של שינוי. לאחר התשלום, יש לצרף קבלה.
+        באחריותך לעדכן את הפרטים במקרה של שינוי.
       </p>
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
@@ -137,15 +129,6 @@ const BankDetailsForm = () => {
           placeholder="302114567"
           required
           value={form.idNumber}
-          onChange={handleChange}
-        />
-
-        <label htmlFor="receipt">📎 העלאת קבלה על תשלום:</label>
-        <input
-          type="file"
-          id="receipt"
-          name="receipt"
-          accept=".pdf,image/*"
           onChange={handleChange}
         />
 
