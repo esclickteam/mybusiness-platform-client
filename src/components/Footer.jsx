@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/Footer.css"; // קובץ עיצוב נפרד לתחתית
+import "../styles/Footer.css";
 
 function Footer() {
   return (
@@ -16,10 +16,9 @@ function Footer() {
             rel="noopener noreferrer"
             className="footer-link"
           >
-            💼 בעלי עסקים
+            ✏️ הצטרפות עסקים
           </a>
         </li>
-        <li><Link to="/join" className="footer-link">✏️ הצטרפות עסקים</Link></li>
         <li><Link to="/faq" className="footer-link">❓ שאלות נפוצות</Link></li>
         <li><Link to="/terms" className="footer-link">📜 תקנון</Link></li>
         <li><Link to="/contact" className="footer-link">📞 יצירת קשר</Link></li>
