@@ -166,24 +166,10 @@
     text-align: right;
     white-space: normal;
     border-bottom: 1px solid #eee;
+    position: relative;
   }
 
-  /* כאן העדכון המלא לעמודת "שם" */
-  .clients-table tbody td:first-child {
-  justify-content: center !important; /* למרכז */
-  text-align: center !important;      /* למרכז */
-  flex-direction: row !important;     /* בשורה */
-  align-items: center !important;
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-  .clients-table tbody td:last-child {
-    border-bottom: none;
-    justify-content: center;
-    padding-top: 1rem;
-  }
-
+  /* התווית מעל כל שדה, כולל עמודת "שם" */
   .clients-table tbody td::before {
     content: attr(data-label);
     font-weight: 700;
@@ -191,6 +177,23 @@
     flex-basis: 40%;
     text-align: right;
     padding-left: 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* תוכן עמודת "שם" מיושר במרכז */
+  .clients-table tbody td:first-child {
+    justify-content: center !important;
+    text-align: center !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .clients-table tbody td:last-child {
+    border-bottom: none;
+    justify-content: center;
+    padding-top: 1rem;
   }
 
   .clients-table tbody td.phone-cell,
