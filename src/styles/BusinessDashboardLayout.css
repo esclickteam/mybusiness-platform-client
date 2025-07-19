@@ -157,20 +157,3 @@
   }
 }
 
-/*==========================
-   עיצוב דסקטופ
-==========================*/
-@media (min-width: 769px) {
-  /* סיידבר תמיד גלוי */
-  .sidebar {
-    transform: none !important;
-    position: relative !important;
-    box-shadow: none !important;
-    z-index: auto !important;
-  }
-  /* הכפתור והאופרליי מוסתרים */
-  .sidebar-toggle-button,
-  .sidebar-overlay {
-    display: none !important;
-  }
-}
