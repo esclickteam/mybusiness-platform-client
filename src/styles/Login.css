@@ -66,6 +66,7 @@ input:focus {
   position: relative;
   width: 100%;
   margin-bottom: 15px;
+  text-align: center;          /* ✅ מיישר את כל התוכן הפנימי למרכז */
 }
 
 /* שדה הסיסמה ברוחב מלא, עם מקום לכפתור העין */
