@@ -6,9 +6,13 @@ import ALL_CATEGORIES from "../data/categories";
 import ALL_CITIES from "../data/cities";
 import { FaSearch } from "react-icons/fa";
 import { Helmet } from "react-helmet";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./BusinessList.css";
 
 const BusinessesList = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [businesses, setBusinesses] = useState([]);
   const [category, setCategory] = useState(null);
   const [city, setCity] = useState(null);
@@ -17,6 +21,7 @@ const BusinessesList = () => {
   const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
   const cityOptions = ALL_CITIES.map((c) => ({ value: c, label: c }));
 
+  // פונקציה למשיכת עסקים עם פילטרים
   const fetchBusinesses = async (filters = {}) => {
     setLoading(true);
     try {
@@ -34,14 +39,51 @@ const BusinessesList = () => {
     }
   };
 
+  // קריאת פרמטרים מה־URL והגדרת המצב ההתחלתי
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const categoryParam = query.get("category");
+    const cityParam = query.get("city");
+
+    if (categoryParam) {
+      const catOption = categoryOptions.find((o) => o.value === categoryParam);
+      setCategory(catOption || null);
+    }
+    if (cityParam) {
+      const cityOption = cityOptions.find((o) => o.value === cityParam);
+      setCity(cityOption || null);
+    }
+  }, [location.search]); // מופעל כשכתובת ה-URL משתנה
+
+  // חיפוש אוטומטי בכל פעם שהקטגוריה או העיר משתנות
+  useEffect(() => {
+    // כדי לא להפעיל חיפוש לפני שהסטייטים מאותחלים מה-URL
+    if (category || city) {
+      fetchBusinesses({
+        category: category ? category.value : null,
+        city: city ? city.value : null,
+      });
+
+      // עדכון ה-URL (למקרה שינוי ב-select)
+      const params = new URLSearchParams();
+      if (category) params.set("category", category.value);
+      if (city) params.set("city", city.value);
+      navigate({ search: params.toString() }, { replace: true });
+    } else {
+      setBusinesses([]);
+      navigate({ search: "" }, { replace: true });
+    }
+  }, [category, city, navigate]);
+
+  // פונקציית לחיצה על כפתור חפש - מחליפה פשוט את הקטגוריה והעיר,
+  // מה שיגרום ל-useEffect לעדכן את התוצאות וה-URL
   const handleSearch = () => {
-    fetchBusinesses({
-      category: category?.value,
-      city: city?.value,
-    });
+    // לא צריך לקרוא fetchBusinesses כאן כי useEffect מטפל בזה
+    // רק ודא שהערכים מעודכנים
+    // במקרה שלך כבר setCategory ו-setCity עושים את העבודה
   };
 
-  // יצירת טקסט SEO דינמי לכותרת ותיאור
+  // SEO כמו בקוד שלך
   const seoTitleParts = [];
   if (category) seoTitleParts.push(category.label);
   if (city) seoTitleParts.push(city.label);
@@ -64,20 +106,21 @@ const BusinessesList = () => {
         <meta name="description" content={seoDescription} />
         <meta
           name="keywords"
-          content={`עסקים, חיפוש עסקים, ${category ? category.label + "," : ""} ${
-            city ? city.label + "," : ""
-          } עסקליק, לקוחות, שירותים`}
+          content={`עסקים, חיפוש עסקים, ${
+            category ? category.label + "," : ""
+          } ${city ? city.label + "," : ""} עסקליק, לקוחות, שירותים`}
         />
         <link
           rel="canonical"
-          href={`https://yourdomain.co.il/businesses${category ? `?category=${category.value}` : ""}${city ? `&city=${city.value}` : ""}`}
+          href={`https://yourdomain.co.il/businesses${
+            category ? `?category=${category.value}` : ""
+          }${city ? `&city=${city.value}` : ""}`}
         />
       </Helmet>
 
       <div className="business-list-container">
         <h1>רשימת עסקים</h1>
 
-        {/* תגיות שנבחרו */}
         {(category || city) && (
           <div className="filter-chips">
             {category && (
@@ -95,9 +138,7 @@ const BusinessesList = () => {
           </div>
         )}
 
-        {/* שורת חיפוש */}
         <div className="filters-wrapper">
-          {/* תחום */}
           <div className="dropdown-wrapper">
             <Select
               options={categoryOptions}
@@ -110,7 +151,6 @@ const BusinessesList = () => {
             />
           </div>
 
-          {/* עיר */}
           <div className="dropdown-wrapper">
             <Select
               options={cityOptions}
@@ -123,7 +163,6 @@ const BusinessesList = () => {
             />
           </div>
 
-          {/* כפתור חפש */}
           <button
             className="search-btn"
             onClick={handleSearch}
@@ -134,7 +173,6 @@ const BusinessesList = () => {
           </button>
         </div>
 
-        {/* תוצאות */}
         {loading ? (
           <p className="no-results">טוען תוצאות…</p>
         ) : businesses.length > 0 ? (
@@ -144,7 +182,7 @@ const BusinessesList = () => {
             ))}
           </div>
         ) : (
-          <p className="no-results">לחץ על חפש כדי לראות תוצאות</p>
+          <p className="no-results">אין תוצאות מתאימות</p>
         )}
       </div>
     </div>
