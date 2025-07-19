@@ -70,10 +70,13 @@
   }
   
   @media (max-width: 768px) {
-    .dashboard-cards-container {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .dashboard-cards-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 עמודות */
+    grid-auto-rows: auto;
+    max-height: calc(2 * (גובה_כרטיס + רווח)); /* מגביל ל-2 שורות */
+    overflow-y: hidden; /* אפשר לשנות אם רוצים גלילה */
   }
+}
   
   @media (max-width: 500px) {
     .dashboard-cards-container {
@@ -81,25 +84,28 @@
     }
   }
   
-   .dashboard-card {
-    padding: 12px; /* הקטנת הפדינג */
-    font-size: 0.85rem; /* הקטנת הגופן */
-    border-radius: 12px; /* מעט פחות מעוגל */
+  .dashboard-card {
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: var(--box-shadow);
+    transition: 0.2s ease-in-out;
+    background-color: var(--secondary-bg);
   }
   
   .dashboard-card:hover {
     transform: scale(var(--hover-scale));
   }
   
-  
   .card-icon {
-    font-size: 24px; /* הקטנת אייקון */
-    margin-bottom: 6px;
+    font-size: 30px;
+    margin-bottom: 10px;
   }
   
-    .card-title {
-    font-size: 12px;
-    margin-bottom: 4px;
+  .card-title {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
   }
   
   .card-value {
@@ -625,26 +631,4 @@
   color: #6a1b9a;
   padding: 10px;
   text-align: center;
-}
-@media (max-width: 600px) {
-  .dashboard-cards-container {
-    grid-template-columns: 1fr !important; /* גריד של כרטיס אחד לשורה */
-    gap: 12px; /* ריווח קטן יותר בין כרטיסיות */
-  }
-
-  .graph-box,
-  .appointments-box {
-    flex: 1 1 100% !important;
-    max-width: 100% !important;
-    min-width: auto !important;
-  }
-
-  .calendar-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  .dashboard-nav button {
-    font-size: 13px !important;
-    padding: 8px 12px !important;
-  }
 }
