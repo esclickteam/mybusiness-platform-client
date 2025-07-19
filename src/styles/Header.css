@@ -386,30 +386,33 @@ a.active-link {
 /* כפתור דשבורד מובייל עם טקסט */
 /* ========================== */
 .mobile-dashboard-button {
-  display: none; /* מוסתר כברירת מחדל */
+  display: none; /* מוסתר בדסקטופ */
   position: fixed;
   top: 12px;
   left: 15px;
   z-index: 1200;
-  width: auto;             /* רוחב דינמי לפי תוכן */
-  max-width: 140px;        /* רוחב מקסימלי מוגדר */
-  height: 36px;            /* גובה קטן וקומפקטי */
+  min-width: 90px;
+  max-width: 140px;
+  height: 36px;
+  padding: 0 14px;
   background: #5c46ff;
   color: white;
   border: none;
-  border-radius: 18px;     /* פינות מעוגלות מאוד, למראה "pill" */
+  border-radius: 18px;
   cursor: pointer;
 
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 0 14px;
+
   font-size: 14px;
   font-weight: 600;
   user-select: none;
-
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   transition: background 0.2s ease;
 }
@@ -422,7 +425,9 @@ a.active-link {
 
 @media (max-width: 768px) {
   .mobile-dashboard-button {
-    display: flex;
+    display: flex;  /* מוצג רק במובייל */
+    order: 1;       /* מיקום לפני הלוגו אם בתוך flex container */
+    margin-right: 10px; /* ריווח בין הכפתור ללוגו */
   }
 
   /* השאר את הלוגו במרכז בדיוק */
