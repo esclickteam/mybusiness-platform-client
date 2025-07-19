@@ -99,7 +99,7 @@ input:focus {
   position: absolute;
   left: 12px;          /* מיקום בשמאל */
   right: auto;
-  top: 52%;
+  top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
