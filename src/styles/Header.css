@@ -382,22 +382,32 @@ a.active-link {
   background: #4315c7;
 }
 
+/* ========================== */
+/* כפתור דשבורד מובייל עם טקסט */
+/* ========================== */
 .mobile-dashboard-button {
   display: none; /* מוסתר כברירת מחדל */
   position: fixed;
   top: 12px;
   left: 15px;
   z-index: 1200;
-  width: 40px;
+  min-width: 90px;        /* רוחב מינימלי שיאפשר טקסט */
   height: 40px;
   background: #5c46ff;
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+
+  display: flex;          /* להצגת תוכן פנימי בשורה */
   align-items: center;
   justify-content: center;
-  display: flex;
+  gap: 6px;               /* ריווח בין האייקון לטקסט */
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  user-select: none;
+
   transition: background 0.2s ease;
 }
 

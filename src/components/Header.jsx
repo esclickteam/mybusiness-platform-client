@@ -27,7 +27,6 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // שני מצבים נפרדים: תפריט המבורגר וסיידבר דשבורד
   const [menuOpen, setMenuOpen] = useState(false);
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -94,7 +93,17 @@ export default function Header() {
             onClick={() => setDashboardOpen(!dashboardOpen)}
             title={dashboardOpen ? "סגור ניווט" : "פתח ניווט"}
           >
-            {dashboardOpen ? <FaChevronLeft size={22} /> : <FaTachometerAlt size={22} />}
+            {dashboardOpen ? (
+              <>
+                <FaChevronLeft size={18} style={{ marginRight: 6 }} />
+                <span>סגור</span>
+              </>
+            ) : (
+              <>
+                <FaTachometerAlt size={18} style={{ marginRight: 6 }} />
+                <span>Dashboard</span>
+              </>
+            )}
           </button>
         )}
 
