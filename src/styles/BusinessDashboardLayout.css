@@ -113,32 +113,39 @@
   transition: filter 0.3s ease;
 }
 
-/* כפתור יחיד ☰/✕ לסיידבר */
-.sidebar-toggle-button {
+/* כפתור ניווט מובייל מקצועי (MobileNavToggle) */
+.mobile-nav-toggle {
   position: fixed;
-  top: 12px;
-  right: 12px;
-  z-index: 9999;
-  width: 44px;
-  height: 44px;
-  background: var(--primary);
-  color: #fff;
+  top: 15px;
+  left: 15px;
+  z-index: 1100;
+  width: 40px;
+  height: 40px;
+  background: transparent;
   border: none;
-  border-radius: 8px;
-  font-size: 1.7rem;
-  display: none; /* נסתר כברירת מחדל */
+  cursor: pointer;
+  padding: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 12px #b39ddb55;
-  transition: background 0.2s, box-shadow 0.2s;
-}
-.sidebar-toggle-button:hover {
-  background: #5c46ff;
-  box-shadow: 0 4px 20px #a085ffcc;
+  transition: filter 0.3s ease;
 }
 
-/* במובייל בלבד – מציגים את הכפתור ומסדרים פריסה */
+.mobile-nav-toggle svg line {
+  stroke: #333;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-toggle:hover svg line {
+  stroke: #5c46ff; /* צבע הכחול בהארה בריחוף */
+}
+
+.mobile-nav-toggle:focus {
+  outline: 2px solid #5c46ff;
+  outline-offset: 2px;
+}
+
+/* במובייל בלבד – התוכן מתחת לכפתור */
 @media (max-width: 768px) {
   .business-dashboard-layout {
     flex-direction: row !important; /* לשמור על פריסה אופקית */
@@ -153,10 +160,6 @@
     height: 100vh !important;
     overflow-y: auto;
   }
-  .sidebar-toggle-button {
-    display: flex !important;
-  }
-  /* סיידבר fixed וגלוי כשהוא פתוח */
   .sidebar.mobile {
     position: fixed !important;
     top: 0;
@@ -185,7 +188,7 @@
     z-index: auto !important;
     border-radius: 0 12px 12px 0; /* שמירת עיגול בפינות בצד ימין */
   }
-  .sidebar-toggle-button {
+  .mobile-nav-toggle {
     display: none !important;
   }
   .sidebar-overlay {
