@@ -73,7 +73,6 @@
   align-items: center;
   padding-top: 0.5rem;
   border-top: 1px solid #ddd;
-  /* תיבה קבועה מתחת לאזור ההודעות */
 }
 
 .chat-input input {
@@ -141,30 +140,45 @@
   direction: rtl;
 }
 
+/* עיצוב הכפתורים של השאלות המוכנות */
+.preset-questions-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem; /* רווח בין הכפתורים */
+  margin: 1rem 0;
+}
+
 .preset-question-btn {
+  flex: 1 1 auto;
+  max-width: 250px; /* רוחב מקסימלי */
+  min-width: 140px; /* רוחב מינימלי */
+  padding: 12px 16px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  border-radius: 12px;
   background: #f1f1f1;
   color: #222;
   border: 1px solid #ccc;
-  border-radius: 12px;
-  padding: 12px 16px;
   cursor: pointer;
-  text-align: right;
-  font-size: 1.05rem;
-  font-weight: 500;
+  text-align: center;
   transition: background 0.2s, color 0.2s;
+  white-space: normal;
+  box-shadow: 0 0 10px rgba(124, 77, 255, 0.3);
 }
 
 .preset-question-btn:hover,
 .preset-question-btn:focus {
   background: #e1dbf8;
   color: #5a2fa0;
+  box-shadow: 0 0 15px rgba(124, 77, 255, 0.6);
 }
 
 .preset-question-btn:disabled {
   background: #ededed;
   color: #999 !important;
   cursor: not-allowed;
-  opacity: 1;
+  box-shadow: none;
 }
 
 /* גלילה מותאמת לפסי גלילה WebKit */
@@ -242,6 +256,7 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+
 @media (max-width: 700px) {
   .advisor-chat-container {
     max-width: 100%;
