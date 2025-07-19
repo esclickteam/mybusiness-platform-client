@@ -69,23 +69,24 @@ input:focus {
 }
 
 .password-row {
-  position: relative;     /* כבר היה */
-  display: flex;          /* הוספנו */
-  align-items: center;    /* יישור אנכי מרכזי */
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 /* ➡️  האייקון בשמאל בכל Breakpoint */
 .password-input {
+  direction: rtl;
+  text-align: right;
   width: 100%;
   box-sizing: border-box;
-  padding-inline-start: 40px; /* מרווח מצד ימין בשפה RTL */
-  padding-inline-end: 12px;
+  /* מרווח מצד ימין לטקסט, מצד שמאל (physical) נשאיר לאייקון */
+  padding-inline-start: 12px;  /* physical right */
+  padding-inline-end: 2.5em;   /* physical left */
   border-radius: 12px;
   border: 1px solid #c084fc;
   background-color: #f9f9ff;
   font-size: 16px;
-  direction: rtl;
-  text-align: right;
   transition: 0.3s;
 }
 
@@ -98,22 +99,23 @@ input:focus {
 
 .password-toggle-btn {
   position: absolute;
-  inset-inline-start: 12px; /* תומך גם ב־LTR וגם ב־RTL */
+  inset-inline-end: 12px;   /* physical left */
+  inset-inline-start: auto; /* מבטלים את ההגדרה ההפוכה */
   top: 0;
   bottom: 0;
-  margin: auto 0;          /* יישור אנכי אוטומטי */
-  
-  width: 1.8em;            /* רוחב */
-  height: 1.8em;           /* גובה זהה - מתאים ל־line-height של השדה */
+  margin: auto 0;
+
+  width: 1.8em;
+  height: 1.8em;
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
-  
+
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   z-index: 2;
   font-size: 1.2em;
   color: #222;
