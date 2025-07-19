@@ -435,3 +435,13 @@ a.active-link {
     margin-left: 0;
   }
 }
+
+.mobile-dashboard-button {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-dashboard-button {
+    display: flex !important;
+  }
+}
