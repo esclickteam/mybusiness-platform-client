@@ -307,12 +307,12 @@ input:focus {
 
 @media (max-width: 480px) {
   .password-input {
-    padding-left: 36px;     /* פחות מקום – כי הכל צפוף יותר */
+    padding-left: 36px;
     font-size: 15px;
-    height: 44px;           /* או כל גובה שנראה לך מתאים */
+    height: 44px;
   }
   .password-toggle-btn {
-    left: 8px;              /* קירוב לצד */
-    top: 43%;               /* טיפה יותר גבוה אם צריך */
+    left: 12px;   /* בדיוק כמו בדסקטופ! */
+    top: 43%;
   }
 }
