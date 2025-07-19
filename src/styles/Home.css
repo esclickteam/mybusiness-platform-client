@@ -33,6 +33,17 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+/* קו נוסף מתחת לכותרת הראשית */
+.main-subtitle-line {
+  display: block;
+  font-weight: 600;
+  font-size: 1.7rem;
+  margin-top: 0.15em;
+  color: #6b3ddf;
+  text-shadow: 1px 1px 6px rgba(107, 61, 223, 0.4);
+  font-family: 'Poppins', sans-serif;
+}
+
 /* === תת כותרת עם צבע דהוי אלגנטי === */
 .subtitle {
   font-size: 1.25rem;
@@ -275,6 +286,9 @@ body {
   }
   .main-title {
     font-size: 2.6rem;
+  }
+  .main-subtitle-line {
+    font-size: 1.3rem;
   }
   .subtitle {
     font-size: 1rem;
