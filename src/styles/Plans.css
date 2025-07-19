@@ -230,3 +230,15 @@
     font-size: 1.3rem;
   }
 }
+
+.launch-price-banner {
+  margin-bottom: 20px;
+  padding: 12px 20px;
+  background-color: #e0d7ff;
+  color: #4b2bd9;
+  font-weight: 700;
+  font-size: 1.15rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(75, 0, 210, 0.2);
+}

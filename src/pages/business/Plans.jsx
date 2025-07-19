@@ -80,15 +80,34 @@ function Plans() {
               aria-checked={selectedDuration === d}
               tabIndex={selectedDuration === d ? 0 : -1}
               aria-label={`מנוי ${
-                 d === "1" ? "חודשי" : d === "3" ? "שלושה חודשים" : "שנתי"
-
+                d === "1" ? "חודשי" : d === "3" ? "לשלושה חודשים" : "שנתי"
               } במחיר ${prices[d]} שקלים לחודש`}
               type="button"
             >
-              {d === "1" ? "חודשי" : d === "3" ? "שלושה חודשים" : "שנתי"}
+              {d === "1" ? "חודשי" : d === "3" ? "לשלושה חודשים" : "שנתי"}
               <span className="duration-price">{prices[d]} ₪ לחודש</span>
             </button>
           ))}
+        </div>
+
+        {/* מחיר השקה מקצועי ומודגש */}
+        <div
+          className="launch-price-banner"
+          role="alert"
+          aria-live="polite"
+          style={{
+            marginBottom: '20px',
+            padding: '12px 20px',
+            backgroundColor: '#e0d7ff',
+            color: '#4b2bd9',
+            fontWeight: '700',
+            fontSize: '1.15rem',
+            borderRadius: '12px',
+            textAlign: 'center',
+            boxShadow: '0 4px 10px rgba(75, 0, 210, 0.2)',
+          }}
+        >
+          הצטרפו עכשיו במחיר השקה מיוחד לזמן מוגבל – אל תפספסו!
         </div>
 
         <button
