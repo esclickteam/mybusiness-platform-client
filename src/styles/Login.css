@@ -98,9 +98,9 @@ input:focus {
 /* כפתור העין בתוך התיבה */
 .password-toggle-btn {
   position: absolute;
-  left: 12px;                /* האייקון בתוך השדה, בצד שמאל */
+  left: 12px;
   right: auto;
-  top: 50%;
+  top: 44%;              /* במקום 50% – קח 43%–46% לפי גובה הקלט שלך */
   transform: translateY(-50%);
   background: none;
   border: none;
@@ -111,12 +111,13 @@ input:focus {
   z-index: 2;
   cursor: pointer;
   user-select: none;
-  font-size: 18px;           /* מתאים ל־SVG 24x24 */
+  font-size: 18px;
   color: #222;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 
 /* כפתור “שכחת סיסמה?” מתחת לשדה */
 .forgot-inside-btn {
