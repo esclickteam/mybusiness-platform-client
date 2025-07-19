@@ -81,7 +81,7 @@ export default function Home() {
           />
         </div>
         <button className="search-button" onClick={navigateToSearch}>
-          🔍 חפש
+           חפש
         </button>
       </div>
 
