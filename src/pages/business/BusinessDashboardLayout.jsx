@@ -27,10 +27,8 @@ const tabs = [
   { path: "help-center", label: "❓ מרכז העזרה" },
 ];
 
-// החלף כאן לכתובת השרת שלך
+// כתובת ה־Socket שלך
 const SOCKET_URL = "https://api.esclick.co.il";
-
-// יצירת חיבור socket מחוץ לרכיב
 const socket = io(SOCKET_URL, { autoConnect: false });
 
 export default function BusinessDashboardLayout({ children }) {
@@ -48,10 +46,6 @@ export default function BusinessDashboardLayout({ children }) {
     setMessagesCount(unreadFromContext || 0);
   }, [unreadFromContext]);
 
-  const updateMessagesCount = (newCount) => {
-    setMessagesCount(newCount);
-  };
-
   useEffect(() => {
     if (!user?.businessId) return;
 
@@ -60,12 +54,9 @@ export default function BusinessDashboardLayout({ children }) {
     }
 
     const roomName = "businessbusiness-" + user.businessId;
-
     socket.emit("joinRoom", roomName);
 
     const handleNewMessage = (message) => {
-      console.log("התקבלה הודעה חדשה:", message);
-
       if (message.toId === user.businessId) {
         setMessagesCount((count) => count + 1);
         alert(`הודעה חדשה מ-${message.fromId}`);
@@ -222,12 +213,11 @@ export default function BusinessDashboardLayout({ children }) {
               />
             )}
 
+            {/* כפתור חץ פתיחה/סגירה */}
             {isMobile && (
               <button
                 onClick={() => setShowSidebar((prev) => !prev)}
-                aria-label={
-                  showSidebar ? "סגור ניווט / חזור לדשבורד" : "פתח ניווט"
-                }
+                aria-label={showSidebar ? "סגור ניווט / חזור לדשבורד" : "פתח ניווט"}
                 className="mobile-toggle-button"
                 style={{
                   position: "fixed",
