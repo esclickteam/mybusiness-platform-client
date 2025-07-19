@@ -65,20 +65,23 @@ input:focus {
 .password-wrapper {
   width: 100%;
   margin-bottom: 15px;
-  text-align: center;          /* מיישר את התוכן הפנימי */
+  /* הסרנו text-align: center */
 }
 
 /* שורה שמכילה את שדה הסיסמה וכפתור העין */
 .password-row {
-  position: relative;           /* מיקום מוחלט לכפתור העין */
+  position: relative;      /* כדי שה־absolute יתייחס לכאן */
+  display: flex;           /* הפכנו לפלקס כברירת מחדל */
+  align-items: center;     /* יישור אנכי */
+  justify-content: flex-start; /* תמיד שמאלה */
   width: 100%;
 }
 
-/* שדה הסיסמה ברוחב מלא, עם padding בצד שמאל (ל-RTL) */
+/* שדה הסיסמה ברוחב מלא, עם padding בצד שמאל */
 .password-input {
-  width: 100%;
+  flex: 1;                 /* יתפוס את השטח שנותר */
   box-sizing: border-box;
-  padding-left: 40px;    /* פינוי מקום לאייקון בשמאל */
+  padding-left: 40px;      /* פינה עבור האייקון */
   border-radius: 12px;
   border: 1px solid #c084fc;
   background-color: #f9f9ff;
@@ -98,14 +101,11 @@ input:focus {
 /* כפתור העין בתוך התיבה */
 .password-toggle-btn {
   position: absolute;
-  left: 12px;
-  right: auto;
-  top: 44%;              /* במקום 50% – קח 43%–46% לפי גובה הקלט שלך */
+  left: 12px;              /* תמיד משמאל */
+  top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  box-shadow: none;
-  filter: none;
   padding: 0;
   margin: 0;
   z-index: 2;
@@ -118,11 +118,10 @@ input:focus {
   justify-content: center;
 }
 
-
 /* כפתור “שכחת סיסמה?” מתחת לשדה */
 .forgot-inside-btn {
-  display: block;              /* אפשר גם inline-block; שניהם יעבדו */
-  margin: 8px auto 0;          /* מרכז אופקית */
+  display: block;
+  margin: 8px auto 0;
   font-size: 0.95rem;
   text-decoration: underline;
   color: #e53e3e;
@@ -303,35 +302,4 @@ input:focus {
 
 .login-container .accessibility-btn:hover {
   transform: scale(1.1);
-}
-
-@media (max-width: 480px) {
-  /* מבטל כל יישור מרכזי */
-  .password-wrapper {
-    text-align: left;
-  }
-
-  /* הופך את השורה לפלקס ומיישר שמאלה */
-  .password-row {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    position: relative; /* כדי לשמור על absolute בתוך זה */
-    width: 100%;
-  }
-
-  /* מודיע לכפתור העין להיות משמאל */
-  .password-toggle-btn {
-    position: absolute;
-    left: 12px;
-    right: auto;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  /* מבטיח שה־input יתפוס את השטח הנותר */
-  .password-input {
-    flex: 1;
-    padding-left: 40px; /* פינה למיקום האייקון */
-  }
 }
