@@ -1,3 +1,4 @@
+// Login.js
 import React, { useState, lazy, Suspense, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
@@ -5,7 +6,6 @@ import { lazyWithPreload } from "../utils/lazyWithPreload";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
-// Dynamic imports & preloading
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
@@ -31,8 +31,6 @@ export default function Login() {
   const [dashPreloadDone, setDashPreloadDone] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
-
-  // מצב להצגת הסיסמה
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -63,10 +61,10 @@ export default function Login() {
         loggedInUser?.hasPaid === true ||
         loggedInUser?.hasPaid === "true" ||
         loggedInUser?.hasPaid === 1;
-
       const isPaymentApproved =
         loggedInUser?.paymentStatus === "approved" && normalizedHasPaid;
 
+      // ניווט לפי תפקיד וסטאטוס
       if (redirectUrl) {
         if (redirectUrl === "/dashboard" && loggedInUser?.businessId) {
           navigate(`/business/${loggedInUser.businessId}/dashboard`, {
@@ -105,7 +103,6 @@ export default function Login() {
     <div className="login-container">
       <div className="login-box" aria-live="polite" aria-busy={loading}>
         <h2>התחברות</h2>
-
         <form onSubmit={handleSubmit} noValidate>
           <input
             type="email"
@@ -120,6 +117,7 @@ export default function Login() {
             className="login-input"
           />
 
+          {/* שורה של סיסמה + הצגה/הסתר + שכחתי סיסמה */}
           <div className="password-wrapper">
             <input
               type={showPassword ? "text" : "password"}
@@ -135,11 +133,18 @@ export default function Login() {
             />
             <button
               type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
+              onClick={() => setShowPassword((p) => !p)}
               className="password-toggle-btn"
               aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
             >
               👁️
+            </button>
+            <button
+              type="button"
+              className="forgot-inside-btn"
+              onClick={() => setShowForgot(true)}
+            >
+              שכחת את הסיסמה?
             </button>
           </div>
 
@@ -160,25 +165,12 @@ export default function Login() {
         )}
 
         <div className="login-extra-options">
-          <span
-            className="forgot-password"
-            onClick={() => setShowForgot(true)}
-            tabIndex={0}
-            role="button"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") setShowForgot(true);
-            }}
-          >
-            שכחת את הסיסמה?
-          </span>
-
           <p className="signup-link">
             לא רשום?{" "}
             <Link to="/register" className="signup-link-text">
               הירשם עכשיו
             </Link>
           </p>
-
           <button
             className="staff-login-btn"
             onClick={() => navigate("/staff-login")}

@@ -62,14 +62,37 @@ input:focus {
   }
 }
 
-/* הוספת padding לשדה הסיסמה כאשר יש כפתור הצגה בצד שמאל */
-input[name="password"] {
-  padding-left: 40px; /* מרחב לכפתור הצג סיסמה */
-  direction: ltr; /* מוודא שהטקסט לא מתערבב עם הכפתור בצד שמאל */
-  text-align: right; /* לשמירה על יישור נכון של הטקסט בעברית */
+/* עטיפת שדה הסיסמה וכפתור הצגה + שכחת סיסמה בשורה אחת */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
 }
 
-/* כפתור הצגת הסיסמה בצד שמאל בתוך השדה */
+/* שדה הסיסמה עם padding פנימי לשני הכפתורים */
+.password-wrapper input[name="password"] {
+  width: 100%;
+  box-sizing: border-box;
+  height: 38px;
+  padding-left: 40px;   /* מקום לכפתור הצגת סיסמה משמאל */
+  padding-right: 120px; /* מקום לכפתור שכחתי סיסמה מימין */
+  direction: ltr;       /* למניעת בלבול בכיוון הטקסט */
+  text-align: right;    /* שמירה על יישור טקסט בעברית */
+  border-radius: 12px;
+  border: 1px solid #c084fc;
+  background-color: #f9f9ff;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.password-wrapper input[name="password"]:focus {
+  border-color: #8200ff;
+  background-color: #fff;
+  outline: none;
+  animation: inputFocusAnimation 0.3s ease;
+}
+
+/* כפתור הצגת הסיסמה בתוך השדה, מצד שמאל */
 .password-toggle-btn {
   position: absolute;
   left: 10px;
@@ -82,11 +105,34 @@ input[name="password"] {
   padding: 0;
   color: #555;
   user-select: none;
+  z-index: 10;
 }
 
 .password-toggle-btn:focus {
   outline: 2px solid #6a00f4;
   outline-offset: 2px;
+}
+
+/* כפתור "שכחתי סיסמה" בתוך השדה, מצד ימין */
+.forgot-inside-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+  text-decoration: underline;
+  color: #e53e3e;
+  user-select: none;
+  z-index: 10;
+}
+
+.forgot-inside-btn:hover {
+  color: #c53030;
+  transform: translateY(-50%) scale(1.05);
 }
 
 .login-button {
@@ -128,11 +174,6 @@ input[name="password"] {
   font-size: 18px;
 }
 
-.staff-login-link {
-  margin-top: 15px;
-  text-align: center;
-}
-
 .staff-login-btn {
   padding: 12px 20px;
   background: #6a00f4;
@@ -146,12 +187,10 @@ input[name="password"] {
 }
 
 .staff-login-btn:hover {
-  background: #6a00f4;
   transform: scale(1.05);
 }
 
 .staff-login-btn:active {
-  background: #6a00f4;
   transform: scale(1);
 }
 
@@ -170,17 +209,6 @@ input[name="password"] {
   cursor: pointer;
   font-weight: 600;
   text-decoration: none;
-}
-
-.forgot-password {
-  color: #e53e3e;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.forgot-password:hover {
-  color: #c53030;
-  transform: scale(1.05);
 }
 
 .register-link {
@@ -205,30 +233,9 @@ input[name="password"] {
     font-size: 16px;
   }
 
-  .staff-login-link {
-    font-size: 13px;
-  }
-
   .bottom-links {
     font-size: 12px;
   }
-}
-
-.login-container .accessibility-btn {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background-color: #fff;
-  border: 2px solid #6a00f4;
-  border-radius: 50%;
-  padding: 10px;
-  cursor: pointer;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease;
-}
-
-.login-container .accessibility-btn:hover {
-  transform: scale(1.1);
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
@@ -281,53 +288,20 @@ input[name="password"] {
   }
 }
 
-/* עטיפת שדה הסיסמה וכפתור הצגה */
-.password-wrapper {
-  position: relative;
-  width: 100%;
-  margin-bottom: 15px; /* רווח מתחת */
-}
-
-/* שדה הסיסמה עם padding-left לפנוי מקום לכפתור */
-.password-wrapper input[name="password"] {
-  padding-left: 40px; /* מרחב לכפתור הצגה */
-  direction: ltr; /* למניעת בלבול בכיוון הטקסט */
-  text-align: right; /* שמירה על יישור טקסט בעברית */
-  width: 100%;
-  box-sizing: border-box;
-  height: 38px;
-  border-radius: 12px;
-  border: 1px solid #c084fc;
-  background-color: #f9f9ff;
-  font-size: 16px;
-  transition: 0.3s;
-}
-
-.password-wrapper input[name="password"]:focus {
-  border-color: #8200ff;
+/* כפתור נגישות (אם רלוונטי) */
+.login-container .accessibility-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
   background-color: #fff;
-  outline: none;
-  animation: inputFocusAnimation 0.3s ease;
-}
-
-/* כפתור הצגת הסיסמה בתוך השדה, מצד שמאל */
-.password-toggle-btn {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
+  border: 2px solid #6a00f4;
+  border-radius: 50%;
+  padding: 10px;
   cursor: pointer;
-  font-size: 18px;
-  padding: 0;
-  color: #555;
-  user-select: none;
-  z-index: 10;
-  display: inline-block; /* הוסף שורה זו */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
 }
 
-.password-toggle-btn:focus {
-  outline: 2px solid #6a00f4;
-  outline-offset: 2px;
+.login-container .accessibility-btn:hover {
+  transform: scale(1.1);
 }
