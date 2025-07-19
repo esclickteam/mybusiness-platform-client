@@ -27,8 +27,10 @@ const tabs = [
   { path: "help-center", label: "❓ מרכז העזרה" },
 ];
 
-// כתובת ה־Socket שלך
+// החלף כאן לכתובת השרת שלך
 const SOCKET_URL = "https://api.esclick.co.il";
+
+// יצירת חיבור socket מחוץ לרכיב
 const socket = io(SOCKET_URL, { autoConnect: false });
 
 export default function BusinessDashboardLayout({ children }) {
@@ -46,6 +48,10 @@ export default function BusinessDashboardLayout({ children }) {
     setMessagesCount(unreadFromContext || 0);
   }, [unreadFromContext]);
 
+  const updateMessagesCount = (newCount) => {
+    setMessagesCount(newCount);
+  };
+
   useEffect(() => {
     if (!user?.businessId) return;
 
@@ -54,9 +60,12 @@ export default function BusinessDashboardLayout({ children }) {
     }
 
     const roomName = "businessbusiness-" + user.businessId;
+
     socket.emit("joinRoom", roomName);
 
     const handleNewMessage = (message) => {
+      console.log("התקבלה הודעה חדשה:", message);
+
       if (message.toId === user.businessId) {
         setMessagesCount((count) => count + 1);
         alert(`הודעה חדשה מ-${message.fromId}`);
@@ -213,28 +222,31 @@ export default function BusinessDashboardLayout({ children }) {
               />
             )}
 
-            {/* כפתור חץ פתיחה/סגירה */}
+            {/* כפתור פתיחה וסגירה של התפריט, בפינה ימנית עליונה */}
             {isMobile && (
               <button
                 onClick={() => setShowSidebar((prev) => !prev)}
-                aria-label={showSidebar ? "סגור ניווט / חזור לדשבורד" : "פתח ניווט"}
-                className="mobile-toggle-button"
+                aria-label={showSidebar ? "סגור ניווט" : "פתח ניווט"}
+                className="sidebar-toggle-button"
                 style={{
                   position: "fixed",
-                  top: 15,
-                  left: 15,
-                  width: 40,
-                  height: 40,
-                  fontSize: 24,
-                  background: "none",
+                  top: 12,
+                  right: 12,
+                  width: 44,
+                  height: 44,
+                  background: "var(--primary)",
+                  color: "#fff",
                   border: "none",
-                  cursor: "pointer",
-                  zIndex: 1001,
-                  padding: 0,
+                  borderRadius: 8,
+                  fontSize: 24,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 12px #b39ddb55",
+                  transition: "background 0.2s, box-shadow 0.2s",
                   userSelect: "none",
+                  zIndex: 9999,
                 }}
               >
                 <span aria-hidden="true" style={{ lineHeight: 1 }}>
