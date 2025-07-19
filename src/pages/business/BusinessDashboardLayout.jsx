@@ -33,84 +33,6 @@ const SOCKET_URL = "https://api.esclick.co.il";
 // יצירת חיבור socket מחוץ לרכיב
 const socket = io(SOCKET_URL, { autoConnect: false });
 
-// כפתור ניווט מובייל מקצועי עם SVG ואנימציה
-function MobileNavToggle({ showSidebar, setShowSidebar }) {
-  return (
-    <button
-      onClick={() => setShowSidebar(!showSidebar)}
-      aria-label={showSidebar ? "סגור תפריט ניווט" : "פתח תפריט ניווט"}
-      aria-expanded={showSidebar}
-      className="mobile-nav-toggle"
-      style={{
-        position: "fixed",
-        top: 15,
-        left: 15,
-        zIndex: 1100,
-        width: 40,
-        height: 40,
-        background: "transparent",
-        border: "none",
-        cursor: "pointer",
-        padding: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <svg
-        width="30"
-        height="30"
-        viewBox="0 0 30 30"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <line
-          x1="4"
-          y1="7"
-          x2="26"
-          y2="7"
-          stroke="#333"
-          strokeWidth="3"
-          style={{
-            transition: "all 0.3s ease",
-            transformOrigin: "center",
-            transform: showSidebar
-              ? "rotate(45deg) translate(5px, 5px)"
-              : "none",
-          }}
-        />
-        <line
-          x1="4"
-          y1="15"
-          x2="26"
-          y2="15"
-          stroke="#333"
-          strokeWidth="3"
-          style={{
-            transition: "all 0.3s ease",
-            opacity: showSidebar ? 0 : 1,
-          }}
-        />
-        <line
-          x1="4"
-          y1="23"
-          x2="26"
-          y2="23"
-          stroke="#333"
-          strokeWidth="3"
-          style={{
-            transition: "all 0.3s ease",
-            transformOrigin: "center",
-            transform: showSidebar
-              ? "rotate(-45deg) translate(5px, -5px)"
-              : "none",
-          }}
-        />
-      </svg>
-    </button>
-  );
-}
-
 export default function BusinessDashboardLayout({ children }) {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -300,10 +222,7 @@ export default function BusinessDashboardLayout({ children }) {
               />
             )}
 
-            {/* כפתור ניווט מובייל מקצועי */}
-            {isMobile && (
-              <MobileNavToggle showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
-            )}
+            {/* כפתור ניווט מובייל מקצועי הוסר מהלייאאוט - יש להוסיף ב־Header */}
 
             <main
               className="dashboard-content"

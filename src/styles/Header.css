@@ -381,3 +381,39 @@ a.active-link {
 .mobile-auth .login-button:hover {
   background: #4315c7;
 }
+
+.mobile-dashboard-button {
+  display: none; /* מוסתר כברירת מחדל */
+  position: fixed;
+  top: 12px;
+  left: 15px;
+  z-index: 1200;
+  width: 40px;
+  height: 40px;
+  background: #5c46ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  transition: background 0.2s ease;
+}
+
+.mobile-dashboard-button:hover,
+.mobile-dashboard-button:focus {
+  background: #4831d4;
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-dashboard-button {
+    display: flex;
+  }
+
+  /* להזיז את הלוגו מעט ימינה כדי לפנות מקום לכפתור */
+  .logo-wrapper {
+    margin-left: 60px;
+  }
+}

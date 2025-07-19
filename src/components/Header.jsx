@@ -14,6 +14,7 @@ import {
   FaPhone,
   FaQuestionCircle,
   FaFileContract,
+  FaTachometerAlt,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
@@ -79,6 +80,24 @@ export default function Header() {
   return (
     <>
       <nav className="app-header">
+        {/* כפתור ניווט לדשבורד בצד שמאל, רק במובייל ולבעלי עסקים */}
+        {(user?.role === "business" || user?.role === "business-dashboard") && (
+          <button
+            className="mobile-dashboard-button"
+            aria-label="לוח בקרה"
+            onClick={() => navigate(getDashboardPath())}
+            title="לוח בקרה"
+          >
+            <FaTachometerAlt size={22} />
+          </button>
+        )}
+
+        <div className="logo-wrapper">
+          <Link to="/" className="logo-link">
+            <img src={logo} alt="Logo" className="logo" />
+          </Link>
+        </div>
+
         <div className="menu-toggle">
           <button
             className="menu-button"
@@ -112,12 +131,6 @@ export default function Header() {
               )}
             </>
           )}
-        </div>
-
-        <div className="logo-wrapper">
-          <Link to="/" className="logo-link">
-            <img src={logo} alt="Logo" className="logo" />
-          </Link>
         </div>
 
         <div className="auth-controls desktop-only">
