@@ -32,6 +32,9 @@ export default function Login() {
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
 
+  // הוספת מצב להצגת הסיסמה
+  const [showPassword, setShowPassword] = useState(false);
+
   useEffect(() => {
     DashboardPage.preload().finally(() => setDashPreloadDone(true));
   }, []);
@@ -64,17 +67,20 @@ export default function Login() {
       const isPaymentApproved =
         loggedInUser?.paymentStatus === "approved" && normalizedHasPaid;
 
-      // ניתוב לפי redirectUrl או לפי role
       if (redirectUrl) {
         if (redirectUrl === "/dashboard" && loggedInUser?.businessId) {
-          navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
+          navigate(`/business/${loggedInUser.businessId}/dashboard`, {
+            replace: true,
+          });
         } else {
           navigate(redirectUrl, { replace: true });
         }
       } else if (loggedInUser?.role === "affiliate") {
         navigate("/affiliate/dashboard", { replace: true });
       } else if (loggedInUser?.role === "business" && isPaymentApproved) {
-        navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
+        navigate(`/business/${loggedInUser.businessId}/dashboard`, {
+          replace: true,
+        });
       } else if (loggedInUser?.role === "business") {
         navigate("/plans", { replace: true });
       } else {
@@ -113,17 +119,39 @@ export default function Login() {
             aria-label="אימייל"
           />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="סיסמה"
-            value={form.password}
-            onChange={handleChange}
-            disabled={loading}
-            required
-            autoComplete="current-password"
-            aria-label="סיסמה"
-          />
+          <div style={{ position: "relative" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="סיסמה"
+              value={form.password}
+              onChange={handleChange}
+              disabled={loading}
+              required
+              autoComplete="current-password"
+              aria-label="סיסמה"
+              style={{ paddingRight: "40px" }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              style={{
+                position: "absolute",
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "18px",
+                padding: 0,
+                color: "#555",
+              }}
+              aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
 
           <button
             type="submit"
