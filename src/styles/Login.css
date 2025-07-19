@@ -74,16 +74,16 @@ input:focus {
   width: 100%;
 }
 
-/* שדה הסיסמה ברוחב מלא, עם padding בצד ההתחלתי */
+/* שדה הסיסמה ברוחב מלא, עם padding בצד שמאל (ל-RTL) */
 .password-input {
   width: 100%;
   box-sizing: border-box;
-  padding-inline-start: 42px;  /* מקום לאייקון העין */
+  padding-left: 40px;  /* מקום לאייקון העין */
   border-radius: 12px;
   border: 1px solid #c084fc;
   background-color: #f9f9ff;
   font-size: 16px;
-  direction: ltr;
+  direction: rtl;
   text-align: right;
   transition: 0.3s;
 }
@@ -98,7 +98,7 @@ input:focus {
 /* כפתור העין בתוך התיבה */
 .password-toggle-btn {
   position: absolute;
-  inset-inline-start: 12px; /* מיקום בצד ההתחלתי (RTL/LTR) */
+  left: 12px; /* האייקון בצד שמאל בתוך התיבה */
   top: 50%;
   transform: translateY(-50%);
   background: none;
