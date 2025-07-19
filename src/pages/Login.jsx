@@ -64,7 +64,6 @@ export default function Login() {
       const isPaymentApproved =
         loggedInUser?.paymentStatus === "approved" && normalizedHasPaid;
 
-      // ניווט לפי תפקיד וסטאטוס
       if (redirectUrl) {
         if (redirectUrl === "/dashboard" && loggedInUser?.businessId) {
           navigate(`/business/${loggedInUser.businessId}/dashboard`, {
@@ -118,9 +117,7 @@ export default function Login() {
             className="login-input"
           />
 
-          {/* עטיפה של הסיסמה כעמודה */}
           <div className="password-wrapper">
-            {/* שורה של שדה + כפתור עין */}
             <div className="password-row">
               <input
                 type={showPassword ? "text" : "password"}
@@ -143,7 +140,7 @@ export default function Login() {
                 👁️
               </button>
             </div>
-            {/* כפתור שכחתי סיסמה מתחת לשורה */}
+
             <button
               type="button"
               className="forgot-inside-btn"
