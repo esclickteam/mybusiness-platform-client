@@ -26,9 +26,8 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
-import PaymentSuccess from "./components/PaymentSuccess";
-import Business from "./pages/business/Business";
-import BusinessJoin from "./pages/business/BusinessJoin";
+
+
 
 // טעינה עצלה (lazy) של כל הרכיבים
 const HomePage            = lazy(() => import("./pages/Home"));
@@ -145,12 +144,7 @@ export default function App() {
               <Route path="/business/:businessId" element={<BusinessProfileView />} />
               <Route path="/book/:businessId" element={<BookingPage />} />
               <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
-              <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
-              <Route path="/payment-success" element={<PaymentSuccess />} />
-              <Route path="/business" element={<Business />} />
-              <Route path="/join" element={<BusinessJoin />} />
-
-
+=             <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
 
 
 
