@@ -7,14 +7,8 @@ function Plans() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // מחיר קבוע לכל חבילה
-  const pricePerPeriod = 1;
-
-  const planLabels = {
-    "1": "חבילת מנוי עסקליק - חודש",
-    "3": "חבילת מנוי עסקליק - 3 חודשים",
-    "12": "חבילת מנוי עסקליק - שנתי",
-  };
+  // מחירים לפי תקופה (מחיר לחודש)
+  const prices = { "1": 799, "3": 769, "12": 699 };
 
   const [selectedDuration, setSelectedDuration] = useState("1");
 
@@ -26,13 +20,12 @@ function Plans() {
       return;
     }
 
-    // מחיר קבוע, לא כופלים במספר החודשים
-    const totalPrice = pricePerPeriod;
+    const totalPrice = prices[selectedDuration] * parseInt(selectedDuration);
 
     navigate("/checkout", {
       state: {
-        planName: planLabels[selectedDuration],
-        totalPrice: totalPrice.toFixed(2),
+        planName: "חבילת מנוי עסקליק",
+        totalPrice: totalPrice,
         duration: selectedDuration,
       },
     });
@@ -51,9 +44,22 @@ function Plans() {
       <div className="plans-card">
         <h2 className="card-title">מה מקבל העסק שלך?</h2>
         <ul className="plans-list">
-          {[/* רשימת התכונות שלך כאן */].map((text, idx) => (
+          {[
+            "ייעוץ שיווקי ועסקי מבוסס בינה מלאכותית עם 30 פניות איכותיות בחודש",
+            "שותף AI חכם עם יותר מ-20 המלצות ופעולות לשיפור מתמיד של העסק",
+            "פלטפורמה לשיתופי פעולה עסקיים והרחבת רשת הקשרים שלך",
+            "עמוד עסקי מקצועי הכולל פרטים מלאים, גלריה, שאלות נפוצות ועוד",
+            "מערכת נוחה להזמנת תורים ללקוחות שלך – פשוטה ומהירה",
+            "צ'אט אינטראקטיבי לשירות לקוחות בזמן אמת – קריטי בעידן המודרני",
+            "מערכת ביקורות אמינה – רק לקוחות שקיבלו שירות יכולים לדרג ולהשאיר חוות דעת",
+            "גישה מלאה וללא הגבלה לכל מערכות הפלטפורמה המקצועיות שלנו",
+            "ניהול יומן הזמנות מתקדם ומעקב יעדים חכם",
+            "מערכת CRM חכמה לניהול קשרי לקוחות ממוקד ואפקטיבי",
+            "דשבורד אנליטי מתקדם לניהול פגישות, תזכורות ושינויים בזמן אמת",
+            "התראות חכמות לזיהוי וניהול אירועים חשובים בזמן אמת",
+          ].map((text, idx) => (
             <li key={idx} className="plans-list-item">
-              <span aria-hidden="true" className="checkmark">✔</span> {text}
+              <span className="checkmark" aria-hidden="true">✔</span> {text}
             </li>
           ))}
         </ul>
@@ -63,32 +69,33 @@ function Plans() {
           role="radiogroup"
           aria-label="בחירת תקופת מנוי"
         >
-          {[1, 3, 12].map((id) => {
-            const labels = {
-              1: "לחודש",
-              3: "לשלושה חודשים",
-              12: "לשנה",
-            };
-            const planLabel = planLabels[id.toString()] || "";
-            return (
-              <button
-                key={id}
-                onClick={() => handleDurationChange(id.toString())}
-                className={`duration-btn ${selectedDuration === id.toString() ? "active" : ""}`}
-                role="radio"
-                aria-checked={selectedDuration === id.toString()}
-                tabIndex={selectedDuration === id.toString() ? 0 : -1}
-                aria-label={`מנוי ${planLabel} במחיר ${pricePerPeriod} שקלים ${labels[id]}`}
-                type="button"
-              >
-                {planLabel}
-                <span className="duration-price">{pricePerPeriod} ₪ {labels[id]}</span>
-              </button>
-            );
-          })}
+          {["1", "3", "12"].map((d) => (
+            <button
+              key={d}
+              onClick={() => handleDurationChange(d)}
+              className={`duration-btn ${
+                selectedDuration === d ? "active" : ""
+              }`}
+              role="radio"
+              aria-checked={selectedDuration === d}
+              tabIndex={selectedDuration === d ? 0 : -1}
+              aria-label={`מנוי ${
+                d === "1" ? "חודשי" : d === "3" ? "3 חודשים" : "שנתי"
+              } במחיר ${prices[d]} שקלים לחודש`}
+              type="button"
+            >
+              {d === "1" ? "חודשי" : d === "3" ? "3 חודשים" : "שנתי"}
+              <span className="duration-price">{prices[d]} ₪ לחודש</span>
+            </button>
+          ))}
         </div>
 
-        <button className="subscribe-btn" onClick={handleSelectPlan} type="button">
+        <button
+          className="subscribe-btn"
+          onClick={handleSelectPlan}
+          type="button"
+          aria-label={`בחר מנוי לתקופה של ${selectedDuration} חודשים במחיר כולל ${prices[selectedDuration] * parseInt(selectedDuration)} שקלים`}
+        >
           בחר מנוי והתחל לגדול עם עסקליק עכשיו!
         </button>
       </div>
