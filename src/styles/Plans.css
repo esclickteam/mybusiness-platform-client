@@ -235,10 +235,30 @@
   margin-bottom: 20px;
   padding: 12px 20px;
   background-color: #e0d7ff;
-  color: #4b2bd9;
-  font-weight: 700;
+  font-weight: 900;
   font-size: 1.15rem;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(75, 0, 210, 0.2);
+  box-shadow: 0 4px 15px rgba(75, 0, 210, 0.5);
+  animation: blinkColorOpacity 3s ease-in-out infinite;
+  color: #4b2bd9;
+}
+
+@keyframes blinkColorOpacity {
+  0%, 100% {
+    opacity: 1;
+    color: #4b2bd9;  /* צבע בסיס - סגול כהה */
+    text-shadow:
+      0 0 5px #7c55ff,
+      0 0 15px #7c55ff,
+      0 0 20px #7c55ff;
+  }
+  50% {
+    opacity: 0.4;
+    color: #a678ff;  /* צבע בהיר יותר */
+    text-shadow:
+      0 0 10px #a678ff,
+      0 0 20px #a678ff,
+      0 0 30px #a678ff;
+  }
 }
