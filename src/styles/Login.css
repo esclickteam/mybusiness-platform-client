@@ -63,23 +63,16 @@ input:focus {
 
 /* עטיפת שדה הסיסמה */
 .password-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  position: relative;
+  width: 100%;
   margin-bottom: 15px;
 }
 
-/* שורה של שדה + כפתור עין */
-.password-row {
-  display: flex;
-  flex-direction: row-reverse; /* RTL: שדה מימין, עין משמאל */
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.password-row .password-input {
-  flex: 1;
-  padding: 12px;
+/* שדה הסיסמה ברוחב מלא, עם מקום לכפתור העין */
+.password-wrapper .password-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 12px 12px 40px; /* padding-left 40px למיקום העין בתוך התיבה */
   border-radius: 12px;
   border: 1px solid #c084fc;
   background-color: #f9f9ff;
@@ -89,36 +82,44 @@ input:focus {
   transition: 0.3s;
 }
 
-.password-row .password-input:focus {
+.password-wrapper .password-input:focus {
   border-color: #8200ff;
   background-color: #fff;
   outline: none;
   animation: inputFocusAnimation 0.3s ease;
 }
 
-/* כפתור הצגת/הסתרת סיסמה */
-.password-toggle-btn {
+/* כפתור העין בתוך התיבה */
+.password-wrapper .password-toggle-btn {
+  position: absolute;
+  left: 12px;               /* בתוך padding-left של השדה */
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
   font-size: 18px;
   padding: 0;
   color: #555;
+  user-select: none;
+  z-index: 2;
 }
 
-/* כפתור “שכחת סיסמה?” מתחת לשורה, מיושר לימין */
-.forgot-inside-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
+/* כפתור “שכחת סיסמה?” מתחת לשדה */
+.password-wrapper .forgot-inside-btn {
+  display: block;
+  margin-top: 8px;
   font-size: 0.85rem;
   text-decoration: underline;
   color: #e53e3e;
-  align-self: flex-end;
+  background: none;
+  border: none;
+  cursor: pointer;
   padding: 0;
+  text-align: right; /* מיושר לימין */
 }
 
-.forgot-inside-btn:hover {
+.password-wrapper .forgot-inside-btn:hover {
   color: #c53030;
   transform: scale(1.05);
 }
