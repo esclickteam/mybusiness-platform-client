@@ -32,7 +32,7 @@ export default function Login() {
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
 
-  // הוספת מצב להצגת הסיסמה
+  // מצב להצגת הסיסמה
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -130,14 +130,14 @@ export default function Login() {
               required
               autoComplete="current-password"
               aria-label="סיסמה"
-              style={{ paddingRight: "40px" }}
+              style={{ paddingLeft: "40px" }} // ריפוד שמאל כי הכפתור שם
             />
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
               style={{
                 position: "absolute",
-                right: "10px",
+                left: "10px", // הצבת הכפתור מצד שמאל
                 top: "50%",
                 transform: "translateY(-50%)",
                 background: "none",
@@ -149,7 +149,7 @@ export default function Login() {
               }}
               aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
             >
-              {showPassword ? "🙈" : "👁️"}
+              👁️
             </button>
           </div>
 
