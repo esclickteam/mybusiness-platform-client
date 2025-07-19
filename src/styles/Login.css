@@ -116,7 +116,7 @@ input:focus {
   border: none;
   cursor: pointer;
   padding: 0;
-  text-align: right; /* מיושר לימין */
+  text-align: center; 
 }
 
 .password-wrapper .forgot-inside-btn:hover {
