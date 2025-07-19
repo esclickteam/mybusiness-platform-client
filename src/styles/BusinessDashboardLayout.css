@@ -115,9 +115,9 @@
 
 /* כפתור ניווט מובייל מקצועי (MobileNavToggle) */
 .mobile-nav-toggle {
-  position: fixed;
-  top: 15px;
-  left: 15px;
+  position: fixed; /* או absolute בתוך קונטיינר */
+  top: 12px; /* התאמה לגובה הלוגו */
+  left: 80px; /* מיקום ליד הלוגו - תתאים לפי רוחב הלוגו */
   z-index: 1100;
   width: 40px;
   height: 40px;
@@ -130,6 +130,7 @@
   justify-content: center;
   transition: filter 0.3s ease;
 }
+
 
 .mobile-nav-toggle svg line {
   stroke: #333;
