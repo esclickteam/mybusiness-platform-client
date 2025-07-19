@@ -81,28 +81,25 @@
     }
   }
   
-  .dashboard-card {
-    padding: 20px;
-    border-radius: 16px;
-    text-align: center;
-    box-shadow: var(--box-shadow);
-    transition: 0.2s ease-in-out;
-    background-color: var(--secondary-bg);
+   .dashboard-card {
+    padding: 12px; /* הקטנת הפדינג */
+    font-size: 0.85rem; /* הקטנת הגופן */
+    border-radius: 12px; /* מעט פחות מעוגל */
   }
   
   .dashboard-card:hover {
     transform: scale(var(--hover-scale));
   }
   
+  
   .card-icon {
-    font-size: 30px;
-    margin-bottom: 10px;
+    font-size: 24px; /* הקטנת אייקון */
+    margin-bottom: 6px;
   }
   
-  .card-title {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-bottom: 6px;
+    .card-title {
+    font-size: 12px;
+    margin-bottom: 4px;
   }
   
   .card-value {
@@ -629,9 +626,10 @@
   padding: 10px;
   text-align: center;
 }
-@media (max-width: 400px) {
+@media (max-width: 600px) {
   .dashboard-cards-container {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr !important; /* גריד של כרטיס אחד לשורה */
+    gap: 12px; /* ריווח קטן יותר בין כרטיסיות */
   }
 
   .graph-box,
