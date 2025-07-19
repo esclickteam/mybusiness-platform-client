@@ -98,19 +98,12 @@ input:focus {
 }
 
 .password-toggle-btn {
-  /* מבטל רקע חצי־שקוף ו-backdrop blur */
-  background: none !important;
-  backdrop-filter: none !important;
-  
-  /* מבטל כל צל */
-  box-shadow: none !important;
-  
-  /* (מומלץ לשמור על כל השאר כמו שהגדרת) */
   position: absolute;
   inset-inline-end: 12px;
-  top: 0;
-  bottom: 0;
-  margin: auto 0;
+  top: 4px; /* העלאה קלה של האייקון */
+  /* שאר ההגדרות נשארות כפי שהן */
+  bottom: auto; /* מבטל את הערך הקודם של bottom */
+  margin: 0;
   width: 1.8em;
   height: 1.8em;
   border: none;
