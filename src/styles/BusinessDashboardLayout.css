@@ -111,28 +111,43 @@
   transition: filter 0.3s ease;
 }
 
+
+
 /*==========================
-   כפתור toggle
+   עיצוב מובייל
 ==========================*/
-.sidebar-toggle-button {
-  position: fixed;
-  top: 12px; right: 12px;
-  z-index: 9999;
-  width: 44px; height: 44px;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.7rem;
-  display: none; /* יופיע רק במובייל */
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 12px #b39ddb55;
-  transition: background 0.2s, box-shadow 0.2s;
-}
-.sidebar-toggle-button:hover {
-  background: #5c46ff;
-  box-shadow: 0 4px 20px #a085ffcc;
+@media (max-width: 768px) {
+  /* פריסת שורה אופקית */
+  .business-dashboard-layout {
+    flex-direction: row !important;
+  }
+
+  /* מראה הכפתור */
+  .sidebar-toggle-button {
+    display: flex !important;
+  }
+
+  /* דוחפים את התוכן כשפותחים את הסיידבר */
+  .sidebar-open .business-dashboard-layout .dashboard-content {
+    margin-right: 260px !important;
+    transition: margin-right 0.35s ease;
+  }
 }
 
+/*==========================
+   עיצוב דסקטופ
+==========================*/
+@media (min-width: 769px) {
+  /* סיידבר תמיד גלוי */
+  .sidebar {
+    transform: none !important;
+    position: relative !important;
+    box-shadow: none !important;
+    z-index: auto !important;
+  }
+  /* הכפתור והאופרליי מוסתרים */
+  .sidebar-toggle-button,
+  .sidebar-overlay {
+    display: none !important;
+  }
+}
