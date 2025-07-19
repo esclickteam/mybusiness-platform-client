@@ -9,8 +9,6 @@ import {
   FaUserPlus,
   FaCogs,
   FaListUl,
-  FaTags,
-  FaSearch,
   FaHome,
   FaInfoCircle,
   FaPhone,
@@ -180,8 +178,7 @@ export default function Header() {
                   <div className="menu-section">
                     <h4>ללקוחות</h4>
                     {link("/businesses", <FaListUl />, "רשימת עסקים")}
-                    {link("/categories", <FaTags />, "קטגוריות")}
-                    {link("/search", <FaSearch />, "חיפוש מתקדם")}
+                    {/* הוסר: קטגוריות וחיפוש מתקדם */}
                   </div>
                   <div className="menu-section">
                     <h4>כללי</h4>
