@@ -17,11 +17,11 @@ const BusinessesList = () => {
   const [category, setCategory] = useState(null);
   const [city, setCity] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
   const cityOptions = ALL_CITIES.map((c) => ({ value: c, label: c }));
 
-  // פונקציה למשיכת עסקים עם פילטרים
   const fetchBusinesses = async (filters = {}) => {
     setLoading(true);
     try {
@@ -39,7 +39,7 @@ const BusinessesList = () => {
     }
   };
 
-  // קריאת פרמטרים מה־URL והגדרת המצב ההתחלתי
+  // שלב ראשון: אתחול הסטייטים מה-URL
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const categoryParam = query.get("category");
@@ -53,37 +53,30 @@ const BusinessesList = () => {
       const cityOption = cityOptions.find((o) => o.value === cityParam);
       setCity(cityOption || null);
     }
-  }, [location.search]); // מופעל כשכתובת ה-URL משתנה
+    setInitialized(true); // סמן שהאתחול בוצע
+  }, [location.search]);
 
-  // חיפוש אוטומטי בכל פעם שהקטגוריה או העיר משתנות
+  // שלב שני: חיפוש רק אחרי שהסטייטים מאותחלים
   useEffect(() => {
-    // כדי לא להפעיל חיפוש לפני שהסטייטים מאותחלים מה-URL
-    if (category || city) {
-      fetchBusinesses({
-        category: category ? category.value : null,
-        city: city ? city.value : null,
-      });
+    if (!initialized) return; // לא להפעיל חיפוש לפני האתחול
 
-      // עדכון ה-URL (למקרה שינוי ב-select)
-      const params = new URLSearchParams();
-      if (category) params.set("category", category.value);
-      if (city) params.set("city", city.value);
-      navigate({ search: params.toString() }, { replace: true });
-    } else {
-      setBusinesses([]);
-      navigate({ search: "" }, { replace: true });
-    }
-  }, [category, city, navigate]);
+    fetchBusinesses({
+      category: category ? category.value : null,
+      city: city ? city.value : null,
+    });
 
-  // פונקציית לחיצה על כפתור חפש - מחליפה פשוט את הקטגוריה והעיר,
-  // מה שיגרום ל-useEffect לעדכן את התוצאות וה-URL
+    // עדכון ה-URL בהתאם
+    const params = new URLSearchParams();
+    if (category) params.set("category", category.value);
+    if (city) params.set("city", city.value);
+    navigate({ search: params.toString() }, { replace: true });
+  }, [category, city, initialized, navigate]);
+
   const handleSearch = () => {
-    // לא צריך לקרוא fetchBusinesses כאן כי useEffect מטפל בזה
-    // רק ודא שהערכים מעודכנים
-    // במקרה שלך כבר setCategory ו-setCity עושים את העבודה
+    // הכפתור יכול להשאר כדי לאפשר חיפוש ידני,
+    // אבל בפועל החיפוש מתבצע אוטומטית ב-useEffect
   };
 
-  // SEO כמו בקוד שלך
   const seoTitleParts = [];
   if (category) seoTitleParts.push(category.label);
   if (city) seoTitleParts.push(city.label);
