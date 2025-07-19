@@ -176,7 +176,8 @@
 
   display: flex;
   flex-direction: column;
-  overflow: hidden;          /* מסתיר גלילה חיצונית */
+  overflow-y: auto;                /* שינוי מ-hidden ל-auto - גלילה אנכית */
+  -webkit-overflow-scrolling: touch; /* גלילה חלקה במובייל */
   transform: translateX(100%);
   transition: transform .3s;
   z-index: 1501;
@@ -210,9 +211,9 @@
 
 .menu-scroll {
   flex: 1 1 auto;
-  overflow-y: auto;
+  overflow-y: auto;                /* שמור גלילה פנימית */
   -webkit-overflow-scrolling: touch;
-  padding: 0;
+  padding: 0 0 16px 0;             /* ריווח תחתון למניעת חיתוך */
 }
 
 .menu-user {
