@@ -115,8 +115,7 @@ export default function Home() {
           <li><Link to="/search">📋 חיפוש עסקים</Link></li>
           <li><Link to="/about">📖 קצת עלינו</Link></li>
           <li><Link to="/how-it-works">⚙️ איך זה עובד</Link></li>
-          <li><Link to="/business">💼 בעלי עסקים</Link></li>
-          <li><Link to="/join">✏️ הצטרפות עסקים</Link></li>
+          <li><Link to="/business">✏️ הצטרפות עסקים</Link></li>
           <li><Link to="/faq">❓ שאלות נפוצות</Link></li>
           <li><Link to="/terms">📜 תקנון</Link></li>
           <li><Link to="/contact">📞 יצירת קשר</Link></li>
