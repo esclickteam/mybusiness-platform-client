@@ -98,19 +98,23 @@ input:focus {
 }
 
 .password-toggle-btn {
-  /* מבטל רקע חצי־שקוף ו-backdrop blur */
+  /* מבטל רקע חצי-שקוף ו-backdrop blur */
   background: none !important;
   backdrop-filter: none !important;
   
   /* מבטל כל צל */
   box-shadow: none !important;
   
-  /* (מומלץ לשמור על כל השאר כמו שהגדרת) */
+  /* מיקום מוחלט בתוך השדה */
   position: absolute;
   inset-inline-end: 12px;
   top: 0;
   bottom: 0;
   margin: auto 0;
+
+  /* הוספת תזוזה קלה כלפי מעלה */
+  transform: translateY(-10%);
+
   width: 1.8em;
   height: 1.8em;
   border: none;
@@ -123,6 +127,7 @@ input:focus {
   font-size: 1.2em;
   color: #222;
 }
+
 
 
 /* --------------------------- לינקים, כפתורים וסטייטים --------------------------- */
