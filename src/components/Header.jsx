@@ -101,7 +101,7 @@ export default function Header() {
             ) : (
               <>
                 <FaTachometerAlt size={18} style={{ marginRight: 6 }} />
-                <span>Dashboard</span>
+                <span>דשבורד</span>
               </>
             )}
           </button>
