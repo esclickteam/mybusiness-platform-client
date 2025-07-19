@@ -27,6 +27,7 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // סטייט לפתיחת הסיידבר
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
@@ -84,11 +85,11 @@ export default function Header() {
         {(user?.role === "business" || user?.role === "business-dashboard") && (
           <button
             className="mobile-dashboard-button"
-            aria-label="לוח בקרה"
-            onClick={() => navigate(getDashboardPath())}
-            title="לוח בקרה"
+            aria-label={menuOpen ? "סגור ניווט" : "פתח ניווט"}
+            onClick={() => setMenuOpen(!menuOpen)}
+            title={menuOpen ? "סגור ניווט" : "פתח ניווט"}
           >
-            <FaTachometerAlt size={22} />
+            {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
           </button>
         )}
 
@@ -155,6 +156,7 @@ export default function Header() {
         </div>
       </nav>
 
+      {/* סיידבר של הדשבורד שמוצג/מוסתר בהתאם לסטייט menuOpen */}
       {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
@@ -184,23 +186,16 @@ export default function Header() {
                     <span>{user.name || user.email}</span>
                   </div>
                   <div className="menu-section">
-                    <h4>לעסקים</h4>
-                    {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
-                    {link("/how-it-works", <FaCogs />, "איך זה עובד")}
-                  </div>
-                  <div className="menu-section">
-                    <h4>ללקוחות</h4>
-                    {link("/businesses", <FaListUl />, "רשימת עסקים")}
-                    {/* הוסר: קטגוריות וחיפוש מתקדם */}
-                  </div>
-                  <div className="menu-section">
-                    <h4>כללי</h4>
-                    {link("/", <FaHome />, "דף הבית")}
-                    {link("/about", <FaInfoCircle />, "אודות")}
-                    {link("/contact", <FaPhone />, "צור קשר")}
-                    {link("/faq", <FaQuestionCircle />, "שאלות נפוצות")}
-                    {link("/accessibility", <FaInfoCircle />, "הצהרת נגישות")}
-                    {link("/privacy-policy", <FaFileContract />, "מדיניות פרטיות")}
+                    <h4>ניהול העסק</h4>
+                    {link(`/business/${user.businessId}`, "👀", "צפייה בפרופיל ציבורי")}
+                    {link(`/business/${user.businessId}/dashboard`, "📊", "דשבורד")}
+                    {link(`/business/${user.businessId}/dashboard/build`, "🧱", "עריכת עמוד עסקי")}
+                    {link(`/business/${user.businessId}/dashboard/messages`, "💬", "הודעות מלקוחות")}
+                    {link(`/business/${user.businessId}/dashboard/collab`, "🤝", "שיתופי פעולה")}
+                    {link(`/business/${user.businessId}/dashboard/crm`, "📇", "מערכת CRM")}
+                    {link(`/business/${user.businessId}/dashboard/esclick`, "🧠", "יועץ עסקליק")}
+                    {link(`/business/${user.businessId}/dashboard/affiliate`, "👥", "תכנית שותפים")}
+                    {link(`/business/${user.businessId}/dashboard/help-center`, "❓", "מרכז העזרה")}
                   </div>
                 </>
               )}
