@@ -222,35 +222,19 @@ export default function BusinessDashboardLayout({ children }) {
               />
             )}
 
-            {/* כפתור פתיחה וסגירה של התפריט, בפינה ימנית עליונה */}
             {isMobile && (
               <button
                 onClick={() => setShowSidebar((prev) => !prev)}
-                aria-label={showSidebar ? "סגור ניווט" : "פתח ניווט"}
-                className="sidebar-toggle-button"
-                style={{
-                  position: "fixed",
-                  top: 12,
-                  right: 12,
-                  width: 44,
-                  height: 44,
-                  background: "var(--primary)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 8,
-                  fontSize: 24,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  boxShadow: "0 2px 12px #b39ddb55",
-                  transition: "background 0.2s, box-shadow 0.2s",
-                  userSelect: "none",
-                  zIndex: 9999,
-                }}
+                aria-label={
+                  showSidebar
+                    ? "סגור ניווט / חזור לדשבורד"
+                    : "פתח ניווט"
+                }
+                className="mobile-toggle-button"
               >
-                <span aria-hidden="true" style={{ lineHeight: 1 }}>
-                  {showSidebar ? "←" : "→"}
+                <span className="icon">{showSidebar ? "×" : "☰"}</span>
+                <span className="label">
+                  {showSidebar ? "סגור ניווט" : "פתח ניווט"}
                 </span>
               </button>
             )}
