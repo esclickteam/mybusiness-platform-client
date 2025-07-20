@@ -132,44 +132,64 @@ export default function CollabBusinessProfileTab({ socket }) {
 
   // --- שמירת פרופיל כולל העלאת לוגו ---
   const handleSaveProfile = useCallback(
-    async (e) => {
-      e.preventDefault();
-      setSaving(true);
-      const formData = new FormData(e.target);
-      const updatedData = {
-        businessName: formData.get("businessName"),
-        category: formData.get("category"),
-        area: formData.get("area"),
-        description: formData.get("about"),
-        collabPref: formData.get("collabPref"),
-        contact: formData.get("contact"),
-        phone: formData.get("phone"),
-        email: formData.get("email"),
-      };
-      try {
-        if (logoFile) {
-          const logoFormData = new FormData();
-          logoFormData.append("logo", logoFile);
-          const logoRes = await API.put("/business/my/logo", logoFormData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-          updatedData.logo = logoRes.data.logo;
+  async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    const formData = new FormData(e.target);
+    const updatedData = {
+      businessName: formData.get("businessName"),
+      category: formData.get("category"),
+      area: formData.get("area"),
+      description: formData.get("about"),
+      collabPref: formData.get("collabPref"),
+      contact: formData.get("contact"),
+      phone: formData.get("phone"),
+      email: formData.get("email"),
+    };
+    try {
+      console.log("🚀 מתחילים שמירת פרופיל...");
+      if (logoFile) {
+        console.log("📤 מעלה לוגו חדש:", logoFile);
+        const logoFormData = new FormData();
+        logoFormData.append("logo", logoFile);
+        const logoRes = await API.put("/business/my/logo", logoFormData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        console.log("🟢 תשובת השרת לאחר העלאת הלוגו:", logoRes);
 
-          // עדכון preview עם URL קבוע מהשרת
+        if (logoRes.status === 200) {
+          updatedData.logo = logoRes.data.logo;
           setLogoPreview(logoRes.data.logo);
           setLogoFile(null);
+          console.log("✅ הלוגו עודכן בהצלחה ל-URL:", logoRes.data.logo);
+        } else {
+          console.warn("⚠️ העלאת לוגו נכשלה:", logoRes);
         }
-        await API.put("/business/profile", updatedData);
+      } else {
+        console.log("אין לוגו חדש להעלות.");
+      }
+
+      const profileRes = await API.put("/business/profile", updatedData);
+      console.log("🟢 תשובת השרת לאחר שמירת הפרופיל:", profileRes);
+
+      if (profileRes.status === 200) {
         await fetchData();
         setShowEditProfile(false);
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        setSaving(false);
+        console.log("✅ שמירת הפרופיל הושלמה בהצלחה");
+      } else {
+        console.warn("⚠️ שמירת פרופיל נכשלה:", profileRes);
+        alert("שגיאה בשמירת הפרופיל");
       }
-    },
-    [logoFile, fetchData]
-  );
+    } catch (err) {
+      console.error("❌ שגיאה בשמירת הפרופיל:", err);
+      alert("שגיאה בשמירת הפרופיל");
+    } finally {
+      setSaving(false);
+    }
+  },
+  [logoFile, fetchData]
+);
+
 
   const collabPrefLines = useMemo(() => {
     if (!profileData?.collabPref) return [];
