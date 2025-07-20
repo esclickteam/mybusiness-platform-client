@@ -71,19 +71,25 @@ export default function MainSection({
     if (!window.confirm("אתה בטוח שברצונך למחוק את הלוגו?")) return;
     try {
       setIsDeletingLogo(true);
+
+      // דוגמה להוספת טוקן (JWT) ל-Authorization header
+      const token = localStorage.getItem("token"); // או מאיפה שאתה שומר את הטוקן
+
       const response = await fetch("/api/business/my/logo", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          // אם צריך, הוסף כאן authorization token
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
         }
       });
+
       if (!response.ok) {
         const error = await response.json();
         alert("שגיאה במחיקת הלוגו: " + (error.error || response.statusText));
         setIsDeletingLogo(false);
         return;
       }
+
       // מעדכן את הערך של הלוגו למחרוזת ריקה
       handleInputChange({ target: { name: "logo", value: "" } });
       alert("הלוגו נמחק בהצלחה");
