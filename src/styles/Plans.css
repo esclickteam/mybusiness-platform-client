@@ -242,7 +242,7 @@
   text-align: center;
   animation: blinkOrangeOpacity 3s ease-in-out infinite;
   color: #a93100; /* אדום כתום כהה לטקסט */
-  text-shadow: none;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
   box-shadow: 0 4px 10px rgba(255, 102, 0, 0.3);
 }
 
