@@ -16,6 +16,7 @@ export default function CollabBusinessProfileTab({ socket }) {
   const [showBusinessChat, setShowBusinessChat] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isDeletingLogo, setIsDeletingLogo] = useState(false);
 
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [myBusinessName, setMyBusinessName] = useState("");
@@ -88,6 +89,36 @@ export default function CollabBusinessProfileTab({ socket }) {
       setLogoPreview(URL.createObjectURL(file));
     }
   }, [logoPreview, logoFile]);
+
+  // פונקציה למחיקת לוגו
+  const handleDeleteLogo = useCallback(async () => {
+    if (saving || isDeletingLogo) return;
+    if (!window.confirm("אתה בטוח שברצונך למחוק את הלוגו?")) return;
+
+    try {
+      setIsDeletingLogo(true);
+
+      const response = await API.delete("/business/my/logo");
+
+      if (response.status !== 200) {
+        alert("שגיאה במחיקת הלוגו");
+        setIsDeletingLogo(false);
+        return;
+      }
+
+      // מנקה את הלוגו בממשק
+      setLogoPreview(null);
+      setLogoFile(null);
+      // מעדכן את הנתונים בפרופיל
+      await fetchData();
+      alert("הלוגו נמחק בהצלחה");
+    } catch (err) {
+      alert("שגיאה במחיקת הלוגו");
+      console.error(err);
+    } finally {
+      setIsDeletingLogo(false);
+    }
+  }, [saving, isDeletingLogo, fetchData]);
 
   const handleSaveProfile = useCallback(
     async (e) => {
@@ -189,6 +220,16 @@ export default function CollabBusinessProfileTab({ socket }) {
               >
                 💬 הודעות עסקיות
               </button>
+              {logoPreview && (
+                <button
+                  className="btn-danger"
+                  onClick={handleDeleteLogo}
+                  disabled={saving || isDeletingLogo}
+                  title="מחק לוגו"
+                >
+                  {isDeletingLogo ? "מוחק..." : "❌ מחק לוגו"}
+                </button>
+              )}
             </div>
           </div>
 
