@@ -70,6 +70,7 @@
 }
 
 .duration-btn {
+  position: relative; /* ← זה מה שחסר */
   background: #d6ceff;
   border: none;
   border-radius: 12px;
