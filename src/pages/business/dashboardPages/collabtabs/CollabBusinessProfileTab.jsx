@@ -41,7 +41,10 @@ export default function CollabBusinessProfileTab({ socket }) {
 
       if (profileRes.data.business) {
         setProfileData(profileRes.data.business);
+
+        // חשוב: עדכון logoPreview עם URL קבוע מהשרת (לא URL זמני)
         setLogoPreview(profileRes.data.business.logo || null);
+
         setMyBusinessName(profileRes.data.business.businessName || "עסק שלי");
       }
       if (businessIdRes.data.myBusinessId) {
@@ -86,7 +89,7 @@ export default function CollabBusinessProfileTab({ socket }) {
         URL.revokeObjectURL(logoPreview);
       }
       setLogoFile(file);
-      setLogoPreview(URL.createObjectURL(file));
+      setLogoPreview(URL.createObjectURL(file)); // כאן נשמר URL זמני להצגה מיידית
     }
   }, [logoPreview, logoFile]);
 
@@ -109,8 +112,10 @@ export default function CollabBusinessProfileTab({ socket }) {
       // מנקה את הלוגו בממשק
       setLogoPreview(null);
       setLogoFile(null);
-      // מעדכן את הנתונים בפרופיל
+
+      // מעדכן את הנתונים בפרופיל (משלוף מחדש של URL קבוע)
       await fetchData();
+
       alert("הלוגו נמחק בהצלחה");
     } catch (err) {
       alert("שגיאה במחיקת הלוגו");
@@ -143,11 +148,14 @@ export default function CollabBusinessProfileTab({ socket }) {
             headers: { "Content-Type": "multipart/form-data" },
           });
           updatedData.logo = logoRes.data.logo;
+
+          // חשוב: לעדכן את logoPreview עם ה-URL מהשרת (קבוע, לא זמני)
+          setLogoPreview(logoRes.data.logo);
+          setLogoFile(null);
         }
         await API.put("/business/profile", updatedData);
         await fetchData();
         setShowEditProfile(false);
-        setLogoFile(null);
       } catch (err) {
         alert(err.message);
       } finally {
