@@ -235,24 +235,25 @@
 .launch-price-banner {
   margin-bottom: 20px;
   padding: 12px 20px;
-  background-color: #ffe6e6; /* רקע אדום בהיר */
+  background: linear-gradient(145deg, #fff1e0, #ffd8a8); /* רקע כתום בהיר הדרגתי */
   font-weight: 900;
   font-size: 1.15rem;
   border-radius: 12px;
   text-align: center;
-  animation: blinkRedOpacity 3s ease-in-out infinite;
-  color: #cc0000; /* אדום בולט */
+  animation: blinkOrangeOpacity 3s ease-in-out infinite;
+  color: #a93100; /* אדום כתום כהה לטקסט */
   text-shadow: none;
+  box-shadow: 0 4px 10px rgba(255, 102, 0, 0.3);
 }
 
-@keyframes blinkRedOpacity {
+@keyframes blinkOrangeOpacity {
   0%, 100% {
     opacity: 1;
-    color: #cc0000;
+    color: #a93100;
   }
   50% {
-    opacity: 0.4;
-    color: #ff4d4d; /* אדום בהיר יותר */
+    opacity: 0.5;
+    color: #ff6600; /* כתום בוהק */
   }
 }
 
