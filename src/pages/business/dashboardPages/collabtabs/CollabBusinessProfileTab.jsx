@@ -10,8 +10,11 @@ import AiModal from "../../../../components/AiModal";
 
 export default function CollabBusinessProfileTab({ socket }) {
   const [profileData, setProfileData] = useState(null);
+
+  // --- לוגו: preview ו-file מנוהלים כאן ---
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
+
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showBusinessChat, setShowBusinessChat] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -42,7 +45,7 @@ export default function CollabBusinessProfileTab({ socket }) {
       if (profileRes.data.business) {
         setProfileData(profileRes.data.business);
 
-        // חשוב: עדכון logoPreview עם URL קבוע מהשרת (לא URL זמני)
+        // עדכון logoPreview עם URL קבוע מהשרת (לא URL זמני)
         setLogoPreview(profileRes.data.business.logo || null);
 
         setMyBusinessName(profileRes.data.business.businessName || "עסק שלי");
@@ -82,18 +85,20 @@ export default function CollabBusinessProfileTab({ socket }) {
     };
   }, [logoPreview, logoFile]);
 
+  // --- ניהול שינוי לוגו עם יצירת preview זמני ---
   const handleLogoChange = useCallback((e) => {
     const file = e.target.files[0];
     if (file) {
+      // שחרור preview קודם אם היה
       if (logoPreview && logoFile) {
         URL.revokeObjectURL(logoPreview);
       }
       setLogoFile(file);
-      setLogoPreview(URL.createObjectURL(file)); // כאן נשמר URL זמני להצגה מיידית
+      setLogoPreview(URL.createObjectURL(file)); // preview זמני להצגה מיידית
     }
   }, [logoPreview, logoFile]);
 
-  // פונקציה למחיקת לוגו
+  // --- מחיקת לוגו עם עדכון ממשק ושליפת נתונים מחדש ---
   const handleDeleteLogo = useCallback(async () => {
     if (saving || isDeletingLogo) return;
     if (!window.confirm("אתה בטוח שברצונך למחוק את הלוגו?")) return;
@@ -109,11 +114,11 @@ export default function CollabBusinessProfileTab({ socket }) {
         return;
       }
 
-      // מנקה את הלוגו בממשק
+      // ניקוי הלוגו בממשק
       setLogoPreview(null);
       setLogoFile(null);
 
-      // מעדכן את הנתונים בפרופיל (משלוף מחדש של URL קבוע)
+      // עדכון פרופיל עם ה-URL החדש
       await fetchData();
 
       alert("הלוגו נמחק בהצלחה");
@@ -125,6 +130,7 @@ export default function CollabBusinessProfileTab({ socket }) {
     }
   }, [saving, isDeletingLogo, fetchData]);
 
+  // --- שמירת פרופיל כולל העלאת לוגו ---
   const handleSaveProfile = useCallback(
     async (e) => {
       e.preventDefault();
@@ -149,7 +155,7 @@ export default function CollabBusinessProfileTab({ socket }) {
           });
           updatedData.logo = logoRes.data.logo;
 
-          // חשוב: לעדכן את logoPreview עם ה-URL מהשרת (קבוע, לא זמני)
+          // עדכון preview עם URL קבוע מהשרת
           setLogoPreview(logoRes.data.logo);
           setLogoFile(null);
         }
