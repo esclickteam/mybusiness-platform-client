@@ -42,13 +42,23 @@ export default function CollabBusinessProfileTab({ socket }) {
         API.get("/business-chat/me"),
       ]);
 
-      if (profileRes.data.business) {
-        setProfileData(profileRes.data.business);
+      // תמיכה במבנה response עם business או ישירות
+      const businessData =
+        profileRes.data.business || profileRes.data || null;
+
+      if (businessData) {
+        setProfileData(businessData);
 
         // עדכון logoPreview עם URL קבוע מהשרת (לא URL זמני)
-        setLogoPreview(profileRes.data.business.logo || null);
+        if (typeof businessData.logo === "string") {
+          setLogoPreview(businessData.logo);
+        } else if (businessData.logo && businessData.logo.preview) {
+          setLogoPreview(businessData.logo.preview);
+        } else {
+          setLogoPreview(null);
+        }
 
-        setMyBusinessName(profileRes.data.business.businessName || "עסק שלי");
+        setMyBusinessName(businessData.businessName || "עסק שלי");
       }
       if (businessIdRes.data.myBusinessId) {
         setMyBusinessId(businessIdRes.data.myBusinessId);
@@ -86,17 +96,20 @@ export default function CollabBusinessProfileTab({ socket }) {
   }, [logoPreview, logoFile]);
 
   // --- ניהול שינוי לוגו עם יצירת preview זמני ---
-  const handleLogoChange = useCallback((e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // שחרור preview קודם אם היה
-      if (logoPreview && logoFile) {
-        URL.revokeObjectURL(logoPreview);
+  const handleLogoChange = useCallback(
+    (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        // שחרור preview קודם אם היה
+        if (logoPreview && logoFile) {
+          URL.revokeObjectURL(logoPreview);
+        }
+        setLogoFile(file);
+        setLogoPreview(URL.createObjectURL(file)); // preview זמני להצגה מיידית
       }
-      setLogoFile(file);
-      setLogoPreview(URL.createObjectURL(file)); // preview זמני להצגה מיידית
-    }
-  }, [logoPreview, logoFile]);
+    },
+    [logoPreview, logoFile]
+  );
 
   // --- מחיקת לוגו עם עדכון ממשק ושליפת נתונים מחדש ---
   const handleDeleteLogo = useCallback(async () => {
@@ -108,7 +121,7 @@ export default function CollabBusinessProfileTab({ socket }) {
 
       const response = await API.delete("/business/my/logo");
 
-      if (response.status !== 200) {
+      if (response.status !== 200 && response.status !== 204) {
         alert("שגיאה במחיקת הלוגו");
         setIsDeletingLogo(false);
         return;
@@ -132,64 +145,63 @@ export default function CollabBusinessProfileTab({ socket }) {
 
   // --- שמירת פרופיל כולל העלאת לוגו ---
   const handleSaveProfile = useCallback(
-  async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    const formData = new FormData(e.target);
-    const updatedData = {
-      businessName: formData.get("businessName"),
-      category: formData.get("category"),
-      area: formData.get("area"),
-      description: formData.get("about"),
-      collabPref: formData.get("collabPref"),
-      contact: formData.get("contact"),
-      phone: formData.get("phone"),
-      email: formData.get("email"),
-    };
-    try {
-      console.log("🚀 מתחילים שמירת פרופיל...");
-      if (logoFile) {
-        console.log("📤 מעלה לוגו חדש:", logoFile);
-        const logoFormData = new FormData();
-        logoFormData.append("logo", logoFile);
-        const logoRes = await API.put("/business/my/logo", logoFormData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        console.log("🟢 תשובת השרת לאחר העלאת הלוגו:", logoRes);
+    async (e) => {
+      e.preventDefault();
+      setSaving(true);
+      const formData = new FormData(e.target);
+      const updatedData = {
+        businessName: formData.get("businessName"),
+        category: formData.get("category"),
+        area: formData.get("area"),
+        description: formData.get("about"),
+        collabPref: formData.get("collabPref"),
+        contact: formData.get("contact"),
+        phone: formData.get("phone"),
+        email: formData.get("email"),
+      };
+      try {
+        console.log("🚀 מתחילים שמירת פרופיל...");
+        if (logoFile) {
+          console.log("📤 מעלה לוגו חדש:", logoFile);
+          const logoFormData = new FormData();
+          logoFormData.append("logo", logoFile);
+          const logoRes = await API.put("/business/my/logo", logoFormData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          console.log("🟢 תשובת השרת לאחר העלאת הלוגו:", logoRes);
 
-        if (logoRes.status === 200) {
-          updatedData.logo = logoRes.data.logo;
-          setLogoPreview(logoRes.data.logo);
-          setLogoFile(null);
-          console.log("✅ הלוגו עודכן בהצלחה ל-URL:", logoRes.data.logo);
+          if (logoRes.status === 200) {
+            updatedData.logo = logoRes.data.logo;
+            setLogoPreview(logoRes.data.logo);
+            setLogoFile(null);
+            console.log("✅ הלוגו עודכן בהצלחה ל-URL:", logoRes.data.logo);
+          } else {
+            console.warn("⚠️ העלאת לוגו נכשלה:", logoRes);
+          }
         } else {
-          console.warn("⚠️ העלאת לוגו נכשלה:", logoRes);
+          console.log("אין לוגו חדש להעלות.");
         }
-      } else {
-        console.log("אין לוגו חדש להעלות.");
-      }
 
-      const profileRes = await API.put("/business/profile", updatedData);
-      console.log("🟢 תשובת השרת לאחר שמירת הפרופיל:", profileRes);
+        const profileRes = await API.put("/business/profile", updatedData);
+        console.log("🟢 תשובת השרת לאחר שמירת הפרופיל:", profileRes);
 
-      if (profileRes.status === 200) {
-        await fetchData();
-        setShowEditProfile(false);
-        console.log("✅ שמירת הפרופיל הושלמה בהצלחה");
-      } else {
-        console.warn("⚠️ שמירת פרופיל נכשלה:", profileRes);
+        if (profileRes.status === 200) {
+          await fetchData();
+          setShowEditProfile(false);
+          console.log("✅ שמירת הפרופיל הושלמה בהצלחה");
+        } else {
+          console.warn("⚠️ שמירת פרופיל נכשלה:", profileRes);
+          alert("שגיאה בשמירת הפרופיל");
+        }
+      } catch (err) {
+        console.error("❌ שגיאה בשמירת הפרופיל:", err);
         alert("שגיאה בשמירת הפרופיל");
+      } finally {
+        setSaving(false);
       }
-    } catch (err) {
-      console.error("❌ שגיאה בשמירת הפרופיל:", err);
-      alert("שגיאה בשמירת הפרופיל");
-    } finally {
-      setSaving(false);
-    }
-  },
-  [logoFile, fetchData]
-);
-
+    },
+    [logoFile, fetchData]
+  );
 
   const collabPrefLines = useMemo(() => {
     if (!profileData?.collabPref) return [];
