@@ -191,6 +191,7 @@
     font-size: 1.2rem;
   }
 }
+
 /* רספונסיביות למסכי טבלט גדולים (901px - 1024px) */
 @media (min-width: 901px) and (max-width: 1024px) {
   .plans-wrapper {
@@ -241,7 +242,6 @@
   text-align: center;
   animation: blinkRedOpacity 3s ease-in-out infinite;
   color: #cc0000; /* אדום בולט */
-  /* ללא צל טקסט */
   text-shadow: none;
 }
 

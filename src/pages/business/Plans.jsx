@@ -89,18 +89,10 @@ function Plans() {
           ))}
         </div>
 
-        {/* מחיר השקה מודגש ומהבהב */}
         <div
-          className="launch-price-banner blink-slow"
+          className="launch-price-banner"
           role="alert"
           aria-live="polite"
-          style={{
-            marginBottom: '20px',
-            padding: '12px 20px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            boxShadow: '0 4px 15px rgba(75, 0, 210, 0.5)',
-          }}
         >
           הצטרפו עכשיו במחיר השקה מיוחד לזמן מוגבל – אל תפספסו!
         </div>
