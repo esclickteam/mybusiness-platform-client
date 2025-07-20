@@ -304,10 +304,12 @@
 
 /* הדגשת מסלול מומלץ (שנתי) */
 .duration-btn.recommended {
-  border: 2px solid gold;
-  background-color: #fff9db;
-  position: relative;
+  background: #fffadc;
+  color: #2b1e00; /* כהה טבעי */
+  border: 2px solid #ffd100;
+  box-shadow: 0 10px 25px rgba(132, 96, 255, 0.35);
 }
+
 
 .duration-btn.recommended::after {
   content: "מומלץ";
