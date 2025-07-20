@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import rawCities from "../../../../../data/cities";
@@ -13,7 +13,7 @@ const cityOptions = CITIES.map(city => ({ value: city, label: city }));
 
 export default function MainSection({
   businessDetails = {},
-  reviews = [], // מערך הביקורות
+  reviews = [],
   handleInputChange,
   handleMainImagesChange,
   handleDeleteImage,
@@ -28,6 +28,7 @@ export default function MainSection({
   renderTopBar
 }) {
   const containerRef = useRef();
+  const [isDeletingLogo, setIsDeletingLogo] = useState(false);
 
   useEffect(() => {
     const onClickOutside = e => {
@@ -56,13 +57,43 @@ export default function MainSection({
     phone = "",
     email = "",
     category = "",
-    address = {}
+    address = {},
+    logo = null
   } = businessDetails;
   const { city = "" } = address;
 
-  // מיון הביקורות לפי תאריך חדש לישן והוצאת 2 האחרונות
   const sortedReviews = [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
   const lastTwoReviews = sortedReviews.slice(0, 2);
+
+  // פונקציה למחיקת לוגו
+  async function handleDeleteLogo() {
+    if (isSaving || isDeletingLogo) return;
+    if (!window.confirm("אתה בטוח שברצונך למחוק את הלוגו?")) return;
+    try {
+      setIsDeletingLogo(true);
+      const response = await fetch("/api/business/my/logo", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          // אם צריך, הוסף כאן authorization token
+        }
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        alert("שגיאה במחיקת הלוגו: " + (error.error || response.statusText));
+        setIsDeletingLogo(false);
+        return;
+      }
+      // מעדכן את הערך של הלוגו למחרוזת ריקה
+      handleInputChange({ target: { name: "logo", value: "" } });
+      alert("הלוגו נמחק בהצלחה");
+    } catch (err) {
+      alert("שגיאה במחיקת הלוגו");
+      console.error(err);
+    } finally {
+      setIsDeletingLogo(false);
+    }
+  }
 
   return (
     <>
@@ -169,14 +200,27 @@ export default function MainSection({
           onChange={handleLogoChange}
           disabled={isSaving}
         />
-        <button
-          type="button"
-          className="save-btn"
-          onClick={() => logoInputRef.current?.click()}
-          disabled={isSaving}
-        >
-          העלאת לוגו
-        </button>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <button
+            type="button"
+            className="save-btn"
+            onClick={() => logoInputRef.current?.click()}
+            disabled={isSaving || isDeletingLogo}
+          >
+            העלאת לוגו
+          </button>
+          {logo && (
+            <button
+              type="button"
+              className="delete-btn"
+              onClick={handleDeleteLogo}
+              disabled={isSaving || isDeletingLogo}
+              title="מחק לוגו"
+            >
+              {isDeletingLogo ? "מוחק..." : "❌ מחק לוגו"}
+            </button>
+          )}
+        </div>
 
         <label>תמונות ראשיות:</label>
         <input
