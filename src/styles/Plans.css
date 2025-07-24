@@ -340,3 +340,22 @@
   transform: scale(1.05);
   transition: transform 0.25s ease, background 0.3s ease;
 }
+
+/* עיצוב לחבילת ניסיון */
+.duration-btn.test {
+  border: 2px solid #ffa500;
+  background: #fff8e1;
+  color: #a66300;
+}
+
+.duration-btn.test:hover {
+  background: #ffe082;
+}
+
+.duration-btn.test.active {
+  background: #ffc107;
+  color: #4b2bd9;
+  box-shadow: 0 7px 15px rgba(255, 165, 0, 0.6);
+  transform: scale(1.05);
+  transition: transform 0.25s ease, background 0.3s ease;
+}

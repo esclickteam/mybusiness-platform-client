@@ -7,20 +7,19 @@ function Plans() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // מחירים לחבילות רגילות
-  const prices = { "1": 399, "3": 379, "12": 329 };
-  const [selectedDuration, setSelectedDuration] = useState("1");
-
-  // אם המשתמש הוא משתמש ניסוי, נוסיף חבילה ניסיונית
+  // האם המשתמש הוא משתמש ניסוי
   const isTestUser = user?.isTestUser || false;
 
-  // חבילות זמינות להצגה
-  const durations = ["1", "3", "12"];
-  if (isTestUser) {
-    durations.unshift("test"); // נוסיף חבילה ניסיונית בקידומת "test"
-  }
+  // durations לחבילות להצגה (כולל חבילת ניסיון למשתמש ניסוי)
+  const durations = isTestUser ? ["test", "1", "3", "12"] : ["1", "3", "12"];
 
-  // מחירי החבילה הניסיונית
+  // בשלב ההתחלתי נסמן את חבילת הניסיון כברירת מחדל אם זה user ניסוי
+  const [selectedDuration, setSelectedDuration] = useState(
+    isTestUser ? "test" : "1"
+  );
+
+  // מחירים לחבילות רגילות
+  const prices = { "1": 399, "3": 379, "12": 329 };
   const testPrices = { test: 1 };
 
   const handleDurationChange = (duration) => setSelectedDuration(duration);
@@ -73,7 +72,10 @@ function Plans() {
         <ul className="plans-list">
           {features.map((text, idx) => (
             <li key={idx} className="plans-list-item">
-              <span className="checkmark" aria-hidden="true">✔</span> {text}
+              <span className="checkmark" aria-hidden="true">
+                ✔
+              </span>{" "}
+              {text}
             </li>
           ))}
         </ul>
@@ -84,7 +86,6 @@ function Plans() {
           aria-label="בחירת תקופת מנוי"
         >
           {durations.map((d) => {
-            // טקסט להצגה למחיר ומשך המנוי
             let label = "";
             let price = 0;
             if (d === "test") {
@@ -105,9 +106,9 @@ function Plans() {
               <button
                 key={d}
                 onClick={() => handleDurationChange(d)}
-                className={`duration-btn ${selectedDuration === d ? "active" : ""} ${
-                  d === "12" ? "recommended" : ""
-                }`}
+                className={`duration-btn ${d} ${
+                  selectedDuration === d ? "active" : ""
+                } ${d === "12" ? "recommended" : ""}`}
                 role="radio"
                 aria-checked={selectedDuration === d}
                 tabIndex={selectedDuration === d ? 0 : -1}
@@ -125,11 +126,15 @@ function Plans() {
           המחיר הכולל:{" "}
           {selectedDuration === "test"
             ? testPrices.test
-            : prices[selectedDuration] * parseInt(selectedDuration)}{" "}
-          ₪
+            : prices[selectedDuration] * parseInt(selectedDuration)}
+          {" "}₪
         </div>
 
-        <div className="launch-price-banner" role="alert" aria-live="polite">
+        <div
+          className="launch-price-banner"
+          role="alert"
+          aria-live="polite"
+        >
           הצטרפו עכשיו במחיר השקה מיוחד לזמן מוגבל – אל תפספסו!
         </div>
 
@@ -137,7 +142,11 @@ function Plans() {
           className="subscribe-btn"
           onClick={handleSelectPlan}
           type="button"
-          aria-label={`בחר מנוי לתקופה של ${selectedDuration} חודשים במחיר כולל ${
+          aria-label={`בחר מנוי לתקופה של ${
+            selectedDuration === "test"
+              ? "ניסיון"
+              : selectedDuration + " חודשים"
+          } במחיר כולל ${
             selectedDuration === "test"
               ? testPrices.test
               : prices[selectedDuration] * parseInt(selectedDuration)
