@@ -19,21 +19,18 @@ export default function Checkout() {
   const getUserId = (user) => user?._id || user?.id || user?.userId || null;
   const realUserId = getUserId(user);
 
-  // עדכון אפשרויות התשלומים בהתאם ל-duration (עם המרה למספר)
-  useEffect(() => {
-    const durNum = Number(duration);
-    let maxPayments = 1;
-    if (durNum === 3) maxPayments = 3;
-    else if (durNum === 12) maxPayments = 12;
-    // ברירת מחדל: 1
+  // המרה למספר חודשים (test => 1)
+  const monthsCount = duration === "test" ? 1 : Number(duration || 0);
 
-    const options = [];
-    for (let i = 1; i <= maxPayments; i++) {
-      options.push(i);
-    }
+  // עדכון אפשרויות התשלומים בהתאם למספר חודשים
+  useEffect(() => {
+    let maxPayments = 1;
+    if (monthsCount > 1) maxPayments = monthsCount;
+
+    const options = Array.from({ length: maxPayments }, (_, i) => i + 1);
     setPaymentOptions(options);
-    setPaymentCount(1); // אתחל ל-1 בכל שינוי
-  }, [duration]);
+    setPaymentCount(1);
+  }, [monthsCount]);
 
   if (loading) return null;
 
@@ -46,9 +43,7 @@ export default function Checkout() {
     return (
       <div className="checkout-container error-container">
         <h2 className="error-message">❌ החבילה שבחרת אינה זמינה.</h2>
-        <button className="return-link" onClick={() => navigate("/plans")}>
-          🔙 חזרה לעמוד החבילות
-        </button>
+        <button className="return-link" onClick={() => navigate("/plans")}>🔙 חזרה לעמוד החבילות</button>
       </div>
     );
   }
@@ -70,8 +65,8 @@ export default function Checkout() {
         plan: planName,
         price: totalPrice,
         userId: realUserId,
-        paymentCount, // שולח גם את מספר התשלומים שנבחר
-        duration: Number(duration), // מומלץ לשלוח גם duration לשרת
+        paymentCount,
+        duration: monthsCount,
       });
 
       const { paymentUrl } = response.data;
@@ -92,19 +87,18 @@ export default function Checkout() {
     }
   };
 
-  // קביעה של התצוגה של משך המנוי: יום או חודשים
-  const durationLabel = Number(duration) === 1 ? "חודש" : "חודשים";
-
+  // פלורליזציה של "חודש"/"חודשים"
+  const durationLabel = monthsCount === 1 ? "חודש" : "חודשים";
 
   return (
     <div className="checkout-container">
-      <div className="checkout-card">
-        <h1>🔹 תשלום עבור חבילת {planName}</h1>
+      <div className="checkout-card" dir="rtl">
+        <h1>🔹 תשלום עבור {planName}</h1>
         <p className="checkout-price">
           מחיר סופי: <strong>{totalPrice} ₪</strong>
         </p>
         <p className="checkout-duration">
-          משך המנוי: <strong>{duration} {durationLabel}</strong>
+          משך המנוי: <strong>{monthsCount} {durationLabel}</strong>
         </p>
 
         <label htmlFor="paymentCountSelect">מספר תשלומים:</label>
@@ -125,15 +119,13 @@ export default function Checkout() {
 
         <button className="pay-button" onClick={handlePayment} disabled={processing}>
           {processing ? (
-            <>
-              <span className="spinner" />⏳ מעבד תשלום...
-            </>
+            <><span className="spinner" />⏳ מעבד תשלום...</>
           ) : (
             "💳 עבור לתשלום"
           )}
         </button>
 
-        {errorMessage && !processing && (
+        {!processing && errorMessage && (
           <button className="retry-link" onClick={handlePayment} style={{ marginTop: "1em" }}>
             🔄 נסה שוב
           </button>
