@@ -55,6 +55,20 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  // פונקציה חדשה לרענון פרטי המשתמש מהשרת ועדכון ה-state וה-localStorage
+  const refreshUser = async () => {
+    try {
+      const { data } = await API.get("/auth/me", { withCredentials: true });
+      const normalized = normalizeUser(data);
+      setUser(normalized);
+      localStorage.setItem("businessDetails", JSON.stringify(normalized));
+      return normalized;
+    } catch (e) {
+      console.error("Failed to refresh user", e);
+      return null;
+    }
+  };
+
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
     setError(null);
@@ -244,6 +258,7 @@ export function AuthProvider({ children }) {
     affiliateLogin,
     fetchWithAuth,
     refreshAccessToken: singleFlightRefresh,
+    refreshUser, // הוספתי פה את הפונקציה החדשה
     socket,
     setUser,
   };

@@ -107,7 +107,7 @@ export function preloadDashboardComponents() {
  * Main component
  *************************/
 const DashboardPage = () => {
-  const { user, initialized, logout, refreshAccessToken } = useAuth();
+  const { user, initialized, logout, refreshAccessToken, refreshUser } = useAuth();
   const businessId = getBusinessId();
 
   /* sockets */
@@ -293,6 +293,18 @@ const DashboardPage = () => {
       }
     }
   }, [location.pathname, location.state]);
+
+  /*******************
+   * Refresh user on dashboard load to update payment status
+   *******************/
+  useEffect(() => {
+    if (initialized) {
+      refreshUser().catch((err) => {
+        console.error("Failed to refresh user:", err);
+        logout();
+      });
+    }
+  }, [initialized, refreshUser, logout]);
 
   /*******************
    * Guard‑clauses
