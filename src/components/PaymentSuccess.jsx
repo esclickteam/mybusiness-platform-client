@@ -11,16 +11,23 @@ export default function PaymentSuccess() {
     async function fetchUser() {
       try {
         const { data } = await API.get("/auth/me", { withCredentials: true });
-        setUser(data);
-        // אפשר לעדכן גם טוקן אם צריך
-        navigate(data.role === "business" ? `/business/${data.businessId}/dashboard` : "/dashboard");
+        const user = data.user || data; // תלוי איך השרת מחזיר
+        setUser(user);
+        // אם אתם מחזירים טוקן חדש יש לעדכן גם אותו:
+        // setToken(data.accessToken);
+
+        if (user.role === "business" && user.businessId) {
+          navigate(`/business/${user.businessId}/dashboard`);
+        } else {
+          navigate("/dashboard");
+        }
       } catch (err) {
         console.error("Failed to fetch user after payment:", err);
         navigate("/login");
       }
     }
     fetchUser();
-  }, [navigate, setUser]);
+  }, [navigate, setUser, setToken]);
 
   return <div>טוען נתונים לאחר תשלום, אנא המתן...</div>;
 }
