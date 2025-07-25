@@ -56,11 +56,11 @@ export default function AffiliateDashboardPage() {
   // טיפול בבקשת משיכה
   const handleWithdrawRequest = async () => {
     if (withdrawAmount < 200) {
-      alert("סכום מינימום למשיכה הוא 200 ש\"ח");
+      alert('סכום מינימום למשיכה הוא 200 ש"ח');
       return;
     }
     if (withdrawAmount > currentBalance) {
-      alert("סכום המשיכה גבוה מהיתרה הזמינה");
+      alert('סכום המשיכה גבוה מהיתרה הזמינה');
       return;
     }
     try {
@@ -114,6 +114,23 @@ export default function AffiliateDashboardPage() {
   const affiliateLink = affiliateId
     ? `https://esclick.co.il/register?ref=${affiliateId}`
     : "לא זוהה מזהה שותף";
+
+  // פונקציה לעדכון פרטי בנק
+  const updateBankDetails = async (bankDetails) => {
+    try {
+      const response = await API.put(
+        "/affiliate-marketer/marketers/bank-details",
+        bankDetails,
+        { withCredentials: true }
+      );
+      alert(response.data.message || "פרטי הבנק עודכנו בהצלחה");
+      setShowBankForm(false);
+      refreshStats();
+    } catch (error) {
+      console.error(error);
+      alert("שגיאה בעדכון פרטי הבנק");
+    }
+  };
 
   return (
     <div className="affiliate-page">
@@ -213,7 +230,12 @@ export default function AffiliateDashboardPage() {
         <button className="payment-button" onClick={() => setShowBankForm((p) => !p)}>
           ⚙️ ניהול פרטי חשבון בנק
         </button>
-        {showBankForm && <MarketerBankDetailsForm />}
+        {showBankForm && (
+          <MarketerBankDetailsForm
+            affiliateId={affiliateId}
+            onSubmit={updateBankDetails}
+          />
+        )}
       </section>
     </div>
   );
