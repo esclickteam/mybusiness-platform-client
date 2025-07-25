@@ -43,7 +43,12 @@ export default function Checkout() {
     return (
       <div className="checkout-container error-container">
         <h2 className="error-message">❌ החבילה שבחרת אינה זמינה.</h2>
-        <button className="return-link" onClick={() => navigate("/plans")}>🔙 חזרה לעמוד החבילות</button>
+        <button
+          className="return-link"
+          onClick={() => navigate("/plans")}
+        >
+          🔙 חזרה לעמוד החבילות
+        </button>
       </div>
     );
   }
@@ -61,16 +66,27 @@ export default function Checkout() {
     }
 
     try {
-      const response = await API.post("/cardcom", {
-        plan: planName,
-        price: totalPrice,
-        userId: realUserId,
-        paymentCount,
-        duration: monthsCount,
-      });
+      const response = await API.post(
+        "/cardcom",
+        {
+          plan: planName,
+          price: totalPrice,
+          userId: realUserId,
+          paymentCount,
+          duration: monthsCount,
+        },
+        { withCredentials: true }
+      );
 
       const { paymentUrl } = response.data;
       if (paymentUrl) {
+        // ① שומרים לאן לחזור אחרי שהתשלום יסתיים בהצלחה
+        sessionStorage.setItem(
+          "postLoginRedirect",
+          `/business/${realUserId}/dashboard`
+        );
+
+        // ② מפנים את הדפדפן אל מסך התשלום החיצוני
         window.location.href = paymentUrl;
       } else {
         throw new Error("השרת לא החזיר כתובת תשלום תקינה");
@@ -80,7 +96,9 @@ export default function Checkout() {
       if (err.response?.status === 429) {
         setErrorMessage("⏳ נעשו יותר מדי ניסיונות תשלום. נסה שוב בעוד דקה.");
       } else {
-        setErrorMessage("❌ שגיאה בעת יצירת התשלום. לחץ 'נסה שוב' כדי לקבל קישור חדש.");
+        setErrorMessage(
+          "❌ שגיאה בעת יצירת התשלום. לחץ 'נסה שוב' כדי לקבל קישור חדש."
+        );
       }
     } finally {
       setProcessing(false);
@@ -117,21 +135,35 @@ export default function Checkout() {
 
         {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-        <button className="pay-button" onClick={handlePayment} disabled={processing}>
+        <button
+          className="pay-button"
+          onClick={handlePayment}
+          disabled={processing}
+        >
           {processing ? (
-            <><span className="spinner" />⏳ מעבד תשלום...</>
+            <>
+              <span className="spinner" />⏳ מעבד תשלום...
+            </>
           ) : (
             "💳 עבור לתשלום"
           )}
         </button>
 
         {!processing && errorMessage && (
-          <button className="retry-link" onClick={handlePayment} style={{ marginTop: "1em" }}>
+          <button
+            className="retry-link"
+            onClick={handlePayment}
+            style={{ marginTop: "1em" }}
+          >
             🔄 נסה שוב
           </button>
         )}
 
-        <button className="return-link" onClick={() => navigate("/plans")} disabled={processing}>
+        <button
+          className="return-link"
+          onClick={() => navigate("/plans")}
+          disabled={processing}
+        >
           🔙 חזרה לעמוד החבילות
         </button>
       </div>

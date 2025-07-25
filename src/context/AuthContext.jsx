@@ -57,22 +57,18 @@ export function AuthProvider({ children }) {
 
   // פונקציה חדשה לרענון פרטי המשתמש מהשרת ועדכון ה-state וה-localStorage
   const refreshUser = async () => {
-  try {
-    const { data } = await API.get("/auth/me?forceRefresh=1", { withCredentials: true });
-    console.log("refreshUser - user data received:", data);
-    console.log("subscriptionStart:", data.subscriptionStart);
-    console.log("subscriptionEnd:", data.subscriptionEnd);
-
-    const normalized = normalizeUser(data);
-    setUser(normalized);
-    localStorage.setItem("businessDetails", JSON.stringify(normalized));
-    return normalized;
-  } catch (e) {
-    console.error("Failed to refresh user", e);
-    return null;
-  }
-};
-
+    try {
+      const { data } = await API.get("/auth/me?forceRefresh=1", { withCredentials: true });
+      console.log("refreshUser - user data received:", data);
+      const normalized = normalizeUser(data);
+      setUser(normalized);
+      localStorage.setItem("businessDetails", JSON.stringify(normalized));
+      return normalized;
+    } catch (e) {
+      console.error("Failed to refresh user", e);
+      return null;
+    }
+  };
 
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
@@ -217,20 +213,23 @@ export function AuthProvider({ children }) {
 
     (async () => {
       try {
-        if (!user) {
-          const { data } = await API.get("/auth/me", { withCredentials: true });
-          const normalized = normalizeUser(data);
-          setUser(normalized);
-          localStorage.setItem("businessDetails", JSON.stringify(normalized));
+        // רענון משתמש מהשרת במקום קריאה ישירה ל־localStorage
+        const freshUser = await refreshUser();
+        if (freshUser) {
+          setUser(freshUser);
+        } else {
+          // fallback ל־localStorage אם רענון נכשל
+          const saved = localStorage.getItem("businessDetails");
+          if (saved) setUser(normalizeUser(JSON.parse(saved)));
         }
 
-        const newSocket = await createSocket(singleFlightRefresh, logout, user?.businessId);
+        const newSocket = await createSocket(singleFlightRefresh, logout, freshUser?.businessId);
         setSocket(newSocket);
 
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
           const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && user?.hasPaid;
+          const shouldSkip = isPlans && freshUser?.hasPaid;
           if (!shouldSkip) {
             navigate(savedRedirect, { replace: true });
           }
@@ -263,7 +262,7 @@ export function AuthProvider({ children }) {
     affiliateLogin,
     fetchWithAuth,
     refreshAccessToken: singleFlightRefresh,
-    refreshUser, // הוספתי פה את הפונקציה החדשה
+    refreshUser,
     socket,
     setUser,
   };
