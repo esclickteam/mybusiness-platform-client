@@ -127,7 +127,7 @@ const DashboardPage = () => {
   const [stats, setStats]               = useState(null);
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState(null);
-  const [isRefreshingUser, setIsRefreshingUser] = useState(false); // <-- new loading state for refreshUser
+  const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
   /*******************
    * Redirect business user with businessId to personal dashboard if on "/dashboard"
@@ -144,36 +144,48 @@ const DashboardPage = () => {
   }, [initialized, user, location.pathname, navigate]);
 
   /*******************
-   * Refresh profile if "?paid=1" is in URL and redirect accordingly
+   * Poll & refresh profile if "?paid=1" is in URL and update user state accordingly
    *******************/
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("paid") === "1") {
       setIsRefreshingUser(true);
-      refreshAccessToken()
-        .then(() => refreshUser())
-        .then((updatedUser) => {
-          setIsRefreshingUser(false);
-          if (updatedUser) {
+      let attempts = 0;
+      const maxAttempts = 10;
+      const poll = async () => {
+        attempts++;
+        try {
+          await refreshAccessToken();
+          const updatedUser = await refreshUser();
+          if (updatedUser?.hasPaid) {
+            setIsRefreshingUser(false);
             setUser(updatedUser);
+
+            // Remove ?paid=1 from URL without page reload
+            window.history.replaceState({}, document.title, location.pathname);
+
+            // Redirect to proper dashboard
             if (updatedUser.role === "business" && updatedUser.businessId) {
               navigate(`/business/${updatedUser.businessId}/dashboard`, { replace: true });
             } else {
               navigate("/dashboard", { replace: true });
             }
+          } else if (attempts < maxAttempts) {
+            setTimeout(poll, 3000);
           } else {
-            navigate("/dashboard", { replace: true });
+            setIsRefreshingUser(false);
+            alert("המנוי טרם הופעל. נסה לרענן שוב בעוד רגע.");
+            window.history.replaceState({}, document.title, location.pathname);
           }
-          // Clean the URL, removing ?paid=1 param
-          navigate(location.pathname, { replace: true });
-        })
-        .catch(() => {
+        } catch (e) {
           setIsRefreshingUser(false);
-          navigate("/dashboard", { replace: true });
-          navigate(location.pathname, { replace: true });
-        });
+          alert("שגיאה בבדיקת סטטוס מנוי.");
+          window.history.replaceState({}, document.title, location.pathname);
+        }
+      };
+      poll();
     }
-  }, [location.search, navigate, refreshAccessToken, refreshUser, setUser]);
+  }, [location.search, navigate, refreshAccessToken, refreshUser, setUser, location.pathname]);
 
   /*******************
    * Pre‑load chunks once
@@ -200,7 +212,6 @@ const DashboardPage = () => {
     setLoading(true);
     setError(null);
 
-    /* optimistic – show cache first */
     const cached = localStorage.getItem("dashboardStats");
     if (cached) setStats(JSON.parse(cached));
 
