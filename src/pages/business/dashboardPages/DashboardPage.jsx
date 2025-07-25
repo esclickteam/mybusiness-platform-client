@@ -107,7 +107,7 @@ export function preloadDashboardComponents() {
  * Main component
  *************************/
 const DashboardPage = () => {
-  const { user, initialized, logout, refreshAccessToken } = useAuth();
+  const { user, initialized, logout, refreshAccessToken, refreshUser, setUser } = useAuth();
   const businessId = getBusinessId();
 
   /* sockets */
@@ -135,17 +135,17 @@ const DashboardPage = () => {
     const params = new URLSearchParams(location.search);
     if (params.get("paid") === "1") {
       refreshAccessToken()
-        .then(() => fetch("/auth/me"))
-        .then((res) => res.json())
-        .then((userData) => {
-          // כאן אפשר לעדכן את ההקשר המקומי אם צריך (למשל setUser)
-          // אבל לרוב useAuth מטפל בזה אוטומטית
+        .then(() => refreshUser())
+        .then((updatedUser) => {
+          if (updatedUser) {
+            setUser(updatedUser);
+          }
         })
         .finally(() => {
           navigate("/dashboard", { replace: true });
         });
     }
-  }, [location.search, navigate, refreshAccessToken]);
+  }, [location.search, navigate, refreshAccessToken, refreshUser, setUser]);
 
   /*******************
    * Pre‑load chunks once
