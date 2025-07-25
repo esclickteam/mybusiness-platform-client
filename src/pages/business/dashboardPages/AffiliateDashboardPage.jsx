@@ -65,7 +65,7 @@ export default function AffiliateDashboardPage() {
     }
     try {
       const { data } = await API.post(
-        "/affiliate-marketer/request-withdrawal",
+        "/affiliate/request-withdrawal",
         { affiliateId, amount: withdrawAmount },
         { withCredentials: true }
       );
@@ -95,7 +95,7 @@ export default function AffiliateDashboardPage() {
       formData.append("affiliateId", affiliateId);
       if (withdrawalId) formData.append("withdrawalId", withdrawalId);
 
-      const { data } = await API.post("/affiliate-marketer/upload-receipt", formData, {
+      const { data } = await API.post("/affiliate/upload-receipt", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
