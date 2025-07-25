@@ -52,7 +52,8 @@ export default function MarketerBankDetailsForm() {
         idNumber: form.idNumber,
       };
 
-      const res = await API.put("/affiliate/marketers/bank-details", payload, {
+      const res = await API.put("/affiliate-marketer/marketers/bank-details", payload, {
+
         withCredentials: true,
       });
 
