@@ -213,7 +213,7 @@ export default function AffiliateDashboardPage() {
         <button className="payment-button" onClick={() => setShowBankForm((p) => !p)}>
           ⚙️ ניהול פרטי חשבון בנק
         </button>
-        {showBankForm && <BankDetailsForm />}
+        {showBankForm && <MarketerBankDetailsForm />}
       </section>
     </div>
   );
