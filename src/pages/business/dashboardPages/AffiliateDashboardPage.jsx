@@ -22,7 +22,10 @@ export default function AffiliateDashboardPage() {
   // חישוב סך כל העמלות שלא שולם
   const totalUnpaidCommissions = allStats
     .filter((stat) => stat.paymentStatus !== "paid")
-    .reduce((sum, stat) => sum + (stat.totalCommissions - (stat.paidCommissions || 0)), 0);
+    .reduce(
+      (sum, stat) => sum + (stat.totalCommissions - (stat.paidCommissions || 0)),
+      0
+    );
 
   // טען סטטיסטיקות ויתרה
   const refreshStats = async () => {
@@ -56,7 +59,7 @@ export default function AffiliateDashboardPage() {
   // טיפול בבקשת משיכה
   const handleWithdrawRequest = async () => {
     if (withdrawAmount < 200) {
-      alert('סכום מינימום למשיכה הוא 200 ש"ח');
+      alert('סכום מינימום למשיכה הוא 200 ש\"ח');
       return;
     }
     if (withdrawAmount > currentBalance) {
@@ -65,7 +68,7 @@ export default function AffiliateDashboardPage() {
     }
     try {
       const { data } = await API.post(
-          `/affiliate-marketer/request-withdrawal/${affiliateId}`,
+        `/affiliate-marketer/request-withdrawal/${affiliateId}`,
         { affiliateId, amount: withdrawAmount },
         { withCredentials: true }
       );
@@ -95,18 +98,20 @@ export default function AffiliateDashboardPage() {
       formData.append("affiliateId", affiliateId);
       if (withdrawalId) formData.append("withdrawalId", withdrawalId);
 
-      const { data } = await API.post("/affiliate/upload-receipt", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
+      const { data } = await API.post(
+        "/affiliate-marketer/upload-receipt",
+        formData,
+        { withCredentials: true }
+      );
 
       alert(data.message || "הקבלה הועלתה בהצלחה");
       setWithdrawStatus("קבלה הועלתה וממתינה לאישור.");
       setShowReceiptForm(false);
       setReceiptFile(null);
       refreshStats();
-    } catch {
-      alert("שגיאה בהעלאת הקבלה");
+    } catch (error) {
+      console.error("שגיאה בהעלאת הקבלה:", error);
+      alert(error.response?.data?.message || "שגיאה בהעלאת הקבלה");
     }
   };
 
@@ -146,7 +151,10 @@ export default function AffiliateDashboardPage() {
           onClick={(e) => e.target.select()}
           className="affiliate-link-input"
         />
-        <button onClick={() => navigator.clipboard.writeText(affiliateLink)} disabled={!affiliateId}>
+        <button
+          onClick={() => navigator.clipboard.writeText(affiliateLink)}
+          disabled={!affiliateId}
+        >
           📋 העתק קישור
         </button>
       </section>
@@ -231,10 +239,7 @@ export default function AffiliateDashboardPage() {
           ⚙️ ניהול פרטי חשבון בנק
         </button>
         {showBankForm && (
-          <MarketerBankDetailsForm
-            affiliateId={affiliateId}
-            onSubmit={updateBankDetails}
-          />
+          <MarketerBankDetailsForm affiliateId={affiliateId} onSubmit={updateBankDetails} />
         )}
       </section>
     </div>
