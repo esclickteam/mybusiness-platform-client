@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import API from "@api";
 import "./AffiliatePage.css";
-import BankDetailsForm from "./BankDetailsForm";
+import MarketerBankDetailsForm from "./MarketerBankDetailsForm";
 
 export default function AffiliateDashboardPage() {
   const { user } = useAuth();
