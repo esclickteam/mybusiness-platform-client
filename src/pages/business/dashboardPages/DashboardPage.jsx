@@ -132,7 +132,6 @@ const DashboardPage = () => {
    * Redirect business user with businessId to personal dashboard if on "/dashboard"
    *******************/
   useEffect(() => {
-    // Redirect only if user is business and has businessId and is on "/dashboard" without extra path
     if (
       initialized &&
       user?.role === "business" &&
@@ -144,7 +143,7 @@ const DashboardPage = () => {
   }, [initialized, user, location.pathname, navigate]);
 
   /*******************
-   * Refresh profile if "?paid=1" is in URL
+   * Refresh profile if "?paid=1" is in URL and redirect accordingly
    *******************/
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -154,9 +153,14 @@ const DashboardPage = () => {
         .then((updatedUser) => {
           if (updatedUser) {
             setUser(updatedUser);
+            if (updatedUser.role === "business" && updatedUser.businessId) {
+              navigate(`/business/${updatedUser.businessId}/dashboard`, { replace: true });
+            } else {
+              navigate("/dashboard", { replace: true });
+            }
           }
         })
-        .finally(() => {
+        .catch(() => {
           navigate("/dashboard", { replace: true });
         });
     }
@@ -251,7 +255,6 @@ const DashboardPage = () => {
       socketRef.current     = sock;
       reconnectAttempts.current = 0;
 
-      /* ───────── connect / disconnect ───────── */
       sock.on("connect", () => {
         console.log("Dashboard socket connected", sock.id);
         sock.emit("joinBusinessRoom", businessId);
@@ -269,7 +272,6 @@ const DashboardPage = () => {
         }
       });
 
-      /* ───────── token refresh ───────── */
       sock.on("tokenExpired", async () => {
         const newToken = await refreshAccessToken();
         if (!newToken) return logout();
@@ -277,24 +279,20 @@ const DashboardPage = () => {
         sock.emit("authenticate", { token: newToken });
       });
 
-      /* ───────── business updates ───────── */
       sock.on("dashboardUpdate", (newStats) => debouncedSetStats(newStats));
       sock.on("profileViewsUpdated", ({ views_count }) => {
         setStats((s) => (s ? { ...s, views_count } : s));
       });
 
-      /* ───────── appointment events ───────── */
       sock.on("appointmentCreated", refreshAppointmentsFromAPI);
       sock.on("appointmentUpdated", refreshAppointmentsFromAPI);
       sock.on("appointmentDeleted", refreshAppointmentsFromAPI);
 
-      /* ───────── AI recommendations ───────── */
       sock.on("newRecommendation", (rec) =>
         setRecommendations((prev) => [...prev, rec])
       );
     };
 
-    /* initial load */
     loadStats();
     refreshAppointmentsFromAPI();
     setupSocket();
