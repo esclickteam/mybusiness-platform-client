@@ -20,7 +20,8 @@ function Plans() {
 
   // מחירים לחבילות רגילות
   const prices = { "1": 399, "3": 379, "12": 329 };
-  const testPrices = { test: 1 };
+  // מחיר כולל לחבילת ניסיון ל-3 חודשים (לדוגמה 3 ש"ח לסה"כ)
+  const testPrices = { test: 3 };
 
   const handleDurationChange = (duration) => setSelectedDuration(duration);
 
@@ -34,8 +35,8 @@ function Plans() {
     let planName;
 
     if (selectedDuration === "test") {
-      totalPrice = testPrices.test;
-      planName = "חבילת מנוי ניסיונית - 1 ש\"ח";
+      totalPrice = testPrices.test; // מחיר כולל ל-3 חודשים
+      planName = "חבילת מנוי ניסיונית - 3 חודשים";
     } else {
       totalPrice = prices[selectedDuration] * parseInt(selectedDuration);
       planName = "חבילת מנוי עסקליק";
@@ -45,7 +46,8 @@ function Plans() {
       state: {
         planName,
         totalPrice,
-        duration: selectedDuration,
+        // עבור חבילת ניסיון שולחים duration = "3" כדי להתייחס ל-3 חודשים
+        duration: selectedDuration === "test" ? "3" : selectedDuration,
       },
     });
   };
@@ -89,8 +91,9 @@ function Plans() {
             let label = "";
             let price = 0;
             if (d === "test") {
-              label = "חבילת ניסיון";
-              price = testPrices.test;
+              label = "חבילת ניסיון (3 חודשים)";
+              // מציג מחיר לחודש לחבילת ניסיון (לדוגמה)
+              price = (testPrices.test / 3).toFixed(2);
             } else if (d === "1") {
               label = "חודשי";
               price = prices["1"];
@@ -130,11 +133,7 @@ function Plans() {
           {" "}₪
         </div>
 
-        <div
-          className="launch-price-banner"
-          role="alert"
-          aria-live="polite"
-        >
+        <div className="launch-price-banner" role="alert" aria-live="polite">
           הצטרפו עכשיו במחיר השקה מיוחד לזמן מוגבל – אל תפספסו!
         </div>
 
