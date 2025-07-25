@@ -129,6 +129,21 @@ const DashboardPage = () => {
   const [error, setError]               = useState(null);
 
   /*******************
+   * Redirect business user with businessId to personal dashboard if on "/dashboard"
+   *******************/
+  useEffect(() => {
+    // Redirect only if user is business and has businessId and is on "/dashboard" without extra path
+    if (
+      initialized &&
+      user?.role === "business" &&
+      user?.businessId &&
+      location.pathname === "/dashboard"
+    ) {
+      navigate(`/business/${user.businessId}/dashboard`, { replace: true });
+    }
+  }, [initialized, user, location.pathname, navigate]);
+
+  /*******************
    * Refresh profile if "?paid=1" is in URL
    *******************/
   useEffect(() => {
