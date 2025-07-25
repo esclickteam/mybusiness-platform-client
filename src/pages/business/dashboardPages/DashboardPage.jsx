@@ -127,6 +127,7 @@ const DashboardPage = () => {
   const [stats, setStats]               = useState(null);
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState(null);
+  const [isRefreshingUser, setIsRefreshingUser] = useState(false); // <-- new loading state for refreshUser
 
   /*******************
    * Redirect business user with businessId to personal dashboard if on "/dashboard"
@@ -148,9 +149,11 @@ const DashboardPage = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("paid") === "1") {
+      setIsRefreshingUser(true);
       refreshAccessToken()
         .then(() => refreshUser())
         .then((updatedUser) => {
+          setIsRefreshingUser(false);
           if (updatedUser) {
             setUser(updatedUser);
             if (updatedUser.role === "business" && updatedUser.businessId) {
@@ -158,10 +161,16 @@ const DashboardPage = () => {
             } else {
               navigate("/dashboard", { replace: true });
             }
+          } else {
+            navigate("/dashboard", { replace: true });
           }
+          // Clean the URL, removing ?paid=1 param
+          navigate(location.pathname, { replace: true });
         })
         .catch(() => {
+          setIsRefreshingUser(false);
           navigate("/dashboard", { replace: true });
+          navigate(location.pathname, { replace: true });
         });
     }
   }, [location.search, navigate, refreshAccessToken, refreshUser, setUser]);
@@ -326,6 +335,7 @@ const DashboardPage = () => {
     return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   if (loading && !stats)    return <DashboardSkeleton />;
   if (error)                return <p className="error-text">{alert || error}</p>;
+  if (isRefreshingUser)     return <p className="loading-text">⏳ מרענן פרטי משתמש…</p>;
 
   /*******************
    * Derived data

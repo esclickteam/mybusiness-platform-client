@@ -58,7 +58,7 @@ export function AuthProvider({ children }) {
   // פונקציה חדשה לרענון פרטי המשתמש מהשרת ועדכון ה-state וה-localStorage
   const refreshUser = async () => {
   try {
-    const { data } = await API.get("/auth/me", { withCredentials: true });
+    const { data } = await API.get("/auth/me?forceRefresh=1", { withCredentials: true });
     console.log("refreshUser - user data received:", data);
     console.log("subscriptionStart:", data.subscriptionStart);
     console.log("subscriptionEnd:", data.subscriptionEnd);
