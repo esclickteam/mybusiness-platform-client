@@ -65,7 +65,7 @@ export default function AffiliateDashboardPage() {
     }
     try {
       const { data } = await API.post(
-        "/affiliate/request-withdrawal",
+          `/affiliate-marketer/request-withdrawal/${affiliateId}`,
         { affiliateId, amount: withdrawAmount },
         { withCredentials: true }
       );
