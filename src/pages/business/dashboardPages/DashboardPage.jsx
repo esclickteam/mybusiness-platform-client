@@ -110,6 +110,14 @@ const DashboardPage = () => {
   const { user, initialized, logout, refreshAccessToken, refreshUser, setUser } = useAuth();
   const businessId = getBusinessId();
 
+  /* refs */
+  const cardsRef = useRef(null);
+  const insightsRef = useRef(null);
+  const chartsRef = useRef(null);
+  const appointmentsRef = useRef(null);
+  const nextActionsRef = useRef(null);
+  const weeklySummaryRef = useRef(null);
+
   /* sockets */
   const socketRef = useRef(null);
   const reconnectAttempts = useRef(0);
