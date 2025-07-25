@@ -128,13 +128,24 @@ const DashboardPage = () => {
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState(null);
 
-  /* refs for scrolling via DashboardNav */
-  const cardsRef         = useRef(null);
-  const insightsRef      = useRef(null);
-  const chartsRef        = useRef(null);
-  const appointmentsRef  = useRef(null);
-  const nextActionsRef   = useRef(null);
-  const weeklySummaryRef = useRef(null);
+  /*******************
+   * Refresh profile if "?paid=1" is in URL
+   *******************/
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("paid") === "1") {
+      refreshAccessToken()
+        .then(() => fetch("/auth/me"))
+        .then((res) => res.json())
+        .then((userData) => {
+          // כאן אפשר לעדכן את ההקשר המקומי אם צריך (למשל setUser)
+          // אבל לרוב useAuth מטפל בזה אוטומטית
+        })
+        .finally(() => {
+          navigate("/dashboard", { replace: true });
+        });
+    }
+  }, [location.search, navigate, refreshAccessToken]);
 
   /*******************
    * Pre‑load chunks once
