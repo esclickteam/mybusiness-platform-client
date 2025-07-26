@@ -57,11 +57,11 @@ export default function Home() {
       {/* Bookmark Cards */}
       <div className="cards-container">
         <div className="bookmark-card">
-          
-          
-          
-            
-          
+          <h3>לקוחות 🔐</h3>
+          <p>מצאו עסקים לפי תחום וצרו קשר בקליק!</p>
+          <Link to="/businesses">
+            <button>מעבר לחיפוש</button>
+          </Link>
         </div>
         <div className="bookmark-card">
           <h3>בעלי עסקים 💼</h3>
