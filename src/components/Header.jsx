@@ -204,10 +204,10 @@ export default function Header() {
                     {link("/business", <FaUserPlus />, "הצטרפות כבעל עסק")}
                     {link("/how-it-works", <FaCogs />, "איך זה עובד")}
                   </div>
-                  <div className="menu-section">
-                    
-                    {link("/businesses", <FaListUl />, "רשימת עסקים")}
-                  </div>
+                
+              
+                  
+                  
                   <div className="menu-section">
                     <h4>כללי</h4>
                     {link("/", <FaHome />, "דף הבית")}
