@@ -61,7 +61,7 @@ function About() {
       {/* Footer */}
       <footer className="footer">
         <ul className="footer-links">
-\          <li><Link to="/about">📖 קצת עלינו</Link></li>
+          <li><Link to="/about">📖 קצת עלינו</Link></li>
           <li><Link to="/how-it-works">⚙ איך זה עובד</Link></li>
           <li><Link to="/join">✏ הצטרפות עסקים</Link></li>
           <li><Link to="/faq">❓ שאלות נפוצות</Link></li>
