@@ -1,11 +1,3 @@
-import React, { useState } from "react";
-import { Helmet } from "react-helmet";
-import "../styles/Home.css";
-import { Link, useNavigate } from "react-router-dom";
-import Select from "react-select";
-import ALL_CATEGORIES from "../data/categories";
-import ALL_CITIES    from "../data/cities";
-
 export default function Home() {
   const navigate = useNavigate();
   const [category, setCategory] = useState("");
@@ -21,7 +13,6 @@ export default function Home() {
     navigate(`/businesses?${params.toString()}`);
   };
 
-  // סגנון לפורטל של React-Select עם z-index גבוה
   const portalStyles = {
     menuPortal: base => ({ ...base, zIndex: 9999 })
   };
@@ -56,13 +47,7 @@ export default function Home() {
 
       {/* Bookmark Cards */}
       <div className="cards-container">
-        <div className="bookmark-card">
-          <h3>לקוחות 🔐</h3>
-          <p>מצאו עסקים לפי תחום וצרו קשר בקליק!</p>
-          <Link to="/businesses">
-            <button>מעבר לחיפוש</button>
-          </Link>
-        </div>
+        {/* הוסר בלוק 'לקוחות' */}
         <div className="bookmark-card">
           <h3>בעלי עסקים 💼</h3>
           <p>הצטרפו לעסקליק ותקבלו פניות ישירות מלקוחות.</p>
