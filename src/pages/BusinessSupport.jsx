@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useForm, ValidationError } from "@formspree/react"; // יבוא של Formspree
+import { useForm } from "@formspree/react";
 
 import "../styles/business-support.css";
 
@@ -7,15 +7,14 @@ export default function BusinessSupport() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",              // הוסף שדה טלפון כאן
     issueDescription: "",
   });
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); // { type: 'success' | 'error', message: string }
+  const [status, setStatus] = useState(null);
 
-  // חיבור ל-Formspree עם המזהה שלך "mwpoojlv"
-  const [state, handleSubmit] = useForm("mwpoojlv"); // השתמש במזהה Formspree שלך
+  const [state, handleSubmit] = useForm("mwpoojlv");
 
-  // במידה והטופס נשלח בהצלחה
   if (state.succeeded) {
     return <p className="status-msg success">הפנייה נשלחה בהצלחה!</p>;
   }
@@ -29,20 +28,19 @@ export default function BusinessSupport() {
     e.preventDefault();
     setStatus(null);
 
-    const { name, email, issueDescription } = formData;
-    if (!name || !email || !issueDescription) {
-      setStatus({ type: "error", message: "אנא מלא את כל השדות" });
+    const { name, email, phone, issueDescription } = formData;
+
+    if (!name || !email || !phone || !issueDescription) {
+      setStatus({ type: "error", message: "אנא מלא את כל השדות כולל טלפון" });
       return;
     }
 
     setLoading(true);
 
     try {
-      // שליחה ל-Formspree
-      await handleSubmit(e); // Formspree כבר מטפל בשליחה
-
+      await handleSubmit(e);
       setStatus({ type: "success", message: "הפנייה נשלחה בהצלחה" });
-      setFormData({ name: "", email: "", issueDescription: "" });
+      setFormData({ name: "", email: "", phone: "", issueDescription: "" });
     } catch (err) {
       console.error("שגיאה:", err);
       setStatus({ type: "error", message: "שגיאה בשליחה" });
@@ -74,6 +72,16 @@ export default function BusinessSupport() {
           onChange={handleInputChange}
           disabled={loading}
           placeholder="הכנס את המייל שלך"
+        />
+
+        <label>טלפון ליצירת קשר:</label>  {/* שדה הטלפון */}
+        <input
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          onChange={handleInputChange}
+          disabled={loading}
+          placeholder="הכנס את הטלפון שלך"
         />
 
         <label>תיאור הבעיה:</label>
