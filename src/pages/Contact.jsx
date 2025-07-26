@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { useForm } from "@formspree/react"; // ייבוא Formspree
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import "../styles/Contact.css"; // ודא שה- CSS העדכני
+import "../styles/Contact.css";
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -11,15 +12,48 @@ function Contact() {
     message: "",
   });
 
+  const [state, handleSubmit] = useForm("mwpoojlv"); // החלף ב-ID שלך מ-Formspree
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    alert("הטופס נשלח בהצלחה!");
-    setFormData({ name: "", phone: "", email: "", message: "" });
+    setStatus(null);
+
+    const { name, phone, email, message } = formData;
+
+    if (!name || !phone || !email || !message) {
+      setStatus({ type: "error", message: "אנא מלא את כל השדות" });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await handleSubmit({
+        data: { name, phone, email, message }
+      });
+
+      setStatus({ type: "success", message: "הטופס נשלח בהצלחה!" });
+      setFormData({ name: "", phone: "", email: "", message: "" });
+    } catch (error) {
+      setStatus({ type: "error", message: "אירעה שגיאה בשליחה. נסה שוב." });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (state.succeeded) {
+    return (
+      <div className="contact-container">
+        <h2>הטופס נשלח בהצלחה!</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="contact-container">
@@ -41,7 +75,7 @@ function Contact() {
         יש לכם שאלה או רוצים שנחזור אליכם? מלאו את הטופס וניצור קשר בהקדם!
       </p>
 
-      <form className="contact-form" onSubmit={handleSubmit}>
+      <form className="contact-form" onSubmit={onSubmit}>
         <label>שם מלא:</label>
         <input
           type="text"
@@ -49,6 +83,7 @@ function Contact() {
           value={formData.name}
           onChange={handleChange}
           required
+          disabled={loading}
         />
 
         <label>טלפון:</label>
@@ -58,6 +93,7 @@ function Contact() {
           value={formData.phone}
           onChange={handleChange}
           required
+          disabled={loading}
         />
 
         <label>אימייל:</label>
@@ -67,6 +103,7 @@ function Contact() {
           value={formData.email}
           onChange={handleChange}
           required
+          disabled={loading}
         />
 
         <label>הודעה:</label>
@@ -75,12 +112,23 @@ function Contact() {
           value={formData.message}
           onChange={handleChange}
           required
+          disabled={loading}
         ></textarea>
 
-        <button type="submit" className="submit-button">
-          שליחת טופס
+        <button type="submit" className="submit-button" disabled={loading}>
+          {loading ? "שולח..." : "שליחת טופס"}
         </button>
       </form>
+
+      {status && (
+        <div
+          className={`status-msg ${status.type}`}
+          data-icon={status.type === "success" ? "✅" : "❌"}
+          style={{ marginTop: "1rem" }}
+        >
+          {status.message}
+        </div>
+      )}
 
       <p className="contact-email">
         ✉️ ניתן גם לפנות ישירות במייל: <strong>support@esclick.co.il</strong>
@@ -89,7 +137,6 @@ function Contact() {
       {/* Footer בעיצוב כפול שורה */}
       <footer className="footer-links-box">
         <div className="footer-links-row">
-          
           <Link to="/about"><span role="img" aria-label="ספר">📖</span> קצת עלינו</Link>
           <Link to="/how-it-works"><span role="img" aria-label="הגדרות">⚙️</span> איך זה עובד</Link>
           <Link to="/join"><span role="img" aria-label="חץ ימני">➥</span> הצטרפות עסקים</Link>
