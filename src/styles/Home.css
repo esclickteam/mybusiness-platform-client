@@ -132,11 +132,12 @@ body {
 
 /* === כרטיסיות עם קו דק וסגול מצד ימין === */
 .cards-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2.5rem;
+  display: flex;
+  justify-content: center; /* מרכז את הכרטיסים אופקית */
+  gap: 2.5rem; /* רווח בין הכרטיסים */
   padding: 0 1rem;
   margin-bottom: 4rem;
+  flex-wrap: wrap; /* מאפשר לעטוף שורות במובייל */
 }
 
 .bookmark-card {
