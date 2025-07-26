@@ -156,6 +156,9 @@ body {
   flex-direction: column;
   justify-content: space-between;
   min-height: 230px;
+  flex: 1 1 300px; /* רוחב בסיס וגמישות */
+  max-width: 320px;
+  min-width: 280px;
 }
 
 .bookmark-card:hover {
@@ -273,17 +276,20 @@ body {
 /* === רספונסיביות משופרת === */
 @media (max-width: 1024px) {
   .cards-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .search-section {
-    max-width: 100%;
-    padding: 20px 10px;
+    /* נשאר flex עם עטיפה ורוחב גמיש */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
   }
 }
 
 @media (max-width: 600px) {
   .cards-container {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column; /* כרטיסים בטור במובייל */
+    gap: 2rem;
+    padding: 0 1rem;
   }
   .main-title {
     font-size: 2.6rem;
@@ -309,12 +315,12 @@ body {
     max-width: 100%;
   }
   .dropdown-wrapper {
-    min-width: auto;      /* לבטל את המינימום הקבוע */
-    flex: 1 1 auto;       /* גמישות מרבית */
+    min-width: auto; /* לבטל את המינימום הקבוע */
+    flex: 1 1 auto; /* גמישות מרבית */
   }
   .dropdown-wrapper select,
   .dropdown-wrapper input {
-    padding: 12px 15px;   /* מעט פחות פדינג למובייל */
+    padding: 12px 15px; /* מעט פחות פדינג למובייל */
     font-size: 1rem;
   }
   .search-button {
