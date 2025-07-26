@@ -100,7 +100,7 @@ function HowItWorks() {
       {/* תחתית הדף */}
       <footer className="footer">
         <ul className="footer-links">
-          <li><Link to="/search">📋 חיפוש עסקים</Link></li>
+          
           <li><Link to="/about">📖 קצת עלינו</Link></li>
           <li><Link to="/how-it-works">⚙ איך זה עובד</Link></li>
           <li><Link to="/join">✏ הצטרפות עסקים</Link></li>
