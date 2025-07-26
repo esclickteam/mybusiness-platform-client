@@ -205,7 +205,7 @@ export default function Header() {
                     {link("/how-it-works", <FaCogs />, "איך זה עובד")}
                   </div>
                   <div className="menu-section">
-                    <h4>ללקוחות</h4>
+                    
                     {link("/businesses", <FaListUl />, "רשימת עסקים")}
                   </div>
                   <div className="menu-section">
