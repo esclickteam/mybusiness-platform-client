@@ -73,7 +73,7 @@ export default function Home() {
       <footer className="footer">
         <ul className="footer-links">
           <li>
-            <Link to="/businesses">📋 חיפוש עסקים</Link>
+            
           </li>
           <li>
             <Link to="/about">📖 קצת עלינו</Link>
