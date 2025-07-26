@@ -54,51 +54,6 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Search */}
-      <div className="search-section">
-        <div
-          className="dropdown-wrapper"
-          style={{ overflow: "visible" }}  /* חשוב: לא לחסום overflow */
-        >
-          <Select
-            options={categoryOptions}
-            value={categoryOptions.find(o => o.value === category) || null}
-            onChange={opt => setCategory(opt?.value || "")}
-            placeholder="תחום (לדוגמה: חשמלאי)"
-            isClearable
-            filterOption={({ label }, input) =>
-              label.toLowerCase().includes(input.toLowerCase())
-            }
-            menuPlacement="bottom"
-            menuPosition="fixed"              /* מבטיח שהתפריט לא ייחתך */
-            menuPortalTarget={document.body}  /* מפנה את התפריט ל־body */
-            styles={portalStyles}             /* z-index גבוה */
-          />
-        </div>
-        <div
-          className="dropdown-wrapper"
-          style={{ overflow: "visible" }}
-        >
-          <Select
-            options={cityOptions}
-            value={cityOptions.find(o => o.value === city) || null}
-            onChange={opt => setCity(opt?.value || "")}
-            placeholder="עיר (לדוגמה: תל אביב)"
-            isClearable
-            filterOption={({ label }, input) =>
-              label.toLowerCase().startsWith(input.toLowerCase())
-            }
-            menuPlacement="bottom"
-            menuPosition="fixed"
-            menuPortalTarget={document.body}
-            styles={portalStyles}
-          />
-        </div>
-        <button className="search-button" onClick={navigateToSearch}>
-          חפש
-        </button>
-      </div>
-
       {/* Bookmark Cards */}
       <div className="cards-container">
         <div className="bookmark-card">
