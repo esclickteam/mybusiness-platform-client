@@ -89,7 +89,7 @@ function Contact() {
       {/* Footer בעיצוב כפול שורה */}
       <footer className="footer-links-box">
         <div className="footer-links-row">
-          <Link to="/search"><span role="img" aria-label="מסמך">📝</span> חיפוש עסקים</Link>
+          
           <Link to="/about"><span role="img" aria-label="ספר">📖</span> קצת עלינו</Link>
           <Link to="/how-it-works"><span role="img" aria-label="הגדרות">⚙️</span> איך זה עובד</Link>
           <Link to="/join"><span role="img" aria-label="חץ ימני">➥</span> הצטרפות עסקים</Link>

@@ -86,7 +86,7 @@ function FAQ() {
       {/* תחתית הדף */}
       <footer className="footer">
         <ul className="footer-links">
-          <li><Link to="/business-search" className="footer-link">📋 חיפוש עסקים</Link></li>
+          
           <li><Link to="/about" className="footer-link">📖 קצת עלינו</Link></li>
           <li><Link to="/how-it-works" className="footer-link">⚙ איך זה עובד</Link></li>
           <li><Link to="/business-signup" className="footer-link">✏ הצטרפות עסקים</Link></li>
