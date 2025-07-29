@@ -204,7 +204,7 @@ export default function ProfileFAQ() {
             style={{
               width: "100%",
               textAlign: "right",
-              background: "#f3f3f3",
+              background: "#fc7777ff",
               border: "none",
               padding: "12px 15px",
               fontSize: 18,
@@ -229,7 +229,7 @@ export default function ProfileFAQ() {
               aria-labelledby={`faq-header-${index}`}
               style={{
                 padding: "12px 15px",
-                background: "#f25858ff",
+                background: "#fafafa",
                 whiteSpace: "pre-wrap",
                 fontSize: 16,
                 lineHeight: 1.6,
