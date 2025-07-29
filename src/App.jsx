@@ -144,8 +144,7 @@ export default function App() {
               <Route path="/business/:businessId" element={<BusinessProfileView />} />
               <Route path="/book/:businessId" element={<BookingPage />} />
               <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
-=             <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
-
+             <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
 
 
               <Route
