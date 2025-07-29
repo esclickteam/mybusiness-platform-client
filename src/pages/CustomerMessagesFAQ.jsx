@@ -122,7 +122,7 @@ export default function CustomerMessagesFAQ() {
             style={{
               width: "100%",
               textAlign: "right",
-              background: "#f3f3f3",
+              background: "#a8c0ff",
               border: "none",
               padding: "12px 20px",
               fontSize: 18,

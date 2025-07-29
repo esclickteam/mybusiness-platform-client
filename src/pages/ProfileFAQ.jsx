@@ -204,7 +204,7 @@ export default function ProfileFAQ() {
             style={{
               width: "100%",
               textAlign: "right",
-              background: "#a8c0ff",
+              background: "#f5f5f5",
               border: "none",
               padding: "12px 15px",
               fontSize: 18,
