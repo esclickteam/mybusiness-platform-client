@@ -229,7 +229,7 @@ export default function ProfileFAQ() {
               aria-labelledby={`faq-header-${index}`}
               style={{
                 padding: "12px 15px",
-                background: "#fafafa",
+                background: "#f25858ff",
                 whiteSpace: "pre-wrap",
                 fontSize: 16,
                 lineHeight: 1.6,
