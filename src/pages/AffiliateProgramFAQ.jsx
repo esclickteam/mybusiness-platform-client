@@ -125,7 +125,7 @@ export default function AffiliateProgramFAQ() {
             id={`faq-question-${idx}`}
             style={{
               width: "100%",
-              background: "none",
+              background: "rgba(85, 107, 47, 0.5)",
               border: "none",
               textAlign: "right",
               fontSize: "1.1rem",

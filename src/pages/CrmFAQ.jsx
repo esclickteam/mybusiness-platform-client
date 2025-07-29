@@ -184,7 +184,7 @@ export default function CrmFAQ() {
             style={{
               width: "100%",
               textAlign: "right",
-              background: "#a8c0ff",
+              background: "rgba(85, 107, 47, 0.5)",
               border: "none",
               padding: "12px 20px",
               fontSize: 18,

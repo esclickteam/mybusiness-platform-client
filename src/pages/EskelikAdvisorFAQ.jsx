@@ -219,7 +219,7 @@ export default function EskelikAdvisorFAQ() {
             id={`faq-header-${index}`}
             style={{
               width: "100%",
-              background: "#f5f5f5",
+              background: "rgba(85, 107, 47, 0.5)",
               color: "#333",
               padding: "15px 20px",
               fontSize: 18,
