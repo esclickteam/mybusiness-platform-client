@@ -56,7 +56,7 @@ const DashboardNav = ({ refs }) => {
       ))}
 
       {/* כפתור פרופיל ציבורי */}
-      <button onClick={openPublicProfile} className="public-profile-btn">
+      <button onClick={openPublicProfile}  className="public-profile-btn">
         👁️ צפייה בפרופיל
       </button>
     </div>
