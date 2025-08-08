@@ -49,7 +49,7 @@ const DashboardNav = ({ refs }) => {
         <button
           key={id}
           onClick={(e) => scrollTo(id, e)}
-          className={activeSection === id ? "active" : ""}
+          className={activeSection === id ?  "active" : ""}
         >
           {label}
         </button>
