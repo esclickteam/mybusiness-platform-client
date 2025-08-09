@@ -1,119 +1,143 @@
-import React, { useEffect, useMemo, useCallback, useContext, useState } from "react";
+import React, { useEffect, useMemo, useState, useContext, useCallback } from "react";
 import { AuthContext } from "../../../context/AuthContext"; // גישה ל-businessId
 
-const HEADER_SELECTOR = ".main-header"; // אם יש לכם סלקטור אחר להדר – עדכנו כאן
-const DEFAULT_OFFSET = 80;               // פיקסלים להוריד בגלילה אם אין header
+const SECTION_IDS = [
+  "cardsRef",
+  "insightsRef",
+  "nextActionsRef",
+  "chartsRef",
+  "appointmentsRef",
+  "weeklySummaryRef",
+];
 
-const DashboardNav = React.memo(({ refs = {} }) => {
-  const { user } = useContext(AuthContext);
+const LABELS = {
+  cardsRef: "כרטיסים",
+  insightsRef: "תובנות",
+  nextActionsRef: "המלצות",
+  chartsRef: "גרפים",
+  appointmentsRef: "פגישות",
+  weeklySummaryRef: "סיכום שבועי",
+};
+
+const DashboardNav = ({ refs = {} }) => {
+  const { user } = useContext(AuthContext); // ← businessId מתוך הקונטקסט
   const [activeSection, setActiveSection] = useState(null);
 
-  // בונים רשימת כפתורים רק ל-refs שקיימים בפועל
-  const buttons = useMemo(() => {
-    const all = [
-      { id: "cardsRef",         label: "כרטיסים" },
-      { id: "insightsRef",      label: "תובנות" },
-      { id: "nextActionsRef",   label: "המלצות" },
-      { id: "chartsRef",        label: "גרפים" },
-      { id: "appointmentsRef",  label: "פגישות" },
-      { id: "weeklySummaryRef", label: "סיכום שבועי" },
-    ];
-    return all.filter(btn => refs?.[btn.id]?.current);
+  // ממפה רק סקשנים קיימים בפועל (עם ref.current תקף)
+  const entries = useMemo(() => {
+    return SECTION_IDS
+      .map((id) => [id, refs[id]])
+      .filter(([, r]) => r && r.current);
   }, [refs]);
 
-  // מחשב offset לפי גובה ההדר אם קיים
-  const getScrollOffset = useCallback(() => {
-    const header = document.querySelector(HEADER_SELECTOR);
-    return header?.offsetHeight || DEFAULT_OFFSET;
-  }, []);
+  // Highlight סקשן פעיל באמצעות IntersectionObserver (יעיל מ-scroll)
+  useEffect(() => {
+    if (!entries.length) return;
 
-  // גלילה חלקה לסקשן עם קיזוז
+    const observer = new IntersectionObserver(
+      (ioEntries) => {
+        // בוחרים את הסקשן הנראה ביותר (highest intersectionRatio)
+        const visible = ioEntries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visible?.target?.id) {
+          setActiveSection(visible.target.id);
+          // מעדכנים גם את ה-hash (לא שובר back/forward)
+          if (window.history?.replaceState) {
+            window.history.replaceState(null, "", `#${visible.target.id}`);
+          }
+        }
+      },
+      {
+        // כשה-30% העליונים של המסך חוצים את האזור — נחשב כ"פעיל"
+        root: null,
+        rootMargin: "-30% 0px -60% 0px",
+        threshold: [0, 0.15, 0.3, 0.6, 1],
+      }
+    );
+
+    // מוסיפים id לאלמנטים (אם חסר) כדי לאפשר hash + תצפית
+    entries.forEach(([id, r]) => {
+      if (r.current && !r.current.id) r.current.id = id;
+      if (r.current) observer.observe(r.current);
+    });
+
+    return () => observer.disconnect();
+  }, [entries]);
+
+  // גלילה חלקה לסקשן
   const scrollTo = useCallback((refName, e) => {
     if (e) e.preventDefault();
-    const el = refs?.[refName]?.current;
+    const el = refs[refName]?.current;
     if (!el) return;
+    // ודא שיש id בשביל hash/deeplink
+    if (!el.id) el.id = refName;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    // מעדכן hash ללא קפיצה (לשיתוף קישור ישיר)
+    if (window.history?.replaceState) {
+      window.history.replaceState(null, "", `#${el.id}`);
+    }
+  }, [refs]);
 
-    const top = el.getBoundingClientRect().top + window.scrollY - getScrollOffset();
-    window.history.replaceState(null, "", `#${refName}`);
-    window.scrollTo({ top, behavior: "smooth" });
-  }, [refs, getScrollOffset]);
-
-  // פותח פרופיל ציבורי
-  const openPublicProfile =  useCallback(() => {
+  // פתיחת הפרופיל הציבורי עם src=owner
+  const openPublicProfile = useCallback(() => {
     const businessId = user?.businessId;
     if (!businessId) return;
     window.open(`/profile/${businessId}?src=owner`, "_blank", "noopener,noreferrer");
   }, [user]);
 
-  // הדגשת סקשן פעיל – IntersectionObserver
+  // Deeplink: אם יש hash תחלתי, גלול אליו בעדינות לאחר mount
   useEffect(() => {
-    const entries = Object.entries(refs).filter(([, r]) => r?.current);
-    if (!entries.length) return;
-
-    const marginTop = getScrollOffset();
-    const observer = new IntersectionObserver(
-      (ioEntries) => {
-        // ניקח את מה שהכי בתוך המסך (highest intersectionRatio)
-        const visible = ioEntries
-          .filter(e => e.isIntersecting)
-          .sort((a, b) =>  b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (visible) {
-          const match = entries.find(([, r]) => r.current === visible.target);
-          if (match && match[0] !== activeSection) {
-            setActiveSection(match[0]);
-            // מעדכן hash בלי לקפוץ
-            window.history.replaceState(null, "", `#${match[0]}`);
-          }
-        }
-      },
-      {
-        // כשהחלק העליון מגיע אחרי ההדר נחשב כנראה "נכנס"
-        root: null,
-        rootMargin: `-${marginTop}px 0px 0px 0px`,
-        threshold: [0.15, 0.35, 0.55, 0.75, 1],
+    const hash = typeof window !== "undefined" ? window.location.hash.replace("#", "") : "";
+    if (!hash) return;
+    // נוודא שהסקשן קיים ורק אז נגלול (timeout קצר עד שה־refs מאוכלסים)
+    const t = setTimeout(() => {
+      if (refs[hash]?.current) {
+        scrollTo(hash);
       }
-    );
+    }, 0);
+    return () => clearTimeout(t);
+  }, [refs, scrollTo]);
 
-    entries.forEach(([, r]) => observer.observe(r.current));
-    return () => observer.disconnect();
-  }, [refs, getScrollOffset, activeSection]);
+  // בניית מערך כפתורים לפי סקשנים הקיימים בפועל
+  const buttons = useMemo(() => {
+    return SECTION_IDS
+      .filter((id) => refs[id]) // מציג רק קיים
+      .map((id) => ({ id, label: LABELS[id] || id }));
+  }, [refs]);
 
-  // אם יש hash בטעינה – גלול אליו בעדינות אחרי mount
-  useEffect(() => {
-    const hash = window.location.hash?.replace("#", "");
-    if (hash && refs?.[hash]?.current) {
-      // timeout קטן כדי לוודא שה־DOM והתוכן נטענו
-      setTimeout(() => scrollTo(hash), 0);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const showPublicBtn = Boolean(user?.businessId);
 
   return (
-    <div className="dashboard-nav">
+    <nav className="dashboard-nav" aria-label="ניווט לקטעי הדשבורד" dir="rtl">
       {/* כפתורי ניווט פנימיים */}
       {buttons.map(({ id, label }) => (
         <button
           key={id}
-          onClick={(e) =>  scrollTo(id, e)}
-          className={activeSection === id    ? "active" : ""}
-          aria-current={activeSection === id  ? "page" : undefined}
+          onClick={(e) => scrollTo(id, e)}
+          className={`nav-chip${activeSection === id ? " active" : ""}`}
+          data-active={activeSection === id ? "true" : "false"}
+          aria-current={activeSection === id ? "true" : "false"}
+          type="button"
         >
           {label}
         </button>
       ))}
 
       {/* כפתור פרופיל ציבורי */}
-      <button
-        onClick= {openPublicProfile}
-        className="public-profile-btn"
-        disabled={!user?.businessId}
-        title={!user?.businessId ? "אין businessId מחובר" : "צפייה בפרופיל הציבורי"}
-      >
-        👁️ צפייה בפרופיל
-      </button>
-    </div>
+      {showPublicBtn && (
+        <button
+          onClick={openPublicProfile}
+          className="public-profile-btn"
+          type="button"
+          title="צפייה בפרופיל הציבורי (נפתח בלשונית חדשה)"
+        >
+          👁️ צפייה בפרופיל
+        </button>
+      )}
+    </nav>
   );
-});
+};
 
 export default DashboardNav;
