@@ -39,7 +39,7 @@ const DashboardNav = React.memo(({ refs = {} }) => {
   }, [refs, getScrollOffset]);
 
   // פותח פרופיל ציבורי
-  const openPublicProfile = useCallback(() => {
+  const openPublicProfile =  useCallback(() => {
     const businessId = user?.businessId;
     if (!businessId) return;
     window.open(`/profile/${businessId}?src=owner`, "_blank", "noopener,noreferrer");
