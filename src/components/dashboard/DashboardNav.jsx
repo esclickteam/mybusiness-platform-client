@@ -95,8 +95,8 @@ const DashboardNav = React.memo(({ refs = {} }) => {
       {buttons.map(({ id, label }) => (
         <button
           key={id}
-          onClick={(e) => scrollTo(id, e)}
-          className={activeSection === id   ? "active" : ""}
+          onClick={(e) =>  scrollTo(id, e)}
+          className={activeSection === id    ? "active" : ""}
           aria-current={activeSection === id  ? "page" : undefined}
         >
           {label}
