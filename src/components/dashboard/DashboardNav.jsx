@@ -92,7 +92,7 @@ const DashboardNav = memo(({ refs = {} }) => {
         <button
           key={id}
           onClick={(e) => scrollTo(id, e)}
-          className={activeSection === id ? "active" : ""}
+          className={activeSection === id ?  "active" : ""}
           aria-current={activeSection === id ? "page" : undefined}
         >
           {label}
