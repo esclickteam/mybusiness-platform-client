@@ -96,7 +96,7 @@ const DashboardNav = React.memo(({ refs = {} }) => {
         <button
           key={id}
           onClick={(e) => scrollTo(id, e)}
-          className={activeSection === id ? "active" : ""}
+          className={activeSection === id  ? "active" : ""}
           aria-current={activeSection === id ? "page" : undefined}
         >
           {label}
@@ -105,7 +105,7 @@ const DashboardNav = React.memo(({ refs = {} }) => {
 
       {/* כפתור פרופיל ציבורי */}
       <button
-        onClick={openPublicProfile}
+        onClick= {openPublicProfile}
         className="public-profile-btn"
         disabled={!user?.businessId}
         title={!user?.businessId ? "אין businessId מחובר" : "צפייה בפרופיל הציבורי"}
