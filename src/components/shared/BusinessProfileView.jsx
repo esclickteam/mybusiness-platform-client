@@ -131,15 +131,28 @@ export default function BusinessProfileView() {
   }, [workHoursData]);
 
   useEffect(() => {
-    if (!socket || !bizId) return;
-    socket.emit("profileView", { businessId: bizId }, (res) => {
-      if (res.ok) {
-        setProfileViewsCount(res.stats.views_count || 0);
+  if (!socket || !bizId || !user?.businessId) return;
+
+  // אל תספור אם זה בעל העסק עצמו
+  if (user.businessId === bizId) return;
+
+  socket.emit(
+    "profileView",
+    { businessId: bizId, src: "public" }, // מציין שזו צפייה ציבורית
+    (res) => {
+      if (res?.ok) {
+        if (!res.skipped) {
+          setProfileViewsCount(res.stats?.views_count || 0);
+        } else {
+          console.log("View skipped:", res.reason);
+        }
       } else {
-        console.error("Failed to register profile view:", res.error);
+        console.error("Failed to register profile view:", res?.error);
       }
-    });
-  }, [socket, bizId]);
+    }
+  );
+}, [socket, bizId, user?.businessId]);
+
 
   const sortedReviews = useMemo(() => {
     return [...reviews].sort(
