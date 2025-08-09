@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useContext, useCallback } from "react";
-import { AuthContext } from "../../../context/AuthContext"; // גישה ל-businessId
+import { AuthContext } from "../../context/AuthContext";
 
 const SECTION_IDS = [
   "cardsRef",
