@@ -56,7 +56,7 @@ const DashboardNav = React.memo(({ refs = {} }) => {
         // ניקח את מה שהכי בתוך המסך (highest intersectionRatio)
         const visible = ioEntries
           .filter(e => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          .sort((a, b) =>  b.intersectionRatio - a.intersectionRatio)[0];
 
         if (visible) {
           const match = entries.find(([, r]) => r.current === visible.target);
