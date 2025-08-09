@@ -131,10 +131,10 @@ export default function BusinessProfileView() {
   }, [workHoursData]);
 
   useEffect(() => {
-  if (!socket || !bizId || !user?.businessId) return;
+  if (!socket || !bizId) return;
 
-  // אל תספור אם זה בעל העסק עצמו
-  if (user.businessId === bizId) return;
+  // אל תספור אם זה הבעלים עצמו
+  if (user?.businessId && user.businessId === bizId) return;
 
   socket.emit(
     "profileView",
@@ -152,6 +152,7 @@ export default function BusinessProfileView() {
     }
   );
 }, [socket, bizId, user?.businessId]);
+
 
 
   const sortedReviews = useMemo(() => {
