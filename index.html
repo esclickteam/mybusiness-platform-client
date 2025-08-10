@@ -10,11 +10,19 @@
   <title>עסקליק - פלטפורמת עסקים</title>
 
   <base href="/" />
-  <link rel="icon" type="image/png" href="/favicon.ico" />
+  <!-- ✅ Favicon / App Icons -->
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180x180.png" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#1876c9" />
   <link rel="manifest" href="/manifest.json" />
   <meta http-equiv="Content-Language" content="he" />
 
-  <!-- טעינת פונטים ו- CSS קריטי מראש -->
+  <!-- טעינת פונטים ו־CSS קריטי מראש -->
   <link rel="preload" href="/fonts/myfont.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
   <link rel="preload" href="/index.css" as="style" />
   <link rel="preload" href="/styles/accessibility-style.css" as="style" />
@@ -23,9 +31,8 @@
   <link rel="stylesheet" href="/index.css" />
   <link rel="stylesheet" href="/styles/accessibility-style.css" />
 
-  <!-- אפשר להוסיף כאן CSS קריטי מוטמע ב-inline אם יש -->
+  <!-- CSS קריטי inline (דוגמה) -->
   <style>
-    /* דוגמה לסגנונות קריטיים */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -34,7 +41,7 @@
     }
   </style>
 
-  <!-- סקריפט CardCom LowProfile SDK -->
+  <!-- CardCom LowProfile SDK -->
   <script
     src="https://secure.cardcom.solutions/EasyCheckout/js/Checkout.js"
     async
@@ -49,7 +56,7 @@
   <!-- סקריפט הראשי של React -->
   <script type="module" src="/src/index.jsx" defer></script>
 
-  <!-- קוד נגישות EqualWeb - דחה טעינת הסקריפט -->
+  <!-- קוד נגישות EqualWeb - דחיית טעינת הסקריפט -->
   <script>
     window.interdeal = {
       sitekey: "b060e41b9209f7660ba072aacbc11ef1",
@@ -69,7 +76,7 @@
     (function (doc, head, body) {
       var coreCall = doc.createElement("script");
       coreCall.src = interdeal.domains.js + "core/5.1.0/accessibility.js";
-      coreCall.defer = true;  /* דחיית טעינה */
+      coreCall.defer = true;
       coreCall.integrity = "sha512-TcsprTlCCE0u/G5TN3zikzkynCEIRcfd96+RejMcyd2HFPnTpVUDxumXmFb/rSJ3ogQM+b/yvYWLwV6duAuJQg==";
       coreCall.crossOrigin = "anonymous";
       coreCall.setAttribute("data-cfasync", true);
