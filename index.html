@@ -10,16 +10,19 @@
   <title>עסקליק - פלטפורמת עסקים</title>
 
   <base href="/" />
-  <!-- ✅ Favicon / App Icons -->
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
-  <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180x180.png" />
-  <link rel="shortcut icon" href="/favicon.ico" />
-  <meta name="theme-color" content="#1876c9" />
-  <link rel="manifest" href="/manifest.json" />
+
+  <!-- ✅ Favicon / App Icons (מאוחדים תחת /icons + cache-busting) -->
+  <link rel="icon" type="image/png" sizes="16x16"  href="/icons/icon-16x16.png?v=3" />
+  <link rel="icon" type="image/png" sizes="32x32"  href="/icons/icon-32x32.png?v=3" />
+  <link rel="icon" type="image/png" sizes="48x48"  href="/icons/icon-48x48.png?v=3" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png?v=3" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png?v=3" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png?v=3" />
+  <link rel="shortcut icon" href="/favicon.ico?v=3" />
+
+  <!-- יישור צבעי ערכת נושא בין HTML ל-manifest -->
+  <meta name="theme-color" content="#6200ea" />
+  <link rel="manifest" href="/manifest.json?v=3" />
   <meta http-equiv="Content-Language" content="he" />
 
   <!-- טעינת פונטים ו־CSS קריטי מראש -->
