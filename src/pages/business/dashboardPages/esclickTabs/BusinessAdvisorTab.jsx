@@ -180,7 +180,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
       {/* מונה קטן (אופציונלי) */}
       {remainingQuestions !== null && (
-        <p style={{ fontSize: 12, opacity: 0.7 }}>
+        <p style={{ fontSize: 24, opacity: 0.7 }}>
           יתרה חודשית: נשארו {remainingQuestions} שאלות
         </p>
       )}
