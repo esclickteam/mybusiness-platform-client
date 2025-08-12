@@ -9,9 +9,23 @@ import API, { setAuthToken } from "../api";
 import createSocket from "../socket"; // singleton socket helper
 
 function normalizeUser(user) {
+  if (!user) return null;
+
+  // חישוב fallback אם השדה לא מגיע מהשרת
+  const computedIsValid = (() => {
+    if (!user.subscriptionEnd) return false;
+    const endDate = new Date(user.subscriptionEnd);
+    const now = new Date();
+    return endDate > now;
+  })();
+
   return {
     ...user,
     hasPaid: Boolean(user?.hasPaid),
+    isSubscriptionValid:
+      typeof user?.isSubscriptionValid === "boolean"
+        ? user.isSubscriptionValid
+        : computedIsValid
   };
 }
 
@@ -55,7 +69,6 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // פונקציה חדשה לרענון פרטי המשתמש מהשרת ועדכון ה-state וה-localStorage
   const refreshUser = async () => {
     try {
       const { data } = await API.get("/auth/me?forceRefresh=1", { withCredentials: true });
@@ -213,12 +226,10 @@ export function AuthProvider({ children }) {
 
     (async () => {
       try {
-        // רענון משתמש מהשרת במקום קריאה ישירה ל־localStorage
         const freshUser = await refreshUser();
         if (freshUser) {
           setUser(freshUser);
         } else {
-          // fallback ל־localStorage אם רענון נכשל
           const saved = localStorage.getItem("businessDetails");
           if (saved) setUser(normalizeUser(JSON.parse(saved)));
         }
