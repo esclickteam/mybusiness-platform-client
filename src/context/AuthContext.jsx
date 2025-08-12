@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import createSocket from "../socket"; // singleton socket helper
@@ -11,7 +6,6 @@ import createSocket from "../socket"; // singleton socket helper
 function normalizeUser(user) {
   if (!user) return null;
 
-  // חישוב fallback אם השדה לא מגיע מהשרת
   const computedIsValid = (() => {
     if (!user.subscriptionEnd) return false;
     const endDate = new Date(user.subscriptionEnd);
@@ -25,7 +19,7 @@ function normalizeUser(user) {
     isSubscriptionValid:
       typeof user?.isSubscriptionValid === "boolean"
         ? user.isSubscriptionValid
-        : computedIsValid
+        : computedIsValid,
   };
 }
 
@@ -69,9 +63,11 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  const refreshUser = async () => {
+  const refreshUser = async (force = false) => {
     try {
-      const { data } = await API.get("/auth/me?forceRefresh=1", { withCredentials: true });
+      const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
+        withCredentials: true,
+      });
       console.log("refreshUser - user data received:", data);
       const normalized = normalizeUser(data);
       setUser(normalized);
@@ -99,7 +95,9 @@ export function AuthProvider({ children }) {
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      const normalizedUser = normalizeUser(loggedInUser);
+      // מיד אחרי login — תמיד מושכים מהשרת כדי לוודא שהנתונים עדכניים
+      const freshUser = await refreshUser(true);
+      const normalizedUser = freshUser || normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
@@ -142,7 +140,8 @@ export function AuthProvider({ children }) {
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      const normalizedStaffUser = normalizeUser(staffUser);
+      const freshUser = await refreshUser(true);
+      const normalizedStaffUser = freshUser || normalizeUser(staffUser);
       setUser(normalizedStaffUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedStaffUser));
 
@@ -166,8 +165,8 @@ export function AuthProvider({ children }) {
       const { data } = await API.get(`/affiliate/login/${publicToken}`, { withCredentials: true });
       if (!data.success) throw new Error("משווק לא נמצא");
 
-      const userData = await API.get("/auth/me", { withCredentials: true });
-      const normalized = normalizeUser(userData.data);
+      const freshUser = await refreshUser(true);
+      const normalized = freshUser || normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
 
@@ -210,6 +209,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // אתחול מהיר אחרי טעינה — תמיד מושך נתונים מהשרת
   useEffect(() => {
     if (!token) {
       console.log("Token missing, resetting user...");
@@ -226,21 +226,18 @@ export function AuthProvider({ children }) {
 
     (async () => {
       try {
-        const freshUser = await refreshUser();
-        if (freshUser) {
-          setUser(freshUser);
-        } else {
-          const saved = localStorage.getItem("businessDetails");
-          if (saved) setUser(normalizeUser(JSON.parse(saved)));
-        }
+        const freshUser = await refreshUser(true); // תמיד forceRefresh
+        if (!freshUser) throw new Error("No fresh user data");
 
-        const newSocket = await createSocket(singleFlightRefresh, logout, freshUser?.businessId);
+        setUser(freshUser);
+
+        const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
 
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
           const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && freshUser?.hasPaid;
+          const shouldSkip = isPlans && freshUser.hasPaid;
           if (!shouldSkip) {
             navigate(savedRedirect, { replace: true });
           }
