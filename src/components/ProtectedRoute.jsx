@@ -14,6 +14,9 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   const { user, loading, initialized } = useAuth();
   const location = useLocation();
 
+  // Debug log — חשוב לראות מה מגיע מה־AuthContext
+  console.log("🔍 ProtectedRoute user object:", user);
+
   // בדיקה אם המשתמש הוא עסק
   const isBusiness = useMemo(
     () => (user?.role || "").toLowerCase() === "business",
@@ -32,6 +35,10 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return !!user?.isSubscriptionValid; // מגיע ישירות מהשרת
   }, [isBusiness, user?.isSubscriptionValid]);
 
+  // Debug log — לראות מה יוצא אחרי החישוב
+  console.log("📊 isBusiness:", isBusiness);
+  console.log("📊 isSubscriptionValid (from server or computed):", isSubscriptionValid);
+
   const normalizedRoles = useMemo(
     () => roles.map((r) => r.toLowerCase()),
     [roles]
@@ -49,6 +56,7 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
 
   // לא מחובר → מעבר לעמוד התחברות מתאים
   if (!user) {
+    console.warn("⚠️ ProtectedRoute: no user found, redirecting to login");
     const staffRoles = ["worker", "manager", "מנהל", "admin"];
     const needsStaffLogin = normalizedRoles.some((r) => staffRoles.includes(r));
     const loginPath = needsStaffLogin ? "/staff-login" : "/login";
@@ -61,21 +69,25 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     !normalizedRoles.includes((user.role || "").toLowerCase()) &&
     !(isAffiliate && normalizedRoles.includes("affiliate"))
   ) {
+    console.warn("⛔ ProtectedRoute: role not authorized");
     return <Unauthorized />;
   }
 
   // בדיקת מנוי עסק
   if (isBusiness && !isSubscriptionValid) {
+    console.warn("⛔ ProtectedRoute: subscription invalid for business");
     return <Unauthorized message="המנוי שלך אינו פעיל כרגע." />;
   }
 
   // דרישת חבילה ספציפית
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
+    console.warn("⛔ ProtectedRoute: requiredPackage mismatch");
     return <Navigate to="/plans" replace />;
   }
 
   // עסק ללא businessId → יצירת עסק חדש
   if (isBusiness && !user.businessId) {
+    console.warn("⛔ ProtectedRoute: no businessId for business user");
     return <Navigate to="/create-business" replace />;
   }
 
