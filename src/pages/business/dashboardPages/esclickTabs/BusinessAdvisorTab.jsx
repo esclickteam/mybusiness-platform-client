@@ -14,6 +14,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   const [purchaseMessage, setPurchaseMessage] = useState("");
   const [purchaseError, setPurchaseError] = useState("");
   const bottomRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   const presetQuestions = [
     "איך להעלות מחירים בלי לאבד לקוחות?",
@@ -27,8 +28,6 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 1, type: "ai-package" },
     { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 1, type: "ai-package" }
   ];
-
-  const abortControllerRef = useRef(null);
 
   const refreshRemainingQuestions = useCallback(async () => {
     try {
@@ -47,49 +46,61 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     refreshRemainingQuestions();
   }, [refreshRemainingQuestions]);
 
-  const sendMessage = useCallback(async (promptText, conversationMessages) => {
-    if (!businessId || !promptText.trim() || loading) return;
+  const sendMessage = useCallback(
+    async (promptText, conversationMessages) => {
+      if (!businessId || !promptText.trim() || loading) return;
 
-    if (remainingQuestions !== null && remainingQuestions <= 0) {
-      setMessages(prev => [
-        ...prev,
-        { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש שאלות נוספות." }
-      ]);
-      return;
-    }
+      if (remainingQuestions !== null && remainingQuestions <= 0) {
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש שאלות נוספות." }
+        ]);
+        return;
+      }
 
-    setLoading(true);
-    if (abortControllerRef.current) abortControllerRef.current.abort();
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
+      setLoading(true);
+      if (abortControllerRef.current) abortControllerRef.current.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
-    const payload = {
-      businessId,
-      prompt: promptText,
-      businessDetails,
-      profile: { conversationId: conversationId || null, userId: userId || null },
-      messages: conversationMessages || messages,
-    };
+      const payload = {
+        businessId,
+        prompt: promptText,
+        businessDetails,
+        profile: { conversationId: conversationId || null, userId: userId || null },
+        messages: conversationMessages || messages
+      };
 
-    try {
-      const response = await API.post("/chat/business-advisor", payload, { signal: controller.signal });
+      try {
+        const response = await API.post("/chat/business-advisor", payload, { signal: controller.signal });
 
-      if (response.status === 403) {
-        setRemainingQuestions(0);
-        const errorMsg = response.data?.error || "❗ הגעת למגבלת השאלות החודשית.";
-        setMessages(prev => [...prev, { role: "assistant", content: errorMsg }]);
-      } else {
-        setMessages(prev => [...prev, { role: "assistant", content: response.data.answer || "❌ לא התקבלה תשובה מהשרת." }]);
+        // הצלחה
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", content: response.data.answer || "❌ לא התקבלה תשובה מהשרת." }
+        ]);
         setRemainingQuestions(prev => (prev !== null ? Math.max(prev - 1, 0) : null));
-      }
-    } catch (error) {
-      if (error.name !== "AbortError") {
+
+        // סנכרון מול השרת
+        await refreshRemainingQuestions();
+      } catch (error) {
+        if (error.name === "AbortError") return;
+
+        // טיפול נכון ב־403
+        if (error.response?.status === 403) {
+          const msg = error.response?.data?.error || "❗ הגעת למגבלת השאלות החודשית.";
+          setRemainingQuestions(0);
+          setMessages(prev => [...prev, { role: "assistant", content: msg }]);
+          return;
+        }
+
         setMessages(prev => [...prev, { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." }]);
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  }, [businessId, businessDetails, conversationId, userId, messages, loading, remainingQuestions]);
+    },
+    [businessId, businessDetails, conversationId, userId, messages, loading, remainingQuestions, refreshRemainingQuestions]
+  );
 
   const handleSubmit = useCallback(() => {
     if (!userInput.trim() || loading) return;
@@ -101,14 +112,17 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     setStartedChat(true);
   }, [userInput, loading, messages, sendMessage]);
 
-  const handlePresetQuestion = useCallback((question) => {
-    if (loading) return;
-    const userMessage = { role: "user", content: question };
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
-    sendMessage(question, newMessages);
-    setStartedChat(true);
-  }, [loading, messages, sendMessage]);
+  const handlePresetQuestion = useCallback(
+    (question) => {
+      if (loading) return;
+      const userMessage = { role: "user", content: question };
+      const newMessages = [...messages, userMessage];
+      setMessages(newMessages);
+      sendMessage(question, newMessages);
+      setStartedChat(true);
+    },
+    [loading, messages, sendMessage]
+  );
 
   const handlePurchaseExtra = async () => {
     if (purchaseLoading || !selectedPackage) return;
@@ -128,7 +142,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         packageId: selectedPackage.id,
         businessId,
         packageType: selectedPackage.type,
-        price: selectedPackage.price,
+        price: selectedPackage.price
       });
 
       if (res.data.paymentUrl) {
@@ -139,6 +153,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
       setSelectedPackage(null);
 
+      // רענון המונה אחרי רכישה
       await refreshRemainingQuestions();
     } catch (e) {
       setPurchaseError(e.message || "שגיאה ברכישת החבילה");
@@ -159,6 +174,14 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       <h2>יועץ עסקי 🤝</h2>
       <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
 
+      {/* מונה קטן (אופציונלי) */}
+      {remainingQuestions !== null && (
+        <p style={{ fontSize: 12, opacity: 0.7 }}>
+          יתרה חודשית: נשארו {remainingQuestions} שאלות
+        </p>
+      )}
+
+      {/* לפני תחילת השיחה – כפתורי שאלות מוכנות בלבד */}
       {!startedChat && (
         <>
           <div className="preset-questions-container">
@@ -174,35 +197,35 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
             ))}
           </div>
           <hr style={{ margin: "1em 0" }} />
-
-          {remainingQuestions !== null && remainingQuestions <= 0 && (
-            <div className="purchase-extra-container">
-              <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
-              {aiPackages.map((pkg) => (
-                <label key={pkg.id} className="radio-label">
-                  <input
-                    type="radio"
-                    name="question-package"
-                    value={pkg.id}
-                    disabled={purchaseLoading}
-                    checked={selectedPackage?.id === pkg.id}
-                    onChange={() => setSelectedPackage(pkg)}
-                  />
-                  {pkg.label} - {pkg.price} ש"ח
-                </label>
-              ))}
-              <button
-                onClick={handlePurchaseExtra}
-                disabled={purchaseLoading || !selectedPackage}
-              >
-                {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
-              </button>
-
-              {purchaseMessage && <p className="success">{purchaseMessage}</p>}
-              {purchaseError && <p className="error">{purchaseError}</p>}
-            </div>
-          )}
         </>
+      )}
+
+      {/* בלוק הרכישה מופיע תמיד כשאין יתרה */}
+      {remainingQuestions !== null && remainingQuestions <= 0 && (
+        <div className="purchase-extra-container">
+          <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
+
+          {aiPackages.map((pkg) => (
+            <label key={pkg.id} className="radio-label">
+              <input
+                type="radio"
+                name="question-package"
+                value={pkg.id}
+                disabled={purchaseLoading}
+                checked={selectedPackage?.id === pkg.id}
+                onChange={() => setSelectedPackage(pkg)}
+              />
+              {pkg.label} - {pkg.price} ש"ח
+            </label>
+          ))}
+
+          <button onClick={handlePurchaseExtra} disabled={purchaseLoading || !selectedPackage}>
+            {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
+          </button>
+
+          {purchaseMessage && <p className="success">{purchaseMessage}</p>}
+          {purchaseError && <p className="error">{purchaseError}</p>}
+        </div>
       )}
 
       <div className="chat-box-wrapper">
@@ -210,15 +233,19 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           {messages.map((msg, idx) => (
             <div key={idx} className={`bubble ${msg.role}`}>
               {msg.role === "assistant" ? (
-                <Markdown options={{
-                  overrides: {
-                    p: { component: (props) => (
-                      <p style={{ margin: "0.2em 0", direction: "rtl", textAlign: "right" }}>
-                        {props.children}
-                      </p>
-                    ) }
-                  }
-                }}>
+                <Markdown
+                  options={{
+                    overrides: {
+                      p: {
+                        component: (props) => (
+                          <p style={{ margin: "0.2em 0", direction: "rtl", textAlign: "right" }}>
+                            {props.children}
+                          </p>
+                        )
+                      }
+                    }
+                  }}
+                >
                   {msg.content}
                 </Markdown>
               ) : (
