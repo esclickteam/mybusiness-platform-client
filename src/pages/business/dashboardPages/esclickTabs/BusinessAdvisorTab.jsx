@@ -30,21 +30,25 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   ];
 
   const refreshRemainingQuestions = useCallback(async () => {
-    try {
-      const res = await API.get("/business/my");
-      const business = res.data.business;
-      const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
-      const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
-      const remaining = Math.max(maxQuestions - usedQuestions, 0);
-      setRemainingQuestions(remaining);
-    } catch (error) {
-      setRemainingQuestions(null);
-    }
-  }, []);
+  if (!businessId) return;
+  try {
+    // חשוב: לשלוף לפי ה-ID שמגיע ב-props, לא /business/my
+    const res = await API.get(`/business/${businessId}?t=${Date.now()}`);
+    const business = res.data.business;
+
+    const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
+    const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
+    const remaining = Math.max(maxQuestions - usedQuestions, 0);
+    setRemainingQuestions(remaining);
+  } catch (error) {
+    setRemainingQuestions(null);
+  }
+}, [businessId]);
+
 
   useEffect(() => {
     refreshRemainingQuestions();
-  }, [refreshRemainingQuestions]);
+  }, [refreshRemainingQuestions, businessId]);
 
   const sendMessage = useCallback(
     async (promptText, conversationMessages) => {
