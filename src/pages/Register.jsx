@@ -91,7 +91,7 @@ const Register = () => {
         { withCredentials: true }
       );
 
-      // התחברות מיידית לאחר הרשמה, מחכים לתוצאה
+      // התחברות מיידית לאחר הרשמה
       const { user } = await login(email.trim().toLowerCase(), password, {
         skipRedirect: true,
       });
@@ -101,9 +101,10 @@ const Register = () => {
         return;
       }
 
-      // ניתוב מותנה אחרי הרשמה והתחברות
+      // הפניה בהתאם לסוג המשתמש
       if (userType === "business") {
-        navigate("/plans");
+        // בעל עסק חדש → חודש ניסיון והפניה לדשבורד
+        navigate("/dashboard");
       } else {
         navigate("/client/dashboard/search");
       }
