@@ -75,7 +75,7 @@ function BusinessJoin() {
       <div className="cta-section">
         <h2>התחילו עכשיו וקבלו יותר לקוחות!</h2>
         <p>כל מה שאתם צריכים זה להירשם, לבחור חבילה וליהנות מחשיפה רחבה.</p>
-        <Link to="/plans">
+        <Link to="/register">
           <button className="join-button">הצטרפו עכשיו</button>
         </Link>
       </div>
