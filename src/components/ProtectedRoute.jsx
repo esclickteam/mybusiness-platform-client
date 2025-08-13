@@ -74,8 +74,13 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return <Unauthorized />;
   }
 
-  // בדיקת מנוי עסק — אם לא בתוקף, הפניה לחבילות
-  if (isBusiness && !isSubscriptionValid) {
+  // בדיקת מנוי עסק — הפניה לחבילות רק אם לא בתוקף וגם לא ניסיון פעיל
+  const isTrialActive =
+    user?.subscriptionPlan === "trial" &&
+    user?.subscriptionEnd &&
+    new Date(user.subscriptionEnd) > new Date();
+
+  if (isBusiness && !isSubscriptionValid && !isTrialActive) {
     const reason =
       user?.subscriptionPlan === "trial" ? "trial_expired" : "plan_expired";
     return <Navigate to={`/packages?reason=${reason}`} replace />;
