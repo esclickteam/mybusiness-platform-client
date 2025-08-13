@@ -14,37 +14,40 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   const { user, loading, initialized } = useAuth();
   const location = useLocation();
 
-  // Debug log — חשוב לראות מה מגיע מה־AuthContext
   console.log("🔍 ProtectedRoute user object:", user);
 
-  // בדיקה אם המשתמש הוא עסק
   const isBusiness = useMemo(
     () => (user?.role || "").toLowerCase() === "business",
     [user?.role]
   );
 
-  // בדיקה אם המשתמש הוא שותף
   const isAffiliate = useMemo(
     () => (user?.role || "").toLowerCase() === "affiliate",
     [user?.role]
   );
 
-  // הסתמכות על הערך שמגיע מהשרת
+  // חישוב תקפות מנוי עסק — כולל תמיכה בלוגיקת ניסיון
   const isSubscriptionValid = useMemo(() => {
-    if (!isBusiness) return true; // רק עסקים צריכים מנוי פעיל
-    return !!user?.isSubscriptionValid; // מגיע ישירות מהשרת
-  }, [isBusiness, user?.isSubscriptionValid]);
+    if (!isBusiness) return true; // רק עסקים דורשים מנוי
+    if (typeof user?.isSubscriptionValid === "boolean") return user.isSubscriptionValid;
 
-  // Debug log — לראות מה יוצא אחרי החישוב
+    // חישוב בצד לקוח לפי תאריכים אם השרת לא מחזיר
+    if (user?.subscriptionStart && user?.subscriptionEnd) {
+      const now = new Date();
+      const end = new Date(user.subscriptionEnd);
+      return end > now;
+    }
+    return false;
+  }, [isBusiness, user?.isSubscriptionValid, user?.subscriptionStart, user?.subscriptionEnd]);
+
   console.log("📊 isBusiness:", isBusiness);
-  console.log("📊 isSubscriptionValid (from server or computed):", isSubscriptionValid);
+  console.log("📊 isSubscriptionValid (computed):", isSubscriptionValid);
 
   const normalizedRoles = useMemo(
     () => roles.map((r) => r.toLowerCase()),
     [roles]
   );
 
-  // ──────────────────────────────────────────────────────────────────────────────
   // טעינה
   if (loading || !initialized) {
     return (
@@ -54,9 +57,8 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     );
   }
 
-  // לא מחובר → מעבר לעמוד התחברות מתאים
+  // לא מחובר
   if (!user) {
-    console.warn("⚠️ ProtectedRoute: no user found, redirecting to login");
     const staffRoles = ["worker", "manager", "מנהל", "admin"];
     const needsStaffLogin = normalizedRoles.some((r) => staffRoles.includes(r));
     const loginPath = needsStaffLogin ? "/staff-login" : "/login";
@@ -69,28 +71,25 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     !normalizedRoles.includes((user.role || "").toLowerCase()) &&
     !(isAffiliate && normalizedRoles.includes("affiliate"))
   ) {
-    console.warn("⛔ ProtectedRoute: role not authorized");
     return <Unauthorized />;
   }
 
-  // בדיקת מנוי עסק
+  // בדיקת מנוי עסק — אם לא בתוקף, הפניה לחבילות
   if (isBusiness && !isSubscriptionValid) {
-    console.warn("⛔ ProtectedRoute: subscription invalid for business");
-    return <Unauthorized message="המנוי שלך אינו פעיל כרגע." />;
+    const reason =
+      user?.subscriptionPlan === "trial" ? "trial_expired" : "plan_expired";
+    return <Navigate to={`/packages?reason=${reason}`} replace />;
   }
 
   // דרישת חבילה ספציפית
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
-    console.warn("⛔ ProtectedRoute: requiredPackage mismatch");
-    return <Navigate to="/plans" replace />;
+    return <Navigate to="/packages" replace />;
   }
 
-  // עסק ללא businessId → יצירת עסק חדש
+  // עסק ללא businessId
   if (isBusiness && !user.businessId) {
-    console.warn("⛔ ProtectedRoute: no businessId for business user");
     return <Navigate to="/create-business" replace />;
   }
 
-  // הכל תקין → הצגת התוכן המוגן
   return <>{children}</>;
 }

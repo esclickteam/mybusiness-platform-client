@@ -6,12 +6,12 @@ import createSocket from "../socket"; // singleton socket helper
 function normalizeUser(user) {
   if (!user) return null;
 
-  const computedIsValid = (() => {
-    if (!user.subscriptionEnd) return false;
-    const endDate = new Date(user.subscriptionEnd);
-    const now = new Date();
-    return endDate > now;
-  })();
+  const now = new Date();
+  let computedIsValid = false;
+
+  if (user.subscriptionStart && user.subscriptionEnd) {
+    computedIsValid = new Date(user.subscriptionEnd) > now;
+  }
 
   return {
     ...user,
@@ -20,6 +20,11 @@ function normalizeUser(user) {
       typeof user?.isSubscriptionValid === "boolean"
         ? user.isSubscriptionValid
         : computedIsValid,
+    subscriptionStatus: user.subscriptionPlan || "free",
+    daysLeft:
+      user.subscriptionEnd && computedIsValid
+        ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
+        : 0,
   };
 }
 
@@ -95,20 +100,23 @@ export function AuthProvider({ children }) {
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      // מיד אחרי login — תמיד מושכים מהשרת כדי לוודא שהנתונים עדכניים
       const freshUser = await refreshUser(true);
       const normalizedUser = freshUser || normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      if (!skipRedirect && redirectUrl) {
-        const isPlans = redirectUrl === "/plans";
-        const shouldSkip = isPlans && normalizedUser.hasPaid;
-        if (!shouldSkip) {
-          if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
-            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
-          } else {
-            navigate(redirectUrl, { replace: true });
+      if (!skipRedirect) {
+        if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
+          navigate("/dashboard", { replace: true });
+        } else if (redirectUrl) {
+          const isPlans = redirectUrl === "/plans";
+          const shouldSkip = isPlans && normalizedUser.hasPaid;
+          if (!shouldSkip) {
+            if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
+              navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+            } else {
+              navigate(redirectUrl, { replace: true });
+            }
           }
         }
       }
@@ -209,10 +217,8 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // אתחול מהיר אחרי טעינה — תמיד מושך נתונים מהשרת
   useEffect(() => {
     if (!token) {
-      console.log("Token missing, resetting user...");
       socket?.disconnect();
       setSocket(null);
       setUser(null);
@@ -226,7 +232,7 @@ export function AuthProvider({ children }) {
 
     (async () => {
       try {
-        const freshUser = await refreshUser(true); // תמיד forceRefresh
+        const freshUser = await refreshUser(true);
         if (!freshUser) throw new Error("No fresh user data");
 
         setUser(freshUser);
@@ -236,10 +242,14 @@ export function AuthProvider({ children }) {
 
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
-          const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && freshUser.hasPaid;
-          if (!shouldSkip) {
-            navigate(savedRedirect, { replace: true });
+          if (freshUser.subscriptionStatus === "trial" && freshUser.isSubscriptionValid) {
+            navigate("/dashboard", { replace: true });
+          } else {
+            const isPlans = savedRedirect === "/plans";
+            const shouldSkip = isPlans && freshUser.hasPaid;
+            if (!shouldSkip) {
+              navigate(savedRedirect, { replace: true });
+            }
           }
           sessionStorage.removeItem("postLoginRedirect");
         }
