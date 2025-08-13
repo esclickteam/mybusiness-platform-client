@@ -105,8 +105,10 @@ export function AuthProvider({ children }) {
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
+      // ⬅️ שמירת דגל אם זה משתמש חדש בחודש ניסיון
       if (!skipRedirect) {
         if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
+          sessionStorage.setItem("justRegistered", "true");
           navigate("/dashboard", { replace: true });
         } else if (redirectUrl) {
           const isPlans = redirectUrl === "/plans";
@@ -205,18 +207,6 @@ export function AuthProvider({ children }) {
     navigate("/login", { replace: true });
   };
 
-  const fetchWithAuth = async (fn) => {
-    try {
-      return await fn();
-    } catch (err) {
-      if ([401, 403].includes(err.response?.status)) {
-        await logout();
-        setError("❌ יש להתחבר מחדש");
-      }
-      throw err;
-    }
-  };
-
   useEffect(() => {
     if (!token) {
       socket?.disconnect();
@@ -240,16 +230,20 @@ export function AuthProvider({ children }) {
         const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
 
+        // ⬅️ בדיקה אם המשתמש רק נרשם עכשיו
+        const justRegistered = sessionStorage.getItem("justRegistered");
+        if (justRegistered) {
+          sessionStorage.removeItem("justRegistered");
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
-          if (freshUser.subscriptionStatus === "trial" && freshUser.isSubscriptionValid) {
-            navigate("/dashboard", { replace: true });
-          } else {
-            const isPlans = savedRedirect === "/plans";
-            const shouldSkip = isPlans && freshUser.hasPaid;
-            if (!shouldSkip) {
-              navigate(savedRedirect, { replace: true });
-            }
+          const isPlans = savedRedirect === "/plans";
+          const shouldSkip = isPlans && freshUser.hasPaid;
+          if (!shouldSkip) {
+            navigate(savedRedirect, { replace: true });
           }
           sessionStorage.removeItem("postLoginRedirect");
         }
@@ -278,7 +272,17 @@ export function AuthProvider({ children }) {
     logout,
     staffLogin,
     affiliateLogin,
-    fetchWithAuth,
+    fetchWithAuth: async (fn) => {
+      try {
+        return await fn();
+      } catch (err) {
+        if ([401, 403].includes(err.response?.status)) {
+          await logout();
+          setError("❌ יש להתחבר מחדש");
+        }
+        throw err;
+      }
+    },
     refreshAccessToken: singleFlightRefresh,
     refreshUser,
     socket,
