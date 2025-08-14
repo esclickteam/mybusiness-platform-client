@@ -105,11 +105,15 @@ export function AuthProvider({ children }) {
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // ⬅️ שמירת דגל אם זה משתמש חדש בחודש ניסיון
+      // ניווט אחרי התחברות
       if (!skipRedirect) {
         if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
           sessionStorage.setItem("justRegistered", "true");
-          navigate("/dashboard", { replace: true });
+          if (normalizedUser.role === "business" && normalizedUser.businessId) {
+            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+          } else {
+            navigate("/dashboard", { replace: true });
+          }
         } else if (redirectUrl) {
           const isPlans = redirectUrl === "/plans";
           const shouldSkip = isPlans && normalizedUser.hasPaid;
@@ -230,11 +234,14 @@ export function AuthProvider({ children }) {
         const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
 
-        // ⬅️ בדיקה אם המשתמש רק נרשם עכשיו
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
-          navigate("/dashboard", { replace: true });
+          if (freshUser.role === "business" && freshUser.businessId) {
+            navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
+          } else {
+            navigate("/dashboard", { replace: true });
+          }
           return;
         }
 
