@@ -51,28 +51,8 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = form.email.trim().toLowerCase();
-      const { user: loggedInUser, redirectUrl } = await login(
-        cleanEmail,
-        form.password
-      );
-
-      // 🔹 ניווט לפי סוג המשתמש
-      if (loggedInUser?.role === "affiliate") {
-        navigate("/affiliate/dashboard", { replace: true });
-      }
-      else if (loggedInUser?.role === "business" && loggedInUser?.businessId) {
-        navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
-      }
-      else if (loggedInUser?.role === "customer") {
-        navigate("/client/dashboard", { replace: true });
-      }
-      else if (redirectUrl) {
-        navigate(redirectUrl, { replace: true });
-      }
-      else {
-        navigate("/", { replace: true });
-      }
-
+      await login(cleanEmail, form.password); 
+      // אין כאן navigate – ההפניה תיעשה ב־AuthContext
       setTimeout(() => {
         if (typeof fetchNotifications === "function") fetchNotifications();
       }, 1000);
@@ -115,31 +95,8 @@ export default function Login() {
                 aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
                 tabIndex={-1}
               >
-                {showPassword ? (
-                  <svg
-                    width="24"
-                    height="24"
-                    fill="none"
-                    stroke="#222"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#222" />
-                    <circle cx="12" cy="12" r="2" fill="#222" />
-                  </svg>
-                ) : (
-                  <svg
-                    width="24"
-                    height="24"
-                    fill="none"
-                    stroke="#222"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#222" />
-                    <circle cx="12" cy="12" r="2" fill="#222" />
-                  </svg>
-                )}
+                {/* כאן אפשר לשים אייקון הצגה/הסתרה */}
+                👁
               </button>
               <input
                 type={showPassword ? "text" : "password"}
