@@ -108,7 +108,11 @@ export function AuthProvider({ children }) {
       if (!skipRedirect) {
         if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
           sessionStorage.setItem("justRegistered", "true");
-          navigate("/dashboard", { replace: true });
+          if (normalizedUser.businessId) {
+            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+          } else {
+            navigate("/dashboard", { replace: true });
+          }
         } else if (redirectUrl) {
           const isPlans = redirectUrl === "/plans";
           const shouldSkip = isPlans && normalizedUser.hasPaid;
@@ -120,8 +124,11 @@ export function AuthProvider({ children }) {
             }
           }
         } else if (normalizedUser.role === "business") {
-          // אם אין redirectUrl והמשתמש עסק – הפניה לדשבורד
-          navigate("/dashboard", { replace: true });
+          if (normalizedUser.businessId) {
+            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+          } else {
+            navigate("/dashboard", { replace: true });
+          }
         }
       }
 
@@ -235,7 +242,13 @@ export function AuthProvider({ children }) {
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
-          navigate("/dashboard", { replace: true });
+          if (freshUser.role === "business") {
+            if (freshUser.businessId) {
+              navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
+            } else {
+              navigate("/dashboard", { replace: true });
+            }
+          }
           return;
         }
 
@@ -248,9 +261,12 @@ export function AuthProvider({ children }) {
           }
           sessionStorage.removeItem("postLoginRedirect");
         } else {
-          // ✅ הפניה אוטומטית לעסקים שנמצאים בדף הבית
           if (freshUser.role === "business" && window.location.pathname === "/") {
-            navigate("/dashboard", { replace: true });
+            if (freshUser.businessId) {
+              navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
+            } else {
+              navigate("/dashboard", { replace: true });
+            }
           }
         }
       } catch {
