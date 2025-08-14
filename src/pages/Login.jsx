@@ -56,17 +56,21 @@ export default function Login() {
         form.password
       );
 
-      // ניווט אוטומטי לכתובת מהשרת, או ברירת מחדל אם אין
-      if (redirectUrl) {
+      // 🔹 ניווט לפי סוג המשתמש
+      if (loggedInUser?.role === "affiliate") {
+        navigate("/affiliate/dashboard", { replace: true });
+      }
+      else if (loggedInUser?.role === "business" && loggedInUser?.businessId) {
+        navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
+      }
+      else if (loggedInUser?.role === "customer") {
+        navigate("/client/dashboard", { replace: true });
+      }
+      else if (redirectUrl) {
         navigate(redirectUrl, { replace: true });
-      } else {
-        if (loggedInUser?.role === "affiliate") {
-          navigate("/affiliate/dashboard", { replace: true });
-        } else if (loggedInUser?.role === "business") {
-          navigate("/dashboard", { replace: true });
-        } else {
-          navigate("/client/dashboard", { replace: true });
-        }
+      }
+      else {
+        navigate("/", { replace: true });
       }
 
       setTimeout(() => {
