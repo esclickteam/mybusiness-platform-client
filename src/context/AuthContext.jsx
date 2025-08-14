@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
-import createSocket from "../socket";
+import createSocket from "../socket"; // singleton socket helper
 
 function normalizeUser(user) {
   if (!user) return null;
@@ -73,6 +73,7 @@ export function AuthProvider({ children }) {
       const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
         withCredentials: true,
       });
+      console.log("refreshUser - user data received:", data);
       const normalized = normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
@@ -80,19 +81,6 @@ export function AuthProvider({ children }) {
     } catch (e) {
       console.error("Failed to refresh user", e);
       return null;
-    }
-  };
-
-  const navigateByRole = (u) => {
-    if (!u) return;
-    if (u.role === "business" && u.businessId) {
-      navigate(`/business/${u.businessId}/dashboard`, { replace: true });
-    } else if (u.role === "customer") {
-      navigate("/client/dashboard", { replace: true });
-    } else if (u.role === "affiliate") {
-      navigate("/affiliate/dashboard", { replace: true });
-    } else {
-      navigate("/", { replace: true });
     }
   };
 
@@ -105,7 +93,7 @@ export function AuthProvider({ children }) {
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
       );
-      const { accessToken, user: loggedInUser } = data;
+      const { accessToken, user: loggedInUser, redirectUrl } = data;
       if (!accessToken) throw new Error("No access token received");
 
       localStorage.setItem("token", accessToken);
@@ -117,12 +105,26 @@ export function AuthProvider({ children }) {
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
+      // ⬅️ שמירת דגל אם זה משתמש חדש בחודש ניסיון
       if (!skipRedirect) {
-        navigateByRole(normalizedUser);
+        if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
+          sessionStorage.setItem("justRegistered", "true");
+          navigate("/dashboard", { replace: true });
+        } else if (redirectUrl) {
+          const isPlans = redirectUrl === "/plans";
+          const shouldSkip = isPlans && normalizedUser.hasPaid;
+          if (!shouldSkip) {
+            if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
+              navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+            } else {
+              navigate(redirectUrl, { replace: true });
+            }
+          }
+        }
       }
 
       setLoading(false);
-      return { user: normalizedUser };
+      return { user: normalizedUser, redirectUrl };
     } catch (e) {
       setError(
         e.response?.status >= 400 && e.response?.status < 500
@@ -153,7 +155,6 @@ export function AuthProvider({ children }) {
       setUser(normalizedStaffUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedStaffUser));
 
-      navigateByRole(normalizedStaffUser);
       setLoading(false);
       return normalizedStaffUser;
     } catch (e) {
@@ -179,7 +180,6 @@ export function AuthProvider({ children }) {
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
 
-      navigateByRole(normalized);
       setToken(null);
       setLoading(false);
       return normalized;
@@ -230,7 +230,23 @@ export function AuthProvider({ children }) {
         const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
 
-        navigateByRole(freshUser);
+        // ⬅️ בדיקה אם המשתמש רק נרשם עכשיו
+        const justRegistered = sessionStorage.getItem("justRegistered");
+        if (justRegistered) {
+          sessionStorage.removeItem("justRegistered");
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        const savedRedirect = sessionStorage.getItem("postLoginRedirect");
+        if (savedRedirect) {
+          const isPlans = savedRedirect === "/plans";
+          const shouldSkip = isPlans && freshUser.hasPaid;
+          if (!shouldSkip) {
+            navigate(savedRedirect, { replace: true });
+          }
+          sessionStorage.removeItem("postLoginRedirect");
+        }
       } catch {
         await logout();
       } finally {

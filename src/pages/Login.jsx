@@ -51,8 +51,24 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = form.email.trim().toLowerCase();
-      await login(cleanEmail, form.password); 
-      // אין כאן navigate – ההפניה תיעשה ב־AuthContext
+      const { user: loggedInUser, redirectUrl } = await login(
+        cleanEmail,
+        form.password
+      );
+
+      // ניווט אוטומטי לכתובת מהשרת, או ברירת מחדל אם אין
+      if (redirectUrl) {
+        navigate(redirectUrl, { replace: true });
+      } else {
+        if (loggedInUser?.role === "affiliate") {
+          navigate("/affiliate/dashboard", { replace: true });
+        } else if (loggedInUser?.role === "business") {
+          navigate("/dashboard", { replace: true });
+        } else {
+          navigate("/client/dashboard", { replace: true });
+        }
+      }
+
       setTimeout(() => {
         if (typeof fetchNotifications === "function") fetchNotifications();
       }, 1000);
@@ -95,8 +111,31 @@ export default function Login() {
                 aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
                 tabIndex={-1}
               >
-                {/* כאן אפשר לשים אייקון הצגה/הסתרה */}
-                👁
+                {showPassword ? (
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="#222"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#222" />
+                    <circle cx="12" cy="12" r="2" fill="#222" />
+                  </svg>
+                ) : (
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="#222"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#222" />
+                    <circle cx="12" cy="12" r="2" fill="#222" />
+                  </svg>
+                )}
               </button>
               <input
                 type={showPassword ? "text" : "password"}
