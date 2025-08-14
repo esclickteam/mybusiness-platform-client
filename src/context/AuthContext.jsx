@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import createSocket from "../socket"; // singleton socket helper
 
@@ -57,6 +57,7 @@ export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [socket, setSocket] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(() => {
@@ -253,7 +254,14 @@ export function AuthProvider({ children }) {
             navigate(savedRedirect, { replace: true });
           }
           sessionStorage.removeItem("postLoginRedirect");
+          return;
         }
+
+        // ✅ הפניה ישירה לדשבורד אם זה עסק עם businessId ונמצאים בדף הבית
+        if (freshUser.role === "business" && freshUser.businessId && location.pathname === "/") {
+          navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
+        }
+
       } catch {
         await logout();
       } finally {
@@ -261,7 +269,7 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     })();
-  }, [token, navigate]);
+  }, [token, navigate, location.pathname]);
 
   useEffect(() => {
     if (!successMessage) return;
