@@ -56,31 +56,17 @@ export default function Login() {
         form.password
       );
 
-      const normalizedHasPaid =
-        loggedInUser?.hasPaid === true ||
-        loggedInUser?.hasPaid === "true" ||
-        loggedInUser?.hasPaid === 1;
-      const isPaymentApproved =
-        loggedInUser?.paymentStatus === "approved" && normalizedHasPaid;
-
+      // ניווט אוטומטי לכתובת מהשרת, או ברירת מחדל אם אין
       if (redirectUrl) {
-        if (redirectUrl === "/dashboard" && loggedInUser?.businessId) {
-          navigate(`/business/${loggedInUser.businessId}/dashboard`, {
-            replace: true,
-          });
-        } else {
-          navigate(redirectUrl, { replace: true });
-        }
-      } else if (loggedInUser?.role === "affiliate") {
-        navigate("/affiliate/dashboard", { replace: true });
-      } else if (loggedInUser?.role === "business" && isPaymentApproved) {
-        navigate(`/business/${loggedInUser.businessId}/dashboard`, {
-          replace: true,
-        });
-      } else if (loggedInUser?.role === "business") {
-        navigate("/plans", { replace: true });
+        navigate(redirectUrl, { replace: true });
       } else {
-        navigate("/client/dashboard", { replace: true });
+        if (loggedInUser?.role === "affiliate") {
+          navigate("/affiliate/dashboard", { replace: true });
+        } else if (loggedInUser?.role === "business") {
+          navigate("/dashboard", { replace: true });
+        } else {
+          navigate("/client/dashboard", { replace: true });
+        }
       }
 
       setTimeout(() => {
@@ -166,7 +152,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* כפתור התחבר מעל כפתור שכחת סיסמה */}
           <button
             type="submit"
             className="login-button"
