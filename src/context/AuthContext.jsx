@@ -106,7 +106,17 @@ export function AuthProvider({ children }) {
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
       if (!skipRedirect) {
-        if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
+        // אם אין מנוי תקף ואין תשלום פעיל → הפניה לחבילות
+        if (
+          normalizedUser.role === "business" &&
+          !normalizedUser.isSubscriptionValid &&
+          !normalizedUser.hasPaid
+        ) {
+          navigate("/plans", { replace: true });
+        } else if (
+          normalizedUser.subscriptionStatus === "trial" &&
+          normalizedUser.isSubscriptionValid
+        ) {
           sessionStorage.setItem("justRegistered", "true");
           if (normalizedUser.businessId) {
             navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
@@ -234,6 +244,18 @@ export function AuthProvider({ children }) {
         const freshUser = await refreshUser(true);
         if (!freshUser) throw new Error("No fresh user data");
 
+        // בדיקה לפני כל רינדור – אם אין מנוי תקף ואין תשלום פעיל
+        if (
+          freshUser.role === "business" &&
+          !freshUser.isSubscriptionValid &&
+          !freshUser.hasPaid
+        ) {
+          navigate("/plans", { replace: true });
+          setInitialized(true);
+          setLoading(false);
+          return; // מפסיקים כאן – לא טוענים את הדשבורד
+        }
+
         setUser(freshUser);
 
         const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
@@ -242,12 +264,10 @@ export function AuthProvider({ children }) {
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
-          if (freshUser.role === "business") {
-            if (freshUser.businessId) {
-              navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
-            } else {
-              navigate("/dashboard", { replace: true });
-            }
+          if (freshUser.businessId) {
+            navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
+          } else {
+            navigate("/dashboard", { replace: true });
           }
           return;
         }
@@ -310,6 +330,11 @@ export function AuthProvider({ children }) {
     socket,
     setUser,
   };
+
+  // חוסמים רינדור של ילדים עד שסיימנו לבדוק
+  if (!initialized || loading) {
+    return <div className="loading-screen">טוען...</div>;
+  }
 
   return (
     <AuthContext.Provider value={ctx}>
