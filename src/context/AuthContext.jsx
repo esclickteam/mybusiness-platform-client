@@ -105,6 +105,7 @@ export function AuthProvider({ children }) {
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
+      // ⬅️ שמירת דגל אם זה משתמש חדש בחודש ניסיון
       if (!skipRedirect) {
         if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
           sessionStorage.setItem("justRegistered", "true");
@@ -119,9 +120,6 @@ export function AuthProvider({ children }) {
               navigate(redirectUrl, { replace: true });
             }
           }
-        } else if (normalizedUser.role === "business" && normalizedUser.businessId) {
-          // ברירת מחדל לעסק
-          navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
         }
       }
 
@@ -232,6 +230,7 @@ export function AuthProvider({ children }) {
         const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
 
+        // ⬅️ בדיקה אם המשתמש רק נרשם עכשיו
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
@@ -247,9 +246,6 @@ export function AuthProvider({ children }) {
             navigate(savedRedirect, { replace: true });
           }
           sessionStorage.removeItem("postLoginRedirect");
-        } else if (freshUser.role === "business" && freshUser.businessId) {
-          // ברירת מחדל לעסק
-          navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
         }
       } catch {
         await logout();
@@ -296,11 +292,7 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={ctx}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
-      {(!initialized || loading) ? (
-        <div className="loading-screen">טוען...</div>
-      ) : (
-        children
-      )}
+      {children}
     </AuthContext.Provider>
   );
 }
