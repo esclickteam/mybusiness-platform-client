@@ -63,7 +63,8 @@ export default function Login() {
         if (loggedInUser?.role === "affiliate") {
           navigate("/affiliate/dashboard", { replace: true });
         } else if (loggedInUser?.role === "business") {
-          navigate("/dashboard", { replace: true });
+            navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
+
         } else {
           navigate("/client/dashboard", { replace: true });
         }
