@@ -105,7 +105,6 @@ export function AuthProvider({ children }) {
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // ⬅️ שמירת דגל אם זה משתמש חדש בחודש ניסיון
       if (!skipRedirect) {
         if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
           sessionStorage.setItem("justRegistered", "true");
@@ -120,6 +119,9 @@ export function AuthProvider({ children }) {
               navigate(redirectUrl, { replace: true });
             }
           }
+        } else if (normalizedUser.role === "business") {
+          // אם אין redirectUrl והמשתמש עסק – הפניה לדשבורד
+          navigate("/dashboard", { replace: true });
         }
       }
 
@@ -230,7 +232,6 @@ export function AuthProvider({ children }) {
         const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
 
-        // ⬅️ בדיקה אם המשתמש רק נרשם עכשיו
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
@@ -246,6 +247,11 @@ export function AuthProvider({ children }) {
             navigate(savedRedirect, { replace: true });
           }
           sessionStorage.removeItem("postLoginRedirect");
+        } else {
+          // ✅ הפניה אוטומטית לעסקים שנמצאים בדף הבית
+          if (freshUser.role === "business" && window.location.pathname === "/") {
+            navigate("/dashboard", { replace: true });
+          }
         }
       } catch {
         await logout();
