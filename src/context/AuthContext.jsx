@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import createSocket from "../socket"; // singleton socket helper
 
@@ -57,6 +57,7 @@ export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [socket, setSocket] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(() => {
@@ -107,22 +108,30 @@ export function AuthProvider({ children }) {
       if (!skipRedirect) {
         if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
           sessionStorage.setItem("justRegistered", "true");
-          navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+          const target = `/business/${normalizedUser.businessId}/dashboard`;
+          if (location.pathname !== target) {
+            navigate(target, { replace: true });
+          }
         } else if (redirectUrl) {
           const isPlans = redirectUrl === "/plans";
           const shouldSkip = isPlans && normalizedUser.hasPaid;
           if (!shouldSkip) {
             if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
-              navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
-            } else {
+              const target = `/business/${normalizedUser.businessId}/dashboard`;
+              if (location.pathname !== target) {
+                navigate(target, { replace: true });
+              }
+            } else if (location.pathname !== redirectUrl) {
               navigate(redirectUrl, { replace: true });
             }
           }
         } else {
-          // ברירת מחדל – עסק לדשבורד, אחר הביתה
           if (normalizedUser.role === "business" && normalizedUser.businessId) {
-            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
-          } else {
+            const target = `/business/${normalizedUser.businessId}/dashboard`;
+            if (location.pathname !== target) {
+              navigate(target, { replace: true });
+            }
+          } else if (location.pathname !== "/") {
             navigate("/", { replace: true });
           }
         }
@@ -238,7 +247,10 @@ export function AuthProvider({ children }) {
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
-          navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
+          const target = `/business/${freshUser.businessId}/dashboard`;
+          if (location.pathname !== target) {
+            navigate(target, { replace: true });
+          }
           return;
         }
 
@@ -248,17 +260,22 @@ export function AuthProvider({ children }) {
           const shouldSkip = isPlans && freshUser.hasPaid;
           if (!shouldSkip) {
             if (savedRedirect === "/dashboard" && freshUser.businessId) {
-              navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
-            } else {
+              const target = `/business/${freshUser.businessId}/dashboard`;
+              if (location.pathname !== target) {
+                navigate(target, { replace: true });
+              }
+            } else if (location.pathname !== savedRedirect) {
               navigate(savedRedirect, { replace: true });
             }
           }
           sessionStorage.removeItem("postLoginRedirect");
         } else {
-          // ברירת מחדל בטעינה מחדש
           if (freshUser.role === "business" && freshUser.businessId) {
-            navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
-          } else {
+            const target = `/business/${freshUser.businessId}/dashboard`;
+            if (location.pathname !== target) {
+              navigate(target, { replace: true });
+            }
+          } else if (location.pathname !== "/") {
             navigate("/", { replace: true });
           }
         }
@@ -269,7 +286,7 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     })();
-  }, [token, navigate]);
+  }, [token, navigate, location.pathname]);
 
   useEffect(() => {
     if (!successMessage) return;
