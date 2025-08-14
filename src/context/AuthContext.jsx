@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import createSocket from "../socket"; // singleton socket helper
 
@@ -57,7 +57,6 @@ export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const location = useLocation();
   const [socket, setSocket] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(() => {
@@ -74,6 +73,7 @@ export function AuthProvider({ children }) {
       const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
         withCredentials: true,
       });
+      console.log("refreshUser - user data received:", data);
       const normalized = normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
@@ -108,32 +108,20 @@ export function AuthProvider({ children }) {
       if (!skipRedirect) {
         if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
           sessionStorage.setItem("justRegistered", "true");
-          const target = `/business/${normalizedUser.businessId}/dashboard`;
-          if (location.pathname !== target) {
-            navigate(target, { replace: true });
-          }
+          navigate("/dashboard", { replace: true });
         } else if (redirectUrl) {
           const isPlans = redirectUrl === "/plans";
           const shouldSkip = isPlans && normalizedUser.hasPaid;
           if (!shouldSkip) {
             if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
-              const target = `/business/${normalizedUser.businessId}/dashboard`;
-              if (location.pathname !== target) {
-                navigate(target, { replace: true });
-              }
-            } else if (location.pathname !== redirectUrl) {
+              navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+            } else {
               navigate(redirectUrl, { replace: true });
             }
           }
-        } else {
-          if (normalizedUser.role === "business" && normalizedUser.businessId) {
-            const target = `/business/${normalizedUser.businessId}/dashboard`;
-            if (location.pathname !== target) {
-              navigate(target, { replace: true });
-            }
-          } else if (location.pathname !== "/") {
-            navigate("/", { replace: true });
-          }
+        } else if (normalizedUser.role === "business" && normalizedUser.businessId) {
+          // ברירת מחדל לעסק
+          navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
         }
       }
 
@@ -247,10 +235,7 @@ export function AuthProvider({ children }) {
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
-          const target = `/business/${freshUser.businessId}/dashboard`;
-          if (location.pathname !== target) {
-            navigate(target, { replace: true });
-          }
+          navigate("/dashboard", { replace: true });
           return;
         }
 
@@ -259,25 +244,12 @@ export function AuthProvider({ children }) {
           const isPlans = savedRedirect === "/plans";
           const shouldSkip = isPlans && freshUser.hasPaid;
           if (!shouldSkip) {
-            if (savedRedirect === "/dashboard" && freshUser.businessId) {
-              const target = `/business/${freshUser.businessId}/dashboard`;
-              if (location.pathname !== target) {
-                navigate(target, { replace: true });
-              }
-            } else if (location.pathname !== savedRedirect) {
-              navigate(savedRedirect, { replace: true });
-            }
+            navigate(savedRedirect, { replace: true });
           }
           sessionStorage.removeItem("postLoginRedirect");
-        } else {
-          if (freshUser.role === "business" && freshUser.businessId) {
-            const target = `/business/${freshUser.businessId}/dashboard`;
-            if (location.pathname !== target) {
-              navigate(target, { replace: true });
-            }
-          } else if (location.pathname !== "/") {
-            navigate("/", { replace: true });
-          }
+        } else if (freshUser.role === "business" && freshUser.businessId) {
+          // ברירת מחדל לעסק
+          navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
         }
       } catch {
         await logout();
@@ -286,7 +258,7 @@ export function AuthProvider({ children }) {
         setInitialized(true);
       }
     })();
-  }, [token, navigate, location.pathname]);
+  }, [token, navigate]);
 
   useEffect(() => {
     if (!successMessage) return;
@@ -324,7 +296,11 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={ctx}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
-      {children}
+      {(!initialized || loading) ? (
+        <div className="loading-screen">טוען...</div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }
