@@ -138,6 +138,18 @@ const DashboardPage = () => {
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
   /*******************
+   * Always scroll to top + remove hash
+   *******************/
+  useEffect(() => {
+    if (location.hash) {
+      // מוחק את ה־hash אבל משאיר query params אם קיימים
+      window.history.replaceState({}, document.title, location.pathname + location.search);
+    }
+    // תמיד חוזר לראש העמוד
+    window.scrollTo(0, 0);
+  }, [location]);
+
+  /*******************
    * Redirect business user with businessId to personal dashboard if on "/dashboard"
    *******************/
   useEffect(() => {
@@ -150,6 +162,7 @@ const DashboardPage = () => {
       navigate(`/business/${user.businessId}/dashboard`, { replace: true });
     }
   }, [initialized, user, location.pathname, navigate]);
+
 
   /*******************
    * Poll & refresh profile if "?paid=1" is in URL and update user state accordingly

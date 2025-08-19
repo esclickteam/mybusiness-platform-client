@@ -40,9 +40,6 @@ const DashboardNav = ({ refs = {} }) => {
 
         if (visible?.target?.id) {
           setActiveSection(visible.target.id);
-          if (window.history?.replaceState) {
-            window.history.replaceState(null, "", `#${visible.target.id}`);
-          }
         }
       },
       {
@@ -67,23 +64,9 @@ const DashboardNav = ({ refs = {} }) => {
       if (!el) return;
       if (!el.id) el.id = refName;
       el.scrollIntoView({ behavior: "smooth", block: "start" });
-      if (window.history?.replaceState) {
-        window.history.replaceState(null, "", `#${el.id}`);
-      }
     },
     [refs]
   );
-
-  useEffect(() => {
-    const hash = typeof window !== "undefined" ? window.location.hash.replace("#", "") : "";
-    if (!hash) return;
-    const t = setTimeout(() => {
-      if (refs[hash]?.current) {
-        scrollTo(hash);
-      }
-    }, 0);
-    return () => clearTimeout(t);
-  }, [refs, scrollTo]);
 
   const buttons = useMemo(() => {
     return SECTION_IDS
