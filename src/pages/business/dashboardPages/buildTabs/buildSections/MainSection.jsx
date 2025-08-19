@@ -1,15 +1,11 @@
+// src/pages/business/MainSection.jsx
 import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
-import rawCities from "../../../../../data/cities";
 import ALL_CATEGORIES from "../../../../../data/categories";
 import ImageLoader from "@components/ImageLoader";
 
-const CITIES = Array.from(new Set(rawCities)).sort((a, b) =>
-  a.localeCompare(b, "he")
-);
 const categoryOptions = ALL_CATEGORIES.map(cat => ({ value: cat, label: cat }));
-const cityOptions = CITIES.map(city => ({ value: city, label: city }));
 
 export default function MainSection({
   businessDetails = {},
@@ -29,6 +25,35 @@ export default function MainSection({
 }) {
   const containerRef = useRef();
   const [isDeletingLogo, setIsDeletingLogo] = useState(false);
+
+  // ערים מה־API
+  const [cityOptions, setCityOptions] = useState([]);
+  const [loadingCities, setLoadingCities] = useState(true);
+
+  useEffect(() => {
+    async function fetchCities() {
+      try {
+        setLoadingCities(true);
+        const res = await fetch(
+          "https://data.gov.il/api/3/action/datastore_search?resource_id=5c78e9fa-c2e2-4771-93ff-7f400a12f7ba&limit=5000"
+        );
+        const data = await res.json();
+        const cities = (data.result?.records || [])
+          .map(r => r["שם_ישוב"].trim())
+          .filter(Boolean);
+
+        const unique = Array.from(new Set(cities)).sort((a, b) =>
+          a.localeCompare(b, "he")
+        );
+        setCityOptions(unique.map(c => ({ value: c, label: c })));
+      } catch (err) {
+        console.error("שגיאה בטעינת ערים:", err);
+      } finally {
+        setLoadingCities(false);
+      }
+    }
+    fetchCities();
+  }, []);
 
   useEffect(() => {
     const onClickOutside = e => {
@@ -65,21 +90,19 @@ export default function MainSection({
   const sortedReviews = [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
   const lastTwoReviews = sortedReviews.slice(0, 2);
 
-  // פונקציה למחיקת לוגו
+  // מחיקת לוגו
   async function handleDeleteLogo() {
     if (isSaving || isDeletingLogo) return;
     if (!window.confirm("אתה בטוח שברצונך למחוק את הלוגו?")) return;
     try {
       setIsDeletingLogo(true);
-
-      // דוגמה להוספת טוקן (JWT) ל-Authorization header
-      const token = localStorage.getItem("token"); // או מאיפה שאתה שומר את הטוקן
+      const token = localStorage.getItem("token");
 
       const response = await fetch("/api/business/my/logo", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
         }
       });
 
@@ -90,7 +113,6 @@ export default function MainSection({
         return;
       }
 
-      // מעדכן את הערך של הלוגו למחרוזת ריקה
       handleInputChange({ target: { name: "logo", value: "" } });
       alert("הלוגו נמחק בהצלחה");
     } catch (err) {
@@ -158,10 +180,6 @@ export default function MainSection({
           isDisabled={isSaving}
           placeholder="הקלד קטגוריה"
           isClearable
-          menuPlacement="bottom"
-          openMenuOnClick={false}
-          openMenuOnFocus={false}
-          openMenuOnInput
           filterOption={({ label }, input) =>
             label.toLowerCase().startsWith(input.toLowerCase())
           }
@@ -179,13 +197,9 @@ export default function MainSection({
           options={cityOptions}
           value={cityOptions.find(o => o.value === city) || null}
           onChange={wrapSelectChange("address.city")}
-          isDisabled={isSaving}
-          placeholder="הקלד עיר"
+          isDisabled={isSaving || loadingCities}
+          placeholder={loadingCities ? "טוען ערים..." : "הקלד עיר"}
           isClearable
-          menuPlacement="bottom"
-          openMenuOnClick={false}
-          openMenuOnFocus={false}
-          openMenuOnInput
           filterOption={({ label }, input) =>
             label.toLowerCase().startsWith(input.toLowerCase())
           }

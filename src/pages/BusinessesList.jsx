@@ -4,35 +4,47 @@ import Select from "react-select";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
 import ALL_CATEGORIES from "../data/categories";
-import ALL_CITIES from "../data/cities";
+import { fetchCities } from "../data/cities"; // 👈 יבוא הפונקציה הדינמית
 import { FaSearch } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 import "./BusinessList.css";
 
 const BusinessesList = () => {
-  // 1. קריאה לפרמטרים מה-URL
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category") || "";
   const cityParam     = searchParams.get("city")     || "";
 
-  // 2. סטייט של הפילטרים ושל הנתונים
   const [businesses, setBusinesses] = useState([]);
-  const [category, setCategory]     = useState(
-    ALL_CATEGORIES.includes(categoryParam)
-      ? { value: categoryParam, label: categoryParam }
-      : null
-  );
-  const [city, setCity]             = useState(
-    ALL_CITIES.includes(cityParam)
-      ? { value: cityParam, label: cityParam }
-      : null
-  );
-  const [loading, setLoading] = useState(false);
+  const [category, setCategory]     = useState(null);
+  const [city, setCity]             = useState(null);
+  const [loading, setLoading]       = useState(false);
+
+  const [cities, setCities]         = useState([]);   // 👈 ערים מה-API
+  const [loadingCities, setLoadingCities] = useState(true);
 
   const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
-  const cityOptions     = ALL_CITIES.map(c => ({ value: c, label: c }));
+  const cityOptions     = cities.map(c => ({ value: c, label: c })); // 👈 דינמי
 
-  // 3. פונקציית הקריאה ל־API
+  // טען ערים מה־API פעם אחת
+  useEffect(() => {
+    const loadCities = async () => {
+      setLoadingCities(true);
+      const fetched = await fetchCities();
+      setCities(fetched);
+
+      // אם יש פרמטר ב־URL – שים אותו ב־state אם הוא קיים באמת
+      if (categoryParam && ALL_CATEGORIES.includes(categoryParam)) {
+        setCategory({ value: categoryParam, label: categoryParam });
+      }
+      if (cityParam && fetched.includes(cityParam)) {
+        setCity({ value: cityParam, label: cityParam });
+      }
+      setLoadingCities(false);
+    };
+    loadCities();
+  }, [categoryParam, cityParam]);
+
+  // קריאה לעסקים
   const fetchBusinesses = async (cat, city) => {
     setLoading(true);
     try {
@@ -49,26 +61,25 @@ const BusinessesList = () => {
     }
   };
 
-  // 4. בכל שינוי בפרמטרים ב-URL – תבצע קריאה
+  // בכל שינוי פרמטרים ב־URL – שלוף עסקים
   useEffect(() => {
     fetchBusinesses(categoryParam, cityParam);
   }, [categoryParam, cityParam]);
 
-  // 5. עדכון ה-URL בעת בחירה ידנית ב־Select
   const onCategoryChange = opt => {
     setCategory(opt);
-    if (opt)   searchParams.set("category", opt.value);
-    else       searchParams.delete("category");
-    setSearchParams(searchParams, { replace: true });
-  };
-  const onCityChange = opt => {
-    setCity(opt);
-    if (opt)   searchParams.set("city", opt.value);
-    else       searchParams.delete("city");
+    if (opt) searchParams.set("category", opt.value);
+    else     searchParams.delete("category");
     setSearchParams(searchParams, { replace: true });
   };
 
-  // 6. SEO כמו בקוד המקורי
+  const onCityChange = opt => {
+    setCity(opt);
+    if (opt) searchParams.set("city", opt.value);
+    else     searchParams.delete("city");
+    setSearchParams(searchParams, { replace: true });
+  };
+
   const seoTitleParts = [];
   if (category) seoTitleParts.push(category.label);
   if (city)     seoTitleParts.push(city.label);
@@ -84,9 +95,7 @@ const BusinessesList = () => {
           name="description"
           content={
             seoTitleParts.length
-              ? `מצא עסקים בתחום ${category ? category.label : ""} ${
-                  city ? "בעיר " + city.label : ""
-                } בפלטפורמת עסקליק.`
+              ? `מצא עסקים בתחום ${category ? category.label : ""} ${city ? "בעיר " + city.label : ""} בפלטפורמת עסקליק.`
               : "חפש עסקים לפי תחום ועיר בפלטפורמת עסקליק."
           }
         />
@@ -134,8 +143,9 @@ const BusinessesList = () => {
               options={cityOptions}
               value={city}
               onChange={onCityChange}
-              placeholder="עיר (לדוגמה: תל אביב)"
+              placeholder={loadingCities ? "טוען ערים..." : "עיר (לדוגמה: תל אביב)"}
               isClearable
+              isDisabled={loadingCities}
             />
           </div>
 

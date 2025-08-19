@@ -1,10 +1,11 @@
+// src/pages/SearchBusinesses.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import API from '@api';
 import BusinessCard from '../components/BusinessCard';
 import BusinessCardSkeleton from '../components/BusinessCardSkeleton';
 import ALL_CATEGORIES from '../data/categories';
-import ALL_CITIES from '../data/cities';
+import { fetchCities } from '../data/cities';
 import { Helmet } from 'react-helmet';
 import './BusinessList.css';
 
@@ -28,20 +29,24 @@ export default function SearchBusinesses() {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Category autocomplete
+  // קטגוריה
   const catParam = searchParams.get('category') || '';
   const [cat, setCat] = useState(catParam);
   const [openCat, setOpenCat] = useState(false);
   const wrapperCatRef = useRef(null);
 
-  // City autocomplete
+  // ערים דינמיות
   const cityParam = searchParams.get('city') || '';
   const [city, setCity] = useState(cityParam);
   const [openCity, setOpenCity] = useState(false);
   const wrapperCityRef = useRef(null);
 
+  const [cities, setCities] = useState([]);
+  const [loadingCities, setLoadingCities] = useState(true);
+
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
+  // טוען עסקים מהשרת
   useEffect(() => {
     API.get('/business')
       .then(r => {
@@ -51,6 +56,24 @@ export default function SearchBusinesses() {
       .catch(console.error);
   }, []);
 
+  // טוען ערים מה־API (עם cache)
+  useEffect(() => {
+    const loadCities = async () => {
+      const cache = localStorage.getItem('allCities');
+      if (cache) {
+        setCities(JSON.parse(cache));
+        setLoadingCities(false);
+        return;
+      }
+      const fetched = await fetchCities();
+      setCities(fetched);
+      setLoadingCities(false);
+      localStorage.setItem('allCities', JSON.stringify(fetched));
+    };
+    loadCities();
+  }, []);
+
+  // סגירת dropdown בלחיצה מחוץ
   useEffect(() => {
     const handler = e => {
       if (wrapperCatRef.current && !wrapperCatRef.current.contains(e.target)) setOpenCat(false);
@@ -60,6 +83,7 @@ export default function SearchBusinesses() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  // עדכון URL בפרמטרים
   useEffect(() => {
     const params = new URLSearchParams();
     if (cat) params.set('category', cat);
@@ -69,15 +93,15 @@ export default function SearchBusinesses() {
   }, [cat, city, page, setSearchParams]);
 
   const handleSearch = () => {
+    setPage(1); // תמיד חוזר לעמוד ראשון
     const normCat = normalize(cat);
     const normCity = normalize(city);
     const result = all.filter(b => {
-      if (normCat && normalize(b.category) !== normCat) return false;
+      if (normCat && !normalize(b.category).includes(normCat)) return false;
       if (normCity && !normalize(b.address?.city || '').startsWith(normCity)) return false;
       return true;
     });
     setFiltered(result);
-    setPage(1);
     setSearched(true);
   };
 
@@ -89,7 +113,7 @@ export default function SearchBusinesses() {
     ? ALL_CATEGORIES.filter(c => normalize(c).includes(normalize(cat)))
     : [];
   const citySuggestions = city.trim()
-    ? ALL_CITIES.filter(c => normalize(c).startsWith(normalize(city)))
+    ? cities.filter(c => normalize(c).startsWith(normalize(city)))
     : [];
 
   // SEO דינמי
@@ -106,6 +130,14 @@ export default function SearchBusinesses() {
       ? `מצא עסקים בתחום ${cat ? cat : ""} ${city ? "בעיר " + city : ""} בפלטפורמת עסקליק. חיפוש נוח, דירוגים אמיתיים, וקבלת פניות מהירות.`
       : "חפש עסקים לפי תחום ועיר בפלטפורמת עסקליק. קבל פניות, קרא חוות דעת ותאם שירות בקלות.";
 
+  const canonicalUrl = `https://yourdomain.co.il/search${
+    cat || city || page > 1
+      ? `?${cat ? `category=${encodeURIComponent(cat)}` : ""}${
+          city ? `${cat ? "&" : ""}city=${encodeURIComponent(city)}` : ""
+        }${page > 1 ? `${cat || city ? "&" : ""}page=${page}` : ""}`
+      : ""
+  }`;
+
   return (
     <div className="list-page">
       <Helmet>
@@ -117,10 +149,7 @@ export default function SearchBusinesses() {
             city ? city + "," : ""
           } עסקליק, לקוחות, שירותים`}
         />
-        <link
-          rel="canonical"
-          href={`https://yourdomain.co.il/search?category=${encodeURIComponent(cat)}&city=${encodeURIComponent(city)}${page > 1 ? `&page=${page}` : ''}`}
-        />
+        <link rel="canonical" href={canonicalUrl} />
       </Helmet>
 
       <div className="business-list-container">
@@ -144,6 +173,7 @@ export default function SearchBusinesses() {
         )}
 
         <div className="filters-wrapper">
+          {/* קטגוריות */}
           <div className="dropdown-wrapper input-clearable" ref={wrapperCatRef}>
             <input
               type="text"
@@ -152,6 +182,7 @@ export default function SearchBusinesses() {
               value={cat}
               onFocus={() => setOpenCat(true)}
               onChange={e => { setCat(e.target.value); setOpenCat(true); }}
+              onKeyDown={e => e.key === 'Enter' && handleSearch()}
               disabled={loading}
             />
             {openCat && catSuggestions.length > 0 && (
@@ -163,15 +194,17 @@ export default function SearchBusinesses() {
             )}
           </div>
 
+          {/* ערים */}
           <div className="dropdown-wrapper input-clearable" ref={wrapperCityRef}>
             <input
               type="text"
               className="filter-input"
-              placeholder="עיר (לדוגמא: תל אביב)"
+              placeholder={loadingCities ? "טוען ערים..." : "עיר (לדוגמא: תל אביב)"}
               value={city}
               onFocus={() => setOpenCity(true)}
               onChange={e => { setCity(e.target.value); setOpenCity(true); }}
-              disabled={loading}
+              onKeyDown={e => e.key === 'Enter' && handleSearch()}
+              disabled={loading || loadingCities}
             />
             {openCity && citySuggestions.length > 0 && (
               <ul className="suggestions-list">

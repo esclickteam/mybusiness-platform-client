@@ -1,12 +1,25 @@
 // src/pages/ProfileEdit.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import ALL_CITIES from '../data/cities';
+import { fetchCities } from '../data/cities'; // 👈 שימוש בפונקציה הדינמית
 import './BusinessList.css'; // reuses the dropdown CSS
 
 export default function ProfileEdit() {
   const [city, setCity] = useState('');
   const [openCity, setOpenCity] = useState(false);
+  const [cities, setCities] = useState([]);       // 👈 ערים דינמיות
+  const [loadingCities, setLoadingCities] = useState(true);
   const wrapperCityRef = useRef(null);
+
+  // טעינת ערים מה־API
+  useEffect(() => {
+    const loadCities = async () => {
+      setLoadingCities(true);
+      const fetched = await fetchCities();
+      setCities(fetched);
+      setLoadingCities(false);
+    };
+    loadCities();
+  }, []);
 
   // סגירת dropdown בלחיצה מחוץ
   useEffect(() => {
@@ -19,6 +32,10 @@ export default function ProfileEdit() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  const filteredCities = cities.filter(c =>
+    city === '' || c.toLowerCase().includes(city.trim().toLowerCase())
+  );
+
   return (
     <div className="profile-page">
       <form>
@@ -28,26 +45,24 @@ export default function ProfileEdit() {
             id="city-input"
             type="text"
             className="filter-input"
-            placeholder="עיר (לדוגמה: תל אביב)"
+            placeholder={loadingCities ? "טוען ערים..." : "עיר (לדוגמה: תל אביב)"}
             value={city}
             onFocus={() => setOpenCity(true)}
             onChange={e => { setCity(e.target.value); setOpenCity(true); }}
+            disabled={loadingCities}
           />
-          {openCity && (
+          {openCity && !loadingCities && (
             <ul className="suggestions-list">
-              {ALL_CITIES
-                .filter(c =>
-                  city === '' || c.toLowerCase().includes(city.trim().toLowerCase())
-                )
-                .map((c, i) => (
-                  <li key={i} onClick={() => { setCity(c); setOpenCity(false); }}>
-                    {c === 'כל הערים' ? <em>{c}</em> : c}
+              {filteredCities.length > 0 ? (
+                filteredCities.map((c, i) => (
+                  <li
+                    key={i}
+                    onClick={() => { setCity(c); setOpenCity(false); }}
+                  >
+                    {c}
                   </li>
                 ))
-              }
-              {ALL_CITIES.filter(c =>
-                city === '' || c.toLowerCase().includes(city.trim().toLowerCase())
-              ).length === 0 && (
+              ) : (
                 <li className="no-match">אין ערים מתאימות</li>
               )}
             </ul>
