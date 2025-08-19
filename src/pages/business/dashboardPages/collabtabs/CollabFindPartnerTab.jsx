@@ -9,6 +9,11 @@ function PartnerCard({ business, isMine, onOpenProfile }) {
   return (
     <div key={business._id} className={`collab-card${isMine ? " my-business" : ""}`}>
       <div className="collab-card-inner">
+        {/* ✅ הלוגו בתוך הכרטיס, בראש */}
+        <div className="business-card__media">
+          <img src={logoUrl} alt={`${business.businessName} לוגו`} />
+        </div>
+
         <div className="collab-card-content">
           <h3 className="business-name">
             {business.businessName}
@@ -28,10 +33,6 @@ function PartnerCard({ business, isMine, onOpenProfile }) {
               </button>
             )}
           </div>
-        </div>
-
-        <div className="business-logo-left">
-          <img src={logoUrl} alt={`${business.businessName} לוגו`} />
         </div>
       </div>
     </div>
@@ -65,7 +66,6 @@ export default function CollabFindPartnerTab({ searchMode, searchCategory, freeT
 
   useEffect(() => {
     fetchData();
-    // אם רוצה רענון תקופתי, אפשר פה להוסיף setInterval עם ניקוי
   }, [fetchData]);
 
   const filteredPartners = useMemo(() => {
@@ -104,14 +104,13 @@ export default function CollabFindPartnerTab({ searchMode, searchCategory, freeT
 
   if (loading) return <p>טוען שותפים...</p>;
   if (error) return <p className="error-text">{error}</p>;
-
   if (filteredPartners.length === 0) {
     return <p>לא נמצאו שותפים.</p>;
   }
 
   return (
     <div>
-      <div className="search-container">{/* שדות חיפוש בעתיד */}</div>
+      <div className="search-container">{/* future search fields */}</div>
 
       <div className="partners-grid">
         {filteredPartners.map((business) => (
