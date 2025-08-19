@@ -17,7 +17,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: right;
+  text-align: center; /* ✅ מיושרים למרכז */
   background: linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
@@ -37,6 +37,13 @@
   width: 96px;
   height: 96px;
   margin-bottom: 1rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #ddd;
+  background-color: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .business-card__media img {
@@ -44,8 +51,6 @@
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid #ddd;
-  background-color: #fafafa;
 }
 
 .business-card__title {
@@ -67,7 +72,6 @@
   text-align: center;
 }
 
-
 .business-card__info svg {
   flex-shrink: 0;
   color: var(--primary);
@@ -82,13 +86,11 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
-  line-clamp: 3; /* 🟢 תוספת להמלצה */
+  line-clamp: 3;
   overflow: hidden;
-
-  text-align: right;
+  text-align: center; /* ✅ תמיד במרכז */
   color: #333;
 }
-
 
 .business-card__btn {
   margin-top: 1.25rem;
@@ -133,6 +135,7 @@
     font-size: 0.95rem;
   }
 }
+
 @media (max-width: 360px) {
   .business-card {
     padding: 1rem 0.75rem;
@@ -159,6 +162,7 @@
     padding: 0.5rem 1.25rem;
   }
 }
+
 @media (min-width: 1024px) {
   .business-card {
     max-width: 380px;
