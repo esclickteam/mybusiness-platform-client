@@ -13,7 +13,7 @@ import CRMServicesTab from "./CRMServicesTab";
 
 async function fetchCustomer(id) {
   if (!id) return null;
-  const res = await API.get(`/clients/${id}`); // ⚡ תעדכן ל־endpoint האמיתי שלך
+  const res = await API.get(`/clients/single/${id}`);
   return res.data;
 }
 
