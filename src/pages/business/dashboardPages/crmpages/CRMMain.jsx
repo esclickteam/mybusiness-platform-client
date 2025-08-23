@@ -8,6 +8,7 @@ const crmTabs = [
   { path: "services", label: "🛠️ שירותים" },
   { path: "appointments", label: "📆 תיאומים" },
   { path: "clients", label: "👥 לקוחות" },
+  { path: "customer/:id", label: "👤 פרופיל לקוח" },
 ];
 
 // פונקציות fetch לדוגמה (החלף לפי הקוד שלך)

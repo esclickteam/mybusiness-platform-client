@@ -1,6 +1,9 @@
 // crmpages/CRMCustomerProfile.jsx
 import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Phone, Mail, Calendar, CreditCard } from "lucide-react";
+import API from "@api";
 import "./CRMCustomerProfile.css";
 
 // ייבוא רכיבים קיימים
@@ -8,8 +11,27 @@ import ClientAppointmentsHistory from "./ClientAppointmentsHistory";
 import CRMAppointmentsTab from "./CRMAppointmentsTab";
 import CRMServicesTab from "./CRMServicesTab";
 
-export default function CRMCustomerProfile({ customer, onBack }) {
+async function fetchCustomer(id) {
+  if (!id) return null;
+  const res = await API.get(`/clients/${id}`); // ⚡ תעדכן ל־endpoint האמיתי שלך
+  return res.data;
+}
+
+export default function CRMCustomerProfile() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+
+  // טעינת נתוני הלקוח
+  const { data: customer, isLoading, error } = useQuery({
+    queryKey: ["customer", id],
+    queryFn: () => fetchCustomer(id),
+    enabled: !!id,
+  });
+
+  if (isLoading) return <div className="customer-profile-container">טוען פרטי לקוח...</div>;
+  if (error) return <div className="customer-profile-container">שגיאה בטעינת פרטי לקוח</div>;
+  if (!customer) return <div className="customer-profile-container">לא נמצא לקוח</div>;
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -17,38 +39,37 @@ export default function CRMCustomerProfile({ customer, onBack }) {
         return (
           <div>
             <h3>📊 סקירה כללית</h3>
-            <p>כאן אפשר לשים סיכום: מספר פגישות, הכנסות מהלקוח, שירותים פופולריים, המלצות AI וכו׳.</p>
+            <p>סה״כ פגישות: {customer.totalAppointments || 0}</p>
+            <p>סה״כ הכנסות: ₪{customer.totalPayments || 0}</p>
           </div>
         );
       case "appointments":
         return (
           <div>
             <h3>📅 פגישות</h3>
-            {/* מציג היסטוריה של פגישות ללקוח */}
-            <ClientAppointmentsHistory customerId={customer.id} />
-            {/* או טאב כללי לניהול תיאומים */}
-            <CRMAppointmentsTab customerId={customer.id} />
+            <ClientAppointmentsHistory customerId={id} />
+            <CRMAppointmentsTab customerId={id} />
           </div>
         );
       case "payments":
         return (
           <div>
             <h3>💳 תשלומים</h3>
-            <p>כאן נציג דוחות תשלומים / חשבוניות לפי הלקוח (בהמשך אפשר לחבר ל־Cardcom).</p>
+            <p>כאן נציג דוחות תשלומים / חשבוניות (נחבר ל־Cardcom בהמשך).</p>
           </div>
         );
       case "messages":
         return (
           <div>
             <h3>💬 הודעות</h3>
-            <p>כאן נטמיע את רכיב הצ׳אט מול הלקוח (כבר דיברנו שיש לך `CollabChat` ו־`ChatComponent`).</p>
+            <p>כאן נטמיע את רכיב הצ׳אט מול הלקוח.</p>
           </div>
         );
       case "tasks":
         return (
           <div>
             <h3>✅ משימות</h3>
-            <p>כאן נוסיף ניהול משימות ותזכורות אוטומטיות ללקוח.</p>
+            <p>כאן נוסיף משימות ותזכורות.</p>
           </div>
         );
       default:
@@ -59,18 +80,20 @@ export default function CRMCustomerProfile({ customer, onBack }) {
   return (
     <div className="customer-profile-container">
       {/* כפתור חזרה */}
-      <button className="back-btn" onClick={onBack}>⬅ חזרה ללקוחות</button>
+      <button className="back-btn" onClick={() => navigate("/crm/clients")}>
+        ⬅ חזרה ללקוחות
+      </button>
 
       {/* Header */}
       <div className="customer-header">
         <div className="customer-info">
           <img
             src={customer.avatar || "/default-avatar.png"}
-            alt={customer.name}
+            alt={customer.fullName}
             className="customer-avatar"
           />
           <div>
-            <h2>{customer.name}</h2>
+            <h2>{customer.fullName}</h2>
             <p>{customer.tags?.join(", ")}</p>
             <div className="customer-details">
               <span><Phone size={16}/> {customer.phone}</span>
