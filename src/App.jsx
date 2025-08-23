@@ -76,8 +76,9 @@ const AffiliatePage = lazy(() => import("./pages/business/dashboardPages/Affilia
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
 const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
-const CRMMain             = lazy(() => import("./crmpages/CRMMain"));
-const CRMCustomerProfile  = lazy(() => import("./crmpages/CRMCustomerProfile"));
+const CRMMain = lazy(() => import("./pages/business/dashboardPages/crmpages/CRMMain.jsx"));
+const CRMCustomerProfile = lazy(() => import("./pages/business/dashboardPages/crmpages/CRMCustomerProfile.jsx"));
+
 
 
 
