@@ -76,11 +76,6 @@ const AffiliatePage = lazy(() => import("./pages/business/dashboardPages/Affilia
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const CollabFindPartnerTab = lazy(() => import("./pages/business/dashboardPages/collabtabs/CollabFindPartnerTab"));
 const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
-const CRMMain = lazy(() => import("./pages/business/dashboardPages/crmpages/CRMMain.jsx"));
-const CRMCustomerProfile = lazy(() => import("./pages/business/dashboardPages/crmpages/CRMCustomerProfile.jsx"));
-
-
-
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -354,24 +349,6 @@ export default function App() {
     </ProtectedRoute>
   }
 />
-
-    {/* ⚡ חדש: CRM Routes */}
-              <Route
-                path="/crm/*"
-                element={
-                  <ProtectedRoute roles={["business"]}>
-                    <CRMMain />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/crm/customer/:id"
-                element={
-                  <ProtectedRoute roles={["business"]}>
-                    <CRMCustomerProfile />
-                  </ProtectedRoute>
-                }
-              />
 
 
 
