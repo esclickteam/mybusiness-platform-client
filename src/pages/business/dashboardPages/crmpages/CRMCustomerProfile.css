@@ -1,0 +1,131 @@
+.customer-profile-container {
+  padding: 1.5rem;
+  background: #f9f9fb;
+  min-height: 100%;
+  border-radius: 16px;
+}
+
+/* כפתור חזרה */
+.back-btn {
+  background: transparent;
+  border: none;
+  color: #6c5ce7;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: color 0.2s ease;
+}
+.back-btn:hover {
+  color: #4e39c4;
+}
+
+/* Header עליון */
+.customer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  margin-bottom: 1.5rem;
+}
+
+.customer-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.customer-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid #ececec;
+  object-fit: cover;
+}
+
+.customer-info h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: #222;
+}
+
+.customer-info p {
+  font-size: 0.9rem;
+  color: #777;
+  margin: 0.25rem 0;
+}
+
+.customer-details {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* כפתורי פעולה */
+.customer-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.customer-actions button {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: linear-gradient(135deg, #8e44ad, #6c5ce7);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.customer-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+}
+
+/* Tabs */
+.customer-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #ececec;
+}
+
+.customer-tabs button {
+  background: transparent;
+  border: none;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s ease;
+}
+
+.customer-tabs button:hover {
+  background: #f1f0ff;
+  color: #6c5ce7;
+}
+
+.customer-tabs button.active {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-bottom: none;
+  color: #6c5ce7;
+  font-weight: 600;
+}
+
+/* תוכן ה-Tabs */
+.customer-tab-content {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
