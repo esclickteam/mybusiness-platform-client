@@ -42,11 +42,11 @@ export default function Home() {
           </ul>
         </nav>
         <Link to="/business">
-          <button className="button-primary header-cta">🚀 14 יום ניסיון חינם</button>
+          <button className="button-primary header-cta"> 14 יום ניסיון התחל בחינם</button>
         </Link>
       </header>
 
-      {/* === Hero === */}
+      {/* Hero */}
       <section className="hero-section">
         <h1 className="main-title">
           עסקליק
@@ -60,32 +60,13 @@ export default function Home() {
         </p>
       </section>
 
-      {/* === יתרונות מהירים (3 אייקונים) === */}
-      <section className="features-section">
-        <div className="feature">
-          <span className="feature-icon">📅</span>
-          <h4>יומן חכם</h4>
-          <p>קביעת פגישות עם תזכורות אוטומטיות</p>
-        </div>
-        <div className="feature">
-          <span className="feature-icon">👥</span>
-          <h4>CRM בעברית</h4>
-          <p>ניהול לקוחות, לידים ומעקב מלא</p>
-        </div>
-        <div className="feature">
-          <span className="feature-icon">🤖</span>
-          <h4>AI שותף חכם</h4>
-          <p>המלצות מותאמות אוטומטית לעסק</p>
-        </div>
-      </section>
-
-      {/* === כרטיסיות תחתונות === */}
+      {/* Bookmark Cards */}
       <div className="cards-container">
         <div className="bookmark-card">
           <h3>בעלי עסקים 💼</h3>
           <p>הצטרפו לעסקליק ותקבלו פניות ישירות מלקוחות.</p>
           <Link to="/business">
-            <button className="button-primary">🚀 התחל עכשיו בחינם ל־14 יום</button>
+            <button className="button-primary"> התחל עכשיו בחינם ל־14 יום</button>
           </Link>
         </div>
 
@@ -106,7 +87,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* === Footer === */}
+      {/* Footer */}
       <footer className="footer">
         <ul className="footer-links">
           <li><Link to="/about">📖 קצת עלינו</Link></li>
