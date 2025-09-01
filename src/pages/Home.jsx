@@ -66,7 +66,7 @@ export default function Home() {
           <h3>בעלי עסקים 💼</h3>
           <p>הצטרפו לעסקליק ותקבלו פניות ישירות מלקוחות.</p>
           <Link to="/business">
-            <button className="button-primary">🚀 התחל עכשיו בחינם ל־14 יום</button>
+            <button className="button-primary"> התחל עכשיו בחינם ל־14 יום</button>
           </Link>
         </div>
 

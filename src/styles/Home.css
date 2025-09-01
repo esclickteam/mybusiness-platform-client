@@ -332,7 +332,7 @@ body {
 
 /* === כפתור ראשי (CTA) === */
 .button-primary {
-  background: linear-gradient(90deg, #ff9800, #ff5722); /* צבע כתום חזק */
+  background: linear-gradient(90deg, #ff9800, #ff5722);
   border: none;
   border-radius: 28px;
   padding: 0.95rem 2.5rem;
