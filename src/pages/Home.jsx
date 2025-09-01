@@ -38,7 +38,7 @@ export default function Home() {
           <span className="main-subtitle-line">פלטפורמה חכמה לעסקים ולקוחות</span>
         </h1>
         <p className="subtitle">
-          חפשו עסקים, תאמו שירותים, פתחו עמוד עסקי – הכל במקום אחד, פשוט ויעיל.
+         יותר פניות, פחות בלגן – ניהול יומן, לקוחות ועמוד עסקי בפלטפורמה אחת.
         </p>
       </section>
 
