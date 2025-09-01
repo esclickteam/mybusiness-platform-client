@@ -179,9 +179,9 @@ export default function Login() {
 
         <div className="login-extra-options">
           <p className="signup-link">
-            לא רשום?{" "}
+             עדיין לא הצטרפת?{" "} 
             <Link to="/register" className="signup-link-text">
-              הירשם עכשיו
+             מתחילים כאן עם 14 יום ניסיון חינם
             </Link>
           </p>
           <button
