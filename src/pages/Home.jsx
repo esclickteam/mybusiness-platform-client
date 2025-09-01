@@ -42,7 +42,7 @@ export default function Home() {
           </ul>
         </nav>
         <Link to="/business">
-          <button className="button-primary header-cta"> 14 יום ניסיון התחל בחינם</button>
+          <button className="button-primary header-cta"> התחל עכשיו – 14 יום ניסיון חינם</button>
         </Link>
       </header>
 
