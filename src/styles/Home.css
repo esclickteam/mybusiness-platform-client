@@ -329,3 +329,115 @@ body {
     box-sizing: border-box;
   }
 }
+
+/* === כפתור ראשי (CTA) === */
+.button-primary {
+  background: linear-gradient(90deg, #ff9800, #ff5722); /* צבע כתום חזק */
+  border: none;
+  border-radius: 28px;
+  padding: 0.95rem 2.5rem;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(255, 152, 0, 0.6);
+  transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.25s ease;
+  width: 220px;
+  margin: 0 auto;
+  margin-top: 1.5rem;
+}
+
+.button-primary:hover {
+  background: linear-gradient(90deg, #ff5722, #ff9800);
+  box-shadow: 0 12px 36px rgba(255, 87, 34, 0.8);
+  transform: translateY(-3px);
+}
+
+/* === כפתור משני (Secondary) === */
+.button-secondary {
+  background: #fff;
+  border: 2px solid #7c3aed;
+  border-radius: 28px;
+  padding: 0.85rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #7c3aed;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
+  width: 200px;
+  margin: 0 auto;
+  margin-top: 1.2rem;
+}
+
+.button-secondary:hover {
+  background: #7c3aed;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* === Header קבוע עם CTA === */
+.main-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 40px;
+  z-index: 1000;
+}
+
+.main-header .logo {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: #4b1eaa;
+  letter-spacing: 0.03em;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: #4b1eaa;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.nav-links li a:hover {
+  color: #7c3aed;
+}
+
+.header-cta {
+  font-size: 1rem;
+  padding: 10px 20px;
+  margin-right: 1rem;
+}
+
+/* === התאמה לרספונסיביות בהדר === */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none; /* נסתיר תפריט בדסקטופ קטן, נכניס המבורגר בהמשך */
+  }
+
+  .main-header {
+    padding: 10px 20px;
+  }
+
+  .main-header .logo {
+    font-size: 1.3rem;
+  }
+
+  .header-cta {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+}
