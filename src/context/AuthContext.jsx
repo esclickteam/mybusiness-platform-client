@@ -14,6 +14,7 @@ function normalizeUser(user) {
   }
 
   const isTrialing = user.subscriptionPlan === "trial" && computedIsValid;
+  const isPendingActivation = user.status === "pending_activation";
 
   return {
     ...user,
@@ -29,8 +30,8 @@ function normalizeUser(user) {
         ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
         : 0,
 
-    // ✅ גישה אם המשתמש משלם או בתקופת ניסיון פעילה
-    hasAccess: isTrialing || Boolean(user?.hasPaid),
+    // ✅ גישה אם המשתמש בתקופת ניסיון, שילם, או מחכה להפעלה
+    hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
 }
 
@@ -112,9 +113,9 @@ export function AuthProvider({ children }) {
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // ניווט אחרי התחברות
+      // ✅ ניווט אחרי התחברות
       if (!skipRedirect) {
-        if (normalizedUser.hasAccess && normalizedUser.subscriptionStatus === "trial") {
+        if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
           if (normalizedUser.role === "business" && normalizedUser.businessId) {
             navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
@@ -123,7 +124,7 @@ export function AuthProvider({ children }) {
           }
         } else if (redirectUrl) {
           const isPlans = redirectUrl === "/plans";
-          const shouldSkip = isPlans && normalizedUser.hasAccess; // ✅ כאן השינוי
+          const shouldSkip = isPlans && normalizedUser.hasAccess;
           if (!shouldSkip) {
             if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
               navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
@@ -255,7 +256,7 @@ export function AuthProvider({ children }) {
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
           const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && freshUser.hasAccess; // ✅ כאן השינוי
+          const shouldSkip = isPlans && freshUser.hasAccess; // ✅ שינוי
           if (!shouldSkip) {
             navigate(savedRedirect, { replace: true });
           }
