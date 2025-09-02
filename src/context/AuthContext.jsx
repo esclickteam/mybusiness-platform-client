@@ -13,6 +13,8 @@ function normalizeUser(user) {
     computedIsValid = new Date(user.subscriptionEnd) > now;
   }
 
+  const isTrialing = user.subscriptionPlan === "trial" && computedIsValid;
+
   return {
     ...user,
     hasPaid: Boolean(user?.hasPaid),
@@ -20,11 +22,15 @@ function normalizeUser(user) {
       typeof user?.isSubscriptionValid === "boolean"
         ? user.isSubscriptionValid
         : computedIsValid,
-    subscriptionStatus: user.subscriptionPlan || "free",
+    subscriptionStatus: user.status || user.subscriptionPlan || "free",
+
     daysLeft:
       user.subscriptionEnd && computedIsValid
         ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
         : 0,
+
+    // ✅ גישה אם המשתמש משלם או בתקופת ניסיון פעילה
+    hasAccess: isTrialing || Boolean(user?.hasPaid),
   };
 }
 
@@ -108,7 +114,7 @@ export function AuthProvider({ children }) {
 
       // ניווט אחרי התחברות
       if (!skipRedirect) {
-        if (normalizedUser.subscriptionStatus === "trial" && normalizedUser.isSubscriptionValid) {
+        if (normalizedUser.hasAccess && normalizedUser.subscriptionStatus === "trial") {
           sessionStorage.setItem("justRegistered", "true");
           if (normalizedUser.role === "business" && normalizedUser.businessId) {
             navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
@@ -117,7 +123,7 @@ export function AuthProvider({ children }) {
           }
         } else if (redirectUrl) {
           const isPlans = redirectUrl === "/plans";
-          const shouldSkip = isPlans && normalizedUser.hasPaid;
+          const shouldSkip = isPlans && normalizedUser.hasAccess; // ✅ כאן השינוי
           if (!shouldSkip) {
             if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
               navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
@@ -249,7 +255,7 @@ export function AuthProvider({ children }) {
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
           const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && freshUser.hasPaid;
+          const shouldSkip = isPlans && freshUser.hasAccess; // ✅ כאן השינוי
           if (!shouldSkip) {
             navigate(savedRedirect, { replace: true });
           }
@@ -261,7 +267,6 @@ export function AuthProvider({ children }) {
         if (freshUser.role === "business" && freshUser.businessId && location.pathname === "/") {
           navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
         }
-
       } catch {
         await logout();
       } finally {
