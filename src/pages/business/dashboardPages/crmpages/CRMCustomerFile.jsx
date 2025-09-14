@@ -25,8 +25,8 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
     }
 
     try {
-      // ✅ שמירה לשרת עם businessId
-      await API.post(`/clients?businessId=${businessId}`, newClient);
+      // ✅ שמירה לשרת בנתיב החדש עם businessId
+      await API.post(`/crm-clients`, { ...newClient, businessId });
 
       // ✅ ריענון רשימת הלקוחות ב-CRMClientsTab
       queryClient.invalidateQueries(["clients", businessId]);
@@ -71,8 +71,12 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
           />
 
           <div className="form-actions">
-            <button className="save-client-btn" onClick={handleSave}>💾 שמור</button>
-            <button className="cancel-btn" onClick={onClose}>↩ חזרה</button>
+            <button className="save-client-btn" onClick={handleSave}>
+              💾 שמור
+            </button>
+            <button className="cancel-btn" onClick={onClose}>
+              ↩ חזרה
+            </button>
           </div>
         </div>
       </div>
@@ -83,13 +87,17 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
   return (
     <div className="crm-customer-profile">
       <h2>תיק לקוח – {client?.fullName}</h2>
-      <p>📞 {client?.phone} | ✉️ {client?.email} | 📍 {client?.address}</p>
+      <p>
+        📞 {client?.phone} | ✉️ {client?.email} | 📍 {client?.address}
+      </p>
 
       {/* כאן אפשר להוסיף בהמשך Timeline או משימות */}
       <p>כאן יוצג ה-Timeline של הלקוח</p>
 
       <div className="form-actions">
-        <button className="cancel-btn" onClick={onClose}>↩ חזרה</button>
+        <button className="cancel-btn" onClick={onClose}>
+          ↩ חזרה
+        </button>
       </div>
     </div>
   );

@@ -4,20 +4,17 @@ import API from "@api";
 import CRMCustomerFile from "./CRMCustomerFile"; // תיק לקוח מלא
 import "./CRMClientsTab.css";
 
+// ✅ מביא את הלקוחות מתוך ה־CRMClients API
 const fetchClients = async (businessId) => {
   if (!businessId) return [];
-  const res = await API.get(
-    `/appointments/clients-from-appointments?businessId=${businessId}`
-  );
+  const res = await API.get(`/crm-clients/${businessId}`);
   return res.data.map((c) => ({
-    fullName: c.fullName || c.clientName || "לא ידוע",
-    phone:
-      (c.phone || c.clientPhone || "").toString().replace(/\s/g, "") ||
-      "אין טלפון",
+    fullName: c.fullName || "לא ידוע",
+    phone: (c.phone || "").toString().replace(/\s/g, "") || "אין טלפון",
     email: (c.email || "").replace(/\s/g, "") || "-",
     address: c.address || "-",
     id: c._id || Date.now(),
-    appointments: c.appointments || [],
+    appointments: c.appointments || [], // נשאיר לעתיד אם נוסיף תורים
   }));
 };
 
