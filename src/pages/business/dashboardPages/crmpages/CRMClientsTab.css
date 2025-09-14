@@ -111,12 +111,12 @@
   background-color: #f1f1f1;
 }
 
-.clients-table td {
-  padding: 0.55rem 0.9rem;
+.clients-table thead {
+  background: #f8f8f8 !important; /* אפור קבוע */
+  color: #222;
+  font-weight: 700;
   text-align: right;
-  vertical-align: middle;
-  word-wrap: break-word;
-  border-radius: 8px;
+  user-select: none;
 }
 
 /* תא עם גלישת טלפון, אימייל וכתובת */
