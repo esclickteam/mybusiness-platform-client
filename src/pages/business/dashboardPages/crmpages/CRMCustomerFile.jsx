@@ -1,7 +1,11 @@
 import React, { useState } from "react";
+import API from "@api";
+import { useQueryClient } from "@tanstack/react-query";
 import "./CRMCustomerProfile.css";
 
-export default function CRMCustomerFile({ client, isNew = false, onClose }) {
+export default function CRMCustomerFile({ client, isNew = false, onClose, businessId }) {
+  const queryClient = useQueryClient();
+
   const [newClient, setNewClient] = useState({
     fullName: client?.fullName || "",
     phone: client?.phone || "",
@@ -9,17 +13,26 @@ export default function CRMCustomerFile({ client, isNew = false, onClose }) {
     address: client?.address || "",
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!newClient.fullName || !newClient.phone) {
       alert("שם מלא וטלפון הם שדות חובה");
       return;
     }
-    // כאן בעתיד שמירה ל-API
-    console.log("📌 לקוח חדש:", newClient);
-    onClose(); // חוזר למסך לקוחות
+
+    try {
+      // ✅ שמירה לשרת
+      await API.post(`/clients?businessId=${businessId}`, newClient);
+
+      // ✅ מרענן את רשימת הלקוחות ב-CRMClientsTab
+      queryClient.invalidateQueries(["clients", businessId]);
+
+      onClose(); // חוזר למסך לקוחות
+    } catch (err) {
+      console.error("❌ שגיאה בשמירת לקוח:", err);
+      alert("שמירת הלקוח נכשלה");
+    }
   };
 
-  // === מצב יצירת לקוח חדש ===
   if (isNew) {
     return (
       <div className="crm-customer-profile">
@@ -59,13 +72,12 @@ export default function CRMCustomerFile({ client, isNew = false, onClose }) {
     );
   }
 
-  // === מצב צפייה בתיק לקוח קיים ===
   return (
     <div className="crm-customer-profile">
       <h2>תיק לקוח – {client?.fullName}</h2>
       <p>📞 {client?.phone} | ✉️ {client?.email} | 📍 {client?.address}</p>
 
-      {/* כאן נשאר ה-Timeline, משימות, שיחות וכו' */}
+      {/* כאן ייכנס ה-Timeline */}
       <p>כאן יוצג ה-Timeline של הלקוח</p>
 
       <div className="form-actions">
