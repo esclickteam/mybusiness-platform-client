@@ -142,68 +142,66 @@ const CRMAppointmentsTab = () => {
   }, [socket, queryClient, businessId]);
 
   // === שמירה של פגישה חדשה כולל crmClientId ===
-  // === שמירה של פגישה חדשה כולל crmClientId ===
-const handleConfirmAppointment = async () => {
-  if (isSaving) return;
+  const handleConfirmAppointment = async () => {
+    if (isSaving) return;
 
-  if (
-    !newAppointment.clientName.trim() ||
-    !newAppointment.clientPhone.trim() ||
-    !newAppointment.date ||
-    !newAppointment.time ||
-    !newAppointment.serviceId ||
-    !newAppointment.crmClientId
-  ) {
-    alert("אנא מלא שם, טלפון, שירות, תאריך, שעה ולקוח CRM");
-    return;
-  }
-
-  setIsSaving(true);
-  try {
-    await API.post("/appointments", {
-      businessId,
-      crmClientId: newAppointment.crmClientId, // ✅ קישור ללקוח CRM
-      name: newAppointment.clientName,         // ✅ שינוי ל-name
-      phone: newAppointment.clientPhone,       // ✅ שינוי ל-phone
-      address: newAppointment.address,
-      email: newAppointment.email,
-      note: newAppointment.note,
-      serviceId: newAppointment.serviceId,
-      date: newAppointment.date,
-      time: newAppointment.time,
-      serviceName: newAppointment.serviceName,
-      duration: 30,
-    });
-
-    await refetchAppointments();
-    setShowAddForm(false);
-    setNewAppointment({
-      crmClientId: "",
-      clientName: "",
-      clientPhone: "",
-      address: "",
-      email: "",
-      note: "",
-      serviceId: "",
-      serviceName: "",
-      date: "",
-      time: "",
-    });
-  } catch (error) {
     if (
-      error.response &&
-      error.response.status === 400 &&
-      error.response.data.message.includes("Slot already booked")
+      !newAppointment.clientName.trim() ||
+      !newAppointment.clientPhone.trim() ||
+      !newAppointment.date ||
+      !newAppointment.time ||
+      !newAppointment.serviceId ||
+      !newAppointment.crmClientId
     ) {
-      alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
-    } else {
-      alert("שגיאה בשמירת התיאום, נסה שנית");
+      alert("אנא מלא שם, טלפון, שירות, תאריך, שעה ולקוח CRM");
+      return;
     }
-  } finally {
-    setIsSaving(false);
-  }
-};
 
+    setIsSaving(true);
+    try {
+      await API.post("/appointments", {
+        businessId,
+        crmClientId: newAppointment.crmClientId,
+        name: newAppointment.clientName,
+        phone: newAppointment.clientPhone,
+        address: newAppointment.address,
+        email: newAppointment.email,
+        note: newAppointment.note,
+        serviceId: newAppointment.serviceId,
+        date: newAppointment.date,
+        time: newAppointment.time,
+        serviceName: newAppointment.serviceName,
+        duration: 30,
+      });
+
+      await refetchAppointments();
+      setShowAddForm(false);
+      setNewAppointment({
+        crmClientId: "",
+        clientName: "",
+        clientPhone: "",
+        address: "",
+        email: "",
+        note: "",
+        serviceId: "",
+        serviceName: "",
+        date: "",
+        time: "",
+      });
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data.message.includes("Slot already booked")
+      ) {
+        alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
+      } else {
+        alert("שגיאה בשמירת התיאום, נסה שנית");
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // === שליחת תזכורת וואטסאפ ===
   const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
@@ -441,6 +439,7 @@ const handleConfirmAppointment = async () => {
                 <td>{appt.date}</td>
                 <td>{appt.time}</td>
                 <td>
+                  {/* תזכורת */}
                   <button
                     onClick={() =>
                       sendWhatsAppReminder(
@@ -453,6 +452,30 @@ const handleConfirmAppointment = async () => {
                     }
                   >
                     📩 תזכורת
+                  </button>
+
+                  {/* עריכה */}
+                  <button onClick={() => setEditId(appt._id)}>✏️ ערוך</button>
+
+                  {/* מחיקה */}
+                  <button
+                    onClick={async () => {
+                      if (window.confirm("בטוח שתרצה למחוק את התיאום?")) {
+                        try {
+                          await API.delete(`/appointments/${appt._id}`);
+                          queryClient.invalidateQueries([
+                            "appointments",
+                            "all-with-services",
+                            businessId,
+                          ]);
+                        } catch (err) {
+                          console.error("שגיאה במחיקת התיאום:", err);
+                          alert("❌ המחיקה נכשלה");
+                        }
+                      }
+                    }}
+                  >
+                    ❌ מחק
                   </button>
                 </td>
               </tr>
