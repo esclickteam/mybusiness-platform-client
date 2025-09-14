@@ -167,12 +167,41 @@
   font-size: 1rem;
   color: #111827;
   margin-bottom: 5px;
+  cursor: text;
 }
 
 .event-timeline li p {
   font-size: 0.9rem;
   color: #374151;
   margin: 0;
+  cursor: text;
+}
+
+/* עריכה inline */
+.event-timeline li strong[contenteditable="true"],
+.event-timeline li p[contenteditable="true"] {
+  outline: 2px dashed transparent;
+  transition: outline 0.2s ease;
+}
+.event-timeline li strong[contenteditable="true"]:focus,
+.event-timeline li p[contenteditable="true"]:focus {
+  outline: 2px dashed #6a11cb;
+  background: #fff;
+}
+
+/* כפתור מחיקה */
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  font-size: 0.9rem;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.delete-btn:hover {
+  color: #dc2626;
+  text-decoration: underline;
 }
 
 /* ====== צבעים לפי סוג אירוע ====== */
