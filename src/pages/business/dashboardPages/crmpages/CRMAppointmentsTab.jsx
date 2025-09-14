@@ -142,65 +142,68 @@ const CRMAppointmentsTab = () => {
   }, [socket, queryClient, businessId]);
 
   // === שמירה של פגישה חדשה כולל crmClientId ===
-  const handleConfirmAppointment = async () => {
-    if (isSaving) return;
+  // === שמירה של פגישה חדשה כולל crmClientId ===
+const handleConfirmAppointment = async () => {
+  if (isSaving) return;
 
+  if (
+    !newAppointment.clientName.trim() ||
+    !newAppointment.clientPhone.trim() ||
+    !newAppointment.date ||
+    !newAppointment.time ||
+    !newAppointment.serviceId ||
+    !newAppointment.crmClientId
+  ) {
+    alert("אנא מלא שם, טלפון, שירות, תאריך, שעה ולקוח CRM");
+    return;
+  }
+
+  setIsSaving(true);
+  try {
+    await API.post("/appointments", {
+      businessId,
+      crmClientId: newAppointment.crmClientId, // ✅ קישור ללקוח CRM
+      name: newAppointment.clientName,         // ✅ שינוי ל-name
+      phone: newAppointment.clientPhone,       // ✅ שינוי ל-phone
+      address: newAppointment.address,
+      email: newAppointment.email,
+      note: newAppointment.note,
+      serviceId: newAppointment.serviceId,
+      date: newAppointment.date,
+      time: newAppointment.time,
+      serviceName: newAppointment.serviceName,
+      duration: 30,
+    });
+
+    await refetchAppointments();
+    setShowAddForm(false);
+    setNewAppointment({
+      crmClientId: "",
+      clientName: "",
+      clientPhone: "",
+      address: "",
+      email: "",
+      note: "",
+      serviceId: "",
+      serviceName: "",
+      date: "",
+      time: "",
+    });
+  } catch (error) {
     if (
-      !newAppointment.clientName.trim() ||
-      !newAppointment.clientPhone.trim() ||
-      !newAppointment.date ||
-      !newAppointment.time ||
-      !newAppointment.serviceId ||
-      !newAppointment.crmClientId
+      error.response &&
+      error.response.status === 400 &&
+      error.response.data.message.includes("Slot already booked")
     ) {
-      alert("אנא מלא שם, טלפון, שירות, תאריך, שעה ולקוח CRM");
-      return;
+      alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
+    } else {
+      alert("שגיאה בשמירת התיאום, נסה שנית");
     }
+  } finally {
+    setIsSaving(false);
+  }
+};
 
-    setIsSaving(true);
-    try {
-      await API.post("/appointments", {
-        businessId,
-        crmClientId: newAppointment.crmClientId, // ✅ קישור ללקוח CRM
-        clientName: newAppointment.clientName,
-        clientPhone: newAppointment.clientPhone,
-        address: newAppointment.address,
-        email: newAppointment.email,
-        note: newAppointment.note,
-        serviceId: newAppointment.serviceId,
-        date: newAppointment.date,
-        time: newAppointment.time,
-        serviceName: newAppointment.serviceName,
-        duration: 30,
-      });
-      await refetchAppointments();
-      setShowAddForm(false);
-      setNewAppointment({
-        crmClientId: "",
-        clientName: "",
-        clientPhone: "",
-        address: "",
-        email: "",
-        note: "",
-        serviceId: "",
-        serviceName: "",
-        date: "",
-        time: "",
-      });
-    } catch (error) {
-      if (
-        error.response &&
-        error.response.status === 400 &&
-        error.response.data.message.includes("Slot already booked")
-      ) {
-        alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
-      } else {
-        alert("שגיאה בשמירת התיאום, נסה שנית");
-      }
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   // === שליחת תזכורת וואטסאפ ===
   const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
