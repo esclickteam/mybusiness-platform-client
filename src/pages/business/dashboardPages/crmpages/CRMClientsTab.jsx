@@ -6,10 +6,14 @@ import "./CRMClientsTab.css";
 
 const fetchClients = async (businessId) => {
   if (!businessId) return [];
-  const res = await API.get(`/appointments/clients-from-appointments?businessId=${businessId}`);
+  const res = await API.get(
+    `/appointments/clients-from-appointments?businessId=${businessId}`
+  );
   return res.data.map((c) => ({
     fullName: c.fullName || c.clientName || "לא ידוע",
-    phone: (c.phone || c.clientPhone || "").toString().replace(/\s/g, "") || "אין טלפון",
+    phone:
+      (c.phone || c.clientPhone || "").toString().replace(/\s/g, "") ||
+      "אין טלפון",
     email: (c.email || "").replace(/\s/g, "") || "-",
     address: c.address || "-",
     id: c._id || Date.now(),
@@ -22,7 +26,11 @@ const CRMClientsTab = ({ businessId }) => {
   const [selectedClient, setSelectedClient] = useState(null);
   const [creatingNew, setCreatingNew] = useState(false);
 
-  const { data: clients = [], isLoading, error } = useQuery({
+  const {
+    data: clients = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["clients", businessId],
     queryFn: () => fetchClients(businessId),
     enabled: !!businessId,
@@ -48,7 +56,7 @@ const CRMClientsTab = ({ businessId }) => {
           className="search-input"
         />
         <button
-          className="add-client-btn" // ← עכשיו תואם ל-CSS שלך
+          className="add-client-btn"
           onClick={() => {
             setSelectedClient(null);
             setCreatingNew(true);
@@ -84,9 +92,15 @@ const CRMClientsTab = ({ businessId }) => {
                   filteredClients.map((client) => (
                     <tr key={client.id}>
                       <td data-label="שם">{client.fullName}</td>
-                      <td data-label="טלפון" className="phone-cell">{client.phone}</td>
-                      <td data-label="כתובת" className="address-cell">{client.address}</td>
-                      <td data-label="אימייל" className="email-cell">{client.email}</td>
+                      <td data-label="טלפון" className="phone-cell">
+                        {client.phone}
+                      </td>
+                      <td data-label="כתובת" className="address-cell">
+                        {client.address}
+                      </td>
+                      <td data-label="אימייל" className="email-cell">
+                        {client.email}
+                      </td>
                       <td data-label="פעולות">
                         <button
                           className="show-history-btn"
@@ -107,9 +121,16 @@ const CRMClientsTab = ({ businessId }) => {
 
           {creatingNew && (
             <CRMCustomerFile
-              client={{ fullName: "", phone: "", email: "", address: "", appointments: [] }}
+              client={{
+                fullName: "",
+                phone: "",
+                email: "",
+                address: "",
+                appointments: [],
+              }}
               isNew={true}
               onClose={() => setCreatingNew(false)}
+              businessId={businessId} // ✅ שולחים businessId
             />
           )}
 
@@ -118,6 +139,7 @@ const CRMClientsTab = ({ businessId }) => {
               client={selectedClient}
               isNew={false}
               onClose={() => setSelectedClient(null)}
+              businessId={businessId} // ✅ שולחים businessId
             />
           )}
         </>
