@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import API from "@api";
 import { useQueryClient } from "@tanstack/react-query";
 import "./CRMCustomerProfile.css";
+import CRMCustomerTimeline from "./CRMCustomerTimeline"; 
 
 export default function CRMCustomerFile({ client, isNew = false, onClose, businessId }) {
   const queryClient = useQueryClient();
@@ -25,10 +26,10 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
     }
 
     try {
-      // ✅ שמירה לשרת בנתיב החדש עם businessId
+      // ✅ שמירה לשרת
       await API.post(`/crm-clients`, { ...newClient, businessId });
 
-      // ✅ ריענון רשימת הלקוחות ב-CRMClientsTab
+      // ✅ ריענון רשימת הלקוחות
       queryClient.invalidateQueries(["clients", businessId]);
 
       alert("✅ הלקוח נשמר בהצלחה!");
@@ -91,8 +92,8 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
         📞 {client?.phone} | ✉️ {client?.email} | 📍 {client?.address}
       </p>
 
-      {/* כאן אפשר להוסיף בהמשך Timeline או משימות */}
-      <p>כאן יוצג ה-Timeline של הלקוח</p>
+      {/* ✅ הצגת טיימליין מלא של פגישות ואירועים */}
+      <CRMCustomerTimeline client={client} businessId={businessId} />
 
       <div className="form-actions">
         <button className="cancel-btn" onClick={onClose}>
