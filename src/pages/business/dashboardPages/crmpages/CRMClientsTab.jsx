@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "@api";
 import CRMCustomerFile from "./CRMCustomerFile"; // תיק לקוח מלא
 import "./CRMClientsTab.css";
@@ -14,11 +14,12 @@ const fetchClients = async (businessId) => {
     email: (c.email || "").replace(/\s/g, "") || "-",
     address: c.address || "-",
     id: c._id || Date.now(),
-    appointments: c.appointments || [], // נשאיר לעתיד אם נוסיף תורים
+    appointments: c.appointments || [],
   }));
 };
 
 const CRMClientsTab = ({ businessId }) => {
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedClient, setSelectedClient] = useState(null);
   const [creatingNew, setCreatingNew] = useState(false);
@@ -39,6 +40,19 @@ const CRMClientsTab = ({ businessId }) => {
       client.phone.includes(search);
     return matchesSearch;
   });
+
+  const handleDelete = async (client) => {
+    if (window.confirm(`האם למחוק את הלקוח "${client.fullName}"?`)) {
+      try {
+        await API.delete(`/crm-clients/${client.id}`);
+        queryClient.invalidateQueries(["clients", businessId]);
+        alert("✅ הלקוח נמחק בהצלחה");
+      } catch (err) {
+        console.error("❌ שגיאה במחיקת לקוח:", err);
+        alert("❌ מחיקה נכשלה");
+      }
+    }
+  };
 
   return (
     <div className="crm-tab-content">
@@ -106,7 +120,22 @@ const CRMClientsTab = ({ businessId }) => {
                             setCreatingNew(false);
                           }}
                         >
-                          פתח תיק לקוח
+                          📂 פתח תיק לקוח
+                        </button>
+                        <button
+                          className="edit-client-btn"
+                          onClick={() => {
+                            setSelectedClient(client);
+                            setCreatingNew(true);
+                          }}
+                        >
+                          ✏ ערוך
+                        </button>
+                        <button
+                          className="delete-client-btn"
+                          onClick={() => handleDelete(client)}
+                        >
+                          🗑 מחק
                         </button>
                       </td>
                     </tr>
@@ -116,27 +145,20 @@ const CRMClientsTab = ({ businessId }) => {
             </table>
           )}
 
-          {creatingNew && (
+          {(creatingNew || selectedClient) && (
             <CRMCustomerFile
-              client={{
-                fullName: "",
-                phone: "",
-                email: "",
-                address: "",
-                appointments: [],
+              client={
+                creatingNew && !selectedClient
+                  ? { fullName: "", phone: "", email: "", address: "" }
+                  : selectedClient
+              }
+              isNew={creatingNew && !selectedClient}
+              onClose={() => {
+                setCreatingNew(false);
+                setSelectedClient(null);
+                queryClient.invalidateQueries(["clients", businessId]);
               }}
-              isNew={true}
-              onClose={() => setCreatingNew(false)}
-              businessId={businessId} // ✅ שולחים businessId
-            />
-          )}
-
-          {selectedClient && !creatingNew && (
-            <CRMCustomerFile
-              client={selectedClient}
-              isNew={false}
-              onClose={() => setSelectedClient(null)}
-              businessId={businessId} // ✅ שולחים businessId
+              businessId={businessId}
             />
           )}
         </>

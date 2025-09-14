@@ -328,3 +328,47 @@
     font-size: 1rem;
   }
 }
+
+/* ===== כפתורי פעולות נוספים ===== */
+.edit-client-btn {
+  background-color: #ffb300; /* כתום */
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-right: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.edit-client-btn:hover {
+  background-color: #e69a00;
+  transform: scale(1.05);
+}
+
+.delete-client-btn {
+  background-color: #e53935; /* אדום */
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-right: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.delete-client-btn:hover {
+  background-color: #c62828;
+  transform: scale(1.05);
+}
+
+/* במובייל – שיהיו ברוחב מלא */
+@media (max-width: 700px) {
+  .edit-client-btn,
+  .delete-client-btn {
+    width: 100%;
+    margin: 0.3rem 0;
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+}
