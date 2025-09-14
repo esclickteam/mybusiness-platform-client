@@ -475,7 +475,7 @@ const CRMAppointmentsTab = () => {
                 <td>
                   {editId === appt._id ? (
                     <input
-                      value={editData.clientName}
+                       value={editData.clientName}
                       onChange={(e) => handleEditInputChange("clientName", e.target.value)}
                     />
                   ) : (
