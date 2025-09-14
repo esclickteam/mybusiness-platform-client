@@ -6,12 +6,17 @@ import "./CRMCustomerProfile.css";
 export default function CRMCustomerFile({ client, isNew = false, onClose, businessId }) {
   const queryClient = useQueryClient();
 
-  const [newClient, setNewClient] = useState({
-    fullName: client?.fullName || "",
-    phone: client?.phone || "",
-    email: client?.email || "",
-    address: client?.address || "",
-  });
+  // ✅ מצב התחלתי: טופס ריק אם זה לקוח חדש, אחרת פרטי הלקוח
+  const [newClient, setNewClient] = useState(
+    isNew
+      ? { fullName: "", phone: "", email: "", address: "" }
+      : {
+          fullName: client?.fullName || "",
+          phone: client?.phone || "",
+          email: client?.email || "",
+          address: client?.address || "",
+        }
+  );
 
   const handleSave = async () => {
     if (!newClient.fullName || !newClient.phone) {
