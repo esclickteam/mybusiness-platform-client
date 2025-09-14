@@ -35,12 +35,14 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
     }
   };
 
-  // === שליפת פגישות של הלקוח הנוכחי ===
+  // === שליפת פגישות של הלקוח הנוכחי לפי crmClientId ===
   const { data: clientAppointments = [], isLoading, isError } = useQuery({
     queryKey: ["appointments", "by-client", client?._id],
     queryFn: () =>
-      API.get(`/appointments/by-client/${client?._id}`).then((res) => res.data),
-    enabled: !!client?._id,
+      API.get(`/appointments/by-client/${client?._id}`, {
+        params: { businessId }, // ✅ חובה לשלוח גם מזהה עסק
+      }).then((res) => res.data),
+    enabled: !!client?._id && !!businessId,
   });
 
   // ✨ מסך יצירת לקוח חדש
