@@ -101,10 +101,10 @@
 }
 
 .clients-table tbody tr {
-  background: #f9f9f9; /* אפור בהיר תמיד */
-  box-shadow: none; /* בלי צל אם לא רוצים */
-  border-radius: 10px;
+  background: #fff !important; /* לבן קבוע */
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
   transition: background-color 0.2s ease;
+  border-radius: 10px;
 }
 
 .clients-table tbody tr:hover {
