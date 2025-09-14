@@ -1,92 +1,76 @@
 import React, { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "./CRMCustomerProfile.css"; // אפשר להשתמש באותו CSS כמו קודם
+import "./CRMCustomerProfile.css";
 
 export default function CRMCustomerFile({ client, isNew = false, onClose }) {
-  const [events, setEvents] = useState([]);
-  const [newEvent, setNewEvent] = useState({
-    type: "call", // call, message, meeting, task, file
-    title: "",
-    date: "",
-    notes: ""
+  const [newClient, setNewClient] = useState({
+    fullName: client?.fullName || "",
+    phone: client?.phone || "",
+    email: client?.email || "",
+    address: client?.address || "",
   });
 
-  const addEvent = () => {
-    if (!newEvent.title) return;
-    const event = { id: Date.now(), ...newEvent };
-    setEvents([event, ...events]);
-    setNewEvent({ type: "call", title: "", date: "", notes: "" });
-
-    // תזכורת למשימות/פגישות
-    if ((event.type === "task" || event.type === "meeting") && event.date) {
-      toast.info(`📌 נוספה ${event.type === "task" ? "משימה" : "פגישה"} ל-${event.date}: ${event.title}`);
+  const handleSave = () => {
+    if (!newClient.fullName || !newClient.phone) {
+      alert("שם מלא וטלפון הם שדות חובה");
+      return;
     }
+    // כאן בעתיד שמירה ל-API
+    console.log("📌 לקוח חדש:", newClient);
+    onClose(); // חוזר למסך לקוחות
   };
 
-  const typeLabels = {
-    call: "📞 שיחה",
-    message: "💬 הודעה",
-    meeting: "📅 פגישה",
-    task: "✅ משימה",
-    file: "📄 תוכן"
-  };
+  // === מצב יצירת לקוח חדש ===
+  if (isNew) {
+    return (
+      <div className="crm-customer-profile">
+        <h2>➕ לקוח חדש</h2>
+        <div className="new-client-form">
+          <input
+            type="text"
+            placeholder="שם מלא"
+            value={newClient.fullName}
+            onChange={(e) => setNewClient({ ...newClient, fullName: e.target.value })}
+          />
+          <input
+            type="tel"
+            placeholder="טלפון"
+            value={newClient.phone}
+            onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+          />
+          <input
+            type="email"
+            placeholder="אימייל"
+            value={newClient.email}
+            onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+          />
+          <input
+            type="text"
+            placeholder="כתובת"
+            value={newClient.address}
+            onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
+          />
 
+          <div className="form-actions">
+            <button className="save-client-btn" onClick={handleSave}>💾 שמור</button>
+            <button className="cancel-btn" onClick={onClose}>↩ חזרה</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // === מצב צפייה בתיק לקוח קיים ===
   return (
     <div className="crm-customer-profile">
-      <h2>{isNew ? "➕ לקוח חדש" : `תיק לקוח – ${client?.fullName}`}</h2>
-      <p>
-        📞 {client?.phone || "-"} | ✉️ {client?.email || "-"} | 📍 {client?.address || "-"}
-      </p>
+      <h2>תיק לקוח – {client?.fullName}</h2>
+      <p>📞 {client?.phone} | ✉️ {client?.email} | 📍 {client?.address}</p>
 
-      {/* טופס להוספת אירוע */}
-      <div className="add-event-form">
-        <select
-          value={newEvent.type}
-          onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
-        >
-          <option value="call">שיחה</option>
-          <option value="message">הודעה</option>
-          <option value="meeting">פגישה</option>
-          <option value="task">משימה</option>
-          <option value="file">תוכן</option>
-        </select>
+      {/* כאן נשאר ה-Timeline, משימות, שיחות וכו' */}
+      <p>כאן יוצג ה-Timeline של הלקוח</p>
 
-        <input
-          type="text"
-          placeholder="כותרת"
-          value={newEvent.title}
-          onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-        />
-
-        <input
-          type="date"
-          value={newEvent.date}
-          onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-        />
-
-        <textarea
-          placeholder="הערות"
-          value={newEvent.notes}
-          onChange={(e) => setNewEvent({ ...newEvent, notes: e.target.value })}
-        />
-
-        <button onClick={addEvent}>➕ הוסף</button>
-        <button onClick={onClose} style={{ marginRight: "10px" }}>⬅ חזרה</button>
+      <div className="form-actions">
+        <button className="cancel-btn" onClick={onClose}>↩ חזרה</button>
       </div>
-
-      {/* Timeline */}
-      <ul className="event-timeline">
-        {events.map((e) => (
-          <li key={e.id} data-type={e.type}>
-            <span>{typeLabels[e.type]}</span>
-            <strong>{e.title}</strong> – {e.date || "ללא תאריך"}
-            <p>{e.notes}</p>
-          </li>
-        ))}
-      </ul>
-
-      <ToastContainer position="top-center" autoClose={5000} />
     </div>
   );
 }

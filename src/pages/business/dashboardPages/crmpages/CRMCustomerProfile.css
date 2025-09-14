@@ -12,7 +12,7 @@
 
 .crm-customer-profile h2 {
   font-size: 1.8rem;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   color: #1e3a8a;
   text-align: center;
 }
@@ -21,6 +21,63 @@
   text-align: center;
   color: #374151;
   margin-bottom: 25px;
+}
+
+/* ====== טופס לקוח חדש ====== */
+.new-client-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.new-client-form input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.new-client-form input:focus {
+  border-color: #6a11cb;
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.save-client-btn {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.save-client-btn:hover {
+  background: linear-gradient(135deg, #2575fc, #6a11cb);
+}
+
+.cancel-btn {
+  background: #eee;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.cancel-btn:hover {
+  background: #ddd;
 }
 
 /* ====== טופס הוספת אירוע ====== */
@@ -138,6 +195,10 @@
 /* ===== רספונסיביות ===== */
 @media (max-width: 600px) {
   .crm-customer-profile {
+    padding: 15px;
+  }
+
+  .new-client-form {
     padding: 15px;
   }
 
