@@ -15,24 +15,26 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
 
   const handleSave = async () => {
     if (!newClient.fullName || !newClient.phone) {
-      alert("שם מלא וטלפון הם שדות חובה");
+      alert("❌ שם מלא וטלפון הם שדות חובה");
       return;
     }
 
     try {
-      // ✅ שמירה לשרת
+      // ✅ שמירה לשרת עם businessId
       await API.post(`/clients?businessId=${businessId}`, newClient);
 
-      // ✅ מרענן את רשימת הלקוחות ב-CRMClientsTab
+      // ✅ ריענון רשימת הלקוחות ב-CRMClientsTab
       queryClient.invalidateQueries(["clients", businessId]);
 
-      onClose(); // חוזר למסך לקוחות
+      alert("✅ הלקוח נשמר בהצלחה!");
+      onClose(); // חזרה למסך לקוחות
     } catch (err) {
       console.error("❌ שגיאה בשמירת לקוח:", err);
-      alert("שמירת הלקוח נכשלה");
+      alert("❌ שמירת הלקוח נכשלה");
     }
   };
 
+  // ✨ מסך יצירת לקוח חדש
   if (isNew) {
     return (
       <div className="crm-customer-profile">
@@ -72,12 +74,13 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
     );
   }
 
+  // ✨ מסך תיק לקוח קיים
   return (
     <div className="crm-customer-profile">
       <h2>תיק לקוח – {client?.fullName}</h2>
       <p>📞 {client?.phone} | ✉️ {client?.email} | 📍 {client?.address}</p>
 
-      {/* כאן ייכנס ה-Timeline */}
+      {/* כאן אפשר להוסיף בהמשך Timeline או משימות */}
       <p>כאן יוצג ה-Timeline של הלקוח</p>
 
       <div className="form-actions">
