@@ -8,8 +8,12 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   const [newNote, setNewNote] = useState("");
   const [newTask, setNewTask] = useState({
     title: "",
+    description: "",
     dueDate: "",
     dueTime: "",
+    status: "todo",
+    priority: "normal",
+    reminder: "",
   });
 
   // === שליפת תיעודים ===
@@ -48,7 +52,6 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   const handleAddTask = async () => {
     if (!newTask.title.trim() || !newTask.dueDate || !newTask.dueTime) return;
 
-    // מחבר תאריך ושעה ל־ISO string
     const isoDateTime = new Date(
       `${newTask.dueDate}T${newTask.dueTime}:00`
     ).toISOString();
@@ -58,10 +61,22 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         clientId,
         businessId,
         title: newTask.title,
+        description: newTask.description,
         dueDate: isoDateTime,
+        status: newTask.status,
+        priority: newTask.priority,
+        reminder: newTask.reminder || null,
       });
       setTasks((prev) => [...prev, res.data]);
-      setNewTask({ title: "", dueDate: "", dueTime: "" });
+      setNewTask({
+        title: "",
+        description: "",
+        dueDate: "",
+        dueTime: "",
+        status: "todo",
+        priority: "normal",
+        reminder: "",
+      });
     } catch (err) {
       console.error("שגיאה בהוספת משימה", err);
     }
@@ -112,14 +127,15 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                         month: "2-digit",
                         year: "numeric",
                       })
-                    : ""}
-                  {" "}
+                    : ""}{" "}
                   {task.dueDate
                     ? new Date(task.dueDate).toLocaleTimeString("he-IL", {
                         hour: "2-digit",
                         minute: "2-digit",
                       })
                     : ""}
+                  {" | "}
+                  <em>{task.status}</em> | <b>{task.priority}</b>
                 </span>
                 <small>
                   {task.isCompleted ? "✔️ בוצע" : "⏳ ממתין"}
@@ -134,6 +150,13 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           placeholder="כותרת משימה"
           value={newTask.title}
           onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+        />
+        <textarea
+          placeholder="תיאור משימה"
+          value={newTask.description}
+          onChange={(e) =>
+            setNewTask({ ...newTask, description: e.target.value })
+          }
         />
         <div className="task-datetime">
           <input
@@ -151,6 +174,38 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             }
           />
         </div>
+
+        <select
+          value={newTask.status}
+          onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
+        >
+          <option value="todo">לביצוע</option>
+          <option value="in_progress">בתהליך</option>
+          <option value="waiting">ממתין</option>
+          <option value="completed">הושלם</option>
+          <option value="cancelled">בוטל</option>
+        </select>
+
+        <select
+          value={newTask.priority}
+          onChange={(e) =>
+            setNewTask({ ...newTask, priority: e.target.value })
+          }
+        >
+          <option value="low">נמוכה</option>
+          <option value="normal">רגילה</option>
+          <option value="high">גבוהה</option>
+          <option value="critical">קריטית</option>
+        </select>
+
+        <input
+          type="datetime-local"
+          value={newTask.reminder}
+          onChange={(e) =>
+            setNewTask({ ...newTask, reminder: e.target.value })
+          }
+        />
+
         <button onClick={handleAddTask}>➕ צור משימה</button>
       </div>
     </div>
