@@ -9,11 +9,11 @@ const fetchClients = async (businessId) => {
   if (!businessId) return [];
   const res = await API.get(`/crm-clients/${businessId}`);
   return res.data.map((c) => ({
+    _id: c._id, // ✅ שומרים את המזהה בשם המקורי
     fullName: c.fullName || "לא ידוע",
     phone: (c.phone || "").toString().replace(/\s/g, "") || "אין טלפון",
     email: (c.email || "").replace(/\s/g, "") || "-",
     address: c.address || "-",
-    id: c._id || Date.now(),
     appointments: c.appointments || [],
   }));
 };
@@ -44,7 +44,7 @@ const CRMClientsTab = ({ businessId }) => {
   const handleDelete = async (client) => {
     if (window.confirm(`האם למחוק את הלקוח "${client.fullName}"?`)) {
       try {
-        await API.delete(`/crm-clients/${client.id}`);
+        await API.delete(`/crm-clients/${client._id}`);
         queryClient.invalidateQueries(["clients", businessId]);
         alert("✅ הלקוח נמחק בהצלחה");
       } catch (err) {
@@ -101,7 +101,7 @@ const CRMClientsTab = ({ businessId }) => {
                   </tr>
                 ) : (
                   filteredClients.map((client) => (
-                    <tr key={client.id}>
+                    <tr key={client._id}>
                       <td data-label="שם">{client.fullName}</td>
                       <td data-label="טלפון" className="phone-cell">
                         {client.phone}
