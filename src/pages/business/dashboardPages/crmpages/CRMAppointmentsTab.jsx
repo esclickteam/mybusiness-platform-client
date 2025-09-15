@@ -26,7 +26,6 @@ const CRMAppointmentsTab = () => {
   });
 
   const [editId, setEditId] = useState(null);
-  const [editData, setEditData] = useState({});
   const [isSaving, setIsSaving] = useState(false);
 
   const [services, setServices] = useState([]);
@@ -174,7 +173,14 @@ const CRMAppointmentsTab = () => {
         duration: 30,
       });
 
+      // ✅ רענון גם לפגישות וגם לתיק הלקוח
       await refetchAppointments();
+      queryClient.invalidateQueries(["clients", businessId]);
+      queryClient.invalidateQueries([
+        "customerFile",
+        newAppointment.crmClientId,
+      ]);
+
       setShowAddForm(false);
       setNewAppointment({
         crmClientId: "",
