@@ -21,12 +21,16 @@ export async function subscribeUser() {
     // רישום service worker
     const registration = await navigator.serviceWorker.register("/service-worker.js");
 
+    // שליפת המפתח הציבורי מהשרת
+    const keyRes = await fetch("/api/config/public-vapid-key");
+    if (!keyRes.ok) throw new Error("❌ לא הצלחתי להביא VAPID_PUBLIC_KEY מהשרת");
+
+    const { publicKey } = await keyRes.json();
+
     // יצירת subscription
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        process.env.REACT_APP_VAPID_PUBLIC_KEY
-      ),
+      applicationServerKey: urlBase64ToUint8Array(publicKey),
     });
 
     // שליחה לשרת (נשמר בשדה pushSubscription של המשתמש המחובר)
