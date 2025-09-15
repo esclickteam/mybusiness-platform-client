@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import "./CRMCustomerProfile.css";
 
 // ייבוא הקומפוננטה החדשה
-import ClientTasksAndNotes from "./ClientTasksAndNotes";
+import ClientTasksAndNotes from "../../../../components/CRM/ClientTasksAndNotes";
 
 export default function CRMCustomerFile({
   client,
