@@ -4,7 +4,7 @@
   border-radius: 16px;
   padding: 25px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  max-width: 900px;
+  max-width: 1000px;
   margin: 30px auto;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl; /* עברית */
@@ -12,7 +12,7 @@
 
 .crm-customer-profile h2 {
   font-size: 1.8rem;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: #1e3a8a;
   text-align: center;
 }
@@ -20,227 +20,149 @@
 .crm-customer-profile p {
   text-align: center;
   color: #374151;
+  margin-bottom: 20px;
+}
+
+/* ====== כותרת טאבים ====== */
+.tabs-header {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
   margin-bottom: 25px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 10px;
 }
 
-/* ====== טופס לקוח חדש ====== */
-.new-client-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  background: #f9fafb;
-  padding: 20px;
-  border-radius: 12px;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.new-client-form input {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+.tabs-header button {
+  background: transparent;
+  border: none;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  font-weight: 600;
+  color: #6b7280;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.new-client-form input:focus {
-  border-color: #6a11cb;
-  outline: none;
+.tabs-header button:hover {
+  background: #f3f4f6;
+  color: #1e3a8a;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
-}
-
-.save-client-btn {
+.tabs-header button.active {
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-.save-client-btn:hover {
-  background: linear-gradient(135deg, #2575fc, #6a11cb);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.cancel-btn {
-  background: #eee;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-.cancel-btn:hover {
-  background: #ddd;
-}
-
-/* ====== טופס הוספת אירוע ====== */
-.add-event-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* ====== תוכן טאב ====== */
+.tab-content {
+  padding: 15px;
   background: #f9fafb;
-  padding: 20px;
   border-radius: 12px;
-  margin-bottom: 25px;
 }
 
-.add-event-form select,
-.add-event-form input,
-.add-event-form textarea {
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+/* ====== טבלה כללית ====== */
+.appointments-table,
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.appointments-table th,
+.data-table th {
+  background: #f3f4f6;
+  padding: 12px;
+  text-align: right;
+  font-weight: bold;
+  border-bottom: 2px solid #e5e7eb;
+  color: #374151;
+}
+
+.appointments-table td,
+.data-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
   font-size: 0.95rem;
+  color: #111827;
 }
 
-.add-event-form button {
-  align-self: flex-start;
-  padding: 10px 18px;
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
+.appointments-table tr:hover,
+.data-table tr:hover {
+  background: #f9fafc;
 }
 
-.add-event-form button:hover {
-  background: linear-gradient(135deg, #2575fc, #6a11cb);
+/* ====== רשימת קבצים ====== */
+.file-list {
+  list-style: none;
+  padding: 0;
+}
+
+.file-list li {
+  margin-bottom: 10px;
+}
+
+.file-list a {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.file-list a:hover {
+  text-decoration: underline;
+  color: #1d4ed8;
 }
 
 /* ====== Timeline אנכי ====== */
-.event-timeline {
-  position: relative;
-  margin: 20px 0;
-  padding-right: 20px;
-  list-style: none;
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.event-timeline::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 12px;
-  width: 3px;
-  height: 100%;
-  background: #e5e7eb;
-}
-
-.event-timeline li {
-  position: relative;
-  margin: 20px 0;
-  padding: 15px 20px;
-  background: #f9fafb;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.event-timeline li::before {
-  content: "";
-  position: absolute;
-  top: 20px;
-  right: -9px;
-  width: 15px;
-  height: 15px;
+.timeline-item {
   background: #fff;
-  border: 3px solid #6a11cb;
-  border-radius: 50%;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border-right: 4px solid #6a11cb;
 }
 
-/* טקסטים בתוך האירוע */
-.event-timeline li span {
-  display: inline-block;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-}
-
-.event-timeline li strong {
-  display: block;
-  font-size: 1rem;
+.timeline-item strong {
   color: #111827;
-  margin-bottom: 5px;
-  cursor: text;
+  font-size: 1rem;
 }
 
-.event-timeline li p {
+.timeline-item span {
+  font-size: 1.2rem;
+  margin-left: 8px;
+}
+
+.timeline-item p {
   font-size: 0.9rem;
   color: #374151;
-  margin: 0;
-  cursor: text;
-}
-
-/* עריכה inline */
-.event-timeline li strong[contenteditable="true"],
-.event-timeline li p[contenteditable="true"] {
-  outline: 2px dashed transparent;
-  transition: outline 0.2s ease;
-}
-.event-timeline li strong[contenteditable="true"]:focus,
-.event-timeline li p[contenteditable="true"]:focus {
-  outline: 2px dashed #6a11cb;
-  background: #fff;
-}
-
-/* כפתור מחיקה */
-.delete-btn {
-  background: transparent;
-  border: none;
-  color: #ef4444;
-  font-size: 0.9rem;
-  margin-top: 8px;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-.delete-btn:hover {
-  color: #dc2626;
-  text-decoration: underline;
-}
-
-/* ====== צבעים לפי סוג אירוע ====== */
-.event-timeline li[data-type="call"]::before {
-  border-color: #3b82f6; /* כחול */
-}
-.event-timeline li[data-type="message"]::before {
-  border-color: #9333ea; /* סגול */
-}
-.event-timeline li[data-type="meeting"]::before {
-  border-color: #f59e0b; /* כתום */
-}
-.event-timeline li[data-type="task"]::before {
-  border-color: #10b981; /* ירוק */
-}
-.event-timeline li[data-type="file"]::before {
-  border-color: #ef4444; /* אדום */
+  margin: 5px 0 0;
 }
 
 /* ===== רספונסיביות ===== */
-@media (max-width: 600px) {
-  .crm-customer-profile {
-    padding: 15px;
+@media (max-width: 768px) {
+  .tabs-header {
+    flex-wrap: wrap;
+    gap: 5px;
   }
 
-  .new-client-form {
-    padding: 15px;
+  .appointments-table th,
+  .appointments-table td,
+  .data-table th,
+  .data-table td {
+    font-size: 0.85rem;
+    padding: 8px;
   }
 
-  .add-event-form {
-    padding: 15px;
-  }
-
-  .event-timeline li {
-    font-size: 0.9rem;
+  .timeline-item {
     padding: 12px;
-  }
-
-  .event-timeline li strong {
-    font-size: 0.95rem;
   }
 }

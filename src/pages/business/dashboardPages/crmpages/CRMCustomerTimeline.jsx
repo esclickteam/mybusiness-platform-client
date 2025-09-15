@@ -8,39 +8,48 @@ export default function CRMCustomerTimeline({ client, businessId }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // ✅ פגישות
-        const apptRes = await API.get(`/crm-clients/${client._id}/appointments`);
-        const appointments = apptRes.data.map((appt) => ({
+        // ✅ קריאה מרוכזת לשרת
+        const res = await API.get(`/crm-customer/${client._id}`, {
+          params: { businessId },
+        });
+
+        const { appointments = [], events: crmEvents = [] } = res.data;
+
+        // ✅ מיפוי פגישות
+        const mappedAppointments = appointments.map((appt) => ({
           id: appt._id,
           type: "meeting",
           title: appt.serviceName || "פגישה",
-          date: `${appt.date} ${appt.time}`,
+          date: appt.date && appt.time ? new Date(`${appt.date}T${appt.time}`) : null,
           notes: appt.note || "",
         }));
 
-        // ✅ אירועי CRM
-        const eventsRes = await API.get(`/crm-events/${client._id}`);
-        const crmEvents = eventsRes.data.map((ev) => ({
+        // ✅ מיפוי אירועי CRM
+        const mappedEvents = crmEvents.map((ev) => ({
           id: ev._id,
           type: ev.type,
           title: ev.title,
-          date: ev.date,
+          date: ev.date ? new Date(ev.date) : null,
           notes: ev.notes,
         }));
 
-        // ✅ שילוב הכל
-        setEvents([...appointments, ...crmEvents].sort((a, b) =>
-          (b.date || "").localeCompare(a.date || "")
-        ));
+        // ✅ שילוב הכל + מיון לפי תאריך
+        const combined = [...mappedAppointments, ...mappedEvents].sort((a, b) => {
+          if (!a.date) return 1;
+          if (!b.date) return -1;
+          return b.date - a.date;
+        });
+
+        setEvents(combined);
       } catch (err) {
         console.error("❌ שגיאה בטעינת Timeline:", err);
       }
     };
 
-    if (client?._id) {
+    if (client?._id && businessId) {
       fetchData();
     }
-  }, [client?._id]);
+  }, [client?._id, businessId]);
 
   const typeLabels = {
     call: "📞 שיחה",
@@ -65,7 +74,9 @@ export default function CRMCustomerTimeline({ client, businessId }) {
                 <strong>{e.title}</strong>
               </div>
               <div className="event-meta">
-                <span>{e.date || "ללא תאריך"}</span>
+                <span>
+                  {e.date ? e.date.toLocaleString("he-IL") : "ללא תאריך"}
+                </span>
               </div>
               {e.notes && <p className="event-notes">{e.notes}</p>}
             </div>
