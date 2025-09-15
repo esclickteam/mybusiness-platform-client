@@ -9,7 +9,7 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 import useIdleLogout from "./hooks/useIdleLogout";  
 import "./styles/index.css";
 
-// Polyfill ל‑Buffer (חלק מהספריות דורשות)
+// Polyfill ל-Buffer (חלק מהספריות דורשות)
 import { Buffer } from "buffer";
 if (!window.Buffer) window.Buffer = Buffer;
 
@@ -21,6 +21,18 @@ function AppWithIdleLogout() {
   const { logout } = useAuth();
   useIdleLogout(logout, 10 * 60 * 1000); // יציאה אחרי 10 דקות אי פעילות
   return <App />;
+}
+
+// 📌 רישום Service Worker לפוש נוטיפיקיישנס
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/sw.js")
+    .then((reg) => {
+      console.log("✅ Service Worker רשום:", reg);
+    })
+    .catch((err) => {
+      console.error("❌ שגיאה ברישום Service Worker:", err);
+    });
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(
