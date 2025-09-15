@@ -70,7 +70,8 @@ li span {
 
 /* טפסים */
 textarea,
-input {
+input,
+select {
   display: block;
   width: 100%;
   margin-top: 8px;
@@ -83,11 +84,38 @@ input {
 }
 
 textarea:focus,
-input:focus {
+input:focus,
+select:focus {
   outline: none;
   border-color: #6a11cb;
   box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.15);
   background: #fff;
+}
+
+/* תוויות (labels) */
+label {
+  display: block;
+  margin-top: 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+}
+
+/* בלוק תאריך ושעה */
+.task-datetime,
+.task-reminder {
+  background: #f9f9ff;
+  border: 1px solid #e6e6fa;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.task-datetime label,
+.task-reminder label {
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  color: #555;
 }
 
 /* כפתורים */
@@ -96,7 +124,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin-top: 10px;
+  margin-top: 16px;
   padding: 10px 14px;
   border: none;
   border-radius: 8px;
@@ -115,4 +143,12 @@ button:hover {
 
 button:active {
   transform: scale(0.97);
+}
+
+/* טקסט ריק */
+.empty-text {
+  color: #888;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-bottom: 12px;
 }

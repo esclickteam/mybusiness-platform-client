@@ -158,7 +158,10 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             setNewTask({ ...newTask, description: e.target.value })
           }
         />
+
+        {/* מועד לביצוע */}
         <div className="task-datetime">
+          <label>🗓 מועד לביצוע:</label>
           <input
             type="date"
             value={newTask.dueDate}
@@ -175,6 +178,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           />
         </div>
 
+        <label>⚡ סטטוס:</label>
         <select
           value={newTask.status}
           onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
@@ -186,6 +190,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           <option value="cancelled">בוטל</option>
         </select>
 
+        <label>🏷 עדיפות:</label>
         <select
           value={newTask.priority}
           onChange={(e) =>
@@ -198,13 +203,17 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           <option value="critical">קריטית</option>
         </select>
 
-        <input
-          type="datetime-local"
-          value={newTask.reminder}
-          onChange={(e) =>
-            setNewTask({ ...newTask, reminder: e.target.value })
-          }
-        />
+        {/* תזכורת */}
+        <div className="task-reminder">
+          <label>⏰ תזכורת (לא חובה):</label>
+          <input
+            type="datetime-local"
+            value={newTask.reminder}
+            onChange={(e) =>
+              setNewTask({ ...newTask, reminder: e.target.value })
+            }
+          />
+        </div>
 
         <button onClick={handleAddTask}>➕ צור משימה</button>
       </div>
