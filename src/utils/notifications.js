@@ -33,21 +33,79 @@ export async function subscribeUser() {
       applicationServerKey: urlBase64ToUint8Array(publicKey),
     });
 
-    // שליחה לשרת (נשמר בשדה pushSubscription של המשתמש המחובר)
-    const res = await fetch("/api/users/subscription", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include", // 👈 כדי לשלוח JWT ב־cookie
-      body: JSON.stringify({ pushSubscription: subscription }),
-    });
-
-    if (!res.ok) {
-      throw new Error("❌ שגיאה בשמירת subscription בשרת");
-    }
-
+    // ניסיון לשמור subscription בשרת
+    await saveSubscription(subscription);
     console.log("✅ Push subscription נשמר בהצלחה");
   } catch (err) {
     console.error("❌ שגיאה בהרשמת המשתמש לנוטיפיקציות:", err);
+  }
+}
+
+/**
+ * שומר את ה־subscription בשרת
+ */
+async function saveSubscription(subscription) {
+  const token = localStorage.getItem("token");
+
+  let res = await fetch("/api/users/subscription", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    credentials: "include", // שולח גם cookies (refreshToken)
+    body: JSON.stringify({ pushSubscription: subscription }),
+  });
+
+  // אם ה־access token לא תקף (401) → ננסה לחדש ע"י refresh
+  if (res.status === 401) {
+    console.warn("⚠️ Token לא תקף, מנסה לרענן...");
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      const newToken = localStorage.getItem("token");
+      res = await fetch("/api/users/subscription", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(newToken ? { Authorization: `Bearer ${newToken}` } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({ pushSubscription: subscription }),
+      });
+    }
+  }
+
+  if (!res.ok) {
+    throw new Error("❌ שגיאה בשמירת subscription בשרת");
+  }
+}
+
+/**
+ * מנסה לחדש Access Token בעזרת refreshToken (cookie)
+ */
+async function refreshAccessToken() {
+  try {
+    const res = await fetch("/api/auth/refresh", {
+      method: "POST",
+      credentials: "include", // שולח refreshToken ב־cookie
+    });
+
+    if (!res.ok) {
+      console.error("❌ רענון טוקן נכשל");
+      return false;
+    }
+
+    const data = await res.json();
+    if (data?.accessToken) {
+      localStorage.setItem("token", data.accessToken);
+      console.log("🔄 Access Token חודש בהצלחה");
+      return true;
+    }
+
+    return false;
+  } catch (err) {
+    console.error("❌ שגיאה ברענון הטוקן:", err);
+    return false;
   }
 }
 
