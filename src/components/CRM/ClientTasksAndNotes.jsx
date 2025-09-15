@@ -15,6 +15,23 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     priority: "normal",
     reminder: "",
   });
+  const [editTaskId, setEditTaskId] = useState(null);
+
+  // מיפוי סטטוסים וקדימויות לטקסט קריא
+  const statusLabels = {
+    todo: "לביצוע",
+    in_progress: "בתהליך",
+    waiting: "ממתין",
+    completed: "הושלם",
+    cancelled: "בוטל",
+  };
+
+  const priorityLabels = {
+    low: "נמוכה",
+    normal: "רגילה",
+    high: "גבוהה",
+    critical: "קריטית",
+  };
 
   // === שליפת תיעודים ===
   useEffect(() => {
@@ -48,8 +65,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     }
   };
 
-  // === הוספת משימה חדשה ===
-  const handleAddTask = async () => {
+  // === הוספת/עדכון משימה ===
+  const handleSaveTask = async () => {
     if (!newTask.title.trim() || !newTask.dueDate || !newTask.dueTime) return;
 
     const isoDateTime = new Date(
@@ -57,17 +74,28 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     ).toISOString();
 
     try {
-      const res = await API.post("/crm-extras/tasks", {
-        clientId,
-        businessId,
-        title: newTask.title,
-        description: newTask.description,
-        dueDate: isoDateTime,
-        status: newTask.status,
-        priority: newTask.priority,
-        reminder: newTask.reminder || null,
-      });
-      setTasks((prev) => [...prev, res.data]);
+      if (editTaskId) {
+        // עדכון
+        const res = await API.patch(`/crm-extras/tasks/${editTaskId}`, {
+          ...newTask,
+          dueDate: isoDateTime,
+        });
+        setTasks((prev) =>
+          prev.map((t) => (t._id === editTaskId ? res.data : t))
+        );
+        setEditTaskId(null);
+      } else {
+        // יצירה
+        const res = await API.post("/crm-extras/tasks", {
+          clientId,
+          businessId,
+          ...newTask,
+          dueDate: isoDateTime,
+        });
+        setTasks((prev) => [...prev, res.data]);
+      }
+
+      // איפוס טופס
       setNewTask({
         title: "",
         description: "",
@@ -78,7 +106,40 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         reminder: "",
       });
     } catch (err) {
-      console.error("שגיאה בהוספת משימה", err);
+      console.error("שגיאה בשמירת משימה", err);
+    }
+  };
+
+  // === עריכת משימה קיימת ===
+  const handleEditTask = (task) => {
+    setEditTaskId(task._id);
+    setNewTask({
+      title: task.title,
+      description: task.description || "",
+      dueDate: task.dueDate ? task.dueDate.slice(0, 10) : "",
+      dueTime: task.dueDate
+        ? new Date(task.dueDate).toLocaleTimeString("he-IL", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          })
+        : "",
+      status: task.status,
+      priority: task.priority,
+      reminder: task.reminder
+        ? new Date(task.reminder).toISOString().slice(0, 16)
+        : "",
+    });
+  };
+
+  // === מחיקת משימה ===
+  const handleDeleteTask = async (taskId) => {
+    if (!window.confirm("האם למחוק את המשימה?")) return;
+    try {
+      await API.delete(`/crm-extras/tasks/${taskId}`);
+      setTasks((prev) => prev.filter((t) => t._id !== taskId));
+    } catch (err) {
+      console.error("שגיאה במחיקת משימה", err);
     }
   };
 
@@ -135,16 +196,21 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                       })
                     : ""}
                   {" | "}
-                  <em>{task.status}</em> | <b>{task.priority}</b>
+                  <em>סטטוס: {statusLabels[task.status]}</em> |{" "}
+                  <b>עדיפות: {priorityLabels[task.priority]}</b>
                 </span>
-                <small>
-                  {task.isCompleted ? "✔️ בוצע" : "⏳ ממתין"}
-                </small>
+                <div className="task-actions">
+                  <button onClick={() => handleEditTask(task)}>✏️ ערוך</button>
+                  <button onClick={() => handleDeleteTask(task._id)}>
+                    🗑 מחק
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
         )}
 
+        {/* === טופס יצירה/עריכה === */}
         <input
           type="text"
           placeholder="כותרת משימה"
@@ -215,7 +281,27 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           />
         </div>
 
-        <button onClick={handleAddTask}>➕ צור משימה</button>
+        <button onClick={handleSaveTask}>
+          {editTaskId ? "💾 עדכן משימה" : "➕ צור משימה"}
+        </button>
+        {editTaskId && (
+          <button
+            onClick={() => {
+              setEditTaskId(null);
+              setNewTask({
+                title: "",
+                description: "",
+                dueDate: "",
+                dueTime: "",
+                status: "todo",
+                priority: "normal",
+                reminder: "",
+              });
+            }}
+          >
+            ביטול
+          </button>
+        )}
       </div>
     </div>
   );

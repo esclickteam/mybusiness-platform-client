@@ -55,6 +55,7 @@ li {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
 li:last-child {
@@ -66,6 +67,36 @@ li span {
   flex: 1;
   margin-right: 10px;
   color: #333;
+}
+
+/* פעולות משימה (עריכה/מחיקה) */
+.task-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.task-actions button {
+  margin-top: 0; /* שלא ייראו מוזרים בתוך השורה */
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+/* כפתור עריכה */
+.task-actions button:first-child {
+  background: #4caf50;
+}
+.task-actions button:first-child:hover {
+  background: #3e8e41;
+}
+
+/* כפתור מחיקה */
+.task-actions button:last-child {
+  background: #f44336;
+}
+.task-actions button:last-child:hover {
+  background: #d32f2f;
 }
 
 /* טפסים */
@@ -118,7 +149,7 @@ label {
   color: #555;
 }
 
-/* כפתורים */
+/* כפתורים כלליים */
 button {
   display: inline-flex;
   align-items: center;
