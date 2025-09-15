@@ -23,6 +23,112 @@
   margin-bottom: 20px;
 }
 
+/* ====== כרטיס יצירת לקוח חדש ====== */
+.add-client-card {
+  max-width: 420px;
+  margin: 30px auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.4s ease;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #f1f1f1;
+  padding-bottom: 0.8rem;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #3a0ca3;
+}
+
+.card-icon {
+  font-size: 1.8rem;
+  background: linear-gradient(135deg, #7c4dff, #3a0ca3);
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.add-client-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.add-client-form input {
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.add-client-form input:focus {
+  border-color: #7c4dff;
+  box-shadow: 0 0 6px rgba(124, 77, 255, 0.3);
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.save-client-btn {
+  flex: 1;
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.save-client-btn:hover {
+  background: #16a34a;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #7c4dff;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cancel-btn:hover {
+  background: #6a3edb;
+}
+
+/* אנימציה עדינה */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ====== כותרת טאבים ====== */
 .tabs-header {
   display: flex;
@@ -164,5 +270,10 @@
 
   .timeline-item {
     padding: 12px;
+  }
+
+  .add-client-card {
+    margin: 15px;
+    padding: 1.2rem;
   }
 }

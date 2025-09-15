@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import "./CRMCustomerProfile.css";
 
 export default function CRMCustomerFile({
@@ -63,9 +63,13 @@ export default function CRMCustomerFile({
   // ✨ מסך יצירת לקוח חדש
   if (isNew) {
     return (
-      <div className="crm-customer-profile">
-        <h2>➕ לקוח חדש</h2>
-        <div className="new-client-form">
+      <div className="add-client-card">
+        <div className="card-header">
+          <span className="card-icon">👤</span>
+          <h2>לקוח חדש</h2>
+        </div>
+
+        <div className="add-client-form">
           <input
             type="text"
             placeholder="שם מלא"
