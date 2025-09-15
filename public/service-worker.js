@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 
-// מאזין לאירוע פוש שנשלח מהשרת
+// מאזין לפוש שנשלח מהשרת
 self.addEventListener("push", (event) => {
   if (!event.data) return;
 
@@ -15,26 +15,23 @@ self.addEventListener("push", (event) => {
   const title = data.title || "📌 התראה חדשה";
   const options = {
     body: data.body || "יש לך הודעה חדשה",
-    icon: data.icon || "/icons/logo.png", // אייקון שיוצג בהתראה
-    badge: "/icons/badge.png",            // אייקון קטן (לא חובה)
+    icon: data.icon || "/icons/logo.png", // תעדכן אם יש לך אייקון
+    badge: "/icons/badge.png",            // לא חובה
     data: {
-      url: data.data?.url || "/tasks",    // לאן לפתוח בלחיצה
+      url: data.data?.url || "/",         // עמוד שייפתח בלחיצה
     },
   };
 
-  // מציג את הנוטיפיקציה
   event.waitUntil(
     self.registration.showNotification(title, options)
   );
 });
 
-// מאזין ללחיצה על הנוטיפיקציה
+// מאזין ללחיצה על ההתראה
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-
   const url = event.notification.data?.url || "/";
 
-  // פותח טאב חדש או מביא לפוקוס אם כבר פתוח
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
