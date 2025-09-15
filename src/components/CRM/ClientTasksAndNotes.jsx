@@ -67,18 +67,21 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       {/* === תיעודים === */}
       <div className="notes-section">
         <h3>📝 תיעודים</h3>
-        <ul>
-          {notes.length === 0 ? (
-            <p>אין תיעודים ללקוח</p>
-          ) : (
-            notes.map((note) => (
+        {notes.length === 0 ? (
+          <p className="empty-text">אין תיעודים ללקוח</p>
+        ) : (
+          <ul>
+            {notes.map((note) => (
               <li key={note._id}>
                 <span>{note.text}</span>
-                <small>{new Date(note.createdAt).toLocaleString("he-IL")}</small>
+                <small>
+                  {new Date(note.createdAt).toLocaleString("he-IL")}
+                </small>
               </li>
-            ))
-          )}
-        </ul>
+            ))}
+          </ul>
+        )}
+
         <textarea
           placeholder="הוסף תיעוד..."
           value={newNote}
@@ -90,43 +93,47 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       {/* === משימות === */}
       <div className="tasks-section">
         <h3>✅ משימות</h3>
-        <ul>
-          {tasks.length === 0 ? (
-            <p>אין משימות</p>
-          ) : (
-            tasks.map((task) => (
+        {tasks.length === 0 ? (
+          <p className="empty-text">אין משימות</p>
+        ) : (
+          <ul>
+            {tasks.map((task) => (
               <li key={task._id}>
-                <strong>{task.title}</strong> –{" "}
-                {new Date(task.dueDate).toLocaleDateString("he-IL")}{" "}
-                {task.dueTime}
-                {task.isCompleted ? " ✔️" : " ⏳"}
+                <span>
+                  <strong>{task.title}</strong> –{" "}
+                  {new Date(task.dueDate).toLocaleDateString("he-IL")}{" "}
+                  {task.dueTime}
+                </span>
+                <small>
+                  {task.isCompleted ? "✔️ בוצע" : "⏳ ממתין"}
+                </small>
               </li>
-            ))
-          )}
-        </ul>
+            ))}
+          </ul>
+        )}
 
         <input
           type="text"
           placeholder="כותרת משימה"
           value={newTask.title}
-          onChange={(e) =>
-            setNewTask({ ...newTask, title: e.target.value })
-          }
+          onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
         />
-        <input
-          type="date"
-          value={newTask.dueDate}
-          onChange={(e) =>
-            setNewTask({ ...newTask, dueDate: e.target.value })
-          }
-        />
-        <input
-          type="time"
-          value={newTask.dueTime}
-          onChange={(e) =>
-            setNewTask({ ...newTask, dueTime: e.target.value })
-          }
-        />
+        <div className="task-datetime">
+          <input
+            type="date"
+            value={newTask.dueDate}
+            onChange={(e) =>
+              setNewTask({ ...newTask, dueDate: e.target.value })
+            }
+          />
+          <input
+            type="time"
+            value={newTask.dueTime}
+            onChange={(e) =>
+              setNewTask({ ...newTask, dueTime: e.target.value })
+            }
+          />
+        </div>
         <button onClick={handleAddTask}>➕ צור משימה</button>
       </div>
     </div>
