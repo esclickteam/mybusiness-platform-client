@@ -47,13 +47,18 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   // === הוספת משימה חדשה ===
   const handleAddTask = async () => {
     if (!newTask.title.trim() || !newTask.dueDate || !newTask.dueTime) return;
+
+    // מחבר תאריך ושעה ל־ISO string
+    const isoDateTime = new Date(
+      `${newTask.dueDate}T${newTask.dueTime}:00`
+    ).toISOString();
+
     try {
       const res = await API.post("/crm-extras/tasks", {
         clientId,
         businessId,
         title: newTask.title,
-        dueDate: newTask.dueDate,
-        dueTime: newTask.dueTime,
+        dueDate: isoDateTime,
       });
       setTasks((prev) => [...prev, res.data]);
       setNewTask({ title: "", dueDate: "", dueTime: "" });
@@ -101,8 +106,20 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               <li key={task._id}>
                 <span>
                   <strong>{task.title}</strong> –{" "}
-                  {new Date(task.dueDate).toLocaleDateString("he-IL")}{" "}
-                  {task.dueTime}
+                  {task.dueDate
+                    ? new Date(task.dueDate).toLocaleDateString("he-IL", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })
+                    : ""}
+                  {" "}
+                  {task.dueDate
+                    ? new Date(task.dueDate).toLocaleTimeString("he-IL", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : ""}
                 </span>
                 <small>
                   {task.isCompleted ? "✔️ בוצע" : "⏳ ממתין"}
