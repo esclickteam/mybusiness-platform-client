@@ -3,7 +3,12 @@ import API from "@api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import "./CRMCustomerProfile.css";
 
-export default function CRMCustomerFile({ client, isNew = false, onClose, businessId }) {
+export default function CRMCustomerFile({
+  client,
+  isNew = false,
+  onClose,
+  businessId,
+}) {
   const queryClient = useQueryClient();
 
   // ✅ מצב התחלתי: טופס ריק אם זה לקוח חדש
@@ -20,7 +25,7 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
 
   // === שמירה לשרת ===
   const handleSave = async () => {
-    if (!newClient.fullName || !newClient.phone) {
+    if (!newClient.fullName.trim() || !newClient.phone.trim()) {
       alert("❌ שם מלא וטלפון הם שדות חובה");
       return;
     }
@@ -36,11 +41,15 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
   };
 
   // === שליפת פגישות של הלקוח הנוכחי לפי crmClientId ===
-  const { data: clientAppointments = [], isLoading, isError } = useQuery({
+  const {
+    data: clientAppointments = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["appointments", "by-client", client?._id],
     queryFn: () =>
       API.get(`/appointments/by-client/${client?._id}`, {
-        params: { businessId }, // ✅ חובה לשלוח גם מזהה עסק
+        params: { businessId },
       }).then((res) => res.data),
     enabled: !!client?._id && !!businessId,
   });
@@ -55,25 +64,33 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
             type="text"
             placeholder="שם מלא"
             value={newClient.fullName}
-            onChange={(e) => setNewClient({ ...newClient, fullName: e.target.value })}
+            onChange={(e) =>
+              setNewClient({ ...newClient, fullName: e.target.value })
+            }
           />
           <input
             type="tel"
             placeholder="טלפון"
             value={newClient.phone}
-            onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+            onChange={(e) =>
+              setNewClient({ ...newClient, phone: e.target.value })
+            }
           />
           <input
             type="email"
             placeholder="אימייל"
             value={newClient.email}
-            onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+            onChange={(e) =>
+              setNewClient({ ...newClient, email: e.target.value })
+            }
           />
           <input
             type="text"
             placeholder="כתובת"
             value={newClient.address}
-            onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
+            onChange={(e) =>
+              setNewClient({ ...newClient, address: e.target.value })
+            }
           />
 
           <div className="form-actions">
@@ -94,36 +111,41 @@ export default function CRMCustomerFile({ client, isNew = false, onClose, busine
     <div className="crm-customer-profile">
       <h2>תיק לקוח – {client?.fullName}</h2>
       <p>
-        📞 {client?.phone} | ✉️ {client?.email} | 📍 {client?.address}
+        📞 {client?.phone} | ✉️ {client?.email || "-"} | 📍{" "}
+        {client?.address || "-"}
       </p>
 
       <h3>📆 הפגישות של הלקוח</h3>
-      {isLoading && <p>טוען פגישות...</p>}
+      {isLoading && <p>⏳ טוען פגישות...</p>}
       {isError && <p>❌ שגיאה בטעינת פגישות</p>}
 
-      {clientAppointments.length === 0 ? (
-        <p>אין פגישות ללקוח זה.</p>
-      ) : (
-        <table className="appointments-table">
-          <thead>
-            <tr>
-              <th>שירות</th>
-              <th>תאריך</th>
-              <th>שעה</th>
-              <th>הערה</th>
-            </tr>
-          </thead>
-          <tbody>
-            {clientAppointments.map((appt) => (
-              <tr key={appt._id}>
-                <td>{appt.serviceName}</td>
-                <td>{appt.date}</td>
-                <td>{appt.time}</td>
-                <td>{appt.note || "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {!isLoading && !isError && (
+        <>
+          {clientAppointments.length === 0 ? (
+            <p>אין פגישות ללקוח זה.</p>
+          ) : (
+            <table className="appointments-table">
+              <thead>
+                <tr>
+                  <th>שירות</th>
+                  <th>תאריך</th>
+                  <th>שעה</th>
+                  <th>הערה</th>
+                </tr>
+              </thead>
+              <tbody>
+                {clientAppointments.map((appt) => (
+                  <tr key={appt._id}>
+                    <td>{appt.serviceName}</td>
+                    <td>{appt.date}</td>
+                    <td>{appt.time}</td>
+                    <td>{appt.note || "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </>
       )}
 
       <div className="form-actions">
