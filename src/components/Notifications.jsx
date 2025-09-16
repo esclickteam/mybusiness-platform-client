@@ -102,6 +102,10 @@ export default function Notifications({ onClose }) {
       ) : (
         dedupedNotifications.map((notif) => {
           const key = notif.threadId || notif.id;
+
+          // ✅ צבע שונה למשימות
+          const isTaskReminder = notif.type === "taskReminder";
+
           return (
             <div
               key={key}
@@ -110,7 +114,11 @@ export default function Notifications({ onClose }) {
                 padding: "10px 15px",
                 borderBottom: "1px solid #eee",
                 fontWeight: notif.read ? "normal" : "700",
-                backgroundColor: notif.read ? "white" : "#e8f4ff",
+                backgroundColor: isTaskReminder
+                  ? "#fff7e6" // כתום בהיר למשימות
+                  : notif.read
+                  ? "white"
+                  : "#e8f4ff",
                 cursor: "pointer",
                 userSelect: "none",
                 display: "flex",
@@ -119,8 +127,10 @@ export default function Notifications({ onClose }) {
               }}
               title={notif.text}
             >
-              {/* מציג בדיוק את ה-text שמגיע מהמונגו */}
-              <div>{notif.text}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                {isTaskReminder && <span style={{ color: "#fa8c16" }}>⏰</span>}
+                <div>{notif.text}</div>
+              </div>
 
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
@@ -136,7 +146,7 @@ export default function Notifications({ onClose }) {
                 {!notif.read && notif.unreadCount > 0 && (
                   <div
                     style={{
-                      backgroundColor: "#d00",
+                      backgroundColor: isTaskReminder ? "#fa8c16" : "#d00",
                       color: "white",
                       borderRadius: "50%",
                       width: 22,
