@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
+import KanbanBoard from "./KanbanBoard"; // ⬅️ ייבוא רכיב הקאנבן
 import "./ClientTasksAndNotes.css";
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
@@ -16,21 +17,23 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     reminder: "",
   });
   const [editTaskId, setEditTaskId] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [viewMode, setViewMode] = useState("list"); // "list" | "kanban"
 
-  // מיפוי סטטוסים וקדימויות לטקסט קריא
+  // מיפוי סטטוסים וקדימויות לטקסט קריא + צבעים
   const statusLabels = {
-    todo: "לביצוע",
-    in_progress: "בתהליך",
-    waiting: "ממתין",
-    completed: "הושלם",
-    cancelled: "בוטל",
+    todo: { text: "לביצוע", color: "gray" },
+    in_progress: { text: "בתהליך", color: "orange" },
+    waiting: { text: "ממתין", color: "purple" },
+    completed: { text: "הושלם", color: "green" },
+    cancelled: { text: "בוטל", color: "red" },
   };
 
   const priorityLabels = {
-    low: "נמוכה",
-    normal: "רגילה",
-    high: "גבוהה",
-    critical: "קריטית",
+    low: { text: "נמוכה", color: "blue" },
+    normal: { text: "רגילה", color: "gray" },
+    high: { text: "גבוהה", color: "orange" },
+    critical: { text: "קריטית", color: "red" },
   };
 
   // === שליפת תיעודים ===
@@ -60,14 +63,19 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       });
       setNotes((prev) => [...prev, res.data]);
       setNewNote("");
+      setMessage("✅ התיעוד נשמר בהצלחה");
     } catch (err) {
       console.error("שגיאה בהוספת תיעוד", err);
+      setMessage("❌ שגיאה בהוספת תיעוד");
     }
   };
 
   // === הוספת/עדכון משימה ===
   const handleSaveTask = async () => {
-    if (!newTask.title.trim() || !newTask.dueDate || !newTask.dueTime) return;
+    if (!newTask.title.trim() || !newTask.dueDate || !newTask.dueTime) {
+      setMessage("⚠️ יש למלא כותרת ותאריך/שעה");
+      return;
+    }
 
     const isoDateTime = new Date(
       `${newTask.dueDate}T${newTask.dueTime}:00`
@@ -75,7 +83,6 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
 
     try {
       if (editTaskId) {
-        // עדכון
         const res = await API.patch(`/crm-extras/tasks/${editTaskId}`, {
           ...newTask,
           dueDate: isoDateTime,
@@ -84,8 +91,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           prev.map((t) => (t._id === editTaskId ? res.data : t))
         );
         setEditTaskId(null);
+        setMessage("✅ המשימה עודכנה בהצלחה");
       } else {
-        // יצירה
         const res = await API.post("/crm-extras/tasks", {
           clientId,
           businessId,
@@ -93,6 +100,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           dueDate: isoDateTime,
         });
         setTasks((prev) => [...prev, res.data]);
+        setMessage("✅ המשימה נוספה בהצלחה");
       }
 
       // איפוס טופס
@@ -107,6 +115,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       });
     } catch (err) {
       console.error("שגיאה בשמירת משימה", err);
+      setMessage("❌ שגיאה בשמירת משימה");
     }
   };
 
@@ -138,22 +147,26 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     try {
       await API.delete(`/crm-extras/tasks/${taskId}`);
       setTasks((prev) => prev.filter((t) => t._id !== taskId));
+      setMessage("🗑️ המשימה נמחקה");
     } catch (err) {
       console.error("שגיאה במחיקת משימה", err);
+      setMessage("❌ שגיאה במחיקת משימה");
     }
   };
 
   return (
     <div className="client-extras">
+      {message && <div className="feedback-msg">{message}</div>}
+
       {/* === תיעודים === */}
       <div className="notes-section">
         <h3>📝 תיעודים</h3>
         {notes.length === 0 ? (
           <p className="empty-text">אין תיעודים ללקוח</p>
         ) : (
-          <ul>
+          <ul className="notes-list">
             {notes.map((note) => (
-              <li key={note._id}>
+              <li key={note._id} className="note-item">
                 <span>{note.text}</span>
                 <small>
                   {new Date(note.createdAt).toLocaleString("he-IL")}
@@ -168,116 +181,159 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
         />
-        <button onClick={handleAddNote}>➕ שמור תיעוד</button>
+        <button className="btn-primary" onClick={handleAddNote}>
+          ➕ שמור תיעוד
+        </button>
       </div>
 
       {/* === משימות === */}
       <div className="tasks-section">
         <h3>✅ משימות</h3>
-        {tasks.length === 0 ? (
-          <p className="empty-text">אין משימות</p>
-        ) : (
-          <ul>
-            {tasks.map((task) => (
-              <li key={task._id} className={`task-item ${task.status}`}>
-                <div className="task-header">
-                  <strong>{task.title}</strong> –{" "}
-                  {task.dueDate
-                    ? new Date(task.dueDate).toLocaleDateString("he-IL", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      })
-                    : ""}{" "}
-                  {task.dueDate
-                    ? new Date(task.dueDate).toLocaleTimeString("he-IL", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : ""}{" "}
-                  | <em>סטטוס: {statusLabels[task.status]}</em> |{" "}
-                  <b>עדיפות: {priorityLabels[task.priority]}</b>
-                </div>
 
-                {/* ===== הצגת תיאור ===== */}
-                {task.description && (
-                  <div className="task-description">{task.description}</div>
-                )}
-
-                <div className="task-actions">
-                  <button onClick={() => handleEditTask(task)}>✏️ ערוך</button>
-                  <button onClick={() => handleDeleteTask(task._id)}>
-                    🗑 מחק
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {/* === טופס יצירה/עריכה === */}
-        <input
-          type="text"
-          placeholder="כותרת משימה"
-          value={newTask.title}
-          onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-        />
-        <textarea
-          placeholder="תיאור משימה"
-          value={newTask.description}
-          onChange={(e) =>
-            setNewTask({ ...newTask, description: e.target.value })
-          }
-        />
-
-        {/* מועד לביצוע */}
-        <div className="task-datetime">
-          <label>🗓 מועד לביצוע:</label>
-          <input
-            type="date"
-            value={newTask.dueDate}
-            onChange={(e) =>
-              setNewTask({ ...newTask, dueDate: e.target.value })
-            }
-          />
-          <input
-            type="time"
-            value={newTask.dueTime}
-            onChange={(e) =>
-              setNewTask({ ...newTask, dueTime: e.target.value })
-            }
-          />
+        {/* כפתורי מעבר בין רשימה ל-Kanban */}
+        <div className="view-toggle">
+          <button
+            className={viewMode === "list" ? "active" : ""}
+            onClick={() => setViewMode("list")}
+          >
+            📋 רשימה
+          </button>
+          <button
+            className={viewMode === "kanban" ? "active" : ""}
+            onClick={() => setViewMode("kanban")}
+          >
+            🗂️ Kanban
+          </button>
         </div>
 
-        <label>⚡ סטטוס:</label>
-        <select
-          value={newTask.status}
-          onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
-        >
-          {Object.entries(statusLabels).map(([key, label]) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
+        {viewMode === "list" ? (
+          <>
+            {tasks.length === 0 ? (
+              <p className="empty-text">אין משימות</p>
+            ) : (
+              <ul className="tasks-list">
+                {tasks.map((task) => (
+                  <li key={task._id} className={`task-item ${task.status}`}>
+                    <div className="task-header">
+                      <strong>{task.title}</strong>
+                      <span
+                        className={`badge ${statusLabels[task.status].color}`}
+                      >
+                        {statusLabels[task.status].text}
+                      </span>
+                      <span
+                        className={`badge ${priorityLabels[task.priority].color}`}
+                      >
+                        {priorityLabels[task.priority].text}
+                      </span>
+                    </div>
 
-        <label>🏷 עדיפות:</label>
-        <select
-          value={newTask.priority}
-          onChange={(e) =>
-            setNewTask({ ...newTask, priority: e.target.value })
-          }
-        >
-          {Object.entries(priorityLabels).map(([key, label]) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
+                    <div className="task-meta">
+                      {task.dueDate &&
+                        new Date(task.dueDate).toLocaleString("he-IL", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                    </div>
 
-        <button onClick={handleSaveTask}>
-          {editTaskId ? "💾 עדכן משימה" : "➕ הוסף משימה"}
-        </button>
+                    {task.description && (
+                      <div className="task-description">{task.description}</div>
+                    )}
+
+                    <div className="task-actions">
+                      <button
+                        className="btn-edit"
+                        onClick={() => handleEditTask(task)}
+                      >
+                        ✏️ ערוך
+                      </button>
+                      <button
+                        className="btn-delete"
+                        onClick={() => handleDeleteTask(task._id)}
+                      >
+                        🗑 מחק
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* === טופס יצירה/עריכה === */}
+            <div className="task-form">
+              <input
+                type="text"
+                placeholder="כותרת משימה"
+                value={newTask.title}
+                onChange={(e) =>
+                  setNewTask({ ...newTask, title: e.target.value })
+                }
+              />
+              <textarea
+                placeholder="תיאור משימה"
+                value={newTask.description}
+                onChange={(e) =>
+                  setNewTask({ ...newTask, description: e.target.value })
+                }
+              />
+
+              <div className="task-datetime">
+                <label>🗓 מועד לביצוע:</label>
+                <input
+                  type="date"
+                  value={newTask.dueDate}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, dueDate: e.target.value })
+                  }
+                />
+                <input
+                  type="time"
+                  value={newTask.dueTime}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, dueTime: e.target.value })
+                  }
+                />
+              </div>
+
+              <label>⚡ סטטוס:</label>
+              <select
+                value={newTask.status}
+                onChange={(e) =>
+                  setNewTask({ ...newTask, status: e.target.value })
+                }
+              >
+                {Object.entries(statusLabels).map(([key, { text }]) => (
+                  <option key={key} value={key}>
+                    {text}
+                  </option>
+                ))}
+              </select>
+
+              <label>🏷 עדיפות:</label>
+              <select
+                value={newTask.priority}
+                onChange={(e) =>
+                  setNewTask({ ...newTask, priority: e.target.value })
+                }
+              >
+                {Object.entries(priorityLabels).map(([key, { text }]) => (
+                  <option key={key} value={key}>
+                    {text}
+                  </option>
+                ))}
+              </select>
+
+              <button className="btn-primary" onClick={handleSaveTask}>
+                {editTaskId ? "💾 עדכן משימה" : "➕ הוסף משימה"}
+              </button>
+            </div>
+          </>
+        ) : (
+          <KanbanBoard clientId={clientId} businessId={businessId} />
+        )}
       </div>
     </div>
   );
