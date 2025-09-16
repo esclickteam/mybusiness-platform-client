@@ -179,8 +179,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         ) : (
           <ul>
             {tasks.map((task) => (
-              <li key={task._id}>
-                <span>
+              <li key={task._id} className={`task-item ${task.status}`}>
+                <div className="task-header">
                   <strong>{task.title}</strong> –{" "}
                   {task.dueDate
                     ? new Date(task.dueDate).toLocaleDateString("he-IL", {
@@ -194,11 +194,16 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                         hour: "2-digit",
                         minute: "2-digit",
                       })
-                    : ""}
-                  {" | "}
-                  <em>סטטוס: {statusLabels[task.status]}</em> |{" "}
+                    : ""}{" "}
+                  | <em>סטטוס: {statusLabels[task.status]}</em> |{" "}
                   <b>עדיפות: {priorityLabels[task.priority]}</b>
-                </span>
+                </div>
+
+                {/* ===== הצגת תיאור ===== */}
+                {task.description && (
+                  <div className="task-description">{task.description}</div>
+                )}
+
                 <div className="task-actions">
                   <button onClick={() => handleEditTask(task)}>✏️ ערוך</button>
                   <button onClick={() => handleDeleteTask(task._id)}>
@@ -249,11 +254,11 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           value={newTask.status}
           onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
         >
-          <option value="todo">לביצוע</option>
-          <option value="in_progress">בתהליך</option>
-          <option value="waiting">ממתין</option>
-          <option value="completed">הושלם</option>
-          <option value="cancelled">בוטל</option>
+          {Object.entries(statusLabels).map(([key, label]) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
         </select>
 
         <label>🏷 עדיפות:</label>
@@ -263,45 +268,16 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             setNewTask({ ...newTask, priority: e.target.value })
           }
         >
-          <option value="low">נמוכה</option>
-          <option value="normal">רגילה</option>
-          <option value="high">גבוהה</option>
-          <option value="critical">קריטית</option>
+          {Object.entries(priorityLabels).map(([key, label]) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
         </select>
 
-        {/* תזכורת */}
-        <div className="task-reminder">
-          <label>⏰ תזכורת (לא חובה):</label>
-          <input
-            type="datetime-local"
-            value={newTask.reminder}
-            onChange={(e) =>
-              setNewTask({ ...newTask, reminder: e.target.value })
-            }
-          />
-        </div>
-
         <button onClick={handleSaveTask}>
-          {editTaskId ? "💾 עדכן משימה" : "➕ צור משימה"}
+          {editTaskId ? "💾 עדכן משימה" : "➕ הוסף משימה"}
         </button>
-        {editTaskId && (
-          <button
-            onClick={() => {
-              setEditTaskId(null);
-              setNewTask({
-                title: "",
-                description: "",
-                dueDate: "",
-                dueTime: "",
-                status: "todo",
-                priority: "normal",
-                reminder: "",
-              });
-            }}
-          >
-            ביטול
-          </button>
-        )}
       </div>
     </div>
   );

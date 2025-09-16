@@ -53,48 +53,62 @@ li {
   border-bottom: 1px solid #f0f0f0;
   font-size: 0.95rem;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 6px;
 }
 
 li:last-child {
   border-bottom: none;
 }
 
-/* טקסט ארוך */
-li span {
-  flex: 1;
-  margin-right: 10px;
+/* כותרת המשימה ושורה ראשית */
+li .task-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
   color: #333;
+}
+
+/* תיאור המשימה */
+li .task-description {
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  padding: 6px 0 0 0;
 }
 
 /* פעולות משימה (עריכה/מחיקה) */
 .task-actions {
   display: flex;
   gap: 6px;
+  margin-top: 4px;
 }
 
 .task-actions button {
-  margin-top: 0; /* שלא ייראו מוזרים בתוך השורה */
   padding: 6px 10px;
   font-size: 0.85rem;
   font-weight: 600;
   border-radius: 6px;
+  border: none;
+  cursor: pointer;
 }
 
-/* כפתור עריכה */
 .task-actions button:first-child {
   background: #4caf50;
+  color: #fff;
 }
+
 .task-actions button:first-child:hover {
   background: #3e8e41;
 }
 
-/* כפתור מחיקה */
 .task-actions button:last-child {
   background: #f44336;
+  color: #fff;
 }
+
 .task-actions button:last-child:hover {
   background: #d32f2f;
 }
