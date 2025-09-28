@@ -1,384 +1,212 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
 
-/* === רקע דף הבית חדש ומיוחד === */
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #f0ebff 0%, #d9d0ff 100%);
-  direction: rtl;
-  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #3a1f7d;
-  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  color: #1e1e2f;
+  background: #f9fafc;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* === מבנה כללי מרכזי רחב עם מרווחים גדולים === */
+/* === Container === */
 .home-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 3rem 2rem 5rem 2rem;
+  padding: 0;
+}
+
+/* === Hero Section === */
+.hero-section {
   text-align: center;
+  padding: 8rem 2rem 6rem;
+  background: linear-gradient(135deg, #1e2a78, #6a11cb);
+  color: #fff;
+  border-radius: 0 0 60px 60px;
 }
 
-/* === כותרת ראשית גדולה ומודגשת עם גוון מיוחד === */
 .main-title {
-  font-size: 3.5rem;
-  font-weight: 900;
-  color: #4b1eaa;
-  text-shadow: 2px 2px 8px rgba(75, 30, 170, 0.3);
-  margin-bottom: 0.8rem;
-  letter-spacing: 0.06em;
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
   line-height: 1.2;
-  font-family: 'Poppins', sans-serif;
 }
 
-/* קו נוסף מתחת לכותרת הראשית */
 .main-subtitle-line {
   display: block;
-  font-weight: 600;
-  font-size: 1.7rem;
-  margin-top: 0.15em;
-  color: #6b3ddf;
-  text-shadow: 1px 1px 6px rgba(107, 61, 223, 0.4);
-  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  color: #ffd700;
 }
 
-/* === תת כותרת עם צבע דהוי אלגנטי === */
 .subtitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #5e4bb7cc;
-  margin-bottom: 3rem;
-  letter-spacing: 0.02em;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* === סקשן חיפוש עם קופסה מודרנית === */
-.search-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-bottom: 4rem;
-  background: #ffffffcc;
-  padding: 20px 30px;
-  border-radius: 24px;
-  box-shadow: 0 8px 20px rgba(75, 30, 170, 0.15);
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* טקסטבוקס ושליטה על האורך */
-.dropdown-wrapper {
-  min-width: 280px;
-  max-width: 350px;
-  flex: 1 1 280px;
-  background: #f9f7ff;
-  border-radius: 12px;
-  box-shadow: inset 0 0 6px #a292ff44;
-  border: 1px solid transparent;
-  transition: border-color 0.3s ease;
-}
-
-.dropdown-wrapper:focus-within {
-  border-color: #7c3aed;
-}
-
-/* סגנון הפקד select/input */
-.dropdown-wrapper select,
-.dropdown-wrapper input {
-  width: 100%;
-  border: none;
-  padding: 14px 18px;
-  font-size: 1rem;
-  border-radius: 12px;
-  background: transparent;
-  outline: none;
-  font-weight: 600;
-  color: #4b1eaa;
-  cursor: pointer;
-}
-
-/* כפתור חיפוש מעוצב עם אפקט מואר */
-.search-button {
-  background: linear-gradient(90deg, #7c3aed, #a679ff);
-  color: #fff;
-  padding: 14px 36px;
-  border: none;
-  border-radius: 30px;
-  font-weight: 700;
   font-size: 1.2rem;
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(124, 58, 237, 0.5);
-  transition: background 0.35s ease, transform 0.25s ease, box-shadow 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  color: #e0e0ff;
+  max-width: 700px;
+  margin: 1rem auto 2.5rem;
+  line-height: 1.6;
 }
 
-.search-button:hover {
-  background: linear-gradient(90deg, #a679ff, #7c3aed);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.7);
-}
-
-.search-button::before {
-  content: "🔍";
-  font-size: 1.3rem;
-}
-
-/* === כרטיסיות עם קו דק וסגול מצד ימין === */
-.cards-container {
+.hero-buttons {
   display: flex;
   justify-content: center;
-  gap: 2.5rem;
-  padding: 0 1rem;
-  margin-bottom: 4rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
-.bookmark-card {
-  background: linear-gradient(145deg, #fff, #f0e8ff);
-  border-radius: 24px;
-  padding: 2.2rem 2.5rem;
-  box-shadow:
-    0 6px 15px rgba(124, 58, 237, 0.1),
-    0 10px 30px rgba(124, 58, 237, 0.15);
-  text-align: center;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
-  border-right: 6px solid #7c3aed;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 230px;
-  flex: 1 1 300px;
-  max-width: 320px;
-  min-width: 280px;
-}
-
-.bookmark-card:hover {
-  transform: translateY(-12px) scale(1.03);
-  box-shadow:
-    0 15px 30px rgba(124, 58, 237, 0.25),
-    0 30px 60px rgba(124, 58, 237, 0.3);
-}
-
-.bookmark-card h3 {
-  margin: 0 0 1rem 0;
-  color: #5a2ca0;
-  font-size: 1.7rem;
-  font-weight: 800;
-  border-bottom: 2px solid #d8bfff99;
-  padding-bottom: 8px;
-  margin-bottom: 1.3rem;
-}
-
-.bookmark-card p {
-  color: #4a3a7fdd;
-  font-size: 1.1rem;
-  line-height: 1.5;
-  margin-bottom: 0;
-  padding: 0 1rem;
-}
-
-/* === בסיס כפתורים בכרטיסיות (בלי צבע) === */
-.bookmark-card button {
+.button-primary,
+.button-secondary {
   border: none;
-  border-radius: 28px;
-  padding: 0.85rem 2.2rem;
-  font-weight: 700;
-  font-size: 1.1rem;
+  border-radius: 40px;
+  padding: 0.9rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  position: relative;
-  z-index: 5;
-  width: 200px;
-  margin: 0 auto;
-  margin-top: 1.5rem;
-  transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.25s ease;
+  transition: all 0.3s ease;
 }
 
-/* === כפתור ראשי (CTA) === */
 .button-primary {
-  background: linear-gradient(90deg, #ff9800, #ff5722);
-  color: #fff;
-  box-shadow: 0 8px 25px rgba(255, 152, 0, 0.6);
+  background: linear-gradient(90deg, #ffd700, #ff9800);
+  color: #1e2a78;
+  box-shadow: 0 8px 20px rgba(255, 193, 7, 0.4);
 }
 
 .button-primary:hover {
-  background: linear-gradient(90deg, #ff5722, #ff9800);
-  box-shadow: 0 12px 36px rgba(255, 87, 34, 0.8);
   transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(255, 193, 7, 0.6);
 }
 
-/* === כפתור משני (Secondary) === */
 .button-secondary {
-  background: #fff;
-  border: 2px solid #7c3aed;
-  color: #7c3aed;
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
 }
 
 .button-secondary:hover {
-  background: #7c3aed;
-  color: #fff;
-  transform: translateY(-2px);
+  background: #fff;
+  color: #1e2a78;
 }
 
-/* === פוטר עם קישורים מרכזיים === */
-.footer {
-  background: linear-gradient(90deg, #f0ebff, #d9d0ff);
-  padding: 30px 20px;
+/* === Value Proposition === */
+.value-section {
+  padding: 6rem 2rem;
   text-align: center;
+  background: #fff;
+}
+
+.section-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #1e2a78;
+  margin-bottom: 1.5rem;
+}
+
+.section-text {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 850px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* === Benefits Section === */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  padding: 6rem 2rem;
+}
+
+.bookmark-card {
+  background: #fff;
+  padding: 2.5rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.bookmark-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+.bookmark-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #2b3fa3;
+}
+
+.bookmark-card p {
+  color: #666;
   font-size: 1rem;
-  font-weight: 600;
-  color: #5a2ca0cc;
+  line-height: 1.6;
+}
+
+/* === CTA Section === */
+.cta-section {
+  text-align: center;
+  padding: 6rem 2rem;
+  background: linear-gradient(135deg, #6a11cb, #2b3fa3);
+  color: #fff;
+  border-radius: 40px;
+  margin: 3rem 1rem;
+}
+
+.cta-section .main-title {
+  color: #fff;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.cta-section .button-primary {
+  font-size: 1.2rem;
+  padding: 1rem 3rem;
+}
+
+/* === Footer === */
+.footer {
+  padding: 2rem;
+  text-align: center;
+  background: #f0f1f5;
+  margin-top: 3rem;
 }
 
 .footer-links {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  padding: 0;
-  margin: 0 0 12px 0;
-}
-
-.footer-links li {
-  cursor: pointer;
-  color: #4b1eaacc;
-  transition: color 0.25s ease;
-  user-select: none;
-}
-
-.footer-links li:hover {
-  color: #7c3aed;
-  text-decoration: underline;
-}
-
-.footer p {
-  color: #4b1eaa88;
-  font-weight: 500;
-}
-
-/* === רספונסיביות משופרת === */
-@media (max-width: 1024px) {
-  .cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2rem;
-  }
-}
-
-@media (max-width: 600px) {
-  .cards-container {
-    flex-direction: column;
-    gap: 2rem;
-    padding: 0 1rem;
-  }
-  .main-title {
-    font-size: 2.6rem;
-  }
-  .main-subtitle-line {
-    font-size: 1.3rem;
-  }
-  .subtitle {
-    font-size: 1rem;
-    margin-bottom: 2rem;
-  }
-  .search-section {
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px 20px;
-    max-width: 100%;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .dropdown-wrapper,
-  .search-button {
-    width: 100%;
-    max-width: 100%;
-  }
-  .dropdown-wrapper {
-    min-width: auto;
-    flex: 1 1 auto;
-  }
-  .dropdown-wrapper select,
-  .dropdown-wrapper input {
-    padding: 12px 15px;
-    font-size: 1rem;
-  }
-  .search-button {
-    padding: 14px 0;
-    font-size: 1.1rem;
-    box-sizing: border-box;
-  }
-}
-
-/* === Header קבוע עם CTA === */
-.main-header {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 100%;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 40px;
-  z-index: 1000;
-}
-
-.main-header .logo {
-  font-weight: 800;
-  font-size: 1.5rem;
-  color: #4b1eaa;
-  letter-spacing: 0.03em;
-}
-
-.nav-links {
-  list-style: none;
-  display: flex;
   gap: 1.5rem;
-  margin: 0;
+  justify-content: center;
   padding: 0;
+  margin: 0 0 1rem;
 }
 
-.nav-links li a {
+.footer-links li a {
   text-decoration: none;
-  color: #4b1eaa;
+  color: #1e2a78;
   font-weight: 600;
   transition: color 0.2s ease;
 }
 
-.nav-links li a:hover {
-  color: #7c3aed;
+.footer-links li a:hover {
+  color: #6a11cb;
 }
 
-.header-cta {
-  font-size: 1rem;
-  padding: 10px 20px;
-  margin-right: 1rem;
+.footer p {
+  color: #777;
+  font-size: 0.95rem;
 }
 
+/* === Responsive === */
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
-  .main-header {
-    padding: 10px 20px;
-  }
-  .main-header .logo {
-    font-size: 1.3rem;
-  }
-  .header-cta {
-    font-size: 0.9rem;
-    padding: 8px 16px;
-  }
+  .main-title { font-size: 2.3rem; }
+  .main-subtitle-line { font-size: 1.2rem; }
+  .subtitle { font-size: 1rem; }
+  .cards-container { padding: 3rem 1rem; }
+  .value-section { padding: 3rem 1rem; }
+  .cta-section { margin: 2rem 1rem; padding: 4rem 1.5rem; }
 }

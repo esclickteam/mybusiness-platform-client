@@ -1,103 +1,98 @@
-import React, { useState } from "react";
+import React from "react";
 import { Helmet } from "react-helmet";
 import "../styles/Home.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Home() {
-  const navigate = useNavigate();
-  const [category, setCategory] = useState("");
-  const [city, setCity] = useState("");
-
-  const navigateToSearch = () => {
-    const params = new URLSearchParams();
-    if (category) params.set("category", category);
-    if (city) params.set("city", city);
-    navigate(`/businesses?${params.toString()}`);
-  };
-
   return (
     <div className="home-container">
       <Helmet>
-        <title>עסקליק – מצא עסקים לפי תחום ועיר | עסקליק</title>
+        <title>Bizuply – All-in-One Business Management Platform</title>
         <meta
           name="description"
-          content="פלטפורמה למציאת עסקים ושירותים לפי תחום ועיר. פתיחת דף עסקי, יצירת קשר, ותיאום שירות – הכל במקום אחד!"
+          content="Manage clients, schedule appointments, automate with AI, and grow smarter — all in one platform."
         />
-        <meta
-          name="keywords"
-          content="עסקים, חיפוש עסקים, שירותים בתל אביב, אינדקס עסקים, עסקליק, לקוחות, פרסום לעסקים"
-        />
-        <link rel="canonical" href="https://yourdomain.co.il/" />
+        <link rel="canonical" href="https://bizuply.com/" />
       </Helmet>
 
-      {/* === Header קבוע עם CTA === */}
-      <header className="main-header">
-        <div className="logo">עסקליק</div>
-        <nav>
-          <ul className="nav-links">
-            <li><Link to="/about">קצת עלינו</Link></li>
-            <li><Link to="/how-it-works">איך זה עובד</Link></li>
-            <li><Link to="/faq">שאלות נפוצות</Link></li>
-            <li><Link to="/contact">צור קשר</Link></li>
-          </ul>
-        </nav>
-        <Link to="/business">
-          <button className="button-primary header-cta"> התחל עכשיו – 14 יום ניסיון חינם</button>
-        </Link>
-      </header>
-
-      {/* Hero */}
-      <section className="hero-section">
+      {/* Hero Section */}
+      <section className="hero-section text-center">
         <h1 className="main-title">
-          עסקליק
-          <br />
-          <span className="main-subtitle-line">
-           כל מה שהעסק שלך צריך – ניהול חכם ושיתופי פעולה להזדמנויות חדשות
-          </span>
+          Everything Your Business Needs. <br /> In One Place.
         </h1>
         <p className="subtitle">
-          יותר סדר, פחות דאגות – כל מה שהעסק שלך צריך במקום אחד.
+          Manage clients, schedule appointments, automate with AI, and grow smarter — all with Bizuply.
+        </p>
+        <div className="hero-buttons">
+          <Link to="/get-started">
+            <button className="button-primary">Get Started</button>
+          </Link>
+          <Link to="/how-it-works">
+            <button className="button-secondary">See How It Works</button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Value Proposition */}
+      <section className="value-section text-center">
+        <h2 className="section-title">
+          More Than a Platform — Your True Business Partner.
+        </h2>
+        <p className="section-text max-w-3xl mx-auto">
+          Bizuply is built to empower small businesses to operate like the big ones.
+          From smart scheduling and client management, to AI that delivers insights and acts as your personal advisor,
+          and even collaborations with other businesses — everything works seamlessly together in one powerful system.
         </p>
       </section>
 
-      {/* Bookmark Cards */}
-      <div className="cards-container">
-        <div className="bookmark-card">
-          <h3>בעלי עסקים 💼</h3>
-          <p>הצטרפו לעסקליק ותקבלו פניות ישירות מלקוחות.</p>
-          <Link to="/business">
-            <button className="button-primary"> התחל עכשיו בחינם ל־14 יום</button>
-          </Link>
+      {/* Benefits Section */}
+      <section className="benefits-section grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+        <div className="benefit-card">
+          <h3>🤝 Collaboration</h3>
+          <p>
+            The system identifies potential partners from complementary fields and introduces them to you.
+            Together, you can form agreements to increase profits and achieve shared growth.
+          </p>
         </div>
+        <div className="benefit-card">
+          <h3>⚙️ Smart Management</h3>
+          <p>
+            An integrated CRM plus a branded business page where clients can view your gallery,
+            ratings, reviews, chat, and more.
+          </p>
+        </div>
+        <div className="benefit-card">
+          <h3>🤖 AI Assistant</h3>
+          <p>
+            Automate replies, gain valuable insights, and let Bizuply handle repetitive tasks so you can save time.
+          </p>
+        </div>
+        <div className="benefit-card">
+          <h3>📈 Grow With You</h3>
+          <p>
+            Our growth is your growth — businesses thrive together.
+          </p>
+        </div>
+      </section>
 
-        <div className="bookmark-card">
-          <h3>⚙️ איך זה עובד?</h3>
-          <p>כל מה שצריך לדעת כדי להתחיל לעבוד עם עסקליק.</p>
-          <Link to="/how-it-works">
-            <button className="button-secondary">צפה בהסבר</button>
-          </Link>
-        </div>
-
-        <div className="bookmark-card">
-          <h3>💬 קצת עלינו</h3>
-          <p>עסקליק מחברת בין אנשים לעסקים – בקלות וביעילות.</p>
-          <Link to="/about">
-            <button className="button-secondary">קרא עוד</button>
-          </Link>
-        </div>
-      </div>
+      {/* CTA Section */}
+      <section className="cta-section text-center">
+        <h2 className="cta-title">Ready to Grow Smarter?</h2>
+        <Link to="/get-started">
+          <button className="button-primary">Start Today</button>
+        </Link>
+      </section>
 
       {/* Footer */}
       <footer className="footer">
         <ul className="footer-links">
-          <li><Link to="/about">📖 קצת עלינו</Link></li>
-          <li><Link to="/how-it-works">⚙️ איך זה עובד</Link></li>
-          <li><Link to="/business">✏️ הצטרפות עסקים</Link></li>
-          <li><Link to="/faq">❓ שאלות נפוצות</Link></li>
-          <li><Link to="/terms">📜 תקנון</Link></li>
-          <li><Link to="/contact">📞 יצירת קשר</Link></li>
+          <li><Link to="/about">About</Link></li>
+          <li><Link to="/features">Features</Link></li>
+          <li><Link to="/pricing">Pricing</Link></li>
+          <li><Link to="/faq">FAQ</Link></li>
+          <li><Link to="/contact">Contact</Link></li>
         </ul>
-        <p>© כל הזכויות שמורות עסקליק</p>
+        <p>© All rights reserved Bizuply</p>
       </footer>
     </div>
   );
