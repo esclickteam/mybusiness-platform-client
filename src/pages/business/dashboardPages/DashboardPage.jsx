@@ -17,7 +17,7 @@ import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
 
 /*************************
- * Lazy‑loaded components
+ * Lazy-loaded components
  *************************/
 const DashboardCards       = lazyWithPreload(() => import("../../../components/DashboardCards"));
 const BarChartComponent    = lazyWithPreload(() => import("../../../components/dashboard/BarChart"));
@@ -48,14 +48,7 @@ function enrichAppointment(appt, business = {}) {
     );
     serviceName = service?.name;
   }
-
-  let clientName = appt.clientName?.trim();
-
-  return {
-    ...appt,
-    clientName: clientName || "לא ידוע",
-    serviceName: serviceName || "לא ידוע",
-  };
+  return { ...appt, clientName: appt.clientName?.trim() || "לא ידוע", serviceName: serviceName || "לא ידוע" };
 }
 
 function countItemsInLastWeek(items, dateKey = "date") {
@@ -89,7 +82,7 @@ const fetchAppointments = async (businessId, refreshAccessToken) => {
 };
 
 /*************************
- * Pre‑load all chunks on mount
+ * Pre-load all chunks on mount
  *************************/
 export function preloadDashboardComponents() {
   DashboardCards.preload();
@@ -137,21 +130,15 @@ const DashboardPage = () => {
   const [error, setError]               = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
-  /*******************
-   * Always scroll to top + remove hash
-   *******************/
+  /* always top & remove hash */
   useEffect(() => {
     if (location.hash) {
-      // מוחק את ה־hash אבל משאיר query params אם קיימים
       window.history.replaceState({}, document.title, location.pathname + location.search);
     }
-    // תמיד חוזר לראש העמוד
     window.scrollTo(0, 0);
   }, [location]);
 
-  /*******************
-   * Redirect business user with businessId to personal dashboard if on "/dashboard"
-   *******************/
+  /* redirect */
   useEffect(() => {
     if (
       initialized &&
@@ -163,10 +150,7 @@ const DashboardPage = () => {
     }
   }, [initialized, user, location.pathname, navigate]);
 
-
-  /*******************
-   * Poll & refresh profile if "?paid=1" is in URL and update user state accordingly
-   *******************/
+  /* ?paid=1 polling */
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("paid") === "1") {
@@ -181,11 +165,7 @@ const DashboardPage = () => {
           if (updatedUser?.hasPaid) {
             setIsRefreshingUser(false);
             setUser(updatedUser);
-
-            // Remove ?paid=1 from URL without page reload
             window.history.replaceState({}, document.title, location.pathname);
-
-            // Redirect to proper dashboard
             if (updatedUser.role === "business" && updatedUser.businessId) {
               navigate(`/business/${updatedUser.businessId}/dashboard`, { replace: true });
             } else {
@@ -208,16 +188,10 @@ const DashboardPage = () => {
     }
   }, [location.search, navigate, refreshAccessToken, refreshUser, setUser, location.pathname]);
 
-  /*******************
-   * Pre‑load chunks once
-   *******************/
-  useEffect(() => {
-    preloadDashboardComponents();
-  }, []);
+  /* preload once */
+  useEffect(() => { preloadDashboardComponents(); }, []);
 
-  /*******************
-   * Debounced setter → localStorage cache
-   *******************/
+  /* debounced stats setter */
   const debouncedSetStats = useRef(
     debounce((newStats) => {
       setStats(newStats);
@@ -225,9 +199,7 @@ const DashboardPage = () => {
     }, 300)
   ).current;
 
-  /*******************
-   * Fetch stats once (and refresh on demand)
-   *******************/
+  /* fetch stats */
   const loadStats = async () => {
     if (!businessId) return;
     setLoading(true);
@@ -248,9 +220,7 @@ const DashboardPage = () => {
     }
   };
 
-  /*******************
-   * Refresh appointments whenever server notifies us
-   *******************/
+  /* refresh appts on server notification */
   const refreshAppointmentsFromAPI = useCallback(async () => {
     if (!businessId) return;
     try {
@@ -265,23 +235,12 @@ const DashboardPage = () => {
     }
   }, [businessId, refreshAccessToken]);
 
-  /*******************
-   * WebSocket lifecycle
-   *******************/
+  /* socket lifecycle */
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     let isMounted        = true;
     let reconnectTimeout = null;
-
-    const safeEmit = (socket, event, data, cb) => {
-      if (!socket || socket.disconnected) {
-        console.warn(`Socket disconnected, cannot emit ${event}`);
-        cb?.({ ok: false, error: "Socket disconnected" });
-        return;
-      }
-      socket.emit(event, data, cb);
-    };
 
     const setupSocket = async () => {
       const token = await refreshAccessToken();
@@ -297,17 +256,14 @@ const DashboardPage = () => {
       reconnectAttempts.current = 0;
 
       sock.on("connect", () => {
-        console.log("Dashboard socket connected", sock.id);
         sock.emit("joinBusinessRoom", businessId);
       });
 
-      sock.on("disconnect", (reason) => {
-        console.log("Dashboard socket disconnected", reason);
+      sock.on("disconnect", () => {
         if (isMounted && reconnectAttempts.current < maxReconnectAttempts) {
           const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
           reconnectTimeout = setTimeout(() => {
             reconnectAttempts.current += 1;
-            console.log(`Attempt #${reconnectAttempts.current} reconnecting…`);
             setupSocket();
           }, delay);
         }
@@ -346,9 +302,7 @@ const DashboardPage = () => {
     };
   }, [initialized, businessId, logout, refreshAccessToken, debouncedSetStats, refreshAppointmentsFromAPI]);
 
-  /*******************
-   * mark messages read when route changes
-   *******************/
+  /* mark messages read when route changes */
   useEffect(() => {
     if (!socketRef.current) return;
     if (location.pathname.includes("/messages")) {
@@ -359,24 +313,19 @@ const DashboardPage = () => {
     }
   }, [location.pathname, location.state]);
 
-  /*******************
-   * Guard‑clauses
-   *******************/
-  if (!initialized)         return <p className="loading-text">⏳ טוען נתונים…</p>;
+  /* guards */
+  if (!initialized)         return <p className="dp-loading">⏳ טוען נתונים…</p>;
   if (user?.role !== "business" || !businessId)
-    return <p className="error-text">אין לך הרשאה לצפות בדשבורד העסק.</p>;
+    return <p className="dp-error">אין לך הרשאה לצפות בדשבורד העסק.</p>;
   if (loading && !stats)    return <DashboardSkeleton />;
-  if (error)                return <p className="error-text">{alert || error}</p>;
-  if (isRefreshingUser)     return <p className="loading-text">⏳ מרענן פרטי משתמש…</p>;
+  if (error)                return <p className="dp-error">{alert || error}</p>;
+  if (isRefreshingUser)     return <p className="dp-loading">⏳ מרענן פרטי משתמש…</p>;
 
-  /*******************
-   * Derived data
-   *******************/
+  /* derived */
   const effectiveStats      = stats || {};
   const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
     enrichAppointment(appt, effectiveStats)
   );
-
   const getUpcomingAppointmentsCount = (appointments) => {
     const now        = new Date();
     const endOfWeek  = new Date();
@@ -386,134 +335,181 @@ const DashboardPage = () => {
       return apptDate >= now && apptDate <= endOfWeek;
     }).length;
   };
-
   const syncedStats = {
     ...effectiveStats,
     messages_count: effectiveStats.messages_count || 0,
   };
 
   /*******************
-   * Render
+   * Render — NEW UX
    *******************/
   return (
-    <div className="dashboard-container">
-      <h2 className="business-dashboard-header">
-        📊 דשבורד העסק
-        <span className="greeting">
-          {user?.businessName ? ` | שלום, ${user.businessName}!` : ""}
-        </span>
-      </h2>
-
-      {alert && <p className="alert-text">{alert}</p>}
-
-      {/* ───────── AI recommendations banner ───────── */}
-      {recommendations.length > 0 && (
-        <section className="recommendations-section">
-          <h3>המלצות AI חדשות לקבלת אישור</h3>
-          <ul>
-            {recommendations.map(({ recommendationId, message, recommendation }) => (
-              <li key={recommendationId}>
-                <p><b>הודעת לקוח:</b> {message}</p>
-                <p><b>המלצה AI:</b> {recommendation}</p>
-                <button onClick={() => {
-                  if (!socketRef.current) return alert("Socket לא מחובר");
-                  socketRef.current.emit("approveRecommendation", { recommendationId }, (res) => {
-                    if (res?.ok) {
-                      setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
-                    } else {
-                      alert("שגיאה: " + (res?.error || ""));
-                    }
-                  });
-                }}>אשר ושלח</button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {/* ───────── Navigation bar ───────── */}
-      <Suspense fallback={<div className="loading-spinner">🔄 טוען ניווט…</div>}>
-        <DashboardNav
-          refs={{
-            cardsRef,
-            insightsRef,
-            chartsRef,
-            appointmentsRef,
-            nextActionsRef,
-            weeklySummaryRef,
-          }}
-        />
-      </Suspense>
-
-      {/* ───────── Cards ───────── */}
-      <div ref={cardsRef}>
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען כרטיסים…</div>}>
-          <DashboardCards stats={syncedStats} unreadCount={syncedStats.messages_count} />
-        </Suspense>
-      </div>
-
-      {/* ───────── Insights ───────── */}
-      <div ref={insightsRef}>
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען תובנות…</div>}>
-          <Insights
-            stats={{
-              ...syncedStats,
-              upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
-            }}
-          />
-        </Suspense>
-      </div>
-
-      {/* ───────── Bar chart ───────── */}
-      <div ref={chartsRef} style={{ marginTop: 20, width: "100%", minWidth: 320 }}>
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען גרף…</div>}>
-          <BarChartComponent
-            appointments={enrichedAppointments}
-            title="לקוחות שהזמינו פגישות לפי חודשים 📊"
-          />
-        </Suspense>
-      </div>
-
-      {/* ───────── Next actions ───────── */}
-      <div ref={nextActionsRef} className="actions-container full-width">
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען פעולות…</div>}>
-          <NextActions
-            stats={{
-              weekly_views_count:       countItemsInLastWeek(syncedStats.views, "date"),
-              weekly_appointments_count: countItemsInLastWeek(enrichedAppointments),
-              weekly_reviews_count:     countItemsInLastWeek(syncedStats.reviews, "date"),
-              weekly_messages_count:    countItemsInLastWeek(syncedStats.messages, "date"),
-            }}
-          />
-        </Suspense>
-      </div>
-
-      {/* ───────── Calendar + Daily agenda ───────── */}
-      <div ref={appointmentsRef} className="calendar-row">
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען יומן…</div>}>
-          <div className="day-agenda-box">
-            <DailyAgenda
-              date={selectedDate}
-              appointments={enrichedAppointments}
-              businessName={syncedStats.businessName}
-              businessId={businessId}
-            />
+    <div className="dp-root" dir="rtl">
+      {/* Topbar */}
+      <header className="dp-topbar">
+        <div className="dp-topbar__brand">
+          <img src="/logo192.png" alt="עסקליק" className="dp-logo" />
+          <div className="dp-brand-titles">
+            <h1>דשבורד העסק</h1>
+            {user?.businessName && <span className="dp-subtitle">שלום, {user.businessName}</span>}
           </div>
-          <div className="calendar-container">
-            <CalendarView
-              appointments={enrichedAppointments}
-              onDateClick={setSelectedDate}
-              selectedDate={selectedDate}
-            />
-          </div>
-        </Suspense>
-      </div>
+        </div>
+        <div className="dp-topbar__actions">
+          <button className="dp-btn dp-btn--ghost" onClick={()=>navigate(`/business/${businessId}/profile`)}>עמוד עסקי</button>
+          <button className="dp-btn dp-btn--primary" onClick={()=>navigate(`/business/${businessId}/messages`)}>הודעות ({syncedStats.messages_count})</button>
+        </div>
+      </header>
 
-      {/* ───────── Weekly summary ───────── */}
-      <div ref={weeklySummaryRef}>
-        <Suspense fallback={<div className="loading-spinner">🔄 טוען סיכום שבועי…</div>}>
-          <WeeklySummary stats={syncedStats} />
-        </Suspense>
+      <div className="dp-layout">
+        {/* Sidebar */}
+        <aside className="dp-sidebar">
+          <nav className="dp-nav">
+            <Suspense fallback={<div className="dp-loading-sm">🔄 טוען ניווט…</div>}>
+              <DashboardNav
+                refs={{
+                  cardsRef,
+                  insightsRef,
+                  chartsRef,
+                  appointmentsRef,
+                  nextActionsRef,
+                  weeklySummaryRef,
+                }}
+              />
+            </Suspense>
+          </nav>
+
+          <div className="dp-tip">
+            <div className="dp-tip__title">תובנת AI</div>
+            <p className="dp-tip__text">
+              צפיות בפרופיל עלו השבוע. מומלץ לשלוח הודעת מעקב אוטומטית לפונים חדשים.
+            </p>
+          </div>
+        </aside>
+
+        {/* Main */}
+        <main className="dp-main">
+          {alert && <p className="dp-error">{alert}</p>}
+
+          {/* AI recommendations banner */}
+          {recommendations.length > 0 && (
+            <section className="dp-banner">
+              <div className="dp-banner__head">
+                <h3>המלצות AI לאישור</h3>
+                <span className="dp-pill">{recommendations.length}</span>
+              </div>
+              <ul className="dp-rec-list">
+                {recommendations.map(({ recommendationId, message, recommendation }) => (
+                  <li key={recommendationId} className="dp-rec">
+                    <div className="dp-rec__msg"><b>לקוח:</b> {message}</div>
+                    <div className="dp-rec__ai"><b>המלצת AI:</b> {recommendation}</div>
+                    <div className="dp-rec__actions">
+                      <button
+                        className="dp-btn dp-btn--primary"
+                        onClick={() => {
+                          if (!socketRef.current) return alert("Socket לא מחובר");
+                          socketRef.current.emit("approveRecommendation", { recommendationId }, (res) => {
+                            if (res?.ok) {
+                              setRecommendations((prev) => prev.filter((r) => r.recommendationId !== recommendationId));
+                            } else {
+                              alert("שגיאה: " + (res?.error || ""));
+                            }
+                          });
+                        }}
+                      >
+                        אשר ושלח
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* KPI cards */}
+          <section ref={cardsRef} className="dp-section">
+            <Suspense fallback={<div className="dp-loading-sm">🔄 טוען כרטיסים…</div>}>
+              <div className="dp-card dp-card--panel">
+                <DashboardCards stats={syncedStats} unreadCount={syncedStats.messages_count} />
+              </div>
+            </Suspense>
+          </section>
+
+          {/* Insights + Chart */}
+          <section className="dp-grid-2">
+            <div ref={insightsRef} className="dp-card dp-card--panel">
+              <Suspense fallback={<div className="dp-loading-sm">🔄 טוען תובנות…</div>}>
+                <Insights
+                  stats={{
+                    ...syncedStats,
+                    upcoming_appointments: getUpcomingAppointmentsCount(enrichedAppointments),
+                  }}
+                />
+              </Suspense>
+            </div>
+
+            <div ref={chartsRef} className="dp-card dp-card--panel">
+              <Suspense fallback={<div className="dp-loading-sm">🔄 טוען גרף…</div>}>
+                <BarChartComponent
+                  appointments={enrichedAppointments}
+                  title="לקוחות שהזמינו פגישות לפי חודשים"
+                />
+              </Suspense>
+            </div>
+          </section>
+
+          {/* Agenda + Calendar */}
+          <section ref={appointmentsRef} className="dp-grid-2">
+            <div className="dp-card dp-card--panel">
+              <Suspense fallback={<div className="dp-loading-sm">🔄 טוען יומן…</div>}>
+                <DailyAgenda
+                  date={selectedDate}
+                  appointments={enrichedAppointments}
+                  businessName={syncedStats.businessName}
+                  businessId={businessId}
+                />
+              </Suspense>
+            </div>
+            <div className="dp-card dp-card--panel">
+              <Suspense fallback={<div className="dp-loading-sm">🔄 טוען לוח שנה…</div>}>
+                <CalendarView
+                  appointments={enrichedAppointments}
+                  onDateClick={setSelectedDate}
+                  selectedDate={selectedDate}
+                />
+              </Suspense>
+            </div>
+          </section>
+
+          {/* Next actions */}
+          <section ref={nextActionsRef} className="dp-section">
+            <div className="dp-card dp-card--panel">
+              <Suspense fallback={<div className="dp-loading-sm">🔄 טוען פעולות…</div>}>
+                <NextActions
+                  stats={{
+                    weekly_views_count:       countItemsInLastWeek(syncedStats.views, "date"),
+                    weekly_appointments_count: countItemsInLastWeek(enrichedAppointments),
+                    weekly_reviews_count:     countItemsInLastWeek(syncedStats.reviews, "date"),
+                    weekly_messages_count:    countItemsInLastWeek(syncedStats.messages, "date"),
+                  }}
+                />
+              </Suspense>
+            </div>
+          </section>
+
+          {/* Weekly summary + Recent activity */}
+          <section ref={weeklySummaryRef} className="dp-grid-2">
+            <div className="dp-card dp-card--panel">
+              <Suspense fallback={<div className="dp-loading-sm">🔄 טוען סיכום שבועי…</div>}>
+                <WeeklySummary stats={syncedStats} />
+              </Suspense>
+            </div>
+            <div className="dp-card dp-card--panel">
+              <Suspense fallback={<div className="dp-loading-sm">🔄 טוען פעילות אחרונה…</div>}>
+                <RecentActivityTable stats={syncedStats} />
+              </Suspense>
+            </div>
+          </section>
+        </main>
       </div>
     </div>
   );

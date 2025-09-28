@@ -36,7 +36,7 @@ const DashboardCards = React.memo(({ stats = {} }) => {
         <div
           key={index}
           className="dashboard-card"
-          style={{ backgroundColor: card.bgColor, border: "1px solid red" }}
+          style={{ backgroundColor: card.bgColor}}
           role="listitem"
           aria-label={`${card.label}: ${card.value}`}
         >
