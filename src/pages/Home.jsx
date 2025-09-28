@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/home.css"; // אם לא תרצה/י קובץ חדש – ראו הערה בסוף
+import "../styles/Home.css"; // אם לא תרצה/י קובץ חדש – ראו הערה בסוף
 
 export default function Home() {
   // קריאה/שמירה של שפה בלוקאל-סטורג'
