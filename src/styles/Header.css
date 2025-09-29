@@ -215,7 +215,7 @@
   .desktop-only { display: flex; }
 
   .app-header {
-    height: 120px !important;       /* גובה מספיק ללוגו גדול */
+    height: 80px !important;       /* גובה מספיק ללוגו גדול */
     padding: 0 32px 0 0;            /* צד שמאל צמוד */
     justify-content: flex-start;    /* לוגו בצד שמאל */
     gap: 40px;
