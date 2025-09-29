@@ -136,7 +136,7 @@ export default function Home() {
       {/* ===== SERVICES ===== */}
       <section id="services" className="esd-services" aria-labelledby="services-title">
         <h2 id="services-title" className="esd-section-title">Our services</h2>
-        <p className="esd-section-sub">All the tools in one place — modular and grows with you.</p>
+        
         <div className="esd-services__grid">
           <article className="esd-service">
             <span className="esd-service__badge">Core</span>
