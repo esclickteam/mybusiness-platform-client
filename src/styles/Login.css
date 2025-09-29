@@ -90,15 +90,20 @@ input:focus {
 }
 
 /* --------------------------- Password Field + Eye Icon --------------------------- */
-.password-wrapper {
-  width: 100%;
+.password-input-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .password-input {
-  padding-right: 2.5em;   /* space for the eye icon */
+  width: 100%;
+  padding: 12px;
+  padding-right: 2.5em;  /* מקום לעין */
+  border: 1px solid #c084fc;
+  border-radius: 12px;
+  font-size: 16px;
+  background-color: #f9f9ff;
 }
-
 .password-toggle-btn {
   position: absolute;
   right: 12px;

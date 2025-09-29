@@ -113,7 +113,7 @@ export default function Login() {
             <label htmlFor="password">
               Password <span className="required">*</span>
             </label>
-            <div className="password-wrapper">
+            <div className="password-input-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
@@ -128,7 +128,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword((p) => !p)}
-                className="password-toggle-btn"
+                className="password-toggle-inside"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 tabIndex={-1}
               >
@@ -147,7 +147,7 @@ export default function Login() {
                     <circle cx="12" cy="12" r="3" />
                   </svg>
                 ) : (
-                  // 👁️‍🗨️ עין עם קו חוצה
+                  // 👁️‍🗨️ עין סגורה
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="22"
