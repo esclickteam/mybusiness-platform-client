@@ -297,7 +297,7 @@ export default function Support() {
         </div>
 
         <div className="donation-quick-grid">
-          {[1, 50, 250, 500, 1000, 5000, 10000].map((val) => (
+          {[ 50, 250, 500, 1000, 5000, 10000].map((val) => (
             <button
               key={val}
               className="donation-quick-btn"
