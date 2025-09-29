@@ -124,10 +124,10 @@
   margin: 0;
 }
 .logo-link .logo {
-  height: auto;        /* הגובה יותאם אוטומטית */
-  max-height: 240px;    /* תקרה לגובה */
+  height: auto;
+  max-height: 160px;   /* ✨ תקרת גובה גבוהה יותר */
   width: auto;
-  max-width: 280px;    /* ✨ הגדלת הרוחב המקסימלי */
+  max-width: 420px;    /* ✨ תן הרבה יותר רוחב */
   object-fit: contain;
 }
 .logo-link:hover .logo {
