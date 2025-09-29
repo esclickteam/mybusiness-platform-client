@@ -195,7 +195,7 @@
   }
 
   .logo-link .logo {
-    max-height: 140px;  /* גובה סטנדרטי ללוגו מובייל */
+    max-height: 1800px;  /* גובה סטנדרטי ללוגו מובייל */
     width: auto;
     object-fit: contain;
   }
