@@ -119,10 +119,12 @@
 
 .support-progress-bar {
   position: relative;
-  height: 2px; /* קו דק מלא */
+  height: 8px; /* עבה יותר - רואים ברור */
   background: #e6e9f0;
+  border-radius: 6px;
   margin: 0 auto 40px;
   max-width: 600px;
+  overflow: hidden;
 }
 
 /* פס התקדמות צבעוני */
@@ -132,9 +134,10 @@
   left: 0;
   height: 100%;
   background: linear-gradient(90deg, #6a11cb, #2575fc);
+  border-radius: 6px;
+  width: 0; /* מתחיל ריק */
   transition: width 0.6s ease;
 }
-
 /* Milestones */
 .support-progress-marker {
   position: absolute;
