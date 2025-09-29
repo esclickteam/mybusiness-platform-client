@@ -197,10 +197,10 @@
   }
 
    .logo-link {
+    margin: 0 !important;
+    padding: 0 !important;
     display: flex;
     align-items: center;
-    margin: 0;
-    padding: 0;              /* מבטל padding פנימי */
   }
 
   .logo-link .logo {
