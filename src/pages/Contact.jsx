@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useForm } from "@formspree/react"; 
+import { useForm } from "@formspree/react";
 import { Helmet } from "react-helmet";
 import "../styles/Contact.css";
 
@@ -34,13 +34,16 @@ function Contact() {
 
     try {
       await handleSubmit({
-        data: { name, phone, email, message }
+        data: { name, phone, email, message },
       });
 
       setStatus({ type: "success", message: "Form submitted successfully!" });
       setFormData({ name: "", phone: "", email: "", message: "" });
     } catch (error) {
-      setStatus({ type: "error", message: "An error occurred. Please try again." });
+      setStatus({
+        type: "error",
+        message: "An error occurred. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -69,7 +72,7 @@ function Contact() {
         <link rel="canonical" href="https://yourdomain.com/contact" />
       </Helmet>
 
-      <h1 className="contact-title">📞 Contact Us</h1>
+      <h1 className="contact-title">Contact Us</h1>
       <p className="contact-subtitle">
         Have a question or want us to get back to you? Fill out the form and we’ll be in touch shortly!
       </p>
@@ -122,7 +125,6 @@ function Contact() {
       {status && (
         <div
           className={`status-msg ${status.type}`}
-          data-icon={status.type === "success" ? "✅" : "❌"}
           style={{ marginTop: "1rem" }}
         >
           {status.message}
@@ -130,7 +132,7 @@ function Contact() {
       )}
 
       <p className="contact-email">
-        ✉️ You can also email us directly at: <strong>support@bizuply.com</strong>
+        You can also email us directly at: <strong>support@bizuply.com</strong>
       </p>
     </div>
   );
