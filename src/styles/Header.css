@@ -231,10 +231,10 @@
   .mobile-only { display: none !important; }
   .desktop-only { display: flex; }
 
-  .app-header {
-    height: 70px !important;       /* גובה מספיק ללוגו גדול */
-    padding: 0 32px 0 0;            /* צד שמאל צמוד */
-    justify-content: flex-start;    /* לוגו בצד שמאל */
+   .app-header {
+    height: 70px !important;
+    padding: 0 32px;
+    justify-content: space-between;   /* לוגו בצד שמאל, כפתורים בצד ימין */
     gap: 40px;
   }
 
