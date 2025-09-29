@@ -7,7 +7,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-start;        /* לוגו בצד שמאל */
+  justify-content: flex-start;        /* הלוגו בצד שמאל */
   padding: 12px 32px 12px 0;
   height: 80px;
   background-color: #fff;
@@ -21,10 +21,11 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  margin: 0;
 }
 .logo-link .logo {
   height: auto;
-  max-height: 80px;       /* לוגו גדול בדסקטופ */
+  max-height: 80px;
   width: auto;
   object-fit: contain;
   transition: transform 0.2s ease;
@@ -81,7 +82,6 @@
 .auth-link.logout {
   color: #c62828;
 }
-
 .auth-link.logout:hover {
   color: #a91f1f;
 }
@@ -108,7 +108,7 @@
   transform: translateY(-1px);
 }
 
-/* ===== Hamburger + notifications (mobile only) ===== */
+/* ===== Hamburger (mobile only) ===== */
 .menu-toggle {
   display: flex;
   align-items: center;
@@ -147,6 +147,7 @@
   padding: 0 16px;
   background: #f3e8ff;
 }
+
 .menu-section { margin-top: 24px; }
 .menu-section a {
   display: block;
@@ -163,6 +164,7 @@
   color: #2d006e;
   font-weight: 600;
 }
+
 .menu-backdrop {
   position: fixed;
   inset: 0;
