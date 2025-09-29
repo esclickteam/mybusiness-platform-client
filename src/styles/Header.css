@@ -179,23 +179,18 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 16px;       /* ריווח מינימלי מסביב */
-    height: 80px;          /* מספיק מקום ללוגו גדול */
+    padding: 0 16px;
+    height: 80px !important;       /* מספיק מקום ללוגו גדול */
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 
   /* לוגו */
-  .logo-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    flex: 1 1 auto;
-  }
-
-  .logo-link .logo {
-    height: clamp(56px, 8vw, 80px);  /* אוטומטי: 56px–80px */
-    width: auto;
+  .app-header .logo-wrapper .logo-link .logo {
+    height: clamp(70px, 9vw, 90px) !important; /* לוגו גדול וברור */
+    width: auto !important;
+    max-height: none !important;
+    max-width: none !important;
     object-fit: contain;
     display: block;
   }
@@ -221,12 +216,14 @@
   .desktop-only { display: flex; }
 
   .app-header {
-    height: 90px;          /* טיפה גבוה יותר בדסקטופ */
+    height: 100px !important;     /* טיפה גבוה יותר בדסקטופ */
     padding: 12px 32px;
   }
 
-  .logo-link .logo {
-    height: clamp(64px, 6vw, 100px); /* דינאמי גם בדסקטופ */
-    width: auto;
+  .app-header .logo-wrapper .logo-link .logo {
+    height: clamp(80px, 6vw, 110px) !important; /* דינאמי, עדיף למסכים רחבים */
+    width: auto !important;
+    max-height: none !important;
+    max-width: none !important;
   }
 }
