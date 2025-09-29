@@ -210,6 +210,7 @@
 }
 
 @media (max-width: 768px) {
+  /* ===== Donation box ===== */
   .donation-box {
     text-align: center;
     margin: 20px auto;
@@ -222,7 +223,7 @@
     align-items: center;
     justify-content: center;
     margin: 15px auto;
-    max-width: 200px;
+    max-width: 220px;
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: 8px 12px;
@@ -241,7 +242,7 @@
     outline: none;
   }
 
-  /* grid של כפתורי סכומים */
+  /* grid של כפתורי סכומים (ברירת מחדל 3 בעמודה) */
   .donation-quick-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -264,8 +265,36 @@
     color: #fff;
   }
 
+  /* ===== Progress labels — במובייל מתחת לפס ===== */
+  .support-progress-wrapper {
+    padding-top: 16px;     /* פחות מקום למעלה */
+    padding-bottom: 36px;  /* מקום לטקסט מתחת לפס */
+  }
+  .support-progress-bar {
+    max-width: 100%;
+  }
+  .support-progress-label {
+    bottom: auto;
+    top: 100%;         /* מציב את הטקסט מתחת לפס */
+    margin-top: 6px;
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    text-align: center;
+  }
+
   /* כפתורי תשלום */
   #paypal-button-container {
     margin-top: 20px;
+  }
+}
+
+/* מסכים קטנים מאוד: 2 עמודות וכתב קטן יותר */
+@media (max-width: 480px) {
+  .donation-quick-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .support-progress-label {
+    font-size: 0.75rem;
   }
 }
