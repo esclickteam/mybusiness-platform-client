@@ -225,7 +225,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 .esd-service {
-  background: #fff;
+  background: #1743ef;
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 28px 22px;
