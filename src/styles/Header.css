@@ -38,10 +38,9 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 28px;
-  font-size: 0.95rem;
+  gap: 32px;                  /* רווח קבוע ואלגנטי */
+  font-size: 1rem;
   font-weight: 500;
-  color: #222;
 }
 .nav-links a {
   text-decoration: none;
@@ -50,7 +49,7 @@
 }
 .nav-links a:hover,
 .nav-links a.active-link {
-  color: #5e17eb;
+  color: #5e17eb;             /* צבע מותג */
   font-weight: 600;
 }
 
@@ -58,15 +57,17 @@
 .auth-controls.desktop-only {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;                  /* רווח נדיב יותר */
 }
 .login-link {
   background: none;
   border: none;
   font-weight: 600;
+  font-size: 0.95rem;
   color: #333;
   cursor: pointer;
   padding: 8px 14px;
+  transition: color 0.2s;
 }
 .login-link:hover {
   color: #5e17eb;
@@ -75,13 +76,15 @@
   background: #5e17eb;
   color: #fff;
   font-weight: 700;
-  padding: 10px 18px;
+  font-size: 0.95rem;
+  padding: 10px 22px;
   border-radius: 6px;
   text-decoration: none;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s;
 }
 .cta-button:hover {
   background: #4315c7;
+  transform: translateY(-1px);  /* אפקט עדין */
 }
 
 /* ===== Hamburger + notifications (mobile only) ===== */
