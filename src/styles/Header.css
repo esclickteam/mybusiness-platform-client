@@ -191,7 +191,7 @@
   }
 
   .logo-link .logo {
-    max-height: 55px;   /* יותר מאוזן למסך קטן */
+    max-height: 160px;   /* יותר מאוזן למסך קטן */
     width: auto;
     object-fit: contain;
   }
