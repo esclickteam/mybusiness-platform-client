@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import "../styles/Support.css";
+import "./Support.css";
 
 export default function Support() {
   const [amount, setAmount] = useState("");
