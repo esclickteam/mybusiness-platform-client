@@ -44,7 +44,7 @@ export default function Login() {
     setLoginError("");
 
     if (!form.email.trim() || !form.password) {
-      setLoginError("יש למלא אימייל וסיסמה");
+      setLoginError("Please enter email and password");
       return;
     }
 
@@ -56,15 +56,14 @@ export default function Login() {
         form.password
       );
 
-      // ניווט אוטומטי לכתובת מהשרת, או ברירת מחדל אם אין
+      // Redirect from server or default fallback
       if (redirectUrl) {
         navigate(redirectUrl, { replace: true });
       } else {
         if (loggedInUser?.role === "affiliate") {
           navigate("/affiliate/dashboard", { replace: true });
         } else if (loggedInUser?.role === "business") {
-            navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
-
+          navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
         } else {
           navigate("/client/dashboard", { replace: true });
         }
@@ -74,7 +73,7 @@ export default function Login() {
         if (typeof fetchNotifications === "function") fetchNotifications();
       }, 1000);
     } catch (err) {
-      setLoginError(authError || err?.message || "אימייל או סיסמה שגויים");
+      setLoginError(authError || err?.message || "Incorrect email or password");
     } finally {
       setLoading(false);
     }
@@ -87,19 +86,19 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-box" aria-live="polite" aria-busy={loading}>
-        <h2>התחברות</h2>
+        <h2>Login</h2>
 
         <form onSubmit={handleSubmit} noValidate>
           <input
             type="email"
             name="email"
-            placeholder="אימייל"
+            placeholder="Email"
             value={form.email}
             onChange={handleChange}
             disabled={loading}
             required
             autoComplete="email"
-            aria-label="אימייל"
+            aria-label="Email"
             className="login-input"
           />
 
@@ -109,7 +108,7 @@ export default function Login() {
                 type="button"
                 onClick={() => setShowPassword((p) => !p)}
                 className="password-toggle-btn"
-                aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                aria-label={showPassword ? "Hide password" : "Show password"}
                 tabIndex={-1}
               >
                 {showPassword ? (
@@ -141,13 +140,13 @@ export default function Login() {
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
-                placeholder="סיסמה"
+                placeholder="Password"
                 value={form.password}
                 onChange={handleChange}
                 disabled={loading}
                 required
                 autoComplete="current-password"
-                aria-label="סיסמה"
+                aria-label="Password"
                 className="password-input"
               />
             </div>
@@ -159,7 +158,7 @@ export default function Login() {
             disabled={loading}
             aria-live="polite"
           >
-            {loading ? "🔄 מתחבר..." : "התחבר"}
+            {loading ? "🔄 Logging in..." : "Login"}
           </button>
 
           <button
@@ -167,7 +166,7 @@ export default function Login() {
             className="forgot-inside-btn"
             onClick={() => setShowForgot(true)}
           >
-            שכחת סיסמה?
+            Forgot password?
           </button>
         </form>
 
@@ -179,9 +178,9 @@ export default function Login() {
 
         <div className="login-extra-options">
           <p className="signup-link">
-             עדיין לא הצטרפת?{" "} 
+            Don’t have an account yet?{" "}
             <Link to="/register" className="signup-link-text">
-             מתחילים כאן עם 14 יום ניסיון חינם
+              Start here with a 14-day free trial
             </Link>
           </p>
           <button
@@ -189,13 +188,13 @@ export default function Login() {
             onClick={() => navigate("/staff-login")}
             disabled={loading}
           >
-            כניסת עובדים
+            Staff login
           </button>
         </div>
       </div>
 
       {showForgot && (
-        <Suspense fallback={<div>טוען טופס איפוס סיסמה...</div>}>
+        <Suspense fallback={<div>Loading reset password form...</div>}>
           <ForgotPassword closePopup={() => setShowForgot(false)} />
         </Suspense>
       )}

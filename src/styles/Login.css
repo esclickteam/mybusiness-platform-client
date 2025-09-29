@@ -1,6 +1,8 @@
-/* Login.css */
+/* =================================================================== */
+/*                               Login.css                             */
+/* =================================================================== */
 
-/* --------------------------- רקע ועימוד כללי --------------------------- */
+/* --------------------------- Background & Layout --------------------------- */
 .login-container {
   display: flex;
   justify-content: center;
@@ -8,10 +10,10 @@
   height: 100vh;
   background: linear-gradient(135deg, #e5d9f2, #c084fc);
   padding: 20px;
-  background-image: url('background-image.jpg'); /* ⬅️ החלף ב‑URL שלך */
+  background-image: url('background-image.jpg'); /* ⬅️ replace with your image URL */
   background-size: cover;
   background-position: center;
-  backdrop-filter: blur(5px); /* טשטוש עדין */
+  backdrop-filter: blur(5px); /* subtle blur */
 }
 
 .login-box {
@@ -37,7 +39,7 @@
   color: #3b007d;
 }
 
-/* --------------------------- קלטים כלליים --------------------------- */
+/* --------------------------- Input Fields --------------------------- */
 input {
   width: 100%;
   padding: 12px;
@@ -61,11 +63,11 @@ input:focus {
   100% { transform: scale(1.05); }
 }
 
-/* --------------------------- שדה סיסמה + אייקון עין --------------------------- */
+/* --------------------------- Password Field + Eye Icon --------------------------- */
 .password-wrapper {
   width: 100%;
   margin-bottom: 15px;
-  text-align: center; /* יישור תוכן פנימי */
+  text-align: center;
 }
 
 .password-row {
@@ -74,15 +76,14 @@ input:focus {
   align-items: center;
 }
 
-/* ➡️  האייקון בשמאל בכל Breakpoint */
+/* Eye icon aligned to the left (LTR-safe) */
 .password-input {
-  direction: rtl;
-  text-align: right;
+  direction: ltr;
+  text-align: left;
   width: 100%;
   box-sizing: border-box;
-  /* מרווח מצד ימין לטקסט, מצד שמאל (physical) נשאיר לאייקון */
-  padding-inline-start: 12px;  /* physical right */
-  padding-inline-end: 2.5em;   /* physical left */
+  padding-inline-start: 12px;  /* text padding left */
+  padding-inline-end: 2.5em;   /* space for the icon */
   border-radius: 12px;
   border: 1px solid #c084fc;
   background-color: #f9f9ff;
@@ -98,21 +99,16 @@ input:focus {
 }
 
 .password-toggle-btn {
-  /* מבטל רקע חצי-שקוף ו-backdrop blur */
   background: none !important;
   backdrop-filter: none !important;
-  
-  /* מבטל כל צל */
   box-shadow: none !important;
-  
-  /* מיקום מוחלט בתוך השדה */
+
   position: absolute;
   inset-inline-end: 12px;
   top: 0;
   bottom: 0;
   margin: auto 0;
 
-  /* הוספת תזוזה קלה כלפי מעלה */
   transform: translateY(-15%);
 
   width: 1.8em;
@@ -128,9 +124,7 @@ input:focus {
   color: #222;
 }
 
-
-
-/* --------------------------- לינקים, כפתורים וסטייטים --------------------------- */
+/* --------------------------- Links, Buttons & States --------------------------- */
 .forgot-inside-btn {
   display: block;
   margin: 8px auto 0;
@@ -179,7 +173,6 @@ input:focus {
   display: flex;
   align-items: center;
 }
-
 .error-message::before {
   content: "❌";
   margin-right: 5px;
@@ -197,11 +190,9 @@ input:focus {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 .staff-login-btn:hover {
   transform: scale(1.05);
 }
-
 .staff-login-btn:active {
   transform: scale(1);
 }
@@ -232,6 +223,18 @@ input:focus {
   .login-box h2 { font-size: 22px; }
   .login-button { font-size: 16px; }
   .bottom-links { font-size: 12px; }
+
+  /* signup message line */
+  .login-extra-options .signup-link {
+    font-size: 1rem;
+    margin: 12px 0;
+  }
+  /* signup link itself */
+  .login-extra-options .signup-link-text {
+    font-size: 1.2rem;
+    padding: 1px 3px;
+    border-bottom-width: 1px;
+  }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
@@ -250,7 +253,7 @@ input:focus {
   .staff-login-btn { font-size: 18px; padding: 14px 24px; }
 }
 
-/* --------------------------- כפתור נגישות --------------------------- */
+/* --------------------------- Accessibility Button --------------------------- */
 .login-container .accessibility-btn {
   position: fixed;
   bottom: 20px;
@@ -263,23 +266,6 @@ input:focus {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease;
 }
-
 .login-container .accessibility-btn:hover {
   transform: scale(1.1);
-}
-
-/* התאמות למובייל (עד רוחב 480px) */
-@media (max-width: 480px) {
-  /* השורה כולה: "לא רשום? הירשם עכשיו" */
-  .login-extra-options .signup-link {
-    font-size: 1rem;    /* גופן קטן יותר */
-    margin: 12px 0;     /* פחות מרווח למעלה ולמטה */
-  }
-
-  /* רק הקישור עצמו: "הירשם עכשיו" */
-  .login-extra-options .signup-link-text {
-    font-size: 1.2rem;       /* גודל קצת נמוך יותר */
-    padding: 1px 3px;        /* פחות “חלל” מסביב */
-    border-bottom-width: 1px;/* קו תחתון דק יותר */
-  }
 }
