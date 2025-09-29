@@ -181,12 +181,12 @@
     align-items: center;
     justify-content: space-between;   /* לוגו שמאל, המבורגר ימין */
     padding: 0 16px 0 0;              /* ימין 16px, שמאל 0px */
-    height: 60px !important;
+    height: 120px !important;         /* גובה מספיק ללוגו 190px */
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 
-   .logo-wrapper {
+  .logo-wrapper {
     margin: 0 !important;
     padding: 0 !important;
     display: flex;
@@ -195,8 +195,14 @@
     flex: 0 0 auto;
   }
 
+  .logo-link {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block;
+  }
+
   .logo-link .logo {
-    height: 190px !important;
+    height: 190px !important;         /* לוגו באמת גדול */
     width: auto !important;
     max-height: none !important;
     max-width: none !important;
@@ -205,7 +211,7 @@
   }
 
   .menu-toggle {
-    margin-left: auto;
+    margin-left: auto;                /* דוחף לימין */
     position: relative;
     transform: none;
   }
