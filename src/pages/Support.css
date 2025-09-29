@@ -12,10 +12,10 @@
 
 /* ===== Titles ===== */
 .support-page .support-title {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 1.8rem;
+  margin-bottom: 1.5rem;
   color: #1e2a78;
 }
 
@@ -61,45 +61,36 @@
   color: #2b3fa3;
 }
 .support-page .support-input {
-  width: 240px;
-  padding: 12px;
+  width: 220px;
+  padding: 10px;
   font-size: 1rem;
   margin-bottom: 1rem;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 6px;
   text-align: center;
-  transition: border-color 0.2s ease;
-}
-.support-page .support-input:focus {
-  border-color: #6a11cb;
-  outline: none;
 }
 
 /* ===== Quick Buttons ===== */
 .support-page .support-quick {
   margin-bottom: 1.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 .support-page .support-quick-btn {
   background: #f5f3ff;
   border: 1px solid #c5bdf5;
   border-radius: 8px;
-  margin: 6px;
-  padding: 12px 22px;
+  margin: 5px;
+  padding: 12px 20px;
   font-size: 1rem;
   font-weight: 600;
   color: #2b3fa3;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 3px 8px rgba(106, 17, 203, 0.15);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.15);
 }
 .support-page .support-quick-btn:hover {
   background: #6a11cb;
   border-color: #4a0fa8;
   color: #fff;
-  transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(106, 17, 203, 0.25);
 }
 
@@ -107,19 +98,15 @@
 .support-page .support-btn {
   background-color: #4a3aff;
   color: #fff;
-  font-size: 1.15rem;
-  padding: 14px 32px;
+  font-size: 1.1rem;
+  padding: 14px 28px;
   border: none;
-  border-radius: 30px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 12px rgba(74, 58, 255, 0.25);
+  transition: background-color 0.2s ease;
 }
 .support-page .support-btn:hover {
   background-color: #372bc2;
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 16px rgba(55, 43, 194, 0.3);
 }
 
 /* ===== Progress Section ===== */
@@ -127,7 +114,7 @@
   margin: 30px 0;
   text-align: center;
   position: relative;
-  padding-bottom: 40px;
+  padding-bottom: 40px; /* מקום לטקסט של milestones */
 }
 
 .support-progress-bar {
@@ -138,13 +125,12 @@
   margin: 0 auto 12px;
   max-width: 600px;
   position: relative;
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
 }
 
 .support-progress-fill {
   background: linear-gradient(90deg, #6a11cb, #2575fc);
   height: 100%;
-  transition: width 0.6s ease-in-out;
+  transition: width 0.5s ease;
 }
 
 /* Milestones */
@@ -160,7 +146,7 @@
 
 .support-progress-label {
   position: absolute;
-  top: 32px;
+  top: 32px; /* מתחת לפס */
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.8rem;
@@ -187,26 +173,34 @@
 }
 
 .support-progress-text {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #1e2a78;
   margin-bottom: 4px;
 }
 
 .support-progress-left {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #555;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 600px) {
-  .support-page .support-title {
-    font-size: 1.6rem;
-  }
-  .support-page .support-subtitle {
-    font-size: 1.2rem;
-  }
-  .support-progress-label {
-    font-size: 0.7rem;
-  }
+/* ===== תיקון להידר רק בדף התמיכה ===== */
+.support-page ~ .app-header,
+.support-page .app-header,
+.app-header {
+  direction: ltr;
+  text-align: left;
+}
+.support-page .app-header .nav-links,
+.support-page .app-header .auth-controls {
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.support-page,
+.support-page .support-text,
+.support-page .support-title,
+.support-page .support-subtitle,
+.support-page .support-list {
+  direction: ltr;
+  text-align: left;
 }
