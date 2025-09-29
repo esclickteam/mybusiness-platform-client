@@ -2,49 +2,54 @@
 /*                             Header.css                              */
 /* =================================================================== */
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
-
-/* ===== Header Base ===== */
+/* ===== Header (Desktop) ===== */
 .app-header {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* לוגו שמאל, CTA ימין */
-  padding: 0 32px;
-  height: 72px;
+  justify-content: space-between;   /* לוגו שמאל, ניווט באמצע, CTA ימין */
+  padding: 12px 32px;
+  height: 80px;
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   z-index: 1502;
-  font-family: "Poppins", sans-serif;
+  gap: 40px;
 }
 
-/* ===== Logo ===== */
+/* Logo */
 .logo-wrapper {
-  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0;
 }
 .logo-link .logo {
-  height: 42px;
+  height: auto;
+  max-height: 80px;
   width: auto;
   object-fit: contain;
   transition: transform 0.2s ease;
 }
 .logo-link:hover .logo {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
-/* ===== Nav Links ===== */
+/* ===== Nav Links (Desktop) ===== */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 32px;
-  margin: 0 auto; /* ממרכז את הניווט */
+  justify-content: center; /* מרכז */
+  flex: 1;                 /* תופס אוטומטית מקום באמצע */
+  gap: 40px;
   font-size: 1rem;
   font-weight: 500;
+  color: #222;
 }
 .nav-links a {
   text-decoration: none;
   color: #222;
   transition: color 0.2s;
+  padding: 8px 0;
 }
 .nav-links a:hover,
 .nav-links a.active-link {
@@ -56,14 +61,20 @@
 .auth-controls.desktop-only {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
+  margin-left: auto;
 }
+
 .auth-link {
-  text-decoration: none;
+  background: none;
+  border: none;
   font-weight: 600;
   font-size: 0.95rem;
   color: #333;
+  cursor: pointer;
+  padding: 8px 14px;
   transition: color 0.2s;
+  text-decoration: none;
 }
 .auth-link:hover {
   color: #5e17eb;
@@ -84,9 +95,9 @@
 .cta-button {
   background: #5e17eb;
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.95rem;
-  padding: 10px 20px;
+  padding: 10px 22px;
   border-radius: 6px;
   text-decoration: none;
   transition: background 0.2s, transform 0.2s;
@@ -96,10 +107,11 @@
   transform: translateY(-1px);
 }
 
-/* ===== Mobile ===== */
+/* ===== Hamburger (mobile only) ===== */
 .menu-toggle {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 .menu-button {
   background: none;
@@ -109,12 +121,12 @@
   font-size: 24px;
 }
 
-/* ===== Side Drawer ===== */
+/* ===== Drawer (Hamburger menu) ===== */
 .side-menu {
   position: fixed;
   top: 0;
   right: 0;
-  max-width: 280px;
+  max-width: 300px;
   width: 100%;
   height: 100vh;
   background: #fff;
@@ -175,12 +187,39 @@
 /* ================= Responsive ================= */
 @media (max-width: 768px) {
   .app-header {
-    height: 60px;
-    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 16px 0 0;
+    height: 60px !important;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: visible;
+  }
+
+  .logo-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .logo-link .logo {
-    height: 36px;
+    height: 60px !important;
+    width: auto !important;
+    object-fit: contain;
+    display: block;
+  }
+
+  .menu-toggle {
+    position: relative;
+    margin-left: auto;
+    z-index: 10;
   }
 
   .nav-links,
@@ -189,7 +228,35 @@
   }
 }
 
+/* ===== Header Desktop ===== */
 @media (min-width: 1025px) {
   .mobile-only { display: none !important; }
   .desktop-only { display: flex; }
+
+  .app-header {
+    height: 70px !important;
+    padding: 0 32px;
+    justify-content: space-between; /* לוגו שמאל, ניווט באמצע, CTA ימין */
+    gap: 40px;
+  }
+
+  .logo-wrapper {
+    flex: 0 0 auto;
+  }
+
+  .nav-links {
+    flex: 1;
+    justify-content: center; /* ממרכז את התפריט */
+  }
+
+  .auth-controls.desktop-only {
+    margin-left: 0;
+  }
+
+  .app-header .logo-wrapper .logo-link .logo {
+    height: 60px !important;
+    width: auto !important;
+    object-fit: contain;
+    display: block;
+  }
 }
