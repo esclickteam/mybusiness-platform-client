@@ -79,22 +79,22 @@
 }
 
 .support-page .support-quick-btn {
-  background: #f5f3ff;       /* רקע סגלגל עדין */
-  border: 1px solid #c5bdf5; /* מסגרת כהה יותר */
+  background: #f5f3ff;
+  border: 1px solid #c5bdf5;
   border-radius: 8px;
   margin: 5px;
   padding: 12px 20px;
   font-size: 1rem;
   font-weight: 600;
-  color: #2b3fa3;            /* טקסט כחול כהה */
+  color: #2b3fa3;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.15); /* צל עדין */
+  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.15);
 }
 .support-page .support-quick-btn:hover {
-  background: #6a11cb;       /* סגול עיקרי */
+  background: #6a11cb;
   border-color: #4a0fa8;
-  color: #fff;               /* טקסט הופך ללבן בהובר */
+  color: #fff;
   box-shadow: 0 6px 16px rgba(106, 17, 203, 0.25);
 }
 
@@ -109,7 +109,6 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .support-page .support-btn:hover {
   background-color: #372bc2;
 }
@@ -142,8 +141,9 @@
   top: -8px;
   width: 2px;
   height: 40px;
-  background: #fff;
-  border-left: 2px solid #6a11cb;
+  background: #6a11cb;
+  transform: translateX(-50%);
+  transition: background 0.3s ease;
 }
 
 .support-progress-marker::after {
@@ -155,6 +155,23 @@
   font-weight: 600;
   color: #2b3fa3;
   white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+/* כשהיעד נחצה */
+.support-progress-marker.reached {
+  background: #28a745;
+  animation: bounceIn 0.6s ease;
+}
+.support-progress-marker.reached::after {
+  color: #28a745;
+}
+
+/* אנימציית bounce */
+@keyframes bounceIn {
+  0%   { transform: translateX(-50%) scale(0.6); opacity: 0.3; }
+  60%  { transform: translateX(-50%) scale(1.2); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1); }
 }
 
 .support-progress-text {

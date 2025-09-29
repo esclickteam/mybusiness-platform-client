@@ -4,7 +4,7 @@ import "./Support.css";
 
 export default function Support() {
   const [amount, setAmount] = useState("");
-  const [raised, setRaised] = useState(17200); // כמה נאסף בפועל (אפשר לעדכן ידנית או מהשרת)
+  const [raised, setRaised] = useState(0);
 
   const milestones = [50000, 100000, 250000];
   const goal = milestones[milestones.length - 1];
@@ -36,7 +36,6 @@ export default function Support() {
           onApprove: (data, actions) => {
             return actions.order.capture().then((details) => {
               alert(`Thank you, ${details.payer.name.given_name}!`);
-              // כאן אפשר להוסיף עדכון raised בשרת
               setRaised((prev) => prev + Number(amount || 10));
             });
           },
@@ -73,8 +72,11 @@ export default function Support() {
               key={i}
               className="support-progress-marker"
               style={{ left: `${(m / goal) * 100}%` }}
-              title={`$${m.toLocaleString()}`}
-            />
+            >
+              <span className="support-progress-label">
+                ${m.toLocaleString()}
+              </span>
+            </div>
           ))}
         </div>
         <div className="support-progress-text">
