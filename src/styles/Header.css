@@ -7,30 +7,31 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 32px 12px 0;  /* בצד שמאל אין ריווח */
+  justify-content: flex-start;        /* הלוגו בצד שמאל */
+  padding: 12px 32px 12px 0;          /* בצד שמאל אין ריווח */
   height: 80px;
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   z-index: 1502;
+  gap: 40px;                          /* רווח בין הלוגו לניווט */
 }
 
 /* Logo */
 .logo-wrapper {
   display: flex;
   align-items: center;
-  justify-content: flex-start;  /* יושבים לשמאל */
+  justify-content: flex-start;
   margin: 0;
 }
 .logo-link .logo {
   height: auto;
-  max-height: 220px;      /* יותר גדול ממה שיש לך עכשיו */
+  max-height: 80px;       /* לוגו גדול בדסקטופ */
   width: auto;
   object-fit: contain;
   transition: transform 0.2s ease;
 }
 .logo-link:hover .logo {
-  transform: scale(1.80);
+  transform: scale(1.1);
 }
 
 /* ===== Nav Links (Desktop) ===== */
@@ -180,17 +181,15 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 16px;
-    height: 80px !important;       /* מספיק מקום ללוגו גדול */
+    height: 72px !important;
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 
   /* לוגו */
   .app-header .logo-wrapper .logo-link .logo {
-    height: clamp(70px, 9vw, 90px) !important; /* לוגו גדול וברור */
+    height: clamp(55px, 9vw, 75px) !important;
     width: auto !important;
-    max-height: none !important;
-    max-width: none !important;
     object-fit: contain;
     display: block;
   }
@@ -216,14 +215,13 @@
   .desktop-only { display: flex; }
 
   .app-header {
-    height: 100px !important;     /* טיפה גבוה יותר בדסקטופ */
+    height: 100px !important;     
     padding: 12px 32px;
   }
 
   .app-header .logo-wrapper .logo-link .logo {
-    height: clamp(80px, 6vw, 110px) !important; /* דינאמי, עדיף למסכים רחבים */
+    height: clamp(80px, 6vw, 110px) !important;
     width: auto !important;
-    max-height: none !important;
-    max-width: none !important;
+    object-fit: contain;
   }
 }
