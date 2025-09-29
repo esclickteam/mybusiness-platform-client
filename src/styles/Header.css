@@ -8,12 +8,12 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;        /* הלוגו בצד שמאל */
-  padding: 12px 32px 12px 0;          /* בצד שמאל אין ריווח */
+  padding: 12px 32px 12px 0;
   height: 80px;
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   z-index: 1502;
-  gap: 40px;                          /* רווח בין הלוגו לניווט */
+  gap: 40px;
 }
 
 /* Logo */
@@ -25,7 +25,7 @@
 }
 .logo-link .logo {
   height: auto;
-  max-height: 80px;       /* לוגו גדול בדסקטופ */
+  max-height: 80px;
   width: auto;
   object-fit: contain;
   transition: transform 0.2s ease;
@@ -38,8 +38,8 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 40px;              /* ריווח שווה בין הקטגוריות */
-  font-size: 1rem;        /* טקסט קצת גדול יותר */
+  gap: 40px;
+  font-size: 1rem;
   font-weight: 500;
   color: #222;
 }
@@ -47,7 +47,7 @@
   text-decoration: none;
   color: #222;
   transition: color 0.2s;
-  padding: 8px 0;         /* מוסיף מרווח קל לטקסט */
+  padding: 8px 0;
 }
 .nav-links a:hover,
 .nav-links a.active-link {
@@ -59,10 +59,11 @@
 .auth-controls.desktop-only {
   display: flex;
   align-items: center;
-  gap: 24px;                  /* רווח יפה בין Login ל-CTA */
-  margin-left: auto;          /* מצמיד את כל הבלוק לימין */
+  gap: 24px;
+  margin-left: auto;
 }
-.login-link {
+
+.auth-link {
   background: none;
   border: none;
   font-weight: 600;
@@ -71,10 +72,24 @@
   cursor: pointer;
   padding: 8px 14px;
   transition: color 0.2s;
+  text-decoration: none;
 }
-.login-link:hover {
+.auth-link:hover {
   color: #5e17eb;
 }
+.auth-link.logout {
+  color: #c62828;
+}
+.auth-link.logout:hover {
+  color: #a91f1f;
+}
+.hello-user {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+}
+
+/* ===== CTA Button ===== */
 .cta-button {
   background: #5e17eb;
   color: #fff;
@@ -87,10 +102,10 @@
 }
 .cta-button:hover {
   background: #4315c7;
-  transform: translateY(-1px);  /* אפקט עדין */
+  transform: translateY(-1px);
 }
 
-/* ===== Hamburger + notifications (mobile only) ===== */
+/* ===== Hamburger (mobile only) ===== */
 .menu-toggle {
   display: flex;
   align-items: center;
@@ -102,27 +117,6 @@
   cursor: pointer;
   color: #5e17eb;
   font-size: 24px;
-}
-.notification-button {
-  position: relative;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #5e17eb;
-  font-size: 22px;
-}
-.notification-button > span {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: red;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  font-weight: bold;
-  min-width: 18px;
-  text-align: center;
 }
 
 /* ===== Drawer (Hamburger menu) ===== */
@@ -142,6 +136,7 @@
   z-index: 1501;
 }
 .side-menu.open { transform: translateX(0); }
+
 .drawer-header {
   height: 64px;
   display: flex;
@@ -149,14 +144,8 @@
   padding: 0 16px;
   background: #f3e8ff;
 }
+
 .menu-section { margin-top: 24px; }
-.menu-section h4 {
-  padding: 0 16px 8px;
-  font: 600 0.9rem/1 "inherit";
-  text-transform: uppercase;
-  color: #2d006e;
-  border-bottom: 1px solid #eee;
-}
 .menu-section a {
   display: block;
   padding: 12px 16px;
@@ -172,6 +161,7 @@
   color: #2d006e;
   font-weight: 600;
 }
+
 .menu-backdrop {
   position: fixed;
   inset: 0;
@@ -179,25 +169,37 @@
   z-index: 1500;
 }
 
-/* ================= Responsive ================= */
-/* ===== Header Mobile & Tablet ===== */
-@media (max-width: 768px) {
- .app-header {
+/* ===== Mobile Auth ===== */
+.mobile-auth {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;        /* ההמבורגר נדחף לימין */
-  padding: 0 16px 0 0;
-  height: 60px !important;          /* קומפקטי */
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  position: relative;               /* מאפשר ללוגו להיות ממורכז אבסולוטית */
-  overflow: visible;                /* מאפשר ללוגו לחרוג מגובה ההידר */
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
 }
+.mobile-auth .auth-link,
+.mobile-auth .cta-button {
+  width: 100%;
+  text-align: center;
+}
+
+/* ================= Responsive ================= */
+@media (max-width: 768px) {
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 16px 0 0;
+    height: 60px !important;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: visible;
+  }
 
   .logo-wrapper {
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);      /* ממורכז במדויק */
+    transform: translateX(-50%);
     margin: 0 !important;
     padding: 0 !important;
     display: flex;
@@ -205,19 +207,17 @@
     justify-content: center;
   }
 
- .logo-link .logo {
-    height: 320px !important;      /* לוגו ענק במובייל */
+  .logo-link .logo {
+    height: 60px !important;
     width: auto !important;
-    max-height: none !important;
-    max-width: none !important;
     object-fit: contain;
     display: block;
   }
 
   .menu-toggle {
     position: relative;
-    margin-left: auto;                /* תמיד בקצה ימין */
-    z-index: 10;                      /* מעל הלוגו */
+    margin-left: auto;
+    z-index: 10;
   }
 
   .nav-links,
@@ -225,10 +225,6 @@
     display: none !important;
   }
 }
-
-
-
-
 
 /* ===== Header Desktop ===== */
 @media (min-width: 1025px) {
