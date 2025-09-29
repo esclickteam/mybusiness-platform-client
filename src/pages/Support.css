@@ -304,3 +304,11 @@
     font-size: 0.75rem;
   }
 }
+
+
+.support-page ~ .app-header, 
+.support-page .app-header, 
+.app-header
+ { direction: ltr;
+   text-align: left; 
+}
