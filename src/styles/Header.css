@@ -207,10 +207,10 @@
     justify-content: center;
   }
 
-    .logo-link .logo {
-    height: 100% !important;   /* יתאים בדיוק לגובה ההידר */
+      .logo-link .logo {
+    height: auto !important;
+    max-height: 65px !important;  /* ימלא כמעט את כל ההידר */
     width: auto !important;
-    object-fit: contain;
     display: block;
   }
 
