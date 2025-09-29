@@ -109,3 +109,17 @@
 .support-page .support-btn:hover {
   background-color: #372bc2;
 }
+
+/* ===== תיקון להידר רק בדף התמיכה ===== */
+.support-page ~ .app-header,
+.support-page .app-header,
+.app-header {
+  direction: ltr;
+  text-align: left;
+}
+
+.support-page .app-header .nav-links,
+.support-page .app-header .auth-controls {
+  flex-direction: row;
+  justify-content: flex-end;
+}
