@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 32px;  /* ריווח נעים */
-  height: 72px;        /* גובה סביר להידר */
+  height: 80px;        /* גובה סביר להידר */
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   z-index: 1502;
@@ -173,15 +173,28 @@
 
 /* ================= Responsive ================= */
 @media (max-width: 768px) {
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* לוגו שמאלה, המבורגר ימינה */
+    padding: 12px 20px;
+    height: 64px;
+  }
+
   .nav-links,
   .auth-controls.desktop-only {
     display: none !important;
   }
+
   .menu-toggle {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
+    position: static;  /* לא מוחלט */
+    transform: none;   /* מבטל translateY */
+  }
+
+  .logo-link .logo {
+    max-height: 40px;  /* גודל נוח במובייל */
+    width: auto;
+    object-fit: contain;
   }
 }
 
@@ -189,3 +202,5 @@
   .mobile-only { display: none !important; }
   .desktop-only { display: flex; }
 }
+
+
