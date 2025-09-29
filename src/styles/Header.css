@@ -173,52 +173,57 @@
 }
 
 /* ================= Responsive ================= */
-@media (max-width: 768px) {
-   .app-header {
+@media (max-width: 1024px) {
+  .app-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 !important;     
-    padding-left: 0 !important; /* מבטל כל ריווח מצד שמאל */
-    height: 54px;
+    padding: 8px 16px;  /* קצת ריווח מסביב */
+    height: 72px;       /* מספיק גובה ללוגו גדול */
     background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 
-  .nav-links,
-  .auth-controls.desktop-only {
-    display: none !important;
-  }
-
+  /* לוגו */
   .logo-wrapper {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    margin: 0 !important;
-    padding: 0 !important;
   }
 
-  .logo-link {
-    margin: 0 !important;
-    margin-left: 0 !important;  /* מבטל כל דחיפה שמאלה */
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center;
-  }
   .logo-link .logo {
-    height: 80px;               /* גובה קבוע */
+    max-height: 60px;   /* דומה ל-HubSpot */
     width: auto;
     object-fit: contain;
-    display: block;             /* מסיר רווח inline */
+    display: block;
   }
 
+  /* המבורגר */
   .menu-toggle {
-    position: relative;
     margin-left: auto;
-    margin-right: 8px;          /* צמוד לקצה ימין */
+    margin-right: 0;
+    position: relative;
+    transform: none;
+  }
+
+  /* מסתיר לינקים רגילים */
+  .nav-links,
+  .auth-controls.desktop-only {
+    display: none !important;
   }
 }
 
-@media (min-width: 1024px) {
+/* ===== Header Desktop ===== */
+@media (min-width: 1025px) {
   .mobile-only { display: none !important; }
   .desktop-only { display: flex; }
+
+  .app-header {
+    height: 80px;
+    padding: 12px 32px;
+  }
+
+  .logo-link .logo {
+    max-height: 70px;
+  }
 }
