@@ -125,7 +125,7 @@
 }
 .logo-link .logo {
   height: auto;        /* הגובה יותאם אוטומטית */
-  max-height: 180px;    /* תקרה לגובה */
+  max-height: 240px;    /* תקרה לגובה */
   width: auto;
   max-width: 280px;    /* ✨ הגדלת הרוחב המקסימלי */
   object-fit: contain;
