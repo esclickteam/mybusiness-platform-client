@@ -189,7 +189,7 @@
     align-items: center;
     justify-content: flex-end;
     padding: 0 16px 0 0;
-    height: 80px !important;
+    height: 70px !important;
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     position: relative;
@@ -207,8 +207,8 @@
     justify-content: center;
   }
 
-  .logo-link .logo {
-    height: 60px !important;
+    .logo-link .logo {
+    height: 100% !important;   /* יתאים בדיוק לגובה ההידר */
     width: auto !important;
     object-fit: contain;
     display: block;
