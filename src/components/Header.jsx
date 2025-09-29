@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../images/logo_final.svg"; // שימוש ב-SVG
+import logo from "../images/logo_final.svg"; // SVG לוגו
 import { FaBars, FaChevronLeft } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
@@ -37,6 +37,7 @@ export default function Header() {
   const handleLogout = async () => {
     try {
       await logout();
+      navigate("/");
     } catch (err) {
       console.error("❌ Logout failed:", err);
     }
@@ -60,9 +61,26 @@ export default function Header() {
 
         {/* Desktop actions */}
         <div className="auth-controls desktop-only">
-          <Link to="/register" className="cta-button">
-            Try it Free
-          </Link>
+          {!user ? (
+            <>
+              <Link to="/login" className="auth-link">
+                Login
+              </Link>
+              <Link to="/register" className="cta-button">
+                Try it Free
+              </Link>
+            </>
+          ) : (
+            <>
+              <span className="hello-user">Hello, {user.name}</span>
+              <Link to="/dashboard" className="auth-link">
+                My Account
+              </Link>
+              <button onClick={handleLogout} className="auth-link logout">
+                Logout
+              </button>
+            </>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -86,15 +104,43 @@ export default function Header() {
             </div>
 
             <div className="menu-scroll">
-              {/* CTA תמיד בולט במובייל */}
+              {/* CTA + Auth */}
               <div className="mobile-auth">
-                <Link
-                  to="/register"
-                  className="cta-button full-width"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Try it Free
-                </Link>
+                {!user ? (
+                  <>
+                    <Link
+                      to="/login"
+                      className="auth-link full-width"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="cta-button full-width"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Try it Free
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <span className="hello-user">Hello, {user.name}</span>
+                    <Link
+                      to="/dashboard"
+                      className="auth-link full-width"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      My Account
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="auth-link logout full-width"
+                    >
+                      Logout
+                    </button>
+                  </>
+                )}
               </div>
 
               {/* Nav links */}
