@@ -7,45 +7,93 @@
   position: relative;
   display: flex;
   align-items: center;
-  padding: 6px 20px;
-  min-height: 90px;
   justify-content: space-between;
-  background-color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  backdrop-filter: saturate(180%) blur(12px);
+  padding: 6px 32px;
+  min-height: 80px;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   z-index: 1502;
 }
 
-/* Hamburger + notifications container (mobile only) */
-.menu-toggle {
-  position: absolute;
-  top: calc(50% + 8px);
-  right: 12px;
-  transform: translateY(-50%);
-  z-index: 1600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: white;
-  border-radius: 8px;
-  padding: 4px 8px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
-}
-
-/* Hamburger button */
-.menu-button {
-  background: none;
-  border: none;
-  padding: 4px;
-  cursor: pointer;
-  color: #5e17eb;
-  font-size: 24px;
+/* Logo */
+.logo-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.logo-link .logo {
+  height: auto;
+  max-height: 40px;   /* גובה נקי כמו באתרים גדולים */
+  width: auto;
+  object-fit: contain;
+}
+.logo-link:hover .logo {
+  transform: scale(1.05);
+}
 
-/* Notification button */
+/* ===== Nav Links (Desktop) ===== */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #222;
+}
+.nav-links a {
+  text-decoration: none;
+  color: #222;
+  transition: color 0.2s;
+}
+.nav-links a:hover,
+.nav-links a.active-link {
+  color: #5e17eb;
+  font-weight: 600;
+}
+
+/* ===== Auth Controls (Desktop) ===== */
+.auth-controls.desktop-only {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.login-link {
+  background: none;
+  border: none;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  padding: 8px 14px;
+}
+.login-link:hover {
+  color: #5e17eb;
+}
+.cta-button {
+  background: #5e17eb;
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.cta-button:hover {
+  background: #4315c7;
+}
+
+/* ===== Hamburger + notifications (mobile only) ===== */
+.menu-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.menu-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #5e17eb;
+  font-size: 24px;
+}
 .notification-button {
   position: relative;
   background: none;
@@ -53,25 +101,12 @@
   cursor: pointer;
   color: #5e17eb;
   font-size: 22px;
-  padding: 4px 6px 4px 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  transition: opacity 0.2s;
-}
-.notification-button:hover {
-  opacity: 0.8;
-}
-.notification-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(94, 23, 235, 0.4);
 }
 .notification-button > span {
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: red;
+  background: red;
   color: white;
   border-radius: 50%;
   padding: 2px 6px;
@@ -79,58 +114,9 @@
   font-weight: bold;
   min-width: 18px;
   text-align: center;
-  line-height: 1;
 }
 
-/* Logo */
-.logo-wrapper {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  order: 2;
-}
-.logo-link .logo {
-  height: auto;
-  max-height: 300px;  /* שמור גודל מקורי */
-  width: auto;
-  max-width: 420px;
-  object-fit: contain;
-}
-.logo-link:hover .logo {
-  transform: scale(1.05);
-}
-
-/* Desktop buttons (left side) */
-.auth-controls.desktop-only {
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 12px;
-}
-
-/* Action buttons */
-.personal-area-button,
-.logout-button,
-.login-button {
-  padding: 8px 18px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  background: #5e17eb;
-  color: #fff;
-  cursor: pointer;
-  transition: background .2s;
-}
-.personal-area-button:hover,
-.logout-button:hover,
-.login-button:hover {
-  background: #4315c7;
-}
-
-/* Drawer (Hamburger menu) */
+/* ===== Drawer (Hamburger menu) ===== */
 .side-menu {
   position: fixed;
   top: 0;
@@ -142,85 +128,41 @@
   box-shadow: -4px 0 16px rgba(0,0,0,.1);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   transform: translateX(100%);
   transition: transform .3s;
   z-index: 1501;
 }
-.side-menu.open {
-  transform: translateX(0);
-}
-
+.side-menu.open { transform: translateX(0); }
 .drawer-header {
   height: 64px;
   display: flex;
   align-items: center;
-  background: #f3e8ff;
   padding: 0 16px;
+  background: #f3e8ff;
 }
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: #fff;
-  border: 1px solid #bfa2e1;
-  border-radius: 20px;
-  color: #5e17eb;
-  cursor: pointer;
-}
-.back-button:hover {
-  background: #e8dbff;
-}
-
-.menu-scroll {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  padding-bottom: 80px;
-}
-.menu-section {
-  margin-top: 32px;
-}
+.menu-section { margin-top: 24px; }
 .menu-section h4 {
-  margin: 0;
   padding: 0 16px 8px;
-  font: 600 1rem/1 "inherit";
+  font: 600 0.9rem/1 "inherit";
   text-transform: uppercase;
   color: #2d006e;
   border-bottom: 1px solid #eee;
 }
 .menu-section a {
-  display: flex;
-  align-items: center;
+  display: block;
   padding: 12px 16px;
-  margin: 4px 0;
-  border-radius: 4px;
-  color: #4e2977;
-  font-size: .95rem;
   text-decoration: none;
+  color: #4e2977;
+  font-size: 0.95rem;
+  border-radius: 4px;
   transition: background .2s, color .2s;
 }
 .menu-section a:hover,
-a.active-link {
+.menu-section a.active-link {
   background: #f5f1fa;
   color: #2d006e;
-  font-weight: 700;
+  font-weight: 600;
 }
-
-.auth-menu {
-  margin-top: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 -2px 8px rgba(0,0,0,.04);
-}
-.auth-menu button {
-  width: 100%;
-}
-
-/* Backdrop */
 .menu-backdrop {
   position: fixed;
   inset: 0;
@@ -230,16 +172,15 @@ a.active-link {
 
 /* ================= Responsive ================= */
 @media (max-width: 768px) {
-  .app-header {
-    padding: 0 12px;
-    height: 90px;
-  }
-  .logo-link .logo {
-    max-height: 260px; /* גובה מותאם לנייד */
-    max-width: 300px;
-  }
+  .nav-links,
   .auth-controls.desktop-only {
     display: none !important;
+  }
+  .menu-toggle {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
 
