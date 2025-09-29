@@ -23,8 +23,9 @@
 }
 .logo-link .logo {
   height: auto;
-  max-height: 40px;   /* גובה נקי כמו באתרים גדולים */
+  max-height: 80px;   /* גובה קבוע ונוח לשורת הניווט */
   width: auto;
+  max-width: 220px;   /* שים לב, זה ישאיר אותו גדול אבל לא ענק */
   object-fit: contain;
 }
 .logo-link:hover .logo {
