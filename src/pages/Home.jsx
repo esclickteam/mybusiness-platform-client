@@ -1,7 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import "../styles/Home.css";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 export default function Home() {
   return (
@@ -13,6 +13,49 @@ export default function Home() {
           content="Manage clients, schedule appointments, automate with AI, collaborate and grow — all in one platform."
         />
       </Helmet>
+
+      {/* ===== HEADER (logo left, menu center, auth right) ===== */}
+      <header className="esd-hd" aria-label="Main header">
+        <div className="esd-hd__inner">
+          {/* Left: Logo */}
+          <Link to="/" className="esd-logo" aria-label="Bizuply home">
+            <img src="/logo192.png" alt="Bizuply" />
+            <span>Bizuply</span>
+          </Link>
+
+          {/* Center: Menu */}
+          <nav className="esd-nav" aria-label="Primary">
+            <NavLink to="/" end>Home</NavLink>
+            <a href="#how">How it works</a>
+            <a href="#services">Services</a>
+            <a href="#why">Why us</a>
+            <a href="#faq">FAQ</a>
+            <Link to="/help">Support</Link>
+          </nav>
+
+          {/* Right: Auth */}
+          <div className="esd-hd__cta">
+            <Link className="esd-btn esd-btn--ghost" to="/login">Log in</Link>
+            <Link className="esd-btn esd-btn--primary" to="/get-started">Sign up</Link>
+          </div>
+
+          {/* Mobile menu */}
+          <input id="mobnav" type="checkbox" className="esd-mobnav__toggle" aria-hidden />
+          <label htmlFor="mobnav" className="esd-mobnav__btn" aria-label="Open menu" />
+          <div className="esd-mobnav__sheet">
+            <NavLink to="/" end onClick={() => (document.getElementById("mobnav").checked=false)}>Home</NavLink>
+            <a href="#how" onClick={() => (document.getElementById("mobnav").checked=false)}>How it works</a>
+            <a href="#services" onClick={() => (document.getElementById("mobnav").checked=false)}>Services</a>
+            <a href="#why" onClick={() => (document.getElementById("mobnav").checked=false)}>Why us</a>
+            <a href="#faq" onClick={() => (document.getElementById("mobnav").checked=false)}>FAQ</a>
+            <Link to="/help" onClick={() => (document.getElementById("mobnav").checked=false)}>Support</Link>
+            <div className="esd-mobnav__cta">
+              <Link className="esd-btn esd-btn--ghost" to="/login">Log in</Link>
+              <Link className="esd-btn esd-btn--primary" to="/get-started">Sign up</Link>
+            </div>
+          </div>
+        </div>
+      </header>
 
       {/* ===== HERO ===== */}
       <section className="esd-hero" aria-labelledby="hero-title">
@@ -32,9 +75,7 @@ export default function Home() {
             <Link to="/how-it-works" className="esd-btn esd-btn--ghost">See How It Works</Link>
           </div>
 
-          <p className="esd-hero__trust">
-            ✓ 14-day free trial • ✓ No credit card • ✓ Mobile-friendly
-          </p>
+          <p className="esd-hero__trust">✓ 14-day free trial • ✓ No credit card • ✓ Mobile-friendly</p>
 
           <div className="esd-partners" aria-label="Partners & tech">
             <div>OpenAI</div>
@@ -46,7 +87,7 @@ export default function Home() {
         <div className="esd-curve" />
       </section>
 
-      {/* ===== VALUE ===== */}
+      {/* ===== VALUE (Positioning) ===== */}
       <section className="esd-value" aria-labelledby="value-title">
         <div className="esd-card esd-value__card">
           <h2 id="value-title" className="esd-section-title">
@@ -54,44 +95,149 @@ export default function Home() {
           </h2>
           <p className="esd-section-text">
             Bizuply is built to empower small businesses to operate like the big ones.
-            From smart scheduling and client management, to AI that delivers insights
-            and acts as your personal advisor — and even collaborations with other
-            businesses — everything works seamlessly together in one powerful system.
+            From smart scheduling and client management, to AI that delivers insights and
+            acts as your personal advisor — and even collaborations with other businesses —
+            everything works seamlessly together in one powerful system.
           </p>
         </div>
       </section>
 
-      {/* ===== FEATURES ===== */}
-      <section className="esd-features" aria-labelledby="features-title">
-        <h2 id="features-title" className="esd-section-title">What You Get</h2>
-        <div className="esd-grid">
-          <article className="esd-feature">
-            <div className="esd-icon" aria-hidden>🤝</div>
-            <h3>Collaboration</h3>
-            <p>Identify complementary partners and create agreements to increase profits and grow together.</p>
+      {/* ===== HOW IT WORKS (steps) ===== */}
+      <section id="how" className="esd-how" aria-labelledby="how-title">
+        <h2 id="how-title" className="esd-section-title">How it works</h2>
+        <ol className="esd-steps">
+          <li><span>1</span><div><h5>Create your account</h5><p>It takes a minute to get started.</p></div></li>
+          <li><span>2</span><div><h5>Set up once</h5><p>Services, hours, branding and your business page.</p></div></li>
+          <li><span>3</span><div><h5>Start booking & chatting</h5><p>Clients schedule and talk to you in one place.</p></div></li>
+          <li><span>4</span><div><h5>Grow with insights</h5><p>AI suggestions and automations improve results.</p></div></li>
+        </ol>
+      </section>
+
+      {/* ===== DETAILED BLOCKS (your detailed content) ===== */}
+      <section className="esd-blocks" aria-labelledby="blocks-title">
+        <h2 id="blocks-title" className="esd-section-title">Run your business without the busywork</h2>
+        <div className="esd-blocks__grid">
+          <article className="esd-block">
+            <h3>Bookings that just work</h3>
+            <p>Smart scheduling, reminders, cancellations and rescheduling — all automated so you don’t have to chase.</p>
+            <Link to="/features/appointments" className="esd-link">Learn more</Link>
           </article>
-          <article className="esd-feature">
-            <div className="esd-icon" aria-hidden>⚙️</div>
-            <h3>Smart Management</h3>
-            <p>Integrated CRM + branded page with gallery, ratings, reviews, chat, and more.</p>
+          <article className="esd-block">
+            <h3>Conversations in one place</h3>
+            <p>Central inbox for all client messages, quick replies and automation. Know what’s next at a glance.</p>
+            <Link to="/features/messages" className="esd-link">Learn more</Link>
           </article>
-          <article className="esd-feature">
-            <div className="esd-icon" aria-hidden>🤖</div>
-            <h3>AI Assistant</h3>
-            <p>Automate replies, get insights, and let Bizuply handle repetitive tasks to save time.</p>
+          <article className="esd-block">
+            <h3>Lightweight CRM</h3>
+            <p>Client cards, history, tags and tasks. Import/Export and segmentation for campaigns when you need it.</p>
+            <Link to="/features/crm" className="esd-link">Learn more</Link>
           </article>
-          <article className="esd-feature">
-            <div className="esd-icon" aria-hidden>📈</div>
-            <h3>Grows With You</h3>
-            <p>Dashboards and automations that scale as you do.</p>
+          <article className="esd-block">
+            <h3>AI that actually helps</h3>
+            <p>Actionable suggestions, follow-ups, and automations that save hours every week — no learning curve.</p>
+            <Link to="/features/ai" className="esd-link">Learn more</Link>
           </article>
+        </div>
+      </section>
+
+      {/* ===== SERVICES (cards/tabs vibe) ===== */}
+      <section id="services" className="esd-services" aria-labelledby="services-title">
+        <h2 id="services-title" className="esd-section-title">Our services</h2>
+        <p className="esd-section-sub">All the tools in one place — modular and grows with you.</p>
+        <div className="esd-services__grid">
+          <article className="esd-service">
+            <span className="esd-service__badge">Core</span>
+            <h4>Appointments</h4>
+            <p>Online calendar, smart reminders, updates and cancellation links. Seamless rescheduling.</p>
+            <Link to="/features/appointments" className="esd-link">Details</Link>
+          </article>
+          <article className="esd-service">
+            <span className="esd-service__badge">Core</span>
+            <h4>Messages</h4>
+            <p>All chats in one place with templates, quick replies and automations. Never miss a thread.</p>
+            <Link to="/features/messages" className="esd-link">Details</Link>
+          </article>
+          <article className="esd-service">
+            <span className="esd-service__badge">Plus</span>
+            <h4>CRM</h4>
+            <p>Clients, history, tagging and tasks. Import/export CSV and simple segmentation.</p>
+            <Link to="/features/crm" className="esd-link">Details</Link>
+          </article>
+          <article className="esd-service">
+            <span className="esd-service__badge">Pro</span>
+            <h4>Insights & AI</h4>
+            <p>Weekly performance dashboard and AI advisor with actionable next steps.</p>
+            <Link to="/features/insights" className="esd-link">Details</Link>
+          </article>
+        </div>
+      </section>
+
+      {/* ===== WHY US (icon list) ===== */}
+      <section id="why" className="esd-why" aria-labelledby="why-title">
+        <h2 id="why-title" className="esd-section-title">Why choose Bizuply</h2>
+        <ul className="esd-why__grid">
+          <li className="esd-why__item">
+            <div className="esd-why__icon">⚡</div>
+            <div><h5>Fast to start</h5><p>Be up and running in minutes — not weeks.</p></div>
+          </li>
+          <li className="esd-why__item">
+            <div className="esd-why__icon">📱</div>
+            <div><h5>Mobile-first</h5><p>Looks great on every device, everywhere.</p></div>
+          </li>
+          <li className="esd-why__item">
+            <div className="esd-why__icon">🤖</div>
+            <div><h5>Built-in AI</h5><p>Real insights and suggestions that move the needle.</p></div>
+          </li>
+          <li className="esd-why__item">
+            <div className="esd-why__icon">🔒</div>
+            <div><h5>Secure</h5><p>Encrypted data and standards you can trust.</p></div>
+          </li>
+          <li className="esd-why__item">
+            <div className="esd-why__icon">🧑‍💻</div>
+            <div><h5>Human support</h5><p>Help center, guides and real chat support.</p></div>
+          </li>
+          <li className="esd-why__item">
+            <div className="esd-why__icon">💸</div>
+            <div><h5>Fair pricing</h5><p>Start free, pay only when you grow.</p></div>
+          </li>
+        </ul>
+      </section>
+
+      {/* ===== FAQ ===== */}
+      <section id="faq" className="esd-faq" aria-labelledby="faq-title">
+        <h2 id="faq-title" className="esd-section-title">Frequently asked questions</h2>
+        <div className="esd-faq__list">
+          <details>
+            <summary>Is there a free trial?</summary>
+            <p>Yes — 14 days, no credit card required.</p>
+          </details>
+          <details>
+            <summary>Does it work on mobile?</summary>
+            <p>Absolutely. Bizuply is fully responsive.</p>
+          </details>
+          <details>
+            <summary>How do I get started?</summary>
+            <p>Create your account and follow the short onboarding — you’ll be ready in minutes.</p>
+          </details>
+          <details>
+            <summary>Can I import my clients?</summary>
+            <p>Yes. CSV import/export is built-in.</p>
+          </details>
+          <details>
+            <summary>Do you offer support?</summary>
+            <p>Help center, guides and live chat support are available.</p>
+          </details>
+          <details>
+            <summary>How about security?</summary>
+            <p>We use encryption and industry-standard practices to keep your data safe.</p>
+          </details>
         </div>
       </section>
 
       {/* ===== CTA ===== */}
       <section className="esd-cta" aria-labelledby="cta-title">
         <div className="esd-cta__inner">
-          <h2 id="cta-title">Ready to Grow Smarter?</h2>
+          <h2 id="cta-title">Ready to grow smarter?</h2>
           <Link to="/get-started" className="esd-btn esd-btn--primary esd-btn--lg">Start Today</Link>
         </div>
       </section>
