@@ -181,7 +181,7 @@
   align-items: center;
   justify-content: flex-end;        /* ההמבורגר נדחף לימין */
   padding: 0 16px 0 0;
-  height: 70px !important;          /* קומפקטי */
+  height: 60px !important;          /* קומפקטי */
   background: #fff;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   position: relative;               /* מאפשר ללוגו להיות ממורכז אבסולוטית */
