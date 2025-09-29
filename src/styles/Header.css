@@ -186,12 +186,12 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 
-   .logo-wrapper {
-    margin: 0 !important;
+     .logo-wrapper {
+    margin: 0 auto !important;        /* מצמיד את הלוגו למרכז */
     padding: 0 !important;
     display: flex;
     align-items: center;
-    justify-content: flex-start;      /* צמוד לגמרי לשמאל */
+    justify-content: center;
     flex: 0 0 auto;
   }
 
