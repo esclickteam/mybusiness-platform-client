@@ -1,7 +1,8 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import "../styles/Home.css";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
+import Header from "../components/Header"; // ✅ שימוש בהדר קיים
 
 export default function Home() {
   return (
@@ -14,48 +15,8 @@ export default function Home() {
         />
       </Helmet>
 
-      {/* ===== HEADER (logo left, menu center, auth right) ===== */}
-      <header className="esd-hd" aria-label="Main header">
-        <div className="esd-hd__inner">
-          {/* Left: Logo */}
-          <Link to="/" className="esd-logo" aria-label="Bizuply home">
-            <img src="/logo192.png" alt="Bizuply" />
-            <span>Bizuply</span>
-          </Link>
-
-          {/* Center: Menu */}
-          <nav className="esd-nav" aria-label="Primary">
-            <NavLink to="/" end>Home</NavLink>
-            <a href="#how">How it works</a>
-            <a href="#services">Services</a>
-            <a href="#why">Why us</a>
-            <a href="#faq">FAQ</a>
-            <Link to="/help">Support</Link>
-          </nav>
-
-          {/* Right: Auth */}
-          <div className="esd-hd__cta">
-            <Link className="esd-btn esd-btn--ghost" to="/login">Log in</Link>
-            <Link className="esd-btn esd-btn--primary" to="/get-started">Sign up</Link>
-          </div>
-
-          {/* Mobile menu */}
-          <input id="mobnav" type="checkbox" className="esd-mobnav__toggle" aria-hidden />
-          <label htmlFor="mobnav" className="esd-mobnav__btn" aria-label="Open menu" />
-          <div className="esd-mobnav__sheet">
-            <NavLink to="/" end onClick={() => (document.getElementById("mobnav").checked=false)}>Home</NavLink>
-            <a href="#how" onClick={() => (document.getElementById("mobnav").checked=false)}>How it works</a>
-            <a href="#services" onClick={() => (document.getElementById("mobnav").checked=false)}>Services</a>
-            <a href="#why" onClick={() => (document.getElementById("mobnav").checked=false)}>Why us</a>
-            <a href="#faq" onClick={() => (document.getElementById("mobnav").checked=false)}>FAQ</a>
-            <Link to="/help" onClick={() => (document.getElementById("mobnav").checked=false)}>Support</Link>
-            <div className="esd-mobnav__cta">
-              <Link className="esd-btn esd-btn--ghost" to="/login">Log in</Link>
-              <Link className="esd-btn esd-btn--primary" to="/get-started">Sign up</Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* ✅ Header רק פעם אחת */}
+      <Header />
 
       {/* ===== HERO ===== */}
       <section className="esd-hero" aria-labelledby="hero-title">
@@ -71,11 +32,17 @@ export default function Home() {
           </p>
 
           <div className="esd-hero__cta" role="group" aria-label="Primary actions">
-            <Link to="/get-started" className="esd-btn esd-btn--primary">Get Started</Link>
-            <Link to="/how-it-works" className="esd-btn esd-btn--ghost">See How It Works</Link>
+            <Link to="/get-started" className="esd-btn esd-btn--primary">
+              Get Started
+            </Link>
+            <Link to="/how-it-works" className="esd-btn esd-btn--ghost">
+              See How It Works
+            </Link>
           </div>
 
-          <p className="esd-hero__trust">✓ 14-day free trial • ✓ No credit card • ✓ Mobile-friendly</p>
+          <p className="esd-hero__trust">
+            ✓ 14-day free trial • ✓ No credit card • ✓ Mobile-friendly
+          </p>
 
           <div className="esd-partners" aria-label="Partners & tech">
             <div>OpenAI</div>
@@ -87,7 +54,7 @@ export default function Home() {
         <div className="esd-curve" />
       </section>
 
-      {/* ===== VALUE (Positioning) ===== */}
+      {/* ===== VALUE ===== */}
       <section className="esd-value" aria-labelledby="value-title">
         <div className="esd-card esd-value__card">
           <h2 id="value-title" className="esd-section-title">
@@ -102,45 +69,83 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== HOW IT WORKS (steps) ===== */}
+      {/* ===== HOW IT WORKS ===== */}
       <section id="how" className="esd-how" aria-labelledby="how-title">
         <h2 id="how-title" className="esd-section-title">How it works</h2>
         <ol className="esd-steps">
-          <li><span>1</span><div><h5>Create your account</h5><p>It takes a minute to get started.</p></div></li>
-          <li><span>2</span><div><h5>Set up once</h5><p>Services, hours, branding and your business page.</p></div></li>
-          <li><span>3</span><div><h5>Start booking & chatting</h5><p>Clients schedule and talk to you in one place.</p></div></li>
-          <li><span>4</span><div><h5>Grow with insights</h5><p>AI suggestions and automations improve results.</p></div></li>
+          <li>
+            <span>1</span>
+            <div>
+              <h5>Create your account</h5>
+              <p>It takes a minute to get started.</p>
+            </div>
+          </li>
+          <li>
+            <span>2</span>
+            <div>
+              <h5>Set up once</h5>
+              <p>Services, hours, branding and your business page.</p>
+            </div>
+          </li>
+          <li>
+            <span>3</span>
+            <div>
+              <h5>Start booking & chatting</h5>
+              <p>Clients schedule and talk to you in one place.</p>
+            </div>
+          </li>
+          <li>
+            <span>4</span>
+            <div>
+              <h5>Grow with insights</h5>
+              <p>AI suggestions and automations improve results.</p>
+            </div>
+          </li>
         </ol>
       </section>
 
-      {/* ===== DETAILED BLOCKS (your detailed content) ===== */}
+      {/* ===== BLOCKS ===== */}
       <section className="esd-blocks" aria-labelledby="blocks-title">
-        <h2 id="blocks-title" className="esd-section-title">Run your business without the busywork</h2>
+        <h2 id="blocks-title" className="esd-section-title">
+          Run your business without the busywork
+        </h2>
         <div className="esd-blocks__grid">
           <article className="esd-block">
             <h3>Bookings that just work</h3>
-            <p>Smart scheduling, reminders, cancellations and rescheduling — all automated so you don’t have to chase.</p>
+            <p>
+              Smart scheduling, reminders, cancellations and rescheduling — all automated
+              so you don’t have to chase.
+            </p>
             <Link to="/features/appointments" className="esd-link">Learn more</Link>
           </article>
           <article className="esd-block">
             <h3>Conversations in one place</h3>
-            <p>Central inbox for all client messages, quick replies and automation. Know what’s next at a glance.</p>
+            <p>
+              Central inbox for all client messages, quick replies and automation. Know what’s
+              next at a glance.
+            </p>
             <Link to="/features/messages" className="esd-link">Learn more</Link>
           </article>
           <article className="esd-block">
             <h3>Lightweight CRM</h3>
-            <p>Client cards, history, tags and tasks. Import/Export and segmentation for campaigns when you need it.</p>
+            <p>
+              Client cards, history, tags and tasks. Import/Export and segmentation for
+              campaigns when you need it.
+            </p>
             <Link to="/features/crm" className="esd-link">Learn more</Link>
           </article>
           <article className="esd-block">
             <h3>AI that actually helps</h3>
-            <p>Actionable suggestions, follow-ups, and automations that save hours every week — no learning curve.</p>
+            <p>
+              Actionable suggestions, follow-ups, and automations that save hours every week
+              — no learning curve.
+            </p>
             <Link to="/features/ai" className="esd-link">Learn more</Link>
           </article>
         </div>
       </section>
 
-      {/* ===== SERVICES (cards/tabs vibe) ===== */}
+      {/* ===== SERVICES ===== */}
       <section id="services" className="esd-services" aria-labelledby="services-title">
         <h2 id="services-title" className="esd-section-title">Our services</h2>
         <p className="esd-section-sub">All the tools in one place — modular and grows with you.</p>
@@ -148,31 +153,41 @@ export default function Home() {
           <article className="esd-service">
             <span className="esd-service__badge">Core</span>
             <h4>Appointments</h4>
-            <p>Online calendar, smart reminders, updates and cancellation links. Seamless rescheduling.</p>
+            <p>
+              Online calendar, smart reminders, updates and cancellation links. Seamless
+              rescheduling.
+            </p>
             <Link to="/features/appointments" className="esd-link">Details</Link>
           </article>
           <article className="esd-service">
             <span className="esd-service__badge">Core</span>
             <h4>Messages</h4>
-            <p>All chats in one place with templates, quick replies and automations. Never miss a thread.</p>
+            <p>
+              All chats in one place with templates, quick replies and automations. Never
+              miss a thread.
+            </p>
             <Link to="/features/messages" className="esd-link">Details</Link>
           </article>
           <article className="esd-service">
             <span className="esd-service__badge">Plus</span>
             <h4>CRM</h4>
-            <p>Clients, history, tagging and tasks. Import/export CSV and simple segmentation.</p>
+            <p>
+              Clients, history, tagging and tasks. Import/export CSV and simple segmentation.
+            </p>
             <Link to="/features/crm" className="esd-link">Details</Link>
           </article>
           <article className="esd-service">
             <span className="esd-service__badge">Pro</span>
             <h4>Insights & AI</h4>
-            <p>Weekly performance dashboard and AI advisor with actionable next steps.</p>
+            <p>
+              Weekly performance dashboard and AI advisor with actionable next steps.
+            </p>
             <Link to="/features/insights" className="esd-link">Details</Link>
           </article>
         </div>
       </section>
 
-      {/* ===== WHY US (icon list) ===== */}
+      {/* ===== WHY US ===== */}
       <section id="why" className="esd-why" aria-labelledby="why-title">
         <h2 id="why-title" className="esd-section-title">Why choose Bizuply</h2>
         <ul className="esd-why__grid">
@@ -238,7 +253,9 @@ export default function Home() {
       <section className="esd-cta" aria-labelledby="cta-title">
         <div className="esd-cta__inner">
           <h2 id="cta-title">Ready to grow smarter?</h2>
-          <Link to="/get-started" className="esd-btn esd-btn--primary esd-btn--lg">Start Today</Link>
+          <Link to="/get-started" className="esd-btn esd-btn--primary esd-btn--lg">
+            Start Today
+          </Link>
         </div>
       </section>
     </main>

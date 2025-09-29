@@ -26,8 +26,8 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
-  direction:ltr;                 /* LTR only */
-  text-align:left;               /* ensure left alignment */
+  direction:ltr;                 /* enforce LTR */
+  text-align:left;
   font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   background:var(--page);
   color:var(--text);
@@ -36,7 +36,7 @@ body{
 }
 .esd-page{
   overflow-x:hidden;
-  direction:ltr;                 /* enforce LTR on page root */
+  direction:ltr;
   text-align:left;
 }
 
@@ -62,10 +62,10 @@ body{
 /* ─── HERO ─────────────────────────────────────────── */
 .esd-hero{
   position:relative;
-  padding:112px 24px 48px; /* breathing room under sticky header */
+  padding:112px 24px 48px; 
   color:#fff;
   isolation:isolate;
-  text-align:center;       /* center within hero, still LTR */
+  text-align:center;
 }
 .esd-hero__bg{
   position:absolute; inset:-8% -8% auto -8%;
@@ -140,7 +140,7 @@ body{
 }
 .esd-steps h5{margin:0 0 4px}
 
-/* ─── BLOCKS (detailed) ─────────────────── */
+/* ─── BLOCKS ───────────────────────────── */
 .esd-blocks{padding:86px 24px}
 .esd-blocks__grid{
   max-width:1100px; margin:0 auto;
@@ -157,7 +157,7 @@ body{
 .esd-link{font-weight:800; color:var(--violet); text-decoration:none}
 .esd-link:hover{text-decoration:underline}
 
-/* ─── FEATURES ─────────────────────────────────────── */
+/* ─── FEATURES ─────────────────────────── */
 .esd-features{padding:86px 24px}
 .esd-grid{
   max-width:1100px; margin:0 auto;
@@ -176,7 +176,7 @@ body{
 .esd-feature h3{margin:6px 0 8px; color:var(--indigo); font-size:20px; font-weight:800}
 .esd-feature p{margin:0; color:#545b75; line-height:1.6}
 
-/* ─── SERVICES (cards) ──────────────────── */
+/* ─── SERVICES ─────────────────────────── */
 .esd-services{padding:86px 24px}
 .esd-services__grid{
   max-width:1120px; margin:0 auto;
@@ -196,7 +196,7 @@ body{
 .esd-service p{margin:0 0 10px; color:#5d6175; line-height:1.6}
 .esd-service .esd-link{display:inline-block; margin-top:4px}
 
-/* ─── WHY US (icon list) ────────────────── */
+/* ─── WHY US ───────────────────────────── */
 .esd-why{padding:86px 24px}
 .esd-why__grid{
   max-width:1000px; margin:0 auto; list-style:none; padding:0;
