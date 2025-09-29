@@ -1,17 +1,23 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="פלטפורמת עסקים מתקדמת - חיבור בין עסקים ללקוחות, ניהול פרופילים עסקיים ועוד." />
-  <meta name="author" content="עסקליק" />
-  <meta name="keywords" content="עסקים, שירותים, לקוחות, פלטפורמה עסקית, חנות, יומן תורים, לקוחות מרוצים" />
+  <meta 
+    name="description" 
+    content="Advanced business platform - connect businesses with clients, manage business profiles, scheduling, and more." 
+  />
+  <meta name="author" content="BizUply" />
+  <meta 
+    name="keywords" 
+    content="business, services, clients, business platform, store, appointments, customer management" 
+  />
 
-  <title>עסקליק - פלטפורמת עסקים</title>
+  <title>BizUply - Business Platform</title>
 
   <base href="/" />
 
-  <!-- ✅ Favicon / App Icons (מאוחדים תחת /icons + cache-busting) -->
+  <!-- ✅ Favicon / App Icons -->
   <link rel="icon" type="image/png" sizes="16x16"  href="/icons/icon-16x16.png?v=3" />
   <link rel="icon" type="image/png" sizes="32x32"  href="/icons/icon-32x32.png?v=3" />
   <link rel="icon" type="image/png" sizes="48x48"  href="/icons/icon-48x48.png?v=3" />
@@ -20,27 +26,25 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png?v=3" />
   <link rel="shortcut icon" href="/favicon.ico?v=3" />
 
-  <!-- יישור צבעי ערכת נושא בין HTML ל-manifest -->
+  <!-- Theme color -->
   <meta name="theme-color" content="#6200ea" />
   <link rel="manifest" href="/manifest.json?v=3" />
-  <meta http-equiv="Content-Language" content="he" />
+  <meta http-equiv="Content-Language" content="en" />
 
-  <!-- טעינת פונטים ו־CSS קריטי מראש -->
+  <!-- Preload fonts and critical CSS -->
   <link rel="preload" href="/fonts/myfont.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
   <link rel="preload" href="/index.css" as="style" />
-  <link rel="preload" href="/styles/accessibility-style.css" as="style" />
 
-  <!-- CSS גלובלי -->
+  <!-- Global CSS -->
   <link rel="stylesheet" href="/index.css" />
-  <link rel="stylesheet" href="/styles/accessibility-style.css" />
 
-  <!-- CSS קריטי inline (דוגמה) -->
+  <!-- Inline critical CSS -->
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #fff;
-      direction: rtl;
+      direction: ltr;
     }
   </style>
 
@@ -52,39 +56,11 @@
   ></script>
 </head>
 <body>
-  <!-- כאן React יטען את האפליקציה -->
+  <!-- React app will be mounted here -->
   <div id="root"></div>
   <div id="popup-root"></div>
 
-  <!-- סקריפט הראשי של React -->
+  <!-- Main React script -->
   <script type="module" src="/src/index.jsx" defer></script>
-
-  <!-- קוד נגישות EqualWeb - דחיית טעינת הסקריפט -->
-  <script>
-    window.interdeal = {
-      sitekey: "b060e41b9209f7660ba072aacbc11ef1",
-      Position: "left",
-      domains: {
-        js: "https://cdn.equalweb.com/",
-        acc: "https://access.equalweb.com/"
-      },
-      Menulang: "HE",
-      btnStyle: {
-        vPosition: ["80%", "80%"],
-        scale: ["0.5", "0.5"],
-        color: { main: "#1876c9", second: "#ffffff" },
-        icon: { outline: false, type: 1, shape: "rounded" }
-      }
-    };
-    (function (doc, head, body) {
-      var coreCall = doc.createElement("script");
-      coreCall.src = interdeal.domains.js + "core/5.1.0/accessibility.js";
-      coreCall.defer = true;
-      coreCall.integrity = "sha512-TcsprTlCCE0u/G5TN3zikzkynCEIRcfd96+RejMcyd2HFPnTpVUDxumXmFb/rSJ3ogQM+b/yvYWLwV6duAuJQg==";
-      coreCall.crossOrigin = "anonymous";
-      coreCall.setAttribute("data-cfasync", true);
-      (body || head).appendChild(coreCall);
-    })(document, document.head, document.body);
-  </script>
 </body>
 </html>
