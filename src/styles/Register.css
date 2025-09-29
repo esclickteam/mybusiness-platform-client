@@ -1,152 +1,158 @@
+/* =================================================================== */
+/*                           Register.css                              */
+/* =================================================================== */
+
+/* --------------------------- Container --------------------------- */
 .register-container {
-    width: 400px;
-    background: #f2e5ff; /* רקע סגול בהיר */
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-    margin: 60px auto;
-    text-align: center;
+  width: 400px;
+  background: #f2e5ff; /* light purple background */
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  margin: 60px auto;
+  text-align: center;
+}
+
+.register-container h2 {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #3b007d;
+}
+
+.register-container p {
+  font-size: 14px;
+  color: #5d5d5d;
+  margin-bottom: 20px;
+}
+
+/* --------------------------- Inputs --------------------------- */
+.register-container input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #c084fc;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: #f9f9ff;
+  transition: 0.3s;
+}
+
+.register-container input:focus {
+  border-color: #8200ff;
+  background-color: #fff;
+  outline: none;
+}
+
+/* --------------------------- Radio Buttons --------------------------- */
+.radio-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #c084fc;
+  gap: 20px;
+}
+
+.radio-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+}
+
+/* Custom styled radio button */
+.radio-option input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #3b007d;
+  border-radius: 50%;
+  margin-bottom: 5px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.radio-option input[type="radio"]:checked {
+  background-color: #3b007d;
+}
+
+.radio-option label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #3b007d;
+  text-align: center;
+}
+
+/* --------------------------- Register Button --------------------------- */
+.register-button {
+  width: 100%;
+  padding: 14px;
+  background: #6a00f4;
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+  box-shadow: 0px 4px 8px rgba(106, 0, 244, 0.3);
+}
+
+.register-button:hover {
+  background: #5000c9;
+  box-shadow: 0px 6px 12px rgba(80, 0, 201, 0.4);
+}
+
+/* --------------------------- Error Message --------------------------- */
+.error-message {
+  color: red;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* --------------------------- Login Link --------------------------- */
+.login-link {
+  font-size: 14px;
+  margin-top: 15px;
+}
+
+.login-link a {
+  color: #6a00f4;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------- Responsive --------------------------- */
+@media (max-width: 480px) {
+  .register-container {
+    padding: 20px;
+    margin: 40px auto;
+    width: 90%;
   }
-  
+
   .register-container h2 {
-    font-size: 26px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #3b007d;
+    font-size: 22px;
   }
-  
-  .register-container p {
-    font-size: 14px;
-    color: #5d5d5d;
-    margin-bottom: 20px;
-  }
-  
-  .register-container input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #c084fc;
-    border-radius: 6px;
-    font-size: 16px;
-    background-color: #f9f9ff;
-    transition: 0.3s;
-  }
-  
-  .register-container input:focus {
-    border-color: #8200ff;
-    background-color: #fff;
-    outline: none;
-  }
-  
-  /* תיבת בחירה לרדיובטנים */
-  .radio-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #ffffff;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border: 1px solid #c084fc;
-    gap: 20px;
-  }
-  
-  /* אפשרות בחירה */
-  .radio-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 50%;
-  }
-  
-  /* רדיובטנים מעוצבים */
-  .radio-option input[type="radio"] {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border: 2px solid #3b007d;
-    border-radius: 50%;
-    margin-bottom: 5px;
-    position: relative;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  .radio-option input[type="radio"]:checked {
-    background-color: #3b007d;
-  }
-  
-  .radio-option label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #3b007d;
-    text-align: center;
-  }
-  
-  /* כפתור הרשמה */
+
   .register-button {
-    width: 100%;
-    padding: 14px;
-    background: #6a00f4;
-    color: #fff;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
-    box-shadow: 0px 4px 8px rgba(106, 0, 244, 0.3);
+    font-size: 16px;
   }
-  
-  .register-button:hover {
-    background: #5000c9;
-    box-shadow: 0px 6px 12px rgba(80, 0, 201, 0.4);
+
+  .radio-option label {
+    font-size: 13px;
   }
-  
-  /* הודעות שגיאה */
-  .error-message {
-    color: red;
-    margin-top: 10px;
-    font-size: 14px;
-  }
-  
-  /* לינק להתחברות */
-  .login-link {
-    font-size: 14px;
-    margin-top: 15px;
-  }
-  
-  .login-link a {
-    color: #6a00f4;
-    font-weight: bold;
-    text-decoration: none;
-  }
-  
-  .login-link a:hover {
-    text-decoration: underline;
-  }
-  
-  /* רספונסיביות */
-  @media (max-width: 480px) {
-    .register-container {
-      padding: 20px;
-      margin: 40px auto;
-      width: 90%;
-    }
-  
-    .register-container h2 {
-      font-size: 22px;
-    }
-  
-    .register-button {
-      font-size: 16px;
-    }
-  
-    .radio-option label {
-      font-size: 13px;
-    }
-  }
-  @media (max-width: 768px) and (min-width: 481px) {
+}
+
+@media (max-width: 768px) and (min-width: 481px) {
   .register-container {
     width: 90%;
     max-width: 400px;

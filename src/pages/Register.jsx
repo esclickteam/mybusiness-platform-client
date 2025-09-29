@@ -1,3 +1,4 @@
+// src/pages/Register.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import API from "../api";
@@ -11,7 +12,7 @@ const Register = () => {
     phone: "",
     password: "",
     confirmPassword: "",
-    userType: "customer",
+    userType: "business", 
     businessName: "",
     referralCode: "",
   });
@@ -53,24 +54,24 @@ const Register = () => {
     } = formData;
 
     if (!name || !email || !password || !confirmPassword) {
-      setError("⚠️ יש למלא את כל השדות הנדרשים");
+      setError("⚠️ Please fill in all required fields");
       return;
     }
     if (password !== confirmPassword) {
-      setError("⚠️ הסיסמאות לא תואמות");
+      setError("⚠️ Passwords do not match");
       return;
     }
     if (userType === "business") {
       if (!businessName.trim()) {
-        setError("⚠️ יש להזין שם עסק כדי להירשם כבעל עסק");
+        setError("⚠️ Please enter a business name to register as a business owner");
         return;
       }
       if (!phone.trim()) {
-        setError("⚠️ יש להזין מספר טלפון כדי להירשם כבעל עסק");
+        setError("⚠️ Please enter a phone number to register as a business owner");
         return;
       }
       if (!isValidPhone(phone.trim())) {
-        setError("⚠️ יש להזין מספר טלפון ישראלי תקין (10 ספרות המתחילות ב-05)");
+        setError("⚠️ Please enter a valid Israeli phone number (10 digits starting with 05)");
         return;
       }
     }
@@ -91,44 +92,43 @@ const Register = () => {
         { withCredentials: true }
       );
 
-      // התחברות מיידית לאחר הרשמה
+      // Auto-login after registration
       const { user } = await login(email.trim().toLowerCase(), password, {
         skipRedirect: true,
       });
 
       if (!user) {
-        setError("❌ לא הצלחנו להתחבר לאחר ההרשמה, נסה שוב בבקשה");
+        setError("❌ Failed to log in after registration, please try again");
         return;
       }
 
-      // הפניה בהתאם לסוג המשתמש
+      // Redirect based on user type
       if (userType === "business") {
-        // בעל עסק חדש → חודש ניסיון והפניה לדשבורד
-        navigate("/dashboard");
+        navigate("/dashboard"); // Business → dashboard
       } else {
-        navigate("/client/dashboard/search");
+        navigate("/client/dashboard/search"); // Customer → client dashboard
       }
     } catch (err) {
       console.error("❌ Registration error:", err.response?.data || err.message);
       if (err.response?.status === 400) {
-        setError(err.response.data.error || "❌ אימייל כבר רשום במערכת");
+        setError(err.response.data.error || "❌ Email is already registered");
       } else if (err.response?.status === 401) {
-        setError("❌ לא מצליח להתחבר לאחר הרשמה, נסה שוב");
+        setError("❌ Failed to log in after registration, please try again");
       } else {
-        setError("❌ שגיאה בלתי צפויה. נסה שוב מאוחר יותר.");
+        setError("❌ Unexpected error. Please try again later.");
       }
     }
   };
 
   return (
     <div className="register-container">
-      <h2>הרשמה</h2>
-      <p>בחר את סוג החשבון שלך והזן את הפרטים</p>
+      <h2>Register</h2>
+      <p>Select your account type and enter your details</p>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           name="name"
-          placeholder="שם מלא"
+          placeholder="Full Name"
           value={formData.name}
           onChange={handleChange}
           required
@@ -136,7 +136,7 @@ const Register = () => {
         <input
           type="email"
           name="email"
-          placeholder="אימייל"
+          placeholder="Email Address"
           value={formData.email}
           onChange={handleChange}
           required
@@ -146,7 +146,7 @@ const Register = () => {
             <input
               type="text"
               name="businessName"
-              placeholder="שם העסק"
+              placeholder="Business Name"
               value={formData.businessName}
               onChange={handleChange}
               required
@@ -154,7 +154,7 @@ const Register = () => {
             <input
               type="tel"
               name="phone"
-              placeholder="טלפון"
+              placeholder="Phone Number"
               value={formData.phone}
               onChange={handleChange}
               required
@@ -167,13 +167,13 @@ const Register = () => {
             name="referralCode"
             value={formData.referralCode}
             readOnly
-            placeholder="קוד הפניה"
+            placeholder="Referral Code"
           />
         )}
         <input
           type="password"
           name="password"
-          placeholder="סיסמה"
+          placeholder="Password"
           value={formData.password}
           onChange={handleChange}
           required
@@ -181,7 +181,7 @@ const Register = () => {
         <input
           type="password"
           name="confirmPassword"
-          placeholder="אימות סיסמה"
+          placeholder="Confirm Password"
           value={formData.confirmPassword}
           onChange={handleChange}
           required
@@ -197,7 +197,7 @@ const Register = () => {
               checked={formData.userType === "customer"}
               onChange={handleChange}
             />
-            <label htmlFor="customer">הרשמה כלקוח</label>
+            <label htmlFor="customer">Register as Customer</label>
           </div>
           <div className="radio-option">
             <input
@@ -208,19 +208,19 @@ const Register = () => {
               checked={formData.userType === "business"}
               onChange={handleChange}
             />
-            <label htmlFor="business">הרשמה כבעל עסק</label>
+            <label htmlFor="business">Register as Business Owner</label>
           </div>
         </div>
 
         <button type="submit" className="register-button">
-          הירשם
+          Sign Up
         </button>
 
         {error && <p className="error-message">{error}</p>}
       </form>
 
       <div className="login-link">
-        כבר יש לך חשבון? <Link to="/login">התחבר עכשיו</Link>
+        Already have an account? <Link to="/login">Log in</Link>
       </div>
     </div>
   );
