@@ -45,7 +45,6 @@
   padding-left: 1.2rem;
   font-size: 1.05rem;
 }
-
 .support-page .support-list li {
   margin-bottom: 0.6rem;
 }
@@ -55,14 +54,12 @@
   text-align: center;
   margin-top: 2rem;
 }
-
 .support-page .support-label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: #2b3fa3;
 }
-
 .support-page .support-input {
   width: 220px;
   padding: 10px;
@@ -77,7 +74,6 @@
 .support-page .support-quick {
   margin-bottom: 1.5rem;
 }
-
 .support-page .support-quick-btn {
   background: #f5f3ff;
   border: 1px solid #c5bdf5;
@@ -138,19 +134,19 @@
 /* Milestones */
 .support-progress-marker {
   position: absolute;
-  top: -8px;
+  top: 0;
+  bottom: 0;
   width: 2px;
-  height: 40px;
   background: #6a11cb;
   transform: translateX(-50%);
   transition: background 0.3s ease;
 }
 
-.support-progress-marker::after {
-  content: attr(title);
+.support-progress-label {
   position: absolute;
-  top: -24px;
-  left: -20px;
+  top: 32px; /* מתחת לפס */
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 0.8rem;
   font-weight: 600;
   color: #2b3fa3;
@@ -163,7 +159,7 @@
   background: #28a745;
   animation: bounceIn 0.6s ease;
 }
-.support-progress-marker.reached::after {
+.support-progress-marker.reached .support-progress-label {
   color: #28a745;
 }
 
@@ -193,13 +189,11 @@
   direction: ltr;
   text-align: left;
 }
-
 .support-page .app-header .nav-links,
 .support-page .app-header .auth-controls {
   flex-direction: row;
   justify-content: flex-end;
 }
-
 .support-page,
 .support-page .support-text,
 .support-page .support-title,
