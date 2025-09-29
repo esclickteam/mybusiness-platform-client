@@ -37,7 +37,8 @@ export default function Support() {
 
     const script = document.createElement("script");
     script.src =
-      "https://www.paypal.com/sdk/js?client-id=Ad5vKKrnnrh28YQ58TH5sW34exTDt8j_fP68ebdSFrwGnKE__UZvcri0ENQ2ngJSDnyHzgpigne9xOnC&currency=USD";
+      "https://www.paypal.com/sdk/js?client-id=Ad5vKKrnnrh28YQ58TH5sW34exTDt8j_fP68ebdSFrwGnKE__UZvcri0ENQ2ngJSDnyHzgpigne9xOnC&currency=USD&locale=en_US";
+
     script.async = true;
     script.addEventListener("load", onLoad, { once: true });
     document.body.appendChild(script);
