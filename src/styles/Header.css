@@ -173,11 +173,11 @@
 
 /* ================= Responsive ================= */
 @media (max-width: 768px) {
-   .app-header {
+  .app-header {
     display: flex;
     align-items: center;
     justify-content: space-between; /* לוגו שמאלה, המבורגר ימינה */
-    padding: 12px 16px; /* פחות padding כדי שהלוגו יישב קרוב לשמאל */
+    padding: 12px 16px; /* קרוב לשמאל */
     height: 64px;
   }
 
@@ -186,20 +186,19 @@
     display: none !important;
   }
 
-   .logo-wrapper {
-    justify-content: flex-start;   /* דוחף את הלוגו לשמאל */
-    margin-right: auto;            /* מבטיח שההמבורגר לא יידחוף אותו פנימה */
+  .logo-wrapper {
+    margin-right: auto;   /* מבטיח שהלוגו צמוד לשמאל */
   }
 
   .logo-link .logo {
-    max-height: 160px;   /* יותר מאוזן למסך קטן */
+    max-height: 70px;   /* גודל מאוזן למובייל */
     width: auto;
     object-fit: contain;
   }
 
   .menu-toggle {
-    position: static;  /* לא מוחלט */
-    transform: none;   /* מבטל translateY */
+    position: static;
+    transform: none;
   }
 }
 
@@ -207,6 +206,4 @@
   .mobile-only { display: none !important; }
   .desktop-only { display: flex; }
 }
-
-
 
