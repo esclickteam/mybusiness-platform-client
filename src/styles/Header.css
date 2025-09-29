@@ -57,7 +57,8 @@
 .auth-controls.desktop-only {
   display: flex;
   align-items: center;
-  gap: 24px;                  /* רווח נדיב יותר */
+  gap: 24px;                  /* רווח יפה בין Login ל-CTA */
+  margin-left: auto;          /* מצמיד את כל הבלוק לימין */
 }
 .login-link {
   background: none;
