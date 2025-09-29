@@ -208,3 +208,64 @@
   direction: ltr;
   text-align: left;
 }
+
+@media (max-width: 768px) {
+  .donation-box {
+    text-align: center;
+    margin: 20px auto;
+    padding: 10px;
+  }
+
+  /* input עם $ */
+  .donation-input-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px auto;
+    max-width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 12px;
+    background: #fff;
+  }
+  .donation-currency {
+    font-weight: 600;
+    margin-right: 6px;
+    color: #2b3fa3;
+  }
+  .donation-input {
+    border: none;
+    flex: 1;
+    text-align: left;
+    font-size: 1rem;
+    outline: none;
+  }
+
+  /* grid של כפתורי סכומים */
+  .donation-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .donation-quick-btn {
+    background: #f5f3ff;
+    border: 1px solid #c5bdf5;
+    border-radius: 8px;
+    padding: 14px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2b3fa3;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .donation-quick-btn:hover {
+    background: #6a11cb;
+    color: #fff;
+  }
+
+  /* כפתורי תשלום */
+  #paypal-button-container {
+    margin-top: 20px;
+  }
+}
