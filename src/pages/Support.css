@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
 
+/* ===== Reset כדי למנוע השפעה על ה-Header ===== */
 .support-page {
   max-width: 850px;
   margin: 0 auto;
@@ -7,8 +8,11 @@
   font-family: "Poppins", sans-serif;
   color: #222;
   line-height: 1.7;
+  text-align: left;   /* מבטל ירושה של center */
+  direction: ltr;     /* מבטל RTL */
 }
 
+/* ===== Titles ===== */
 .support-title {
   font-size: 2rem;
   font-weight: 700;
@@ -24,6 +28,7 @@
   color: #2b3fa3;
 }
 
+/* ===== Text ===== */
 .support-text {
   font-size: 1.05rem;
   margin-bottom: 1rem;
@@ -36,6 +41,7 @@
   margin: 2rem 0;
 }
 
+/* ===== Lists ===== */
 .support-list {
   margin: 1rem 0 1.5rem;
   padding-left: 1.2rem;
@@ -46,6 +52,7 @@
   margin-bottom: 0.6rem;
 }
 
+/* ===== CTA Section ===== */
 .support-cta {
   text-align: center;
   margin-top: 2rem;
@@ -68,6 +75,7 @@
   text-align: center;
 }
 
+/* ===== Quick Buttons ===== */
 .support-quick {
   margin-bottom: 1.5rem;
 }
@@ -88,6 +96,7 @@
   border-color: #b0b0f0;
 }
 
+/* ===== Main Button ===== */
 .support-btn {
   background-color: #4a3aff;
   color: #fff;
