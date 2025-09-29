@@ -22,9 +22,11 @@
   justify-content: center;
 }
 .logo-link .logo {
-  height: 40px;        /* גודל לוגו מקצועי, כמו אצל Pipedrive */
+  height: auto;
+  max-height: 70px;      /* יותר גדול ממה שיש לך עכשיו */
   width: auto;
   object-fit: contain;
+  transition: transform 0.2s ease;
 }
 .logo-link:hover .logo {
   transform: scale(1.05);
