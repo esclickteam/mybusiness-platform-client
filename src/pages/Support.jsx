@@ -4,7 +4,7 @@ import "./Support.css";
 
 export default function Support() {
   const [amount, setAmount] = useState("");
-  const [raised, setRaised] = useState(0); // מתחיל מ-0
+  const [raised, setRaised] = useState(0);
   const paypalReadyRef = useRef(false);
   const paypalContainerRef = useRef(null);
 
@@ -53,7 +53,6 @@ export default function Support() {
   const renderPaypalButtons = () => {
     if (!window.paypal) return;
 
-    // נקה כפתורים קודמים
     if (paypalContainerRef.current) {
       paypalContainerRef.current.innerHTML = "";
     }
@@ -81,13 +80,6 @@ export default function Support() {
             alert(`Thank you, ${details.payer.name.given_name}!`);
             const paid = Number(amount || 10);
             setRaised((prev) => prev + paid);
-
-            // אופציונלי: שלח לשרת לרישום התרומה
-            // fetch("/api/donations/new", {
-            //   method: "POST",
-            //   headers: { "Content-Type": "application/json" },
-            //   body: JSON.stringify({ amount: paid, orderId: data.orderID }),
-            // });
           });
         },
         onError: (err) => {
@@ -102,7 +94,7 @@ export default function Support() {
   useEffect(() => {
     const fetchRaised = async () => {
       try {
-        const res = await fetch("/api/donations/total"); // החזר { totalRaised: number }
+        const res = await fetch("/api/donations/total");
         if (res.ok) {
           const data = await res.json();
           if (typeof data.totalRaised === "number") {
@@ -110,11 +102,11 @@ export default function Support() {
           }
         }
       } catch (e) {
-        // שקט – אם אין API עדיין
+        // שקט אם אין API
       }
     };
 
-    fetchRaised(); // טעינה ראשונית
+    fetchRaised();
     const id = setInterval(fetchRaised, 5000);
     return () => clearInterval(id);
   }, []);
@@ -145,9 +137,9 @@ export default function Support() {
                 className={`support-progress-marker ${reached ? "reached" : ""}`}
                 style={{ left: `${(m / goal) * 100}%` }}
               >
-                <span className="support-progress-label">
+                <div className="support-progress-label">
                   ${m.toLocaleString()}
-                </span>
+                </div>
               </div>
             );
           })}

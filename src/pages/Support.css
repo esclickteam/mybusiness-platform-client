@@ -151,14 +151,16 @@
 /* מספרים מעל milestones */
 .support-progress-label {
   position: absolute;
-  top: -28px;   /* מציב את המספרים מעל הפס */
+  bottom: 100%;     /* מציב את המספרים מעל הפס */
+  margin-bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.9rem;
   font-weight: 600;
-  color: #2b3fa3;
+  color: #1e2a78;
   white-space: nowrap;
 }
+
 
 /* כשהיעד נחצה */
 .support-progress-marker.reached {
