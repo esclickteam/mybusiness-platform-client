@@ -192,7 +192,7 @@
   }
 
   .logo-link .logo {
-    max-height: 40px;  /* גודל נוח במובייל */
+    max-height: 70px;  /* גודל נוח במובייל */
     width: auto;
     object-fit: contain;
   }
