@@ -178,7 +178,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 12px;   /* מינימום ריווח משני הצדדים */
-    height: 64px;
+    height: 58px;
     background: #fff;
   }
 
@@ -195,7 +195,7 @@
   }
 
   .logo-link .logo {
-    max-height: 1800px;  /* גובה סטנדרטי ללוגו מובייל */
+    max-height: 180px;  /* גובה סטנדרטי ללוגו מובייל */
     width: auto;
     object-fit: contain;
   }
