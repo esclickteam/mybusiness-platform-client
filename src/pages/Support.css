@@ -283,8 +283,10 @@
     text-align: center;
   }
 
-    .support-progress-marker.last-marker .support-progress-label {
-    transform: translateX(-10%); /* מזיז שמאלה רק במובייל */
+     .support-progress-marker.last-marker .support-progress-label {
+    transform: translateX(-120%);
+    text-align: right;
+    max-width: 100px;
   }
 
   /* כפתורי תשלום */

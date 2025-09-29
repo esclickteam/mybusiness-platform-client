@@ -119,9 +119,7 @@ export default function Support() {
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
 
-      <h1 className="support-title">
-        Help Us Build a Future for Our Baby
-      </h1>
+      <h1 className="support-title">Help Us Build a Future for Our Baby</h1>
 
       {/* === Progress Bar === */}
       <div className="support-progress-wrapper">
@@ -132,10 +130,13 @@ export default function Support() {
           />
           {milestones.map((m, i) => {
             const reached = raised >= m;
+            const isLast = i === milestones.length - 1; // מוסיפים בדיקה אם זה milestone אחרון
             return (
               <div
                 key={i}
-                className={`support-progress-marker ${reached ? "reached" : ""}`}
+                className={`support-progress-marker ${reached ? "reached" : ""} ${
+                  isLast ? "last-marker" : ""
+                }`}
                 style={{ left: `${(m / goal) * 100}%` }}
                 aria-hidden="true"
               >
@@ -148,7 +149,8 @@ export default function Support() {
         </div>
 
         <div className="support-progress-text">
-          <strong>${raised.toLocaleString()}</strong> raised of ${goal.toLocaleString()} goal
+          <strong>${raised.toLocaleString()}</strong> raised of $
+          {goal.toLocaleString()} goal
         </div>
         <div className="support-progress-left">
           {goal - raised > 0
@@ -162,34 +164,42 @@ export default function Support() {
       {/* Our Story */}
       <h2 className="support-subtitle">Our Story</h2>
       <p className="support-text">
-        We are a young couple with a big dream — to build a platform that will help small businesses
-        manage their operations in a smart and innovative way.
+        We are a young couple with a big dream — to build a platform that will
+        help small businesses manage their operations in a smart and innovative
+        way.
       </p>
       <p className="support-text">
-        For two years we went through difficult fertility treatments, which were very costly both
-        financially and emotionally. To cover the treatments, as well as our basic living expenses,
-        we had to take out loans and rely on credit card payments.
+        For two years we went through difficult fertility treatments, which were
+        very costly both financially and emotionally. To cover the treatments,
+        as well as our basic living expenses, we had to take out loans and rely
+        on credit card payments.
       </p>
       <p className="support-text">
-        Since the war of October 7th, my husband has been called up for reserve duty again and again.
-        Altogether he served for about half a year, and during those periods our income dropped sharply —
-        in some months down to zero. Even in the short breaks when he returned, the business could not recover,
-        and the financial burden kept growing.
+        Since the war of October 7th, my husband has been called up for reserve
+        duty again and again. Altogether he served for about half a year, and
+        during those periods our income dropped sharply — in some months down to
+        zero. Even in the short breaks when he returned, the business could not
+        recover, and the financial burden kept growing.
       </p>
       <p className="support-text">
-        After a very difficult period, our income began to stabilize slightly, but in reality we are unable
-        to keep up with the monthly payments on our loans and credit cards. Every month we face high interest rates
-        and growing debt, and we simply have nowhere left to take money from.
+        After a very difficult period, our income began to stabilize slightly,
+        but in reality we are unable to keep up with the monthly payments on our
+        loans and credit cards. Every month we face high interest rates and
+        growing debt, and we simply have nowhere left to take money from.
       </p>
       <p className="support-text">
-        And despite everything — we have not given up. For the past seven months we have been developing on our own
-        an advanced SaaS platform, building it step by step: a business page with ratings and reviews, chat, gallery,
-        CRM system, a collaboration network to increase revenues, and even an AI business partner to assist entrepreneurs.
+        And despite everything — we have not given up. For the past seven months
+        we have been developing on our own an advanced SaaS platform, building
+        it step by step: a business page with ratings and reviews, chat,
+        gallery, CRM system, a collaboration network to increase revenues, and
+        even an AI business partner to assist entrepreneurs.
       </p>
       <p className="support-text">
-        After two years of treatments, we finally managed to get pregnant — but sadly, we lost twins. Just one month later,
-        we unexpectedly became pregnant again. This pregnancy is so precious to us, and all we want now is to live with dignity,
-        pay off our debts, complete the platform, and build a stable foundation for our baby on the way.
+        After two years of treatments, we finally managed to get pregnant — but
+        sadly, we lost twins. Just one month later, we unexpectedly became
+        pregnant again. This pregnancy is so precious to us, and all we want now
+        is to live with dignity, pay off our debts, complete the platform, and
+        build a stable foundation for our baby on the way.
       </p>
 
       <hr className="support-divider" />
@@ -197,9 +207,11 @@ export default function Support() {
       {/* Our Vision */}
       <h2 className="support-subtitle">Our Vision</h2>
       <p className="support-text">
-        The platform we are building was born from a true desire to help businesses. Our dream is that, over time, it will grow
-        into an American company with international reach, serving businesses around the world. We cannot promise this today —
-        but it is our vision, and we believe we can get there with enough support.
+        The platform we are building was born from a true desire to help
+        businesses. Our dream is that, over time, it will grow into an American
+        company with international reach, serving businesses around the world.
+        We cannot promise this today — but it is our vision, and we believe we
+        can get there with enough support.
       </p>
 
       <hr className="support-divider" />
@@ -207,11 +219,14 @@ export default function Support() {
       {/* Why We Are Reaching Out */}
       <h2 className="support-subtitle">Why We Are Reaching Out</h2>
       <p className="support-text">
-        We are not a nonprofit, and we are not backed by large investors. We are a young family, with a real story and a real dream.{" "}
-        All we ask for is support to help us hold on, pay off our debts, complete the development, and build a stable and secure future
-        for ourselves and for our baby.
+        We are not a nonprofit, and we are not backed by large investors. We are
+        a young family, with a real story and a real dream. All we ask for is
+        support to help us hold on, pay off our debts, complete the development,
+        and build a stable and secure future for ourselves and for our baby.
       </p>
-      <p className="support-text">Any amount you choose to give will be received with deep gratitude 🙏</p>
+      <p className="support-text">
+        Any amount you choose to give will be received with deep gratitude 🙏
+      </p>
 
       <hr className="support-divider" />
 
@@ -224,12 +239,15 @@ export default function Support() {
         <li>Above $1,000 → Your name listed on a special page on our website: “Friends & Supporters”</li>
         <li>Above $5,000 → A personal thank-you video call with us (via Zoom)</li>
         <li>
-          Above $10,000 → Your name featured at the top of our “Friends & Supporters” page as a Main Supporter +
-          a personalized “Founding Donor” Certificate
+          Above $10,000 → Your name featured at the top of our “Friends & Supporters” page as a Main
+          Supporter + a personalized “Founding Donor” Certificate
         </li>
       </ul>
 
-      <p className="support-text">Of course, there will always be an option to choose any other amount you wish to give.</p>
+      <p className="support-text">
+        Of course, there will always be an option to choose any other amount you
+        wish to give.
+      </p>
 
       {/* Support Form */}
       <div className="support-cta donation-box">
