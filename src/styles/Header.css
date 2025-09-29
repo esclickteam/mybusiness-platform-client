@@ -125,7 +125,7 @@
 }
 .logo-link .logo {
   height: auto;
-  max-height: 160px;   /* ✨ תקרת גובה גבוהה יותר */
+  max-height: 300px;   /* ✨ תקרת גובה גבוהה יותר */
   width: auto;
   max-width: 420px;    /* ✨ תן הרבה יותר רוחב */
   object-fit: contain;
