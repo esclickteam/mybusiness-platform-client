@@ -1,170 +1,110 @@
-/* ✨ עיצוב רקע כללי */
-body {
-    font-family: "Arial", sans-serif;
-    background: linear-gradient(to bottom, #e0e4ff, #ffffff);
-    margin: 0;
-    padding: 0;
+/* ✨ HERO Section */
+.hero {
+  position: relative;
+  padding: 120px 20px 80px;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(135deg, #1e2a78 0%, #2b3fa3 50%, #6a11cb 100%);
+  overflow: hidden;
 }
 
-/* ✨ מבנה כללי של התוכן */
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 40px 20px;
-    text-align: center;
+/* רקע עם אפקט זוהר */
+.hero::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 70%);
+  transform: translateX(-50%);
+  z-index: 0;
 }
 
-/* ✨ כותרות ראשיות */
-.title {
-    font-size: 36px;
-    color: #4a148c;
-    font-weight: bold;
-    margin-bottom: 20px;
+/* תוכן ההירו */
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: auto;
 }
 
-/* ✨ כותרות משנה */
-.subtitle {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 30px;
+/* ✨ כותרת ראשית */
+.hero-title {
+  font-size: clamp(38px, 5vw, 64px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin: 0 0 20px;
+  letter-spacing: -0.01em;
+}
+.hero-title span {
+  color: #ffd700; /* זהב מודגש */
 }
 
-/* ✨ אזור כרטיסיות אחיד */
-.cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 25px;
-    margin-top: 30px;
+/* ✨ כותרת משנה */
+.hero-subtitle {
+  font-size: 20px;
+  line-height: 1.7;
+  color: #e0e4ff;
+  margin: 0 auto 30px;
+  max-width: 720px;
 }
 
-/* ✨ עיצוב כרטיסיות */
-.card {
-    width: 45%;
-    min-width: 320px;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+/* ✨ כפתורים */
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 25px;
 }
 
-/* צבעים לכרטיסיות */
-.card.purple {
-    background: #f3e5f5;
-    color: #4a148c;
+.hero-cta .btn-primary {
+  background: linear-gradient(90deg, #ffd700, #ffcc33);
+  color: #1e2a78;
+  font-size: 22px;
+  padding: 14px 34px;
+  border-radius: 30px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 22px rgba(255, 215, 0, 0.35);
+}
+.hero-cta .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(255, 215, 0, 0.5);
 }
 
-.card.white {
-    background: #ffffff;
-    color: #333;
+.hero-cta .btn-ghost {
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 20px;
+  padding: 14px 34px;
+  border-radius: 30px;
+  background: transparent;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.hero-cta .btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
-/* ✨ כותרות בכרטיסיות */
-.card h2 {
-    font-size: 24px;
-    margin-bottom: 15px;
+/* ✨ טקסט אמון */
+.hero-trust {
+  margin-top: 22px;
+  font-size: 16px;
+  color: #dcdff9;
+  opacity: 0.9;
 }
 
-/* ✨ כפתור מודגש */
-.btn-primary {
-    background: linear-gradient(90deg, #ff8c00, #ff3d00);
-    color: #fff;
-    font-size: 24px;
-    padding: 15px 35px;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    font-weight: bold;
-    display: inline-block;
-    text-align: center;
-    text-transform: uppercase;
-    box-shadow: 0px 8px 18px rgba(255, 61, 0, 0.3);
-    transition: all 0.3s ease-in-out;
-}
-
-.btn-primary:hover {
-    background: linear-gradient(90deg, #ff3d00, #ff8c00);
-    transform: scale(1.1);
-    box-shadow: 0px 10px 22px rgba(255, 61, 0, 0.5);
-}
-
-/* ✨ התאמה למובייל */
+/* ✨ התאמה לנייד */
 @media (max-width: 768px) {
-    .cards-container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .card {
-        width: 90%;
-        text-align: center;
-    }
-
-    .title {
-        font-size: 30px;
-    }
-
-    .subtitle {
-        font-size: 18px;
-    }
-
-    .btn-primary {
-        font-size: 18px;
-        padding: 12px 30px;
-    }
-}
-/* טאבלטים גדולים (769px עד 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .cards-container {
-    gap: 20px;
-  }
-
-  .card {
-    width: 60%;
-    min-width: auto;
-    padding: 20px;
-  }
-
-  .title {
-    font-size: 32px;
-  }
-
-  .subtitle {
-    font-size: 19px;
-  }
-
-  .btn-primary {
-    font-size: 20px;
-    padding: 14px 32px;
-  }
-}
-
-/* מסכים קטנים מאוד (עד 480px) */
-@media (max-width: 480px) {
-  .cards-container {
-    gap: 15px;
-  }
-
-  .card {
-    width: 95%;
-    padding: 15px;
-  }
-
-  .title {
-    font-size: 26px;
-  }
-
-  .subtitle {
-    font-size: 16px;
-    margin-bottom: 20px;
-  }
-
-  .btn-primary {
-    font-size: 16px;
-    padding: 10px 25px;
+  .hero-title { font-size: 34px; }
+  .hero-subtitle { font-size: 18px; }
+  .hero-cta .btn-primary, .hero-cta .btn-ghost {
+    font-size: 18px;
+    padding: 12px 28px;
   }
 }
