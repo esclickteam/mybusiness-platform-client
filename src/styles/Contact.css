@@ -3,7 +3,7 @@
   max-width: 600px;
   margin: 40px auto 60px auto;
   padding: 30px 25px;
-  direction: rtl;
+  direction: ltr; /* Left-to-right */
   background: #faf7ff;
   border-radius: 18px;
   box-shadow: 0 15px 40px rgba(128, 0, 128, 0.15);
@@ -46,7 +46,7 @@
   font-weight: 700;
   color: #4a148c;
   margin-bottom: 8px;
-  text-align: right;
+  text-align: left; /* English style */
   user-select: none;
 }
 
@@ -57,7 +57,7 @@
   margin-bottom: 22px;
   border: 2.5px solid #9c27b0;
   border-radius: 12px;
-  font-size: 18px;
+  font-size: 16px;
   font-family: inherit;
   color: #333;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -75,11 +75,11 @@
 .submit-button {
   background-color: #6a1b9a;
   color: #fff;
-  font-size: 22px;
-  font-weight: 900;
-  padding: 20px 0;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 16px 0;
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
   cursor: pointer;
   transition: background-color 0.35s ease, transform 0.25s ease, box-shadow 0.3s ease;
   text-transform: uppercase;
@@ -89,13 +89,13 @@
 .submit-button:hover {
   background-color: #4a148c;
   box-shadow: 0 10px 30px rgba(74, 20, 140, 0.7);
-  transform: scale(1.07);
+  transform: scale(1.05);
 }
 
 .contact-email {
-  font-size: 17px;
+  font-size: 15px;
   color: #4a148c;
-  margin-top: 28px;
+  margin-top: 25px;
   font-weight: 600;
   user-select: text;
 }
@@ -104,56 +104,7 @@
   content: "📧 ";
 }
 
-/* ----------- פוטר מעוצב לשתי שורות בלבד ----------- */
-.footer-links-box {
-  background: #f8f6fd;
-  border-radius: 24px;
-  padding: 32px 10px 14px 10px;
-  max-width: 98%;
-  margin: 0 auto 0 auto;
-  direction: rtl;
-  box-shadow: none;
-}
-
-.footer-links-row {
-  display: flex;
-  justify-content: center;
-  gap: 54px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.footer-links-row a {
-  color: #7a32c2;
-  font-weight: 800;
-  font-size: 0.85m;
-  text-decoration: none;
-  transition: color 0.18s;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  letter-spacing: 0.03em;
-}
-
-.footer-links-row a span[role="img"] {
-  font-size: 1.15em;
-  margin-left: 2px;
-  margin-right: 2px;
-}
-
-.footer-links-row a:hover {
-  color: #a35be0;
-}
-
-.footer-copyright {
-  text-align: center;
-  color: #b7b5c6;
-  font-size: 1em;
-  margin-top: 10px;
-  font-weight: 500;
-}
-
-/* ----------- רספונסיביות ----------- */
+/* ---------- Responsive ---------- */
 @media (max-width: 768px) {
   .contact-container {
     padding: 25px 15px;
@@ -169,64 +120,12 @@
   }
 
   .contact-form label {
-    font-size: 16px;
-  }
-
-  .contact-form input,
-  .contact-form textarea {
-    font-size: 16px;
-  }
-
-  .submit-button {
-    font-size: 18px;
-    padding: 16px 0;
-  }
-
-  .contact-email {
     font-size: 15px;
   }
 
-  .footer-links-row {
-    gap: 15px;
-    font-size: 0.97em;
-    flex-wrap: wrap;
-    padding-bottom: 4px;
-  }
-  .footer-links-box {
-    padding: 18px 3px 8px 3px;
-  }
-  .footer-links-row a {
-    font-size: 1em;
-    padding: 2px 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .contact-container {
-    padding: 20px 15px;
-    width: 95%;
-    margin: 20px auto 50px auto;
-  }
-
-  .contact-title {
-    font-size: 24px;
-  }
-
-  .contact-subtitle {
-    font-size: 14px;
-    margin-bottom: 20px;
-  }
-
-  .contact-form label {
-    font-size: 14px;
-    margin-bottom: 6px;
-  }
-
   .contact-form input,
   .contact-form textarea {
-    font-size: 14px;
-    padding: 12px 14px;
-    margin-bottom: 18px;
+    font-size: 15px;
   }
 
   .submit-button {
@@ -236,34 +135,33 @@
 
   .contact-email {
     font-size: 14px;
-    margin-top: 18px;
   }
 }
-@media (max-width: 360px) {
+
+@media (max-width: 480px) {
   .contact-container {
-    padding: 15px 12px;
-    margin: 15px auto 40px auto;
+    padding: 20px 12px;
+    width: 95%;
+    margin: 20px auto 50px auto;
   }
 
   .contact-title {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   .contact-subtitle {
-    font-size: 13px;
-    margin-bottom: 15px;
+    font-size: 14px;
+    margin-bottom: 20px;
   }
 
   .contact-form label {
-    font-size: 12px;
-    margin-bottom: 4px;
+    font-size: 13px;
   }
 
   .contact-form input,
   .contact-form textarea {
-    font-size: 12px;
-    padding: 10px 12px;
-    margin-bottom: 14px;
+    font-size: 13px;
+    padding: 12px 14px;
   }
 
   .submit-button {
@@ -272,21 +170,7 @@
   }
 
   .contact-email {
-    font-size: 12px;
-    margin-top: 12px;
-  }
-
-  .footer-links-row {
-    gap: 10px;
-    font-size: 0.9em;
-  }
-
-  .footer-links-box {
-    padding: 12px 5px 6px 5px;
-  }
-
-  .footer-links-row a {
-    font-size: 0.9em;
-    padding: 1px 0;
+    font-size: 13px;
+    margin-top: 15px;
   }
 }

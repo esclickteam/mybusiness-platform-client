@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useForm } from "@formspree/react"; // ייבוא Formspree
-import { Link } from "react-router-dom";
+import { useForm } from "@formspree/react"; 
 import { Helmet } from "react-helmet";
 import "../styles/Contact.css";
 
@@ -12,7 +11,7 @@ function Contact() {
     message: "",
   });
 
-  const [state, handleSubmit] = useForm("mwpoojlv"); // החלף ב-ID שלך מ-Formspree
+  const [state, handleSubmit] = useForm("mwpoojlv"); // replace with your Formspree ID
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +26,7 @@ function Contact() {
     const { name, phone, email, message } = formData;
 
     if (!name || !phone || !email || !message) {
-      setStatus({ type: "error", message: "אנא מלא את כל השדות" });
+      setStatus({ type: "error", message: "Please fill in all fields" });
       return;
     }
 
@@ -38,10 +37,10 @@ function Contact() {
         data: { name, phone, email, message }
       });
 
-      setStatus({ type: "success", message: "הטופס נשלח בהצלחה!" });
+      setStatus({ type: "success", message: "Form submitted successfully!" });
       setFormData({ name: "", phone: "", email: "", message: "" });
     } catch (error) {
-      setStatus({ type: "error", message: "אירעה שגיאה בשליחה. נסה שוב." });
+      setStatus({ type: "error", message: "An error occurred. Please try again." });
     } finally {
       setLoading(false);
     }
@@ -50,7 +49,7 @@ function Contact() {
   if (state.succeeded) {
     return (
       <div className="contact-container">
-        <h2>הטופס נשלח בהצלחה!</h2>
+        <h2>Form submitted successfully!</h2>
       </div>
     );
   }
@@ -58,25 +57,25 @@ function Contact() {
   return (
     <div className="contact-container">
       <Helmet>
-        <title>יצירת קשר - עסקליק | נשמח לעמוד לשירותך</title>
+        <title>Contact Us - Bizuply | We're Here to Help</title>
         <meta
           name="description"
-          content="צור קשר עם צוות עסקליק לשאלות, תמיכה והצטרפות. מלא טופס פשוט ונחזור אליך בהקדם."
+          content="Contact the Bizuply team for questions, support, and business inquiries. Fill out a simple form and we'll get back to you quickly."
         />
         <meta
           name="keywords"
-          content="צור קשר, תמיכה, עסקליק, שאלות, הצטרפות, שירות לקוחות"
+          content="contact, support, Bizuply, questions, help, business"
         />
-        <link rel="canonical" href="https://yourdomain.co.il/contact" />
+        <link rel="canonical" href="https://yourdomain.com/contact" />
       </Helmet>
 
-      <h1 className="contact-title">📞 יצירת קשר</h1>
+      <h1 className="contact-title">📞 Contact Us</h1>
       <p className="contact-subtitle">
-        יש לכם שאלה או רוצים שנחזור אליכם? מלאו את הטופס וניצור קשר בהקדם!
+        Have a question or want us to get back to you? Fill out the form and we’ll be in touch shortly!
       </p>
 
       <form className="contact-form" onSubmit={onSubmit}>
-        <label>שם מלא:</label>
+        <label>Full Name:</label>
         <input
           type="text"
           name="name"
@@ -86,7 +85,7 @@ function Contact() {
           disabled={loading}
         />
 
-        <label>טלפון:</label>
+        <label>Phone:</label>
         <input
           type="tel"
           name="phone"
@@ -96,7 +95,7 @@ function Contact() {
           disabled={loading}
         />
 
-        <label>אימייל:</label>
+        <label>Email:</label>
         <input
           type="email"
           name="email"
@@ -106,7 +105,7 @@ function Contact() {
           disabled={loading}
         />
 
-        <label>הודעה:</label>
+        <label>Message:</label>
         <textarea
           name="message"
           value={formData.message}
@@ -116,7 +115,7 @@ function Contact() {
         ></textarea>
 
         <button type="submit" className="submit-button" disabled={loading}>
-          {loading ? "שולח..." : "שליחת טופס"}
+          {loading ? "Sending..." : "Send Message"}
         </button>
       </form>
 
@@ -131,25 +130,8 @@ function Contact() {
       )}
 
       <p className="contact-email">
-        ✉️ ניתן גם לפנות ישירות במייל: <strong>support@esclick.co.il</strong>
+        ✉️ You can also email us directly at: <strong>support@bizuply.com</strong>
       </p>
-
-      {/* Footer בעיצוב כפול שורה */}
-      <footer className="footer-links-box">
-        <div className="footer-links-row">
-          <Link to="/about"><span role="img" aria-label="ספר">📖</span> קצת עלינו</Link>
-          <Link to="/how-it-works"><span role="img" aria-label="הגדרות">⚙️</span> איך זה עובד</Link>
-          <Link to="/join"><span role="img" aria-label="חץ ימני">➥</span> הצטרפות עסקים</Link>
-        </div>
-        <div className="footer-links-row">
-          <Link to="/faq"><span role="img" aria-label="סימן שאלה">❓</span> שאלות נפוצות</Link>
-          <Link to="/terms"><span role="img" aria-label="גליון">📜</span> תקנון</Link>
-          <Link to="/contact"><span role="img" aria-label="טלפון">📞</span> יצירת קשר</Link>
-        </div>
-        <div className="footer-copyright">
-          כל הזכויות שמורות © עסקליק
-        </div>
-      </footer>
     </div>
   );
 }
