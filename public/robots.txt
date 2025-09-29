@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bizuply.com/bizuply_sitemap.xml
+Sitemap: https://bizuply.com/sitemap.xml
