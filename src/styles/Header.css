@@ -29,7 +29,7 @@
   transition: transform 0.2s ease;
 }
 .logo-link:hover .logo {
-  transform: scale(1.05);
+  transform: scale(1.80);
 }
 
 /* ===== Nav Links (Desktop) ===== */
