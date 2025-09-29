@@ -8,8 +8,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 32px;
-  max-height: 80px;
+  padding: 12px 32px;   /* קצת יותר מרווח מלמעלה ולמטה */
+  height: 100px;        /* גובה גבוה יותר ללוגו גדול */
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   z-index: 1502;
@@ -23,9 +23,9 @@
 }
 .logo-link .logo {
   height: auto;
-  max-height: 80px;   /* גובה אידיאלי לשורת הניווט */
+  max-height: 100px;   /* שליטה על גובה הלוגו */
   width: auto;
-  max-width: 320px;   /* ישאיר אותו קריא אבל לא ענק */
+  max-width: 240px;    /* שומר על פרופורציות */
   object-fit: contain;
   transition: transform 0.2s ease;
 }
