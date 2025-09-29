@@ -319,7 +319,7 @@ a.active-link {
     backdrop-filter: saturate(180%) blur(12px);
   }
   .logo-link .logo {
-    height: 160px;       /* קצת יותר קטן */
+    height: 300px;       /* קצת יותר קטן */
     max-width: 180px;   /* מגבלה נכונה */
   }
   .auth-controls.desktop-only {
