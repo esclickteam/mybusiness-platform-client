@@ -4,6 +4,11 @@ import "./Support.css";
 
 export default function Support() {
   const [amount, setAmount] = useState("");
+  const [raised, setRaised] = useState(17200); // כמה נאסף בפועל (אפשר לעדכן ידנית או מהשרת)
+
+  const milestones = [50000, 100000, 250000];
+  const goal = milestones[milestones.length - 1];
+  const progress = Math.min((raised / goal) * 100, 100);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -22,7 +27,7 @@ export default function Support() {
               purchase_units: [
                 {
                   amount: {
-                    value: amount || "10", // ברירת מחדל אם לא הוזן סכום
+                    value: amount || "10",
                   },
                 },
               ],
@@ -31,6 +36,8 @@ export default function Support() {
           onApprove: (data, actions) => {
             return actions.order.capture().then((details) => {
               alert(`Thank you, ${details.payer.name.given_name}!`);
+              // כאן אפשר להוסיף עדכון raised בשרת
+              setRaised((prev) => prev + Number(amount || 10));
             });
           },
           onError: (err) => {
@@ -53,6 +60,32 @@ export default function Support() {
       <h1 className="support-title">
         Help Us Hold On, Finish the Development, and Build a Future for Our Baby on the Way
       </h1>
+
+      {/* === Progress Bar === */}
+      <div className="support-progress-wrapper">
+        <div className="support-progress-bar">
+          <div
+            className="support-progress-fill"
+            style={{ width: `${progress}%` }}
+          />
+          {milestones.map((m, i) => (
+            <div
+              key={i}
+              className="support-progress-marker"
+              style={{ left: `${(m / goal) * 100}%` }}
+              title={`$${m.toLocaleString()}`}
+            />
+          ))}
+        </div>
+        <div className="support-progress-text">
+          <strong>${raised.toLocaleString()}</strong> raised of ${goal.toLocaleString()} goal
+        </div>
+        <div className="support-progress-left">
+          {goal - raised > 0
+            ? `$${(goal - raised).toLocaleString()} left to reach the goal`
+            : "🎉 Goal reached!"}
+        </div>
+      </div>
 
       <hr className="support-divider" />
 

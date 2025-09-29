@@ -86,7 +86,7 @@
   padding: 12px 20px;
   font-size: 1rem;
   font-weight: 600;
-  color: #2b3fa3;            /* טקסט כחול כהה במקום לבן */
+  color: #2b3fa3;            /* טקסט כחול כהה */
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 10px rgba(106, 17, 203, 0.15); /* צל עדין */
@@ -112,6 +112,61 @@
 
 .support-page .support-btn:hover {
   background-color: #372bc2;
+}
+
+/* ===== Progress Section ===== */
+.support-progress-wrapper {
+  margin: 30px 0;
+  text-align: center;
+}
+
+.support-progress-bar {
+  background: #e6e9f0;
+  border-radius: 30px;
+  overflow: hidden;
+  height: 24px;
+  margin: 0 auto 12px;
+  max-width: 600px;
+  position: relative;
+}
+
+.support-progress-fill {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+/* Milestones */
+.support-progress-marker {
+  position: absolute;
+  top: -8px;
+  width: 2px;
+  height: 40px;
+  background: #fff;
+  border-left: 2px solid #6a11cb;
+}
+
+.support-progress-marker::after {
+  content: attr(title);
+  position: absolute;
+  top: -24px;
+  left: -20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #2b3fa3;
+  white-space: nowrap;
+}
+
+.support-progress-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e2a78;
+  margin-bottom: 4px;
+}
+
+.support-progress-left {
+  font-size: 0.95rem;
+  color: #555;
 }
 
 /* ===== תיקון להידר רק בדף התמיכה ===== */
