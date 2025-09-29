@@ -124,12 +124,11 @@
   margin: 0;
 }
 .logo-link .logo {
-  height: 70px;         /* ✨ גובה ראשי */
-  max-height: 80px;     /* לא לעבור את זה */
-  max-width: 220px;     /* הגבלת רוחב כדי שלא יתפרס */
+  height: auto;        /* הגובה יותאם אוטומטית */
+  max-height: 80px;    /* תקרה לגובה */
   width: auto;
+  max-width: 280px;    /* ✨ הגדלת הרוחב המקסימלי */
   object-fit: contain;
-  transition: transform .3s;
 }
 .logo-link:hover .logo {
   transform: scale(1.05);
