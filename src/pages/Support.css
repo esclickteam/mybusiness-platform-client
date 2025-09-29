@@ -123,3 +123,12 @@
   flex-direction: row;
   justify-content: flex-end;
 }
+
+.support-page,
+.support-page .support-text,
+.support-page .support-title,
+.support-page .support-subtitle,
+.support-page .support-list {
+  direction: ltr;
+  text-align: left;
+}
