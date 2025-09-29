@@ -9,7 +9,7 @@ const ForgotPassword = ({ closePopup }) => {
 
   const handleSendReset = async () => {
     if (!email) {
-      setMessage("נא להזין כתובת אימייל");
+      setMessage("Please enter your email address");
       return;
     }
 
@@ -17,12 +17,12 @@ const ForgotPassword = ({ closePopup }) => {
     setMessage("");
 
     try {
-      const res = await API.post("/auth/forgot-password", { email });
-      setMessage("✅ קישור איפוס נשלח לאימייל שלך!");
+      await API.post("/auth/forgot-password", { email });
+      setMessage("✅ A reset link has been sent to your email!");
     } catch (error) {
-      console.error("❌ שגיאה בשליחת קוד איפוס:", error);
+      console.error("❌ Error sending reset link:", error);
       setMessage(
-        error.response?.data?.error || "❌ שגיאה בלתי צפויה. נסה שוב."
+        error.response?.data?.error || "❌ Unexpected error. Please try again."
       );
     } finally {
       setLoading(false);
@@ -32,11 +32,11 @@ const ForgotPassword = ({ closePopup }) => {
   return (
     <div className="forgot-password-overlay">
       <div className="forgot-password-modal">
-        <h2>שחזור סיסמה</h2>
-        <p>הזן את כתובת האימייל שלך ונשלח לך קישור לאיפוס הסיסמה</p>
+        <h2>Reset Password</h2>
+        <p>Enter your email address and we’ll send you a reset link</p>
         <input
           type="email"
-          placeholder="הזן אימייל"
+          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -45,11 +45,11 @@ const ForgotPassword = ({ closePopup }) => {
           className="send-button"
           disabled={loading}
         >
-          {loading ? "🔄 שולח..." : "שלח קישור איפוס"}
+          {loading ? "🔄 Sending..." : "Send Reset Link"}
         </button>
         {message && <p className="message">{message}</p>}
         <button onClick={closePopup} className="close-button">
-          סגור
+          Close
         </button>
       </div>
     </div>
