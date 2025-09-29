@@ -187,14 +187,15 @@
     display: none !important;
   }
 
- .logo-wrapper {
+  .logo-wrapper {
     display: flex;
     align-items: center;
-    margin-right: auto;   /* צמוד לשמאל */
+    justify-content: flex-start; /* חשוב! צמוד לשמאל */
+    margin-right: auto;          /* דוחף אותו לשמאל */
   }
 
   .logo-link .logo {
-    max-height: 32px;  /* גובה סטנדרטי ללוגו מובייל */
+    max-height: 80px;  /* גובה סטנדרטי ללוגו מובייל */
     width: auto;
     object-fit: contain;
   }
