@@ -139,7 +139,6 @@ export default function Support() {
                 style={{ left: `${(m / goal) * 100}%` }}
                 aria-hidden="true"
               >
-                {/* המספרים מעל כל milestone */}
                 <div className="support-progress-label">
                   ${m.toLocaleString()}
                 </div>
@@ -233,24 +232,27 @@ export default function Support() {
       <p className="support-text">Of course, there will always be an option to choose any other amount you wish to give.</p>
 
       {/* Support Form */}
-      <div className="support-cta">
+      <div className="support-cta donation-box">
         <label htmlFor="amount" className="support-label">
           Enter your support amount (USD):
         </label>
-        <input
-          id="amount"
-          type="number"
-          className="support-input"
-          placeholder="e.g. 100"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
+        <div className="donation-input-wrapper">
+          <span className="donation-currency">$</span>
+          <input
+            id="amount"
+            type="number"
+            className="donation-input"
+            placeholder="100"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        </div>
 
-        <div className="support-quick">
+        <div className="donation-quick-grid">
           {[50, 250, 500, 1000, 5000, 10000].map((val) => (
             <button
               key={val}
-              className="support-quick-btn"
+              className="donation-quick-btn"
               onClick={() => setAmount(val)}
             >
               ${val}
