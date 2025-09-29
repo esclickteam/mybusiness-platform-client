@@ -16,59 +16,10 @@
   z-index: 1502;
 }
 
-/* ===== Logo ===== */
-.logo-wrapper {
+/* Hamburger + notifications container (mobile only) */
+.menu-toggle {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  order: 2;
-}
-.logo-link .logo {
-  height: auto;
-  max-height: 80px;
-  max-width: 280px;
-  object-fit: contain;
-  transition: transform 0.2s ease;
-}
-.logo-link:hover .logo {
-  transform: scale(1.05);
-}
-
-/* ===== Desktop auth controls ===== */
-.auth-controls.desktop-only {
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 12px;
-}
-
-.personal-area-button,
-.logout-button,
-.login-button {
-  padding: 8px 18px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  background: #5e17eb;
-  color: #fff;
-  cursor: pointer;
-  transition: background .2s;
-}
-.personal-area-button:hover,
-.logout-button:hover,
-.login-button:hover {
-  background: #4315c7;
-}
-
-/* =================================================================== */
-/*                           Hamburger Toggle                           */
-/* =================================================================== */
-.menu-toggle.mobile-only {
-  position: absolute;
-  top: 50%;
+  top: calc(50% + 8px);
   right: 12px;
   transform: translateY(-50%);
   z-index: 1600;
@@ -94,7 +45,7 @@
   justify-content: center;
 }
 
-/* Notifications button */
+/* Notification button */
 .notification-button {
   position: relative;
   background: none;
@@ -112,6 +63,10 @@
 .notification-button:hover {
   opacity: 0.8;
 }
+.notification-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(94, 23, 235, 0.4);
+}
 .notification-button > span {
   position: absolute;
   top: -5px;
@@ -127,22 +82,68 @@
   line-height: 1;
 }
 
-/* =================================================================== */
-/*                               Drawer                                 */
-/* =================================================================== */
+/* Logo */
+.logo-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  order: 2;
+}
+.logo-link .logo {
+  height: auto;
+  max-height: 300px;  /* שמור גודל מקורי */
+  width: auto;
+  max-width: 420px;
+  object-fit: contain;
+}
+.logo-link:hover .logo {
+  transform: scale(1.05);
+}
+
+/* Desktop buttons (left side) */
+.auth-controls.desktop-only {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
+}
+
+/* Action buttons */
+.personal-area-button,
+.logout-button,
+.login-button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  background: #5e17eb;
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s;
+}
+.personal-area-button:hover,
+.logout-button:hover,
+.login-button:hover {
+  background: #4315c7;
+}
+
+/* Drawer (Hamburger menu) */
 .side-menu {
   position: fixed;
   top: 0;
   right: 0;
-  width: 100%;
   max-width: 300px;
+  width: 100%;
   height: 100vh;
   background: #fff;
   box-shadow: -4px 0 16px rgba(0,0,0,.1);
-
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   transform: translateX(100%);
   transition: transform .3s;
   z-index: 1501;
@@ -167,7 +168,6 @@
   border: 1px solid #bfa2e1;
   border-radius: 20px;
   color: #5e17eb;
-  font-size: .95rem;
   cursor: pointer;
 }
 .back-button:hover {
@@ -210,46 +210,40 @@ a.active-link {
 
 .auth-menu {
   margin-top: auto;
-  background: #fff;
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   box-shadow: 0 -2px 8px rgba(0,0,0,.04);
 }
-.auth-menu .personal-area-button,
-.auth-menu .logout-button {
+.auth-menu button {
   width: 100%;
-  text-align: center;
 }
 
+/* Backdrop */
 .menu-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.5);
   z-index: 1500;
 }
 
-/* =================================================================== */
-/*                         Responsive Behaviour                         */
-/* =================================================================== */
-
-/* Mobile only */
-.mobile-only {
-  display: flex;
-}
-@media (min-width: 1024px) {
-  .mobile-only {
+/* ================= Responsive ================= */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 12px;
+    height: 90px;
+  }
+  .logo-link .logo {
+    max-height: 260px; /* גובה מותאם לנייד */
+    max-width: 300px;
+  }
+  .auth-controls.desktop-only {
     display: none !important;
   }
 }
 
-/* Desktop only */
-.desktop-only {
-  display: none;
-}
 @media (min-width: 1024px) {
-  .desktop-only {
-    display: flex;
-  }
+  .mobile-only { display: none !important; }
+  .desktop-only { display: flex; }
 }
