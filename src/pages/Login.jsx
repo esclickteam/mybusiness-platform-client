@@ -128,7 +128,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword((p) => !p)}
-                className="password-toggle-inside"
+                className="password-toggle-btn" 
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 tabIndex={-1}
               >
