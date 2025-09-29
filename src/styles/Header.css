@@ -186,15 +186,19 @@
     display: none !important;
   }
 
-  .menu-toggle {
-    position: static;  /* לא מוחלט */
-    transform: none;   /* מבטל translateY */
+  .logo-wrapper {
+    justify-content: flex-start; /* דוחף את הלוגו לשמאל */
   }
 
   .logo-link .logo {
-    max-height: 160px;  /* גודל נוח במובייל */
+    max-height: 55px;   /* יותר מאוזן למסך קטן */
     width: auto;
     object-fit: contain;
+  }
+
+  .menu-toggle {
+    position: static;  /* לא מוחלט */
+    transform: none;   /* מבטל translateY */
   }
 }
 
@@ -202,5 +206,6 @@
   .mobile-only { display: none !important; }
   .desktop-only { display: flex; }
 }
+
 
 
