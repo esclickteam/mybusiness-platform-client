@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
 
-/* ===== Reset כדי למנוע השפעה על ה-Header ===== */
+/* ===== עמוד התמיכה בלבד ===== */
 .support-page {
   max-width: 850px;
   margin: 0 auto;
@@ -8,12 +8,10 @@
   font-family: "Poppins", sans-serif;
   color: #222;
   line-height: 1.7;
-  text-align: left;   /* מבטל ירושה של center */
-  direction: ltr;     /* מבטל RTL */
 }
 
 /* ===== Titles ===== */
-.support-title {
+.support-page .support-title {
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
@@ -21,7 +19,7 @@
   color: #1e2a78;
 }
 
-.support-subtitle {
+.support-page .support-subtitle {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 2rem 0 1rem;
@@ -29,43 +27,43 @@
 }
 
 /* ===== Text ===== */
-.support-text {
+.support-page .support-text {
   font-size: 1.05rem;
   margin-bottom: 1rem;
   color: #333;
 }
 
-.support-divider {
+.support-page .support-divider {
   border: none;
   border-top: 1px solid #e6e9f0;
   margin: 2rem 0;
 }
 
 /* ===== Lists ===== */
-.support-list {
+.support-page .support-list {
   margin: 1rem 0 1.5rem;
   padding-left: 1.2rem;
   font-size: 1.05rem;
 }
 
-.support-list li {
+.support-page .support-list li {
   margin-bottom: 0.6rem;
 }
 
 /* ===== CTA Section ===== */
-.support-cta {
+.support-page .support-cta {
   text-align: center;
   margin-top: 2rem;
 }
 
-.support-label {
+.support-page .support-label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: #2b3fa3;
 }
 
-.support-input {
+.support-page .support-input {
   width: 220px;
   padding: 10px;
   font-size: 1rem;
@@ -76,11 +74,11 @@
 }
 
 /* ===== Quick Buttons ===== */
-.support-quick {
+.support-page .support-quick {
   margin-bottom: 1.5rem;
 }
 
-.support-quick-btn {
+.support-page .support-quick-btn {
   background: #f0f0ff;
   border: 1px solid #d0d0f0;
   border-radius: 6px;
@@ -91,13 +89,13 @@
   transition: all 0.2s ease;
 }
 
-.support-quick-btn:hover {
+.support-page .support-quick-btn:hover {
   background: #e0e0ff;
   border-color: #b0b0f0;
 }
 
 /* ===== Main Button ===== */
-.support-btn {
+.support-page .support-btn {
   background-color: #4a3aff;
   color: #fff;
   font-size: 1.1rem;
@@ -108,6 +106,6 @@
   transition: background-color 0.2s ease;
 }
 
-.support-btn:hover {
+.support-page .support-btn:hover {
   background-color: #372bc2;
 }
