@@ -39,7 +39,7 @@ export default function Home() {
             ✓ 14-day free trial • ✓ No credit card • ✓ Mobile-friendly
           </p>
         </div>
-        <div className="esd-curve" />
+      
       </section>
 
       {/* ===== VALUE ===== */}

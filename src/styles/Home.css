@@ -97,12 +97,6 @@ body{
 }
 .esd-partners > div{letter-spacing:.02em}
 
-/* Soft white curve */
-.esd-curve{
-  position:absolute; left:50%; transform:translateX(-50%);
-  bottom:-28px; width:min(1100px,88%); height:56px;
-  background:#fff; border-radius:22px; box-shadow:var(--shadow-md); z-index:0;
-}
 
 /* ─── VALUE ────────────────────────────────────────── */
 .esd-value{padding:86px 24px 40px}
