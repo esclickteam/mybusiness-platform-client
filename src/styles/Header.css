@@ -230,29 +230,47 @@
 
 /* ===== Header Desktop ===== */
 @media (min-width: 1025px) {
-  .mobile-only { display: none !important; }
-  .desktop-only { display: flex; }
+  .mobile-only { 
+    display: none !important; 
+  }
 
-   .app-header {
-    height: 70px !important;       /* גובה מספיק ללוגו גדול */
-    padding: 0 32px;               /* ריווח שווה מימין ומשמאל */
-    justify-content: flex-start;   /* מתחילים מהשמאל */
+  .desktop-only { 
+    display: flex; 
+  }
+
+  .app-header {
+    height: 70px !important;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  /* לוגו צמוד לשמאל */
+  .logo-wrapper {
+    margin-right: auto;   /* זה דוחף את כל השאר ימינה */
+    display: flex;
+    align-items: center;
+  }
+
+  /* קישורי הניווט במרכז */
+  .nav-links {
+    flex: 1;
+    display: flex;
+    justify-content: center; /* ממרכז את התפריט */
     gap: 40px;
   }
 
-   .logo-wrapper {
-    margin-right: auto;  /* דוחף את כל שאר האלמנטים ימינה */
-  }
-
-  .nav-links {
-    flex: 1;
-    justify-content: center; /* ממרכז את התפריט */
-  }
-
+  /* כפתורים בצד ימין */
   .auth-controls.desktop-only {
     margin-left: 0;
+    display: flex;
+    align-items: center;
+    gap: 24px;
   }
 
+  /* לוגו */
   .app-header .logo-wrapper .logo-link .logo {
     height: 60px !important;       
     width: auto !important;
@@ -262,3 +280,4 @@
     display: block;
   }
 }
+
