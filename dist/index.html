@@ -11,7 +11,7 @@
 
   <base href="/" />
 
-  <!-- Favicon – לפי ההנחיות של גוגל (גרסת v2) -->
+  <!-- Favicon – לפי ההנחיות של גוגל -->
   <link rel="icon" href="/favicon-48x48-v2.png" sizes="48x48" type="image/png" />
   <link rel="icon" href="/favicon-192x192-v2.png" sizes="192x192" type="image/png" />
   <link rel="icon" href="/favicon-512x512-v2.png" sizes="512x512" type="image/png" />
@@ -21,13 +21,11 @@
 
   <meta http-equiv="Content-Language" content="he" />
 
-  <!-- טעינת פונטים ו-CSS קריטי מראש -->
+  <!-- טעינת CSS קריטי מראש -->
   <link rel="preload" href="/fonts/myfont.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
-  <link rel="preload" href="/index.css" as="style" />
   <link rel="preload" href="/styles/accessibility-style.css" as="style" />
 
-  <!-- CSS גלובלי -->
-  <link rel="stylesheet" href="/index.css" />
+  <!-- CSS גלובלי (רק accessibility כי index.css ייטען דרך React) -->
   <link rel="stylesheet" href="/styles/accessibility-style.css" />
 
   <!-- עיצוב בסיסי -->
@@ -43,7 +41,7 @@
   <!-- סקריפט CardCom LowProfile SDK -->
   <script src="https://secure.cardcom.solutions/EasyCheckout/js/Checkout.js" async defer></script>
 
-  <!-- React build -->
+  <!-- React build (Vite/CRA) -->
   <script type="module" crossorigin src="/assets/index-B3nJCeaC.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-B29DLvy6.css" />
 </head>
