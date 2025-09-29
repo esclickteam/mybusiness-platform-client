@@ -7,91 +7,79 @@ function BusinessJoin() {
   return (
     <div className="business-join-container">
       <Helmet>
-        <title>הצטרפות עסקים - שיתופי פעולה, לקוחות וניהול חכם | עסקליק</title>
+        <title>Join Businesses - Collaborations, Clients & Smart Management | Bizuply</title>
         <meta
           name="description"
-          content="הצטרפו לעסקליק וקבלו פניות מלקוחות אמיתיים, שיתופי פעולה עם עסקים אחרים, וניהול חכם ביומן ו־CRM. כל מה שעסק צריך כדי לגדול במקום אחד."
+          content="Join Bizuply and get real client inquiries, collaborations with other businesses, and smart CRM & scheduling. Everything your business needs to grow in one place."
         />
         <meta
           name="keywords"
-          content="הצטרפות עסקים, שיתופי פעולה, פניות מלקוחות, ניהול חכם, CRM, עסקליק"
+          content="join business, collaborations, client inquiries, CRM, smart management, Bizuply"
         />
-        <link rel="canonical" href="https://yourdomain.co.il/join" />
+        <link rel="canonical" href="https://yourdomain.com/join" />
       </Helmet>
 
-      {/* כותרת */}
+      {/* Title Section */}
       <div className="header-section">
-        <h1 className="title">הצטרפו לפלטפורמת העסקים המובילה!</h1>
+        <h1 className="title">Join the Leading Business Platform!</h1>
         <p className="subtitle">
-          בעלי עסקים כבר יודעים – הדרך להגדלת הכנסות וצמיחה אמיתית עוברת
-          בשיתופי פעולה, בניהול חכם ובחשיפה ללקוחות חדשים. עסקליק מרכזת את הכל במקום אחד.
+          Smart businesses know — the way to increase revenue and achieve real
+          growth is through collaborations, efficient management, and exposure
+          to new clients. Bizuply brings everything together in one place.
         </p>
       </div>
 
-      {/* כרטיסיות */}
+      {/* Info Cards */}
       <div className="info-section">
         <div className="info-box purple">
-          <h2> היתרונות שתקבל בעסקליק</h2>
+          <h2>Benefits You’ll Get</h2>
           <ul>
-            <li>עמוד עסקי מקצועי עם יומן חכם ו־CRM לניהול פניות</li>
-            <li>מערכת שיתופי פעולה שמביאה לקוחות חדשים</li>
-            <li>כלי <b>AI חכמים</b> לניהול, שיווק ותזכורות</li>
-            <li>מחיר חודשי אחד – בלי הפתעות</li>
+            <li>Professional business page with smart calendar & CRM</li>
+            <li>Collaboration system that brings new clients</li>
+            <li><b>AI tools</b> for management, marketing & reminders</li>
+            <li>One monthly price — no surprises</li>
           </ul>
         </div>
 
         <div className="info-box white">
-          <h2> יותר שיתופי פעולה – יותר לקוחות</h2>
+          <h2>More Collaborations = More Clients</h2>
           <ul>
-            <li>התחברו לעסקים משלימים בתחום שלכם</li>
-            <li>קבלו הפניות ישירות מעסקים אחרים</li>
-            <li>שתפו פעולה בפרויקטים חדשים</li>
-            <li>בנו רשת קשרים שמביאה לכם עבודה</li>
+            <li>Connect with complementary businesses in your field</li>
+            <li>Receive direct referrals from other businesses</li>
+            <li>Collaborate on new projects</li>
+            <li>Build a strong network that drives growth</li>
           </ul>
         </div>
 
         <div className="info-box purple">
-          <h2> למי עסקליק מתאימה?</h2>
+          <h2>Who is Bizuply For?</h2>
           <ul>
-            <li>לעסקים שרוצים לגדול ולהתפתח</li>
-            <li>למי שמעוניין ביותר פניות ושיתופי פעולה</li>
-            <li>לעסקים שרוצים חשיפה דיגיטלית רחבה</li>
-            <li>לאנשי מקצוע שמחפשים סדר ויעילות</li>
+            <li>Businesses ready to grow and expand</li>
+            <li>Those who want more client inquiries & collaborations</li>
+            <li>Businesses seeking strong digital exposure</li>
+            <li>Professionals looking for structure & efficiency</li>
           </ul>
         </div>
 
         <div className="info-box white">
-          <h2> 3 צעדים פשוטים להתחלה</h2>
+          <h2>3 Simple Steps to Get Started</h2>
           <ul>
-            <li>נרשמים ובוחרים את החבילה המתאימה</li>
-            <li>בונים עמוד עסקי עם צ'אט, יומן וגלריה</li>
-            <li>מתחילים לקבל פניות ולבצע שיתופי פעולה</li>
-            <li>נותנים למערכת החכמה לעבוד בשבילכם</li>
+            <li>Sign up and choose your plan</li>
+            <li>Create a business page with chat, calendar & gallery</li>
+            <li>Start receiving inquiries and collaborations</li>
+            <li>Let the smart system work for you</li>
           </ul>
         </div>
       </div>
 
-      {/* קריאה לפעולה */}
+      {/* Call To Action */}
       <div className="cta-section">
-        <h2>התחילו לנהל את העסק שלכם חכם יותר – שיתופי פעולה, פניות וסדר במקום אחד</h2>
-        <p>הצטרפו לעסקליק ותיהנו מכל מה שעסק צריך – במקום אחד.</p>
+        <h2>Manage Your Business Smarter — Collaborations, Inquiries & Structure in One Place</h2>
+        <p>Join Bizuply and enjoy everything your business needs — all in one platform.</p>
         <Link to="/register">
-          <button className="join-button">14 יום ניסיון חינם</button>
+          <button className="join-button">14-Day Free Trial</button>
         </Link>
       </div>
-
-      {/* תחתית */}
-      <footer className="footer">
-        <ul className="footer-links">
-          <li><Link to="/about">📖 קצת עלינו</Link></li>
-          <li><Link to="/how-it-works">⚙ איך זה עובד</Link></li>
-          <li><Link to="/join">✏ הצטרפות עסקים</Link></li>
-          <li><Link to="/faq">❓ שאלות נפוצות</Link></li>
-          <li><Link to="/terms">📜 תקנון</Link></li>
-          <li><Link to="/contact">📞 יצירת קשר</Link></li>
-        </ul>
-        <p className="copyright">כל הזכויות שמורות © עסקליק</p>
-      </footer>
     </div>
   );
 }

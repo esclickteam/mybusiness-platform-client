@@ -1,4 +1,4 @@
-/* Container כללי */
+/* General Container */
 .business-join-container {
   max-width: 900px;
   margin: 60px auto 80px;
@@ -8,7 +8,7 @@
   color: #333;
   border-radius: 20px;
   box-shadow: 0 10px 35px rgba(90, 70, 150, 0.12);
-  direction: rtl;
+  direction: ltr; /* Left-to-right */
 }
 
 /* Header */
@@ -33,7 +33,7 @@
   line-height: 1.5;
 }
 
-/* Grid layout - 2 כרטיסיות בשורה */
+/* Grid layout - 2 cards per row */
 .info-section {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -42,7 +42,7 @@
   padding: 0 10px;
 }
 
-/* רספונסיבי - 1 כרטיסיה בניידים */
+/* Responsive - 1 card on mobile */
 @media (max-width: 700px) {
   .info-section {
     grid-template-columns: 1fr;
@@ -50,7 +50,7 @@
   }
 }
 
-/* כרטיסיות */
+/* Cards */
 .info-box {
   background: #fff;
   border-radius: 18px;
@@ -58,13 +58,13 @@
   box-shadow: 0 6px 20px rgba(92, 61, 153, 0.07);
   display: flex;
   flex-direction: column;
-  justify-content: center;  /* מרכז אנכי */
-  align-items: center;      /* מרכז אופקי */
+  justify-content: center;
+  align-items: center;
   min-height: 380px;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
   user-select: none;
   word-break: keep-all;
-  text-align: center;       /* מרכז טקסט */
+  text-align: center;
 }
 
 .info-box:hover {
@@ -72,13 +72,13 @@
   transform: translateY(-7px);
 }
 
-/* כרטיסיות עם רקע סגול */
+/* Purple background cards */
 .info-box.purple {
   background: #f5ecff;
   color: #5c3d99;
 }
 
-/* כותרות */
+/* Card Titles */
 .info-box h2 {
   font-weight: 800;
   font-size: 1.5rem;
@@ -86,12 +86,12 @@
   border-bottom: 3px solid #5c3d99;
   padding-bottom: 8px;
   letter-spacing: 0.6px;
-  white-space: normal; /* מאפשר שבר שורות */
+  white-space: normal;
   width: 100%;
   text-align: center;
 }
 
-/* רשימות */
+/* Lists */
 .info-box ul {
   list-style: none;
   padding-left: 0;
@@ -99,23 +99,23 @@
   font-size: 1.15rem;
   line-height: 1.5;
   font-weight: 600;
-  text-align: right;  /* שמור לימין כי עברית */
+  text-align: left;  /* English = left */
   color: inherit;
-  max-width: 280px; /* מגבלת רוחב לרשימה */
+  max-width: 280px;
 }
 
 .info-box li {
   position: relative;
   margin-bottom: 14px;
-  padding-right: 30px; /* מספיק רווח מימין לסימן ✔ */
+  padding-left: 30px; /* space for checkmark */
   display: block;
 }
 
-/* סימן ✔ ימני */
+/* Left checkmark */
 .info-box li::before {
   content: '✔';
   position: absolute;
-  right: 0; /* צמוד לצד ימין */
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
   color: #5c3d99;
@@ -125,7 +125,7 @@
   pointer-events: none;
 }
 
-/* אזור קריאה לפעולה - הצטרפות */
+/* CTA Section */
 .cta-section {
   background: linear-gradient(90deg, #a694d1, #c7bcf0);
   border-radius: 32px;
@@ -155,9 +155,9 @@
   margin-bottom: 35px;
 }
 
-/* כפתור ההצטרפות */
+/* Join Button */
 .join-button {
-  background: linear-gradient(90deg, #ff9800, #ff5722); /* כתום → אדום */
+  background: linear-gradient(90deg, #ff9800, #ff5722);
   color: #fff;
   font-weight: 900;
   font-size: 1.65rem;
@@ -173,58 +173,25 @@
 }
 
 .join-button:hover {
-  background: linear-gradient(90deg, #ff5722, #ff9800); /* הפוך ב-hover */
+  background: linear-gradient(90deg, #ff5722, #ff9800);
   color: #fff;
   box-shadow: 0 14px 36px rgba(255, 87, 34, 0.85);
   transform: scale(1.1);
 }
 
-/* Footer */
-.footer {
-  margin-top: 50px;
-  padding: 30px 20px 20px;
-  font-size: 0.9rem;
-  color: #6b5e8a;
-  text-align: center;
-  font-weight: 600;
-  user-select: none;
-  border-top: 1px solid #ddd;
-}
-
-.footer-links {
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 18px;
-  list-style: none;
-  padding: 0;
-}
-
-.footer-links li a {
-  color: #5c3d99;
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.25s ease;
-}
-
-.footer-links li a:hover {
-  color: #9e81f7;
-}
-
-/* רספונסיביות נוספת לניידים */
+/* Responsive for mobile */
 @media (max-width: 700px) {
   .info-box {
     min-height: auto;
     padding: 24px 20px;
   }
-  
+
   .info-box ul {
     max-width: 100%;
     font-size: 1.1rem;
   }
 }
-/* רספונסיביות נוספת לניידים קטנים */
+
 @media (max-width: 480px) {
   .business-join-container {
     margin: 40px 10px 60px;
@@ -279,14 +246,5 @@
   .join-button {
     padding: 14px 40px;
     font-size: 1.3rem;
-  }
-
-  .footer {
-    font-size: 0.85rem;
-    padding: 20px 10px 15px;
-  }
-
-  .footer-links {
-    gap: 14px;
   }
 }
