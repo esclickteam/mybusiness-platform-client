@@ -109,51 +109,53 @@
   background-color: #372bc2;
 }
 
-/* ===== Progress Section ===== */
+/* ===== Progress Section - Timeline Style ===== */
 .support-progress-wrapper {
-  margin: 30px 0;
+  margin: 40px 0;
   text-align: center;
   position: relative;
-  padding-bottom: 40px; /* מקום לטקסט של milestones */
+  padding-top: 60px; /* מקום לטקסט מעל הפס */
 }
 
 .support-progress-bar {
-  background: #e6e9f0;
-  border-radius: 30px;
-  overflow: hidden;
-  height: 24px;
-  margin: 0 auto 12px;
-  max-width: 600px;
   position: relative;
+  height: 2px; /* קו דק מלא */
+  background: #e6e9f0;
+  margin: 0 auto 40px;
+  max-width: 600px;
 }
 
+/* פס התקדמות צבעוני */
 .support-progress-fill {
-  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
-  transition: width 0.5s ease;
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  transition: width 0.6s ease;
 }
 
 /* Milestones */
 .support-progress-marker {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: -12px;
+  height: 24px;
   width: 2px;
   background: #6a11cb;
   transform: translateX(-50%);
-  transition: background 0.3s ease;
 }
 
 .support-progress-label {
   position: absolute;
-  top: 32px; /* מתחת לפס */
+  top: -32px; /* מעל הפס */
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #2b3fa3;
   white-space: nowrap;
   transition: color 0.3s ease;
+  pointer-events: none;
 }
 
 /* כשהיעד נחצה */
@@ -182,25 +184,4 @@
 .support-progress-left {
   font-size: 0.95rem;
   color: #555;
-}
-
-/* ===== תיקון להידר רק בדף התמיכה ===== */
-.support-page ~ .app-header,
-.support-page .app-header,
-.app-header {
-  direction: ltr;
-  text-align: left;
-}
-.support-page .app-header .nav-links,
-.support-page .app-header .auth-controls {
-  flex-direction: row;
-  justify-content: flex-end;
-}
-.support-page,
-.support-page .support-text,
-.support-page .support-title,
-.support-page .support-subtitle,
-.support-page .support-list {
-  direction: ltr;
-  text-align: left;
 }
