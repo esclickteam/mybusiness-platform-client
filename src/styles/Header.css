@@ -2,52 +2,49 @@
 /*                             Header.css                              */
 /* =================================================================== */
 
-/* ===== Header (Desktop) ===== */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+/* ===== Header Base ===== */
 .app-header {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-start;        /* הלוגו בצד שמאל */
-  padding: 12px 32px 12px 0;
-  height: 80px;
+  justify-content: space-between; /* לוגו שמאל, CTA ימין */
+  padding: 0 32px;
+  height: 72px;
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   z-index: 1502;
-  gap: 40px;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Logo */
+/* ===== Logo ===== */
 .logo-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 0;
+  flex: 0 0 auto;
 }
 .logo-link .logo {
-  height: auto;
-  max-height: 80px;
+  height: 42px;
   width: auto;
   object-fit: contain;
   transition: transform 0.2s ease;
 }
 .logo-link:hover .logo {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
-/* ===== Nav Links (Desktop) ===== */
+/* ===== Nav Links ===== */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 32px;
+  margin: 0 auto; /* ממרכז את הניווט */
   font-size: 1rem;
   font-weight: 500;
-  color: #222;
 }
 .nav-links a {
   text-decoration: none;
   color: #222;
   transition: color 0.2s;
-  padding: 8px 0;
 }
 .nav-links a:hover,
 .nav-links a.active-link {
@@ -59,20 +56,14 @@
 .auth-controls.desktop-only {
   display: flex;
   align-items: center;
-  gap: 24px;
-  margin-left: auto;
+  gap: 20px;
 }
-
 .auth-link {
-  background: none;
-  border: none;
+  text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
   color: #333;
-  cursor: pointer;
-  padding: 8px 14px;
   transition: color 0.2s;
-  text-decoration: none;
 }
 .auth-link:hover {
   color: #5e17eb;
@@ -93,9 +84,9 @@
 .cta-button {
   background: #5e17eb;
   color: #fff;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.95rem;
-  padding: 10px 22px;
+  padding: 10px 20px;
   border-radius: 6px;
   text-decoration: none;
   transition: background 0.2s, transform 0.2s;
@@ -105,11 +96,10 @@
   transform: translateY(-1px);
 }
 
-/* ===== Hamburger (mobile only) ===== */
+/* ===== Mobile ===== */
 .menu-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 .menu-button {
   background: none;
@@ -119,12 +109,12 @@
   font-size: 24px;
 }
 
-/* ===== Drawer (Hamburger menu) ===== */
+/* ===== Side Drawer ===== */
 .side-menu {
   position: fixed;
   top: 0;
   right: 0;
-  max-width: 300px;
+  max-width: 280px;
   width: 100%;
   height: 100vh;
   background: #fff;
@@ -185,39 +175,12 @@
 /* ================= Responsive ================= */
 @media (max-width: 768px) {
   .app-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 16px 0 0;
-    height: 60px !important;
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    position: relative;
-    overflow: visible;
-  }
-
-  .logo-wrapper {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0 !important;
-    padding: 0 !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 60px;
+    padding: 0 16px;
   }
 
   .logo-link .logo {
-    height: 60px !important;
-    width: auto !important;
-    object-fit: contain;
-    display: block;
-  }
-
-  .menu-toggle {
-    position: relative;
-    margin-left: auto;
-    z-index: 10;
+    height: 36px;
   }
 
   .nav-links,
@@ -226,24 +189,7 @@
   }
 }
 
-/* ===== Header Desktop ===== */
 @media (min-width: 1025px) {
   .mobile-only { display: none !important; }
   .desktop-only { display: flex; }
-
-  .app-header {
-    height: 70px !important;       /* גובה מספיק ללוגו גדול */
-    padding: 0 32px 0 0;            /* צד שמאל צמוד */
-    justify-content: flex-start;    /* לוגו בצד שמאל */
-    gap: 40px;
-  }
-
-  .app-header .logo-wrapper .logo-link .logo {
-    height: 250px !important;       /* גודל לוגו קבוע גדול */
-    width: auto !important;
-    max-height: none !important;    /* מבטל הגבלה */
-    max-width: none !important;
-    object-fit: contain;
-    display: block;
-  }
 }
