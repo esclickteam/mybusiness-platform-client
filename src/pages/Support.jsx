@@ -4,7 +4,8 @@ import "./Support.css";
 
 export default function Support() {
   const [amount, setAmount] = useState("");
-  const [raised, setRaised] = useState(0); // מתחיל מ-0
+  const [raised, setRaised] = useState(0); 
+  const [donors, setDonors] = useState(0);
   const paypalReadyRef = useRef(false);
   const paypalContainerRef = useRef(null);
 
@@ -13,10 +14,9 @@ export default function Support() {
   const goal = milestones[milestones.length - 1];
   const progress = Math.min((raised / goal) * 100, 100);
 
-  // ---- טעינת PayPal SDK פעם אחת ----
+  // ---- טעינת PayPal SDK ----
   useEffect(() => {
     if (paypalReadyRef.current) return;
-
     const existing = document.querySelector(
       'script[src^="https://www.paypal.com/sdk/js"]'
     );
@@ -37,13 +37,13 @@ export default function Support() {
 
     const script = document.createElement("script");
     script.src =
-      "https://www.paypal.com/sdk/js?client-id=Ad5vKKrnnrh28YQ58TH5sW34exTDt8j_fP68ebdSFrwGnKE__UZvcri0ENQ2ngJSDnyHzgpigne9xOnC&currency=USD";
+      "https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD";
     script.async = true;
     script.addEventListener("load", onLoad, { once: true });
     document.body.appendChild(script);
   }, []);
 
-  // ---- רנדר מחודש של כפתורי PayPal כשסכום משתנה ----
+  // ---- עדכון כפתור PayPal כשהסכום משתנה ----
   useEffect(() => {
     if (!paypalReadyRef.current) return;
     renderPaypalButtons();
@@ -52,8 +52,6 @@ export default function Support() {
 
   const renderPaypalButtons = () => {
     if (!window.paypal) return;
-
-    // נקה כפתורים קודמים
     if (paypalContainerRef.current) {
       paypalContainerRef.current.innerHTML = "";
     }
@@ -81,13 +79,7 @@ export default function Support() {
             alert(`Thank you, ${details.payer.name.given_name}!`);
             const paid = Number(amount || 10);
             setRaised((prev) => prev + paid);
-
-            // אופציונלי: שלח לשרת לרישום התרומה
-            // fetch("/api/donations/new", {
-            //   method: "POST",
-            //   headers: { "Content-Type": "application/json" },
-            //   body: JSON.stringify({ amount: paid, orderId: data.orderID }),
-            // });
+            setDonors((prev) => prev + 1);
           });
         },
         onError: (err) => {
@@ -98,23 +90,23 @@ export default function Support() {
       .render("#paypal-button-container");
   };
 
-  // ---- עדכון בזמן אמת מהשרת (Pooling כל 5 שניות) ----
+  // ---- עדכון בזמן אמת מהשרת ----
   useEffect(() => {
     const fetchRaised = async () => {
       try {
-        const res = await fetch("/api/donations/total"); // החזר { totalRaised: number }
+        const res = await fetch("/api/donations/total"); 
         if (res.ok) {
           const data = await res.json();
           if (typeof data.totalRaised === "number") {
             setRaised(data.totalRaised);
           }
+          if (typeof data.totalDonors === "number") {
+            setDonors(data.totalDonors);
+          }
         }
-      } catch (e) {
-        // שקט – אם אין API עדיין
-      }
+      } catch (e) {}
     };
-
-    fetchRaised(); // טעינה ראשונית
+    fetchRaised();
     const id = setInterval(fetchRaised, 5000);
     return () => clearInterval(id);
   }, []);
@@ -160,85 +152,14 @@ export default function Support() {
             ? `$${(goal - raised).toLocaleString()} left to reach the goal`
             : "🎉 Goal reached!"}
         </div>
+        <div className="support-progress-donors">
+          {donors === 0
+            ? "Be the first to support us 💜"
+            : `${donors} supporter${donors > 1 ? "s" : ""} so far`}
+        </div>
       </div>
 
       <hr className="support-divider" />
-
-      {/* Our Story */}
-      <h2 className="support-subtitle">Our Story</h2>
-      <p className="support-text">
-        We are a young couple with a big dream — to build a platform that will help small businesses
-        manage their operations in a smart and innovative way.
-      </p>
-      <p className="support-text">
-        For two years we went through difficult fertility treatments, which were very costly both
-        financially and emotionally. To cover the treatments, as well as our basic living expenses,
-        we had to take out loans and rely on credit card payments.
-      </p>
-      <p className="support-text">
-        Since the war of October 7th, my husband has been called up for reserve duty again and again.
-        Altogether he served for about half a year, and during those periods our income dropped sharply —
-        in some months down to zero. Even in the short breaks when he returned, the business could not recover,
-        and the financial burden kept growing.
-      </p>
-      <p className="support-text">
-        After a very difficult period, our income began to stabilize slightly, but in reality we are unable
-        to keep up with the monthly payments on our loans and credit cards. Every month we face high interest rates
-        and growing debt, and we simply have nowhere left to take money from.
-      </p>
-      <p className="support-text">
-        And despite everything — we have not given up. For the past seven months we have been developing on our own
-        an advanced SaaS platform, building it step by step: a business page with ratings and reviews, chat, gallery,
-        CRM system, a collaboration network to increase revenues, and even an AI business partner to assist entrepreneurs.
-      </p>
-      <p className="support-text">
-        After two years of treatments, we finally managed to get pregnant — but sadly, we lost twins. Just one month later,
-        we unexpectedly became pregnant again. This pregnancy is so precious to us, and all we want now is to live with dignity,
-        pay off our debts, complete the platform, and build a stable foundation for our baby on the way.
-      </p>
-
-      <hr className="support-divider" />
-
-      {/* Our Vision */}
-      <h2 className="support-subtitle">Our Vision</h2>
-      <p className="support-text">
-        The platform we are building was born from a true desire to help businesses. Our dream is that, over time, it will grow
-        into an American company with international reach, serving businesses around the world. We cannot promise this today —
-        but it is our vision, and we believe we can get there with enough support.
-      </p>
-
-      <hr className="support-divider" />
-
-      {/* Why We Are Reaching Out */}
-      <h2 className="support-subtitle">Why We Are Reaching Out</h2>
-      <p className="support-text">
-        We are not a nonprofit, and we are not backed by large investors. We are a young family, with a real story and a real dream.  
-        All we ask for is support to help us hold on, pay off our debts, complete the development, and build a stable and secure future
-        for ourselves and for our baby.
-      </p>
-      <p className="support-text">
-        Any amount you choose to give will be received with deep gratitude 🙏
-      </p>
-
-      <hr className="support-divider" />
-
-      {/* Donation Levels */}
-      <h2 className="support-subtitle">✨ Donation Levels (Thank-You Only)</h2>
-      <ul className="support-list">
-        <li>Above $50 → A personal thank-you email</li>
-        <li>Above $250 → A digital certificate of appreciation (PDF with your name)</li>
-        <li>Above $500 → A printed thank-you letter sent by mail</li>
-        <li>Above $1,000 → Your name listed on a special page on our website: “Friends & Supporters”</li>
-        <li>Above $5,000 → A personal thank-you video call with us (via Zoom)</li>
-        <li>
-          Above $10,000 → Your name featured at the top of our “Friends & Supporters” page as a Main Supporter +
-          a personalized “Founding Donor” Certificate
-        </li>
-      </ul>
-
-      <p className="support-text">
-        Of course, there will always be an option to choose any other amount you wish to give.
-      </p>
 
       {/* Support Form */}
       <div className="support-cta">
@@ -265,6 +186,8 @@ export default function Support() {
             </button>
           ))}
         </div>
+
+        <button className="cta-donate">Donate Now</button>
 
         {/* PayPal Smart Buttons */}
         <div id="paypal-button-container" ref={paypalContainerRef}></div>
