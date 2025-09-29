@@ -175,7 +175,7 @@
 
 /* ================= Responsive ================= */
 /* ===== Header Mobile & Tablet ===== */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
  .app-header {
   display: flex;
   align-items: center;
@@ -199,12 +199,14 @@
     justify-content: center;
   }
 
-  .logo-link .logo {
-  height: 220px !important; 
-  width: auto !important;
-  object-fit: contain;
-  display: block;
-}
+ .logo-link .logo {
+    height: 220px !important;      /* לוגו ענק במובייל */
+    width: auto !important;
+    max-height: none !important;
+    max-width: none !important;
+    object-fit: contain;
+    display: block;
+  }
 
   .menu-toggle {
     position: relative;
