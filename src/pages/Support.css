@@ -19,13 +19,16 @@
   color: #0f1a4f;          /* כהה יותר */
 }
 
+/* עטיפה שממרכזת את כל הכותרות המשניות */
+.support-subtitle-wrapper {
+  text-align: center;
+  margin: 2rem 0 1rem;
+}
 
 .support-page .support-subtitle {
   font-size: 1.5rem;
   font-weight: 600;
-  margin: 2rem 0 1rem;
   color: #2b3fa3;
-  text-align: center;
   position: relative;
   display: inline-block;
   padding-bottom: 6px;
@@ -166,7 +169,6 @@
   white-space: nowrap;
 }
 
-
 /* כשהיעד נחצה */
 .support-progress-marker.reached {
   background: #28a745;
@@ -174,7 +176,6 @@
 .support-progress-marker.reached .support-progress-label {
   color: #28a745;
 }
-
 
 /* אנימציית bounce */
 @keyframes bounceIn {
@@ -195,32 +196,18 @@
   color: #555;
 }
 
-.support-page ~ .app-header,
-.support-page .app-header,
-.app-header {
-  direction: ltr;
-  text-align: left;
+/* כותרת ראשית תמיד במרכז */
+.support-page .support-title {
+  text-align: center;
 }
-.support-page .app-header .nav-links,
-.support-page .app-header .auth-controls {
-  flex-direction: row;
-  justify-content: flex-end;
-}
+
+/* טקסט ורשימות בברירת מחדל שמאל */
 .support-page,
 .support-page .support-text,
 .support-page .support-list {
   direction: ltr;
-  text-align: left; /* רק טקסט ורשימות */
+  text-align: left;
 }
-
-/* כותרת ראשית ומשנה תמיד במרכז */
-.support-page .support-title,
-.support-page .support-subtitle {
-  text-align: center;
-}
-
-
-
 
 @media (max-width: 768px) {
   /* ===== Donation box ===== */
@@ -296,7 +283,7 @@
     text-align: center;
   }
 
-     .support-progress-marker.last-marker .support-progress-label {
+  .support-progress-marker.last-marker .support-progress-label {
     transform: translateX(-120%);
     text-align: right;
     max-width: 100px;
@@ -307,8 +294,6 @@
     margin-top: 20px;
   }
 }
-
-
 
 /* מסכים קטנים מאוד: 2 עמודות וכתב קטן יותר */
 @media (max-width: 480px) {

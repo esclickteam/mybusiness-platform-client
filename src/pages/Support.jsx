@@ -130,7 +130,7 @@ export default function Support() {
           />
           {milestones.map((m, i) => {
             const reached = raised >= m;
-            const isLast = i === milestones.length - 1; // מוסיפים בדיקה אם זה milestone אחרון
+            const isLast = i === milestones.length - 1;
             return (
               <div
                 key={i}
@@ -162,7 +162,9 @@ export default function Support() {
       <hr className="support-divider" />
 
       {/* Our Story */}
-      <h2 className="support-subtitle">Our Story</h2>
+      <div className="support-subtitle-wrapper">
+        <h2 className="support-subtitle">Our Story</h2>
+      </div>
       <p className="support-text">
         We are a young couple with a big dream — to build a platform that will
         help small businesses manage their operations in a smart and innovative
@@ -205,7 +207,9 @@ export default function Support() {
       <hr className="support-divider" />
 
       {/* Our Vision */}
-      <h2 className="support-subtitle">Our Vision</h2>
+      <div className="support-subtitle-wrapper">
+        <h2 className="support-subtitle">Our Vision</h2>
+      </div>
       <p className="support-text">
         The platform we are building was born from a true desire to help
         businesses. Our dream is that, over time, it will grow into an American
@@ -217,7 +221,9 @@ export default function Support() {
       <hr className="support-divider" />
 
       {/* Why We Are Reaching Out */}
-      <h2 className="support-subtitle">Why We Are Reaching Out</h2>
+      <div className="support-subtitle-wrapper">
+        <h2 className="support-subtitle">Why We Are Reaching Out</h2>
+      </div>
       <p className="support-text">
         We are not a nonprofit, and we are not backed by large investors. We are
         a young family, with a real story and a real dream. All we ask for is
@@ -231,16 +237,25 @@ export default function Support() {
       <hr className="support-divider" />
 
       {/* Donation Levels */}
-      <h2 className="support-subtitle">✨ Donation Levels (Thank-You Only)</h2>
+      <div className="support-subtitle-wrapper">
+        <h2 className="support-subtitle">✨ Donation Levels (Thank-You Only)</h2>
+      </div>
       <ul className="support-list">
         <li>Above $50 → A personal thank-you email</li>
-        <li>Above $250 → A digital certificate of appreciation (PDF with your name)</li>
+        <li>
+          Above $250 → A digital certificate of appreciation (PDF with your
+          name)
+        </li>
         <li>Above $500 → A printed thank-you letter sent by mail</li>
-        <li>Above $1,000 → Your name listed on a special page on our website: “Friends & Supporters”</li>
+        <li>
+          Above $1,000 → Your name listed on a special page on our website:
+          “Friends & Supporters”
+        </li>
         <li>Above $5,000 → A personal thank-you video call with us (via Zoom)</li>
         <li>
-          Above $10,000 → Your name featured at the top of our “Friends & Supporters” page as a Main
-          Supporter + a personalized “Founding Donor” Certificate
+          Above $10,000 → Your name featured at the top of our “Friends &
+          Supporters” page as a Main Supporter + a personalized “Founding Donor”
+          Certificate
         </li>
       </ul>
 
