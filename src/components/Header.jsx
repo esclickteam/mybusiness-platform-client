@@ -13,7 +13,7 @@ import { useNotifications } from "../context/NotificationsContext";
 import "../styles/Header.css";
 import Notifications from "./Notifications";
 
-// 🔗 מערך קישורים משותף (Footer + המבורגר)
+// 🔗 Shared links (Footer + Hamburger)
 const navLinks = [
   {
     title: "Company",
@@ -98,10 +98,10 @@ export default function Header() {
   return (
     <>
       <nav className="app-header">
-        {/* כפתור ניווט לדשבורד בצד שמאל, רק במובייל */}
+        {/* Mobile dashboard button */}
         {user?.role === "business" && (
           <button
-            className="mobile-dashboard-button"
+            className="mobile-dashboard-button mobile-only"
             onClick={() => setDashboardOpen(!dashboardOpen)}
           >
             {dashboardOpen ? (
@@ -124,7 +124,8 @@ export default function Header() {
           </Link>
         </div>
 
-        <div className="menu-toggle">
+        {/* Hamburger only on mobile */}
+        <div className="menu-toggle mobile-only">
           <button
             className="menu-button"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -154,6 +155,7 @@ export default function Header() {
           )}
         </div>
 
+        {/* Desktop auth controls */}
         <div className="auth-controls desktop-only">
           {!user ? (
             <Link to="/login" className="login-button">
@@ -176,7 +178,7 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* סיידבר המבורגר במובייל */}
+      {/* Hamburger menu for mobile */}
       {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
@@ -192,6 +194,20 @@ export default function Header() {
             </div>
 
             <div className="menu-scroll">
+              {/* Show login at the top if user is not logged in */}
+              {!user && (
+                <div className="mobile-auth">
+                  <Link
+                    to="/login"
+                    className="login-button"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                </div>
+              )}
+
+              {/* Sections (Company + Support) */}
               {navLinks.map((section) => (
                 <div key={section.title} className="menu-section">
                   <h4>{section.title}</h4>
@@ -200,6 +216,7 @@ export default function Header() {
               ))}
             </div>
 
+            {/* If logged in → personal area + logout */}
             {user && (
               <div className="auth-menu">
                 <button
