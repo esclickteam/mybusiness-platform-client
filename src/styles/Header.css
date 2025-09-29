@@ -181,7 +181,7 @@
   align-items: center;
   justify-content: flex-end;        /* ההמבורגר נדחף לימין */
   padding: 0 16px 0 0;
-  height: 90px !important;          /* קומפקטי */
+  height: 80px !important;          /* קומפקטי */
   background: #fff;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   position: relative;               /* מאפשר ללוגו להיות ממורכז אבסולוטית */
@@ -200,7 +200,7 @@
   }
 
  .logo-link .logo {
-    height: 280px !important;      /* לוגו ענק במובייל */
+    height: 320px !important;      /* לוגו ענק במובייל */
     width: auto !important;
     max-height: none !important;
     max-width: none !important;
