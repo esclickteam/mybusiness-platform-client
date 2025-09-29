@@ -44,8 +44,8 @@
 }
 
 .footer-logo {
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
 }
 
 .footer-desc {
@@ -53,23 +53,7 @@
   color: #ccc;
   margin-top: 10px;
   line-height: 1.5;
-  max-width: 250px;
-}
-
-.social-icons {
-  margin-top: 10px;
-}
-
-.social-icons a {
-  display: inline-block;
-  margin-right: 12px;
-  font-size: 1.2rem;
-  color: #ddd;
-  transition: color 0.3s ease;
-}
-
-.social-icons a:hover {
-  color: #ffd700;
+  max-width: 260px;
 }
 
 .footer-bottom {
@@ -77,6 +61,8 @@
   margin-top: 30px;
   font-size: 0.85rem;
   color: #ccc;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 15px;
 }
 
 /* רספונסיביות */
@@ -89,6 +75,10 @@
   .footer-col {
     margin-bottom: 20px;
   }
+
+  .footer-logo {
+    font-size: 1.3rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -100,7 +90,7 @@
     text-align: center;
   }
 
-  .social-icons {
-    justify-content: center;
+  .footer-desc {
+    margin: 10px auto 0;
   }
 }

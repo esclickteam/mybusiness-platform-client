@@ -1,98 +1,127 @@
 import React from "react";
-import "../styles/PrivacyPolicy.css";  // ודא שהקובץ CSS מיובא כאן
+import "../styles/PrivacyPolicy.css";
 
 export default function PrivacyPolicy() {
   return (
-    <main className="privacy-policy-page" dir="rtl">
-      <h1>מדיניות פרטיות</h1>
+    <main className="privacy-policy-page">
+      <h1>Privacy Policy</h1>
 
-      <h2>1. כללי</h2>
+      <h2>1. General</h2>
       <p>
-        1.1. פלטפורמת עסקליק רואה חשיבות רבה בהגנה על פרטיות המשתמשים בשירותיה ("משתמשים"). מטרת תנאים אלה היא לתאר את מדיניות הפרטיות של פלטפורמת עסקליק ואת אופן איסוף, שימוש ושמירה על המידע האישי של המשתמשים. "שירותי עסקליק" לצורך מדיניות זו כוללים את האתר הרשמי של עסקליק, האפליקציות הנלוות ו/או כל שירות אחר הניתן על ידי פלטפורמת עסקליק.
+        1.1. Bizuply values the privacy of its users (“Users”) and is committed
+        to protecting personal information. This Privacy Policy describes how we
+        collect, use, and store your information when you use our services.
       </p>
       <p>
-        1.2. תנאי מדיניות פרטיות זו לא באים לגרוע מהאמור בהסכמים הקיימים בין עסקליק לבין המשתמשים או בתנאי השימוש באתר.
+        1.2. This Privacy Policy applies to Bizuply’s official website,
+        applications, and any other services provided by Bizuply.
       </p>
       <p>
-        1.3. מדיניות פרטיות זו חלה על מידע אישי שנאסף ממך, המשתמש, ומציינת את השימוש במידע זה. מדיניות זו אינה חלה על נתונים שאינם מהווים מידע אישי או על נתונים מצרפיים או סטטיסטיים.
-      </p>
-      <p>
-        1.4. השימוש בשירותי עסקליק מהווה הסכמה מצד המשתמש למדיניות פרטיות זו ולשימוש במידע אישי על פי התנאים המובאים בה.
+        1.3. By using Bizuply’s services, you agree to this Privacy Policy and
+        the practices described herein.
       </p>
 
-      <h2>2. סוגי המידע הנאסף</h2>
-      <p>
-        2.1. עסקליק אוספת את המידע האישי של המשתמשים תוך כדי שימוש בשירותים השונים, כולל:
-      </p>
+      <h2>2. Information We Collect</h2>
       <ul>
-        <li>פרטי זיהוי: שם, כתובת דוא"ל, מספר טלפון, כתובת.</li>
-        <li>מידע אודות השימוש בשירותים: דפוסי השימוש, שאילתות בחיפוש, המידע שנמסר בזמן הצטרפות לשירותים.</li>
-        <li>מידע פיננסי: פרטי אמצעי תשלום, חיובים וזיכויים.</li>
+        <li>
+          Identifying information: name, email address, phone number, billing
+          address.
+        </li>
+        <li>
+          Usage information: service usage patterns, search queries, and data
+          provided when registering.
+        </li>
+        <li>
+          Financial information: payment method details, billing records, and
+          transactions.
+        </li>
       </ul>
-      <p>2.2. ייתכן וייאסף מידע נוסף אודות השימוש בשירותי האתר, כמו היסטוריית חיפושים או נתוני גלישה.</p>
-
-      <h2>3. אופן איסוף המידע ושמירתו</h2>
       <p>
-        3.1. מידע אודות המשתמש נאסף במהלך ההרשמה לשירותים ובמהלך השימוש בהם, וכן במקרים של פניות שונות מצד המשתמשים.
-      </p>
-      <p>
-        3.2. המידע נשמר בצורה מאובטחת ולטווח זמן הדרוש על פי החוק, ובכפוף למדיניות שמירה על המידע.
-      </p>
-      <p>
-        3.3. עסקליק עשויה לשתף את המידע עם צדדים שלישיים במקרים של שיתוף שירותים, או במקרה של פניות מצד המשתמשים.
+        Additional data may be collected, such as browsing activity or search
+        history when using our services.
       </p>
 
-      <h2>4. מטרות השימוש במידע</h2>
+      <h2>3. How We Collect and Store Information</h2>
       <p>
-        4.1. עסקליק עושה שימוש במידע האישי כדי לספק את השירותים המוצעים למשתמשים, כולל שליחת עדכונים, הצעות מותאמות אישית, טיוב השירותים ועוד.
+        3.1. We collect information when you register, use our services, or
+        contact us for support.
       </p>
       <p>
-        4.2. המידע עשוי לשמש לצרכים סטטיסטיים ומחקריים כדי לשפר את איכות השירותים.
+        3.2. Information is stored securely for as long as necessary under
+        applicable law.
       </p>
       <p>
-        4.3. מידע אישי עשוי לשמש גם לצורך הצעות שיווקיות, פרסום מותאם אישית, ועדכונים שיווקיים.
-      </p>
-
-      <h2>5. מסירת מידע לצדדים שלישיים</h2>
-      <p>
-        5.1. עסקליק לא תמסור את המידע שלך לצדדים שלישיים ללא הסכמתך, אלא במקרים המנויים בחוק ובמקרים שבהם יש צורך להעביר את המידע לצורך ביצוע שירותים.
-      </p>
-      <p>
-        5.2. מידע אישי עשוי להיות מועבר לגורמים חיצוניים הנדרשים לצורך מתן השירותים, כמו ספקי שירותי טכנולוגיה, מיקור חוץ ופרסום.
+        3.3. Information may be shared with third-party providers when required
+        to deliver services.
       </p>
 
-      <h2>6. אבטחת מידע</h2>
+      <h2>4. Purpose of Use</h2>
       <p>
-        6.1. עסקליק נוקטת אמצעי אבטחת מידע מתקדמים על מנת להבטיח את סודיות ושלמות המידע האישי שנמסר לה.
+        4.1. To provide and improve our services, including sending updates,
+        personalized offers, and enhancing user experience.
       </p>
       <p>
-        6.2. עם זאת, עסקליק אינה יכולה להבטיח באופן מוחלט את הבטיחות המידע ברשת, ויש לנקוט בזהירות בשימוש בשירותים ובשמירה על פרטי ההזדהות.
-      </p>
-
-      <h2>7. הזכויות שלך</h2>
-      <p>
-        7.1. המשתמש זכאי לעיין, לעדכן או למחוק את המידע האישי שלו שמוחזק אצל עסקליק.
+        4.2. To analyze service usage for statistical and research purposes.
       </p>
       <p>
-        7.2. לשם כך, יש לפנות לצוות שירות הלקוחות של עסקליק בכתובת הדוא"ל המפורטת בהמשך.
+        4.3. To send marketing and promotional materials where legally
+        permitted.
       </p>
 
-      <h2>8. שינוי במדיניות הפרטיות</h2>
+      <h2>5. Sharing Information with Third Parties</h2>
       <p>
-        8.1. מדיניות פרטיות זו עשויה להתעדכן מעת לעת. כל עדכון יפורסם באתר.
+        5.1. We do not share your personal data with third parties without your
+        consent, except as required by law.
       </p>
       <p>
-        8.2. המשך השימוש בשירותי עסקליק לאחר עדכון מדיניות פרטיות מהווה הסכמה להתניות החדשות.
-      </p>
-
-      <h2>9. יצירת קשר</h2>
-      <p>
-        אם יש לך שאלות בנוגע למדיניות פרטיות זו או אם ברצונך לעדכן את המידע האישי שלך, ניתן ליצור קשר עם צוות שירות הלקוחות בכתובת הדוא"ל:
-        <a href="mailto:support@esclick.co.il">support@esclick.co.il</a>
+        5.2. Data may be shared with trusted third-party service providers such
+        as cloud hosting, analytics, and payment processors.
       </p>
 
-      <h2>10. תאריך עדכון</h2>
-      <p>הצהרה זו עודכנה ב־<time dateTime="2025-04-30">30 באפריל 2025</time>.</p>
+      <h2>6. Data Security</h2>
+      <p>
+        6.1. Bizuply implements advanced security measures to safeguard your
+        personal data.
+      </p>
+      <p>
+        6.2. However, no system is completely secure, and we cannot guarantee
+        absolute security of your information.
+      </p>
+
+      <h2>7. Your Rights</h2>
+      <p>
+        7.1. You have the right to access, update, or delete your personal
+        information.
+      </p>
+      <p>
+        7.2. To exercise these rights, please contact us using the details
+        below.
+      </p>
+
+      <h2>8. Changes to This Policy</h2>
+      <p>
+        8.1. We may update this Privacy Policy from time to time. Updates will
+        be posted on our website.
+      </p>
+      <p>
+        8.2. Continued use of Bizuply services after updates constitutes your
+        acceptance of the revised policy.
+      </p>
+
+      <h2>9. Contact Us</h2>
+      <p>
+        If you have any questions about this Privacy Policy, please contact us
+        at:{" "}
+        <a href="mailto:support@bizuply.com">
+          support@bizuply.com
+        </a>
+      </p>
+
+      <h2>10. Last Updated</h2>
+      <p>
+        This Privacy Policy was last updated on{" "}
+        <time dateTime="2025-04-30">April 30, 2025</time>.
+      </p>
     </main>
   );
 }

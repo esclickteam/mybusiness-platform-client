@@ -1,51 +1,57 @@
 import React from "react";
-import "../styles/accessibility-style.css";  // ודא שהקובץ CSS מיובא כאן
+import "../styles/accessibility-style.css";
 
 export default function Accessibility() {
   return (
-    <main className="accessibility-page" dir="rtl">
-      <h1>נגישות אתר האינטרנט של עסקליק</h1>
+    <main className="accessibility-page">
+      <h1>Accessibility Statement</h1>
 
       <p>
-        אתר <strong>עסקליק</strong> עומד בדרישות הנגישות שנקבעו בחוק ובתקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), התשע”ג-2013.
-        האתר מעודכן לפי המלצות התקן הישראלי (ת”י 5568) לנגישות תכנים באינטרנט ברמת AA, ובסמוך למסמך WCAG2.0 הבינלאומי.
+        Bizuply is committed to ensuring digital accessibility for people with
+        disabilities. We are constantly working to improve the user experience
+        for everyone and to apply the relevant accessibility standards in line
+        with the Americans with Disabilities Act (ADA).
       </p>
 
-      <h2>התאמות הנגישות</h2>
+      <h2>Our Commitment</h2>
       <p>
-        ההתאמות שבוצעו באתר נבדקו בעבור דפדפן Google Chrome, אך אנו פועלים גם להתאמת התצוגה בדפדפנים הנפוצים בטלפונים ניידים כגון Safari, Chrome ו-Firefox, ובדפדפנים נוספים.
+        We aim to follow the Web Content Accessibility Guidelines (WCAG) 2.1
+        Level AA to provide an inclusive and user-friendly digital experience
+        for all visitors.
       </p>
 
-      <p>
-        המאמרים או הסרטונים המוצגים באתר עשויים שלא להיות נגישים באופן מותאם לבעלי מוגבלויות. במקרים כאלה, ניתן לפנות אלינו ונשמח לסייע ולהנגיש את המידע לשירותכם.
-      </p>
-
-      <h2>כפתור נגישות</h2>
-      <p>
-        בתחתית האתר מצוי כפתור נגישות המאפשר את הפונקציות הבאות:
-      </p>
+      <h2>Accessibility Features</h2>
       <ul>
-        <li>ניגודיות: היפוך צבעים, ניגודיות כהה, ניגודיות בהירה.</li>
-        <li>הדגשת קישורים.</li>
-        <li>הגדלת טקסט: ריווח טקסט, הגדלת גובה שורה, יישור טקסט, תמיכה בדיסלקציה, גופן קריא.</li>
-        <li>שינוי סמן: סמן גדול, מסכת קריאה, מדריך קריאה.</li>
-        <li>ביטול הנפשות.</li>
-        <li>הסתרת תמונות.</li>
+        <li>Keyboard navigation support.</li>
+        <li>Readable text with adjustable contrast and sizing.</li>
+        <li>Alternative text for images and icons.</li>
+        <li>Consistent structure and clear labels for forms and buttons.</li>
       </ul>
 
-      <h2>פנייה לקבלת שירות ושיפור הנגישות</h2>
+      <h2>Limitations</h2>
       <p>
-        האתר נמצא בתהליך שיפור מתמיד של נגישותו, ואנו עושים את מירב המאמצים להנגיש את כל המידע באתר עבור כלל האוכלוסייה.
-        אם נתקלתם בבעיה כלשהי בנוגע לנגישות, אנא פנו אלינו ואנו נשמח להתאים את המידע הנדרש ולספק פתרונות נוספים.
+        While we strive to make all content fully accessible, some third-party
+        integrations or media may not yet meet full ADA/WCAG requirements. We
+        are actively working on solutions and improvements.
       </p>
 
-      <h2>יצירת קשר</h2>
+      <h2>Feedback & Contact</h2>
+      <p>
+        If you encounter any barriers while using Bizuply or need assistance,
+        please contact us:
+      </p>
       <ul>
-        <li>דוא"ל למחלקת שירות לקוחות: <a href="mailto:support@esclick.co.il">support@esclick.co.il</a></li>
+        <li>
+          Email:{" "}
+          <a href="mailto:support@bizuply.com">support@bizuply.com</a>
+        </li>
       </ul>
 
-      <h2>תאריך עדכון</h2>
-      <p>הצהרה מעודכנת ל-<time dateTime="2025-04-30">30 באפריל 2025</time>.</p>
+      <h2>Last Updated</h2>
+      <p>
+        This statement was last updated on{" "}
+        <time dateTime="2025-09-29">September 29, 2025</time>.
+      </p>
     </main>
   );
 }

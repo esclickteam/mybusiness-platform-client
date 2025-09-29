@@ -1,136 +1,87 @@
-/* עיצוב כללי לדף נגישות */
+/* General styling for Accessibility page */
 .accessibility-page {
-    margin: 0 auto;
-    padding: 30px;
-    max-width: 900px;
-    font-family: 'Arial', sans-serif;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    text-align: right;
-  }
-  
-  h1, h2 {
-    color: #5c27e0;
-    font-size: 32px;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  ul {
-    list-style-type: none;
-    padding-left: 0;
-    font-size: 18px;
-  }
-  
-  ul li {
-    margin: 10px 0;
-  }
-  
-  p {
-    font-size: 18px;
-    line-height: 1.6;
-    color: #555;
-  }
-  
-  a {
-    color: #1876c9;
-    text-decoration: none;
-  }
-  
-  a:hover {
-    text-decoration: underline;
-  }
-  
-  /* עיצוב כפתור נגישות */
-  .aw-toggle-button {
-    background-color: #1876c9;
-    color: white;
-    font-size: 1.5rem;
-    padding: 1rem;
-    border-radius: 50%;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    z-index: 1000;
-  }
-  
-  .aw-toggle-button:hover {
-    background-color: #5c27e0;
-  }
-  
-  /* הגדרת טביות ושורות */
-  h2 {
-    margin-top: 30px;
-    font-size: 26px;
-  }
-  
-  .time {
-    font-style: italic;
-  }
-  
-  /* עיצוב קישורים */
-  ul li a {
-    font-weight: bold;
-  }
-  
-  /* פוטר הדף */
-  footer {
-    margin-top: 30px;
-    text-align: center;
-    font-size: 16px;
-    color: #999;
-  }
-  @media (max-width: 768px) {
-  .accessibility-page {
-    padding: 20px 15px;
-    max-width: 95%;
-  }
-
-  h1, h2 {
-    font-size: 24px;
-    margin-bottom: 15px;
-  }
-
-  ul {
-    font-size: 16px;
-  }
-
-  p {
-    font-size: 16px;
-  }
-
-  .aw-toggle-button {
-    font-size: 1.2rem;
-    padding: 0.8rem;
-    bottom: 15px;
-    right: 15px;
-  }
+  margin: 0 auto;
+  padding: 50px 30px;
+  max-width: 900px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #ffffff;
+  color: #333;
+  line-height: 1.7;
+  text-align: left;
 }
 
+.accessibility-page h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #6a11cb; /* Bizuply purple */
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.accessibility-page h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e2a78; /* Deep indigo */
+  margin-top: 40px;
+  margin-bottom: 15px;
+}
+
+.accessibility-page p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.accessibility-page ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.accessibility-page ul li {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+/* Links */
+.accessibility-page a {
+  color: #6a11cb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.accessibility-page a:hover {
+  text-decoration: underline;
+  color: #1e2a78;
+}
+
+/* Footer note inside the page */
+.accessibility-page footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .accessibility-page {
+    padding: 30px 20px;
+  }
+  .accessibility-page h1 {
+    font-size: 2rem;
+  }
+  .accessibility-page h2 {
+    font-size: 1.4rem;
+  }
+}
 @media (max-width: 480px) {
   .accessibility-page {
-    padding: 15px 10px;
+    padding: 20px 15px;
   }
-
-  h1, h2 {
-    font-size: 20px;
+  .accessibility-page h1 {
+    font-size: 1.6rem;
   }
-
-  ul {
-    font-size: 14px;
-  }
-
-  p {
-    font-size: 14px;
-  }
-
-  .aw-toggle-button {
-    font-size: 1rem;
-    padding: 0.6rem;
-    bottom: 12px;
-    right: 12px;
+  .accessibility-page h2 {
+    font-size: 1.2rem;
   }
 }
