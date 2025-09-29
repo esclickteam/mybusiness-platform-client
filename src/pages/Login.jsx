@@ -56,14 +56,15 @@ export default function Login() {
         form.password
       );
 
-      // Redirect from server or default fallback
       if (redirectUrl) {
         navigate(redirectUrl, { replace: true });
       } else {
         if (loggedInUser?.role === "affiliate") {
           navigate("/affiliate/dashboard", { replace: true });
         } else if (loggedInUser?.role === "business") {
-          navigate(`/business/${loggedInUser.businessId}/dashboard`, { replace: true });
+          navigate(`/business/${loggedInUser.businessId}/dashboard`, {
+            replace: true,
+          });
         } else {
           navigate("/client/dashboard", { replace: true });
         }
@@ -89,21 +90,41 @@ export default function Login() {
         <h2>Login</h2>
 
         <form onSubmit={handleSubmit} noValidate>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            disabled={loading}
-            required
-            autoComplete="email"
-            aria-label="Email"
-            className="login-input"
-          />
+          {/* Email */}
+          <div className="form-group">
+            <label htmlFor="email">
+              Email <span className="required">*</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              disabled={loading}
+              required
+              autoComplete="email"
+              className="login-input"
+            />
+          </div>
 
-          <div className="password-wrapper">
-            <div className="password-row">
+          {/* Password */}
+          <div className="form-group">
+            <label htmlFor="password">
+              Password <span className="required">*</span>
+            </label>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                disabled={loading}
+                required
+                autoComplete="current-password"
+                className="password-input"
+              />
               <button
                 type="button"
                 onClick={() => setShowPassword((p) => !p)}
@@ -111,54 +132,19 @@ export default function Login() {
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 tabIndex={-1}
               >
-                {showPassword ? (
-                  <svg
-                    width="24"
-                    height="24"
-                    fill="none"
-                    stroke="#222"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#222" />
-                    <circle cx="12" cy="12" r="2" fill="#222" />
-                  </svg>
-                ) : (
-                  <svg
-                    width="24"
-                    height="24"
-                    fill="none"
-                    stroke="#222"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <ellipse cx="12" cy="12" rx="9" ry="6" stroke="#222" />
-                    <circle cx="12" cy="12" r="2" fill="#222" />
-                  </svg>
-                )}
+                {showPassword ? "🙈" : "👁️"}
               </button>
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Password"
-                value={form.password}
-                onChange={handleChange}
-                disabled={loading}
-                required
-                autoComplete="current-password"
-                aria-label="Password"
-                className="password-input"
-              />
             </div>
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             className="login-button"
             disabled={loading}
             aria-live="polite"
           >
-            {loading ? "🔄 Logging in..." : "Login"}
+            {loading ? "🔄 Logging in..." : "Sign in"}
           </button>
 
           <button
