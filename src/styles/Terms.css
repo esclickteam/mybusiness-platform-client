@@ -1,16 +1,16 @@
-/* 🌟 רקע דף התקנון */
+/* 🌟 Page Background */
 body {
   margin: 0;
   padding: 0;
   background: linear-gradient(135deg, #c3d0f7 0%, #ffffff 100%);
-  direction: rtl;
+  direction: ltr;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #2c2c2c;
   line-height: 1.75;
   font-weight: 400;
 }
 
-/* 🌟 מבנה הדף */
+/* 🌟 Container */
 .terms-container {
   max-width: 920px;
   margin: 50px auto 80px auto;
@@ -18,7 +18,7 @@ body {
   background: #fff;
   border-radius: 25px;
   box-shadow: 0 15px 50px rgba(74, 20, 140, 0.2);
-  text-align: right;
+  text-align: left;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -27,82 +27,54 @@ body {
   box-shadow: 0 25px 70px rgba(74, 20, 140, 0.35);
 }
 
-/* 🌟 כותרת ראשית */
+/* 🌟 Title */
 .terms-title {
   font-size: 42px;
   color: #4a148c;
   font-weight: 900;
   margin-bottom: 45px;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
+  text-align: center;
   text-shadow: 0 1px 5px rgba(74, 20, 140, 0.2);
 }
 
-/* 🌟 סגנון הסעיפים */
+/* 🌟 Sections */
 .terms-section {
   margin-bottom: 35px;
 }
 
 .terms-section h2 {
-  font-size: 30px;
+  font-size: 28px;
   color: #6a1b9a;
-  font-weight: 800;
-  margin-bottom: 18px;
+  font-weight: 700;
+  margin-bottom: 15px;
   border-left: 6px solid #9c27b0;
   padding-left: 12px;
-  letter-spacing: 0.8px;
-  box-shadow: 1px 2px 5px rgba(156, 39, 176, 0.15);
   background: #f7e9ff;
   border-radius: 8px;
-  padding-top: 10px;
-  padding-bottom: 10px;
 }
 
 .terms-section p {
-  font-size: 19px;
+  font-size: 18px;
   color: #444;
-  line-height: 1.85;
+  line-height: 1.8;
   margin-bottom: 16px;
   text-align: justify;
-  word-spacing: 2px;
-  letter-spacing: 0.2px;
 }
 
-/* 🌟 התאמה לנייד */
-@media (max-width: 768px) {
-  .terms-container {
-    padding: 30px 20px;
-    width: 95%;
-    margin: 30px auto 60px auto;
-  }
-
-  .terms-title {
-    font-size: 32px;
-  }
-
-  .terms-section h2 {
-    font-size: 24px;
-    border-left-width: 4px;
-  }
-
-  .terms-section p {
-    font-size: 16px;
-  }
-}
-
-/* 🌟 כפתור חזרה למעלה */
+/* 🌟 Back to top */
 .back-to-top {
   position: fixed;
   bottom: 35px;
-  left: 35px;
+  right: 35px;
   background: #6a1b9a;
   color: #fff;
   padding: 12px 18px;
   border-radius: 50px;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   box-shadow: 0 8px 15px rgba(106, 27, 154, 0.4);
   transition: background 0.3s ease, transform 0.2s ease;
-  user-select: none;
   z-index: 1000;
 }
 
@@ -111,61 +83,20 @@ body {
   transform: scale(1.1);
 }
 
-/* 🌟 תחתית האתר */
-.footer {
-  margin-top: 60px;
-  padding: 30px 15px;
-  text-align: center;
-  background-color: #faf7ff;
-  border-top: 1px solid #e1d7f3;
-  font-size: 15px;
-  color: #555;
-  letter-spacing: 0.3px;
-}
-
-.footer-links {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 18px;
-}
-
-.footer-links li {
-  display: inline-block;
-  margin: 0 18px;
-  color: #7a4ca1;
-  cursor: pointer;
-  font-weight: 600;
-  transition: color 0.25s ease;
-}
-
-.footer-links li:hover {
-  text-decoration: underline;
-  color: #4a148c;
-}
-
-/* זכויות שמורות */
-.copyright {
-  font-size: 14px;
-  color: #777;
-}
-@media (max-width: 768px) and (min-width: 481px) {
+/* 🌟 Responsive */
+@media (max-width: 768px) {
   .terms-container {
-    padding: 35px 25px;
-    max-width: 90%;
-    margin: 40px auto 50px auto;
+    padding: 30px 20px;
+    width: 95%;
+    margin: 30px auto 60px auto;
   }
-
   .terms-title {
-    font-size: 36px;
+    font-size: 32px;
   }
-
   .terms-section h2 {
-    font-size: 26px;
-    border-left-width: 5px;
+    font-size: 22px;
   }
-
   .terms-section p {
-    font-size: 17px;
-    line-height: 1.7;
+    font-size: 16px;
   }
 }
