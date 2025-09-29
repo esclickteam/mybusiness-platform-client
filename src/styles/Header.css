@@ -200,7 +200,7 @@
   }
 
   .logo-link .logo {
-  height: clamp(100px, 22vw, 160px) !important; /* רספונסיבי: מינימום 100px, מקסימום 160px */
+  height: clamp(140px, 35vw, 260px) !important;
   width: auto !important;
   object-fit: contain;
   display: block;
