@@ -102,7 +102,7 @@ export default function Support() {
           }
         }
       } catch (e) {
-        // שקט אם אין API
+        // אם אין API, מתעלמים בשקט
       }
     };
 
@@ -136,7 +136,9 @@ export default function Support() {
                 key={i}
                 className={`support-progress-marker ${reached ? "reached" : ""}`}
                 style={{ left: `${(m / goal) * 100}%` }}
+                aria-hidden="true"
               >
+                {/* המספרים מעל כל milestone */}
                 <div className="support-progress-label">
                   ${m.toLocaleString()}
                 </div>
@@ -144,6 +146,7 @@ export default function Support() {
             );
           })}
         </div>
+
         <div className="support-progress-text">
           <strong>${raised.toLocaleString()}</strong> raised of ${goal.toLocaleString()} goal
         </div>
@@ -204,13 +207,11 @@ export default function Support() {
       {/* Why We Are Reaching Out */}
       <h2 className="support-subtitle">Why We Are Reaching Out</h2>
       <p className="support-text">
-        We are not a nonprofit, and we are not backed by large investors. We are a young family, with a real story and a real dream.  
+        We are not a nonprofit, and we are not backed by large investors. We are a young family, with a real story and a real dream.{" "}
         All we ask for is support to help us hold on, pay off our debts, complete the development, and build a stable and secure future
         for ourselves and for our baby.
       </p>
-      <p className="support-text">
-        Any amount you choose to give will be received with deep gratitude 🙏
-      </p>
+      <p className="support-text">Any amount you choose to give will be received with deep gratitude 🙏</p>
 
       <hr className="support-divider" />
 
@@ -228,9 +229,7 @@ export default function Support() {
         </li>
       </ul>
 
-      <p className="support-text">
-        Of course, there will always be an option to choose any other amount you wish to give.
-      </p>
+      <p className="support-text">Of course, there will always be an option to choose any other amount you wish to give.</p>
 
       {/* Support Form */}
       <div className="support-cta">
