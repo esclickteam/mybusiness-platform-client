@@ -283,11 +283,17 @@
     text-align: center;
   }
 
+    .support-progress-marker.last-marker .support-progress-label {
+    transform: translateX(-80%); /* מזיז שמאלה רק במובייל */
+  }
+
   /* כפתורי תשלום */
   #paypal-button-container {
     margin-top: 20px;
   }
 }
+
+
 
 /* מסכים קטנים מאוד: 2 עמודות וכתב קטן יותר */
 @media (max-width: 480px) {
