@@ -177,7 +177,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0;     /* מינימום ריווח משני הצדדים */
+    padding: 0;        /* מבטל רווחים */
     height: 54px;
     background: #fff;
   }
@@ -191,18 +191,25 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    margin: 0;          /* מבטל מרווחים מיותרים */
+    margin: 0;
+  }
+
+  .logo-link {
+    margin: 0;
+    padding: 0;        /* מבטל רווח פנימי */
   }
 
   .logo-link .logo {
-    max-height: 180px;  /* גובה סטנדרטי ללוגו מובייל */
+    height: 80px;      /* גובה קבוע ונקי */
     width: auto;
     object-fit: contain;
+    display: block;
   }
 
-   .menu-toggle {
+  .menu-toggle {
     position: relative;
-    margin-left: auto;   /* צמוד לימין */
+    margin-left: auto; /* צמוד לימין */
+    margin-right: 8px; /* ריווח קטן מהקצה */
   }
 }
 
@@ -210,4 +217,3 @@
   .mobile-only { display: none !important; }
   .desktop-only { display: flex; }
 }
-
