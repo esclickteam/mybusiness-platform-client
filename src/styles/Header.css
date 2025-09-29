@@ -187,16 +187,20 @@
     display: none !important;
   }
 
+  
   .logo-wrapper {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     margin: 0;
+    padding: 0;
   }
 
-  .logo-link {
+   .logo-link {
+    display: flex;
+    align-items: center;
     margin: 0;
-    padding: 0;        /* מבטל רווח פנימי */
+    padding: 0;              /* מבטל padding פנימי */
   }
 
   .logo-link .logo {
