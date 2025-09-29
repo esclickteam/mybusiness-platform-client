@@ -24,6 +24,7 @@
   font-weight: 600;
   margin: 2rem 0 1rem;
   color: #2b3fa3;
+  text-align: center;  /* יישור לאמצע */
 }
 
 /* ===== Text ===== */
@@ -203,10 +204,9 @@
 .support-page,
 .support-page .support-text,
 .support-page .support-title,
-.support-page .support-subtitle,
 .support-page .support-list {
   direction: ltr;
-  text-align: left;
+  text-align: left; /* ישאיר רק את הפסקאות והטקסט מיושרים לשמאל */
 }
 
 @media (max-width: 768px) {
