@@ -120,7 +120,7 @@ export default function Support() {
       </Helmet>
 
       <h1 className="support-title">
-        Help Us Hold On, Finish the Development, and Build a Future for Our Baby on the Way
+        Help Us Build a Future for Our Baby
       </h1>
 
       {/* === Progress Bar === */}
