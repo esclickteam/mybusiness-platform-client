@@ -181,7 +181,7 @@
     align-items: center;
     justify-content: space-between;   /* לוגו שמאל, המבורגר ימין */
     padding: 0 16px 0 0;              /* ימין 16px, שמאל 0px */
-    height: 70px !important;
+    height: 60px !important;
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
