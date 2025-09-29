@@ -319,8 +319,8 @@ a.active-link {
     backdrop-filter: saturate(180%) blur(12px);
   }
     .logo-link .logo {
-    max-height: 180px;   /* ✨ גובה מקסימלי בנייד */
-    max-width: 200px;   /* ✨ רוחב מקסימלי */
+    max-height: 260px;   /* ✨ גובה מקסימלי בנייד */
+    max-width: 300px;   /* ✨ רוחב מקסימלי */
     height: auto;       /* שמירה על פרופורציה */
     width: auto;        /* לא מותח לרוחב */
   }
