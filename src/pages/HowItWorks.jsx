@@ -5,7 +5,7 @@ import "../styles/HowItWorks.css";
 
 function HowItWorks() {
   return (
-    <div className="howitworks-container">
+    <div className="howitworks-container" dir="ltr">
       <Helmet>
         <title>How It Works - Bizuply | Platform Guide</title>
         <meta
@@ -30,34 +30,56 @@ function HowItWorks() {
         <h2>Step 1: Create a Business or Client Profile</h2>
         <h3>For Businesses:</h3>
         <ul>
-          <li>Click <b>"Join as a Business"</b> and fill out your basic details.</li>
+          <li>
+            Click <b>"Join as a Business"</b> and fill out your basic details.
+          </li>
           <li>Upload your logo, images, and set your business hours.</li>
           <li>Choose the right plan (free or paid).</li>
-          <li><b>Result:</b> You have a professional business page ready to welcome clients!</li>
+          <li>
+            <b>Result:</b> You have a professional business page ready to
+            welcome clients!
+          </li>
         </ul>
         <h3>For Clients:</h3>
         <ul>
-          <li>Click <b>"Sign Up"</b> and choose "New Client".</li>
+          <li>
+            Click <b>"Sign Up"</b> and choose "New Client".
+          </li>
           <li>Fill in your name, email, and password.</li>
-          <li><b>Result:</b> Full access to search businesses, book services, and chat directly with providers.</li>
+          <li>
+            <b>Result:</b> Full access to search businesses, book services, and
+            chat directly with providers.
+          </li>
         </ul>
       </div>
 
       <div className="howitworks-section">
         <h2>Step 2: Smart Business & Service Search</h2>
         <ul>
-          <li>Use the search bar to enter keywords like <b>"Hairdresser in NYC"</b>.</li>
-          <li>The system will show results based on ratings, location, and availability.</li>
+          <li>
+            Use the search bar to enter keywords like{" "}
+            <b>"Hairdresser in NYC"</b>.
+          </li>
+          <li>
+            The system will show results based on ratings, location, and
+            availability.
+          </li>
           <li>You can filter by price, reviews, category, and business hours.</li>
-          <li><b>Result:</b> Quickly find the exact business you need!</li>
+          <li>
+            <b>Result:</b> Quickly find the exact business you need!
+          </li>
         </ul>
       </div>
 
       <div className="howitworks-section">
         <h2>Step 3: Scheduling & Managing Appointments</h2>
         <ul>
-          <li>Go to a business page and click <b>"Book Now"</b>.</li>
-          <li>View the calendar with available slots and get instant confirmation.</li>
+          <li>
+            Go to a business page and click <b>"Book Now"</b>.
+          </li>
+          <li>
+            View the calendar with available slots and get instant confirmation.
+          </li>
           <li>Receive automatic reminders by email.</li>
         </ul>
       </div>
@@ -66,13 +88,21 @@ function HowItWorks() {
         <h2>Step 4: Direct Communication</h2>
         <h3>Online Chat:</h3>
         <ul>
-          <li>On every business page, you can click <b>"Send Message"</b>.</li>
-          <li>Ask questions or send requests directly to the business owner and get replies within minutes.</li>
+          <li>
+            On every business page, you can click <b>"Send Message"</b>.
+          </li>
+          <li>
+            Ask questions or send requests directly to the business owner and
+            get replies within minutes.
+          </li>
         </ul>
         <h3>Business-to-Business Collaboration:</h3>
         <ul>
           <li>Businesses can send collaboration requests.</li>
-          <li><b>Result:</b> Easily find suppliers, partners, or refer clients to one another!</li>
+          <li>
+            <b>Result:</b> Easily find suppliers, partners, or refer clients to
+            one another!
+          </li>
         </ul>
       </div>
 
@@ -80,8 +110,14 @@ function HowItWorks() {
         <h2>Step 5: Tracking & Managing Your Activity</h2>
         <h3>For Businesses:</h3>
         <ul>
-          <li>Access the <b>"Dashboard"</b> with data on visits, bookings, and client activity.</li>
-          <li>Use the built-in email marketing system to send promotions and updates.</li>
+          <li>
+            Access the <b>"Dashboard"</b> with data on visits, bookings, and
+            client activity.
+          </li>
+          <li>
+            Use the built-in email marketing system to send promotions and
+            updates.
+          </li>
         </ul>
         <h3>For Clients:</h3>
         <ul>
@@ -102,12 +138,24 @@ function HowItWorks() {
       {/* Footer */}
       <footer className="footer">
         <ul className="footer-links">
-          <li><Link to="/about">📖 About Us</Link></li>
-          <li><Link to="/how-it-works">⚙ How It Works</Link></li>
-          <li><Link to="/join">✏ Join as a Business</Link></li>
-          <li><Link to="/faq">❓ FAQ</Link></li>
-          <li><Link to="/terms">📜 Terms & Conditions</Link></li>
-          <li><Link to="/contact">📞 Contact Us</Link></li>
+          <li>
+            <Link to="/about">📖 About Us</Link>
+          </li>
+          <li>
+            <Link to="/how-it-works">⚙ How It Works</Link>
+          </li>
+          <li>
+            <Link to="/join">✏ Join as a Business</Link>
+          </li>
+          <li>
+            <Link to="/faq">❓ FAQ</Link>
+          </li>
+          <li>
+            <Link to="/terms">📜 Terms & Conditions</Link>
+          </li>
+          <li>
+            <Link to="/contact">📞 Contact Us</Link>
+          </li>
         </ul>
         <p className="copyright">© All rights reserved | Bizuply</p>
       </footer>
