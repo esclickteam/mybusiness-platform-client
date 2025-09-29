@@ -39,7 +39,6 @@ export default function Support() {
     const script = document.createElement("script");
     script.src =
       "https://www.paypal.com/sdk/js?client-id=Ad5vKKrnnrh28YQ58TH5sW34exTDt8j_fP68ebdSFrwGnKE__UZvcri0ENQ2ngJSDnyHzgpigne9xOnC&currency=USD&locale=en_US";
-
     script.async = true;
     script.addEventListener("load", onLoad, { once: true });
     document.body.appendChild(script);
@@ -79,7 +78,10 @@ export default function Support() {
         },
         onApprove: (data, actions) => {
           return actions.order.capture().then((details) => {
-            const paid = Number(amount || 10);
+            // משתמשים באובייקט של PayPal (details) במקום req.body
+            const paid = Number(
+              details.purchase_units?.[0]?.amount?.value || 0
+            );
             setRaised((prev) => prev + paid); // עדכון מיידי בצד לקוח
           });
         },
