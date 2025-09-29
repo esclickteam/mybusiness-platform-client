@@ -113,6 +113,8 @@
 .support-progress-wrapper {
   margin: 30px 0;
   text-align: center;
+  position: relative;
+  padding-bottom: 40px; /* מקום לטקסט של milestones */
 }
 
 .support-progress-bar {
