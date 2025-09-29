@@ -185,3 +185,23 @@
   font-size: 0.95rem;
   color: #555;
 }
+
+.support-page ~ .app-header,
+.support-page .app-header,
+.app-header {
+  direction: ltr;
+  text-align: left;
+}
+.support-page .app-header .nav-links,
+.support-page .app-header .auth-controls {
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.support-page,
+.support-page .support-text,
+.support-page .support-title,
+.support-page .support-subtitle,
+.support-page .support-list {
+  direction: ltr;
+  text-align: left;
+}
