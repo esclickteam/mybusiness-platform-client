@@ -23,10 +23,11 @@
 }
 .logo-link .logo {
   height: auto;
-  max-height: 260px;   /* גובה קבוע ונוח לשורת הניווט */
+  max-height: 60px;   /* גובה אידיאלי לשורת הניווט */
   width: auto;
-  max-width: 300px;   /* שים לב, זה ישאיר אותו גדול אבל לא ענק */
+  max-width: 200px;   /* ישאיר אותו קריא אבל לא ענק */
   object-fit: contain;
+  transition: transform 0.2s ease;
 }
 .logo-link:hover .logo {
   transform: scale(1.05);
