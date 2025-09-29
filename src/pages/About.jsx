@@ -1,75 +1,70 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { FaUsers, FaRobot, FaChartLine, FaHandshake } from "react-icons/fa";
 import "../styles/About.css";
 
 function About() {
   return (
     <div className="about-container">
       <Helmet>
-        <title>קצת עלינו - עסקליק | הפלטפורמה לחיבור עסקים ולקוחות</title>
+        <title>About Us - Bizuply | The All-in-One Business Platform</title>
         <meta
           name="description"
-          content="עסקליק – הפלטפורמה המובילה בישראל לחיבור עסקים ללקוחות. ניהול חכם, שירותים דיגיטליים ושיתופי פעולה לעסקים קטנים ובינוניים."
+          content="Bizuply – the all-in-one platform for businesses. Manage clients, appointments, digital services, and collaborations in one smart solution."
         />
-        <meta
-          name="keywords"
-          content="עסקליק, עסקים, חיבור עסקים ולקוחות, ניהול פניות, שירותים דיגיטליים, שיתופי פעולה עסקיים, פלטפורמה לעסקים"
-        />
-        <link rel="canonical" href="https://yourdomain.co.il/about" />
+        <link rel="canonical" href="https://bizuply.com/about" />
       </Helmet>
 
-      <h1 className="about-title">קצת עלינו - עסקליק</h1>
-      <p className="about-paragraph">
-        ברוכים הבאים ל*עסקליק* — הפלטפורמה המובילה בישראל לחיבור בין עסקים ללקוחות, המאפשרת לנהל, לקדם ולהגדיל את העסק בצורה חכמה, יעילה ומתקדמת.  
-        בעזרת מערכת חדשנית המשלבת ניהול פניות, זימון תורים, שירותים דיגיטליים ושיתופי פעולה עסקיים, אנו מאפשרים לעסקים מכל התחומים להרחיב את טווח ההגעה ולהציע ללקוחות חוויית שירות בלתי מתפשרת.
-      </p>
+      {/* Hero Section */}
+      <section className="about-hero">
+        <h1>About <span>Bizuply</span></h1>
+        <p>
+          Bizuply is the all-in-one platform that helps businesses manage clients,
+          bookings, digital services, and collaborations — all in one place.
+        </p>
+      </section>
 
-      <h2 className="about-section-title">החזון שלנו</h2>
-      <p className="about-paragraph">
-        להוביל את השינוי הדיגיטלי בישראל בתחום השירותים העסקיים, וליצור פלטפורמה ייחודית שמשלבת בין טכנולוגיה מתקדמת לנוחות מקסימלית,  
-        שמאפשרת לעסקים קטנים ובינוניים לפרוח וללקוחות לקבל שירות איכותי, אמין ומותאם אישית.
-      </p>
+      {/* Vision Section */}
+      <section className="about-section">
+        <h2>Our Vision</h2>
+        <p>
+          Empowering small and medium-sized businesses worldwide with simple,
+          powerful, and innovative tools that make growth effortless.
+        </p>
+      </section>
 
-      <h2 className="about-section-title">המסע שלנו</h2>
-      <p className="about-paragraph">
-        עסקליק נולדה מתוך הבנה עמוקה של האתגרים של בעלי עסקים ולקוחות כאחד — למצוא את השירות הנכון בזמן הנכון, ולנהל את ההזמנות והפניות בקלות וביעילות.  
-        הפלטפורמה מתפתחת כל הזמן, בשיתוף עם בעלי עסקים מובילים, כדי להציע פתרונות טכנולוגיים חדשניים ומותאמים לצרכים משתנים.
-      </p>
+      {/* Features Section */}
+      <section className="about-features">
+        <div className="feature">
+          <FaUsers className="feature-icon" />
+          <h3>Smart Client Management</h3>
+          <p>Centralize requests, bookings, and communications in one dashboard.</p>
+        </div>
+        <div className="feature">
+          <FaRobot className="feature-icon" />
+          <h3>Automation Tools</h3>
+          <p>Save time with AI-powered scheduling, reminders, and workflows.</p>
+        </div>
+        <div className="feature">
+          <FaChartLine className="feature-icon" />
+          <h3>Analytics & Insights</h3>
+          <p>Track performance and make data-driven decisions with ease.</p>
+        </div>
+        <div className="feature">
+          <FaHandshake className="feature-icon" />
+          <h3>Business Collaborations</h3>
+          <p>Connect with complementary businesses and unlock new opportunities.</p>
+        </div>
+      </section>
 
-      <h2 className="about-section-title">מה אנחנו מציעים לעסקים</h2>
-      <ul className="about-list">
-        <li>ניהול חכם של פניות וזימוני תורים ופגישות – כלים אוטומטיים ומתקדמים לניהול לוחות זמנים ושירות עד הבית.</li>
-        <li>מערכת שירות לקוחות דיגיטלית – תקשורת ישירה, מהירה ונוחה עם לקוחות דרך הפלטפורמה.</li>
-        <li>שיתופי פעולה עסקיים – יצירת קשרים עם עסקים משלימים להרחבת הרשת והזדמנויות עסקיות חדשות.</li>
-        <li>ניהול הזמנות ופניות מרוכז – שליטה מלאה בכל הפניות בממשק אחד פשוט ואינטואיטיבי.</li>
-        <li>כלים לניתוח פעילות העסק – סטטיסטיקות ודוחות מתקדמים לשיפור מתמיד של השירות וההכנסות.</li>
-      </ul>
-
-      <h2 className="about-section-title">למה לבחור בעסקליק?</h2>
-      <p className="about-paragraph">
-        כי עסקליק מספקת חוויית משתמש ייחודית, טכנולוגיה מתקדמת, ותמיכה מקצועית לאורך כל הדרך.  
-        הפלטפורמה שלנו מותאמת לכל סוגי העסקים ומציעה פתרונות פשוטים וממוקדים שמגדילים את החשיפה וההכנסות, עם דגש על נוחות, אמינות וחדשנות.
-      </p>
-
-      <h2 className="about-section-title">המטרה שלנו</h2>
-      <p className="about-paragraph">
-        להיות הבית הדיגיטלי הראשון לעסקים בישראל — פלטפורמה שמאפשרת לנהל שירותים, לייעל תהליכים, ולהעניק ללקוחות חוויה איכותית ובלתי נשכחת,  
-        תוך מתן דגש על מקצועיות, חדשנות ושירות ללא פשרות.
-      </p>
-
-      {/* Footer */}
-      <footer className="footer">
-        <ul className="footer-links">
-          <li><Link to="/about">📖 קצת עלינו</Link></li>
-          <li><Link to="/how-it-works">⚙ איך זה עובד</Link></li>
-          <li><Link to="/join">✏ הצטרפות עסקים</Link></li>
-          <li><Link to="/faq">❓ שאלות נפוצות</Link></li>
-          <li><Link to="/terms">📜 תקנון</Link></li>
-          <li><Link to="/contact">📞 יצירת קשר</Link></li>
-        </ul>
-        <p className="copyright">כל הזכויות שמורות © עסקליק</p>
-      </footer>
+      {/* Mission Section */}
+      <section className="about-section">
+        <h2>Our Mission</h2>
+        <p>
+          To be the digital home for businesses worldwide — simplifying operations,
+          boosting growth, and creating unforgettable client experiences.
+        </p>
+      </section>
     </div>
   );
 }
