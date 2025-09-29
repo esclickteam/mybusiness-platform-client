@@ -177,24 +177,25 @@
 /* ===== Header Mobile & Tablet ===== */
 @media (max-width: 1024px) {
   .app-header {
-    display: flex;
+    height: 70px !important;        /* אותו גובה כמו בדסקטופ */
+    padding: 0 16px 0 0;            /* צמוד לשמאל */
+    justify-content: flex-start;    /* הלוגו תמיד שמאלה */
     align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
-    height: 72px !important;
+    gap: 20px;
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 
-  /* לוגו */
   .app-header .logo-wrapper .logo-link .logo {
-    height: clamp(55px, 9vw, 75px) !important;
+    height: 120px !important;       /* לוגו גדול גם במובייל */
     width: auto !important;
+    max-height: none !important;    /* מבטל מגבלות */
+    max-width: none !important;
     object-fit: contain;
     display: block;
   }
 
-  /* המבורגר */
+  /* ההמבורגר בצד ימין */
   .menu-toggle {
     margin-left: auto;
     margin-right: 0;
@@ -202,12 +203,13 @@
     transform: none;
   }
 
-  /* מסתיר ניווט רגיל */
+  /* מסתיר ניווט רגיל במובייל */
   .nav-links,
   .auth-controls.desktop-only {
     display: none !important;
   }
 }
+
 
 /* ===== Header Desktop ===== */
 @media (min-width: 1025px) {
