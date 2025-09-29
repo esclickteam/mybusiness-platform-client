@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../images/logo_final.svg";  // שימוש ב-SVG
+import logo from "../images/logo_final.svg"; // שימוש ב-SVG
 import { FaBars, FaChevronLeft } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
-// Shared links
+// Shared links (קטגוריות ניווט ראשיות)
 const navLinks = [
-  { to: "/how-it-works", label: "How It Works" },
+  { to: "/features", label: "Features" },
+  { to: "/solutions", label: "Solutions" },
   { to: "/pricing", label: "Pricing" },
-  { to: "/faq", label: "FAQ" },
-  { to: "/contact", label: "Contact" },
+  { to: "/resources", label: "Resources" },
+  { to: "/about", label: "About" },
 ];
 
 export default function Header() {
@@ -59,28 +60,9 @@ export default function Header() {
 
         {/* Desktop actions */}
         <div className="auth-controls desktop-only">
-          {!user ? (
-            <>
-              <Link to="/login" className="login-link">
-                Login
-              </Link>
-              <Link to="/register" className="cta-button">
-                Try it Free
-              </Link>
-            </>
-          ) : (
-            <>
-              <button
-                className="personal-area-button"
-                onClick={() => navigate("/dashboard")}
-              >
-                Dashboard
-              </button>
-              <button className="logout-button" onClick={handleLogout}>
-                Logout
-              </button>
-            </>
-          )}
+          <Link to="/register" className="cta-button">
+            Try it Free
+          </Link>
         </div>
 
         {/* Mobile hamburger */}
@@ -104,39 +86,16 @@ export default function Header() {
             </div>
 
             <div className="menu-scroll">
-              {!user ? (
-                <div className="mobile-auth">
-                  <Link
-                    to="/login"
-                    className="login-button"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="cta-button full-width"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Try it Free
-                  </Link>
-                </div>
-              ) : (
-                <div className="auth-menu">
-                  <button
-                    className="personal-area-button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      navigate("/dashboard");
-                    }}
-                  >
-                    Dashboard
-                  </button>
-                  <button className="logout-button" onClick={handleLogout}>
-                    Logout
-                  </button>
-                </div>
-              )}
+              {/* CTA תמיד בולט במובייל */}
+              <div className="mobile-auth">
+                <Link
+                  to="/register"
+                  className="cta-button full-width"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Try it Free
+                </Link>
+              </div>
 
               {/* Nav links */}
               <div className="menu-section">
