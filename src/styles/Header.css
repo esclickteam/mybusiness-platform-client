@@ -23,9 +23,9 @@
 }
 .logo-link .logo {
   height: auto;
-  max-height: 80px;   /* גובה קבוע ונוח לשורת הניווט */
+  max-height: 260px;   /* גובה קבוע ונוח לשורת הניווט */
   width: auto;
-  max-width: 220px;   /* שים לב, זה ישאיר אותו גדול אבל לא ענק */
+  max-width: 300px;   /* שים לב, זה ישאיר אותו גדול אבל לא ענק */
   object-fit: contain;
 }
 .logo-link:hover .logo {
