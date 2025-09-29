@@ -173,13 +173,14 @@
 }
 
 /* ================= Responsive ================= */
+/* ===== Header Mobile & Tablet ===== */
 @media (max-width: 1024px) {
   .app-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 16px;  /* קצת ריווח מסביב */
-    height: 80px;       /* מספיק גובה ללוגו גדול */
+    padding: 0 16px;       /* ריווח מינימלי מסביב */
+    height: 80px;          /* מספיק מקום ללוגו גדול */
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
@@ -189,10 +190,11 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    flex: 1 1 auto;
   }
 
   .logo-link .logo {
-    max-height: 75px;   /* דומה ל-HubSpot */
+    height: clamp(56px, 8vw, 80px);  /* אוטומטי: 56px–80px */
     width: auto;
     object-fit: contain;
     display: block;
@@ -206,7 +208,7 @@
     transform: none;
   }
 
-  /* מסתיר לינקים רגילים */
+  /* מסתיר ניווט רגיל */
   .nav-links,
   .auth-controls.desktop-only {
     display: none !important;
@@ -219,11 +221,12 @@
   .desktop-only { display: flex; }
 
   .app-header {
-    height: 80px;
+    height: 90px;          /* טיפה גבוה יותר בדסקטופ */
     padding: 12px 32px;
   }
 
   .logo-link .logo {
-    max-height: 70px;
+    height: clamp(64px, 6vw, 100px); /* דינאמי גם בדסקטופ */
+    width: auto;
   }
 }
