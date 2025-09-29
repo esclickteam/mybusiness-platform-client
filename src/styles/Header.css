@@ -176,9 +176,10 @@
   .app-header {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* לוגו שמאלה, המבורגר ימינה */
-    padding: 12px 16px; /* קרוב לשמאל */
+    justify-content: space-between;
+    padding: 0 12px;   /* מינימום ריווח משני הצדדים */
     height: 64px;
+    background: #fff;
   }
 
   .nav-links,
@@ -186,19 +187,21 @@
     display: none !important;
   }
 
-  .logo-wrapper {
-    margin-right: auto;   /* מבטיח שהלוגו צמוד לשמאל */
+ .logo-wrapper {
+    display: flex;
+    align-items: center;
+    margin-right: auto;   /* צמוד לשמאל */
   }
 
   .logo-link .logo {
-    max-height: 70px;   /* גודל מאוזן למובייל */
+    max-height: 32px;  /* גובה סטנדרטי ללוגו מובייל */
     width: auto;
     object-fit: contain;
   }
 
-  .menu-toggle {
-    position: static;
-    transform: none;
+   .menu-toggle {
+    position: relative;
+    margin-left: auto;   /* צמוד לימין */
   }
 }
 
