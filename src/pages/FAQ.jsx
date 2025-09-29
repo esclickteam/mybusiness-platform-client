@@ -1,102 +1,70 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import "../styles/FAQ.css";
 
 function FAQ() {
   return (
-    <div className="faq-container">
+    <main className="faq-page">
       <Helmet>
-        <title>שאלות נפוצות - עסקליק | כל מה שחשוב לדעת</title>
+        <title>FAQ - Bizuply | Everything You Need to Know</title>
         <meta
           name="description"
-          content="שאלות נפוצות בעסקליק – מדריך לשימוש בפלטפורמה, הרשמה, חיפוש עסקים, קביעת תורים, קידום ושיתופי פעולה עסקיים, אבטחה ותמיכה."
+          content="Find answers to frequently asked questions about Bizuply – registration, appointments, security, and support."
         />
-        <meta
-          name="keywords"
-          content="שאלות נפוצות, עסקליק, חיפוש עסקים, קביעת תורים, תמיכה, הרשמה, שיתופי פעולה עסקיים, אבטחה"
-        />
-        <link rel="canonical" href="https://yourdomain.co.il/faq" />
+        <link rel="canonical" href="https://bizuply.com/faq" />
       </Helmet>
 
-      <h1 className="faq-title">שאלות נפוצות - עסקליק</h1>
+      <h1 className="faq-title">Frequently Asked Questions</h1>
 
-      <div className="faq-section">
-        <h2>כללי</h2>
-        <p><b>מהי הפלטפורמה עסקליק?</b><br />
-        עסקליק היא פלטפורמה מתקדמת המחברת בין עסקים ללקוחות בצורה חכמה, מהירה ונוחה. היא מאפשרת חיפוש עסקים, קביעת תורים, יצירת קשר בין עסקים ולקוחות ועוד.</p>
+      <section className="faq-list">
+        <details>
+          <summary>What is Bizuply?</summary>
+          <p>
+            Bizuply is a smart platform that connects businesses and clients. 
+            It allows scheduling, messaging, AI-powered insights, and seamless collaboration — all in one place.
+          </p>
+        </details>
 
-        <p><b>האם השירות כרוך בתשלום?</b><br />
-        כל העסקים בפלטפורמה מקבלים חבילה מקצועית אחידה ומתקדמת, שמעניקה את כל הכלים הדרושים לניהול ושיווק העסק. אין חבילות חינמיות נפרדות — כך שכל עסק זוכה למערכת מתקדמת ושווה עם אפשרות להרחבת שירותי AI חכמים לשדרוג הפעילות.</p>
-      </div>
+        <details>
+          <summary>Is there a free trial?</summary>
+          <p>
+            Yes — Bizuply offers a 14-day free trial, with no credit card required.
+          </p>
+        </details>
 
-      <div className="faq-section">
-        <h2>הרשמה והתחברות</h2>
-        <p><b>איך מצטרפים לעסקליק כבעל עסק?</b><br />
-        ההצטרפות פשוטה ומהירה: לחצו על כפתור "הצטרפות עסקים", מלאו את הפרטים הבסיסיים של העסק, והתחילו ליהנות מעמוד עסקי מקצועי שייצג אתכם בצורה הטובה ביותר ויקשר אתכם ללקוחות רלוונטיים.</p>
+        <details>
+          <summary>How do I join as a business?</summary>
+          <p>
+            Simply click "Join as a Business", complete your profile, and start 
+            managing appointments, clients, and collaborations from one dashboard.
+          </p>
+        </details>
 
-        <p><b>איך נרשמים כלקוח בפלטפורמה?</b><br />
-        לקוחות יכולים להירשם בקלות על ידי לחיצה על "התחברות", מילוי פרטי משתמש בסיסיים, ולקבל גישה מלאה לחיפוש עסקים, קביעת תורים ותקשורת ישירה עם נותני השירות.</p>
-      </div>
+        <details>
+          <summary>How do clients use the platform?</summary>
+          <p>
+            Clients can sign up for free, search businesses, book appointments, 
+            and chat directly — all from mobile or desktop.
+          </p>
+        </details>
 
-      <div className="faq-section">
-        <h2>חיפוש עסקים ושירותים</h2>
-        <p><b>איך מוצאים את העסק המתאים לי?</b><br />
-        פשוט הזינו בשורת החיפוש שם עסק, תחום או מיקום — המערכת תציג לכם תוצאות מדויקות, עם דירוגים, חוות דעת וזמינות בזמן אמת, כדי שתוכלו לבחור את השירות המתאים במהירות ובבטחון.</p>
+        <details>
+          <summary>Is my data secure?</summary>
+          <p>
+            Absolutely. Bizuply uses encryption and industry-standard 
+            practices to keep your information safe at all times.
+          </p>
+        </details>
 
-        <p><b>האם אפשר לקרוא ביקורות והמלצות על עסקים?</b><br />
-        בהחלט! כל עסק בפלטפורמה מציג חוות דעת אותנטיות מלקוחות אמיתיים, כך שתוכלו לקבל החלטה מושכלת לפני הזמנה או רכישה.</p>
-      </div>
-
-      <div className="faq-section">
-        <h2>קביעת תורים וניהול שירותים</h2>
-        <p><b>איך אפשר לקבוע תור דרך עסקליק?</b><br />
-        נכנסים לעמוד העסק המועדף עליכם, בוחרים את האפשרות "קבע תור", בוחרים את השעה המתאימה ומקבלים אישור מיידי, עם תזכורת אוטומטית שתגיע למייל.</p>
-
-        <p><b>מה אם אני רוצה לשנות או לבטל תור?</b><br />
-        דרך חשבון הלקוח ניתן לנהל את התורים בקלות, לשנות או לבטל בהתאם למדיניות העסק, והמערכת תעדכן את שני הצדדים בזמן אמת.</p>
-      </div>
-
-      <div className="faq-section">
-        <h2>קידום ושיתופי פעולה עסקיים</h2>
-        <p><b>איך אוכל לקדם את העסק שלי בעסקליק?</b><br />
-        כל עסק נהנה מכלי קידום ושיווק מקצועיים שמגיעים עם החבילה שלנו, כולל ניהול מבצעים, חשיפה מוגברת ותזכורות אוטומטיות ללקוחות קיימים וחדשים.</p>
-
-        <p><b>האם אפשר ליצור שיתופי פעולה עם עסקים אחרים?</b><br />
-        באמצעות מערכת השיתופי פעולה ניתן לשלוח ולקבל בקשות לשיתופי פעולה עם עסקים משלימים, להרחיב את הרשת העסקית ולהגדיל את ההכנסות.</p>
-      </div>
-
-      <div className="faq-section">
-        <h2>אבטחה ותמיכה</h2>
-        <p><b>האם המידע שלי מאובטח בפלטפורמה?</b><br />
-        אבטחת המידע היא בראש סדר העדיפויות שלנו: כל הנתונים מוצפנים ומאוחסנים תחת סטנדרטים גבוהים של אבטחה כדי להבטיח פרטיות ושקט נפשי.</p>
-
-        <p><b>איך ניתן לקבל תמיכה במקרה של בעיה?</b><br />
-        צוות התמיכה שלנו זמין תמיד דרך עמוד <Link to="/contact">"יצירת קשר"</Link>, עם מענה מהיר ואדיב לכל שאלה או תקלה.</p>
-
-        <p><b>מה קורה לאחר ההתחברות כבעל עסק?</b><br />
-        לאחר ההתחברות, כל בעל עסק מקבל גישה לעמוד מרכז עזרה ייחודי שבו ניתן לקבל תמיכה, ללמוד כיצד לנצל את כל הכלים בפלטפורמה, ולנהל את העסק בצורה יעילה ופשוטה.</p>
-      </div>
-
-      <div className="faq-footer">
-        <h3>📌 יש לכם שאלה נוספת?</h3>
-        <p>נשמח לעזור! תוכלו לפנות אלינו דרך <Link to="/contact">עמוד יצירת הקשר</Link> ונחזור אליכם במהירות.</p>
-      </div>
-
-      {/* תחתית הדף */}
-      <footer className="footer">
-        <ul className="footer-links">
-          
-          <li><Link to="/about" className="footer-link">📖 קצת עלינו</Link></li>
-          <li><Link to="/how-it-works" className="footer-link">⚙ איך זה עובד</Link></li>
-          <li><Link to="/business-signup" className="footer-link">✏ הצטרפות עסקים</Link></li>
-          <li><Link to="/faq" className="footer-link">❓ שאלות נפוצות</Link></li>
-          <li><Link to="/terms" className="footer-link">📜 תקנון</Link></li>
-          <li><Link to="/contact" className="footer-link">📞 יצירת קשר</Link></li>
-        </ul>
-        <p className="copyright">כל הזכויות שמורות © עסקליק</p>
-      </footer>
-    </div>
+        <details>
+          <summary>Where can I get support?</summary>
+          <p>
+            Our support team is available through the <a href="/contact">Contact Page</a>, 
+            with fast and helpful responses.
+          </p>
+        </details>
+      </section>
+    </main>
   );
 }
 
