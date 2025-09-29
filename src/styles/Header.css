@@ -8,8 +8,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 32px;   /* יותר רווח מלמעלה ולמטה */
-  height: 100px;        /* קובע גובה אחיד להידר */
+  padding: 16px 32px;   /* יותר רווח למעלה ולמטה */
+  min-height: 100px;    /* לא max-height! */
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   z-index: 1502;
@@ -22,8 +22,8 @@
   justify-content: center;
 }
 .logo-link .logo {
-  height: 80px;         /* גובה קבוע – שולט ישירות בלוגו */
-  width: auto;          /* ישמור על פרופורציות */
+  height: 100px;        /* הלוגו באמת גדול */
+  width: auto;
   object-fit: contain;
 }
 .logo-link:hover .logo {
