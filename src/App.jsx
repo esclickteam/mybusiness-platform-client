@@ -8,6 +8,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import ClientChatSection from "./components/ClientChatSection";
@@ -365,6 +366,7 @@ export default function App() {
                 onClose={() => setShowNotifications(false)}
               />
             )}
+            <Footer />
           </Suspense>
         </AiProvider>
       </NotificationsProvider>
