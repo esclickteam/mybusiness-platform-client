@@ -200,7 +200,7 @@
   }
 
   .logo-link .logo {
-  height: clamp(140px, 35vw, 260px) !important;
+  height: 220px !important; 
   width: auto !important;
   object-fit: contain;
   display: block;
