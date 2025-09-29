@@ -144,7 +144,15 @@
   border-radius: 12px;
   width: 0;
   transition: width 0.6s ease-in-out;
+  background-size: 200% 100%;
+  animation: progress-stripes 2s linear infinite;
 }
+
+@keyframes progress-stripes {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 
 /* Milestones = פסים אנכיים */
 .support-progress-marker {
