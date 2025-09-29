@@ -210,20 +210,3 @@
   }
 }
 
-/* ===== Header Desktop ===== */
-@media (min-width: 1025px) {
-  .mobile-only { display: none !important; }
-  .desktop-only { display: flex; }
-
-  .app-header {
-    height: 100px !important;     /* טיפה גבוה יותר בדסקטופ */
-    padding: 12px 32px;
-  }
-
-  .app-header .logo-wrapper .logo-link .logo {
-    height: clamp(80px, 6vw, 110px) !important; /* דינאמי, עדיף למסכים רחבים */
-    width: auto !important;
-    max-height: none !important;
-    max-width: none !important;
-  }
-}
