@@ -203,11 +203,19 @@
 }
 .support-page,
 .support-page .support-text,
-.support-page .support-title,
 .support-page .support-list {
   direction: ltr;
-  text-align: left; /* ישאיר רק את הפסקאות והטקסט מיושרים לשמאל */
+  text-align: left; /* רק טקסט ורשימות */
 }
+
+/* כותרת ראשית ומשנה תמיד במרכז */
+.support-page .support-title,
+.support-page .support-subtitle {
+  text-align: center;
+}
+
+
+
 
 @media (max-width: 768px) {
   /* ===== Donation box ===== */
