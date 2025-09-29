@@ -222,7 +222,7 @@
   }
 
   .app-header .logo-wrapper .logo-link .logo {
-    height: 110px !important;       /* גודל לוגו קבוע גדול */
+    height: 250px !important;       /* גודל לוגו קבוע גדול */
     width: auto !important;
     max-height: none !important;    /* מבטל הגבלה */
     max-width: none !important;
