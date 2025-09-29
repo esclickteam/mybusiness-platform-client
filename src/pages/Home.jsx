@@ -1,8 +1,6 @@
-import React from "react";
 import { Helmet } from "react-helmet";
 import "../styles/Home.css";
 import { Link } from "react-router-dom";
-import Header from "../components/Header"; // ✅ שימוש בהדר קיים
 
 export default function Home() {
   return (
@@ -14,9 +12,6 @@ export default function Home() {
           content="Manage clients, schedule appointments, automate with AI, collaborate and grow — all in one platform."
         />
       </Helmet>
-
-      {/* ✅ Header רק פעם אחת */}
-      <Header />
 
       {/* ===== HERO ===== */}
       <section className="esd-hero" aria-labelledby="hero-title">
