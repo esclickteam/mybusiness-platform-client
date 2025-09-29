@@ -1,15 +1,15 @@
 // src/pages/StaffLogin.jsx
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";     // ← משתמשים ב־AuthContext
+import { useAuth } from "../context/AuthContext"; // ← Using AuthContext
 import "../styles/Login.css";
 import { useNavigate } from "react-router-dom";
 
 export default function StaffLogin() {
-  const { staffLogin } = useAuth();                  // ← הפונקציה החדשה ל־staff-login ב־context
+  const { staffLogin } = useAuth(); // ← staff-login function from context
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [staffError, setStaffError] = useState("");
-  const [loading, setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,37 +17,38 @@ export default function StaffLogin() {
     setStaffError("");
 
     if (!username.trim() || !password) {
-      setStaffError("יש למלא שם משתמש וסיסמה");
+      setStaffError("Please enter both username and password.");
       return;
     }
     if (username.includes("@")) {
-      setStaffError("נא להזין שם משתמש בלבד");
+      setStaffError("Please enter a username only, not an email address.");
       return;
     }
 
     setLoading(true);
     try {
-      // ← קוראים לפונקציה שב־AuthContext שתבצע את הקריאה ל־/auth/staff-login, תשמור טוקן, ותעדכן את user ב־context
+      // Call the staffLogin function from AuthContext
       const user = await staffLogin(username.trim(), password);
 
-      // ניווט לפי תפקיד
+      // Navigate by role
       switch (user.role) {
         case "worker":
           navigate("/staff/dashboard", { replace: true });
           break;
         case "manager":
-        case "מנהל":
           navigate("/manager/dashboard", { replace: true });
           break;
         case "admin":
           navigate("/admin/dashboard", { replace: true });
           break;
         default:
-          setStaffError("אין לך הרשאה להתחבר כעובד");
+          setStaffError("You don’t have permission to log in as staff.");
       }
     } catch (err) {
       console.error("Staff login failed:", err);
-      setStaffError(err.response?.data?.error || "שם משתמש או סיסמה שגויים");
+      setStaffError(
+        err.response?.data?.error || "Incorrect username or password."
+      );
     } finally {
       setLoading(false);
     }
@@ -56,11 +57,11 @@ export default function StaffLogin() {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h2>כניסת עובדים</h2>
+        <h2>Staff Login</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="שם משתמש"
+            placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
@@ -68,18 +69,14 @@ export default function StaffLogin() {
           />
           <input
             type="password"
-            placeholder="סיסמה"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
             required
           />
-          <button
-            type="submit"
-            className="login-button"
-            disabled={loading}
-          >
-            {loading ? "🔄 מתחבר..." : "התחבר"}
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? "🔄 Logging in..." : "Log In"}
           </button>
         </form>
 
@@ -88,9 +85,9 @@ export default function StaffLogin() {
         <span
           className="forgot-password"
           onClick={() => navigate("/forgot-password")}
-          style={{cursor: "pointer"}}
+          style={{ cursor: "pointer" }}
         >
-          שכחת את הסיסמה?
+          Forgot password?
         </span>
       </div>
     </div>
