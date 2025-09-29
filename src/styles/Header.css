@@ -177,7 +177,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 12px;   /* מינימום ריווח משני הצדדים */
+    padding: 0;     /* מינימום ריווח משני הצדדים */
     height: 54px;
     background: #fff;
   }
@@ -190,8 +190,8 @@
   .logo-wrapper {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* חשוב! צמוד לשמאל */
-    margin-right: auto;          /* דוחף אותו לשמאל */
+    justify-content: flex-start;
+    margin: 0;          /* מבטל מרווחים מיותרים */
   }
 
   .logo-link .logo {
