@@ -23,9 +23,9 @@
 }
 .logo-link .logo {
   height: auto;
-  max-height: 60px;   /* גובה אידיאלי לשורת הניווט */
+  max-height: 80px;   /* גובה אידיאלי לשורת הניווט */
   width: auto;
-  max-width: 280px;   /* ישאיר אותו קריא אבל לא ענק */
+  max-width: 320px;   /* ישאיר אותו קריא אבל לא ענק */
   object-fit: contain;
   transition: transform 0.2s ease;
 }
