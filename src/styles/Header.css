@@ -209,7 +209,7 @@
 
       .logo-link .logo {
     height: auto !important;
-    max-height: 65px !important;  /* ימלא כמעט את כל ההידר */
+    max-height: 160px !important;  /* ימלא כמעט את כל ההידר */
     width: auto !important;
     display: block;
   }
