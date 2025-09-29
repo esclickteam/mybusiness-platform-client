@@ -8,17 +8,19 @@
 .footer-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 30px;
+  gap: 40px; /* קצת יותר רווח בין טורים */
   max-width: 1200px;
   margin: 0 auto;
   text-align: left;
 }
 
 .footer-col h4 {
-  margin-bottom: 15px;
+  margin-bottom: 18px;
   font-size: 1rem;
   font-weight: 600;
-  color: #ffd700; /* זהב קטן לכותרות */
+  color: #ffd700; /* זהב לכותרות */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .footer-col ul {
@@ -28,14 +30,15 @@
 }
 
 .footer-col ul li {
-  margin: 8px 0;
+  margin: 10px 0;
 }
 
 .footer-link {
   text-decoration: none;
   color: #ddd;
-  font-size: 15px;
-  transition: color 0.3s ease;
+  font-size: 16px;
+  line-height: 1.6;
+  transition: all 0.3s ease;
 }
 
 .footer-link:hover {
@@ -44,25 +47,27 @@
 }
 
 .footer-logo {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 800;
 }
 
 .footer-desc {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: #ccc;
-  margin-top: 10px;
-  line-height: 1.5;
-  max-width: 260px;
+  margin-top: 12px;
+  line-height: 1.6;
+  max-width: 280px;
+  opacity: 0.9;
 }
 
 .footer-bottom {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 35px;
   font-size: 0.85rem;
   color: #ccc;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
-  padding-top: 15px;
+  padding-top: 18px;
+  opacity: 0.8;
 }
 
 /* רספונסיביות */
@@ -73,11 +78,11 @@
   }
 
   .footer-col {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   .footer-logo {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
 }
 
@@ -91,6 +96,6 @@
   }
 
   .footer-desc {
-    margin: 10px auto 0;
+    margin: 12px auto 0;
   }
 }
