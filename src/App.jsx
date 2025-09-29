@@ -27,6 +27,8 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
+const Support = lazy(() => import("./pages/Support"));
+
 
 
 
@@ -146,6 +148,8 @@ export default function App() {
               <Route path="/book/:businessId" element={<BookingPage />} />
               <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
              <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
+             <Route path="/support" element={<Support />} />
+
 
 
               <Route
