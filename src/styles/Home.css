@@ -9,7 +9,7 @@
   --text:#101225;
   --muted:#5e6683;
   --card:#ffffff;
-  --page:#f6f7fb;
+  --page:#f9f9fb;
   --border:#e7e9f3;
 
   --radii-18:18px;
@@ -18,7 +18,7 @@
 
   --shadow-sm:0 6px 16px rgba(20,19,60,.08);
   --shadow-md:0 12px 28px rgba(20,19,60,.12);
-  --shadow-lg:0 16px 38px rgba(20,19,60,.16);
+  --shadow-lg:0 20px 40px rgba(20,19,60,.16);
 
   --ring: 0 0 0 3px rgba(106,17,203,.28);
 }
@@ -26,7 +26,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
-  direction:ltr;                 /* enforce LTR */
+  direction:ltr;
   text-align:left;
   font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   background:var(--page);
@@ -34,27 +34,32 @@ body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
 }
-.esd-page{
-  overflow-x:hidden;
-  direction:ltr;
-  text-align:left;
-}
+.esd-page{overflow-x:hidden;direction:ltr;text-align:left}
 
 /* ─── Shared Buttons ───────────────────────────────── */
 .esd-btn{
   display:inline-flex; align-items:center; justify-content:center;
   padding:12px 26px; border-radius:14px; font-weight:700;
-  text-decoration:none; transition:transform .18s ease, box-shadow .22s ease, background .22s ease, color .22s ease;
-  will-change:transform; border:1px solid #e6e9f2; background:#fff; color:var(--text);
+  text-decoration:none;
+  transition:transform .18s ease, box-shadow .22s ease, background .22s ease, color .22s ease;
+  will-change:transform;
+  border:1px solid #e6e9f2;
+  background:#fff;
+  color:var(--text);
 }
 .esd-btn:hover{transform:translateY(-1px)}
 .esd-btn:focus-visible{outline:none; box-shadow:var(--ring)}
 .esd-btn--primary{
   border-color:transparent;
-  background:linear-gradient(90deg, var(--gold), #ffb347); color:#2a2350;
+  background:linear-gradient(90deg, var(--gold), #ffb347);
+  color:#2a2350;
   box-shadow:0 10px 28px rgba(255,193,7,.35);
+  transform:scale(1);
 }
-.esd-btn--primary:hover{transform:translateY(-2px); box-shadow:0 16px 36px rgba(255,193,7,.5)}
+.esd-btn--primary:hover{
+  transform:scale(1.04);
+  box-shadow:0 16px 36px rgba(255,193,7,.5);
+}
 .esd-btn--ghost{border:2px solid #1f1f3a; color:#1f1f3a; background:transparent}
 .esd-btn--ghost:hover{background:#1f1f3a; color:#fff}
 .esd-btn--lg{padding:14px 34px; font-size:18px; border-radius:16px}
@@ -62,7 +67,7 @@ body{
 /* ─── HERO ─────────────────────────────────────────── */
 .esd-hero{
   position:relative;
-  padding:112px 24px 48px; 
+  padding:120px 24px 60px;
   color:#fff;
   isolation:isolate;
   text-align:center;
@@ -70,16 +75,15 @@ body{
 .esd-hero__bg{
   position:absolute; inset:-8% -8% auto -8%;
   height:520px; min-height:420px;
-  background:
-    radial-gradient(900px 360px at 50% -120px, rgba(255,255,255,.16), rgba(255,255,255,0) 62%),
-    linear-gradient(135deg, var(--purple-deep), var(--violet));
+  background: linear-gradient(135deg, #2a1173, #4b0fa6, #1a0f91);
   z-index:-1;
-  filter:saturate(115%);
+  filter:saturate(125%);
 }
 .esd-hero__inner{max-width:1100px; margin:0 auto; position:relative}
 .esd-hero__title{
   font-size:clamp(36px,4.4vw,64px);
-  font-weight:800; line-height:1.12; margin:0 0 12px; letter-spacing:-.01em;
+  font-weight:800; line-height:1.12;
+  margin:0 0 12px; letter-spacing:-.01em;
 }
 .esd-hero__title span{color:var(--gold)}
 .esd-hero__subtitle{
@@ -97,7 +101,6 @@ body{
 }
 .esd-partners > div{letter-spacing:.02em}
 
-
 /* ─── VALUE ────────────────────────────────────────── */
 .esd-value{padding:86px 24px 40px}
 .esd-card{
@@ -107,9 +110,17 @@ body{
 .esd-value__card{max-width:980px; margin:0 auto; text-align:center; padding:44px 30px}
 .esd-section-title{
   text-align:center;
-  font-size:clamp(28px,3.1vw,44px); margin:0 0 10px; color:var(--purple-deep); font-weight:800;
+  font-size:clamp(28px,3.1vw,44px);
+  margin:0 0 10px;
+  color:var(--purple-deep);
+  font-weight:800;
+  position:relative;
 }
 .esd-section-title span{color:var(--indigo)}
+.esd-section-title::after{
+  content:""; display:block; width:60px; height:3px;
+  background:var(--violet); margin:12px auto 0; border-radius:4px;
+}
 .esd-section-text{
   color:var(--muted); font-size:18px; line-height:1.8; max-width:840px; margin:0 auto;
 }
@@ -126,7 +137,12 @@ body{
 .esd-steps li{
   display:flex; gap:12px; align-items:flex-start;
   background:#fff; border:1px solid var(--border); border-radius:14px;
-  padding:12px; box-shadow:var(--shadow-sm);
+  padding:14px; box-shadow:var(--shadow-sm);
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.esd-steps li:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--shadow-md);
 }
 .esd-steps li span{
   width:34px; height:34px; border-radius:50%; display:grid; place-items:center;
@@ -145,30 +161,14 @@ body{
   padding:22px 20px; box-shadow:var(--shadow-sm);
   transition:transform .18s ease, box-shadow .18s ease;
 }
-.esd-block:hover{transform:translateY(-6px); box-shadow:var(--shadow-lg)}
+.esd-block:hover{
+  transform:translateY(-6px);
+  box-shadow:var(--shadow-lg);
+}
 .esd-block h3{margin:0 0 8px; color:var(--indigo); font-size:20px; font-weight:800}
 .esd-block p{margin:0 0 12px; color:#545b75; line-height:1.7}
 .esd-link{font-weight:800; color:var(--violet); text-decoration:none}
 .esd-link:hover{text-decoration:underline}
-
-/* ─── FEATURES ─────────────────────────── */
-.esd-features{padding:86px 24px}
-.esd-grid{
-  max-width:1100px; margin:0 auto;
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:22px;
-}
-.esd-feature{
-  background:rgba(255,255,255,.98);
-  border-radius:var(--radii-20); padding:26px 20px; text-align:center;
-  box-shadow:var(--shadow-sm);
-  backdrop-filter:saturate(120%) blur(1.5px);
-  transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
-  border:1px solid var(--border);
-}
-.esd-feature:hover{transform:translateY(-6px); box-shadow:var(--shadow-lg)}
-.esd-icon{font-size:30px; margin-bottom:10px}
-.esd-feature h3{margin:6px 0 8px; color:var(--indigo); font-size:20px; font-weight:800}
-.esd-feature p{margin:0; color:#545b75; line-height:1.6}
 
 /* ─── SERVICES ─────────────────────────── */
 .esd-services{padding:86px 24px}
@@ -178,13 +178,19 @@ body{
 }
 .esd-service{
   background:#fff; border:1px solid var(--border); border-radius:18px;
-  padding:20px 18px; box-shadow:var(--shadow-sm); position:relative; overflow:hidden;
+  padding:20px 18px; box-shadow:var(--shadow-sm);
+  position:relative; overflow:hidden;
   transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
 }
-.esd-service:hover{transform:translateY(-6px); box-shadow:var(--shadow-lg)}
+.esd-service:hover{
+  transform:translateY(-6px);
+  box-shadow:var(--shadow-lg);
+}
 .esd-service__badge{
-  position:absolute; inset:14px auto auto 14px; background:#efe9ff; color:#4b2bb8;
-  font-weight:800; font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid #ded7ff;
+  position:absolute; inset:14px auto auto 14px;
+  background:#efe9ff; color:#4b2bb8;
+  font-weight:800; font-size:12px; padding:6px 10px;
+  border-radius:999px; border:1px solid #ded7ff;
 }
 .esd-service h4{margin:22px 0 6px; font-size:18px; color:var(--indigo); font-weight:900}
 .esd-service p{margin:0 0 10px; color:#5d6175; line-height:1.6}
@@ -198,8 +204,11 @@ body{
 }
 .esd-why__item{
   background:#fff; border:1px solid var(--border); border-radius:18px;
-  padding:16px 14px; box-shadow:var(--shadow-sm); display:flex; gap:12px; align-items:flex-start;
+  padding:16px 14px; box-shadow:var(--shadow-sm);
+  display:flex; gap:12px; align-items:flex-start;
+  transition:transform .2s ease, box-shadow .2s ease;
 }
+.esd-why__item:hover{transform:translateY(-4px); box-shadow:var(--shadow-md)}
 .esd-why__icon{
   width:36px; height:36px; border-radius:10px;
   background:linear-gradient(180deg, var(--violet), var(--indigo));
@@ -226,7 +235,7 @@ body{
 .esd-cta{padding:86px 24px 116px}
 .esd-cta__inner{
   max-width:1100px; margin:0 auto; text-align:center; color:#fff;
-  background:linear-gradient(135deg, var(--violet), var(--indigo));
+  background:linear-gradient(135deg, #4b0fa6, #1a0f91);
   padding:52px 26px; border-radius:var(--radii-22);
   box-shadow:var(--shadow-lg); position:relative; overflow:hidden;
 }
@@ -246,7 +255,6 @@ body{
 @media (max-width:768px){
   .esd-hero__subtitle{max-width:92%}
   .esd-value__card{padding:36px 22px}
-  .esd-curve{width:92%}
 }
 @media (max-width:520px){
   .esd-btn{padding:11px 20px}
