@@ -7,8 +7,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;   /* לוגו שמאל, ניווט באמצע, CTA ימין */
-  padding: 12px 32px;
+  justify-content: flex-start;        /* הלוגו בצד שמאל */
+  padding: 12px 32px 12px 0;
   height: 80px;
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
@@ -38,8 +38,6 @@
 .nav-links {
   display: flex;
   align-items: center;
-  justify-content: center; /* מרכז */
-  flex: 1;                 /* תופס אוטומטית מקום באמצע */
   gap: 40px;
   font-size: 1rem;
   font-weight: 500;
@@ -230,54 +228,22 @@
 
 /* ===== Header Desktop ===== */
 @media (min-width: 1025px) {
-  .mobile-only { 
-    display: none !important; 
-  }
-
-  .desktop-only { 
-    display: flex; 
-  }
+  .mobile-only { display: none !important; }
+  .desktop-only { display: flex; }
 
   .app-header {
-    height: 70px !important;
-    padding: 0 32px;
-    display: flex;
-    align-items: center;
-    background: #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  }
-
-  /* לוגו צמוד לשמאל */
-  .logo-wrapper {
-    margin-right: auto;   /* זה דוחף את כל השאר ימינה */
-    display: flex;
-    align-items: center;
-  }
-
-  /* קישורי הניווט במרכז */
-  .nav-links {
-    flex: 1;
-    display: flex;
-    justify-content: center; /* ממרכז את התפריט */
+    height: 70px !important;       /* גובה מספיק ללוגו גדול */
+    padding: 0 32px 0 0;            /* צד שמאל צמוד */
+    justify-content: flex-start;    /* לוגו בצד שמאל */
     gap: 40px;
   }
 
-  /* כפתורים בצד ימין */
-  .auth-controls.desktop-only {
-    margin-left: 0;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-  }
-
-  /* לוגו */
   .app-header .logo-wrapper .logo-link .logo {
-    height: 60px !important;       
+    height: 250px !important;       /* גודל לוגו קבוע גדול */
     width: auto !important;
-    max-height: none !important;   
+    max-height: none !important;    /* מבטל הגבלה */
     max-width: none !important;
     object-fit: contain;
     display: block;
   }
 }
-
