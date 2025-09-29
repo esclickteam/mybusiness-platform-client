@@ -38,18 +38,20 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 32px;                  /* רווח קבוע ואלגנטי */
-  font-size: 1rem;
+  gap: 40px;              /* ריווח שווה בין הקטגוריות */
+  font-size: 1rem;        /* טקסט קצת גדול יותר */
   font-weight: 500;
+  color: #222;
 }
 .nav-links a {
   text-decoration: none;
   color: #222;
   transition: color 0.2s;
+  padding: 8px 0;         /* מוסיף מרווח קל לטקסט */
 }
 .nav-links a:hover,
 .nav-links a.active-link {
-  color: #5e17eb;             /* צבע מותג */
+  color: #5e17eb;
   font-weight: 600;
 }
 
