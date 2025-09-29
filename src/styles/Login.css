@@ -107,7 +107,7 @@ input:focus {
 .password-toggle-btn {
   position: absolute;
   right: 12px;
-  top: 25%;
+  top: 27%;
   transform: translateY(-60%);
   border: none;
   background: none;
