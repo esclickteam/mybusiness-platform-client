@@ -176,16 +176,17 @@
 /* ================= Responsive ================= */
 /* ===== Header Mobile & Tablet ===== */
 @media (max-width: 1024px) {
-  .app-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;        /* דוחף את ההמבורגר לימין */
-    padding: 0 16px 0 0;
-    height: 90px !important;
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    position: relative;               /* חשוב כדי שהלוגו יתמקם יחסית */
-  }
+ .app-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;        /* ההמבורגר נדחף לימין */
+  padding: 0 16px 0 0;
+  height: 80px !important;          /* קומפקטי */
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  position: relative;               /* מאפשר ללוגו להיות ממורכז אבסולוטית */
+  overflow: visible;                /* מאפשר ללוגו לחרוג מגובה ההידר */
+}
 
   .logo-wrapper {
     position: absolute;
@@ -199,13 +200,11 @@
   }
 
   .logo-link .logo {
-    height: 350px !important;          /* גובה יפה למובייל */
-    width: auto !important;
-    max-height: none !important;
-    max-width: none !important;
-    object-fit: contain;
-    display: block;
-  }
+  height: clamp(100px, 22vw, 160px) !important; /* רספונסיבי: מינימום 100px, מקסימום 160px */
+  width: auto !important;
+  object-fit: contain;
+  display: block;
+}
 
   .menu-toggle {
     position: relative;
