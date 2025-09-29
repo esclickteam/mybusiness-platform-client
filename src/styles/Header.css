@@ -177,38 +177,44 @@
 /* ===== Header Mobile & Tablet ===== */
 @media (max-width: 1024px) {
   .app-header {
-    height: 70px !important;        /* אותו גובה כמו בדסקטופ */
-    padding: 0 16px 0 0;            /* צמוד לשמאל */
-    justify-content: flex-start;    /* הלוגו תמיד שמאלה */
+    display: flex;
     align-items: center;
-    gap: 20px;
+    justify-content: space-between;   /* לוגו שמאל, המבורגר ימין */
+    padding: 0 16px;
+    height: 70px !important;
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
 
-  .app-header .logo-wrapper .logo-link .logo {
-    height: 120px !important;       /* לוגו גדול גם במובייל */
+  .logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;      /* לוגו צמוד לשמאל */
+    flex: 1;                          /* לוקח את כל הצד השמאלי */
+  }
+
+  .logo-link .logo {
+    height: 70px !important;          /* גודל יפה במובייל */
     width: auto !important;
-    max-height: none !important;    /* מבטל מגבלות */
+    max-height: none !important;
     max-width: none !important;
     object-fit: contain;
     display: block;
   }
 
-  /* ההמבורגר בצד ימין */
   .menu-toggle {
-    margin-left: auto;
-    margin-right: 0;
+    margin-left: auto;                /* דוחף אותו לקצה ימין */
     position: relative;
     transform: none;
   }
 
-  /* מסתיר ניווט רגיל במובייל */
+  /* מסתיר ניווט רגיל */
   .nav-links,
   .auth-controls.desktop-only {
     display: none !important;
   }
 }
+
 
 
 /* ===== Header Desktop ===== */
