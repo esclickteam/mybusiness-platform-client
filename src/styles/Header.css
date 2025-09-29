@@ -173,11 +173,12 @@
 
 /* ================= Responsive ================= */
 @media (max-width: 768px) {
-  .app-header {
+   .app-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 !important;      /* מבטל כל רווח פנימי */
+    padding: 0 !important;     
+    padding-left: 0 !important; /* מבטל כל ריווח מצד שמאל */
     height: 54px;
     background: #fff;
   }
@@ -197,11 +198,11 @@
 
   .logo-link {
     margin: 0 !important;
+    margin-left: 0 !important;  /* מבטל כל דחיפה שמאלה */
     padding: 0 !important;
     display: flex !important;
     align-items: center;
   }
-
   .logo-link .logo {
     height: 80px;               /* גובה קבוע */
     width: auto;
