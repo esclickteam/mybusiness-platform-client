@@ -233,15 +233,15 @@
   .mobile-only { display: none !important; }
   .desktop-only { display: flex; }
 
-  .app-header {
-    height: 70px !important;
-    padding: 0 32px;
-    justify-content: space-between; /* לוגו שמאל, ניווט באמצע, CTA ימין */
+   .app-header {
+    height: 70px !important;       /* גובה מספיק ללוגו גדול */
+    padding: 0 32px;               /* ריווח שווה מימין ומשמאל */
+    justify-content: flex-start;   /* מתחילים מהשמאל */
     gap: 40px;
   }
 
-  .logo-wrapper {
-    flex: 0 0 auto;
+   .logo-wrapper {
+    margin-right: auto;  /* דוחף את כל שאר האלמנטים ימינה */
   }
 
   .nav-links {
@@ -254,8 +254,10 @@
   }
 
   .app-header .logo-wrapper .logo-link .logo {
-    height: 60px !important;
+    height: 60px !important;       
     width: auto !important;
+    max-height: none !important;   
+    max-width: none !important;
     object-fit: contain;
     display: block;
   }
