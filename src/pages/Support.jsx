@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
+import { io } from "socket.io-client";
 import "./Support.css";
 
 export default function Support() {
@@ -78,21 +79,32 @@ export default function Support() {
         },
         onApprove: (data, actions) => {
           return actions.order.capture().then((details) => {
-            alert(`Thank you, ${details.payer.name.given_name}!`);
             const paid = Number(amount || 10);
-            setRaised((prev) => prev + paid);
+            setRaised((prev) => prev + paid); // עדכון מיידי בצד לקוח
           });
         },
         onError: (err) => {
           console.error("PayPal Checkout Error:", err);
-          alert("Something went wrong. Please try again.");
         },
       })
       .render("#paypal-button-container");
   };
 
-  // ---- עדכון בזמן אמת מהשרת (Pooling כל 5 שניות) ----
+  // ---- התחברות ל־socket לקבלת עדכוני תרומות בזמן אמת ----
   useEffect(() => {
+    const socket = io(process.env.REACT_APP_API_URL, {
+      path: "/socket.io",
+      transports: ["websocket"],
+    });
+
+    // מאזין לאירוע שמגיע מהשרת
+    socket.on("donationUpdated", (data) => {
+      if (typeof data.totalRaised === "number") {
+        setRaised(data.totalRaised);
+      }
+    });
+
+    // טעינה ראשונית
     const fetchRaised = async () => {
       try {
         const res = await fetch("/api/donations/total");
@@ -103,13 +115,14 @@ export default function Support() {
           }
         }
       } catch (e) {
-        // אם אין API, מתעלמים בשקט
+        console.error("Failed to fetch initial raised total:", e);
       }
     };
-
     fetchRaised();
-    const id = setInterval(fetchRaised, 5000);
-    return () => clearInterval(id);
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   return (
@@ -282,7 +295,7 @@ export default function Support() {
         </div>
 
         <div className="donation-quick-grid">
-          {[50, 250, 500, 1000, 5000, 10000].map((val) => (
+          {[5, 50, 250, 500, 1000, 5000, 10000].map((val) => (
             <button
               key={val}
               className="donation-quick-btn"
