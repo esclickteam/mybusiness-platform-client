@@ -38,13 +38,6 @@ export default function Home() {
           <p className="esd-hero__trust">
             ✓ 14-day free trial • ✓ No credit card • ✓ Mobile-friendly
           </p>
-
-          <div className="esd-partners" aria-label="Partners & tech">
-            <div>OpenAI</div>
-            <div>MongoDB</div>
-            <div>WordPress</div>
-            <div>Stripe</div>
-          </div>
         </div>
         <div className="esd-curve" />
       </section>
