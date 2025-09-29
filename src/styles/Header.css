@@ -177,7 +177,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0;        /* מבטל רווחים */
+    padding: 0 !important;      /* מבטל כל רווח פנימי */
     height: 54px;
     background: #fff;
   }
@@ -187,33 +187,32 @@
     display: none !important;
   }
 
-  
   .logo-wrapper {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    margin: 0;
-    padding: 0;
-  }
-
-   .logo-link {
     margin: 0 !important;
     padding: 0 !important;
-    display: flex;
+  }
+
+  .logo-link {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
     align-items: center;
   }
 
   .logo-link .logo {
-    height: 80px;      /* גובה קבוע ונקי */
+    height: 80px;               /* גובה קבוע */
     width: auto;
     object-fit: contain;
-    display: block;
+    display: block;             /* מסיר רווח inline */
   }
 
   .menu-toggle {
     position: relative;
-    margin-left: auto; /* צמוד לימין */
-    margin-right: 8px; /* ריווח קטן מהקצה */
+    margin-left: auto;
+    margin-right: 8px;          /* צמוד לקצה ימין */
   }
 }
 
