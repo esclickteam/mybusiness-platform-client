@@ -162,14 +162,13 @@ export default function Support() {
         </div>
 
         <div className="support-progress-text">
-          <strong>${raised.toLocaleString()}</strong> raised of $
-          {goal.toLocaleString()} goal
-        </div>
-        <div className="support-progress-left">
-          {goal - raised > 0
-            ? `$${(goal - raised).toLocaleString()} left to reach the goal`
-            : "🎉 Goal reached!"}
-        </div>
+  <strong>${raised.toLocaleString()}</strong> raised of ${goal.toLocaleString()} goal
+</div>
+<div className="support-progress-left">
+  {goal - raised > 0
+    ? `$${(goal - raised).toLocaleString()} left to reach the goal`
+    : "🎉 Goal reached!"}
+</div>
       </div>
 
       <hr className="support-divider" />
