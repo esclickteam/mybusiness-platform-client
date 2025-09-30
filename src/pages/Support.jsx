@@ -179,30 +179,55 @@ export default function Support() {
         <h2 className="support-subtitle">Our Story</h2>
       </div>
 
+      {/* אפשר להשאיר תמונות – יוגבלו ע"י ה-CSS לגודל נכון */}
       <figure className="support-image">
         <img src="/images/support/3.jpg" alt="Together during service" />
         <figcaption>Together even in the hardest moments</figcaption>
       </figure>
 
-      <p className="support-text">
-        We are a young couple with a big dream — to build a platform that will
-        help small businesses manage their operations in a smart and innovative
-        way.
-      </p>
+      <div className="support-text">
+        <p>
+          We are a young couple with a big dream — to build a platform that will
+          help small businesses manage their operations in a smart and innovative way.
+        </p>
+        <p>
+          For two years we went through difficult fertility treatments, which were very
+          costly both financially and emotionally. To cover the treatments, as well as our
+          basic living expenses, we had to take out loans and rely on credit card payments.
+        </p>
+        <p>
+          Since the war of October 7th, my husband has been called up for reserve duty
+          again and again. Altogether he served for about half a year (more or less),
+          and during those periods our income dropped sharply — in some months down to
+          zero. Even in the short breaks when he returned, the business could not recover,
+          and the financial burden kept growing. We applied for a government-backed loan
+          but were rejected, even though we demonstrated the loss of income.
+        </p>
+        <p>
+          After a very difficult period, our income began to stabilize slightly, but in
+          reality we are unable to keep up with the monthly payments on our loans and
+          credit cards. Every month we face high interest rates and growing debt, and we
+          simply have nowhere left to take money from.
+        </p>
+        <p>
+          And despite everything — we have not given up. We work around the clock, from
+          morning until late at night. For the past seven months we have been developing
+          on our own an advanced SaaS platform, building it step by step: a business page
+          with ratings and reviews, chat, gallery, CRM system, a collaboration network to
+          increase revenues, and even an AI business partner to assist entrepreneurs.
+        </p>
+        <p>
+          On a personal level, the road has not been easy either. After two years of
+          treatments, we finally managed to get pregnant — but sadly, the pregnancy did
+          not progress, and we lost twins. Despite the heartbreak and depression, we
+          continued to work. Just one month later, we unexpectedly became pregnant again.
+          This pregnancy is so precious to us, and all we want now is to live with dignity,
+          pay off our debts, complete the platform, and build a stable foundation for our
+          baby on the way.
+        </p>
+      </div>
 
-      <figure className="support-image">
-        <img src="/images/support/2.jpg" alt="On the way, serious moment" />
-        <figcaption>
-          On the way to another challenging day, with faith in our hearts
-        </figcaption>
-      </figure>
-
-      <p className="support-text">
-        For two years we went through difficult fertility treatments, which were
-        very costly both financially and emotionally...
-      </p>
-
-      <hr className="support-divider" />
+      <p className="support-text" style={{ textAlign: "center" }}>⸻</p>
 
       {/* Our Vision */}
       <div className="support-subtitle-wrapper">
@@ -214,32 +239,37 @@ export default function Support() {
         <figcaption>A small moment of light in a difficult time</figcaption>
       </figure>
 
-      <p className="support-text">
-        The platform we are building was born from a true desire to help
-        businesses...
-      </p>
+      <div className="support-text">
+        <p>
+          The platform we are building was born from a true desire to help businesses.
+          Our dream is that, over time, it will grow into an American company with
+          international reach, serving businesses around the world. We know we cannot
+          promise this today — but it is our vision, and we believe we have the ability
+          to get there with enough support.
+        </p>
+      </div>
 
-      <hr className="support-divider" />
+      <p className="support-text" style={{ textAlign: "center" }}>⸻</p>
 
       {/* Why We Are Reaching Out */}
       <div className="support-subtitle-wrapper">
         <h2 className="support-subtitle">Why We Are Reaching Out</h2>
       </div>
 
-      <p className="support-text">
-        We are not a nonprofit, and we are not backed by large investors...
-      </p>
-
       <figure className="support-image">
         <img src="/images/support/4.jpg" alt="Smiling towards the future" />
-        <figcaption>
-          Smiling towards the future thanks to your support
-        </figcaption>
+        <figcaption>Smiling towards the future thanks to your support</figcaption>
       </figure>
 
-      <p className="support-text">
-        Any amount you choose to give will be received with deep gratitude 🙏
-      </p>
+      <div className="support-text">
+        <p>
+          We are not a nonprofit, and we are not backed by large investors. We are a
+          young family, with a real story and a real dream. All we ask for is support
+          to help us hold on, pay off our debts, complete the development, and build a
+          stable and secure future for ourselves and for our baby.
+        </p>
+        <p>Any amount you choose to give will be received with deep gratitude 🙏</p>
+      </div>
 
       <hr className="support-divider" />
 
