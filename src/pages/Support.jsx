@@ -161,14 +161,15 @@ export default function Support() {
           })}
         </div>
 
+        {/* ✅ נוסח מתוקן */}
         <div className="support-progress-text">
-  <strong>${raised.toLocaleString()}</strong> raised of ${goal.toLocaleString()} goal
-</div>
-<div className="support-progress-left">
-  {goal - raised > 0
-    ? `$${(goal - raised).toLocaleString()} left to reach the goal`
-    : "🎉 Goal reached!"}
-</div>
+          raised <strong>${raised.toLocaleString()}</strong> of ${goal.toLocaleString()} goal
+        </div>
+        <div className="support-progress-left">
+          {goal - raised > 0
+            ? `$${(goal - raised).toLocaleString()} left to reach the goal`
+            : "🎉 Goal reached!"}
+        </div>
       </div>
 
       <hr className="support-divider" />
@@ -191,7 +192,9 @@ export default function Support() {
 
       <figure className="support-image">
         <img src="/images/support/2.jpg" alt="On the way, serious moment" />
-        <figcaption>On the way to another challenging day, with faith in our hearts</figcaption>
+        <figcaption>
+          On the way to another challenging day, with faith in our hearts
+        </figcaption>
       </figure>
 
       <p className="support-text">
@@ -229,7 +232,9 @@ export default function Support() {
 
       <figure className="support-image">
         <img src="/images/support/4.jpg" alt="Smiling towards the future" />
-        <figcaption>Smiling towards the future thanks to your support</figcaption>
+        <figcaption>
+          Smiling towards the future thanks to your support
+        </figcaption>
       </figure>
 
       <p className="support-text">
