@@ -48,6 +48,18 @@
   margin: 2.5rem 0;
 }
 
+.readmore-wrapper {
+  text-align: center;   /* ממרכז את הכפתור */
+  margin-top: 1.2rem;   /* רווח מהטקסט */
+}
+
+.readmore-wrapper .support-btn {
+  display: inline-block;
+  min-width: 160px;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(74, 58, 255, 0.3);
+}
+
 /* ===== Lists ===== */
 .support-page .support-list {
   margin: 1.5rem 0 2rem;
