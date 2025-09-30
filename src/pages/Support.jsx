@@ -258,7 +258,6 @@ export default function Support() {
 )}
 </div>
 
-      <p className="support-text" style={{ textAlign: "center" }}>⸻</p>
 
       {/* Our Vision */}
       <div className="support-subtitle-wrapper">
@@ -280,7 +279,6 @@ export default function Support() {
         </p>
       </div>
 
-      <p className="support-text" style={{ textAlign: "center" }}>⸻</p>
 
       {/* Why We Are Reaching Out */}
       <div className="support-subtitle-wrapper">
