@@ -9,12 +9,12 @@ export default function Support() {
   const paypalReadyRef = useRef(false);
   const paypalContainerRef = useRef(null);
 
-  // ===== קונפיג קמפיין =====
+  // ===== Campaign Config =====
   const milestones = [50000, 100000, 250000];
   const goal = milestones[milestones.length - 1];
   const progress = Math.min((raised / goal) * 100, 100);
 
-  // ---- טעינת PayPal SDK פעם אחת ----
+  // ---- Load PayPal SDK once ----
   useEffect(() => {
     if (paypalReadyRef.current) return;
 
@@ -44,7 +44,7 @@ export default function Support() {
     document.body.appendChild(script);
   }, []);
 
-  // ---- רנדר מחודש של כפתורי PayPal כשסכום משתנה ----
+  // ---- Re-render PayPal buttons when amount changes ----
   useEffect(() => {
     if (!paypalReadyRef.current) return;
     renderPaypalButtons();
@@ -82,7 +82,7 @@ export default function Support() {
             console.log(
               `✅ Payment of $${paid} approved. Waiting for server webhook update...`
             );
-            // ⚠️ לא מעדכנים כאן state — מחכים ל־Webhook מהשרת דרך socket
+            // ⚠️ State update comes from Webhook via socket
           });
         },
         onError: (err) => {
@@ -92,7 +92,7 @@ export default function Support() {
       .render("#paypal-button-container");
   };
 
-  // ---- התחברות ל־socket לקבלת עדכוני תרומות בזמן אמת ----
+  // ---- Socket connection for real-time donation updates ----
   useEffect(() => {
     const socket = io(process.env.REACT_APP_API_URL, {
       path: "/socket.io",
@@ -181,7 +181,7 @@ export default function Support() {
 
       <figure className="support-image">
         <img src="/images/support/3.jpg" alt="Together during service" />
-        <figcaption>יחד גם ברגעים הכי קשים</figcaption>
+        <figcaption>Together even in the hardest moments</figcaption>
       </figure>
 
       <p className="support-text">
@@ -192,7 +192,7 @@ export default function Support() {
 
       <figure className="support-image">
         <img src="/images/support/2.jpg" alt="On the way, serious moment" />
-        <figcaption>בדרך לעוד יום מאתגר, עם אמונה גדולה בלב</figcaption>
+        <figcaption>On the way to another challenging day, with faith in our hearts</figcaption>
       </figure>
 
       <p className="support-text">
@@ -209,7 +209,7 @@ export default function Support() {
 
       <figure className="support-image">
         <img src="/images/support/1.jpg" alt="Small moment of light" />
-        <figcaption>רגע קטן של אור בתוך התקופה הקשה</figcaption>
+        <figcaption>A small moment of light in a difficult time</figcaption>
       </figure>
 
       <p className="support-text">
@@ -230,7 +230,7 @@ export default function Support() {
 
       <figure className="support-image">
         <img src="/images/support/4.jpg" alt="Smiling towards the future" />
-        <figcaption>מחייכים אל העתיד בזכות התמיכה שלכם</figcaption>
+        <figcaption>Smiling towards the future thanks to your support</figcaption>
       </figure>
 
       <p className="support-text">

@@ -12,14 +12,13 @@
 
 /* ===== Titles ===== */
 .support-page .support-title {
-  font-size: 2.5rem;       /* יותר גדול */
+  font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
   margin-bottom: 1.8rem;
-  color: #0f1a4f;          /* כהה יותר */
+  color: #0f1a4f;
 }
 
-/* עטיפה שממרכזת את כל הכותרות המשניות */
 .support-subtitle-wrapper {
   text-align: center;
   margin: 2rem 0 1rem;
@@ -32,7 +31,7 @@
   position: relative;
   display: inline-block;
   padding-bottom: 6px;
-  border-bottom: 2px solid #c5d9f5; /* קו עדין מתחת */
+  border-bottom: 2px solid #c5d9f5;
 }
 
 /* ===== Text ===== */
@@ -80,9 +79,6 @@
 }
 
 /* ===== Quick Buttons ===== */
-.support-page .support-quick {
-  margin-bottom: 1.5rem;
-}
 .support-page .support-quick-btn {
   background: #f5f3ff;
   border: 1px solid #c5bdf5;
@@ -123,16 +119,17 @@
   margin: 40px 0;
   text-align: center;
   position: relative;
-  padding-top: 50px;   /* מקום למספרים מעל */
+  padding-top: 50px;
 }
 
 .support-progress-bar {
   position: relative;
-  height: 20px; /* פס עבה */
-  background: #e6e9f0;
+  height: 20px;
+  background: #c2c7e3; /* אפור סגלגל כהה יותר */
   border-radius: 12px;
   margin: 0 auto 40px;
   max-width: 700px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.15); /* עומק מקצועי */
 }
 
 .support-progress-fill {
@@ -153,8 +150,6 @@
   100% { background-position: -200% 0; }
 }
 
-
-/* Milestones = פסים אנכיים */
 .support-progress-marker {
   position: absolute;
   top: 0;
@@ -164,10 +159,9 @@
   transform: translateX(-50%);
 }
 
-/* מספרים מעל milestones */
 .support-progress-label {
   position: absolute;
-  bottom: 100%;     /* מציב את המספרים מעל הפס */
+  bottom: 100%;
   margin-bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
@@ -177,19 +171,11 @@
   white-space: nowrap;
 }
 
-/* כשהיעד נחצה */
 .support-progress-marker.reached {
   background: #28a745;
 }
 .support-progress-marker.reached .support-progress-label {
   color: #28a745;
-}
-
-/* אנימציית bounce */
-@keyframes bounceIn {
-  0%   { transform: translateX(-50%) scale(0.6); opacity: 0.3; }
-  60%  { transform: translateX(-50%) scale(1.2); opacity: 1; }
-  100% { transform: translateX(-50%) scale(1); }
 }
 
 .support-progress-text {
@@ -198,34 +184,39 @@
   color: #1e2a78;
   margin-bottom: 4px;
 }
-
 .support-progress-left {
   font-size: 0.95rem;
   color: #555;
 }
 
-/* כותרת ראשית תמיד במרכז */
-.support-page .support-title {
+/* ===== Images with captions ===== */
+.support-image {
+  margin: 2rem auto;
   text-align: center;
 }
-
-/* טקסט ורשימות בברירת מחדל שמאל */
-.support-page,
-.support-page .support-text,
-.support-page .support-list {
-  direction: ltr;
-  text-align: left;
+.support-image img {
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
+}
+.support-image img:hover {
+  transform: scale(1.02);
+}
+.support-image figcaption {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: #444;
+  font-style: italic;
 }
 
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
-  /* ===== Donation box ===== */
   .donation-box {
     text-align: center;
     margin: 20px auto;
     padding: 10px;
   }
-
-  /* input עם $ */
   .donation-input-wrapper {
     display: flex;
     align-items: center;
@@ -249,61 +240,38 @@
     font-size: 1rem;
     outline: none;
   }
-
-  /* grid של כפתורי סכומים (ברירת מחדל 3 בעמודה) */
   .donation-quick-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     margin: 20px 0;
   }
-  .donation-quick-btn {
-    background: #f5f3ff;
-    border: 1px solid #c5bdf5;
-    border-radius: 8px;
-    padding: 14px 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #2b3fa3;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .donation-quick-btn:hover {
-    background: #6a11cb;
-    color: #fff;
-  }
-
-  /* ===== Progress labels — במובייל מתחת לפס ===== */
   .support-progress-wrapper {
-    padding-top: 16px;     /* פחות מקום למעלה */
-    padding-bottom: 36px;  /* מקום לטקסט מתחת לפס */
+    padding-top: 16px;
+    padding-bottom: 36px;
   }
   .support-progress-bar {
     max-width: 100%;
   }
   .support-progress-label {
     bottom: auto;
-    top: 100%;         /* מציב את הטקסט מתחת לפס */
+    top: 100%;
     margin-top: 6px;
     margin-bottom: 0;
     font-size: 0.85rem;
     white-space: nowrap;
     text-align: center;
   }
-
   .support-progress-marker.last-marker .support-progress-label {
     transform: translateX(-120%);
     text-align: right;
     max-width: 100px;
   }
-
-  /* כפתורי תשלום */
   #paypal-button-container {
     margin-top: 20px;
   }
 }
 
-/* מסכים קטנים מאוד: 2 עמודות וכתב קטן יותר */
 @media (max-width: 480px) {
   .donation-quick-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -313,10 +281,9 @@
   }
 }
 
-
 .support-page ~ .app-header, 
 .support-page .app-header, 
-.app-header
- { direction: ltr;
-   text-align: left; 
+.app-header {
+  direction: ltr;
+  text-align: left;
 }
