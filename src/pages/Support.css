@@ -51,12 +51,12 @@
 /* ===== Lists ===== */
 .support-page .support-list {
   margin: 1.5rem 0 2rem;
-  padding-left: 2rem;         /* ריווח לבולטים בצד שמאל */
+  padding-left: 2rem;          /* ריווח לבולטים */
   font-size: 1.05rem;
-  text-align: left;           /* מיישר את הטקסט */
-  list-style-type: disc;      /* בולטים רגילים */
-  list-style-position: outside; /* ✅ הנקודות בצד שמאל */
-  display: block;             /* מונע בעיות של centering */
+  text-align: left;            /* טקסט שמאלה */
+  list-style-type: disc;       /* נקודות רגילות */
+  list-style-position: outside;/* בולטים בצד */
+  direction: ltr;              /* ✅ תמיד משמאל לימין */
 }
 .support-page .support-list li {
   margin-bottom: 0.7rem;
