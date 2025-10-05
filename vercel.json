@@ -26,14 +26,16 @@
       "src": "/robots.txt",
       "dest": "/robots.txt",
       "headers": {
-        "Content-Type":  "text/plain; charset=utf-8"
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate"
       }
     },
     {
       "src": "/favicon.ico",
       "dest": "/favicon.ico",
       "headers": {
-        "Content-Type": "image/x-icon"
+        "Content-Type": "image/x-icon",
+        "Cache-Control": "public, max-age=86400"
       }
     }
   ],
@@ -41,7 +43,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination":  "https://api.bizuply.com/api/:path*"
+      "destination": "https://api.bizuply.com/api/:path*"
     },
     {
       "source": "/(.*)",
