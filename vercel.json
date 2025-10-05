@@ -1,5 +1,6 @@
 {
   "version": 2,
+
   "builds": [
     {
       "src": "server.js",
@@ -16,10 +17,41 @@
       }
     }
   ],
+
+  "headers": [
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/xml; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/robots.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/favicon.ico",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "image/x-icon"
+        }
+      ]
+    }
+  ],
+
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination":  "https://api.esclick.co.il/api/:path*"
+      "destination": "https://api.bizuply.com/api/:path*"
     },
     {
       "source": "/(.*)",
