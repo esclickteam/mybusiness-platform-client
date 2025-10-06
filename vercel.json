@@ -3,13 +3,33 @@
 
   "builds": [
     {
-      "src": "server.js",
-      "use": "@vercel/node"
-    },
-    {
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": { "distDir": "dist" }
+    }
+  ],
+
+  "headers": [
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/robots.txt",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/favicon.ico",
+      "headers": [
+        { "key": "Content-Type", "value": "image/x-icon" },
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
     }
   ],
 
@@ -17,10 +37,9 @@
     {
       "source": "/api/:path*",
       "destination": "https://api.bizuply.com/api/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/"
     }
-  ]
+  ],
+
+  "cleanUrls": true,
+  "trailingSlash": false
 }
