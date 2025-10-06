@@ -16,7 +16,9 @@
       "source": "/(.*\\.xml)",
       "headers": [
         { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Vary", "value": "Accept-Encoding" },
+        { "key": "X-Content-Encoding-Overridden", "value": "identity" }
       ]
     },
     {
