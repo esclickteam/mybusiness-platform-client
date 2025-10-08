@@ -572,7 +572,7 @@ const DashboardPage = () => {
             </div>
             <div className="dp-card dp-card--panel">
               <Suspense fallback={<div className="dp-loading-sm">🔄 Loading recent activity...</div>}>
-                <RecentActivityTable stats={syncedStats} />
+              
               </Suspense>
             </div>
           </section>
