@@ -2,7 +2,7 @@ import axios from "axios";
 
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd
-  ? "https://api.esclick.co.il/api"
+  ? "https://api.bizuply.com/api"
   : "/api";
 
 const API = axios.create({
