@@ -25,9 +25,6 @@ const DashboardCards = lazyWithPreload(() =>
 const BarChartComponent = lazyWithPreload(() =>
   import("../../../components/dashboard/BarChart")
 );
-const RecentActivityTable = lazyWithPreload(() =>
-  import("../../../components/dashboard/RecentActivityTable")
-);
 const Insights = lazyWithPreload(() =>
   import("../../../components/dashboard/Insights")
 );
