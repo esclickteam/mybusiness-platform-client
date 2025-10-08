@@ -87,14 +87,6 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-box" aria-live="polite" aria-busy={loading}>
-        <div className="bizuply-logo" onClick={() => navigate("/")}>
-          <img
-            src="/assets/bizuply-logo-purple.svg"
-            alt="Bizuply Logo"
-            className="login-logo"
-          />
-        </div>
-
         <h2>Login</h2>
 
         <form onSubmit={handleSubmit} noValidate>
