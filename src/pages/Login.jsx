@@ -89,8 +89,8 @@ export default function Login() {
       <div className="login-box" aria-live="polite" aria-busy={loading}>
         <div className="bizuply-logo" onClick={() => navigate("/")}>
           <img
-            src="/assets/bizuply-logo-white.svg"
-            alt="Bizuply"
+            src="/assets/bizuply-logo-purple.svg"
+            alt="Bizuply Logo"
             className="login-logo"
           />
         </div>
@@ -136,13 +136,12 @@ export default function Login() {
                 onClick={() => setShowPassword((p) => !p)}
                 className="password-toggle-btn"
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                tabIndex={-1}
               >
                 {showPassword ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="22"
-                    height="22"
+                    width="20"
+                    height="20"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -154,8 +153,8 @@ export default function Login() {
                 ) : (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="22"
-                    height="22"
+                    width="20"
+                    height="20"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
