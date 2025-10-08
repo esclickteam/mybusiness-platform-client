@@ -1,6 +1,8 @@
 // src/pages/business/MainSection.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Select from "react-select";
+import "react-phone-input-2/lib/style.css";
+import PhoneInput from "react-phone-input-2";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import ALL_CATEGORIES from "../../../../../data/categories";
 import ImageLoader from "@components/ImageLoader";
@@ -17,7 +19,6 @@ export default function MainSection({
   handleSave,
   showViewProfile,
   navigate,
-  currentUser,
   logoInputRef,
   mainImagesInputRef,
   isSaving,
@@ -25,45 +26,6 @@ export default function MainSection({
 }) {
   const containerRef = useRef();
   const [isDeletingLogo, setIsDeletingLogo] = useState(false);
-
-  // Cities from API
-  const [cityOptions, setCityOptions] = useState([]);
-  const [loadingCities, setLoadingCities] = useState(true);
-
-  useEffect(() => {
-    async function fetchCities() {
-      try {
-        setLoadingCities(true);
-        const res = await fetch(
-          "https://data.gov.il/api/3/action/datastore_search?resource_id=5c78e9fa-c2e2-4771-93ff-7f400a12f7ba&limit=5000"
-        );
-        const data = await res.json();
-        const cities = (data.result?.records || [])
-          .map(r => r["שם_ישוב"].trim())
-          .filter(Boolean);
-
-        const unique = Array.from(new Set(cities)).sort((a, b) =>
-          a.localeCompare(b, "he")
-        );
-        setCityOptions(unique.map(c => ({ value: c, label: c })));
-      } catch (err) {
-        console.error("Error loading cities:", err);
-      } finally {
-        setLoadingCities(false);
-      }
-    }
-    fetchCities();
-  }, []);
-
-  useEffect(() => {
-    const onClickOutside = e => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // react-select auto-closes
-      }
-    };
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
-  }, []);
 
   if (!businessDetails._id) return null;
 
@@ -86,9 +48,6 @@ export default function MainSection({
     logo = null
   } = businessDetails;
   const { city = "" } = address;
-
-  const sortedReviews = [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
-  const lastTwoReviews = sortedReviews.slice(0, 2);
 
   // Delete logo
   async function handleDeleteLogo() {
@@ -123,14 +82,32 @@ export default function MainSection({
     }
   }
 
+  const inputStyle = {
+    width: "100%",
+    padding: "10px 14px",
+    borderRadius: "10px",
+    border: "1px solid #e3e6ed",
+    fontSize: "1rem",
+    background: "#fff",
+    transition: "0.2s ease",
+    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+  };
+
+  const inputFocus = {
+    outline: "none",
+    borderColor: "#6a11cb",
+    boxShadow: "0 0 0 3px rgba(106,17,203,0.15)",
+  };
+
   return (
     <>
       <div className="form-column" ref={containerRef}>
-        <h2>🎨 Edit Business Details</h2>
+        <h2 style={{ marginBottom: "1rem", fontWeight: "600", color: "#1e1e2f" }}>
+          🎨 Edit Business Details
+        </h2>
 
-        <label>
-          Business Name: <span style={{ color: "red" }}>*</span>
-        </label>
+        {/* BUSINESS NAME */}
+        <label>Business Name <span style={{ color: "red" }}>*</span></label>
         <input
           type="text"
           name="businessName"
@@ -139,28 +116,48 @@ export default function MainSection({
           placeholder="Enter business name"
           required
           disabled={isSaving}
+          style={inputStyle}
+          onFocus={e => Object.assign(e.target.style, inputFocus)}
+          onBlur={e => Object.assign(e.target.style, inputStyle)}
         />
 
-        <label>Description:</label>
+        {/* DESCRIPTION */}
+        <label style={{ marginTop: "0.75rem" }}>Description</label>
         <textarea
           name="description"
           value={description}
           onChange={handleInputChange}
           placeholder="Enter short description"
           disabled={isSaving}
+          rows={3}
+          style={{ ...inputStyle, resize: "none" }}
+          onFocus={e => Object.assign(e.target.style, inputFocus)}
+          onBlur={e => Object.assign(e.target.style, inputStyle)}
         />
 
-        <label>Phone:</label>
-        <input
-          type="text"
-          name="phone"
-          value={phone}
-          onChange={handleInputChange}
-          placeholder="Enter phone number"
+        {/* PHONE */}
+        <label style={{ marginTop: "0.75rem" }}>Phone (US)</label>
+        <PhoneInput
+          country={"us"}
+          onlyCountries={["us"]}
+          value={phone?.replace("+", "")}
+          onChange={val =>
+            handleInputChange({ target: { name: "phone", value: "+" + val } })
+          }
           disabled={isSaving}
+          inputProps={{ name: "phone", required: true }}
+          inputStyle={{
+            ...inputStyle,
+            paddingLeft: "50px",
+          }}
+          buttonStyle={{
+            border: "none",
+            background: "transparent",
+          }}
         />
 
-        <label>Email:</label>
+        {/* EMAIL */}
+        <label style={{ marginTop: "0.75rem" }}>Email</label>
         <input
           type="email"
           name="email"
@@ -168,49 +165,58 @@ export default function MainSection({
           onChange={handleInputChange}
           placeholder="Enter email address"
           disabled={isSaving}
+          style={inputStyle}
+          onFocus={e => Object.assign(e.target.style, inputFocus)}
+          onBlur={e => Object.assign(e.target.style, inputStyle)}
         />
 
-        <label>
-          Category: <span style={{ color: "red" }}>*</span>
+        {/* CATEGORY */}
+        <label style={{ marginTop: "0.75rem" }}>
+          Category <span style={{ color: "red" }}>*</span>
         </label>
         <Select
           options={categoryOptions}
           value={categoryOptions.find(o => o.value === category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
-          placeholder="Type category"
+          placeholder="Select category"
           isClearable
-          filterOption={({ label }, input) =>
-            label.toLowerCase().startsWith(input.toLowerCase())
-          }
-          noOptionsMessage={({ inputValue }) =>
-            inputValue ? "No matching categories" : null
-          }
-          menuPortalTarget={document.body}
-          styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+          styles={{
+            control: base => ({
+              ...base,
+              ...inputStyle,
+              cursor: "pointer",
+              boxShadow: "none",
+              borderRadius: "10px",
+              ":hover": { borderColor: "#6a11cb" },
+            }),
+            menu: base => ({
+              ...base,
+              borderRadius: "10px",
+              zIndex: 9999,
+            }),
+          }}
         />
 
-        <label>
-          City: <span style={{ color: "red" }}>*</span>
+        {/* CITY */}
+        <label style={{ marginTop: "0.75rem" }}>
+          City <span style={{ color: "red" }}>*</span>
         </label>
-        <Select
-          options={cityOptions}
-          value={cityOptions.find(o => o.value === city) || null}
-          onChange={wrapSelectChange("address.city")}
-          isDisabled={isSaving || loadingCities}
-          placeholder={loadingCities ? "Loading cities..." : "Type city"}
-          isClearable
-          filterOption={({ label }, input) =>
-            label.toLowerCase().startsWith(input.toLowerCase())
-          }
-          noOptionsMessage={({ inputValue }) =>
-            inputValue ? "No matching cities" : null
-          }
-          menuPortalTarget={document.body}
-          styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+        <input
+          type="text"
+          name="address.city"
+          value={city}
+          onChange={handleInputChange}
+          placeholder="Enter city (e.g. New York)"
+          required
+          disabled={isSaving}
+          style={inputStyle}
+          onFocus={e => Object.assign(e.target.style, inputFocus)}
+          onBlur={e => Object.assign(e.target.style, inputStyle)}
         />
 
-        <label>Logo:</label>
+        {/* LOGO */}
+        <label style={{ marginTop: "0.75rem" }}>Logo</label>
         <input
           type="file"
           name="logo"
@@ -220,7 +226,7 @@ export default function MainSection({
           onChange={handleLogoChange}
           disabled={isSaving}
         />
-        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
           <button
             type="button"
             className="save-btn"
@@ -242,7 +248,8 @@ export default function MainSection({
           )}
         </div>
 
-        <label>Main Images:</label>
+        {/* MAIN IMAGES */}
+        <label style={{ marginTop: "0.75rem" }}>Main Images</label>
         <input
           type="file"
           name="main-images"
@@ -253,9 +260,13 @@ export default function MainSection({
           onChange={handleMainImagesChange}
           disabled={isSaving}
         />
-        <div className="gallery-preview">
+        <div className="gallery-preview" style={{ marginTop: "8px" }}>
           {limitedMainImgs.map(({ preview, publicId }, i) => (
-            <div key={publicId || `preview-${i}`} className="gallery-item-wrapper image-wrapper">
+            <div
+              key={publicId || `preview-${i}`}
+              className="gallery-item-wrapper image-wrapper"
+              style={{ position: "relative" }}
+            >
               <ImageLoader src={preview} alt="Main image" className="gallery-img" />
               <button
                 className="delete-btn"
@@ -263,6 +274,15 @@ export default function MainSection({
                 type="button"
                 title="Delete"
                 disabled={isSaving}
+                style={{
+                  position: "absolute",
+                  top: "5px",
+                  right: "5px",
+                  background: "rgba(255,255,255,0.9)",
+                  border: "none",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                }}
               >
                 🗑️
               </button>
@@ -272,70 +292,62 @@ export default function MainSection({
             <div
               className="gallery-placeholder clickable"
               onClick={() => mainImagesInputRef.current?.click()}
+              style={{
+                width: "120px",
+                height: "120px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "2px dashed #ccc",
+                borderRadius: "10px",
+                fontSize: "2rem",
+                color: "#999",
+                cursor: "pointer",
+              }}
             >
               +
             </div>
           )}
         </div>
 
-        <button className="save-btn" onClick={handleSave} disabled={isSaving}>
+        {/* SAVE BUTTONS */}
+        <button
+          className="save-btn"
+          onClick={handleSave}
+          disabled={isSaving}
+          style={{
+            marginTop: "1rem",
+            padding: "10px 16px",
+            background: "linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)",
+            color: "#fff",
+            border: "none",
+            borderRadius: "10px",
+            fontWeight: "600",
+            cursor: "pointer",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+            transition: "0.2s ease",
+          }}
+        >
           {isSaving ? "Saving..." : "💾 Save Changes"}
         </button>
 
         {showViewProfile && (
           <button
             type="button"
-            className="save-btn"
-            style={{ marginTop: "0.5rem" }}
+            style={{
+              marginTop: "0.5rem",
+              background: "#f3f4f6",
+              border: "1px solid #ccc",
+              borderRadius: "10px",
+              padding: "10px 16px",
+              cursor: "pointer",
+            }}
             onClick={() => navigate(`/business/${businessDetails._id}`)}
             disabled={isSaving}
           >
             👀 View Profile
           </button>
         )}
-      </div>
-
-      <div className="preview-column">
-        {renderTopBar?.()}
-
-        <div className="preview-images">
-          {limitedMainImgs.map(({ preview }, i) => (
-            <div key={i} className="image-wrapper">
-              <ImageLoader src={preview} alt="Main image" />
-            </div>
-          ))}
-        </div>
-
-        <div className="latest-reviews" style={{ marginTop: "1rem" }}>
-          {lastTwoReviews.map((review, idx) => (
-            <div
-              key={idx}
-              className="review-card"
-              style={{
-                border: "1px solid #ccc",
-                borderRadius: "6px",
-                padding: "1rem",
-                marginBottom: "1rem",
-                backgroundColor: "#fff",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
-              }}
-            >
-              <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-                Average Rating: {review.rating || "No rating"}
-              </div>
-              <div>
-                <strong>Review:</strong> {review.opinion || "No review"}
-              </div>
-              <div>
-                <strong>Date:</strong>{" "}
-                {review.date ? new Date(review.date).toLocaleDateString("en-US") : "Not specified"}
-              </div>
-              <div>
-                <strong>By:</strong> {review.author || "Not specified"}
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     </>
   );
