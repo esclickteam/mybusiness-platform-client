@@ -1,13 +1,14 @@
 import axios from "axios";
 
+// Detect environment
 const isProd = import.meta.env.MODE === "production";
-const BASE_URL = isProd
-  ? "https://api.esclick.co.il/api"
-  : "/api";
+
+// ✅ Always go through the same domain (proxy handles redirect to api.bizuply.com)
+const BASE_URL = isProd ? "/api" : "http://localhost:5000/api";
 
 const API = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
+  withCredentials: true, // required for cookies
   timeout: 20000,
   headers: {
     Accept: "application/json",
@@ -26,17 +27,12 @@ const setAuthToken = (token) => {
 // Setting the token on module load
 setAuthToken(localStorage.getItem("token"));
 
-// Identifying authentication endpoints to ignore them in token refresh
-const isAuthEndpoint = (url) => {
-  return [
-    "/auth/me",
-    "/auth/refresh-token",
-    "/auth/login",
-    "/auth/register",
-  ].some((endpoint) => url.endsWith(endpoint));
-};
+// Identify authentication endpoints to skip refresh logic
+const isAuthEndpoint = (url) =>
+  ["/auth/me", "/auth/refresh-token", "/auth/login", "/auth/register"].some((endpoint) =>
+    url.endsWith(endpoint)
+  );
 
-// Variables to track token refresh and register callback
 let isRefreshing = false;
 let refreshSubscribers = [];
 
@@ -49,28 +45,23 @@ function addRefreshSubscriber(callback) {
   refreshSubscribers.push(callback);
 }
 
-// Request interceptor: adds Authorization header to every call
+// Request interceptor
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    } else {
-      delete config.headers["Authorization"];
-    }
+    if (token) config.headers["Authorization"] = `Bearer ${token}`;
+    else delete config.headers["Authorization"];
+
     if (config.data && !(config.data instanceof FormData)) {
       config.headers["Content-Type"] = "application/json";
     }
     console.log(`API Request: ${config.method.toUpperCase()} ${config.baseURL}${config.url}`);
     return config;
   },
-  (error) => {
-    console.error("API Request Error:", error);
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor: handling error responses, including token refresh
+// Response interceptor
 API.interceptors.response.use(
   (response) => {
     console.log(`API Response: ${response.status} ${response.config.url}`);
@@ -78,12 +69,8 @@ API.interceptors.response.use(
   },
   async (error) => {
     const { response, config } = error;
-    if (!response) {
-      console.error("Network error:", error);
-      return Promise.reject(new Error("Network error"));
-    }
+    if (!response) return Promise.reject(new Error("Network error"));
 
-    // Handling 401/403 for non-authentication calls
     if (
       (response.status === 401 || response.status === 403) &&
       !isAuthEndpoint(config.url) &&
@@ -94,10 +81,7 @@ API.interceptors.response.use(
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           addRefreshSubscriber((token) => {
-            if (!token) {
-              reject(new Error("Failed to refresh token"));
-              return;
-            }
+            if (!token) return reject(new Error("Failed to refresh token"));
             config.headers["Authorization"] = `Bearer ${token}`;
             resolve(API(config));
           });
@@ -106,11 +90,9 @@ API.interceptors.response.use(
 
       isRefreshing = true;
       try {
-        const refreshResponse = await axios.post(
-          `${BASE_URL}/auth/refresh-token`,
-          null,
-          { withCredentials: true }
-        );
+        const refreshResponse = await axios.post(`/api/auth/refresh-token`, null, {
+          withCredentials: true,
+        });
         const newToken = refreshResponse.data.accessToken;
         if (newToken) {
           localStorage.setItem("token", newToken);
@@ -129,16 +111,9 @@ API.interceptors.response.use(
       }
     }
 
-    // Handling regular errors
-    const contentType = response.headers["content-type"] || "";
-    let message;
-    if (!contentType.includes("application/json")) {
-      message = typeof response.data === "string"
-        ? response.data
-        : JSON.stringify(response.data);
-    } else {
-      message = response.data?.message || JSON.stringify(response.data);
-    }
+    const message =
+      response.data?.message ||
+      (typeof response.data === "string" ? response.data : JSON.stringify(response.data));
     console.error(`API Error ${response.status}:`, message);
     return Promise.reject(new Error(message));
   }
