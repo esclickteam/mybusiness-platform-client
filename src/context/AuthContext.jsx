@@ -111,6 +111,44 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /* ------------------------------- הרשמה חדשה ------------------------------- */
+  const register = async (formData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await API.post("/auth/register", formData, { withCredentials: true });
+
+      const { accessToken, refreshToken, user: registeredUser, redirectUrl } = data;
+      if (!accessToken) throw new Error("No access token received");
+
+      // ✅ שמירת הטוקנים בלוקאל סטורג'
+      localStorage.setItem("token", accessToken);
+      if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+
+      setAuthToken(accessToken);
+      setToken(accessToken);
+
+      const normalizedUser = normalizeUser(registeredUser);
+      setUser(normalizedUser);
+      localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+
+      // ✅ ניווט אחרי הרשמה
+      sessionStorage.setItem("justRegistered", "true");
+      if (normalizedUser.role === "business" && normalizedUser.businessId) {
+        navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+      } else {
+        navigate(redirectUrl || "/dashboard", { replace: true });
+      }
+
+      setLoading(false);
+      return { user: normalizedUser, redirectUrl };
+    } catch (e) {
+      setError(e.response?.data?.error || "❌ שגיאה בהרשמה, נסה שוב");
+      setLoading(false);
+      throw e;
+    }
+  };
+
   /* ------------------------------- התחברות רגילה ------------------------------- */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
@@ -322,6 +360,7 @@ export function AuthProvider({ children }) {
     initialized,
     error,
     login,
+    register, // ✅ נוספה הרשמה עם refreshToken
     logout,
     staffLogin,
     affiliateLogin,
