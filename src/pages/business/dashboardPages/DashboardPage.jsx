@@ -396,7 +396,7 @@ const DashboardPage = () => {
       {/* Topbar */}
       <header className="dp-topbar">
         <div className="dp-topbar__brand">
-          <img src="/logo192.png" alt="Bizuply" className="dp-logo" />
+          
           <div className="dp-brand-titles">
             <h1>Business Dashboard</h1>
             {user?.businessName && (
@@ -404,20 +404,7 @@ const DashboardPage = () => {
             )}
           </div>
         </div>
-        <div className="dp-topbar__actions">
-          <button
-            className="dp-btn dp-btn--ghost"
-            onClick={() => navigate(`/business/${businessId}/profile`)}
-          >
-            Business Page
-          </button>
-          <button
-            className="dp-btn dp-btn--primary"
-            onClick={() => navigate(`/business/${businessId}/messages`)}
-          >
-            Messages ({syncedStats.messages_count})
-          </button>
-        </div>
+        
       </header>
 
       <div className="dp-layout">
