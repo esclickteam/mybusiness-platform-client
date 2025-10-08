@@ -89,7 +89,7 @@ const Insights = ({ stats }) => {
             paddingLeft: "6px",
           }}
         >
-          Consider scheduling new appointments to increase engagement.
+          
         </div>
       )}
     </div>

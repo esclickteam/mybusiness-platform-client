@@ -428,7 +428,7 @@ const DashboardPage = () => {
           <div className="dp-tip">
             <div className="dp-tip__title">AI Insight</div>
             <p className="dp-tip__text">
-              Profile views increased this week. Consider sending an automated follow-up message to new leads.
+              
             </p>
           </div>
         </aside>

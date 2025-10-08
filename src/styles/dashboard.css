@@ -364,3 +364,28 @@ html, body {
     transition: none !important;
   }
 }
+
+/* ========= Topbar Title Center ========= */
+.dp-topbar {
+  display: flex;
+  justify-content: center; /* ממורכז לרוחב */
+  align-items: center;
+  width: 100%;
+  padding: 1.5rem 0;
+  background: transparent;
+}
+
+.dp-brand-titles {
+  text-align: center;
+}
+
+.dp-brand-titles h1 {
+  font-size: clamp(24px, 2.5vw, 38px);
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  margin: 0;
+  background: linear-gradient(90deg, var(--violet) 0%, var(--blue) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
