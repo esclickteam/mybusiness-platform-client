@@ -7,7 +7,10 @@ import { dedupeByPreview } from "../../../../../utils/dedupe";
 import ALL_CATEGORIES from "../../../../../data/categories";
 import ImageLoader from "@components/ImageLoader";
 
-const categoryOptions = ALL_CATEGORIES.map(cat => ({ value: cat, label: cat }));
+const categoryOptions = ALL_CATEGORIES.map((cat) => ({
+  value: cat,
+  label: cat,
+}));
 
 export default function MainSection({
   businessDetails = {},
@@ -22,7 +25,7 @@ export default function MainSection({
   logoInputRef,
   mainImagesInputRef,
   isSaving,
-  renderTopBar
+  renderTopBar,
 }) {
   const containerRef = useRef();
   const [isDeletingLogo, setIsDeletingLogo] = useState(false);
@@ -52,7 +55,6 @@ export default function MainSection({
   const sortedReviews = [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
   const lastTwoReviews = sortedReviews.slice(0, 2);
 
-  // Delete logo
   async function handleDeleteLogo() {
     if (isSaving || isDeletingLogo) return;
     if (!window.confirm("Are you sure you want to delete the logo?")) return;
@@ -104,81 +106,8 @@ export default function MainSection({
         gap: "2rem",
         alignItems: "start",
         width: "100%",
-        direction: "ltr", // 👈 נשאר באנגלית כדי לשמור על הסדר הנכון
       }}
     >
-
-      {/* RIGHT COLUMN — PREVIEW (נמצא ראשון ב־HTML כדי להיות בצד ימין) */}
-      <div
-        className="preview-column"
-        style={{
-          background: "#fff",
-          borderRadius: "20px",
-          padding: "2rem",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-        }}
-      >
-        {renderTopBar?.()}
-
-        {/* Preview images */}
-        <div
-          className="preview-images"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-            gap: "10px",
-            marginTop: "1rem",
-          }}
-        >
-          {limitedMainImgs.map(({ preview }, i) => (
-            <div key={i} className="image-wrapper">
-              <ImageLoader
-                src={preview}
-                alt="Main image"
-                style={{
-                  width: "100%",
-                  height: "140px",
-                  objectFit: "cover",
-                  borderRadius: "10px",
-                }}
-              />
-            </div>
-          ))}
-        </div>
-
-        {/* Latest reviews */}
-        <div className="latest-reviews" style={{ marginTop: "1.5rem" }}>
-          <h3 style={{ marginBottom: "1rem", fontWeight: 600 }}>⭐ Latest Reviews</h3>
-          {lastTwoReviews.length === 0 ? (
-            <p style={{ color: "#777" }}>No reviews yet</p>
-          ) : (
-            lastTwoReviews.map((review, idx) => (
-              <div
-                key={idx}
-                style={{
-                  border: "1px solid #eee",
-                  borderRadius: "10px",
-                  padding: "1rem",
-                  marginBottom: "1rem",
-                  backgroundColor: "#fafafa",
-                }}
-              >
-                <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-                  {review.rating ? `⭐ ${review.rating}/5` : "No rating"}
-                </div>
-                <div>{review.opinion || "No review provided"}</div>
-                <div style={{ fontSize: "0.9rem", color: "#666", marginTop: "0.5rem" }}>
-                  {review.author || "Anonymous"} –{" "}
-                  {review.date
-                    ? new Date(review.date).toLocaleDateString("en-US")
-                    : "Unknown date"}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
       {/* LEFT COLUMN — FORM */}
       <div
         className="form-column"
@@ -201,6 +130,7 @@ export default function MainSection({
           🎨 Edit Business Details
         </h2>
 
+        {/* BUSINESS NAME */}
         <label>Business Name *</label>
         <input
           type="text"
@@ -213,6 +143,7 @@ export default function MainSection({
           style={inputStyle}
         />
 
+        {/* DESCRIPTION */}
         <label style={{ marginTop: "0.75rem" }}>Description</label>
         <textarea
           name="description"
@@ -224,6 +155,7 @@ export default function MainSection({
           style={{ ...inputStyle, resize: "none" }}
         />
 
+        {/* PHONE */}
         <label style={{ marginTop: "0.75rem" }}>Phone (US)</label>
         <PhoneInput
           country={"us"}
@@ -244,6 +176,7 @@ export default function MainSection({
           }}
         />
 
+        {/* EMAIL */}
         <label style={{ marginTop: "0.75rem" }}>Email</label>
         <input
           type="email"
@@ -255,6 +188,7 @@ export default function MainSection({
           style={inputStyle}
         />
 
+        {/* CATEGORY */}
         <label style={{ marginTop: "0.75rem" }}>Category *</label>
         <Select
           options={categoryOptions}
@@ -275,6 +209,7 @@ export default function MainSection({
           }}
         />
 
+        {/* CITY */}
         <label style={{ marginTop: "0.75rem" }}>City *</label>
         <input
           type="text"
@@ -394,6 +329,7 @@ export default function MainSection({
           )}
         </div>
 
+        {/* SAVE BUTTON */}
         <button
           onClick={handleSave}
           disabled={isSaving}
@@ -429,6 +365,76 @@ export default function MainSection({
             👀 View Profile
           </button>
         )}
+      </div>
+
+      {/* RIGHT COLUMN — PREVIEW */}
+      <div
+        className="preview-column"
+        style={{
+          background: "#fff",
+          borderRadius: "20px",
+          padding: "2rem",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+        }}
+      >
+        {renderTopBar?.()}
+
+        <div
+          className="preview-images"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+            gap: "10px",
+            marginTop: "1rem",
+          }}
+        >
+          {limitedMainImgs.map(({ preview }, i) => (
+            <div key={i} className="image-wrapper">
+              <ImageLoader
+                src={preview}
+                alt="Main image"
+                style={{
+                  width: "100%",
+                  height: "140px",
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Latest Reviews */}
+        <div className="latest-reviews" style={{ marginTop: "1.5rem" }}>
+          <h3 style={{ marginBottom: "1rem", fontWeight: 600 }}>⭐ Latest Reviews</h3>
+          {lastTwoReviews.length === 0 ? (
+            <p style={{ color: "#777" }}>No reviews yet</p>
+          ) : (
+            lastTwoReviews.map((review, idx) => (
+              <div
+                key={idx}
+                style={{
+                  border: "1px solid #eee",
+                  borderRadius: "10px",
+                  padding: "1rem",
+                  marginBottom: "1rem",
+                  backgroundColor: "#fafafa",
+                }}
+              >
+                <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
+                  {review.rating ? `⭐ ${review.rating}/5` : "No rating"}
+                </div>
+                <div>{review.opinion || "No review provided"}</div>
+                <div style={{ fontSize: "0.9rem", color: "#666", marginTop: "0.5rem" }}>
+                  {review.author || "Anonymous"} –{" "}
+                  {review.date
+                    ? new Date(review.date).toLocaleDateString("en-US")
+                    : "Unknown date"}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
