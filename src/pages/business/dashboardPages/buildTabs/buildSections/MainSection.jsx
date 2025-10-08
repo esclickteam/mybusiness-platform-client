@@ -104,6 +104,7 @@ export default function MainSection({
         gap: "2rem",
         alignItems: "start",
         width: "100%",
+        direction: "rtl",
       }}
     >
       {/* LEFT COLUMN — FORM */}
