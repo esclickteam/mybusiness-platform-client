@@ -24,27 +24,46 @@ function normalizeUser(user) {
         ? user.isSubscriptionValid
         : computedIsValid,
     subscriptionStatus: user.status || user.subscriptionPlan || "free",
-
     daysLeft:
       user.subscriptionEnd && computedIsValid
         ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
         : 0,
-
-    // ✅ גישה אם המשתמש בתקופת ניסיון, שילם, או מחכה להפעלה
     hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
 }
 
+/* ----------------------- ריענון accessToken עם גיבוי ----------------------- */
 let ongoingRefresh = null;
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
-    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
-      .then((res) => {
-        const { accessToken, user: refreshedUser } = res.data;
+    ongoingRefresh = (async () => {
+      try {
+        // 🔹 ננסה קודם עם cookie
+        let res;
+        try {
+          res = await API.post("/auth/refresh-token", null, { withCredentials: true });
+        } catch (err) {
+          // 🔹 fallback – אם Safari חסם cookie, נשתמש ב־localStorage
+          const localRefresh = localStorage.getItem("refreshToken");
+          if (!localRefresh) throw err;
+
+          res = await API.post(
+            "/auth/refresh-token",
+            { refreshToken: localRefresh },
+            { withCredentials: true }
+          );
+        }
+
+        const { accessToken, user: refreshedUser, refreshToken: newRefresh } = res.data;
         if (!accessToken) throw new Error("No new token");
 
         localStorage.setItem("token", accessToken);
         setAuthToken(accessToken);
+
+        // 🔹 נעדכן refreshToken אם קיבלנו חדש
+        if (newRefresh) {
+          localStorage.setItem("refreshToken", newRefresh);
+        }
 
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
@@ -52,10 +71,10 @@ export async function singleFlightRefresh() {
         }
 
         return accessToken;
-      })
-      .finally(() => {
+      } finally {
         ongoingRefresh = null;
-      });
+      }
+    })();
   }
   return ongoingRefresh;
 }
@@ -76,12 +95,12 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  /* ---------------------------- ריענון נתוני משתמש ---------------------------- */
   const refreshUser = async (force = false) => {
     try {
       const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
         withCredentials: true,
       });
-      console.log("refreshUser - user data received:", data);
       const normalized = normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
@@ -92,6 +111,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /* ------------------------------- התחברות רגילה ------------------------------- */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
     setError(null);
@@ -101,10 +121,14 @@ export function AuthProvider({ children }) {
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
       );
-      const { accessToken, user: loggedInUser, redirectUrl } = data;
+
+      const { accessToken, refreshToken, user: loggedInUser, redirectUrl } = data;
       if (!accessToken) throw new Error("No access token received");
 
+      // 🔹 שמירת ה־tokens בלוקאל סטורג’
       localStorage.setItem("token", accessToken);
+      if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+
       setAuthToken(accessToken);
       setToken(accessToken);
 
@@ -148,6 +172,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /* ----------------------------- התחברות לצוות ----------------------------- */
   const staffLogin = async (username, password) => {
     setLoading(true);
     setError(null);
@@ -157,8 +182,12 @@ export function AuthProvider({ children }) {
         { username: username.trim(), password },
         { withCredentials: true }
       );
-      const { accessToken, user: staffUser } = data;
+
+      const { accessToken, refreshToken, user: staffUser } = data;
+
       localStorage.setItem("token", accessToken);
+      if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+
       setAuthToken(accessToken);
       setToken(accessToken);
 
@@ -180,6 +209,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /* --------------------------- התחברות משווק/שותף --------------------------- */
   const affiliateLogin = async (publicToken) => {
     setLoading(true);
     setError(null);
@@ -202,6 +232,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /* ---------------------------------- התנתקות ---------------------------------- */
   const logout = async () => {
     setLoading(true);
     try {
@@ -209,6 +240,7 @@ export function AuthProvider({ children }) {
     } catch {}
     setAuthToken(null);
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("businessDetails");
     localStorage.removeItem("dashboardStats");
     setToken(null);
@@ -219,6 +251,7 @@ export function AuthProvider({ children }) {
     navigate("/login", { replace: true });
   };
 
+  /* ---------------------------- אתחול והתחברות אוטו' ---------------------------- */
   useEffect(() => {
     if (!token) {
       socket?.disconnect();
@@ -256,7 +289,7 @@ export function AuthProvider({ children }) {
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
           const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && freshUser.hasAccess; // ✅ שינוי
+          const shouldSkip = isPlans && freshUser.hasAccess;
           if (!shouldSkip) {
             navigate(savedRedirect, { replace: true });
           }
@@ -264,7 +297,6 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        // ✅ הפניה ישירה לדשבורד אם זה עסק עם businessId ונמצאים בדף הבית
         if (freshUser.role === "business" && freshUser.businessId && location.pathname === "/") {
           navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
         }
