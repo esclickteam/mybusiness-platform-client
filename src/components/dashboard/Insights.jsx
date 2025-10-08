@@ -7,7 +7,11 @@ const Insights = ({ stats }) => {
   const viewsLastWeek = stats?.views_last_week || 0;
   const viewsDiff = viewsThisWeek - viewsLastWeek;
   const viewsPercent =
-    viewsLastWeek > 0 ? Math.round((viewsDiff / viewsLastWeek) * 100) : viewsThisWeek > 0 ? 100 : 0;
+    viewsLastWeek > 0
+      ? Math.round((viewsDiff / viewsLastWeek) * 100)
+      : viewsThisWeek > 0
+      ? 100
+      : 0;
 
   const upcoming = stats?.upcoming_appointments || 0;
 
@@ -22,52 +26,70 @@ const Insights = ({ stats }) => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "15px", fontSize: "1.1rem" }}>
+    <div
+      style={{
+        direction: "ltr",
+        display: "flex",
+        flexDirection: "column",
+        gap: "15px",
+        fontSize: "1.05rem",
+        fontFamily: "Poppins, sans-serif",
+      }}
+    >
+      {/* Profile Views Section */}
       <div
-        title="שינוי בצפיות לעומת שבוע שעבר"
+        title="Change in profile views compared to last week"
         style={{
           color: changeColor(viewsDiff),
-          fontWeight: "bold",
+          fontWeight: "600",
           display: "flex",
           alignItems: "center",
-          gap: "5px",
+          gap: "6px",
+          flexWrap: "wrap",
         }}
       >
-        {changeIcon(viewsDiff)} שינוי בצפיות:{" "}
+        {changeIcon(viewsDiff)} Change in profile views:{" "}
         {viewsDiff === 0
-          ? "אין שינוי"
+          ? "No change"
           : viewsDiff > 0
-          ? `עלייה של ${viewsPercent}%`
-          : `ירידה של ${Math.abs(viewsPercent)}%`}{" "}
-        ({viewsThisWeek} צפיות השבוע, {viewsLastWeek} צפיות בשבוע שעבר)
+          ? `Up by ${viewsPercent}%`
+          : `Down by ${Math.abs(viewsPercent)}%`}{" "}
+        ({viewsThisWeek} this week, {viewsLastWeek} last week)
       </div>
 
+      {/* Upcoming Appointments Section */}
       <div
         style={{
           backgroundColor: upcoming > 0 ? "#d4edda" : "#f8d7da",
-          padding: "10px",
-          borderRadius: "5px",
-          color: upcoming > 0 ? "green" : "red",
-          fontWeight: "bold",
+          padding: "10px 12px",
+          borderRadius: "8px",
+          color: upcoming > 0 ? "#155724" : "#721c24",
+          fontWeight: "600",
           display: "flex",
           alignItems: "center",
           gap: "8px",
         }}
       >
-        📆 {upcoming > 0 ? `יש ${upcoming} פגישות מתוכננות השבוע` : "אין פגישות מתוכננות השבוע"}
+        📆{" "}
+        {upcoming > 0
+          ? `You have ${upcoming} scheduled appointment${
+              upcoming > 1 ? "s" : ""
+            } this week`
+          : "No appointments scheduled this week"}
       </div>
 
+      {/* Suggestion Message */}
       {!upcoming && (
         <div
           style={{
             marginTop: "5px",
-            fontWeight: "normal",
+            fontWeight: "400",
             fontSize: "0.9rem",
             color: "#555",
-            paddingLeft: "5px",
+            paddingLeft: "6px",
           }}
         >
-          מומלץ לתזמן פגישות לשיפור הפעילות
+          Consider scheduling new appointments to increase engagement.
         </div>
       )}
     </div>

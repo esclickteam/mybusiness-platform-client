@@ -2,10 +2,10 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DailyAgenda.css";
 
-const DailyAgenda = ({ date, appointments, businessName = "העסק שלך", businessId }) => {
+const DailyAgenda = ({ date, appointments, businessName = "Your Business", businessId }) => {
   const navigate = useNavigate();
 
-  // פורמט תאריך לתבנית "YYYY-MM-DD"
+  // Format selected date to "YYYY-MM-DD"
   const selectedDate = useMemo(() => {
     try {
       const d = new Date(date);
@@ -15,16 +15,16 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך", bus
     }
   }, [date]);
 
-  // טיפול בתאריך לתצוגה בטקסט הכותרת, עם fallback
+  // Format date for display
   const displayDate = useMemo(() => {
     try {
-      return new Date(date).toLocaleDateString("he-IL");
+      return new Date(date).toLocaleDateString("en-US");
     } catch {
-      return "לא זמין";
+      return "Unavailable";
     }
   }, [date]);
 
-  // סינון וסידור הפגישות ליום הנבחר
+  // Filter appointments for selected day
   const dayAppointments = useMemo(() => {
     if (!selectedDate) return [];
 
@@ -43,23 +43,24 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך", bus
     return sorted;
   }, [appointments, selectedDate]);
 
-  // אם לא נבחר תאריך, נחזיר טקסט מתאים
+  // No date selected
   if (!date) {
     return (
       <p style={{ fontStyle: "italic", textAlign: "center" }}>
-        בחר/י תאריך כדי לראות לו״ז
+        Select a date to view your agenda.
       </p>
     );
   }
 
-  // פונקציית שליחת תזכורת בוואטסאפ
+  // WhatsApp reminder function
   const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
     if (!phone) {
-      alert("מספר טלפון של הלקוח לא זמין");
+      alert("Client phone number is not available");
       return;
     }
+
     let cleanPhone = phone.replace(/\D/g, "");
-    if (!cleanPhone.startsWith("972")) {
+    if (!cleanPhone.startsWith("1") && !cleanPhone.startsWith("972")) {
       if (cleanPhone.startsWith("0")) {
         cleanPhone = "972" + cleanPhone.substring(1);
       } else {
@@ -67,14 +68,14 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך", bus
       }
     }
 
-    const formattedDate = new Date(date).toLocaleDateString("he-IL", {
+    const formattedDate = new Date(date).toLocaleDateString("en-US", {
       weekday: "long",
       day: "numeric",
       month: "numeric",
       year: "numeric",
     });
 
-    const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך בתאריך ${formattedDate} בשעה ${time}\nעבור שירות: ${service}\n\nמחכים לך,\n${businessName}`;
+    const message = `Hi ${clientName},\nThis is a reminder for your appointment on ${formattedDate} at ${time}.\nService: ${service}\n\nLooking forward to seeing you,\n${businessName}`;
     const encodedMessage = encodeURIComponent(message);
 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -85,36 +86,34 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך", bus
     window.open(url, "_blank");
   };
 
-  // ניתוב לעמוד תיאומים/הזמנות
+  // Navigate to appointment management
   const editAppointment = (appt) => {
     if (!businessId) {
-      alert("מזהה העסק לא זמין");
+      alert("Business ID is not available");
       return;
     }
     navigate(`/business/${businessId}/dashboard/crm/appointments`);
   };
 
   return (
-    <div className="daily-agenda-container">
+    <div className="daily-agenda-container" dir="ltr">
       <h4 style={{ textAlign: "center", marginBottom: "15px" }}>
-        לו״ז ליום {displayDate}
+        Schedule for {displayDate}
       </h4>
 
       {dayAppointments.length === 0 ? (
         <p style={{ textAlign: "center", color: "#888" }}>
-          אין פגישות בתאריך זה.
+          No appointments on this date.
         </p>
       ) : (
         <div className="agenda-list">
           {dayAppointments.map((a) => {
             const time = a.time || "";
-            const clientName = a.clientName?.trim() || "לא ידוע";
-
-            // לוג להצגת שם הלקוח בקונסול
-            console.log(`Displaying appointment for clientName: ${clientName}`);
-
-            const serviceName = a.serviceName || "לא ידוע";
+            const clientName = a.clientName?.trim() || "Unknown";
+            const serviceName = a.serviceName || "Unknown";
             const clientPhone = a.clientPhone || "";
+
+            console.log(`Displaying appointment for clientName: ${clientName}`);
 
             return (
               <div
@@ -122,12 +121,12 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך", bus
                 className="agenda-item"
               >
                 <div className="agenda-time">🕒 {time}</div>
-                <div className="agenda-service">💼 שירות: {serviceName}</div>
-                <div className="agenda-client">👤 לקוח: {clientName}</div>
+                <div className="agenda-service">💼 Service: {serviceName}</div>
+                <div className="agenda-client">👤 Client: {clientName}</div>
                 <div className="agenda-actions">
                   <button
                     className="agenda-btn"
-                    aria-label={`שלח תזכורת לווטסאפ ללקוח ${clientName} לשעה ${time}`}
+                    aria-label={`Send WhatsApp reminder to ${clientName} at ${time}`}
                     onClick={() =>
                       sendWhatsAppReminder(
                         clientPhone,
@@ -138,14 +137,14 @@ const DailyAgenda = ({ date, appointments, businessName = "העסק שלך", bus
                       )
                     }
                   >
-                    שלח תזכורת
+                    Send Reminder
                   </button>
                   <button
                     className="agenda-btn outline"
-                    aria-label={`ערוך פגישה של לקוח ${clientName} לשעה ${time}`}
+                    aria-label={`Edit appointment for ${clientName} at ${time}`}
                     onClick={() => editAppointment(a)}
                   >
-                    ערוך פגישה
+                    Edit Appointment
                   </button>
                 </div>
               </div>

@@ -5,7 +5,7 @@ const THRESHOLDS = {
   views: 10,
   appointments: 2,
   reviews: 2,
-  messages: 1,  
+  messages: 1,
 };
 
 const NextActions = ({ stats }) => {
@@ -21,30 +21,56 @@ const NextActions = ({ stats }) => {
   const actions = [];
 
   if (weekly_views_count < THRESHOLDS.views) {
-    actions.push({ text: "שבוע שקט? זו הזדמנות מצוינת לפרסם שירות חדש", type: "info" });
+    actions.push({
+      text: "📢 Quiet week? It’s a great time to promote a new service or offer.",
+      type: "info",
+    });
   } else {
-    actions.push({ text: "👀 צפיות בפרופיל השבוע במצב טוב", type: "success" });
+    actions.push({
+      text: "👀 Profile views are looking good this week.",
+      type: "success",
+    });
   }
 
   if (weekly_appointments_count < THRESHOLDS.appointments) {
-    actions.push({ text: "📅 שבוע רגוע? זו הזדמנות לקבוע שיחות ייעוץ חדשות", type: "warning" });
+    actions.push({
+      text: "📅 Slow week? Reach out to schedule new consultations.",
+      type: "warning",
+    });
   } else {
-    actions.push({ text: "📅 מספר הפגישות השבועי תקין", type: "success" });
+    actions.push({
+      text: "📅 Great! You have a healthy number of appointments this week.",
+      type: "success",
+    });
   }
 
   if (weekly_reviews_count < THRESHOLDS.reviews) {
-    actions.push({ text: "⭐ לא קיבלת הרבה ביקורות השבוע? תזכירי ללקוחות מרוצים לדרג אותך", type: "warning" });
+    actions.push({
+      text: "⭐ Haven’t received many reviews? Ask happy clients to leave one!",
+      type: "warning",
+    });
   } else {
-    actions.push({ text: "⭐ יש ביקורות טובות ומספיקות השבוע", type: "success" });
+    actions.push({
+      text: "⭐ You’ve got enough good reviews this week. Keep it up!",
+      type: "success",
+    });
   }
 
   if (weekly_messages_count >= THRESHOLDS.messages) {
-    actions.push({ text: "📩 יש מספיק הודעות מלקוחות השבוע", type: "success" });
+    actions.push({
+      text: "📩 You’ve received enough client messages this week.",
+      type: "success",
+    });
+  } else {
+    actions.push({
+      text: "💬 No client messages yet — consider posting something engaging.",
+      type: "info",
+    });
   }
 
   return (
     <div className="actions-container full-width">
-      <h4>המלצות לפעולה חכמה 💡</h4>
+      <h4>Smart Action Recommendations 💡</h4>
       <ul>
         {actions.map(({ text, type }, i) => (
           <li key={i} className={type}>

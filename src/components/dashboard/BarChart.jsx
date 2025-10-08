@@ -15,22 +15,32 @@ import {
   Legend,
 } from "recharts";
 
+// English month map
 const monthMap = {
-  ינואר: "ינו", פברואר: "פבר", מרץ: "מרץ", אפריל: "אפר",
-  מאי: "מאי", יוני: "יוני", יולי: "יולי", אוגוסט: "אוג",
-  ספטמבר: "ספט", אוקטובר: "אוק", נובמבר: "נוב", דצמבר: "דצמ",
+  January: "Jan",
+  February: "Feb",
+  March: "Mar",
+  April: "Apr",
+  May: "May",
+  June: "Jun",
+  July: "Jul",
+  August: "Aug",
+  September: "Sep",
+  October: "Oct",
+  November: "Nov",
+  December: "Dec",
 };
 
 function formatMonthlyData(appointments) {
   const counts = {
-    ינו: 0, פבר: 0, מרץ: 0, אפר: 0,
-    מאי: 0, יוני: 0, יולי: 0, אוג: 0,
-    ספט: 0, אוק: 0, נוב: 0, דצמ: 0,
+    Jan: 0, Feb: 0, Mar: 0, Apr: 0,
+    May: 0, Jun: 0, Jul: 0, Aug: 0,
+    Sep: 0, Oct: 0, Nov: 0, Dec: 0,
   };
 
-  appointments.forEach(appt => {
+  appointments.forEach((appt) => {
     if (!appt.date) return;
-    const fullMonth = new Date(appt.date).toLocaleString("he-IL", { month: "long" });
+    const fullMonth = new Date(appt.date).toLocaleString("en-US", { month: "long" });
     const shortMonth = monthMap[fullMonth];
     if (counts[shortMonth] !== undefined) counts[shortMonth]++;
   });
@@ -38,46 +48,52 @@ function formatMonthlyData(appointments) {
   return Object.entries(counts).map(([name, customers]) => ({ name, customers }));
 }
 
-const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמינו פגישות לפי חודשים 📊" }) => {
+const BarChartComponent = ({
+  appointments = [],
+  title = "Clients Who Booked Appointments by Month 📊",
+}) => {
   const [viewMode, setViewMode] = useState("bar");
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const data = useMemo(() => formatMonthlyData(appointments), [appointments]);
-
   const total = useMemo(() => data.reduce((sum, d) => sum + d.customers, 0), [data]);
   const average = useMemo(() => total / 12, [total]);
-  const maxMonth = useMemo(() =>
-    data.reduce((max, curr) => curr.customers > max.customers ? curr : max, data[0] || {name: "-", customers: 0}),
+  const maxMonth = useMemo(
+    () =>
+      data.reduce(
+        (max, curr) => (curr.customers > max.customers ? curr : max),
+        data[0] || { name: "-", customers: 0 }
+      ),
     [data]
   );
 
-  const showLegend = data.some(d => d.customers > 0);
+  const showLegend = data.some((d) => d.customers > 0);
 
   return (
-    <div className="graph-box">
+    <div className="graph-box" dir="ltr">
       <h2 className="graph-title">{title}</h2>
 
       <div className="chart-buttons">
         <button
           className={viewMode === "bar" ? "active" : ""}
           onClick={() => setViewMode("bar")}
-          aria-label="תצוגת עמודות"
+          aria-label="Bar view"
         >
-          📊 עמודות
+          📊 Bars
         </button>
         <button
           className={viewMode === "line" ? "active" : ""}
           onClick={() => setViewMode("line")}
-          aria-label="תצוגת קווים"
+          aria-label="Line view"
         >
-          📈 קווי
+          📈 Line
         </button>
         <button
           className={viewMode === "table" ? "active" : ""}
           onClick={() => setViewMode("table")}
-          aria-label="תצוגת טבלה"
+          aria-label="Table view"
         >
-          📋 טבלה
+          📋 Table
         </button>
       </div>
 
@@ -113,22 +129,33 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
               <Tooltip
                 cursor={false}
                 wrapperStyle={{ fontSize: 12 }}
-                contentStyle={{ backgroundColor: "#fafafa", borderRadius: 8, borderColor: "#ddd" }}
-                labelFormatter={(value) => `חודש: ${value}`}
-                formatter={(value) => [`${value} לקוחות`, ""]}
+                contentStyle={{
+                  backgroundColor: "#fafafa",
+                  borderRadius: 8,
+                  borderColor: "#ddd",
+                }}
+                labelFormatter={(value) => `Month: ${value}`}
+                formatter={(value) => [`${value} clients`, ""]}
               />
               {showLegend && (
                 <Legend
                   verticalAlign="top"
                   align="center"
-                  wrapperStyle={{ marginBottom: 12, fontWeight: 600, color: "#4b0082", fontSize: 12 }}
+                  wrapperStyle={{
+                    marginBottom: 12,
+                    fontWeight: 600,
+                    color: "#4b0082",
+                    fontSize: 12,
+                  }}
                 />
               )}
-              <Bar dataKey="customers" name="לקוחות" radius={[5, 5, 0, 0]}>
+              <Bar dataKey="customers" name="Clients" radius={[5, 5, 0, 0]}>
                 {data.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={entry.name === maxMonth.name ? "#4caf50" : "#6a5acd"}
+                    fill={
+                      entry.name === maxMonth.name ? "#4caf50" : "#6a5acd"
+                    }
                   />
                 ))}
               </Bar>
@@ -161,15 +188,19 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
               <Tooltip
                 cursor={false}
                 wrapperStyle={{ fontSize: 12 }}
-                contentStyle={{ backgroundColor: "#fafafa", borderRadius: 8, borderColor: "#ddd" }}
-                labelFormatter={(value) => `חודש: ${value}`}
-                formatter={(value) => [`${value} לקוחות`, ""]}
+                contentStyle={{
+                  backgroundColor: "#fafafa",
+                  borderRadius: 8,
+                  borderColor: "#ddd",
+                }}
+                labelFormatter={(value) => `Month: ${value}`}
+                formatter={(value) => [`${value} clients`, ""]}
               />
               <Legend verticalAlign="top" align="center" />
               <Line
                 type="monotone"
                 dataKey="customers"
-                name="לקוחות"
+                name="Clients"
                 stroke="#4b0082"
                 strokeWidth={2}
                 activeDot={{ r: 6 }}
@@ -179,18 +210,44 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
 
           {viewMode === "table" && (
             <div style={{ width: "100%", overflowX: "auto" }}>
-              <table style={{ margin: "0 auto", direction: "rtl", borderCollapse: "collapse", fontSize: "0.9rem", width: "100%" }}>
+              <table
+                style={{
+                  margin: "0 auto",
+                  direction: "ltr",
+                  borderCollapse: "collapse",
+                  fontSize: "0.9rem",
+                  width: "100%",
+                }}
+              >
                 <thead>
                   <tr>
-                    <th style={{ padding: "8px", borderBottom: "1px solid #ccc" }}>חודש</th>
-                    <th style={{ padding: "8px", borderBottom: "1px solid #ccc" }}>כמות פגישות</th>
+                    <th style={{ padding: "8px", borderBottom: "1px solid #ccc" }}>
+                      Month
+                    </th>
+                    <th style={{ padding: "8px", borderBottom: "1px solid #ccc" }}>
+                      Appointments
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.map((row, i) => (
                     <tr key={i}>
-                      <td style={{ padding: "6px", borderBottom: "1px solid #eee" }}>{row.name}</td>
-                      <td style={{ padding: "6px", borderBottom: "1px solid #eee" }}>{row.customers}</td>
+                      <td
+                        style={{
+                          padding: "6px",
+                          borderBottom: "1px solid #eee",
+                        }}
+                      >
+                        {row.name}
+                      </td>
+                      <td
+                        style={{
+                          padding: "6px",
+                          borderBottom: "1px solid #eee",
+                        }}
+                      >
+                        {row.customers}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -200,8 +257,17 @@ const BarChartComponent = ({ appointments = [], title = "לקוחות שהזמי
         </ResponsiveContainer>
       </div>
 
-      <div className="summary-text" style={{ textAlign: "center", fontSize: "0.85rem", color: "#4b0082", marginTop: "1rem" }}>
-        סה"כ פגישות: {total} • ממוצע חודשי: {average.toFixed(1)} • שיא: {maxMonth.name} ({maxMonth.customers})
+      <div
+        className="summary-text"
+        style={{
+          textAlign: "center",
+          fontSize: "0.85rem",
+          color: "#4b0082",
+          marginTop: "1rem",
+        }}
+      >
+        Total Appointments: {total} • Monthly Avg: {average.toFixed(1)} • Peak:{" "}
+        {maxMonth.name} ({maxMonth.customers})
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./CalendarView.css";
 
-const weekDays = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const getDateTime = (dateStr, timeStr) => {
   if (!dateStr) return null;
@@ -14,7 +14,7 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
 
-  // לוג שמראה מתי הקומפוננטה מרנדרת ומה המידע שמתקבל
+  // Log for debugging
   useEffect(() => {
     console.log("CalendarView render - appointments:", appointments);
   }, [appointments]);
@@ -42,7 +42,7 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
-  // סידור הפגישות לפי תאריך
+  // Organize appointments by day
   const byDay = {};
   appointments.forEach((appt) => {
     if (!appt.date) return;
@@ -65,33 +65,34 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
   });
 
   const monthNames = [
-    "ינואר",
-    "פברואר",
-    "מרץ",
-    "אפריל",
-    "מאי",
-    "יוני",
-    "יולי",
-    "אוגוסט",
-    "ספטמבר",
-    "אוקטובר",
-    "נובמבר",
-    "דצמבר",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   return (
-    <div className="calendar-container" style={{ direction: "rtl" }}>
+    <div className="calendar-container" style={{ direction: "ltr" }}>
       <div className="calendar-header">
-        <h3>{monthNames[currentMonth]}</h3>
-        <span>{currentYear}</span>
+        <h3>
+          {monthNames[currentMonth]} <span>{currentYear}</span>
+        </h3>
       </div>
 
       <div className="month-navigation">
-        <button onClick={goToPreviousMonth}>← חודש קודם</button>
-        <button onClick={goToNextMonth}>חודש הבא →</button>
+        <button onClick={goToPreviousMonth}>← Previous Month</button>
+        <button onClick={goToNextMonth}>Next Month →</button>
       </div>
 
-      <div className="date-picker-text">בחר תאריך כדי לראות לוח"ז</div>
+      <div className="date-picker-text">Select a date to view your agenda</div>
 
       <div className="calendar-weekdays">
         {weekDays.map((dayName) => (
@@ -107,7 +108,7 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
             key={idx}
             className="calendar-day"
             onClick={() => day && onDateClick && onDateClick(dateStr)}
-            title={day ? "לחצי כדי לראות לו״ז יומי" : ""}
+            title={day ? "Click to view daily schedule" : ""}
             style={{
               cursor: day ? "pointer" : "default",
               backgroundColor: day ? undefined : "#f0f0f0",
@@ -117,18 +118,18 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
               <>
                 <div className="day-number">{day}</div>
                 {events.map((e, i) => {
-                  const clientName = e.clientName?.trim() || "לא ידוע";
+                  const clientName = e.clientName?.trim() || "Unknown";
                   const fullDate = getDateTime(e.date, e.time);
 
                   return (
                     <div key={i} className="event-item">
                       🕒{" "}
                       {fullDate
-                        ? fullDate.toLocaleTimeString("he-IL", {
+                        ? fullDate.toLocaleTimeString("en-US", {
                             hour: "2-digit",
                             minute: "2-digit",
                           })
-                        : "לא ידוע"}
+                        : "Unknown"}
                       <br />
                       👤 {clientName}
                     </div>

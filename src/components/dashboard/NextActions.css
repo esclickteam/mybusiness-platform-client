@@ -1,8 +1,9 @@
 .actions-container {
+  direction: ltr;
   background: #fff9f5;
   border-radius: 12px;
   padding: 1rem 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   max-width: 400px;
   margin: auto;
 
@@ -10,7 +11,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  text-align: left;
   box-sizing: border-box;
 }
 
@@ -21,7 +22,7 @@
 
 .actions-container h4 {
   margin-bottom: 0.8rem;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   color: #4b0082;
   font-weight: 700;
   display: flex;
@@ -39,7 +40,7 @@
 
 .actions-container li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.6rem;
   font-size: 1rem;
   padding: 8px 0;
@@ -77,20 +78,22 @@
   content: "•";
   font-size: 1.4rem;
   line-height: 1;
+  color: #ccc;
 }
 
-/* התאמות מובייל */
+/* 📱 Mobile */
 @media (max-width: 480px) {
   .actions-container {
     padding: 1rem;
     max-width: 100%;
     border-radius: 0;
+    text-align: left;
   }
 
   .actions-container h4 {
     font-size: 1.1rem;
     flex-wrap: wrap;
-    text-align: center;
+    text-align: left;
   }
 
   .actions-container li {
@@ -99,7 +102,7 @@
   }
 }
 
-/* מסכים קטנים במיוחד */
+/* 📱 Extra Small Screens */
 @media (max-width: 360px) {
   .actions-container h4 {
     font-size: 1rem;
@@ -109,7 +112,8 @@
     font-size: 0.85rem;
   }
 }
-/* טאבלטים (עד 768px) */
+
+/* 💻 Tablets (up to 768px) */
 @media (max-width: 768px) {
   .actions-container {
     padding: 1.25rem;
@@ -125,7 +129,7 @@
   }
 }
 
-/* מחשבים ניידים קטנים (עד 1024px) */
+/* 💻 Small Laptops (up to 1024px) */
 @media (max-width: 1024px) {
   .actions-container {
     padding: 1.5rem;

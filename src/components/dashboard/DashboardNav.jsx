@@ -1,6 +1,13 @@
-import React, { useEffect, useMemo, useState, useContext, useCallback } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useContext,
+  useCallback,
+} from "react";
 import { AuthContext } from "../../context/AuthContext";
 
+/* Section references (same order) */
 const SECTION_IDS = [
   "cardsRef",
   "insightsRef",
@@ -10,25 +17,28 @@ const SECTION_IDS = [
   "weeklySummaryRef",
 ];
 
+/* Labels in English */
 const LABELS = {
-  cardsRef: "כרטיסים",
-  insightsRef: "תובנות",
-  nextActionsRef: "המלצות",
-  chartsRef: "גרפים",
-  appointmentsRef: "פגישות",
-  weeklySummaryRef: "סיכום שבועי",
+  cardsRef: "Overview",
+  insightsRef: "Insights",
+  nextActionsRef: "Actions",
+  chartsRef: "Charts",
+  appointmentsRef: "Appointments",
+  weeklySummaryRef: "Weekly Summary",
 };
 
 const DashboardNav = ({ refs = {} }) => {
-  const { user } = useContext(AuthContext); 
+  const { user } = useContext(AuthContext);
   const [activeSection, setActiveSection] = useState(null);
 
+  /* Get list of active refs */
   const entries = useMemo(() => {
     return SECTION_IDS
       .map((id) => [id, refs[id]])
       .filter(([, r]) => r && r.current);
   }, [refs]);
 
+  /* Intersection observer for highlighting active section */
   useEffect(() => {
     if (!entries.length) return;
 
@@ -37,7 +47,6 @@ const DashboardNav = ({ refs = {} }) => {
         const visible = ioEntries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
         if (visible?.target?.id) {
           setActiveSection(visible.target.id);
         }
@@ -57,6 +66,7 @@ const DashboardNav = ({ refs = {} }) => {
     return () => observer.disconnect();
   }, [entries]);
 
+  /* Scroll to section smoothly */
   const scrollTo = useCallback(
     (refName, e) => {
       if (e) e.preventDefault();
@@ -68,6 +78,7 @@ const DashboardNav = ({ refs = {} }) => {
     [refs]
   );
 
+  /* Filter out missing refs */
   const buttons = useMemo(() => {
     return SECTION_IDS
       .filter((id) => refs[id])
@@ -75,7 +86,11 @@ const DashboardNav = ({ refs = {} }) => {
   }, [refs]);
 
   return (
-    <nav className="dashboard-nav" aria-label="ניווט לקטעי הדשבורד" dir="rtl">
+    <nav
+      className="dashboard-nav"
+      aria-label="Dashboard Section Navigation"
+      dir="ltr"
+    >
       {buttons.map(({ id, label }) => (
         <button
           key={id}
