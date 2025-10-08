@@ -4,14 +4,13 @@
   border-radius: 12px;
   padding: 1rem 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  max-width: 400px;
-  margin: auto;
-
+  max-width: 500px; /* טיפה רחב יותר, נראה מאוזן */
+  margin: 0 auto; /* ממורכז */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* ממורכז אנכית */
   justify-content: center;
-  text-align: center;
+  text-align: center; /* ממורכז טקסטואלית */
   box-sizing: border-box;
 }
 
@@ -20,6 +19,7 @@
   margin: 0;
 }
 
+/* כותרת */
 .actions-container h4 {
   margin-bottom: 0.8rem;
   font-size: 1.25rem;
@@ -27,17 +27,21 @@
   font-weight: 700;
   display: flex;
   align-items: center;
+  justify-content: center; /* ממורכז גם בכותרת */
   gap: 0.5rem;
   word-break: break-word;
 }
 
+/* הרשימה */
 .actions-container ul {
   list-style: none;
   padding: 0;
-  margin: 0;
-  width: 100%;
+  margin: 0 auto;           /* ⬅️ ממורכזת */
+  width: fit-content;       /* ⬅️ גודל לפי תוכן בלבד */
+  text-align: left;         /* שומר על יישור פנימי */
 }
 
+/* פריטים */
 .actions-container li {
   display: flex;
   align-items: flex-start;
@@ -59,21 +63,21 @@
   border-radius: 6px;
 }
 
+/* צבעים */
 .actions-container li.success {
   color: #4caf50;
   font-weight: 600;
 }
-
 .actions-container li.warning {
   color: #d9534f;
   font-weight: 600;
 }
-
 .actions-container li.info {
   color: #2196f3;
   font-weight: 600;
 }
 
+/* נקודה לפני פריט */
 .actions-container li::before {
   content: "•";
   font-size: 1.4rem;
@@ -87,60 +91,21 @@
     padding: 1rem;
     max-width: 100%;
     border-radius: 0;
-    text-align: center;
   }
-
   .actions-container h4 {
     font-size: 1.1rem;
     flex-wrap: wrap;
-    text-align: center;
   }
-
   .actions-container li {
     font-size: 0.95rem;
     padding: 6px 0;
   }
 }
 
-/* 📱 Extra Small Screens */
-@media (max-width: 360px) {
-  .actions-container h4 {
-    font-size: 1rem;
-  }
-
-  .actions-container li {
-    font-size: 0.85rem;
-  }
-}
-
-/* 💻 Tablets (up to 768px) */
+/* 💻 Tablets */
 @media (max-width: 768px) {
   .actions-container {
     padding: 1.25rem;
     max-width: 90%;
-  }
-
-  .actions-container h4 {
-    font-size: 1.15rem;
-  }
-
-  .actions-container li {
-    font-size: 0.95rem;
-  }
-}
-
-/* 💻 Small Laptops (up to 1024px) */
-@media (max-width: 1024px) {
-  .actions-container {
-    padding: 1.5rem;
-    max-width: 600px;
-  }
-
-  .actions-container h4 {
-    font-size: 1.2rem;
-  }
-
-  .actions-container li {
-    font-size: 1rem;
   }
 }
