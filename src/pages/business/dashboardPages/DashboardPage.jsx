@@ -106,7 +106,6 @@ const fetchAppointments = async (businessId, refreshAccessToken) => {
 export function preloadDashboardComponents() {
   DashboardCards.preload();
   BarChartComponent.preload();
-  RecentActivityTable.preload();
   Insights.preload();
   NextActions.preload();
   WeeklySummary.preload();
