@@ -230,6 +230,7 @@ html, body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, .05);
 }
 
+/* ===== Centered Smart Actions ===== */
 .actions-container {
   background: linear-gradient(180deg, #fffdf7 0%, #fff7e6 100%);
   border: 1px solid #f3e6c5;
@@ -239,10 +240,24 @@ html, body {
   max-width: 760px;
   margin: 0 auto;
   box-shadow: var(--shadow);
+  text-align: center;
 }
-.actions-container h4 { margin: 0 0 10px; font-weight: 800; }
-.actions-container ul { padding-left: 18px; margin: 0; }
-.actions-container li { margin-bottom: 6px; }
+.actions-container h4 {
+  margin: 0 0 10px;
+  font-weight: 800;
+  text-align: center;
+}
+.actions-container ul {
+  display: inline-block;
+  text-align: left;
+  margin: 0 auto;
+  padding-left: 0;
+}
+.actions-container li {
+  list-style: none;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
 
 /* ========= Calendar / Agenda ========= */
 .calendar-row {
