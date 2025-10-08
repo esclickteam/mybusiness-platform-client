@@ -1,7 +1,6 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
-import KanbanBoard from "./KanbanBoard"; // ⬅️ Importing the Kanban component
+import KanbanBoard from "./KanbanBoard";
 import "./ClientTasksAndNotes.css";
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
@@ -21,7 +20,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   const [message, setMessage] = useState(null);
   const [viewMode, setViewMode] = useState("list"); // "list" | "kanban"
 
-  // Mapping statuses and priorities to readable text + colors
+  // === Labels ===
   const statusLabels = {
     todo: { text: "To Do", color: "gray" },
     in_progress: { text: "In Progress", color: "orange" },
@@ -37,23 +36,23 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     critical: { text: "Critical", color: "red" },
   };
 
-  // === Fetching notes ===
+  // === Fetch Notes ===
   useEffect(() => {
     if (!clientId) return;
     API.get(`/crm-extras/notes/${clientId}`, { params: { businessId } })
       .then((res) => setNotes(res.data))
-      .catch((err) => console.error("Error fetching notes", err));
+      .catch((err) => console.error("Error fetching notes:", err));
   }, [clientId, businessId]);
 
-  // === Fetching tasks ===
+  // === Fetch Tasks ===
   useEffect(() => {
     if (!clientId) return;
     API.get(`/crm-extras/tasks/${clientId}`, { params: { businessId } })
       .then((res) => setTasks(res.data))
-      .catch((err) => console.error("Error fetching tasks", err));
+      .catch((err) => console.error("Error fetching tasks:", err));
   }, [clientId, businessId]);
 
-  // === Adding a new note ===
+  // === Add Note ===
   const handleAddNote = async () => {
     if (!newNote.trim()) return;
     try {
@@ -64,17 +63,17 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       });
       setNotes((prev) => [...prev, res.data]);
       setNewNote("");
-      setMessage("✅ The note was saved successfully");
+      setMessage("✅ Note saved successfully.");
     } catch (err) {
-      console.error("Error adding note", err);
-      setMessage("❌ Error adding note");
+      console.error("Error adding note:", err);
+      setMessage("❌ Failed to add note.");
     }
   };
 
-  // === Adding/updating a task ===
+  // === Add or Edit Task ===
   const handleSaveTask = async () => {
     if (!newTask.title.trim() || !newTask.dueDate || !newTask.dueTime) {
-      setMessage("⚠️ Please fill in the title and date/time");
+      setMessage("⚠️ Please fill in title, date, and time.");
       return;
     }
 
@@ -84,6 +83,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
 
     try {
       if (editTaskId) {
+        // Update existing
         const res = await API.patch(`/crm-extras/tasks/${editTaskId}`, {
           ...newTask,
           dueDate: isoDateTime,
@@ -92,8 +92,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           prev.map((t) => (t._id === editTaskId ? res.data : t))
         );
         setEditTaskId(null);
-        setMessage("✅ The task was updated successfully");
+        setMessage("✅ Task updated successfully.");
       } else {
+        // Add new
         const res = await API.post("/crm-extras/tasks", {
           clientId,
           businessId,
@@ -101,7 +102,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           dueDate: isoDateTime,
         });
         setTasks((prev) => [...prev, res.data]);
-        setMessage("✅ The task was added successfully");
+        setMessage("✅ Task added successfully.");
       }
 
       // Reset form
@@ -115,12 +116,12 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         reminder: "",
       });
     } catch (err) {
-      console.error("Error saving task", err);
-      setMessage("❌ Error saving task");
+      console.error("Error saving task:", err);
+      setMessage("❌ Failed to save task.");
     }
   };
 
-  // === Editing an existing task ===
+  // === Edit Task ===
   const handleEditTask = (task) => {
     setEditTaskId(task._id);
     setNewTask({
@@ -128,7 +129,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       description: task.description || "",
       dueDate: task.dueDate ? task.dueDate.slice(0, 10) : "",
       dueTime: task.dueDate
-        ? new Date(task.dueDate).toLocaleTimeString("he-IL", {
+        ? new Date(task.dueDate).toLocaleTimeString("en-GB", {
             hour: "2-digit",
             minute: "2-digit",
             hour12: false,
@@ -142,16 +143,16 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     });
   };
 
-  // === Deleting a task ===
+  // === Delete Task ===
   const handleDeleteTask = async (taskId) => {
-    if (!window.confirm("Are you sure you want to delete the task?")) return;
+    if (!window.confirm("Are you sure you want to delete this task?")) return;
     try {
       await API.delete(`/crm-extras/tasks/${taskId}`);
       setTasks((prev) => prev.filter((t) => t._id !== taskId));
-      setMessage("🗑️ The task was deleted");
+      setMessage("🗑️ Task deleted.");
     } catch (err) {
-      console.error("Error deleting task", err);
-      setMessage("❌ Error deleting task");
+      console.error("Error deleting task:", err);
+      setMessage("❌ Failed to delete task.");
     }
   };
 
@@ -159,18 +160,24 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     <div className="client-extras">
       {message && <div className="feedback-msg">{message}</div>}
 
-      {/* === Notes === */}
+      {/* === Notes Section === */}
       <div className="notes-section">
         <h3>📝 Notes</h3>
         {notes.length === 0 ? (
-          <p className="empty-text">No notes for the client</p>
+          <p className="empty-text">No notes yet.</p>
         ) : (
           <ul className="notes-list">
             {notes.map((note) => (
               <li key={note._id} className="note-item">
                 <span>{note.text}</span>
                 <small>
-                  {new Date(note.createdAt).toLocaleString("he-IL")}
+                  {new Date(note.createdAt).toLocaleString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </small>
               </li>
             ))}
@@ -178,7 +185,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         )}
 
         <textarea
-          placeholder="Add a note..."
+          placeholder="Add a new note..."
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
         />
@@ -187,11 +194,11 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         </button>
       </div>
 
-      {/* === Tasks === */}
+      {/* === Tasks Section === */}
       <div className="tasks-section">
         <h3>✅ Tasks</h3>
 
-        {/* Buttons to switch between list and Kanban */}
+        {/* View toggle */}
         <div className="view-toggle">
           <button
             className={viewMode === "list" ? "active" : ""}
@@ -210,7 +217,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         {viewMode === "list" ? (
           <>
             {tasks.length === 0 ? (
-              <p className="empty-text">No tasks</p>
+              <p className="empty-text">No tasks yet.</p>
             ) : (
               <ul className="tasks-list">
                 {tasks.map((task) => (
@@ -231,7 +238,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
 
                     <div className="task-meta">
                       {task.dueDate &&
-                        new Date(task.dueDate).toLocaleString("he-IL", {
+                        new Date(task.dueDate).toLocaleString("en-GB", {
                           day: "2-digit",
                           month: "2-digit",
                           year: "numeric",
@@ -263,7 +270,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               </ul>
             )}
 
-            {/* === Create/Edit form === */}
+            {/* === Add/Edit Task Form === */}
             <div className="task-form">
               <input
                 type="text"
@@ -339,4 +346,3 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     </div>
   );
 }
-```
