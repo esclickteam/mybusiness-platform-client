@@ -31,11 +31,11 @@ export default function MainSection({
 
   const wrappedMainImages = (businessDetails.mainImages || []).map((url, idx) => ({
     preview: url,
-    publicId: (businessDetails.mainImageIds || [])[idx] || null
+    publicId: (businessDetails.mainImageIds || [])[idx] || null,
   }));
 
   const limitedMainImgs = dedupeByPreview(wrappedMainImages).slice(0, 6);
-  const wrapSelectChange = name => option =>
+  const wrapSelectChange = (name) => (option) =>
     handleInputChange({ target: { name, value: option ? option.value : "" } });
 
   const {
@@ -45,9 +45,12 @@ export default function MainSection({
     email = "",
     category = "",
     address = {},
-    logo = null
+    logo = null,
   } = businessDetails;
   const { city = "" } = address;
+
+  const sortedReviews = [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const lastTwoReviews = sortedReviews.slice(0, 2);
 
   // Delete logo
   async function handleDeleteLogo() {
@@ -61,8 +64,8 @@ export default function MainSection({
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        }
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
       if (!response.ok) {
@@ -93,21 +96,40 @@ export default function MainSection({
     boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
   };
 
-  const inputFocus = {
-    outline: "none",
-    borderColor: "#6a11cb",
-    boxShadow: "0 0 0 3px rgba(106,17,203,0.15)",
-  };
-
   return (
-    <>
-      <div className="form-column" ref={containerRef}>
-        <h2 style={{ marginBottom: "1rem", fontWeight: "600", color: "#1e1e2f" }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: "2rem",
+        alignItems: "start",
+        width: "100%",
+      }}
+    >
+      {/* LEFT COLUMN — FORM */}
+      <div
+        className="form-column"
+        ref={containerRef}
+        style={{
+          background: "#fff",
+          borderRadius: "20px",
+          padding: "2rem",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+        }}
+      >
+        <h2
+          style={{
+            marginBottom: "1.5rem",
+            fontWeight: "600",
+            color: "#1e1e2f",
+            textAlign: "center",
+          }}
+        >
           🎨 Edit Business Details
         </h2>
 
         {/* BUSINESS NAME */}
-        <label>Business Name <span style={{ color: "red" }}>*</span></label>
+        <label>Business Name *</label>
         <input
           type="text"
           name="businessName"
@@ -117,8 +139,6 @@ export default function MainSection({
           required
           disabled={isSaving}
           style={inputStyle}
-          onFocus={e => Object.assign(e.target.style, inputFocus)}
-          onBlur={e => Object.assign(e.target.style, inputStyle)}
         />
 
         {/* DESCRIPTION */}
@@ -131,8 +151,6 @@ export default function MainSection({
           disabled={isSaving}
           rows={3}
           style={{ ...inputStyle, resize: "none" }}
-          onFocus={e => Object.assign(e.target.style, inputFocus)}
-          onBlur={e => Object.assign(e.target.style, inputStyle)}
         />
 
         {/* PHONE */}
@@ -141,7 +159,7 @@ export default function MainSection({
           country={"us"}
           onlyCountries={["us"]}
           value={phone?.replace("+", "")}
-          onChange={val =>
+          onChange={(val) =>
             handleInputChange({ target: { name: "phone", value: "+" + val } })
           }
           disabled={isSaving}
@@ -166,42 +184,31 @@ export default function MainSection({
           placeholder="Enter email address"
           disabled={isSaving}
           style={inputStyle}
-          onFocus={e => Object.assign(e.target.style, inputFocus)}
-          onBlur={e => Object.assign(e.target.style, inputStyle)}
         />
 
         {/* CATEGORY */}
-        <label style={{ marginTop: "0.75rem" }}>
-          Category <span style={{ color: "red" }}>*</span>
-        </label>
+        <label style={{ marginTop: "0.75rem" }}>Category *</label>
         <Select
           options={categoryOptions}
-          value={categoryOptions.find(o => o.value === category) || null}
+          value={categoryOptions.find((o) => o.value === category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
           placeholder="Select category"
           isClearable
           styles={{
-            control: base => ({
+            control: (base) => ({
               ...base,
               ...inputStyle,
               cursor: "pointer",
+              borderRadius: "10px",
               boxShadow: "none",
-              borderRadius: "10px",
               ":hover": { borderColor: "#6a11cb" },
-            }),
-            menu: base => ({
-              ...base,
-              borderRadius: "10px",
-              zIndex: 9999,
             }),
           }}
         />
 
         {/* CITY */}
-        <label style={{ marginTop: "0.75rem" }}>
-          City <span style={{ color: "red" }}>*</span>
-        </label>
+        <label style={{ marginTop: "0.75rem" }}>City *</label>
         <input
           type="text"
           name="address.city"
@@ -211,8 +218,6 @@ export default function MainSection({
           required
           disabled={isSaving}
           style={inputStyle}
-          onFocus={e => Object.assign(e.target.style, inputFocus)}
-          onBlur={e => Object.assign(e.target.style, inputStyle)}
         />
 
         {/* LOGO */}
@@ -232,16 +237,30 @@ export default function MainSection({
             className="save-btn"
             onClick={() => logoInputRef.current?.click()}
             disabled={isSaving || isDeletingLogo}
+            style={{
+              background: "linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)",
+              color: "#fff",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "10px",
+              cursor: "pointer",
+              fontWeight: 500,
+            }}
           >
             Upload Logo
           </button>
           {logo && (
             <button
               type="button"
-              className="delete-btn"
               onClick={handleDeleteLogo}
               disabled={isSaving || isDeletingLogo}
               title="Delete logo"
+              style={{
+                border: "1px solid #ccc",
+                padding: "8px 16px",
+                borderRadius: "10px",
+                cursor: "pointer",
+              }}
             >
               {isDeletingLogo ? "Deleting..." : "❌ Delete Logo"}
             </button>
@@ -260,16 +279,15 @@ export default function MainSection({
           onChange={handleMainImagesChange}
           disabled={isSaving}
         />
-        <div className="gallery-preview" style={{ marginTop: "8px" }}>
+        <div className="gallery-preview" style={{ marginTop: "10px" }}>
           {limitedMainImgs.map(({ preview, publicId }, i) => (
             <div
               key={publicId || `preview-${i}`}
               className="gallery-item-wrapper image-wrapper"
-              style={{ position: "relative" }}
+              style={{ position: "relative", display: "inline-block", marginRight: "8px" }}
             >
               <ImageLoader src={preview} alt="Main image" className="gallery-img" />
               <button
-                className="delete-btn"
                 onClick={() => handleDeleteImage(publicId)}
                 type="button"
                 title="Delete"
@@ -310,9 +328,7 @@ export default function MainSection({
           )}
         </div>
 
-        {/* SAVE BUTTONS */}
         <button
-          className="save-btn"
           onClick={handleSave}
           disabled={isSaving}
           style={{
@@ -325,7 +341,6 @@ export default function MainSection({
             fontWeight: "600",
             cursor: "pointer",
             boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-            transition: "0.2s ease",
           }}
         >
           {isSaving ? "Saving..." : "💾 Save Changes"}
@@ -349,6 +364,77 @@ export default function MainSection({
           </button>
         )}
       </div>
-    </>
+
+      {/* RIGHT COLUMN — PREVIEW */}
+      <div
+        className="preview-column"
+        style={{
+          background: "#fff",
+          borderRadius: "20px",
+          padding: "2rem",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+        }}
+      >
+        {renderTopBar?.()}
+
+        {/* Preview images */}
+        <div
+          className="preview-images"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+            gap: "10px",
+            marginTop: "1rem",
+          }}
+        >
+          {limitedMainImgs.map(({ preview }, i) => (
+            <div key={i} className="image-wrapper">
+              <ImageLoader
+                src={preview}
+                alt="Main image"
+                style={{
+                  width: "100%",
+                  height: "140px",
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Latest reviews */}
+        <div className="latest-reviews" style={{ marginTop: "1.5rem" }}>
+          <h3 style={{ marginBottom: "1rem", fontWeight: 600 }}>⭐ Latest Reviews</h3>
+          {lastTwoReviews.length === 0 ? (
+            <p style={{ color: "#777" }}>No reviews yet</p>
+          ) : (
+            lastTwoReviews.map((review, idx) => (
+              <div
+                key={idx}
+                style={{
+                  border: "1px solid #eee",
+                  borderRadius: "10px",
+                  padding: "1rem",
+                  marginBottom: "1rem",
+                  backgroundColor: "#fafafa",
+                }}
+              >
+                <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
+                  {review.rating ? `⭐ ${review.rating}/5` : "No rating"}
+                </div>
+                <div>{review.opinion || "No review provided"}</div>
+                <div style={{ fontSize: "0.9rem", color: "#666", marginTop: "0.5rem" }}>
+                  {review.author || "Anonymous"} –{" "}
+                  {review.date
+                    ? new Date(review.date).toLocaleDateString("en-US")
+                    : "Unknown date"}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
