@@ -1,3 +1,4 @@
+```javascript
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../../../api";
@@ -9,27 +10,27 @@ function PartnerCard({ business, isMine, onOpenProfile }) {
   return (
     <div key={business._id} className={`collab-card${isMine ? " my-business" : ""}`}>
       <div className="collab-card-inner">
-        {/* ✅ הלוגו בתוך הכרטיס, בראש */}
+        {/* ✅ The logo inside the card, at the top */}
         <div className="business-card__media">
-          <img src={logoUrl} alt={`${business.businessName} לוגו`} />
+          <img src={logoUrl} alt={`${business.businessName} logo`} />
         </div>
 
         <div className="collab-card-content">
           <h3 className="business-name">
             {business.businessName}
-            {isMine && <span className="my-business-badge">העסק שלי</span>}
+            {isMine && <span className="my-business-badge">My Business</span>}
           </h3>
           <p className="business-category">{business.category}</p>
           <p className="business-desc">{business.description}</p>
           <div className="collab-card-buttons">
             {isMine ? (
-              <span className="disabled-action">לא ניתן לשלוח לעצמך</span>
+              <span className="disabled-action">Cannot send to yourself</span>
             ) : (
               <button
                 className="message-box-button secondary"
                 onClick={() => onOpenProfile(business)}
               >
-                צפייה בפרופיל
+                View Profile
               </button>
             )}
           </div>
@@ -57,7 +58,7 @@ export default function CollabFindPartnerTab({ searchMode, searchCategory, freeT
       setMyBusinessId(myBusinessRes.data.business._id);
       setPartners(partnersRes.data.relevant || []);
     } catch (err) {
-      setError("שגיאה בטעינת נתונים");
+      setError("Error loading data");
       console.error(err);
     } finally {
       setLoading(false);
@@ -102,10 +103,10 @@ export default function CollabFindPartnerTab({ searchMode, searchCategory, freeT
     [navigate]
   );
 
-  if (loading) return <p>טוען שותפים...</p>;
+  if (loading) return <p>Loading partners...</p>;
   if (error) return <p className="error-text">{error}</p>;
   if (filteredPartners.length === 0) {
-    return <p>לא נמצאו שותפים.</p>;
+    return <p>No partners found.</p>;
   }
 
   return (
@@ -125,3 +126,4 @@ export default function CollabFindPartnerTab({ searchMode, searchCategory, freeT
     </div>
   );
 }
+```

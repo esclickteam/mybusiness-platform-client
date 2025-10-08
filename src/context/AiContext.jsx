@@ -1,3 +1,4 @@
+```javascript
 // src/context/AiContext.jsx — updated to reuse singleton socket
 import React, {
   createContext,
@@ -15,7 +16,7 @@ export function AiProvider({ children }) {
   /*  Shared state & helpers                                      */
   /* ------------------------------------------------------------ */
   const { token, user } = useAuth();
-  const socket = useSocket(); // ← לא יוצר חיבור חדש
+  const socket = useSocket(); // ← does not create a new connection
 
   const [suggestions, setSuggestions] = useState(() => {
     try {
@@ -59,7 +60,7 @@ export function AiProvider({ children }) {
       const newSug = {
         id: suggestion.recommendationId,
         text: suggestion.recommendation,
-        status: suggestion.status || "ממתין",
+        status: suggestion.status || "Pending",
         conversationId: suggestion.conversationId,
         clientSocketId: suggestion.clientSocketId,
       };
@@ -94,7 +95,7 @@ export function AiProvider({ children }) {
       setActiveSuggestion(null);
     } catch (err) {
       console.error("Approve suggestion error:", err);
-      alert("שגיאה באישור ההמלצה: " + err.message);
+      alert("Error approving the recommendation: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -163,17 +164,18 @@ function AiModal() {
           direction: "rtl",
         }}
       >
-        <h2>הודעת AI חדשה</h2>
+        <h2>New AI Message</h2>
         <p>{activeSuggestion.text}</p>
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
           <button onClick={() => approveSuggestion(activeSuggestion.id)} disabled={loading}>
-            אשר ושלח
+            Approve and Send
           </button>
           <button onClick={() => rejectSuggestion(activeSuggestion.id)} disabled={loading}>
-            דחה
+            Reject
           </button>
         </div>
       </div>
     </div>
   );
 }
+```

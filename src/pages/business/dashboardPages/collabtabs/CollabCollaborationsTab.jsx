@@ -1,6 +1,7 @@
+```javascript
 import React, { useState } from "react";
 import CollabActiveTab from "./collabtabs/CollabActiveTab";
-import CollabPendingTab from "./collabtabs/CollabPendingTab"; // חדש
+import CollabPendingTab from "./collabtabs/CollabPendingTab"; // New
 import PartnershipAgreementsTab from "./PartnershipAgreementsTab";
 
 export default function CollabCollaborationsTab({ isDevUser, userBusinessId, token }) {
@@ -20,13 +21,13 @@ export default function CollabCollaborationsTab({ isDevUser, userBusinessId, tok
     <div style={{ maxWidth: 900, margin: "auto" }}>
       <div style={{ display: "flex", justifyContent: "center", gap: 12, marginBottom: 20 }}>
         <button style={tabStyle("active")} onClick={() => setActiveView("active")}>
-          שיתופי פעולה פעילים
+          Active Collaborations
         </button>
         <button style={tabStyle("pending")} onClick={() => setActiveView("pending")}>
-          שיתופי פעולה בהמתנה
+          Pending Collaborations
         </button>
         <button style={tabStyle("agreements")} onClick={() => setActiveView("agreements")}>
-          הסכמי שיתוף פעולה
+          Collaboration Agreements
         </button>
       </div>
 
@@ -40,3 +41,4 @@ export default function CollabCollaborationsTab({ isDevUser, userBusinessId, tok
     </div>
   );
 }
+```

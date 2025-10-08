@@ -1,3 +1,4 @@
+```javascript
 import React, { useState } from "react";
 import "./AdminSettings.css";
 import { Link } from "react-router-dom";
@@ -5,7 +6,7 @@ import { Link } from "react-router-dom";
 function AdminSettings() {
   const [settings, setSettings] = useState({
     timezone: "Asia/Jerusalem",
-    language: "עברית",
+    language: "Hebrew",
     dateFormat: "DD/MM/YYYY",
     currency: "₪",
     supportEmail: "support@example.com",
@@ -25,65 +26,66 @@ function AdminSettings() {
   };
 
   const handleSave = () => {
-    console.log("✅ הגדרות נשמרו:", settings);
-    alert("ההגדרות נשמרו בהצלחה!");
+    console.log("✅ Settings saved:", settings);
+    alert("Settings saved successfully!");
   };
 
   return (
     <div className="admin-settings">
-      <Link to="/admin/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
-      <h1>⚙️ הגדרות כלליות</h1>
+      <Link to="/admin/dashboard" className="back-dashboard">🔙 Back to Dashboard</Link>
+      <h1>⚙️ General Settings</h1>
 
       <div className="settings-form">
-        <label>🌍 אזור זמן:
+        <label>🌍 Time Zone:
           <input type="text" name="timezone" value={settings.timezone} onChange={handleChange} />
         </label>
-        <label>🗣️ שפת ברירת מחדל:
+        <label>🗣️ Default Language:
           <select name="language" value={settings.language} onChange={handleChange}>
-            <option value="עברית">עברית</option>
+            <option value="Hebrew">Hebrew</option>
             <option value="English">English</option>
           </select>
         </label>
-        <label>📅 פורמט תאריך:
+        <label>📅 Date Format:
           <select name="dateFormat" value={settings.dateFormat} onChange={handleChange}>
             <option value="DD/MM/YYYY">DD/MM/YYYY</option>
             <option value="MM/DD/YYYY">MM/DD/YYYY</option>
           </select>
         </label>
-        <label>💸 מטבע:
+        <label>💸 Currency:
           <select name="currency" value={settings.currency} onChange={handleChange}>
             <option value="₪">₪</option>
             <option value="$">$</option>
             <option value="€">€</option>
           </select>
         </label>
-        <label>📧 אימייל תמיכה:
+        <label>📧 Support Email:
           <input type="email" name="supportEmail" value={settings.supportEmail} onChange={handleChange} />
         </label>
-        <label>📞 טלפון שירות:
+        <label>📞 Support Phone:
           <input type="text" name="supportPhone" value={settings.supportPhone} onChange={handleChange} />
         </label>
         <label>
           <input type="checkbox" name="enablePopups" checked={settings.enablePopups} onChange={handleChange} />
-          🛎️ הצג פופאפים אוטומטיים
+          🛎️ Show Automatic Popups
         </label>
         <label>
           <input type="checkbox" name="enableCoupons" checked={settings.enableCoupons} onChange={handleChange} />
-          🎁 הצג מבצעי קופונים
+          🎁 Show Coupon Deals
         </label>
         <label>
           <input type="checkbox" name="enableAlerts" checked={settings.enableAlerts} onChange={handleChange} />
-          🔔 הצג התראות מערכת
+          🔔 Show System Alerts
         </label>
         <label>
           <input type="checkbox" name="allowRegistration" checked={settings.allowRegistration} onChange={handleChange} />
-          🧾 אפשר הרשמה למשתמשים
+          🧾 Allow User Registration
         </label>
 
-        <button onClick={handleSave}>💾 שמור הגדרות</button>
+        <button onClick={handleSave}>💾 Save Settings</button>
       </div>
     </div>
   );
 }
 
 export default AdminSettings;
+```

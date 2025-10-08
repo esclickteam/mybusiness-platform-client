@@ -1,3 +1,4 @@
+```javascript
 import React, {
   useEffect,
   useRef,
@@ -5,12 +6,12 @@ import React, {
   useReducer,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
-import API from "../api"; // axios עם token מוגדר מראש
+import API from "../api"; // axios with predefined token
 import { useSocket } from "../context/socketContext";
-import { useNotifications } from "../context/NotificationsContext"; // ייבוא הקונטקסט של ההתראות
+import { useNotifications } from "../context/NotificationsContext"; // import the notifications context
 import "./BusinessChatTab.css";
 
-// עזר לנירמול הודעות
+// Helper to normalize messages
 function normalize(msg) {
   return {
     ...msg,
@@ -133,7 +134,7 @@ export default function BusinessChatTab({
   conversationType = "user-business",
 }) {
   const socket = useSocket();
-  const { addNotification } = useNotifications(); // שימוש ב-context של ההתראות
+  const { addNotification } = useNotifications(); // using the notifications context
 
   const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
@@ -230,7 +231,7 @@ export default function BusinessChatTab({
     };
 
     const handleNewNotification = notification => {
-      addNotification(notification); // עדכון דרך Context ולא state מקומי
+      addNotification(notification); // update through Context instead of local state
       console.log("New notification received:", notification);
     };
 
@@ -246,7 +247,6 @@ export default function BusinessChatTab({
     socket.on("typing", handleTyping);
     socket.on("newNotification", handleNewNotification);
     socket.on("newRecommendationNotification", handleNewNotification);
-
 
     return () => {
       socket.off("connect", handleConnect);
@@ -307,7 +307,7 @@ export default function BusinessChatTab({
         {unreadCount > 0 && <div className="unread-badge">{unreadCount}</div>}
       </div>
       <div className="message-list" ref={listRef}>
-        {sorted.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {sorted.length === 0 && <div className="empty">No messages yet</div>}
         {sorted.map((m, i) => (
           <div
             key={`${m._id}-${m.tempId}-${i}`}
@@ -332,11 +332,11 @@ export default function BusinessChatTab({
             </div>
           </div>
         ))}
-        {isTyping && <div className="typing-indicator">הלקוח מקליד…</div>}
+        {isTyping && <div className="typing-indicator">The customer is typing…</div>}
       </div>
       {firstMessageAlert && (
         <div className="first-message-alert">
-          הודעה ראשונה חדשה: "{firstMessageAlert.text}"
+          New first message: "{firstMessageAlert.text}"
           <button onClick={() => setFirstMessageAlert(null)}>×</button>
         </div>
       )}
@@ -344,7 +344,7 @@ export default function BusinessChatTab({
       <div className="inputBar">
         <textarea
           className="inputField"
-          placeholder="הקלד הודעה..."
+          placeholder="Type a message..."
           value={input}
           onChange={handleInput}
           onKeyDown={e => {
@@ -363,3 +363,4 @@ export default function BusinessChatTab({
     </div>
   );
 }
+```

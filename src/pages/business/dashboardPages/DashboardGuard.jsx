@@ -1,3 +1,4 @@
+```javascript
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +7,7 @@ export default function DashboardGuard({ children }) {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // נרמול hasPaid
+  // Normalizing hasPaid
   const normalizedHasPaid =
     user?.hasPaid === true || user?.hasPaid === "true" || user?.hasPaid === 1;
 
@@ -22,3 +23,4 @@ export default function DashboardGuard({ children }) {
 
   return children;
 }
+```

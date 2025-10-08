@@ -1,7 +1,8 @@
+```javascript
 import React from "react";
 
 const AppErrorFallback = ({ error, resetErrorBoundary }) => {
-  console.error("🔥 שגיאה שנתפסה ע״י ErrorBoundary:", error);
+  console.error("🔥 Error caught by ErrorBoundary:", error);
 
   return (
     <div
@@ -17,8 +18,8 @@ const AppErrorFallback = ({ error, resetErrorBoundary }) => {
         fontFamily: "sans-serif"
       }}
     >
-      <h2>⚠️ שגיאה באפליקציה</h2>
-      <p>משהו השתבש... נסה לרענן את הדף או לחזור מאוחר יותר.</p>
+      <h2>⚠️ Application Error</h2>
+      <p>Something went wrong... try refreshing the page or come back later.</p>
       {error?.message && (
         <div
           style={{
@@ -49,10 +50,11 @@ const AppErrorFallback = ({ error, resetErrorBoundary }) => {
           cursor: "pointer"
         }}
       >
-        🔁 רענן את הדף
+        🔁 Refresh the page
       </button>
     </div>
   );
 };
 
 export default AppErrorFallback;
+```

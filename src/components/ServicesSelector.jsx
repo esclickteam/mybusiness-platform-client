@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useEffect, useMemo } from "react";
 import ClientServiceCard from "../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientServiceCard";
 import "./ServicesSelector.css";
@@ -9,21 +10,21 @@ export default function ServicesSelector({ services, categories, onSelect }) {
     localStorage.getItem("lastService") || null
   );
 
-  // שמירת הבחירה בלוקאל־סטורג'
+  // Save the selection in local storage
   useEffect(() => {
     if (selectedId) {
       localStorage.setItem("lastService", selectedId);
     }
   }, [selectedId]);
 
-  // פונקציה לעיצוב משך
+  // Function to format duration
   const formatDuration = (minutes) => {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return `${h}:${m.toString().padStart(2, "0")}`;
   };
 
-  // פילטר החיפוש והקטגוריה
+  // Search and category filter
   const filtered = useMemo(() => {
     return services.filter((s) => {
       const matchesCategory = activeCategory === "all" || s.category === activeCategory;
@@ -32,16 +33,15 @@ export default function ServicesSelector({ services, categories, onSelect }) {
     });
   }, [services, search, activeCategory]);
 
-  // טאב "הכל" ועוד קטגוריות
+  // "All" tab and other categories
   const tabs = ["all", ...(Array.isArray(categories) ? categories : Object.keys(categories || {}))];
-
 
   return (
     <div className="services-selector">
-      {/* קטגוריות */}
+      {/* Categories */}
       <div className="cat-tabs" role="tablist">
         {tabs.map((catKey) => {
-          const label = catKey === "all" ? "הכל" : catKey;
+          const label = catKey === "all" ? "All" : catKey;
           return (
             <button
               key={catKey}
@@ -55,17 +55,17 @@ export default function ServicesSelector({ services, categories, onSelect }) {
         })}
       </div>
 
-      {/* חיפוש typeahead */}
+      {/* Typeahead search */}
       <input
         type="search"
         className="services-search"
-        placeholder="חפש שירות..."
+        placeholder="Search for a service..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        aria-label="חיפוש שירות"
+        aria-label="Search for a service"
       />
 
-      {/* רשת כרטיסיות */}
+      {/* Grid of cards */}
       <div className="services-grid">
         {filtered.length > 0 ? (
           filtered.map((service) => {
@@ -87,9 +87,10 @@ export default function ServicesSelector({ services, categories, onSelect }) {
             );
           })
         ) : (
-          <p className="no-results">לא נמצאו שירותים</p>
+          <p className="no-results">No services found</p>
         )}
       </div>
     </div>
   );
 }
+```

@@ -1,3 +1,4 @@
+```javascript
 import React, { useEffect, useState, useRef, useCallback, useReducer } from "react";
 import { io } from "socket.io-client";
 import API from "../../../../api";
@@ -113,7 +114,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       }
     } catch (err) {
       setConversations([]);
-      setError("לא הצלחנו לטעון שיחות");
+      setError("We could not load the conversations");
       console.error("[fetchConversations] error:", err);
     }
   }, [refreshAccessToken, selectedConversation]);
@@ -346,7 +347,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     const timeoutId = setTimeout(() => {
       if (!ackReceived) {
         dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
-        alert("שליחת ההודעה לקחה יותר מדי זמן. אנא נסה שנית.");
+        alert("Sending the message took too long. Please try again.");
       }
     }, 10000);
 
@@ -356,13 +357,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       console.log("[sendMessage] ack:", ack);
 
       if (!ack) {
-        alert("קיבלנו תשובה ריקה מהשרת. אנא נסה שנית.");
+        alert("We received an empty response from the server. Please try again.");
         dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
         return;
       }
 
       if (!ack.ok) {
-        alert("שליחת הודעה נכשלה: " + (ack.error || "שגיאה לא ידועה"));
+        alert("Message sending failed: " + (ack.error || "Unknown error"));
         dispatchMessages({ type: "remove", payload: tempId });
         return;
       }
@@ -372,7 +373,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           ...ack.message,
           fromBusinessId: ack.message.fromBusinessId || ack.message.from,
           toBusinessId: ack.message.toBusinessId || ack.message.to,
-          tempId, // לשימוש להחלפת ההודעה הזמנית
+          tempId, // for replacing the temporary message
           sending: false,
           failed: false,
         };
@@ -414,11 +415,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             py: 2,
           }}
         >
-          הודעות עסקיות
+          Business Messages
         </Box>
         {conversations.length === 0 && (
           <Box sx={{ p: 3, color: "#bbb", textAlign: "center" }}>
-            אין שיחות עסקיות
+            No business conversations
           </Box>
         )}
         {conversations
@@ -427,7 +428,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             const otherId = getOtherBusinessId(conv, myBusinessId);
             const partner =
               conv.participantsInfo?.find((b) => b._id.toString() === otherId) || {
-                businessName: "עסק",
+                businessName: "Business",
               };
             const lastMsg = conv.messages?.[conv.messages.length - 1]?.text || "";
 
@@ -457,7 +458,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {lastMsg || "אין הודעות"}
+                  {lastMsg || "No messages"}
                 </Box>
               </Box>
             );
@@ -485,10 +486,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                     fontSize: 17,
                   }}
                 >
-                  שיחה עם{" "}
+                  Conversation with{" "}
                   {selectedConversation.participantsInfo?.find(
                     (b) => b._id.toString() !== myBusinessId.toString()
-                  )?.businessName || "עסק"}
+                  )?.businessName || "Business"}
                 </Box>
                 {messages.map((msg, i) => {
                   const fromId = msg.fromBusinessId || msg.from || msg.fromId;
@@ -520,7 +521,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                           borderBottomRightRadius: 16,
                         }}
                       >
-                        <Box>{msg?.text ?? "[אין טקסט להציג]"}</Box>
+                        <Box>{msg?.text ?? "[No text to display]"}</Box>
                         <Box
                           sx={{
                             fontSize: 11,
@@ -546,12 +547,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               </>
             ) : (
               <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
-                {error || "אין הודעות בשיחה זו"}
+                {error || "No messages in this conversation"}
               </Box>
             )
           ) : (
             <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
-              בחרי שיחה עסקית מהעמודה הימנית
+              Select a business conversation from the right column
             </Box>
           )}
         </Box>
@@ -576,7 +577,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             <TextField
               fullWidth
               size="medium"
-              placeholder="כתוב הודעה..."
+              placeholder="Type a message..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               autoComplete="off"
@@ -615,7 +616,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               }}
               disabled={!input.trim()}
             >
-              שלח
+              Send
             </Button>
           </form>
         )}
@@ -629,3 +630,4 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     </Box>
   );
 }
+```

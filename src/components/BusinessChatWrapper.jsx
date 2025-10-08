@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -31,7 +32,7 @@ export default function BusinessChatWrapper() {
         return;
       }
 
-      // כאן שולחים את הפונקציה getValidAccessToken, לא את הטוקן עצמו!
+      // Here we send the function getValidAccessToken, not the token itself!
       const sock = await createSocket(getValidAccessToken, logout, businessId);
       if (!sock) return;
 
@@ -155,9 +156,10 @@ export default function BusinessChatWrapper() {
             color: "#b5b5b5",
           }}
         >
-          בחר שיחה כדי לראות הודעות
+          Select a conversation to see messages
         </div>
       )}
     </div>
   );
 }
+```

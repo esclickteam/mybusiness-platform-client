@@ -1,3 +1,4 @@
+```javascript
 // src/components/GalleryUploader.jsx
 import React, { useState } from "react";
 import axios from "axios";
@@ -20,10 +21,10 @@ export default function GalleryUploader({ onUploaded }) {
       const res = await axios.put("/business/my/gallery", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      onUploaded(res.data.gallery); // מערך של URLs
+      onUploaded(res.data.gallery); // Array of URLs
     } catch (err) {
       console.error(err);
-      alert("שגיאה בהעלאת גלריה");
+      alert("Error uploading gallery");
     } finally {
       setUploading(false);
     }
@@ -38,8 +39,9 @@ export default function GalleryUploader({ onUploaded }) {
         onChange={handleChange}
       />
       <button onClick={handleUpload} disabled={uploading}>
-        {uploading ? "טוען…" : "העלה גלריה"}
+        {uploading ? "Uploading…" : "Upload Gallery"}
       </button>
     </div>
   );
 }
+```

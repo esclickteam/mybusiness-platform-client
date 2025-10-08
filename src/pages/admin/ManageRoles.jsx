@@ -1,3 +1,4 @@
+```javascript
 // src/pages/admin/ManageRoles.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -15,16 +16,16 @@ function ManageRoles() {
   });
   const [searchTerm, setSearchTerm] = useState("");
 
-  // טוען את המשתמשים מהשרת בהתחלה
+  // Loads users from the server initially
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const res = await API.get("/admin/users");
-        console.log("📦 משתמשים מהשרת:", res.data);
+        console.log("📦 Users from server:", res.data);
         setUsers(res.data);
       } catch (err) {
-        console.error("❌ שגיאה בטעינת משתמשים:", err);
-        alert("❌ שגיאה בטעינת המשתמשים");
+        console.error("❌ Error loading users:", err);
+        alert("❌ Error loading users");
       }
     };
     fetchUsers();
@@ -37,45 +38,45 @@ function ManageRoles() {
 
   const handleAdd = async () => {
     if (!form.name || !form.username || !form.email) {
-      alert("יש למלא את כל השדות");
+      alert("All fields must be filled");
       return;
     }
     try {
       const res = await API.post("/admin/create-user", form);
       const { userId, tempPassword } = res.data;
-      alert(`✅ המשתמש נוצר בהצלחה!\nסיסמה זמנית: ${tempPassword}`);
+      alert(`✅ User created successfully!\nTemporary password: ${tempPassword}`);
       setUsers((prev) => [...prev, { ...form, _id: userId }]);
       setForm({ name: "", username: "", email: "", phone: "", role: "worker" });
     } catch (err) {
-      console.error("❌ שגיאה ביצירת משתמש:", err);
-      alert(err.response?.data?.error || "❌ שגיאה ביצירת המשתמש");
+      console.error("❌ Error creating user:", err);
+      alert(err.response?.data?.error || "❌ Error creating user");
     }
   };
 
   const handleReset = async (userId) => {
-    const newPassword = prompt("הזן סיסמה חדשה (לפחות 6 תווים):", "12345678");
+    const newPassword = prompt("Enter a new password (at least 6 characters):", "12345678");
     if (!newPassword || newPassword.length < 6) {
-      alert("סיסמה לא תקינה");
+      alert("Invalid password");
       return;
     }
     try {
       await API.put("/admin/users/reset-user-password", { userId, newPassword });
-      alert(`✅ הסיסמה אופסה ל: ${newPassword}`);
+      alert(`✅ Password reset to: ${newPassword}`);
     } catch (err) {
-      console.error("❌ שגיאה באיפוס סיסמה:", err);
-      alert(err.response?.data?.error || "❌ שגיאה באיפוס הסיסמה");
+      console.error("❌ Error resetting password:", err);
+      alert(err.response?.data?.error || "❌ Error resetting password");
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("האם אתה בטוח שברצונך למחוק משתמש זה?")) return;
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       await API.delete(`/admin/users/${id}`);
       setUsers((prev) => prev.filter((u) => u._id !== id));
-      alert("✅ המשתמש נמחק בהצלחה");
+      alert("✅ User deleted successfully");
     } catch (err) {
-      console.error("❌ שגיאה במחיקת משתמש:", err);
-      alert(err.response?.data?.error || "❌ שגיאה במחיקת המשתמש");
+      console.error("❌ Error deleting user:", err);
+      alert(err.response?.data?.error || "❌ Error deleting user");
     }
   };
 
@@ -86,52 +87,52 @@ function ManageRoles() {
 
   return (
     <div className="manage-roles">
-      <h1>🔐 ניהול משתמשים ותפקידים</h1>
+      <h1>🔐 User and Role Management</h1>
       <Link to="/admin/dashboard" className="back-dashboard">
-        🔙 חזרה לדשבורד
+        🔙 Back to Dashboard
       </Link>
 
       <div className="role-form">
         <input
           type="text"
           name="name"
-          placeholder="שם מלא"
+          placeholder="Full Name"
           value={form.name}
           onChange={handleChange}
         />
         <input
           type="text"
           name="username"
-          placeholder="שם משתמש ייחודי"
+          placeholder="Unique Username"
           value={form.username}
           onChange={handleChange}
         />
         <input
           type="email"
           name="email"
-          placeholder="אימייל"
+          placeholder="Email"
           value={form.email}
           onChange={handleChange}
         />
         <input
           type="tel"
           name="phone"
-          placeholder="טלפון"
+          placeholder="Phone"
           value={form.phone}
           onChange={handleChange}
         />
         <select name="role" value={form.role} onChange={handleChange}>
-          <option value="worker">עובד</option>
-          <option value="manager">מנהל</option>
-          <option value="admin">אדמין</option>
+          <option value="worker">Worker</option>
+          <option value="manager">Manager</option>
+          <option value="admin">Admin</option>
         </select>
-        <button onClick={handleAdd}>➕ הוסף משתמש</button>
+        <button onClick={handleAdd}>➕ Add User</button>
       </div>
 
       <div className="user-search-box">
         <input
           type="text"
-          placeholder="🔍 חפש לפי שם, שם משתמש או טלפון..."
+          placeholder="🔍 Search by name, username, or phone..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -140,12 +141,12 @@ function ManageRoles() {
       <table className="users-table">
         <thead>
           <tr>
-            <th>שם</th>
-            <th>שם משתמש</th>
-            <th>אימייל</th>
-            <th>טלפון</th>
-            <th>תפקיד</th>
-            <th>פעולות</th>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -158,7 +159,7 @@ function ManageRoles() {
               <td>{user.role}</td>
               <td>
                 <button onClick={() => handleDelete(user._id)}>🗑️</button>
-                <button onClick={() => handleReset(user._id)}>🔄 איפוס סיסמה</button>
+                <button onClick={() => handleReset(user._id)}>🔄 Reset Password</button>
               </td>
             </tr>
           ))}
@@ -169,3 +170,4 @@ function ManageRoles() {
 }
 
 export default ManageRoles;
+```

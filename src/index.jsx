@@ -1,3 +1,4 @@
+```javascript
 import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -9,17 +10,17 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 import useIdleLogout from "./hooks/useIdleLogout";  
 import "./styles/index.css";
 
-// Polyfill ל‑Buffer (חלק מהספריות דורשות)
+// Polyfill for Buffer (some libraries require it)
 import { Buffer } from "buffer";
 if (!window.Buffer) window.Buffer = Buffer;
 
 const queryClient = new QueryClient();
 const App = lazy(() => import("./App"));
 
-// קומפוננטה לעטיפת ה-App עם idle logout
+// Component to wrap the App with idle logout
 function AppWithIdleLogout() {
   const { logout } = useAuth();
-  useIdleLogout(logout, 10 * 60 * 1000); // יציאה אחרי 10 דקות אי פעילות
+  useIdleLogout(logout, 10 * 60 * 1000); // logout after 10 minutes of inactivity
   return <App />;
 }
 
@@ -38,3 +39,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </BrowserRouter>
   </React.StrictMode>
 );
+```

@@ -11,14 +11,14 @@ export default function FaqSection({ currentUser, renderTopBar }) {
   useEffect(() => {
     API.get("/business/my/faqs")
       .then(res => {
-        // תמיכה גם בתשובה מסוג { faqs: [...] } וגם מערך ישיר
+        // Support for both a response of the type { faqs: [...] } and a direct array
         const faqsArr =
           Array.isArray(res.data)
             ? res.data
             : (Array.isArray(res.data.faqs) ? res.data.faqs : []);
         setFaqs(faqsArr);
       })
-      .catch(err => console.error("❌ שגיאה בטעינת שאלות:", err));
+      .catch(err => console.error("❌ Error loading questions:", err));
   }, []);
 
   return (
@@ -35,7 +35,7 @@ export default function FaqSection({ currentUser, renderTopBar }) {
         {renderTopBar && renderTopBar()}
         <FaqTab
           faqs={faqs}
-          setFaqs={() => {}} // בפועל ב־preview לא צריך לשנות state
+          setFaqs={() => {}} // In preview mode, there's no need to change state
           isPreview={true}
           currentUser={currentUser}
         />

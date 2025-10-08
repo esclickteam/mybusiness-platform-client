@@ -1,3 +1,4 @@
+```javascript
 // src/components/FaqTab.jsx
 "use client";
 
@@ -6,13 +7,13 @@ import '../build/Build.css';
 import './FaqTab.css';
 import API from '@api';
 
-// ערך דיפולטי בטוח ל־setFaqs!
+// Default safe value for setFaqs!
 const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
-  // DEBUG: תראה בקונסולה בכל Mount מה קיבלת
+  // DEBUG: Log to console on every mount what you received
   React.useEffect(() => {
     console.log("FaqTab mount! faqs:", faqs, "setFaqs typeof:", typeof setFaqs);
     if (typeof setFaqs !== "function") {
-      console.error("❌ setFaqs שהועבר ל־FaqTab הוא לא פונקציה!", setFaqs);
+      console.error("❌ setFaqs passed to FaqTab is not a function!", setFaqs);
     }
   }, [faqs, setFaqs]);
 
@@ -21,7 +22,7 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
   const [editFaqId, setEditFaqId] = useState(null);
   const [editedFaq, setEditedFaq] = useState({ question: '', answer: '' });
 
-  // ודא ש־faqs תמיד מערך
+  // Ensure faqs is always an array
   const safeFaqs = Array.isArray(faqs) ? faqs : [];
 
   const toggleAnswer = (id) => {
@@ -45,10 +46,10 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
     try {
       const response = await API.post('/business/my/faqs', { question, answer });
       const added = response.data.faq ?? response.data;
-      setFaqs(prev => [added, ...(prev || [])]); // הגנה: prev תמיד מערך
+      setFaqs(prev => [added, ...(prev || [])]); // Protection: prev is always an array
       setNewFaq({ question: '', answer: '' });
     } catch (err) {
-      console.error('❌ שגיאה בהוספת שאלה:', err);
+      console.error('❌ Error adding question:', err);
     }
   };
 
@@ -57,7 +58,7 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
       await API.delete(`/business/my/faqs/${id}`);
       setFaqs(prev => (prev || []).filter(faq => (faq.faqId ?? faq._id) !== id));
     } catch (err) {
-      console.error('❌ שגיאה במחיקת שאלה:', err);
+      console.error('❌ Error deleting question:', err);
     }
   };
 
@@ -76,7 +77,7 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
       setEditFaqId(null);
       setEditedFaq({ question: '', answer: '' });
     } catch (err) {
-      console.error('❌ שגיאה בשמירת עריכה:', err);
+      console.error('❌ Error saving edit:', err);
     }
   };
 
@@ -88,10 +89,10 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
         answer: f.answer
       }));
       await API.put('/business/my/faqs', { faqs: payload });
-      alert('✅ כל השאלות נשמרו!');
+      alert('✅ All questions saved!');
     } catch (err) {
-      console.error('❌ שגיאה בשמירה:', err);
-      alert('❌ שגיאה בשמירה');
+      console.error('❌ Error saving:', err);
+      alert('❌ Error saving');
     }
   };
 
@@ -99,31 +100,31 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
     <div className="faq-tab">
       {!isPreview && (
         <>
-          <h2>הוספת שאלה ותשובה</h2>
+          <h2>Add Question and Answer</h2>
           <form onSubmit={handleSubmit} className="faq-form">
             <input
               type="text"
               name="question"
-              placeholder="שאלה"
+              placeholder="Question"
               value={newFaq.question}
               onChange={handleChange}
             />
             <textarea
               name="answer"
-              placeholder="תשובה"
+              placeholder="Answer"
               value={newFaq.answer}
               onChange={handleChange}
             />
-            <button type="submit">הוסף</button>
+            <button type="submit">Add</button>
           </form>
           <hr />
         </>
       )}
 
-      <h3>שאלות ותשובות</h3>
+      <h3>Questions and Answers</h3>
       <div className="faq-list">
         {safeFaqs.length === 0 ? (
-          <p>אין עדיין שאלות</p>
+          <p>No questions yet</p>
         ) : (
           safeFaqs.map(faq => {
             const id = faq.faqId ?? faq._id;
@@ -138,13 +139,13 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
                         setEditedFaq({ question: faq.question, answer: faq.answer });
                       }}
                     >
-                      ✏️ ערוך
+                      ✏️ Edit
                     </button>
                     <button
                       className="inline-btn delete"
                       onClick={() => handleDelete(id)}
                     >
-                      🗑️ מחק
+                      🗑️ Delete
                     </button>
                   </div>
                 )}
@@ -155,34 +156,34 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
                       type="text"
                       value={editedFaq.question}
                       onChange={e => setEditedFaq(prev => ({ ...prev, question: e.target.value }))}
-                      placeholder="עדכן את השאלה"
+                      placeholder="Update the question"
                     />
                     <textarea
                       value={editedFaq.answer}
                       onChange={e => setEditedFaq(prev => ({ ...prev, answer: e.target.value }))}
-                      placeholder="עדכן את התשובה"
+                      placeholder="Update the answer"
                     />
                     <button
                       className="save-edit-btn"
                       onClick={() => handleSaveEdit(id)}
                     >
-                      💾 שמור עריכה
+                      💾 Save Edit
                     </button>
                   </div>
                 ) : (
                   <>
                     <div className="faq-header">
-                      <strong>שאלה:</strong> {faq.question}
+                      <strong>Question:</strong> {faq.question}
                     </div>
                     <button
                       onClick={() => toggleAnswer(id)}
                       className="toggle-answer-btn"
                     >
-                      {openAnswers.includes(id) ? 'הסתר תשובה' : 'הצג תשובה'}
+                      {openAnswers.includes(id) ? 'Hide Answer' : 'Show Answer'}
                     </button>
                     {openAnswers.includes(id) && (
                       <div className="faq-answer-wrapper open">
-                        <p><strong>תשובה:</strong> {faq.answer}</p>
+                        <p><strong>Answer:</strong> {faq.answer}</p>
                       </div>
                     )}
                   </>
@@ -195,7 +196,7 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
 
       {!isPreview && safeFaqs.length > 0 && (
         <button className="save-all-button" onClick={saveFaqsToServer}>
-          💾 שמור הכל
+          💾 Save All
         </button>
       )}
     </div>
@@ -203,3 +204,4 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
 };
 
 export default FaqTab;
+```

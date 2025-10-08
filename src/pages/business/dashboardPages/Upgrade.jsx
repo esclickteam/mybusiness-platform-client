@@ -3,8 +3,8 @@ import React from "react";
 const Upgrade = () => {
   return (
     <div>
-      <h2>שדרוג מנוי</h2>
-      {/* תוכן */}
+      <h2>Subscription Upgrade</h2>
+      {/* Content */}
     </div>
   );
 };

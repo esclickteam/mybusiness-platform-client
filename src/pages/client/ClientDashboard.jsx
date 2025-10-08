@@ -1,3 +1,4 @@
+```javascript
 // src/pages/client/ClientDashboard.jsx
 import React from "react";
 import { NavLink, Link, Outlet } from "react-router-dom";
@@ -9,23 +10,23 @@ export default function ClientDashboard() {
 
   return (
     <div className="client-dashboard">
-      <h1 className="client-dashboard-title">שלום {user.name} 👋</h1>
-      <p className="client-dashboard-subtitle">מה תרצה לעשות היום?</p>
+      <h1 className="client-dashboard-title">Hello {user.name} 👋</h1>
+      <p className="client-dashboard-subtitle">What would you like to do today?</p>
 
       <div className="client-tabs">
-        {/* החלפתי NavLink ל-Link עם נתיב חיצוני */}
+        {/* I replaced NavLink with Link with an external path */}
         <Link to="/search" className="client-tab-button">
-          🔎 חיפוש עסקים
+          🔎 Business Search
         </Link>
 
-        {/* שאר הטאבים נשארים כמו שהם */}
+        {/* The rest of the tabs remain as they are */}
         <NavLink
           to="orders"
           className={({ isActive }) =>
             `client-tab-button ${isActive ? "active" : ""}`
           }
         >
-          📄 הפגישות שלי
+          📄 My Appointments
         </NavLink>
 
         <NavLink
@@ -34,7 +35,7 @@ export default function ClientDashboard() {
             `client-tab-button ${isActive ? "active" : ""}`
           }
         >
-          💬 ההודעות שלי
+          💬 My Messages
         </NavLink>
 
         <NavLink
@@ -43,7 +44,7 @@ export default function ClientDashboard() {
             `client-tab-button ${isActive ? "active" : ""}`
           }
         >
-          ⭐ מועדפים
+          ⭐ Favorites
         </NavLink>
       </div>
 
@@ -53,3 +54,4 @@ export default function ClientDashboard() {
     </div>
   );
 }
+```

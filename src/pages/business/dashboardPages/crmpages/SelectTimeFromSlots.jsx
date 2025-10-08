@@ -1,3 +1,4 @@
+```javascript
 import React, { useEffect, useState } from "react";
 import API from "@api";
 
@@ -7,16 +8,16 @@ const SelectTimeFromSlots = ({
   onChange,
   businessId,
   serviceId,
-  schedule = [], // לוח זמנים עובר כפרופ
+  schedule = [], // Schedule passed as a prop
 }) => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loading, setLoading] = useState(false);
   const [localSelectedTime, setLocalSelectedTime] = useState(selectedTime || "");
 
-  // פונקציה לבדיקת תקינות לוח הזמנים ליום המבוקש
+  // Function to check the validity of the schedule for the requested day
   const isDayValid = (schedule, date) => {
     if (!schedule || schedule.length === 0) return false;
-    const dayOfWeek = new Date(date).getDay(); // 0=ראשון, 6=שבת
+    const dayOfWeek = new Date(date).getDay(); // 0=Sunday, 6=Saturday
     const daySchedule = schedule.find(s => Number(s.day) === dayOfWeek);
     return daySchedule && daySchedule.start && daySchedule.end;
   };
@@ -29,7 +30,7 @@ const SelectTimeFromSlots = ({
     }
 
     if (!isDayValid(schedule, date)) {
-      // אם אין לוח זמנים תקף ליום זה, לא נטען משבצות
+      // If there is no valid schedule for this day, do not load slots
       setAvailableSlots([]);
       setLocalSelectedTime("");
       return;
@@ -53,14 +54,14 @@ const SelectTimeFromSlots = ({
     fetchSlots();
   }, [businessId, serviceId, date, schedule]);
 
-  // סנכרון שינוי selectedTime חיצוני עם מצב מקומי
+  // Synchronize external selectedTime change with local state
   useEffect(() => {
     setLocalSelectedTime(selectedTime || "");
   }, [selectedTime]);
 
-  if (loading) return <p>טוען זמני פגישה...</p>;
-  if (!date) return <p>יש לבחור תאריך תחילה</p>;
-  if (availableSlots.length === 0) return <p>אין משבצות זמינות בתאריך זה</p>;
+  if (loading) return <p>Loading appointment times...</p>;
+  if (!date) return <p>Please select a date first</p>;
+  if (availableSlots.length === 0) return <p>No available slots on this date</p>;
 
   const handleTimeSelect = (time) => {
     setLocalSelectedTime(time);
@@ -74,12 +75,12 @@ const SelectTimeFromSlots = ({
 
   return (
     <div className="time-select-wrapper">
-      <label>שעה:</label>
+      <label>Time:</label>
       {localSelectedTime ? (
         <div>
-          <span>השעה שנבחרה: {localSelectedTime}</span>
+          <span>Selected time: {localSelectedTime}</span>
           <button onClick={handleChangeTime} style={{ marginLeft: "10px" }}>
-            שנה שעה
+            Change time
           </button>
         </div>
       ) : (
@@ -87,7 +88,7 @@ const SelectTimeFromSlots = ({
           value={localSelectedTime}
           onChange={(e) => handleTimeSelect(e.target.value)}
         >
-          <option value="">בחר שעה</option>
+          <option value="">Select time</option>
           {availableSlots.map((time) => (
             <option key={time} value={time}>
               {time}
@@ -100,3 +101,4 @@ const SelectTimeFromSlots = ({
 };
 
 export default SelectTimeFromSlots;
+```

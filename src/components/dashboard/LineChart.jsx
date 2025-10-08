@@ -1,3 +1,4 @@
+```javascript
 import React from "react";
 import {
   LineChart,
@@ -22,8 +23,8 @@ const LineChartComponent = ({ stats }) => {
   if (!isValidStats) {
     return (
       <div style={{ textAlign: "center", marginTop: 30 }}>
-        <h3>📈 פעילות בשבוע האחרון</h3>
-        <p>אין נתונים להצגה</p>
+        <h3>📈 Activity in the Last Week</h3>
+        <p>No data to display</p>
       </div>
     );
   }
@@ -37,7 +38,7 @@ const LineChartComponent = ({ stats }) => {
 
   return (
     <div className="chart-container" style={{ marginTop: 30 }}>
-      <h3 style={{ textAlign: "center" }}>📈 פעילות בשבוע האחרון</h3>
+      <h3 style={{ textAlign: "center" }}>📈 Activity in the Last Week</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart
           data={data}
@@ -53,21 +54,21 @@ const LineChartComponent = ({ stats }) => {
             dataKey="views"
             stroke="#6a5acd"
             strokeWidth={2}
-            name="צפיות"
+            name="Views"
           />
           <Line
             type="monotone"
             dataKey="requests"
             stroke="#ffa07a"
             strokeWidth={2}
-            name="פניות"
+            name="Requests"
           />
           <Line
             type="monotone"
             dataKey="orders"
             stroke="#90ee90"
             strokeWidth={2}
-            name="הזמנות"
+            name="Orders"
           />
         </LineChart>
       </ResponsiveContainer>
@@ -76,3 +77,4 @@ const LineChartComponent = ({ stats }) => {
 };
 
 export default LineChartComponent;
+```

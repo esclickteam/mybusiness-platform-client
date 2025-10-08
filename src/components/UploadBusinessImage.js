@@ -1,3 +1,4 @@
+```javascript
 import React, { useState } from "react";
 
 const UploadBusinessImage = ({ businessId }) => {
@@ -5,15 +6,15 @@ const UploadBusinessImage = ({ businessId }) => {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
 
-  // פונקציה לשינוי קובץ (לוגו או גלריה)
+  // Function to change file (logo or gallery)
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
-  // פונקציה להעלאת קובץ ל־Cloudinary
+  // Function to upload file to Cloudinary
   const handleUpload = async () => {
     if (!file) {
-      alert("נא לבחור קובץ להעלאה");
+      alert("Please select a file to upload");
       return;
     }
 
@@ -21,7 +22,7 @@ const UploadBusinessImage = ({ businessId }) => {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "unsigned_business"); // preset שהגדרת ב־Cloudinary
+    formData.append("upload_preset", "unsigned_business"); // preset you defined in Cloudinary
 
     try {
       const res = await fetch("https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload", {
@@ -31,23 +32,23 @@ const UploadBusinessImage = ({ businessId }) => {
 
       const data = await res.json();
       if (data.secure_url) {
-        setImageUrl(data.secure_url); // עדכון ה-URL של התמונה
-        alert("התמונה הועלתה בהצלחה!");
+        setImageUrl(data.secure_url); // Update the image URL
+        alert("Image uploaded successfully!");
 
-        // שליחה לעדכון במסד הנתונים
-        await updateLogo(data.secure_url); // עדכון הלוגו ב-Backend
+        // Send to update in the database
+        await updateLogo(data.secure_url); // Update the logo in the Backend
       } else {
-        alert("שגיאה: לא התקבל URL לתמונה");
+        alert("Error: No URL received for the image");
       }
     } catch (error) {
-      console.error("שגיאה בהעלאת הקובץ:", error);
-      alert("הייתה שגיאה בהעלאת הקובץ");
+      console.error("Error uploading the file:", error);
+      alert("There was an error uploading the file");
     } finally {
       setLoading(false);
     }
   };
 
-  // שליחה של ה-URL לעדכון הלוגו במסד הנתונים
+  // Sending the URL to update the logo in the database
   const updateLogo = async (url) => {
     try {
       const res = await fetch(`/business/${businessId}/logo`, {
@@ -60,13 +61,13 @@ const UploadBusinessImage = ({ businessId }) => {
 
       const data = await res.json();
       if (data.logo) {
-        alert("הלוגו עודכן בהצלחה!");
+        alert("Logo updated successfully!");
       } else {
-        alert("שגיאה בעדכון הלוגו");
+        alert("Error updating the logo");
       }
     } catch (error) {
-      console.error("שגיאה בעדכון הלוגו:", error);
-      alert("הייתה שגיאה בעדכון הלוגו");
+      console.error("Error updating the logo:", error);
+      alert("There was an error updating the logo");
     }
   };
 
@@ -74,12 +75,12 @@ const UploadBusinessImage = ({ businessId }) => {
     <div>
       <input type="file" onChange={handleFileChange} />
       <button onClick={handleUpload} disabled={loading}>
-        {loading ? "ממתין להעלאה..." : "העלה תמונה"}
+        {loading ? "Waiting for upload..." : "Upload Image"}
       </button>
 
       {imageUrl && (
         <div>
-          <h3>התמונה שהועלתה:</h3>
+          <h3>Uploaded Image:</h3>
           <img src={imageUrl} alt="Uploaded Business Image" style={{ width: "300px" }} />
         </div>
       )}
@@ -88,3 +89,4 @@ const UploadBusinessImage = ({ businessId }) => {
 };
 
 export default UploadBusinessImage;
+```

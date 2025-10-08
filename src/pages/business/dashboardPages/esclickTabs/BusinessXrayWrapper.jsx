@@ -1,7 +1,8 @@
+```javascript
 import React, { useState } from "react";
 import XrayTab from "./XrayTab";
 import BusinessXrayReport from "./BusinessXrayReport";
-import "./BusinessXrayReport.css"; // להבטיח שיש עיצוב לכפתור ול־report
+import "./BusinessXrayReport.css"; // Ensure there is styling for the button and the report
 
 const BusinessXrayWrapper = () => {
   const [reportData, setReportData] = useState(null);
@@ -27,8 +28,8 @@ const BusinessXrayWrapper = () => {
       const result = await response.json();
       setReportData(result);
     } catch (error) {
-      console.error("שגיאה בשליחת השאלון:", error);
-      alert("אירעה שגיאה בשליחת השאלון. נסה/י שוב מאוחר יותר.");
+      console.error("Error submitting the questionnaire:", error);
+      alert("An error occurred while submitting the questionnaire. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -51,7 +52,7 @@ const BusinessXrayWrapper = () => {
           />
           <div className="xray-reset-row">
             <button onClick={handleReset} className="xray-reset-btn">
-              🔁 התחלה מחדש
+              🔁 Restart
             </button>
           </div>
         </>
@@ -61,3 +62,4 @@ const BusinessXrayWrapper = () => {
 };
 
 export default BusinessXrayWrapper;
+```

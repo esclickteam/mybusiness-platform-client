@@ -1,3 +1,4 @@
+```javascript
 import React from "react";
 import { useNotifications } from "../context/NotificationsContext";
 
@@ -8,7 +9,7 @@ export default function Notifications({ onClose }) {
     console.log("🔔 raw notifications:", notifications);
   }, [notifications]);
 
-  // dedupe לפי threadId/ id
+  // dedupe by threadId/ id
   const dedupedNotifications = React.useMemo(() => {
     const map = new Map();
     for (const notif of notifications) {
@@ -88,22 +89,22 @@ export default function Notifications({ onClose }) {
           fontWeight: 700,
         }}
       >
-        התראות
+        Notifications
         {dedupedNotifications.length > 0 && (
           <button onClick={handleClear} style={buttonStyle}>
-            ניקוי כל ההתראות
+            Clear all notifications
           </button>
         )}
       </div>
 
       {/* Body */}
       {dedupedNotifications.length === 0 ? (
-        <div style={{ padding: 15, textAlign: "center" }}>אין התראות</div>
+        <div style={{ padding: 15, textAlign: "center" }}>No notifications</div>
       ) : (
         dedupedNotifications.map((notif) => {
           const key = notif.threadId || notif.id;
 
-          // ✅ צבע שונה למשימות
+          // ✅ Different color for tasks
           const isTaskReminder = notif.type === "taskReminder";
 
           return (
@@ -115,7 +116,7 @@ export default function Notifications({ onClose }) {
                 borderBottom: "1px solid #eee",
                 fontWeight: notif.read ? "normal" : "700",
                 backgroundColor: isTaskReminder
-                  ? "#fff7e6" // כתום בהיר למשימות
+                  ? "#fff7e6" // Light orange for tasks
                   : notif.read
                   ? "white"
                   : "#e8f4ff",
@@ -157,7 +158,7 @@ export default function Notifications({ onClose }) {
                       fontSize: 14,
                       fontWeight: "bold",
                     }}
-                    aria-label={`${notif.unreadCount} התראות לא נקראו`}
+                    aria-label={`${notif.unreadCount} unread notifications`}
                   >
                     {notif.unreadCount}
                   </div>
@@ -170,3 +171,4 @@ export default function Notifications({ onClose }) {
     </div>
   );
 }
+```

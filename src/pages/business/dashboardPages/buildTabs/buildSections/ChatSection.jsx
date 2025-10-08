@@ -19,7 +19,7 @@ export default function ChatButton({ previewContent, renderTopBar }) {
                 : styles["edit-link-button"]
             }
           >
-            צ'אט עם לקוחות
+            Chat with Customers
           </NavLink>
         </div>
       </div>

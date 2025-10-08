@@ -1,3 +1,4 @@
+```javascript
 import React from "react";
 import PropTypes from 'prop-types';
 import "./ProfileHeader.css";
@@ -22,13 +23,13 @@ const ProfileHeader = ({ businessDetails }) => {
       <div className="profile-header__logo">
         <img
           src={getImageUrl(logo) || "/images/placeholder.jpg"}
-          alt={businessName ? `${businessName} Logo` : "לוגו העסק"}
+          alt={businessName ? `${businessName} Logo` : "Business Logo"}
           className="profile-header__img"
         />
       </div>
       <div className="profile-header__info">
         <h1 className="profile-header__name">
-          {businessName || "שם העסק"}
+          {businessName || "Business Name"}
         </h1>
 
         {averageRating && (
@@ -70,3 +71,4 @@ ProfileHeader.propTypes = {
 };
 
 export default ProfileHeader;
+```

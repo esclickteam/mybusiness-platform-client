@@ -1,6 +1,7 @@
+```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
-import KanbanBoard from "./KanbanBoard"; // ⬅️ ייבוא רכיב הקאנבן
+import KanbanBoard from "./KanbanBoard"; // ⬅️ Importing the Kanban component
 import "./ClientTasksAndNotes.css";
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
@@ -20,39 +21,39 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   const [message, setMessage] = useState(null);
   const [viewMode, setViewMode] = useState("list"); // "list" | "kanban"
 
-  // מיפוי סטטוסים וקדימויות לטקסט קריא + צבעים
+  // Mapping statuses and priorities to readable text + colors
   const statusLabels = {
-    todo: { text: "לביצוע", color: "gray" },
-    in_progress: { text: "בתהליך", color: "orange" },
-    waiting: { text: "ממתין", color: "purple" },
-    completed: { text: "הושלם", color: "green" },
-    cancelled: { text: "בוטל", color: "red" },
+    todo: { text: "To Do", color: "gray" },
+    in_progress: { text: "In Progress", color: "orange" },
+    waiting: { text: "Waiting", color: "purple" },
+    completed: { text: "Completed", color: "green" },
+    cancelled: { text: "Cancelled", color: "red" },
   };
 
   const priorityLabels = {
-    low: { text: "נמוכה", color: "blue" },
-    normal: { text: "רגילה", color: "gray" },
-    high: { text: "גבוהה", color: "orange" },
-    critical: { text: "קריטית", color: "red" },
+    low: { text: "Low", color: "blue" },
+    normal: { text: "Normal", color: "gray" },
+    high: { text: "High", color: "orange" },
+    critical: { text: "Critical", color: "red" },
   };
 
-  // === שליפת תיעודים ===
+  // === Fetching notes ===
   useEffect(() => {
     if (!clientId) return;
     API.get(`/crm-extras/notes/${clientId}`, { params: { businessId } })
       .then((res) => setNotes(res.data))
-      .catch((err) => console.error("שגיאה בשליפת תיעודים", err));
+      .catch((err) => console.error("Error fetching notes", err));
   }, [clientId, businessId]);
 
-  // === שליפת משימות ===
+  // === Fetching tasks ===
   useEffect(() => {
     if (!clientId) return;
     API.get(`/crm-extras/tasks/${clientId}`, { params: { businessId } })
       .then((res) => setTasks(res.data))
-      .catch((err) => console.error("שגיאה בשליפת משימות", err));
+      .catch((err) => console.error("Error fetching tasks", err));
   }, [clientId, businessId]);
 
-  // === הוספת תיעוד חדש ===
+  // === Adding a new note ===
   const handleAddNote = async () => {
     if (!newNote.trim()) return;
     try {
@@ -63,17 +64,17 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       });
       setNotes((prev) => [...prev, res.data]);
       setNewNote("");
-      setMessage("✅ התיעוד נשמר בהצלחה");
+      setMessage("✅ The note was saved successfully");
     } catch (err) {
-      console.error("שגיאה בהוספת תיעוד", err);
-      setMessage("❌ שגיאה בהוספת תיעוד");
+      console.error("Error adding note", err);
+      setMessage("❌ Error adding note");
     }
   };
 
-  // === הוספת/עדכון משימה ===
+  // === Adding/updating a task ===
   const handleSaveTask = async () => {
     if (!newTask.title.trim() || !newTask.dueDate || !newTask.dueTime) {
-      setMessage("⚠️ יש למלא כותרת ותאריך/שעה");
+      setMessage("⚠️ Please fill in the title and date/time");
       return;
     }
 
@@ -91,7 +92,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           prev.map((t) => (t._id === editTaskId ? res.data : t))
         );
         setEditTaskId(null);
-        setMessage("✅ המשימה עודכנה בהצלחה");
+        setMessage("✅ The task was updated successfully");
       } else {
         const res = await API.post("/crm-extras/tasks", {
           clientId,
@@ -100,10 +101,10 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           dueDate: isoDateTime,
         });
         setTasks((prev) => [...prev, res.data]);
-        setMessage("✅ המשימה נוספה בהצלחה");
+        setMessage("✅ The task was added successfully");
       }
 
-      // איפוס טופס
+      // Reset form
       setNewTask({
         title: "",
         description: "",
@@ -114,12 +115,12 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         reminder: "",
       });
     } catch (err) {
-      console.error("שגיאה בשמירת משימה", err);
-      setMessage("❌ שגיאה בשמירת משימה");
+      console.error("Error saving task", err);
+      setMessage("❌ Error saving task");
     }
   };
 
-  // === עריכת משימה קיימת ===
+  // === Editing an existing task ===
   const handleEditTask = (task) => {
     setEditTaskId(task._id);
     setNewTask({
@@ -141,16 +142,16 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     });
   };
 
-  // === מחיקת משימה ===
+  // === Deleting a task ===
   const handleDeleteTask = async (taskId) => {
-    if (!window.confirm("האם למחוק את המשימה?")) return;
+    if (!window.confirm("Are you sure you want to delete the task?")) return;
     try {
       await API.delete(`/crm-extras/tasks/${taskId}`);
       setTasks((prev) => prev.filter((t) => t._id !== taskId));
-      setMessage("🗑️ המשימה נמחקה");
+      setMessage("🗑️ The task was deleted");
     } catch (err) {
-      console.error("שגיאה במחיקת משימה", err);
-      setMessage("❌ שגיאה במחיקת משימה");
+      console.error("Error deleting task", err);
+      setMessage("❌ Error deleting task");
     }
   };
 
@@ -158,11 +159,11 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     <div className="client-extras">
       {message && <div className="feedback-msg">{message}</div>}
 
-      {/* === תיעודים === */}
+      {/* === Notes === */}
       <div className="notes-section">
-        <h3>📝 תיעודים</h3>
+        <h3>📝 Notes</h3>
         {notes.length === 0 ? (
-          <p className="empty-text">אין תיעודים ללקוח</p>
+          <p className="empty-text">No notes for the client</p>
         ) : (
           <ul className="notes-list">
             {notes.map((note) => (
@@ -177,26 +178,26 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         )}
 
         <textarea
-          placeholder="הוסף תיעוד..."
+          placeholder="Add a note..."
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
         />
         <button className="btn-primary" onClick={handleAddNote}>
-          ➕ שמור תיעוד
+          ➕ Save Note
         </button>
       </div>
 
-      {/* === משימות === */}
+      {/* === Tasks === */}
       <div className="tasks-section">
-        <h3>✅ משימות</h3>
+        <h3>✅ Tasks</h3>
 
-        {/* כפתורי מעבר בין רשימה ל-Kanban */}
+        {/* Buttons to switch between list and Kanban */}
         <div className="view-toggle">
           <button
             className={viewMode === "list" ? "active" : ""}
             onClick={() => setViewMode("list")}
           >
-            📋 רשימה
+            📋 List
           </button>
           <button
             className={viewMode === "kanban" ? "active" : ""}
@@ -209,7 +210,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         {viewMode === "list" ? (
           <>
             {tasks.length === 0 ? (
-              <p className="empty-text">אין משימות</p>
+              <p className="empty-text">No tasks</p>
             ) : (
               <ul className="tasks-list">
                 {tasks.map((task) => (
@@ -248,13 +249,13 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                         className="btn-edit"
                         onClick={() => handleEditTask(task)}
                       >
-                        ✏️ ערוך
+                        ✏️ Edit
                       </button>
                       <button
                         className="btn-delete"
                         onClick={() => handleDeleteTask(task._id)}
                       >
-                        🗑 מחק
+                        🗑 Delete
                       </button>
                     </div>
                   </li>
@@ -262,18 +263,18 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               </ul>
             )}
 
-            {/* === טופס יצירה/עריכה === */}
+            {/* === Create/Edit form === */}
             <div className="task-form">
               <input
                 type="text"
-                placeholder="כותרת משימה"
+                placeholder="Task Title"
                 value={newTask.title}
                 onChange={(e) =>
                   setNewTask({ ...newTask, title: e.target.value })
                 }
               />
               <textarea
-                placeholder="תיאור משימה"
+                placeholder="Task Description"
                 value={newTask.description}
                 onChange={(e) =>
                   setNewTask({ ...newTask, description: e.target.value })
@@ -281,7 +282,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               />
 
               <div className="task-datetime">
-                <label>🗓 מועד לביצוע:</label>
+                <label>🗓 Due Date:</label>
                 <input
                   type="date"
                   value={newTask.dueDate}
@@ -298,7 +299,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                 />
               </div>
 
-              <label>⚡ סטטוס:</label>
+              <label>⚡ Status:</label>
               <select
                 value={newTask.status}
                 onChange={(e) =>
@@ -312,7 +313,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                 ))}
               </select>
 
-              <label>🏷 עדיפות:</label>
+              <label>🏷 Priority:</label>
               <select
                 value={newTask.priority}
                 onChange={(e) =>
@@ -327,7 +328,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               </select>
 
               <button className="btn-primary" onClick={handleSaveTask}>
-                {editTaskId ? "💾 עדכן משימה" : "➕ הוסף משימה"}
+                {editTaskId ? "💾 Update Task" : "➕ Add Task"}
               </button>
             </div>
           </>
@@ -338,3 +339,4 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     </div>
   );
 }
+```

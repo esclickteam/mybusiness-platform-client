@@ -1,11 +1,12 @@
+```javascript
 import React, { useState, useEffect } from "react";
-import API from "../api"; // נניח שזו הספרייה שלך לשליחת בקשות ל-API
+import API from "../api"; // Assume this is your library for sending API requests
 
 export default function EmployeeDashboard() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // טעינת פרטי העובדים
+  // Loading employee details
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -34,7 +35,7 @@ export default function EmployeeDashboard() {
     }
   };
 
-  // זמן בשיחה וזמן בהפסקה
+  // Time in call and time on break
   const updateTime = (employeeId) => {
     setEmployees(prevEmployees =>
       prevEmployees.map(emp =>
@@ -48,26 +49,26 @@ export default function EmployeeDashboard() {
   useEffect(() => {
     const interval = setInterval(() => {
       employees.forEach(emp => updateTime(emp._id));
-    }, 1000); // עדכון כל שנייה
+    }, 1000); // Update every second
 
-    return () => clearInterval(interval); // ניקוי ה־interval
+    return () => clearInterval(interval); // Cleanup the interval
   }, [employees]);
 
   if (loading) {
-    return <div>🔄 טוען נתונים...</div>;
+    return <div>🔄 Loading data...</div>;
   }
 
   return (
     <div className="employee-dashboard">
-      <h2>ניהול עובדים</h2>
+      <h2>Employee Management</h2>
       <table>
         <thead>
           <tr>
-            <th>שם</th>
-            <th>סטטוס</th>
-            <th>זמן בשיחה</th>
-            <th>זמן בהפסקה</th>
-            <th>פעולה</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Time in Call</th>
+            <th>Time on Break</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -78,9 +79,9 @@ export default function EmployeeDashboard() {
               <td>{employee.timeInCall}s</td>
               <td>{employee.timeInBreak}s</td>
               <td>
-                <button onClick={() => handleChangeStatus(employee._id, "inCall")}>התחל שיחה</button>
-                <button onClick={() => handleChangeStatus(employee._id, "onBreak")}>הפסקה</button>
-                <button onClick={() => handleChangeStatus(employee._id, "available")}>זמין</button>
+                <button onClick={() => handleChangeStatus(employee._id, "inCall")}>Start Call</button>
+                <button onClick={() => handleChangeStatus(employee._id, "onBreak")}>Break</button>
+                <button onClick={() => handleChangeStatus(employee._id, "available")}>Available</button>
               </td>
             </tr>
           ))}
@@ -89,3 +90,4 @@ export default function EmployeeDashboard() {
     </div>
   );
 }
+```

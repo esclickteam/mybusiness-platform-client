@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useEffect, useCallback } from "react";
 import API from "../../../../api";
 import "./CollabMarketTab.css";
@@ -28,7 +29,7 @@ function CreateCollabForm({ onSuccess }) {
       setError(null);
       const { title, description, contactName, phone } = formData;
       if (!title.trim() || !description.trim() || !contactName.trim() || !phone.trim()) {
-        setError("אנא מלא את כותרת ההצעה, תיאור, איש קשר וטלפון");
+        setError("Please fill in the proposal title, description, contact person, and phone number");
         return;
       }
 
@@ -73,7 +74,7 @@ function CreateCollabForm({ onSuccess }) {
         if (onSuccess) onSuccess();
       } catch (err) {
         console.error(err);
-        setError("❌ שגיאה בפרסום ההצעה");
+        setError("❌ Error publishing the proposal");
       } finally {
         setLoading(false);
       }
@@ -83,91 +84,91 @@ function CreateCollabForm({ onSuccess }) {
 
   return (
     <form onSubmit={handleSubmit} className="proposal-form">
-      <h3>פרסם שיתוף פעולה חדש</h3>
+      <h3>Post a New Collaboration</h3>
 
       <label>
-        כותרת*:
+        Title*:
         <input
           type="text"
           name="title"
           value={formData.title}
           onChange={handleChange}
           required
-          placeholder="כותרת ההצעה"
+          placeholder="Proposal title"
         />
       </label>
 
       <label>
-        תיאור*:
+        Description*:
         <textarea
           name="description"
           value={formData.description}
           onChange={handleChange}
           required
-          placeholder="תיאור מפורט"
+          placeholder="Detailed description"
         />
       </label>
 
       <label>
-        מה העסק צריך (מופרד בפסיקים):
+        What the business needs (comma separated):
         <input
           type="text"
           name="needs"
           value={formData.needs}
           onChange={handleChange}
-          placeholder="למשל: שותף שיווק, משקיע"
+          placeholder="For example: marketing partner, investor"
         />
       </label>
 
       <label>
-        מה העסק נותן (מופרד בפסיקים):
+        What the business offers (comma separated):
         <input
           type="text"
           name="offers"
           value={formData.offers}
           onChange={handleChange}
-          placeholder="למשל: שותפות ברווח, פרסום משותף"
+          placeholder="For example: profit sharing, joint advertising"
         />
       </label>
 
       <label>
-        איש קשר*:
+        Contact Person*:
         <input
           type="text"
           name="contactName"
           value={formData.contactName}
           onChange={handleChange}
           required
-          placeholder="שם איש קשר"
+          placeholder="Contact person's name"
         />
       </label>
 
       <label>
-        טלפון*:
+        Phone*:
         <input
           type="tel"
           name="phone"
           value={formData.phone}
           onChange={handleChange}
           required
-          placeholder="טלפון ליצירת קשר"
+          placeholder="Contact phone number"
         />
       </label>
 
       <label>
-        תקציב (₪):
+        Budget (₪):
         <input
           type="number"
           name="budget"
           value={formData.budget}
           onChange={handleChange}
           min="0"
-          placeholder="תקציב משוער"
+          placeholder="Estimated budget"
         />
       </label>
 
       <label>
-        תוקף עד:
+        Valid until:
         <input
           type="date"
           name="expiryDate"
@@ -179,7 +180,7 @@ function CreateCollabForm({ onSuccess }) {
       {error && <p className="error-text">{error}</p>}
 
       <button type="submit" disabled={loading} className="save-button">
-        {loading ? "שולח..." : "פרסם שיתוף פעולה"}
+        {loading ? "Sending..." : "Post Collaboration"}
       </button>
     </form>
   );
@@ -218,11 +219,11 @@ export default function CollabMarketTab({ isDevUser }) {
         });
         setCollabMarket(collabs);
       } else {
-        setError("שגיאה בטעינת שיתופי פעולה");
+        setError("Error loading collaborations");
       }
     } catch (err) {
       console.error(err);
-      setError("שגיאה בטעינת שיתופי פעולה");
+      setError("Error loading collaborations");
     } finally {
       setLoading(false);
     }
@@ -245,12 +246,12 @@ export default function CollabMarketTab({ isDevUser }) {
     <div className="collab-market-container">
       <CreateCollabForm onSuccess={() => setRefreshFlag((f) => !f)} />
 
-      <h3 className="collab-title">📣 מרקט שיתופים</h3>
+      <h3 className="collab-title">📣 Collaboration Market</h3>
 
-      {loading && <p>טוען שיתופי פעולה...</p>}
+      {loading && <p>Loading collaborations...</p>}
       {error && <p className="error-text">{error}</p>}
 
-      {!loading && collabMarket.length === 0 && <div>אין שיתופי פעולה להצגה</div>}
+      {!loading && collabMarket.length === 0 && <div>No collaborations to display</div>}
 
       <div className="partners-grid">
         {collabMarket.map((item) => (
@@ -261,16 +262,16 @@ export default function CollabMarketTab({ isDevUser }) {
                 <p className="business-category">{item.title}</p>
                 <p className="business-desc">{item.description}</p>
                 <p>
-                  <strong>מה העסק צריך:</strong> {item.needs.join(", ")}
+                  <strong>What the business needs:</strong> {item.needs.join(", ")}
                 </p>
                 <p>
-                  <strong>מה העסק נותן:</strong> {item.offers.join(", ")}
+                  <strong>What the business offers:</strong> {item.offers.join(", ")}
                 </p>
                 <p>
-                  <strong>תקציב:</strong> ₪{item.budget}
+                  <strong>Budget:</strong> ₪{item.budget}
                 </p>
                 <p>
-                  <strong>תוקף עד:</strong>{" "}
+                  <strong>Valid until:</strong>{" "}
                   {item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : "-"}
                 </p>
                 <div className="collab-card-buttons">
@@ -278,11 +279,11 @@ export default function CollabMarketTab({ isDevUser }) {
                     className="message-box-button secondary"
                     onClick={() => handleViewProfile(item.businessId)}
                   >
-                    צפייה בפרופיל
+                    View Profile
                   </button>
                 </div>
               </div>
-              {/* הלוגו הוסר לפי בקשה */}
+              {/* The logo was removed at the request */}
             </div>
           </div>
         ))}
@@ -290,3 +291,4 @@ export default function CollabMarketTab({ isDevUser }) {
     </div>
   );
 }
+```

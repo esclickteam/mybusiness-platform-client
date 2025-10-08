@@ -1,3 +1,4 @@
+```javascript
 import React, { useState } from "react";
 import API from "../../api";
 import "./AdminAffiliates.css";
@@ -7,7 +8,7 @@ function AdminAffiliates() {
     name: "",
     email: "",
     affiliateId: "",
-    password: "",           // הוספתי שדה סיסמה
+    password: "",           // Added password field
     commissionRate: 0.2,
   });
 
@@ -32,12 +33,12 @@ function AdminAffiliates() {
     setAffiliateUrl(null);
 
     if (!form.name.trim() || !form.affiliateId.trim() || !form.password.trim()) {
-      setError("נא למלא שם, מזהה ייחודי וסיסמה");
+      setError("Please fill in the name, unique identifier, and password");
       setLoading(false);
       return;
     }
     if (form.commissionRate < 0 || form.commissionRate > 1) {
-      setError("אחוז העמלה חייב להיות בין 0 ל-1");
+      setError("The commission rate must be between 0 and 1");
       setLoading(false);
       return;
     }
@@ -45,21 +46,21 @@ function AdminAffiliates() {
     try {
       const res = await API.post("/admin/affiliates", form);
       if (res.data.success) {
-        setMessage("✅ המשווק נוצר בהצלחה!");
+        setMessage("✅ The affiliate was created successfully!");
         setAffiliateUrl(`https://esclick.co.il/affiliate/auto-login/${res.data.affiliate.publicToken}`);
 
         setForm({
           name: "",
           email: "",
           affiliateId: "",
-          password: "",           // איפוס הסיסמה גם
+          password: "",           // Resetting the password as well
           commissionRate: 0.2,
         });
       } else {
-        setError("שגיאה ביצירת המשווק");
+        setError("Error creating the affiliate");
       }
     } catch (err) {
-      setError(err.response?.data?.error || "שגיאה בשרת");
+      setError(err.response?.data?.error || "Server error");
     } finally {
       setLoading(false);
     }
@@ -67,27 +68,27 @@ function AdminAffiliates() {
 
   return (
     <div className="admin-affiliates-container">
-      <h2 className="title">יצירת משווק חדש</h2>
+      <h2 className="title">Create New Affiliate</h2>
 
       {message && <div className="message success">{message}</div>}
       {error && <div className="message error">{error}</div>}
 
       <form onSubmit={handleSubmit} className="affiliate-form">
         <label>
-          שם המשווק*:
+          Affiliate Name*:
           <input
             type="text"
             name="name"
             value={form.name}
             onChange={handleChange}
             required
-            placeholder="לדוגמה: יעל בן-ארי"
+            placeholder="For example: Yael Ben-Ari"
             autoComplete="off"
           />
         </label>
 
         <label>
-          אימייל (אופציונלי):
+          Email (optional):
           <input
             type="email"
             name="email"
@@ -99,33 +100,33 @@ function AdminAffiliates() {
         </label>
 
         <label>
-          מזהה ייחודי (affiliateId)*:
+          Unique Identifier (affiliateId)*:
           <input
             type="text"
             name="affiliateId"
             value={form.affiliateId}
             onChange={handleChange}
             required
-            placeholder="לדוגמה: yael123"
+            placeholder="For example: yael123"
             autoComplete="off"
           />
         </label>
 
         <label>
-          סיסמה*:
+          Password*:
           <input
             type="password"
             name="password"
             value={form.password}
             onChange={handleChange}
             required
-            placeholder="הכנס סיסמה"
+            placeholder="Enter password"
             autoComplete="new-password"
           />
         </label>
 
         <label>
-          אחוז עמלה* (0–1):
+          Commission Rate* (0–1):
           <input
             type="number"
             name="commissionRate"
@@ -139,13 +140,13 @@ function AdminAffiliates() {
         </label>
 
         <button type="submit" disabled={loading} className="submit-btn">
-          {loading ? "שומר..." : "צור משווק"}
+          {loading ? "Saving..." : "Create Affiliate"}
         </button>
       </form>
 
       {affiliateUrl && (
         <div className="affiliate-url-container">
-          כתובת המשווק:{" "}
+          Affiliate URL:{" "}
           <a href={affiliateUrl} target="_blank" rel="noopener noreferrer" className="affiliate-link">
             {affiliateUrl}
           </a>
@@ -156,3 +157,4 @@ function AdminAffiliates() {
 }
 
 export default AdminAffiliates;
+```

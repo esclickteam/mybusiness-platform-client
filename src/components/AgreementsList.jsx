@@ -1,3 +1,4 @@
+```javascript
 import React, { useEffect, useState } from "react";
 import API from "@api";
 
@@ -17,7 +18,7 @@ export default function AgreementsList() {
         const res = await API.get("/partnershipAgreements");
         setAgreements(res.data);
       } catch (err) {
-        setError("שגיאה בטעינת ההסכמים");
+        setError("Error loading agreements");
       } finally {
         setLoading(false);
       }
@@ -27,13 +28,13 @@ export default function AgreementsList() {
 
   const openAgreement = async (agreementId) => {
     try {
-      // המרה למחרוזת תקינה לפני השימוש ב-URL
+      // Convert to a valid string before using in URL
       const idStr = typeof agreementId === "string" ? agreementId : agreementId.toString();
       const res = await API.get(`/partnershipAgreements/${idStr}`);
       setSelectedAgreement(res.data);
       setModalOpen(true);
     } catch {
-      alert("אין לך הרשאה לצפות בהסכם זה או שההסכם לא נמצא");
+      alert("You do not have permission to view this agreement or the agreement was not found");
     }
   };
 
@@ -52,10 +53,10 @@ export default function AgreementsList() {
         padding: 20,
       }}
     >
-      <h2>רשימת הסכמים</h2>
-      {loading && <p>טוען...</p>}
+      <h2>Agreements List</h2>
+      {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {!loading && agreements.length === 0 && <p>אין הסכמים להצגה.</p>}
+      {!loading && agreements.length === 0 && <p>No agreements to display.</p>}
 
       <ul style={{ listStyle: "none", padding: 0 }}>
         {agreements.map((agreement) => (
@@ -76,9 +77,9 @@ export default function AgreementsList() {
           >
             <strong>{agreement.title}</strong> — {agreement.status}
             <br />
-            <small>שלח: {agreement.sender?.businessName || "-"}</small>
+            <small>Sent by: {agreement.sender?.businessName || "-"}</small>
             <br />
-            <small>מקבל: {agreement.receiver?.businessName || "-"}</small>
+            <small>Received by: {agreement.receiver?.businessName || "-"}</small>
           </li>
         ))}
       </ul>
@@ -115,25 +116,25 @@ export default function AgreementsList() {
           >
             <h3>{selectedAgreement.title}</h3>
             <p>
-              <strong>תיאור:</strong> {selectedAgreement.description || "-"}
+              <strong>Description:</strong> {selectedAgreement.description || "-"}
             </p>
             <p>
-              <strong>מצב:</strong> {selectedAgreement.status}
+              <strong>Status:</strong> {selectedAgreement.status}
             </p>
             <p>
-              <strong>עסק ששלח:</strong> {selectedAgreement.sender?.businessName || "-"}
+              <strong>Business that sent:</strong> {selectedAgreement.sender?.businessName || "-"}
             </p>
             <p>
-              <strong>עסק מקבל:</strong> {selectedAgreement.receiver?.businessName || "-"}
+              <strong>Receiving business:</strong> {selectedAgreement.receiver?.businessName || "-"}
             </p>
             <p>
-              <strong>מתחיל בתאריך:</strong>{" "}
+              <strong>Starts on:</strong>{" "}
               {selectedAgreement.startDate
                 ? new Date(selectedAgreement.startDate).toLocaleDateString("he-IL")
                 : "-"}
             </p>
             <p>
-              <strong>מסתיים בתאריך:</strong>{" "}
+              <strong>Ends on:</strong>{" "}
               {selectedAgreement.endDate
                 ? new Date(selectedAgreement.endDate).toLocaleDateString("he-IL")
                 : "-"}
@@ -141,33 +142,33 @@ export default function AgreementsList() {
 
             <hr style={{ margin: "20px 0" }} />
 
-            <h4>חתימות</h4>
+            <h4>Signatures</h4>
 
             <div style={{ marginBottom: 16 }}>
-              <strong>חתימת העסק ששלח:</strong>{" "}
+              <strong>Signature of the sending business:</strong>{" "}
               {selectedAgreement.signatures?.createdBy?.signed ? (
                 <>
-                  ✔️ נחתם ב־
+                  ✔️ Signed on
                   {selectedAgreement.signatures.createdBy.signedAt
                     ? new Date(selectedAgreement.signatures.createdBy.signedAt).toLocaleDateString("he-IL")
                     : "-"}
                 </>
               ) : (
-                "❌ לא נחתם"
+                "❌ Not signed"
               )}
             </div>
 
             <div>
-              <strong>חתימת העסק המקבל:</strong>{" "}
+              <strong>Signature of the receiving business:</strong>{" "}
               {selectedAgreement.signatures?.invitedBusiness?.signed ? (
                 <>
-                  ✔️ נחתם ב־
+                  ✔️ Signed on
                   {selectedAgreement.signatures.invitedBusiness.signedAt
                     ? new Date(selectedAgreement.signatures.invitedBusiness.signedAt).toLocaleDateString("he-IL")
                     : "-"}
                 </>
               ) : (
-                "❌ לא נחתם"
+                "❌ Not signed"
               )}
             </div>
 
@@ -184,7 +185,7 @@ export default function AgreementsList() {
                 fontWeight: "bold",
               }}
             >
-              סגור
+              Close
             </button>
           </div>
         </div>
@@ -192,3 +193,4 @@ export default function AgreementsList() {
     </div>
   );
 }
+```

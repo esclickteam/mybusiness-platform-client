@@ -1,3 +1,4 @@
+```javascript
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API, { setAuthToken } from "../api";
@@ -30,7 +31,7 @@ function normalizeUser(user) {
         ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
         : 0,
 
-    // ✅ גישה אם המשתמש בתקופת ניסיון, שילם, או מחכה להפעלה
+    // ✅ Access if the user is in a trial period, has paid, or is waiting for activation
     hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
 }
@@ -113,7 +114,7 @@ export function AuthProvider({ children }) {
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // ✅ ניווט אחרי התחברות
+      // ✅ Navigation after login
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
@@ -140,8 +141,8 @@ export function AuthProvider({ children }) {
     } catch (e) {
       setError(
         e.response?.status >= 400 && e.response?.status < 500
-          ? "❌ אימייל או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסה שוב"
+          ? "❌ Invalid email or password"
+          : "❌ Server error, please try again"
       );
       setLoading(false);
       throw e;
@@ -172,8 +173,8 @@ export function AuthProvider({ children }) {
     } catch (e) {
       setError(
         e.response?.status >= 400 && e.response?.status < 500
-          ? "❌ שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסה שוב"
+          ? "❌ Invalid username or password"
+          : "❌ Server error, please try again"
       );
       setLoading(false);
       throw e;
@@ -185,7 +186,7 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const { data } = await API.get(`/affiliate/login/${publicToken}`, { withCredentials: true });
-      if (!data.success) throw new Error("משווק לא נמצא");
+      if (!data.success) throw new Error("Affiliate not found");
 
       const freshUser = await refreshUser(true);
       const normalized = freshUser || normalizeUser(data);
@@ -196,7 +197,7 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return normalized;
     } catch (e) {
-      setError(e.message || "שגיאה בכניסה כמשווק");
+      setError(e.message || "Error logging in as an affiliate");
       setLoading(false);
       throw e;
     }
@@ -256,7 +257,7 @@ export function AuthProvider({ children }) {
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
           const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && freshUser.hasAccess; // ✅ שינוי
+          const shouldSkip = isPlans && freshUser.hasAccess; // ✅ Change
           if (!shouldSkip) {
             navigate(savedRedirect, { replace: true });
           }
@@ -264,7 +265,7 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        // ✅ הפניה ישירה לדשבורד אם זה עסק עם businessId ונמצאים בדף הבית
+        // ✅ Direct navigation to dashboard if it's a business with businessId and we are on the homepage
         if (freshUser.role === "business" && freshUser.businessId && location.pathname === "/") {
           navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
         }
@@ -299,7 +300,7 @@ export function AuthProvider({ children }) {
       } catch (err) {
         if ([401, 403].includes(err.response?.status)) {
           await logout();
-          setError("❌ יש להתחבר מחדש");
+          setError("❌ You need to log in again");
         }
         throw err;
       }
@@ -321,3 +322,4 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+```

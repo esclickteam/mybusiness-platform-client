@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useEffect } from "react";
 
 const NotificationsPanel = ({ stats }) => {
@@ -9,39 +10,39 @@ const NotificationsPanel = ({ stats }) => {
 
     const notifications = [];
 
-    // 📅 פגישות קרובות ב־24 שעות
+    // 📅 Upcoming appointments in the next 24 hours
     const upcoming = stats.appointments?.filter((a) => {
       const diff = new Date(a.date) - new Date();
       return diff > 0 && diff < 1000 * 60 * 60 * 24;
     });
 
     if (upcoming?.length) {
-      notifications.push(`📅 יש לך ${upcoming.length} פגישות קרובות ב־24 השעות הקרובות`);
+      notifications.push(`📅 You have ${upcoming.length} upcoming appointments in the next 24 hours`);
     }
 
-    // ⚠️ לידים ישנים
+    // ⚠️ Old leads
     const leads = stats.leads || [];
     const staleLeads = leads.filter((l) => {
       const diff = (new Date() - new Date(l.date)) / (1000 * 60 * 60 * 24);
-      return diff > 3 && l.status !== "נסגר";
+      return diff > 3 && l.status !== "Closed";
     });
 
     if (staleLeads.length > 0) {
-      notifications.push(`⚠️ יש ${staleLeads.length} לידים שלא טופלו מעל 3 ימים`);
+      notifications.push(`⚠️ There are ${staleLeads.length} leads that have not been handled for over 3 days`);
     }
 
-    // ⭐ אין ביקורות
+    // ⭐ No reviews
     if ((stats.reviews_count || 0) === 0) {
-      notifications.push("⭐ עדיין אין ביקורות חדשות לעסק");
+      notifications.push("⭐ There are still no new reviews for the business");
     }
 
-    // 🛒 אין שירותים פעילים (בדיקה לדוגמה)
+    // 🛒 No active services (example check)
     if (!stats.services || Object.keys(stats.services).length === 0) {
-      notifications.push("🛒 אין שירותים מוגדרים בעסק – הוסף כדי למשוך לקוחות");
+      notifications.push("🛒 There are no defined services in the business – add some to attract customers");
     }
 
     if (notifications.length === 0) {
-      notifications.push("✅ הכל תקין! אין התראות כרגע");
+      notifications.push("✅ Everything is fine! There are no notifications at the moment");
     }
 
     setMessages(notifications);
@@ -62,3 +63,4 @@ const NotificationsPanel = ({ stats }) => {
 };
 
 export default NotificationsPanel;
+```

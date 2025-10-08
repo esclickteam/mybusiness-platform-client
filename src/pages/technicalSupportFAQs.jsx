@@ -1,181 +1,182 @@
+```javascript
 import React, { useState } from "react";
 
 const technicalSupportFAQs = [
   {
-    question: "❓ איך לקבל עזרה טכנית?",
+    question: "❓ How to get technical assistance?",
     answer: (
       <>
-        <p>כדי לקבל עזרה טכנית בצורה מהירה ויעילה, מומלץ לבצע את השלבים הבאים:</p>
+        <p>To receive technical assistance quickly and efficiently, it is recommended to follow these steps:</p>
         <ul>
           <li>
-            <b>קרא את המדריכים והשאלות ותשובות במרכז העזרה:</b> במרכז העזרה באתר תמצא מדריכים מפורטים ושאלות ותשובות שמכסים מגוון נושאים ושגיאות נפוצות. קריאתם עשויה לסייע לך לפתור את הבעיה באופן עצמאי וללא צורך בפנייה לתמיכה.
+            <b>Read the guides and FAQs in the help center:</b> In the help center on the website, you will find detailed guides and FAQs covering a variety of topics and common errors. Reading them may help you resolve the issue independently without needing to contact support.
           </li>
           <li>
-            <b>השתמש בבוט התמיכה שלנו:</b> ניתן להתייעץ עם בוט התמיכה באתר שיכול לעזור לך לאבחן ולפתור בעיות שגרתיות במהירות ובקלות.
+            <b>Use our support bot:</b> You can consult the support bot on the website that can help you diagnose and resolve routine issues quickly and easily.
           </li>
           <li>
-            <b>נסה לפתור את הבעיה באופן עצמאי:</b> רוב התקלות והשגיאות הנפוצות במערכת ניתנות לפתרון פשוט על ידי ביצוע צעדים פשוטים כמו רענון הדף, ניקוי מטמון הדפדפן, איפוס סיסמה וכדומה.
+            <b>Try to resolve the issue independently:</b> Most common faults and errors in the system can be resolved simply by performing straightforward steps such as refreshing the page, clearing the browser cache, resetting the password, etc.
           </li>
           <li>
-            <b>פנה לצוות התמיכה במידת הצורך:</b><br />
-            אם לאחר קריאת המדריכים והשימוש בבוט הבעיה עדיין קיימת, תוכל לפנות לצוות התמיכה שלנו.<br />
-            <b>כתובת אימייל:</b> support@esclick.co.il<br />
-            <b>טלפון:</b> מספר הטלפון הרלוונטי<br />
-            בעת הפנייה, מומלץ לצרף תיאור מפורט של הבעיה, צילומי מסך ופרטי מערכת (דפדפן, מכשיר, זמן האירוע) כדי שנוכל לסייע במהירות.
+            <b>Contact the support team if necessary:</b><br />
+            If after reading the guides and using the bot the issue still exists, you can contact our support team.<br />
+            <b>Email address:</b> support@esclick.co.il<br />
+            <b>Phone:</b> Relevant phone number<br />
+            When contacting, it is recommended to include a detailed description of the problem, screenshots, and system details (browser, device, time of the event) so we can assist quickly.
           </li>
         </ul>
       </>
     ),
   },
   {
-    question: "❓ איך לאפס את הסיסמה שלי?",
+    question: "❓ How to reset my password?",
     answer: (
       <>
-        <p>כדי לאפס את הסיסמה שלך ולהחזיר את הגישה לחשבון, פעל לפי השלבים הבאים:</p>
+        <p>To reset your password and regain access to your account, follow these steps:</p>
         <ol>
-          <li>גש לדף ההתחברות של המערכת.</li>
-          <li>לחץ על הקישור "שכחתי סיסמה" שנמצא בדרך כלל מתחת לשדות ההתחברות.</li>
-          <li>הזן את כתובת האימייל המשויכת לחשבון שלך בשדה המתאים.</li>
-          <li>לחץ על כפתור השליחה או המשך.</li>
-          <li>בדוק את תיבת הדואר הנכנס שלך (כולל תיקיית הספאם) לקבלת מייל עם קישור לאיפוס סיסמה.</li>
-          <li>לחץ על הקישור במייל כדי לעבור לדף איפוס הסיסמה.</li>
-          <li>הזן סיסמה חדשה ובצע אימות אם נדרש (לדוגמה: הזנת הסיסמה פעמיים).</li>
-          <li>שמור את הסיסמה החדשה על ידי לחיצה על כפתור "אפס סיסמה" או "אישור".</li>
-          <li>נסה להתחבר עם הסיסמה החדשה לדף ההתחברות.</li>
+          <li>Go to the system's login page.</li>
+          <li>Click on the "Forgot Password" link usually found below the login fields.</li>
+          <li>Enter the email address associated with your account in the appropriate field.</li>
+          <li>Click the submit or continue button.</li>
+          <li>Check your inbox (including the spam folder) for an email with a password reset link.</li>
+          <li>Click the link in the email to go to the password reset page.</li>
+          <li>Enter a new password and confirm if required (for example: entering the password twice).</li>
+          <li>Save the new password by clicking the "Reset Password" or "Confirm" button.</li>
+          <li>Try logging in with the new password on the login page.</li>
         </ol>
-        <p><b>אם לא קיבלת את המייל:</b></p>
+        <p><b>If you did not receive the email:</b></p>
         <ul>
-          <li>ודא שכתובת האימייל שהזנת נכונה.</li>
-          <li>בדוק את תיקיית הספאם.</li>
-          <li>המתן מספר דקות ונסה לבקש איפוס סיסמה שוב.</li>
-          <li>אם הבעיה ממשיכה, פנה לתמיכה הטכנית לעזרה.</li>
+          <li>Ensure that the email address you entered is correct.</li>
+          <li>Check the spam folder.</li>
+          <li>Wait a few minutes and try requesting a password reset again.</li>
+          <li>If the problem persists, contact technical support for assistance.</li>
         </ul>
       </>
     ),
   },
   {
-    question: "❓ איך להגדיר התראות?",
+    question: "❓ How to set up notifications?",
     answer: (
       <>
-        <p>במערכת שלנו, כל ההתראות מופעלות ונשלחות באופן אוטומטי עבור אירועים חשובים כמו הודעות חדשות, שיתופי פעולה, תיאומי תורים ועוד. ההתראות מופיעות בלחצן הפעמון שבפינה העליונה של המסך, כך שתמיד תוכל לראות אותן בזמן אמת.</p>
-        <p><b>אין צורך לבצע הגדרות ידניות או להפעיל/לכבות התראות במערכת</b>, מכיוון שהמערכת מנהלת את שליחת ההתראות בצורה אוטומטית ואחידה לכל המשתמשים.</p>
-        <p>בנוגע להתראות דחיפה (Push Notifications) במכשירים ניידים או דפדפנים:</p>
+        <p>In our system, all notifications are activated and sent automatically for important events such as new messages, collaborations, appointment scheduling, and more. Notifications appear in the bell button at the top corner of the screen, so you can always see them in real-time.</p>
+        <p><b>No manual settings are required or turning notifications on/off in the system</b>, as the system manages the sending of notifications automatically and uniformly for all users.</p>
+        <p>Regarding push notifications on mobile devices or browsers:</p>
         <ul>
-          <li>במידה והמכשיר או הדפדפן שלך תומכים בכך, ייתכן שיוצג לך בקשה לאישור קבלת התראות דחיפה בעת השימוש באתר.</li>
-          <li>ניתן לאשר או לסרב לקבלת התראות אלו דרך הגדרות הדפדפן או מערכת ההפעלה של המכשיר, מחוץ למערכת שלנו.</li>
+          <li>If your device or browser supports it, you may be prompted to approve receiving push notifications while using the site.</li>
+          <li>You can approve or decline receiving these notifications through your browser or device operating system settings, outside of our system.</li>
         </ul>
       </>
     ),
   },
   {
-    question: "❓ למה אני לא רואה עדכונים חדשים במערכת?",
+    question: "❓ Why am I not seeing new updates in the system?",
     answer: (
       <>
-        <p>אם אינך רואה עדכונים חדשים במערכת, מומלץ לבצע את השלבים הבאים:</p>
+        <p>If you are not seeing new updates in the system, it is recommended to follow these steps:</p>
         <ul>
-          <li><b>בדוק את חיבור האינטרנט שלך:</b> ודא שהמכשיר שלך מחובר לאינטרנט וחיבור האינטרנט יציב וחזק. חיבור לא יציב עלול למנוע טעינת תוכן חדש.</li>
-          <li><b>רענן את הדף בדפדפן:</b> השתמש בכפתור הרענון (F5 ב-Windows או Cmd + R ב-Mac) כדי לטעון מחדש את הדף ולנסות להציג את העדכונים האחרונים.</li>
-          <li><b>נקה את מטמון הדפדפן (Cache):</b> לעיתים הדפדפן מציג גרסה שמורה של הדף, ללא העדכונים האחרונים. ניקוי המטמון יאפשר טעינה חדשה של התוכן. הוראות לניקוי מטמון בדפדפן כרום נמצאות בתשובות קודמות.</li>
-          <li><b>ודא שהמערכת שלך מעודכנת לגרסה האחרונה:</b> במערכות מסוימות, אם משתמשים ביישומים או גרסאות ישנות, יתכן שתכנים חדשים לא יוצגו כראוי. במידה ואתה משתמש באפליקציה ניידת, ודא שהיא מעודכנת בחנות האפליקציות. במערכת מבוססת דפדפן, זה פחות רלוונטי, אך חשוב להקפיד להשתמש בדפדפן מעודכן.</li>
-          <li><b>נסה להיכנס מדפדפן או מכשיר אחר:</b> לעיתים הבעיה מקומית לדפדפן או למכשיר מסוים. בדוק אם העדכונים מופיעים בדפדפן אחר או במכשיר שונה.</li>
-          <li><b>אם הבעיה ממשיכה:</b> ודא שאין מגבלות רשת או חומות אש המונעות עדכון תוכן. פנה לתמיכה עם תיאור הבעיה, סוג המכשיר, דפדפן, ותאריך השעה שבה נתקלת בבעיה.</li>
+          <li><b>Check your internet connection:</b> Ensure that your device is connected to the internet and that the connection is stable and strong. An unstable connection may prevent new content from loading.</li>
+          <li><b>Refresh the page in the browser:</b> Use the refresh button (F5 on Windows or Cmd + R on Mac) to reload the page and try to display the latest updates.</li>
+          <li><b>Clear the browser cache:</b> Sometimes the browser displays a saved version of the page, without the latest updates. Clearing the cache will allow for a fresh load of the content. Instructions for clearing the cache in Chrome are found in previous answers.</li>
+          <li><b>Ensure your system is updated to the latest version:</b> In some systems, if older applications or versions are used, new content may not display properly. If you are using a mobile app, ensure it is updated in the app store. In a browser-based system, this is less relevant, but it is important to ensure you are using an updated browser.</li>
+          <li><b>Try logging in from another browser or device:</b> Sometimes the issue is local to a specific browser or device. Check if the updates appear in another browser or on a different device.</li>
+          <li><b>If the problem persists:</b> Ensure there are no network restrictions or firewalls preventing content updates. Contact support with a description of the problem, device type, browser, and the date and time you encountered the issue.</li>
         </ul>
       </>
     ),
   },
   {
-    question: "❓ איך לנקות קאש ומטמון בדפדפן?",
+    question: "❓ How to clear cache and cookies in the browser?",
     answer: (
       <>
-        <p>ניקוי הקאש וה-Cookies בדפדפן יכול לעזור לפתור בעיות טעינה, שגיאות וטעויות בהצגת דפים. להלן הוראות לניקוי במגוון דפדפנים, בדגש על Google Chrome:</p>
+        <p>Clearing the cache and cookies in the browser can help resolve loading issues, errors, and display problems on pages. Here are instructions for clearing in various browsers, with an emphasis on Google Chrome:</p>
         <ol>
-          <li>פתח את הדפדפן ולחץ על שלוש הנקודות האנכיות בפינה הימנית העליונה של החלון (תפריט).</li>
-          <li>בתפריט שנפתח, בחר ב-הגדרות (Settings).</li>
-          <li>בצד שמאל, לחץ על פרטיות ואבטחה (Privacy and security).</li>
-          <li>בחר ב-נקה נתוני גלישה (Clear browsing data).</li>
-          <li>בחלון שייפתח, בחר בטווח הזמן: כל הזמן (All time), כדי למחוק את כל הנתונים.</li>
-          <li>סמן את האפשרויות:<br />- עוגיות ונתוני אתר אחרים (Cookies and other site data)<br />- קבצים ותמונות שמורים במטמון (Cached images and files)</li>
-          <li>לחץ על כפתור נקה נתונים (Clear data).</li>
-          <li>סגור את הדפדפן ופתח אותו מחדש.</li>
+          <li>Open the browser and click on the three vertical dots in the upper right corner of the window (menu).</li>
+          <li>In the opened menu, select Settings.</li>
+          <li>On the left side, click on Privacy and security.</li>
+          <li>Select Clear browsing data.</li>
+          <li>In the window that opens, select the time range: All time, to delete all data.</li>
+          <li>Check the options:<br />- Cookies and other site data<br />- Cached images and files</li>
+          <li>Click the Clear data button.</li>
+          <li>Close the browser and reopen it.</li>
         </ol>
-        <p>תהליך דומה קיים גם בדפדפנים פופולריים אחרים כמו Firefox, Edge ו-Safari:</p>
+        <p>A similar process exists in other popular browsers like Firefox, Edge, and Safari:</p>
         <ul>
-          <li>חפש בתפריט ההגדרות או הפרטיות את האפשרות לנקות נתוני גלישה.</li>
-          <li>בחר למחוק Cookies ומטמון.</li>
-          <li>בחר טווח זמן מתאים (מומלץ כל הזמן).</li>
-          <li>אמת את הפעולה וסגור/הפעל מחדש את הדפדפן.</li>
+          <li>Look in the settings or privacy menu for the option to clear browsing data.</li>
+          <li>Select to delete cookies and cache.</li>
+          <li>Select an appropriate time range (recommended: all time).</li>
+          <li>Confirm the action and close/reopen the browser.</li>
         </ul>
       </>
     ),
   },
   {
-    question: "❓ מה לעשות אם האתר איטי או מתעכב?",
+    question: "❓ What to do if the site is slow or lagging?",
     answer: (
       <>
-        <p>כאשר האתר מתעכב או פועל לאט, כדאי לבצע את הצעדים הבאים כדי לאתר ולפתור את הבעיה:</p>
+        <p>When the site is lagging or running slowly, it is advisable to take the following steps to identify and resolve the issue:</p>
         <ul>
-          <li><b>בדוק את חיבור האינטרנט שלך:</b> ודא שהחיבור יציב ומהיר. נסה לפתוח אתרים אחרים ולבדוק אם הם נטענים מהר. אם יש בעיות בחיבור, נתק ותחבר מחדש את הנתב או המודם.</li>
-          <li><b>סגור אפליקציות ותהליכים ברקע:</b> תוכנות רבות יכולות להשתמש ברוחב הפס או במשאבי המחשב. סגור תוכנות שלא בשימוש, במיוחד כאלה שמורידות קבצים, מפעילות סטרימינג או מבצעות עדכונים אוטומטיים.</li>
-          <li><b>נקה את מטמון הדפדפן (Cache):</b> מטמון עמוס עלול לגרום לטעינה איטית או לטעינה של גרסאות ישנות של דפים. עקוב אחר ההוראות לניקוי מטמון שניתנו קודם, וסגור ופתח מחדש את הדפדפן.</li>
-          <li><b>נסה להשתמש בדפדפן אחר:</b> ייתכן שהבעיה קשורה לדפדפן שבו אתה משתמש. בדוק אם האתר פועל מהר יותר בדפדפן אחר (למשל Firefox, Edge או Safari).</li>
-          <li><b>בדוק אם יש עדכונים למערכת או לדפדפן:</b> עדכוני דפדפן או מערכת יכולים לשפר ביצועים ולטפל בבעיות.</li>
-          <li><b>אם הבעיה נמשכת:</b> פנה לתמיכה הטכנית וציין פרטים חשובים: סוג המכשיר, דפדפן, מהירות האינטרנט, זמנים בהם הבעיה מתרחשת ותיאור מפורט.</li>
+          <li><b>Check your internet connection:</b> Ensure the connection is stable and fast. Try opening other websites and check if they load quickly. If there are connection issues, disconnect and reconnect the router or modem.</li>
+          <li><b>Close background applications and processes:</b> Many programs can use bandwidth or computer resources. Close unused programs, especially those downloading files, streaming, or performing automatic updates.</li>
+          <li><b>Clear the browser cache:</b> A full cache can cause slow loading or loading of old versions of pages. Follow the previously provided instructions for clearing the cache, and close and reopen the browser.</li>
+          <li><b>Try using a different browser:</b> The issue may be related to the browser you are using. Check if the site works faster in another browser (e.g., Firefox, Edge, or Safari).</li>
+          <li><b>Check for updates to the system or browser:</b> Browser or system updates can improve performance and address issues.</li>
+          <li><b>If the problem persists:</b> Contact technical support and provide important details: device type, browser, internet speed, times when the issue occurs, and a detailed description.</li>
         </ul>
       </>
     ),
   },
   {
-    question: "❓ איך לבדוק אם הבעיה היא אצלנו או במערכת?",
+    question: "❓ How to check if the problem is on our end or the system?",
     answer: (
       <>
-        <p>כאשר אתה נתקל בבעיה במערכת, חשוב לבדוק אם היא נובעת מבעיה טכנית במערכת עצמה או מבעיה במכשיר או ברשת שלך. כדי לבצע אבחנה זו, בצע את הצעדים הבאים:</p>
+        <p>When you encounter a problem in the system, it is important to check whether it is due to a technical issue in the system itself or a problem with your device or network. To make this diagnosis, follow these steps:</p>
         <ul>
-          <li>נסה לגשת למערכת ממכשיר אחר: פתח את המערכת במחשב, בטלפון או בטאבלט שונה מהמשמש אותך בדרך כלל. אם הבעיה ממשיכה להופיע גם במכשיר אחר, סביר להניח שהבעיה קשורה למערכת.</li>
-          <li>נסה לגשת למערכת מרשת אינטרנט שונה: לדוגמה, אם אתה מחובר דרך רשת הביתית, נסה להתחבר דרך רשת סלולרית או רשת ציבורית אחרת (כמו רשת קפה או משרד). אם הבעיה מופיעה רק ברשת אחת, הבעיה עשויה להיות בחיבור האינטרנט שלך או בהגדרות הרשת.</li>
-          <li>נקה מטמון ודפדפן: במכשיר שבו הבעיה מתרחשת, נקה מטמון הדפדפן ו-Cookies, שכן קבצים שמורים עלולים לגרום לבעיות טעינה או תפקוד.</li>
-          <li>בדוק הגדרות אבטחה ותוספים: ודא שאין חוסמי פרסומות, חומות אש (Firewall) או תוכנות אבטחה שחוסמות חלק מהאתר. השבת זמנית תוספים בדפדפן כדי לוודא שאינם גורמים לבעיה.</li>
-          <li>אם לאחר כל השלבים הבעיה עדיין קיימת: ייתכן שהתקלה היא במערכת. פנה לתמיכה וציין את כל הבדיקות שביצעת, כולל המכשירים והרשתות שבהן ניסית.</li>
+          <li>Try accessing the system from another device: Open the system on a different computer, phone, or tablet than the one you usually use. If the problem continues to appear on another device, it is likely related to the system.</li>
+          <li>Try accessing the system from a different internet network: For example, if you are connected through your home network, try connecting through a cellular network or another public network (like a café or office network). If the problem appears only on one network, the issue may be with your internet connection or network settings.</li>
+          <li>Clear cache and browser: On the device where the problem occurs, clear the browser cache and cookies, as saved files may cause loading or functionality issues.</li>
+          <li>Check security settings and plugins: Ensure there are no ad blockers, firewalls, or security software blocking parts of the site. Temporarily disable plugins in the browser to ensure they are not causing the issue.</li>
+          <li>If after all the steps the problem still exists: The fault may be in the system. Contact support and mention all the checks you performed, including the devices and networks you tried.</li>
         </ul>
       </>
     ),
   },
   {
-    question: "❓ האם המערכת תומכת בדפדפנים ישנים?",
+    question: "❓ Does the system support old browsers?",
     answer: (
       <>
-        <p>תמיכה בטכנולוגיות חדשות: דפדפנים מודרניים תומכים בטכנולוגיות חדשות המשפרות את מהירות הטעינה, אבטחה, ויכולות תצוגה מורכבות של האתר.</p>
-        <p>ביצועים ויציבות: דפדפנים ישנים עלולים להיתקל בבעיות ביצועים, טעינה איטית או קריסות. השימוש בגרסאות מעודכנות מבטיח חוויית משתמש חלקה ויציבה.</p>
-        <p>אבטחה: דפדפנים ישנים אינם מתעדכנים עם תיקוני אבטחה חשובים, ועלולים להיות חשופים לפרצות וסיכונים.</p>
-        <p>תקלות וטעויות: שימוש בדפדפנים ישנים עלול לגרום לטעויות תצוגה, אלמנטים לא פעילים, שגיאות פונקציונליות ואף לכשלים בטעינת דפים או רכיבים.</p>
-        <p>מה לעשות אם יש לך דפדפן ישן? מומלץ לעדכן את הדפדפן לגרסה העדכנית ביותר דרך אתר היצרן. במידה שאינך יכול לעדכן (לדוגמה במערכות ישנות), נסה להשתמש בדפדפן אחר הנתמך במערכת. במידת הצורך, פנה לתמיכה לקבלת המלצות.</p>
+        <p>Support for new technologies: Modern browsers support new technologies that improve loading speed, security, and complex display capabilities of the site.</p>
+        <p>Performance and stability: Old browsers may encounter performance issues, slow loading, or crashes. Using updated versions ensures a smooth and stable user experience.</p>
+        <p>Security: Old browsers do not receive important security updates and may be exposed to vulnerabilities and risks.</p>
+        <p>Errors and bugs: Using old browsers may cause display errors, inactive elements, functional errors, and even failures in loading pages or components.</p>
+        <p>What to do if you have an old browser? It is recommended to update the browser to the latest version through the manufacturer's website. If you cannot update (for example, on old systems), try using another browser that is supported by the system. If necessary, contact support for recommendations.</p>
       </>
     ),
   },
   {
-    question: "❓ איך לפעול במקרה של בעיות באבטחת חשבון?",
+    question: "❓ How to act in case of account security issues?",
     answer: (
       <>
-        <p>אם יש לך חשד שחשבון המשתמש שלך נפרץ או שהסיסמה דלפה, חשוב לפעול במהירות ובאופן ממוקד כדי לשמור על אבטחת המידע והחשבון:</p>
+        <p>If you suspect that your user account has been hacked or that the password has leaked, it is important to act quickly and specifically to maintain the security of your information and account:</p>
         <ul>
-          <li>שנה את הסיסמה מיד: היכנס להגדרות החשבון או דף האבטחה במערכת. בחר באפשרות לשינוי סיסמה והזן סיסמה חדשה, חזקה וייחודית. סיסמה טובה כוללת לפחות 8 תווים, שילוב של אותיות גדולות וקטנות, מספרים ותווים מיוחדים.</li>
-          <li>בדוק האם נעשו שינויים חשודים בחשבון: בדוק היסטוריית פעילויות במערכת (אם קיימת). ודא שאין שינויים בפרטים אישיים, כתובות דואר אלקטרוני או הרשאות לא מורשות.</li>
-          <li>בדוק התקנים מחוברים: במידה ויש אפשרות, בדוק אילו מכשירים או מיקומים מחוברים לחשבון. אם זיהית חיבורים לא מוכרים, נתק אותם ונהל מחדש את הרשאות הגישה.</li>
-          <li>ודא שאתה שומר על סיסמאות ייחודיות: אל תשתמש באותה סיסמה במספר אתרים או שירותים. שקול להשתמש במנהל סיסמאות לניהול בטוח של הסיסמאות.</li>
-          <li>אם אינך מצליח לשנות סיסמה או לגשת לחשבון: פנה לתמיכה הטכנית בהקדם כדי לקבל עזרה בשחזור ושליטה מחדש על החשבון.</li>
-          <li>הקפד על ניקוי מחשב ומכשירים: ודא שאין תוכנות זדוניות במכשירים שבהם אתה משתמש. הפעל סריקות אנטי-וירוס ועדכן את תוכנות האבטחה שלך.</li>
+          <li>Change the password immediately: Log into the account settings or security page in the system. Choose the option to change the password and enter a new, strong, and unique password. A good password includes at least 8 characters, a mix of uppercase and lowercase letters, numbers, and special characters.</li>
+          <li>Check for suspicious changes in the account: Check the activity history in the system (if available). Ensure there are no changes to personal details, email addresses, or unauthorized permissions.</li>
+          <li>Check connected devices: If possible, check which devices or locations are connected to the account. If you identify unknown connections, disconnect them and manage access permissions again.</li>
+          <li>Ensure you keep unique passwords: Do not use the same password across multiple sites or services. Consider using a password manager for secure password management.</li>
+          <li>If you cannot change the password or access the account: Contact technical support as soon as possible for help in recovering and regaining control of the account.</li>
+          <li>Ensure to clean your computer and devices: Make sure there are no malware on the devices you are using. Run antivirus scans and update your security software.</li>
         </ul>
       </>
     ),
   },
   {
-    question: "❓ איך לשחזר חשבון אם שכחתי את פרטי ההתחברות?",
+    question: "❓ How to recover an account if I forgot the login details?",
     answer: (
       <>
-        <p>אם שכחת את פרטי ההתחברות לחשבון שלך, פעל לפי השלבים הבאים:</p>
+        <p>If you forgot your account login details, follow these steps:</p>
         <ul>
-          <li>נסה לאפס את הסיסמה: לחץ על הקישור "שכחתי סיסמה" בדף ההתחברות. הזן את כתובת האימייל המשויכת לחשבון. פתח את המייל שקיבלת והפעל את הקישור לאיפוס סיסמה.</li>
-          <li>אם שכחת גם את שם המשתמש או כתובת המייל: חפש מיילים קודמים מהמערכת שיכולים לעזור לזהות את שם המשתמש. פנה לתמיכה עם פרטים מזהים (שם מלא, טלפון וכו') כדי לקבל עזרה.</li>
-          <li>אם אינך מצליח לאפס את הסיסמה או לשחזר את הפרטים: פנה לתמיכה הטכנית עם כמה שיותר פרטים, ונעזור לך לשחזר את הגישה לחשבון.</li>
+          <li>Try resetting the password: Click on the "Forgot Password" link on the login page. Enter the email address associated with the account. Open the email you received and activate the password reset link.</li>
+          <li>If you also forgot the username or email address: Look for previous emails from the system that may help identify the username. Contact support with identifying details (full name, phone, etc.) for assistance.</li>
+          <li>If you cannot reset the password or recover the details: Contact technical support with as many details as possible, and we will help you regain access to the account.</li>
         </ul>
       </>
     ),
@@ -201,7 +202,7 @@ export default function TechnicalSupport() {
         lineHeight: 1.6,
       }}
     >
-      <h1 style={{ marginBottom: 30, textAlign: "center" }}>תמיכה טכנית - שאלות ותשובות</h1>
+      <h1 style={{ marginBottom: 30, textAlign: "center" }}>Technical Support - FAQs</h1>
       {technicalSupportFAQs.map(({ question, answer }, idx) => (
         <div
           key={idx}
@@ -257,3 +258,4 @@ export default function TechnicalSupport() {
     </div>
   );
 }
+```

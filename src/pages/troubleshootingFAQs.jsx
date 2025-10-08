@@ -1,191 +1,192 @@
+```javascript
 import React, { useState } from "react";
 
 const troubleshootingFAQs = [
   {
-    question: "❓ המערכת לא נטענת, מה לעשות?",
+    question: "❓ The system is not loading, what should I do?",
     answer: (
       <>
-        <p>כאשר המערכת לא נטענת, מומלץ לבצע את השלבים הבאים לפי הסדר:</p>
+        <p>When the system is not loading, it is recommended to follow these steps in order:</p>
         <ol>
           <li>
-            <b>בדוק את חיבור האינטרנט:</b> ודא שהמחשב או המכשיר שלך מחוברים לאינטרנט ושהאות יציב. נסה לפתוח אתר אחר כדי לוודא שיש חיבור.
+            <b>Check your internet connection:</b> Make sure your computer or device is connected to the internet and that the signal is stable. Try opening another website to ensure there is a connection.
           </li>
           <li>
-            <b>רענן את הדף בדפדפן:</b> לחץ על כפתור הרענון בדפדפן או הקש <code>F5</code> (Windows) או <code>Cmd + R</code> (Mac) כדי לטעון מחדש את הדף.
+            <b>Refresh the page in the browser:</b> Click the refresh button in the browser or press <code>F5</code> (Windows) or <code>Cmd + R</code> (Mac) to reload the page.
           </li>
           <li>
-            <b>נקה את מטמון הדפדפן (Cache):</b> לעיתים, גרסה ישנה או שגויה של הדף נשמרת במטמון ולכן האתר לא נטען כראוי.<br />
-            <i>בדפדפן כרום:</i> פתח את התפריט (שלוש נקודות בפינה ימנית עליונה) {'>'} הגדרות {'>'} פרטיות ואבטחה {'>'} נקה נתוני גלישה.<br />
-            סמן "קבצים שמורים במטמון" ו-"עוגיות" (Cookies).<br />
-            לחץ על "נקה נתונים".<br />
-            לאחר מכן, סגור ופתח מחדש את הדפדפן.
+            <b>Clear the browser cache:</b> Sometimes, an old or incorrect version of the page is stored in the cache, causing the site not to load properly.<br />
+            <i>In Chrome:</i> Open the menu (three dots in the upper right corner) {'>'} Settings {'>'} Privacy and security {'>'} Clear browsing data.<br />
+            Check "Cached images and files" and "Cookies".<br />
+            Click "Clear data".<br />
+            After that, close and reopen the browser.
           </li>
           <li>
-            <b>התנתק מהמערכת והתחבר מחדש:</b> נסה לצאת מהחשבון על ידי לחיצה על "התנתק" או "יציאה". המתן 2-3 דקות ואז התחבר שוב.
+            <b>Log out of the system and log back in:</b> Try logging out of your account by clicking "Log out" or "Exit". Wait 2-3 minutes and then log back in.
           </li>
           <li>
-            <b>נסה דפדפן או מכשיר אחר:</b> לעיתים הבעיה קשורה לדפדפן או למכשיר הספציפי. נסה לפתוח את המערכת בדפדפן אחר (Firefox, Edge, Safari) או במכשיר אחר.
+            <b>Try a different browser or device:</b> Sometimes the problem is related to a specific browser or device. Try opening the system in another browser (Firefox, Edge, Safari) or on another device.
           </li>
           <li>
-            <b>השבת תוספים חוסמי פרסומות או אבטחה זמנית:</b> תוספים בדפדפן עלולים לחסום טעינה של חלקים מהאתר. נסה להשבית אותם ולבדוק שוב.
+            <b>Temporarily disable ad blockers or security plugins:</b> Browser plugins may block parts of the site from loading. Try disabling them and check again.
           </li>
         </ol>
-        <p>אם הבעיה נמשכת, פנה לתמיכה הטכנית עם תיאור הבעיה, צילומי מסך אם אפשר, ופרטי דפדפן ומערכת ההפעלה שבה אתה משתמש.</p>
+        <p>If the problem persists, contact technical support with a description of the issue, screenshots if possible, and details about the browser and operating system you are using.</p>
       </>
     ),
   },
   {
-    question: "❓ קיבלתי שגיאת 500 בשרת, איך לפעול?",
+    question: "❓ I received a 500 error on the server, what should I do?",
     answer: (
       <>
-        <p>שגיאת 500 היא שגיאה פנימית בשרת, שמשמעותה שיש תקלה במערכת שמונעת את השלמת הבקשה שלך. לפניך מספר שלבים מומלצים לפעולה עצמאית:</p>
+        <p>A 500 error is an internal server error, meaning there is a malfunction in the system preventing your request from being completed. Here are some recommended steps for independent action:</p>
         <ol>
-          <li>רענן את הדף (F5 או Cmd + R).</li>
-          <li>נקה את מטמון הדפדפן ו-Cookies (הוראות לניקוי במרכז העזרה).</li>
-          <li>נסה להיכנס שוב לאחר מספר דקות (ייתכן תקלה זמנית בשרתים).</li>
-          <li>בדוק בדפדפן או מכשיר אחר.</li>
-          <li>השבת תוספים חוסמי תוכן זמנית.</li>
+          <li>Refresh the page (F5 or Cmd + R).</li>
+          <li>Clear the browser cache and cookies (instructions for clearing are in the help center).</li>
+          <li>Try logging in again after a few minutes (there may be a temporary issue with the servers).</li>
+          <li>Check in another browser or device.</li>
+          <li>Temporarily disable content blockers.</li>
         </ol>
-        <p>אם השגיאה חוזרת, פנה לתמיכה עם תיאור מלא של הפעולה שביצעת, צילומי מסך, פרטי דפדפן ומערכת הפעלה וזמן מתן השגיאה.</p>
+        <p>If the error persists, contact support with a full description of the action you took, screenshots, browser and operating system details, and the time the error occurred.</p>
       </>
     ),
   },
   {
-    question: "❓ לא מצליח להתחבר לחשבון שלי. מה ניתן לעשות?",
+    question: "❓ I can't log into my account. What can I do?",
     answer: (
       <>
-        <p>אם אינך מצליח להתחבר לחשבון שלך, בצע את השלבים הבאים:</p>
+        <p>If you are unable to log into your account, follow these steps:</p>
         <ol>
-          <li>ודא שאתה מזין את שם המשתמש והסיסמה הנכונים (שים לב לאותיות גדולות/קטנות ולשפה).</li>
-          <li>נסה לאפס את הסיסמה דרך הקישור "שכחתי סיסמה" במסך ההתחברות.</li>
-          <li>בדוק את תיבת הדואר (כולל ספאם) לקבלת מייל לאיפוס סיסמה.</li>
-          <li>אם אינך מקבל מייל, בדוק שוב את כתובת האימייל, נסה שוב לאחר זמן מה.</li>
-          <li>אם שכחת את שם המשתמש, חפש מיילים קודמים מהמערכת או פנה לתמיכה עם פרטים מזהים.</li>
-          <li>אם החשבון נעול, המתן כ-15 דקות ונסה שוב או פנה לתמיכה.</li>
-          <li>נסה להתחבר מדפדפן אחר או במצב גלישה פרטית.</li>
+          <li>Make sure you are entering the correct username and password (pay attention to uppercase/lowercase letters and language).</li>
+          <li>Try resetting your password using the "Forgot Password" link on the login screen.</li>
+          <li>Check your inbox (including spam) for an email to reset your password.</li>
+          <li>If you do not receive an email, double-check the email address, and try again after some time.</li>
+          <li>If you forgot your username, look for previous emails from the system or contact support with identifying details.</li>
+          <li>If the account is locked, wait about 15 minutes and try again or contact support.</li>
+          <li>Try logging in from another browser or in private browsing mode.</li>
         </ol>
-        <p>אם כל השלבים לא עזרו, פנה לתמיכה עם פרטי הבעיה ופרטי חשבון.</p>
+        <p>If none of the steps helped, contact support with details of the issue and account information.</p>
       </>
     ),
   },
   {
-    question: "❓ הקבצים לא נטענים או לא מוצגים, מה לעשות?",
+    question: "❓ The files are not loading or displaying, what should I do?",
     answer: (
       <>
-        <p>כאשר קבצים שהעלית לא נטענים או אינם מוצגים כראוי, בצע את הפעולות הבאות:</p>
+        <p>When the files you uploaded are not loading or displaying correctly, take the following actions:</p>
         <ol>
-          <li>בדוק שהקובץ בפורמט נתמך (JPG, PNG, PDF, MP4 וכו').</li>
-          <li>ודא שהקובץ קטן מהמגבלה המותרת (לדוגמה עד 10MB).</li>
-          <li>ודא שהקובץ לא פגום על ידי פתיחתו במחשב.</li>
-          <li>רענן את הדף ונסה שוב.</li>
-          <li>נסה להעלות את הקובץ מחדש.</li>
-          <li>ודא חיבור אינטרנט יציב.</li>
-          <li>נסה בדפדפן אחר או במצב גלישה פרטית.</li>
-          <li>אם יש הודעת שגיאה ספציפית, רשום או צלם אותה.</li>
-          <li>פנה לתמיכה עם פרטי הקובץ, הדפדפן והמכשיר.</li>
-        </ol>
-      </>
-    ),
-  },
-  {
-    question: "❓ המערכת מתנתקת לבד, מה לעשות?",
-    answer: (
-      <>
-        <p>כאשר המערכת מתנתקת ללא התראה, מומלץ לבצע את השלבים הבאים:</p>
-        <ol>
-          <li>בדוק את חיבור האינטרנט – ודא שהוא יציב וחזק.</li>
-          <li>סגור אפליקציות ותהליכים ברקע שיכולים לצרוך רוחב פס.</li>
-          <li>בדוק הגדרות חיסכון באנרגיה או שינה במחשב או מכשיר נייד.</li>
-          <li>נקה מטמון ונתוני דפדפן.</li>
-          <li>נסה להתחבר מדפדפן או מכשיר אחר.</li>
-          <li>בדוק אם קיימים עדכונים למערכת ההפעלה או לדפדפן.</li>
-          <li>אם משתמש ב-VPN או פרוקסי, נסה להשבית זמנית.</li>
-          <li>אם הבעיה ממשיכה, רשום זמנים ותנאים ופנה לתמיכה עם פרטים מלאים.</li>
+          <li>Check that the file is in a supported format (JPG, PNG, PDF, MP4, etc.).</li>
+          <li>Ensure the file is smaller than the allowed limit (for example, up to 10MB).</li>
+          <li>Make sure the file is not corrupted by opening it on your computer.</li>
+          <li>Refresh the page and try again.</li>
+          <li>Try re-uploading the file.</li>
+          <li>Ensure a stable internet connection.</li>
+          <li>Try in another browser or in private browsing mode.</li>
+          <li>If there is a specific error message, write it down or take a screenshot.</li>
+          <li>Contact support with file details, browser, and device information.</li>
         </ol>
       </>
     ),
   },
   {
-    question: "❓ איך מדווחים על באגים במערכת?",
+    question: "❓ The system disconnects by itself, what should I do?",
     answer: (
       <>
-        <p>כדי לדווח על באגים במערכת בצורה יעילה:</p>
+        <p>When the system disconnects without warning, it is recommended to follow these steps:</p>
         <ol>
-          <li>תעד את הבעיה בצורה ברורה כולל צעד הפעולה שגרם לה.</li>
-          <li>צרף צילום מסך של השגיאה או הבעיה.</li>
-          <li>אסוף מידע טכני: סוג מכשיר, מערכת הפעלה, דפדפן וגרסתו.</li>
-          <li>ציין מועד מדויק של התקלה.</li>
-          <li>שלח את המידע לכתובת התמיכה: support@esclick.co.il או פתח פנייה במערכת.</li>
-          <li>כתוב כותרת ברורה ותאר אם הבעיה חוזרת או איך לשחזר אותה.</li>
-          <li>המתן למענה מהתמיכה עם הנחיות או תיקונים.</li>
+          <li>Check the internet connection – make sure it is stable and strong.</li>
+          <li>Close applications and background processes that may consume bandwidth.</li>
+          <li>Check power-saving or sleep settings on your computer or mobile device.</li>
+          <li>Clear browser cache and data.</li>
+          <li>Try logging in from another browser or device.</li>
+          <li>Check for updates to the operating system or browser.</li>
+          <li>If using a VPN or proxy, try disabling it temporarily.</li>
+          <li>If the problem continues, note the times and conditions and contact support with full details.</li>
         </ol>
       </>
     ),
   },
   {
-    question: "❓ חשבון נחסם ללא סיבה, מה לעשות?",
+    question: "❓ How to report bugs in the system?",
     answer: (
       <>
-        <p>אם חשבונך נחסם ואתה לא יודע מדוע, בצע את השלבים הבאים:</p>
+        <p>To report bugs in the system effectively:</p>
         <ol>
-          <li>וודא שהחשבון אכן חסום באמצעות ניסיון התחברות.</li>
-          <li>בדוק מיילים (כולל ספאם) להודעות מחסימה.</li>
-          <li>פנה לתמיכה עם פרטי חשבון, מתי ניסית להיכנס ומה ההודעה שקיבלת.</li>
-          <li>תאר בקצרה אם ביצעת פעולות מיוחדות לפני החסימה.</li>
-          <li>המתן למענה ותיקון או הנחיות נוספות.</li>
-          <li>למניעת חסימות: שמור סיסמה חזקה, הימנע משימוש במכשירים ציבוריים ללא יציאה, הימנע מפעולות חריגות.</li>
+          <li>Document the issue clearly, including the action steps that caused it.</li>
+          <li>Attach a screenshot of the error or issue.</li>
+          <li>Gather technical information: device type, operating system, browser, and its version.</li>
+          <li>Specify the exact time of the issue.</li>
+          <li>Send the information to the support address: support@esclick.co.il or open a ticket in the system.</li>
+          <li>Write a clear title and describe if the issue is recurring or how to reproduce it.</li>
+          <li>Wait for a response from support with instructions or fixes.</li>
         </ol>
       </>
     ),
   },
   {
-    question: "❓ קיבלתי הודעת שגיאה לא מזוהה במערכת, מה כדאי לעשות?",
+    question: "❓ My account was blocked without reason, what should I do?",
     answer: (
       <>
-        <p>כאשר מופיעה שגיאה לא מזוהה, בצע את הצעדים הבאים:</p>
+        <p>If your account is blocked and you do not know why, follow these steps:</p>
         <ol>
-          <li>רענן את הדף (F5 או Cmd + R).</li>
-          <li>נקה מטמון ו-Cookies (הוראות לניקוי בדפדפן כרום מופיעות לעיל).</li>
-          <li>נסה להתחבר מדפדפן או מכשיר אחר.</li>
-          <li>רשום את תוכן הודעת השגיאה וצילום מסך.</li>
-          <li>פנה לתמיכה עם פרטים מדויקים: פעולה שבוצעה, תוכן ההודעה, דפדפן, מערכת הפעלה, מועד התקלה.</li>
+          <li>Ensure the account is indeed blocked by attempting to log in.</li>
+          <li>Check emails (including spam) for blocking notifications.</li>
+          <li>Contact support with account details, when you tried to log in, and what message you received.</li>
+          <li>Briefly describe if you performed any special actions before the block.</li>
+          <li>Wait for a response and resolution or further instructions.</li>
+          <li>To prevent blocks: keep a strong password, avoid using public devices without logging out, and refrain from unusual activities.</li>
         </ol>
       </>
     ),
   },
   {
-    question: "❓ המערכת מופיעה לי עם דפים ריקים או מסך לבן, איך לפתור?",
+    question: "❓ I received an unidentified error message in the system, what should I do?",
     answer: (
       <>
-        <p>במקרה של דפים ריקים או מסך לבן:</p>
+        <p>When an unidentified error appears, follow these steps:</p>
         <ol>
-          <li>ודא חיבור אינטרנט יציב.</li>
-          <li>נקה מטמון ו-Cookies.</li>
-          <li>השבת תוספים (חוסמי פרסומות, חוסמי סקריפטים) זמנית.</li>
-          <li>נסה במצב גלישה פרטית (Incognito/Private Mode).</li>
-          <li>נסה דפדפן או מכשיר אחר.</li>
-          <li>פנה לתמיכה עם תיאור מלא וצלומי מסך.</li>
+          <li>Refresh the page (F5 or Cmd + R).</li>
+          <li>Clear cache and cookies (instructions for clearing in Chrome are above).</li>
+          <li>Try logging in from another browser or device.</li>
+          <li>Write down the content of the error message and take a screenshot.</li>
+          <li>Contact support with precise details: action taken, message content, browser, operating system, time of the issue.</li>
         </ol>
       </>
     ),
   },
   {
-    question: "❓ מופיעה לי שגיאת Timeout – האתר לא מגיב או מתנתק, מה עושים?",
+    question: "❓ The system shows me blank pages or a white screen, how to resolve?",
     answer: (
       <>
-        <p>שגיאת Timeout מופיעה כאשר השרת לא מגיב בזמן סביר. כדי לפתור:</p>
+        <p>In case of blank pages or a white screen:</p>
         <ol>
-          <li>בדוק חיבור אינטרנט יציב ומהיר.</li>
-          <li>סגור תוכנות או אפליקציות שצורכות רוחב פס רב.</li>
-          <li>רענן את הדף ונסה שוב.</li>
-          <li>נסה להתחבר בשעה אחרת אם השרת עמוס.</li>
-          <li>נסה בדפדפן או מכשיר אחר.</li>
-          <li>אם הבעיה חוזרת, רשום זמנים ופנה לתמיכה עם פרטים מלאים.</li>
+          <li>Ensure a stable internet connection.</li>
+          <li>Clear cache and cookies.</li>
+          <li>Temporarily disable plugins (ad blockers, script blockers).</li>
+          <li>Try in private browsing mode (Incognito/Private Mode).</li>
+          <li>Try another browser or device.</li>
+          <li>Contact support with a full description and screenshots.</li>
         </ol>
       </>
     ),
   },
-  // ניתן להוסיף את שאר השאלות בהתאם לצורך
+  {
+    question: "❓ I am getting a Timeout error – the site is not responding or disconnecting, what should I do?",
+    answer: (
+      <>
+        <p>A Timeout error occurs when the server does not respond in a reasonable time. To resolve:</p>
+        <ol>
+          <li>Check for a stable and fast internet connection.</li>
+          <li>Close programs or applications that consume a lot of bandwidth.</li>
+          <li>Refresh the page and try again.</li>
+          <li>Try logging in at a different time if the server is busy.</li>
+          <li>Try another browser or device.</li>
+          <li>If the problem persists, note the times and contact support with full details.</li>
+        </ol>
+      </>
+    ),
+  },
+  // Additional questions can be added as needed
 ];
 
 export default function TroubleshootingSupport() {
@@ -208,7 +209,7 @@ export default function TroubleshootingSupport() {
       }}
     >
       <h1 style={{ marginBottom: 30, textAlign: "center" }}>
-        טיפול בתקלות ושגיאות - שאלות ותשובות
+        Troubleshooting and Errors - Questions and Answers
       </h1>
       {troubleshootingFAQs.map(({ question, answer }, idx) => (
         <div
@@ -265,3 +266,4 @@ export default function TroubleshootingSupport() {
     </div>
   );
 }
+```

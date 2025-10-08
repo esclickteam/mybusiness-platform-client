@@ -1,3 +1,4 @@
+```javascript
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
@@ -45,7 +46,7 @@ export default function useDashboardSocket({ token, businessId, refreshAccessTok
         return;
       }
       socketRef.current.auth.token = newToken;
-      // במקום disconnect/connect, משתמשים ב-emit authenticate
+      // Instead of disconnect/connect, we use emit authenticate
       socketRef.current.emit("authenticate", { token: newToken }, (ack) => {
         if (!ack?.ok) {
           console.warn("❌ Authentication failed after token refresh");
@@ -70,3 +71,4 @@ export default function useDashboardSocket({ token, businessId, refreshAccessTok
 
   return stats;
 }
+```

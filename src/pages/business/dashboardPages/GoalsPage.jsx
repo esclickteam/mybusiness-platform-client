@@ -1,3 +1,4 @@
+```javascript
 import React, { useEffect, useState } from "react";
 import API from "../../../api";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -19,11 +20,11 @@ const GoalsPage = () => {
     const fetchStats = async () => {
       try {
         const { data: business } = await API.get("/business/my");
-        if (!business?._id) throw new Error("לא הוחזר מזהה עסק");
+        if (!business?._id) throw new Error("Business ID not returned");
         const response = await API.get(`/business/${business._id}/stats`);
         setData(response.data);
       } catch (error) {
-        console.error("❌ שגיאה בטעינת סטטיסטיקות:", error.response?.data || error.message);
+        console.error("❌ Error loading statistics:", error.response?.data || error.message);
       }
     };
     fetchStats();
@@ -64,38 +65,38 @@ const GoalsPage = () => {
   const getMotivation = (progress) => {
     const level = Math.floor(progress / 10) * 10;
     const messages = {
-      0: "כל התחלה מתחילה בצעד אחד – קדימה!",
-      10: "אתה בתנועה, תמשיך להתקדם!",
-      20: "יפה! כבר 20% בדרך ליעד.",
-      30: "התקדמות מעולה – תמשיך באותו קצב!",
-      40: "כמעט בחצי – אתה על זה!",
-      50: "חצי דרך עברת – שאפו!",
-      60: "קצב חזק! אל תעצור עכשיו.",
-      70: "זה כבר מרגיש קרוב – תן פוש אחרון.",
-      80: "כמעט שם! עוד קצת וזה שלך.",
-      90: "סנטימטר מהיעד – זה הזמן לסיים בגדול.",
-      100: "היעד הושג! כל הכבוד על ההתמדה 🎉"
+      0: "Every beginning starts with one step – go ahead!",
+      10: "You're in motion, keep progressing!",
+      20: "Great! Already 20% on the way to the goal.",
+      30: "Excellent progress – keep up the pace!",
+      40: "Almost halfway – you've got this!",
+      50: "You've made it halfway – well done!",
+      60: "Strong pace! Don't stop now.",
+      70: "It already feels close – give it one last push.",
+      80: "Almost there! Just a bit more and it's yours.",
+      90: "An inch from the goal – it's time to finish strong.",
+      100: "The goal has been achieved! Congratulations on your perseverance 🎉"
     };
-    return messages[level] || "אתה בדרך הנכונה – תמשיך כך!";
+    return messages[level] || "You're on the right track – keep it up!";
   };
 
   const getActionTip = (type) => {
     const tips = {
-      clients: "✉️ שלח לידים מהשבוע האחרון הצעה מיוחדת או קופון",
-      revenue: "📊 צור מבצע חם לחבילת שירות/מוצר עם ערך גבוה",
-      orders: "🔔 תזכיר ללקוחות שלא סיימו רכישה – אל תוותר עליהם",
-      messages: "💬 פנה אישית ללקוחות שפנו ולא רכשו עדיין",
-      returningClients: "👋 שלח תודה עם קוד הנחה לחוזרים",
-      reviews: "🌟 שלח בקשה קצרה להמלצה עם לינק נוח"
+      clients: "✉️ Send leads from the last week a special offer or coupon",
+      revenue: "📊 Create a hot deal for a high-value service/product package",
+      orders: "🔔 Remind customers who haven't completed their purchase – don't give up on them",
+      messages: "💬 Personally reach out to customers who inquired but haven't purchased yet",
+      returningClients: "👋 Send a thank you with a discount code to returnees",
+      reviews: "🌟 Send a short request for a recommendation with a convenient link"
     };
-    return tips[type] || "🎯 בצע פעולה קטנה היום שתקרב אותך למטרה.";
+    return tips[type] || "🎯 Take a small action today that will bring you closer to your goal.";
   };
 
   const getLastAchievement = () => {
     const completed = goals.filter(goal => calculateProgress(goal) === 100);
     if (completed.length === 0) return null;
     const last = completed[completed.length - 1];
-    return `🏆 השגת יעד: "${last.title}" בתאריך ${new Date(last.deadline).toLocaleDateString("he-IL")}`;
+    return `🏆 Achieved goal: "${last.title}" on ${new Date(last.deadline).toLocaleDateString("he-IL")}`;
   };
 
   const completedGoalsList = goals.filter(goal => calculateProgress(goal) === 100);
@@ -103,38 +104,38 @@ const GoalsPage = () => {
   return (
     <div className="goals-container">
       <div className="goals-header">
-        <h1>🎯 היעדים שלי</h1>
+        <h1>🎯 My Goals</h1>
         <div>
-          <button className="add-goal-btn" onClick={handleAddGoal}>➕ הוסף יעד</button>
-          <button className="add-goal-btn" style={{ marginRight: '10px', backgroundColor: '#555' }} onClick={() => setShowHistory(!showHistory)}>🕘 היסטוריית יעדים</button>
+          <button className="add-goal-btn" onClick={handleAddGoal}>➕ Add Goal</button>
+          <button className="add-goal-btn" style={{ marginRight: '10px', backgroundColor: '#555' }} onClick={() => setShowHistory(!showHistory)}>🕘 Goals History</button>
         </div>
       </div>
 
       <div className="new-goal-form">
-        <label>שם היעד</label>
-        <input placeholder="למשל: השגת 10 לקוחות" value={newGoal.title} onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })} />
-        <label>סוג יעד</label>
+        <label>Goal Name</label>
+        <input placeholder="For example: Achieve 10 clients" value={newGoal.title} onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })} />
+        <label>Goal Type</label>
         <select value={newGoal.type} onChange={(e) => setNewGoal({ ...newGoal, type: e.target.value })}>
-          <option value="clients">לקוחות חדשים</option>
-          <option value="revenue">הכנסות</option>
-          <option value="orders">הזמנות / פגישות</option>
-          <option value="messages">פניות מהאתר</option>
-          <option value="returningClients">לקוחות חוזרים</option>
-          <option value="reviews">המלצות / דירוגים</option>
+          <option value="clients">New Clients</option>
+          <option value="revenue">Revenue</option>
+          <option value="orders">Orders / Meetings</option>
+          <option value="messages">Inquiries from the website</option>
+          <option value="returningClients">Returning Clients</option>
+          <option value="reviews">Recommendations / Ratings</option>
         </select>
-        <label>יעד מספרי</label>
-        <input type="number" placeholder="כמה?" value={newGoal.target} onChange={(e) => setNewGoal({ ...newGoal, target: parseInt(e.target.value) })} />
-        <label>תאריך יעד</label>
+        <label>Numeric Goal</label>
+        <input type="number" placeholder="How many?" value={newGoal.target} onChange={(e) => setNewGoal({ ...newGoal, target: parseInt(e.target.value) })} />
+        <label>Deadline</label>
         <input type="date" value={newGoal.deadline} onChange={(e) => setNewGoal({ ...newGoal, deadline: e.target.value })} />
       </div>
 
       {showHistory && (
         <div className="history-list">
-          <h3>✅ יעדים שהושלמו</h3>
+          <h3>✅ Completed Goals</h3>
           {completedGoalsList.map(goal => (
             <div key={goal.id} className="goal-card">
               <strong>{renderIcon(goal.type)} {goal.title}</strong>
-              <p>הושלם בתאריך: {new Date(goal.deadline).toLocaleDateString("he-IL")}</p>
+              <p>Completed on: {new Date(goal.deadline).toLocaleDateString("he-IL")}</p>
             </div>
           ))}
         </div>
@@ -147,12 +148,12 @@ const GoalsPage = () => {
             <CSSTransition key={goal.id} timeout={400} classNames="fade" appear>
               <div className="goal-card">
                 <h3>{renderIcon(goal.type)} {goal.title}</h3>
-                <p className="goal-sub">יעד: {goal.target} | תאריך: {goal.deadline}</p>
+                <p className="goal-sub">Goal: {goal.target} | Date: {goal.deadline}</p>
                 <div className="progress-bar">
                   <div className="progress" style={{ width: `${progress}%` }}></div>
                 </div>
                 <span className="progress-label">{Math.round(progress)}%</span>
-                <button className="summary-btn" onClick={() => setSelectedGoal(goal)}>📋 סיכום והשראה</button>
+                <button className="summary-btn" onClick={() => setSelectedGoal(goal)}>📋 Summary and Inspiration</button>
               </div>
             </CSSTransition>
           );
@@ -162,12 +163,12 @@ const GoalsPage = () => {
       {selectedGoal && (
         <div className="summary-modal">
           <div className="summary-box">
-            <h2>✨ סיכום ליעד: {selectedGoal.title}</h2>
-            <p><strong>התקדמות:</strong> {Math.round(calculateProgress(selectedGoal))}%</p>
-            <p><strong>השראה:</strong> {getMotivation(calculateProgress(selectedGoal))}</p>
-            <p><strong>המלצה:</strong> {getActionTip(selectedGoal.type)}</p>
+            <h2>✨ Summary for Goal: {selectedGoal.title}</h2>
+            <p><strong>Progress:</strong> {Math.round(calculateProgress(selectedGoal))}%</p>
+            <p><strong>Inspiration:</strong> {getMotivation(calculateProgress(selectedGoal))}</p>
+            <p><strong>Recommendation:</strong> {getActionTip(selectedGoal.type)}</p>
             {getLastAchievement() && <p><strong>{getLastAchievement()}</strong></p>}
-            <button onClick={() => setSelectedGoal(null)}>סגור</button>
+            <button onClick={() => setSelectedGoal(null)}>Close</button>
           </div>
         </div>
       )}
@@ -176,3 +177,4 @@ const GoalsPage = () => {
 };
 
 export default GoalsPage;
+```

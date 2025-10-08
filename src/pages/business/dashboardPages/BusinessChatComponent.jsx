@@ -1,6 +1,7 @@
+```javascript
 import React, { useState, useEffect, useRef } from "react";
 import { Paperclip, Mic, Image, FileText, Send, ScrollText, FileSignature } from "lucide-react";
-import API from "@api"; // השתמש ב־API במקום axios
+import API from "@api"; // Use API instead of axios
 
 const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => {
   const [messages, setMessages] = useState([]);
@@ -31,7 +32,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
         const res = await API.get(`/chat/${partnerId}`);
         setMessages(res.data || []);
       } catch (err) {
-        console.error("❌ שגיאה בטעינת שיחה", err);
+        console.error("❌ Error loading chat", err);
       }
     };
 
@@ -60,7 +61,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
           )
         );
       } catch (error) {
-        console.error("❌ שגיאה בשליחת הודעה", error);
+        console.error("❌ Error sending message", error);
       }
     }
   };
@@ -98,8 +99,8 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
       setMediaRecorder(recorder);
       setIsRecording(true);
     } catch (err) {
-      console.error("🎤 שגיאה בגישה למיקרופון:", err);
-      alert("לא ניתן לגשת למיקרופון");
+      console.error("🎤 Error accessing microphone:", err);
+      alert("Cannot access the microphone");
     }
   };
 
@@ -111,13 +112,13 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
   };
 
   const handleSendAgreement = () => {
-    alert("📄 פתיחת טופס הסכם לשיתוף פעולה - בהמשך");
+    alert("📄 Opening the cooperation agreement form - coming soon");
   };
 
   return (
     <div className="chat-card mx-auto max-w-3xl w-full bg-white rounded-2xl shadow border p-4" dir="rtl">
       <div className="flex justify-between items-center border-b pb-3 mb-4">
-        <h3 className="text-xl font-bold text-purple-700">💬 שיחה עם {partnerName}</h3>
+        <h3 className="text-xl font-bold text-purple-700">💬 Chat with {partnerName}</h3>
         <ScrollText className="text-purple-400" />
       </div>
 
@@ -146,25 +147,25 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
         <button
           className="p-2 hover:text-purple-600"
           onClick={isRecording ? stopRecording : startRecording}
-          title={isRecording ? "עצור הקלטה" : "התחל הקלטה"}
+          title={isRecording ? "Stop recording" : "Start recording"}
         >
           <Mic size={18} color={isRecording ? "#e74c3c" : "#6c5ce7"} />
         </button>
-        <button className="p-2 hover:text-purple-600" onClick={handleSendAgreement} title="שלח הסכם">
+        <button className="p-2 hover:text-purple-600" onClick={handleSendAgreement} title="Send agreement">
           <FileSignature size={18} />
         </button>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="כתוב הודעה..."
+          placeholder="Type a message..."
           className="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-purple-400"
         />
         <button
           onClick={handleSend}
           className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full text-sm flex items-center gap-1"
         >
-          <Send size={16} /> שלח
+          <Send size={16} /> Send
         </button>
       </div>
     </div>
@@ -172,3 +173,4 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
 };
 
 export default BusinessChat;
+```

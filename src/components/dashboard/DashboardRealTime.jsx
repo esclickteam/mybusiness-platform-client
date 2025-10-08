@@ -1,6 +1,7 @@
+```javascript
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
-import LineChart from "./LineChart";  // שנה לנתיב שלך
+import LineChart from "./LineChart";  // Change to your path
 import { useAuth } from "../context/AuthContext";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
@@ -100,3 +101,4 @@ const DashboardRealTime = ({ businessId }) => {
 };
 
 export default DashboardRealTime;
+```
