@@ -3,12 +3,12 @@ import { NavLink, useParams } from 'react-router-dom';
 import './PublicBusinessTabs.css';
 
 const TABS = [
-  { to: '',        label: 'Home' },
-  { to: 'gallery', label: 'Gallery' },
-  { to: 'reviews', label: 'Reviews' },
-  { to: 'faq',     label: 'Questions and Answers' },
-  { to: 'chat',    label: 'Chat with the business' },
-  { to: 'shop',    label: 'Diary' }, // changed to "Diary"
+  { to: '',        label: 'ראשי' },
+  { to: 'gallery', label: 'גלריה' },
+  { to: 'reviews', label: 'ביקורות' },
+  { to: 'faq',     label: 'שאלות ותשובות' },
+  { to: 'chat',    label: 'צ\'אט עם העסק' },
+  { to: 'shop',    label: 'יומן' }, // שונה ל"יומן"
 ];
 
 export default function PublicBusinessTabs() {

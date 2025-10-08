@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -39,7 +38,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
       sock.emit("getConversations", { userId }, (res) => {
         if (!isMounted) return;
         if (!res || typeof res !== "object") {
-          setError("Invalid response from the chat server");
+          setError("תגובה לא תקינה משרת השיחות");
           return;
         }
         if (res.ok) {
@@ -49,7 +48,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
             const first = convs[0];
             const convoId = first._id || first.conversationId;
 
-            // Strict check of partnerId: comparing strings to avoid type mismatches
+            // בדיקה קפדנית של partnerId: להשוות למחרוזות כדי למנוע השוואת סוגים שונים
             const partnerId =
               (first.participants || []).find(
                 (pid) => pid && pid.toString() !== userId.toString()
@@ -60,7 +59,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
             setSelected({ conversationId: convoId, partnerId });
           }
         } else {
-          setError("Unable to load conversations: " + (res.error || "Error"));
+          setError("לא ניתן לטעון שיחות: " + (res.error || "שגיאה"));
         }
       });
 
@@ -104,14 +103,14 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
   const handleSelect = ({ conversationId, partnerId }) => {
     if (!partnerId) {
       console.warn("Selected partnerId is null or undefined:", partnerId);
-      setError("Cannot select a conversation without a valid partner");
+      setError("לא ניתן לבחור שיחה ללא שותף תקין");
       return;
     }
     setSelected({ conversationId, partnerId });
   };
 
-  if (!userId) return <p>⏳ Loading user…</p>;
-  if (!selected) return <p>⏳ Select a conversation to start</p>;
+  if (!userId) return <p>⏳ טוען משתמש…</p>;
+  if (!selected) return <p>⏳ בחר שיחה כדי להתחיל</p>;
 
   return (
     <div className="chat-page">
@@ -138,4 +137,3 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
     </div>
   );
 }
-```

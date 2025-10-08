@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import PartnershipAgreement from "./SignAgreement";
@@ -18,7 +19,7 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
         setAgreements(res.data || []);
       } catch (err) {
         console.error(err);
-        setError("שגיאה בטעינת ההסכמים");
+        setError("Error loading agreements");
       } finally {
         setLoading(false);
       }
@@ -26,24 +27,24 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
     fetchAgreements();
   }, []);
 
-  if (loading) return <p>טוען הסכמים...</p>;
+  if (loading) return <p>Loading agreements...</p>;
   if (error) return <p className="error">{error}</p>;
 
   if (selectedId)
     return (
       <div>
         <button className="back-btn" onClick={() => setSelectedId(null)}>
-          ⬅ חזור לרשימת ההסכמים
+          ⬅ Back to the list of agreements
         </button>
         <PartnershipAgreement agreementId={selectedId} userBusinessId={userBusinessId} />
       </div>
     );
 
-  if (agreements.length === 0) return <p>אין הסכמים להצגה</p>;
+  if (agreements.length === 0) return <p>No agreements to display</p>;
 
   return (
     <div className="agreements-container">
-      <h2>הסכמי שיתוף פעולה</h2>
+      <h2>Partnership Agreements</h2>
       <ul className="agreements-list">
         {agreements.map((agreement) => (
           <li key={agreement._id} className="agreement-item">
@@ -51,9 +52,9 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
               onClick={() => setSelectedId(agreement._id)}
               className="agreement-btn"
             >
-              {agreement.title} - סטטוס: {agreement.status} <br />
+              {agreement.title} - Status: {agreement.status} <br />
               {agreement.startDate
-                ? `מתאריך: ${new Date(agreement.startDate).toLocaleDateString()}`
+                ? `From: ${new Date(agreement.startDate).toLocaleDateString()}`
                 : ""}
             </button>
           </li>
@@ -62,3 +63,4 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
     </div>
   );
 }
+```

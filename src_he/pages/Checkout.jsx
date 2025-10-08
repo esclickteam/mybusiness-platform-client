@@ -1,3 +1,4 @@
+```javascript
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import API from "../api";
@@ -19,10 +20,10 @@ export default function Checkout() {
   const getUserId = (user) => user?._id || user?.id || user?.userId || null;
   const realUserId = getUserId(user);
 
-  // המרה למספר חודשים (test => 1)
+  // Convert to number of months (test => 1)
   const monthsCount = duration === "test" ? 1 : Number(duration || 0);
 
-  // עדכון אפשרויות התשלומים בהתאם למספר חודשים
+  // Update payment options based on the number of months
   useEffect(() => {
     let maxPayments = 1;
     if (monthsCount > 1) maxPayments = monthsCount;
@@ -42,12 +43,12 @@ export default function Checkout() {
   if (!planName || !totalPrice) {
     return (
       <div className="checkout-container error-container">
-        <h2 className="error-message">❌ החבילה שבחרת אינה זמינה.</h2>
+        <h2 className="error-message">❌ The package you selected is not available.</h2>
         <button
           className="return-link"
           onClick={() => navigate("/plans")}
         >
-          🔙 חזרה לעמוד החבילות
+          🔙 Back to the packages page
         </button>
       </div>
     );
@@ -60,7 +61,7 @@ export default function Checkout() {
     setErrorMessage("");
 
     if (!planName || !totalPrice || !realUserId) {
-      setErrorMessage("❌ חסרים נתונים, לא ניתן להמשיך לתשלום.");
+      setErrorMessage("❌ Missing data, unable to proceed to payment.");
       setProcessing(false);
       return;
     }
@@ -80,24 +81,24 @@ export default function Checkout() {
 
       const { paymentUrl } = response.data;
       if (paymentUrl) {
-        // ① שומרים לאן לחזור אחרי שהתשלום יסתיים בהצלחה
+        // ① Save where to return after the payment is successfully completed
         sessionStorage.setItem(
           "postLoginRedirect",
           `/business/${realUserId}/dashboard`
         );
 
-        // ② מפנים את הדפדפן אל מסך התשלום החיצוני
+        // ② Redirect the browser to the external payment screen
         window.location.href = paymentUrl;
       } else {
-        throw new Error("השרת לא החזיר כתובת תשלום תקינה");
+        throw new Error("The server did not return a valid payment address");
       }
     } catch (err) {
-      console.error("❌ שגיאה בעת יצירת תשלום:", err);
+      console.error("❌ Error while creating payment:", err);
       if (err.response?.status === 429) {
-        setErrorMessage("⏳ נעשו יותר מדי ניסיונות תשלום. נסה שוב בעוד דקה.");
+        setErrorMessage("⏳ Too many payment attempts. Please try again in a minute.");
       } else {
         setErrorMessage(
-          "❌ שגיאה בעת יצירת התשלום. לחץ 'נסה שוב' כדי לקבל קישור חדש."
+          "❌ Error while creating the payment. Click 'Try Again' to get a new link."
         );
       }
     } finally {
@@ -105,21 +106,21 @@ export default function Checkout() {
     }
   };
 
-  // פלורליזציה של "חודש"/"חודשים"
-  const durationLabel = monthsCount === 1 ? "חודש" : "חודשים";
+  // Pluralization of "month"/"months"
+  const durationLabel = monthsCount === 1 ? "month" : "months";
 
   return (
     <div className="checkout-container">
       <div className="checkout-card" dir="rtl">
-        <h1>🔹 תשלום עבור {planName}</h1>
+        <h1>🔹 Payment for {planName}</h1>
         <p className="checkout-price">
-          מחיר סופי: <strong>{totalPrice} ₪</strong>
+          Final price: <strong>{totalPrice} ₪</strong>
         </p>
         <p className="checkout-duration">
-          משך המנוי: <strong>{monthsCount} {durationLabel}</strong>
+          Subscription duration: <strong>{monthsCount} {durationLabel}</strong>
         </p>
 
-        <label htmlFor="paymentCountSelect">מספר תשלומים:</label>
+        <label htmlFor="paymentCountSelect">Number of payments:</label>
         <select
           id="paymentCountSelect"
           value={paymentCount}
@@ -142,10 +143,10 @@ export default function Checkout() {
         >
           {processing ? (
             <>
-              <span className="spinner" />⏳ מעבד תשלום...
+              <span className="spinner" />⏳ Processing payment...
             </>
           ) : (
-            "💳 עבור לתשלום"
+            "💳 Proceed to payment"
           )}
         </button>
 
@@ -155,7 +156,7 @@ export default function Checkout() {
             onClick={handlePayment}
             style={{ marginTop: "1em" }}
           >
-            🔄 נסה שוב
+            🔄 Try again
           </button>
         )}
 
@@ -164,9 +165,10 @@ export default function Checkout() {
           onClick={() => navigate("/plans")}
           disabled={processing}
         >
-          🔙 חזרה לעמוד החבילות
+          🔙 Back to the packages page
         </button>
       </div>
     </div>
   );
 }
+```

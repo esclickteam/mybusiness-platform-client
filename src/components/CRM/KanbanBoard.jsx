@@ -5,38 +5,28 @@ import "./KanbanBoard.css";
 
 export default function KanbanBoard({ clientId, businessId }) {
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const statusColumns = {
-    todo: "To Do",
-    in_progress: "In Progress",
-    waiting: "Waiting",
-    completed: "Completed",
-    cancelled: "Cancelled",
+    todo: "לביצוע",
+    in_progress: "בתהליך",
+    waiting: "ממתין",
+    completed: "הושלם",
+    cancelled: "בוטל",
   };
 
-  // === Fetch tasks ===
   useEffect(() => {
     if (!clientId) return;
-    setLoading(true);
     API.get(`/crm-extras/tasks/${clientId}`, { params: { businessId } })
-      .then((res) => {
-        setTasks(res.data);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error("Error fetching tasks:", err);
-        setError("Failed to load tasks");
-      })
-      .finally(() => setLoading(false));
+      .then((res) => setTasks(res.data))
+      .catch((err) => console.error("שגיאה בשליפת משימות", err));
   }, [clientId, businessId]);
 
-  // === Dragging handler ===
+  // פונקציה לגרירה
   const handleDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
     if (!destination) return;
 
+    // לא זז
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -47,6 +37,7 @@ export default function KanbanBoard({ clientId, businessId }) {
     const draggedTask = tasks.find((t) => t._id === draggableId);
     if (!draggedTask) return;
 
+    // עדכון סטטוס בשרת
     try {
       const res = await API.patch(`/crm-extras/tasks/${draggableId}`, {
         ...draggedTask,
@@ -57,22 +48,7 @@ export default function KanbanBoard({ clientId, businessId }) {
         prev.map((t) => (t._id === draggableId ? res.data : t))
       );
     } catch (err) {
-      console.error("Error updating task status:", err);
-    }
-  };
-
-  // === Date formatter ===
-  const formatDate = (date) => {
-    try {
-      return new Date(date).toLocaleString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return "";
+      console.error("שגיאה בעדכון סטטוס", err);
     }
   };
 
@@ -88,10 +64,6 @@ export default function KanbanBoard({ clientId, businessId }) {
                 {...provided.droppableProps}
               >
                 <h4>{label}</h4>
-
-                {loading && <p className="loading">Loading...</p>}
-                {error && <p className="error">{error}</p>}
-
                 <div className="kanban-tasks">
                   {tasks
                     .filter((t) => t.status === status)
@@ -103,7 +75,7 @@ export default function KanbanBoard({ clientId, businessId }) {
                       >
                         {(provided, snapshot) => (
                           <div
-                            className={`kanban-card ${task.priority || ""} ${
+                            className={`kanban-card ${task.priority} ${
                               snapshot.isDragging ? "dragging" : ""
                             }`}
                             ref={provided.innerRef}
@@ -115,15 +87,19 @@ export default function KanbanBoard({ clientId, businessId }) {
                               <p className="desc">{task.description}</p>
                             )}
                             {task.dueDate && (
-                              <small>{formatDate(task.dueDate)}</small>
+                              <small>
+                                {new Date(task.dueDate).toLocaleString("he-IL", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </small>
                             )}
                             <div className="actions">
-                              <button className="edit" title="Edit task">
-                                ✏️
-                              </button>
-                              <button className="delete" title="Delete task">
-                                🗑️
-                              </button>
+                              <button className="edit">✏️</button>
+                              <button className="delete">🗑️</button>
                             </div>
                           </div>
                         )}

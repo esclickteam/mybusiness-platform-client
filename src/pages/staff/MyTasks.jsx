@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import "./MyTasks.css";
 import { Link } from "react-router-dom";
@@ -21,7 +20,7 @@ function MyTasks() {
       phone,
       date,
       time,
-      status: "Pending",
+      status: "ממתינה",
       completed: false,
       attempts
     };
@@ -56,25 +55,25 @@ function MyTasks() {
 
   return (
     <div className="my-tasks">
-      <h1>📋 Personal Tasks</h1>
+      <h1>📋 משימות אישיות</h1>
 
-      <Link to="/staff/dashboard" className="back-dashboard">🔙 Back to Dashboard</Link>
+      <Link to="/staff/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
 
       <div className="task-form">
         <input
           type="text"
-          placeholder="Task Description"
+          placeholder="תיאור המשימה"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
         <textarea
-          placeholder="Additional Details"
+          placeholder="פרטים נוספים"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
         ></textarea>
         <input
           type="tel"
-          placeholder="Phone for Callback (Optional)"
+          placeholder="טלפון לחזרה (אופציונלי)"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
@@ -88,7 +87,7 @@ function MyTasks() {
           value={time}
           onChange={(e) => setTime(e.target.value)}
         />
-        <button onClick={handleAddTask}>➕ Add Task</button>
+        <button onClick={handleAddTask}>➕ הוסף משימה</button>
       </div>
 
       <ul className="task-list">
@@ -98,17 +97,17 @@ function MyTasks() {
             {task.details && <p>📝 {task.details}</p>}
             {task.phone && <p>📞 {task.phone}</p>}
             <p>📅 {task.date} {task.time && `⏰ ${task.time}`}</p>
-            <p>Status: {task.completed ? "Completed" : task.status}</p>
-            <p>🔁 Attempts: {task.attempts}</p>
+            <p>סטטוס: {task.completed ? "בוצע" : task.status}</p>
+            <p>🔁 ניסיונות השגה: {task.attempts}</p>
 
             <div className="task-actions">
               <button onClick={() => handleToggleComplete(task.id)}>
-                {task.completed ? "↩️ Undo Completion" : "✔️ Mark as Completed"}
+                {task.completed ? "↩️ בטל ביצוע" : "✔️ סמן כבוצע"}
               </button>
-              <button onClick={() => handleIncreaseAttempts(task.id)}>➕ Attempt</button>
+              <button onClick={() => handleIncreaseAttempts(task.id)}>➕ ניסיון</button>
               <button onClick={() => handleDecreaseAttempts(task.id)}>➖</button>
               {!task.phone && (
-                <button onClick={() => handleDeleteTask(task.id)} className="delete">🗑️ Delete</button>
+                <button onClick={() => handleDeleteTask(task.id)} className="delete">🗑️ מחק</button>
               )}
             </div>
           </li>
@@ -119,4 +118,3 @@ function MyTasks() {
 }
 
 export default MyTasks;
-```

@@ -1,84 +1,82 @@
-```javascript
 import React from "react";
 import "./BusinessCollaborationGuidePage.css";
 
 export default function BusinessCollaborationGuidePage() {
   return (
     <div className="business-collab-container" dir="rtl" lang="he">
-      {/* The title sentence has been removed */}
-      <h1>🧷 Business Collaborations in Ascalik – How to Manage, Maintain, and Succeed</h1>
+      {/* משפט הכותרת הוסר */}
+      <h1>🧷 שיתופי פעולה בין עסקים בעסקליק – איך לנהל, לשמור ולהצליח</h1>
 
-      <h2>Why are collaborations essential for your business?</h2>
+      <h2>למה שיתופי פעולה הם חיוניים לעסק שלך?</h2>
       <p>
-        It is clear that when you have a successful business, the aspiration is to earn as much as possible on your own. However, collaborations are not just a way to share revenue – they are a strategic tool that allows you to expand your business, enter new markets, and create a network of trust and professionalism that cannot be built alone.
+        ברור שכשיש לך עסק מצליח, השאיפה היא להרוויח כמה שיותר בעצמך. עם זאת, שיתופי פעולה הם לא רק דרך לחלוקת הכנסות – הם כלי אסטרטגי שמאפשר להרחיב את העסק, להיכנס לשווקים חדשים וליצור רשת אמינות ומקצועיות שלא ניתן לבנות לבד.
       </p>
-      <p>When you collaborate with complementary businesses, you:</p>
+      <p>כשאתה משתף פעולה עם עסקים משלימים, אתה:</p>
       <ul>
-        <li>Increase your customer base by reaching new customers you wouldn't reach on your own.</li>
-        <li>Enhance your reputation and credibility as customers see you as part of a professional and trustworthy network.</li>
-        <li>Reduce marketing costs by marketing in partnership rather than alone.</li>
-        <li>Generate new revenue through referrals, joint packages, or commissions.</li>
-        <li>Develop new business opportunities such as joint events, joint promotions, integrated services, and more.</li>
+        <li>מגדיל את קהל הלקוחות שלך על ידי חשיפה ללקוחות חדשים שלא היית מגיע אליהם לבד.</li>
+        <li>משפר את המוניטין והאמינות כי הלקוחות רואים שאתה חלק מרשת מקצועית ואמינה.</li>
+        <li>מפחית עלויות שיווק כשאתה משווק בשותפות במקום לבד.</li>
+        <li>מייצר הכנסות חדשות דרך הפניות, חבילות משותפות או עמלות.</li>
+        <li>מפתח הזדמנויות עסקיות חדשות כגון אירועים משותפים, מבצעים משותפים, שירותים משולבים ועוד.</li>
       </ul>
-      <p>In short: the right collaboration is a lever for rapid and stable growth.</p>
+      <p>בקיצור: שיתוף פעולה נכון הוא מנוף לצמיחה מהירה ויציבה.</p>
 
-      <h2>What does the “Collaborations” tab in Ascalik include and how does it work?</h2>
-      <p>The tab allows you to manage the entire collaboration process in one system:</p>
+      <h2>מה כולל הטאב “שיתופי פעולה” בעסקליק ואיך זה עובד?</h2>
+      <p>הטאב מאפשר לך לנהל את כל תהליך השיתוף במערכת אחת:</p>
       <ul>
-        <li><strong>Search and propose collaboration</strong> – You search for relevant businesses by field, can propose a clear collaboration with what you offer and what you are looking for.</li>
-        <li><strong>Market collaborations</strong> – You can publish open proposals or browse existing proposals and initiate new connections.</li>
-        <li><strong>Initial conversation in a dedicated chat</strong> – A place to have an open conversation, formulate ideas, clarify expectations, and create understandings before signing an agreement.</li>
-        <li><strong>Digital collaboration agreement</strong> – You can upload or edit an agreement and sign it digitally, so both parties are protected and organized.</li>
-        <li><strong>Active collaboration</strong> – An organized list of all active partners, including details and the validity of the agreements.</li>
+        <li><strong>חיפוש והצעת שיתוף פעולה</strong> – אתה מחפש עסקים רלוונטיים לפי תחום, יכול להציע להם שיתוף פעולה ברור עם מה שאתה מציע ומה אתה מחפש.</li>
+        <li><strong>מרקט שיתופים</strong> – תוכל לפרסם הצעות פתוחות או לעיין בהצעות קיימות וליזום קשרים חדשים.</li>
+        <li><strong>שיחה ראשונית בצ’אט ייעודי</strong> – מקום לנהל שיחה פתוחה, לנסח רעיונות, לברר ציפיות וליצור הבנות לפני חתימת הסכם.</li>
+        <li><strong>הסכם שיתוף פעולה דיגיטלי</strong> – ניתן להעלות או לערוך הסכם ולחתום עליו דיגיטלית, כך ששני הצדדים מוגנים ומאורגנים.</li>
+        <li><strong>שיתוף פעולה פעיל</strong> – רשימה מסודרת של כל השותפים הפעילים, כולל פרטים ותוקף ההסכמים.</li>
       </ul>
 
-      <h2>How to properly manage a business collaboration?</h2>
+      <h2>איך להתנהל נכון בשיתוף פעולה עסקי?</h2>
       <ol>
         <li>
-          <strong>Define clear goals and objectives</strong><br />
-          Before any collaboration, it is important to define what each party wants to achieve. Is the goal:<br />
-          Expanding the customer base? Creating referral channels? Joint marketing or joint promotions? Sharing knowledge, equipment, or services?<br />
-          Clarifying in advance prevents misunderstandings and increases the chances of success.
+          <strong>הגדרת מטרות ויעדים ברורים</strong><br />
+          לפני כל שיתוף פעולה, חשוב להגדיר מה כל צד רוצה להשיג. האם המטרה היא:<br />
+          הרחבת קהל לקוחות? יצירת ערוצי הפניות? שיווק משותף או מבצעים משותפים? שיתוף ידע, ציוד או שירות?<br />
+          הבהרה מראש מונעת אי הבנות ומגבירה את סיכויי ההצלחה.
         </li>
         <li>
-          <strong>Choose the right partner</strong><br />
-          Choose complementary businesses, not direct competitors, where there is overlap in the target audience but no conflict of interest. For example:<br />
-          A yoga studio and medical massage services, a hair salon with a cosmetics institute, a clothing store with a makeup salon.<br />
-          A good partner is one who aspires to mutual success and respects commitments.
+          <strong>בחירת שותף מתאים</strong><br />
+          בחר עסקים משלימים, לא מתחרים ישירים, שבהם יש חפיפה בקהל היעד אך לא ניגוד אינטרסים. לדוגמה:<br />
+          סטודיו יוגה ושירותי עיסוי רפואי, מספרה עם מכון קוסמטיקה, חנות בגדים עם סלון איפור.<br />
+          שותף טוב הוא כזה ששואף להצלחה הדדית ושמכבד את ההתחייבויות.
         </li>
         <li>
-          <strong>Select a collaboration model</strong><br />
-          There are several common models – choose the one that fits your business and partner:<br />
-          Mutual referrals, commission per referral, joint packages, mutual marketing promotion.<br />
-          A clear agreement that describes the model will prevent conflicts in the future.
+          <strong>בחירת מודל שיתוף פעולה</strong><br />
+          יש כמה מודלים נפוצים – בחר את זה שמתאים לעסק שלך ולשותף:<br />
+          הפניות הדדיות, עמלות לפי הפניות, חבילות משותפות, קידום שיווקי הדדי.<br />
+          הסכם ברור שמתאר את המודל ימנע קונפליקטים בעתיד.
         </li>
         <li>
-          <strong>Manage communication and maintain contact</strong><br />
-          Open, reliable, and ongoing communication is the key to successful collaboration. It is advisable to set regular meetings (even if virtual), share insights and success data, and be flexible with adjustments.
+          <strong>ניהול תקשורת ושמירה על קשר</strong><br />
+          שיחה פתוחה, אמינה ומתמשכת היא המפתח לשיתוף פעולה מוצלח. מומלץ לקבוע פגישות קבועות (גם אם וירטואליות), לשתף תובנות ונתוני הצלחה ולהיות גמישים בהתאמות.
         </li>
         <li>
-          <strong>Maintain agreements and organization</strong><br />
-          Use the agreements tab to keep the agreements, ensure that every change is documented and agreed upon, and avoid agreements that are only verbal.
+          <strong>שמירה על הסכמים וארגון</strong><br />
+          השתמש בטאב ההסכמים לשמירת ההסכמים, ודא שכל שינוי מתועד ומוסכם והימנע מהסכמים שבעל פה בלבד.
         </li>
       </ol>
 
-      <h2>Why should you engage in collaborations if you have a successful business?</h2>
+      <h2>למה כדאי לך לעשות שיתופי פעולה אם יש לך עסק מצליח?</h2>
       <ul>
-        <li>No business operates in a bubble these days. Collaboration connects you to a broad network that enhances your impact.</li>
-        <li>Revenues grow even without expanding the team or adding high marketing costs.</li>
-        <li>Collaboration allows you to reach new audiences quickly and efficiently.</li>
-        <li>Prevents feelings of business loneliness and creates a sense of professional belonging.</li>
-        <li>Even successful businesses need partners to remain relevant and grow.</li>
+        <li>אף עסק לא עובד בבועה בימינו. שיתוף פעולה מחבר אותך לרשת רחבה שמגבירה את ההשפעה שלך.</li>
+        <li>ההכנסות גדלות גם בלי להרחיב צוות או להוסיף עלויות שיווק גבוהות.</li>
+        <li>שיתוף פעולה מאפשר להגיע לקהלים חדשים במהירות וביעילות.</li>
+        <li>מונע תחושת בדידות עסקית ויוצר תחושת שייכות מקצועית.</li>
+        <li>גם עסקים מצליחים זקוקים לשותפים כדי להישאר רלוונטיים ולהתפתח.</li>
       </ul>
 
-      <h2>Summary</h2>
+      <h2>סיכום</h2>
       <p>
-        Collaborations are a strategic tool that can upgrade your business in every aspect – marketing, service, management, and sales. Ascalik's collaboration system allows you to manage the entire process simply, orderly, professionally, and securely.
+        שיתופי פעולה הם כלי אסטרטגי שיכול לשדרג את העסק שלך בכל היבט – שיווק, שירות, ניהול ומכירות. מערכת שיתופי הפעולה של עסקליק מאפשרת לך לנהל את כל התהליך בצורה פשוטה, מסודרת, מקצועית ומאובטחת.
       </p>
       <p>
-        If you act correctly – choose suitable partners, define clear models, maintain open communication, and manage the agreements within the system – you will become a strong and relevant player in the market.
+        אם תפעל נכון – תבחר שותפים מתאימים, תגדיר מודלים ברורים, תשמור על תקשורת פתוחה ותנהל את ההסכמים בתוך המערכת – תהפוך לשחקן חזק ורלוונטי בשוק.
       </p>
     </div>
   );
 }
-```

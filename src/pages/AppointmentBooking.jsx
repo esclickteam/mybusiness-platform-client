@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import he from 'date-fns/locale/he';
@@ -15,7 +14,7 @@ export default function AppointmentBooking({ businessId, serviceId }) {
   const [booking, setBooking] = useState(false);
   const [error, setError] = useState('');
 
-  // Reset state when the service or business changes
+  // אפס סטייט כשמשתנה השירות או העסק
   useEffect(() => {
     setDate(null);
     setAvailableSlots([]);
@@ -23,7 +22,7 @@ export default function AppointmentBooking({ businessId, serviceId }) {
     setError('');
   }, [businessId, serviceId]);
 
-  // Request available appointment slots
+  // בקשת זמני תורים פנויות
   useEffect(() => {
     if (!date) return;
     setLoadingSlots(true);
@@ -41,12 +40,12 @@ export default function AppointmentBooking({ businessId, serviceId }) {
     .then(res => {
       const slots = res.data.slots || [];
       if (slots.length === 0) {
-        setError('No available appointments for this date');
+        setError('אין תורים זמינים לתאריך זה');
       }
       setAvailableSlots(slots);
     })
     .catch(() => {
-      setError('Error fetching availability');
+      setError('שגיאה בשליפת זמינות');
     })
     .finally(() => setLoadingSlots(false));
   }, [date, businessId, serviceId]);
@@ -54,7 +53,7 @@ export default function AppointmentBooking({ businessId, serviceId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!date || !slot) {
-      setError('Please select a date and time');
+      setError('בחרי תאריך ושעה');
       return;
     }
     setBooking(true);
@@ -66,14 +65,14 @@ export default function AppointmentBooking({ businessId, serviceId }) {
         date: date.toISOString().slice(0,10),
         time: slot
       });
-      alert('✅ Appointment successfully scheduled!');
-      // Reset after scheduling an appointment
+      alert('✅ התור נקבע בהצלחה!');
+      // איפוס לאחר קביעת תור
       setDate(null);
       setAvailableSlots([]);
       setSlot('');
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'Error scheduling the appointment');
+      setError(err.response?.data?.message || 'שגיאה בקביעת התור');
     } finally {
       setBooking(false);
     }
@@ -88,16 +87,16 @@ export default function AppointmentBooking({ businessId, serviceId }) {
           onChange={setDate}
           inline
           minDate={new Date()}
-          placeholderText="Select a date"
+          placeholderText="בחרי תאריך"
           dateFormat="dd.MM.yyyy"
         />
       </div>
 
-      {loadingSlots && <p>Loading available slots…</p>}
+      {loadingSlots && <p>טוען זמינים…</p>}
 
       {!loadingSlots && date && availableSlots.length > 0 && (
         <div className="inputs">
-          <label>Select a time:</label>
+          <label>בחרי שעה:</label>
           <select
             value={slot}
             onChange={e => {
@@ -121,9 +120,8 @@ export default function AppointmentBooking({ businessId, serviceId }) {
         className="save-all-btn styled"
         style={{ marginTop: 16 }}
       >
-        {booking ? 'Saving…' : 'Schedule Appointment'}
+        {booking ? 'שומר…' : 'קבע תור'}
       </button>
     </form>
   );
 }
-```

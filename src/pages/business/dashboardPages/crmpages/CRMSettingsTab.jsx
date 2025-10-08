@@ -1,13 +1,12 @@
-```javascript
 import React, { useState } from "react";
 import "./CRMSettingsTab.css";
 
 const CRMSettingsTab = () => {
   const [settings, setSettings] = useState({
-    businessName: "My Business",
+    businessName: "העסק שלי",
     businessEmail: "biz@example.com",
     businessPhone: "050-1234567",
-    businessAddress: "Tel Aviv",
+    businessAddress: "תל אביב",
     sendFromEmail: "no-reply@mycrm.com",
     themeColor: "#7c4dff",
   });
@@ -18,39 +17,38 @@ const CRMSettingsTab = () => {
   };
 
   const handleSave = () => {
-    console.log("🔧 Settings saved:", settings);
-    alert("Settings saved ✅");
-    // Future: send to DB
+    console.log("🔧 הגדרות נשמרו:", settings);
+    alert("ההגדרות נשמרו ✅");
+    // בעתיד: שליחה ל-DB
   };
 
   return (
     <div className="crm-tab-content">
-      <h2>⚙️ CRM Settings</h2>
+      <h2>⚙️ הגדרות CRM</h2>
 
       <div className="settings-form">
-        <label>Business Name</label>
+        <label>שם עסק</label>
         <input name="businessName" value={settings.businessName} onChange={handleChange} />
 
-        <label>Business Email</label>
+        <label>אימייל עסקי</label>
         <input name="businessEmail" value={settings.businessEmail} onChange={handleChange} />
 
-        <label>Business Phone</label>
+        <label>טלפון עסק</label>
         <input name="businessPhone" value={settings.businessPhone} onChange={handleChange} />
 
-        <label>Address</label>
+        <label>כתובת</label>
         <input name="businessAddress" value={settings.businessAddress} onChange={handleChange} />
 
-        <label>Email for Sending Reminders</label>
+        <label>אימייל לשליחת תזכורות</label>
         <input name="sendFromEmail" value={settings.sendFromEmail} onChange={handleChange} />
 
-        <label>Main Color (hex)</label>
+        <label>צבע ראשי (hex)</label>
         <input name="themeColor" value={settings.themeColor} onChange={handleChange} />
 
-        <button className="save-settings-btn" onClick={handleSave}>💾 Save</button>
+        <button className="save-settings-btn" onClick={handleSave}>💾 שמור</button>
       </div>
     </div>
   );
 };
 
 export default CRMSettingsTab;
-```

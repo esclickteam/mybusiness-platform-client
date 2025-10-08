@@ -1,12 +1,11 @@
-```javascript
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../images/logo_final.svg"; // SVG logo
+import logo from "../images/logo_final.svg"; // SVG לוגו
 import { FaBars, FaChevronLeft } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
-// Shared links (main navigation categories)
+// Shared links (קטגוריות ניווט ראשיות)
 const navLinks = [
   { to: "/features", label: "Features" },
   { to: "/solutions", label: "Solutions" },
@@ -155,4 +154,3 @@ export default function Header() {
     </>
   );
 }
-```

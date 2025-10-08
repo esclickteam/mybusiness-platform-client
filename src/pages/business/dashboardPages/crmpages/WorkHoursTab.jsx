@@ -1,16 +1,15 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import '../buildTabs/shopAndCalendar/Appointments/CalendarSetup.css';
 
 const weekdays = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday"
+  "ראשון",
+  "שני",
+  "שלישי",
+  "רביעי",
+  "חמישי",
+  "שישי",
+  "שבת"
 ];
 
 export default function WorkHoursTab() {
@@ -48,25 +47,25 @@ export default function WorkHoursTab() {
   const handleSave = async () => {
     try {
       await API.post("/appointments/update-work-hours", { workHours: weeklyHours });
-      alert("The hours have been saved successfully");
+      alert("השעות נשמרו בהצלחה");
     } catch (e) {
       console.error("Error saving work hours:", e);
-      alert("Error saving the hours");
+      alert("שגיאה בשמירת השעות");
     }
   };
 
   return (
     <div className="calendar-setup-container">
-      <h2 className="calendar-title">🗓️ Setting Fixed Working Hours for the Week</h2>
+      <h2 className="calendar-title">🗓️ הגדרת שעות פעילות קבועות לשבוע</h2>
 
       <div className="weekly-hours-table">
         <table>
           <thead>
             <tr>
-              <th>Day</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Closed</th>
+              <th>יום</th>
+              <th>התחלה</th>
+              <th>סיום</th>
+              <th>סגור</th>
             </tr>
           </thead>
           <tbody>
@@ -97,7 +96,7 @@ export default function WorkHoursTab() {
                     className="close-checkbox"
                     checked={weeklyHours[i] === null}
                     onChange={() => handleToggleClosed(i)}
-                    aria-label={`Close ${name}`}
+                    aria-label={`סגור ${name}`}
                   />
                 </td>
               </tr>
@@ -108,24 +107,24 @@ export default function WorkHoursTab() {
 
       <div className="actions">
         <button className="save-all-btn styled" onClick={handleSave}>
-          💾 Save Weekly Hours
+          💾 שמור שעות שבועיות
         </button>
       </div>
 
       <div className="summary">
-        <strong>🗓️ Summary of Working Hours:</strong>
+        <strong>🗓️ סיכום שעות פעילות:</strong>
         <ul>
           {weekdays.map((name, i) => (
             <li key={i} className="summary-item">
               <span className="day-label">{name}:</span>
               {weeklyHours[i] === null ? (
-                <span className="closed-label">Closed</span>
+                <span className="closed-label">סגור</span>
               ) : weeklyHours[i]?.start && weeklyHours[i]?.end ? (
                 <span className="hours-label">
                   {weeklyHours[i].start} – {weeklyHours[i].end}
                 </span>
               ) : (
-                <span className="hours-label">Not Defined</span>
+                <span className="hours-label">לא הוגדר</span>
               )}
             </li>
           ))}
@@ -134,4 +133,3 @@ export default function WorkHoursTab() {
     </div>
   );
 }
-```

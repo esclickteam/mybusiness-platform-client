@@ -1,91 +1,90 @@
-```javascript
 import React, { useState } from "react";
 
 const faqs = [
   {
-    question: "What is the Esclic affiliate program and how does it work?",
-    answer: `The Esclic affiliate program is a rewarding business opportunity that allows you to earn additional income in a simple and efficient way, without the need for full management of the sales process or complex marketing efforts. By receiving a personal referral link, you can refer potential customers to the business, and once they register and make a purchase in the system — you will receive a financial commission for every completed transaction.
+    question: "מהי תוכנית השותפים של עסקליק וכיצד היא פועלת?",
+    answer: `תוכנית השותפים של עסקליק היא הזדמנות עסקית משתלמת שמאפשרת לך להרוויח הכנסה נוספת בצורה פשוטה ויעילה, ללא צורך בניהול מלא של תהליך המכירה או במאמץ שיווקי מורכב. באמצעות קבלת קישור הפניה אישי, תוכל להפנות לקוחות פוטנציאליים לעסק, וברגע שהם נרשמים ומבצעים רכישה במערכת — תקבל עמלה כספית על כל עסקה שהושלמה.
 
-Why should you join the affiliate program?
-- Passive income and revenue expansion — without the need to manage inventory or direct service.
-- A transparent and accurate system — real-time tracking of referrals, registrations, and purchases.
-- Simplicity and convenience — easy sharing of the link across various channels.
-- Expanding your business network and exposure to new markets.
-- Flexibility in managing the pace and marketing channels.`,
+למה כדאי להצטרף לתוכנית השותפים?
+- הכנסה פסיבית והרחבת ההכנסות — ללא צורך בניהול מלאי או שירות ישיר.
+- מערכת שקופה ומדויקת — מעקב בזמן אמת אחרי הפניות, הרשמות ורכישות.
+- פשטות ונוחות — שיתוף קל של הקישור בערוצים שונים.
+- הרחבת רשת הקשרים העסקית וחשיפה לשווקים חדשים.
+- גמישות בניהול הקצב וערוצי השיווק.`,
   },
   {
-    question: "How to receive and share my personal link in the affiliate program?",
-    answer: `In your personal dashboard, you will find a unique referral link.
-Easily copy it using the copy button.
-Share it across channels like social networks, email, website, calls, webinars, and more.
-Maintain consistency in sharing and use the dashboard to track results.`,
+    question: "כיצד לקבל ולשתף את הקישור האישי שלי בתוכנית השותפים?",
+    answer: `בלוח הבקרה האישי תמצא קישור הפניה ייחודי.
+העתק אותו בקלות באמצעות כפתור העתקה.
+שתף בערוצים כמו רשתות חברתיות, אימייל, אתר, שיחות, וובינרים ועוד.
+שמור על עקביות בשיתוף והשתמש בלוח הבקרה למעקב אחרי התוצאות.`,
   },
   {
-    question: "What are the commission terms and how are they calculated?",
-    answer: `- Variable commission percentage (3%-7%) based on the type of package or agreement.
-- Additional financial bonuses based on a minimum number of transactions per month.
-- A 14-day verification period for completed transactions that remain valid.
-- Monthly payment with full transparency in the dashboard.
-- Cancellation and refund policies apply to commissions accordingly.`,
+    question: "מהם תנאי העמלות ואיך הן מחושבות?",
+    answer: `- אחוז עמלה משתנה (3%-7%) לפי סוג החבילה או ההסכם.
+- בונוסים כספיים נוספים לפי מינימום עסקאות בחודש.
+- תקופת בדיקה של 14 ימים לעסקאות שהושלמו ונותרו בתוקף.
+- תשלום חודשי עם שקיפות מלאה בלוח הבקרה.
+- מדיניות ביטולים והחזרים חלה על העמלות בהתאם.`,
   },
   {
-    question: "How to track referrals, transactions, and commissions?",
-    answer: `- A dashboard with real-time data on:
-  - Total number of referrals.
-  - Status and amount of completed transactions.
-  - Amount of commissions and bonuses.
-  - Payment status.
-  - Filters by time periods for analysis and tracking.`,
+    question: "כיצד לעקוב אחרי ההפניות, העסקאות והעמלות?",
+    answer: `- לוח בקרה עם נתונים בזמן אמת על:
+  - מספר ההפניות הכולל.
+  - סטטוס וסכום העסקאות שהושלמו.
+  - סכום העמלות והבונוסים.
+  - סטטוס תשלום.
+  - פילטרים לפי תקופות זמן לניתוח ומעקב.`,
   },
   {
-    question: "What packages are available and what are the commitment terms?",
-    answer: `- Monthly, quarterly, and annual packages.
-- Commission percentages: 3% (monthly), 5% (quarterly), 7% (annual).
-- One-time financial bonuses based on transaction thresholds.
-- Choice tailored to the partner's needs and level of commitment.`,
+    question: "אילו חבילות קיימות ומה תנאי ההתחייבות?",
+    answer: `- חבילות חודשיות, רבעוניות ושנתיות.
+- אחוזי עמלה: 3% (חודשי), 5% (רבעוני), 7% (שנתי).
+- בונוסים כספיים חד-פעמיים לפי רף עסקאות.
+- בחירה בהתאמה לצרכי השותף ורמת ההתחייבות.`,
   },
   {
-    question: "How to upload receipts and manage payment in the program?",
-    answer: `- Upload receipts in the dashboard via a dedicated button.
-- Save the receipt in the system for tracking and approval.
-- The payments team verifies the receipts and ensures their validity.
-- Without a valid receipt, commission payments will be delayed.
-- It is important to track and maintain compliance with tax authorities.`,
+    question: "כיצד להעלות קבלות ולנהל תשלום בתוכנית?",
+    answer: `- העלאת קבלות בלוח הבקרה דרך כפתור ייעודי.
+- שמירת הקבלה במערכת לצורך מעקב ואישור.
+- צוות התשלומים מאשר את הקבלות ומוודא תקינות.
+- ללא קבלה תקינה יתעכב תשלום העמלות.
+- חשוב לעקוב ולשמור על תאימות לרשויות המס.`,
   },
   {
-    question: "What to do in case of issues with tracking or payment?",
-    answer: `- Ensure that your personal link is correct and updated.
-- Check payment status and cancellation period (14 days).
-- Gather detailed information for support (dates, amounts, source of referral).
-- Contact support with all details for professional assistance.`,
+    question: "מה לעשות במקרה של בעיות במעקב או בתשלום?",
+    answer: `- ודא שהקישור האישי נכון ומעודכן.
+- בדוק סטטוס תשלום ותקופת ביטול (14 ימים).
+- אסוף מידע מפורט לתמיכה (תאריכים, סכומים, מקור הפניה).
+- פנה לתמיכה עם כל הפרטים לקבלת סיוע מקצועי.`,
   },
   {
-    question: "How to increase income from the affiliate program?",
-    answer: `- Choose targeted and effective marketing channels.
-- Distribute the link on social networks and through newsletters.
-- Create professional content (articles, guides, videos).
-- Collaborate with partners and influencers.
-- Track and analyze campaign performance and practice optimization.`,
+    question: "כיצד להגדיל את ההכנסות מתוכנית השותפים?",
+    answer: `- בחר ערוצי שיווק ממוקדים ויעילים.
+- הפץ את הקישור ברשתות חברתיות ובדיוורים.
+- צור תוכן מקצועי (מאמרים, מדריכים, סרטונים).
+- חבר לשיתופי פעולה ומשפיענים.
+- עקוב ונתח את ביצועי הקמפיינים והתאמן על אופטימיזציה.`,
   },
   {
-    question: "What to do if the personal link does not work or does not redirect correctly?",
-    answer: `- Check that the link is complete and correct (copy from the dashboard).
-- Check for browser blocks (firewall, ad blockers).
-- Clear cache and cookies.
-- Try opening in a different browser or device.
-- Ensure that the business actually made a purchase through your link.
-- Track referrals in the system.
-- If necessary, contact support with complete details.`,
+    question: "מה לעשות אם הקישור האישי לא עובד או לא מפנה נכון?",
+    answer: `- בדוק שהקישור שלם ונכון (העתקה מלוח הבקרה).
+- בדוק חסימות בדפדפן (פיירוול, חוסמי פרסומות).
+- נקה מטמון ו-Cookies.
+- נסה לפתוח בדפדפן או מכשיר אחר.
+- וודא שהעסק אכן רכש דרך הקישור שלך.
+- עקוב אחרי הפניות במערכת.
+- במידת הצורך, פנה לתמיכה עם פרטים מלאים.`,
   },
   {
-    question: "What to do when the program pages do not load or load slowly?",
-    answer: `- Refresh the browser with Ctrl+F5 / Cmd+Shift+R.
-- Clear cache and cookies.
-- Check internet connection.
-- Close background applications that are heavy.
-- Try a different browser or device.
-- Check for maintenance messages or system issues.
-- Contact support if necessary.`,
+    question: "מה לעשות כשעמודי התוכנית לא נטענים או נטענים לאט?",
+    answer: `- רענן את הדפדפן ב-Ctrl+F5 / Cmd+Shift+R.
+- נקה מטמון ו-Cookies.
+- בדוק חיבור אינטרנט.
+- סגור אפליקציות רקע שמכבידות.
+- נסה דפדפן או מכשיר אחר.
+- בדוק הודעות תחזוקה או תקלות במערכת.
+- פנה לתמיכה במידת הצורך.`,
   },
 ];
 
@@ -108,7 +107,7 @@ export default function AffiliateProgramFAQ() {
       }}
     >
       <h1 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-        Esclic Affiliate Program - Frequently Asked Questions
+        תוכנית השותפים של עסקליק - שאלות נפוצות
       </h1>
       {faqs.map((faq, idx) => (
         <div
@@ -143,8 +142,8 @@ export default function AffiliateProgramFAQ() {
             <span
               style={{
                 userSelect: "none",
-                color: "#f06292",        // Pink-Red
-                marginLeft: 10,          // Space between the question mark and text
+                color: "#f06292",        // ורוד-אדום
+                marginLeft: 10,          // רווח בין סימן השאלה לטקסט
                 paddingRight: 2,
                 fontWeight: "bold",
                 fontSize: 24,
@@ -181,4 +180,3 @@ export default function AffiliateProgramFAQ() {
     </div>
   );
 }
-```

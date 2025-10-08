@@ -1,12 +1,11 @@
-```javascript
 import React from "react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 import "./BusinessXrayReport.css";
 
 const BusinessXrayReport = ({ data, insights, businessType }) => {
-  if (!data || !insights) return <p>No data found for display.</p>;
+  if (!data || !insights) return <p>לא נמצאו נתונים להצגה.</p>;
 
-  // Converting score object to recharts structure
+  // המרת אובייקט ציונים למבנה של recharts
   const chartData = Object.entries(data).map(([category, score]) => ({
     subject: category,
     A: parseFloat(score),
@@ -15,8 +14,8 @@ const BusinessXrayReport = ({ data, insights, businessType }) => {
 
   return (
     <div className="report-container">
-      <h2>📊 Business X-Ray Report</h2>
-      <p>Business Type: <strong>{businessType}</strong></p>
+      <h2>📊 דוח רנטגן עסקי</h2>
+      <p>סוג עסק: <strong>{businessType}</strong></p>
 
       <div className="chart-wrapper">
         <ResponsiveContainer width="100%" height={300}>
@@ -24,13 +23,13 @@ const BusinessXrayReport = ({ data, insights, businessType }) => {
             <PolarGrid />
             <PolarAngleAxis dataKey="subject" />
             <PolarRadiusAxis angle={30} domain={[0, 5]} />
-            <Radar name="Score" dataKey="A" stroke="#7e57c2" fill="#7e57c2" fillOpacity={0.6} />
+            <Radar name="ציון" dataKey="A" stroke="#7e57c2" fill="#7e57c2" fillOpacity={0.6} />
           </RadarChart>
         </ResponsiveContainer>
       </div>
 
       <div className="insights-box">
-        <h3>🧠 Insights tailored to your business:</h3>
+        <h3>🧠 תובנות מותאמות לעסק שלך:</h3>
         <pre>{insights}</pre>
       </div>
     </div>
@@ -38,4 +37,3 @@ const BusinessXrayReport = ({ data, insights, businessType }) => {
 };
 
 export default BusinessXrayReport;
-```

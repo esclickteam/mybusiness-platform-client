@@ -2,16 +2,16 @@ import React from "react";
 import ReviewsModule from "../ReviewsModule.jsx";
 
 export default function ReviewsSection({ reviews, setReviews, currentUser, renderTopBar }) {
-  // Sorts the reviews by date descending (most recent first)
+  // ממיין את הביקורות לפי תאריך יורד (הכי חדש קודם)
   const sortedReviews = [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  // Retrieves only the last 2 reviews
+  // שולף רק את 2 הביקורות האחרונות
   const lastTwoReviews = sortedReviews.slice(0, 2);
 
   return (
     <>
       <div className="form-column">
-        {/* All reviews in the regular tab */}
+        {/* כל הביקורות בטאב הרגיל */}
         <ReviewsModule
           reviews={reviews}
           setReviews={setReviews}
@@ -21,7 +21,7 @@ export default function ReviewsSection({ reviews, setReviews, currentUser, rende
       </div>
       <div className="preview-column">
         {renderTopBar()}
-        {/* Only the last 2 reviews in the main tab */}
+        {/* רק 2 הביקורות האחרונות בטאב הראשי */}
         <ReviewsModule
           reviews={lastTwoReviews}
           setReviews={setReviews}

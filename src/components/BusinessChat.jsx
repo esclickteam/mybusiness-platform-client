@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import Button from "@mui/material/Button";
@@ -61,7 +60,7 @@ export default function BusinessChat({
           console.log("↩️ getHistory:", h);
           if (h.ok) setMessages(h.messages);
 
-          // Mark the messages as read as soon as we receive the history
+          // סמן את ההודעות כנקראו ברגע שקיבלנו את ההיסטוריה
           socket.emit("markMessagesRead", res.conversationId, (ackMark) => {
             if (!ackMark?.ok) {
               console.warn("Failed to mark messages as read:", ackMark?.error);
@@ -134,11 +133,11 @@ export default function BusinessChat({
     };
   }, [token, role, myBusinessId, myBusinessName, getValidAccessToken, refreshAccessToken, onLogout]);
 
-  // Listens to newMessage and ensures the socket joins the conversation if conversationId changes
+  // מאזין ל-newMessage ומוודא שהסוקט מצטרף לשיחה במקרה ש-conversationId משתנה
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    // Ensure we are connected to the conversation room (in case of disconnection/change)
+    // ודא שאנחנו מחוברים לחדר השיחה (למקרה של ניתוק/שינוי)
     socket.emit("joinConversation", conversationId, (ack) => {
       if (!ack?.ok) {
         console.error("Failed to join conversation on newMessage listener:", ack?.error);
@@ -152,7 +151,7 @@ export default function BusinessChat({
       if (msg.conversationId === conversationId) {
         setMessages((prev) => [...prev, msg]);
 
-        // Mark messages as read
+        // סימון הודעות כנקראו
         socket.emit("markMessagesRead", conversationId, (ackMark) => {
           if (!ackMark?.ok) {
             console.warn("Failed to mark messages as read:", ackMark?.error);
@@ -196,14 +195,14 @@ export default function BusinessChat({
         setInput("");
       } else {
         console.error("❗️ sendMessage failed:", ack.error);
-        alert("Message sending failed: " + ack.error);
+        alert("שליחת הודעה נכשלה: " + ack.error);
       }
     });
   };
 
   return (
     <div style={{ maxWidth: 600, margin: "auto", display: "flex", flexDirection: "column" }}>
-      <h3>Business Chat</h3>
+      <h3>צ'אט עסקי</h3>
 
       <div
         style={{
@@ -220,7 +219,7 @@ export default function BusinessChat({
             key={i}
             style={{ marginBottom: 8, textAlign: msg.from === myBusinessId ? "right" : "left" }}
           >
-            <b>{msg.from === myBusinessId ? "Me" : "Them"}</b>: {msg.text}
+            <b>{msg.from === myBusinessId ? "אני" : "הם"}</b>: {msg.text}
           </div>
         ))}
         <div ref={messagesEndRef} />
@@ -230,7 +229,7 @@ export default function BusinessChat({
         fullWidth
         multiline
         maxRows={4}
-        placeholder="Type a message..."
+        placeholder="הקלד הודעה..."
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {
@@ -247,9 +246,8 @@ export default function BusinessChat({
         disabled={!input.trim() || !conversationId}
         sx={{ mt: 1, alignSelf: "flex-end" }}
       >
-        Send
+        שלח
       </Button>
     </div>
   );
 }
-```

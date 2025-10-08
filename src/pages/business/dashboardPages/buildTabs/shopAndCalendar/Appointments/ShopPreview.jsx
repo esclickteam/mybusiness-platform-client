@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from 'react';
 import './ShopPreview.css';
 import PaymentSection from './PaymentSection';
@@ -25,7 +24,7 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
     setCart(updated);
   };
 
-  const allCategories = [...new Set(products.map(p => p.category || 'General'))];
+  const allCategories = [...new Set(products.map(p => p.category || 'כללי'))];
   const filteredProducts = activeCategory
     ? products.filter(p => p.category === activeCategory)
     : products;
@@ -42,12 +41,12 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
   return (
     <div className="shop-preview">
       <div className="shop-header-row">
-        <h3 className="shop-section-title">🏍️ Your Shop</h3>
+        <h3 className="shop-section-title">🏍️ החנות שלכם</h3>
         <button className="cart-toggle-btn" onClick={() => {
           setShowCart(!showCart);
           setShowPayment(false);
         }}>
-          {showCart ? '↩ Back to Shop' : `View Cart (${cart.length}) 🛒`}
+          {showCart ? '↩ חזרה לחנות' : `לצפייה בסל (${cart.length}) 🛒`}
         </button>
       </div>
 
@@ -60,10 +59,10 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
         />
       ) : showCart ? (
         <div className="cart-view-section">
-          <h3>🛒 Your Shopping Cart</h3>
+          <h3>🛒 סל הקניות שלך</h3>
 
           {cart.length === 0 ? (
-            <p className="empty-cart">Your cart is currently empty</p>
+            <p className="empty-cart">העגלה שלך ריקה כרגע</p>
           ) : (
             <div className="cart-list">
               {cart.map((item, i) => (
@@ -71,8 +70,8 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
                   <img src={item.image} alt={item.name} className="cart-thumb" />
                   <div className="item-details">
                     <h4>{item.name}</h4>
-                    <p>Quantity: {item.quantity}</p>
-                    <p>Total: ₪ {item.price * item.quantity}</p>
+                    <p>כמות: {item.quantity}</p>
+                    <p>סה״כ: ₪ {item.price * item.quantity}</p>
                   </div>
                   <button className="remove-btn" onClick={() => handleRemoveFromCart(i)}>🗑️</button>
                 </div>
@@ -83,26 +82,26 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
           <div className="coupon-box">
             <input
               className="coupon-input"
-              placeholder="Enter coupon code (e.g., SUMMER10)"
+              placeholder="הכנס קוד קופון (למשל: SUMMER10)"
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
             />
           </div>
 
           <div className="summary">
-            <p>📟 Before discount: ₪ {base.toFixed(2)}</p>
-            {discount > 0 && <p className="discount">💸 Discount: ₪ {discount.toFixed(2)}</p>}
-            {shippingCost > 0 && <p>🚚 Shipping: ₪ {shippingCost.toFixed(2)}</p>}
-            <h3>💰 To pay: ₪ {final.toFixed(2)}</h3>
+            <p>📟 לפני הנחה: ₪ {base.toFixed(2)}</p>
+            {discount > 0 && <p className="discount">💸 הנחה: ₪ {discount.toFixed(2)}</p>}
+            {shippingCost > 0 && <p>🚚 משלוח: ₪ {shippingCost.toFixed(2)}</p>}
+            <h3>💰 לתשלום: ₪ {final.toFixed(2)}</h3>
           </div>
 
-          <button className="pay-btn" onClick={() => setShowPayment(true)}>To Payment 💳</button>
+          <button className="pay-btn" onClick={() => setShowPayment(true)}>לתשלום 💳</button>
         </div>
       ) : (
         <>
           {allCategories.length > 1 && (
             <div className="category-filter">
-              <button className={!activeCategory ? 'active' : ''} onClick={() => setActiveCategory(null)}>All</button>
+              <button className={!activeCategory ? 'active' : ''} onClick={() => setActiveCategory(null)}>הכל</button>
               {allCategories.map((cat, i) => (
                 <button
                   key={i}
@@ -124,7 +123,7 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
                   <p>{p.price} ₪</p>
                   {p.description && (
                     <details className="product-description">
-                      <summary>Show Description</summary>
+                      <summary>הצג תיאור</summary>
                       <p>{p.description}</p>
                     </details>
                   )}
@@ -142,7 +141,7 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
                         const qty = parseInt(e.target.parentElement.querySelector('.quantity-input').value) || 1;
                         handleAddToCart(p, qty);
                       }}
-                    >Add to Cart</button>
+                    >הוסף לעגלה</button>
                   </div>
                 </div>
               </div>
@@ -155,4 +154,3 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
 };
 
 export default ShopPreview;
-```

@@ -1,129 +1,128 @@
-```javascript
 import React, { useState } from "react";
 
 const faqData = [
   {
-    question: "❓ What does my business dashboard display?",
+    question: "❓ מה מציג דשבורד העסק שלי?",
     answer: `
-The business dashboard is a dynamic control panel designed to present a comprehensive real-time overview of the business, enabling informed decision-making. It includes:
+דשבורד העסק הוא לוח מחוונים דינמי, המיועד להציג תמונת מצב מקיפה של העסק בזמן אמת, ומאפשר קבלת החלטות מושכלות. הוא כולל:
 
-- Number of meetings: Display of the total scheduled meetings for the current week and upcoming months, including status (confirmed, pending approval, canceled).
-- Reviews and ratings: The number of positive and negative reviews received, with the option to analyze reviews by time periods and identify positive trends or areas for improvement.
-- Profile views: Viewing and exposure data per customer segment, including percentage changes compared to previous periods, to assess the effectiveness of marketing campaigns.
-- Analytical graphs: Visual representation of trends in sales, meetings, and customer activity over time – linear graphs, columns, and tabular data.
-- Interactive calendar: Display of meetings and events by dates, including the option to filter and view by types of meetings, customers, or employees.
+- מספר פגישות: הצגה של סך הפגישות המתוזמנות בשבוע הנוכחי ובחודשים הקרובים, כולל סטטוס (מאושרות, ממתינות לאישור, בוטלות).
+- ביקורות ודירוגים: מספר הביקורות החיוביות והשליליות שהתקבלו, עם אפשרות לנתח ביקורות לפי תקופות זמן, ולזהות מגמות חיוביות או אזורי שיפור.
+- צפיות בפרופיל העסק: נתוני צפייה וחשיפה פר סגמנט לקוחות, כולל שינוי אחוזים לעומת תקופות קודמות, כדי לבחון את האפקטיביות של קמפיינים שיווקיים.
+- גרפים אנליטיים: המחשה ויזואלית של מגמות במכירות, פגישות ופעילות לקוחות לאורך זמן – גרפים ליניאריים, עמודות ונתונים טבלאיים.
+- לוח שנה אינטראקטיבי: הצגת פגישות ואירועים לפי תאריכים, כולל אפשרות לסינון וצפייה לפי סוגי פגישות, לקוחות או עובדים.
     `,
   },
   {
-    question: "❓ How can I see all scheduled meetings for the week or month?",
+    question: "❓ כיצד אוכל לראות את כל הפגישות המתוכננות בשבוע או בחודש?",
     answer: `
-In the "Meetings" tab, you can view all scheduled meetings in an easy-to-use interface, which includes:
+בלשונית "פגישות" תוכל לצפות בכל הפגישות המתוזמנות בממשק קל ונוח, הכולל:
 
-- Monthly calendar: Marked dates where meetings are scheduled. Click on a date to see the detailed meetings for that day, including start time, client name, and service.
-- Table view: A complete list of all meetings, with the option to sort by date, client name, status (confirmed, canceled, etc.), and advanced filtering by various parameters.
-- Reports and export: Export meetings to Excel or PDF files for management purposes, periodic reports, and graphical presentation.
+- לוח שנה חודשי: עם סימון תאריכים שבהם קיימות פגישות. לחץ על תאריך כדי לראות את הפגישות המפורטות באותו יום, כולל שעת התחלה, שם הלקוח ושירות.
+- תצוגת טבלה: רשימה מלאה של כל הפגישות, עם אפשרות למיין לפי תאריך, שם לקוח, סטטוס (מאושר, בוטל וכו’), וסינון מתקדם לפי פרמטרים שונים.
+- דוחות וייצוא: ייצוא הפגישות לקבצי Excel או PDF לצרכי ניהול, דוחות תקופתיים והצגה גרפית.
     `,
   },
   {
-    question: "❓ What to do if meetings or views are not updating on the dashboard?",
+    question: "❓ איך לפעול אם הפגישות או הצפיות לא מתעדכנות בדשבורד?",
     answer: `
-Steps to troubleshoot:
+שלבים לטיפול בתקלות:
 
-- Check internet connection stability: Verify loading of other websites, try switching to another network (WiFi or cellular).
-- Refresh the page: Use Ctrl + F5 (or Cmd + Shift + R on Mac) to perform a full refresh with cache clearing.
-- Clear browser cache and cookies: Old cache may cause loading of outdated information. Clear them through browser settings.
-- Use a different browser or device: Try accessing from Chrome, Firefox, Edge, or another computer.
-- Log out and log back in: Sometimes, updating permissions or data occurs only after re-logging.
-- Wait 5–10 minutes: There may be a delay in data synchronization in the system. Wait and try checking again.
-- Check system messages and maintenance: The system may be undergoing updates or there may be known issues published in the message system.
+- בדוק יציבות חיבור האינטרנט: בדוק טעינת אתרים אחרים, נסה לעבור לרשת אחרת (WiFi או סלולרי).
+- רענון עמוד: השתמש ב-Ctrl + F5 (או Cmd + Shift + R במק) כדי לבצע רענון מלא עם ניקוי המטמון.
+- ניקוי מטמון הדפדפן ו-Cookies: מטמון ישן עלול לגרום לטעינת מידע לא עדכני. נקה אותם דרך הגדרות הדפדפן.
+- שימוש בדפדפן או מכשיר אחר: נסה לגשת מדפדפן Chrome, Firefox, Edge, או ממחשב אחר.
+- התנתקות מהמערכת והתחברות מחדש: לעיתים עדכון הרשאות או נתונים מתבצע רק אחרי התחברות מחודשת.
+- המתן 5–10 דקות: ייתכן שיש עיכוב בסנכרון הנתונים במערכת. חכה ונסה לבדוק שוב.
+- בדוק הודעות מערכת ותחזוקה: ייתכן שהמערכת נמצאת בעדכון או שיש תקלות ידועות המפורסמות במערכת ההודעות.
 
-If the problem persists after all these steps, contact technical support with all the information: browser, operating system, detailed description, and time of the event.
+אם לאחר כל אלה הבעיה נמשכת, פנה לתמיכה הטכנית עם כל המידע: דפדפן, מערכת הפעלה, תיאור מפורט וזמן האירוע.
     `,
   },
   {
-    question: "❓ What does the calendar symbolize on the dashboard?",
+    question: "❓ מה מסמל לוח השנה בדשבורד?",
     answer: `
-The calendar visually displays all scheduled meetings for the selected month.
+לוח השנה מציג באופן חזותי את כל הפגישות המתוזמנות בחודש הנבחר.
 
-- Each marked day represents at least one meeting, and clicking on the day shows the list of meetings organized by start time.
-- You can navigate between previous and future months to plan activities in advance.
-- Allows quick identification of busy or free days.
+- כל יום שמסומן מייצג לפחות פגישה אחת, ולחיצה על היום מציגה את רשימת הפגישות המאורגנות לפי שעת התחלה.
+- ניתן לנווט בין חודשים קודמים ועתידיים על מנת לתכנן מראש את הפעילות.
+- מאפשר זיהוי מהיר של ימי עומס או ימי פנוי.
     `,
   },
   {
-    question: "❓ How to read the graph \"Clients who scheduled meetings by month\"?",
+    question: "❓ כיצד לקרוא את גרף \"לקוחות שהזמינו פגישות לפי חודשים\"?",
     answer: `
-The graph represents the number of clients who scheduled meetings each month throughout the year.
+הגרף מייצג את מספר הלקוחות שקבעו פגישות בכל חודש במהלך השנה.
 
-- The information can be displayed in various formats: column graph, lines, and table, for different analysis purposes.
-- The data allows identification of peak seasons, seasonal trends, and assists in budget planning and marketing activities.
-- You can use the information to assess whether promotional activities had a positive impact.
+- ניתן להציג את המידע במגוון פורמטים: גרף עמודות, קווים, וטבלה, לצורך ניתוח שונה.
+- הנתונים מאפשרים זיהוי עונות שיא, מגמות עונתיות, ועזרה בתכנון תקציב ופעילויות שיווקיות.
+- ניתן להשתמש במידע כדי להעריך האם פעילויות קידום השפיעו בצורה חיובית.
     `,
   },
   {
-    question: "❓ What are \"smart action recommendations\" on the dashboard?",
+    question: "❓ מה הן \"המלצות לפעולה חכמה\" בדשבורד?",
     answer: `
-The system uses advanced analytics to examine business data and provides tailored recommendations, such as:
+המערכת משתמשת באנליטיקה מתקדמת לבחינת נתוני העסק ומספקת המלצות מותאמות, כגון:
 
-- Promoting new offers or services in case of a decline in meetings or views.
-- Reminders for maintaining stable activity and customer retention.
-- Recommendations to contact clients for requesting reviews and feedback.
-- Tips for optimizing scheduling and availability of appointments.
+- קידום מבצעים או שירותים חדשים במקרה של ירידה בפגישות או הצפיות.
+- תזכורות להמשך פעילות יציבה ושימור לקוחות.
+- המלצות ליצירת קשר עם לקוחות לבקשת ביקורות וחוות דעת.
+- טיפים לאופטימיזציה של תזמון וזמינות תורים.
 
-The recommendations appear in a separate tab and are updated in real-time.
+ההמלצות מופיעות בלשונית נפרדת, ומעודכנות בזמן אמת.
     `,
   },
   {
-    question: "❓ What to do if I identify incorrect or missing data on the dashboard?",
+    question: "❓ מה לעשות אם זיהיתי נתונים שגויים או חסרים בדשבורד?",
     answer: `
-- Ensure all meetings in your possession are updated in the system with correct statuses.
-- Check if there is a synchronization issue between the meeting management systems and the dashboard.
-- Perform a system refresh or log out and log back in.
-- Check for maintenance messages or reported issues in the system.
-- If the data continues to be incorrect, collect accurate examples and send a report to technical support with screenshots and full details.
+- ודא שכל הפגישות שברשותך עודכנו במערכת עם סטטוסים נכונים.
+- בדוק האם קיימת תקלה בסנכרון בין מערכות ניהול הפגישות והדשבורד.
+- בצע רענון מערכת או התנתקות וכניסה מחדש.
+- בדוק אם קיימות הודעות תחזוקה או תקלות שדווחו במערכת.
+- אם הנתונים ממשיכים להיות שגויים, אסוף דוגמאות מדויקות ושלח דווח לתמיכה הטכנית עם צילומי מסך ופרטים מלאים.
     `,
   },
   {
-    question: "❓ How can I receive a weekly or monthly summary of business activity?",
+    question: "❓ כיצד ניתן לקבל סיכום שבועי או חודשי של פעילות העסק?",
     answer: `
-The dashboard has the option to receive periodic summary reports that include:
+בדשבורד קיימת אפשרות לקבל דוחות סיכום תקופתיים הכוללים:
 
-- Total meetings that took place during the period.
-- Viewing and exposure data for the business profile.
-- Summary of reviews and ratings.
+- סך הפגישות שהתקיימו בתקופה.
+- נתוני צפייה וחשיפה בפרופיל העסק.
+- סיכום ביקורות ודירוגים.
 
-The reports can be viewed directly, downloaded as a PDF or Excel file, and shared with the team or managers.
+הדוחות ניתנים לצפייה ישירה, הורדה כקובץ PDF או Excel, ושיתוף עם צוות או מנהלים.
     `,
   },
   {
-    question: "❓ What to do if the data on the business dashboard is not updating in real-time?",
+    question: "❓ מה עושים אם הנתונים בדשבורד העסק לא מתעדכנים בזמן אמת?",
     answer: `
-If the dashboard data is not updating or showing old information, follow these steps:
+אם נתוני הדשבורד אינם מתעדכנים או מראים מידע ישן, יש לבצע את השלבים הבאים:
 
-- Check internet connection: Ensure the connection is stable and fast. A weak or unstable connection may cause incomplete or slow data loading.
-- Refresh the dashboard: Use a full refresh command in the browser (Ctrl + F5 or Cmd + Shift + R) to clear the cache and reload the data.
-- Clear cache and cookies: Sometimes the browser saves old data that causes an outdated display. Clear Cache and Cookies through browser settings.
-- Use a different browser or device: Try opening the dashboard in a different browser (such as Chrome, Firefox, or Edge) or from another device to rule out specific issues.
-- Check system messages: See if the system displays maintenance messages or technical issues that may affect data updates.
-- Log out and log back in: Sometimes issues with permissions or session activation are resolved by logging out of the system and logging back in.
-- Wait a few minutes: Some systems may have a slight delay in updates. Wait 5–10 minutes and try again.
+- בדיקת חיבור אינטרנט: ודא שהחיבור יציב ומהיר. חיבור חלש או לא יציב עלול לגרום לטעינת נתונים לא מלאה או איטית.
+- רענון הדשבורד: השתמש בפקודת רענון מלאה בדפדפן (Ctrl + F5 או Cmd + Shift + R) כדי לנקות את המטמון ולטעון מחדש את הנתונים.
+- ניקוי מטמון ו-Cookies: לעיתים דפדפן שומר נתונים ישנים שגורמים לתצוגה לא מעודכנת. יש לנקות Cache ו-Cookies דרך הגדרות הדפדפן.
+- שימוש בדפדפן או מכשיר אחר: נסה לפתוח את הדשבורד בדפדפן שונה (כגון Chrome, Firefox או Edge) או ממכשיר אחר כדי לשלול בעיות ספציפיות.
+- בדיקת הודעות מערכת: בדוק אם המערכת מציגה הודעות תחזוקה או בעיות טכניות שיכולות להשפיע על עדכון הנתונים.
+- התנתקות והתחברות מחדש: לעיתים בעיות בהרשאות או סשן הפעלה נפתרות על ידי יציאה מהמערכת והתחברות מחדש.
+- המתן מספר דקות: יש מערכות שבהן העדכון מתבצע עם פיגור קל. המתן 5–10 דקות ונסה שוב.
 
-If the problem is not resolved after all these steps, contact technical support with details of the browser, operating system, description of the issue, and time of occurrence.
+אם לאחר כל השלבים הללו הבעיה לא נפתרה, יש לפנות לתמיכה הטכנית עם פרטי דפדפן, מערכת הפעלה, תיאור הבעיה וזמן הופעתה.
     `,
   },
   {
-    question: "❓ How can I improve the data displayed on the dashboard and increase business activity?",
+    question: "❓ איך ניתן לשפר את הנתונים המוצגים בדשבורד ולהגביר את הפעילות העסקית?",
     answer: `
-Improving the data on the dashboard requires a combination of marketing, management, and technological actions:
+שיפור הנתונים בדשבורד מחייב שילוב של פעולות שיווקיות, ניהוליות וטכנולוגיות:
 
-- Targeted promotion and marketing: Run targeted campaigns on social media, Google, etc., to increase exposure to the business profile. Optimize keywords and use quality content on the business page.
-- Enhance customer experience: Ensure that the information on the business profile is accurate and up-to-date (operating hours, prices, services). Add quality images and videos that professionally showcase your services.
-- Efficient management of meetings: Regularly update your availability on the calendar. Use reminders for clients to prevent cancellations and no-shows.
-- Collect feedback and reviews: Ask satisfied clients to leave positive reviews. Respond quickly to inquiries and reviews, including negative ones, to show engagement and care.
-- Analyze data: Analyze the graphs and reports on the dashboard, and try to identify trends and changes across various metrics. Adjust business activities based on the information (e.g., increase operating hours on peak days).
-- Use technological tools: Utilize CRM tools for customer management and scheduling meetings. Use business advisors or other analytical tools for personalized recommendations.
+- קידום ושיווק ממוקד: הפעל קמפיינים ממוקדים ברשתות חברתיות, גוגל ועוד, כדי להגדיל את החשיפה לפרופיל העסק. בצע אופטימיזציה של מילות מפתח ושימוש בתוכן איכותי בעמוד העסק.
+- שיפור חוויית הלקוח: ודא שהמידע בפרופיל העסק מדויק ומעודכן (שעות פעילות, מחירים, שירותים). הוסף תמונות וסרטונים איכותיים שממחישים את השירותים שלך בצורה מקצועית.
+- ניהול יעיל של הפגישות: עדכן את זמינותך בלוח השנה באופן שוטף. השתמש בתזכורות ללקוחות כדי למנוע ביטולים והחסרות.
+- איסוף משוב וביקורות: בקש מלקוחות מרוצים להשאיר ביקורות חיוביות. השב במהירות לפניות וביקורות, גם השליליות, כדי להראות מעורבות ואכפתיות.
+- בדיקת נתונים וניתוחם: נתח את הגרפים והדוחות בדשבורד, ונסה לזהות מגמות ושינויים במגוון מדדים. התאם את הפעילות העסקית בהתאם למידע (למשל, הגדלת שעות פעילות בימי שיא).
+- שימוש בכלים טכנולוגיים: נצל את כלי ה-CRM לניהול לקוחות ותזמון פגישות. השתמש ביועץ עסקליק או כלים אנליטיים נוספים לקבלת המלצות מותאמות אישית.
 
-Combining these steps will help you increase business activity and ensure that the business dashboard reflects updated and accurate data, contributing to overall success.
+שילוב של צעדים אלה יסייע לך להגדיל את הפעילות העסקית ולהבטיח שדשבורד העסק ישקף נתונים מעודכנים ומדויקים, מה שיתרום להצלחה כוללת.
     `,
   },
 ];
@@ -147,7 +146,7 @@ export default function DashboardFAQ() {
       }}
     >
       <h1 style={{ textAlign: "center", marginBottom: 25 }}>
-        Detailed Questions and Answers for Help Center - Business Dashboard
+        שאלות ותשובות מפורטות למרכז עזרה - דשבורד העסק
       </h1>
       {faqData.map((item, index) => (
         <div
@@ -205,4 +204,3 @@ export default function DashboardFAQ() {
     </div>
   );
 }
-```

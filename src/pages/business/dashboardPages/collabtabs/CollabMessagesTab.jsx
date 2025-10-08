@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useMemo } from "react";
 import API from "../../../../api";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
@@ -56,7 +55,7 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
       setError(null);
     } catch (err) {
       console.error("Error loading proposals:", err);
-      setError("Error loading messages");
+      setError("שגיאה בטעינת ההודעות");
     } finally {
       setLoading(false);
     }
@@ -97,18 +96,18 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
   };
 
   const handleCancelProposal = async (proposalId) => {
-    if (!window.confirm("Are you sure you want to delete the proposal?")) return;
+    if (!window.confirm("האם למחוק את ההצעה?")) return;
     try {
       await API.delete(`/business/my/proposals/${proposalId}`);
       setMessages((prev) => ({
         sent: prev.sent.filter((p) => p.proposalId !== proposalId && p._id !== proposalId),
         received: prev.received.filter((p) => p.proposalId !== proposalId && p._id !== proposalId),
       }));
-      alert("The proposal was successfully canceled");
+      alert("ההצעה בוטלה בהצלחה");
       onStatusChange?.();
     } catch (err) {
-      console.error("Error canceling the proposal:", err);
-      alert("Error canceling the proposal");
+      console.error("שגיאה בביטול ההצעה:", err);
+      alert("שגיאה בביטול ההצעה");
     }
   };
 
@@ -116,11 +115,11 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
       updateMessageStatus(proposalId, "accepted");
-      alert("The proposal was successfully accepted");
+      alert("ההצעה אושרה בהצלחה");
       onStatusChange?.();
     } catch (err) {
       console.error(err);
-      alert("Error accepting the proposal");
+      alert("שגיאה באישור ההצעה");
     }
   };
 
@@ -128,11 +127,11 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, { status: "rejected" });
       updateMessageStatus(proposalId, "rejected");
-      alert("The proposal was successfully rejected");
+      alert("ההצעה נדחתה בהצלחה");
       onStatusChange?.();
     } catch (err) {
       console.error(err);
-      alert("Error rejecting the proposal");
+      alert("שגיאה בדחיית ההצעה");
     }
   };
 
@@ -142,7 +141,7 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
       setSelectedAgreement(res.data);
       setModalOpen(true);
     } catch {
-      alert("You do not have permission to view this agreement or the agreement was not found");
+      alert("אין לך הרשאה לצפות בהסכם זה או שההסכם לא נמצא");
     }
   };
 
@@ -160,7 +159,7 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
   }, [filter, messages]);
 
   if (loading) {
-    return <div style={{ textAlign: "center", padding: 20 }}>🔄 Loading proposals...</div>;
+    return <div style={{ textAlign: "center", padding: 20 }}>🔄 טוען הצעות...</div>;
   }
 
   if (error) {
@@ -171,23 +170,23 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
     <div style={{ direction: "rtl", fontFamily: "Arial, sans-serif", maxWidth: 700, margin: "auto" }}>
       <div style={{ marginBottom: 20, display: "flex", gap: 12, justifyContent: "center" }}>
         <button onClick={() => setFilter("sent")} style={filterButtonStyle(filter === "sent")}>
-          Sent Proposals
+          הצעות שנשלחו
         </button>
         <button onClick={() => setFilter("received")} style={filterButtonStyle(filter === "received")}>
-          Received Proposals
+          הצעות שהתקבלו
         </button>
         <button onClick={() => setFilter("accepted")} style={filterButtonStyle(filter === "accepted")}>
-          Accepted Proposals
+          הצעות שאושרו
         </button>
       </div>
 
       {messagesToShow.length === 0 ? (
         <p style={{ textAlign: "center" }}>
           {filter === "sent"
-            ? "No proposals have been sent yet."
+            ? "לא נשלחו עדיין הצעות."
             : filter === "received"
-            ? "No proposals have been received yet."
-            : "No accepted proposals to display."}
+            ? "לא התקבלו עדיין הצעות."
+            : "אין הצעות שאושרו להצגה."}
         </p>
       ) : (
         messagesToShow.map((msg) => {
@@ -210,32 +209,32 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
               }}
             >
               <p>
-                <strong>Sending Business:</strong>{" "}
-                <span style={{ marginLeft: 6 }}>{msg.fromBusinessId?.businessName || "Unknown"}</span>
+                <strong>עסק שולח:</strong>{" "}
+                <span style={{ marginLeft: 6 }}>{msg.fromBusinessId?.businessName || "לא ידוע"}</span>
               </p>
               <p>
-                <strong>Receiving Business:</strong>{" "}
-                <span style={{ marginLeft: 6 }}>{msg.toBusinessId?.businessName || "Unknown"}</span>
+                <strong>עסק מקבל:</strong>{" "}
+                <span style={{ marginLeft: 6 }}>{msg.toBusinessId?.businessName || "לא ידוע"}</span>
               </p>
 
               {msg.message && (
                 <>
                   {msg.message.title && (
-                    <p style={{ fontWeight: "bold", marginBottom: 4 }}>Title: {msg.message.title}</p>
+                    <p style={{ fontWeight: "bold", marginBottom: 4 }}>כותרת: {msg.message.title}</p>
                   )}
                   {msg.message.description && (
                     <p style={{ marginBottom: 4, whiteSpace: "pre-line" }}>
-                      Description: {msg.message.description}
+                      תיאור: {msg.message.description}
                     </p>
                   )}
                   {msg.message.budget != null && (
                     <p>
-                      <strong>Amount:</strong> {msg.message.budget}
+                      <strong>סכום:</strong> {msg.message.budget}
                     </p>
                   )}
                   {msg.message.expiryDate && (
                     <p>
-                      <strong>Expiry Date:</strong>{" "}
+                      <strong>תאריך תוקף:</strong>{" "}
                       {new Date(msg.message.expiryDate).toLocaleDateString("he-IL")}
                     </p>
                   )}
@@ -243,7 +242,7 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
               )}
 
               <p>
-                <strong>Status:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
+                <strong>סטטוס:</strong> <span style={{ marginLeft: 6 }}>{msg.status}</span>
               </p>
 
               {(msg.agreementId || msg._id) && isUserParty && (
@@ -261,7 +260,7 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
                   }}
                   style={buttonStylePurple}
                 >
-                  View Agreement
+                  צפייה בהסכם
                 </button>
               )}
 
@@ -277,15 +276,15 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
                   <>
                     <button
                       style={buttonStylePurple}
-                      onClick={() => alert("Resend (not yet implemented)")}
+                      onClick={() => alert("שלח שוב (טרם מיושם)")}
                     >
-                      📨 Resend
+                      📨 שלח שוב
                     </button>
                     <button
                       style={buttonStylePink}
                       onClick={() => handleCancelProposal(msg.proposalId || msg._id)}
                     >
-                      🗑️ Cancel
+                      🗑️ ביטול
                     </button>
                   </>
                 ) : filter === "received" && msg.status === "pending" ? (
@@ -294,17 +293,17 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
                       style={buttonStylePurple}
                       onClick={() => handleAccept(msg.proposalId || msg._id)}
                     >
-                      ✅ Accept
+                      ✅ אשר
                     </button>
                     <button
                       style={buttonStylePink}
                       onClick={() => handleReject(msg.proposalId || msg._id)}
                     >
-                      ❌ Reject
+                      ❌ דחה
                     </button>
                   </>
                 ) : (
-                  <p style={{ alignSelf: "center" }}>Status: {msg.status}</p>
+                  <p style={{ alignSelf: "center" }}>סטטוס: {msg.status}</p>
                 )}
               </div>
             </div>
@@ -359,7 +358,7 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
                 fontWeight: "bold",
               }}
             >
-              Close
+              סגור
             </button>
           </div>
         </div>
@@ -367,4 +366,3 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
     </div>
   );
 }
-```

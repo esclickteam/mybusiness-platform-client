@@ -1,4 +1,3 @@
-```javascript
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -12,9 +11,9 @@ export default function PaymentSuccess() {
     async function fetchUser() {
       try {
         const { data } = await API.get("/auth/me", { withCredentials: true });
-        const user = data.user || data; // depends on how the server returns
+        const user = data.user || data; // תלוי איך השרת מחזיר
         setUser(user);
-        // if you are returning a new token, you also need to update it:
+        // אם אתם מחזירים טוקן חדש יש לעדכן גם אותו:
         // setToken(data.accessToken);
 
         if (user.role === "business" && user.businessId) {
@@ -30,6 +29,5 @@ export default function PaymentSuccess() {
     fetchUser();
   }, [navigate, setUser, setToken]);
 
-  return <div>Loading data after payment, please wait...</div>;
+  return <div>טוען נתונים לאחר תשלום, אנא המתן...</div>;
 }
-```

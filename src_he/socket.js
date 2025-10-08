@@ -8,20 +8,20 @@ let socketInstance = null;  // singleton instance
 let currentToken   = null;  // last used token
 
 /**
- * מחזיר מופע Socket.IO יחיד; אם כבר קיים עם אותו טוקן – מחזיר אותו
+ * Returns a single Socket.IO instance; if one already exists with the same token – returns it
  * @param {() => Promise<string|null>} getValidAccessToken
  * @param {() => void|Promise<void>}   onLogout
  * @param {string|null}                businessId
  */
 export async function createSocket(getValidAccessToken, onLogout, businessId = null) {
-  // קבל טוקן עדכני
+  // Get the latest token
   const token = await getValidAccessToken();
   if (!token) {
     onLogout?.();
     return null;
   }
 
-  // בדיקת role ו-businessId
+  // Check role and businessId
   const role = getUserRole();
   const needBiz = ["business", "business-dashboard"];
   if (needBiz.includes(role) && !businessId) {
@@ -29,12 +29,12 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     return null;
   }
 
-  // אם כבר יש מופע פעיל עם אותו טוקן – החזרו
+  // If there is already an active instance with the same token – return it
   if (socketInstance && token === currentToken) {
     return socketInstance;
   }
 
-  // אחרת – נתקו מופע קודם (אם היה)
+  // Otherwise – disconnect the previous instance (if there was one)
   if (socketInstance) {
     socketInstance.removeAllListeners();
     socketInstance.disconnect();
@@ -43,7 +43,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
   currentToken = token;
 
-  // צרו מופע חדש
+  // Create a new instance
   socketInstance = io(SOCKET_URL, {
     path: "/socket.io",
     transports: ["websocket"],
@@ -51,19 +51,19 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     reconnection: true,
   });
 
-  // לוג חיבור/ניתוק
+  // Connection/disconnection log
   socketInstance.on("connect", () =>
     console.log(`✅ WS connected (${socketInstance.id})`)
   );
   socketInstance.on("disconnect", (reason) => {
     console.log(`🔴 WS disconnected: ${reason}`);
-    // אם הסיבה היא client/server disconnect – נשטוף את המופע
+    // If the reason is client/server disconnect – reset the instance
     if (["io client disconnect", "io server disconnect"].includes(reason)) {
       socketInstance = null;
     }
   });
 
-  // טיפול ב-expired token
+  // Handling expired token
   const refreshAndReconnect = async () => {
     const newT = await getValidAccessToken();
     if (!newT) {

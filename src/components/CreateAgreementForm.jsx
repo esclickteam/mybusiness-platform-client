@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import "./CreateAgreementForm.css";
@@ -54,39 +53,39 @@ export default function CreateAgreementForm({
     setError("");
 
     if (!formData.partnerBusinessName.trim()) {
-      setError("You must enter a partner business name.");
+      setError("יש להזין שם עסק שותף.");
       return;
     }
     if (!formData.title.trim()) {
-      setError("You must enter an agreement title.");
+      setError("יש להזין כותרת הסכם.");
       return;
     }
     if (!formData.description.trim()) {
-      setError("Please fill in the agreement description.");
+      setError("נא למלא תיאור הסכם.");
       return;
     }
     if (!formData.giving.trim()) {
-      setError("Please fill in what you will provide under the agreement.");
+      setError("נא למלא מה תספק במסגרת ההסכם.");
       return;
     }
     if (!formData.receiving.trim()) {
-      setError("Please fill in what you will receive under the agreement.");
+      setError("נא למלא מה תקבל במסגרת ההסכם.");
       return;
     }
     if (!formData.type) {
-      setError("Please select a type of collaboration.");
+      setError("נא לבחור סוג שיתוף פעולה.");
       return;
     }
     if (!formData.cancelAnytime && (!formData.startDate || !formData.endDate)) {
-      setError("Please fill in the start and end dates or choose 'can be canceled at any time'.");
+      setError("נא למלא תאריכי התחלה וסיום או לבחור 'ניתן לבטל בכל שלב'.");
       return;
     }
     if (!fromBusinessId) {
-      setError("The sender business ID is invalid.");
+      setError("מזהה העסק השולח אינו תקין.");
       return;
     }
     if (!partnerBusiness?._id) {
-      setError("The partner business ID is invalid.");
+      setError("מזהה העסק השותף אינו תקין.");
       return;
     }
 
@@ -105,11 +104,11 @@ export default function CreateAgreementForm({
 
       console.log("Response from create agreement API:", res.data);
 
-      alert("The agreement has been created and sent for the other party's signature!");
+      alert("ההסכם נוצר ונשלח לחתימה של הצד השני!");
       if (onCreated) onCreated(res.data);
     } catch (err) {
       console.error("Error creating agreement:", err);
-      setError("Error creating the agreement: " + (err.response?.data?.message || err.message));
+      setError("שגיאה ביצירת ההסכם: " + (err.response?.data?.message || err.message));
     } finally {
       setSending(false);
     }
@@ -117,72 +116,72 @@ export default function CreateAgreementForm({
 
   return (
     <form onSubmit={handleSubmit} className="create-agreement-form" dir="rtl">
-      <h2 className="form-title">Collaboration Agreement</h2>
+      <h2 className="form-title">הסכם שיתוף פעולה</h2>
 
       <label>
-        Sender Business Name:
+        שם העסק השולח:
         <input type="text" name="fromBusinessName" value={formData.fromBusinessName} disabled className="form-input" />
       </label>
 
       <label>
-        Partner Business Name:
+        שם העסק השותף:
         <input type="text" name="partnerBusinessName" value={formData.partnerBusinessName} disabled className="form-input" />
       </label>
 
       <label>
-        Agreement Title:
+        כותרת ההסכם:
         <input
           type="text"
           name="title"
           value={formData.title}
           onChange={handleChange}
           required
-          placeholder="Agreement Title"
+          placeholder="כותרת ההסכם"
           className="form-input"
         />
       </label>
 
       <label>
-        Agreement Description:
+        תיאור ההסכם:
         <textarea
           name="description"
           value={formData.description}
           onChange={handleChange}
           required
           rows={4}
-          placeholder="Agreement Description"
+          placeholder="תיאור ההסכם"
           className="form-textarea"
         />
       </label>
 
       <label>
-        What you will provide under the agreement:
+        מה תספק במסגרת ההסכם:
         <textarea
           name="giving"
           value={formData.giving}
           onChange={handleChange}
           required
           rows={2}
-          placeholder="What you will provide under the agreement"
+          placeholder="מה תספק במסגרת ההסכם"
           className="form-textarea"
         />
       </label>
 
       <label>
-        What you will receive under the agreement:
+        מה תקבל במסגרת ההסכם:
         <textarea
           name="receiving"
           value={formData.receiving}
           onChange={handleChange}
           required
           rows={2}
-          placeholder="What you will receive under the agreement"
+          placeholder="מה תקבל במסגרת ההסכם"
           className="form-textarea"
         />
       </label>
 
       <label>
-        Type of Collaboration:
+        סוג שיתוף פעולה:
         <select
           name="type"
           value={formData.type}
@@ -190,26 +189,26 @@ export default function CreateAgreementForm({
           required
           className="form-input"
         >
-          <option value="">Select Type</option>
-          <option value="Unilateral">Unilateral</option>
-          <option value="Bilateral">Bilateral</option>
-          <option value="With Commissions">With Commissions</option>
+          <option value="">בחר סוג</option>
+          <option value="חד צדדי">חד צדדי</option>
+          <option value="דו צדדי">דו צדדי</option>
+          <option value="עם עמלות">עם עמלות</option>
         </select>
       </label>
 
       <label>
-        Commissions / Payment (if any):
+        עמלות / תשלום (אם יש):
         <input
           type="text"
           name="payment"
           value={formData.payment}
           onChange={handleChange}
-          placeholder="Commissions / Payment"
+          placeholder="עמלות / תשלום"
           className="form-input"
         />
       </label>
 
-      <label>Agreement Validity:</label>
+      <label>תוקף ההסכם:</label>
       <div className="date-inputs">
         <input
           type="date"
@@ -236,7 +235,7 @@ export default function CreateAgreementForm({
           checked={formData.cancelAnytime}
           onChange={handleChange}
         />
-        Can cancel the agreement at any time
+        ניתן לבטל את ההסכם בכל שלב
       </label>
 
       <label className="checkbox-label">
@@ -246,15 +245,14 @@ export default function CreateAgreementForm({
           checked={formData.confidentiality}
           onChange={handleChange}
         />
-        Confidentiality Clause
+        סעיף סודיות
       </label>
 
       {error && <p className="error-message">{error}</p>}
 
       <button type="submit" disabled={sending} className="submit-btn">
-        {sending ? "Sending..." : "Create Agreement"}
+        {sending ? "שולח..." : "צור הסכם"}
       </button>
     </form>
   );
 }
-```

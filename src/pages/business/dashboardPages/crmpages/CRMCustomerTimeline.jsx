@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./CRMCustomerTimeline.css";
@@ -9,23 +8,23 @@ export default function CRMCustomerTimeline({ client, businessId }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // ✅ Consolidated call to the server
+        // ✅ קריאה מרוכזת לשרת
         const res = await API.get(`/crm-customer/${client._id}`, {
           params: { businessId },
         });
 
         const { appointments = [], events: crmEvents = [] } = res.data;
 
-        // ✅ Mapping appointments
+        // ✅ מיפוי פגישות
         const mappedAppointments = appointments.map((appt) => ({
           id: appt._id,
           type: "meeting",
-          title: appt.serviceName || "Meeting",
+          title: appt.serviceName || "פגישה",
           date: appt.date && appt.time ? new Date(`${appt.date}T${appt.time}`) : null,
           notes: appt.note || "",
         }));
 
-        // ✅ Mapping CRM events
+        // ✅ מיפוי אירועי CRM
         const mappedEvents = crmEvents.map((ev) => ({
           id: ev._id,
           type: ev.type,
@@ -34,7 +33,7 @@ export default function CRMCustomerTimeline({ client, businessId }) {
           notes: ev.notes,
         }));
 
-        // ✅ Combining everything + sorting by date
+        // ✅ שילוב הכל + מיון לפי תאריך
         const combined = [...mappedAppointments, ...mappedEvents].sort((a, b) => {
           if (!a.date) return 1;
           if (!b.date) return -1;
@@ -43,7 +42,7 @@ export default function CRMCustomerTimeline({ client, businessId }) {
 
         setEvents(combined);
       } catch (err) {
-        console.error("❌ Error loading Timeline:", err);
+        console.error("❌ שגיאה בטעינת Timeline:", err);
       }
     };
 
@@ -53,19 +52,19 @@ export default function CRMCustomerTimeline({ client, businessId }) {
   }, [client?._id, businessId]);
 
   const typeLabels = {
-    call: "📞 Call",
-    message: "💬 Message",
-    meeting: "📅 Meeting",
-    task: "✅ Task",
-    file: "📄 Content",
+    call: "📞 שיחה",
+    message: "💬 הודעה",
+    meeting: "📅 פגישה",
+    task: "✅ משימה",
+    file: "📄 תוכן",
   };
 
   return (
     <div className="timeline-container">
-      <h3>📌 Timeline of {client.fullName}</h3>
+      <h3>📌 Timeline של {client.fullName}</h3>
 
       {events.length === 0 ? (
-        <p className="no-events">No events for this client</p>
+        <p className="no-events">אין אירועים ללקוח זה</p>
       ) : (
         <div className="timeline-list">
           {events.map((e) => (
@@ -76,7 +75,7 @@ export default function CRMCustomerTimeline({ client, businessId }) {
               </div>
               <div className="event-meta">
                 <span>
-                  {e.date ? e.date.toLocaleString("he-IL") : "No date"}
+                  {e.date ? e.date.toLocaleString("he-IL") : "ללא תאריך"}
                 </span>
               </div>
               {e.notes && <p className="event-notes">{e.notes}</p>}
@@ -87,4 +86,3 @@ export default function CRMCustomerTimeline({ client, businessId }) {
     </div>
   );
 }
-```

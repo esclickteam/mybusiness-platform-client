@@ -1,12 +1,11 @@
-```javascript
 import React from "react";
 
 const AppointmentsList = ({ appointments }) => {
   if (!appointments || appointments.length === 0) {
     return (
       <div className="graph-box">
-        <h4>📅 Appointments Calendar</h4>
-        <p style={{ textAlign: "center" }}>No scheduled appointments.</p>
+        <h4>📅 יומן פגישות</h4>
+        <p style={{ textAlign: "center" }}>אין פגישות מתוכננות.</p>
       </div>
     );
   }
@@ -17,12 +16,12 @@ const AppointmentsList = ({ appointments }) => {
 
   return (
     <div className="graph-box">
-      <h4>📅 Upcoming Appointments</h4>
+      <h4>📅 פגישות קרובות</h4>
       <ul style={{ listStyle: "none", padding: 0, fontSize: "14px" }}>
         {sorted.map((item, i) => {
-          const clientName = item.clientName || "Unknown";
+          const clientName = item.clientName || "לא ידוע";
           const serviceName =
-            item.serviceName || item.service?.name || item.service || "Unknown";
+            item.serviceName || item.service?.name || item.service || "לא ידוע";
 
           return (
             <li key={i} style={{ marginBottom: "10px" }}>
@@ -36,7 +35,7 @@ const AppointmentsList = ({ appointments }) => {
                 })}
               </strong>
               <br />
-              Client: {clientName} | Service: {serviceName}
+              לקוח: {clientName} | שירות: {serviceName}
             </li>
           );
         })}
@@ -46,4 +45,3 @@ const AppointmentsList = ({ appointments }) => {
 };
 
 export default AppointmentsList;
-```

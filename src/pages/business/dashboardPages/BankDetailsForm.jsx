@@ -1,7 +1,6 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import API from "@api"; // Assume the API is set up with axios
+import API from "@api"; // נניח שה-API מוגדר עם axios
 import "./BankDetailsForm.css";
 
 const BankDetailsForm = () => {
@@ -46,7 +45,7 @@ const BankDetailsForm = () => {
 
     try {
       if (!user) {
-        throw new Error("Business details are not available. Please log in again.");
+        throw new Error("פרטי העסק אינם זמינים. יש להתחבר מחדש.");
       }
 
       const formData = new FormData();
@@ -59,10 +58,10 @@ const BankDetailsForm = () => {
       const response = await API.put("/business/my/bank-details", formData);
 
       if (response.status !== 200) {
-        throw new Error("Error saving details");
+        throw new Error("שגיאה בשמירת הפרטים");
       }
 
-      alert("Details saved successfully!");
+      alert("הפרטים נשמרו בהצלחה!");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -72,24 +71,24 @@ const BankDetailsForm = () => {
 
   return (
     <section className="bank-details-form">
-      <h2>🏦 Bank Account Details for Payment Receipt</h2>
+      <h2>🏦 פרטי חשבון בנק לקבלת תשלום</h2>
       <p className="disclaimer">
-        It is your responsibility to update the details in case of changes.
+        באחריותך לעדכן את הפרטים במקרה של שינוי.
       </p>
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <label htmlFor="bankName">Bank Name:</label>
+        <label htmlFor="bankName">שם הבנק:</label>
         <input
           type="text"
           id="bankName"
           name="bankName"
-          placeholder="Bank Hapoalim"
+          placeholder="בנק הפועלים"
           required
           value={form.bankName}
           onChange={handleChange}
         />
 
-        <label htmlFor="branchNumber">Branch Number:</label>
+        <label htmlFor="branchNumber">מספר סניף:</label>
         <input
           type="text"
           id="branchNumber"
@@ -100,7 +99,7 @@ const BankDetailsForm = () => {
           onChange={handleChange}
         />
 
-        <label htmlFor="accountNumber">Account Number:</label>
+        <label htmlFor="accountNumber">מספר חשבון:</label>
         <input
           type="text"
           id="accountNumber"
@@ -111,18 +110,18 @@ const BankDetailsForm = () => {
           onChange={handleChange}
         />
 
-        <label htmlFor="fullName">Full Name:</label>
+        <label htmlFor="fullName">שם מלא:</label>
         <input
           type="text"
           id="fullName"
           name="fullName"
-          placeholder="The name as it appears in the bank"
+          placeholder="השם כפי שמופיע בבנק"
           required
           value={form.fullName}
           onChange={handleChange}
         />
 
-        <label htmlFor="idNumber">ID Number / Company Number:</label>
+        <label htmlFor="idNumber">תעודת זהות / ח.פ:</label>
         <input
           type="text"
           id="idNumber"
@@ -134,7 +133,7 @@ const BankDetailsForm = () => {
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "💾 Save Details"}
+          {loading ? "שומר..." : "💾 שמור פרטים"}
         </button>
       </form>
 
@@ -144,4 +143,3 @@ const BankDetailsForm = () => {
 };
 
 export default BankDetailsForm;
-```

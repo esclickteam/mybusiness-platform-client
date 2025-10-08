@@ -1,4 +1,3 @@
-```javascript
 import React, {
   createContext,
   useContext,
@@ -16,10 +15,10 @@ const initialState = {
 };
 
 function normalizeNotification(notif) {
-  console.log("[normalizeNotification] Input:", notif);
+  console.log("[normalizeNotification] קלט:", notif);
 
   let text = notif.text;
-  // ✅ Handling task reminders
+  // ✅ טיפול בהתראות משימות
   if (notif.type === "taskReminder" && !text?.startsWith("⏰")) {
     text = `⏰ ${text}`;
   }
@@ -42,7 +41,7 @@ function reducer(state, action) {
     case "SET_NOTIFICATIONS": {
       let list = action.payload.map(normalizeNotification);
 
-      // Keeping special rules for AI
+      // שמירה על כללים מיוחדים ל־AI
       const filtered = [];
       const aiThreads = new Set(
         list.filter((n) => n.type === "recommendation").map((n) => n.threadId)
@@ -66,18 +65,18 @@ function reducer(state, action) {
       const newNotif = normalizeNotification(action.payload);
       console.log("[ADD_NOTIFICATION] newNotif:", newNotif);
 
-      // Do not add a regular client message if there is already an AI recommendation
+      // אל תוסיף הודעת client רגילה אם כבר יש AI recommendation
       if (
         newNotif.type === "message" &&
         state.notifications.some(
           (n) => n.threadId === newNotif.threadId && n.type === "recommendation"
         )
       ) {
-        console.log("[ADD_NOTIFICATION] AI recommendation exists, skipping regular");
+        console.log("[ADD_NOTIFICATION] קיימת המלצת AI, מדלג על רגילה");
         return state;
       }
 
-      // If this is an AI recommendation – replace regular
+      // אם זו המלצת AI – תחליף רגילה
       if (newNotif.type === "recommendation") {
         const list = [
           newNotif,
@@ -87,7 +86,7 @@ function reducer(state, action) {
         return { notifications: list, unreadCount };
       }
 
-      // Regular – do not insert duplicates
+      // רגילה – אל תכניס כפילויות
       const exists = state.notifications.some(
         (n) =>
           n.id === newNotif.id ||
@@ -140,34 +139,34 @@ export function NotificationsProvider({ children }) {
     const onConnect = () => {
       socket.emit("joinBusinessRoom", user.businessId);
 
-      // 📩 New messages
+      // 📩 הודעות חדשות
       socket.on("newMessage", (msg) => {
         const senderRole = msg.role || "client";
         const notif = {
           threadId: msg.conversationId,
-          text: `✉️ New message from ${
-            senderRole === "client" ? "client" : "business"
+          text: `✉️ הודעה חדשה מ${
+            senderRole === "client" ? "לקוח" : "עסק"
           }`,
           timestamp: msg.timestamp || msg.createdAt,
           read: false,
           unreadCount: 1,
           type: "message",
-          actorName: senderRole === "client" ? "client" : "business",
+          actorName: senderRole === "client" ? "לקוח" : "עסק",
         };
         dispatch({ type: "ADD_NOTIFICATION", payload: notif });
       });
 
-      // 🔔 Regular notifications (including taskReminder)
+      // 🔔 התראות רגילות (כולל taskReminder)
       socket.on("newNotification", (notif) => {
         dispatch({ type: "ADD_NOTIFICATION", payload: notif });
       });
 
-      // 🤖 AI notifications
+      // 🤖 התראות AI
       socket.on("newRecommendationNotification", (notif) => {
         dispatch({ type: "ADD_NOTIFICATION", payload: notif });
       });
 
-      // 📊 Update unread messages count
+      // 📊 עדכון ספירת הודעות שלא נקראו
       socket.on("unreadMessagesCount", (count) => {
         dispatch({ type: "UPDATE_UNREAD_COUNT", payload: count });
       });
@@ -225,4 +224,3 @@ export function NotificationsProvider({ children }) {
 export function useNotifications() {
   return useContext(NotificationsContext);
 }
-```

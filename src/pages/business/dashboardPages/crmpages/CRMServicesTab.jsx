@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import "./CRMServicesTab.css";
 import API from "@api";
@@ -58,7 +57,7 @@ const CRMServicesTab = () => {
 
   const handleAddOrUpdateService = useCallback(async () => {
     if (!newService.name.trim() || newService.price === "") {
-      alert("Please fill in the service name and price");
+      alert("נא למלא שם שירות ומחיר");
       return;
     }
 
@@ -96,7 +95,7 @@ const CRMServicesTab = () => {
       setShowAddForm(false);
       resetForm();
     } catch (error) {
-      alert("Error saving the service");
+      alert("שגיאה בשמירת השירות");
       console.error(error);
     }
   }, [newService, editingService, resetForm, services]);
@@ -117,24 +116,24 @@ const CRMServicesTab = () => {
   }, []);
 
   const handleDelete = useCallback(async (serviceId) => {
-    if (!window.confirm("Are you sure you want to delete the service?")) return;
+    if (!window.confirm("בטוח שברצונך למחוק את השירות?")) return;
 
     try {
       await API.delete(`/business/my/services/${serviceId}`);
       setServices((prev) => prev.filter((s) => s._id !== serviceId));
     } catch (err) {
-      alert("Error deleting the service");
+      alert("שגיאה במחיקת השירות");
       console.error(err);
     }
   }, []);
 
   return (
     <div className="crm-services-tab" dir="rtl">
-      <h2>🛠️ Services</h2>
+      <h2>🛠️ שירותים</h2>
       <div className="services-header">
         <input
           type="text"
-          placeholder="Search by service name..."
+          placeholder="חפש לפי שם השירות..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="services-search-input"
@@ -147,7 +146,7 @@ const CRMServicesTab = () => {
             resetForm();
           }}
         >
-          {showAddForm ? "Cancel" : editingService ? "Edit Service" : "Add Service"}
+          {showAddForm ? "בטל" : editingService ? "ערוך שירות" : "הוסף שירות"}
         </button>
       </div>
 
@@ -160,31 +159,31 @@ const CRMServicesTab = () => {
           }}
         >
           <label>
-            Service Name:
+            שם שירות:
             <input
               type="text"
               value={newService.name}
               onChange={(e) =>
                 setNewService((prev) => ({ ...prev, name: e.target.value }))
               }
-              placeholder="For example: Facial Treatment"
+              placeholder="לדוגמה: טיפול פנים"
               required
             />
           </label>
 
           <label>
-            Service Description:
+            תיאור השירות:
             <input
               type="text"
               value={newService.description}
               onChange={(e) =>
                 setNewService((prev) => ({ ...prev, description: e.target.value }))
               }
-              placeholder="Details about the service..."
+              placeholder="פירוט על השירות..."
             />
           </label>
 
-          <label>Service Duration:</label>
+          <label>משך השירות:</label>
           <div className="duration-container">
             <select
               value={newService.durationHours}
@@ -194,7 +193,7 @@ const CRMServicesTab = () => {
             >
               {[...Array(24)].map((_, i) => (
                 <option key={i} value={i}>
-                  {i} hours
+                  {i} שעות
                 </option>
               ))}
             </select>
@@ -206,28 +205,28 @@ const CRMServicesTab = () => {
             >
               {[0, 15, 30, 45].map((m) => (
                 <option key={m} value={m}>
-                  {m} minutes
+                  {m} דקות
                 </option>
               ))}
             </select>
           </div>
 
           <label>
-            Price (NIS):
+            מחיר (ש"ח):
             <input
               type="number"
               value={newService.price}
               onChange={(e) =>
                 setNewService((prev) => ({ ...prev, price: e.target.value }))
               }
-              placeholder="For example: 250"
+              placeholder="לדוגמה: 250"
               min="0"
               required
             />
           </label>
 
           <label>
-            Service Image (optional):
+            תמונת שירות (לא חובה):
             <input
               type="file"
               accept="image/*"
@@ -238,7 +237,7 @@ const CRMServicesTab = () => {
           </label>
 
           <button type="submit" className="add-btn">
-            {editingService ? "Update Service" : "Save Service"}
+            {editingService ? "עדכן שירות" : "שמור שירות"}
           </button>
         </form>
       )}
@@ -246,17 +245,17 @@ const CRMServicesTab = () => {
       <table className="services-table">
         <thead>
           <tr>
-            <th>Name + Image + Description</th>
-            <th>Duration (minutes)</th>
-            <th>Price (NIS)</th>
-            <th>Actions</th>
+            <th>שם + תמונה + תיאור</th>
+            <th>משך (דקות)</th>
+            <th>מחיר (ש"ח)</th>
+            <th>פעולות</th>
           </tr>
         </thead>
         <tbody>
           {filteredServices.length === 0 ? (
             <tr>
               <td colSpan="4" style={{ textAlign: "center", padding: "10px" }}>
-                No services found
+                לא נמצאו שירותים
               </td>
             </tr>
           ) : (
@@ -303,18 +302,18 @@ const CRMServicesTab = () => {
                   <button
                     onClick={() => handleEdit(service)}
                     className="action-btn edit-btn"
-                    aria-label={`Edit service ${service.name}`}
-                    title="Edit"
+                    aria-label={`ערוך שירות ${service.name}`}
+                    title="ערוך"
                   >
-                    <span>Edit</span> <span>✏️</span>
+                    <span>ערוך</span> <span>✏️</span>
                   </button>
                   <button
                     onClick={() => handleDelete(service._id)}
                     className="action-btn delete-btn"
-                    aria-label={`Delete service ${service.name}`}
-                    title="Delete"
+                    aria-label={`בטל שירות ${service.name}`}
+                    title="בטל"
                   >
-                    <span>Delete</span> <span>❌</span>
+                    <span>בטל</span> <span>❌</span>
                   </button>
                 </td>
               </tr>
@@ -327,4 +326,3 @@ const CRMServicesTab = () => {
 };
 
 export default CRMServicesTab;
-```

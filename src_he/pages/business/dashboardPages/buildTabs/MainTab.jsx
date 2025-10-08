@@ -1,10 +1,11 @@
+```javascript
 import React, { useState, useEffect } from "react";
 import "../build/Build.css";
 import "./MainTab.css";
 import { dedupeByPreview } from "../../../../utils/dedupe";
 
 export default function MainTab({ businessDetails, socket }) {
-  // הגנה על undefined
+  // Protection against undefined
   const raw = businessDetails?.mainImages || [];
   const normalized = raw
     .map(item => {
@@ -17,11 +18,11 @@ export default function MainTab({ businessDetails, socket }) {
   const unique = dedupeByPreview(normalized);
   const toShow = unique.slice(0, 6);
 
-  // סטייט ביקורות
+  // Reviews state
   const initialReviews = businessDetails?.reviews || [];
   const [reviews, setReviews] = useState(initialReviews);
 
-  // טעינת ביקורות ראשונית ב-useEffect
+  // Loading initial reviews in useEffect
   useEffect(() => {
     async function fetchInitialReviews() {
       if (!businessDetails?._id) return;
@@ -38,7 +39,7 @@ export default function MainTab({ businessDetails, socket }) {
     fetchInitialReviews();
   }, [businessDetails?._id]);
 
-  // עדכוני ביקורות בזמן אמת מ-socket (אופציונלי)
+  // Real-time review updates from socket (optional)
   useEffect(() => {
     if (!socket) return;
 
@@ -60,13 +61,13 @@ export default function MainTab({ businessDetails, socket }) {
     <>
       {toShow.length === 0 ? (
         <div className="main-images-grid empty">
-          <p className="no-images">אין תמונות להצגה</p>
+          <p className="no-images">No images to display</p>
         </div>
       ) : (
         <div className="main-images-grid">
           {toShow.map((item, i) => (
             <div key={item.preview} className="grid-item">
-              <img src={item.preview} alt={`תמונה ראשית ${i + 1}`} className="grid-img" />
+              <img src={item.preview} alt={`Main image ${i + 1}`} className="grid-img" />
             </div>
           ))}
         </div>
@@ -74,11 +75,11 @@ export default function MainTab({ businessDetails, socket }) {
 
       {lastTwoReviews.length > 0 && (
         <div className="reviews-section">
-          <h3>ביקורות אחרונות</h3>
+          <h3>Recent Reviews</h3>
           {lastTwoReviews.map((review, i) => (
             <div key={review._id || review.id || i} className="review-card">
               <div className="review-header">
-                <strong className="review-user">{review.authorName || review.userName || "לקוח"}</strong>
+                <strong className="review-user">{review.authorName || review.userName || "Customer"}</strong>
                 <span className="star-text">⭐ {review.rating || review.averageScore}</span>
               </div>
               <p className="review-text">{review.comment}</p>
@@ -89,3 +90,4 @@ export default function MainTab({ businessDetails, socket }) {
     </>
   );
 }
+```

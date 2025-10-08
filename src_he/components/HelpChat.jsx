@@ -1,16 +1,17 @@
+```javascript
 import React, { useState, useRef, useEffect } from "react";
 
 export default function HelpChat() {
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState([]); // הודעות שיחה
+  const [messages, setMessages] = useState([]); // chat messages
   const messagesEndRef = useRef(null);
 
-  // גלילה אוטומטית לתחתית הצ'אט כשיש הודעות חדשות
+  // automatic scrolling to the bottom of the chat when there are new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // שליחת שאלה לשרת והוספת התשובה לשיחה
+  // sending a question to the server and adding the answer to the chat
   async function sendQuestion() {
     if (!input.trim()) return;
 
@@ -28,13 +29,13 @@ export default function HelpChat() {
 
       const botMessage = {
         sender: "bot",
-        text: data.answer || "מצטערים, לא נמצאה תשובה מתאימה.",
+        text: data.answer || "Sorry, no suitable answer was found.",
       };
       setMessages((msgs) => [...msgs, botMessage]);
     } catch (err) {
       setMessages((msgs) => [
         ...msgs,
-        { sender: "bot", text: "אירעה שגיאה, נסה שנית מאוחר יותר." },
+        { sender: "bot", text: "An error occurred, please try again later." },
       ]);
     }
   }
@@ -51,7 +52,7 @@ export default function HelpChat() {
         boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
       }}
     >
-      <h2 style={{ textAlign: "center", marginBottom: 20 }}>שאלות ותשובות - עזרה</h2>
+      <h2 style={{ textAlign: "center", marginBottom: 20 }}>Questions and Answers - Help</h2>
 
       <div
         style={{
@@ -66,7 +67,7 @@ export default function HelpChat() {
         }}
       >
         {messages.length === 0 && (
-          <p style={{ textAlign: "center", color: "#888" }}>כתוב שאלה כדי להתחיל</p>
+          <p style={{ textAlign: "center", color: "#888" }}>Type a question to start</p>
         )}
         {messages.map((msg, idx) => (
           <div
@@ -98,7 +99,7 @@ export default function HelpChat() {
       <div style={{ display: "flex", gap: 8 }}>
         <input
           type="text"
-          placeholder="כתוב כאן את השאלה שלך..."
+          placeholder="Type your question here..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendQuestion()}
@@ -111,7 +112,7 @@ export default function HelpChat() {
             direction: "rtl",
             outline: "none",
           }}
-          aria-label="שאלת עזרה"
+          aria-label="Help question"
         />
         <button
           onClick={sendQuestion}
@@ -124,11 +125,12 @@ export default function HelpChat() {
             fontSize: 16,
             cursor: "pointer",
           }}
-          aria-label="שלח שאלה"
+          aria-label="Send question"
         >
-          שלח
+          Send
         </button>
       </div>
     </div>
   );
 }
+```

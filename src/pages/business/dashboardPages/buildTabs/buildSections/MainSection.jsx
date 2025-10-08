@@ -1,4 +1,3 @@
-```javascript
 // src/pages/business/MainSection.jsx
 import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
@@ -27,7 +26,7 @@ export default function MainSection({
   const containerRef = useRef();
   const [isDeletingLogo, setIsDeletingLogo] = useState(false);
 
-  // Cities from the API
+  // ערים מה־API
   const [cityOptions, setCityOptions] = useState([]);
   const [loadingCities, setLoadingCities] = useState(true);
 
@@ -48,7 +47,7 @@ export default function MainSection({
         );
         setCityOptions(unique.map(c => ({ value: c, label: c })));
       } catch (err) {
-        console.error("Error loading cities:", err);
+        console.error("שגיאה בטעינת ערים:", err);
       } finally {
         setLoadingCities(false);
       }
@@ -91,10 +90,10 @@ export default function MainSection({
   const sortedReviews = [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
   const lastTwoReviews = sortedReviews.slice(0, 2);
 
-  // Deleting logo
+  // מחיקת לוגו
   async function handleDeleteLogo() {
     if (isSaving || isDeletingLogo) return;
-    if (!window.confirm("Are you sure you want to delete the logo?")) return;
+    if (!window.confirm("אתה בטוח שברצונך למחוק את הלוגו?")) return;
     try {
       setIsDeletingLogo(true);
       const token = localStorage.getItem("token");
@@ -109,15 +108,15 @@ export default function MainSection({
 
       if (!response.ok) {
         const error = await response.json();
-        alert("Error deleting the logo: " + (error.error || response.statusText));
+        alert("שגיאה במחיקת הלוגו: " + (error.error || response.statusText));
         setIsDeletingLogo(false);
         return;
       }
 
       handleInputChange({ target: { name: "logo", value: "" } });
-      alert("The logo has been successfully deleted");
+      alert("הלוגו נמחק בהצלחה");
     } catch (err) {
-      alert("Error deleting the logo");
+      alert("שגיאה במחיקת הלוגו");
       console.error(err);
     } finally {
       setIsDeletingLogo(false);
@@ -127,91 +126,91 @@ export default function MainSection({
   return (
     <>
       <div className="form-column" ref={containerRef}>
-        <h2>🎨 Edit Business Details</h2>
+        <h2>🎨 עריכת פרטי העסק</h2>
 
         <label>
-          Business Name: <span style={{ color: "red" }}>*</span>
+          שם העסק: <span style={{ color: "red" }}>*</span>
         </label>
         <input
           type="text"
           name="businessName"
           value={businessName}
           onChange={handleInputChange}
-          placeholder="Enter business name"
+          placeholder="הכנס שם העסק"
           required
           disabled={isSaving}
         />
 
-        <label>Description:</label>
+        <label>תיאור:</label>
         <textarea
           name="description"
           value={description}
           onChange={handleInputChange}
-          placeholder="Enter a short description"
+          placeholder="הכנס תיאור קצר"
           disabled={isSaving}
         />
 
-        <label>Phone:</label>
+        <label>טלפון:</label>
         <input
           type="text"
           name="phone"
           value={phone}
           onChange={handleInputChange}
-          placeholder="Enter phone number"
+          placeholder="הכנס טלפון"
           disabled={isSaving}
         />
 
-        <label>Email:</label>
+        <label>אימייל:</label>
         <input
           type="email"
           name="email"
           value={email}
           onChange={handleInputChange}
-          placeholder="Enter email"
+          placeholder="הכנס מייל"
           disabled={isSaving}
         />
 
         <label>
-          Category: <span style={{ color: "red" }}>*</span>
+          קטגוריה: <span style={{ color: "red" }}>*</span>
         </label>
         <Select
           options={categoryOptions}
           value={categoryOptions.find(o => o.value === category) || null}
           onChange={wrapSelectChange("category")}
           isDisabled={isSaving}
-          placeholder="Type category"
+          placeholder="הקלד קטגוריה"
           isClearable
           filterOption={({ label }, input) =>
             label.toLowerCase().startsWith(input.toLowerCase())
           }
           noOptionsMessage={({ inputValue }) =>
-            inputValue ? "No matching categories" : null
+            inputValue ? "אין קטגוריות מתאימות" : null
           }
           menuPortalTarget={document.body}
           styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
         />
 
         <label>
-          City: <span style={{ color: "red" }}>*</span>
+          עיר: <span style={{ color: "red" }}>*</span>
         </label>
         <Select
           options={cityOptions}
           value={cityOptions.find(o => o.value === city) || null}
           onChange={wrapSelectChange("address.city")}
           isDisabled={isSaving || loadingCities}
-          placeholder={loadingCities ? "Loading cities..." : "Type city"}
+          placeholder={loadingCities ? "טוען ערים..." : "הקלד עיר"}
           isClearable
           filterOption={({ label }, input) =>
             label.toLowerCase().startsWith(input.toLowerCase())
           }
           noOptionsMessage={({ inputValue }) =>
-            inputValue ? "No matching cities" : null
+            inputValue ? "אין ערים מתאימות" : null
           }
           menuPortalTarget={document.body}
           styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
         />
 
-        <label>Logo:</label>
+        <label>לוגו:</label>
         <input
           type="file"
           name="logo"
@@ -228,7 +227,7 @@ export default function MainSection({
             onClick={() => logoInputRef.current?.click()}
             disabled={isSaving || isDeletingLogo}
           >
-            Upload Logo
+            העלאת לוגו
           </button>
           {logo && (
             <button
@@ -236,14 +235,14 @@ export default function MainSection({
               className="delete-btn"
               onClick={handleDeleteLogo}
               disabled={isSaving || isDeletingLogo}
-              title="Delete Logo"
+              title="מחק לוגו"
             >
-              {isDeletingLogo ? "Deleting..." : "❌ Delete Logo"}
+              {isDeletingLogo ? "מוחק..." : "❌ מחק לוגו"}
             </button>
           )}
         </div>
 
-        <label>Main Images:</label>
+        <label>תמונות ראשיות:</label>
         <input
           type="file"
           name="main-images"
@@ -257,12 +256,12 @@ export default function MainSection({
         <div className="gallery-preview">
           {limitedMainImgs.map(({ preview, publicId }, i) => (
             <div key={publicId || `preview-${i}`} className="gallery-item-wrapper image-wrapper">
-              <ImageLoader src={preview} alt="Main Image" className="gallery-img" />
+              <ImageLoader src={preview} alt="תמונה ראשית" className="gallery-img" />
               <button
                 className="delete-btn"
                 onClick={() => handleDeleteImage(publicId)}
                 type="button"
-                title="Delete"
+                title="מחיקה"
                 disabled={isSaving}
               >
                 🗑️
@@ -280,7 +279,7 @@ export default function MainSection({
         </div>
 
         <button className="save-btn" onClick={handleSave} disabled={isSaving}>
-          {isSaving ? "Saving..." : "💾 Save Changes"}
+          {isSaving ? "שומר..." : "💾 שמור שינויים"}
         </button>
 
         {showViewProfile && (
@@ -291,7 +290,7 @@ export default function MainSection({
             onClick={() => navigate(`/business/${businessDetails._id}`)}
             disabled={isSaving}
           >
-            👀 View Profile
+            👀 צפה בפרופיל
           </button>
         )}
       </div>
@@ -302,7 +301,7 @@ export default function MainSection({
         <div className="preview-images">
           {limitedMainImgs.map(({ preview }, i) => (
             <div key={i} className="image-wrapper">
-              <ImageLoader src={preview} alt="Main Image" />
+              <ImageLoader src={preview} alt="תמונה ראשית" />
             </div>
           ))}
         </div>
@@ -322,17 +321,17 @@ export default function MainSection({
               }}
             >
               <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-                Average Rating: {review.rating || "No rating"}
+                דירוג ממוצע: {review.rating || "אין דירוג"}
               </div>
               <div>
-                <strong>Review:</strong> {review.opinion || "No review"}
+                <strong>חוות דעת:</strong> {review.opinion || "אין חוות דעת"}
               </div>
               <div>
-                <strong>Date:</strong>{" "}
-                {review.date ? new Date(review.date).toLocaleDateString("he-IL") : "Not specified"}
+                <strong>תאריך:</strong>{" "}
+                {review.date ? new Date(review.date).toLocaleDateString("he-IL") : "לא צוין"}
               </div>
               <div>
-                <strong>By:</strong> {review.author || "Not specified"}
+                <strong>מאת:</strong> {review.author || "לא צוין"}
               </div>
             </div>
           ))}
@@ -341,4 +340,3 @@ export default function MainSection({
     </>
   );
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import SignatureCanvas from "react-signature-canvas";
@@ -18,7 +17,7 @@ export default function SignAgreementPage({ currentUserBusinessId }) {
         const res = await API.get(`/partnershipAgreements/${agreementId}`);
         setAgreement(res.data);
       } catch (err) {
-        setError("Error loading the agreement");
+        setError("שגיאה בטעינת ההסכם");
       } finally {
         setLoading(false);
       }
@@ -26,27 +25,27 @@ export default function SignAgreementPage({ currentUserBusinessId }) {
     fetchAgreement();
   }, [agreementId]);
 
-  if (loading) return <p>Loading agreement...</p>;
+  if (loading) return <p>טוען הסכם...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!agreement) return <p>The agreement was not found</p>;
+  if (!agreement) return <p>ההסכם לא נמצא</p>;
 
-  // Check if the user is the other party (the user who needs to sign)
+  // בדיקה אם המשתמש הוא הצד השני (המשתמש שצריך לחתום)
   const isInvited = agreement.invitedBusinessId === currentUserBusinessId;
   const hasSigned = agreement.signatures?.invitedBusiness?.signed;
 
   const handleSign = async () => {
     if (sigPadRef.current.isEmpty()) {
-      alert("Please sign before submitting");
+      alert("אנא חתום לפני השליחה");
       return;
     }
     setSending(true);
     try {
       const signatureDataUrl = sigPadRef.current.getTrimmedCanvas().toDataURL();
       const res = await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl });
-      alert("You have signed successfully!");
-      setAgreement(res.data); // Update the agreement after signing
+      alert("חתמת בהצלחה!");
+      setAgreement(res.data); // עדכון ההסכם לאחר החתימה
     } catch (err) {
-      alert("Error signing: " + (err.response?.data?.message || err.message));
+      alert("שגיאה בחתימה: " + (err.response?.data?.message || err.message));
     } finally {
       setSending(false);
     }
@@ -54,21 +53,21 @@ export default function SignAgreementPage({ currentUserBusinessId }) {
 
   return (
     <div dir="rtl">
-      <h2>Agreement: {agreement.title}</h2>
-      <p><strong>Description:</strong> {agreement.description}</p>
-      <p><strong>Sender:</strong> {agreement.sender.businessName}</p>
-      <p><strong>Partner:</strong> {agreement.receiver.businessName}</p>
+      <h2>הסכם: {agreement.title}</h2>
+      <p><strong>תיאור:</strong> {agreement.description}</p>
+      <p><strong>שולח:</strong> {agreement.sender.businessName}</p>
+      <p><strong>שותף:</strong> {agreement.receiver.businessName}</p>
 
-      <p><strong>Sender's Signature:</strong></p>
+      <p><strong>חתימת השולח:</strong></p>
       {agreement.signatures.createdBy.signatureDataUrl ? (
-        <img src={agreement.signatures.createdBy.signatureDataUrl} alt="Sender's signature" style={{ border: "1px solid #ccc", width: 200, height: 100 }} />
+        <img src={agreement.signatures.createdBy.signatureDataUrl} alt="חתימת שולח" style={{ border: "1px solid #ccc", width: 200, height: 100 }} />
       ) : (
-        <p>No signature</p>
+        <p>אין חתימה</p>
       )}
 
-      <p><strong>Partner's Signature:</strong></p>
+      <p><strong>חתימת השותף:</strong></p>
       {hasSigned ? (
-        <img src={agreement.signatures.invitedBusiness.signatureDataUrl} alt="Partner's signature" style={{ border: "1px solid #ccc", width: 200, height: 100 }} />
+        <img src={agreement.signatures.invitedBusiness.signatureDataUrl} alt="חתימת שותף" style={{ border: "1px solid #ccc", width: 200, height: 100 }} />
       ) : isInvited ? (
         <>
           <SignatureCanvas
@@ -77,13 +76,12 @@ export default function SignAgreementPage({ currentUserBusinessId }) {
             canvasProps={{ width: 400, height: 150, className: "sigCanvas" }}
           />
           <button onClick={handleSign} disabled={sending}>
-            {sending ? "Sending..." : "Sign the agreement"}
+            {sending ? "שולח..." : "חתום על ההסכם"}
           </button>
         </>
       ) : (
-        <p>Not signed yet</p>
+        <p>עדיין לא נחתם</p>
       )}
     </div>
   );
 }
-```

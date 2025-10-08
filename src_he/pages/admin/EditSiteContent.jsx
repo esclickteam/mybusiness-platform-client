@@ -1,32 +1,33 @@
+```javascript
 import React from "react";
 import "./EditSiteContent.css";
 import { Link } from "react-router-dom";
 
 function EditSiteContent() {
   const pages = [
-    { name: "עמוד הבית", path: "/", editable: true },
-    { name: "חבילות", path: "/plans", editable: true },
-    { name: "תקנון", path: "/terms", editable: true },
-    { name: "אודות", path: "/about", editable: true },
-    { name: "שאלות נפוצות", path: "/faq", editable: true },
-    { name: "צור קשר", path: "/contact", editable: true },
-    { name: "לוח עבודות מהירות", path: "/quick-jobs", editable: true },
-    { name: "טופס עבודה מהירה", path: "/quick-jobs/new", editable: false },
-    { name: "הרשמה", path: "/register", editable: false },
-    { name: "כניסת משתמש", path: "/login", editable: false }
+    { name: "Home Page", path: "/", editable: true },
+    { name: "Packages", path: "/plans", editable: true },
+    { name: "Terms", path: "/terms", editable: true },
+    { name: "About", path: "/about", editable: true },
+    { name: "Frequently Asked Questions", path: "/faq", editable: true },
+    { name: "Contact Us", path: "/contact", editable: true },
+    { name: "Quick Jobs Board", path: "/quick-jobs", editable: true },
+    { name: "Quick Job Form", path: "/quick-jobs/new", editable: false },
+    { name: "Registration", path: "/register", editable: false },
+    { name: "User Login", path: "/login", editable: false }
   ];
 
   return (
     <div className="edit-site-content">
-      <Link to="/admin/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
-      <h1>✍️ ניהול תוכן האתר</h1>
+      <Link to="/admin/dashboard" className="back-dashboard">🔙 Back to Dashboard</Link>
+      <h1>✍️ Site Content Management</h1>
 
       <table className="content-table">
         <thead>
           <tr>
-            <th>שם עמוד</th>
-            <th>נתיב</th>
-            <th>עריכה</th>
+            <th>Page Name</th>
+            <th>Path</th>
+            <th>Edit</th>
           </tr>
         </thead>
         <tbody>
@@ -36,7 +37,7 @@ function EditSiteContent() {
               <td>{page.path}</td>
               <td>
                 {page.editable ? (
-                  <Link to={page.path} className="edit-btn">✏️ ערוך</Link>
+                  <Link to={page.path} className="edit-btn">✏️ Edit</Link>
                 ) : (
                   <span className="disabled">⛔</span>
                 )}
@@ -50,3 +51,4 @@ function EditSiteContent() {
 }
 
 export default EditSiteContent;
+```

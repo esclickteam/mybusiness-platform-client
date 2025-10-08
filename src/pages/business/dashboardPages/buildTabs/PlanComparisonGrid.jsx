@@ -1,25 +1,25 @@
-```javascript
+
 import React, { useState, useEffect } from "react";
 import "./PlanComparisonGrid.css";
 
 const plans = [
   {
     key: "free",
-    name: "Free",
+    name: "חינמית",
     price: "₪0",
     color: "#f44336",
     features: [false, false, false, false],
   },
   {
     key: "advanced",
-    name: "Advanced",
+    name: "מתקדמת",
     price: "₪89",
     color: "#9c27b0",
     features: [true, true, false, false],
   },
   {
     key: "professional",
-    name: "Professional",
+    name: "מקצועית",
     price: "₪189",
     color: "#3f51b5",
     features: [true, true, true, false],
@@ -34,10 +34,10 @@ const plans = [
 ];
 
 const features = [
-  "Receiving inquiries",
-  "Chat with customers",
-  "Store/queue management",
-  "Business collaboration",
+  "קבלת פניות",
+  "צ׳אט עם לקוחות",
+  "ניהול חנות/תורים",
+  "שיתוף פעולה בין עסקים",
 ];
 
 const PlanComparisonGrid = ({ onSelectPlan }) => {
@@ -55,7 +55,7 @@ const PlanComparisonGrid = ({ onSelectPlan }) => {
 
   return isMobile ? (
     <div className="comparison-cards-wrapper">
-      <h2 className="comparison-title">Package Comparison</h2>
+      <h2 className="comparison-title">השוואת חבילות</h2>
       {plans.map((plan) => (
         <div
           key={plan.key}
@@ -63,7 +63,7 @@ const PlanComparisonGrid = ({ onSelectPlan }) => {
           style={{ borderTop: `6px solid ${plan.color}` }}
         >
           <h3 style={{ backgroundColor: plan.color }}>{plan.name}</h3>
-          <p className="price">{plan.price} / month</p>
+          <p className="price">{plan.price} / חודש</p>
           <ul>
             {features.map((feature, idx) => (
               <li key={idx}>
@@ -75,14 +75,14 @@ const PlanComparisonGrid = ({ onSelectPlan }) => {
             onClick={() => onSelectPlan(plan.key)}
             className="select-button"
           >
-            Select {plan.name} Package
+            בחר חבילת {plan.name}
           </button>
         </div>
       ))}
     </div>
   ) : (
     <div className="comparison-table-wrapper">
-      <h2 className="comparison-title">Package Comparison</h2>
+      <h2 className="comparison-title">השוואת חבילות</h2>
       <div style={{
         display: "grid",
         gridTemplateColumns: "1fr repeat(4, 1fr)",
@@ -118,7 +118,7 @@ const PlanComparisonGrid = ({ onSelectPlan }) => {
                 fontWeight: "bold",
                 fontSize: "18px"
               }}>{plan.name}</div>
-              <div style={{ fontSize: "16px", margin: "12px 0" }}>{plan.price} / month</div>
+              <div style={{ fontSize: "16px", margin: "12px 0" }}>{plan.price} / חודש</div>
               {plan.features.map((enabled, idx) => (
                 <div
                   key={idx}
@@ -138,7 +138,7 @@ const PlanComparisonGrid = ({ onSelectPlan }) => {
               onClick={() => onSelectPlan(plan.key)}
               className="select-button"
             >
-              Select {plan.name} Package
+              בחר חבילת {plan.name}
             </button>
           </div>
         ))}
@@ -148,4 +148,3 @@ const PlanComparisonGrid = ({ onSelectPlan }) => {
 };
 
 export default PlanComparisonGrid;
-```

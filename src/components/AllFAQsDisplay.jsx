@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { loadAllFAQs } from "./loadAllFAQs";
 
@@ -26,12 +25,12 @@ export default function AllFAQsDisplay() {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  if (loading) return <p>Loading FAQs...</p>;
-  if (error) return <p>An error occurred: {error}</p>;
+  if (loading) return <p>טוען שאלות ותשובות...</p>;
+  if (error) return <p>אירעה שגיאה: {error}</p>;
 
   return (
     <div style={{ maxWidth: 900, margin: "auto", padding: 20, direction: "rtl", textAlign: "right" }}>
-      <h1 style={{ textAlign: "center", marginBottom: 30 }}>All Questions and Answers</h1>
+      <h1 style={{ textAlign: "center", marginBottom: 30 }}>כל השאלות ותשובות</h1>
       {faqs.map((faq, idx) => (
         <div
           key={idx}
@@ -85,4 +84,3 @@ export default function AllFAQsDisplay() {
     </div>
   );
 }
-```

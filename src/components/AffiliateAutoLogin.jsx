@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -20,8 +19,8 @@ export default function AffiliateAutoLogin() {
         await affiliateLogin(publicToken);
         navigate("/affiliate/dashboard");
       } catch (err) {
-        setError(err.message || "Error logging in as an affiliate");
-        // You can also navigate to the login page after a second, if you want:
+        setError(err.message || "שגיאה בכניסה כמשווק");
+        // אפשר גם לנווט אחרי שנייה לדף login, אם רוצים:
         // setTimeout(() => navigate("/login"), 2000);
       }
     }
@@ -38,8 +37,7 @@ export default function AffiliateAutoLogin() {
 
   return (
     <div style={{ padding: 20, textAlign: "center" }}>
-      <h2>Loading the affiliate page…</h2>
+      <h2>טוען את דף המשווק…</h2>
     </div>
   );
 }
-```

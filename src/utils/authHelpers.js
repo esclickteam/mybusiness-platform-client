@@ -1,24 +1,23 @@
-```javascript
 import jwtDecode from "jwt-decode";
 
-// Checks if the token is expired
+// בודק אם ה-token פג תוקף
 export function isTokenExpired(token) {
   if (!token) return true;
   try {
     const { exp } = jwtDecode(token);
-    // Compares the current time to the expiration time (exp) in milliseconds
+    // משווים את הזמן הנוכחי לזמן הפקיעה (exp) ב־milliseconds
     return Date.now() >= exp * 1000;
   } catch {
-    return true; // In case of an error decoding the token, consider it expired
+    return true; // במקרה של שגיאה בפענוח הטוקן, נחשב לפג תוקף
   }
 }
 
-// Returns the access token from localStorage
+// מחזיר את access token מה-localStorage
 export function getAccessToken() {
   return localStorage.getItem("token");
 }
 
-// Returns a business ID from localStorage, if it exists
+// מחזירה מזהה עסק מ-localStorage, אם קיים
 export function getBusinessId() {
   try {
     const biz = JSON.parse(localStorage.getItem("businessDetails") || "{}");
@@ -28,7 +27,7 @@ export function getBusinessId() {
   }
 }
 
-// Returns a valid access token, refreshing it if expired
+// מחזירה access token תקף, מרעננת אותו אם פג תוקף
 export async function getValidAccessToken() {
   let token = getAccessToken();
 
@@ -36,7 +35,7 @@ export async function getValidAccessToken() {
     try {
       const response = await fetch(`/refresh-token`, {
         method: "POST",
-        credentials: "include", // Automatically sends the refreshToken cookie
+        credentials: "include", // שולח את עוגיית ה-refreshToken אוטומטית
       });
 
       if (!response.ok) {
@@ -58,7 +57,7 @@ export async function getValidAccessToken() {
   return token;
 }
 
-// Returns the user's role from the token
+// מחזיר את תפקיד המשתמש מתוך ה-token
 export function getUserRole() {
   const token = getAccessToken();
   if (!token) return null;
@@ -67,7 +66,7 @@ export function getUserRole() {
     const decoded = jwtDecode(token);
     let role = decoded.role || null;
 
-    // Match for a special role in the business dashboard
+    // התאמה לתפקיד מיוחד בדשבורד העסקי
     if (role === "business" && window.location.pathname.includes("/dashboard")) {
       return "business-dashboard";
     }
@@ -77,4 +76,3 @@ export function getUserRole() {
     return null;
   }
 }
-```

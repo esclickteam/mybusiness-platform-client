@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef, useEffect, Suspense, lazy } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
@@ -15,22 +14,22 @@ const ChatSection    = lazy(() => import("../buildTabs/buildSections/ChatSection
 const FaqSection     = lazy(() => import("../buildTabs/buildSections/FaqSection"));
 
 const TABS = [
-  "Main",
-  "Gallery",
-  "Reviews",
-  "Diary",
-  "Chat with the business",
-  "Questions and Answers",
+  "ראשי",
+  "גלריה",
+  "ביקורות",
+  " יומן",
+  "צ'אט עם העסק",
+  "שאלות ותשובות",
 ];
 
-// Maximum allowed in the gallery
+// המקסימום המותרים בגלריה
 const GALLERY_MAX = 5;
 
 export default function Build() {
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const [currentTab, setCurrentTab] = useState("Main");
+  const [currentTab, setCurrentTab] = useState("ראשי");
   const [businessDetails, setBusinessDetails] = useState({
     businessName:    "",
     description:     "",
@@ -63,7 +62,7 @@ export default function Build() {
   const galleryInputRef    = useRef();
   const pendingUploadsRef  = useRef([]);
 
-  // Adding state for shopMode
+  // הוספת סטייט עבור shopMode
   const [shopMode, setShopMode] = useState(null);
 
    const setGalleryOrder = (newOrder) => {
@@ -88,7 +87,7 @@ export default function Build() {
     return p;
   };
 
-  // Initial data loading
+  // טעינת הנתונים הראשונית
   useEffect(() => {
     // Load business details
     API.get("/business/my")
@@ -136,19 +135,19 @@ export default function Build() {
       .catch(console.error)
       .finally(() => setFirstLoad(false));
 
-    // Load work hours correctly - do not reduce!
+    // Load work hours correctly - לא לעשות reduce!
     API.get('/appointments/get-work-hours', {
       params: { businessId: currentUser?.businessId || "" }
     })
     .then(res => {
       let map = {};
-      // If the data arrived as an array
+      // אם המידע הגיע כמערך
       if (Array.isArray(res.data.workHours)) {
         res.data.workHours.forEach(item => {
           map[Number(item.day)] = item;
         });
       }
-      // If the data arrived as an object (not an array)
+      // אם המידע הגיע כאובייקט (ולא מערך)
       else if (
         res.data.workHours &&
         typeof res.data.workHours === "object" &&
@@ -156,13 +155,13 @@ export default function Build() {
       ) {
         map = res.data.workHours;
       }
-      // fallback: maybe the whole response is an array (rare but possible)
+      // fallback: אולי כל התשובה היא מערך (נדיר אבל אפשרי)
       else if (Array.isArray(res.data)) {
         res.data.forEach(item => {
           map[Number(item.day)] = item;
         });
       }
-      // otherwise (nothing valid): leave map empty
+      // אחרת (שום דבר תקין): משאירים map ריק
 
       setWorkHours(map);
       setBusinessDetails(prev => ({ ...prev, workHours: map }));
@@ -240,26 +239,26 @@ export default function Build() {
     if (!file) return;
     e.target.value = null;
 
-    // Release memory of previous preview if it was a blob
+    // שחרור הזכרון של preview קודם אם היה blob
     if (businessDetails.logo?.preview?.startsWith('blob:')) {
       URL.revokeObjectURL(businessDetails.logo.preview);
     }
 
-    // Create new preview
+    // יצירת preview חדש
     const preview = URL.createObjectURL(file);
     setBusinessDetails(prev => ({
       ...prev,
       logo: { preview }
     }));
 
-    // Build FormData and upload to server
+    // בניית FormData והעלאה לשרת
     const fd = new FormData();
     fd.append('logo', file);
 
     try {
       const res = await API.put('/business/my/logo', fd);
       if (res.status === 200) {
-        // After successful upload, update preview and publicId from server
+        // לאחר העלאה מוצלחת, עדכון preview ו-publicId מהשרת
         setBusinessDetails(prev => ({
           ...prev,
           logo: {
@@ -273,61 +272,61 @@ export default function Build() {
     } catch (err) {
       console.error('Error uploading logo:', err);
     } finally {
-      // Release memory of the blob URL created
+      // שחרור הזכרון של ה-blob URL שנוצר
       URL.revokeObjectURL(preview);
     }
   };
 
 
   // ===== MAIN IMAGES =====
-  // Inside src/pages/business/dashboardPages/buildTabs/Build.jsx
+  // בתוך src/pages/business/dashboardPages/buildTabs/Build.jsx
 
   const handleMainImagesChange = async e => {
-    // 1) Files (up to 5)
+    // 1) קבצים (עד 5)
     const files = Array.from(e.target.files || []).slice(0, 6);
     if (!files.length) return;
     e.target.value = null;
 
-    // 2) Local preview - update state with the new images
+    // 2) פריוויו מקומי - עדכון state עם התמונות החדשות
     const tempPreviews = files.map(f => URL.createObjectURL(f));
     setBusinessDetails(prev => ({
       ...prev,
-      mainImages: [...prev.mainImages, ...tempPreviews]  // Adding images to preview
+      mainImages: [...prev.mainImages, ...tempPreviews]  // הוספת התמונות לפריוויו
     }));
 
-    // 3) Build FormData to send to server
+    // 3) בניית FormData לשליחה לשרת
     const fd = new FormData();
     files.forEach(f => fd.append("main-images", f));
 
     try {
-      // 4) Send to server
+      // 4) שליחה לשרת
       const res = await API.put("/business/my/main-images", fd);
 
       if (res.status === 200) {
-        // 5) Extract URLs and publicIds from the response
+        // 5) חילוץ URL-ים ו־publicIds מה-response
         const urls = (res.data.mainImages || []).slice(0, 6);
         const ids = (res.data.mainImageIds || []).slice(0, 6);
 
-        // 6) Update the state with the results from the server
+        // 6) עדכון ה-state עם התוצאות מהשרת
         setBusinessDetails(prev => ({
           ...prev,
-          mainImages: urls,  // Update with the addresses received from the server
-          mainImageIds: ids  // Update with the publicIds
+          mainImages: urls,  // עדכון עם הכתובות שהתקבלו מהשרת
+          mainImageIds: ids  // עדכון עם ה-publicIds
         }));
       } else {
-        console.warn("Main image upload failed:", res);
+        console.warn("העלאת תמונות ראשיות נכשלה:", res);
       }
     } catch (err) {
-      console.error("Error uploading main images:", err);
+      console.error("שגיאה בהעלאת תמונות ראשיות:", err);
     } finally {
-      // 7) Release memory of the blob URLs (after completion)
+      // 7) שחרור הזיכרון של ה־blob URLs (לאחר סיום)
       tempPreviews.forEach(URL.revokeObjectURL);
     }
   };
 
   // Build.jsx
 
-  // First, let's change the signature so that the function already receives the publicId
+  // קודם כל, נשנה את החתימה כך שהפונקציה תקבל כבר את ה-publicId
   const handleDeleteMainImage = async publicId => {
     console.log("🔴 Deleting publicId:", publicId);
     if (!publicId) {
@@ -336,17 +335,17 @@ export default function Build() {
     }
 
     try {
-      // encodeURIComponent will convert "/" to "%2F" so that we can send a path parameter with a subfolder
+      // encodeURIComponent ימיר "/" ל־"%2F" כך שניתן לשלוח ל־path פרמטר עם תת־תיקיה
       const encodedId = encodeURIComponent(publicId);
       const res = await API.delete(`/business/my/main-images/${encodedId}`);
 
       console.log("🟢 DELETE status:", res.status);
       if (res.status === 204) {
         setBusinessDetails(prev => {
-          // Find the index of the deleted image
+          // מצא את האינדקס של התמונה שנמחקה
           const idx = prev.mainImageIds.indexOf(publicId);
           if (idx === -1) return prev;
-          // Copy both arrays and release the appropriate item in each
+          // העתק שני המערכים ושחרר את הפריט המתאים בכל אחד
           const mainImages   = [...prev.mainImages];
           const mainImageIds = [...prev.mainImageIds];
           mainImages.splice(idx, 1);
@@ -360,11 +359,11 @@ export default function Build() {
         console.log("✅ Removed:", publicId);
       } else {
         console.warn("❌ DELETE failed:", res);
-        alert("Error deleting image");
+        alert("שגיאה במחיקת תמונה");
       }
     } catch (err) {
       console.error("🚨 Error:", err);
-      alert("Error deleting image");
+      alert("שגיאה במחיקת תמונה");
     }
   };
 
@@ -374,13 +373,13 @@ export default function Build() {
     setIsPopupOpen(true);
   };
   
-  // Closes the popup and resets the index
+  // סוגר את הפופאפ ומאפס את האינדקס
   const closePopup = () => {
     setEditIndex(null);
     setIsPopupOpen(false);
   };
   
-  // Update image size based on type ('full' or 'custom')
+  // עדכון גודל התמונה לפי סוג ('full' או 'custom')
   const updateImageSize = sizeType => {
     if (editIndex === null) return;
   
@@ -395,21 +394,21 @@ export default function Build() {
   };
 
   // ===== GALLERY =====
-  // Inside Build.jsx
+  // בתוך Build.jsx
 
   const handleGalleryChange = async e => {
     const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
     if (!files.length) return;
     e.target.value = null;
 
-    // 1️⃣ Local preview
+    // 1️⃣ פריוויו מקומי
     const tempPreviews = files.map(f => URL.createObjectURL(f));
     setBusinessDetails(prev => ({
       ...prev,
       gallery: [...prev.gallery, ...tempPreviews]
     }));
 
-    // 2️⃣ Continue uploading to server
+    // 2️⃣ ממשיכים להעלות לשרת
     const fd = new FormData();
     files.forEach(f => fd.append("gallery", f));
     try {
@@ -417,7 +416,7 @@ export default function Build() {
         headers: { "Content-Type": "multipart/form-data" }
       });
       if (res.status === 200) {
-        // 3️⃣ Receive addresses from the server + cache-busting
+        // 3️⃣ קבלת כתובות מהשרת + cache-busting
         const urls = (res.data.gallery || []).map(u => `${u}?v=${Date.now()}`);
         const ids  = res.data.galleryImageIds || [];
         setBusinessDetails(prev => ({
@@ -428,15 +427,15 @@ export default function Build() {
       }
     } catch (err) {
       console.error(err);
-      alert("❌ Error uploading gallery");
+      alert("❌ שגיאה בהעלאת גלריה");
     } finally {
-      // 4️⃣ Release memory of the local previews
+      // 4️⃣ שחרור הזכרון של הפריוויוים המקומיים
       tempPreviews.forEach(URL.revokeObjectURL);
     }
   };
 
     
-  // ← Add the closing curly brace and semicolon to finish the function
+  // ← הוסיפי כאן את הסוגרית המסולסלת והסמי-קולון לסיום הפונקציה
   
 
   const handleDeleteGalleryImage = async publicId => {
@@ -450,10 +449,10 @@ export default function Build() {
       console.log("🟢 DELETE status:", res.status);
       if (res.status === 204) {
         setBusinessDetails(prev => {
-          // Find the index of the image in the gallery
+          // מצא את האינדקס של התמונה בגלריה
           const idx = prev.galleryImageIds.indexOf(publicId);
           if (idx === -1) return prev;
-          // Copy both arrays and release the appropriate item in each
+          // העתק שני המערכים ושחרר את הפריט המתאים בכל אחד
           const gallery         = [...prev.gallery];
           const galleryImageIds = [...prev.galleryImageIds];
           gallery.splice(idx, 1);
@@ -467,11 +466,11 @@ export default function Build() {
         console.log("✅ Gallery image removed:", publicId);
       } else {
         console.warn("❌ DELETE failed:", res);
-        alert("Error deleting image from gallery");
+        alert("שגיאה במחיקת תמונה בגלריה");
       }
     } catch (err) {
       console.error("🚨 Error deleting gallery image:", err);
-      alert("Error deleting image from gallery");
+      alert("שגיאה במחיקת תמונה בגלריה");
     }
   };
 
@@ -483,7 +482,7 @@ export default function Build() {
 
   // ===== SAVE =====
   const handleSave = async () => {
-    // Save all fields, including email
+    // שמירת כל השדות, כולל המייל
     setIsSaving(true);
     try {
       const payload = {
@@ -512,13 +511,13 @@ export default function Build() {
           logoId: prev.logoId
         }));
         setShowViewProfile(true);
-        alert("✅ Saved successfully!");
+        alert("✅ נשמר בהצלחה!");
       } else {
-        alert("❌ Save failed: " + res.statusText);
+        alert("❌ שמירה נכשלה: " + res.statusText);
       }
     } catch (err) {
-      console.error("❌ Error saving:", err);
-      alert("❌ Save failed");
+      console.error("❌ שגיאה בשמירה:", err);
+      alert("❌ שמירה נכשלה");
     } finally {
       setIsSaving(false);
     }
@@ -533,14 +532,14 @@ export default function Build() {
 
     return (
       <div className="topbar-preview">
-        {/* Logo */}
+        {/* לוגו */}
         <div className="logo-circle" onClick={handleLogoClick}>
           {businessDetails.logo?.preview ? (
             <img src={businessDetails.logo.preview} className="logo-img" />
           ) : businessDetails.logo ? (
             <img src={businessDetails.logo} className="logo-img" />
           ) : (
-            <span>Logo</span>
+            <span>לוגו</span>
           )}
           <input
             type="file"
@@ -551,42 +550,42 @@ export default function Build() {
           />
         </div>
 
-        {/* Business name + rating */}
+        {/* שם העסק + דירוג */}
         <div className="name-rating">
-          <h2>{businessDetails.businessName || "Business Name"}</h2> {/* Display business name */}
+          <h2>{businessDetails.businessName || "שם העסק"}</h2> {/* הצגת שם העסק */}
           <div className="rating-badge">
             <span className="star">★</span>
             <span>{avg.toFixed(1)} / 5</span>
           </div>
         </div>
 
-        {/* Category below the name */}
+        {/* קטגוריה מתחת לשם */}
         {businessDetails.category && (
           <p className="preview-category">
-            <strong>Category:</strong> {businessDetails.category}
+            <strong>קטגוריה:</strong> {businessDetails.category}
           </p>
         )}
 
-        {/* Description and phone below the name */}
+        {/* תיאור וטלפון מתחת לשם */}
         {businessDetails.description && (
           <p className="preview-description">
-            <strong>Description:</strong> {businessDetails.description}
+            <strong>תיאור:</strong> {businessDetails.description}
           </p>
         )}
         {businessDetails.phone && (
           <p className="preview-phone">
-            <strong>Phone:</strong> {businessDetails.phone}
+            <strong>טלפון:</strong> {businessDetails.phone}
           </p>
         )}
         {businessDetails.address.city && (
           <p className="preview-city">
-            <strong>City:</strong> {businessDetails.address.city}
+            <strong>עיר:</strong> {businessDetails.address.city}
           </p>
         )}
 
         <hr className="divider" />
 
-        {/* Tab buttons */}
+        {/* כפתורי הטאבים */}
         <div className="tabs">
           {TABS.map(tab => (
             <button
@@ -606,7 +605,7 @@ export default function Build() {
 
   const renderTabContent = () => {
     switch (currentTab) {
-      case "Main":
+      case "ראשי":
         return (
           <MainSection
             businessDetails={businessDetails}
@@ -625,7 +624,7 @@ export default function Build() {
             isSaving={isSaving}
           />
         );
-      case "Gallery":
+      case "גלריה":
         return (
           <GallerySection
             businessDetails={businessDetails}
@@ -637,7 +636,7 @@ export default function Build() {
             renderTopBar={renderTopBar}
           />
         );
-      case "Reviews":
+      case "ביקורות":
         return (
           <ReviewsSection
             reviews={businessDetails.reviews}
@@ -646,7 +645,7 @@ export default function Build() {
             renderTopBar={renderTopBar}
           />
         );
-      case "Diary":
+      case " יומן":
         return (
           <ShopSection
             setBusinessDetails={setBusinessDetails}
@@ -655,7 +654,7 @@ export default function Build() {
             setWorkHours={setWorkHours}
           />
         );
-      case "Chat with the business":
+      case "צ'אט עם העסק":
         return (
           <ChatSection
             businessDetails={businessDetails}
@@ -663,7 +662,7 @@ export default function Build() {
             renderTopBar={renderTopBar}
           />
         );
-      case "Questions and Answers":
+      case "שאלות ותשובות":
         return (
           <FaqSection
             faqs={businessDetails.faqs}
@@ -679,21 +678,20 @@ export default function Build() {
 
   return (
     <div className="build-wrapper">
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div>טוען...</div>}>
         {renderTabContent()}
       </Suspense>
 
       {isPopupOpen && (
         <div className="popup-overlay">
           <div className="popup-content">
-            <h3>Select Image Size</h3>
-            <button type="button" onClick={() => updateImageSize("full")}>Full Size</button>
-            <button type="button" onClick={() => updateImageSize("custom")}>Custom Size</button>
-            <button type="button" onClick={closePopup}>Cancel</button>
+            <h3>בחר גודל תמונה</h3>
+            <button type="button" onClick={() => updateImageSize("full")}>גודל מלא</button>
+            <button type="button" onClick={() => updateImageSize("custom")}>גודל מותאם</button>
+            <button type="button" onClick={closePopup}>ביטול</button>
           </div>
         </div>
       )}
     </div>
   );
 }
-```

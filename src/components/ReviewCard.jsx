@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 const StarDisplay = ({ rating }) => {
@@ -13,15 +12,15 @@ const StarDisplay = ({ rating }) => {
   );
 };
 
-// Translation dictionary for the fields to Hebrew with icons
+// מילון תרגום השדות לעברית עם האייקונים
 const ratingLabels = {
-  service: "Service 🤝",
-  professional: "Professionalism 💼",
-  timing: "Timeliness ⏰",
-  availability: "Availability 📞",
-  value: "Value for Money 💰",
-  goal: "Goal Achievement 🎯",
-  experience: "Overall Experience 🎉",
+  service: "שירות 🤝",
+  professional: "מקצועיות 💼",
+  timing: "עמידה בזמנים ⏰",
+  availability: "זמינות 📞",
+  value: "תמורה למחיר 💰",
+  goal: "השגת מטרה 🎯",
+  experience: "חוויה כללית 🎉",
 };
 
 export default function ReviewCard({ review }) {
@@ -43,7 +42,7 @@ export default function ReviewCard({ review }) {
         month: "numeric",
         year: "numeric",
       })
-    : "Unknown";
+    : "לא ידוע";
 
   return (
     <div
@@ -59,19 +58,19 @@ export default function ReviewCard({ review }) {
       }}
     >
       <div style={{ marginBottom: 8, fontWeight: "bold", fontSize: "1.1rem" }}>
-        Average Rating: {average.toFixed(1)} <StarDisplay rating={average} />
+        דירוג ממוצע: {average.toFixed(1)} <StarDisplay rating={average} />
       </div>
 
       <div style={{ marginBottom: 8 }}>
-        <strong>Review:</strong> {review.comment || review.text || "—"}
+        <strong>חוות דעת:</strong> {review.comment || review.text || "—"}
       </div>
 
       <div style={{ marginBottom: 8 }}>
-        <strong>Date:</strong> {date}
+        <strong>תאריך:</strong> {date}
       </div>
 
       <div style={{ marginBottom: 12 }}>
-        <strong>By:</strong> {review.client?.name || review.client || "Anonymous"}
+        <strong>מאת:</strong> {review.client?.name || review.client || "אנונימי"}
       </div>
 
       <button
@@ -86,7 +85,7 @@ export default function ReviewCard({ review }) {
           marginBottom: 10,
         }}
       >
-        {showDetails ? "Hide Rating Details" : "📋 Rating Details"}
+        {showDetails ? "הסתר פירוט דירוג" : "📋 פירוט דירוג"}
       </button>
 
       {showDetails && review.ratings && (
@@ -113,4 +112,3 @@ export default function ReviewCard({ review }) {
     </div>
   );
 }
-```

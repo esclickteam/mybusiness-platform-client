@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
@@ -6,7 +5,7 @@ import API from "../../../api";
 const partnershipAgreementFormInitial = {
   yourBusinessName: "",
   partnerBusinessName: "",
-  toBusinessId: "", // Important! The partner business ID for sending
+  toBusinessId: "", // חשוב! מזהה העסק השותף לשליחה
   agreementTitle: "",
   partnershipDescription: "",
   agreementSupplies: "",
@@ -77,15 +76,15 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
     e.preventDefault();
 
     if (isSender && !formData.senderSignature) {
-      alert("The sender must sign!");
+      alert("השולח חייב לחתום!");
       return;
     }
     if (!isSender && !formData.receiverSignature) {
-      alert("The receiver must sign the agreement!");
+      alert("המקבל חייב לחתום על ההסכם!");
       return;
     }
     if (!formData.toBusinessId) {
-      alert("Please select a partner business with a valid ID");
+      alert("יש לבחור עסק שותף עם מזהה תקין");
       return;
     }
 
@@ -104,10 +103,10 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
           withCredentials: true,
         }
       );
-      alert(isSender ? "The agreement has been sent to the receiver for signature!" : "The agreement is complete!");
+      alert(isSender ? "ההסכם נשלח למקבל לחתימה!" : "ההסכם הושלם!");
       if (typeof onSubmit === "function") onSubmit(formData, isSender ? "pending" : "approved");
     } catch (err) {
-      alert("Error sending the agreement: " + (err?.response?.data?.error || err.message));
+      alert("שגיאה בשליחת ההסכם: " + (err?.response?.data?.error || err.message));
     } finally {
       setSending(false);
     }
@@ -126,68 +125,68 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
         color: "#4a4a9e",
       }}
     >
-      <h2 style={{ textAlign: "center", color: "#5a59d6" }}>Partnership Agreement 🤝</h2>
+      <h2 style={{ textAlign: "center", color: "#5a59d6" }}>הסכם שיתוף פעולה 🤝</h2>
 
-      {/* Form Fields */}
+      {/* שדות טופס */}
       <label>
-        Partner Business ID (toBusinessId):
+        מזהה עסק שותף (toBusinessId):
         <input
           type="text"
           name="toBusinessId"
           value={formData.toBusinessId}
           onChange={handleChange}
-          placeholder="Enter partner business ID"
+          placeholder="הזן מזהה עסק שותף"
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        Your Business Name:
+        שם העסק שלך:
         <input
           type="text"
           name="yourBusinessName"
           value={formData.yourBusinessName}
           onChange={handleChange}
-          placeholder="Enter your business name"
+          placeholder="הזן שם העסק שלך"
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        Partner Business Name:
+        שם העסק השותף:
         <input
           type="text"
           name="partnerBusinessName"
           value={formData.partnerBusinessName}
           onChange={handleChange}
-          placeholder="Enter partner business name"
+          placeholder="הזן שם העסק השותף"
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        Agreement Title:
+        כותרת ההסכם:
         <input
           type="text"
           name="agreementTitle"
           value={formData.agreementTitle}
           onChange={handleChange}
-          placeholder="Agreement title (e.g., Summer Campaign)"
+          placeholder="כותרת ההסכם (למשל: קמפיין קיץ)"
           style={inputStyle}
           required
         />
       </label>
 
       <label>
-        Partnership Description:
+        תיאור שיתוף הפעולה:
         <textarea
           name="partnershipDescription"
           value={formData.partnershipDescription}
           onChange={handleChange}
-          placeholder="Briefly describe the partnership"
+          placeholder="תאר בקצרה את שיתוף הפעולה"
           style={textareaStyle}
           rows={4}
           required
@@ -195,31 +194,31 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
       </label>
 
       <label>
-        What will you provide under the agreement:
+        מה תספק במסגרת ההסכם:
         <textarea
           name="agreementSupplies"
           value={formData.agreementSupplies}
           onChange={handleChange}
-          placeholder="What will you provide under the agreement"
+          placeholder="מה תספק במסגרת ההסכם"
           style={textareaStyle}
           rows={3}
         />
       </label>
 
       <label>
-        What will you receive under the agreement:
+        מה תקבל במסגרת ההסכם:
         <textarea
           name="agreementBenefits"
           value={formData.agreementBenefits}
           onChange={handleChange}
-          placeholder="What will you receive under the agreement"
+          placeholder="מה תקבל במסגרת ההסכם"
           style={textareaStyle}
           rows={3}
         />
       </label>
 
       <label>
-        Type of Partnership:
+        סוג שיתוף פעולה:
         <select
           name="partnershipType"
           value={formData.partnershipType}
@@ -227,28 +226,28 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
           style={inputStyle}
           required
         >
-          <option value="">Select type</option>
-          <option value="jointCampaign">Joint Campaign</option>
-          <option value="referral">Referrals</option>
-          <option value="resale">Resale</option>
-          <option value="other">Other</option>
+          <option value="">בחר סוג</option>
+          <option value="jointCampaign">קמפיין משותף</option>
+          <option value="referral">הפניות</option>
+          <option value="resale">מכירה מחדש</option>
+          <option value="other">אחר</option>
         </select>
       </label>
 
       <label>
-        Commission / Payment (if any):
+        עמלה / תשלום (אם יש):
         <input
           type="text"
           name="commissionOrPayment"
           value={formData.commissionOrPayment}
           onChange={handleChange}
-          placeholder="For example: 10% commission"
+          placeholder="למשל: 10% עמלה"
           style={inputStyle}
         />
       </label>
 
       <label>
-        Agreement Validity - Start Date:
+        תוקף ההסכם - תאריך התחלה:
         <input
           type="date"
           name="agreementStartDate"
@@ -260,7 +259,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
       </label>
 
       <label>
-        Agreement Validity - End Date:
+        תוקף ההסכם - תאריך סיום:
         <input
           type="date"
           name="agreementEndDate"
@@ -279,7 +278,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
             checked={formData.cancellableAtAnyStage}
             onChange={handleChange}
           />
-          The agreement can be canceled at any stage
+          ניתן לבטל את ההסכם בכל שלב
         </label>
       </div>
 
@@ -291,19 +290,19 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
             checked={formData.confidentialityClause}
             onChange={handleChange}
           />
-          Confidentiality Clause
+          סעיף סודיות
         </label>
       </div>
 
-      {/* Signatures */}
+      {/* חתימות */}
       <div style={{ marginTop: 20 }}>
-        <label>Signature (of the first signer):</label>
+        <label>חתימה (של החותם הראשון):</label>
         {isSender ? (
           <>
             {formData.senderSignature ? (
               <img
                 src={formData.senderSignature}
-                alt="Sender's signature"
+                alt="חתימת השולח"
                 style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
               />
             ) : (
@@ -320,7 +319,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
                   onEnd={saveSenderSignature}
                 />
                 <button type="button" onClick={clearSenderSignature} style={{ marginTop: 5 }}>
-                  Clear Signature
+                  נקה חתימה
                 </button>
               </>
             )}
@@ -328,22 +327,22 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
         ) : formData.senderSignature ? (
           <img
             src={formData.senderSignature}
-            alt="Sender's signature"
+            alt="חתימת השולח"
             style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
           />
         ) : (
-          <p>The first signer has not signed yet</p>
+          <p>החותם הראשון עדיין לא חתם</p>
         )}
       </div>
 
       <div style={{ marginTop: 20 }}>
-        <label>Signature (of the second signer):</label>
+        <label>חתימה (של החותם השני):</label>
         {!isSender ? (
           <>
             {formData.receiverSignature ? (
               <img
                 src={formData.receiverSignature}
-                alt="Receiver's signature"
+                alt="חתימת המקבל"
                 style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
               />
             ) : (
@@ -360,7 +359,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
                   onEnd={saveReceiverSignature}
                 />
                 <button type="button" onClick={clearReceiverSignature} style={{ marginTop: 5 }}>
-                  Clear Signature
+                  נקה חתימה
                 </button>
               </>
             )}
@@ -368,11 +367,11 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
         ) : formData.receiverSignature ? (
           <img
             src={formData.receiverSignature}
-            alt="Receiver's signature"
+            alt="חתימת המקבל"
             style={{ border: "1px solid #ccc", borderRadius: 5, width: 400, height: 150 }}
           />
         ) : (
-          <p>The second signer has not signed yet</p>
+          <p>החותם השני עדיין לא חתם</p>
         )}
       </div>
 
@@ -391,7 +390,7 @@ export default function PartnershipAgreementForm({ isSender = true, onSubmit, ag
           opacity: sending ? 0.7 : 1,
         }}
       >
-        {sending ? "Sending..." : "Send the Agreement 📩"}
+        {sending ? "שולח..." : "שלח את ההסכם 📩"}
       </button>
     </form>
   );
@@ -413,4 +412,3 @@ const textareaStyle = {
   resize: "vertical",
   minHeight: 70,
 };
-```

@@ -1,7 +1,6 @@
-```javascript
 // src/components/BusinessChatContainer.jsx
 import React, { useEffect, useState } from 'react';
-import API from '../api'; // Make sure this API is pointed to the correct baseURL
+import API from '../api'; // ודא שה־API הזה מכוּון ל-baseURL הנכון
 import BusinessChat from './BusinessChat';
 
 export default function BusinessChatContainer({
@@ -15,7 +14,7 @@ export default function BusinessChatContainer({
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // 1. First, try to retrieve from localStorage
+    // 1. נסו קודם לשלוף מה־localStorage
     const storedDetails = JSON.parse(localStorage.getItem('businessDetails') || '{}');
     if (storedDetails._id) {
       setMyBusinessId(storedDetails._id);
@@ -25,13 +24,13 @@ export default function BusinessChatContainer({
       return;
     }
 
-    // 2. If not found in localStorage, call the API
+    // 2. אם לא נמצא ב־localStorage, פנו ל־API
     async function fetchMyBusiness() {
       try {
         const res = await API.get('/business/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        // Depending on your response structure:
+        // בהתאם למבנה התשובה שלך:
         const id = res.data.business?._id || res.data._id;
         if (id) {
           setMyBusinessId(id);
@@ -42,7 +41,7 @@ export default function BusinessChatContainer({
         }
       } catch (err) {
         console.error('Error fetching my business id:', err);
-        setError('✖ Unable to retrieve business ID. Check API and token.');
+        setError('✖ לא ניתן לקבל מזהה עסק. בדוק API ו־token.');
       } finally {
         setLoading(false);
       }
@@ -52,23 +51,23 @@ export default function BusinessChatContainer({
   }, [token]);
 
   if (loading) {
-    return <p>Loading business details…</p>;
+    return <p>טוען פרטי העסק…</p>;
   }
 
   if (error) {
     return <p style={{ color: 'red' }}>{error}</p>;
   }
 
-  // 3. If there is no ID after all, display a message
+  // 3. במידה ואין ID גם אחרי הכל, הצג הודעה
   if (!myBusinessId) {
     return (
       <p style={{ color: 'red' }}>
-        ✖ I did not receive a valid business ID. Ensure the business profile exists.
+        ✖ לא קיבלתי מזהה עסק תקין. ודא שהפרופיל העסקי קיים.
       </p>
     );
   }
 
-  // 4. Everything else – render the chat
+  // 4. כל השאר – רינדור הצ'אט
   return (
     <BusinessChat
       token={token}
@@ -79,4 +78,3 @@ export default function BusinessChatContainer({
     />
   );
 }
-```

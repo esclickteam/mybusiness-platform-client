@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
@@ -15,7 +14,7 @@ export default function UpdateAgreement({ agreementId, onUpdated }) {
 
   const handleSign = async () => {
     if (!sigPadRef.current || sigPadRef.current.isEmpty()) {
-      setError("A signature must be provided before submission");
+      setError("יש לספק חתימה לפני השליחה");
       return;
     }
 
@@ -33,11 +32,11 @@ export default function UpdateAgreement({ agreementId, onUpdated }) {
 
       const res = await API.patch(`/partnershipAgreements/${idStr}`, payload);
 
-      alert("The agreement has been successfully updated!");
+      alert("ההסכם עודכן בהצלחה!");
       if (onUpdated) onUpdated(res.data);
       clearSignature();
     } catch (err) {
-      setError("Error updating the agreement: " + (err.response?.data?.message || err.message));
+      setError("שגיאה בעדכון ההסכם: " + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -45,7 +44,7 @@ export default function UpdateAgreement({ agreementId, onUpdated }) {
 
   return (
     <div style={{ direction: "rtl" }}>
-      <label style={{ display: "block", marginBottom: 6 }}>Signature:</label>
+      <label style={{ display: "block", marginBottom: 6 }}>חתימה:</label>
       <SignatureCanvas
         ref={sigPadRef}
         penColor="black"
@@ -53,14 +52,13 @@ export default function UpdateAgreement({ agreementId, onUpdated }) {
       />
       <div style={{ marginTop: 8, display: "flex", gap: 10 }}>
         <button type="button" onClick={clearSignature} disabled={loading}>
-          Clear Signature
+          נקה חתימה
         </button>
         <button type="button" onClick={handleSign} disabled={loading}>
-          {loading ? "Processing..." : "Update Signature"}
+          {loading ? "מעבד..." : "עדכן חתימה"}
         </button>
       </div>
       {error && <p style={{ color: "red", marginTop: 10 }}>{error}</p>}
     </div>
   );
 }
-```

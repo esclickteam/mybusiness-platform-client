@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import {
   PieChart,
@@ -24,7 +23,7 @@ const PieChartComponent = ({ data }) => {
       borderRadius: "12px",
       boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
     }}>
-      <h3 style={{ textAlign: "center", color: "#4b0082" }}>💰 Income Distribution by Source</h3>
+      <h3 style={{ textAlign: "center", color: "#4b0082" }}>💰 התפלגות הכנסות לפי מקור</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
@@ -66,4 +65,3 @@ const PieChartComponent = ({ data }) => {
 };
 
 export default PieChartComponent;
-```

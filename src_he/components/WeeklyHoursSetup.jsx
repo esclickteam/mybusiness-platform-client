@@ -1,17 +1,18 @@
+```javascript
 import React, { useState } from "react";
 
-// ימים א'–ש' בעברית, Sunday=0
+// Days Sunday–Saturday in Hebrew, Sunday=0
 const DAYS_HE = [
-  { key: 0, label: "ראשון" },
-  { key: 1, label: "שני" },
-  { key: 2, label: "שלישי" },
-  { key: 3, label: "רביעי" },
-  { key: 4, label: "חמישי" },
-  { key: 5, label: "שישי" },
-  { key: 6, label: "שבת" },
+  { key: 0, label: "Sunday" },
+  { key: 1, label: "Monday" },
+  { key: 2, label: "Tuesday" },
+  { key: 3, label: "Wednesday" },
+  { key: 4, label: "Thursday" },
+  { key: 5, label: "Friday" },
+  { key: 6, label: "Saturday" },
 ];
 
-// ברירת מחדל: פתוח א'-ה', סגור שבת
+// Default: open Sunday-Thursday, closed Saturday
 const DEFAULT_HOURS = {
   0: { start: "09:00", end: "18:00" },
   1: { start: "09:00", end: "18:00" },
@@ -19,7 +20,7 @@ const DEFAULT_HOURS = {
   3: { start: "09:00", end: "18:00" },
   4: { start: "09:00", end: "18:00" },
   5: { start: "09:00", end: "14:00" },
-  6: null, // שבת סגור
+  6: null, // Saturday closed
 };
 
 export default function WeeklyHoursSetup({ initialHours = DEFAULT_HOURS, onSave }) {
@@ -44,7 +45,7 @@ export default function WeeklyHoursSetup({ initialHours = DEFAULT_HOURS, onSave 
 
   const handleSave = () => {
     if (onSave) onSave(weeklyHours);
-    alert("שעות פעילות שבועיות נשמרו!");
+    alert("Weekly operating hours saved!");
   };
 
   return (
@@ -52,14 +53,14 @@ export default function WeeklyHoursSetup({ initialHours = DEFAULT_HOURS, onSave 
       maxWidth: 430, margin: "0 auto", background: "#f8ecff",
       borderRadius: 16, padding: 24, direction: "rtl", textAlign: "right"
     }}>
-      <h2 style={{ textAlign: "center" }}>🗓️ הגדרת שעות פעילות שבועיות</h2>
+      <h2 style={{ textAlign: "center" }}>🗓️ Weekly Operating Hours Setup</h2>
       <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 10px" }}>
         <thead>
           <tr style={{ color: "#6c36a7" }}>
-            <th>יום</th>
-            <th>התחלה</th>
-            <th>סיום</th>
-            <th>סגור</th>
+            <th>Day</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Closed</th>
           </tr>
         </thead>
         <tbody>
@@ -89,7 +90,7 @@ export default function WeeklyHoursSetup({ initialHours = DEFAULT_HOURS, onSave 
                   type="checkbox"
                   checked={weeklyHours[key] === null}
                   onChange={() => handleClosedToggle(key)}
-                  aria-label={`סגור ביום ${label}`}
+                  aria-label={`Closed on ${label}`}
                   style={{ transform: "scale(1.2)" }}
                 />
               </td>
@@ -108,25 +109,25 @@ export default function WeeklyHoursSetup({ initialHours = DEFAULT_HOURS, onSave 
             cursor: "pointer", boxShadow: "0 1px 6px #d3c1fa60"
           }}
         >
-          💾 שמור שעות פעילות שבועיות
+          💾 Save Weekly Operating Hours
         </button>
       </div>
 
-      {/* תצוגת סיכום */}
+      {/* Summary display */}
       <div style={{
         marginTop: 24, background: "#fff", borderRadius: 12,
         boxShadow: "0 0 6px #d3c1fa30", padding: 16
       }}>
-        <div style={{ fontWeight: "bold", marginBottom: 8, color: "#6c36a7" }}>סיכום שעות פעילות:</div>
+        <div style={{ fontWeight: "bold", marginBottom: 8, color: "#6c36a7" }}>Summary of Operating Hours:</div>
         <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
           {DAYS_HE.map(({ key, label }) => (
             <li key={key} style={{ margin: "5px 0" }}>
               <span style={{ fontWeight: 500 }}>{label}:</span>{" "}
               {weeklyHours[key] === null
-                ? <span style={{ color: "#e04040" }}>סגור</span>
+                ? <span style={{ color: "#e04040" }}>Closed</span>
                 : ((weeklyHours[key]?.start && weeklyHours[key]?.end)
                     ? `${weeklyHours[key].start}–${weeklyHours[key].end}`
-                    : <span style={{ color: "#aaa" }}>לא הוגדר</span>
+                    : <span style={{ color: "#aaa" }}>Not defined</span>
                   )
               }
             </li>
@@ -136,3 +137,4 @@ export default function WeeklyHoursSetup({ initialHours = DEFAULT_HOURS, onSave 
     </div>
   );
 }
+```

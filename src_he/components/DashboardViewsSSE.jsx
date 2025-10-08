@@ -1,3 +1,4 @@
+```javascript
 import React, { useEffect, useState, useRef } from "react";
 
 export default function DashboardViewsSSE({ businessId }) {
@@ -12,7 +13,7 @@ export default function DashboardViewsSSE({ businessId }) {
     const connect = () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("אין טוקן לאימות");
+        setError("No token for authentication");
         return;
       }
 
@@ -36,8 +37,8 @@ export default function DashboardViewsSSE({ businessId }) {
       evtSource.onerror = (err) => {
         console.error("SSE connection error:", err);
         evtSource.close();
-        setError("תקלה בחיבור לשרת, מנסה להתחבר מחדש...");
-        // נתקן תוך 5 שניות
+        setError("Connection error with the server, trying to reconnect...");
+        // Reconnect in 5 seconds
         reconnectTimeoutRef.current = setTimeout(() => {
           connect();
         }, 5000);
@@ -56,13 +57,14 @@ export default function DashboardViewsSSE({ businessId }) {
     };
   }, [businessId]);
 
-  if (!businessId) return <div>מחכה ל-businessId…</div>;
+  if (!businessId) return <div>Waiting for businessId…</div>;
 
   return (
     <div>
-      <h3>צפיות בפרופיל בזמן אמת (SSE)</h3>
+      <h3>Real-time profile views (SSE)</h3>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <p>מספר צפיות: {viewsCount}</p>
+      <p>Number of views: {viewsCount}</p>
     </div>
   );
 }
+```

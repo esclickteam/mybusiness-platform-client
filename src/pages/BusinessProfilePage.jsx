@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Modal from "@mui/material/Modal";
@@ -8,7 +7,7 @@ import Button from "@mui/material/Button";
 import API from "../api";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 import CreateAgreementForm from "../components/CreateAgreementForm";
-// ✅ We added the Layout
+// ✅ הוספנו את ה־Layout
 import BusinessDashboardLayout from "./business/BusinessDashboardLayout";
 
 export default function BusinessProfilePage({ resetSearchFilters }) {
@@ -34,7 +33,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
         const res = await API.get(`/business/${businessId}`);
         setBusiness(res.data.business);
       } catch {
-        setError("Error loading business details");
+        setError("שגיאה בטעינת פרטי העסק");
       } finally {
         setLoading(false);
       }
@@ -57,7 +56,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   }, []);
 
   if (loading)
-    return <p style={{ textAlign: "center", marginTop: 50 }}>Loading profile...</p>;
+    return <p style={{ textAlign: "center", marginTop: 50 }}>טוען פרופיל...</p>;
   if (error)
     return (
       <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>
@@ -65,14 +64,14 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
       </p>
     );
   if (!business)
-    return <p style={{ textAlign: "center", marginTop: 50 }}>Business not found.</p>;
+    return <p style={{ textAlign: "center", marginTop: 50 }}>העסק לא נמצא.</p>;
 
   const isOwnerViewingOther =
     currentUserBusinessId && currentUserBusinessId !== businessId;
 
   const openProposalModal = () => {
     if (!currentUserBusinessName) {
-      alert("The sending business name has not been loaded yet, please wait and try again.");
+      alert("שם העסק השולח עדיין לא נטען, אנא המתן ונסה שוב.");
       return;
     }
     setIsProposalModalOpen(true);
@@ -96,10 +95,10 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
         otherBusinessId: business._id,
         text: chatMessage.trim(),
       });
-      alert("Message sent successfully!");
+      alert("ההודעה נשלחה בהצלחה!");
       closeChatModal();
     } catch {
-      alert("Error sending the message");
+      alert("שגיאה בשליחת ההודעה");
     } finally {
       setSending(false);
     }
@@ -110,7 +109,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     setCreateAgreementModalOpen(false);
 
   return (
-    // ✅ We wrapped all the content in the business management Layout
+    // ✅ עטפנו את כל התוכן ב־Layout של ניהול העסק
     <BusinessDashboardLayout>
       <div
         style={{
@@ -143,13 +142,13 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
               padding: 0,
               textDecoration: "underline",
             }}
-            aria-label="Back to collaborations"
+            aria-label="חזרה לשיתופי פעולה"
           >
-            ← Back to collaborations
+            ← חזרה לשיתופי פעולה
           </button>
         )}
 
-        {/* Title and Logo */}
+        {/* כותרת ולוגו */}
         <div
           style={{
             display: "flex",
@@ -189,7 +188,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
 
           <img
             src={business.logo || "/default-logo.png"}
-            alt={`${business.businessName} logo`}
+            alt={`${business.businessName} לוגו`}
             style={{
               width: 80,
               height: 80,
@@ -200,29 +199,29 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
           />
         </div>
 
-        {/* Content Blocks */}
-        {[ 
+        {/* בלוקים תוכן */}
+        {[
           {
-            title: "📍 Activity Area",
-            content: business.area || "Not defined",
+            title: "📍 אזור פעילות",
+            content: business.area || "לא מוגדר",
           },
           {
-            title: "📝 About the Business",
-            content: business.description || "No description available",
+            title: "📝 על העסק",
+            content: business.description || "אין תיאור זמין",
           },
           {
-            title: "🤝 Desired Collaborations",
+            title: "🤝 שיתופי פעולה רצויים",
             content: (
               <>
                 {business.collabPref && (
                   <p>
-                    <b>General Preference:</b> {business.collabPref}
+                    <b>העדפה כללית:</b> {business.collabPref}
                   </p>
                 )}
                 {business.lookingFor?.length > 0 && (
                   <>
                     <p>
-                      <b>Looking for collaborations in fields:</b>
+                      <b>מחפש שיתופי פעולה בתחומים:</b>
                     </p>
                     <ul style={{ paddingInlineStart: 20 }}>
                       {business.lookingFor.map((item, i) => (
@@ -234,7 +233,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
                 {business.complementaryCategories?.length > 0 && (
                   <>
                     <p>
-                      <b>Complementary Categories:</b>
+                      <b>קטגוריות משלימות:</b>
                     </p>
                     <ul style={{ paddingInlineStart: 20 }}>
                       {business.complementaryCategories.map((item, i) => (
@@ -247,20 +246,20 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
             ),
           },
           {
-            title: "📞 Contact Details",
+            title: "📞 פרטי איש הקשר",
             content: (
               <>
                 <p>
-                  <b>Contact Person:</b> {business.contact}
+                  <b>איש קשר:</b> {business.contact}
                 </p>
                 {business.phone && (
                   <p>
-                    <b>Phone:</b> {business.phone}
+                    <b>טלפון:</b> {business.phone}
                   </p>
                 )}
                 {business.email && (
                   <p>
-                    <b>Email:</b> {business.email}
+                    <b>אימייל:</b> {business.email}
                   </p>
                 )}
               </>
@@ -290,7 +289,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
           </div>
         ))}
 
-        {/* Buttons */}
+        {/* כפתורים */}
         <div
           style={{
             display: "flex",
@@ -302,7 +301,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
           <button
             onClick={handleCreateAgreement}
             disabled={!currentProposalId}
-            title={!currentProposalId ? "You must send a proposal first" : ""}
+            title={!currentProposalId ? "יש לשלוח הצעה קודם" : ""}
             style={{
               backgroundColor: !currentProposalId ? "#ccc" : "transparent",
               border: "1.5px solid #8e44ad",
@@ -329,7 +328,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
               }
             }}
           >
-            Create New Agreement
+            צור הסכם חדש
           </button>
 
           <button
@@ -348,7 +347,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#732d91")}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#8e44ad")}
           >
-            Send Proposal
+            שלח הצעה
           </button>
 
           <button
@@ -373,7 +372,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
               e.currentTarget.style.color = "#8e44ad";
             }}
           >
-            Chat
+            צ׳אט
           </button>
         </div>
 
@@ -418,7 +417,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
               flexDirection: "column",
             }}
           >
-            <h3>Send a message to {business.businessName}</h3>
+            <h3>שלח הודעה אל {business.businessName}</h3>
             <TextField
               autoFocus
               multiline
@@ -426,7 +425,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
               fullWidth
               value={chatMessage}
               onChange={(e) => setChatMessage(e.target.value)}
-              placeholder="Type your first message to the business…"
+              placeholder="הקלד הודעה ראשונה לעסק…"
               sx={{ mb: 2 }}
             />
             <Button
@@ -434,7 +433,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
               onClick={handleSendBusinessMessage}
               disabled={!chatMessage.trim() || sending}
             >
-              Send
+              שלח
             </Button>
           </Box>
         </Modal>
@@ -458,7 +457,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
               partnerBusiness={business}
               proposalId={currentProposalId}
               onCreated={() => {
-                alert("Agreement created successfully!");
+                alert("ההסכם נוצר בהצלחה!");
                 closeCreateAgreementModal();
               }}
               onClose={closeCreateAgreementModal}
@@ -469,4 +468,3 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     </BusinessDashboardLayout>
   );
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 export default function AiCommandPanel({ businessId, token, profile }) {
@@ -25,7 +24,7 @@ export default function AiCommandPanel({ businessId, token, profile }) {
       });
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || "Error sending the command");
+      if (!res.ok) throw new Error(data.error || "שגיאה בשליחת הפקודה");
 
       setResponse(data);
       setPrompt("");
@@ -47,7 +46,7 @@ export default function AiCommandPanel({ businessId, token, profile }) {
         textAlign: "right",
       }}
     >
-      <h2>AI Partner - Request an action or answer</h2>
+      <h2>שותף AI - בקש פעולה או תשובה</h2>
 
       <textarea
         rows={4}
@@ -59,11 +58,11 @@ export default function AiCommandPanel({ businessId, token, profile }) {
           border: "1px solid #ccc",
           resize: "vertical",
         }}
-        placeholder="Write your request to the AI partner here..."
+        placeholder="כתוב כאן את הבקשה שלך לשותף AI..."
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
         disabled={loading}
-        aria-label="Request to AI partner"
+        aria-label="בקשה לשותף AI"
       />
 
       <button
@@ -83,12 +82,12 @@ export default function AiCommandPanel({ businessId, token, profile }) {
         aria-disabled={loading || !prompt.trim()}
         aria-busy={loading}
       >
-        {loading ? "Sending..." : "Send"}
+        {loading ? "שולח..." : "שלח"}
       </button>
 
       {error && (
         <p style={{ color: "red", marginTop: 10 }} role="alert" aria-live="assertive">
-          Error: {error}
+          שגיאה: {error}
         </p>
       )}
 
@@ -105,12 +104,12 @@ export default function AiCommandPanel({ businessId, token, profile }) {
           }}
           aria-live="polite"
         >
-          <h3>AI Response:</h3>
+          <h3>תשובת AI:</h3>
           <p>{response.answer}</p>
 
           {response.action && (
             <>
-              <h4>Recommended action to take:</h4>
+              <h4>פעולה שמומלצת לביצוע:</h4>
               <pre
                 style={{
                   backgroundColor: "#ddd",
@@ -129,4 +128,3 @@ export default function AiCommandPanel({ businessId, token, profile }) {
     </div>
   );
 }
-```

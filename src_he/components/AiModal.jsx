@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useEffect } from "react";
 import { useAi } from "../context/AiContext";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -31,7 +32,7 @@ export default function AiModal() {
   return (
     <div className="ai-modal-overlay" onClick={closeModal} aria-modal="true" role="dialog">
       <div className="ai-modal-content" onClick={(e) => e.stopPropagation()}>
-        <h2 className="ai-modal-title">הודעת AI חדשה</h2>
+        <h2 className="ai-modal-title">New AI Message</h2>
         <textarea
           className="ai-modal-textarea"
           value={editedText}
@@ -44,24 +45,25 @@ export default function AiModal() {
             onClick={handleApprove}
             disabled={loading}
           >
-            אשר ושלח
+            Approve and Send
           </button>
           <button
             className="ai-modal-button reject-btn"
             onClick={() => rejectSuggestion(activeSuggestion.id)}
             disabled={loading}
           >
-            דחה
+            Reject
           </button>
           <button
             className="ai-modal-button close-btn"
             onClick={closeModal}
             disabled={loading}
           >
-            סגור
+            Close
           </button>
         </div>
       </div>
     </div>
   );
 }
+```

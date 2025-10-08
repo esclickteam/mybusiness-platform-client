@@ -1,3 +1,4 @@
+```javascript
 import React from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import API from "@api";
@@ -5,12 +6,12 @@ import "./KanbanLeads.css";
 
 export default function KanbanLeads({ leads, setLeads, onEditLead, onDeleteLead }) {
   const statusColumns = {
-    new: "חדש",
-    contacted: "יצר קשר",
-    meeting: "פגישה מתואמת",
-    proposal: "הצעה נשלחה",
-    closed: "נסגר",
-    lost: "לא רלוונטי",
+    new: "New",
+    contacted: "Contacted",
+    meeting: "Meeting Scheduled",
+    proposal: "Proposal Sent",
+    closed: "Closed",
+    lost: "Not Relevant",
   };
 
   const handleDragEnd = async (result) => {
@@ -28,7 +29,7 @@ export default function KanbanLeads({ leads, setLeads, onEditLead, onDeleteLead 
       });
       setLeads((prev) => prev.map((l) => (l._id === draggableId ? res.data : l)));
     } catch (err) {
-      console.error("שגיאה בעדכון סטטוס ליד", err);
+      console.error("Error updating lead status", err);
     }
   };
 
@@ -55,7 +56,7 @@ export default function KanbanLeads({ leads, setLeads, onEditLead, onDeleteLead 
                             <strong>{lead.name}</strong>
                             {lead.phone && <p>📞 {lead.phone}</p>}
                             {lead.email && <p>📧 {lead.email}</p>}
-                            {lead.source && <small>מקור: {lead.source}</small>}
+                            {lead.source && <small>Source: {lead.source}</small>}
                             <div className="actions">
                               <button className="edit" onClick={() => onEditLead(lead)}>✏️</button>
                               <button className="delete" onClick={() => onDeleteLead(lead._id)}>🗑️</button>
@@ -76,3 +77,4 @@ export default function KanbanLeads({ leads, setLeads, onEditLead, onDeleteLead 
     </DragDropContext>
   );
 }
+```

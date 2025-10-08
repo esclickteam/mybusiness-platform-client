@@ -1,4 +1,3 @@
-```javascript
 ﻿// src/data/cities.js
 
 export async function fetchCities() {
@@ -8,21 +7,20 @@ export async function fetchCities() {
     );
 
     if (!response.ok) {
-      throw new Error("Error loading data from the API");
+      throw new Error("שגיאה בטעינת הנתונים מה-API");
     }
 
     const data = await response.json();
 
-    // Extract only the name of the locality
+    // נשלוף רק את שם היישוב
     const cities = data.result.records.map((r) => r["שם יישוב"]);
 
-    // Filter duplicates + sort alphabetically
+    // מסנן כפילויות + ממיין לפי א"ב
     return [...new Set(cities)].sort();
   } catch (error) {
-    console.error("Error loading cities:", error);
+    console.error("שגיאה בטעינת ערים:", error);
     return [];
   }
 }
 
 export default fetchCities;
-```

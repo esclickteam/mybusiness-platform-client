@@ -1,16 +1,15 @@
-```javascript
 import { useState } from "react";
-import jwtDecode from "jwt-decode"; // You need to install: npm install jwt-decode
+import jwtDecode from "jwt-decode"; // יש להתקין: npm install jwt-decode
 import "./ReviewForm.css";
 
 const ratingFields = [
-  { key: "service", label: "🤝 Service" },
-  { key: "professional", label: "💼 Professionalism" },
-  { key: "timing", label: "⏰ Timeliness" },
-  { key: "availability", label: "📞 Availability" },
-  { key: "value", label: "💰 Value for Money" },
-  { key: "goal", label: "🎯 Goal Achievement" },
-  { key: "experience", label: "🎉 Overall Experience" },
+  { key: "service", label: "🤝 שירותיות" },
+  { key: "professional", label: "💼 מקצועיות" },
+  { key: "timing", label: "⏰ עמידה בזמנים" },
+  { key: "availability", label: "📞 זמינות" },
+  { key: "value", label: "💰 תמורה למחיר" },
+  { key: "goal", label: "🎯 השגת מטרה" },
+  { key: "experience", label: "🎉 חוויה כללית" },
 ];
 
 const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
@@ -31,7 +30,7 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
 
   const sendRecommendation = async (avgRating, clientId, reviewText) => {
     const token = localStorage.getItem("token");
-    if (!token) throw new Error("No authentication token, please log in again");
+    if (!token) throw new Error("אין טוקן אימות, אנא התחבר מחדש");
 
     const payload = {
       businessId,
@@ -52,7 +51,7 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
 
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.error || "Error creating recommendation");
+      throw new Error(err.error || "שגיאה ביצירת המלצה");
     }
 
     const data = await res.json();
@@ -66,11 +65,11 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
 
     try {
       const token = localStorage.getItem("token");
-      if (!token) throw new Error("No authentication token, please log in again");
+      if (!token) throw new Error("אין טוקן אימות, אנא התחבר מחדש");
 
       const decoded = jwtDecode(token);
       const clientId = decoded.userId;
-      if (!clientId) throw new Error("Invalid token - missing userId");
+      if (!clientId) throw new Error("טוקן לא תקין - חסר userId");
 
       const reviewData = {
         business: businessId,
@@ -89,7 +88,7 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
       };
 
       if (socket && socket.connected) {
-        // Sending via socket
+        // שליחה דרך socket
         socket.emit("createReview", reviewData, async (res) => {
           if (res.ok) {
             try {
@@ -102,12 +101,12 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
             setText("");
             setIsSubmitting(false);
           } else {
-            setError(res.error || "Error sending the review");
+            setError(res.error || "שגיאה בשליחת הביקורת");
             setIsSubmitting(false);
           }
         });
       } else {
-        // fallback to regular fetch
+        // fallback לביצוע fetch רגיל
         const response = await fetch("/api/reviews", {
           method: "POST",
           headers: {
@@ -120,7 +119,7 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.error || "Error sending the review");
+          throw new Error(data.error || "שגיאה בשליחת הביקורת");
         }
 
         const data = await response.json();
@@ -144,7 +143,7 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
 
   return (
     <form className="review-form" onSubmit={handleSubmit}>
-      <h3>📝 Leave a review for the service</h3>
+      <h3>📝 השאר ביקורת על השירות</h3>
 
       {ratingFields.map(({ key, label }) => (
         <div key={key} className="rating-row">
@@ -154,7 +153,7 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
             onChange={(e) => handleRatingChange(key, Number(e.target.value))}
             required
           >
-            <option value="">Select rating</option>
+            <option value="">בחר דירוג</option>
             {[5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1].map((n) => (
               <option key={n} value={n}>
                 {"★".repeat(Math.round(n)) + "☆".repeat(5 - Math.round(n))} ({n})
@@ -164,25 +163,24 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
         </div>
       ))}
 
-      <label>✍️ Review</label>
+      <label>✍️ חוות דעת</label>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows="4"
-        placeholder="Write your experience with the service here..."
+        placeholder="כתוב כאן את החוויה שלך עם השירות..."
         required
       />
 
-      <div className="average-score">⭐ Average Score: {calculateAverage()} / 5</div>
+      <div className="average-score">⭐ ציון ממוצע: {calculateAverage()} / 5</div>
 
       {error && <div className="error-message">{error}</div>}
 
       <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Loading…" : "Submit Review"}
+        {isSubmitting ? "טוען…" : "שלח ביקורת"}
       </button>
     </form>
   );
 };
 
 export default ReviewForm;
-```

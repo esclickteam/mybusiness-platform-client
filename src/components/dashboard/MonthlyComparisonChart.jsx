@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import {
   BarChart,
@@ -21,7 +20,7 @@ const MonthlyComparisonChart = ({ data }) => {
     !Array.isArray(data.lastYear)
   ) {
     console.warn("Invalid or incomplete data for MonthlyComparisonChart:", data);
-    return <p style={{ textAlign: "center", color: "red" }}>No data to display in the monthly chart</p>;
+    return <p style={{ textAlign: "center", color: "red" }}>אין נתונים להצגה בגרף החודשי</p>;
   }
 
   const chartData = data.months.map((month, index) => ({
@@ -35,7 +34,7 @@ const MonthlyComparisonChart = ({ data }) => {
   return (
     <div className="graph-box" style={{ marginTop: 40 }}>
       <h4 style={{ textAlign: "center", marginBottom: 10 }}>
-        📊 Monthly Revenue Comparison
+        📊 השוואת הכנסות חודשית
       </h4>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart
@@ -47,8 +46,8 @@ const MonthlyComparisonChart = ({ data }) => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="thisYear" fill="#6a5acd" name="This Year" />
-          <Bar dataKey="lastYear" fill="#ffa07a" name="Last Year" />
+          <Bar dataKey="thisYear" fill="#6a5acd" name="השנה" />
+          <Bar dataKey="lastYear" fill="#ffa07a" name="שנה שעברה" />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -56,4 +55,3 @@ const MonthlyComparisonChart = ({ data }) => {
 };
 
 export default MonthlyComparisonChart;
-```

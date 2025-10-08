@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -89,63 +88,63 @@ function AdminDashboard() {
 
   return (
     <div className="admin-dashboard">
-      <h1>👑 Main Admin Dashboard</h1>
-      <p className="welcome-admin">Hello, {user?.name || user?.email || "Admin"}</p>
+      <h1>👑 דשבורד אדמין ראשי</h1>
+      <p className="welcome-admin">שלום, {user?.name || user?.email || "מנהל"}</p>
 
       <div className="admin-summary">
         <div className="summary-card">
-          👥 Users in the system: <strong>{stats.totalUsers}</strong>
+          👥 משתמשים במערכת: <strong>{stats.totalUsers}</strong>
         </div>
         <div className="summary-card">
-          🏢 Registered businesses: <strong>{stats.totalBusinesses}</strong>
+          🏢 עסקים רשומים: <strong>{stats.totalBusinesses}</strong>
         </div>
         <div className="summary-card">
-          👥 Registered clients: <strong>{stats.totalClients}</strong>
+          👥 לקוחות רשומים: <strong>{stats.totalClients}</strong>
         </div>
         <div className="summary-card">
-          💰 Total sales: <strong>{stats.totalSales} ₪</strong>
+          💰 סה"כ מכירות: <strong>{stats.totalSales} ₪</strong>
         </div>
         <div className="summary-card">
-          🧑‍💼 Active managers: <strong>{stats.activeManagers}</strong>
+          🧑‍💼 מנהלים פעילים: <strong>{stats.activeManagers}</strong>
         </div>
         <div className="summary-card">
-          🚫 Blocked users: <strong>{stats.blockedUsers}</strong>
+          🚫 משתמשים חסומים: <strong>{stats.blockedUsers}</strong>
         </div>
       </div>
 
       <div className="admin-actions">
         <Link to="/admin/roles" className="admin-link">
-          🔐 Role and permission management
+          🔐 ניהול תפקידים והרשאות
         </Link>
         <Link to="/admin/site-edit" className="admin-link">
-          🖊️ Edit site content
+          🖊️ עריכת תוכן האתר
         </Link>
         <Link to="/admin/plans" className="admin-link">
-          📦 Package management
+          📦 ניהול חבילות
         </Link>
         <Link to="/admin/users" className="admin-link">
-          👥 User management
+          👥 ניהול משתמשים
         </Link>
         <Link to="/admin/logs" className="admin-link">
-          🕐 System actions (logs)
+          🕐 פעולות מערכת (לוגים)
         </Link>
         <Link to="/admin/settings" className="admin-link">
-          ⚙️ General settings
+          ⚙️ הגדרות כלליות
         </Link>
         <Link to="/reset-password" className="admin-link">
-          🔒 Change password
+          🔒 שינוי סיסמה
         </Link>
 
-        {/* The new link for managing affiliates */}
+        {/* הקישור החדש לניהול משווקים */}
         <Link to="/admin/affiliates" className="admin-link">
-          🤝 Affiliate management
+          🤝 ניהול משווקים (שותפים)
         </Link>
 
         <Link to="/admin/affiliate-payouts" className="admin-link">
-          💸 Partner payment report
+          💸 דו"ח תשלומים לשותפים
         </Link>
         <Link to="/admin/withdrawals" className="admin-link">
-          🏧 Withdrawal requests for partners
+          🏧 בקשות משיכה לשותפים
         </Link>
       </div>
     </div>
@@ -153,4 +152,3 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard;
-```

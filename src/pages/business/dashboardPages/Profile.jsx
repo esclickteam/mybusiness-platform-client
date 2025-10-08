@@ -1,4 +1,3 @@
-```javascript
 // src/pages/business/dashboardPages/Profile.jsx
 
 import React, { useEffect, useState } from "react";
@@ -13,21 +12,21 @@ import FaqTab from "./buildTabs/FaqTab";
 import ChatTab from "./buildTabs/ChatTab";
 
 const TABS = [
-  "Main",
-  "Gallery",
-  "Shop / Calendar",
-  "Reviews",
-  "Chat with Business",
-  "Questions and Answers",
+  "ראשי",
+  "גלריה",
+  "חנות / יומן",
+  "ביקורות",
+  "צ'אט עם העסק",
+  "שאלות ותשובות",
 ];
 
 const fallbackBusiness = {
-  name: "Sample Business",
-  description: "Welcome to the sample business! We offer amazing services 😊",
+  name: "עסק לדוגמה",
+  description: "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
   phone: "050-1234567",
   logo: "https://via.placeholder.com/100",
-  category: "Marketing",
-  area: "Center",
+  category: "שיווק",
+  area: "מרכז",
   gallery: [
     { url: "https://via.placeholder.com/300", type: "image" },
     { url: "https://via.placeholder.com/300", type: "image" },
@@ -36,12 +35,12 @@ const fallbackBusiness = {
     { url: "https://via.placeholder.com/150", type: "image", uploadedAt: Date.now() },
   ],
   services: [
-    { name: "Consultation", description: "Initial consultation call", price: 150 },
-    { name: "Coaching", description: "Monthly coaching program", price: 800 },
+    { name: "ייעוץ", description: "שיחת ייעוץ ראשונית", price: 150 },
+    { name: "ליווי", description: "תוכנית ליווי חודשית", price: 800 },
   ],
   reviews: [
-    { user: "Shira", comment: "Amazing service!", rating: 5 },
-    { user: "Alon", comment: "Really professional!", rating: 5 },
+    { user: "שירה", comment: "שירות מהמם!", rating: 5 },
+    { user: "אלון", comment: "ממש מקצועיים!", rating: 5 },
   ],
 };
 
@@ -49,7 +48,7 @@ export default function Profile() {
   const [businessData, setBusinessData] = useState(null);
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentTab, setCurrentTab] = useState("Main");
+  const [currentTab, setCurrentTab] = useState("ראשי");
   const [shopMode, setShopMode] = useState(null);
 
   useEffect(() => {
@@ -81,7 +80,7 @@ export default function Profile() {
   }, []);
 
   if (loading) {
-    return <div className="p-6 text-center">🔄 Loading profile...</div>;
+    return <div className="p-6 text-center">🔄 טוען פרופיל...</div>;
   }
 
   return (
@@ -100,19 +99,19 @@ export default function Profile() {
         ))}
       </div>
 
-      {currentTab === "Main" && (
+      {currentTab === "ראשי" && (
         <section>
           <MainTab isForm={false} businessDetails={businessData} />
         </section>
       )}
 
-      {currentTab === "Gallery" && (
+      {currentTab === "גלריה" && (
         <section>
           <GalleryTab isForm={false} businessDetails={businessData} />
         </section>
       )}
 
-      {currentTab === "Shop / Calendar" && (
+      {currentTab === "חנות / יומן" && (
         <section>
           <ShopAndCalendar
   isPreview={false}
@@ -123,27 +122,27 @@ export default function Profile() {
         </section>
       )}
 
-      {currentTab === "Reviews" && (
+      {currentTab === "ביקורות" && (
         <section>
           <ReviewsModule
             reviews={businessData.reviews}
-            setReviews={() => {}}   // Empty function to prevent errors if no editing
+            setReviews={() => {}}   // פונקציה ריקה למניעת שגיאות אם אין עריכה
             isPreview
           />
         </section>
       )}
 
-      {currentTab === "Chat with Business" && (
+      {currentTab === "צ'אט עם העסק" && (
         <section>
           <ChatTab
             businessDetails={businessData}
-            setBusinessDetails={() => {}} // Empty function, no editing
+            setBusinessDetails={() => {}} // פונקציה ריקה, אין עריכה
             isPreview
           />
         </section>
       )}
 
-      {currentTab === "Questions and Answers" && (
+      {currentTab === "שאלות ותשובות" && (
         <section>
           <FaqTab
             faqs={faqs}
@@ -155,4 +154,3 @@ export default function Profile() {
     </div>
   );
 }
-```

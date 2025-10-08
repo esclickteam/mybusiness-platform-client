@@ -1,17 +1,17 @@
 // src/utils/notifications.js
 
 /**
- * קובץ ריק לאחר ביטול התמיכה ב-Push Notifications
- * השארתי פונקציות דמה כדי שלא יישברו קריאות קיימות בקוד.
- * הן פשוט לא עושות כלום ולא יבקשו הרשאה מהדפדפן.
+ * This file is empty after the support for Push Notifications was canceled.
+ * I left dummy functions so that existing calls in the code won't break.
+ * They simply do nothing and won't request permission from the browser.
  */
 
 export async function requestNotificationPermission() {
-  console.log("🔔 Push Notifications בוטלו - לא מבקשים הרשאה");
+  console.log("🔔 Push Notifications have been canceled - not requesting permission");
   return false;
 }
 
 export async function subscribeUser() {
-  console.log("🔔 Push Notifications בוטלו - לא נרשמים לשירות");
+  console.log("🔔 Push Notifications have been canceled - not subscribing to the service");
   return;
 }

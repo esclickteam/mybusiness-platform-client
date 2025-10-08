@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useRef } from "react";
 import ImageLoader from "@components/ImageLoader";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
@@ -19,7 +18,7 @@ export default function GallerySection({
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // No special cleanup needed
+        // אין צורך בניקוי מיוחד
       }
     };
     document.addEventListener("mousedown", onClickOutside);
@@ -32,7 +31,7 @@ export default function GallerySection({
   }));
   const uniqueImages = dedupeByPreview(wrapped);
 
-  // Handle drag end - update order
+  // טיפול בסיום גרירה - עדכון הסדר
   const onDragEnd = (result) => {
     if (!result.destination) return;
 
@@ -46,7 +45,7 @@ export default function GallerySection({
   return (
     <>
       <div className="form-column" ref={containerRef}>
-        <h3>Upload Images to Gallery</h3>
+        <h3>העלאת תמונות לגלריה</h3>
         <input
           type="file"
           name="gallery"
@@ -63,7 +62,7 @@ export default function GallerySection({
           onClick={() => galleryInputRef.current?.click()}
           disabled={isSaving}
         >
-          Add Images
+          הוספת תמונות
         </button>
 
         <DragDropContext onDragEnd={onDragEnd}>
@@ -89,14 +88,14 @@ export default function GallerySection({
                       >
                         <img
                           src={preview}
-                          alt={`Gallery Image ${index + 1}`}
+                          alt={`תמונת גלריה ${index + 1}`}
                           className="gallery-img"
                         />
                         <button
                           className="delete-btn"
                           onClick={() => handleDeleteImage(publicId)}
                           type="button"
-                          title="Delete"
+                          title="מחיקה"
                           disabled={isSaving}
                         >
                           🗑️
@@ -115,7 +114,7 @@ export default function GallerySection({
       <div className="preview-column">
         {renderTopBar?.()}
 
-        <h3 className="section-title">Our Gallery</h3>
+        <h3 className="section-title">הגלריה שלנו</h3>
         <div className="gallery-grid-container view">
           {uniqueImages.length > 0 ? (
             uniqueImages.map(({ preview, publicId }, i) => (
@@ -125,17 +124,16 @@ export default function GallerySection({
               >
                 <ImageLoader
                   src={preview}
-                  alt={`Gallery Image ${i + 1}`}
+                  alt={`תמונת גלריה ${i + 1}`}
                   className="gallery-img"
                 />
               </div>
             ))
           ) : (
-            <p className="no-data">No images in the gallery</p>
+            <p className="no-data">אין תמונות בגלריה</p>
           )}
         </div>
       </div>
     </>
   );
 }
-```

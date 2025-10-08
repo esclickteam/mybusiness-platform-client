@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useMemo } from "react";
 import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
@@ -33,7 +32,7 @@ const CRMAppointmentsTab = () => {
   const [clients, setClients] = useState([]);
   const [businessSchedule, setBusinessSchedule] = useState(null);
 
-  // === Convert work hours object to array ===
+  // === הפיכת אובייקט של שעות עבודה למערך ===
   const scheduleArray = useMemo(() => {
     if (!businessSchedule) return [];
     if (Array.isArray(businessSchedule)) return businessSchedule;
@@ -44,7 +43,7 @@ const CRMAppointmentsTab = () => {
     }));
   }, [businessSchedule]);
 
-  // === Fetch services ===
+  // === שליפת שירותים ===
   useEffect(() => {
     async function fetchServices() {
       if (!businessId) return;
@@ -58,7 +57,7 @@ const CRMAppointmentsTab = () => {
     fetchServices();
   }, [businessId]);
 
-  // === Fetch CRM clients ===
+  // === שליפת לקוחות CRM ===
   useEffect(() => {
     async function fetchClients() {
       if (!businessId) return;
@@ -72,7 +71,7 @@ const CRMAppointmentsTab = () => {
     fetchClients();
   }, [businessId]);
 
-  // === Fetch work hours ===
+  // === שליפת שעות עבודה ===
   useEffect(() => {
     async function fetchSchedule() {
       if (!businessId) return;
@@ -88,7 +87,7 @@ const CRMAppointmentsTab = () => {
     fetchSchedule();
   }, [businessId]);
 
-  // === Fetch appointments ===
+  // === שליפת פגישות ===
   const {
     data: appointments = [],
     refetch: refetchAppointments,
@@ -101,7 +100,7 @@ const CRMAppointmentsTab = () => {
     enabled: !!businessId,
   });
 
-  // === Sync appointments with socket.io ===
+  // === סנכרון פגישות עם socket.io ===
   useEffect(() => {
     if (!socket) return;
 
@@ -141,7 +140,7 @@ const CRMAppointmentsTab = () => {
     };
   }, [socket, queryClient, businessId]);
 
-  // === Save a new appointment including crmClientId ===
+  // === שמירה של פגישה חדשה כולל crmClientId ===
   const handleConfirmAppointment = async () => {
     if (isSaving) return;
 
@@ -153,7 +152,7 @@ const CRMAppointmentsTab = () => {
       !newAppointment.serviceId ||
       !newAppointment.crmClientId
     ) {
-      alert("Please fill in name, phone, service, date, time, and CRM client");
+      alert("אנא מלא שם, טלפון, שירות, תאריך, שעה ולקוח CRM");
       return;
     }
 
@@ -174,7 +173,7 @@ const CRMAppointmentsTab = () => {
         duration: 30,
       });
 
-      // ✅ Refresh both appointments and client file
+      // ✅ רענון גם לפגישות וגם לתיק הלקוח
       await refetchAppointments();
       queryClient.invalidateQueries(["clients", businessId]);
       queryClient.invalidateQueries([
@@ -201,19 +200,19 @@ const CRMAppointmentsTab = () => {
         error.response.status === 400 &&
         error.response.data.message.includes("Slot already booked")
       ) {
-        alert("The time you selected is occupied or conflicts with another appointment. Please choose another time.");
+        alert("הזמן שבחרת תפוס או מתנגש עם תיאום אחר. בחר בבקשה זמן אחר.");
       } else {
-        alert("Error saving the appointment, please try again");
+        alert("שגיאה בשמירת התיאום, נסה שנית");
       }
     } finally {
       setIsSaving(false);
     }
   };
 
-  // === Send WhatsApp reminder ===
+  // === שליחת תזכורת וואטסאפ ===
   const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
     if (!phone) {
-      alert("Client's phone number is not available");
+      alert("מספר טלפון של הלקוח לא זמין");
       return;
     }
     let cleanPhone = phone.replace(/\D/g, "");
@@ -232,9 +231,9 @@ const CRMAppointmentsTab = () => {
       year: "numeric",
     });
 
-    const businessName = user?.businessName || "Your Business";
+    const businessName = user?.businessName || "העסק שלך";
 
-    const message = `Hello ${clientName},\nThis is a reminder for your appointment on ${formattedDate} at ${time}\nFor service: ${service}\n\nWe are waiting for you,\n${businessName}`;
+    const message = `שלום ${clientName},\nזוהי תזכורת לפגישה שלך בתאריך ${formattedDate} בשעה ${time}\nעבור שירות: ${service}\n\nמחכים לך,\n${businessName}`;
     const encodedMessage = encodeURIComponent(message);
 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -245,7 +244,7 @@ const CRMAppointmentsTab = () => {
     window.open(url, "_blank");
   };
 
-  // === Search and filter ===
+  // === חיפוש וסינון ===
   const filteredUniqueAppointments = useMemo(() => {
     const seen = new Set();
     const searchLower = search.toLowerCase().trim();
@@ -275,17 +274,17 @@ const CRMAppointmentsTab = () => {
       });
   }, [appointments, search]);
 
-  if (isLoadingAppointments) return <p>Loading appointments...</p>;
-  if (isErrorAppointments) return <p>Error loading appointments</p>;
+  if (isLoadingAppointments) return <p>טוען תיאומים...</p>;
+  if (isErrorAppointments) return <p>שגיאה בטעינת התיאומים</p>;
 
   return (
     <div className="crm-appointments-tab">
-      <h2>📆 Appointments / Orders</h2>
+      <h2>📆 תיאומים / הזמנות</h2>
 
       <div className="appointments-header">
         <input
           type="text"
-          placeholder="Search by name or phone..."
+          placeholder="חפש לפי שם או טלפון..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
@@ -308,13 +307,13 @@ const CRMAppointmentsTab = () => {
             });
           }}
         >
-          ➕ Add Appointment
+          ➕ הוסף תיאום
         </button>
       </div>
 
       {showAddForm && (
         <div className="add-form">
-          {/* ✅ Select CRM client */}
+          {/* ✅ בחירת לקוח CRM */}
           <select
             value={newAppointment.crmClientId}
             onChange={(e) => {
@@ -330,7 +329,7 @@ const CRMAppointmentsTab = () => {
               });
             }}
           >
-            <option value="">Select CRM Client</option>
+            <option value="">בחר לקוח CRM</option>
             {clients.map((c) => (
               <option key={c._id} value={c._id}>
                 {c.fullName} ({c.phone})
@@ -340,7 +339,7 @@ const CRMAppointmentsTab = () => {
 
           <input
             type="text"
-            placeholder="Full Name"
+            placeholder="שם מלא"
             value={newAppointment.clientName}
             onChange={(e) =>
               setNewAppointment({ ...newAppointment, clientName: e.target.value })
@@ -348,7 +347,7 @@ const CRMAppointmentsTab = () => {
           />
           <input
             type="tel"
-            placeholder="Phone"
+            placeholder="טלפון"
             value={newAppointment.clientPhone}
             onChange={(e) =>
               setNewAppointment({ ...newAppointment, clientPhone: e.target.value })
@@ -356,7 +355,7 @@ const CRMAppointmentsTab = () => {
           />
           <input
             type="text"
-            placeholder="Address"
+            placeholder="כתובת"
             value={newAppointment.address}
             onChange={(e) =>
               setNewAppointment({ ...newAppointment, address: e.target.value })
@@ -364,7 +363,7 @@ const CRMAppointmentsTab = () => {
           />
           <input
             type="email"
-            placeholder="Email (for sending confirmation)"
+            placeholder="אימייל (לשליחת אישור)"
             value={newAppointment.email}
             onChange={(e) =>
               setNewAppointment({ ...newAppointment, email: e.target.value })
@@ -372,7 +371,7 @@ const CRMAppointmentsTab = () => {
           />
           <textarea
             className="full-width"
-            placeholder="Note (optional)"
+            placeholder="הערה (לא חובה)"
             value={newAppointment.note}
             onChange={(e) =>
               setNewAppointment({ ...newAppointment, note: e.target.value })
@@ -390,7 +389,7 @@ const CRMAppointmentsTab = () => {
               });
             }}
           >
-            <option value="">Select Service</option>
+            <option value="">בחר שירות</option>
             {services.map((s) => (
               <option key={s._id} value={s._id}>
                 {s.name}
@@ -415,27 +414,27 @@ const CRMAppointmentsTab = () => {
             schedule={scheduleArray}
           />
           <button onClick={handleConfirmAppointment} disabled={isSaving}>
-            📅 Schedule Appointment
+            📅 קבע פגישה
           </button>
         </div>
       )}
 
-      {/* === Appointments Table === */}
+      {/* === טבלת פגישות === */}
       <table className="appointments-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Service</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Actions</th>
+            <th>שם</th>
+            <th>טלפון</th>
+            <th>שירות</th>
+            <th>תאריך</th>
+            <th>שעה</th>
+            <th>פעולות</th>
           </tr>
         </thead>
         <tbody>
           {filteredUniqueAppointments.length === 0 ? (
             <tr>
-              <td colSpan="6">No appointments found</td>
+              <td colSpan="6">לא נמצאו תיאומים</td>
             </tr>
           ) : (
             filteredUniqueAppointments.map((appt) => (
@@ -446,28 +445,28 @@ const CRMAppointmentsTab = () => {
                 <td>{appt.date}</td>
                 <td>{appt.time}</td>
                 <td>
-                  {/* Reminder */}
+                  {/* תזכורת */}
                   <button
                     onClick={() =>
                       sendWhatsAppReminder(
                         appt.clientPhone,
-                        appt.clientName || "Client",
+                        appt.clientName || "לקוח",
                         appt.date,
                         appt.time,
                         appt.serviceName || appt.service
                       )
                     }
                   >
-                    📩 Reminder
+                    📩 תזכורת
                   </button>
 
-                  {/* Edit */}
-                  <button onClick={() => setEditId(appt._id)}>✏️ Edit</button>
+                  {/* עריכה */}
+                  <button onClick={() => setEditId(appt._id)}>✏️ ערוך</button>
 
-                  {/* Delete */}
+                  {/* מחיקה */}
                   <button
                     onClick={async () => {
-                      if (window.confirm("Are you sure you want to delete the appointment?")) {
+                      if (window.confirm("בטוח שתרצה למחוק את התיאום?")) {
                         try {
                           await API.delete(`/appointments/${appt._id}`);
                           queryClient.invalidateQueries([
@@ -476,13 +475,13 @@ const CRMAppointmentsTab = () => {
                             businessId,
                           ]);
                         } catch (err) {
-                          console.error("Error deleting the appointment:", err);
-                          alert("❌ Deletion failed");
+                          console.error("שגיאה במחיקת התיאום:", err);
+                          alert("❌ המחיקה נכשלה");
                         }
                       }
                     }}
                   >
-                    ❌ Delete
+                    ❌ מחק
                   </button>
                 </td>
               </tr>
@@ -495,4 +494,3 @@ const CRMAppointmentsTab = () => {
 };
 
 export default CRMAppointmentsTab;
-```

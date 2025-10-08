@@ -1,95 +1,97 @@
+```javascript
 import React from "react";
 import "./AICompanionGuidePage.css";
 
 export default function AICompanionGuidePage() {
   return (
     <div className="ai-guide-container" dir="rtl" lang="he">
-      {/* משפט הכותרת הוסר */}
-      <h1>🧠 בינה מלאכותית בעסקליק – השותף החכם שלך לצמיחת העסק בעידן המודרני</h1>
+      {/* The title sentence has been removed */}
+      <h1>🧠 Artificial Intelligence at Ascalik – Your Smart Partner for Business Growth in the Modern Era</h1>
 
-      <h2>למה כל עסק בעידן המודרני זקוק לבינה מלאכותית?</h2>
+      <h2>Why does every business in the modern era need artificial intelligence?</h2>
       <p>
-        בעולם שבו התחרות גוברת, והלקוחות מצפים למענה מהיר, מדויק ואישי, העסק שלך חייב להתנהל על בסיס נתונים אמיתיים ומעודכנים. להסתמך על אינטואיציות בלבד או על ניהול ידני הופך לפחות ויותר מסוכן.
+        In a world where competition is increasing, and customers expect quick, accurate, and personalized responses, your business must operate based on real and updated data. Relying solely on intuition or manual management is becoming less and less safe.
       </p>
       <p>
-        בינה מלאכותית היא לא עוד אופציה – היא כבר חובה לכל עסק שרוצה להישאר רלוונטי, תחרותי ורווחי. היא מעניקה לך יועץ אישי וזמין, שמנתח את כל המידע העסקי שלך ומספק תובנות והמלצות ממוקדות, בלי שתצטרך לנחש.
+        Artificial intelligence is no longer just an option – it is a necessity for any business that wants to remain relevant, competitive, and profitable. It provides you with a personal and available advisor that analyzes all your business information and offers focused insights and recommendations, without you having to guess.
       </p>
 
-      <h2>מהו שותף ה-AI של עסקליק וכיצד הוא עוזר לך?</h2>
+      <h2>What is Ascalik's AI partner and how does it help you?</h2>
       <p>
-        שותף ה-AI הוא מערכת חכמה שמשולבת במערכת שלך בעסקליק ומספקת לך כלים וייעוץ מבוססי נתונים בזמן אמת.
+        The AI partner is an intelligent system integrated into your system at Ascalik that provides you with real-time data-driven tools and advice.
       </p>
 
-      <h2>מה כולל השותף החכם?</h2>
+      <h2>What does the smart partner include?</h2>
       <ul>
-        <li>תובנות מותאמות אישית על בסיס פעילות העסק שלך.</li>
-        <li>התראות אוטומטיות על הזדמנויות שיווק, לקוחות פוטנציאליים ואזהרות מוקדמות על תקלות או מגמות שליליות.</li>
-        <li>המלצות שיווקיות ועסקיות – מתי לקדם מבצע, אילו שירותים להדגיש, איך לשפר ניהול פנימי ועוד.</li>
-        <li>עדכון שוטף בזמן אמת בהתאם לפעילות העסק.</li>
+        <li>Personalized insights based on your business activity.</li>
+        <li>Automated alerts about marketing opportunities, potential customers, and early warnings about failures or negative trends.</li>
+        <li>Marketing and business recommendations – when to promote a campaign, which services to highlight, how to improve internal management, and more.</li>
+        <li>Continuous real-time updates based on business activity.</li>
       </ul>
       <p>
-        כל התראות ה-AI מופיעות גם בדשבורד המרכזי שלך, כדי שתוכל לפעול במהירות ולנצל כל הזדמנות.
+        All AI alerts also appear on your main dashboard, so you can act quickly and seize every opportunity.
       </p>
 
-      <h2>למה השותף AI הוא היועץ הטוב ביותר שלך?</h2>
+      <h2>Why is the AI partner your best advisor?</h2>
       <ol>
         <li>
-          <strong>תובנות חכמות ומדויקות מבוססות נתונים אמיתיים</strong><br />
-          ה-AI מנתח את כל הפעילות העסקית – פניות, הזמנות, ביקורות, זמני עבודה ועוד – ומנצל את המידע הזה כדי לייצר תובנות שלא תוכל לקבל בעצמך בקלות, או אפילו בכלל.
+          <strong>Smart and accurate insights based on real data</strong><br />
+          The AI analyzes all business activity – inquiries, orders, reviews, working hours, and more – and leverages this information to generate insights that you wouldn't easily obtain yourself, or even at all.
         </li>
         <li>
-          <strong>פעולות ממוקדות ולא כלליות</strong><br />
-          המלצות ה-AI מדויקות ומותאמות לעסק שלך בלבד, ולא סתם המלצות כלליות. במקום לנחש, אתה מקבל הנחיות ברורות לפעולה.
+          <strong>Targeted actions, not general ones</strong><br />
+          The AI recommendations are precise and tailored specifically to your business, not just general suggestions. Instead of guessing, you receive clear action guidelines.
         </li>
         <li>
-          <strong>תגובה מהירה לשינויים בשוק ובעסק</strong><br />
-          המערכת מזהה חריגות מוקדמות כמו ירידה פתאומית בפניות או עלייה בביטולי תורים, ומתריעה מיידית. כך תוכל להגיב בזמן, לשנות גישה ולמנוע נזקים.
+          <strong>Quick response to market and business changes</strong><br />
+          The system identifies early anomalies such as a sudden drop in inquiries or an increase in appointment cancellations and alerts you immediately. This way, you can respond in time, change your approach, and prevent damage.
         </li>
         <li>
-          <strong>עצמאות עסקית ושיפור מתמיד</strong><br />
-          עם יועץ עסקי שזמין 24/7, אתה לא צריך להסתמך רק על תחושות או על מומחים חיצוניים. ה-AI מלווה אותך כל הזמן ומסייע לך ללמוד, להתאים ולשפר.
+          <strong>Business independence and continuous improvement</strong><br />
+          With a business advisor available 24/7, you don't have to rely solely on feelings or external experts. The AI is with you all the time, helping you learn, adapt, and improve.
         </li>
       </ol>
 
-      <h2>איך לנצל נכון את השותף AI של עסקליק?</h2>
+      <h2>How to effectively utilize Ascalik's AI partner?</h2>
       <ol>
         <li>
-          <strong>התחל מהבנת המטרות שלך</strong><br />
-          הבהר לעצמך מה חשוב לך לשפר: שיווק? ניהול תורים? שימור לקוחות? תמחור? ה-AI יכול לעזור בכל תחום, אבל צריך לדעת מה שאליו מכוונים.
+          <strong>Start by understanding your goals</strong><br />
+          Clarify what you want to improve: marketing? Appointment management? Customer retention? Pricing? The AI can help in every area, but you need to know what you're aiming for.
         </li>
         <li>
-          <strong>בדוק את התובנות והתראות באופן שוטף</strong><br />
-          היכנס לטאב הייעודי של ה-AI לפחות פעם ביום, עיין בהתראות, קרא את ההמלצות ונסה ליישם את מה שמתאים לך.
+          <strong>Regularly check insights and alerts</strong><br />
+          Access the dedicated AI tab at least once a day, review the alerts, read the recommendations, and try to implement what suits you.
         </li>
         <li>
-          <strong>השתמש בייעוץ השיווקי כדי לתכנן מהלכים</strong><br />
-          למשל: מתי הזמן הטוב ביותר לשלוח מבצע, אילו שירותים להדגיש בעמוד, באיזה ערוצים כדאי לפרסם ועוד.
+          <strong>Use marketing advice to plan moves</strong><br />
+          For example: when is the best time to send a promotion, which services to highlight on the page, which channels to advertise on, and more.
         </li>
         <li>
-          <strong>נצל את הייעוץ העסקי כדי לייעל תהליכים</strong><br />
-          ה-AI יעזור לך להבין אם אתה מאזן נכון בין זמן עבודה להכנסות, האם כדאי לשנות תמחור, איך לשפר את יחס הסגירה של פניות ועוד.
+          <strong>Leverage business advice to optimize processes</strong><br />
+          The AI will help you understand if you are balancing work time with income correctly, whether to change pricing, how to improve the conversion rate of inquiries, and more.
         </li>
         <li>
-          <strong>אל תתעלם מהנתונים – למד מהם לאורך זמן</strong><br />
-          השימוש ב-AI הוא תהליך למידה מתמשך. ככל שתעקוב אחרי הנתונים יותר, תוכל לזהות דפוסים ולהתאים את העסק שלך בצורה מדויקת יותר.
+          <strong>Don't ignore the data – learn from it over time</strong><br />
+          Using AI is an ongoing learning process. The more you track the data, the better you can identify patterns and adjust your business more accurately.
         </li>
       </ol>
 
-      <h2>מה המטרות העיקריות שכדאי להתייעץ עם ה-AI?</h2>
+      <h2>What are the main goals to consult with the AI?</h2>
       <ul>
-        <li>שיפור שיווק ומכירות: להגדיל חשיפה, להמיר פניות למכירות, ולהשיג לקוחות חדשים.</li>
-        <li>ניהול זמן ואיזון עבודה: לוודא שהשעות שאתה משקיע בעסק משתלמות, ולמנוע עומס מיותר.</li>
-        <li>שימור לקוחות וניהול קשרים: להציע שירותים מותאמים, לזהות לקוחות "מסוכנים" שעשויים לעזוב, ולהגביר נאמנות.</li>
-        <li>שיפור השירות והתפעול: להקטין ביטולי תורים, לייעל תהליכים פנימיים ולהגביר מקצועיות.</li>
+        <li>Improving marketing and sales: increasing exposure, converting inquiries into sales, and acquiring new customers.</li>
+        <li>Time management and work balance: ensuring that the hours you invest in the business are worthwhile and preventing unnecessary overload.</li>
+        <li>Customer retention and relationship management: offering tailored services, identifying "at-risk" customers who may leave, and increasing loyalty.</li>
+        <li>Improving service and operations: reducing appointment cancellations, optimizing internal processes, and enhancing professionalism.</li>
       </ul>
 
-      <h2>סיכום</h2>
+      <h2>Summary</h2>
       <p>
-        בינה מלאכותית בעסקליק היא הרבה יותר מטכנולוגיה – היא שותף עסקי חכם שנמצא לצידך כל הזמן. בעזרתה תוכל לקבל החלטות מושכלות, לשפר ביצועים, להגדיל הכנסות ולשמור על לקוחות מרוצים – והכל מתוך מערכת אחת אינטגרטיבית.
+        Artificial intelligence at Ascalik is much more than technology – it is a smart business partner that is by your side all the time. With its help, you can make informed decisions, improve performance, increase revenue, and keep customers satisfied – all from one integrated system.
       </p>
       <p>
-        העידן המודרני דורש ניהול מבוסס נתונים ומהירות תגובה, וה-AI הוא הכלי המושלם כדי להבטיח שתהיה תמיד צעד אחד לפני המתחרים.
+        The modern era demands data-driven management and quick response times, and AI is the perfect tool to ensure you are always one step ahead of the competition.
       </p>
     </div>
   );
 }
+```

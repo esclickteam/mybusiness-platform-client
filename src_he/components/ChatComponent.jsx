@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useEffect } from "react";
 import { useSocket } from "../context/socketContext";
 import { useAuth } from "../context/AuthContext";
@@ -12,7 +13,7 @@ export default function ChatComponent({
 }) {
   const socket = useSocket();
   const { user, authToken, initialized } = useAuth();
-  // משיגים את ה־businessId מתוך ה־AuthContext
+  // Getting the businessId from the AuthContext
   const businessId =
     user?.businessId?.toString() || user?.business?._id?.toString() || null;
 
@@ -26,7 +27,7 @@ export default function ChatComponent({
     customerIdProp || null
   );
 
-  // טעינת שיחות לעסק
+  // Loading conversations for the business
   useEffect(() => {
     if (!businessId || !socket) return;
 
@@ -61,7 +62,7 @@ export default function ChatComponent({
         }
       );
     } else {
-      // לקוח פותח שיחה
+      // Client starts a conversation
       if (!conversationId && partnerId) {
         setLoadingInit(true);
         socket.emit(
@@ -87,7 +88,7 @@ export default function ChatComponent({
     }
   }, [businessId, isBusiness, partnerId, socket, conversationId]);
 
-  // עדכון currentCustomerId כשמקצים שיחה
+  // Updating currentCustomerId when assigning a conversation
   useEffect(() => {
     if (isBusiness && conversationId && conversations.length) {
       const conv = conversations.find(
@@ -102,10 +103,10 @@ export default function ChatComponent({
     }
   }, [conversationId, isBusiness, conversations, businessId]);
 
-  // מצבי טעינה
-  if (!initialized) return <p>⏳ טוען פרטי משתמש…</p>;
-  if (isBusiness && loadingConvs) return <p>⏳ טוען שיחות…</p>;
-  if (!conversationId) return <p>⏳ אין שיחה זמינה</p>;
+  // Loading states
+  if (!initialized) return <p>⏳ Loading user details…</p>;
+  if (isBusiness && loadingConvs) return <p>⏳ Loading conversations…</p>;
+  if (!conversationId) return <p>⏳ No conversation available</p>;
 
   return isBusiness ? (
     <BusinessChatTab
@@ -114,7 +115,7 @@ export default function ChatComponent({
       businessId={businessId}
       customerId={currentCustomerId}
       customerName={
-        // השם של הלקוח, אם ידוע לכם כבר ב–conversations תוכלו לחלץ אותו
+        // The name of the customer, if known you can extract it from conversations
         conversations.find(c => (c._id ?? c.conversationId) === conversationId)
           ?.otherParty?.name || ""
       }
@@ -133,3 +134,4 @@ export default function ChatComponent({
     />
   );
 }
+```

@@ -25,7 +25,7 @@ const ClientServiceCard = ({
         className="go-to-calendar-btn"
         onClick={() => onSelect && onSelect(service)}
       >
-        📅 Schedule Appointment
+        📅 קבע תור
       </button>
     </div>
   );

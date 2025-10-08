@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect } from 'react';
 import '../../build/Build.css';
 import './ShopAndCalendar.css';
@@ -25,21 +24,20 @@ export default function ShopAndCalendar({
     }
   }, [safeServices, isPreview, setBusinessDetails]);
 
-  if (!businessId) return null; // Prevents errors if there is no business ID
+  if (!businessId) return null; // מונע טעויות אם אין מזהה עסק
 
   return (
     <div className={`shop-calendar-wrapper ${isPreview ? 'preview-mode' : ''}`}>
       {!isPreview && (
         <div className="edit-links-container">
           <NavLink to={`/business/${businessId}/dashboard/crm/work-hours`} className="edit-link-button">
-            Edit Work Hours
+            עריכת שעות פעילות
           </NavLink>
           <NavLink to={`/business/${businessId}/dashboard/crm/services`} className="edit-link-button">
-            Edit Services
+            עריכת שירותים
           </NavLink>
         </div>
       )}
     </div>
   );
 }
-```

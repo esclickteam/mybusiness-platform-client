@@ -1,7 +1,7 @@
 import React from "react";
-import "./StatsProgressBar.css"; // We will also create corresponding CSS
+import "./StatsProgressBar.css"; // ניצור גם CSS תואם
 
-const StatsProgressBar = ({ value = 0, goal = 100, label = "Monthly Orders" }) => {
+const StatsProgressBar = ({ value = 0, goal = 100, label = "הזמנות החודש" }) => {
   const percentage = Math.min((value / goal) * 100, 100);
 
   return (

@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from 'react';
 import API from '@api';
 import ServiceList from './ServiceList';
@@ -83,8 +82,8 @@ const AppointmentsMain = ({
       <CalendarSetup
         initialHours={workHours}
         onSave={async newHours => {
-          // newHours is a Map object of days
-          // filtering days where start and end are empty
+          // newHours הוא אובייקט Map של ימים
+          // מסננים ימים בהם start ו-end ריקים
           const filteredHours = {};
           Object.entries(newHours).forEach(([day, item]) => {
             if (item?.start?.trim() !== '' && item?.end?.trim() !== '') {
@@ -97,9 +96,9 @@ const AppointmentsMain = ({
             setWorkHours(filteredHours);
             setBusinessDetails(prev => ({ ...prev, workHours: filteredHours }));
             setShowCalendarSetup(false);
-            alert('Business hours saved successfully!');
+            alert('שעות הפעילות נשמרו בהצלחה!');
           } catch {
-            alert('Error saving business hours');
+            alert('שגיאה בשמירת שעות הפעילות');
           }
         }}
         onCancel={() => setShowCalendarSetup(false)}
@@ -110,10 +109,10 @@ const AppointmentsMain = ({
   return (
     <div className="services-page-wrapper">
       <div className="services-form-box">
-        <h2 className="services-form-title">📅 Schedule Appointment</h2>
+        <h2 className="services-form-title">📅 קביעת תור</h2>
 
         <div className="defined-services-section">
-          <h3 className="defined-services-title">Select Service</h3>
+          <h3 className="defined-services-title">בחר שירות</h3>
           <ServiceList
             services={services}
             setServices={setServices}
@@ -128,7 +127,7 @@ const AppointmentsMain = ({
 
         {selectedService && (
           <div className="date-picker">
-            <h3>Select Date</h3>
+            <h3>בחר תאריך</h3>
             <input
               type="date"
               value={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''}
@@ -140,7 +139,7 @@ const AppointmentsMain = ({
 
         {selectedDate && availableSlots.length > 0 && (
           <div className="slots-list">
-            <h3>Available Times</h3>
+            <h3>שעות פנויים</h3>
             <div className="slots-grid">
               {availableSlots.map(slot => (
                 <button
@@ -158,7 +157,7 @@ const AppointmentsMain = ({
         {selectedSlot && (
           <div className="book-action">
             <button onClick={handleBook}>
-              📅 Schedule appointment for {format(selectedDate, 'dd.MM.yyyy')} at {selectedSlot}
+              📅 קבע תור ל־{format(selectedDate, 'dd.MM.yyyy')} בשעה {selectedSlot}
             </button>
           </div>
         )}
@@ -167,7 +166,7 @@ const AppointmentsMain = ({
           className="go-to-calendar-btn"
           onClick={() => setShowCalendarSetup(true)}
         >
-          📅 Set Up Calendar
+          📅 הגדר יומן
         </button>
       </div>
     </div>
@@ -175,4 +174,3 @@ const AppointmentsMain = ({
 };
 
 export default AppointmentsMain;
-```

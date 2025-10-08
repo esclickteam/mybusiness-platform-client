@@ -1,12 +1,14 @@
+```javascript
 // src/context/socketContext.jsx – thin wrapper that reuses AuthContext socket
 
 import { useAuth } from "./AuthContext";
 
 /**
- * useSocket – hook תואם לאחור שמחזיר את מופע הסוקט מה־AuthContext.
- * נועד למנוע שימוש ישיר ב־useAuth בכל מקום, ולשמור על API קיים.
+ * useSocket – backward-compatible hook that returns the socket instance from AuthContext.
+ * Designed to prevent direct use of useAuth everywhere, and to maintain an existing API.
  */
 export function useSocket() {
   const { socket } = useAuth();
   return socket;
 }
+```

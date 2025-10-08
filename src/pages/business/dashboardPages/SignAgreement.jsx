@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
@@ -10,7 +9,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
   const [error, setError] = useState("");
   const sigPadRef = useRef(null);
 
-  // Identify the signing side of the current user
+  // זיהוי צד החתימה של המשתמש הנוכחי
   const side = (() => {
     if (!agreement) return null;
     if (agreement.createdByBusinessId === userBusinessId) return "createdBy";
@@ -26,7 +25,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
         const res = await API.get(`/partnershipAgreements/${agreementId}`);
         setAgreement(res.data);
       } catch {
-        setError("Error loading the agreement");
+        setError("שגיאה בטעינת ההסכם");
       } finally {
         setLoading(false);
       }
@@ -42,7 +41,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
 
   const saveSignature = async () => {
     if (!sigPadRef.current || sigPadRef.current.isEmpty()) {
-      alert("Please sign first");
+      alert("אנא חתום קודם");
       return;
     }
     setSaving(true);
@@ -51,7 +50,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
     try {
       await API.post(`/partnershipAgreements/${agreementId}/sign`, { signatureDataUrl, side });
 
-      alert("Agreement signed successfully!");
+      alert("הסכם נחתם בהצלחה!");
       setAgreement(prev => ({
         ...prev,
         signatures: {
@@ -70,22 +69,22 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
       clearSignature();
       if (typeof onSigned === "function") onSigned();
     } catch {
-      alert("Error saving the signature");
+      alert("שגיאה בשמירת החתימה");
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <p>Loading agreement...</p>;
+  if (loading) return <p>טוען הסכם...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!agreement) return <p>The agreement was not found.</p>;
-  if (!side) return <p>You do not have permission to view or sign this agreement.</p>;
+  if (!agreement) return <p>ההסכם לא נמצא.</p>;
+  if (!side) return <p>אין לך הרשאה לצפות או לחתום על ההסכם הזה.</p>;
 
   return (
     <div style={{ maxWidth: 600, margin: "auto", direction: "rtl", fontFamily: "Arial, sans-serif" }}>
       <h2 style={{ textAlign: "center" }}>{agreement.title}</h2>
-      <p><strong>Description:</strong> {agreement.description || "-"}</p>
-      <p><strong>Agreement Terms:</strong></p>
+      <p><strong>תיאור:</strong> {agreement.description || "-"}</p>
+      <p><strong>תנאי ההסכם:</strong></p>
       <pre
         style={{
           whiteSpace: "pre-wrap",
@@ -97,19 +96,19 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
       >
         {agreement.terms || "-"}
       </pre>
-      <p><strong>Payment Details:</strong> {agreement.paymentDetails || "-"}</p>
-      <p><strong>Agreement Status:</strong> {agreement.status}</p>
+      <p><strong>פרטי תשלום:</strong> {agreement.paymentDetails || "-"}</p>
+      <p><strong>סטטוס ההסכם:</strong> {agreement.status}</p>
 
       <hr />
 
-      <h3>Your Signature ({side === "createdBy" ? "Agreement Creator" : "Invited Business"})</h3>
+      <h3>חתימתך ({side === "createdBy" ? "יוצר ההסכם" : "עסק מוזמן"})</h3>
 
       {hasSigned ? (
         <div>
-          <p>You have already signed the agreement on {new Date(agreement.signatures[side].signedAt).toLocaleDateString()}</p>
+          <p>כבר חתמת על ההסכם בתאריך {new Date(agreement.signatures[side].signedAt).toLocaleDateString()}</p>
           <img
             src={agreement.signatures[side].signatureDataUrl}
-            alt="Signature"
+            alt="חתימה"
             style={{ border: "1px solid black", width: "100%", maxHeight: 150, objectFit: "contain" }}
           />
         </div>
@@ -122,10 +121,10 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
           />
           <div style={{ marginTop: 10 }}>
             <button onClick={clearSignature} disabled={saving} style={{ marginRight: 10 }}>
-              Clear Signature
+              נקה חתימה
             </button>
             <button onClick={saveSignature} disabled={saving}>
-              {saving ? "Saving..." : "Sign and Submit"}
+              {saving ? "שומר..." : "חתום והגש"}
             </button>
           </div>
         </>
@@ -133,27 +132,26 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
 
       <hr />
 
-      <h3>Signature of the Other Party</h3>
+      <h3>חתימת הצד השני</h3>
       {(() => {
         const otherSide = side === "createdBy" ? "invitedBusiness" : "createdBy";
         if (agreement.signatures?.[otherSide]?.signed) {
           return (
             <div>
               <p>
-                The other party signed on{" "}
+                הצד השני חתום בתאריך{" "}
                 {new Date(agreement.signatures[otherSide].signedAt).toLocaleDateString()}
               </p>
               <img
                 src={agreement.signatures[otherSide].signatureDataUrl}
-                alt="Other Party's Signature"
+                alt="חתימת הצד השני"
                 style={{ border: "1px solid black", width: "100%", maxHeight: 150, objectFit: "contain" }}
               />
             </div>
           );
         }
-        return <p>The other party has not signed yet.</p>;
+        return <p>הצד השני עדיין לא חתם.</p>;
       })()}
     </div>
   );
 }
-```

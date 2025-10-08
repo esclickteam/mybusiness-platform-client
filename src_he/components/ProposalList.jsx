@@ -1,9 +1,10 @@
+```javascript
 import React, { useState } from "react";
 
 export default function ProposalList({ proposals, currentBusinessId }) {
   const [openAgreementId, setOpenAgreementId] = useState(null);
 
-  // פונקציה להמרת מזהה למחרוזת בצורה בטוחה
+  // Function to safely convert an ID to a string
   function safeId(id) {
     if (!id) return "";
     if (typeof id === "string") return id;
@@ -36,16 +37,16 @@ export default function ProposalList({ proposals, currentBusinessId }) {
           }}
         >
           <div>
-            <b>כותרת הצעה:</b> {proposal.title}
+            <b>Proposal Title:</b> {proposal.title}
           </div>
           <div>
-            <b>עסק שולח:</b> {proposal.fromBusinessName || proposal.sender?.businessName}
+            <b>Sending Business:</b> {proposal.fromBusinessName || proposal.sender?.businessName}
           </div>
           <div>
-            <b>עסק מקבל:</b> {proposal.toBusinessName || proposal.receiver?.businessName}
+            <b>Receiving Business:</b> {proposal.toBusinessName || proposal.receiver?.businessName}
           </div>
           <div>
-            <b>סטטוס:</b> {proposal.status}
+            <b>Status:</b> {proposal.status}
           </div>
 
           {proposal.agreementId ? (
@@ -62,7 +63,7 @@ export default function ProposalList({ proposals, currentBusinessId }) {
                 }}
                 onClick={() => openModal(proposal.agreementId)}
               >
-                הצג הסכם
+                View Agreement
               </button>
 
               {openAgreementId === safeId(proposal.agreementId) && (
@@ -75,7 +76,7 @@ export default function ProposalList({ proposals, currentBusinessId }) {
                     boxShadow: "inset 0 0 5px rgba(0,0,0,0.1)",
                   }}
                 >
-                  <b>מודל הסכם פתוח (כאן תוסיף פרטים או רכיב מודל אמיתי)</b>
+                  <b>Open Agreement Model (here you can add details or a real modal component)</b>
                   <button
                     style={{
                       marginTop: 10,
@@ -88,14 +89,14 @@ export default function ProposalList({ proposals, currentBusinessId }) {
                     }}
                     onClick={closeModal}
                   >
-                    סגור
+                    Close
                   </button>
                 </div>
               )}
             </>
           ) : (
             <div style={{ marginTop: 10, fontStyle: "italic", color: "#777" }}>
-              אין הסכם להצגה
+              No agreement to display
             </div>
           )}
         </div>
@@ -103,3 +104,4 @@ export default function ProposalList({ proposals, currentBusinessId }) {
     </div>
   );
 }
+```

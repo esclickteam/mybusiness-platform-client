@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "../../api";
 import "./AdminPayoutPage.css";
@@ -18,7 +17,7 @@ const AdminWithdrawalsPage = () => {
         const res = await API.get("/admin/withdrawals/pending");
         setWithdrawals(res.data || []);
       } catch (err) {
-        setError("Error loading pending withdrawals");
+        setError("שגיאה בטעינת משיכות ממתינות");
       } finally {
         setLoading(false);
       }
@@ -30,9 +29,9 @@ const AdminWithdrawalsPage = () => {
     try {
       await API.put(`/admin/withdrawals/${id}/approve`);
       setWithdrawals(withdrawals.filter(w => w.id !== id));
-      alert("The withdrawal has been approved successfully");
+      alert("המשיכה אושרה בהצלחה");
     } catch (err) {
-      alert("Error approving the withdrawal");
+      alert("שגיאה באישור המשיכה");
     }
   };
 
@@ -54,9 +53,9 @@ const AdminWithdrawalsPage = () => {
         )
       );
 
-      alert("Receipt uploaded successfully");
+      alert("קבלה הועלתה בהצלחה");
     } catch (err) {
-      alert("Error uploading the receipt");
+      alert("שגיאה בהעלאת הקבלה");
     } finally {
       setUploadingId(null);
     }
@@ -68,28 +67,28 @@ const AdminWithdrawalsPage = () => {
 
   return (
     <div className="admin-payout-page">
-      <h1>Managing Pending Partner Withdrawals for Approval</h1>
+      <h1>ניהול משיכות שותפים ממתינות לאישור</h1>
 
-      {loading && <p>Loading withdrawals...</p>}
+      {loading && <p>טוען משיכות...</p>}
       {error && <p className="error">{error}</p>}
 
-      {!loading && withdrawals.length === 0 && <p>No pending withdrawals at the moment.</p>}
+      {!loading && withdrawals.length === 0 && <p>אין משיכות ממתינות כרגע.</p>}
 
       {!loading && withdrawals.length > 0 && (
         <>
           <table>
             <thead>
               <tr>
-                <th>Business Name</th>
-                <th>Phone</th>
-                <th>Amount</th>
-                <th>Bank</th>
-                <th>Branch</th>
-                <th>Account</th>
-                <th>ID / Company Number</th>
-                <th>Receipt</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>שם עסק</th>
+                <th>טלפון</th>
+                <th>סכום</th>
+                <th>בנק</th>
+                <th>סניף</th>
+                <th>חשבון</th>
+                <th>ת.ז / ח.פ</th>
+                <th>קבלה</th>
+                <th>סטטוס</th>
+                <th>פעולות</th>
               </tr>
             </thead>
             <tbody>
@@ -109,11 +108,11 @@ const AdminWithdrawalsPage = () => {
                           style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline", background: "none", border: "none", padding: 0 }}
                           onClick={() => setViewingReceiptUrl(w.receiptUrl)}
                         >
-                          📎 View (PDF)
+                          📎 צפייה (PDF)
                         </button>
                       ) : (
                         <a href={w.receiptUrl} target="_blank" rel="noreferrer">
-                          📎 View
+                          📎 צפייה
                         </a>
                       )
                     ) : (
@@ -124,7 +123,7 @@ const AdminWithdrawalsPage = () => {
                           textDecoration: "underline"
                         }}
                       >
-                        {uploadingId === w.id ? "Uploading..." : "Upload Receipt"}
+                        {uploadingId === w.id ? "טוען..." : "העלה קבלה"}
                         <input
                           type="file"
                           accept="image/*,.pdf"
@@ -135,9 +134,9 @@ const AdminWithdrawalsPage = () => {
                       </label>
                     )}
                   </td>
-                  <td>{w.status || "Pending"}</td>
+                  <td>{w.status || "ממתין"}</td>
                   <td>
-                    <button onClick={() => handleApprove(w.id)}>Approve Withdrawal</button>
+                    <button onClick={() => handleApprove(w.id)}>אשר משיכה</button>
                   </td>
                 </tr>
               ))}
@@ -186,11 +185,11 @@ const AdminWithdrawalsPage = () => {
                     fontSize: 16,
                   }}
                 >
-                  Close
+                  סגור
                 </button>
                 <iframe
                   src={viewingReceiptUrl}
-                  title="Receipt"
+                  title="קבלה"
                   width="100%"
                   height="100%"
                   frameBorder="0"
@@ -205,4 +204,3 @@ const AdminWithdrawalsPage = () => {
 };
 
 export default AdminWithdrawalsPage;
-```

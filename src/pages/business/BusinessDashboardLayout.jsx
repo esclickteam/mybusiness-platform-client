@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useRef } from "react";
 import {
   NavLink,
@@ -18,20 +17,20 @@ import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
 
 const tabs = [
-  { path: "dashboard", label: "📊 Dashboard" },
-  { path: "build", label: "🧱 Edit Business Page" },
-  { path: "messages", label: "💬 Customer Messages" },
-  { path: "collab", label: "🤝 Collaborations" },
-  { path: "crm", label: "📇 CRM System" },
-  { path: "esclick", label: "🧠 EsClick Advisor" },
-  { path: "affiliate", label: "👥 Affiliate Program" },
-  { path: "help-center", label: "❓ Help Center" },
+  { path: "dashboard", label: "📊 דשבורד" },
+  { path: "build", label: "🧱 עריכת עמוד עסקי" },
+  { path: "messages", label: "💬 הודעות מלקוחות" },
+  { path: "collab", label: "🤝 שיתופי פעולה" },
+  { path: "crm", label: "📇 מערכת CRM" },
+  { path: "esclick", label: "🧠 יועץ עסקליק" },
+  { path: "affiliate", label: "👥 תכנית שותפים" },
+  { path: "help-center", label: "❓ מרכז העזרה" },
 ];
 
-// Replace here with your server address
+// החלף כאן לכתובת השרת שלך
 const SOCKET_URL = "https://api.esclick.co.il";
 
-// Creating socket connection outside the component
+// יצירת חיבור socket מחוץ לרכיב
 const socket = io(SOCKET_URL, { autoConnect: false });
 
 export default function BusinessDashboardLayout({ children }) {
@@ -65,11 +64,11 @@ export default function BusinessDashboardLayout({ children }) {
     socket.emit("joinRoom", roomName);
 
     const handleNewMessage = (message) => {
-      console.log("New message received:", message);
+      console.log("התקבלה הודעה חדשה:", message);
 
       if (message.toId === user.businessId) {
         setMessagesCount((count) => count + 1);
-        alert(`New message from ${message.fromId}`);
+        alert(`הודעה חדשה מ-${message.fromId}`);
       }
     };
 
@@ -159,7 +158,7 @@ export default function BusinessDashboardLayout({ children }) {
   }, [isMobile, showSidebar]);
 
   if (loading) {
-    return <p className="loading">Loading information…</p>;
+    return <p className="loading">טוען מידע…</p>;
   }
 
   return (
@@ -175,7 +174,7 @@ export default function BusinessDashboardLayout({ children }) {
                 role={isMobile && showSidebar ? "dialog" : undefined}
                 id="sidebar"
               >
-                <h2>Business Management</h2>
+                <h2>ניהול העסק</h2>
                 <nav>
                   {user?.role === "business" && (
                     <NavLink
@@ -185,7 +184,7 @@ export default function BusinessDashboardLayout({ children }) {
                         isActive ? "active" : undefined
                       }
                     >
-                      👀 View Public Profile
+                      👀 צפייה בפרופיל ציבורי
                     </NavLink>
                   )}
                   {tabs.map(({ path, label }) => (
@@ -214,7 +213,7 @@ export default function BusinessDashboardLayout({ children }) {
               <div
                 className="sidebar-overlay"
                 onClick={() => setShowSidebar(false)}
-                aria-label="Close menu"
+                aria-label="סגור תפריט"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
@@ -223,7 +222,7 @@ export default function BusinessDashboardLayout({ children }) {
               />
             )}
 
-            {/* Professional mobile navigation button removed from layout - should be added in Header */}
+            {/* כפתור ניווט מובייל מקצועי הוסר מהלייאאוט - יש להוסיף ב־Header */}
 
             <main
               className="dashboard-content"
@@ -246,4 +245,3 @@ export default function BusinessDashboardLayout({ children }) {
     </BusinessServicesProvider>
   );
 }
-```

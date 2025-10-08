@@ -1,4 +1,3 @@
-```javascript
 // src/pages/ResetPassword.jsx
 
 import React, { useState, useEffect } from "react";
@@ -20,7 +19,7 @@ const ResetPassword = () => {
 
   useEffect(() => {
     if (!token || !email) {
-      setError("Invalid password reset link");
+      setError("קישור לא תקין לאיפוס סיסמה");
     }
   }, [token, email]);
 
@@ -30,11 +29,11 @@ const ResetPassword = () => {
     setError("");
 
     if (!password || !confirmPassword) {
-      setError("All fields must be filled");
+      setError("יש למלא את כל השדות");
       return;
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("הסיסמאות אינן תואמות");
       return;
     }
 
@@ -48,8 +47,8 @@ const ResetPassword = () => {
       setMessage(res.data.message);
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
-      console.error("❌ Error resetting password:", err);
-      setError(err.response?.data?.message || "Server error");
+      console.error("❌ שגיאה באיפוס סיסמה:", err);
+      setError(err.response?.data?.message || "שגיאה בשרת");
     } finally {
       setLoading(false);
     }
@@ -58,7 +57,7 @@ const ResetPassword = () => {
   return (
     <div className="forgot-password-overlay">
       <div className="forgot-password-modal">
-        <h2>Reset Password</h2>
+        <h2>איפוס סיסמה</h2>
         {error && <p className="error-message">{error}</p>}
         {message ? (
           <p className="success-message">{message}</p>
@@ -66,18 +65,18 @@ const ResetPassword = () => {
           <form onSubmit={handleSubmit}>
             <input
               type="password"
-              placeholder="New Password"
+              placeholder="סיסמה חדשה"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <input
               type="password"
-              placeholder="Confirm Password"
+              placeholder="אימות סיסמה"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
             <button className="send-button" type="submit" disabled={loading || error}>
-              {loading ? "🔄 Saving..." : "Reset Password"}
+              {loading ? "🔄 שומר..." : "אפס סיסמה"}
             </button>
           </form>
         )}
@@ -87,4 +86,3 @@ const ResetPassword = () => {
 };
 
 export default ResetPassword;
-```

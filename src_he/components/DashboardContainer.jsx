@@ -1,14 +1,15 @@
+```javascript
 import React from "react";
 import DashboardCards from "./DashboardCards";
-// במקום useDashboardSocket – נייבא את ה־hook מתוך הקונטקסט
+// Instead of useDashboardSocket – import the hook from the context
 import { useDashboardStats } from "../context/DashboardSocketContext";
 
 export default function DashboardLive() {
-  // בהנחה שה־Provider ממילא כבר הוזן במקום גבוה יותר
-  // ואין צורך לקבל token או להקים socket כאן
+  // Assuming the Provider has already been set higher up
+  // and there is no need to get a token or establish a socket here
   const stats = useDashboardStats();
 
-  // אם stats עדיין לא הגיע (null/undefined), אפשר להציג ערכים ברירת-מחדל
+  // If stats have not arrived yet (null/undefined), default values can be displayed
   const safeStats = stats || {
     views_count: 0,
     requests_count: 0,
@@ -21,3 +22,4 @@ export default function DashboardLive() {
 
   return <DashboardCards stats={safeStats} />;
 }
+```

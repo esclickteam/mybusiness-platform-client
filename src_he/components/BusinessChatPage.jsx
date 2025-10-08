@@ -1,3 +1,4 @@
+```javascript
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useOutletContext, useLocation } from "react-router-dom";
@@ -26,11 +27,11 @@ export default function BusinessChatPage() {
       c.clientId?.toString() ||
       c.customer?._id?.toString() ||
       "".toString(),
-    clientName: c.clientName || c.customer?.name || "לקוח",
+    clientName: c.clientName || c.customer?.name || "Client",
     conversationType: c.conversationType || "user-business",
   });
 
-  // בודק פרמטר query threadId ומגדיר שיחה פתוחה אם יש התאמה
+  // Checks the query parameter threadId and sets an open conversation if there is a match
   useEffect(() => {
     if (!initialized || !businessId || convos.length === 0) return;
 
@@ -54,20 +55,20 @@ export default function BusinessChatPage() {
     }
   }, [location.search, convos, initialized, businessId]);
 
-  // טוען שיחות מהשרת ומעדכן רשימת שיחות + מונים
+  // Loads conversations from the server and updates the conversation list + counters
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     API.get("/messages/client-conversations")
       .then(({ data }) => {
-        // מסננים רק שיחות עם לקוחות (user-business)
+        // Filters only conversations with clients (user-business)
         const listRaw = (data.conversations ?? data ?? []).filter(
           (c) => (c.conversationType || "user-business") === "user-business"
         );
 
         const list = listRaw.map(normaliseConversation);
 
-        // מסירים כפילויות לפי clientId
+        // Removes duplicates by clientId
         const deduped = list.reduce((acc, conv) => {
           if (!acc.find((c) => c.clientId === conv.clientId)) acc.push(conv);
           return acc;
@@ -81,7 +82,7 @@ export default function BusinessChatPage() {
         });
         setUnreadCounts(counts);
 
-        // בוחרים שיחה ראשונית אם לא נבחרה עדיין
+        // Selects an initial conversation if none has been selected yet
         if (!selected && deduped.length) {
           const {
             conversationId,
@@ -102,13 +103,13 @@ export default function BusinessChatPage() {
       });
   }, [initialized, businessId]);
 
-  // מעדכן ספירת הודעות לא נקראות בדשבורד או במקום אחר
+  // Updates the unread message count on the dashboard or elsewhere
   useEffect(() => {
     const total = Object.values(unreadCounts).reduce((acc, v) => acc + v, 0);
     updateMessagesCount?.(total);
   }, [unreadCounts, updateMessagesCount]);
 
-  // טיפול בבחירת שיחה
+  // Handles conversation selection
   const handleSelect = (conversationId, partnerId, partnerName) => {
     const convo = convos.find((c) => c.conversationId === conversationId);
     const type = convo?.conversationType || "user-business";
@@ -122,7 +123,7 @@ export default function BusinessChatPage() {
   };
 
   if (!initialized) {
-    return <p className={styles.loading}>טוען מידע…</p>;
+    return <p className={styles.loading}>Loading information…</p>;
   }
 
   return (
@@ -150,10 +151,11 @@ export default function BusinessChatPage() {
           />
         ) : (
           <div className={styles.emptyMessage}>
-            בחר שיחה כדי לראות הודעות
+            Select a conversation to see messages
           </div>
         )}
       </section>
     </div>
   );
 }
+```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import createSocket from "../socket";
@@ -19,10 +18,10 @@ export default function BusinessConversationsList({ onSelectConversation }) {
       setLoading(true);
       setError("");
 
-      // Do not send token, send the function that returns a valid token
+      // לא שולחים token, שולחים את הפונקציה שמחזירה טוקן תקין
       const sock = await createSocket(getValidAccessToken, logout, businessId);
 
-      if (!sock) return; // Probably the login redirect has already occurred
+      if (!sock) return; // כנראה הפניית login כבר התבצעה
 
       sock.connect();
       socketRef.current = sock;
@@ -31,14 +30,14 @@ export default function BusinessConversationsList({ onSelectConversation }) {
         if (res.ok) {
           setConversations(res.conversations || []);
         } else {
-          setError("Error loading conversations: " + (res.error || ""));
+          setError("שגיאה בטעינת שיחות: " + (res.error || ""));
           console.error("Error loading conversations:", res.error);
         }
         setLoading(false);
       });
 
       sock.on("connect_error", (err) => {
-        setError("Socket connection error: " + err.message);
+        setError("שגיאה בחיבור לסוקט: " + err.message);
         setLoading(false);
         console.error("Socket connect error:", err.message);
       });
@@ -52,9 +51,9 @@ export default function BusinessConversationsList({ onSelectConversation }) {
     };
   }, [initialized, businessId, getValidAccessToken, logout]);
 
-  if (loading) return <p>Loading conversations...</p>;
+  if (loading) return <p>טוען שיחות...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (conversations.length === 0) return <p>No active conversations</p>;
+  if (conversations.length === 0) return <p>אין שיחות פעילות</p>;
 
   return (
     <ul>
@@ -64,7 +63,7 @@ export default function BusinessConversationsList({ onSelectConversation }) {
           onClick={() => onSelectConversation(conv._id)}
           style={{ cursor: "pointer", padding: "8px 0" }}
         >
-          Conversation with:{" "}
+          שיחה עם:{" "}
           {(Array.isArray(conv.participants)
             ? conv.participants.filter((p) => p !== businessId)
             : []
@@ -74,4 +73,3 @@ export default function BusinessConversationsList({ onSelectConversation }) {
     </ul>
   );
 }
-```

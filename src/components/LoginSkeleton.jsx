@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 
 export function LoginSkeleton() {
@@ -15,10 +14,10 @@ export function LoginSkeleton() {
         textAlign: "center",
       }}
     >
-      {/* Spinner from index.css */}
+      {/* Spinner מתוך index.css */}
       <div className="spinner" style={{ marginBottom: "2rem" }}></div>
 
-      {/* Loading skeleton */}
+      {/* שלד טעינה */}
       <div style={{ width: "100%", maxWidth: "400px" }}>
         <div style={skeletonStyle("75%", 24)} />
         <div style={skeletonStyle("100%", 16)} />
@@ -29,7 +28,7 @@ export function LoginSkeleton() {
   );
 }
 
-// Small function for uniform styling
+// פונקציה קטנה לסטייל אחיד
 function skeletonStyle(width, height) {
   return {
     height,
@@ -39,4 +38,3 @@ function skeletonStyle(width, height) {
     marginBottom: "1rem",
   };
 }
-```

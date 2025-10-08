@@ -1,4 +1,3 @@
-```javascript
 // src/components/dashboard/BusinessComparison.js
 import React from "react";
 
@@ -11,8 +10,8 @@ const BusinessComparison = ({ stats }) => {
   if (average === 0) {
     return (
       <div className="graph-box">
-        <h4>Comparison to the field</h4>
-        <p>There is not enough data for comparison.</p>
+        <h4>השוואה לתחום</h4>
+        <p>אין מספיק נתונים להשוואה.</p>
       </div>
     );
   }
@@ -23,17 +22,16 @@ const BusinessComparison = ({ stats }) => {
 
   return (
     <div className="graph-box">
-      <h4>📊 Comparison to your field</h4>
+      <h4>📊 השוואה לתחום שלך</h4>
       <p style={{ fontSize: "15px" }}>
-        In the field of <strong>{stats.businessType || "Businesses"}</strong>, the average monthly orders are:{" "}
+        בתחום <strong>{stats.businessType || "עסקים"}</strong>, ממוצע ההזמנות החודשי הוא:{" "}
         <strong>{average}</strong>
       </p>
       <p style={{ fontSize: "16px", color: isAbove ? "green" : "red", fontWeight: "bold" }}>
-        Your business: {myOrders} ({isAbove ? "+" : ""}{diffPercent}% {isAbove ? "above" : "below"} average)
+        העסק שלך: {myOrders} ({isAbove ? "+" : ""}{diffPercent}% {isAbove ? "מעל" : "מתחת"} לממוצע)
       </p>
     </div>
   );
 };
 
 export default BusinessComparison;
-```

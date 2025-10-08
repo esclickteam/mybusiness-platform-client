@@ -1,14 +1,14 @@
-```javascript
+
 import React, { useState } from 'react';
 
 const PARAMETERS = [
-  { key: 'service', label: 'Service' },
-  { key: 'professional', label: 'Professionalism' },
-  { key: 'timing', label: 'Timeliness' },
-  { key: 'availability', label: 'Availability' },
-  { key: 'value', label: 'Value for Money' },
-  { key: 'goal', label: 'Goal Achievement' },
-  { key: 'experience', label: 'Overall Experience' },
+  { key: 'service', label: 'שירותיות' },
+  { key: 'professional', label: 'מקצועיות' },
+  { key: 'timing', label: 'עמידה בזמנים' },
+  { key: 'availability', label: 'זמינות' },
+  { key: 'value', label: 'תמורה למחיר' },
+  { key: 'goal', label: 'השגת מטרה' },
+  { key: 'experience', label: 'חוויה כללית' },
 ];
 
 const StarRating = ({ value, onChange }) => {
@@ -56,7 +56,7 @@ const MultiParamRating = ({ onSubmit }) => {
 
   return (
     <div style={{ padding: '1rem' }}>
-      <h2>Rate the Service</h2>
+      <h2>דרג את השירות</h2>
       {PARAMETERS.map((param) => (
         <div key={param.key} style={{ marginBottom: '1rem' }}>
           <label>{param.label}</label>
@@ -65,7 +65,7 @@ const MultiParamRating = ({ onSubmit }) => {
       ))}
       <textarea
         rows="4"
-        placeholder="Add details / review"
+        placeholder="הוסף פירוט / חוות דעת"
         style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ccc' }}
         value={comment}
         onChange={(e) => setComment(e.target.value)}
@@ -83,11 +83,10 @@ const MultiParamRating = ({ onSubmit }) => {
           cursor: 'pointer',
         }}
       >
-        Submit Review
+        שלח ביקורת
       </button>
     </div>
   );
 };
 
 export default MultiParamRating;
-```

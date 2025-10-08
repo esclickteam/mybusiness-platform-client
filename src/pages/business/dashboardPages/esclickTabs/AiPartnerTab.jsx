@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
@@ -10,13 +9,13 @@ function convertNaturalDateToISO(text) {
   const now = new Date();
   const lowerText = text.toLowerCase();
 
-  if (lowerText.includes("tomorrow")) {
+  if (lowerText.includes("מחר")) {
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const yyyy = tomorrow.getFullYear();
     const mm = String(tomorrow.getMonth() + 1).padStart(2, "0");
     const dd = String(tomorrow.getDate()).padStart(2, "0");
-    return text.replace(/tomorrow/gi, `${yyyy}-${mm}-${dd}`);
+    return text.replace(/מחר/gi, `${yyyy}-${mm}-${dd}`);
   }
 
   return text;
@@ -48,17 +47,17 @@ const AiPartnerTab = ({
   const [commandText, setCommandText] = useState("");
   const [commandResponse, setCommandResponse] = useState(null);
 
-  // Credits and purchase management
+  // קרדיטים וניהול רכישה
   const [remainingQuestions, setRemainingQuestions] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [purchaseMessage, setPurchaseMessage] = useState("");
   const [purchaseError, setPurchaseError] = useState("");
 
-  // Fixed AI packages (like business and marketing consultant)
+  // חבילות AI קבועות (כמו ביועץ עסקי ושיווקי)
   const aiPackages = [
-    { id: "ai_200", label: "AI Package of 200 Questions", price: 1, type: "ai-package" },
-    { id: "ai_500", label: "AI Package of 500 Questions", price: 1, type: "ai-package" },
+    { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 1, type: "ai-package" },
+    { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 1, type: "ai-package" },
   ];
 
   const bottomRef = useRef(null);
@@ -181,7 +180,7 @@ const AiPartnerTab = ({
     s.on("newAiSuggestion", (suggestion) => {
       if (notificationSound.current) notificationSound.current.play();
       if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("New AI Message", {
+        new Notification("הודעת AI חדשה", {
           body: suggestion.text || suggestion.recommendation,
           icon: "/logo192.png",
         });
@@ -285,7 +284,7 @@ const AiPartnerTab = ({
 
       setRemainingQuestions((prev) => (prev !== null ? Math.max(prev - 1, 0) : null));
     } catch (err) {
-      alert("Error sending AI command: " + err.message);
+      alert("שגיאה בשליחת פקודת AI: " + err.message);
     } finally {
       setLoading(false);
       setCommandText("");
@@ -325,11 +324,11 @@ const AiPartnerTab = ({
         setSuggestions((prev) =>
           prev.map((s) => (s.id === id ? { ...s, status: "sent", text: filteredText } : s))
         );
-        alert("The recommendation has been approved and sent to the client!");
+        alert("ההמלצה אושרה ונשלחה ללקוח!");
         setActiveSuggestion(null);
       } catch (err) {
         console.error("Error approving suggestion:", err);
-        alert("Error approving the recommendation: " + err.message);
+        alert("שגיאה באישור ההמלצה: " + err.message);
       } finally {
         setLoading(false);
       }
@@ -363,12 +362,12 @@ const AiPartnerTab = ({
             s.id === id ? { ...s, text: newText, isEdited: true, editedText: newText, status: "sent" } : s
           )
         );
-        alert("The recommendation has been updated and sent successfully!");
+        alert("ההמלצה עודכנה ונשלחה בהצלחה!");
         setActiveSuggestion(null);
         setEditing(false);
       } catch (err) {
         console.error("Error updating recommendation:", err);
-        alert("Error updating the recommendation: " + err.message);
+        alert("שגיאה בעדכון ההמלצה: " + err.message);
       } finally {
         setLoading(false);
       }
@@ -418,12 +417,12 @@ const AiPartnerTab = ({
         return;
       }
 
-      setPurchaseMessage(`Purchased ${selectedPackage.label} successfully for ${selectedPackage.price} ILS.`);
+      setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
       setSelectedPackage(null);
 
       await refreshRemainingQuestions();
     } catch (e) {
-      setPurchaseError(e.message || "Error purchasing the package");
+      setPurchaseError(e.message || "שגיאה ברכישת החבילה");
     } finally {
       setPurchaseLoading(false);
     }
@@ -431,11 +430,11 @@ const AiPartnerTab = ({
 
   return (
     <div className="ai-partner-container">
-      <h2>🤖 Personal AI Partner for Business</h2>
+      <h2>🤖 שותף AI אישי לעסק</h2>
 
       <div style={{ margin: "1rem 0" }}>
         <button className="toggle-suggestions-btn" onClick={() => setShowHistory((prev) => !prev)}>
-          View Command History
+          ראה היסטוריית פקודות
         </button>
       </div>
 
@@ -444,9 +443,9 @@ const AiPartnerTab = ({
           className="ai-command-history"
           style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ccc", padding: "1rem" }}
         >
-          {loadingHistory && <p>Loading history...</p>}
-          {historyError && <p style={{ color: "red" }}>Error loading history: {historyError}</p>}
-          {!loadingHistory && !historyError && aiCommandHistory.length === 0 && <p>No previous AI commands.</p>}
+          {loadingHistory && <p>טוען היסטוריה...</p>}
+          {historyError && <p style={{ color: "red" }}>שגיאה בטעינת היסטוריה: {historyError}</p>}
+          {!loadingHistory && !historyError && aiCommandHistory.length === 0 && <p>אין פקודות AI קודמות.</p>}
           {!loadingHistory && !historyError && aiCommandHistory.length > 0 && (
             <ul>
               {aiCommandHistory.map((cmd) => (
@@ -473,7 +472,7 @@ const AiPartnerTab = ({
                     })}
                   </div>
                   <div>
-                    <strong>Command:</strong>
+                    <strong>פקודה:</strong>
                     <pre
                       style={{
                         whiteSpace: "pre-wrap",
@@ -487,7 +486,7 @@ const AiPartnerTab = ({
                     </pre>
                   </div>
                   <div>
-                    <strong>AI Response:</strong>
+                    <strong>תשובת AI:</strong>
                     <pre
                       style={{
                         whiteSpace: "pre-wrap",
@@ -513,20 +512,20 @@ const AiPartnerTab = ({
               rows={3}
               value={commandText}
               onChange={(e) => setCommandText(e.target.value)}
-              placeholder="Write a command for AI (e.g., schedule a meeting or summarize my meetings for the week)"
+              placeholder="כתוב פקודה ל-AI (למשל: תאם פגישה או סכם לי פגישות השבוע)"
               disabled={loading || (remainingQuestions !== null && remainingQuestions <= 0)}
             />
             <button
               onClick={sendAiCommand}
               disabled={loading || !commandText.trim() || (remainingQuestions !== null && remainingQuestions <= 0)}
             >
-              Send to AI
+              שלח ל-AI
             </button>
           </div>
 
           {remainingQuestions !== null && remainingQuestions <= 0 && (
             <div className="purchase-extra-container" style={{ marginTop: "1rem" }}>
-              <p>You have reached the monthly question limit. You can purchase an additional AI package:</p>
+              <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
               {aiPackages.map((pkg) => (
                 <label key={pkg.id} className="radio-label">
                   <input
@@ -537,11 +536,11 @@ const AiPartnerTab = ({
                     checked={selectedPackage?.id === pkg.id}
                     onChange={() => setSelectedPackage(pkg)}
                   />
-                  {pkg.label} - {pkg.price} ILS
+                  {pkg.label} - {pkg.price} ש"ח
                 </label>
               ))}
               <button onClick={handlePurchaseExtra} disabled={purchaseLoading || !selectedPackage}>
-                {purchaseLoading ? "Purchasing..." : "Purchase Package"}
+                {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
               </button>
 
               {purchaseMessage && <p className="success">{purchaseMessage}</p>}
@@ -570,7 +569,7 @@ const AiPartnerTab = ({
       {activeSuggestion && (
         <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
           <div className="modal-content approve-recommendation-box" onClick={(e) => e.stopPropagation()}>
-            <h4>New AI Message</h4>
+            <h4>הודעת AI חדשה</h4>
 
             {editing ? (
               <>
@@ -591,7 +590,7 @@ const AiPartnerTab = ({
                     }}
                     disabled={loading || !editedText.trim()}
                   >
-                    Approve and Send
+                    אשר ושלח
                   </button>
                   <button
                     disabled={loading}
@@ -600,7 +599,7 @@ const AiPartnerTab = ({
                       setEditedText(activeSuggestion.text);
                     }}
                   >
-                    Cancel
+                    ביטול
                   </button>
                 </div>
               </>
@@ -622,17 +621,17 @@ const AiPartnerTab = ({
                       }}
                       disabled={loading}
                     >
-                      Approve and Send Immediately
+                      אשר ושלח מידית
                     </button>
                     <button disabled={loading} onClick={() => setEditing(true)}>
-                      Edit
+                      ערוך
                     </button>
                     <button disabled={loading} onClick={() => rejectSuggestion(activeSuggestion.id)}>
-                      Reject
+                      דחה
                     </button>
                   </div>
                 ) : (
-                  <p>The recommendation has been approved and sent to the client.</p>
+                  <p>ההמלצה אושרה ונשלחה ללקוח.</p>
                 )}
               </>
             )}
@@ -647,4 +646,3 @@ const AiPartnerTab = ({
 };
 
 export default AiPartnerTab;
-```

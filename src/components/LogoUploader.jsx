@@ -1,4 +1,3 @@
-```javascript
 // src/components/LogoUploader.jsx
 import React, { useState } from "react";
 import axios from "axios";
@@ -24,7 +23,7 @@ export default function LogoUploader({ onUploaded }) {
       onUploaded(res.data.logo);
     } catch (err) {
       console.error(err);
-      alert("Error uploading logo");
+      alert("שגיאה בהעלאת לוגו");
     } finally {
       setUploading(false);
     }
@@ -34,9 +33,8 @@ export default function LogoUploader({ onUploaded }) {
     <div>
       <input type="file" accept="image/*" onChange={handleChange} />
       <button onClick={handleUpload} disabled={uploading}>
-        {uploading ? "Uploading…" : "Upload Logo"}
+        {uploading ? "טוען…" : "העלה לוגו"}
       </button>
     </div>
   );
 }
-```

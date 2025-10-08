@@ -1,10 +1,9 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import { useQueryClient } from "@tanstack/react-query";
 import "./CRMCustomerProfile.css";
 
-// Importing the new component
+// ייבוא הקומפוננטה החדשה
 import ClientTasksAndNotes from "../../../../components/CRM/ClientTasksAndNotes";
 
 export default function CRMCustomerFile({
@@ -28,24 +27,24 @@ export default function CRMCustomerFile({
         }
   );
 
-  // === Saving to server ===
+  // === שמירה לשרת ===
   const handleSave = async () => {
     if (!newClient.fullName.trim() || !newClient.phone.trim()) {
-      alert("❌ Full name and phone are required fields");
+      alert("❌ שם מלא וטלפון הם שדות חובה");
       return;
     }
     try {
       await API.post(`/crm-clients`, { ...newClient, businessId });
       queryClient.invalidateQueries(["clients", businessId]);
-      alert("✅ The client has been saved successfully!");
+      alert("✅ הלקוח נשמר בהצלחה!");
       onClose();
     } catch (err) {
-      console.error("❌ Error saving client:", err);
-      alert("❌ Saving the client failed");
+      console.error("❌ שגיאה בשמירת לקוח:", err);
+      alert("❌ שמירת הלקוח נכשלה");
     }
   };
 
-  // === Fetching full customer file ===
+  // === שליפת תיק לקוח מלא ===
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,72 +53,72 @@ export default function CRMCustomerFile({
         });
         setCustomerData(res.data);
       } catch (err) {
-        console.error("❌ Error loading customer file:", err);
+        console.error("❌ שגיאה בטעינת תיק לקוח:", err);
       }
     };
     if (client?._id && businessId && !isNew) fetchData();
   }, [client?._id, businessId, isNew]);
 
-  // ✨ Existing customer file with tabs
+  // ✨ תיק לקוח קיים עם טאבים
   return (
     <div className="crm-customer-profile">
-      <h2>Customer File – {client?.fullName}</h2>
+      <h2>תיק לקוח – {client?.fullName}</h2>
       <p>
         📞 {client?.phone} | ✉️ {client?.email || "-"} | 📍 {client?.address || "-"}
       </p>
 
-      {/* Tab buttons */}
+      {/* כפתורי טאבים */}
       <div className="tabs-header">
         <button
           className={activeTab === "appointments" ? "active" : ""}
           onClick={() => setActiveTab("appointments")}
         >
-          📅 Appointments
+          📅 פגישות
         </button>
         <button
           className={activeTab === "events" ? "active" : ""}
           onClick={() => setActiveTab("events")}
         >
-          📝 Events
+          📝 אירועים
         </button>
         <button
           className={activeTab === "invoices" ? "active" : ""}
           onClick={() => setActiveTab("invoices")}
         >
-          💰 Invoices
+          💰 חשבוניות
         </button>
         <button
           className={activeTab === "files" ? "active" : ""}
           onClick={() => setActiveTab("files")}
         >
-          📄 Files
+          📄 קבצים
         </button>
         <button
           className={activeTab === "extras" ? "active" : ""}
           onClick={() => setActiveTab("extras")}
         >
-          🗂 Documentation & Tasks
+          🗂 תיעודים & משימות
         </button>
       </div>
 
-      {/* Tab content */}
+      {/* תוכן טאב */}
       <div className="tab-content">
         {!customerData ? (
-          <p>⏳ Loading data...</p>
+          <p>⏳ טוען נתונים...</p>
         ) : (
           <>
             {activeTab === "appointments" && (
               <div>
                 {customerData.appointments?.length === 0 ? (
-                  <p>No appointments for this client</p>
+                  <p>אין פגישות ללקוח זה</p>
                 ) : (
                   <table className="appointments-table">
                     <thead>
                       <tr>
-                        <th>Service</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Note</th>
+                        <th>שירות</th>
+                        <th>תאריך</th>
+                        <th>שעה</th>
+                        <th>הערה</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -140,7 +139,7 @@ export default function CRMCustomerFile({
             {activeTab === "events" && (
               <div className="timeline">
                 {customerData.events?.length === 0 ? (
-                  <p>No events for this client</p>
+                  <p>אין אירועים ללקוח זה</p>
                 ) : (
                   customerData.events.map((e) => (
                     <div key={e._id} className="timeline-item">
@@ -151,7 +150,7 @@ export default function CRMCustomerFile({
                         {e.type === "task" && "✅"}
                         {e.type === "file" && "📄"}
                       </span>{" "}
-                      <strong>{e.title}</strong> – {e.date || "No date"}
+                      <strong>{e.title}</strong> – {e.date || "ללא תאריך"}
                       {e.notes && <p>{e.notes}</p>}
                     </div>
                   ))
@@ -162,15 +161,15 @@ export default function CRMCustomerFile({
             {activeTab === "invoices" && (
               <div>
                 {customerData.invoices?.length === 0 ? (
-                  <p>No invoices for this client</p>
+                  <p>אין חשבוניות ללקוח זה</p>
                 ) : (
                   <table className="data-table">
                     <thead>
                       <tr>
-                        <th>Number</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
+                        <th>מספר</th>
+                        <th>תאריך</th>
+                        <th>סכום</th>
+                        <th>סטטוס</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -191,7 +190,7 @@ export default function CRMCustomerFile({
             {activeTab === "files" && (
               <div>
                 {customerData.files?.length === 0 ? (
-                  <p>No files for this client</p>
+                  <p>אין קבצים ללקוח זה</p>
                 ) : (
                   <ul className="file-list">
                     {customerData.files.map((f) => (
@@ -215,10 +214,9 @@ export default function CRMCustomerFile({
 
       <div className="form-actions">
         <button className="cancel-btn" onClick={onClose}>
-          ↩ Back
+          ↩ חזרה
         </button>
       </div>
     </div>
   );
 }
-```

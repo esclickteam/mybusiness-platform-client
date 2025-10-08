@@ -1,14 +1,15 @@
+```javascript
 import React, { useState } from "react";
 import "./AdminPlans.css";
 import { Link } from "react-router-dom";
 
 function AdminPlans() {
   const [plans, setPlans] = useState([
-    { id: 1, name: "בסיסית", price: 49, duration: "חודש", features: ["עמוד עסקי", "תיאום תורים"], trialDays: 0 },
-    { id: 2, name: "פרימיום", price: 99, duration: "חודש", features: ["צ'אט עם לקוחות", "באנרים מותאמים"], trialDays: 7 }
+    { id: 1, name: "Basic", price: 49, duration: "Month", features: ["Business Page", "Appointment Scheduling"], trialDays: 0 },
+    { id: 2, name: "Premium", price: 99, duration: "Month", features: ["Chat with Customers", "Custom Banners"], trialDays: 7 }
   ]);
 
-  const [form, setForm] = useState({ name: "", price: "", duration: "חודש", features: "", trialDays: "" });
+  const [form, setForm] = useState({ name: "", price: "", duration: "Month", features: "", trialDays: "" });
   const [editId, setEditId] = useState(null);
   const [coupon, setCoupon] = useState({ code: "", discount: "", type: "₪", plans: [], start: "", end: "" });
   const [coupons, setCoupons] = useState([]);
@@ -28,7 +29,7 @@ function AdminPlans() {
       features: form.features.split(",")
     };
     setPlans([...plans, newPlan]);
-    setForm({ name: "", price: "", duration: "חודש", features: "", trialDays: "" });
+    setForm({ name: "", price: "", duration: "Month", features: "", trialDays: "" });
   };
 
   const handleDelete = (id) => {
@@ -78,32 +79,32 @@ function AdminPlans() {
 
   return (
     <div className="admin-plans">
-      <Link to="/admin/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
-      <h1>📦 ניהול חבילות</h1>
+      <Link to="/admin/dashboard" className="back-dashboard">🔙 Back to Dashboard</Link>
+      <h1>📦 Manage Packages</h1>
 
       <div className="plan-form">
-        <input type="text" name="name" placeholder="שם חבילה" value={form.name} onChange={handleChange} />
-        <input type="number" name="price" placeholder="מחיר (₪)" value={form.price} onChange={handleChange} />
+        <input type="text" name="name" placeholder="Package Name" value={form.name} onChange={handleChange} />
+        <input type="number" name="price" placeholder="Price (₪)" value={form.price} onChange={handleChange} />
         <select name="duration" value={form.duration} onChange={handleChange}>
-          <option value="חודש">חודש</option>
-          <option value="3 חודשים">3 חודשים</option>
-          <option value="6 חודשים">6 חודשים</option>
-          <option value="12 חודשים">12 חודשים</option>
+          <option value="Month">Month</option>
+          <option value="3 Months">3 Months</option>
+          <option value="6 Months">6 Months</option>
+          <option value="12 Months">12 Months</option>
         </select>
-        <input type="text" name="features" placeholder="מאפיינים (מופרד בפסיקים)" value={form.features} onChange={handleChange} />
-        <input type="number" name="trialDays" placeholder="ימי ניסיון" value={form.trialDays} onChange={handleChange} />
-        <button onClick={handleAdd}>➕ הוסף חבילה</button>
+        <input type="text" name="features" placeholder="Features (comma separated)" value={form.features} onChange={handleChange} />
+        <input type="number" name="trialDays" placeholder="Trial Days" value={form.trialDays} onChange={handleChange} />
+        <button onClick={handleAdd}>➕ Add Package</button>
       </div>
 
       <table className="plans-table">
         <thead>
           <tr>
-            <th>שם</th>
-            <th>מחיר</th>
-            <th>תקופה</th>
-            <th>ימי ניסיון</th>
-            <th>מאפיינים</th>
-            <th>מחיקה</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Duration</th>
+            <th>Trial Days</th>
+            <th>Features</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -113,10 +114,10 @@ function AdminPlans() {
               <td><input type="number" value={plan.price} onChange={(e) => handleEditPlan(plan.id, "price", e.target.value)} /></td>
               <td>
                 <select value={plan.duration} onChange={(e) => handleEditPlan(plan.id, "duration", e.target.value)}>
-                  <option value="חודש">חודש</option>
-                  <option value="3 חודשים">3 חודשים</option>
-                  <option value="6 חודשים">6 חודשים</option>
-                  <option value="12 חודשים">12 חודשים</option>
+                  <option value="Month">Month</option>
+                  <option value="3 Months">3 Months</option>
+                  <option value="6 Months">6 Months</option>
+                  <option value="12 Months">12 Months</option>
                 </select>
               </td>
               <td><input type="number" value={plan.trialDays} onChange={(e) => handleEditPlan(plan.id, "trialDays", e.target.value)} /></td>
@@ -128,18 +129,18 @@ function AdminPlans() {
       </table>
 
       <div className="coupon-section">
-        <h2>🎁 {editCouponId ? "עריכת קופון" : "הוספת קופון הנחה"}</h2>
-        <input type="text" name="code" placeholder="שם קופון" value={coupon.code} onChange={handleCouponChange} />
-        <input type="number" name="discount" placeholder="הנחה" value={coupon.discount} onChange={handleCouponChange} />
+        <h2>🎁 {editCouponId ? "Editing Coupon" : "Adding Discount Coupon"}</h2>
+        <input type="text" name="code" placeholder="Coupon Name" value={coupon.code} onChange={handleCouponChange} />
+        <input type="number" name="discount" placeholder="Discount" value={coupon.discount} onChange={handleCouponChange} />
         <select name="type" value={coupon.type} onChange={handleCouponChange}>
-          <option value="₪">₪ (שקלים)</option>
-          <option value="%">% (אחוזים)</option>
+          <option value="₪">₪ (Shekels)</option>
+          <option value="%">% (Percentage)</option>
         </select>
         <input type="date" name="start" value={coupon.start} onChange={handleCouponChange} />
         <input type="date" name="end" value={coupon.end} onChange={handleCouponChange} />
 
         <div className="coupon-plans">
-          <p>בחר חבילות לקופון:</p>
+          <p>Select Packages for Coupon:</p>
           {plans.map(p => (
             <label key={p.id}>
               <input
@@ -150,16 +151,16 @@ function AdminPlans() {
             </label>
           ))}
         </div>
-        <button onClick={handleAddCoupon}>{editCouponId ? "💾 עדכן קופון" : "➕ שמור קופון"}</button>
+        <button onClick={handleAddCoupon}>{editCouponId ? "💾 Update Coupon" : "➕ Save Coupon"}</button>
 
         <table className="plans-table" style={{ marginTop: "40px" }}>
           <thead>
             <tr>
-              <th>שם קופון</th>
-              <th>הנחה</th>
-              <th>תקף מ-עד</th>
-              <th>חבילות</th>
-              <th>פעולות</th>
+              <th>Coupon Name</th>
+              <th>Discount</th>
+              <th>Valid From-To</th>
+              <th>Packages</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -183,3 +184,4 @@ function AdminPlans() {
 }
 
 export default AdminPlans;
+```

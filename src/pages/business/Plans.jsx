@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -9,7 +8,7 @@ function Plans() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Reading the reason parameter from the URL
+  // קריאת פרמטר reason מה־URL
   const queryParams = new URLSearchParams(location.search);
   const reason = queryParams.get("reason");
 
@@ -36,10 +35,10 @@ function Plans() {
     let planName;
     if (selectedDuration === "test") {
       totalPrice = testPrices.test;
-      planName = "Experimental Subscription Package - 3 Months";
+      planName = "חבילת מנוי ניסיונית - 3 חודשים";
     } else {
       totalPrice = prices[selectedDuration] * parseInt(selectedDuration);
-      planName = "Escalick Subscription Package";
+      planName = "חבילת מנוי עסקליק";
     }
     navigate("/checkout", {
       state: {
@@ -51,34 +50,34 @@ function Plans() {
   };
 
   const features = [
-    "Marketing and business consulting based on artificial intelligence with up to 60 quality inquiries per month.",
-    "Smart AI partner providing business actions and recommendations.",
-    "Platform for business collaborations.",
-    "Professional business page with gallery, FAQs, and more.",
-    "Smart appointment management system for clients.",
-    "Real-time customer service chat.",
-    "Reliable review system for real customers.",
-    "Full and unlimited access to all systems.",
-    "Smart CRM for customer relationship management.",
-    "Analytical dashboard for monitoring reminders and meetings.",
-    "Smart alerts for important events.",
+    "ייעוץ שיווקי ועסקי מבוסס בינה מלאכותית עם עד 60 פניות איכותיות בחודש.",
+    "שותף AI חכם שמספק פעולות והמלצות עסקיות.",
+    "פלטפורמה לשיתופי פעולה עסקיים.",
+    "עמוד עסקי מקצועי עם גלריה, שאלות נפוצות ועוד.",
+    "מערכת ניהול תורים חכמה ללקוחות.",
+    "צ'אט שירות לקוחות בזמן אמת.",
+    "מערכת ביקורות אמינה ללקוחות אמיתיים.",
+    "גישה מלאה וללא הגבלה לכל המערכות.",
+    "CRM חכם לניהול קשרי לקוחות.",
+    "דשבורד אנליטי לניטור תזכורות ופגישות.",
+    "התראות חכמות לאירועים חשובים.",
   ];
 
   return (
     <div className="plans-wrapper" dir="rtl">
-      <h1 className="plans-header">What does your business get?</h1>
+      <h1 className="plans-header">מה מקבל העסק שלך?</h1>
 
-      {/* Message about trial expiration */}
+      {/* הודעה על סיום ניסיון */}
       {reason === "trial_expired" && (
         <div className="plans-alert plans-alert-error">
-          The free trial period has ended. Choose a package to continue using Escalick.
+          תקופת הניסיון החינמית הסתיימה. בחר חבילה כדי להמשיך להשתמש בעסקליק.
         </div>
       )}
 
-      {/* Message about active trial */}
+      {/* הודעה על ניסיון פעיל */}
       {trialActive && (
         <div className="plans-alert plans-alert-info">
-          You are in a free trial month. You can upgrade to a paid package at any time to ensure continued access after the trial ends.
+          אתה נמצא בחודש ניסיון חינם. תוכל לשדרג לחבילה בתשלום בכל רגע כדי להבטיח המשך גישה אחרי סיום הניסיון.
         </div>
       )}
 
@@ -94,22 +93,22 @@ function Plans() {
         <div
           className="plans-duration-selector"
           role="radiogroup"
-          aria-label="Subscription period selection"
+          aria-label="בחירת תקופת מנוי"
         >
           {durations.map((d) => {
             let label = "";
             let price = 0;
             if (d === "test") {
-              label = "Trial Package (3 Months)";
+              label = "חבילת ניסיון (3 חודשים)";
               price = (testPrices.test / 3).toFixed(2);
             } else if (d === "1") {
-              label = "Monthly";
+              label = "חודשי";
               price = prices["1"];
             } else if (d === "3") {
-              label = "3 Months";
+              label = "3 חודשים";
               price = prices["3"];
             } else if (d === "12") {
-              label = "Yearly";
+              label = "שנתי";
               price = prices["12"];
             }
             return (
@@ -123,14 +122,14 @@ function Plans() {
                 type="button"
               >
                 {label}
-                <span className="duration-price">{price} ₪ per month</span>
+                <span className="duration-price">{price} ₪ לחודש</span>
               </button>
             );
           })}
         </div>
 
         <div className="total-price" aria-live="polite">
-          Total price:{" "}
+          המחיר הכולל:{" "}
           {selectedDuration === "test"
             ? testPrices.test
             : prices[selectedDuration] * parseInt(selectedDuration)}
@@ -138,7 +137,7 @@ function Plans() {
         </div>
 
         <div className="launch-price-banner" role="alert">
-          Join now at a special launch price for a limited time – don't miss out!
+          הצטרפו עכשיו במחיר השקה מיוחד לזמן מוגבל – אל תפספסו!
         </div>
 
         <button
@@ -146,7 +145,7 @@ function Plans() {
           onClick={handleSelectPlan}
           type="button"
         >
-          Choose a subscription and start growing with Escalick now!
+          בחר מנוי והתחל לגדול עם עסקליק עכשיו!
         </button>
       </div>
     </div>
@@ -154,4 +153,3 @@ function Plans() {
 }
 
 export default Plans;
-```

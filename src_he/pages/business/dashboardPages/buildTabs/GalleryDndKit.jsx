@@ -1,3 +1,4 @@
+```javascript
 import React, { useRef, useEffect } from "react";
 import {
   DndContext,
@@ -89,7 +90,7 @@ const SortableItem = ({
               e.stopPropagation();
               onEdit(index);
             }}
-            title="עריכת מדיה"
+            title="Edit Media"
           >
             <FaEdit size={16} />
           </button>
@@ -101,7 +102,7 @@ const SortableItem = ({
               e.stopPropagation();
               onDelete(index);
             }}
-            title="מחיקת מדיה"
+            title="Delete Media"
           >
             <FaTrashAlt size={16} />
           </button>
@@ -119,8 +120,8 @@ const SortableItem = ({
             value={fit || "cover"}
             onChange={(e) => handleFitChange(index, e.target.value)}
           >
-            <option value="cover">חתוך (cover)</option>
-            <option value="contain">מותאם (contain)</option>
+            <option value="cover">Cover</option>
+            <option value="contain">Contain</option>
           </select>
           <button
             className="confirm-btn"
@@ -130,7 +131,7 @@ const SortableItem = ({
               onEdit(null);
             }}
           >
-            ✔ שמור
+            ✔ Save
           </button>
         </div>
       )}
@@ -200,3 +201,4 @@ const GalleryDndKit = ({
 };
 
 export default GalleryDndKit;
+```

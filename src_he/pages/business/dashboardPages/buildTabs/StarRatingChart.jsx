@@ -1,17 +1,18 @@
+```javascript
 import React from 'react';
-import './ReviewDistributionChart.css'; // אפשר להפריד לקובץ CSS ייעודי אם תרצה
+import './ReviewDistributionChart.css'; // You can separate into a dedicated CSS file if you want
 
 const PARAMETERS = {
-  service: '🤝 שירותיות',
-  professional: '💼 מקצועיות',
-  timing: '⏰ עמידה בזמנים',
-  availability: '📞 זמינות',
-  value: '💰 תמורה למחיר',
-  goal: '🎯 השגת מטרה',
-  experience: '🎉 חוויה כללית',
+  service: '🤝 Service',
+  professional: '💼 Professionalism',
+  timing: '⏰ Timeliness',
+  availability: '📞 Availability',
+  value: '💰 Value for Money',
+  goal: '🎯 Goal Achievement',
+  experience: '🎉 Overall Experience',
 };
 
-// מציג כוכבים לפי ציון (כולל חצי)
+// Displays stars based on rating (including half)
 const StarDisplay = ({ rating }) => {
   const full = Math.floor(rating);
   const half = rating % 1 >= 0.5;
@@ -55,3 +56,4 @@ export default function StarRatingChart({ reviews = [] }) {
     </div>
   );
 }
+```

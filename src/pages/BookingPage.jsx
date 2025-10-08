@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api";
@@ -20,15 +19,15 @@ export default function BookingPage() {
         setServices(res.data);
         setError("");
       })
-      .catch(() => setError("Error loading services"))
+      .catch(() => setError("שגיאה בטעינת שירותים"))
       .finally(() => setLoading(false));
   }, [businessId]);
 
   return (
     <div style={{ maxWidth: 600, margin: "auto", padding: "20px" }}>
-      <h2>Appointment Booking</h2>
+      <h2>קביעת תור</h2>
 
-      {loading && <p>Loading services…</p>}
+      {loading && <p>טוען שירותים…</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {!loading && !error && services.length > 0 && (
@@ -42,7 +41,7 @@ export default function BookingPage() {
             marginBottom: "20px"
           }}
         >
-          <option value="">– Select a service –</option>
+          <option value="">– בחרי שירות –</option>
           {services.map(s => (
             <option key={s._id} value={s._id}>
               {s.name}
@@ -60,4 +59,3 @@ export default function BookingPage() {
     </div>
   );
 }
-```

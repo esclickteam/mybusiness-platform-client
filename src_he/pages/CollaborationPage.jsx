@@ -1,3 +1,4 @@
+```javascript
 // src/pages/CollaborationPage.jsx
 import React, { useState } from "react";
 import API from "../../api";
@@ -9,31 +10,31 @@ export default function CollaborationPage({ isDevUser }) {
   const [refreshSent, setRefreshSent] = useState(0);
   const [refreshReceived, setRefreshReceived] = useState(0);
 
-  // כשמייצרים הצעה → רענון Sent
+  // When sending a proposal → refresh Sent
   const handleSendProposal = async (toBusinessId, message) => {
     try {
       await API.post("/business/my/proposals", { toBusinessId, message });
       setRefreshSent(f => f + 1);
     } catch (err) {
       console.error(err);
-      alert("שגיאה בשליחת ההצעה");
+      alert("Error sending the proposal");
     }
   };
 
-  // אחרי אישור/דחייה → רענון Received
+  // After approval/rejection → refresh Received
   const handleStatusChange = () => {
     setRefreshReceived(f => f + 1);
   };
 
   return (
     <div className="collab-page">
-      {/* טאב חיפוש שותפים */}
+      {/* Partner search tab */}
       <CollabFindPartnerTab onSend={handleSendProposal} />
 
-      {/* טאב הצעות נשלחו */}
+      {/* Sent proposals tab */}
       <CollabSentRequestsTab refreshFlag={refreshSent} />
 
-      {/* טאב הצעות שהתקבלו */}
+      {/* Received proposals tab */}
       <CollabReceivedRequestsTab
         isDevUser={isDevUser}
         refreshFlag={refreshReceived}
@@ -42,3 +43,4 @@ export default function CollaborationPage({ isDevUser }) {
     </div>
   );
 }
+```

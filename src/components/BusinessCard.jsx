@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,7 @@ import "./BusinessCard.css";
 export default function BusinessCard({ business = {}, onClick }) {
   const {
     _id,
-    businessName = "Business Name",
+    businessName = "שם העסק",
     logo = "/images/placeholder.jpg",
     description = "",
     category = "",
@@ -41,25 +40,25 @@ export default function BusinessCard({ business = {}, onClick }) {
 
       {category && (
         <p className="business-card__info">
-          <FaTags /> <strong>Category:</strong> {category}
+          <FaTags /> <strong>קטגוריה:</strong> {category}
         </p>
       )}
 
       {description && (
         <p className="business-card__info">
-          <FaInfoCircle /> <strong>Description:</strong> {description}
+          <FaInfoCircle /> <strong>תיאור:</strong> {description}
         </p>
       )}
 
       {phone && (
         <p className="business-card__info">
-          <FaPhoneAlt /> <strong>Phone:</strong> {phone}
+          <FaPhoneAlt /> <strong>טלפון:</strong> {phone}
         </p>
       )}
 
       {city && (
         <p className="business-card__info">
-          <FaMapMarkerAlt /> <strong>City:</strong> {city}
+          <FaMapMarkerAlt /> <strong>עיר:</strong> {city}
         </p>
       )}
 
@@ -70,7 +69,7 @@ export default function BusinessCard({ business = {}, onClick }) {
           handleCardClick();
         }}
       >
-        View Profile
+        צפה בפרופיל
       </button>
     </div>
   );
@@ -88,4 +87,3 @@ BusinessCard.propTypes = {
   }),
   onClick: PropTypes.func
 };
-```

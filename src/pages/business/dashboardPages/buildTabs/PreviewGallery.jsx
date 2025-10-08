@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef, useEffect } from "react";
 import GalleryDndKit from "./GalleryDndKit";
 import "./GalleryTab.css";
@@ -19,7 +18,7 @@ const GalleryEditorWithPreview = ({
 
   const galleryTabImages = businessDetails?.galleryTabImages || [];
 
-  // ✅ Internal delete function
+  // ✅ פונקציית מחיקה פנימית
   const handleDeleteGalleryTabImage = (indexToRemove) => {
     setBusinessDetails((prev) => ({
       ...prev,
@@ -71,9 +70,9 @@ const GalleryEditorWithPreview = ({
   return (
     <div className="preview-gallery-wrapper" style={{ display: "flex", gap: "32px" }}>
       <div className="gallery-form-side" style={{ flex: 1 }}>
-        <h2>🎨 Gallery Design</h2>
-        <h4>Media Upload</h4>
-        <p className="info-note">You can upload images or videos</p>
+        <h2>🎨 עיצוב הגלריה</h2>
+        <h4>העלאת מדיה</h4>
+        <p className="info-note">ניתן להעלות תמונות או סרטונים</p>
         <input
           type="file"
           multiple
@@ -85,9 +84,9 @@ const GalleryEditorWithPreview = ({
           onClick={() => galleryTabInputRef.current.click()}
           className="upload-btn"
         >
-          ➕ Add Media
+          ➕ הוספת מדיה
         </button>
-        <p className="info-note">You can drag and change the order</p>
+        <p className="info-note">ניתן לגרור ולשנות את הסדר</p>
 
         <GalleryDndKit
           images={galleryTabImages}
@@ -99,7 +98,7 @@ const GalleryEditorWithPreview = ({
           }
           setActiveImageIndex={setActiveImageIndex}
           isForm={true}
-          onDelete={handleDeleteGalleryTabImage} // ✅ Internally connected
+          onDelete={handleDeleteGalleryTabImage} // ✅ מחובר פנימית
           setEditIndex={setEditGalleryTabIndex}
           editIndex={editGalleryTabIndex}
           handleFitChange={handleFitChange}
@@ -107,12 +106,12 @@ const GalleryEditorWithPreview = ({
         />
 
         <button className="save-btn" onClick={handleConfirmEdit}>
-          Save
+          שמור
         </button>
       </div>
 
       <div className="gallery-preview-side gallery-preview-wrapper" style={{ flex: 1 }}>
-        <h3>Preview</h3>
+        <h3>תצוגה מקדימה</h3>
         <div className="gallery-instagram-grid">
           {galleryTabImages.map((item, index) => (
             <div
@@ -170,4 +169,3 @@ const GalleryEditorWithPreview = ({
 };
 
 export default GalleryEditorWithPreview;
-```

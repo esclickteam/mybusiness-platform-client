@@ -1,7 +1,6 @@
-```javascript
 import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
-import API from "../api"; // axios with predefined token
+import API from "../api"; // axios עם token מוגדר מראש
 import { useSocket } from "../context/socketContext";
 import "./ClientChatTab.css";
 
@@ -75,13 +74,13 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   );
 }
 
-// normalize updated including businessId
+// normalize מעודכן כולל businessId
 function normalize(msg, userId, businessId) {
   const fromId = String(msg.fromId || msg.from || "");
   const userIdStr = String(userId);
   const businessIdStr = String(businessId);
 
-  let role = "business"; // default
+  let role = "business"; // ברירת מחדל
 
   if (msg.client && String(msg.client) === userIdStr) {
     role = "client";
@@ -203,7 +202,7 @@ export default function ClientChatTab({
         dispatch({ type: "set", payload: msgs });
         setError("");
       } catch (err) {
-        setError("Error loading history: " + (err.message || err));
+        setError("שגיאה בטעינת ההיסטוריה: " + (err.message || err));
         dispatch({ type: "set", payload: [] });
       }
       setLoading(false);
@@ -253,11 +252,11 @@ export default function ClientChatTab({
 
   const sendMessage = () => {
     if (!businessId) {
-      setError("businessId is not defined");
+      setError("businessId לא מוגדר");
       return;
     }
     if (!input.trim() || sending || !socket || !socket.connected) {
-      if (!socket.connected) setError("Socket is not connected");
+      if (!socket.connected) setError("Socket אינו מחובר");
       return;
     }
 
@@ -282,7 +281,7 @@ export default function ClientChatTab({
             dispatch({ type: "set", payload: [normalize(ack.message, userId, businessId)] });
             setInput("");
           } else {
-            setError("Error creating the conversation");
+            setError("שגיאה ביצירת השיחה");
           }
         }
       );
@@ -320,7 +319,7 @@ export default function ClientChatTab({
               },
             });
           } else {
-            setError("Error sending the message: " + (ack.error || "unknown"));
+            setError("שגיאה בשליחת ההודעה: " + (ack.error || "לא ידוע"));
             dispatch({
               type: "updateStatus",
               payload: { id: tempId, updates: { sending: false, failed: true } },
@@ -338,10 +337,10 @@ export default function ClientChatTab({
   return (
     <div className="chat-container client">
       <div className="message-list" ref={listRef}>
-        {loading && <div className="loading">Loading...</div>}
-        {!loading && sortedMessages.length === 0 && <div className="empty">No messages yet</div>}
+        {loading && <div className="loading">טוען...</div>}
+        {!loading && sortedMessages.length === 0 && <div className="empty">עדיין אין הודעות</div>}
         {sortedMessages.map((m) => {
-          console.log("Message role:", m.role, m); // checking role
+          console.log("Message role:", m.role, m); // בדיקה של role
           return (
             <div
               key={m._id || m.tempId}
@@ -354,7 +353,7 @@ export default function ClientChatTab({
                   <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} userAvatar={null} />
                 ) : (
                   <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
-                    {m.fileName || "Download file"}
+                    {m.fileName || "קובץ להורדה"}
                   </a>
                 )
               ) : (
@@ -378,7 +377,7 @@ export default function ClientChatTab({
 
         <textarea
           className="inputField"
-          placeholder="Type a message..."
+          placeholder="הקלד הודעה..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -402,4 +401,3 @@ export default function ClientChatTab({
     </div>
   );
 }
-```

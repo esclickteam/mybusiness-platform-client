@@ -1,4 +1,3 @@
-```javascript
 import React, { useMemo } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -27,12 +26,12 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     [user?.role]
   );
 
-  // Calculate business subscription validity — including trial logic support
+  // חישוב תקפות מנוי עסק — כולל תמיכה בלוגיקת ניסיון
   const isSubscriptionValid = useMemo(() => {
-    if (!isBusiness) return true; // Only businesses require a subscription
+    if (!isBusiness) return true; // רק עסקים דורשים מנוי
     if (typeof user?.isSubscriptionValid === "boolean") return user.isSubscriptionValid;
 
-    // Client-side calculation based on dates if the server does not return
+    // חישוב בצד לקוח לפי תאריכים אם השרת לא מחזיר
     if (user?.subscriptionStart && user?.subscriptionEnd) {
       const now = new Date();
       const end = new Date(user.subscriptionEnd);
@@ -49,16 +48,16 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     [roles]
   );
 
-  // Loading
+  // טעינה
   if (loading || !initialized) {
     return (
       <div style={{ textAlign: "center", padding: "2rem" }} role="status" aria-live="polite">
-        🔄 Loading data...
+        🔄 טוען נתונים...
       </div>
     );
   }
 
-  // Not logged in
+  // לא מחובר
   if (!user) {
     const staffRoles = ["worker", "manager", "מנהל", "admin"];
     const needsStaffLogin = normalizedRoles.some((r) => staffRoles.includes(r));
@@ -66,7 +65,7 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return <Navigate to={loginPath} replace state={{ from: location }} />;
   }
 
-  // Role permissions
+  // הרשאות תפקיד
   if (
     normalizedRoles.length &&
     !normalizedRoles.includes((user.role || "").toLowerCase()) &&
@@ -75,7 +74,7 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return <Unauthorized />;
   }
 
-  // Business subscription check — redirect to packages only if not valid and not an active trial
+  // בדיקת מנוי עסק — הפניה לחבילות רק אם לא בתוקף וגם לא ניסיון פעיל
   const isTrialActive =
     user?.subscriptionPlan === "trial" &&
     user?.subscriptionEnd &&
@@ -87,16 +86,15 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return <Navigate to={`/packages?reason=${reason}`} replace />;
   }
 
-  // Specific package requirement
+  // דרישת חבילה ספציפית
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
     return <Navigate to="/packages" replace />;
   }
 
-  // Business without businessId
+  // עסק ללא businessId
   if (isBusiness && !user.businessId) {
     return <Navigate to="/create-business" replace />;
   }
 
   return <>{children}</>;
 }
-```

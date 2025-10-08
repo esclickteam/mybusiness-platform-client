@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ClientChatTab from "./ClientChatTab";
@@ -18,12 +17,12 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
 
-  // Prevents overwriting valid values with null/undefined
+  // מונע דריסת ערכים תקפים ב-null/undefined
   const safeSetBusinessId = (newId) => setBusinessId((prev) => newId ?? prev);
 
   const socketRef = useRef(null);
 
-  // Creating socket connection
+  // יצירת חיבור סוקטון
   useEffect(() => {
     if (!initialized || !userId) return;
     if (socketRef.current) return;
@@ -48,7 +47,7 @@ export default function ClientChatSection() {
     });
 
     socketRef.current.on("connect_error", (err) =>
-      setError("Socket connection error: " + err.message)
+      setError("שגיאה בחיבור לסוקט: " + err.message)
     );
 
     return () => {
@@ -57,7 +56,7 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId]);
 
-  // Loading conversations based on parameters
+  // טעינת שיחות לפי פרמטרים
   useEffect(() => {
     setLoading(true);
     setError("");
@@ -92,7 +91,7 @@ export default function ClientChatSection() {
         })
         .catch((err) => {
           console.error("Error fetching user conversations:", err);
-          setError("Error loading user conversations");
+          setError("שגיאה בטעינת שיחות המשתמש");
           setLoading(false);
         });
     } else {
@@ -101,10 +100,10 @@ export default function ClientChatSection() {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (!data.ok) throw new Error(data.error || "Error loading conversation");
+          if (!data.ok) throw new Error(data.error || "שגיאה בטעינת שיחה");
           const participants = data.conversation.participants || [];
           if (!participants.includes(clientId)) {
-            throw new Error("The conversation does not include the requested client");
+            throw new Error("השיחה לא מכילה את הלקוח המבוקש");
           }
           setConversationId(threadId);
           setBusinessName(data.conversation.businessName || "");
@@ -119,7 +118,7 @@ export default function ClientChatSection() {
     }
   }, [threadId, clientId, businessIdFromParams]);
 
-  // Loading business name if missing
+  // טעינת שם העסק אם חסר
   useEffect(() => {
     if (businessId && !businessName) {
       const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
@@ -133,23 +132,23 @@ export default function ClientChatSection() {
           return res.json();
         })
         .then((data) => {
-          // Depending on the structure of the response from the server
+          // בהתאם למבנה התגובה מהשרת
           if (data.business?.businessName) {
             setBusinessName(data.business.businessName);
           } else if (data.businessName) {
             setBusinessName(data.businessName);
           } else {
-            setBusinessName("Unknown business");
+            setBusinessName("עסק לא ידוע");
           }
         })
         .catch((err) => {
           console.error("Error fetching business name:", err);
-          setBusinessName("Unknown business");
+          setBusinessName("עסק לא ידוע");
         });
     }
   }, [businessId, businessName]);
 
-  // Listening for messages on socket and history
+  // מאזין להודעות בסוקט והיסטוריה
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !socket.connected || !conversationId) {
@@ -165,7 +164,7 @@ export default function ClientChatSection() {
         setError("");
       } else {
         setMessages([]);
-        setError("Error loading messages: " + (res.error || "Unknown"));
+        setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
       }
       setLoading(false);
     });
@@ -205,16 +204,16 @@ export default function ClientChatSection() {
     };
   }, [conversationId, businessId]);
 
-  if (loading) return <div className={styles.loading}>Loading…</div>;
+  if (loading) return <div className={styles.loading}>טוען…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.whatsappBg}>
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
-          <h3 className={styles.sidebarTitle}>Conversation with the business</h3>
+          <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
           <div className={styles.convItemActive}>
-            {businessName || "Unknown business"}
+            {businessName || "עסק לא ידוע"}
           </div>
         </aside>
         <section className={styles.chatArea}>
@@ -232,4 +231,3 @@ export default function ClientChatSection() {
     </div>
   );
 }
-```

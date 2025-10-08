@@ -1,7 +1,6 @@
-```javascript
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import { useAuth } from "./AuthContext"; // Update according to your path
+import { useAuth } from "./AuthContext"; // עדכן לפי הנתיב אצלך
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 const DashboardSocketContext = createContext(null);
@@ -131,15 +130,15 @@ export function DashboardSocketProvider({ businessId, children }) {
       });
 
       socketRef.current.on("connect", () => {
-        console.log("🔌 [SocketProvider] Connected with ID:", socketRef.current.id);
+        console.log("🔌 [SocketProvider] מחובר עם ID:", socketRef.current.id);
       });
 
       socketRef.current.on("connect_error", (err) => {
-        console.error("❌ [SocketProvider] Connection error:", err.message);
+        console.error("❌ [SocketProvider] שגיאת חיבור:", err.message);
       });
 
       socketRef.current.on("tokenExpired", async () => {
-        console.log("🚨 [SocketProvider] Token expired, refreshing...");
+        console.log("🚨 [SocketProvider] טוקן פג תוקף, מרענן...");
         const newToken = await refreshAccessToken();
         if (!newToken) {
           logout();
@@ -148,15 +147,15 @@ export function DashboardSocketProvider({ businessId, children }) {
         socketRef.current.auth.token = newToken;
         socketRef.current.emit("authenticate", { token: newToken }, (ack) => {
           if (!ack?.ok) {
-            console.warn("❌ Re-authentication failed, performing Logout");
+            console.warn("❌ אימות מחדש נכשל, מבצע Logout");
             logout();
           } else {
-            console.log("✅ Re-authentication succeeded");
+            console.log("✅ אימות מחדש הצליח");
           }
         });
       });
 
-      // Initial request for statistics
+      // בקשה התחלתית לסטטיסטיקות
       socketRef.current.emit("getDashboardStats", null, (res) => {
         if (res?.ok && res.stats) {
           setStats({
@@ -187,7 +186,7 @@ export function DashboardSocketProvider({ businessId, children }) {
         socketRef.current.off("connect_error");
         socketRef.current.off("tokenExpired");
         socketRef.current.disconnect();
-        console.log("🔌 [SocketProvider] Socket disconnected");
+        console.log("🔌 [SocketProvider] ניתוק ה־socket");
         socketRef.current = null;
       }
     };
@@ -203,8 +202,7 @@ export function DashboardSocketProvider({ businessId, children }) {
 export function useDashboardStats() {
   const context = useContext(DashboardSocketContext);
   if (context === undefined) {
-    throw new Error("useDashboardStats must be used within a DashboardSocketProvider");
+    throw new Error("useDashboardStats חייב להיות בתוך DashboardSocketProvider");
   }
   return context;
 }
-```

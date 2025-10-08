@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -9,7 +10,7 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // פורמט תאריך YYYY-MM-DD
+  // Date format YYYY-MM-DD
   const formatDate = (date) => date.toISOString().slice(0, 10);
 
   useEffect(() => {
@@ -42,13 +43,13 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
 
   return (
     <div className="crm-available-slots">
-      <h3>🗓️ זמינות תורים לפי יומן</h3>
+      <h3>🗓️ Appointment Availability by Calendar</h3>
       <Calendar locale="he-IL" value={selectedDate} onChange={setSelectedDate} />
 
-      <h4>תאריך נבחר: {selectedDate.toLocaleDateString("he-IL")}</h4>
+      <h4>Selected Date: {selectedDate.toLocaleDateString("he-IL")}</h4>
 
-      {loading && <p>טוען נתונים...</p>}
-      {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
+      {loading && <p>Loading data...</p>}
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
       {!loading && !error && (
         <>
@@ -59,7 +60,7 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
               ))}
             </ul>
           ) : (
-            <p>אין שעות פנויות ביום זה</p>
+            <p>No available times on this day</p>
           )}
         </>
       )}
@@ -68,3 +69,4 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
 };
 
 export default CRMAvailableSlots;
+```

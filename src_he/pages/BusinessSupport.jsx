@@ -1,3 +1,4 @@
+```javascript
 import React, { useState } from "react";
 import { useForm } from "@formspree/react";
 
@@ -7,7 +8,7 @@ export default function BusinessSupport() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",              // הוסף שדה טלפון כאן
+    phone: "",              // Add phone field here
     issueDescription: "",
   });
   const [loading, setLoading] = useState(false);
@@ -16,7 +17,7 @@ export default function BusinessSupport() {
   const [state, handleSubmit] = useForm("mwpoojlv");
 
   if (state.succeeded) {
-    return <p className="status-msg success">הפנייה נשלחה בהצלחה!</p>;
+    return <p className="status-msg success">The request was sent successfully!</p>;
   }
 
   const handleInputChange = (e) => {
@@ -31,7 +32,7 @@ export default function BusinessSupport() {
     const { name, email, phone, issueDescription } = formData;
 
     if (!name || !email || !phone || !issueDescription) {
-      setStatus({ type: "error", message: "אנא מלא את כל השדות כולל טלפון" });
+      setStatus({ type: "error", message: "Please fill in all fields including phone" });
       return;
     }
 
@@ -39,11 +40,11 @@ export default function BusinessSupport() {
 
     try {
       await handleSubmit(e);
-      setStatus({ type: "success", message: "הפנייה נשלחה בהצלחה" });
+      setStatus({ type: "success", message: "The request was sent successfully" });
       setFormData({ name: "", email: "", phone: "", issueDescription: "" });
     } catch (err) {
-      console.error("שגיאה:", err);
-      setStatus({ type: "error", message: "שגיאה בשליחה" });
+      console.error("Error:", err);
+      setStatus({ type: "error", message: "Error in sending" });
     } finally {
       setLoading(false);
     }
@@ -51,50 +52,50 @@ export default function BusinessSupport() {
 
   return (
     <div className="support-page">
-      <h1>תמיכה לעסקים</h1>
+      <h1>Business Support</h1>
 
       <form onSubmit={handleFormSubmit}>
-        <label>שמך:</label>
+        <label>Your Name:</label>
         <input
           type="text"
           name="name"
           value={formData.name}
           onChange={handleInputChange}
           disabled={loading}
-          placeholder="הכנס את שמך"
+          placeholder="Enter your name"
         />
 
-        <label>אימייל ליצירת קשר:</label>
+        <label>Contact Email:</label>
         <input
           type="email"
           name="email"
           value={formData.email}
           onChange={handleInputChange}
           disabled={loading}
-          placeholder="הכנס את המייל שלך"
+          placeholder="Enter your email"
         />
 
-        <label>טלפון ליצירת קשר:</label>  {/* שדה הטלפון */}
+        <label>Contact Phone:</label>  {/* Phone field */}
         <input
           type="tel"
           name="phone"
           value={formData.phone}
           onChange={handleInputChange}
           disabled={loading}
-          placeholder="הכנס את הטלפון שלך"
+          placeholder="Enter your phone"
         />
 
-        <label>תיאור הבעיה:</label>
+        <label>Issue Description:</label>
         <textarea
           name="issueDescription"
           value={formData.issueDescription}
           onChange={handleInputChange}
           disabled={loading}
-          placeholder="תאר את הבעיה"
+          placeholder="Describe the issue"
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? "שולח..." : "שלח פנייה"}
+          {loading ? "Sending..." : "Submit Request"}
         </button>
       </form>
 
@@ -109,3 +110,4 @@ export default function BusinessSupport() {
     </div>
   );
 }
+```

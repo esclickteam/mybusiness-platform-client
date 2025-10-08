@@ -1,6 +1,5 @@
-```javascript
 import React, { useState, useEffect } from 'react';
-import API from '@api'; // Ensure that API.baseURL = '/api'
+import API from '@api'; // ודא ש־API.baseURL = '/api'
 import './ServiceList.css';
 
 const ServiceList = ({
@@ -23,7 +22,7 @@ const ServiceList = ({
   const formatDuration = minutes => {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
-    return `${h}:${m.toString().padStart(2, '0')} hours`;
+    return `${h}:${m.toString().padStart(2, '0')} שעות`;
   };
 
   const handleAddService = async () => {
@@ -72,24 +71,24 @@ const ServiceList = ({
       });
     } catch (err) {
       console.error('Error adding service:', err);
-      alert('Error adding service');
+      alert('שגיאה בהוספת שירות');
     } finally {
       setLoading(false);
     }
   };
 
-  // Function to delete a service by ID
+  // פונקציה למחיקת שירות לפי ID
   const handleDelete = async (serviceId) => {
-    if (!window.confirm('Delete the service?')) return;
+    if (!window.confirm('למחוק את השירות?')) return;
 
     try {
       await API.delete(`/business/my/services/${serviceId}`);
-      // After deletion, reload the list of services from the server
+      // אחרי מחיקה, טען שוב את רשימת השירותים מהשרת
       const res = await API.get('/business/my/services');
       setServices(res.data.services || []);
     } catch (err) {
       console.error('Error deleting service:', err);
-      alert('Error deleting service');
+      alert('שגיאה במחיקת שירות');
     }
   };
 
@@ -106,34 +105,34 @@ const ServiceList = ({
 
   return (
     <div className="service-list">
-      <h3 className="section-title">Add Service</h3>
+      <h3 className="section-title">הוספת שירות</h3>
 
-      <label>Service Type:</label>
+      <label>סוג השירות:</label>
       <div className="appointment-type-selector">
         <button
           type="button"
           className={newService.appointmentType === 'at_business' ? 'active' : ''}
           onClick={() => setNewService({ ...newService, appointmentType: 'at_business' })}
         >
-          🏢 Appointment at Business
+          🏢 תיאום תור בעסק
         </button>
         <button
           type="button"
           className={newService.appointmentType === 'on_site' ? 'active' : ''}
           onClick={() => setNewService({ ...newService, appointmentType: 'on_site' })}
         >
-          🚗 Home Service
+          🚗 שירות עד הבית
         </button>
       </div>
 
-      <label>Service Name:</label>
+      <label>שם השירות:</label>
       <input
-        placeholder="For example: Facial Treatment"
+        placeholder="לדוגמה: טיפול פנים"
         value={newService.name}
         onChange={e => setNewService({ ...newService, name: e.target.value })}
       />
 
-      <label>Service Duration:</label>
+      <label>משך השירות:</label>
       <div className="time-row">
         <select
           value={newService.hours}
@@ -143,7 +142,7 @@ const ServiceList = ({
             <option key={h} value={h}>{h}</option>
           ))}
         </select>
-        <span>Hours</span>
+        <span>שעות</span>
         <select
           value={newService.minutes}
           onChange={e => setNewService({ ...newService, minutes: e.target.value })}
@@ -152,28 +151,28 @@ const ServiceList = ({
             <option key={m} value={m}>{m}</option>
           ))}
         </select>
-        <span>Minutes</span>
+        <span>דקות</span>
       </div>
 
-      <label>Service Price:</label>
+      <label>מחיר השירות:</label>
       <input
         type="number"
-        placeholder="For example: 250"
+        placeholder="לדוגמה: 250"
         value={newService.price}
         onChange={e => setNewService({ ...newService, price: e.target.value })}
       />
 
-      <label>Service Description (optional):</label>
+      <label>תיאור השירות (לא חובה):</label>
       <textarea
-        placeholder="Details about the service..."
+        placeholder="פירוט על השירות..."
         value={newService.description}
         onChange={e => setNewService({ ...newService, description: e.target.value })}
       />
 
-      <label>Upload Image for Service (optional):</label>
+      <label>העלאת תמונה לשירות (לא חובה):</label>
       <input type="file" onChange={handleImageChange} />
       {newService.imagePreview && (
-        <img src={newService.imagePreview} alt="Preview" className="preview-img" />
+        <img src={newService.imagePreview} alt="תצוגה" className="preview-img" />
       )}
 
       <button
@@ -181,12 +180,12 @@ const ServiceList = ({
         onClick={handleAddService}
         disabled={loading}
       >
-        {loading ? 'Saving...' : '➕ Add Service'}
+        {loading ? 'שומר...' : '➕ הוספת שירות'}
       </button>
 
       <hr />
 
-      <h3>Defined Services:</h3>
+      <h3>השירותים שהוגדרו:</h3>
       <div className="services-grid">
         {services.map((srv, i) => (
           <div key={srv._id || i} className="service-card">
@@ -199,13 +198,13 @@ const ServiceList = ({
               {srv.price && <p className="price">{srv.price} ₪</p>}
               <span>{formatDuration(srv.duration)}</span>
               <p style={{ marginTop: 8, fontSize: 13, color: '#666' }}>
-                Type: {srv.appointmentType === 'on_site' ? 'Home Service' : 'Appointment at Business'}
+                סוג: {srv.appointmentType === 'on_site' ? 'שירות עד הבית' : 'תיאום בעסק'}
               </p>
             </div>
             <button
               type="button"
               className="delete-btn"
-              onClick={() => handleDelete(srv._id)} // <-- Delete service by ID
+              onClick={() => handleDelete(srv._id)} // <-- מחיקת שירות לפי ID
             >
               🗑️
             </button>
@@ -217,4 +216,3 @@ const ServiceList = ({
 };
 
 export default ServiceList;
-```

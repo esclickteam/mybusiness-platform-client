@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../api";
@@ -15,7 +14,7 @@ function useAppointments() {
 
     async function fetchAppointments() {
       if (!user || !user.userId) {
-        setError("User details are not available");
+        setError("פרטי המשתמש לא זמינים");
         setLoading(false);
         return;
       }
@@ -35,7 +34,7 @@ function useAppointments() {
         }
       } catch (err) {
         if (isMounted) {
-          setError(err.message || "Error loading appointments");
+          setError(err.message || "שגיאה בטעינת הפגישות");
         }
       } finally {
         if (isMounted) {
@@ -58,23 +57,23 @@ export default function OrdersPage() {
   const { appointments, loading, error } = useAppointments();
   const navigate = useNavigate();
 
-  if (loading) return <div>Loading appointments...</div>;
+  if (loading) return <div>טוען פגישות...</div>;
 
   if (error)
     return (
       <div style={{ color: "red" }}>
         {error}
         <br />
-        <button onClick={() => window.location.reload()}>Try again</button>
+        <button onClick={() => window.location.reload()}>נסה שוב</button>
       </div>
     );
 
   if (appointments.length === 0)
-    return <div>You have no scheduled appointments at the moment.</div>;
+    return <div>אין לך פגישות מתוזמנות כרגע.</div>;
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>📄 My Appointments</h2>
+      <h2>📄 הפגישות שלי</h2>
       <ul style={{ listStyle: "none", padding: 0 }}>
         {appointments.map((appt) => (
           <li
@@ -88,15 +87,14 @@ export default function OrdersPage() {
               cursor: "pointer",
             }}
             onClick={() => navigate(`/business/${appt.business}/appointments/${appt._id}`)}
-            title={`Click for details of the appointment on ${appt.date} at ${appt.time}`}
+            title={`לחץ לפרטים של הפגישה בתאריך ${appt.date} בשעה ${appt.time}`}
           >
-            <strong>{appt.serviceName || "Unknown service"}</strong>
-            <p>Date: {appt.date} | Time: {appt.time}</p>
-            <p>Duration: {Math.floor(appt.duration / 60)} hours {appt.duration % 60} minutes</p>
+            <strong>{appt.serviceName || "שירות לא ידוע"}</strong>
+            <p>תאריך: {appt.date} | שעה: {appt.time}</p>
+            <p>משך: {Math.floor(appt.duration / 60)} שעות {appt.duration % 60} דקות</p>
           </li>
         ))}
       </ul>
     </div>
   );
 }
-```

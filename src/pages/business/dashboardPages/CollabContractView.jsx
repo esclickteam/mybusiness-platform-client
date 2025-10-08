@@ -1,11 +1,10 @@
-```javascript
 import React, { useRef, useState, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
-import API from "../../../api"; // Make sure this is the correct path based on the file's location
+import API from "../../../api"; // ודא שזה הנתיב הנכון לפי מיקום הקובץ
 import "./CollabContractView.css";
 
 const CollabContractView = ({ contract, onApprove, currentUser }) => {
-  if (!contract) return <p>No contract to display</p>;
+  if (!contract) return <p>אין חוזה להצגה</p>;
 
   const {
     title,
@@ -28,7 +27,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
     messageMetadata,
   } = contract;
 
-  // Check who the current user is - whether they are the sender or the receiver
+  // בודק מי המשתמש הנוכחי - האם הוא השולח או המקבל
   const isSender = currentUser.businessName === sender?.businessName;
   const isReceiver = currentUser.businessName === receiver?.businessName;
 
@@ -51,12 +50,12 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
 
   const handleApprove = async () => {
     if (!localReceiverSig) {
-      alert("Please sign first.");
+      alert("אנא חתום קודם.");
       return;
     }
 
-    if (status === "Approved") {
-      alert("The agreement has already been approved, it cannot be changed.");
+    if (status === "מאושר") {
+      alert("ההסכם כבר אושר, לא ניתן לשנות.");
       return;
     }
 
@@ -65,7 +64,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
     const updatedContract = {
       ...contract,
       receiverSignature: localReceiverSig,
-      status: "Approved",
+      status: "מאושר",
       updatedAt: new Date().toISOString(),
     };
 
@@ -76,7 +75,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
       });
 
       if (!res.data) {
-        alert("Error updating the agreement, please try again.");
+        alert("שגיאה בעדכון ההסכם, נסה שנית.");
         setIsApproving(false);
         return;
       }
@@ -90,8 +89,8 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
 
       onApprove(updatedContract);
     } catch (err) {
-      console.error("❌ Error sending contract approval to the server:", err);
-      alert("Error sending contract approval, please try again.");
+      console.error("❌ שגיאה בשליחת אישור החוזה לשרת:", err);
+      alert("שגיאה בשליחת אישור ההסכם, נסה שנית.");
     } finally {
       setIsApproving(false);
     }
@@ -99,40 +98,40 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
 
   return (
     <div className="contract-view-container">
-      <h2 className="contract-title">📄 Collaboration Agreement</h2>
+      <h2 className="contract-title">📄 הסכם שיתוף פעולה</h2>
 
-      <div className="static-field"><strong>Sender's Business Name:</strong> {sender?.businessName}</div>
-      <div className="static-field"><strong>Receiver's Business Name:</strong> {receiver?.businessName}</div>
+      <div className="static-field"><strong>שם העסק השולח:</strong> {sender?.businessName}</div>
+      <div className="static-field"><strong>שם העסק המקבל:</strong> {receiver?.businessName}</div>
 
-      <div className="static-field"><strong>Title:</strong> {title}</div>
-      <div className="static-field"><strong>Description:</strong> {description}</div>
-      <div className="static-field"><strong>What the sender is giving:</strong> {giving}</div>
-      <div className="static-field"><strong>What they expect to receive:</strong> {receiving}</div>
-      <div className="static-field"><strong>Type of Collaboration:</strong> {type}</div>
-      <div className="static-field"><strong>Commission / Payment:</strong> {payment || "None"}</div>
-      <div className="static-field"><strong>Validity:</strong> {startDate || "Not defined"} to {endDate || "Not defined"}</div>
+      <div className="static-field"><strong>כותרת:</strong> {title}</div>
+      <div className="static-field"><strong>תיאור:</strong> {description}</div>
+      <div className="static-field"><strong>מה הצד השולח נותן:</strong> {giving}</div>
+      <div className="static-field"><strong>מה הוא מצפה לקבל:</strong> {receiving}</div>
+      <div className="static-field"><strong>סוג שיתוף:</strong> {type}</div>
+      <div className="static-field"><strong>עמלה / תשלום:</strong> {payment || "ללא"}</div>
+      <div className="static-field"><strong>תוקף:</strong> {startDate || "לא מוגדר"} עד {endDate || "לא מוגדר"}</div>
       <div className="static-field">
-        <strong>Terms:</strong> {cancelAnytime ? "❎ Cancel at any stage" : ""} {confidentiality ? "| 🔒 Confidentiality" : ""}
+        <strong>תנאים:</strong> {cancelAnytime ? "❎ ביטול בכל שלב" : ""} {confidentiality ? "| 🔒 סודיות" : ""}
       </div>
-      <div className="static-field"><strong>Creation Date:</strong> {new Date(createdAt).toLocaleDateString("he-IL")}</div>
-      <div className="static-field"><strong>Status:</strong> {status}</div>
+      <div className="static-field"><strong>תאריך יצירה:</strong> {new Date(createdAt).toLocaleDateString("he-IL")}</div>
+      <div className="static-field"><strong>סטטוס:</strong> {status}</div>
 
-      {/* Sender's Signature */}
+      {/* חתימת שולח */}
       <div>
-        <strong>✍️ Signature of {sender?.businessName}:</strong>
+        <strong>✍️ חתימת {sender?.businessName}:</strong>
         {senderSignature ? (
-          <img src={senderSignature} alt="Sender's Signature" className="view-signature-image" />
+          <img src={senderSignature} alt="חתימת שולח" className="view-signature-image" />
         ) : (
-          <span>Not yet signed</span>
+          <span>טרם נחתם</span>
         )}
       </div>
 
-      {/* Receiver's Signature */}
+      {/* חתימת מקבל */}
       <div className="mt-4">
-        <strong>✍️ Signature of {receiver?.businessName}:</strong>
+        <strong>✍️ חתימת {receiver?.businessName}:</strong>
         {localReceiverSig ? (
-          <img src={localReceiverSig} alt="Receiver's Signature" className="view-signature-image" />
-        ) : isReceiver && status !== "Approved" ? (
+          <img src={localReceiverSig} alt="חתימת מקבל" className="view-signature-image" />
+        ) : isReceiver && status !== "מאושר" ? (
           <>
             <SignatureCanvas
               penColor="#000"
@@ -149,7 +148,7 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
                 onClick={handleReceiverSign}
                 disabled={isApproving}
               >
-                ✍️ Save Signature
+                ✍️ שמור חתימה
               </button>
               {hasSigned && (
                 <button
@@ -157,13 +156,13 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
                   onClick={handleApprove}
                   disabled={isApproving}
                 >
-                  {isApproving ? "Sending approval..." : "✅ I approve the agreement"}
+                  {isApproving ? "שולח אישור..." : "✅ אני מאשר/ת את ההסכם"}
                 </button>
               )}
             </div>
           </>
         ) : (
-          <span>{status === "Approved" ? "The agreement has been approved" : "Not yet signed"}</span>
+          <span>{status === "מאושר" ? "ההסכם אושר" : "טרם נחתם"}</span>
         )}
       </div>
     </div>
@@ -171,4 +170,3 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
 };
 
 export default CollabContractView;
-```

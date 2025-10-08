@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../api"; 
@@ -15,11 +14,11 @@ export default function MessagesPage() {
         setLoading(true);
         const res = await API.get("/messages/user-conversations", { withCredentials: true });
 
-        // Assuming the server returns: { conversations: [...] }
+        // מניח שהשרת מחזיר: { conversations: [...] }
         setConversations(res.data.conversations || []);
       } catch (error) {
         console.error("Failed to fetch conversations:", error);
-        setError("Error loading conversations, please try again later");
+        setError("שגיאה בטעינת השיחות, נסה שוב מאוחר יותר");
       } finally {
         setLoading(false);
       }
@@ -27,13 +26,13 @@ export default function MessagesPage() {
     fetchConversations();
   }, []);
 
-  if (loading) return <div>Loading conversations...</div>;
+  if (loading) return <div>טוען שיחות...</div>;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
-  if (conversations.length === 0) return <div>You have no messages.</div>;
+  if (conversations.length === 0) return <div>אין לך הודעות.</div>;
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>💬 My Messages</h2>
+      <h2>💬 ההודעות שלי</h2>
       <ul style={{ listStyle: "none", padding: 0 }}>
         {conversations.map((conv) => (
           <li
@@ -52,19 +51,19 @@ export default function MessagesPage() {
               alignItems: "center",
               gap: "10px"
             }}
-            title={`Click to open the chat with ${conv.businessName || "the business"}`}
+            title={`לחץ כדי לפתוח את הצ'אט עם ${conv.businessName || "העסק"}`}
           >
             {conv.businessLogo && (
               <img
                 src={conv.businessLogo}
-                alt={`${conv.businessName} logo`}
+                alt={`${conv.businessName} לוגו`}
                 style={{ width: 40, height: 40, borderRadius: 6 }}
               />
             )}
             <div>
-              <strong>{conv.businessName || "Business"}</strong>
+              <strong>{conv.businessName || "עסק"}</strong>
               <p style={{ margin: "4px 0" }}>
-                {conv.lastMessage?.text || "No messages"}
+                {conv.lastMessage?.text || "אין הודעות"}
               </p>
               <small>{new Date(conv.lastMessageDate || conv.updatedAt).toLocaleString()}</small>
             </div>
@@ -74,4 +73,3 @@ export default function MessagesPage() {
     </div>
   );
 }
-```

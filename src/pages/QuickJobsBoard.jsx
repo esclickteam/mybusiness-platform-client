@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import "./QuickJobsBoard.css";
 import { Link } from "react-router-dom";
@@ -8,53 +7,53 @@ function QuickJobsBoard() {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    // Simulation for a client user
+    // סימולציה למשתמש מסוג לקוח
     const mockUser = {
-      name: "Dana",
+      name: "דנה",
       role: "client"
     };
     localStorage.setItem("user", JSON.stringify(mockUser));
     setUserRole("client");
 
-    // Mock jobs
+    // עבודות מדומות
     setJobs([
       {
         id: 1,
-        title: "Door Repair",
-        description: "Front door is not closing well",
+        title: "תיקון דלת",
+        description: "דלת כניסה לא נסגרת טוב",
         priceMin: 150,
         priceMax: 250,
         time: "12:00-16:00",
-        date: "Today",
-        address: "Tel Aviv"
+        date: "היום",
+        address: "תל אביב"
       },
       {
         id: 2,
-        title: "Shelf Installation",
-        description: "Wooden shelf for drywall",
+        title: "התקנת מדף",
+        description: "מדף עץ לקיר גבס",
         priceMin: 100,
         priceMax: 180,
-        time: "Tomorrow morning",
-        date: "Tomorrow",
-        address: "Holon"
+        time: "מחר בבוקר",
+        date: "מחר",
+        address: "חולון"
       }
     ]);
   }, []);
 
   return (
     <div className="quick-jobs-board">
-      <h1>⚡ Quick Jobs Board</h1>
+      <h1>⚡ לוח עבודות מהירות</h1>
 
       {userRole === "client" && (
         <div className="quick-job-publish-wrapper">
           <Link to="/quick-jobs/new">
-            <button className="quick-job-publish-button">📤 Publish Quick Job</button>
+            <button className="quick-job-publish-button">📤 פרסם עבודה מהירה</button>
           </Link>
         </div>
       )}
 
       <div className="job-list">
-        <h2>Available Jobs</h2>
+        <h2>עבודות פנויות</h2>
         {jobs.map((job) => (
           <div className="job-card" key={job.id}>
             <h3>{job.title}</h3>
@@ -65,8 +64,8 @@ function QuickJobsBoard() {
 
             {userRole === "business" && (
               <div className="job-actions">
-                <button>📥 Accept Job</button>
-                <button>✏️ Submit Another Offer</button>
+                <button>📥 קבל עבודה</button>
+                <button>✏️ הצע הצעה אחרת</button>
               </div>
             )}
           </div>
@@ -77,4 +76,3 @@ function QuickJobsBoard() {
 }
 
 export default QuickJobsBoard;
-```

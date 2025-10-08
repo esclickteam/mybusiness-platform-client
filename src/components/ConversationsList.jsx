@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSocket } from "../context/socketContext";
@@ -41,7 +40,7 @@ export default function ConversationsList({
       const res = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      if (!res.ok) throw new Error("Error loading conversations");
+      if (!res.ok) throw new Error("שגיאה בטעינת השיחות");
       const json = await res.json();
       return json.conversations ?? json;
     },
@@ -59,15 +58,15 @@ export default function ConversationsList({
   }, [socket, businessId, isBusiness]);
 
   // -------- UI STATES ----------
-  if (isLoading) return <div className={styles.noSelection}>Loading conversations…</div>;
+  if (isLoading) return <div className={styles.noSelection}>טוען שיחות…</div>;
   if (error)
     return (
       <div className={styles.noSelection}>
-        Error loading conversations: {error.message}
+        שגיאה בטעינת שיחות: {error.message}
       </div>
     );
   if (!list.length)
-    return <div className={styles.noSelection}>No conversations yet</div>;
+    return <div className={styles.noSelection}>עדיין אין שיחות</div>;
 
   // -------- HELPERS ----------
   /** Ensure we have a stable string id in every scenario */
@@ -89,7 +88,7 @@ export default function ConversationsList({
     <div className={styles.conversationsList}>
       <div className={styles.sidebar}>
         <div className={styles.sidebarTitle}>
-          {isBusiness ? "Conversations with Clients" : "Conversation with Business"}
+          {isBusiness ? "שיחות עם לקוחות" : "שיחה עם עסק"}
         </div>
 
         {uniqueConvs.map((conv) => {
@@ -128,4 +127,3 @@ export default function ConversationsList({
     </div>
   );
 }
-```

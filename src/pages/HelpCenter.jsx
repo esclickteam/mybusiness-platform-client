@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -13,52 +12,52 @@ export default function HelpCenter() {
   const popularArticles = [
     {
       id: 1,
-      title: "Building a Business Page",
-      description: "Step by step guide to creating an attractive business page that will attract new customers.",
+      title: "בניית עמוד עסקי",
+      description: "צעד אחר צעד לבניית עמוד עסקי מושך שימשוך אליך לקוחות חדשים.",
       url: businessId ? `/business/${businessId}/dashboard/articles/build-business-page` : "/",
     },
     {
       id: 2,
-      title: "Proper Use of Chat with Customers",
-      description: "Tips for managing smart chat conversations that will strengthen your relationship with your customers.",
+      title: "שימוש נכון בצ'אט עם לקוחות",
+      description: "טיפים לניהול שיחות צ'אט חכמות שיחזקו את הקשר עם הלקוחות שלך.",
       url: businessId ? `/business/${businessId}/dashboard/articles/chat-guide` : "/",
     },
     {
       id: 3,
-      title: "Business Dashboard",
-      description: "Discover how the dashboard gives you full control and complete visibility over your business.",
+      title: "דשבורד העסק",
+      description: "לגלות איך הדשבורד נותן לך שליטה מלאה ונראות מלאה על העסק.",
       url: businessId ? `/business/${businessId}/dashboard/articles/dashboard-guide` : "/",
     },
     {
       id: 4,
-      title: "Appointment Scheduling / CRM",
-      description: "Manage appointments and customers in one place – simple and efficient as it should be.",
+      title: "יומן תיאום תורים / CRM",
+      description: "ניהול תורים ולקוחות במקום אחד – פשוט ויעיל כמו שצריך.",
       url: businessId ? `/business/${businessId}/dashboard/articles/appointment-crm-guide` : "/",
     },
     {
       id: 5,
-      title: "Eskelik Advisor and AI Partner",
-      description: "Meet the digital advisor that will upgrade your business with artificial intelligence.",
+      title: "יועץ עסקליק ושותף AI",
+      description: "הכירו את היועץ הדיגיטלי שישדרג את העסק עם בינה מלאכותית.",
       url: businessId ? `/business/${businessId}/dashboard/articles/ai-companion` : "/",
     },
     {
       id: 6,
-      title: "Business Collaborations",
-      description: "How to expand your business through winning collaborations with other businesses.",
+      title: "שיתופי פעולה בין עסקים",
+      description: "איך להרחיב את העסק דרך שיתופי פעולה מנצחים עם עסקים אחרים.",
       url: businessId ? `/business/${businessId}/dashboard/articles/business-collaboration` : "/",
     },
   ];
 
   const faqCategories = [
-    { id: 1, title: "Business Profile", path: businessId ? `/business/${businessId}/dashboard/faq/profile` : "/" },
-    { id: 2, title: "Dashboard", path: businessId ? `/business/${businessId}/dashboard/faq/dashboard` : "/" },
-    { id: 3, title: "Messages from Customers", path: businessId ? `/business/${businessId}/dashboard/faq/customer-messages` : "/" },
-    { id: 4, title: "Collaborations", path: businessId ? `/business/${businessId}/dashboard/faq/collaborations` : "/" },
+    { id: 1, title: "פרופיל העסק", path: businessId ? `/business/${businessId}/dashboard/faq/profile` : "/" },
+    { id: 2, title: "דשבורד", path: businessId ? `/business/${businessId}/dashboard/faq/dashboard` : "/" },
+    { id: 3, title: "הודעות מלקוחות", path: businessId ? `/business/${businessId}/dashboard/faq/customer-messages` : "/" },
+    { id: 4, title: "שיתופי פעולה", path: businessId ? `/business/${businessId}/dashboard/faq/collaborations` : "/" },
     { id: 5, title: "CRM", path: businessId ? `/business/${businessId}/dashboard/faq/crm` : "/" },
-    { id: 6, title: "Eskelik Advisor", path: businessId ? `/business/${businessId}/dashboard/faq/eskelik-advisor` : "/" },
-    { id: 7, title: "Affiliate Program", path: businessId ? `/business/${businessId}/dashboard/faq/affiliate-program` : "/" },
-    { id: 8, title: "Troubleshooting and Errors", path: businessId ? `/business/${businessId}/dashboard/faq/troubleshooting` : "/" },
-    { id: 9, title: "Technical Support", path: businessId ? `/business/${businessId}/dashboard/faq/technical-support` : "/" },
+    { id: 6, title: "יועץ עסקליק", path: businessId ? `/business/${businessId}/dashboard/faq/eskelik-advisor` : "/" },
+    { id: 7, title: "תוכנית שותפים", path: businessId ? `/business/${businessId}/dashboard/faq/affiliate-program` : "/" },
+    { id: 8, title: "טיפול בתקלות ושגיאות", path: businessId ? `/business/${businessId}/dashboard/faq/troubleshooting` : "/" },
+    { id: 9, title: "תמיכה טכנית", path: businessId ? `/business/${businessId}/dashboard/faq/technical-support` : "/" },
   ];
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -78,26 +77,26 @@ export default function HelpCenter() {
 
   return (
     <div className="help-center-container">
-      <h1>👋 Welcome to the Eskelik Help Center</h1>
-      <p>Here you can find answers, guides, and tools to manage your digital business.</p>
+      <h1>👋 ברוכים הבאים למרכז העזרה של עסקליק</h1>
+      <p>כאן תוכלו למצוא תשובות, מדריכים וכלים לניהול העסק הדיגיטלי שלכם.</p>
 
       <div className="search-bar">
         <input
           type="text"
-          placeholder='Search for a category like "Dashboard", "CRM", "Business Profile"'
+          placeholder='חפשו קטגוריה כמו "דשבורד", "CRM", "פרופיל העסק"'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           dir="rtl"
-          aria-label="Search categories and articles"
+          aria-label="חיפוש קטגוריות ומאמרים"
           autoComplete="off"
         />
-        <span className="search-icon" role="img" aria-label="Search">🔍</span>
+        <span className="search-icon" role="img" aria-label="חיפוש">🔍</span>
       </div>
 
       {searchTerm.trim() === "" ? (
         <>
           <section className="popular-articles">
-            <h2>Popular Articles</h2>
+            <h2>מאמרים פופולריים</h2>
             <div className="articles-grid">
               {popularArticles.map((article) => (
                 <div key={article.id} className="article-card">
@@ -106,9 +105,9 @@ export default function HelpCenter() {
                   <Link
                     to={article.url}
                     className="more-info-button"
-                    aria-label={`More information about ${article.title}`}
+                    aria-label={`מידע נוסף על ${article.title}`}
                   >
-                    More Information
+                    מידע נוסף
                   </Link>
                 </div>
               ))}
@@ -116,7 +115,7 @@ export default function HelpCenter() {
           </section>
 
           <section className="faq-categories">
-            <h2>Select a Category for Frequently Asked Questions</h2>
+            <h2>בחר קטגוריה לשאלות נפוצות</h2>
             <div className="categories-grid">
               {faqCategories.map((category) => (
                 <div
@@ -128,7 +127,7 @@ export default function HelpCenter() {
                   onKeyPress={(e) => {
                     if (e.key === "Enter") handleCategoryClick(category.path);
                   }}
-                  aria-label={`Open frequently asked questions in the category ${category.title}`}
+                  aria-label={`פתח שאלות נפוצות בקטגוריה ${category.title}`}
                 >
                   {category.title}
                 </div>
@@ -138,7 +137,7 @@ export default function HelpCenter() {
         </>
       ) : (
         <section className="search-results">
-          <h2>Search Results for "{searchTerm}"</h2>
+          <h2>תוצאות חיפוש עבור "{searchTerm}"</h2>
 
           {filteredArticles.length > 0 ? (
             <div className="articles-grid">
@@ -146,14 +145,14 @@ export default function HelpCenter() {
                 <div key={article.id} className="article-card">
                   <p className="article-title">{article.title}</p>
                   <p className="article-description">{article.description}</p>
-                  <Link to={article.url} className="more-info-button" aria-label={`More information about ${article.title}`}>
-                    More Information
+                  <Link to={article.url} className="more-info-button" aria-label={`מידע נוסף על ${article.title}`}>
+                    מידע נוסף
                   </Link>
                 </div>
               ))}
             </div>
           ) : (
-            <p>No articles found matching the search.</p>
+            <p>לא נמצאו מאמרים התואמים את החיפוש.</p>
           )}
 
           {filteredCategories.length > 0 ? (
@@ -168,28 +167,28 @@ export default function HelpCenter() {
                   onKeyPress={e => {
                     if (e.key === "Enter") handleCategoryClick(category.path);
                   }}
-                  aria-label={`Open frequently asked questions in the category ${category.title}`}
+                  aria-label={`פתח שאלות נפוצות בקטגוריה ${category.title}`}
                 >
                   {category.title}
                 </div>
               ))}
             </div>
           ) : (
-            <p>No categories found matching the search.</p>
+            <p>לא נמצאו קטגוריות התואמות את החיפוש.</p>
           )}
         </section>
       )}
 
       <section className="contact-us">
-        <h2>Need Further Assistance?</h2>
+        <h2>צריכים עזרה נוספת?</h2>
         <div>
           <button
             type="button"
             onClick={() => navigate("/business-support")}
             className="support-button"
-            aria-label="Go to the business support page"
+            aria-label="עבור לעמוד תמיכה לעסקים"
           >
-            Go to the Business Support Page
+            עבור לעמוד התמיכה לעסקים
           </button>
         </div>
       </section>
@@ -198,4 +197,3 @@ export default function HelpCenter() {
     </div>
   );
 }
-```

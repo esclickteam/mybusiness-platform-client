@@ -1,6 +1,5 @@
-```javascript
 import React from "react";
-// Without the .jsx extension for build fix
+// ללא הסיומת .jsx לתיקון build
 import ShopAndCalendar from "../shopAndCalendar/ShopAndCalendar";
 
 export default function ShopSection({
@@ -14,7 +13,7 @@ export default function ShopSection({
   return (
     <>
       <div className="form-column">
-        {/* Constant rendering of the calendar (appointments) */}
+        {/* רנדר קבוע של יומן (appointments) */}
         <ShopAndCalendar
           isPreview={false}
           shopMode={shopMode}
@@ -30,13 +29,13 @@ export default function ShopSection({
         <div className="phone-preview-wrapper">
           <div className="phone-frame">
             <div className="phone-body">
-              {/* Preview display of the calendar only */}
+              {/* תצוגת Preview יומן בלבד */}
               <ShopAndCalendar
                 isPreview={true}
                 shopMode={shopMode}
                 setShopMode={setShopMode}
-                workHours={workHours}          // ← Add!
-                setWorkHours={setWorkHours}    // ← Add!
+                workHours={workHours}          // ← הוסף!
+                setWorkHours={setWorkHours}    // ← הוסף!
                 setBusinessDetails={() => {}}
               />
             </div>
@@ -46,4 +45,3 @@ export default function ShopSection({
     </>
   );
 }
-```

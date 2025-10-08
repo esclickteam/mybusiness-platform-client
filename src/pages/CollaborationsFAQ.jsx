@@ -1,123 +1,122 @@
-```javascript
 import React, { useState } from "react";
 
 const faqData = [
   {
-    question: "❓ What is a business collaboration and how can it advance my business?",
+    question: "❓ מה זה שיתוף פעולה עסקי ואיך הוא יכול לקדם את העסק שלי?",
     answer: `
-A business collaboration is an agreement between two or more businesses to work together to achieve shared business goals, such as marketing, sales, service development, or improving customer experience. Collaborations allow for increased exposure, shared advertising costs, access to new markets, and strengthening customer trust. It is important to choose partners with shared values and aligned goals to avoid conflicts and ensure effective long-term results. Collaborating businesses can share information, develop joint promotions, and strategically empower each other.
+שיתוף פעולה עסקי הוא הסכם בין שני עסקים או יותר לפעול יחד להשגת מטרות עסקיות משותפות, כגון שיווק, מכירות, פיתוח שירותים או שיפור חוויית הלקוח. שיתופי פעולה מאפשרים הגדלת טווח החשיפה, חלוקת עלויות פרסום, גישה לשווקים חדשים וחיזוק אמון הלקוחות. חשוב לבחור שותפים בעלי ערכים משותפים ויעדים תואמים, כדי למנוע קונפליקטים ולהבטיח תוצאות אפקטיביות לאורך זמן. עסקים משולבים יכולים לחלוק מידע, לפתח מבצעים משותפים ולהעצים זה את זה בצורה אסטרטגית.
     `,
   },
   {
-    question: "❓ How to publish a new collaboration proposal in the Esclick system?",
+    question: "❓ איך לפרסם הצעת שיתוף פעולה חדשה במערכת עסקליק?",
     answer: `
-To publish a collaboration, you need to fill out a detailed form that includes: a clear title, a detailed description of the proposal, what the business offers and what it seeks to receive, contact details, budget, and the validity of the proposal. It is important to be precise in defining needs and offers to target inquiries and receive suitable partners. After publication, the proposal is distributed to relevant businesses according to filtering by field of activity, location, and type of collaboration. It is advisable to regularly monitor inquiries, quickly approve or reject proposals, and maintain clear communication with potential partners.
+כדי לפרסם שיתוף פעולה, יש למלא טופס מפורט הכולל: כותרת ברורה, תיאור מפורט של ההצעה, מה העסק מציע ומה הוא מחפש לקבל, פרטי יצירת קשר, תקציב ותוקף ההצעה. חשוב לדייק בהגדרת הצרכים וההצעות כדי למקד את הפניות ולקבל שותפים מתאימים. לאחר הפרסום, ההצעה מופצת לעסקים הרלוונטיים בהתאם לסינון של תחום פעילות, מיקום וסוג שיתוף הפעולה. כדאי לעקוב באופן שוטף אחרי הפניות, לאשר או לדחות הצעות במהירות ולתחזק תקשורת ברורה עם שותפים פוטנציאליים.
     `,
   },
   {
-    question: "❓ How to identify and choose a suitable collaboration partner for my business?",
+    question: "❓ איך לזהות ולבחור שותף שיתופי פעולה מתאים לעסק שלי?",
     answer: `
-Choosing the right partner is a key factor in the success of business collaboration. First, ensure there is a complete alignment between your company's values and those of the potential partner, so both parties operate in the same spirit and with a common goal. Additionally, it is important to check that the partner's target market is suitable for your business to maximize benefits.
+בחירת שותף מתאים היא גורם מרכזי להצלחת שיתוף הפעולה העסקי. ראשית, יש לוודא שיש התאמה מלאה בין ערכי החברה שלך לערכי השותף הפוטנציאלי, כך ששני הצדדים יפעלו באותה רוח ועם מטרה משותפת. בנוסף, חשוב לבדוק שהשוק היעד של השותף מתאים לעסק שלך כדי למקסם את התועלת.
 
-It is advisable to examine the partner's business record, including shared clients and recommendations to ensure reliability and a good reputation. Assess whether the partner brings added value, such as complementary professional expertise, innovative technology, or access to new customers not present in your network.
+כדאי לבחון את הרקורד העסקי של השותף, כולל לקוחות משותפים והמלצות כדי לוודא אמינות ומוניטין טוב. יש להעריך האם השותף מביא ערך מוסף, למשל מומחיות מקצועית משלימה, טכנולוגיה חדשנית או גישה ללקוחות חדשים שלא קיימים ברשת שלך.
 
-It is very important to hold initial introductory meetings, where clear expectations, roles, timelines, and communication methods between the parties are defined. This can help prevent misunderstandings in the future.
+חשוב מאוד לקיים פגישות היכרות ראשוניות, שבהן מגדירים ציפיות ברורות, תפקידים, לוחות זמנים ואופן התקשורת בין הצדדים. כך ניתן למנוע אי-הבנות בעתיד.
 
-Additionally, it is recommended to use digital tools for managing partnerships, including tracking KPIs (Key Performance Indicators).
+בנוסף, מומלץ להשתמש בכלים דיגיטליים לניהול שותפויות, כולל מעקב אחר KPI (Key Performance Indicators – מדדי ביצוע מרכזיים).
     `,
   },
   {
-    question: "❓ What are the best ways to manage collaborations effectively?",
+    question: "❓ מהן הדרכים הטובות ביותר לנהל שיתופי פעולה בצורה יעילה?",
     answer: `
-Managing successful collaborations requires careful planning and emphasis on several key aspects:
+ניהול שיתופי פעולה מוצלחים דורש תכנון מוקפד ושימת דגש על מספר היבטים מרכזיים:
 
-- Defining clear and measurable goals and objectives.
-- Division of roles and responsibilities.
-- Coordinating expectations.
-- Planning timelines.
-- Using technological tools for managing collaborations.
-- Organized documentation of decisions, expenses, and results.
-- Quick and transparent conflict management.
-- Continuous measurement and control.
-- Risk assessment and backup planning.
-- Regular and communicative contact.
+- הגדרת מטרות ויעדים ברורים ומדידים.
+- חלוקת תפקידים ואחריות.
+- תיאום ציפיות.
+- תכנון לוחות זמנים.
+- שימוש בכלים טכנולוגיים לניהול שיתופי פעולה.
+- תיעוד מסודר של החלטות, הוצאות ותוצאות.
+- ניהול קונפליקטים באופן מהיר וגלוי.
+- מדידה ובקרה מתמדת.
+- הערכת סיכונים ותכנון לגיבוי.
+- קשר רגיל ותקשורתי.
 
-The Esclick platform supports all these processes and provides tools for managing smart collaborations.
+פלטפורמת עסקליק תומכת בכל התהליכים הללו ומספקת כלים לניהול שיתופי פעולה חכמים.
     `,
   },
   {
-    question: "❓ How can I view the collaboration proposals I have received and manage them effectively?",
+    question: "❓ איך אוכל לצפות בהצעות שיתופי פעולה שקיבלתי וכיצד לנהל אותן בצורה יעילה?",
     answer: `
-In the "Received Proposals" tab, all proposals received from other businesses are displayed. It is recommended to use the built-in filtering and search tools, conduct a thorough assessment of the proposal's suitability, the partner's reliability, budget, and the proposal's validity.
+בלשונית "הצעות שהתקבלו" מוצגות כל ההצעות שהתקבלו מעסקים אחרים. מומלץ להשתמש בכלי הסינון והחיפוש המובנים, לבצע הערכה מעמיקה של התאמת ההצעה, אמינות השותף, תקציב ותוקף ההצעה.
 
-Quick response, open and professional communication is important for the success of the collaboration.
+התגובה המהירה, תקשורת פתוחה ומקצועית חשובה להצלחת שיתוף הפעולה.
 
-If the proposal is not suitable, it is advisable to decline it professionally and politely.
+אם ההצעה אינה מתאימה, מומלץ לדחות בצורה מקצועית ומנומסת.
     `,
   },
   {
-    question: "❓ What does \"Sent Proposals\" mean and how to manage them effectively?",
+    question: "❓ מה המשמעות של \"הצעות שנשלחו\" וכיצד לנהל אותן בצורה אפקטיבית?",
     answer: `
-The "Sent Proposals" category includes all collaboration proposals you have submitted and sent to other businesses. It is advisable to maintain regular tracking, document inquiries and responses, set timelines for follow-up, be proactive in managing negotiations, and prepare a negotiation script.
+קטגוריית "הצעות שנשלחו" כוללת את כל הצעות שיתוף הפעולה שהגשת ונשלחו לעסקים אחרים. מומלץ לנהל מעקב שוטף, לתעד פניות ותגובות, להגדיר לוחות זמנים למעקב, להיות פרואקטיבי בניהול המו"מ ולהכין תסריט מו"מ.
 
-Effective management of these proposals increases your business potential and reduces uncertainties.
+ניהול יעיל של הצעות אלו מגדיל את הפוטנציאל העסקי שלך ומקטין אי-ודאויות.
     `,
   },
   {
-    question: "❓ Is there a time limit for the validity of a collaboration?",
+    question: "❓ האם יש הגבלת זמן לתוקף שיתוף פעולה?",
     answer: `
-Yes, you can set an expiration date for the proposal, which will limit the proposal period in the system. You can also set specific start and end times.
+כן, ניתן להגדיר תאריך תוקף להצעה, שיגביל את תקופת ההצעה במערכת. ניתן להגדיר גם זמן התחלה וסיום מדויקים.
 
-Benefits: Smart management of proposals, improving the business's image, operational flexibility.
+יתרונות: ניהול חכם של הצעות, שיפור תדמית העסק, גמישות תפעולית.
 
-Esclick supports the creation of digital agreements with electronic signatures directly in the system.
+עסקליק תומכת ביצירת הסכמים דיגיטליים עם חתימות אלקטרוניות ישירות במערכת.
     `,
   },
   {
-    question: "❓ What should I do if I cannot send or publish a collaboration?",
+    question: "❓ מה עושים אם איני מצליח לשלוח או לפרסם שיתוף פעולה?",
     answer: `
-To resolve issues with sending a collaboration:
+כדי לפתור בעיות בשליחת שיתוף פעולה:
 
-- Ensure all fields in the form are filled out.
-- Check for a stable internet connection.
-- Check the system's maintenance status.
-- Refresh the page (Ctrl+F5).
-- Try a different browser or device.
-- Ensure you have the appropriate permissions.
-- Contact technical support with full details if the problem persists.
+- ודא שכל שדות הטופס מלאים.
+- בדוק חיבור אינטרנט יציב.
+- בדוק מצב תחזוקה במערכת.
+- רענן את הדף (Ctrl+F5).
+- נסה דפדפן או מכשיר אחר.
+- ודא שיש לך הרשאות מתאימות.
+- פנה לתמיכה הטכנית עם פרטים מלאים אם הבעיה ממשיכה.
     `,
   },
   {
-    question: "❓ How to communicate with a potential partner?",
+    question: "❓ כיצד מתקשרים עם שותף פוטנציאלי?",
     answer: `
-Communication with a potential partner includes:
+תקשורת עם שותף פוטנציאלי כוללת:
 
-- Using the contact details in the proposal form.
-- An internal messaging system and business chat in the Esclick system.
-- Real-time communication for coordination, inquiries, and clarifications.
-- Maintaining professional, transparent, and clear communication.
-- Documenting conversations and agreements.
-- Scheduling meetings and communicating outside the platform if necessary.
-- Regularly updating partners.
+- שימוש בפרטי יצירת קשר בטופס ההצעה.
+- מערכת הודעות פנימית וצ'אט עסקי במערכת עסקליק.
+- תקשורת בזמן אמת לצורך תיאום, בירור והבהרות.
+- שמירה על תקשורת מקצועית, שקופה וברורה.
+- תיעוד שיחות והסכמים.
+- קביעת פגישות ותקשורת מחוץ לפלטפורמה במידת הצורך.
+- עדכון שותפים באופן שוטף.
     `,
   },
   {
-    question: "❓ How to deal with conflicts or issues in business collaboration?",
+    question: "❓ כיצד מתמודדים עם קונפליקטים או בעיות בשיתוף פעולה עסקי?",
     answer: `
-Conflicts in collaboration:
+קונפליקטים בשיתוף פעולה:
 
-- Maintaining open, consistent, and transparent communication.
-- Organized documentation of decisions and agreements.
-- Setting procedures and rules of engagement in advance.
-- Using monitoring and reporting tools in the system.
-- Seeking mediation if necessary.
-- Contacting technical support for technical issues.
-- Setting periodic review points.
-- Maintaining flexibility and openness.
-- Education and training for partnership management.
-- A positive and proactive approach.
+- שמירה על תקשורת פתוחה, עקבית ושקופה.
+- תיעוד מסודר של החלטות והסכמים.
+- קביעת נהלים וכללי משחק מראש.
+- שימוש בכלי ניטור ודיווח במערכת.
+- פנייה לגישור ופישור במידת הצורך.
+- פנייה לתמיכה הטכנית במקרים טכניים.
+- קביעת נקודות ביקורת תקופתיות.
+- שמירה על גמישות ופתיחות.
+- חינוך והדרכה לניהול שותפויות.
+- גישה חיובית ופרואקטיבית.
 
-Esclick provides tools and support for professional and efficient management of collaborations.
+עסקליק מספקת כלים ותמיכה לניהול מקצועי ויעיל של שיתופי פעולה.
     `,
   },
 ];
@@ -141,7 +140,7 @@ export default function CollaborationsFAQ() {
       }}
     >
       <h1 style={{ textAlign: "center", marginBottom: 25 }}>
-        Questions and Answers - Business Collaborations
+        שאלות ותשובות - שיתופי פעולה עסקיים
       </h1>
       {faqData.map((item, index) => (
         <div
@@ -199,4 +198,3 @@ export default function CollaborationsFAQ() {
     </div>
   );
 }
-```

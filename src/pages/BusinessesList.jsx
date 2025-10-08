@@ -1,11 +1,10 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Select from "react-select";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
 import ALL_CATEGORIES from "../data/categories";
-import { fetchCities } from "../data/cities"; // 👈 import the dynamic function
+import { fetchCities } from "../data/cities"; // 👈 יבוא הפונקציה הדינמית
 import { FaSearch } from "react-icons/fa";
 import { Helmet } from "react-helmet";
 import "./BusinessList.css";
@@ -20,20 +19,20 @@ const BusinessesList = () => {
   const [city, setCity]             = useState(null);
   const [loading, setLoading]       = useState(false);
 
-  const [cities, setCities]         = useState([]);   // 👈 cities from the API
+  const [cities, setCities]         = useState([]);   // 👈 ערים מה-API
   const [loadingCities, setLoadingCities] = useState(true);
 
   const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
-  const cityOptions     = cities.map(c => ({ value: c, label: c })); // 👈 dynamic
+  const cityOptions     = cities.map(c => ({ value: c, label: c })); // 👈 דינמי
 
-  // Load cities from the API once
+  // טען ערים מה־API פעם אחת
   useEffect(() => {
     const loadCities = async () => {
       setLoadingCities(true);
       const fetched = await fetchCities();
       setCities(fetched);
 
-      // If there is a parameter in the URL – set it in the state if it actually exists
+      // אם יש פרמטר ב־URL – שים אותו ב־state אם הוא קיים באמת
       if (categoryParam && ALL_CATEGORIES.includes(categoryParam)) {
         setCategory({ value: categoryParam, label: categoryParam });
       }
@@ -45,7 +44,7 @@ const BusinessesList = () => {
     loadCities();
   }, [categoryParam, cityParam]);
 
-  // Fetch businesses
+  // קריאה לעסקים
   const fetchBusinesses = async (cat, city) => {
     setLoading(true);
     try {
@@ -62,7 +61,7 @@ const BusinessesList = () => {
     }
   };
 
-  // On any change of parameters in the URL – fetch businesses
+  // בכל שינוי פרמטרים ב־URL – שלוף עסקים
   useEffect(() => {
     fetchBusinesses(categoryParam, cityParam);
   }, [categoryParam, cityParam]);
@@ -85,8 +84,8 @@ const BusinessesList = () => {
   if (category) seoTitleParts.push(category.label);
   if (city)     seoTitleParts.push(city.label);
   const seoTitle = seoTitleParts.length
-    ? `${seoTitleParts.join(" - ")} | Businesses on Esclick`
-    : "Business List | Esclick";
+    ? `${seoTitleParts.join(" - ")} | עסקים בעסקליק`
+    : "רשימת עסקים | עסקליק";
 
   return (
     <div className="list-page">
@@ -96,8 +95,8 @@ const BusinessesList = () => {
           name="description"
           content={
             seoTitleParts.length
-              ? `Find businesses in the field of ${category ? category.label : ""} ${city ? "in the city of " + city.label : ""} on the Esclick platform.`
-              : "Search for businesses by field and city on the Esclick platform."
+              ? `מצא עסקים בתחום ${category ? category.label : ""} ${city ? "בעיר " + city.label : ""} בפלטפורמת עסקליק.`
+              : "חפש עסקים לפי תחום ועיר בפלטפורמת עסקליק."
           }
         />
         <link
@@ -109,7 +108,7 @@ const BusinessesList = () => {
       </Helmet>
 
       <div className="business-list-container">
-        <h1>Business List</h1>
+        <h1>רשימת עסקים</h1>
 
         {(category || city) && (
           <div className="filter-chips">
@@ -134,7 +133,7 @@ const BusinessesList = () => {
               options={categoryOptions}
               value={category}
               onChange={onCategoryChange}
-              placeholder="Field (e.g., Electrician)"
+              placeholder="תחום (לדוגמה: חשמלאי)"
               isClearable
             />
           </div>
@@ -144,7 +143,7 @@ const BusinessesList = () => {
               options={cityOptions}
               value={city}
               onChange={onCityChange}
-              placeholder={loadingCities ? "Loading cities..." : "City (e.g., Tel Aviv)"}
+              placeholder={loadingCities ? "טוען ערים..." : "עיר (לדוגמה: תל אביב)"}
               isClearable
               isDisabled={loadingCities}
             />
@@ -155,12 +154,12 @@ const BusinessesList = () => {
             onClick={() => fetchBusinesses(category && category.value, city && city.value)}
             disabled={loading}
           >
-            <FaSearch /> {loading ? "Loading…" : "Search"}
+            <FaSearch /> {loading ? "טוען…" : "חפש"}
           </button>
         </div>
 
         {loading ? (
-          <p className="no-results">Loading results…</p>
+          <p className="no-results">טוען תוצאות…</p>
         ) : businesses.length > 0 ? (
           <div className="business-list">
             {businesses.map(b => (
@@ -168,7 +167,7 @@ const BusinessesList = () => {
             ))}
           </div>
         ) : (
-          <p className="no-results">No matching results</p>
+          <p className="no-results">אין תוצאות מתאימות</p>
         )}
       </div>
     </div>
@@ -176,4 +175,3 @@ const BusinessesList = () => {
 };
 
 export default BusinessesList;
-```

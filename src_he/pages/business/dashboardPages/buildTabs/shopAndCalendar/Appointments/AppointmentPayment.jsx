@@ -1,3 +1,4 @@
+```javascript
 import React, { useState } from "react";
 import "./AppointmentPayment.css";
 import emailjs from "emailjs-com";
@@ -13,11 +14,11 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
 
   return (
     <div className="appointment-payment">
-      <h4>תשלום 💳</h4>
+      <h4>Payment 💳</h4>
 
       {!showCreditForm && !showPhoneForm && (
         <div className="payment-methods">
-          <p>בחר את שיטת התשלום המועדפת:</p>
+          <p>Select your preferred payment method:</p>
 
           <button
             className={`base-button ${method === "card" ? "selected" : ""}`}
@@ -26,7 +27,7 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
               setShowCreditForm(true);
             }}
           >
-            תשלום בכרטיס אשראי 💳
+            Credit Card Payment 💳
           </button>
 
           <button
@@ -36,64 +37,64 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
               setShowPhoneForm(true);
             }}
           >
-            תשלום טלפוני 📞
+            Phone Payment 📞
           </button>
 
           <div className="action-buttons">
-            <button onClick={onBack}>⬅ חזרה</button>
+            <button onClick={onBack}>⬅ Back</button>
           </div>
         </div>
       )}
 
       {method === "card" && showCreditForm && (
         <div className="credit-card-form">
-          <h5>תשלום אונליין 🔒</h5>
+          <h5>Online Payment 🔒</h5>
 
-          <label>שם מלא</label>
+          <label>Full Name</label>
           <input type="text" />
 
-          <label>טלפון</label>
+          <label>Phone</label>
           <input type="tel" />
 
-          <label>אימייל</label>
+          <label>Email</label>
           <input type="email" />
 
-          <label>מספר כרטיס</label>
+          <label>Card Number</label>
           <input type="text" placeholder="1234 5678 9012 3456" />
 
-          <label>תוקף</label>
+          <label>Expiration</label>
           <input type="text" placeholder="MM/YY" />
 
           <label>CVV</label>
           <input type="text" placeholder="123" />
 
-          <button className="pay-btn">💳 בצע תשלום</button>
+          <button className="pay-btn">💳 Make Payment</button>
 
           <div className="action-buttons">
-            <button onClick={() => setShowCreditForm(false)}>⬅ חזרה</button>
+            <button onClick={() => setShowCreditForm(false)}>⬅ Back</button>
           </div>
         </div>
       )}
 
       {method === "phone" && showPhoneForm && (
         <div className="credit-card-form">
-          <h5>📞 נא מלא את פרטיך ונחזור אליך</h5>
+          <h5>📞 Please fill in your details and we will get back to you</h5>
 
-          <label>שם מלא</label>
+          <label>Full Name</label>
           <input
             type="text"
             value={phoneName}
             onChange={(e) => setPhoneName(e.target.value)}
           />
 
-          <label>טלפון</label>
+          <label>Phone</label>
           <input
             type="tel"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
 
-          <label>אימייל</label>
+          <label>Email</label>
           <input
             type="email"
             value={phoneEmail}
@@ -108,11 +109,11 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
                 phone: phoneNumber,
                 email: phoneEmail,
                 date: new Date().toLocaleDateString("he-IL"),
-                time: "טלפוני",
-                service: "שירות ייעוץ",
+                time: "Phone",
+                service: "Consultation Service",
                 duration: 30,
                 total: "200 ₪",
-                status: "חדש",
+                status: "New",
                 id: Date.now(),
               };
 
@@ -146,21 +147,21 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
                   "6r3WLmK-pksdHm7kU"
                 )
                 .then((res) => {
-                  console.log("✅ אימייל נשלח:", res.text);
-                  alert("אישור נשלח למייל 🎉");
+                  console.log("✅ Email sent:", res.text);
+                  alert("Confirmation sent to email 🎉");
                   if (onSubmit) onSubmit(data);
                 })
                 .catch((err) => {
-                  console.error("❌ שגיאה בשליחת מייל:", err);
-                  alert("אירעה שגיאה בשליחת המייל. בדוק את הקונסולה.");
+                  console.error("❌ Error sending email:", err);
+                  alert("An error occurred while sending the email. Check the console.");
                 });
             }}
           >
-            שלח ונחזור אליך
+            Send and we will get back to you
           </button>
 
           <div className="action-buttons">
-            <button onClick={() => setShowPhoneForm(false)}>⬅ חזרה</button>
+            <button onClick={() => setShowPhoneForm(false)}>⬅ Back</button>
           </div>
         </div>
       )}
@@ -169,3 +170,4 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
 };
 
 export default AppointmentPayment;
+```

@@ -1,4 +1,3 @@
-```javascript
 // src/pages/SearchBusinesses.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -30,13 +29,13 @@ export default function SearchBusinesses() {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Category
+  // קטגוריה
   const catParam = searchParams.get('category') || '';
   const [cat, setCat] = useState(catParam);
   const [openCat, setOpenCat] = useState(false);
   const wrapperCatRef = useRef(null);
 
-  // Dynamic cities
+  // ערים דינמיות
   const cityParam = searchParams.get('city') || '';
   const [city, setCity] = useState(cityParam);
   const [openCity, setOpenCity] = useState(false);
@@ -47,7 +46,7 @@ export default function SearchBusinesses() {
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
-  // Load businesses from the server
+  // טוען עסקים מהשרת
   useEffect(() => {
     API.get('/business')
       .then(r => {
@@ -57,7 +56,7 @@ export default function SearchBusinesses() {
       .catch(console.error);
   }, []);
 
-  // Load cities from the API (with cache)
+  // טוען ערים מה־API (עם cache)
   useEffect(() => {
     const loadCities = async () => {
       const cache = localStorage.getItem('allCities');
@@ -74,7 +73,7 @@ export default function SearchBusinesses() {
     loadCities();
   }, []);
 
-  // Close dropdown on outside click
+  // סגירת dropdown בלחיצה מחוץ
   useEffect(() => {
     const handler = e => {
       if (wrapperCatRef.current && !wrapperCatRef.current.contains(e.target)) setOpenCat(false);
@@ -84,7 +83,7 @@ export default function SearchBusinesses() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Update URL parameters
+  // עדכון URL בפרמטרים
   useEffect(() => {
     const params = new URLSearchParams();
     if (cat) params.set('category', cat);
@@ -94,7 +93,7 @@ export default function SearchBusinesses() {
   }, [cat, city, page, setSearchParams]);
 
   const handleSearch = () => {
-    setPage(1); // always return to the first page
+    setPage(1); // תמיד חוזר לעמוד ראשון
     const normCat = normalize(cat);
     const normCity = normalize(city);
     const result = all.filter(b => {
@@ -117,19 +116,19 @@ export default function SearchBusinesses() {
     ? cities.filter(c => normalize(c).startsWith(normalize(city)))
     : [];
 
-  // Dynamic SEO
+  // SEO דינמי
   const seoTitleParts = [];
   if (cat) seoTitleParts.push(cat);
   if (city) seoTitleParts.push(city);
   const seoTitle =
     seoTitleParts.length > 0
-      ? `${seoTitleParts.join(" - ")} | Business Search - Asklick`
-      : "Business Search | Asklick";
+      ? `${seoTitleParts.join(" - ")} | חיפוש עסקים - עסקליק`
+      : "חיפוש עסקים | עסקליק";
 
   const seoDescription =
     seoTitleParts.length > 0
-      ? `Find businesses in the field of ${cat ? cat : ""} ${city ? "in the city of " + city : ""} on the Asklick platform. Convenient search, real ratings, and quick inquiries.`
-      : "Search for businesses by field and city on the Asklick platform. Get inquiries, read reviews, and schedule services easily.";
+      ? `מצא עסקים בתחום ${cat ? cat : ""} ${city ? "בעיר " + city : ""} בפלטפורמת עסקליק. חיפוש נוח, דירוגים אמיתיים, וקבלת פניות מהירות.`
+      : "חפש עסקים לפי תחום ועיר בפלטפורמת עסקליק. קבל פניות, קרא חוות דעת ותאם שירות בקלות.";
 
   const canonicalUrl = `https://yourdomain.co.il/search${
     cat || city || page > 1
@@ -146,15 +145,15 @@ export default function SearchBusinesses() {
         <meta name="description" content={seoDescription} />
         <meta
           name="keywords"
-          content={`Businesses, Business Search, ${cat ? cat + "," : ""} ${
+          content={`עסקים, חיפוש עסקים, ${cat ? cat + "," : ""} ${
             city ? city + "," : ""
-          } Asklick, Customers, Services`}
+          } עסקליק, לקוחות, שירותים`}
         />
         <link rel="canonical" href={canonicalUrl} />
       </Helmet>
 
       <div className="business-list-container">
-        <h1>Business List</h1>
+        <h1>רשימת עסקים</h1>
 
         {(cat || city) && (
           <div className="filter-chips">
@@ -174,12 +173,12 @@ export default function SearchBusinesses() {
         )}
 
         <div className="filters-wrapper">
-          {/* Categories */}
+          {/* קטגוריות */}
           <div className="dropdown-wrapper input-clearable" ref={wrapperCatRef}>
             <input
               type="text"
               className="filter-input"
-              placeholder="Field (e.g., Electrician)"
+              placeholder="תחום (לדוגמא: חשמלאי)"
               value={cat}
               onFocus={() => setOpenCat(true)}
               onChange={e => { setCat(e.target.value); setOpenCat(true); }}
@@ -195,12 +194,12 @@ export default function SearchBusinesses() {
             )}
           </div>
 
-          {/* Cities */}
+          {/* ערים */}
           <div className="dropdown-wrapper input-clearable" ref={wrapperCityRef}>
             <input
               type="text"
               className="filter-input"
-              placeholder={loadingCities ? "Loading cities..." : "City (e.g., Tel Aviv)"}
+              placeholder={loadingCities ? "טוען ערים..." : "עיר (לדוגמא: תל אביב)"}
               value={city}
               onFocus={() => setOpenCity(true)}
               onChange={e => { setCity(e.target.value); setOpenCity(true); }}
@@ -221,7 +220,7 @@ export default function SearchBusinesses() {
             onClick={handleSearch}
             disabled={loading}
           >
-            <span>Search</span>
+            <span>חפש</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="search-btn__icon"
@@ -240,7 +239,7 @@ export default function SearchBusinesses() {
           {loading
             ? Array(ITEMS_PER_PAGE).fill().map((_, i) => <BusinessCardSkeleton key={i} />)
             : !searched
-              ? <p className="no-search">Click search to see results</p>
+              ? <p className="no-search">לחץ על חפש כדי לראות תוצאות</p>
               : pageItems.length > 0
                 ? pageItems.map(b => (
                     <BusinessCard
@@ -249,18 +248,18 @@ export default function SearchBusinesses() {
                       onClick={() => navigate(`/business/${b._id}`)}
                     />
                   ))
-                : <p className="no-results">No businesses found</p>
+                : <p className="no-results">לא נמצאו עסקים</p>
           }
         </div>
 
         {searched && totalPages > 1 && (
           <div className="pagination">
             <button onClick={() => setPage(prev => Math.max(prev - 1, 1))} disabled={page === 1}>
-              Previous
+              הקודם
             </button>
-            <span>{page} of {totalPages}</span>
+            <span>{page} מתוך {totalPages}</span>
             <button onClick={() => setPage(prev => Math.min(prev + 1, totalPages))} disabled={page === totalPages}>
-              Next
+              הבא
             </button>
           </div>
         )}
@@ -268,4 +267,3 @@ export default function SearchBusinesses() {
     </div>
   );
 }
-```

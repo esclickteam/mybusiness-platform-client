@@ -1,4 +1,3 @@
-```javascript
 import React from 'react';
 import './MonthCalendar.css';
 
@@ -10,11 +9,11 @@ export default function MonthCalendar({
   onPrevMonth,
   onNextMonth
 }) {
-  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const weekdays = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startDay = new Date(year, month, 1).getDay();
 
-  // Structure of date cells (empty + dates)
+  // מבנה תאי התאריכים (ריקים + תאריכים)
   const cells = [];
   for (let i = 0; i < startDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
@@ -29,10 +28,10 @@ export default function MonthCalendar({
 
   return (
     <div className="calendar-container">
-      {/* Month and year header with arrows (if functions are provided) */}
+      {/* כותרת חודש ושנה עם חצים (אם התקבלו פונקציות) */}
       <div className="calendar-header">
         {onPrevMonth && (
-          <button className="month-arrow" onClick={onPrevMonth} aria-label="Previous month">
+          <button className="month-arrow" onClick={onPrevMonth} aria-label="חודש קודם">
             ←
           </button>
         )}
@@ -43,20 +42,20 @@ export default function MonthCalendar({
           <div className="year">{year}</div>
         </div>
         {onNextMonth && (
-          <button className="month-arrow" onClick={onNextMonth} aria-label="Next month">
+          <button className="month-arrow" onClick={onNextMonth} aria-label="חודש הבא">
             →
           </button>
         )}
       </div>
 
-      {/* Weekdays */}
+      {/* ימי השבוע */}
       <div className="calendar-weekdays">
         {weekdays.map(w => (
           <div key={w} className="weekday">{w}</div>
         ))}
       </div>
 
-      {/* Dates */}
+      {/* תאריכים */}
       <div className="calendar-dates">
         {cells.map((day, idx) => (
           <div
@@ -76,4 +75,3 @@ export default function MonthCalendar({
     </div>
   );
 }
-```

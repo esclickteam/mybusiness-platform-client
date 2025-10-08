@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import "./StaffTopBar.css";
 import { useNavigate } from "react-router-dom";
@@ -52,38 +51,37 @@ function StaffTopBar() {
   return (
     <div className="staff-top-bar">
       <div className="left-section">
-        <span>⏱ Shift Time: <strong>{formatTime(timer)}</strong></span>
+        <span>⏱ זמן משמרת: <strong>{formatTime(timer)}</strong></span>
         <span className={isOnBreak ? "break-status" : "active-status"}>
-          {isOnBreak ? "On Break" : isWorking ? "Active" : "Inactive"}
+          {isOnBreak ? "בהפסקה" : isWorking ? "פעיל" : "לא פעיל"}
         </span>
       </div>
 
       <div className="middle-section">
         <input
           type="text"
-          placeholder="🔎 Search phone number..."
+          placeholder="🔎 חפש מספר טלפון..."
           value={searchPhone}
           onChange={(e) => setSearchPhone(e.target.value)}
         />
-        <button onClick={handleSearch}>Search</button>
+        <button onClick={handleSearch}>חפש</button>
       </div>
 
       <div className="right-section">
         {!isWorking ? (
-          <button onClick={startSession}>▶️ Start Shift</button>
+          <button onClick={startSession}>▶️ התחלת משמרת</button>
         ) : (
           <>
             <button onClick={toggleBreak}>
-              {isOnBreak ? "🔙 Return from Break" : "☕ Break"}
+              {isOnBreak ? "🔙 חזרה מהפסקה" : "☕ הפסקה"}
             </button>
-            <button onClick={stopSession}>🔚 End</button>
+            <button onClick={stopSession}>🔚 סיום</button>
           </>
         )}
-        <button onClick={() => alert("📞 Dialing function will be added soon")}>📞 Dial</button>
+        <button onClick={() => alert("📞 פונקציית חיוג תתווסף בקרוב")}>📞 חיוג</button>
       </div>
     </div>
   );
 }
 
 export default StaffTopBar;
-```

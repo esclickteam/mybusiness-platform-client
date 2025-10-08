@@ -1,4 +1,3 @@
-```javascript
 // src/pages/ClientBookingPage.jsx
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -6,7 +5,7 @@ import ServicesSelector from "../components/ServicesSelector";
 import ClientCalendar from "./business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 import API from "../api";
 
-// Function that converts any format to a map by day of the week
+// פונקציה שממירה כל פורמט ל-map לפי יום בשבוע
 function normalizeWorkHours(data) {
   let map = {};
   if (Array.isArray(data?.workHours)) {
@@ -26,7 +25,7 @@ function normalizeWorkHours(data) {
 }
 
 export default function ClientBookingPage() {
-  const { businessId } = useParams(); // <-- Getting the businessId from the URL
+  const { businessId } = useParams(); // <-- קבלת ה-businessId מה-URL
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
@@ -42,7 +41,7 @@ export default function ClientBookingPage() {
         ]);
         setServices(svcRes.data.services || svcRes.data || []);
         setCategories(catRes.data || []);
-        setWorkHours(normalizeWorkHours(hoursRes.data)); // ← always normalize!
+        setWorkHours(normalizeWorkHours(hoursRes.data)); // ← תמיד normalize!
       } catch (err) {
         console.error("Error loading booking data:", err);
       }
@@ -64,7 +63,7 @@ export default function ClientBookingPage() {
     <div className="client-booking-page">
       {!selectedService ? (
         <>
-          <h2>Select Service</h2>
+          <h2>בחר שירות</h2>
           <ServicesSelector
             services={services}
             categories={categories}
@@ -73,19 +72,18 @@ export default function ClientBookingPage() {
         </>
       ) : (
         <>
-          <h2>To schedule an appointment: {selectedService.name}</h2>
+          <h2>לתיאום תור: {selectedService.name}</h2>
           <button className="back-to-list" onClick={handleBackToList}>
-            ← Select another service
+            ← בחר שירות אחר
           </button>
           <ClientCalendar
             workHours={workHours}
             selectedService={selectedService}
             onBackToList={handleBackToList}
-            businessId={businessId}  // <-- Here I passed the businessId
+            businessId={businessId}  // <-- כאן העברתי את businessId
           />
         </>
       )}
     </div>
   );
 }
-```

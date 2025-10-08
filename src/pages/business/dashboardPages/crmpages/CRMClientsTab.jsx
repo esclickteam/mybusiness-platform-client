@@ -1,18 +1,17 @@
-```javascript
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "@api";
-import CRMCustomerFile from "./CRMCustomerFile"; // Full customer file
+import CRMCustomerFile from "./CRMCustomerFile"; // תיק לקוח מלא
 import "./CRMClientsTab.css";
 
-// ✅ Fetches clients from the CRMClients API
+// ✅ מביא את הלקוחות מתוך ה־CRMClients API
 const fetchClients = async (businessId) => {
   if (!businessId) return [];
   const res = await API.get(`/crm-clients/${businessId}`);
   return res.data.map((c) => ({
-    _id: c._id, // ✅ Keep the identifier with the original name
-    fullName: c.fullName || "Unknown",
-    phone: (c.phone || "").toString().replace(/\s/g, "") || "No phone",
+    _id: c._id, // ✅ שומרים את המזהה בשם המקורי
+    fullName: c.fullName || "לא ידוע",
+    phone: (c.phone || "").toString().replace(/\s/g, "") || "אין טלפון",
     email: (c.email || "").replace(/\s/g, "") || "-",
     address: c.address || "-",
     appointments: c.appointments || [],
@@ -43,26 +42,26 @@ const CRMClientsTab = ({ businessId }) => {
   });
 
   const handleDelete = async (client) => {
-    if (window.confirm(`Are you sure you want to delete the client "${client.fullName}"?`)) {
+    if (window.confirm(`האם למחוק את הלקוח "${client.fullName}"?`)) {
       try {
         await API.delete(`/crm-clients/${client._id}`);
         queryClient.invalidateQueries(["clients", businessId]);
-        alert("✅ Client deleted successfully");
+        alert("✅ הלקוח נמחק בהצלחה");
       } catch (err) {
-        console.error("❌ Error deleting client:", err);
-        alert("❌ Deletion failed");
+        console.error("❌ שגיאה במחיקת לקוח:", err);
+        alert("❌ מחיקה נכשלה");
       }
     }
   };
 
   return (
     <div className="crm-tab-content">
-      <h2>👥 Clients</h2>
+      <h2>👥 לקוחות</h2>
 
       <div className="clients-header">
         <input
           type="text"
-          placeholder="Search by name or phone..."
+          placeholder="חפש לפי שם או טלפון..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
@@ -74,46 +73,46 @@ const CRMClientsTab = ({ businessId }) => {
             setCreatingNew(true);
           }}
         >
-          ➕ Create new client
+          ➕ צור לקוח חדש
         </button>
       </div>
 
       {isLoading ? (
-        <p>Loading clients...</p>
+        <p>טוען לקוחות...</p>
       ) : error ? (
-        <p>Error loading clients</p>
+        <p>שגיאה בטעינת לקוחות</p>
       ) : (
         <>
           {!creatingNew && !selectedClient && (
             <table className="clients-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Phone</th>
-                  <th>Address</th>
-                  <th>Email</th>
-                  <th>Actions</th>
+                  <th>שם</th>
+                  <th>טלפון</th>
+                  <th>כתובת</th>
+                  <th>אימייל</th>
+                  <th>פעולות</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredClients.length === 0 ? (
                   <tr>
-                    <td colSpan="5">No clients found</td>
+                    <td colSpan="5">לא נמצאו לקוחות</td>
                   </tr>
                 ) : (
                   filteredClients.map((client) => (
                     <tr key={client._id}>
-                      <td data-label="Name">{client.fullName}</td>
-                      <td data-label="Phone" className="phone-cell">
+                      <td data-label="שם">{client.fullName}</td>
+                      <td data-label="טלפון" className="phone-cell">
                         {client.phone}
                       </td>
-                      <td data-label="Address" className="address-cell">
+                      <td data-label="כתובת" className="address-cell">
                         {client.address}
                       </td>
-                      <td data-label="Email" className="email-cell">
+                      <td data-label="אימייל" className="email-cell">
                         {client.email}
                       </td>
-                      <td data-label="Actions">
+                      <td data-label="פעולות">
                         <button
                           className="show-history-btn"
                           onClick={() => {
@@ -121,7 +120,7 @@ const CRMClientsTab = ({ businessId }) => {
                             setCreatingNew(false);
                           }}
                         >
-                          📂 Open client file
+                          📂 פתח תיק לקוח
                         </button>
                         <button
                           className="edit-client-btn"
@@ -130,13 +129,13 @@ const CRMClientsTab = ({ businessId }) => {
                             setCreatingNew(true);
                           }}
                         >
-                          ✏ Edit
+                          ✏ ערוך
                         </button>
                         <button
                           className="delete-client-btn"
                           onClick={() => handleDelete(client)}
                         >
-                          🗑 Delete
+                          🗑 מחק
                         </button>
                       </td>
                     </tr>
@@ -169,4 +168,3 @@ const CRMClientsTab = ({ businessId }) => {
 };
 
 export default CRMClientsTab;
-```

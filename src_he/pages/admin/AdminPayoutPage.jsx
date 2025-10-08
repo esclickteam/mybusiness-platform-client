@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useEffect } from "react";
 import { CSVLink } from "react-csv";
 import API from "../../api";
@@ -11,14 +12,14 @@ const AdminPayoutPage = () => {
   const [error, setError] = useState(null);
 
   const headers = [
-    { label: "שם העסק", key: "businessName" },
-    { label: "טלפון", key: "phone" },
-    { label: "סכום עמלות", key: "amount" },
-    { label: "בנק", key: "bankName" },
-    { label: "סניף", key: "branch" },
-    { label: "מס' חשבון", key: "account" },
-    { label: "ת.ז / ח.פ", key: "idNumber" },
-    { label: "קובץ קבלה", key: "receiptUrl" },
+    { label: "Business Name", key: "businessName" },
+    { label: "Phone", key: "phone" },
+    { label: "Commission Amount", key: "amount" },
+    { label: "Bank", key: "bankName" },
+    { label: "Branch", key: "branch" },
+    { label: "Account Number", key: "account" },
+    { label: "ID Number", key: "idNumber" },
+    { label: "Receipt File", key: "receiptUrl" },
   ];
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const AdminPayoutPage = () => {
         }
       } catch (err) {
         console.error("Error fetching months:", err);
-        setError("שגיאה בטעינת רשימת חודשים");
+        setError("Error loading the list of months");
       }
     }
     fetchMonths();
@@ -57,7 +58,7 @@ const AdminPayoutPage = () => {
         setPayouts(res.data.payouts || []);
       } catch (err) {
         console.error("Error fetching payouts:", err);
-        setError("שגיאה בטעינת נתוני תשלומים");
+        setError("Error loading payment data");
       } finally {
         setLoading(false);
       }
@@ -68,9 +69,9 @@ const AdminPayoutPage = () => {
 
   return (
     <div className="admin-payout-page">
-      <h1>דו"ח תשלומים לשותפים</h1>
+      <h1>Partner Payment Report</h1>
 
-      <label htmlFor="month">בחר חודש:</label>
+      <label htmlFor="month">Select Month:</label>
       <select
         id="month"
         value={month}
@@ -79,7 +80,7 @@ const AdminPayoutPage = () => {
         }}
         disabled={months.length === 0}
       >
-        {months.length === 0 && <option>טוען חודשים...</option>}
+        {months.length === 0 && <option>Loading months...</option>}
         {months.map((m) => (
           <option key={m} value={m}>
             {m}
@@ -87,7 +88,7 @@ const AdminPayoutPage = () => {
         ))}
       </select>
 
-      {loading && <p>טוען נתונים...</p>}
+      {loading && <p>Loading data...</p>}
       {error && <p className="error">{error}</p>}
 
       {!loading && !error && (
@@ -95,21 +96,21 @@ const AdminPayoutPage = () => {
           <table>
             <thead>
               <tr>
-                <th>שם עסק</th>
-                <th>טלפון</th>
-                <th>סכום</th>
-                <th>בנק</th>
-                <th>סניף</th>
-                <th>חשבון</th>
-                <th>ת.ז</th>
-                <th>קבלה</th>
+                <th>Business Name</th>
+                <th>Phone</th>
+                <th>Amount</th>
+                <th>Bank</th>
+                <th>Branch</th>
+                <th>Account</th>
+                <th>ID</th>
+                <th>Receipt</th>
               </tr>
             </thead>
             <tbody>
               {payouts.length === 0 ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: "center" }}>
-                    אין נתוני תשלומים לחודש זה
+                    No payment data for this month
                   </td>
                 </tr>
               ) : (
@@ -125,10 +126,10 @@ const AdminPayoutPage = () => {
                     <td>
                       {partner.receiptUrl ? (
                         <a href={partner.receiptUrl} target="_blank" rel="noreferrer">
-                          📎 צפייה
+                          📎 View
                         </a>
                       ) : (
-                        "אין קבלה"
+                        "No receipt"
                       )}
                     </td>
                   </tr>
@@ -139,7 +140,7 @@ const AdminPayoutPage = () => {
 
           <div className="export-button">
             <CSVLink data={payouts} headers={headers} filename={`payouts-${month}.csv`}>
-              📤 ייצוא ל-CSV
+              📤 Export to CSV
             </CSVLink>
           </div>
         </>
@@ -149,3 +150,4 @@ const AdminPayoutPage = () => {
 };
 
 export default AdminPayoutPage;
+```

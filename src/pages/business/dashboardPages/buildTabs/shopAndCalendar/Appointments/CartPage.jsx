@@ -1,31 +1,30 @@
-```javascript
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import './CartPage.css';
 
 const demoCart = [
   {
-    name: "Sports Cap",
+    name: "כובע ספורט",
     price: 55,
     quantity: 1,
     image: "https://cdn.pixabay.com/photo/2016/11/29/01/41/cap-1866587_1280.jpg",
-    color: "Black",
+    color: "שחור",
     size: "M"
   },
   {
-    name: "Cotton T-Shirt",
+    name: "חולצת כותנה",
     price: 89.9,
     quantity: 2,
     image: "https://cdn.pixabay.com/photo/2016/03/27/19/58/t-shirt-1280838_1280.jpg",
-    color: "White",
+    color: "לבן",
     size: "L"
   },
   {
-    name: "Running Shoes",
+    name: "נעלי ריצה",
     price: 199,
     quantity: 1,
     image: "https://cdn.pixabay.com/photo/2015/09/02/12/45/running-shoes-918863_1280.jpg",
-    color: "Gray",
+    color: "אפור",
     size: "42"
   }
 ];
@@ -33,16 +32,16 @@ const demoCart = [
 const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
   const navigate = useNavigate();
 
-  // If the cart is empty – load demo
+  // אם הסל ריק – נטען דמו
   useEffect(() => {
     if (cart.length === 0) {
       setCart(demoCart);
     }
 
-    console.log("📦 Cart contents:", cart);
+    console.log("📦 תוכן הסל:", cart);
     cart.forEach((item, i) => {
       if (!item.image) {
-        console.warn(`🖼️ Product [${item.name || "Unnamed"}] does not include an image (index ${i})`);
+        console.warn(`🖼️ מוצר [${item.name || "ללא שם"}] לא כולל תמונה (index ${i})`);
       }
     });
   }, [cart, setCart]);
@@ -71,26 +70,26 @@ const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
 
   return (
     <div className="cart-page">
-      <h2>🛒 Your Shopping Cart</h2>
+      <h2>🛒 סל הקניות שלך</h2>
 
       {cart.length === 0 ? (
-        <p className="empty-cart">Your cart is currently empty</p>
+        <p className="empty-cart">העגלה שלך ריקה כרגע</p>
       ) : (
         <div className="cart-list">
           {cart.map((item, i) => (
             <div key={i} className="cart-item-card">
               <img
                 src={item.image || "https://via.placeholder.com/100?text=No+Image"}
-                alt={item.name || "Unnamed"}
+                alt={item.name || "ללא שם"}
                 className="cart-thumb"
               />
 
               <div className="item-details">
                 <h4>{item.name}</h4>
-                {item.color && <p>Color: {item.color}</p>}
-                {item.size && <p>Size: {item.size}</p>}
+                {item.color && <p>צבע: {item.color}</p>}
+                {item.size && <p>מידה: {item.size}</p>}
                 <p>
-                  Quantity:
+                  כמות:
                   <input
                     type="number"
                     min="1"
@@ -107,7 +106,7 @@ const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
                     }}
                   />
                 </p>
-                <p>Total: ₪ {item.price * item.quantity}</p>
+                <p>סה"כ: ₪ {item.price * item.quantity}</p>
               </div>
 
               <button className="remove-btn" onClick={() => handleRemove(i)}>🗑️</button>
@@ -119,25 +118,24 @@ const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
       <div className="coupon-box">
         <input
           className="coupon-input"
-          placeholder="Enter coupon code (e.g., SUMMER10)"
+          placeholder="הכנס קוד קופון (למשל: SUMMER10)"
           value={coupon.code}
           onChange={handleCouponChange}
         />
       </div>
 
       <div className="summary">
-        <p>🧾 Before discount: {totalBefore.toFixed(2)} ₪</p>
-        {discount > 0 && <p className="discount">💸 Discount: {discount.toFixed(2)} ₪</p>}
-        <h3>💰 Total to pay: {final.toFixed(2)} ₪</h3>
+        <p>🧾 לפני הנחה: {totalBefore.toFixed(2)} ₪</p>
+        {discount > 0 && <p className="discount">💸 הנחה: {discount.toFixed(2)} ₪</p>}
+        <h3>💰 סה"כ לתשלום: {final.toFixed(2)} ₪</h3>
       </div>
 
       <div className="cart-actions">
-        <button className="back-btn" onClick={handleBack}>⬅️ Back to Store</button>
-        <button className="pay-btn">Proceed to Payment 💳</button>
+        <button className="back-btn" onClick={handleBack}>⬅️ חזרה לחנות</button>
+        <button className="pay-btn">לתשלום 💳</button>
       </div>
     </div>
   );
 };
 
 export default CartPage;
-```

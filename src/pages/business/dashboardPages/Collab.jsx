@@ -1,4 +1,3 @@
-```javascript
 // Collab.js
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useParams } from "react-router-dom";
@@ -23,7 +22,7 @@ export default function Collab() {
   const hasCollabAccess =
     isDevUser || user?.subscriptionPlan?.includes("collaboration");
 
-  // Loading business profile
+  // טעינת פרופיל העסק
   useEffect(() => {
     async function fetchProfile() {
       try {
@@ -47,7 +46,7 @@ export default function Collab() {
     fetchProfile();
   }, []);
 
-  // Connecting to Socket.IO
+  // חיבור ל-Socket.IO
   useEffect(() => {
     const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
 
@@ -61,13 +60,13 @@ export default function Collab() {
     };
   }, []);
 
-  if (loading) return <div className="p-6 text-center">🔄 Loading data...</div>;
+  if (loading) return <div className="p-6 text-center">🔄 טוען נתונים...</div>;
   if (!user && !devMode)
-    return <div className="p-6 text-center">⚠️ You must log in to access this page.</div>;
+    return <div className="p-6 text-center">⚠️ יש להתחבר כדי לגשת לדף זה.</div>;
   if (!hasCollabAccess && !devMode)
     return (
       <div className="p-6 text-center">
-        <h2>Collaborations are only available in the premium package</h2>
+        <h2>שיתופי פעולה זמינים רק בחבילה מתקדמת</h2>
         <UpgradeBanner />
       </div>
     );
@@ -75,30 +74,30 @@ export default function Collab() {
   return (
     <AiProvider>
       <div className="p-6 collab-container">
-        <nav className="tab-header" role="tablist" aria-label="Collaborations">
+        <nav className="tab-header" role="tablist" aria-label="שיתופי פעולה">
           <NavLink
             to="profile"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
-            Business Profile
+            פרופיל עסקי
           </NavLink>
           <NavLink
             to="find-partner"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
-            Find Business Partner
+            מצא שותף עסקי
           </NavLink>
           <NavLink
             to="messages"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
-            Proposals
+            הצעות
           </NavLink>
           <NavLink
             to="market"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
-            Market Collaborations
+            מרקט שיתופים
           </NavLink>
         </nav>
 
@@ -115,4 +114,3 @@ export default function Collab() {
     </AiProvider>
   );
 }
-```

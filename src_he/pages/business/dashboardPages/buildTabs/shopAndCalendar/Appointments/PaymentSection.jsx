@@ -1,3 +1,4 @@
+```javascript
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 import './PaymentSection.css';
@@ -38,7 +39,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
 
   const handleSendEmail = async () => {
     if (!customer.name || !customer.phone || !customer.email) {
-      alert('נא למלא את כל הפרטים כולל אימייל');
+      alert('Please fill in all details including email');
       return;
     }
 
@@ -51,11 +52,11 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
       total: `${total.toFixed(2)} ₪`,
       date: new Date().toLocaleString('he-IL'),
       payment_note: selectedMethod === 'phone'
-        ? "ניצור איתך קשר להשלמת התשלום בטלפון"
-        : "התשלום נקלט ואנו מטפלים בהזמנה שלך",
+        ? "We will contact you to complete the payment by phone"
+        : "The payment has been received and we are processing your order",
       order_items: generateOrderItemsHtml(),
-      business_name: business?.name || "העסק שלך",
-      address: customer.address || "לא נמסרה"
+      business_name: business?.name || "Your Business",
+      address: customer.address || "Not provided"
     };
 
     try {
@@ -65,9 +66,9 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
         templateParams,
         '6r3WLMk-pksdHm7kU'
       );
-      console.log("📧 מייל נשלח ללקוח!");
+      console.log("📧 Email sent to the customer!");
     } catch (error) {
-      console.error("שגיאה בשליחת מייל:", error);
+      console.error("Error sending email:", error);
     }
 
     setSubmitted(true);
@@ -76,19 +77,19 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
   const sharedFields = (
     <>
       <div className="form-row">
-        <label>שם מלא</label>
+        <label>Full Name</label>
         <input type="text" className="form-input" value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} />
       </div>
       <div className="form-row">
-        <label>טלפון</label>
+        <label>Phone</label>
         <input type="tel" className="form-input" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} />
       </div>
       <div className="form-row">
-        <label>אימייל</label>
+        <label>Email</label>
         <input type="email" className="form-input" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} />
       </div>
       <div className="form-row">
-        <label>כתובת למשלוח</label>
+        <label>Shipping Address</label>
         <input type="text" className="form-input" value={customer.address} onChange={(e) => setCustomer({ ...customer, address: e.target.value })} />
       </div>
     </>
@@ -98,12 +99,12 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
     if (submitted) {
       return (
         <div className="payment-box">
-          <h3>✅ תודה {customer.name}!</h3>
-          <p>העסק: <strong>{business?.name || 'העסק שלך'}</strong></p>
-          <p>אישור נשלח ל: <strong>{customer.email}</strong></p>
-          <p>טלפון: <strong>{customer.phone}</strong></p>
-          <p>כתובת: <strong>{customer.address}</strong></p>
-          <p>סה״כ לתשלום: <strong>{calculateTotal().toFixed(2)} ₪</strong></p>
+          <h3>✅ Thank you {customer.name}!</h3>
+          <p>Business: <strong>{business?.name || 'Your Business'}</strong></p>
+          <p>Confirmation sent to: <strong>{customer.email}</strong></p>
+          <p>Phone: <strong>{customer.phone}</strong></p>
+          <p>Address: <strong>{customer.address}</strong></p>
+          <p>Total to pay: <strong>{calculateTotal().toFixed(2)} ₪</strong></p>
         </div>
       );
     }
@@ -111,21 +112,21 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
     if (selectedMethod === 'online') {
       return (
         <div className="payment-box">
-          <p>🔐 תשלום אונליין</p>
+          <p>🔐 Online Payment</p>
           {sharedFields}
           <div className="form-row">
-            <label>מספר כרטיס</label>
+            <label>Card Number</label>
             <input type="text" className="form-input" value={customer.cardNumber} onChange={(e) => setCustomer({ ...customer, cardNumber: e.target.value })} placeholder="1234 5678 9012 3456" />
           </div>
           <div className="form-row">
-            <label>תוקף</label>
+            <label>Expiration Date</label>
             <input type="text" className="form-input" value={customer.expDate} onChange={(e) => setCustomer({ ...customer, expDate: e.target.value })} placeholder="MM/YY" />
           </div>
           <div className="form-row">
             <label>CVV</label>
             <input type="text" className="form-input" value={customer.cvv} onChange={(e) => setCustomer({ ...customer, cvv: e.target.value })} placeholder="123" />
           </div>
-          <button className="pay-btn" onClick={handleSendEmail}>בצע תשלום 💳</button>
+          <button className="pay-btn" onClick={handleSendEmail}>Make Payment 💳</button>
         </div>
       );
     }
@@ -133,29 +134,30 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
     if (selectedMethod === 'phone') {
       return (
         <div className="payment-box">
-          <p className="phone-label">📞 נא מלא את פרטיך ונחזור אליך</p>
+          <p className="phone-label">📞 Please fill in your details and we will get back to you</p>
           {sharedFields}
-          <button className="pay-btn" onClick={handleSendEmail}>שלח ונחזור אליך</button>
+          <button className="pay-btn" onClick={handleSendEmail}>Send and We Will Get Back to You</button>
         </div>
       );
     }
 
     return (
       <div className="payment-box both-options">
-        <p><strong>בחר את שיטת התשלום המועדפת:</strong> 💳</p>
-        <button className="pay-btn" onClick={() => setSelectedMethod('online')}>💳 תשלום אונליין</button>
-        <button className="pay-btn" onClick={() => setSelectedMethod('phone')}>📞 תשלום טלפוני</button>
+        <p><strong>Select Your Preferred Payment Method:</strong> 💳</p>
+        <button className="pay-btn" onClick={() => setSelectedMethod('online')}>💳 Online Payment</button>
+        <button className="pay-btn" onClick={() => setSelectedMethod('phone')}>📞 Phone Payment</button>
       </div>
     );
   };
 
   return (
     <div className="payment-section">
-      <h2>💳 תשלום</h2>
+      <h2>💳 Payment</h2>
       {renderContent()}
-      <button className="back-btn" onClick={handleBack}>⬅️ חזרה</button>
+      <button className="back-btn" onClick={handleBack}>⬅️ Back</button>
     </div>
   );
 };
 
 export default PaymentSection;
+```

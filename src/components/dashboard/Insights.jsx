@@ -1,6 +1,5 @@
-```javascript
 import React from "react";
-import "./Insights.css"; // It is recommended to place the style separately (or use dashboard.css)
+import "./Insights.css"; // מומלץ לשים את הסגנון בנפרד (או להשתמש ב-dashboard.css)
 
 const Insights = ({ stats }) => {
   if (!stats) return null;
@@ -62,4 +61,3 @@ const Insights = ({ stats }) => {
 };
 
 export default Insights;
-```

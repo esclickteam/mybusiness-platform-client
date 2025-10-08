@@ -1,89 +1,88 @@
-```javascript
 import React, { useState } from "react";
 
 const faqData = [
   {
-    question: "❓ How can I view messages with customers?",
+    question: "❓ איך אני יכול לצפות בהודעות עם לקוחות?",
     answer: `
-In the "Customer Messages" tab, you can find a complete list of all customers with whom there are active conversations. The conversations are displayed in chronological order, starting with the most recent messages, with real-time updates that allow you to stay informed of any message sent or received. You can select any customer from the list and open the history of conversations with them. Additionally, the system saves all conversations so you can review old messages at any time, allowing for efficient and organized management of communication with customers.
+בלשונית "הודעות מלקוחות" תוכל למצוא רשימה מלאה של כל הלקוחות איתם קיימות שיחות פעילות. השיחות מוצגות בסדר כרונולוגי, החל מההודעות האחרונות, עם עדכון בזמן אמת המאפשר לך להיות מעודכן בכל הודעה שנשלחה או התקבלה. ניתן לבחור כל לקוח מהרשימה ולפתוח את היסטוריית השיחות עמו. בנוסף, המערכת שומרת את כל השיחות כך שתוכל לעיין בהודעות ישנות בכל עת, מה שמאפשר ניהול יעיל ומסודר של התקשורת מול הלקוחות.
     `,
   },
   {
-    question: "❓ How to send a new message to a customer?",
+    question: "❓ כיצד לשלוח הודעה חדשה ללקוח?",
     answer: `
-To send a new message, select the customer's name from the available customer list in the conversations tab, type the message in the text box located at the bottom of the conversation window, and click the send button or press Enter on the keyboard. The message will be sent immediately and displayed in the conversation window. The messaging system is based on real-time update technology (WebSocket or Long Polling) to ensure that communication is fast and smooth. You can also attach files, images, and links to messages to enrich communication with the customer.
+כדי לשלוח הודעה חדשה, יש לבחור את שם הלקוח מתוך רשימת הלקוחות הזמינה בלשונית השיחות, להקליד את ההודעה בתיבת הטקסט הממוקמת בתחתית חלון השיחה, וללחוץ על כפתור השליחה או להקיש Enter במקלדת. ההודעה תישלח מיידית ותוצג בחלון השיחה. מערכת העברת ההודעות מתבססת על טכנולוגיית עדכון בזמן אמת (WebSocket או Long Polling) כדי לוודא שהתקשורת היא מהירה וחלקה. ניתן גם לצרף קבצים, תמונות וקישורים להודעות כדי להעשיר את התקשורת עם הלקוח.
     `,
   },
   {
-    question: "❓ What should I do if the message is not sent?",
+    question: "❓ מה עליי לעשות אם ההודעה לא נשלחת?",
     answer: `
-If a message is not sent, it is recommended to follow these self-help steps before contacting support:
+במקרה שבו הודעה לא נשלחת, מומלץ לבצע את השלבים הבאים לטיפול עצמי לפני פנייה לתמיכה:
 
-- Check for a stable internet connection: Make sure you are connected to a stable and fast internet network.
-- Refresh the browser: Use the shortcut Ctrl + F5 (or Cmd + Shift + R on Mac) to reload the page and clear the cache.
-- Check maintenance status: Ensure that the system is not in maintenance mode or that there is no known issue through system messages.
-- Try another browser: Sometimes issues occur in a specific browser – switching to Chrome, Firefox, or Edge may help.
-- Check attachments: If the message includes files, ensure that their size and format meet the system's requirements.
+- בדוק חיבור אינטרנט יציב: ודא שאתה מחובר לרשת אינטרנט יציבה ומהירה.
+- רענן את הדפדפן: השתמש בקיצור Ctrl + F5 (או Cmd + Shift + R במק) כדי לטעון מחדש את הדף ולנקות מטמון.
+- בדוק מצב תחזוקה: וודא שהמערכת אינה במצב תחזוקה או שישנה תקלה ידועה דרך הודעות מערכת.
+- נסה בדפדפן אחר: לפעמים תקלות מתרחשות בדפדפן ספציפי – מעבר ל-Chrome, Firefox או Edge יכול לעזור.
+- בדוק קבצים מצורפים: אם ההודעה כוללת קבצים, וודא שגודלם ופורמטם תואמים את דרישות המערכת.
 
-If the problem persists after all these steps, contact technical support and provide customer details, message content, error time, and browser and system data.
+אם לאחר כל אלה הבעיה נמשכת, יש לפנות לתמיכה הטכנית ולספק פרטי הלקוח, תוכן ההודעה, זמן השגיאה ונתוני דפדפן ומערכת.
     `,
   },
   {
-    question: "❓ How will I know if the customer has read my message?",
+    question: "❓ כיצד אדע אם הלקוח קרא את ההודעה שלי?",
     answer: `
-Currently, the chat system does not provide explicit read receipts for sent messages, in order to maintain user privacy and technological simplicity. However, conversations are updated in real-time, so you can see when the customer sends a response or starts typing a message. In cases where it is crucial to ensure that the customer received the message, it is recommended to use additional communication channels (such as phone or email) or to include an explicit request for confirmation of receipt in the message.
+כרגע מערכת הצ'אט אינה מספקת אישור קריאה מפורש להודעות שנשלחו, זאת מתוך שמירה על פרטיות המשתמשים והפשטות הטכנולוגית. עם זאת, השיחות מתעדכנות בזמן אמת ולכן ניתן לראות מתי הלקוח שולח תגובה או מתחיל להקליד הודעה. במקרים שבהם יש חשיבות גבוהה לוודא שהלקוח קיבל את ההודעה, מומלץ להשתמש בערוצי תקשורת נוספים (כגון טלפון או מייל) או להוסיף בהודעה בקשה מפורשת לאישור קבלה.
     `,
   },
   {
-    question: "❓ Is it possible to view historical messages with customers?",
+    question: "❓ האם ניתן לצפות בהודעות היסטוריות עם לקוחות?",
     answer: `
-Yes, all messages are securely stored in the system and you can review the conversation history with any customer at any time. The system allows scrolling back to old messages and offers tools for filtering and searching within conversations by keywords or dates. This way, you can keep track of all previous communication and maintain a professional continuity in responding to customers, which enhances the service experience and the internal management of the business.
+כן, כל ההודעות נשמרות במערכת בצורה מאובטחת וניתן לעיין בהיסטוריית השיחות עם כל לקוח בכל עת. המערכת מאפשרת גלילה אחורה להודעות ישנות, ומציעה כלים לסינון וחיפוש בתוך השיחות לפי מילות מפתח או תאריכים. כך תוכל לעקוב אחרי כל התקשורת הקודמת ולשמור על רצף מקצועי במענה ללקוחות, דבר המשפר את חווית השירות ואת הניהול הפנימי של העסק.
     `,
   },
   {
-    question: "❓ What should I do if I do not see customer messages in real-time?",
+    question: "❓ מה לעשות אם איני רואה את הודעות הלקוח בזמן אמת?",
     answer: `
-If conversations are not updating in real-time, it is recommended to take the following actions:
+אם השיחות לא מתעדכנות בזמן אמת, מומלץ לבצע את הפעולות הבאות:
 
-- Check internet connection: Ensure that your network is stable and active.
-- Refresh the page: Use Ctrl + F5 or Cmd + Shift + R to reload the system.
-- Clear cache and cookies in the browser: In some cases, stored data may cause improper loading.
-- Try another browser or another computer/device: Sometimes the issue is local.
-- Check for system updates: There may be maintenance or temporary updates in the system.
+- בדוק חיבור אינטרנט: ודא שהרשת שלך יציבה ופעילה.
+- רענן את העמוד: השתמש ב-Ctrl + F5 או Cmd + Shift + R כדי לטעון מחדש את המערכת.
+- נקה מטמון ו-Cookies בדפדפן: במקרים מסוימים נתונים שמורים עלולים לגרום לטעינה לא תקינה.
+- נסה דפדפן אחר או מחשב/מכשיר אחר: לעיתים הבעיה מקומית.
+- בדוק עדכוני מערכת: יתכן שיש תחזוקה או עדכון זמני במערכת.
 
-If the problem persists after all these steps, contact support with a detailed description, screenshots, and browser details.
+אם לאחר כל אלה הבעיה נמשכת, יש לפנות לתמיכה עם תיאור מפורט, צילומי מסך ופרטי דפדפן.
     `,
   },
   {
-    question: "❓ Can I send files or links in messages?",
+    question: "❓ האם ניתן לשלוח קבצים או קישורים בהודעות?",
     answer: `
-Yes, the system allows sending files, images, and links directly within the chat window with the customer. You can attach documents in common formats (PDF, JPG, PNG, DOC, etc.) and add external links to services, information sites, or product pages. It is important to ensure that the files do not exceed the maximum upload size (usually up to 5MB) and that the format is supported by the system. This option allows for enriching the conversation and providing a more professional and detailed response to customers.
+כן, המערכת מאפשרת שליחת קבצים, תמונות וקישורים ישירות בתוך חלון הצ'אט עם הלקוח. ניתן לצרף מסמכים בפורמטים נפוצים (PDF, JPG, PNG, DOC וכו') ולהוסיף קישורים חיצוניים לשירותים, אתרי מידע או דפי מוצר. חשוב לוודא כי הקבצים אינם חורגים מגודל ההעלאה המקסימלי (לרוב עד 5MB) וכי הפורמט נתמך על ידי המערכת. אפשרות זו מאפשרת העשרה של השיחה ומתן מענה מקצועי ומפורט יותר ללקוחות.
     `,
   },
   {
-    question: "❓ How to handle incorrect or duplicate messages sent by mistake?",
+    question: "❓ כיצד מטפלים בהודעות שגויות או כפולות שנשלחו בטעות?",
     answer: `
-In the Esclic system, there is no option to delete or edit messages after sending, in order to maintain transparency and reliability in communication. If an incorrect message was sent, it is recommended to send another message with clarification or an apology. To reduce errors, it is advisable to read the message carefully before sending. This process ensures professional and respectful communication with customers.
+במערכת עסקליק אין אפשרות למחוק או לערוך הודעות לאחר השליחה, זאת לשמירה על שקיפות ואמינות התקשורת. אם נשלחה הודעה שגויה, מומלץ לשלוח הודעה נוספת עם הבהרה או התנצלות. כדי להפחית טעויות, מומלץ לקרוא היטב את ההודעה לפני השליחה. תהליך זה מבטיח תקשורת מקצועית ומכבדת עם הלקוחות.
     `,
   },
   {
-    question: "❓ What should I do if I cannot load the list of conversations or customers?",
+    question: "❓ מה עליי לעשות אם לא מצליחים לטעון את רשימת השיחות או הלקוחות?",
     answer: `
-When the list of conversations or customers does not load, follow these steps:
+כאשר רשימת השיחות או הלקוחות אינה נטענת, יש לבצע את השלבים הבאים:
 
-- Check for a proper internet connection.
-- Refresh the page (Ctrl + F5 or Cmd + Shift + R).
-- Clear cache and cookies in the browser.
-- Try accessing the system in another browser or device.
-- Check for maintenance messages or issues in the system.
+- בדוק חיבור אינטרנט תקין.
+- רענן את הדף (Ctrl + F5 או Cmd + Shift + R).
+- נקה מטמון ו-Cookies בדפדפן.
+- נסה להיכנס למערכת בדפדפן או במכשיר אחר.
+- בדוק האם יש הודעות תחזוקה או תקלות במערכת.
 
-If the problem persists, contact technical support with a screenshot, detailed description, and the time the issue occurred.
+אם הבעיה נמשכת, יש לפנות לתמיכה הטכנית עם צילום מסך, תיאור מפורט וזמן הופעת הבעיה.
     `,
   },
   {
-    question: "❓ Is it possible to use the chat to work with multiple customers simultaneously?",
+    question: "❓ האם אפשר להשתמש בצ'אט לעבודה עם מספר לקוחות במקביל?",
     answer: `
-Yes, the system allows managing conversations with multiple customers simultaneously through a user-friendly interface organized by a sidebar conversation list. You can easily switch between different conversations, receive notifications about new messages, and manage organized and efficient communication without losing information or closing a conversation window. This function contributes to increased productivity and provides fast and professional service to customers.
+כן, המערכת מאפשרת ניהול שיחות עם מספר לקוחות במקביל באמצעות ממשק ידידותי המסודר לפי רשימת שיחות צדדית. ניתן לעבור בקלות בין שיחות שונות, לקבל התראות על הודעות חדשות ולנהל תקשורת מסודרת ויעילה מבלי לאבד מידע או לסגור חלון שיחה. פונקציה זו תורמת להגדלת פרודוקטיביות והענקת שירות מהיר ומקצועי ללקוחות.
     `,
   },
 ];
@@ -107,7 +106,7 @@ export default function CustomerMessagesFAQ() {
       }}
     >
       <h1 style={{ textAlign: "center", marginBottom: 25 }}>
-        Questions and Answers - Customer Messages
+        שאלות ותשובות - הודעות מלקוחות
       </h1>
       {faqData.map((item, index) => (
         <div
@@ -165,4 +164,3 @@ export default function CustomerMessagesFAQ() {
     </div>
   );
 }
-```

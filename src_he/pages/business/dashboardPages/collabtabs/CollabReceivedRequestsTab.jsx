@@ -1,3 +1,4 @@
+```javascript
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
 
@@ -6,16 +7,16 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // פונקציה לפירוק ההודעה לשדות נפרדים
+  // Function to parse the message into separate fields
   const parseMessage = (message) => {
     if (!message) return {};
     const lines = message.split('\n').map(line => line.trim());
     const parsed = {};
     lines.forEach(line => {
-      if (line.startsWith('כותרת:')) parsed.title = line.replace('כותרת:', '').trim();
-      else if (line.startsWith('תיאור:')) parsed.description = line.replace('תיאור:', '').trim();
-      else if (line.startsWith('סכום:')) parsed.amount = line.replace('סכום:', '').trim();
-      else if (line.startsWith('תוקף עד:')) parsed.validUntil = line.replace('תוקף עד:', '').trim();
+      if (line.startsWith('Title:')) parsed.title = line.replace('Title:', '').trim();
+      else if (line.startsWith('Description:')) parsed.description = line.replace('Description:', '').trim();
+      else if (line.startsWith('Amount:')) parsed.amount = line.replace('Amount:', '').trim();
+      else if (line.startsWith('Valid until:')) parsed.validUntil = line.replace('Valid until:', '').trim();
     });
     return parsed;
   };
@@ -29,7 +30,7 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
         setError(null);
       } catch (err) {
         console.error(err);
-        setError("שגיאה בטעינת הצעות שהתקבלו");
+        setError("Error loading received proposals");
       } finally {
         setLoading(false);
       }
@@ -37,7 +38,7 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
     if (!isDevUser) {
       fetchReceivedRequests();
     } else {
-      // אם רוצים, אפשר להוסיף כאן דמו, כרגע משאירים ריק
+      // If desired, a demo can be added here, currently leaving it empty
       setReceivedRequests([]);
       setLoading(false);
     }
@@ -53,11 +54,11 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
             : p
         )
       );
-      alert("ההצעה אושרה בהצלחה");
+      alert("The proposal has been successfully accepted");
       onStatusChange?.();
     } catch (err) {
       console.error(err);
-      alert("שגיאה באישור ההצעה");
+      alert("Error accepting the proposal");
     }
   };
 
@@ -71,15 +72,15 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
             : p
         )
       );
-      alert("ההצעה נדחתה בהצלחה");
+      alert("The proposal has been successfully rejected");
       onStatusChange?.();
     } catch (err) {
       console.error(err);
-      alert("שגיאה בדחיית ההצעה");
+      alert("Error rejecting the proposal");
     }
   };
 
-  if (loading) return <p>טוען הצעות שהתקבלו...</p>;
+  if (loading) return <p>Loading received proposals...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
@@ -96,10 +97,10 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
         className="collab-title"
         style={{ color: "#6b46c1", marginBottom: 20, textAlign: "center" }}
       >
-        📥 הצעות שהתקבלו
+        📥 Received Proposals
       </h3>
       {receivedRequests.length === 0 ? (
-        <p style={{ textAlign: "center" }}>לא התקבלו עדיין הצעות.</p>
+        <p style={{ textAlign: "center" }}>No proposals have been received yet.</p>
       ) : (
         receivedRequests.map((req) => {
           const parsedMsg = parseMessage(req.message);
@@ -123,33 +124,33 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
               }}
             >
               <p>
-                <strong>עסק שולח:</strong>{" "}
+                <strong>Sending Business:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>
-                  {req.fromBusinessId?.businessName || "לא ידוע"}
+                  {req.fromBusinessId?.businessName || "Unknown"}
                 </span>
               </p>
               <p>
-                <strong>עסק מקבל:</strong>{" "}
+                <strong>Receiving Business:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>
-                  {req.toBusinessId?.businessName || "לא ידוע"}
+                  {req.toBusinessId?.businessName || "Unknown"}
                 </span>
               </p>
               <p>
-                <strong>כותרת הצעה:</strong>{" "}
+                <strong>Proposal Title:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>{title || "-"}</span>
               </p>
               <p>
-                <strong>תיאור הצעה:</strong>{" "}
+                <strong>Proposal Description:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>{description || "-"}</span>
               </p>
               <p>
-                <strong>סכום:</strong>{" "}
+                <strong>Amount:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>
                   {amount != null ? amount + " ₪" : "-"}
                 </span>
               </p>
               <p>
-                <strong>תוקף הצעה:</strong>{" "}
+                <strong>Proposal Validity:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>
                   {validUntil
                     ? new Date(validUntil).toLocaleDateString("he-IL")
@@ -157,14 +158,14 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
                 </span>
               </p>
               <p>
-                <strong>סטטוס:</strong>{" "}
+                <strong>Status:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>{req.status}</span>
               </p>
               <p
                 className="collab-tag"
                 style={{ color: "#666", fontSize: "0.9rem", marginTop: 12 }}
               >
-                התקבל ב־{new Date(req.createdAt).toLocaleDateString("he-IL")}
+                Received on {new Date(req.createdAt).toLocaleDateString("he-IL")}
               </p>
               <div
                 style={{
@@ -188,7 +189,7 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
                       }}
                       onClick={() => handleAccept(req.proposalId || req._id)}
                     >
-                      ✅ אשר
+                      ✅ Accept
                     </button>
                     <button
                       style={{
@@ -202,11 +203,11 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
                       }}
                       onClick={() => handleReject(req.proposalId || req._id)}
                     >
-                      ❌ דחה
+                      ❌ Reject
                     </button>
                   </>
                 ) : (
-                  <p style={{ alignSelf: "center" }}>סטטוס: {req.status}</p>
+                  <p style={{ alignSelf: "center" }}>Status: {req.status}</p>
                 )}
               </div>
             </div>
@@ -216,3 +217,4 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
     </div>
   );
 }
+```

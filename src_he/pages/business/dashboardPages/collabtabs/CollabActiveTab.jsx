@@ -1,3 +1,4 @@
+```javascript
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./CollabActiveTab.css";
@@ -27,7 +28,7 @@ export default function CollabActiveTab({ userBusinessId, token }) {
         setSentProposals(sentRes.data.proposalsSent || []);
         setReceivedProposals(receivedRes.data.proposalsReceived || []);
       } catch (err) {
-        setError(err.message || "שגיאה בטעינת ההצעות");
+        setError(err.message || "Error loading proposals");
       } finally {
         setLoading(false);
       }
@@ -45,28 +46,28 @@ export default function CollabActiveTab({ userBusinessId, token }) {
     try {
       await API.put(`/business/my/proposals/${id}/status`, { status: "accepted" });
       updateProposalStatus(id, "accepted");
-      alert("ההצעה אושרה בהצלחה");
+      alert("The proposal was successfully accepted");
     } catch {
-      alert("שגיאה באישור ההצעה");
+      alert("Error accepting the proposal");
     }
   }
   async function handleReject(id) {
     try {
       await API.put(`/business/my/proposals/${id}/status`, { status: "rejected" });
       updateProposalStatus(id, "rejected");
-      alert("ההצעה נדחתה בהצלחה");
+      alert("The proposal was successfully rejected");
     } catch {
-      alert("שגיאה בדחיית ההצעה");
+      alert("Error rejecting the proposal");
     }
   }
   async function handleCancel(id) {
-    if (!window.confirm("האם למחוק את ההצעה?")) return;
+    if (!window.confirm("Are you sure you want to delete the proposal?")) return;
     try {
       await API.delete(`/business/my/proposals/${id}`);
       removeProposal(id);
-      alert("ההצעה בוטלה בהצלחה");
+      alert("The proposal was successfully canceled");
     } catch {
-      alert("שגיאה בביטול ההצעה");
+      alert("Error canceling the proposal");
     }
   }
 
@@ -98,50 +99,50 @@ export default function CollabActiveTab({ userBusinessId, token }) {
         }}
       >
         <button onClick={() => setView("active")} style={buttonStyle(view === "active")}>
-          שיתופי פעולה פעילים
+          Active Collaborations
         </button>
         <button onClick={() => setView("sent")} style={buttonStyle(view === "sent")}>
-          הצעות שנשלחו
+          Sent Proposals
         </button>
         <button onClick={() => setView("received")} style={buttonStyle(view === "received")}>
-          הצעות שהתקבלו
+          Received Proposals
         </button>
       </div>
 
-      {loading && <p style={{ textAlign: "center" }}>טוען הצעות...</p>}
-      {error && <p style={{ color: "red", textAlign: "center" }}>שגיאה: {error}</p>}
+      {loading && <p style={{ textAlign: "center" }}>Loading proposals...</p>}
+      {error && <p style={{ color: "red", textAlign: "center" }}>Error: {error}</p>}
 
       {!loading && proposalsToShow.length === 0 && (
-        <p style={{ textAlign: "center" }}>אין הצעות להצגה.</p>
+        <p style={{ textAlign: "center" }}>No proposals to display.</p>
       )}
 
       {!loading &&
         proposalsToShow.map((proposal) => (
           <div key={proposal._id} className="collab-card">
             <p>
-              <strong>עסק שולח:</strong> {proposal.fromBusinessId?.businessName || proposal.partnerName || "-"}
+              <strong>Sending Business:</strong> {proposal.fromBusinessId?.businessName || proposal.partnerName || "-"}
             </p>
             <p>
-              <strong>עסק מקבל:</strong> {proposal.toBusinessId?.businessName || "-"}
+              <strong>Receiving Business:</strong> {proposal.toBusinessId?.businessName || "-"}
             </p>
             <p>
-              <strong>כותרת הצעה:</strong> {proposal.title || "-"}
+              <strong>Proposal Title:</strong> {proposal.title || "-"}
             </p>
             <p>
-              <strong>תיאור הצעה:</strong> {proposal.message || "-"}
+              <strong>Proposal Description:</strong> {proposal.message || "-"}
             </p>
             <p>
-              <strong>סכום:</strong> {proposal.amount ? `${proposal.amount} ₪` : "-"}
+              <strong>Amount:</strong> {proposal.amount ? `${proposal.amount} ₪` : "-"}
             </p>
             <p>
-              <strong>תוקף הצעה:</strong>{" "}
+              <strong>Proposal Expiry:</strong>{" "}
               {proposal.expiryDate ? new Date(proposal.expiryDate).toLocaleDateString("he-IL") : "-"}
             </p>
             <p>
-              <strong>סטטוס:</strong> {proposal.status || "-"}
+              <strong>Status:</strong> {proposal.status || "-"}
             </p>
             <p>
-              <strong>תאריך יצירה:</strong>{" "}
+              <strong>Creation Date:</strong>{" "}
               {proposal.createdAt ? new Date(proposal.createdAt).toLocaleDateString("he-IL") : "-"}
             </p>
 
@@ -158,7 +159,7 @@ export default function CollabActiveTab({ userBusinessId, token }) {
                   onClick={() => handleCancel(proposal._id)}
                   className="collab-form-button collab-form-button-danger"
                 >
-                  ביטול
+                  Cancel
                 </button>
               )}
               {view === "received" && proposal.status === "pending" && (
@@ -167,13 +168,13 @@ export default function CollabActiveTab({ userBusinessId, token }) {
                     onClick={() => handleAccept(proposal._id)}
                     className="collab-form-button collab-form-button-accept"
                   >
-                    אשר
+                    Accept
                   </button>
                   <button
                     onClick={() => handleReject(proposal._id)}
                     className="collab-form-button collab-form-button-reject"
                   >
-                    דחה
+                    Reject
                   </button>
                 </>
               )}
@@ -193,3 +194,4 @@ const buttonStyle = (isActive) => ({
   cursor: "pointer",
   fontWeight: "bold",
 });
+```

@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useRef, useEffect } from "react";
 
 export default function ChatBot({ chatOpen, setChatOpen }) {
@@ -33,14 +34,14 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
 
       const botMessage = {
         sender: "bot",
-        text: cleanText(data.answer || "מצטערים, לא נמצאה תשובה מתאימה."),
-        source: data.source || "עסקליק AI",
+        text: cleanText(data.answer || "Sorry, no suitable answer found."),
+        source: data.source || "Ascleclic AI",
       };
       setChatMessages((msgs) => [...msgs, botMessage]);
     } catch (error) {
       setChatMessages((msgs) => [
         ...msgs,
-        { sender: "bot", text: "אירעה שגיאה, נסה שנית מאוחר יותר." },
+        { sender: "bot", text: "An error occurred, please try again later." },
       ]);
     }
   }
@@ -64,7 +65,7 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
           zIndex: 10000,
           boxShadow: "0 3px 8px rgba(0,123,255,0.6)",
         }}
-        aria-label="פתח יועץ AI"
+        aria-label="Open AI Assistant"
       >
         💬
       </button>
@@ -105,7 +106,7 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
           alignItems: "center",
         }}
       >
-        יועץ עסקליק AI
+        Ascleclic AI Assistant
         <button
           onClick={() => setChatOpen(false)}
           style={{
@@ -118,7 +119,7 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
             lineHeight: "1",
             padding: "0 6px",
           }}
-          aria-label="סגור צ'אט"
+          aria-label="Close Chat"
         >
           &times;
         </button>
@@ -145,7 +146,7 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
               userSelect: "none",
             }}
           >
-            שלום! איך אפשר לעזור לך?
+            Hello! How can I help you?
           </p>
         )}
         {chatMessages.map((msg, i) => (
@@ -169,7 +170,7 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
                 fontWeight: msg.sender === "bot" ? "500" : "400",
                 fontSize: 15,
               }}
-              title={msg.source ? `מקור התשובה: ${msg.source}` : ""}
+              title={msg.source ? `Source of the answer: ${msg.source}` : ""}
             >
               {msg.text}
             </div>
@@ -192,7 +193,7 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
           value={chatInput}
           onChange={(e) => setChatInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="כתוב שאלה..."
+          placeholder="Type a question..."
           style={{
             flex: 1,
             border: "1.5px solid #ccc",
@@ -203,7 +204,7 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
             direction: "rtl",
             transition: "border-color 0.3s ease",
           }}
-          aria-label="שאלת בוט AI"
+          aria-label="Ask AI Bot"
           onFocus={(e) => (e.target.style.borderColor = "#007bff")}
           onBlur={(e) => (e.target.style.borderColor = "#ccc")}
         />
@@ -226,7 +227,7 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
             boxShadow: "0 3px 8px rgba(0,123,255,0.6)",
             transition: "background-color 0.3s ease",
           }}
-          aria-label="שלח שאלה לבוט AI"
+          aria-label="Send question to AI Bot"
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#0056b3")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#007bff")}
         >
@@ -236,3 +237,4 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
     </section>
   );
 }
+```

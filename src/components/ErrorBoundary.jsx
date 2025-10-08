@@ -1,4 +1,3 @@
-```javascript
 import React from 'react';
 
 // Error Boundary Component
@@ -8,12 +7,12 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, errorInfo: null };
   }
 
-  // Catches the error and updates the state
+  // תופס את השגיאה ומעדכן את ה-state
   static getDerivedStateFromError(error) {
     return { hasError: true };
   }
 
-  // Catches the error details
+  // תופס את פרטי השגיאה
   componentDidCatch(error, errorInfo) {
     this.setState({ errorInfo });
     console.error("Error caught by ErrorBoundary:", error, errorInfo);
@@ -21,10 +20,10 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      // Display a custom message in case of an error
+      // הצג הודעה מותאמת אישית במקרה של שגיאה
       return (
         <div>
-          <h1>An error occurred during saving</h1>
+          <h1>התרחשה שגיאה במהלך השמירה</h1>
           <details style={{ whiteSpace: 'pre-wrap' }}>
             {this.state.errorInfo && this.state.errorInfo.componentStack}
           </details>
@@ -32,10 +31,9 @@ class ErrorBoundary extends React.Component {
       );
     }
 
-    // If there is no error, display the inner component
+    // אם אין שגיאה, הצג את הרכיב הפנימי
     return this.props.children;
   }
 }
 
 export default ErrorBoundary;
-```

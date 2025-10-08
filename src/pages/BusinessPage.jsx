@@ -1,4 +1,3 @@
-```javascript
 // src/pages/BusinessPage.jsx
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -15,7 +14,7 @@ export default function BusinessPage() {
 
   return (
     <div className="business-page-container">
-      {/* Edit Profile button - only for the business owner */}
+      {/* כפתור עריכת פרופיל - רק לבעל העסק */}
       {isOwner && (
         <div style={{ textAlign: "center", margin: "2rem 0" }}>
           <button
@@ -30,7 +29,7 @@ export default function BusinessPage() {
               fontSize: "16px"
             }}
           >
-            ✏️ Edit Profile
+            ✏️ ערוך פרופיל
           </button>
         </div>
       )}
@@ -40,4 +39,3 @@ export default function BusinessPage() {
     </div>
   );
 }
-```

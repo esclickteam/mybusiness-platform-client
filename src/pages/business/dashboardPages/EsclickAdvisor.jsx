@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { io } from "socket.io-client";
@@ -136,38 +135,38 @@ const EsclickAdvisor = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>טוען...</div>;
   }
 
   return (
     <div className="esclick-container">
-      <h1 className="esclick-header">🧠 Esclick Advisor</h1>
+      <h1 className="esclick-header">🧠 יועץ עסקליק</h1>
 
       <div className="tab-buttons">
         <button
           className={activeTab === "business" ? "active" : ""}
           onClick={() => handleTabChange("business")}
         >
-          Business Advisor
+          יועץ עסקי
           {hasBusinessNotification && <span className="notification-dot" />}
         </button>
         <button
           className={activeTab === "marketing" ? "active" : ""}
           onClick={() => handleTabChange("marketing")}
         >
-          Marketing Advisor
+          יועץ שיווקי
         </button>
         <button
           className={activeTab === "partner" ? "active" : ""}
           onClick={() => handleTabChange("partner")}
         >
-          Personal AI Partner
+          שותף AI אישי
         </button>
         <button
           className={activeTab === "recommendations" ? "active" : ""}
           onClick={() => handleTabChange("recommendations")}
         >
-          AI Recommendations
+          המלצות AI
         </button>
       </div>
 
@@ -177,4 +176,3 @@ const EsclickAdvisor = () => {
 };
 
 export default EsclickAdvisor;
-```

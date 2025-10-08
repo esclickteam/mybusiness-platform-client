@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import TimePicker from "react-time-picker";
 import 'react-time-picker/dist/TimePicker.css';
@@ -10,7 +9,7 @@ export default function TimePickerExample() {
 
   return (
     <div dir="rtl" style={{ maxWidth: 300, margin: "40px auto" }}>
-      <label>Start Time:</label>
+      <label>שעת התחלה:</label>
       <TimePicker
         onChange={setStart}
         value={start}
@@ -21,7 +20,7 @@ export default function TimePickerExample() {
         clockIcon={null}
         locale="he-IL"
       />
-      <label style={{ marginTop: 20 }}>End Time:</label>
+      <label style={{ marginTop: 20 }}>שעת סיום:</label>
       <TimePicker
         onChange={setEnd}
         value={end}
@@ -35,4 +34,3 @@ export default function TimePickerExample() {
     </div>
   );
 }
-```

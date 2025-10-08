@@ -1,7 +1,8 @@
+```javascript
 // src/pages/business/dashboardPages/build/buildTabs/ChatTab.jsx
 import React from 'react';
-// סגנונות כלליים של עמוד הבניה
-import '../build/Build.css';// סגנונות ספציפיים לטאב הצ'אט
+// General styles for the build page
+import '../build/Build.css';// Specific styles for the chat tab
 import './ChatTab.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 const ChatTab = ({ isPreview, businessDetails, setBusinessDetails }) => {
   const navigate = useNavigate();
 
-  if (!businessDetails) return <p>טוען נתוני צ'אט...</p>;
+  if (!businessDetails) return <p>Loading chat data...</p>;
 
   const messages = businessDetails?.messages ?? [];
 
@@ -40,7 +41,7 @@ const ChatTab = ({ isPreview, businessDetails, setBusinessDetails }) => {
         name: msg.name ?? '',
       }));
 
-      console.log("✅ setMessages - הודעות חדשות (מעובדות):", sanitizedMessages);
+      console.log("✅ setMessages - New messages (processed):", sanitizedMessages);
 
       return {
         ...prev,
@@ -72,14 +73,14 @@ const ChatTab = ({ isPreview, businessDetails, setBusinessDetails }) => {
           }}
         >
           <h3 style={{ fontSize: "1.3rem", marginBottom: "1rem" }}>
-            ✉️ ניהול ההודעות שלך
+            ✉️ Manage Your Messages
           </h3>
           <p>
-            כל ההודעות שהתקבלו מלקוחות בעמוד העסק שלך מרוכזות עבורך בעמוד{" "}
-            <strong>"הודעות מלקוחות"</strong>.
+            All messages received from customers on your business page are consolidated for you on the{" "}
+            <strong>"Customer Messages"</strong> page.
           </p>
           <p style={{ marginTop: "0.5rem" }}>
-            משם תוכל/י לקרוא, להשיב ולנהל את השיחות בצורה מסודרת ונוחה.
+            From there, you can read, reply, and manage conversations in an organized and convenient manner.
           </p>
           <button
             style={{
@@ -94,7 +95,7 @@ const ChatTab = ({ isPreview, businessDetails, setBusinessDetails }) => {
             }}
             onClick={() => navigate("/dashboard/messages")}
           >
-            עבור לעמוד ההודעות
+            Go to the messages page
           </button>
         </div>
       )}
@@ -103,3 +104,4 @@ const ChatTab = ({ isPreview, businessDetails, setBusinessDetails }) => {
 };
 
 export default ChatTab;
+```

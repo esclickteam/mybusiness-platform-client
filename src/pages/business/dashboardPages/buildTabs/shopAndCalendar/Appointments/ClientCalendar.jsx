@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "../../../../../../api";
 import "./ClientCalendar.css";
@@ -74,7 +73,7 @@ export default function ClientCalendar({
         } else {
           console.error("Error message:", err.message);
         }
-        setError("Error loading availability.");
+        setError("שגיאה בטעינת זמינות.");
       })
       .finally(() => {
         console.log("Finished loading booked slots");
@@ -215,15 +214,15 @@ export default function ClientCalendar({
 
   const handleSubmitBooking = async () => {
     if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim()) {
-      alert("Please fill in all required details");
+      alert("אנא מלא את כל הפרטים הנדרשים");
       return;
     }
     if (!selectedSlot) {
-      alert("No time selected");
+      alert("לא נבחרה שעה");
       return;
     }
     if (!businessId) {
-      alert("No business ID. Please refresh the page and try again.");
+      alert("אין מזהה עסק. נא לרענן את הדף ולנסות שוב.");
       return;
     }
 
@@ -253,7 +252,7 @@ export default function ClientCalendar({
       setSelectedSlot(null);
       setBookingSuccess(true);
     } catch (err) {
-      alert("Error sending appointment: " + (err?.response?.data?.message || err.message));
+      alert("שגיאה בשליחת תיאום: " + (err?.response?.data?.message || err.message));
     }
   };
 
@@ -261,7 +260,7 @@ export default function ClientCalendar({
     <div className="client-calendar-wrapper">
       {mode === "slots" && (
         <>
-          <h3>📅 Select Date</h3>
+          <h3>📅 בחר תאריך</h3>
           {selectedService && (
             <div className="month-overview">
               <div className="calendar-nav">
@@ -277,7 +276,7 @@ export default function ClientCalendar({
                   className="month-nav-btn"
                   type="button"
                 >
-                  ← Previous Month
+                  ← חודש קודם
                 </button>
                 <button
                   onClick={() => {
@@ -291,7 +290,7 @@ export default function ClientCalendar({
                   className="month-nav-btn"
                   type="button"
                 >
-                  Next Month →
+                  חודש הבא →
                 </button>
               </div>
               <MonthCalendar
@@ -308,16 +307,16 @@ export default function ClientCalendar({
           <div className="selected-date-info">
             <h4>📆 {selectedDate.toLocaleDateString("he-IL")}</h4>
             {loadingSlots ? (
-              <p>Loading availability...</p>
+              <p>טוען זמינות...</p>
             ) : error ? (
               <p className="error-text">{error}</p>
             ) : config ? (
               <>
                 <p>
-                  🕓 Business Hours: {config.start} - {config.end}
+                  🕓 שעות פעילות: {config.start} - {config.end}
                 </p>
-                {config.breaks && <p>⏸️ Breaks: {config.breaks}</p>}
-                <h5>🕒 Available Times:</h5>
+                {config.breaks && <p>⏸️ הפסקות: {config.breaks}</p>}
+                <h5>🕒 שעות פנויות:</h5>
                 {availableSlots.length ? (
                   <div className="slot-list">
                     {availableSlots.map((t) => (
@@ -327,11 +326,11 @@ export default function ClientCalendar({
                     ))}
                   </div>
                 ) : (
-                  <p>No available times for this day</p>
+                  <p>אין שעות פנויות ליום זה</p>
                 )}
               </>
             ) : (
-              <p>⚠️ No hours defined for this day</p>
+              <p>⚠️ לא הוגדרו שעות ליום זה</p>
             )}
           </div>
         </>
@@ -341,63 +340,63 @@ export default function ClientCalendar({
         <div className="summary-box">
           {!bookingSuccess ? (
             <>
-              <h4 className="success-message">📋 Appointment Summary</h4>
-              <p>🧾 Service: {selectedSlot.name}</p>
-              <p>📅 Date: {selectedSlot.date}</p>
-              <p>🕓 Time: {selectedSlot.time}</p>
+              <h4 className="success-message">📋 סיכום תיאום</h4>
+              <p>🧾 שירות: {selectedSlot.name}</p>
+              <p>📅 תאריך: {selectedSlot.date}</p>
+              <p>🕓 שעה: {selectedSlot.time}</p>
               <p>
-                ⏱️ Duration: {Math.floor(selectedSlot.duration / 60)}:
+                ⏱️ משך: {Math.floor(selectedSlot.duration / 60)}:
                 {(selectedSlot.duration % 60).toString().padStart(2, "0")}
               </p>
-              <p>💰 Cost: {selectedSlot.price} ₪</p>
+              <p>💰 עלות: {selectedSlot.price} ₪</p>
 
               <div className="booking-form">
-                <label>Full Name:</label>
+                <label>שם מלא:</label>
                 <input
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  placeholder="Enter full name"
+                  placeholder="הכנס שם מלא"
                 />
-                <label>Phone:</label>
+                <label>טלפון:</label>
                 <input
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
-                  placeholder="Enter phone"
+                  placeholder="הכנס טלפון"
                 />
-                <label>Address:</label>
+                <label>כתובת:</label>
                 <input
                   value={clientAddress}
                   onChange={(e) => setClientAddress(e.target.value)}
-                  placeholder="Enter address"
+                  placeholder="הכנס כתובת"
                 />
-                <label>Email (for confirmation):</label>
+                <label>אימייל (לשליחת אישור):</label>
                 <input
                   value={clientEmail}
                   onChange={(e) => setClientEmail(e.target.value)}
                   type="email"
-                  placeholder="Enter email"
+                  placeholder="הכנס אימייל"
                 />
-                <label>Note (optional):</label>
+                <label>הערה (לא חובה):</label>
                 <textarea
                   value={clientNote}
                   onChange={(e) => setClientNote(e.target.value)}
-                  placeholder="Additional note"
+                  placeholder="הערה נוספת"
                 />
               </div>
 
               <button className="confirm-slot-btn" onClick={handleSubmitBooking}>
-                📅 Schedule Appointment
+                📅 תיאום תור
               </button>
               <button className="back-button" onClick={() => setMode("slots")}>
-                🔙 Back to Times
+                🔙 חזרה לשעות
               </button>
             </>
           ) : (
             <div>
-              <h4 className="success-message">🎉 Appointment successfully sent!</h4>
-              <p>{clientEmail ? "Confirmation sent to email" : "No confirmation sent as no email was provided"}</p>
+              <h4 className="success-message">🎉 התיאום נשלח בהצלחה!</h4>
+              <p>{clientEmail ? "נשלח אישור למייל" : "לא נשלח אישור כי לא הוזן אימייל"}</p>
               <button className="back-button" onClick={onBackToList}>
-                🔙 Back to List
+                🔙 חזרה לרשימה
               </button>
             </div>
           )}
@@ -406,4 +405,3 @@ export default function ClientCalendar({
     </div>
   );
 }
-```

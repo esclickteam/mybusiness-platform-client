@@ -1,3 +1,4 @@
+```javascript
 import React, { useEffect, useState, useCallback } from "react";
 import { Bar } from "react-chartjs-2";
 import API from '../api';
@@ -11,7 +12,7 @@ function ChartComponent({ businessId }) {
 
   const fetchStats = useCallback(async () => {
     if (!businessId) {
-      setError("⚠️ מזהה העסק לא זמין.");
+      setError("⚠️ Business ID is not available.");
       setLoading(false);
       return;
     }
@@ -23,8 +24,8 @@ function ChartComponent({ businessId }) {
       const response = await API.get(`/business/${businessId}/stats`);
       setStats(response.data);
     } catch (err) {
-      console.error("❌ שגיאה בטעינת סטטיסטיקות:", err);
-      setError("⚠️ לא ניתן לטעון נתונים.");
+      console.error("❌ Error loading statistics:", err);
+      setError("⚠️ Unable to load data.");
     } finally {
       setLoading(false);
     }
@@ -34,20 +35,20 @@ function ChartComponent({ businessId }) {
     fetchStats();
   }, [fetchStats]);
 
-  if (!businessId) return <p className="error-text">⚠️ מזהה העסק לא זמין.</p>;
-  if (loading) return <p className="loading-text">⏳ טוען נתונים...</p>;
+  if (!businessId) return <p className="error-text">⚠️ Business ID is not available.</p>;
+  if (loading) return <p className="loading-text">⏳ Loading data...</p>;
   if (error) return (
     <>
       <p className="error-text">{error}</p>
-      <button onClick={fetchStats}>נסה שוב</button>
+      <button onClick={fetchStats}>Try Again</button>
     </>
   );
 
   const data = {
-    labels: ["לקוחות", "בקשות", "הזמנות"],
+    labels: ["Customers", "Requests", "Orders"],
     datasets: [
       {
-        label: "נתוני העסק",
+        label: "Business Data",
         data: [
           stats.views_count || 0,
           stats.requests_count || 0,
@@ -69,3 +70,4 @@ function ChartComponent({ businessId }) {
 }
 
 export default ChartComponent;
+```

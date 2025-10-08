@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import "./QuickJobForm.css";
 
@@ -26,21 +25,21 @@ function QuickJobForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("✅ Job submitted:", formData);
-    // API submission will go here
+    console.log("✅ עבודה נשלחה:", formData);
+    // שליחה ל-API תבוא כאן
   };
 
   return (
     <div className="quick-jobs-board">
-      <h1>📋 Quick Job Posting</h1>
+      <h1>📋 פרסום עבודה מהירה</h1>
 
       <form className="quick-job-form" onSubmit={handleSubmit}>
-        <h2>Post a job for today / tomorrow</h2>
+        <h2>פרסם עבודה להיום / מחר</h2>
 
         <input
           type="text"
           name="title"
-          placeholder="Job title"
+          placeholder="כותרת העבודה"
           value={formData.title}
           onChange={handleChange}
           required
@@ -48,21 +47,21 @@ function QuickJobForm() {
 
         <textarea
           name="description"
-          placeholder="Short description of the job"
+          placeholder="תיאור קצר של העבודה"
           value={formData.description}
           onChange={handleChange}
           required
         ></textarea>
 
         <select name="date" value={formData.date} onChange={handleChange}>
-          <option value="today">Today</option>
-          <option value="tomorrow">Tomorrow</option>
+          <option value="today">היום</option>
+          <option value="tomorrow">מחר</option>
         </select>
 
         <input
           type="text"
           name="time"
-          placeholder="Preferred hours (e.g.: 9:00-13:00)"
+          placeholder="שעות מועדפות (לדוג׳: 9:00-13:00)"
           value={formData.time}
           onChange={handleChange}
         />
@@ -71,7 +70,7 @@ function QuickJobForm() {
           <input
             type="number"
             name="priceMin"
-            placeholder="Minimum price"
+            placeholder="מחיר מינימלי"
             value={formData.priceMin}
             onChange={handleChange}
           />
@@ -79,7 +78,7 @@ function QuickJobForm() {
           <input
             type="number"
             name="priceMax"
-            placeholder="Maximum price"
+            placeholder="מחיר מקסימלי"
             value={formData.priceMax}
             onChange={handleChange}
           />
@@ -88,7 +87,7 @@ function QuickJobForm() {
         <input
           type="tel"
           name="phone"
-          placeholder="Contact phone"
+          placeholder="טלפון ליצירת קשר"
           value={formData.phone}
           onChange={handleChange}
           required
@@ -96,7 +95,7 @@ function QuickJobForm() {
         <input
           type="text"
           name="address"
-          placeholder="Job address"
+          placeholder="כתובת העבודה"
           value={formData.address}
           onChange={handleChange}
           required
@@ -109,11 +108,10 @@ function QuickJobForm() {
           onChange={handleChange}
         />
 
-        <button type="submit">📤 Post Job</button>
+        <button type="submit">📤 פרסם עבודה</button>
       </form>
     </div>
   );
 }
 
 export default QuickJobForm;
-```

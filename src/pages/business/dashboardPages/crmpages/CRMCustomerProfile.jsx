@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./CRMCustomerProfile.css";
@@ -14,11 +13,11 @@ export default function CRMCustomerFile({ client, businessId }) {
     notes: "",
   });
 
-  // ✅ Loading meetings and events from the server when the file is opened
+  // ✅ טעינת פגישות ואירועים מהשרת כשהתיק נפתח
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // === Fetching meetings by crmClientId ===
+        // === שליפת פגישות לפי crmClientId ===
         const apptRes = await API.get(`/appointments/by-client/${client._id}`, {
           params: { businessId },
         });
@@ -26,13 +25,13 @@ export default function CRMCustomerFile({ client, businessId }) {
         const appointments = apptRes.data.map((appt) => ({
           id: appt._id,
           type: "meeting",
-          title: appt.serviceName || "Meeting",
+          title: appt.serviceName || "פגישה",
           date: `${appt.date} ${appt.time}`,
           notes: appt.note || "",
-          readonly: true, // Meetings cannot be deleted/edited here
+          readonly: true, // פגישות אי אפשר למחוק/לערוך כאן
         }));
 
-        // === Fetching additional CRM events ===
+        // === שליפת אירועי CRM נוספים ===
         const eventsRes = await API.get(`/crm-events/${client._id}`);
         const crmEvents = eventsRes.data.map((ev) => ({
           id: ev._id,
@@ -42,23 +41,23 @@ export default function CRMCustomerFile({ client, businessId }) {
           notes: ev.notes,
         }));
 
-        // Merging everything together
+        // מיזוג הכל יחד
         setEvents([...appointments, ...crmEvents].sort((a, b) =>
           (b.date || "").localeCompare(a.date || "")
         ));
       } catch (err) {
-        console.error("❌ Error loading data:", err);
-        toast.error("❌ Error loading data");
+        console.error("❌ שגיאה בטעינת נתונים:", err);
+        toast.error("❌ שגיאה בטעינת נתונים");
       }
     };
 
     if (client?._id) fetchData();
   }, [client?._id, businessId]);
 
-  // ✅ Adding a new CRM event
+  // ✅ הוספת אירוע CRM חדש
   const addEvent = async () => {
     if (!newEvent.title) {
-      toast.error("❌ Title is required");
+      toast.error("❌ חייבים למלא כותרת");
       return;
     }
 
@@ -83,69 +82,69 @@ export default function CRMCustomerFile({ client, businessId }) {
       setNewEvent({ type: "call", title: "", date: "", notes: "" });
 
       if (res.data.type === "task" && res.data.date) {
-        toast.info(`✅ Task added for ${res.data.date}: ${res.data.title}`);
+        toast.info(`✅ נוספה משימה ל-${res.data.date}: ${res.data.title}`);
       }
     } catch (err) {
-      console.error("❌ Error adding event:", err);
-      toast.error("❌ Error adding event");
+      console.error("❌ שגיאה בהוספת אירוע:", err);
+      toast.error("❌ שגיאה בהוספת אירוע");
     }
   };
 
-  // ✅ Deleting an event
+  // ✅ מחיקת אירוע
   const deleteEvent = async (id) => {
     try {
       await API.delete(`/crm-events/${id}`);
       setEvents(events.filter((e) => e.id !== id));
-      toast.success("🗑️ Event deleted successfully");
+      toast.success("🗑️ האירוע נמחק בהצלחה");
     } catch (err) {
-      console.error("❌ Error deleting event:", err);
-      toast.error("❌ Error deleting event");
+      console.error("❌ שגיאה במחיקת אירוע:", err);
+      toast.error("❌ שגיאה במחיקת אירוע");
     }
   };
 
-  // ✅ Updating an event (title/notes)
+  // ✅ עדכון אירוע (כותרת/הערות)
   const updateEvent = async (id, field, value) => {
     try {
       const res = await API.put(`/crm-events/${id}`, { [field]: value });
       setEvents(events.map((e) => (e.id === id ? { ...e, ...res.data } : e)));
-      toast.success("✏️ Event updated successfully");
+      toast.success("✏️ האירוע עודכן בהצלחה");
     } catch (err) {
-      console.error("❌ Error updating event:", err);
-      toast.error("❌ Error updating event");
+      console.error("❌ שגיאה בעדכון אירוע:", err);
+      toast.error("❌ שגיאה בעדכון אירוע");
     }
   };
 
   const typeLabels = {
-    call: "📞 Call",
-    message: "💬 Message",
-    meeting: "📅 Meeting",
-    task: "✅ Task",
-    file: "📄 Content",
+    call: "📞 שיחה",
+    message: "💬 הודעה",
+    meeting: "📅 פגישה",
+    task: "✅ משימה",
+    file: "📄 תוכן",
   };
 
   return (
     <div className="crm-customer-profile">
-      <h2>Customer File – {client?.fullName}</h2>
+      <h2>תיק לקוח – {client?.fullName}</h2>
       <p>
         📞 {client?.phone} | ✉️ {client?.email}
       </p>
 
-      {/* Add event form */}
+      {/* טופס הוספת אירוע */}
       <div className="add-event-form">
         <select
           value={newEvent.type}
           onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
         >
-          <option value="call">Call</option>
-          <option value="message">Message</option>
-          <option value="meeting">Meeting</option>
-          <option value="task">Task</option>
-          <option value="file">Content</option>
+          <option value="call">שיחה</option>
+          <option value="message">הודעה</option>
+          <option value="meeting">פגישה</option>
+          <option value="task">משימה</option>
+          <option value="file">תוכן</option>
         </select>
 
         <input
           type="text"
-          placeholder="Title"
+          placeholder="כותרת"
           value={newEvent.title}
           onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
         />
@@ -157,18 +156,18 @@ export default function CRMCustomerFile({ client, businessId }) {
         />
 
         <textarea
-          placeholder="Notes"
+          placeholder="הערות"
           value={newEvent.notes}
           onChange={(e) => setNewEvent({ ...newEvent, notes: e.target.value })}
         />
 
-        <button onClick={addEvent}>➕ Add</button>
+        <button onClick={addEvent}>➕ הוסף</button>
       </div>
 
       {/* Timeline */}
       <ul className="event-timeline">
         {events.length === 0 ? (
-          <li>No events for this client</li>
+          <li>אין אירועים ללקוח זה</li>
         ) : (
           events.map((e) => (
             <li key={e.id}>
@@ -182,7 +181,7 @@ export default function CRMCustomerFile({ client, businessId }) {
               >
                 {e.title}
               </strong>{" "}
-              – {e.date || "No date"}
+              – {e.date || "ללא תאריך"}
               <p
                 contentEditable={!e.readonly}
                 suppressContentEditableWarning
@@ -197,7 +196,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                   className="delete-btn"
                   onClick={() => deleteEvent(e.id)}
                 >
-                  🗑️ Delete
+                  🗑️ מחק
                 </button>
               )}
             </li>
@@ -209,4 +208,3 @@ export default function CRMCustomerFile({ client, businessId }) {
     </div>
   );
 }
-```

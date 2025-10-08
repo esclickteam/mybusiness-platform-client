@@ -1,11 +1,10 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
 
 /**
- * AffiliatePage – Full updated version
+ * AffiliatePage – גרסה מעודכנת מלאה
  */
 const AffiliatePage = () => {
   // States
@@ -26,14 +25,14 @@ const AffiliatePage = () => {
 
   const [showBankForm, setShowBankForm] = useState(false);
 
-  // Total unpaid commissions
+  // סכום העמלות שלא שולמו בכלל
   const totalUnpaidCommissions = allStats
     .filter((s) => s.paymentStatus !== "paid")
     .reduce((sum, s) =>
       sum + ((s.totalCommissions || 0) - (s.paidCommissions || 0))
     , 0);
 
-  // ➊ Getting business details + affiliate code
+  // ➊ קבלת פרטי עסק + קוד שותף
   useEffect(() => {
     (async () => {
       try {
@@ -43,17 +42,17 @@ const AffiliatePage = () => {
 
         setBusinessId(business._id);
         setReferralCode(business.referralCode || null);
-        // 👉 Changing: affiliateId = the business itself
+        // 👉 משנים: affiliateId = העסק עצמו
         setAffiliateId(business._id);
         setMarketerBusiness(marketer);
-        // We did not update currentBalance here
+        // לא עידכנו את currentBalance כאן
       } catch {
-        setErrorStats("Failed to retrieve business details");
+        setErrorStats("לא הצלחנו לקבל פרטי עסק");
       }
     })();
   }, []);
 
-  // ➋ Loading statistics when affiliateId is ready
+  // ➋ טעינת סטטיסטיקות כאשר affiliateId מוכן
   useEffect(() => {
     if (!affiliateId) return;
     (async () => {
@@ -63,25 +62,25 @@ const AffiliatePage = () => {
           params: { affiliateId },
         });
         setAllStats(data.stats || []);
-        // 👉 Getting the updated currentBalance from the API
+        // 👉 מקבלים את ה־currentBalance המעודכן מה־API
         setCurrentBalance(data.currentBalance);
         setErrorStats(null);
       } catch {
-        setErrorStats("Error loading data");
+        setErrorStats("שגיאה בטעינת הנתונים");
       } finally {
         setLoadingStats(false);
       }
     })();
   }, [affiliateId]);
 
-  // 💸 Withdrawal request
+  // 💸 בקשת משיכה
   const handleWithdrawRequest = async () => {
     const amount = Number(withdrawAmount);
     if (isNaN(amount) || amount < 200) {
-      return alert('Minimum withdrawal amount is 200 ILS');
+      return alert('סכום מינימום למשיכה הוא 200 ש"ח');
     }
     if (amount > currentBalance) {
-      return alert("Withdrawal amount exceeds available balance");
+      return alert("סכום המשיכה גבוה מהיתרה הזמינה");
     }
 
     try {
@@ -89,18 +88,18 @@ const AffiliatePage = () => {
         affiliateId,
         amount,
       });
-      setWithdrawStatus(data.message || "Withdrawal request received.");
+      setWithdrawStatus(data.message || "בקשת המשיכה התקבלה.");
       setWithdrawalId(data.withdrawalId || null);
-      // The API no longer returns currentBalance here, but we can assume it will refresh
+      // ה־API כבר לא מחזיר currentBalance כאן, אבל ניתן להניח שיבצע ריענון
     } catch (err) {
-      alert(err.response?.data?.message || "Error in withdrawal request");
+      alert(err.response?.data?.message || "שגיאה בבקשת המשיכה");
     }
   };
 
-  // 📤 Receipt upload
+  // 📤 העלאת קבלה
   const handleReceiptUpload = async (e) => {
     e.preventDefault();
-    if (!receiptFile) return alert("Select a receipt file");
+    if (!receiptFile) return alert("בחר קובץ קבלה");
 
     try {
       const fd = new FormData();
@@ -112,28 +111,28 @@ const AffiliatePage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert(data.message || "Receipt uploaded successfully");
-      setWithdrawStatus("Receipt uploaded and awaiting approval.");
+      alert(data.message || "הקבלה הועלתה בהצלחה");
+      setWithdrawStatus("קבלה הועלתה וממתינה לאישור.");
       setReceiptFile(null);
       setWithdrawalId(null);
     } catch (err) {
-      alert(err.response?.data?.message || "Error uploading receipt");
+      alert(err.response?.data?.message || "שגיאה בהעלאת הקבלה");
     }
   };
 
-  // 🔗 Personal link
+  // 🔗 הקישור האישי
   const affiliateLink = referralCode
     ? `${window.location.origin}/register?ref=${referralCode}`
     : "";
 
   return (
     <div className="affiliate-page">
-      <h1>Affiliate Program</h1>
-      <p>Here you can track referrals, commissions, and income from your affiliate program.</p>
+      <h1>תכנית השותפים</h1>
+      <p>כאן תוכל לעקוב אחרי הפניות, עמלות והכנסות מתכנית השותפים שלך.</p>
 
-      {/* 🔗 Personal link */}
+      {/* 🔗 קישור אישי */}
       <section className="affiliate-section">
-        <h2>🎯 Your personal affiliate link</h2>
+        <h2>🎯 קישור השותף האישי שלך</h2>
         <input
           type="text"
           value={affiliateLink}
@@ -147,38 +146,38 @@ const AffiliatePage = () => {
           }
           disabled={!referralCode}
         >
-          📋 Copy Link
+          📋 העתק קישור
         </button>
         {!referralCode && (
-          <p style={{ color: "red", marginTop: 8 }}>Affiliate code not recognized.</p>
+          <p style={{ color: "red", marginTop: 8 }}>לא זוהה קוד שותף.</p>
         )}
       </section>
 
-      {/* 🏷️ Marketer details */}
+      {/* 🏷️ פרטי משווק */}
       {marketerBusiness && (
         <section className="marketer-business">
-          <h2>Marketing Business:</h2>
+          <h2>עסק משווק:</h2>
           <p>
-            Marketing business name: <strong>{marketerBusiness.businessName}</strong>
+            שם העסק המשווק: <strong>{marketerBusiness.businessName}</strong>
           </p>
         </section>
       )}
 
-      {/* 📊 Statistics table */}
+      {/* 📊 טבלת סטטיסטיקות */}
       <section className="affiliate-stats">
-        <h2>📊 Statistics for all months</h2>
-        {loadingStats && <p>Loading data...</p>}
+        <h2>📊 סטטיסטיקות לכל החודשים</h2>
+        {loadingStats && <p>טוען נתונים...</p>}
         {errorStats && <p className="error">{errorStats}</p>}
-        {!loadingStats && allStats.length === 0 && <p>No data found to display.</p>}
+        {!loadingStats && allStats.length === 0 && <p>לא נמצאו נתונים להצגה.</p>}
         {allStats.length > 0 && (
           <table className="stats-table">
             <thead>
               <tr>
-                <th>Month</th>
-                <th>Purchases</th>
-                <th>Paid (₪)</th>
-                <th>Unpaid (₪)</th>
-                <th>Payment Status</th>
+                <th>חודש</th>
+                <th>רכישות</th>
+                <th>שולם (₪)</th>
+                <th>לא שולם (₪)</th>
+                <th>סטטוס תשלום</th>
               </tr>
             </thead>
             <tbody>
@@ -201,10 +200,10 @@ const AffiliatePage = () => {
                       }
                     >
                       {s.paymentStatus === "paid"
-                        ? "Paid ✅"
+                        ? "שולם ✅"
                         : s.paymentStatus === "no-data"
-                          ? "No data"
-                          : "Pending"}
+                          ? "אין נתונים"
+                          : "ממתין"}
                     </td>
                   </tr>
                 );
@@ -214,16 +213,16 @@ const AffiliatePage = () => {
         )}
       </section>
 
-      {/* 💵 Payment actions */}
+      {/* 💵 פעולות תשלום */}
       <section className="affiliate-bank-section">
-        <h2>💵 Payment Actions</h2>
+        <h2>💵 פעולות תשלום</h2>
         <p>
-          Your available balance for withdrawal: <strong>₪{currentBalance.toFixed(2)}</strong>
+          יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong>
         </p>
 
         {currentBalance < 200 ? (
           <p style={{ color: "red", fontWeight: "bold" }}>
-            Minimum withdrawal amount is 200 ILS.
+            סכום מינימום למשיכה הוא 200 ש"ח.
           </p>
         ) : (
           <>
@@ -233,13 +232,13 @@ const AffiliatePage = () => {
               max={currentBalance}
               value={withdrawAmount}
               onChange={(e) => setWithdrawAmount(e.target.value)}
-              placeholder='Minimum withdrawal amount 200 ILS'
+              placeholder='סכום מינימום למשיכה 200 ש"ח'
             />
             <button
               onClick={handleWithdrawRequest}
               disabled={Number(withdrawAmount) < 200}
             >
-              Request Withdrawal
+              בקש משיכה
             </button>
           </>
         )}
@@ -247,14 +246,14 @@ const AffiliatePage = () => {
 
         {withdrawalId && (
           <form className="receipt-upload-form" onSubmit={handleReceiptUpload}>
-            <label>Select receipt file (PDF or image):</label>
+            <label>בחר קובץ קבלה (PDF או תמונה):</label>
             <input
               type="file"
               accept=".pdf,image/*"
               onChange={(e) => setReceiptFile(e.target.files[0])}
               required
             />
-            <button type="submit">🚀 Upload Receipt</button>
+            <button type="submit">🚀 העלאת קבלה</button>
           </form>
         )}
 
@@ -262,7 +261,7 @@ const AffiliatePage = () => {
           className="payment-button"
           onClick={() => setShowBankForm((prev) => !prev)}
         >
-          ⚙️ Manage Bank Account Details
+          ⚙️ ניהול פרטי חשבון בנק
         </button>
         {showBankForm && (
           <div className="bank-form-wrapper">
@@ -275,4 +274,3 @@ const AffiliatePage = () => {
 };
 
 export default AffiliatePage;
-```

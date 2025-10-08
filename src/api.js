@@ -1,4 +1,3 @@
-```javascript
 import axios from "axios";
 
 const isProd = import.meta.env.MODE === "production";
@@ -15,7 +14,7 @@ const API = axios.create({
   },
 });
 
-// Central function to set the Authorization header
+// פונקציה מרכזית להגדרת כותרת Authorization
 const setAuthToken = (token) => {
   if (token) {
     API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -24,10 +23,10 @@ const setAuthToken = (token) => {
   }
 };
 
-// Setting the token on module load
+// קביעת הטוקן במעמד טעינת המודול
 setAuthToken(localStorage.getItem("token"));
 
-// Identifying authentication endpoints to ignore them in token refresh
+// זיהוי מוקדי קצה של Authentication כדי להתעלם מהם ברענון טוקן
 const isAuthEndpoint = (url) => {
   return [
     "/auth/me",
@@ -37,7 +36,7 @@ const isAuthEndpoint = (url) => {
   ].some((endpoint) => url.endsWith(endpoint));
 };
 
-// Variables to track token refresh and register callback
+// משתנים למעקב אחרי רענון טוקן ורישום callback
 let isRefreshing = false;
 let refreshSubscribers = [];
 
@@ -50,7 +49,7 @@ function addRefreshSubscriber(callback) {
   refreshSubscribers.push(callback);
 }
 
-// Request interceptor: adds Authorization header to every call
+// Request interceptor: מוסיף כותרת Authorization מכל קריאה
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -71,7 +70,7 @@ API.interceptors.request.use(
   }
 );
 
-// Response interceptor: handling error responses, including token refresh
+// Response interceptor: טיפול בתשובות שגיאה, כולל רענון טוקן
 API.interceptors.response.use(
   (response) => {
     console.log(`API Response: ${response.status} ${response.config.url}`);
@@ -81,10 +80,10 @@ API.interceptors.response.use(
     const { response, config } = error;
     if (!response) {
       console.error("Network error:", error);
-      return Promise.reject(new Error("Network error"));
+      return Promise.reject(new Error("שגיאת רשת"));
     }
 
-    // Handling 401/403 for non-authentication calls
+    // טיפול ב-401/403 עבור קריאות שאינן Authentication
     if (
       (response.status === 401 || response.status === 403) &&
       !isAuthEndpoint(config.url) &&
@@ -130,7 +129,7 @@ API.interceptors.response.use(
       }
     }
 
-    // Handling regular errors
+    // טיפול בשגיאות רגילות
     const contentType = response.headers["content-type"] || "";
     let message;
     if (!contentType.includes("application/json")) {
@@ -147,4 +146,3 @@ API.interceptors.response.use(
 
 export { setAuthToken };
 export default API;
-```

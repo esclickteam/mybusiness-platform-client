@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { io } from "socket.io-client";
@@ -7,7 +6,7 @@ import "./Support.css";
 export default function Support() {
   const [amount, setAmount] = useState("");
   const [raised, setRaised] = useState(0);
-  const [expanded, setExpanded] = useState(false); // ✅ Full reading mode
+  const [expanded, setExpanded] = useState(false); // ✅ מצב קריאה מלאה
   const paypalReadyRef = useRef(false);
   const paypalContainerRef = useRef(null);
 
@@ -350,4 +349,3 @@ export default function Support() {
     </div>
   );
 }
-```

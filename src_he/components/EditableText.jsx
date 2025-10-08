@@ -23,14 +23,14 @@ function EditableText({ text, onSave, isAdmin }) {
             value={value}
             onChange={(e) => setValue(e.target.value)}
           />
-          <button onClick={handleSave}>💾 שמור</button>
+          <button onClick={handleSave}>💾 Save</button>
         </div>
       ) : (
         <span onClick={() => setIsEditing(true)} className="editable-span">
           {text} <span className="edit-icon">✏️</span>
         </span>
       )}
-      {saved && <span className="saved-message">✅ נשמר</span>}
+      {saved && <span className="saved-message">✅ Saved</span>}
     </div>
   );
 }
