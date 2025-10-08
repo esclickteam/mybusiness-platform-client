@@ -87,10 +87,17 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-box" aria-live="polite" aria-busy={loading}>
+        <div className="bizuply-logo" onClick={() => navigate("/")}>
+          <img
+            src="/assets/bizuply-logo-white.svg"
+            alt="Bizuply"
+            className="login-logo"
+          />
+        </div>
+
         <h2>Login</h2>
 
         <form onSubmit={handleSubmit} noValidate>
-          {/* Email */}
           <div className="form-group">
             <label htmlFor="email">
               Email <span className="required">*</span>
@@ -108,7 +115,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Password */}
           <div className="form-group">
             <label htmlFor="password">
               Password <span className="required">*</span>
@@ -128,12 +134,11 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword((p) => !p)}
-                className="password-toggle-btn" 
+                className="password-toggle-btn"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 tabIndex={-1}
               >
                 {showPassword ? (
-                  // 👁️ עין פתוחה
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="22"
@@ -147,7 +152,6 @@ export default function Login() {
                     <circle cx="12" cy="12" r="3" />
                   </svg>
                 ) : (
-                  // 👁️‍🗨️ עין סגורה
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="22"
@@ -164,7 +168,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             className="login-button"
