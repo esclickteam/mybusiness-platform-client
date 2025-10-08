@@ -1,4 +1,3 @@
-```javascript
 // src/pages/admin/ManageRoles.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -170,4 +169,3 @@ function ManageRoles() {
 }
 
 export default ManageRoles;
-```

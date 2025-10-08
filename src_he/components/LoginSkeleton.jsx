@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 
 export function LoginSkeleton() {
@@ -39,4 +38,3 @@ function skeletonStyle(width, height) {
     marginBottom: "1rem",
   };
 }
-```

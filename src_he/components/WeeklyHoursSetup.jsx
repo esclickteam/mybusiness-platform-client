@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 // Days Sunday–Saturday in Hebrew, Sunday=0
@@ -137,4 +136,3 @@ export default function WeeklyHoursSetup({ initialHours = DEFAULT_HOURS, onSave 
     </div>
   );
 }
-```

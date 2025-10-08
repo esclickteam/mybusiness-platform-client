@@ -1,4 +1,3 @@
-```javascript
 import React, { Suspense, lazy, useState, useEffect } from "react";
 import {
   Routes,
@@ -434,4 +433,3 @@ export function BusinessChatWrapper() {
     />
   );
 }
-```

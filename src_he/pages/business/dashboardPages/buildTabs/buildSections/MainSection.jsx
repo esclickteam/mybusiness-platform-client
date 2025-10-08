@@ -1,4 +1,3 @@
-```javascript
 // src/pages/business/MainSection.jsx
 import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
@@ -341,4 +340,3 @@ export default function MainSection({
     </>
   );
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from 'react';
 
 const PARAMETERS = [
@@ -90,4 +89,3 @@ const MultiParamRating = ({ onSubmit }) => {
 };
 
 export default MultiParamRating;
-```

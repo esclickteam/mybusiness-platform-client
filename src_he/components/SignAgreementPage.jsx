@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import SignatureCanvas from "react-signature-canvas";
@@ -86,4 +85,3 @@ export default function SignAgreementPage({ currentUserBusinessId }) {
     </div>
   );
 }
-```

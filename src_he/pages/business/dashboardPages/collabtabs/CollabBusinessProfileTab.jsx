@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
@@ -395,4 +394,3 @@ export default function CollabBusinessProfileTab({ socket }) {
     </>
   );
 }
-```

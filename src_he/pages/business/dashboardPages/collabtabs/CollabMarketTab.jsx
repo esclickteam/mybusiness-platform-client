@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useCallback } from "react";
 import API from "../../../../api";
 import "./CollabMarketTab.css";
@@ -291,4 +290,3 @@ export default function CollabMarketTab({ isDevUser }) {
     </div>
   );
 }
-```

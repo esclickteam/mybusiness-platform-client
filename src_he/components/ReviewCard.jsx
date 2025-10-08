@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 const StarDisplay = ({ rating }) => {
@@ -113,4 +112,3 @@ export default function ReviewCard({ review }) {
     </div>
   );
 }
-```

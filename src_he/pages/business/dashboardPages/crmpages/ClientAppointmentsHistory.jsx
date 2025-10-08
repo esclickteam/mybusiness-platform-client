@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
 
@@ -89,4 +88,3 @@ const ClientAppointmentsHistory = ({ businessId, email, phone, onClose }) => {
 };
 
 export default ClientAppointmentsHistory;
-```

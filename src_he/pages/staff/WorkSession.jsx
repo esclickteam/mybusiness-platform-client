@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import "./WorkSession.css";
 
@@ -88,4 +87,3 @@ function WorkSession() {
 }
 
 export default WorkSession;
-```

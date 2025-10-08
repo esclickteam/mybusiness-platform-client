@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -7,39 +6,53 @@ export default function AffiliateAutoLogin() {
   const { publicToken } = useParams();
   const navigate = useNavigate();
   const { affiliateLogin } = useAuth();
-  const [error, setError] = useState(null);
+
+  const [status, setStatus] = useState("loading"); // 'loading' | 'success' | 'error'
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    async function doLogin() {
+    const performLogin = async () => {
       if (!publicToken) {
-        navigate("/login");
+        setStatus("error");
+        setMessage("Missing affiliate token");
+        setTimeout(() => navigate("/login"), 2000);
         return;
       }
 
       try {
+        setStatus("loading");
         await affiliateLogin(publicToken);
-        navigate("/affiliate/dashboard");
+        setStatus("success");
+        setMessage("Affiliate login successful");
+        navigate("/affiliate/dashboard", { replace: true });
       } catch (err) {
-        setError(err.message || "Error logging in as an affiliate");
-        // You can also navigate to the login page after a second, if you want:
-        // setTimeout(() => navigate("/login"), 2000);
+        console.error("Affiliate login failed:", err);
+        setStatus("error");
+        setMessage(err?.message || "Error logging in as an affiliate");
+        // Navigate back after a short delay
+        setTimeout(() => navigate("/login"), 3000);
       }
-    }
-    doLogin();
-  }, [publicToken, navigate, affiliateLogin]);
+    };
 
-  if (error) {
-    return (
-      <div style={{ padding: 20, textAlign: "center", color: "red" }}>
-        <h2>{error}</h2>
-      </div>
-    );
-  }
+    performLogin();
+  }, [publicToken, affiliateLogin, navigate]);
 
   return (
-    <div style={{ padding: 20, textAlign: "center" }}>
-      <h2>Loading the affiliate page…</h2>
+    <div
+      style={{
+        padding: "2rem",
+        textAlign: "center",
+        color: status === "error" ? "red" : "#444",
+      }}
+    >
+      {status === "loading" && <h2>Loading affiliate account…</h2>}
+      {status === "success" && <h2>{message}</h2>}
+      {status === "error" && (
+        <>
+          <h2>{message}</h2>
+          <p>You will be redirected shortly.</p>
+        </>
+      )}
     </div>
   );
 }
-```

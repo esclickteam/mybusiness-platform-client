@@ -1,4 +1,3 @@
-```javascript
 ﻿// src/data/cities.js
 
 export async function fetchCities() {
@@ -25,4 +24,3 @@ export async function fetchCities() {
 }
 
 export default fetchCities;
-```

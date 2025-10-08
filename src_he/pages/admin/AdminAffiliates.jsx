@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import API from "../../api";
 import "./AdminAffiliates.css";
@@ -157,4 +156,3 @@ function AdminAffiliates() {
 }
 
 export default AdminAffiliates;
-```

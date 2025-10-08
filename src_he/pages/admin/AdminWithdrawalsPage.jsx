@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "../../api";
 import "./AdminPayoutPage.css";
@@ -205,4 +204,3 @@ const AdminWithdrawalsPage = () => {
 };
 
 export default AdminWithdrawalsPage;
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useRef, useEffect } from "react";
 import {
   DndContext,
@@ -201,4 +200,3 @@ const GalleryDndKit = ({
 };
 
 export default GalleryDndKit;
-```

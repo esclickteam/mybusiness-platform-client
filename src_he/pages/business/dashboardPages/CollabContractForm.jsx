@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import "./CollabContractForm.css";
@@ -372,4 +371,3 @@ const CollabContractForm = ({
 };
 
 export default CollabContractForm;
-```

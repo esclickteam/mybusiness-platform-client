@@ -1,4 +1,3 @@
-```javascript
 // src/context/socketContext.jsx – thin wrapper that reuses AuthContext socket
 
 import { useAuth } from "./AuthContext";
@@ -11,4 +10,3 @@ export function useSocket() {
   const { socket } = useAuth();
   return socket;
 }
-```

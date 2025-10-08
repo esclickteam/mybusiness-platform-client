@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import "./XrayTab.css";
 
@@ -107,4 +106,3 @@ const XrayTab = ({ onSubmit, loading, businessId, conversationId }) => {
 };
 
 export default XrayTab;
-```

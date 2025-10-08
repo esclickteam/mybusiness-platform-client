@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ClientChatTab from "./ClientChatTab";
@@ -232,4 +231,3 @@ export default function ClientChatSection() {
     </div>
   );
 }
-```

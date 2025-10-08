@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import "./CRMSettingsTab.css";
 
@@ -53,4 +52,3 @@ const CRMSettingsTab = () => {
 };
 
 export default CRMSettingsTab;
-```

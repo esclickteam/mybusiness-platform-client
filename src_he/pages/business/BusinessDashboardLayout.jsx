@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useRef } from "react";
 import {
   NavLink,
@@ -246,4 +245,3 @@ export default function BusinessDashboardLayout({ children }) {
     </BusinessServicesProvider>
   );
 }
-```

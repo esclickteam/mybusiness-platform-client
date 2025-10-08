@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { loadAllFAQs } from "./loadAllFAQs";
 
@@ -9,80 +8,119 @@ export default function AllFAQsDisplay() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchFAQs() {
+    const fetchFAQs = async () => {
       try {
         const data = await loadAllFAQs();
-        setFaqs(data);
-      } catch (e) {
-        setError(e.message);
+        setFaqs(data || []);
+      } catch (err) {
+        console.error("Failed to load FAQs:", err);
+        setError(err.message || "Failed to load FAQs");
       } finally {
         setLoading(false);
       }
-    }
+    };
     fetchFAQs();
   }, []);
 
-  const toggle = (index) => {
+  const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  if (loading) return <p>Loading FAQs...</p>;
-  if (error) return <p>An error occurred: {error}</p>;
+  if (loading)
+    return (
+      <div style={{ textAlign: "center", marginTop: 40 }}>
+        <h3>Loading FAQs...</h3>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div style={{ color: "red", textAlign: "center", marginTop: 40 }}>
+        <h3>Error loading FAQs</h3>
+        <p>{error}</p>
+      </div>
+    );
 
   return (
-    <div style={{ maxWidth: 900, margin: "auto", padding: 20, direction: "rtl", textAlign: "right" }}>
-      <h1 style={{ textAlign: "center", marginBottom: 30 }}>All Questions and Answers</h1>
-      {faqs.map((faq, idx) => (
-        <div
-          key={idx}
-          style={{
-            marginBottom: 15,
-            borderBottom: "1px solid #ddd",
-            paddingBottom: 10,
-          }}
-        >
-          <button
-            onClick={() => toggle(idx)}
+    <div
+      style={{
+        maxWidth: 900,
+        margin: "0 auto",
+        padding: 20,
+        textAlign: "left",
+        direction: "ltr",
+      }}
+    >
+      <h1
+        style={{
+          textAlign: "center",
+          fontSize: 28,
+          marginBottom: 30,
+          color: "#4b2aad",
+        }}
+      >
+        All Questions & Answers
+      </h1>
+
+      {faqs.length === 0 ? (
+        <p style={{ textAlign: "center", color: "#777" }}>
+          No FAQs available at the moment.
+        </p>
+      ) : (
+        faqs.map((faq, idx) => (
+          <div
+            key={idx}
             style={{
-              width: "100%",
-              background: "#f3f3f3",
-              border: "none",
-              padding: "12px 20px",
-              fontSize: 18,
-              fontWeight: "bold",
-              cursor: "pointer",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              borderRadius: 6,
-              textAlign: "right",
+              marginBottom: 16,
+              borderBottom: "1px solid #ddd",
+              borderRadius: 8,
+              background: "#fff",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+              overflow: "hidden",
             }}
-            aria-expanded={openIndex === idx}
-            aria-controls={`faq-answer-${idx}`}
           >
-            <span>{faq.question}</span>
-            <span style={{ fontSize: 24 }}>{openIndex === idx ? "−" : "+"}</span>
-          </button>
-          {openIndex === idx && (
-            <div
-              id={`faq-answer-${idx}`}
+            <button
+              onClick={() => toggleFAQ(idx)}
+              aria-expanded={openIndex === idx}
+              aria-controls={`faq-answer-${idx}`}
               style={{
-                padding: "12px 20px",
-                background: "#fafafa",
-                whiteSpace: "pre-line",
-                fontSize: 16,
-                marginTop: 6,
-                borderRadius: 6,
-                color: "#222",
-                lineHeight: 1.5,
+                width: "100%",
+                background: openIndex === idx ? "#f4f0ff" : "#f9f9f9",
+                border: "none",
+                padding: "16px 20px",
+                fontSize: 18,
+                fontWeight: 600,
+                cursor: "pointer",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                transition: "background 0.2s ease",
+                color: "#333",
               }}
             >
-              {faq.answer}
-            </div>
-          )}
-        </div>
-      ))}
+              <span>{faq.question}</span>
+              <span style={{ fontSize: 22 }}>
+                {openIndex === idx ? "−" : "+"}
+              </span>
+            </button>
+
+            {openIndex === idx && (
+              <div
+                id={`faq-answer-${idx}`}
+                style={{
+                  padding: "14px 20px",
+                  background: "#fafafa",
+                  color: "#444",
+                  fontSize: 16,
+                  lineHeight: 1.6,
+                }}
+              >
+                {faq.answer}
+              </div>
+            )}
+          </div>
+        ))
+      )}
     </div>
   );
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import axios from "axios";
 
 const isProd = import.meta.env.MODE === "production";
@@ -147,4 +146,3 @@ API.interceptors.response.use(
 
 export { setAuthToken };
 export default API;
-```

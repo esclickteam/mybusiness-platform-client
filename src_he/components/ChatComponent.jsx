@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { useSocket } from "../context/socketContext";
 import { useAuth } from "../context/AuthContext";
@@ -134,4 +133,3 @@ export default function ChatComponent({
     />
   );
 }
-```

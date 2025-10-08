@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import TimePicker from "react-time-picker";
 import 'react-time-picker/dist/TimePicker.css';
@@ -35,4 +34,3 @@ export default function TimePickerExample() {
     </div>
   );
 }
-```

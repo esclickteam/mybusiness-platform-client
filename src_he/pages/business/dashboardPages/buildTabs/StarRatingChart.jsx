@@ -1,4 +1,3 @@
-```javascript
 import React from 'react';
 import './ReviewDistributionChart.css'; // You can separate into a dedicated CSS file if you want
 
@@ -56,4 +55,3 @@ export default function StarRatingChart({ reviews = [] }) {
     </div>
   );
 }
-```

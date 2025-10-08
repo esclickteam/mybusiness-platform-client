@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import "./AppointmentPayment.css";
 import emailjs from "emailjs-com";
@@ -170,4 +169,3 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
 };
 
 export default AppointmentPayment;
-```

@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import "./AppointmentCRMGuidePage.css";
 
@@ -90,4 +89,3 @@ export default function AppointmentCRMGuidePage() {
     </div>
   );
 }
-```

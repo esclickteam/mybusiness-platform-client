@@ -1,4 +1,3 @@
-```javascript
 // src/pages/business/dashboardPages/Profile.jsx
 
 import React, { useEffect, useState } from "react";
@@ -155,4 +154,3 @@ export default function Profile() {
     </div>
   );
 }
-```

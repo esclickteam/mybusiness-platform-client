@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import "./StaffTopBar.css";
 import { useNavigate } from "react-router-dom";
@@ -86,4 +85,3 @@ function StaffTopBar() {
 }
 
 export default StaffTopBar;
-```

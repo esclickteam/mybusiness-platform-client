@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from 'react';
 import API from '@api';
 import ServiceList from './ServiceList';
@@ -175,4 +174,3 @@ const AppointmentsMain = ({
 };
 
 export default AppointmentsMain;
-```

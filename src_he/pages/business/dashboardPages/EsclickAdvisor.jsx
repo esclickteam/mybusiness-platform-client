@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { io } from "socket.io-client";
@@ -177,4 +176,3 @@ const EsclickAdvisor = () => {
 };
 
 export default EsclickAdvisor;
-```

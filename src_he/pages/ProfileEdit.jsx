@@ -1,4 +1,3 @@
-```javascript
 // src/pages/ProfileEdit.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchCities } from '../data/cities'; // 👈 Using the dynamic function
@@ -75,4 +74,3 @@ export default function ProfileEdit() {
     </div>
   );
 }
-```

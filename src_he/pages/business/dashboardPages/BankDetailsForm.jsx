@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import API from "@api"; // Assume the API is set up with axios
@@ -144,4 +143,3 @@ const BankDetailsForm = () => {
 };
 
 export default BankDetailsForm;
-```

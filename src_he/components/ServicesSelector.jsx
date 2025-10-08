@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useMemo } from "react";
 import ClientServiceCard from "../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientServiceCard";
 import "./ServicesSelector.css";
@@ -93,4 +92,3 @@ export default function ServicesSelector({ services, categories, onSelect }) {
     </div>
   );
 }
-```

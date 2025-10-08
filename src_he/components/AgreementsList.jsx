@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import API from "@api";
 
@@ -193,4 +192,3 @@ export default function AgreementsList() {
     </div>
   );
 }
-```

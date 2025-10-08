@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import "./AdminLogs.css";
 import { Link } from "react-router-dom";
@@ -58,4 +57,3 @@ function AdminLogs() {
 }
 
 export default AdminLogs;
-```

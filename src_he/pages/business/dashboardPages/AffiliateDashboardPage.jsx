@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import API from "@api";
@@ -246,4 +245,3 @@ export default function AffiliateDashboardPage() {
     </div>
   );
 }
-```

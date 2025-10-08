@@ -1,4 +1,3 @@
-```javascript
 export async function loginWithPublicToken(publicToken) {
   try {
     const response = await fetch(
@@ -23,4 +22,3 @@ export async function loginWithPublicToken(publicToken) {
     return false;
   }
 }
-```

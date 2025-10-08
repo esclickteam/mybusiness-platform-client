@@ -1,4 +1,3 @@
-```javascript
 // src/components/BusinessChatContainer.jsx
 import React, { useEffect, useState } from 'react';
 import API from '../api'; // Make sure this API is pointed to the correct baseURL
@@ -79,4 +78,3 @@ export default function BusinessChatContainer({
     />
   );
 }
-```

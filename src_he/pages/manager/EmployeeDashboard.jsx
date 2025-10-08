@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "../api"; // Assume this is your library for sending API requests
 
@@ -90,4 +89,3 @@ export default function EmployeeDashboard() {
     </div>
   );
 }
-```

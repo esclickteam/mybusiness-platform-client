@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "@api";
@@ -169,4 +168,3 @@ const CRMClientsTab = ({ businessId }) => {
 };
 
 export default CRMClientsTab;
-```

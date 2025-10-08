@@ -1,4 +1,3 @@
-```javascript
 // src/pages/SearchBusinesses.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -268,4 +267,3 @@ export default function SearchBusinesses() {
     </div>
   );
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -32,4 +31,3 @@ export default function PaymentSuccess() {
 
   return <div>Loading data after payment, please wait...</div>;
 }
-```

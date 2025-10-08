@@ -1,4 +1,3 @@
-```javascript
 // src/pages/business/dashboardPages/build/buildTabs/ChatTab.jsx
 import React from 'react';
 // General styles for the build page
@@ -104,4 +103,3 @@ const ChatTab = ({ isPreview, businessDetails, setBusinessDetails }) => {
 };
 
 export default ChatTab;
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "../../../../../../api";
 import "./ClientCalendar.css";
@@ -406,4 +405,3 @@ export default function ClientCalendar({
     </div>
   );
 }
-```

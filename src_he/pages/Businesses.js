@@ -1,4 +1,3 @@
-```javascript
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const moment = require("moment"); // Don't forget to install: npm install moment
@@ -93,4 +92,3 @@ router.get("/stats/:id", authenticateToken, async (req, res) => {
 });
 
 module.exports = router;
-```

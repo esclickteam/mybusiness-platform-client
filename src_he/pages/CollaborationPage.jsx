@@ -1,4 +1,3 @@
-```javascript
 // src/pages/CollaborationPage.jsx
 import React, { useState } from "react";
 import API from "../../api";
@@ -43,4 +42,3 @@ export default function CollaborationPage({ isDevUser }) {
     </div>
   );
 }
-```

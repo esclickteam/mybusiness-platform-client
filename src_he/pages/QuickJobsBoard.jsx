@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import "./QuickJobsBoard.css";
 import { Link } from "react-router-dom";
@@ -77,4 +76,3 @@ function QuickJobsBoard() {
 }
 
 export default QuickJobsBoard;
-```

@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import {
   BarChart,
@@ -56,4 +55,3 @@ const MonthlyComparisonChart = ({ data }) => {
 };
 
 export default MonthlyComparisonChart;
-```

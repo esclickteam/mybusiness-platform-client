@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 const UploadBusinessImage = ({ businessId }) => {
@@ -89,4 +88,3 @@ const UploadBusinessImage = ({ businessId }) => {
 };
 
 export default UploadBusinessImage;
-```

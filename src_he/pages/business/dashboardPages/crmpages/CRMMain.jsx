@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
@@ -63,4 +62,3 @@ const CRMMain = () => {
 };
 
 export default CRMMain;
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useRef, useState, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api"; // Make sure this is the correct path based on the file's location
@@ -171,4 +170,3 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
 };
 
 export default CollabContractView;
-```

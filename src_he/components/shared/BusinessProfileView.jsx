@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef, Suspense, lazy, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../../api";
@@ -623,4 +622,3 @@ export default function BusinessProfileView() {
     </div>
   );
 }
-```

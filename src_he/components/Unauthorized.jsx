@@ -1,4 +1,4 @@
-```jsx
+jsx
 // src/components/Unauthorized.jsx
 import React from "react";
 import { Link } from "react-router-dom";
@@ -12,4 +12,3 @@ export default function Unauthorized() {
     </div>
   );
 }
-```

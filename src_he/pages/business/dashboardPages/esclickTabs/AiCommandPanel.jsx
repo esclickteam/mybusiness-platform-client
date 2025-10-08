@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 export default function AiCommandPanel({ businessId, token, profile }) {
@@ -129,4 +128,3 @@ export default function AiCommandPanel({ businessId, token, profile }) {
     </div>
   );
 }
-```

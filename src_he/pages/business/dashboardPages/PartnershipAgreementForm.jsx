@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
@@ -413,4 +412,3 @@ const textareaStyle = {
   resize: "vertical",
   minHeight: 70,
 };
-```

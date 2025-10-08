@@ -1,4 +1,3 @@
-```javascript
 import React from 'react';
 import './MonthCalendar.css';
 
@@ -76,4 +75,3 @@ export default function MonthCalendar({
     </div>
   );
 }
-```

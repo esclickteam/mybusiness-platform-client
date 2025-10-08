@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
@@ -647,4 +646,3 @@ const AiPartnerTab = ({
 };
 
 export default AiPartnerTab;
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { useAi } from "../context/AiContext";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -66,4 +65,3 @@ export default function AiModal() {
     </div>
   );
 }
-```

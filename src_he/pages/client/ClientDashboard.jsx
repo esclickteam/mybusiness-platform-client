@@ -1,4 +1,3 @@
-```javascript
 // src/pages/client/ClientDashboard.jsx
 import React from "react";
 import { NavLink, Link, Outlet } from "react-router-dom";
@@ -54,4 +53,3 @@ export default function ClientDashboard() {
     </div>
   );
 }
-```

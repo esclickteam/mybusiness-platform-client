@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import "../build/Build.css";
 import "./MainTab.css";
@@ -90,4 +89,3 @@ export default function MainTab({ businessDetails, socket }) {
     </>
   );
 }
-```

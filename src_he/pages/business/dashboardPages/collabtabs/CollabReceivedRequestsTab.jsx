@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
 
@@ -217,4 +216,3 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
     </div>
   );
 }
-```

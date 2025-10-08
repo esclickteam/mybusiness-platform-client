@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect } from 'react';
 import '../../build/Build.css';
 import './ShopAndCalendar.css';
@@ -42,4 +41,3 @@ export default function ShopAndCalendar({
     </div>
   );
 }
-```

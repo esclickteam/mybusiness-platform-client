@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -169,4 +168,3 @@ const BusinessDashboardRoutes = () => {
 };
 
 export default BusinessDashboardRoutes;
-```

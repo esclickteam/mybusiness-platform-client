@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ChatMessages from './ChatMessages';
@@ -201,4 +200,3 @@ const CustomerChatPreview = ({ businessDetails, setMessages, messages }) => {
 };
 
 export default CustomerChatPreview;
-```

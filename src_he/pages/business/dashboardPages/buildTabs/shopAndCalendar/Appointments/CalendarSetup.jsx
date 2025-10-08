@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import "./CalendarSetup.css";
 
@@ -143,4 +142,3 @@ export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSav
     </div>
   );
 }
-```

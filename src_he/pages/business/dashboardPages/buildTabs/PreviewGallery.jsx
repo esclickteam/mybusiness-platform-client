@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef, useEffect } from "react";
 import GalleryDndKit from "./GalleryDndKit";
 import "./GalleryTab.css";
@@ -170,4 +169,3 @@ const GalleryEditorWithPreview = ({
 };
 
 export default GalleryEditorWithPreview;
-```

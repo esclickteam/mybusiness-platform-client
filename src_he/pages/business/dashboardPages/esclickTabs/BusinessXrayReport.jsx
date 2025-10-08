@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 import "./BusinessXrayReport.css";
@@ -38,4 +37,3 @@ const BusinessXrayReport = ({ data, insights, businessType }) => {
 };
 
 export default BusinessXrayReport;
-```

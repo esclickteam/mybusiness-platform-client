@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 const faqData = [
@@ -205,4 +204,3 @@ export default function DashboardFAQ() {
     </div>
   );
 }
-```

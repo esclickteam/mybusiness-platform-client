@@ -1,4 +1,3 @@
-```javascript
 // src/components/GalleryUploader.jsx
 import React, { useState } from "react";
 import axios from "axios";
@@ -44,4 +43,3 @@ export default function GalleryUploader({ onUploaded }) {
     </div>
   );
 }
-```

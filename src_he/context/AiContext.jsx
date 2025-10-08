@@ -1,4 +1,3 @@
-```javascript
 // src/context/AiContext.jsx — updated to reuse singleton socket
 import React, {
   createContext,
@@ -178,4 +177,3 @@ function AiModal() {
     </div>
   );
 }
-```

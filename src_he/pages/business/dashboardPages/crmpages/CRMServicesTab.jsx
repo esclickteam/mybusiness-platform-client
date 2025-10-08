@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import "./CRMServicesTab.css";
 import API from "@api";
@@ -327,4 +326,3 @@ const CRMServicesTab = () => {
 };
 
 export default CRMServicesTab;
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef, useEffect } from "react";
 
 export default function ChatBot({ chatOpen, setChatOpen }) {
@@ -237,4 +236,3 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
     </section>
   );
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useRef } from "react";
 import ImageLoader from "@components/ImageLoader";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
@@ -138,4 +137,3 @@ export default function GallerySection({
     </>
   );
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 
 const AppointmentsList = ({ appointments }) => {
@@ -46,4 +45,3 @@ const AppointmentsList = ({ appointments }) => {
 };
 
 export default AppointmentsList;
-```

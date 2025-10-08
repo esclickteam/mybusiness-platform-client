@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import CollabActiveTab from "./collabtabs/CollabActiveTab";
 import CollabPendingTab from "./collabtabs/CollabPendingTab"; // New
@@ -41,4 +40,3 @@ export default function CollabCollaborationsTab({ isDevUser, userBusinessId, tok
     </div>
   );
 }
-```

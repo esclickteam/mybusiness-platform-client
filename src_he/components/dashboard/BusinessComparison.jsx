@@ -1,4 +1,3 @@
-```javascript
 // src/components/dashboard/BusinessComparison.js
 import React from "react";
 
@@ -36,4 +35,3 @@ const BusinessComparison = ({ stats }) => {
 };
 
 export default BusinessComparison;
-```

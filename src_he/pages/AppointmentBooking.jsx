@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import he from 'date-fns/locale/he';
@@ -126,4 +125,3 @@ export default function AppointmentBooking({ businessId, serviceId }) {
     </form>
   );
 }
-```

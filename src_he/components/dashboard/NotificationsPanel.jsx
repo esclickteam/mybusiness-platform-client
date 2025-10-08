@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 
 const NotificationsPanel = ({ stats }) => {
@@ -63,4 +62,3 @@ const NotificationsPanel = ({ stats }) => {
 };
 
 export default NotificationsPanel;
-```

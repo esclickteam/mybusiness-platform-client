@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import PropTypes from 'prop-types';
 import "./ProfileHeader.css";
@@ -71,4 +70,3 @@ ProfileHeader.propTypes = {
 };
 
 export default ProfileHeader;
-```

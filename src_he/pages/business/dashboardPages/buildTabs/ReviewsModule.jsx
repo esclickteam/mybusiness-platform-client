@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
@@ -274,4 +273,3 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId, socke
 };
 
 export default ReviewsModule;
-```

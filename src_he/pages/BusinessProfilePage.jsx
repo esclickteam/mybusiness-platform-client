@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Modal from "@mui/material/Modal";
@@ -469,4 +468,3 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     </BusinessDashboardLayout>
   );
 }
-```

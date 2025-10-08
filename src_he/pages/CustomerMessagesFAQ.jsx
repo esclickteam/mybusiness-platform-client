@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 const faqData = [
@@ -165,4 +164,3 @@ export default function CustomerMessagesFAQ() {
     </div>
   );
 }
-```

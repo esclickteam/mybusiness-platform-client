@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef, useEffect } from "react";
 import '../build/Build.css';
 import "./GalleryTab.css";
@@ -120,4 +119,3 @@ const GalleryTab = ({
 };
 
 export default GalleryTab;
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -162,4 +161,3 @@ export default function BusinessChatWrapper() {
     </div>
   );
 }
-```

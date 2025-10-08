@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef, useEffect, Suspense, lazy } from "react";
 import API from "@api";
 import { useNavigate } from "react-router-dom";
@@ -696,4 +695,3 @@ export default function Build() {
     </div>
   );
 }
-```

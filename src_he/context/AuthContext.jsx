@@ -1,4 +1,3 @@
-```javascript
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API, { setAuthToken } from "../api";
@@ -322,4 +321,3 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
-```

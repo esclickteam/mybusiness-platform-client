@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext"; // Ensure the path is correct
@@ -83,4 +82,3 @@ function ManagerDashboard() {
 }
 
 export default ManagerDashboard;
-```

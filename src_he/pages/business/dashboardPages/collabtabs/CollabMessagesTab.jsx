@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useMemo } from "react";
 import API from "../../../../api";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
@@ -367,4 +366,3 @@ export default function CollabMessagesTab({ socket, refreshFlag, onStatusChange,
     </div>
   );
 }
-```

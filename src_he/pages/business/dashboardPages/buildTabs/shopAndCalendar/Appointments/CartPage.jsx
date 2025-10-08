@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import './CartPage.css';
@@ -140,4 +139,3 @@ const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
 };
 
 export default CartPage;
-```

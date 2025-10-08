@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import "./PhoneProfile.css";
@@ -118,4 +117,3 @@ function PhoneProfile() {
 }
 
 export default PhoneProfile;
-```

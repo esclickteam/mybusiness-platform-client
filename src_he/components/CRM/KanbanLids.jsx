@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import API from "@api";
@@ -77,4 +76,3 @@ export default function KanbanLeads({ leads, setLeads, onEditLead, onDeleteLead 
     </DragDropContext>
   );
 }
-```

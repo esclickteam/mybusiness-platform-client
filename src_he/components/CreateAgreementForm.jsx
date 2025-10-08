@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import "./CreateAgreementForm.css";
@@ -257,4 +256,3 @@ export default function CreateAgreementForm({
     </form>
   );
 }
-```

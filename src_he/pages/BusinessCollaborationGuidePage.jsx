@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import "./BusinessCollaborationGuidePage.css";
 
@@ -81,4 +80,3 @@ export default function BusinessCollaborationGuidePage() {
     </div>
   );
 }
-```

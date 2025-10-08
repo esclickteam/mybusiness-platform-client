@@ -1,4 +1,3 @@
-```javascript
 // src/components/AdminUsers.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -144,4 +143,3 @@ function AdminUsers() {
 }
 
 export default AdminUsers;
-```

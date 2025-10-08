@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import DashboardCards from "./DashboardCards";
 // Instead of useDashboardSocket – import the hook from the context
@@ -22,4 +21,3 @@ export default function DashboardLive() {
 
   return <DashboardCards stats={safeStats} />;
 }
-```

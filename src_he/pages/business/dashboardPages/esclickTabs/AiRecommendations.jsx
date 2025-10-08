@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
@@ -431,4 +430,3 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
 };
 
 export default AiRecommendations;
-```

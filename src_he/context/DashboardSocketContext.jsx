@@ -1,4 +1,3 @@
-```javascript
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext"; // Update according to your path
@@ -207,4 +206,3 @@ export function useDashboardStats() {
   }
   return context;
 }
-```

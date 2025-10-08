@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useRef, useCallback, useReducer } from "react";
 import { io } from "socket.io-client";
 import API from "../../../../api";
@@ -630,4 +629,3 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     </Box>
   );
 }
-```

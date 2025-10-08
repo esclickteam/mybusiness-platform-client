@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 const statuses = ["Waiting for response", "In process", "Closed"];
@@ -98,4 +97,3 @@ const OpenLeadsTable = ({ leads = [] }) => {
 };
 
 export default OpenLeadsTable;
-```

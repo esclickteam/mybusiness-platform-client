@@ -1,4 +1,3 @@
-```javascript
 import React from 'react';
 
 // Error Boundary Component
@@ -38,4 +37,3 @@ class ErrorBoundary extends React.Component {
 }
 
 export default ErrorBoundary;
-```

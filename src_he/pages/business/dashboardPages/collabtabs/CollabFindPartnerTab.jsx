@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../../../api";
@@ -126,4 +125,3 @@ export default function CollabFindPartnerTab({ searchMode, searchCategory, freeT
     </div>
   );
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
@@ -155,4 +154,3 @@ export default function CollabPartnersChat() {
     </div>
   );
 }
-```

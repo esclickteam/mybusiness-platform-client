@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import PartnershipAgreement from "./SignAgreement";
@@ -63,4 +62,3 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
     </div>
   );
 }
-```

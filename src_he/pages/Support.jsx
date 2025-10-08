@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { io } from "socket.io-client";
@@ -350,4 +349,3 @@ export default function Support() {
     </div>
   );
 }
-```

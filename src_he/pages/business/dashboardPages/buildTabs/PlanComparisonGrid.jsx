@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import "./PlanComparisonGrid.css";
 
@@ -148,4 +147,3 @@ const PlanComparisonGrid = ({ onSelectPlan }) => {
 };
 
 export default PlanComparisonGrid;
-```

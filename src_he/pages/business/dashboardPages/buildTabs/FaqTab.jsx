@@ -1,4 +1,3 @@
-```javascript
 // src/components/FaqTab.jsx
 "use client";
 
@@ -204,4 +203,3 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
 };
 
 export default FaqTab;
-```

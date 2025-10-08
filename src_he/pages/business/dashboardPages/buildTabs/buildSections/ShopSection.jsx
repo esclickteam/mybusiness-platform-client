@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 // Without the .jsx extension for build fix
 import ShopAndCalendar from "../shopAndCalendar/ShopAndCalendar";
@@ -46,4 +45,3 @@ export default function ShopSection({
     </>
   );
 }
-```

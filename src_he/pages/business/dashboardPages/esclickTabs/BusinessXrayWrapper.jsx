@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import XrayTab from "./XrayTab";
 import BusinessXrayReport from "./BusinessXrayReport";
@@ -62,4 +61,3 @@ const BusinessXrayWrapper = () => {
 };
 
 export default BusinessXrayWrapper;
-```

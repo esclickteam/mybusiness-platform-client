@@ -1,4 +1,3 @@
-```javascript
 // src/components/UserWayWidget.jsx
 import { useEffect } from "react";
 
@@ -16,4 +15,3 @@ export default function UserWayWidget() {
 
   return null;   // no UI
 }
-```

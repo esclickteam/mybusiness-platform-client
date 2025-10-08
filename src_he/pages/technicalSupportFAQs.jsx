@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 const technicalSupportFAQs = [
@@ -258,4 +257,3 @@ export default function TechnicalSupport() {
     </div>
   );
 }
-```

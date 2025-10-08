@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSocket } from "../context/socketContext";
@@ -128,4 +127,3 @@ export default function ConversationsList({
     </div>
   );
 }
-```

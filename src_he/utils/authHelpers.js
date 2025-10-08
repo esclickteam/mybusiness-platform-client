@@ -1,4 +1,3 @@
-```javascript
 import jwtDecode from "jwt-decode";
 
 // Checks if the token is expired
@@ -77,4 +76,3 @@ export function getUserRole() {
     return null;
   }
 }
-```

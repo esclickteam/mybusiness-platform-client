@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from 'react';
 import './ShopPreview.css';
 import PaymentSection from './PaymentSection';
@@ -155,4 +154,3 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
 };
 
 export default ShopPreview;
-```

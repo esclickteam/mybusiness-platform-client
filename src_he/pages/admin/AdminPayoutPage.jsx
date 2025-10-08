@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { CSVLink } from "react-csv";
 import API from "../../api";
@@ -150,4 +149,3 @@ const AdminPayoutPage = () => {
 };
 
 export default AdminPayoutPage;
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import { useForm } from "@formspree/react";
 
@@ -110,4 +109,3 @@ export default function BusinessSupport() {
     </div>
   );
 }
-```

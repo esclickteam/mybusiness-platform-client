@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import '../buildTabs/shopAndCalendar/Appointments/CalendarSetup.css';
@@ -134,4 +133,3 @@ export default function WorkHoursTab() {
     </div>
   );
 }
-```

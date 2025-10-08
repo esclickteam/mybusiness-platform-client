@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import "./Insights.css"; // It is recommended to place the style separately (or use dashboard.css)
 
@@ -62,4 +61,3 @@ const Insights = ({ stats }) => {
 };
 
 export default Insights;
-```

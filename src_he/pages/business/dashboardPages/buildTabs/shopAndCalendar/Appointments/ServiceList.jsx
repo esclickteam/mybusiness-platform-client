@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from 'react';
 import API from '@api'; // Ensure that API.baseURL = '/api'
 import './ServiceList.css';
@@ -217,4 +216,3 @@ const ServiceList = ({
 };
 
 export default ServiceList;
-```

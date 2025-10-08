@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import LineChart from "./LineChart";  // Change to your path
@@ -101,4 +100,3 @@ const DashboardRealTime = ({ businessId }) => {
 };
 
 export default DashboardRealTime;
-```

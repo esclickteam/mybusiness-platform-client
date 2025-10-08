@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import "./ChatGuidePage.css";
 
@@ -190,4 +189,3 @@ export default function ChatGuidePage() {
     </div>
   );
 }
-```

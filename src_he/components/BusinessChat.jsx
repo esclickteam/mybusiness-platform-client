@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import Button from "@mui/material/Button";
@@ -252,4 +251,3 @@ export default function BusinessChat({
     </div>
   );
 }
-```

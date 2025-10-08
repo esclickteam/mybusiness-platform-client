@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
@@ -63,4 +62,3 @@ export default function UpdateAgreement({ agreementId, onUpdated }) {
     </div>
   );
 }
-```

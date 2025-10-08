@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useRef, useEffect } from "react";
 
 export default function HelpChat() {
@@ -133,4 +132,3 @@ export default function HelpChat() {
     </div>
   );
 }
-```

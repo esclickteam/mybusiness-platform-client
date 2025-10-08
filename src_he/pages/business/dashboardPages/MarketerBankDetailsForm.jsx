@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import API from "@api"; // axios is predefined
@@ -122,4 +121,3 @@ export default function MarketerBankDetailsForm() {
     </section>
   );
 }
-```

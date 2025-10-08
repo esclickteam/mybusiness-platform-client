@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import "./AICompanionGuidePage.css";
 
@@ -94,4 +93,3 @@ export default function AICompanionGuidePage() {
     </div>
   );
 }
-```

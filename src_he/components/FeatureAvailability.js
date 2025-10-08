@@ -1,4 +1,3 @@
-```javascript
 const checkFeatureAvailability = (feature, userPlan) => {
     const featuresByPlan = {
         VIP: ['Unlimited inquiries', 'Chat with customers', 'Appointment coordination/Home services', 'Business collaboration'],
@@ -11,4 +10,3 @@ const checkFeatureAvailability = (feature, userPlan) => {
 }
 
 export default checkFeatureAvailability;
-```

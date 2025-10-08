@@ -1,4 +1,3 @@
-```javascript
 // Collab.js
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useParams } from "react-router-dom";
@@ -115,4 +114,3 @@ export default function Collab() {
     </AiProvider>
   );
 }
-```

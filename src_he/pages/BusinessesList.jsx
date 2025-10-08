@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Select from "react-select";
@@ -176,4 +175,3 @@ const BusinessesList = () => {
 };
 
 export default BusinessesList;
-```

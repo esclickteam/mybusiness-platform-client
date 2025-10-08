@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useCallback } from "react";
 import { Bar } from "react-chartjs-2";
 import API from '../api';
@@ -70,4 +69,3 @@ function ChartComponent({ businessId }) {
 }
 
 export default ChartComponent;
-```

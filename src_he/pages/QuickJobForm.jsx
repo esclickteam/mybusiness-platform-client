@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import "./QuickJobForm.css";
 
@@ -116,4 +115,3 @@ function QuickJobForm() {
 }
 
 export default QuickJobForm;
-```

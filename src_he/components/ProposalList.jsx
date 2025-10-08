@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 export default function ProposalList({ proposals, currentBusinessId }) {
@@ -104,4 +103,3 @@ export default function ProposalList({ proposals, currentBusinessId }) {
     </div>
   );
 }
-```

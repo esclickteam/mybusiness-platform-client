@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import "./EditSiteContent.css";
 import { Link } from "react-router-dom";
@@ -51,4 +50,3 @@ function EditSiteContent() {
 }
 
 export default EditSiteContent;
-```

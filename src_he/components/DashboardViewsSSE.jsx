@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useRef } from "react";
 
 export default function DashboardViewsSSE({ businessId }) {
@@ -67,4 +66,3 @@ export default function DashboardViewsSSE({ businessId }) {
     </div>
   );
 }
-```

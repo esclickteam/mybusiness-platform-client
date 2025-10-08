@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import API from "../../../api";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -177,4 +176,3 @@ const GoalsPage = () => {
 };
 
 export default GoalsPage;
-```

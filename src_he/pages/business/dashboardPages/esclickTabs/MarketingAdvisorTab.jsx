@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Markdown from "markdown-to-jsx";
 import API from "@api";
@@ -269,4 +268,3 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
 };
 
 export default MarketingAdvisorTab;
-```

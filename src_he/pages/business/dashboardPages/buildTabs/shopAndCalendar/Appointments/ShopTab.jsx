@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from 'react';
 import API from '@api'; // axios instance with withCredentials: true and baseURL set to /api/business
 import { useBusinessServices } from '@context/BusinessServicesContext';
@@ -308,4 +307,3 @@ const ShopTab = () => {
 };
 
 export default ShopTab;
-```

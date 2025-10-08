@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
@@ -156,4 +155,3 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
     </div>
   );
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import {
   LineChart,
@@ -77,4 +76,3 @@ const LineChartComponent = ({ stats }) => {
 };
 
 export default LineChartComponent;
-```

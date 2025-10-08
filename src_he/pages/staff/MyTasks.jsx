@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 import "./MyTasks.css";
 import { Link } from "react-router-dom";
@@ -119,4 +118,3 @@ function MyTasks() {
 }
 
 export default MyTasks;
-```

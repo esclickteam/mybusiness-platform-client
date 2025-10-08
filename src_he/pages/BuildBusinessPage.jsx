@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import "./BuildBusinessPage.css";
 
@@ -177,4 +176,3 @@ export default function BuildBusinessPage() {
     </div>
   );
 }
-```

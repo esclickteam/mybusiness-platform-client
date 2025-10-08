@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import createSocket from "../socket";
@@ -74,4 +73,3 @@ export default function BusinessConversationsList({ onSelectConversation }) {
     </ul>
   );
 }
-```

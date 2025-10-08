@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from "react";
 
 const faqs = [
@@ -181,4 +180,3 @@ export default function AffiliateProgramFAQ() {
     </div>
   );
 }
-```

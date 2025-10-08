@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 import API from "../api"; // axios with predefined token
@@ -402,4 +401,3 @@ export default function ClientChatTab({
     </div>
   );
 }
-```

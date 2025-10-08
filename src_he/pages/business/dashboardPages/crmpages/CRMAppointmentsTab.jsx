@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useMemo } from "react";
 import "./CRMAppointmentsTab.css";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
@@ -495,4 +494,3 @@ const CRMAppointmentsTab = () => {
 };
 
 export default CRMAppointmentsTab;
-```

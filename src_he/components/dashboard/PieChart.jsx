@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import {
   PieChart,
@@ -66,4 +65,3 @@ const PieChartComponent = ({ data }) => {
 };
 
 export default PieChartComponent;
-```

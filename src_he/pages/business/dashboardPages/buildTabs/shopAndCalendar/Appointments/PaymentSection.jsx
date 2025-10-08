@@ -1,4 +1,3 @@
-```javascript
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 import './PaymentSection.css';
@@ -160,4 +159,3 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
 };
 
 export default PaymentSection;
-```

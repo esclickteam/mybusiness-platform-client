@@ -1,4 +1,3 @@
-```javascript
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import API from "../api";
@@ -171,4 +170,3 @@ export default function Checkout() {
     </div>
   );
 }
-```

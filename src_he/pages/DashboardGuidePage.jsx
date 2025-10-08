@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import "./DashboardGuidePage.css";
 
@@ -133,4 +132,3 @@ export default function DashboardGuidePage() {
     </div>
   );
 }
-```

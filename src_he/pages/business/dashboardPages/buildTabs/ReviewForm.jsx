@@ -1,4 +1,3 @@
-```javascript
 import { useState } from "react";
 import jwtDecode from "jwt-decode"; // You need to install: npm install jwt-decode
 import "./ReviewForm.css";
@@ -185,4 +184,3 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
 };
 
 export default ReviewForm;
-```

@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import { useNotifications } from "../context/NotificationsContext";
 
@@ -171,4 +170,3 @@ export default function Notifications({ onClose }) {
     </div>
   );
 }
-```

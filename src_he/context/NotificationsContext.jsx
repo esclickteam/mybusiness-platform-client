@@ -1,4 +1,3 @@
-```javascript
 import React, {
   createContext,
   useContext,
@@ -225,4 +224,3 @@ export function NotificationsProvider({ children }) {
 export function useNotifications() {
   return useContext(NotificationsContext);
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./CollabActiveTab.css";
@@ -194,4 +193,3 @@ const buttonStyle = (isActive) => ({
   cursor: "pointer",
   fontWeight: "bold",
 });
-```

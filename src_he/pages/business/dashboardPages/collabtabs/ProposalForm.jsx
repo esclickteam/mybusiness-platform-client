@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -221,4 +220,3 @@ export default function ProposalForm({
     </Box>
   );
 }
-```

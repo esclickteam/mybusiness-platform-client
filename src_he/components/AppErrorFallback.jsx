@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 
 const AppErrorFallback = ({ error, resetErrorBoundary }) => {
@@ -57,4 +56,3 @@ const AppErrorFallback = ({ error, resetErrorBoundary }) => {
 };
 
 export default AppErrorFallback;
-```

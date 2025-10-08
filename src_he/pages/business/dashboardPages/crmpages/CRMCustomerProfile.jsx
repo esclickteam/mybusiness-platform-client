@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./CRMCustomerProfile.css";
@@ -209,4 +208,3 @@ export default function CRMCustomerFile({ client, businessId }) {
     </div>
   );
 }
-```

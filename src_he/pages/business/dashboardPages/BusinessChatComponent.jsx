@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect, useRef } from "react";
 import { Paperclip, Mic, Image, FileText, Send, ScrollText, FileSignature } from "lucide-react";
 import API from "@api"; // Use API instead of axios
@@ -173,4 +172,3 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
 };
 
 export default BusinessChat;
-```

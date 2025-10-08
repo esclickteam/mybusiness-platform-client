@@ -1,4 +1,3 @@
-```javascript
 import React from "react";
 import "./MySales.css";
 import { Link } from "react-router-dom";
@@ -64,4 +63,3 @@ function MySales() {
 }
 
 export default MySales;
-```

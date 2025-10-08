@@ -1,4 +1,3 @@
-```javascript
 import React, {
   useEffect,
   useRef,
@@ -363,4 +362,3 @@ export default function BusinessChatTab({
     </div>
   );
 }
-```

@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import { useQueryClient } from "@tanstack/react-query";
@@ -221,4 +220,3 @@ export default function CRMCustomerFile({
     </div>
   );
 }
-```
