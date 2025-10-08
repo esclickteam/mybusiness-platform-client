@@ -107,7 +107,78 @@ export default function MainSection({
         alignItems: "start",
         width: "100%",
       }}
+      className="main-section-grid"
     >
+      {/* RIGHT COLUMN — PREVIEW */}
+      <div
+        className="preview-column"
+        style={{
+          background: "#fff",
+          borderRadius: "20px",
+          padding: "2rem",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+        }}
+      >
+        {renderTopBar?.()}
+
+        <div
+          className="preview-images"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+            gap: "10px",
+            marginTop: "1rem",
+          }}
+        >
+          {limitedMainImgs.map(({ preview }, i) => (
+            <div key={i} className="image-wrapper">
+              <ImageLoader
+                src={preview}
+                alt="Main image"
+                style={{
+                  width: "100%",
+                  height: "140px",
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Latest Reviews */}
+        <div className="latest-reviews" style={{ marginTop: "1.5rem" }}>
+          <h3 style={{ marginBottom: "1rem", fontWeight: 600 }}>⭐ Latest Reviews</h3>
+          {lastTwoReviews.length === 0 ? (
+            <p style={{ color: "#777" }}>No reviews yet</p>
+          ) : (
+            lastTwoReviews.map((review, idx) => (
+              <div
+                key={idx}
+                style={{
+                  border: "1px solid #eee",
+                  borderRadius: "10px",
+                  padding: "1rem",
+                  marginBottom: "1rem",
+                  backgroundColor: "#fafafa",
+                }}
+              >
+                <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
+                  {review.rating ? `⭐ ${review.rating}/5` : "No rating"}
+                </div>
+                <div>{review.opinion || "No review provided"}</div>
+                <div style={{ fontSize: "0.9rem", color: "#666", marginTop: "0.5rem" }}>
+                  {review.author || "Anonymous"} –{" "}
+                  {review.date
+                    ? new Date(review.date).toLocaleDateString("en-US")
+                    : "Unknown date"}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
       {/* LEFT COLUMN — FORM */}
       <div
         className="form-column"
@@ -367,75 +438,14 @@ export default function MainSection({
         )}
       </div>
 
-      {/* RIGHT COLUMN — PREVIEW */}
-      <div
-        className="preview-column"
-        style={{
-          background: "#fff",
-          borderRadius: "20px",
-          padding: "2rem",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-        }}
-      >
-        {renderTopBar?.()}
-
-        <div
-          className="preview-images"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-            gap: "10px",
-            marginTop: "1rem",
-          }}
-        >
-          {limitedMainImgs.map(({ preview }, i) => (
-            <div key={i} className="image-wrapper">
-              <ImageLoader
-                src={preview}
-                alt="Main image"
-                style={{
-                  width: "100%",
-                  height: "140px",
-                  objectFit: "cover",
-                  borderRadius: "10px",
-                }}
-              />
-            </div>
-          ))}
-        </div>
-
-        {/* Latest Reviews */}
-        <div className="latest-reviews" style={{ marginTop: "1.5rem" }}>
-          <h3 style={{ marginBottom: "1rem", fontWeight: 600 }}>⭐ Latest Reviews</h3>
-          {lastTwoReviews.length === 0 ? (
-            <p style={{ color: "#777" }}>No reviews yet</p>
-          ) : (
-            lastTwoReviews.map((review, idx) => (
-              <div
-                key={idx}
-                style={{
-                  border: "1px solid #eee",
-                  borderRadius: "10px",
-                  padding: "1rem",
-                  marginBottom: "1rem",
-                  backgroundColor: "#fafafa",
-                }}
-              >
-                <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-                  {review.rating ? `⭐ ${review.rating}/5` : "No rating"}
-                </div>
-                <div>{review.opinion || "No review provided"}</div>
-                <div style={{ fontSize: "0.9rem", color: "#666", marginTop: "0.5rem" }}>
-                  {review.author || "Anonymous"} –{" "}
-                  {review.date
-                    ? new Date(review.date).toLocaleDateString("en-US")
-                    : "Unknown date"}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+      {/* Responsive CSS */}
+      <style>{`
+        @media (max-width: 900px) {
+          .main-section-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
