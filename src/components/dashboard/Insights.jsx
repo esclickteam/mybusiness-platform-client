@@ -1,4 +1,5 @@
 import React from "react";
+import "./Insights.css"; // מומלץ לשים את הסגנון בנפרד (או להשתמש ב-dashboard.css)
 
 const Insights = ({ stats }) => {
   if (!stats) return null;
@@ -26,27 +27,12 @@ const Insights = ({ stats }) => {
   };
 
   return (
-    <div
-      style={{
-        direction: "ltr",
-        display: "flex",
-        flexDirection: "column",
-        gap: "15px",
-        fontSize: "1.05rem",
-        fontFamily: "Poppins, sans-serif",
-      }}
-    >
+    <div className="insights-section">
       {/* Profile Views Section */}
       <div
+        className="views-change"
+        style={{ color: changeColor(viewsDiff) }}
         title="Change in profile views compared to last week"
-        style={{
-          color: changeColor(viewsDiff),
-          fontWeight: "600",
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          flexWrap: "wrap",
-        }}
       >
         {changeIcon(viewsDiff)} Change in profile views:{" "}
         {viewsDiff === 0
@@ -59,16 +45,9 @@ const Insights = ({ stats }) => {
 
       {/* Upcoming Appointments Section */}
       <div
-        style={{
-          backgroundColor: upcoming > 0 ? "#d4edda" : "#f8d7da",
-          padding: "10px 12px",
-          borderRadius: "8px",
-          color: upcoming > 0 ? "#155724" : "#721c24",
-          fontWeight: "600",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
+        className={`appointments-info ${
+          upcoming > 0 ? "success" : "danger"
+        }`}
       >
         📆{" "}
         {upcoming > 0
@@ -77,21 +56,6 @@ const Insights = ({ stats }) => {
             } this week`
           : "No appointments scheduled this week"}
       </div>
-
-      {/* Suggestion Message */}
-      {!upcoming && (
-        <div
-          style={{
-            marginTop: "5px",
-            fontWeight: "400",
-            fontSize: "0.9rem",
-            color: "#555",
-            paddingLeft: "6px",
-          }}
-        >
-          
-        </div>
-      )}
     </div>
   );
 };

@@ -426,7 +426,7 @@ const DashboardPage = () => {
           </nav>
 
           <div className="dp-tip">
-            <div className="dp-tip__title">AI Insight</div>
+            
             <p className="dp-tip__text">
               
             </p>

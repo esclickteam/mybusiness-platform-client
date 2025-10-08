@@ -1,0 +1,50 @@
+/* ========= Centered Insights Section ========= */
+.insights-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* ממורכז אנכית */
+  justify-content: center;   /* ממורכז אופקית */
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+  gap: 12px;
+  font-family: "Poppins", sans-serif;
+}
+
+.insights-section > div {
+  text-align: center;
+  margin: 0 auto;
+  max-width: 90%;
+}
+
+.views-change {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.appointments-info {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  width: fit-content;
+  text-align: center;
+}
+
+.appointments-info.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.appointments-info.danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* רספונסיביות */
+@media (max-width: 480px) {
+  .insights-section {
+    font-size: 0.95rem;
+    gap: 10px;
+  }
+}
