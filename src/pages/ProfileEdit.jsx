@@ -1,75 +1,73 @@
 // src/pages/ProfileEdit.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { fetchCities } from '../data/cities'; // 👈 שימוש בפונקציה הדינמית
-import './BusinessList.css'; // reuses the dropdown CSS
+import React, { useState } from 'react';
+import './BusinessList.css'; // לשמירה על עיצוב אחיד
 
 export default function ProfileEdit() {
   const [city, setCity] = useState('');
-  const [openCity, setOpenCity] = useState(false);
-  const [cities, setCities] = useState([]);       // 👈 ערים דינמיות
-  const [loadingCities, setLoadingCities] = useState(true);
-  const wrapperCityRef = useRef(null);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
 
-  // טעינת ערים מה־API
-  useEffect(() => {
-    const loadCities = async () => {
-      setLoadingCities(true);
-      const fetched = await fetchCities();
-      setCities(fetched);
-      setLoadingCities(false);
-    };
-    loadCities();
-  }, []);
-
-  // סגירת dropdown בלחיצה מחוץ
-  useEffect(() => {
-    const handler = e => {
-      if (wrapperCityRef.current && !wrapperCityRef.current.contains(e.target)) {
-        setOpenCity(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  const filteredCities = cities.filter(c =>
-    city === '' || c.toLowerCase().includes(city.trim().toLowerCase())
-  );
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // כאן את יכולה לבצע שליחה לשרת / עדכון פרופיל
+    console.log({ name, email, phone, city });
+    alert('Profile saved successfully ✅');
+  };
 
   return (
     <div className="profile-page">
-      <form>
-        <label htmlFor="city-input">עיר:</label>
-        <div className="dropdown-wrapper" ref={wrapperCityRef}>
-          <input
-            id="city-input"
-            type="text"
-            className="filter-input"
-            placeholder={loadingCities ? "טוען ערים..." : "עיר (לדוגמה: תל אביב)"}
-            value={city}
-            onFocus={() => setOpenCity(true)}
-            onChange={e => { setCity(e.target.value); setOpenCity(true); }}
-            disabled={loadingCities}
-          />
-          {openCity && !loadingCities && (
-            <ul className="suggestions-list">
-              {filteredCities.length > 0 ? (
-                filteredCities.map((c, i) => (
-                  <li
-                    key={i}
-                    onClick={() => { setCity(c); setOpenCity(false); }}
-                  >
-                    {c}
-                  </li>
-                ))
-              ) : (
-                <li className="no-match">אין ערים מתאימות</li>
-              )}
-            </ul>
-          )}
-        </div>
-        {/* שדות נוספים של עמוד העריכה */}
-        <button type="submit">שמירה</button>
+      <form onSubmit={handleSubmit} className="profile-form">
+        <h2>Edit Profile</h2>
+
+        <label htmlFor="name-input">Business Name:</label>
+        <input
+          id="name-input"
+          type="text"
+          className="filter-input"
+          placeholder="Enter business name"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          required
+        />
+
+        <label htmlFor="email-input">Email:</label>
+        <input
+          id="email-input"
+          type="email"
+          className="filter-input"
+          placeholder="Enter email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required
+        />
+
+        <label htmlFor="phone-input">Phone:</label>
+        <input
+          id="phone-input"
+          type="tel"
+          className="filter-input"
+          placeholder="Enter phone number"
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
+        />
+
+        <label htmlFor="city-input">
+          City: <span style={{ color: "red" }}>*</span>
+        </label>
+        <input
+          id="city-input"
+          type="text"
+          className="filter-input"
+          placeholder="Enter city (e.g. New York)"
+          value={city}
+          onChange={e => setCity(e.target.value)}
+          required
+        />
+
+        <button type="submit" className="save-btn">
+          Save Changes
+        </button>
       </form>
     </div>
   );
