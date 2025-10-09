@@ -147,16 +147,17 @@ export default function HelpCenter() {
 
   return (
     <div className="help-center-container">
-      <h1>👋 Welcome to the Bizuply Help Center</h1>
+      {/* 🏁 HEADER */}
+      <h1>🚀 Bizuply Knowledge Hub</h1>
       <p>
-        Here you can find answers, guides, and tools to manage your digital
-        business.
+        Explore detailed guides, smart tools, and answers that help you grow your business with confidence.
       </p>
 
+      {/* 🔍 SEARCH */}
       <div className="search-bar">
         <input
           type="text"
-          placeholder='Search for a category like "Dashboard", "CRM", or "Business Profile"'
+          placeholder='Search for topics like "Dashboard", "CRM", or "AI Advisor"...'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           dir="ltr"
@@ -170,8 +171,9 @@ export default function HelpCenter() {
 
       {searchTerm.trim() === "" ? (
         <>
+          {/* 📰 FEATURED ARTICLES */}
           <section className="popular-articles">
-            <h2>Popular Articles</h2>
+            <h2>🌟 Featured Guides & Articles</h2>
             <div className="articles-grid">
               {popularArticles.map((article) => (
                 <div key={article.id} className="article-card">
@@ -189,8 +191,9 @@ export default function HelpCenter() {
             </div>
           </section>
 
+          {/* 📚 FAQ CATEGORIES */}
           <section className="faq-categories">
-            <h2>Select a FAQ Category</h2>
+            <h2>🧭 Explore by Category</h2>
             <div className="categories-grid">
               {faqCategories.map((category) => (
                 <div
@@ -212,7 +215,7 @@ export default function HelpCenter() {
         </>
       ) : (
         <section className="search-results">
-          <h2>Search Results for "{searchTerm}"</h2>
+          <h2>🔎 Search Results for "{searchTerm}"</h2>
 
           {filteredArticles.length > 0 ? (
             <div className="articles-grid">
@@ -258,8 +261,10 @@ export default function HelpCenter() {
         </section>
       )}
 
+      {/* 💬 CONTACT SUPPORT */}
       <section className="contact-us">
-        <h2>Need more help?</h2>
+        <h2>💡 Need Extra Help?</h2>
+        <p>Our support team is always here to assist you with anything you need.</p>
         <div>
           <button
             type="button"
@@ -267,7 +272,7 @@ export default function HelpCenter() {
             className="support-button"
             aria-label="Go to Business Support page"
           >
-            Go to Business Support Page
+            Contact Support
           </button>
         </div>
       </section>
