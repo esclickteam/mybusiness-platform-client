@@ -80,13 +80,13 @@
   background: #dcd1f9;
   align-self: flex-end;
   margin-left: auto;
-  text-align: right;
+  text-align: left;
 }
 
 .chat-bubble.from-them {
   background: #f0f0f0;
   align-self: flex-start;
-  margin-right: auto;
+  margin-left: auto;
   text-align: left;  /* הודעות מהלקוח מצופות משמאל */
 }
 

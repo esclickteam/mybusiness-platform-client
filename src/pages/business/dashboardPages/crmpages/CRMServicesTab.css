@@ -334,7 +334,7 @@
     border: none;
     border-bottom: 1px solid #eee;
     white-space: normal;
-    text-align: right;
+    text-align: left;
   }
   .services-table tbody td:last-child {
     border-bottom: none;

@@ -1,12 +1,12 @@
 /* styles/App.css */
 
+/* 🌈 Global Variables */
 :root {
-  /* צבעים גלובליים */
   --bg-start: #fdfcff;
   --bg-end:   #e4e8ff;
 }
 
-/* רקע גרדיאנט גלובלי על כל האפליקציה */
+/* 🌍 Global Gradient Background */
 html,
 body,
 #root {
@@ -14,11 +14,12 @@ body,
   padding: 0;
   height: 100%;
   background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
-  /* מאפשר גלילה בכל העמודים */
   overflow: auto;
+  direction: ltr;
+  text-align: left;
 }
 
-/* כפתורים בכרטיסיות - צבעוניים, גדולים ומודגשים יותר */
+/* 💜 Action Buttons */
 .action-button {
   padding: 10px 25px;
   border: none;
@@ -37,20 +38,23 @@ body,
   transform: scale(1.05);
 }
 
-/* כותרת האתר - גדולה יותר ובצבע סגול */
+/* 🏷️ Main Title */
 .main-title {
   color: #6a1b9a;
   font-size: 48px;
   margin-top: 20px;
+  text-align: left; /* שינוי חשוב ל-LTR */
 }
 
-/* כפתור תפריט והתחברות - בצד שמאל עם אימוג'ים מתאימים */
+/* 🔝 Navbar - aligned to the right side in LTR */
 .navbar {
   display: flex;
   gap: 15px;
-  margin-left: auto;
+  margin-left: 0;
+  margin-right: auto; /* הפוך מהעברית */
 }
 
+/* 🧭 Menu & Login Buttons */
 .menu-button,
 .login-button {
   background-color: transparent;
@@ -64,6 +68,8 @@ body,
 .login-button:hover {
   color: #ccc;
 }
+
+/* 📱 Tablet Layout */
 @media (max-width: 768px) {
   .main-title {
     font-size: 36px;
@@ -78,7 +84,7 @@ body,
 
   .navbar {
     justify-content: center;
-    margin-left: 0;
+    margin: 0;
     gap: 10px;
   }
 
@@ -89,6 +95,7 @@ body,
   }
 }
 
+/* 📱 Mobile Layout */
 @media (max-width: 480px) {
   .main-title {
     font-size: 28px;

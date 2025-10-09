@@ -89,7 +89,7 @@
 .conversation-selector {
   max-width: 900px;
   margin: 1rem auto 2rem;
-  text-align: right; /* עברית ימין לשמאל */
+  text-align: left; /* עברית ימין לשמאל */
 }
 
 .conversation-selector h3 {
@@ -110,7 +110,7 @@
   margin-bottom: 6px;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  text-align: right; /* עברית ימין לשמאל */
+  text-align: left; /* עברית ימין לשמאל */
 }
 
 .conversation-selector li.active,
@@ -135,13 +135,13 @@
 .bubble.user {
   background-color: #e0d9ff;
   align-self: flex-end;
-  text-align: right;
+  text-align: left;
 }
 
 .bubble.assistant {
   background-color: #f0f0f0;
   align-self: flex-start;
-  text-align: right;
+  text-align: left;
 }
 /* טלפונים קטנים (עד 480px) */
 @media (max-width: 480px) {

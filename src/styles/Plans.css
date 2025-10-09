@@ -42,7 +42,7 @@
   list-style: none;
   padding: 0;
   margin-bottom: 25px;
-  text-align: right;
+  text-align: left;
   font-size: 0.95rem;
   color: #3a2373;
   line-height: 1.5;
@@ -260,7 +260,7 @@
   list-style: none;
   padding: 0;
   margin: 0 0 25px 0;
-  text-align: right;
+  text-align: left;
   font-weight: 700;
   font-size: 1rem;
   color: #4b2bd9; /* Dark purple text color from your design */

@@ -5,7 +5,7 @@
 /* =================================================================== */
 .client-calendar-wrapper {
   direction: rtl !important;
-  text-align: right;
+  text-align: left;
   padding: 1rem;
   background: #fff;
   border-radius: 16px;
@@ -13,7 +13,7 @@
   margin-top: 20px;
   max-width: 600px;
   margin-left: auto;
-  margin-right: auto;
+  margin-left: auto;
   font-family: 'Alef', sans-serif;
 }
 
@@ -190,7 +190,7 @@
 }
 .summary-box strong {
   color: #5e2fcf;
-  margin-right: 4px;
+  margin-left: 4px;
 }
 
 /* הודעת הצלחה */

@@ -42,7 +42,7 @@
   color: #6447c2;
   font-weight: bold;
   font-size: 1.12rem;
-  text-align: right;
+  text-align: left;
 }
 
 /* Active item (business/client name) */
@@ -52,7 +52,7 @@
   border-radius: 8px;
   font-size: 15px;
   color: #4a3aff;
-  text-align: right;
+  text-align: left;
   font-weight: 500;
   margin-top: 8px;
 }

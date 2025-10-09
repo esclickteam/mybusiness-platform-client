@@ -70,7 +70,7 @@
 .build-business-page-container td {
   border: 1px solid #ddd;
   padding: 10px 12px;
-  text-align: right;
+  text-align: left;
   font-size: 1rem;
   vertical-align: top;
 }

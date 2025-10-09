@@ -144,7 +144,7 @@
   color: #6c2bd9;
   font-weight: bold;
   cursor: pointer;
-  margin-right: 0.5rem;
+  margin-left: 0.5rem;
 }
 
 .review-details-box {
@@ -184,14 +184,14 @@
 
 .review-info-list {
   margin: 1.5rem 0;
-  padding-right: 1.2rem;
+  padding-left: 1.2rem;
   list-style-type: none;
 }
 
 .review-info-list li {
   margin-bottom: 0.6rem;
   position: relative;
-  padding-right: 2rem;
+  padding-left: 2rem;
   font-weight: 500;
 }
 
@@ -215,7 +215,7 @@
 .rating-parameters-table td {
   border: 1px solid #ccc;
   padding: 10px;
-  text-align: right;
+  text-align: left;
 }
 
 .rating-parameters-table th {

@@ -154,7 +154,7 @@
   }
   .dashboard-content {
     flex: 1;
-    margin-right: 0; /* יתעדכן דינמית לפי מצב הסיידבר */
+    margin-left: 0; /* יתעדכן דינמית לפי מצב הסיידבר */
     padding: 1rem !important;
     padding-top: 60px !important; /* למקם מתחת לכפתור */
     box-sizing: border-box;

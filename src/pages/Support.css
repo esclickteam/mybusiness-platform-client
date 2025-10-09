@@ -272,7 +272,7 @@
   }
   .donation-currency {
     font-weight: 600;
-    margin-right: 6px;
+    margin-left: 6px;
     color: #2b3fa3;
   }
   .donation-input {
@@ -306,7 +306,7 @@
   }
   .support-progress-marker.last-marker .support-progress-label {
     transform: translateX(-120%);
-    text-align: right;
+    text-align: left;
     max-width: 100px;
   }
   #paypal-button-container {

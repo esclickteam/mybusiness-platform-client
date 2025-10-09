@@ -41,7 +41,7 @@
   direction: rtl;
   font-size: 1rem;
   line-height: 1.5;
-  text-align: right;
+  text-align: left;
   word-break: break-word;
   overflow-wrap: break-word;
 }
@@ -64,7 +64,7 @@
   word-break: break-word !important;
   overflow-wrap: break-word !important;
   direction: rtl;
-  text-align: right;
+  text-align: left;
 }
 
 .chat-input {
@@ -106,7 +106,7 @@
 
 .markdown-message ol,
 .markdown-message ul {
-  padding-right: 1.2em;
+  padding-left: 1.2em;
   margin: 0.2em 0;
   list-style-position: inside;
   direction: rtl;

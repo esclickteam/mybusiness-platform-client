@@ -203,7 +203,7 @@
   margin-bottom: 2.5rem;
   padding: 2rem 1.5rem 1.5rem 1.5rem;
   max-width: 600px;
-  margin-right: auto;
+  margin-left: auto;
   margin-left: auto;
 }
 .payment-methods h4 {
@@ -257,12 +257,12 @@
   margin-bottom: 2.5rem;
   padding: 2rem 1.5rem 1.5rem 1.5rem;
   max-width: 600px;
-  margin-right: auto;
+  margin-left: auto;
   margin-left: auto;
   padding-top: 1.3rem;
 }
 .shipping-settings h4 {
-  text-align: right;
+  text-align: left;
   font-size: 1.2em;
   font-weight: 700;
   color: #3e1766;
@@ -304,7 +304,7 @@
 }
 .shipping-cost-input {
   margin-top: 0.3em;
-  margin-right: 10px;
+  margin-left: 10px;
   padding: 8px 13px;
   font-size: 15px;
   border-radius: 9px;

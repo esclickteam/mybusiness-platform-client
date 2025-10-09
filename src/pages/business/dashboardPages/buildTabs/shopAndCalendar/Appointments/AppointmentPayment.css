@@ -27,7 +27,7 @@
     margin-bottom: 2rem;
     max-width: 320px;
     margin-left: auto;
-    margin-right: auto;
+    margin-left: auto;
     box-sizing: border-box;
   }
   
@@ -98,7 +98,7 @@
   /* תוויות */
   .credit-card-form label,
   .phone-form label {
-    text-align: right;
+    text-align: left;
     font-weight: bold;
     color: #333;
     font-size: 0.95rem;

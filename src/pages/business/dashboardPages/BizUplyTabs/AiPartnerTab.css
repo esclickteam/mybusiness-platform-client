@@ -257,7 +257,7 @@
   max-height: 80vh;
   box-shadow: 0 5px 20px rgba(0,0,0,0.2);
   box-sizing: border-box;
-  text-align: right;
+  text-align: left;
   font-size: 16px;
   color: #222;
   overflow-y: auto;
@@ -306,7 +306,7 @@
 .modal-content button + button {
   background-color: #ccc;
   color: #333;
-  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .modal-content button + button:hover:not(:disabled) {

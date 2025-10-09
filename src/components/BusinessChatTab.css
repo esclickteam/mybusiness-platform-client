@@ -365,7 +365,7 @@
   height: 32px;
   position: relative;
   margin-left: 5px;
-  margin-right: 2px;
+  margin-left: 2px;
 }
 .avatar-wrapper img {
   width: 100%;
@@ -387,7 +387,7 @@
 .audio-length {
   font-size: 11px;
   color: #917cbe;
-  margin-right: 4px;
+  margin-left: 4px;
   direction: ltr;
   opacity: 0.93;
 }
@@ -404,7 +404,7 @@
 .preview-timer {
   color: #7c43bd;
   font-size: 17px;
-  margin-right: 9px;
+  margin-left: 9px;
   font-weight: 600;
 }
 .send-btn, .discard-btn, .preview-btn.trash {
@@ -455,8 +455,8 @@
   /* העסק – לימין */
   align-self: flex-end;
   margin-left: 32px;
-  margin-right: 0;
-  text-align: right;
+  margin-left: 0;
+  text-align: left;
   background: #e3ffe5;
   border-radius: 18px 18px 4px 18px;
 }
@@ -464,7 +464,7 @@
 .chat-container.business .message.theirs {
   /* הלקוח – לשמאל */
   align-self: flex-start;
-  margin-right: 32px;
+  margin-left: 32px;
   margin-left: 0;
   text-align: left;
   background: #fff;

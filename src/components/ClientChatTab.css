@@ -46,15 +46,15 @@
 /* User (client) message – aligned to the right */
 .chat-container.client .message.mine {
   margin-left: auto;
-  margin-right: 32px;
+  margin-left: 32px;
   background: #dcf8c6;
-  text-align: right;
+  text-align: left;
   border-radius: 18px 18px 4px 18px;
 }
 
 /* Business message – aligned to the left */
 .chat-container.client .message.theirs {
-  margin-right: auto;
+  margin-left: auto;
   margin-left: 32px;
   background: #fff;
   text-align: left;
@@ -155,7 +155,7 @@
   outline: none;
   transition: border-color 0.2s;
   direction: rtl;
-  text-align: right;
+  text-align: left;
   resize: none;
   max-height: 120px;
   min-height: 38px;
@@ -218,7 +218,7 @@
   border: none;
   border-radius: 18px;
   padding: 5px 18px;
-  margin-right: 6px;
+  margin-left: 6px;
   font-size: 15px;
   cursor: pointer;
   transition: background 0.16s;
@@ -417,7 +417,7 @@
   font-size: 11px;
   color: #555;
   min-width: 40px;
-  text-align: right;
+  text-align: left;
   user-select: none;
 }
 
@@ -446,8 +446,8 @@
 /* General responsiveness */
 @media (max-width: 768px) {
   .message { max-width: 90%; padding: 8px 12px 6px 10px; font-size: 14px; }
-  .chat-container.client .message.mine { margin-left: 16px; margin-right: 0; }
-  .chat-container.client .message.theirs { margin-right: 16px; margin-left: 0; }
+  .chat-container.client .message.mine { margin-left: 16px; margin-left: 0; }
+  .chat-container.client .message.theirs { margin-left: 16px; margin-left: 0; }
   .inputBar { padding: 8px 10px 8px 8px; min-height: 56px; gap: 6px; }
   .inputBar textarea, .inputField {
     font-size: 14px; padding: 10px 12px; border-radius: 22px;
@@ -457,8 +457,8 @@
 
 @media (max-width: 400px) {
   .message { max-width: 100%; padding: 6px 10px 5px 8px; font-size: 13px; }
-  .chat-container.client .message.mine { margin-left: 8px; margin-right: 0; }
-  .chat-container.client .message.theirs { margin-right: 8px; margin-left: 0; }
+  .chat-container.client .message.mine { margin-left: 8px; margin-left: 0; }
+  .chat-container.client .message.theirs { margin-left: 8px; margin-left: 0; }
   .inputBar textarea, .inputField {
     font-size: 13px;
     padding: 8px 10px;

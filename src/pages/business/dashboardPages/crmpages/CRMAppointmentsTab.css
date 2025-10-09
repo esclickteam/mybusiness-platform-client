@@ -140,7 +140,7 @@
   background-color: #f8f8f8;
   color: #222 !important;  /* לוודא צבע טקסט כהה */
   font-weight: 700;
-  text-align: right;
+  text-align: left;
   user-select: none;
   padding: 0.75rem 0.9rem;
   border-bottom: 1.5px solid #ddd;
@@ -165,7 +165,7 @@
 /* תאים */
 .appointments-table td {
   padding: 0.55rem 0.9rem;
-  text-align: right;
+  text-align: left;
   vertical-align: middle;
   word-wrap: break-word;
   border-radius: 8px;

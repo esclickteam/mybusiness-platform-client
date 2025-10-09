@@ -10,7 +10,7 @@
 
 .settings-form label {
   font-weight: bold;
-  text-align: right;
+  text-align: left;
   color: #333;
   user-select: none;
 }

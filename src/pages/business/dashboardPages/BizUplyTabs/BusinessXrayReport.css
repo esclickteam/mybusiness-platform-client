@@ -48,7 +48,7 @@
     padding: 2rem;
     line-height: 1.8;
     direction: rtl;
-    text-align: right;
+    text-align: left;
     word-break: break-word;
     overflow-wrap: break-word;
   }

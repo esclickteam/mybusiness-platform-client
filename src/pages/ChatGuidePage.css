@@ -72,7 +72,7 @@
 .chat-guide-container td {
   border: 1px solid #ddd;
   padding: 10px 12px;
-  text-align: right; /* RTL alignment */
+  text-align: left; /* RTL alignment */
   vertical-align: top;
 }
 

@@ -176,8 +176,8 @@
   font-weight: 800;
   color: #682bba;
   margin-bottom: 18px;
-  text-align: right;
-  margin-right: 18px;
+  text-align: left;
+  margin-left: 18px;
 }
 
 /* כרטיס שירות */
@@ -234,7 +234,7 @@
   font-size: 1.12em;
   font-weight: 700;
   margin: 6px 0 8px;
-  text-align: right;
+  text-align: left;
 }
 .service-card .service-duration {
   font-size: 1.07em;
@@ -251,7 +251,7 @@
 /* ממשק בחירת תאריך */
 .date-picker {
   margin: 20px 0;
-  text-align: right;
+  text-align: left;
 }
 .date-picker input[type="date"] {
   padding: 8px 12px;
@@ -272,7 +272,7 @@
 .slots-list {
   margin: 20px auto;
   max-width: 500px;
-  text-align: right;
+  text-align: left;
 }
 .slots-list h3 {
   color: #7329b8;
