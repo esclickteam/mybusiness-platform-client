@@ -1,12 +1,12 @@
-/* 🌎 Help Center – Modern LTR Design */
+/* 🌐 HELP CENTER – MODERN LTR DESIGN (2025 EDITION) */
 .help-center-container {
   max-width: 1200px;
   margin: 60px auto;
   padding: 40px 25px;
   direction: ltr;
   font-family: "Poppins", "Inter", sans-serif;
-  color: #1e1e2f;
-  background: linear-gradient(180deg, #fafaff 0%, #f3f4ff 100%);
+  color: #1f1f29;
+  background: linear-gradient(180deg, #f9f9ff 0%, #eef1ff 100%);
   animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -15,7 +15,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 🌐 Headings */
+/* 🏷️ TITLES */
 h1 {
   font-size: 2.8rem;
   color: #5a0fb0;
@@ -24,14 +24,23 @@ h1 {
   margin-bottom: 15px;
 }
 
+h2 {
+  font-size: 1.9rem;
+  color: #5a0fb0;
+  font-weight: 600;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
 p {
   font-size: 1.15rem;
   text-align: center;
   color: #444;
-  margin-bottom: 45px;
+  margin-bottom: 40px;
+  line-height: 1.6;
 }
 
-/* 🔍 Search Bar */
+/* 🔍 SEARCH BAR */
 .search-bar {
   position: relative;
   max-width: 650px;
@@ -40,18 +49,18 @@ p {
 
 .search-bar input {
   width: 100%;
-  padding: 14px 55px 14px 20px;
+  padding: 14px 50px 14px 20px;
   border-radius: 14px;
-  border: 2px solid #d5ccff;
+  border: 2px solid #d4cdfc;
   font-size: 1rem;
   background-color: #fff;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 
 .search-bar input:focus {
   border-color: #6a11cb;
-  box-shadow: 0 0 10px rgba(106, 17, 203, 0.2);
+  box-shadow: 0 0 10px rgba(106, 17, 203, 0.25);
   outline: none;
 }
 
@@ -64,16 +73,13 @@ p {
   color: #666;
 }
 
-/* 📰 Popular Articles */
-.popular-articles {
+/* 📰 FEATURED ARTICLES */
+.featured-section {
   margin-bottom: 70px;
 }
 
-.popular-articles h2 {
-  text-align: center;
-  font-size: 1.9rem;
+.featured-section h2 {
   color: #5a0fb0;
-  margin-bottom: 30px;
 }
 
 .articles-grid {
@@ -83,12 +89,12 @@ p {
 }
 
 .article-card {
-  background: #fff;
+  background: #ffffff;
   border-radius: 18px;
   padding: 25px;
-  box-shadow: 0 6px 20px rgba(90, 15, 176, 0.1);
-  transition: all 0.3s ease;
   border: 1px solid rgba(90, 15, 176, 0.08);
+  box-shadow: 0 4px 14px rgba(90, 15, 176, 0.1);
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -97,7 +103,7 @@ p {
 
 .article-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 10px 28px rgba(90, 15, 176, 0.2);
+  box-shadow: 0 10px 25px rgba(90, 15, 176, 0.2);
 }
 
 .article-title {
@@ -111,7 +117,6 @@ p {
   color: #555;
   line-height: 1.5;
   margin-bottom: 20px;
-  flex-grow: 1;
 }
 
 .more-info-button {
@@ -130,14 +135,12 @@ p {
   box-shadow: 0 4px 12px rgba(90, 15, 176, 0.3);
 }
 
-/* 📚 FAQ Categories */
-.faq-categories {
-  margin-bottom: 70px;
+/* 📚 FAQ CATEGORIES */
+.faq-section {
+  margin-bottom: 80px;
 }
 
-.faq-categories h2 {
-  text-align: center;
-  font-size: 1.9rem;
+.faq-section h2 {
   color: #5a0fb0;
   margin-bottom: 30px;
 }
@@ -149,7 +152,7 @@ p {
 }
 
 .category-card {
-  background: linear-gradient(145deg, #ffffff, #f4f4ff);
+  background: linear-gradient(145deg, #ffffff, #f3f3ff);
   border: 1px solid rgba(90, 15, 176, 0.1);
   border-radius: 16px;
   padding: 30px 20px;
@@ -169,16 +172,57 @@ p {
   box-shadow: 0 8px 20px rgba(90, 15, 176, 0.25);
 }
 
-/* 💬 Contact Section */
-.contact-us {
+/* 💡 RECOMMENDED ARTICLES */
+.recommended-section {
+  margin: 70px auto;
+  text-align: center;
+}
+
+.recommended-section h2 {
+  color: #5a0fb0;
+  margin-bottom: 25px;
+}
+
+.recommended-list {
+  list-style: none;
+  padding: 0;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.recommended-list li {
+  background-color: #fafbff;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  padding: 14px 18px;
+  font-size: 1rem;
+  color: #333;
+  border-left: 4px solid #6a11cb;
+  transition: all 0.3s ease;
+}
+
+.recommended-list li:hover {
+  background-color: #f2f3ff;
+  transform: translateX(4px);
+}
+
+/* 💬 CONTACT SUPPORT */
+.contact-section {
   text-align: center;
   margin-top: 80px;
 }
 
-.contact-us h2 {
+.contact-section h2 {
   font-size: 1.8rem;
   color: #2c1250;
   margin-bottom: 20px;
+}
+
+.contact-section p {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 30px;
 }
 
 .support-button {
@@ -198,7 +242,7 @@ p {
   box-shadow: 0 6px 14px rgba(90, 15, 176, 0.25);
 }
 
-/* 🤖 ChatBot */
+/* 🤖 CHAT BOT */
 .chatbot-section {
   position: fixed !important;
   bottom: 25px !important;
@@ -238,6 +282,31 @@ p {
   overflow-y: auto !important;
   padding: 20px !important;
   background-color: #f8f9fb !important;
+  font-size: 15px !important;
+  color: #333 !important;
+}
+
+.chatbot-messages p {
+  margin: 5px 0 !important;
+  padding: 12px 18px !important;
+  border-radius: 25px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+  max-width: 75% !important;
+  white-space: pre-line !important;
+}
+
+.chatbot-messages .user {
+  background-color: #daf5d4 !important;
+  color: #222 !important;
+  align-self: flex-end !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.chatbot-messages .bot {
+  background-color: #e8eaed !important;
+  color: #222 !important;
+  align-self: flex-start !important;
+  border-bottom-left-radius: 0 !important;
 }
 
 .chatbot-input {
@@ -283,15 +352,17 @@ p {
   transform: scale(1.05) !important;
 }
 
-/* 📱 Responsive */
-@media (max-width: 992px) {
-  .articles-grid, .categories-grid {
+/* 📱 RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+  .articles-grid,
+  .categories-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 600px) {
-  .articles-grid, .categories-grid {
+@media (max-width: 768px) {
+  .articles-grid,
+  .categories-grid {
     grid-template-columns: 1fr;
   }
 
@@ -304,5 +375,24 @@ p {
     width: 90% !important;
     right: 5% !important;
     bottom: 15px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  .article-card {
+    padding: 20px;
+  }
+
+  .category-card {
+    padding: 25px 15px;
+  }
+
+  .support-button {
+    padding: 12px 28px;
+    font-size: 1rem;
   }
 }
