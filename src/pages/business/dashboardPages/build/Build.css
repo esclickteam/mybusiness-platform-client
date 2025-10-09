@@ -14,6 +14,8 @@
 
 
 
+
+
 .build-wrapper .chat-section {
   flex: 1 1 300px;       /* יתפוס את השטח הפנוי, יכול לכווץ עד 300px */
   display: flex;
