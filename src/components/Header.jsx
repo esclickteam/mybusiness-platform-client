@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../images/logo_final.svg"; // SVG לוגו
+import logo from "../images/logo_final.svg"; // SVG logo
 import { FaBars, FaChevronLeft } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
-// Shared links (קטגוריות ניווט ראשיות)
+// Shared links (main navigation categories)
 const navLinks = [
   { to: "/features", label: "Features" },
   { to: "/solutions", label: "Solutions" },
@@ -54,7 +54,7 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Desktop nav */}
+        {/* Desktop navigation */}
         <div className="nav-links desktop-only">
           {navLinks.map((item) => link(item.to, item.label))}
         </div>
@@ -83,7 +83,7 @@ export default function Header() {
           )}
         </div>
 
-        {/* Mobile hamburger */}
+        {/* Mobile hamburger menu */}
         <div className="menu-toggle mobile-only">
           <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
@@ -91,7 +91,7 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* Mobile drawer */}
+      {/* Mobile side drawer */}
       {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
@@ -104,7 +104,7 @@ export default function Header() {
             </div>
 
             <div className="menu-scroll">
-              {/* CTA + Auth */}
+              {/* Auth/CTA section */}
               <div className="mobile-auth">
                 {!user ? (
                   <>
@@ -143,7 +143,7 @@ export default function Header() {
                 )}
               </div>
 
-              {/* Nav links */}
+              {/* Navigation links */}
               <div className="menu-section">
                 {navLinks.map((item) => link(item.to, item.label))}
               </div>

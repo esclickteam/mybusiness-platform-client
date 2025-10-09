@@ -4,20 +4,20 @@ export async function loginWithPublicToken(publicToken) {
       `https://esclick.co.il/api/affiliate/login/${publicToken}`,
       {
         method: "GET",
-        credentials: "include",        // חשוב כדי שה-cookie יישמר אוטומטית
+        credentials: "include",        // Important so the cookie is saved automatically
         headers: { "Accept": "application/json" },
       }
     );
 
     if (!response.ok) {
-      throw new Error("משווק לא נמצא או שגיאה בשרת");
+      throw new Error("Affiliate not found or server error");
     }
 
     const data = await response.json();
-    return data.success === true;    // מחזיר true אם התחברנו בהצלחה
+    return data.success === true;    // Returns true if login was successful
 
   } catch (error) {
-    console.error("שגיאה בכניסה:", error.message);
+    console.error("Login error:", error.message);
     alert(error.message);
     return false;
   }

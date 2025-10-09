@@ -49,7 +49,7 @@ export default function CollabPartnersChat() {
       setMessages(historyRes.data.messages || []);
     } catch (e) {
       console.error(e);
-      alert("שגיאה בפתיחת השיחה, נסה שוב");
+      alert("Error opening chat, please try again.");
     }
   }, []);
 
@@ -77,7 +77,7 @@ export default function CollabPartnersChat() {
 
     const fromBusinessId = user?.businessId || user?.business?._id || null;
     if (!fromBusinessId) {
-      alert("משהו השתבש, אנא התחבר מחדש");
+      alert("Something went wrong, please log in again.");
       return;
     }
 
@@ -97,18 +97,18 @@ export default function CollabPartnersChat() {
         setMessages(prev => [...prev, ack.message]);
         setInput("");
       } else {
-        alert("שליחת ההודעה נכשלה: " + (ack.error || "שגיאה לא ידועה"));
+        alert("Failed to send message: " + (ack.error || "Unknown error"));
       }
     });
   };
 
   return (
     <div>
-      <h2>שותפי שיתוף פעולה</h2>
+      <h2>Collaboration Partners</h2>
       <ul>
         {partners.map(p => (
           <li key={p._id}>
-            {p.businessName} <button onClick={() => startChat(p._id)}>צ'אט</button>
+            {p.businessName} <button onClick={() => startChat(p._id)}>Chat</button>
           </li>
         ))}
       </ul>
@@ -116,7 +116,7 @@ export default function CollabPartnersChat() {
       {conversationId && (
         <div>
           <h3>
-            צ'אט עם {partners.find(p => p._id === selectedPartner)?.businessName || selectedPartner}
+            Chat with {partners.find(p => p._id === selectedPartner)?.businessName || selectedPartner}
           </h3>
           <div
             style={{
@@ -129,7 +129,7 @@ export default function CollabPartnersChat() {
           >
             {messages.map((m, i) => (
               <div key={i}>
-                <b>{m.from === (user?.businessId || user?.business?._id) ? "אני" : "הם"}:</b> {m.text}
+                <b>{m.from === (user?.businessId || user?.business?._id) ? "Me" : "Them"}:</b> {m.text}
               </div>
             ))}
             <div ref={messagesEndRef} />
@@ -137,7 +137,7 @@ export default function CollabPartnersChat() {
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="הקלד הודעה..."
+            placeholder="Type a message..."
             style={{ marginRight: 8 }}
             onKeyDown={e => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -147,7 +147,7 @@ export default function CollabPartnersChat() {
             }}
           />
           <button onClick={sendMessage} disabled={!input.trim()}>
-            שלח
+            Send
           </button>
         </div>
       )}

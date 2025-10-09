@@ -14,7 +14,7 @@ const API = axios.create({
   },
 });
 
-// פונקציה מרכזית להגדרת כותרת Authorization
+// Main function to set the Authorization header
 const setAuthToken = (token) => {
   if (token) {
     API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -23,10 +23,10 @@ const setAuthToken = (token) => {
   }
 };
 
-// קביעת הטוקן במעמד טעינת המודול
+// Set token when the module is loaded
 setAuthToken(localStorage.getItem("token"));
 
-// זיהוי מוקדי קצה של Authentication כדי להתעלם מהם ברענון טוקן
+// Detect Authentication endpoints to ignore them when refreshing token
 const isAuthEndpoint = (url) => {
   return [
     "/auth/me",
@@ -36,7 +36,7 @@ const isAuthEndpoint = (url) => {
   ].some((endpoint) => url.endsWith(endpoint));
 };
 
-// משתנים למעקב אחרי רענון טוקן ורישום callback
+// Variables for tracking token refresh and registering callbacks
 let isRefreshing = false;
 let refreshSubscribers = [];
 
@@ -49,7 +49,7 @@ function addRefreshSubscriber(callback) {
   refreshSubscribers.push(callback);
 }
 
-// Request interceptor: מוסיף כותרת Authorization מכל קריאה
+// Request interceptor: adds Authorization header to every request
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -70,7 +70,7 @@ API.interceptors.request.use(
   }
 );
 
-// Response interceptor: טיפול בתשובות שגיאה, כולל רענון טוקן
+// Response interceptor: handles error responses, including token refresh
 API.interceptors.response.use(
   (response) => {
     console.log(`API Response: ${response.status} ${response.config.url}`);
@@ -80,10 +80,10 @@ API.interceptors.response.use(
     const { response, config } = error;
     if (!response) {
       console.error("Network error:", error);
-      return Promise.reject(new Error("שגיאת רשת"));
+      return Promise.reject(new Error("Network error"));
     }
 
-    // טיפול ב-401/403 עבור קריאות שאינן Authentication
+    // Handle 401/403 for non-authentication requests
     if (
       (response.status === 401 || response.status === 403) &&
       !isAuthEndpoint(config.url) &&
@@ -129,7 +129,7 @@ API.interceptors.response.use(
       }
     }
 
-    // טיפול בשגיאות רגילות
+    // Handle standard errors
     const contentType = response.headers["content-type"] || "";
     let message;
     if (!contentType.includes("application/json")) {

@@ -9,17 +9,17 @@ export default function MonthCalendar({
   onPrevMonth,
   onNextMonth
 }) {
-  const weekdays = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startDay = new Date(year, month, 1).getDay();
 
-  // מבנה תאי התאריכים (ריקים + תאריכים)
+  // Build the date cells (empty + date numbers)
   const cells = [];
   for (let i = 0; i < startDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
   while (cells.length % 7 !== 0) cells.push(null);
 
-  const isSelected = day =>
+  const isSelected = (day) =>
     selectedDate &&
     day &&
     selectedDate.getFullYear() === year &&
@@ -28,34 +28,34 @@ export default function MonthCalendar({
 
   return (
     <div className="calendar-container">
-      {/* כותרת חודש ושנה עם חצים (אם התקבלו פונקציות) */}
+      {/* Month and year header with arrows (if handlers exist) */}
       <div className="calendar-header">
         {onPrevMonth && (
-          <button className="month-arrow" onClick={onPrevMonth} aria-label="חודש קודם">
+          <button className="month-arrow" onClick={onPrevMonth} aria-label="Previous month">
             ←
           </button>
         )}
         <div>
           <div className="month-hebrew">
-            {new Date(year, month).toLocaleString('he-IL', { month: 'long' })}
+            {new Date(year, month).toLocaleString('en-US', { month: 'long' })}
           </div>
           <div className="year">{year}</div>
         </div>
         {onNextMonth && (
-          <button className="month-arrow" onClick={onNextMonth} aria-label="חודש הבא">
+          <button className="month-arrow" onClick={onNextMonth} aria-label="Next month">
             →
           </button>
         )}
       </div>
 
-      {/* ימי השבוע */}
+      {/* Weekdays */}
       <div className="calendar-weekdays">
-        {weekdays.map(w => (
+        {weekdays.map((w) => (
           <div key={w} className="weekday">{w}</div>
         ))}
       </div>
 
-      {/* תאריכים */}
+      {/* Dates */}
       <div className="calendar-dates">
         {cells.map((day, idx) => (
           <div

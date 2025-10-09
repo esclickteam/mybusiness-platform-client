@@ -7,7 +7,7 @@ import "./BusinessCard.css";
 export default function BusinessCard({ business = {}, onClick }) {
   const {
     _id,
-    businessName = "שם העסק",
+    businessName = "Business Name",
     logo = "/images/placeholder.jpg",
     description = "",
     category = "",
@@ -40,25 +40,25 @@ export default function BusinessCard({ business = {}, onClick }) {
 
       {category && (
         <p className="business-card__info">
-          <FaTags /> <strong>קטגוריה:</strong> {category}
+          <FaTags /> <strong>Category:</strong> {category}
         </p>
       )}
 
       {description && (
         <p className="business-card__info">
-          <FaInfoCircle /> <strong>תיאור:</strong> {description}
+          <FaInfoCircle /> <strong>Description:</strong> {description}
         </p>
       )}
 
       {phone && (
         <p className="business-card__info">
-          <FaPhoneAlt /> <strong>טלפון:</strong> {phone}
+          <FaPhoneAlt /> <strong>Phone:</strong> {phone}
         </p>
       )}
 
       {city && (
         <p className="business-card__info">
-          <FaMapMarkerAlt /> <strong>עיר:</strong> {city}
+          <FaMapMarkerAlt /> <strong>City:</strong> {city}
         </p>
       )}
 
@@ -69,7 +69,7 @@ export default function BusinessCard({ business = {}, onClick }) {
           handleCardClick();
         }}
       >
-        צפה בפרופיל
+        View Profile
       </button>
     </div>
   );

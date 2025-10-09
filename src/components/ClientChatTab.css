@@ -1,6 +1,6 @@
 /* src/components/ClientChatTab.css */
 
-/* קונטיינר הצ'אט */
+/* Chat container */
 .chat-container.client {
   display: flex;
   flex-direction: column;
@@ -9,7 +9,7 @@
   background: #f6f1fb;
 }
 
-/* רשימת ההודעות */
+/* Message list */
 .message-list {
   flex: 1;
   overflow-y: auto;
@@ -20,13 +20,13 @@
   background: none;
 }
 
-/* אנימציית fadeIn */
+/* fadeIn animation */
 @keyframes fadeIn {
   0% { opacity: 0; transform: translateY(30%); }
   100% { opacity: 1; transform: none; }
 }
 
-/* בועה כללית */
+/* General bubble */
 .message {
   max-width: 72%;
   padding: 11px 16px 8px 12px;
@@ -41,29 +41,27 @@
   animation: fadeIn 0.42s cubic-bezier(.77,0,.18,1) both;
 }
 
-/* יישור והפרדה של הודעות בצד הלקוח */
+/* Message alignment and spacing */
 
-/* הודעת המשתמש (לקוח) – לימין */
+/* User (client) message – aligned to the right */
 .chat-container.client .message.mine {
-  /* מוחקים/מתעלמים מ־align-self */
-  margin-left: auto;    /* דוחף את הבועה לימין */
-  margin-right: 32px;   /* רווח רציף משמאל */
+  margin-left: auto;
+  margin-right: 32px;
   background: #dcf8c6;
   text-align: right;
   border-radius: 18px 18px 4px 18px;
 }
 
-/* הודעת העסק – לשמאל */
+/* Business message – aligned to the left */
 .chat-container.client .message.theirs {
-  /* מוחקים/מתעלמים מ־align-self */
-  margin-right: auto;   /* דוחף את הבועה לשמאל */
-  margin-left: 32px;    /* רווח רציף מימין */
+  margin-right: auto;
+  margin-left: 32px;
   background: #fff;
   text-align: left;
   border-radius: 18px 18px 18px 4px;
 }
 
-/* זמן בתוך הבועה */
+/* Time inside the bubble */
 .message .time {
   font-size: 11px;
   color: #878787;
@@ -74,7 +72,7 @@
   padding-left: 4px;
 }
 
-/* מטא־מידע בתוך הבועה */
+/* Meta info inside the bubble */
 .message .meta {
   display: flex;
   align-items: center;
@@ -83,7 +81,7 @@
   margin-top: 2px;
 }
 
-/* סימון קריאה - נקראה */
+/* Read indicator */
 .read-indicator {
   font-size: 14px;
   user-select: none;
@@ -91,7 +89,7 @@
   align-self: center;
 }
 
-/* הודעות מערכת */
+/* System messages */
 .system-message {
   background: #f1f1f6;
   color: #8b8b99;
@@ -102,7 +100,7 @@
   margin: 10px 0;
 }
 
-/* אינדיקטור “הלקוח מקליד…” */
+/* “User is typing…” indicator */
 .typing-indicator {
   padding: 0 20px 10px;
   color: #7c43bd;
@@ -116,14 +114,14 @@
   50% { opacity: 0.48; }
 }
 
-/* הודעה ריקה */
+/* Empty message */
 .empty {
   color: #aaa;
   text-align: center;
   padding: 22px 0 0;
 }
 
-/* אינדיקטור טעינה */
+/* Loading indicator */
 .loading {
   text-align: center;
   color: #777;
@@ -131,7 +129,7 @@
   padding: 12px 0;
 }
 
-/* שורת הקלט */
+/* Input bar */
 .inputBar {
   display: flex;
   flex-direction: row;
@@ -144,7 +142,7 @@
   flex-wrap: nowrap;
 }
 
-/* שדה הקלדה */
+/* Input field */
 .inputBar textarea,
 .inputField {
   flex: 1 1 auto;
@@ -170,7 +168,7 @@
   background: #f6edff;
 }
 
-/* גל הקלטה אנימציה */
+/* Recording wave animation */
 .waveform {
   display: flex;
   align-items: center;
@@ -191,7 +189,7 @@
   50% { transform: scaleY(1); }
 }
 
-/* אינטראקציות קול */
+/* Voice interaction */
 .preview-timer {
   font-size: 16px;
   font-weight: 600;
@@ -346,7 +344,7 @@
   max-width: 220px;
 }
 
-/* עיצוב נגן אודיו בסגנון וואטסאפ */
+/* WhatsApp-style audio player */
 .custom-audio-player {
   display: flex;
   align-items: center;
@@ -423,7 +421,7 @@
   user-select: none;
 }
 
-/* רספונסיביות קטנות */
+/* Small screen responsiveness */
 @media (max-width: 480px) {
   .custom-audio-player {
     max-width: 200px;
@@ -445,7 +443,7 @@
   }
 }
 
-/* רספונסיביות כללית */
+/* General responsiveness */
 @media (max-width: 768px) {
   .message { max-width: 90%; padding: 8px 12px 6px 10px; font-size: 14px; }
   .chat-container.client .message.mine { margin-left: 16px; margin-right: 0; }
@@ -469,7 +467,8 @@
     width: 28px; height: 28px; font-size: 18px;
   }
 }
-/* טאבלטים: בין 768 ל־1024 */
+
+/* Tablets: between 768 and 1024 */
 @media (min-width: 768px) and (max-width: 1024px) {
   .inputBar {
     gap: 10px;
@@ -486,7 +485,7 @@
   }
 }
 
-/* מסכים רחבים מאוד */
+/* Very wide screens */
 @media (min-width: 1440px) {
   .chat-container.client {
     max-width: 1200px;
@@ -500,7 +499,7 @@
   }
 }
 
-/* מובייל קטנטן: מתחת ל־350px */
+/* Tiny mobile screens: below 350px */
 @media (max-width: 350px) {
   .message {
     font-size: 12.5px;

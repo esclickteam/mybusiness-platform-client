@@ -3,17 +3,17 @@ const path = require('path');
 
 const BASE_URL = 'https://esclick.co.il';
 
-// רשימת דפים סטטיים מלאה
+// Full list of static pages
 const staticPages = [
-  { url: '', lastmod: '2025-07-09', changefreq: 'weekly', priority: 1.0 },           // דף הבית
-  { url: 'about', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.8 },     // אודות
-  { url: 'contact', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.7 },   // צור קשר
-  { url: 'terms', lastmod: '2025-06-25', changefreq: 'yearly', priority: 0.5 },      // תנאי שימוש
-  { url: 'privacy', lastmod: '2025-06-25', changefreq: 'yearly', priority: 0.5 },    // מדיניות פרטיות
-  { url: 'faq', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.6 },      // שאלות נפוצות
-  { url: 'how-it-works', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.7 }, // איך זה עובד
-  { url: 'join', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.6 },     // הצטרפות
-  { url: 'search', lastmod: '2025-07-09', changefreq: 'daily', priority: 0.9 },     // חיפוש
+  { url: '', lastmod: '2025-07-09', changefreq: 'weekly', priority: 1.0 },           // Homepage
+  { url: 'about', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.8 },     // About
+  { url: 'contact', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.7 },   // Contact
+  { url: 'terms', lastmod: '2025-06-25', changefreq: 'yearly', priority: 0.5 },      // Terms of Use
+  { url: 'privacy', lastmod: '2025-06-25', changefreq: 'yearly', priority: 0.5 },    // Privacy Policy
+  { url: 'faq', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.6 },       // FAQ
+  { url: 'how-it-works', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.7 }, // How It Works
+  { url: 'join', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.6 },      // Join
+  { url: 'search', lastmod: '2025-07-09', changefreq: 'daily', priority: 0.9 },      // Search
 ];
 
 function createUrlXml({ url, lastmod, changefreq, priority }) {

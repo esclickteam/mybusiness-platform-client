@@ -18,10 +18,10 @@ export default function BusinessConversationsList({ onSelectConversation }) {
       setLoading(true);
       setError("");
 
-      // לא שולחים token, שולחים את הפונקציה שמחזירה טוקן תקין
+      // Do not send a token; send the function that returns a valid token
       const sock = await createSocket(getValidAccessToken, logout, businessId);
 
-      if (!sock) return; // כנראה הפניית login כבר התבצעה
+      if (!sock) return; // Probably redirected to login already
 
       sock.connect();
       socketRef.current = sock;
@@ -30,14 +30,14 @@ export default function BusinessConversationsList({ onSelectConversation }) {
         if (res.ok) {
           setConversations(res.conversations || []);
         } else {
-          setError("שגיאה בטעינת שיחות: " + (res.error || ""));
+          setError("Error loading conversations: " + (res.error || ""));
           console.error("Error loading conversations:", res.error);
         }
         setLoading(false);
       });
 
       sock.on("connect_error", (err) => {
-        setError("שגיאה בחיבור לסוקט: " + err.message);
+        setError("Socket connection error: " + err.message);
         setLoading(false);
         console.error("Socket connect error:", err.message);
       });
@@ -51,9 +51,9 @@ export default function BusinessConversationsList({ onSelectConversation }) {
     };
   }, [initialized, businessId, getValidAccessToken, logout]);
 
-  if (loading) return <p>טוען שיחות...</p>;
+  if (loading) return <p>Loading conversations...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (conversations.length === 0) return <p>אין שיחות פעילות</p>;
+  if (conversations.length === 0) return <p>No active conversations</p>;
 
   return (
     <ul>
@@ -63,7 +63,7 @@ export default function BusinessConversationsList({ onSelectConversation }) {
           onClick={() => onSelectConversation(conv._id)}
           style={{ cursor: "pointer", padding: "8px 0" }}
         >
-          שיחה עם:{" "}
+          Conversation with:{" "}
           {(Array.isArray(conv.participants)
             ? conv.participants.filter((p) => p !== businessId)
             : []

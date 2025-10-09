@@ -1,12 +1,12 @@
 const checkFeatureAvailability = (feature, userPlan) => {
-    const featuresByPlan = {
-        VIP: ['פניות ללא הגבלה', 'צ\'אט עם לקוחות', 'תיאום תורים/שירותי בית', 'שיתוף פעולה בין עסקים'],
-        מקצועית: ['פניות ללא הגבלה', 'צ\'אט עם לקוחות', 'תיאום תורים/שירותי בית'],
-        מתקדמת: ['עד 50 פניות', 'צ\'אט עם לקוחות'],
-        חינמית: ['עמוד עסקי בלבד'],
-    };
+  const featuresByPlan = {
+    VIP: ['Unlimited inquiries', 'Chat with clients', 'Appointment scheduling / Home services', 'Business-to-business collaboration'],
+    Professional: ['Unlimited inquiries', 'Chat with clients', 'Appointment scheduling / Home services'],
+    Advanced: ['Up to 50 inquiries', 'Chat with clients'],
+    Free: ['Business page only'],
+  };
 
-    return featuresByPlan[userPlan].includes(feature);
-}
+  return featuresByPlan[userPlan].includes(feature);
+};
 
 export default checkFeatureAvailability;

@@ -5,14 +5,14 @@ import UnreadBadge from "./UnreadBadge";
 import styles from "./ConversationsList.module.css";
 
 /**
- * Sidebar that shows the list of conversations.
- * Works both for the **client app** and for the **business dashboard**.
+ * Sidebar displaying the list of conversations.
+ * Works for both the **client app** and the **business dashboard**.
  *
- * ‑ When `isBusiness=true` we show the business‑side wording and join the
- *   socket room of the given `businessId`.
- * ‑ We make sure to keep only the first conversation per partner so you
- *   don’t get duplicates when the same client re‑opens a chat.
- * ‑ `onSelect` is called with (conversationId, partnerId, partnerName).
+ * - When `isBusiness=true`, we show business-side labels and join
+ *   the socket room for the given `businessId`.
+ * - We ensure only the first conversation per partner is kept,
+ *   to avoid duplicates when the same client reopens a chat.
+ * - `onSelect` is called with (conversationId, partnerId, partnerName).
  */
 export default function ConversationsList({
   conversations = [],
@@ -29,7 +29,7 @@ export default function ConversationsList({
     ? "/api/messages/client-conversations"
     : "/api/messages/user-conversations";
 
-  // -------- REACT‑QUERY ----------
+  // -------- REACT-QUERY ----------
   const {
     data: fetchedConversations = [],
     isLoading,
@@ -40,7 +40,7 @@ export default function ConversationsList({
       const res = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      if (!res.ok) throw new Error("שגיאה בטעינת השיחות");
+      if (!res.ok) throw new Error("Error loading conversations");
       const json = await res.json();
       return json.conversations ?? json;
     },
@@ -58,18 +58,18 @@ export default function ConversationsList({
   }, [socket, businessId, isBusiness]);
 
   // -------- UI STATES ----------
-  if (isLoading) return <div className={styles.noSelection}>טוען שיחות…</div>;
+  if (isLoading) return <div className={styles.noSelection}>Loading conversations…</div>;
   if (error)
     return (
       <div className={styles.noSelection}>
-        שגיאה בטעינת שיחות: {error.message}
+        Error loading conversations: {error.message}
       </div>
     );
   if (!list.length)
-    return <div className={styles.noSelection}>עדיין אין שיחות</div>;
+    return <div className={styles.noSelection}>No conversations yet</div>;
 
   // -------- HELPERS ----------
-  /** Ensure we have a stable string id in every scenario */
+  /** Ensure a stable string ID in all cases */
   const getConversationId = (conv) =>
     (conv.conversationId ?? conv._id ?? conv.id)?.toString() ?? "";
 
@@ -88,7 +88,7 @@ export default function ConversationsList({
     <div className={styles.conversationsList}>
       <div className={styles.sidebar}>
         <div className={styles.sidebarTitle}>
-          {isBusiness ? "שיחות עם לקוחות" : "שיחה עם עסק"}
+          {isBusiness ? "Chats with Clients" : "Chat with Business"}
         </div>
 
         {uniqueConvs.map((conv) => {

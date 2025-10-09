@@ -11,9 +11,9 @@ export default function PaymentSuccess() {
     async function fetchUser() {
       try {
         const { data } = await API.get("/auth/me", { withCredentials: true });
-        const user = data.user || data; // תלוי איך השרת מחזיר
+        const user = data.user || data; // depends on how the server responds
         setUser(user);
-        // אם אתם מחזירים טוקן חדש יש לעדכן גם אותו:
+        // If a new token is returned, update it as well:
         // setToken(data.accessToken);
 
         if (user.role === "business" && user.businessId) {
@@ -29,5 +29,5 @@ export default function PaymentSuccess() {
     fetchUser();
   }, [navigate, setUser, setToken]);
 
-  return <div>טוען נתונים לאחר תשלום, אנא המתן...</div>;
+  return <div>Loading data after payment, please wait...</div>;
 }

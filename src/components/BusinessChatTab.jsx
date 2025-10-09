@@ -5,12 +5,12 @@ import React, {
   useReducer,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
-import API from "../api"; // axios עם token מוגדר מראש
+import API from "../api"; // axios with token already configured
 import { useSocket } from "../context/socketContext";
-import { useNotifications } from "../context/NotificationsContext"; // ייבוא הקונטקסט של ההתראות
+import { useNotifications } from "../context/NotificationsContext"; // Import notifications context
 import "./BusinessChatTab.css";
 
-// עזר לנירמול הודעות
+// Helper to normalize messages
 function normalize(msg) {
   return {
     ...msg,
@@ -47,10 +47,10 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
     if (!audio) return;
     if (playing) audio.pause();
     else audio.play();
-    setPlaying(p => !p);
+    setPlaying((p) => !p);
   };
 
-  const formatTime = t =>
+  const formatTime = (t) =>
     `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
   const totalDots = 20;
   const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
@@ -87,10 +87,10 @@ function messagesReducer(state, action) {
   switch (action.type) {
     case "set": {
       const unique = [];
-      action.payload.forEach(msg => {
+      action.payload.forEach((msg) => {
         if (
           !unique.some(
-            m =>
+            (m) =>
               (m._id && (m._id === msg._id || m._id === msg.tempId)) ||
               (m.tempId && (m.tempId === msg._id || m.tempId === msg.tempId))
           )
@@ -102,7 +102,7 @@ function messagesReducer(state, action) {
     }
     case "append": {
       const idx = state.findIndex(
-        m =>
+        (m) =>
           (m._id && (m._id === action.payload._id || m._id === action.payload.tempId)) ||
           (m.tempId && (m.tempId === action.payload._id || m.tempId === action.payload.tempId))
       );
@@ -114,7 +114,7 @@ function messagesReducer(state, action) {
       return [...state, action.payload];
     }
     case "updateStatus": {
-      return state.map(m =>
+      return state.map((m) =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
           : m
@@ -133,7 +133,7 @@ export default function BusinessChatTab({
   conversationType = "user-business",
 }) {
   const socket = useSocket();
-  const { addNotification } = useNotifications(); // שימוש ב-context של ההתראות
+  const { addNotification } = useNotifications(); // Using notifications context
 
   const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
@@ -151,11 +151,11 @@ export default function BusinessChatTab({
     messagesRef.current = messages;
   }, [messages]);
 
-  const openConversation = async id => {
+  const openConversation = async (id) => {
     try {
       const res = await API.post(`/api/conversations/${id}/mark-read`);
       if (res.data.unreadCount !== undefined) {
-        setUnreadCounts(prev => ({ ...prev, [id]: 0 }));
+        setUnreadCounts((prev) => ({ ...prev, [id]: 0 }));
       }
     } catch (err) {
       console.error("Failed to mark messages read", err);
@@ -194,7 +194,7 @@ export default function BusinessChatTab({
   useEffect(() => {
     if (!socket || !businessId) return;
 
-    const handleMessage = msg => {
+    const handleMessage = (msg) => {
       const safeMsg = normalize(msg);
       const convId = msg.conversationId;
 
@@ -202,7 +202,7 @@ export default function BusinessChatTab({
         dispatch({ type: "append", payload: safeMsg });
       } else {
         dispatch({ type: "append", payload: safeMsg });
-        setUnreadCounts(prev => {
+        setUnreadCounts((prev) => {
           const prevCount = prev[convId] || 0;
           const newCount = prevCount + 1;
           if (prevCount === 0) {
@@ -219,7 +219,7 @@ export default function BusinessChatTab({
 
     const handleFirstClientMessage = ({ conversationId: convId, text, timestamp }) => {
       setFirstMessageAlert({ conversationId: convId, text, timestamp });
-      setUnreadCounts(prev => ({ ...prev, [convId]: (prev[convId] || 0) + 1 }));
+      setUnreadCounts((prev) => ({ ...prev, [convId]: (prev[convId] || 0) + 1 }));
     };
 
     const handleTyping = ({ from }) => {
@@ -229,8 +229,8 @@ export default function BusinessChatTab({
       handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
     };
 
-    const handleNewNotification = notification => {
-      addNotification(notification); // עדכון דרך Context ולא state מקומי
+    const handleNewNotification = (notification) => {
+      addNotification(notification); // Update via Context instead of local state
       console.log("New notification received:", notification);
     };
 
@@ -246,7 +246,6 @@ export default function BusinessChatTab({
     socket.on("typing", handleTyping);
     socket.on("newNotification", handleNewNotification);
     socket.on("newRecommendationNotification", handleNewNotification);
-
 
     return () => {
       socket.off("connect", handleConnect);
@@ -266,7 +265,7 @@ export default function BusinessChatTab({
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  const handleInput = e => {
+  const handleInput = (e) => {
     setInput(e.target.value);
     socket?.emit("typing", { conversationId, from: businessId });
   };
@@ -283,7 +282,7 @@ export default function BusinessChatTab({
     });
     setInput("");
 
-    socket.emit("sendMessage", { conversationId, from: businessId, to: customerId, text, tempId }, ack => {
+    socket.emit("sendMessage", { conversationId, from: businessId, to: customerId, text, tempId }, (ack) => {
       setSending(false);
       dispatch({
         type: "updateStatus",
@@ -295,9 +294,9 @@ export default function BusinessChatTab({
 
   const sorted = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-  const formatTime = ts => {
+  const formatTime = (ts) => {
     const d = new Date(ts);
-    return isNaN(d) ? "" : d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+    return isNaN(d) ? "" : d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
@@ -307,7 +306,7 @@ export default function BusinessChatTab({
         {unreadCount > 0 && <div className="unread-badge">{unreadCount}</div>}
       </div>
       <div className="message-list" ref={listRef}>
-        {sorted.length === 0 && <div className="empty">עדיין אין הודעות</div>}
+        {sorted.length === 0 && <div className="empty">No messages yet</div>}
         {sorted.map((m, i) => (
           <div
             key={`${m._id}-${m.tempId}-${i}`}
@@ -332,11 +331,11 @@ export default function BusinessChatTab({
             </div>
           </div>
         ))}
-        {isTyping && <div className="typing-indicator">הלקוח מקליד…</div>}
+        {isTyping && <div className="typing-indicator">The client is typing…</div>}
       </div>
       {firstMessageAlert && (
         <div className="first-message-alert">
-          הודעה ראשונה חדשה: "{firstMessageAlert.text}"
+          New first message: "{firstMessageAlert.text}"
           <button onClick={() => setFirstMessageAlert(null)}>×</button>
         </div>
       )}
@@ -344,10 +343,10 @@ export default function BusinessChatTab({
       <div className="inputBar">
         <textarea
           className="inputField"
-          placeholder="הקלד הודעה..."
+          placeholder="Type a message..."
           value={input}
           onChange={handleInput}
-          onKeyDown={e => {
+          onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               sendMessage();

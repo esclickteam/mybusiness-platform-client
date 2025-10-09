@@ -21,7 +21,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['framer-motion'],
-    include: ['chart.js', 'react-chartjs-2', 'jwt-decode'],  // הוסף כאן jwt-decode
+    include: ['chart.js', 'react-chartjs-2', 'jwt-decode'],  // Add jwt-decode here
   },
   server: {
     port: 3000,

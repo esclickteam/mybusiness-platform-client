@@ -6,7 +6,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.1);
   font-family: Arial, sans-serif;
-  direction: rtl;
+  direction: ltr;
   color: #222;
 }
 
@@ -29,26 +29,26 @@
   text-transform: capitalize;
 }
 
-/* עדכון שמות סטטוסים כדי להתאים לסטטוס מהקוד */
-.status-ממתין {
+/* Updated status names to match status from code */
+.status-pending {
   background-color: #f0ad4e;
   color: #fff;
 }
 
-.status-ממתין-לאישור,
-.status-ממתין-לחתימת-שותף {
+.status-waiting-approval,
+.status-waiting-partner-sign {
   background-color: #f0ad4e;
   color: #fff;
 }
 
-.status-מאושר,
+.status-approved,
 .status-fully_signed {
   background-color: #5cb85c;
   color: #fff;
 }
 
-.status-בוטל,
-.status-cancelled {
+.status-cancelled,
+.status-canceled {
   background-color: #d9534f;
   color: #fff;
 }
@@ -123,6 +123,7 @@ hr {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 @media (max-width: 600px) {
   .agreement-view-container {
     padding: 14px;

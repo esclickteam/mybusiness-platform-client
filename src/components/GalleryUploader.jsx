@@ -6,7 +6,7 @@ export default function GalleryUploader({ onUploaded }) {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setFiles(Array.from(e.target.files));
   };
 
@@ -14,16 +14,16 @@ export default function GalleryUploader({ onUploaded }) {
     if (files.length === 0) return;
     setUploading(true);
     const formData = new FormData();
-    files.forEach(file => formData.append("gallery", file));
+    files.forEach((file) => formData.append("gallery", file));
 
     try {
       const res = await axios.put("/business/my/gallery", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      onUploaded(res.data.gallery); // מערך של URLs
+      onUploaded(res.data.gallery); // array of URLs
     } catch (err) {
       console.error(err);
-      alert("שגיאה בהעלאת גלריה");
+      alert("Error uploading gallery");
     } finally {
       setUploading(false);
     }
@@ -31,14 +31,9 @@ export default function GalleryUploader({ onUploaded }) {
 
   return (
     <div>
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleChange}
-      />
+      <input type="file" accept="image/*" multiple onChange={handleChange} />
       <button onClick={handleUpload} disabled={uploading}>
-        {uploading ? "טוען…" : "העלה גלריה"}
+        {uploading ? "Loading…" : "Upload Gallery"}
       </button>
     </div>
   );

@@ -120,7 +120,7 @@ const CustomerChatPreview = ({ businessDetails, setMessages, messages }) => {
         recorder.start();
         setIsRecording(true);
       } catch (err) {
-        console.error("🎤 שגיאה בהפעלת מיקרופון:", err);
+        console.error("🎤 Microphone activation error:", err);
       }
     } else {
       mediaRecorder?.stop();
@@ -131,8 +131,8 @@ const CustomerChatPreview = ({ businessDetails, setMessages, messages }) => {
   const removePreview = () => setFilePreview(null);
 
   return (
-    <div className="customer-chat-preview" dir="rtl">
-      <h3>💬 צ'אט עם העסק</h3>
+    <div className="customer-chat-preview" dir="ltr">
+      <h3>💬 Chat with Business</h3>
 
       <div className="chat-box-wrapper" ref={chatBoxRef}>
         {filePreview && (
@@ -148,7 +148,7 @@ const CustomerChatPreview = ({ businessDetails, setMessages, messages }) => {
               ) : filePreview.type.startsWith('audio') ? (
                 <audio controls style={{ marginTop: '6px', width: '100%' }}>
                   <source src={filePreview.url} type={filePreview.type} />
-                  הדפדפן שלך לא תומך בניגון אודיו.
+                  Your browser does not support audio playback.
                 </audio>
               ) : (
                 <p>{`📎 ${filePreview.name}`}</p>
@@ -163,13 +163,13 @@ const CustomerChatPreview = ({ businessDetails, setMessages, messages }) => {
       <div className="chat-input-area">
         <input
           type="text"
-          placeholder="השם שלך"
+          placeholder="Your Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
         <textarea
-          placeholder="כתוב הודעה..."
+          placeholder="Write a message..."
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={2}
@@ -178,16 +178,16 @@ const CustomerChatPreview = ({ businessDetails, setMessages, messages }) => {
         <div className="chat-input-buttons">
           <button onClick={() => setShowAttach(!showAttach)}>📎</button>
           <button onClick={handleVoiceRecording}>
-            {isRecording ? '⏹️ עצור' : '🎙️ הקלט'}
+            {isRecording ? '⏹️ Stop' : '🎙️ Record'}
           </button>
-          <button onClick={handleSend}>שלח</button>
+          <button onClick={handleSend}>Send</button>
         </div>
 
         {showAttach && (
           <div className="attachment-popup">
-            <button onClick={() => document.getElementById('fileInputImage').click()}>תמונה</button>
-            <button onClick={() => document.getElementById('fileInputVideo').click()}>וידאו</button>
-            <button onClick={() => document.getElementById('fileInputFile').click()}>קובץ</button>
+            <button onClick={() => document.getElementById('fileInputImage').click()}>Image</button>
+            <button onClick={() => document.getElementById('fileInputVideo').click()}>Video</button>
+            <button onClick={() => document.getElementById('fileInputFile').click()}>File</button>
           </div>
         )}
 

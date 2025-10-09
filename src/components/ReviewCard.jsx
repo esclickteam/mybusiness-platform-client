@@ -12,15 +12,15 @@ const StarDisplay = ({ rating }) => {
   );
 };
 
-// מילון תרגום השדות לעברית עם האייקונים
+// Rating field labels in English with icons
 const ratingLabels = {
-  service: "שירות 🤝",
-  professional: "מקצועיות 💼",
-  timing: "עמידה בזמנים ⏰",
-  availability: "זמינות 📞",
-  value: "תמורה למחיר 💰",
-  goal: "השגת מטרה 🎯",
-  experience: "חוויה כללית 🎉",
+  service: "Service 🤝",
+  professional: "Professionalism 💼",
+  timing: "Punctuality ⏰",
+  availability: "Availability 📞",
+  value: "Value for Money 💰",
+  goal: "Goal Achievement 🎯",
+  experience: "Overall Experience 🎉",
 };
 
 export default function ReviewCard({ review }) {
@@ -37,12 +37,12 @@ export default function ReviewCard({ review }) {
       : 0;
 
   const date = review.createdAt
-    ? new Date(review.createdAt).toLocaleDateString("he-IL", {
+    ? new Date(review.createdAt).toLocaleDateString("en-US", {
         day: "numeric",
         month: "numeric",
         year: "numeric",
       })
-    : "לא ידוע";
+    : "Unknown";
 
   return (
     <div
@@ -58,19 +58,19 @@ export default function ReviewCard({ review }) {
       }}
     >
       <div style={{ marginBottom: 8, fontWeight: "bold", fontSize: "1.1rem" }}>
-        דירוג ממוצע: {average.toFixed(1)} <StarDisplay rating={average} />
+        Average Rating: {average.toFixed(1)} <StarDisplay rating={average} />
       </div>
 
       <div style={{ marginBottom: 8 }}>
-        <strong>חוות דעת:</strong> {review.comment || review.text || "—"}
+        <strong>Review:</strong> {review.comment || review.text || "—"}
       </div>
 
       <div style={{ marginBottom: 8 }}>
-        <strong>תאריך:</strong> {date}
+        <strong>Date:</strong> {date}
       </div>
 
       <div style={{ marginBottom: 12 }}>
-        <strong>מאת:</strong> {review.client?.name || review.client || "אנונימי"}
+        <strong>By:</strong> {review.client?.name || review.client || "Anonymous"}
       </div>
 
       <button
@@ -85,7 +85,7 @@ export default function ReviewCard({ review }) {
           marginBottom: 10,
         }}
       >
-        {showDetails ? "הסתר פירוט דירוג" : "📋 פירוט דירוג"}
+        {showDetails ? "Hide Rating Details" : "📋 Show Rating Details"}
       </button>
 
       {showDetails && review.ratings && (
@@ -98,7 +98,7 @@ export default function ReviewCard({ review }) {
                 justifyContent: "space-between",
                 marginTop: 4,
                 fontSize: "0.95rem",
-                direction: "rtl",
+                direction: "ltr",
               }}
             >
               <span>{ratingLabels[key] || key}</span>

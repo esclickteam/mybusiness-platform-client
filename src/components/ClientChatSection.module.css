@@ -1,6 +1,6 @@
 /* src/components/ClientChatSection.module.css */
 
-/* רקע עמוד כללי */
+/* General page background */
 .whatsappBg {
   min-height: 100vh;
   background: #f3edff;
@@ -10,7 +10,7 @@
   padding: 0;
 }
 
-/* קונטיינר אחיד: כולל גם סיידבר וגם chat, עם צל מקצועי */
+/* Main container: includes both sidebar and chat, with a professional shadow */
 .chatContainer {
   display: flex;
   flex-direction: row;
@@ -25,18 +25,18 @@
   overflow: hidden;
 }
 
-/* סיידבר ימני - חלק מהקונטיינר, לא box נפרד! */
+/* Right sidebar – part of the container, not a separate box! */
 .sidebarInner {
   width: 240px;
-  background: #f7f3ff; /* צבע עדין ושקט */
+  background: #f7f3ff; /* soft and calm color */
   border-left: 2px solid #e5dbff;
   display: flex;
   flex-direction: column;
   padding: 22px 16px;
-  /* אין box-shadow! */
+  /* no box-shadow! */
 }
 
-/* כותרת הסיידבר */
+/* Sidebar title */
 .sidebarTitle {
   margin: 0 0 10px 0;
   color: #6447c2;
@@ -45,7 +45,7 @@
   text-align: right;
 }
 
-/* פריט פעיל (שם העסק/לקוח) */
+/* Active item (business/client name) */
 .convItemActive {
   padding: 13px 10px;
   background: #ece6ff;
@@ -57,7 +57,7 @@
   margin-top: 8px;
 }
 
-/* אזור ההודעות */
+/* Message area */
 .chatArea {
   flex: 1;
   display: flex;
@@ -65,14 +65,14 @@
   width: 100%;
   min-width: 0;
   min-height: 0;
-  height: 100%; /* חשוב */
+  height: 100%; /* important */
   background: none;
   padding: 0;
   position: relative;
   overflow: hidden;
 }
 
-/* הודעה ריקה */
+/* Empty message */
 .emptyMessage {
   flex: 1;
   display: flex;
@@ -91,14 +91,14 @@
   padding: 20px;
 }
 
-/* הכנסת ה-inputBar לתחתית (בהנחה ש-clientChatTab משתמש ב-inputBar דומה) */
+/* Input bar positioning (assuming ClientChatTab uses a similar inputBar) */
 .inputBar {
   flex-shrink: 0;
   position: relative;
   z-index: 2;
 }
 
-/* אופציונלי – למי שרוצה שב־mobile הכל ירד לטור אחד */
+/* Optional – make layout a single column on mobile */
 @media (max-width: 700px) {
   .chatContainer {
     flex-direction: column-reverse;
@@ -121,11 +121,12 @@
   }
 }
 
-/* הסרת צל כפול */
+/* Remove duplicate shadow */
 .sidebarInner {
   box-shadow: none !important;
 }
-/* מובייל קטן מאוד - למשל אייפון SE */
+
+/* Very small mobile screens – e.g., iPhone SE */
 @media (max-width: 360px) {
   .sidebarInner {
     padding: 10px 6px;
@@ -140,7 +141,7 @@
   }
 }
 
-/* טאבלטים - אייפד, גלקסי טאבלט וכד' */
+/* Tablets – iPad, Galaxy Tab, etc. */
 @media (min-width: 700px) and (max-width: 1024px) {
   .chatContainer {
     height: 90vh;
@@ -156,7 +157,7 @@
   }
 }
 
-/* מסכים רחבים מאוד */
+/* Very wide screens */
 @media (min-width: 1280px) {
   .chatContainer {
     max-width: 1150px;

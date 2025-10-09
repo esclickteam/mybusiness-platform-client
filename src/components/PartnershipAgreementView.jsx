@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../api"; 
-import html2pdf from "html2pdf.js";  // הוספת הספרייה
+import html2pdf from "html2pdf.js";  // added library
 import "./PartnershipAgreementView.css";
 
 export default function PartnershipAgreementView({ agreementId, currentBusinessId }) {
@@ -24,7 +24,7 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
         setAgreement(res.data);
       } catch (err) {
         console.error("Error loading agreement:", err);
-        alert("שגיאה בטעינת ההסכם");
+        alert("Error loading the agreement");
       }
       setLoading(false);
     }
@@ -33,12 +33,12 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "-";
-    return new Date(dateStr).toLocaleDateString("he-IL");
+    return new Date(dateStr).toLocaleDateString("en-US");
   };
 
   async function handleSaveSignature() {
     if (!sigPadRef.current || sigPadRef.current.isEmpty()) {
-      alert("אנא חתום תחילה");
+      alert("Please sign first");
       return;
     }
     const signatureDataUrl = sigPadRef.current.getTrimmedCanvas().toDataURL();
@@ -55,7 +55,7 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
       setAgreement(res.data);
     } catch (err) {
       console.error("Error saving signature:", err);
-      alert("שגיאה בשמירת החתימה");
+      alert("Error saving signature");
     }
     setSaving(false);
   }
@@ -63,7 +63,7 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
   const downloadPdf = () => {
     const element = document.getElementById("agreement-content");
     if (!element) {
-      alert("ההסכם לא נטען עדיין");
+      alert("The agreement is not loaded yet");
       return;
     }
 
@@ -78,55 +78,55 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
     html2pdf().set(options).from(element).save();
   };
 
-  if (loading) return <div>טוען הסכם...</div>;
-  if (!agreement) return <div>הסכם לא נמצא</div>;
+  if (loading) return <div>Loading agreement...</div>;
+  if (!agreement) return <div>Agreement not found</div>;
 
   const userSigned = agreement.signatures?.[userSide]?.signed;
 
   return (
     <div className="agreement-view-container">
-      <div id="agreement-content" style={{ direction: "rtl" }}>
-        <h2 className="agreement-title">הסכם שיתוף פעולה: {agreement.title}</h2>
+      <div id="agreement-content" style={{ direction: "ltr" }}>
+        <h2 className="agreement-title">Partnership Agreement: {agreement.title}</h2>
 
-        <p><strong>עסק שולח:</strong> {agreement.sender?.businessName || "-"}</p>
-        <p><strong>עסק מקבל:</strong> {agreement.receiver?.businessName || "-"}</p>
-        <p><strong>תיאור:</strong> {agreement.description}</p>
-        <p><strong>מה תספק במסגרת ההסכם:</strong> {agreement.giving}</p>
-        <p><strong>מה תקבל במסגרת ההסכם:</strong> {agreement.receiving}</p>
-        <p><strong>סוג שיתוף פעולה:</strong> {agreement.type}</p>
-        <p><strong>עמלות / תשלום:</strong> {agreement.paymentDetails || "-"}</p>
-        <p><strong>תקופת ההסכם:</strong> {formatDate(agreement.startDate)} - {formatDate(agreement.endDate)}</p>
-        <p><strong>ניתן לבטל בכל שלב:</strong> {agreement.cancelAnytime ? "כן" : "לא"}</p>
-        <p><strong>סעיף סודיות:</strong> {agreement.confidentiality ? "כן" : "לא"}</p>
-        <p><strong>סטטוס:</strong> <span className={`status status-${agreement.status}`}>{agreement.status}</span></p>
+        <p><strong>Sender Business:</strong> {agreement.sender?.businessName || "-"}</p>
+        <p><strong>Receiver Business:</strong> {agreement.receiver?.businessName || "-"}</p>
+        <p><strong>Description:</strong> {agreement.description}</p>
+        <p><strong>What You Will Provide:</strong> {agreement.giving}</p>
+        <p><strong>What You Will Receive:</strong> {agreement.receiving}</p>
+        <p><strong>Collaboration Type:</strong> {agreement.type}</p>
+        <p><strong>Commissions / Payment:</strong> {agreement.paymentDetails || "-"}</p>
+        <p><strong>Agreement Period:</strong> {formatDate(agreement.startDate)} - {formatDate(agreement.endDate)}</p>
+        <p><strong>Cancelable Anytime:</strong> {agreement.cancelAnytime ? "Yes" : "No"}</p>
+        <p><strong>Confidentiality Clause:</strong> {agreement.confidentiality ? "Yes" : "No"}</p>
+        <p><strong>Status:</strong> <span className={`status status-${agreement.status}`}>{agreement.status}</span></p>
 
         <hr />
 
-        <h3>חתימות:</h3>
+        <h3>Signatures:</h3>
         <div className="signatures-container">
           <div>
-            <strong>חתימת היוצר:</strong><br />
+            <strong>Creator’s Signature:</strong><br />
             {agreement.signatures?.createdBy?.signed ? (
               <img
                 src={agreement.signatures.createdBy.signatureDataUrl}
-                alt="חתימת היוצר"
+                alt="Creator's Signature"
                 className="signature-image"
               />
             ) : (
-              "לא חתום"
+              "Not signed"
             )}
           </div>
 
           <div>
-            <strong>חתימת הצד השני:</strong><br />
+            <strong>Partner’s Signature:</strong><br />
             {agreement.signatures?.invitedBusiness?.signed ? (
               <img
                 src={agreement.signatures.invitedBusiness.signatureDataUrl}
-                alt="חתימת הצד השני"
+                alt="Partner's Signature"
                 className="signature-image"
               />
             ) : (
-              "לא חתום"
+              "Not signed"
             )}
           </div>
         </div>
@@ -135,19 +135,19 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
       <hr />
 
       <button onClick={downloadPdf} style={{ marginBottom: 20, padding: "10px 20px", borderRadius: 8, cursor: "pointer" }}>
-        הורד חוזה כ-PDF
+        Download PDF
       </button>
 
-      {/* כפתורי חתימה */}
+      {/* Signature buttons */}
       {userSide === "createdBy" && !userSigned && !showSign && (
         <button className="sign-button" onClick={() => setShowSign(true)}>
-          חתום עכשיו
+          Sign Now
         </button>
       )}
 
       {userSide === "invitedBusiness" && !userSigned && !showSign && (
         <button className="sign-button" onClick={() => setShowSign(true)}>
-          חתום עכשיו
+          Sign Now
         </button>
       )}
 
@@ -159,11 +159,11 @@ export default function PartnershipAgreementView({ agreementId, currentBusinessI
             ref={sigPadRef}
           />
           <div className="signature-buttons">
-            <button onClick={() => sigPadRef.current.clear()} disabled={saving}>נקה</button>
+            <button onClick={() => sigPadRef.current.clear()} disabled={saving}>Clear</button>
             <button onClick={handleSaveSignature} disabled={saving}>
-              {saving ? "שומר..." : "שמור חתימה"}
+              {saving ? "Saving..." : "Save Signature"}
             </button>
-            <button onClick={() => setShowSign(false)} disabled={saving}>בטל</button>
+            <button onClick={() => setShowSign(false)} disabled={saving}>Cancel</button>
           </div>
         </div>
       )}

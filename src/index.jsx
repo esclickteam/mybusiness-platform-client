@@ -9,17 +9,17 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 import useIdleLogout from "./hooks/useIdleLogout";  
 import "./styles/index.css";
 
-// Polyfill ל‑Buffer (חלק מהספריות דורשות)
+// Polyfill for Buffer (required by some libraries)
 import { Buffer } from "buffer";
 if (!window.Buffer) window.Buffer = Buffer;
 
 const queryClient = new QueryClient();
 const App = lazy(() => import("./App"));
 
-// קומפוננטה לעטיפת ה-App עם idle logout
+// Component wrapping App with idle logout
 function AppWithIdleLogout() {
   const { logout } = useAuth();
-  useIdleLogout(logout, 10 * 60 * 1000); // יציאה אחרי 10 דקות אי פעילות
+  useIdleLogout(logout, 10 * 60 * 1000); // Logout after 10 minutes of inactivity
   return <App />;
 }
 

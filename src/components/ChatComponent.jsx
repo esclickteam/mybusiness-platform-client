@@ -12,7 +12,7 @@ export default function ChatComponent({
 }) {
   const socket = useSocket();
   const { user, authToken, initialized } = useAuth();
-  // משיגים את ה־businessId מתוך ה־AuthContext
+  // Retrieve businessId from AuthContext
   const businessId =
     user?.businessId?.toString() || user?.business?._id?.toString() || null;
 
@@ -26,7 +26,7 @@ export default function ChatComponent({
     customerIdProp || null
   );
 
-  // טעינת שיחות לעסק
+  // Load conversations for business
   useEffect(() => {
     if (!businessId || !socket) return;
 
@@ -61,7 +61,7 @@ export default function ChatComponent({
         }
       );
     } else {
-      // לקוח פותח שיחה
+      // Customer starts conversation
       if (!conversationId && partnerId) {
         setLoadingInit(true);
         socket.emit(
@@ -87,7 +87,7 @@ export default function ChatComponent({
     }
   }, [businessId, isBusiness, partnerId, socket, conversationId]);
 
-  // עדכון currentCustomerId כשמקצים שיחה
+  // Update currentCustomerId when assigning conversation
   useEffect(() => {
     if (isBusiness && conversationId && conversations.length) {
       const conv = conversations.find(
@@ -102,10 +102,10 @@ export default function ChatComponent({
     }
   }, [conversationId, isBusiness, conversations, businessId]);
 
-  // מצבי טעינה
-  if (!initialized) return <p>⏳ טוען פרטי משתמש…</p>;
-  if (isBusiness && loadingConvs) return <p>⏳ טוען שיחות…</p>;
-  if (!conversationId) return <p>⏳ אין שיחה זמינה</p>;
+  // Loading states
+  if (!initialized) return <p>⏳ Loading user details…</p>;
+  if (isBusiness && loadingConvs) return <p>⏳ Loading conversations…</p>;
+  if (!conversationId) return <p>⏳ No available conversation</p>;
 
   return isBusiness ? (
     <BusinessChatTab
@@ -114,7 +114,7 @@ export default function ChatComponent({
       businessId={businessId}
       customerId={currentCustomerId}
       customerName={
-        // השם של הלקוח, אם ידוע לכם כבר ב–conversations תוכלו לחלץ אותו
+        // The customer’s name, if already available in conversations you can extract it here
         conversations.find(c => (c._id ?? c.conversationId) === conversationId)
           ?.otherParty?.name || ""
       }

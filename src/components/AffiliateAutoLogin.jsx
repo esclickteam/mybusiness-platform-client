@@ -19,8 +19,8 @@ export default function AffiliateAutoLogin() {
         await affiliateLogin(publicToken);
         navigate("/affiliate/dashboard");
       } catch (err) {
-        setError(err.message || "שגיאה בכניסה כמשווק");
-        // אפשר גם לנווט אחרי שנייה לדף login, אם רוצים:
+        setError(err.message || "Error logging in as affiliate");
+        // You can also redirect to the login page after a second, if desired:
         // setTimeout(() => navigate("/login"), 2000);
       }
     }
@@ -37,7 +37,7 @@ export default function AffiliateAutoLogin() {
 
   return (
     <div style={{ padding: 20, textAlign: "center" }}>
-      <h2>טוען את דף המשווק…</h2>
+      <h2>Loading affiliate page…</h2>
     </div>
   );
 }

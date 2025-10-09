@@ -17,12 +17,12 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
 
-  // מונע דריסת ערכים תקפים ב-null/undefined
+  // Prevent overwriting valid values with null/undefined
   const safeSetBusinessId = (newId) => setBusinessId((prev) => newId ?? prev);
 
   const socketRef = useRef(null);
 
-  // יצירת חיבור סוקטון
+  // Create socket connection
   useEffect(() => {
     if (!initialized || !userId) return;
     if (socketRef.current) return;
@@ -47,7 +47,7 @@ export default function ClientChatSection() {
     });
 
     socketRef.current.on("connect_error", (err) =>
-      setError("שגיאה בחיבור לסוקט: " + err.message)
+      setError("Socket connection error: " + err.message)
     );
 
     return () => {
@@ -56,7 +56,7 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId]);
 
-  // טעינת שיחות לפי פרמטרים
+  // Load conversations based on parameters
   useEffect(() => {
     setLoading(true);
     setError("");
@@ -91,7 +91,7 @@ export default function ClientChatSection() {
         })
         .catch((err) => {
           console.error("Error fetching user conversations:", err);
-          setError("שגיאה בטעינת שיחות המשתמש");
+          setError("Error loading user conversations");
           setLoading(false);
         });
     } else {
@@ -100,10 +100,10 @@ export default function ClientChatSection() {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (!data.ok) throw new Error(data.error || "שגיאה בטעינת שיחה");
+          if (!data.ok) throw new Error(data.error || "Error loading conversation");
           const participants = data.conversation.participants || [];
           if (!participants.includes(clientId)) {
-            throw new Error("השיחה לא מכילה את הלקוח המבוקש");
+            throw new Error("The conversation does not include the requested client");
           }
           setConversationId(threadId);
           setBusinessName(data.conversation.businessName || "");
@@ -118,7 +118,7 @@ export default function ClientChatSection() {
     }
   }, [threadId, clientId, businessIdFromParams]);
 
-  // טעינת שם העסק אם חסר
+  // Load business name if missing
   useEffect(() => {
     if (businessId && !businessName) {
       const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
@@ -132,23 +132,23 @@ export default function ClientChatSection() {
           return res.json();
         })
         .then((data) => {
-          // בהתאם למבנה התגובה מהשרת
+          // According to server response structure
           if (data.business?.businessName) {
             setBusinessName(data.business.businessName);
           } else if (data.businessName) {
             setBusinessName(data.businessName);
           } else {
-            setBusinessName("עסק לא ידוע");
+            setBusinessName("Unknown business");
           }
         })
         .catch((err) => {
           console.error("Error fetching business name:", err);
-          setBusinessName("עסק לא ידוע");
+          setBusinessName("Unknown business");
         });
     }
   }, [businessId, businessName]);
 
-  // מאזין להודעות בסוקט והיסטוריה
+  // Listen for messages and history via socket
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !socket.connected || !conversationId) {
@@ -164,7 +164,7 @@ export default function ClientChatSection() {
         setError("");
       } else {
         setMessages([]);
-        setError("שגיאה בטעינת ההודעות: " + (res.error || "לא ידוע"));
+        setError("Error loading messages: " + (res.error || "Unknown"));
       }
       setLoading(false);
     });
@@ -204,16 +204,16 @@ export default function ClientChatSection() {
     };
   }, [conversationId, businessId]);
 
-  if (loading) return <div className={styles.loading}>טוען…</div>;
+  if (loading) return <div className={styles.loading}>Loading…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.whatsappBg}>
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
-          <h3 className={styles.sidebarTitle}>שיחה עם העסק</h3>
+          <h3 className={styles.sidebarTitle}>Chat with the business</h3>
           <div className={styles.convItemActive}>
-            {businessName || "עסק לא ידוע"}
+            {businessName || "Unknown business"}
           </div>
         </aside>
         <section className={styles.chatArea}>

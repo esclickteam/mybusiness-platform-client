@@ -6,7 +6,7 @@ export default function LogoUploader({ onUploaded }) {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setFile(e.target.files[0]);
   };
 
@@ -23,7 +23,7 @@ export default function LogoUploader({ onUploaded }) {
       onUploaded(res.data.logo);
     } catch (err) {
       console.error(err);
-      alert("שגיאה בהעלאת לוגו");
+      alert("Error uploading logo");
     } finally {
       setUploading(false);
     }
@@ -33,7 +33,7 @@ export default function LogoUploader({ onUploaded }) {
     <div>
       <input type="file" accept="image/*" onChange={handleChange} />
       <button onClick={handleUpload} disabled={uploading}>
-        {uploading ? "טוען…" : "העלה לוגו"}
+        {uploading ? "Uploading…" : "Upload Logo"}
       </button>
     </div>
   );

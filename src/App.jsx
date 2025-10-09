@@ -29,10 +29,7 @@ import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
 const Support = lazy(() => import("./pages/Support"));
 
-
-
-
-// טעינה עצלה (lazy) של כל הרכיבים
+// Lazy loading of all components
 const HomePage            = lazy(() => import("./pages/Home"));
 const About               = lazy(() => import("./pages/About"));
 const SearchBusinesses    = lazy(() => import("./pages/SearchBusinesses"));
@@ -105,7 +102,7 @@ export default function App() {
     setFreeText("");
   };
 
-  // prefetch מוקדם של רכיבי דשבורד
+  // Prefetch dashboard components early
   useEffect(() => {
     preloadDashboardComponents();
   }, []);
@@ -120,9 +117,9 @@ export default function App() {
         <Header onToggleNotifications={toggleNotifications} />
         <ScrollToTop />
         <AiProvider>
-          <Suspense fallback={<div>🔄 טוען…</div>}>
+          <Suspense fallback={<div>🔄 Loading…</div>}>
             <Routes>
-              {/* דפים ציבוריים */}
+              {/* Public pages */}
               <Route path="/" element={<HomePage />} />
               <Route path="/about" element={<About />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -149,8 +146,6 @@ export default function App() {
               <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
              <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
              <Route path="/support" element={<Support />} />
-
-
 
               <Route
                 path="/business/collaborations/:tab?"
@@ -340,7 +335,7 @@ export default function App() {
                 }
               />
 
-              {/* דף ייעודי למשווק */}
+              {/* Dedicated affiliate page */}
               <Route
                 path="/affiliate/:affiliateId"
                 element={<AffiliatePage />}
@@ -355,16 +350,14 @@ export default function App() {
   }
 />
 
-
-
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
 
-            {/* מודאל AI גלובלי */}
+            {/* Global AI modal */}
             <AiModal />
 
-            {/* פאנל התראות גלובלי */}
+            {/* Global notifications panel */}
             {showNotifications && (
               <Notifications
                 onClose={() => setShowNotifications(false)}
@@ -378,7 +371,7 @@ export default function App() {
   );
 }
 
-// נשארים ה־wrappers שלך כפי שהם
+// Your wrappers remain unchanged
 export function BusinessChatListWrapper() {
   const { businessId } = useParams();
   const [convos, setConvos] = useState([]);
@@ -417,12 +410,12 @@ export function BusinessChatWrapper() {
   const { state } = useLocation();
   const { user, loading } = useAuth();
 
-  if (loading) return <div>טוען...</div>;
+  if (loading) return <div>Loading...</div>;
   if (!user || user.role !== "business") {
     return <Navigate to="/login" replace />;
   }
   if (!state?.conversationId) {
-    return <div>שגיאה: חסר conversationId</div>;
+    return <div>Error: Missing conversationId</div>;
   }
 
   return (
@@ -433,7 +426,7 @@ export function BusinessChatWrapper() {
       conversationId={state.conversationId}
       businessName={user.businessName}
       businessProfilePic={user.profilePic ||  "/default-business.png"}
-      clientName="לקוח"
+      clientName="Client"
       clientProfilePic="/default-client.png"
     />
   );

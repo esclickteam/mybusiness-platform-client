@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 
-// מאזין לפוש שנשלח מהשרת
+// Listener for push event sent from the server
 self.addEventListener("push", (event) => {
   if (!event.data) return;
 
@@ -8,17 +8,17 @@ self.addEventListener("push", (event) => {
   try {
     data = event.data.json();
   } catch (err) {
-    console.error("❌ שגיאה בפענוח נתוני Push:", err);
+    console.error("❌ Error parsing Push data:", err);
     return;
   }
 
-  const title = data.title || "📌 התראה חדשה";
+  const title = data.title || "📌 New Notification";
   const options = {
-    body: data.body || "יש לך הודעה חדשה",
-    icon: data.icon || "/icons/logo.png", // תעדכן אם יש לך אייקון
-    badge: "/icons/badge.png",            // לא חובה
+    body: data.body || "You have a new message",
+    icon: data.icon || "/icons/logo.png", // Update if you have a custom icon
+    badge: "/icons/badge.png",            // Optional
     data: {
-      url: data.data?.url || "/",         // עמוד שייפתח בלחיצה
+      url: data.data?.url || "/",         // Page to open when clicked
     },
   };
 
@@ -27,7 +27,7 @@ self.addEventListener("push", (event) => {
   );
 });
 
-// מאזין ללחיצה על ההתראה
+// Listener for notification click
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const url = event.notification.data?.url || "/";

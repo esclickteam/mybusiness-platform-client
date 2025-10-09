@@ -12,52 +12,52 @@ export default function HelpCenter() {
   const popularArticles = [
     {
       id: 1,
-      title: "בניית עמוד עסקי",
-      description: "צעד אחר צעד לבניית עמוד עסקי מושך שימשוך אליך לקוחות חדשים.",
+      title: "Building a Business Page",
+      description: "Step-by-step guide to creating an attractive business page that draws new clients.",
       url: businessId ? `/business/${businessId}/dashboard/articles/build-business-page` : "/",
     },
     {
       id: 2,
-      title: "שימוש נכון בצ'אט עם לקוחות",
-      description: "טיפים לניהול שיחות צ'אט חכמות שיחזקו את הקשר עם הלקוחות שלך.",
+      title: "Using the Client Chat Effectively",
+      description: "Tips for managing smart chat conversations that strengthen your client relationships.",
       url: businessId ? `/business/${businessId}/dashboard/articles/chat-guide` : "/",
     },
     {
       id: 3,
-      title: "דשבורד העסק",
-      description: "לגלות איך הדשבורד נותן לך שליטה מלאה ונראות מלאה על העסק.",
+      title: "Business Dashboard",
+      description: "Discover how the dashboard gives you full control and complete visibility over your business.",
       url: businessId ? `/business/${businessId}/dashboard/articles/dashboard-guide` : "/",
     },
     {
       id: 4,
-      title: "יומן תיאום תורים / CRM",
-      description: "ניהול תורים ולקוחות במקום אחד – פשוט ויעיל כמו שצריך.",
+      title: "Appointments / CRM",
+      description: "Manage appointments and clients in one place – simple and efficient, just as it should be.",
       url: businessId ? `/business/${businessId}/dashboard/articles/appointment-crm-guide` : "/",
     },
     {
       id: 5,
-      title: "יועץ עסקליק ושותף AI",
-      description: "הכירו את היועץ הדיגיטלי שישדרג את העסק עם בינה מלאכותית.",
+      title: "Bizuply AI Advisor",
+      description: "Meet your digital assistant that enhances your business with artificial intelligence.",
       url: businessId ? `/business/${businessId}/dashboard/articles/ai-companion` : "/",
     },
     {
       id: 6,
-      title: "שיתופי פעולה בין עסקים",
-      description: "איך להרחיב את העסק דרך שיתופי פעולה מנצחים עם עסקים אחרים.",
+      title: "Business Collaborations",
+      description: "Learn how to expand your business through powerful collaborations with other companies.",
       url: businessId ? `/business/${businessId}/dashboard/articles/business-collaboration` : "/",
     },
   ];
 
   const faqCategories = [
-    { id: 1, title: "פרופיל העסק", path: businessId ? `/business/${businessId}/dashboard/faq/profile` : "/" },
-    { id: 2, title: "דשבורד", path: businessId ? `/business/${businessId}/dashboard/faq/dashboard` : "/" },
-    { id: 3, title: "הודעות מלקוחות", path: businessId ? `/business/${businessId}/dashboard/faq/customer-messages` : "/" },
-    { id: 4, title: "שיתופי פעולה", path: businessId ? `/business/${businessId}/dashboard/faq/collaborations` : "/" },
+    { id: 1, title: "Business Profile", path: businessId ? `/business/${businessId}/dashboard/faq/profile` : "/" },
+    { id: 2, title: "Dashboard", path: businessId ? `/business/${businessId}/dashboard/faq/dashboard` : "/" },
+    { id: 3, title: "Client Messages", path: businessId ? `/business/${businessId}/dashboard/faq/customer-messages` : "/" },
+    { id: 4, title: "Collaborations", path: businessId ? `/business/${businessId}/dashboard/faq/collaborations` : "/" },
     { id: 5, title: "CRM", path: businessId ? `/business/${businessId}/dashboard/faq/crm` : "/" },
-    { id: 6, title: "יועץ עסקליק", path: businessId ? `/business/${businessId}/dashboard/faq/eskelik-advisor` : "/" },
-    { id: 7, title: "תוכנית שותפים", path: businessId ? `/business/${businessId}/dashboard/faq/affiliate-program` : "/" },
-    { id: 8, title: "טיפול בתקלות ושגיאות", path: businessId ? `/business/${businessId}/dashboard/faq/troubleshooting` : "/" },
-    { id: 9, title: "תמיכה טכנית", path: businessId ? `/business/${businessId}/dashboard/faq/technical-support` : "/" },
+    { id: 6, title: "Bizuply Advisor", path: businessId ? `/business/${businessId}/dashboard/faq/eskelik-advisor` : "/" },
+    { id: 7, title: "Affiliate Program", path: businessId ? `/business/${businessId}/dashboard/faq/affiliate-program` : "/" },
+    { id: 8, title: "Troubleshooting", path: businessId ? `/business/${businessId}/dashboard/faq/troubleshooting` : "/" },
+    { id: 9, title: "Technical Support", path: businessId ? `/business/${businessId}/dashboard/faq/technical-support` : "/" },
   ];
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -77,26 +77,26 @@ export default function HelpCenter() {
 
   return (
     <div className="help-center-container">
-      <h1>👋 ברוכים הבאים למרכז העזרה של עסקליק</h1>
-      <p>כאן תוכלו למצוא תשובות, מדריכים וכלים לניהול העסק הדיגיטלי שלכם.</p>
+      <h1>👋 Welcome to the Bizuply Help Center</h1>
+      <p>Here you can find answers, guides, and tools to manage your digital business.</p>
 
       <div className="search-bar">
         <input
           type="text"
-          placeholder='חפשו קטגוריה כמו "דשבורד", "CRM", "פרופיל העסק"'
+          placeholder='Search for a category like "Dashboard", "CRM", or "Business Profile"'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          dir="rtl"
-          aria-label="חיפוש קטגוריות ומאמרים"
+          dir="ltr"
+          aria-label="Search categories and articles"
           autoComplete="off"
         />
-        <span className="search-icon" role="img" aria-label="חיפוש">🔍</span>
+        <span className="search-icon" role="img" aria-label="Search">🔍</span>
       </div>
 
       {searchTerm.trim() === "" ? (
         <>
           <section className="popular-articles">
-            <h2>מאמרים פופולריים</h2>
+            <h2>Popular Articles</h2>
             <div className="articles-grid">
               {popularArticles.map((article) => (
                 <div key={article.id} className="article-card">
@@ -105,9 +105,9 @@ export default function HelpCenter() {
                   <Link
                     to={article.url}
                     className="more-info-button"
-                    aria-label={`מידע נוסף על ${article.title}`}
+                    aria-label={`More information about ${article.title}`}
                   >
-                    מידע נוסף
+                    Learn More
                   </Link>
                 </div>
               ))}
@@ -115,7 +115,7 @@ export default function HelpCenter() {
           </section>
 
           <section className="faq-categories">
-            <h2>בחר קטגוריה לשאלות נפוצות</h2>
+            <h2>Select a FAQ Category</h2>
             <div className="categories-grid">
               {faqCategories.map((category) => (
                 <div
@@ -127,7 +127,7 @@ export default function HelpCenter() {
                   onKeyPress={(e) => {
                     if (e.key === "Enter") handleCategoryClick(category.path);
                   }}
-                  aria-label={`פתח שאלות נפוצות בקטגוריה ${category.title}`}
+                  aria-label={`Open FAQs in category ${category.title}`}
                 >
                   {category.title}
                 </div>
@@ -137,7 +137,7 @@ export default function HelpCenter() {
         </>
       ) : (
         <section className="search-results">
-          <h2>תוצאות חיפוש עבור "{searchTerm}"</h2>
+          <h2>Search Results for "{searchTerm}"</h2>
 
           {filteredArticles.length > 0 ? (
             <div className="articles-grid">
@@ -145,14 +145,14 @@ export default function HelpCenter() {
                 <div key={article.id} className="article-card">
                   <p className="article-title">{article.title}</p>
                   <p className="article-description">{article.description}</p>
-                  <Link to={article.url} className="more-info-button" aria-label={`מידע נוסף על ${article.title}`}>
-                    מידע נוסף
+                  <Link to={article.url} className="more-info-button" aria-label={`More info about ${article.title}`}>
+                    Learn More
                   </Link>
                 </div>
               ))}
             </div>
           ) : (
-            <p>לא נמצאו מאמרים התואמים את החיפוש.</p>
+            <p>No articles matched your search.</p>
           )}
 
           {filteredCategories.length > 0 ? (
@@ -167,28 +167,28 @@ export default function HelpCenter() {
                   onKeyPress={e => {
                     if (e.key === "Enter") handleCategoryClick(category.path);
                   }}
-                  aria-label={`פתח שאלות נפוצות בקטגוריה ${category.title}`}
+                  aria-label={`Open FAQs in category ${category.title}`}
                 >
                   {category.title}
                 </div>
               ))}
             </div>
           ) : (
-            <p>לא נמצאו קטגוריות התואמות את החיפוש.</p>
+            <p>No categories matched your search.</p>
           )}
         </section>
       )}
 
       <section className="contact-us">
-        <h2>צריכים עזרה נוספת?</h2>
+        <h2>Need More Help?</h2>
         <div>
           <button
             type="button"
             onClick={() => navigate("/business-support")}
             className="support-button"
-            aria-label="עבור לעמוד תמיכה לעסקים"
+            aria-label="Go to Business Support page"
           >
-            עבור לעמוד התמיכה לעסקים
+            Go to Business Support Page
           </button>
         </div>
       </section>

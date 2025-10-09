@@ -31,7 +31,7 @@ export default function BusinessChatWrapper() {
         return;
       }
 
-      // כאן שולחים את הפונקציה getValidAccessToken, לא את הטוקן עצמו!
+      // Here we send the getValidAccessToken function, not the token itself!
       const sock = await createSocket(getValidAccessToken, logout, businessId);
       if (!sock) return;
 
@@ -155,7 +155,7 @@ export default function BusinessChatWrapper() {
             color: "#b5b5b5",
           }}
         >
-          בחר שיחה כדי לראות הודעות
+          Select a conversation to view messages
         </div>
       )}
     </div>

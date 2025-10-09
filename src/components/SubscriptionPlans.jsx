@@ -5,22 +5,22 @@ const SubscriptionPlans = ({ userPlan }) => {
         {
             name: 'VIP',
             price: 219,
-            features: ['פניות ללא הגבלה', 'צ\'אט עם לקוחות', 'תיאום תורים/שירותי בית', 'שיתוף פעולה בין עסקים'],
+            features: ['Unlimited inquiries', 'Chat with clients', 'Appointment scheduling / Home services', 'Business collaborations'],
         },
         {
-            name: 'מקצועית',
+            name: 'Professional',
             price: 189,
-            features: ['פניות ללא הגבלה', 'צ\'אט עם לקוחות', 'תיאום תורים/שירותי בית'],
+            features: ['Unlimited inquiries', 'Chat with clients', 'Appointment scheduling / Home services'],
         },
         {
-            name: 'מתקדמת',
+            name: 'Advanced',
             price: 89,
-            features: ['עד 50 פניות', 'צ\'אט עם לקוחות'],
+            features: ['Up to 50 inquiries', 'Chat with clients'],
         },
         {
-            name: 'חינמית',
+            name: 'Free',
             price: 0,
-            features: ['עמוד עסקי בלבד'],
+            features: ['Business page only'],
         },
     ];
 
@@ -31,16 +31,16 @@ const SubscriptionPlans = ({ userPlan }) => {
             {plans.map(plan => (
                 <div key={plan.name} className={`plan ${plan.name === currentPlan.name ? 'selected' : ''}`}>
                     <h3>{plan.name}</h3>
-                    <p>{plan.price} ש"ח / חודש</p>
+                    <p>{plan.price} NIS / month</p>
                     <ul>
                         {plan.features.map(feature => (
                             <li key={feature}>{feature}</li>
                         ))}
                     </ul>
                     {plan.name === currentPlan.name ? (
-                        <button disabled>בחר חבילה</button>
+                        <button disabled>Select Plan</button>
                     ) : (
-                        <button>בחר חבילה</button>
+                        <button>Select Plan</button>
                     )}
                 </div>
             ))}

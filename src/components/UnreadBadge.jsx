@@ -1,19 +1,19 @@
 // src/components/UnreadBadge.jsx
 import React, { useEffect, useState } from "react";
-import { useSocket } from "../context/socketContext";  // בָּדִיל לייבא את הסוקט מה־Context
+import { useSocket } from "../context/socketContext";  // Import the socket from Context
 
 /**
- * מציג badge עם ספירת ההודעות הלא־נקראות בזמן אמת.
+ * Displays a badge with the count of unread messages in real-time.
  * @param {string} conversationId
  */
 export default function UnreadBadge({ conversationId }) {
-  const socket = useSocket();  // מקבלים את מופע הסוקט מהפרוביידר
+  const socket = useSocket();  // Get the socket instance from the provider
   const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    // 1. קריאה ראשונית לסימון קריאה ולקבלת המונה
+    // 1. Initial call to mark messages as read and get the counter
     socket.emit(
       "markMessagesRead",
       conversationId,
@@ -24,7 +24,7 @@ export default function UnreadBadge({ conversationId }) {
       }
     );
 
-    // 2. האזנה לעדכוני זמן־אמת של המונה
+    // 2. Listen for real-time updates of the counter
     const handler = (newCount) => setCount(newCount);
     socket.on("unreadMessagesCount", handler);
 

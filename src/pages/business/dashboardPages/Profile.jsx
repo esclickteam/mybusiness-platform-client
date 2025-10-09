@@ -12,21 +12,21 @@ import FaqTab from "./buildTabs/FaqTab";
 import ChatTab from "./buildTabs/ChatTab";
 
 const TABS = [
-  "ראשי",
-  "גלריה",
-  "חנות / יומן",
-  "ביקורות",
-  "צ'אט עם העסק",
-  "שאלות ותשובות",
+  "Main",
+  "Gallery",
+  "Shop / Calendar",
+  "Reviews",
+  "Chat with Business",
+  "FAQs",
 ];
 
 const fallbackBusiness = {
-  name: "עסק לדוגמה",
-  description: "ברוכים הבאים לעסק לדוגמה! אנחנו מציעים שירותים מדהימים 😊",
+  name: "Example Business",
+  description: "Welcome to Example Business! We offer amazing services 😊",
   phone: "050-1234567",
   logo: "https://via.placeholder.com/100",
-  category: "שיווק",
-  area: "מרכז",
+  category: "Marketing",
+  area: "Center",
   gallery: [
     { url: "https://via.placeholder.com/300", type: "image" },
     { url: "https://via.placeholder.com/300", type: "image" },
@@ -35,12 +35,12 @@ const fallbackBusiness = {
     { url: "https://via.placeholder.com/150", type: "image", uploadedAt: Date.now() },
   ],
   services: [
-    { name: "ייעוץ", description: "שיחת ייעוץ ראשונית", price: 150 },
-    { name: "ליווי", description: "תוכנית ליווי חודשית", price: 800 },
+    { name: "Consultation", description: "Initial consultation call", price: 150 },
+    { name: "Coaching", description: "Monthly coaching plan", price: 800 },
   ],
   reviews: [
-    { user: "שירה", comment: "שירות מהמם!", rating: 5 },
-    { user: "אלון", comment: "ממש מקצועיים!", rating: 5 },
+    { user: "Shira", comment: "Amazing service!", rating: 5 },
+    { user: "Alon", comment: "Very professional!", rating: 5 },
   ],
 };
 
@@ -48,7 +48,7 @@ export default function Profile() {
   const [businessData, setBusinessData] = useState(null);
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentTab, setCurrentTab] = useState("ראשי");
+  const [currentTab, setCurrentTab] = useState("Main");
   const [shopMode, setShopMode] = useState(null);
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function Profile() {
   }, []);
 
   if (loading) {
-    return <div className="p-6 text-center">🔄 טוען פרופיל...</div>;
+    return <div className="p-6 text-center">🔄 Loading profile...</div>;
   }
 
   return (
@@ -99,50 +99,50 @@ export default function Profile() {
         ))}
       </div>
 
-      {currentTab === "ראשי" && (
+      {currentTab === "Main" && (
         <section>
           <MainTab isForm={false} businessDetails={businessData} />
         </section>
       )}
 
-      {currentTab === "גלריה" && (
+      {currentTab === "Gallery" && (
         <section>
           <GalleryTab isForm={false} businessDetails={businessData} />
         </section>
       )}
 
-      {currentTab === "חנות / יומן" && (
+      {currentTab === "Shop / Calendar" && (
         <section>
           <ShopAndCalendar
-  isPreview={false}
-  shopMode={shopMode}
-  setShopMode={setShopMode}
-  setBusinessDetails={setBusinessData}
-/>
+            isPreview={false}
+            shopMode={shopMode}
+            setShopMode={setShopMode}
+            setBusinessDetails={setBusinessData}
+          />
         </section>
       )}
 
-      {currentTab === "ביקורות" && (
+      {currentTab === "Reviews" && (
         <section>
           <ReviewsModule
             reviews={businessData.reviews}
-            setReviews={() => {}}   // פונקציה ריקה למניעת שגיאות אם אין עריכה
+            setReviews={() => {}}   // Empty function to prevent errors if editing is not enabled
             isPreview
           />
         </section>
       )}
 
-      {currentTab === "צ'אט עם העסק" && (
+      {currentTab === "Chat with Business" && (
         <section>
           <ChatTab
             businessDetails={businessData}
-            setBusinessDetails={() => {}} // פונקציה ריקה, אין עריכה
+            setBusinessDetails={() => {}} // Empty function, no editing
             isPreview
           />
         </section>
       )}
 
-      {currentTab === "שאלות ותשובות" && (
+      {currentTab === "FAQs" && (
         <section>
           <FaqTab
             faqs={faqs}
