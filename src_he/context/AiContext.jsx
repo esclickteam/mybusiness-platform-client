@@ -77,7 +77,7 @@ export function AiProvider({ children }) {
     setLoading(true);
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_API_URL || "https://api.esclick.co.il"}/chat/send-approved`,
+        `${process.env.REACT_APP_API_URL || "https://api.BizUply.co.il"}/chat/send-approved`,
         {
           method: "POST",
           headers: {

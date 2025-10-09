@@ -558,11 +558,11 @@ src\components\ChartComponent.jsx:47:    labels: ["לקוחות", "בקשות",
 src\components\ChartComponent.jsx:50:        label: "נתוני העסק",
 src\components\ChatBot.jsx:36:        text: cleanText(data.answer || 
 "מצטערים, לא נמצאה תשובה מתאימה."),
-src\components\ChatBot.jsx:37:        source: data.source || "עסקליק AI",
+src\components\ChatBot.jsx:37:        source: data.source || "BizUply AI",
 src\components\ChatBot.jsx:43:        { sender: "bot", text: "אירעה 
 שגיאה, נסה שנית מאוחר יותר." },
 src\components\ChatBot.jsx:67:        aria-label="פתח יועץ AI"
-src\components\ChatBot.jsx:108:        יועץ עסקליק AI
+src\components\ChatBot.jsx:108:        יועץ BizUply AI
 src\components\ChatBot.jsx:121:          aria-label="סגור צ'אט"
 src\components\ChatBot.jsx:148:            שלום! איך אפשר לעזור לך?
 src\components\ChatBot.jsx:172:              title={msg.source ? `מקור 
@@ -587,21 +587,21 @@ src\components\ChatComponent.jsx:117:        // השם של הלקוח, אם י�
 לכם כבר ב–conversations תוכלו לחלץ אותו
 src\components\ChatDemo.jsx:5:    { sender: "דנה כהן", time: "09:47", 
 text: "שלום, רציתי לבדוק אם יש לכם משלוחים גם לראשון לציון?" },
-src\components\ChatDemo.jsx:6:    { sender: "עסקליק", time: "09:50", 
+src\components\ChatDemo.jsx:6:    { sender: "BizUply", time: "09:50", 
 text: "היי דנה, תודה שפנית אלינו! כן, אנחנו עושים משלוחים גם לראשון 
 לציון בימים ראשון–חמישי." },
 src\components\ChatDemo.jsx:7:    { sender: "דנה כהן", time: "09:52", 
 text: "מה זמן ההגעה המשוער אם אני מזמינה עכשיו?" },
-src\components\ChatDemo.jsx:8:    { sender: "עסקליק", time: "09:53", 
+src\components\ChatDemo.jsx:8:    { sender: "BizUply", time: "09:53", 
 text: "בדרך כלל זה לוקח עד 2 ימי עסקים. אם תבצעי הזמנה עד השעה 14:00 – 
 נשלח היום!" },
 src\components\ChatDemo.jsx:9:    { sender: "דנה כהן", time: "09:54", 
 text: "מעולה! תודה רבה 🙏" },
-src\components\ChatDemo.jsx:10:    { sender: "עסקליק", time: "09:55", 
+src\components\ChatDemo.jsx:10:    { sender: "BizUply", time: "09:55", 
 text: "בשמחה, אנחנו כאן לכל שאלה 😊" },
 src\components\ChatDemo.jsx:15:      <h2 className="text-xl font-bold 
 mb-4 text-center">צ׳אט עם דנה כהן</h2>
-src\components\ChatDemo.jsx:21:              msg.sender === "עסקליק" ? 
+src\components\ChatDemo.jsx:21:              msg.sender === "BizUply" ? 
 "bg-purple-100 self-start" : "bg-gray-100 self-end ml-auto"
 src\components\ChatPage.jsx:41:          setError("תגובה לא תקינה משרת 
 השיחות");
@@ -3966,369 +3966,369 @@ src\pages\business\dashboardPages\crmpages\WorkHoursTab.jsx:121:
        <span className="closed-label">סגור</span>
 src\pages\business\dashboardPages\crmpages\WorkHoursTab.jsx:127:         
        <span className="hours-label">לא הוגדר</span>
-src\pages\business\dashboardPages\esclickTabs\AiCommandPanel.jsx:27:     
+src\pages\business\dashboardPages\BizUplyTabs\AiCommandPanel.jsx:27:     
  if (!res.ok) throw new Error(data.error || "שגיאה בשליחת הפקודה");
-src\pages\business\dashboardPages\esclickTabs\AiCommandPanel.jsx:49:     
+src\pages\business\dashboardPages\BizUplyTabs\AiCommandPanel.jsx:49:     
  <h2>שותף AI - בקש פעולה או תשובה</h2>
-src\pages\business\dashboardPages\esclickTabs\AiCommandPanel.jsx:61:     
+src\pages\business\dashboardPages\BizUplyTabs\AiCommandPanel.jsx:61:     
    placeholder="כתוב כאן את הבקשה שלך לשותף AI..."
-src\pages\business\dashboardPages\esclickTabs\AiCommandPanel.jsx:65:     
+src\pages\business\dashboardPages\BizUplyTabs\AiCommandPanel.jsx:65:     
    aria-label="בקשה לשותף AI"
-src\pages\business\dashboardPages\esclickTabs\AiCommandPanel.jsx:85:     
+src\pages\business\dashboardPages\BizUplyTabs\AiCommandPanel.jsx:85:     
    {loading ? "שולח..." : "שלח"}
-src\pages\business\dashboardPages\esclickTabs\AiCommandPanel.jsx:90:     
+src\pages\business\dashboardPages\BizUplyTabs\AiCommandPanel.jsx:90:     
      שגיאה: {error}
-src\pages\business\dashboardPages\esclickTabs\AiCommandPanel.jsx:107:    
+src\pages\business\dashboardPages\BizUplyTabs\AiCommandPanel.jsx:107:    
       <h3>תשובת AI:</h3>
-src\pages\business\dashboardPages\esclickTabs\AiCommandPanel.jsx:112:    
+src\pages\business\dashboardPages\BizUplyTabs\AiCommandPanel.jsx:112:    
           <h4>פעולה שמומלצת לביצוע:</h4>
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:12:  if 
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:12:  if 
 (lowerText.includes("מחר")) {
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:18:    
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:18:    
 return text.replace(/מחר/gi, `${yyyy}-${mm}-${dd}`);
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:50:  // 
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:50:  // 
 קרדיטים וניהול רכישה
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:57:  // 
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:57:  // 
 חבילות AI קבועות (כמו ביועץ עסקי ושיווקי)
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:59:    { 
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:59:    { 
 id: "ai_200", label: "חבילת AI של 200 שאלות", price: 1, type: 
 "ai-package" },
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:60:    { 
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:60:    { 
 id: "ai_500", label: "חבילת AI של 500 שאלות", price: 1, type: 
 "ai-package" },
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:183:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:183:      
   new Notification("הודעת AI חדשה", {
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:287:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:287:      
 alert("שגיאה בשליחת פקודת AI: " + err.message);
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:327:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:327:      
   alert("ההמלצה אושרה ונשלחה ללקוח!");
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:331:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:331:      
   alert("שגיאה באישור ההמלצה: " + err.message);
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:365:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:365:      
   alert("ההמלצה עודכנה ונשלחה בהצלחה!");
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:370:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:370:      
   alert("שגיאה בעדכון ההמלצה: " + err.message);
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:420:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:420:      
 setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר 
 ${selectedPackage.price} ש"ח.`);
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:425:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:425:      
 setPurchaseError(e.message || "שגיאה ברכישת החבילה");
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:433:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:433:      
 <h2>🤖 שותף AI אישי לעסק</h2>
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:437:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:437:      
     ראה היסטוריית פקודות
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:446:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:446:      
     {loadingHistory && <p>טוען היסטוריה...</p>}
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:447:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:447:      
     {historyError && <p style={{ color: "red" }}>שגיאה בטעינת היסטוריה: 
 {historyError}</p>}
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:448:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:448:      
     {!loadingHistory && !historyError && aiCommandHistory.length === 0 
 && <p>אין פקודות AI קודמות.</p>}
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:475:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:475:      
               <strong>פקודה:</strong>
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:489:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:489:      
               <strong>תשובת AI:</strong>
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:515:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:515:      
         placeholder="כתוב פקודה ל-AI (למשל: תאם פגישה או סכם לי פגישות 
 השבוע)"
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:522:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:522:      
         שלח ל-AI
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:528:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:528:      
         <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:539:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:539:      
             {pkg.label} - {pkg.price} ש"ח
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:543:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:543:      
           {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:572:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:572:      
       <h4>הודעת AI חדשה</h4>
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:593:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:593:      
               אשר ושלח
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:602:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:602:      
               ביטול
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:624:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:624:      
                 אשר ושלח מידית
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:627:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:627:      
                 ערוך
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:630:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:630:      
                 דחה
-src\pages\business\dashboardPages\esclickTabs\AiPartnerTab.jsx:634:      
+src\pages\business\dashboardPages\BizUplyTabs\AiPartnerTab.jsx:634:      
             <p>ההמלצה אושרה ונשלחה ללקוח.</p>
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:5:con
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:5:con
 st RECOMMEND_LIMIT = 60; // סף למניעת אישור
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:18:  
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:18:  
 // מנקה markdown מסמלים מיותרים
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:21:  
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:21:  
 // טוען המלצות ונתוני אישורים בהתחלה ובכל שינוי של עסק/טוקן
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:26:  
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:26:  
   // טען המלצות AI
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:35:  
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:35:  
     .catch((err) => setError("שגיאה בטעינת ההמלצות: " + err.message));
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:37:  
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:37:  
   // טען ספירת אישורים קיימים
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:54:  
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:54:  
 // התחברות לסוקט לעדכונים בזמן אמת
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:73:  
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:73:  
       setError("שגיאה בקשר לשרת, נסה מחדש מאוחר יותר.");
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:131: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:131: 
  // אישור המלצה
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:134: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:134: 
      setError("הגעת למכסת האישור החודשית, לא ניתן לאשר המלצות נוספות.");
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:162: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:162: 
      setError("שגיאה באישור ההמלצה: " + err.message);
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:172: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:172: 
  // דחיית המלצה
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:193: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:193: 
      setError("שגיאה בדחיית ההמלצה: " + err.message);
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:203: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:203: 
  // התחלת עריכה
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:209: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:209: 
  // ביטול עריכה
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:214: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:214: 
  // שמירת טיוטה
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:237: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:237: 
      setError("שגיאה בשמירת טיוטה: " + err.message);
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:246: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:246: 
  // שמירה ואישור משולב
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:249: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:249: 
      setError("הגעת למכסת האישור החודשית, לא ניתן לאשר המלצות נוספות.");
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:279: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:279: 
      setError("שגיאה בשמירה ואישור: " + err.message);
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:294: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:294: 
      <h3 className="text-xl font-semibold">המלצות AI ממתינות לאישור</h3>
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:299: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:299: 
          הגעת למכסת אישורים! אפשר לצפות בלבד, לא לאשר המלצות נוספות
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:304: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:304: 
        <p>אין המלצות חדשות.</p>
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:331: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:331: 
                        שמור טיוטה
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:338: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:338: 
                        שמור ואשר
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:345: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:345: 
                        ביטול
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:351: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:351: 
                    <p><strong>שאלה:</strong> {cleanText(r.text)}</p>
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:354: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:354: 
                        <strong>תשובה:</strong> {cleanText(r.commandText)}
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:363: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:363: 
                        ערוך
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:370: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:370: 
                        {isLoading ? "…" : "אשר ושלח"}
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:377: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:377: 
                        {isLoading ? "…" : "דחה"}
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:385: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:385: 
                    הגבלת אישור הושגה. אפשר להמשיך לקבל המלצות אך לא לאשר.
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:400: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:400: 
        {showHistory ? "הסתר היסטוריית המלצות" : "ראה היסטוריית המלצות"}
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:405: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:405: 
          <h3 className="text-xl font-semibold">היסטוריית המלצות</h3>
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:407: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:407: 
            <p>אין המלצות בעבר.</p>
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:414: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:414: 
                    <p><strong>שאלה:</strong> {cleanText(r.text)}</p>
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:417: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:417: 
                        <strong>תשובה:</strong> {cleanText(r.commandText)}
-src\pages\business\dashboardPages\esclickTabs\AiRecommendations.jsx:420: 
+src\pages\business\dashboardPages\BizUplyTabs\AiRecommendations.jsx:420: 
                    <p>סטטוס: {r.status === "approved" ? "מאושר" : 
 "נדחה"}</p>
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:20: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:20: 
    "איך להעלות מחירים בלי לאבד לקוחות?",
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:21: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:21: 
    "איך להתמודד עם ירידה בהכנסות?",
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:22: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:22: 
    "מה הדרך הכי טובה לנהל עובדים?",
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:23: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:23: 
    "איך אפשר לשפר שירות לקוחות?",
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:24: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:24: 
    "איך בונים תוכנית עסקית פשוטה?"
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:28: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:28: 
    { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 99, type: 
 "ai-package" },
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:29: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:29: 
    { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 139, type: 
 "ai-package" }
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:35: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:35: 
    // חשוב: לשלוף לפי ה-ID שמגיע ב-props, לא /business/my
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:60: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:60: 
          { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. 
 ניתן לרכוש שאלות נוספות." }
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:81: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:81: 
        // הצלחה
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:84: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:84: 
          { role: "assistant", content: response.data.answer || "❌ לא 
 התקבלה תשובה מהשרת." }
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:88: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:88: 
        // סנכרון מול השרת
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:93: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:93: 
        // טיפול נכון ב־403
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:95: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:95: 
          const msg = error.response?.data?.error || "❗ הגעת למגבלת 
 השאלות החודשית.";
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:101:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:101:
         setMessages(prev => [...prev, { role: "assistant", content: "⚠️ 
 שגיאה בשרת או שאין קרדיטים פעילים." }]);
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:134:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:134:
       setPurchaseError("לא נמצא מזהה עסק. אנא היכנס מחדש.");
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:157:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:157:
       setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר 
 ${selectedPackage.price} ש"ח.`);
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:160:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:160:
       // רענון המונה אחרי רכישה
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:163:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:163:
       setPurchaseError(e.message || "שגיאה ברכישת החבילה");
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:178:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:178:
       <h2>יועץ עסקי 🤝</h2>
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:179:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:179:
       <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:181:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:181:
       {/* מונה קטן (אופציונלי) */}
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:184:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:184:
           יתרה חודשית: נשארו {remainingQuestions} שאלות
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:188:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:188:
       {/* לפני תחילת השיחה – כפתורי שאלות מוכנות בלבד */}
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:207:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:207:
       {/* בלוק הרכישה מופיע תמיד כשאין יתרה */}
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:210:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:210:
           <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:222:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:222:
               {pkg.label} - {pkg.price} ש"ח
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:227:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:227:
             {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:260:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:260:
           {loading && <div className="bubble assistant">⌛ מחשב 
 תשובה...</div>}
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:268:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:268:
           placeholder="כתבי שאלה משלך..."
-src\pages\business\dashboardPages\esclickTabs\BusinessAdvisorTab.jsx:279:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessAdvisorTab.jsx:279:
           שליחה
-src\pages\business\dashboardPages\esclickTabs\BusinessXrayReport.jsx:6:  
+src\pages\business\dashboardPages\BizUplyTabs\BusinessXrayReport.jsx:6:  
 if (!data || !insights) return <p>לא נמצאו נתונים להצגה.</p>;
-src\pages\business\dashboardPages\esclickTabs\BusinessXrayReport.jsx:8:  
+src\pages\business\dashboardPages\BizUplyTabs\BusinessXrayReport.jsx:8:  
 // המרת אובייקט ציונים למבנה של recharts
-src\pages\business\dashboardPages\esclickTabs\BusinessXrayReport.jsx:17: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessXrayReport.jsx:17: 
      <h2>📊 דוח רנטגן עסקי</h2>
-src\pages\business\dashboardPages\esclickTabs\BusinessXrayReport.jsx:18: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessXrayReport.jsx:18: 
      <p>סוג עסק: <strong>{businessType}</strong></p>
-src\pages\business\dashboardPages\esclickTabs\BusinessXrayReport.jsx:26: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessXrayReport.jsx:26: 
            <Radar name="ציון" dataKey="A" stroke="#7e57c2" 
 fill="#7e57c2" fillOpacity={0.6} />
-src\pages\business\dashboardPages\esclickTabs\BusinessXrayReport.jsx:32: 
+src\pages\business\dashboardPages\BizUplyTabs\BusinessXrayReport.jsx:32: 
        <h3>🧠 תובנות מותאמות לעסק שלך:</h3>
-src\pages\business\dashboardPages\esclickTabs\BusinessXrayWrapper.jsx:4:i
+src\pages\business\dashboardPages\BizUplyTabs\BusinessXrayWrapper.jsx:4:i
 mport "./BusinessXrayReport.css"; // להבטיח שיש עיצוב לכפתור ול־report
-src\pages\business\dashboardPages\esclickTabs\BusinessXrayWrapper.jsx:30:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessXrayWrapper.jsx:30:
       console.error("שגיאה בשליחת השאלון:", error);
-src\pages\business\dashboardPages\esclickTabs\BusinessXrayWrapper.jsx:31:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessXrayWrapper.jsx:31:
       alert("אירעה שגיאה בשליחת השאלון. נסה/י שוב מאוחר יותר.");
-src\pages\business\dashboardPages\esclickTabs\BusinessXrayWrapper.jsx:54:
+src\pages\business\dashboardPages\BizUplyTabs\BusinessXrayWrapper.jsx:54:
               🔁 התחלה מחדש
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:20:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:20:
     "איך להביא יותר לידים לעסק?",
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:21:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:21:
     "איך לבנות תוכנית שיווק חודשית?",
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:22:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:22:
     "מה ההבדל בין קמפיין ממומן לאורגני?",
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:23:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:23:
     "איך לשפר אחוזי המרה באתר?",
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:24:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:24:
     "באיזה רשת חברתית כדאי להתמקד?"
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:28:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:28:
     { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 99, type: 
 "ai-package" },
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:29:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:29:
     { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 139, type: 
 "ai-package" }
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:58:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:58:
           { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. 
 ניתן לרכוש שאלות נוספות." }
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:80:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:80:
           { role: "assistant", content: response.data.answer || "❌ לא 
 התקבלה תשובה מהשרת." }
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:88:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:88:
           const msg = error.response?.data?.error || "❗ הגעת למגבלת 
 השאלות החודשית.";
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:94:
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:94:
         setMessages(prev => [...prev, { role: "assistant", content: "⚠️ 
 שגיאה בשרת או שאין קרדיטים פעילים." }]);
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:127
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:127
 :      setPurchaseError("לא נמצא מזהה עסק. אנא היכנס מחדש.");
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:149
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:149
 :      setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר 
 ${selectedPackage.price} ש"ח.`);
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:153
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:153
 :      setPurchaseError(e.message || "שגיאה ברכישת החבילה");
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:168
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:168
 :      <h2>יועץ שיווקי 📈</h2>
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:169
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:169
 :      <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:173
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:173
 :          יתרה חודשית: נשארו {remainingQuestions} שאלות
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:197
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:197
 :          <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:208
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:208
 :              {pkg.label} - {pkg.price} ש"ח
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:212
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:212
 :            {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:244
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:244
 :          {loading && <div className="bubble assistant">⌛ מחשב 
 תשובה...</div>}
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:252
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:252
 :          placeholder="כתבי שאלה משלך..."
-src\pages\business\dashboardPages\esclickTabs\MarketingAdvisorTab.jsx:263
+src\pages\business\dashboardPages\BizUplyTabs\MarketingAdvisorTab.jsx:263
 :          שליחה
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:5:  "עד כמה 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:5:  "עד כמה 
 ברור לך מי קהל היעד של העסק?",
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:6:  "כמה העסק 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:6:  "כמה העסק 
 מרוויח ביחס להוצאות?",
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:7:  "עד כמה יש 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:7:  "עד כמה יש 
 לך שליטה על תהליכים יומיומיים בעסק?",
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:8:  "האם יש לך 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:8:  "האם יש לך 
 תוכנית שיווקית מוגדרת?",
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:9:  "באיזו 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:9:  "באיזו 
 תדירות את/ה בודק/ת שביעות רצון לקוחות?"
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:13:  
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:13:  
 "שירותים": [
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:14:    "איך 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:14:    "איך 
 את/ה משיג לקוחות חדשים?",
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:15:    "מה 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:15:    "מה 
 את/ה עושה כדי לשמור על לקוחות קיימים?"
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:17:  "מסחר": [
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:18:    "כמה 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:17:  "מסחר": [
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:18:    "כמה 
 תנועה מגיעה לאתר או לחנות שלך?",
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:19:    "מה 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:19:    "מה 
 האתגרים הכי גדולים שלך בתחום המכירות?"
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:21:  "מסעדה / 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:21:  "מסעדה / 
 קפה": [
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:22:    "איך 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:22:    "איך 
 את/ה מושך לקוחות חדשים?",
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:23:    "האם יש 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:23:    "האם יש 
 תוכנית לשימור לקוחות קבועים?"
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:25:  "סטודיו / 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:25:  "סטודיו / 
 קליניקה": [
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:26:    "איך 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:26:    "איך 
 לקוחות שומעים עליך בפעם הראשונה?",
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:27:    "מה 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:27:    "מה 
 את/ה עושה כדי לשפר את השירות שלך?"
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:41:      
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:41:      
 alert("יש למלא את כל השאלות ולבחור סוג עסק.");
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:44:    // 
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:44:    // 
 שולחים גם את businessId ו conversationId יחד עם התשובות
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:50:      
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:50:      
 <h2>רנטגן עסקי</h2>
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:51:      
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:51:      
 <p>מלא שאלון קצר ונעזור לך להבין את מצב העסק שלך מבחינת תזרים, מכירות, 
 שיווק וניהול.</p>
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:54:        
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:54:        
 <h3>שאלות כלליות:</h3>
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:63:            
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:63:            
   <option value="" disabled>בחר דירוג</option>
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:71:        
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:71:        
 <h3>מה סוג העסק שלך?</h3>
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:78:            
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:78:            
 <option value="" disabled>בחר סוג עסק</option>
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:87:            
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:87:            
 <h4>שאלות פתוחות לפי סוג עסק:</h4>
-src\pages\business\dashboardPages\esclickTabs\XrayTab.jsx:101:          
+src\pages\business\dashboardPages\BizUplyTabs\XrayTab.jsx:101:          
 {loading ? "שולח..." : "שליחה"}
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:22:  // 
 חישוב סך כל העמלות שלא שולם
@@ -4737,17 +4737,17 @@ src\pages\business\dashboardPages\CollabContractView.jsx:159:
 src\pages\business\dashboardPages\CollabContractView.jsx:165:          
 <span>{status === "מאושר" ? "ההסכם אושר" : "טרם נחתם"}</span>
 src\pages\business\dashboardPages\DashboardGuard.jsx:9:  // נרמול hasPaid
-src\pages\business\dashboardPages\EsclickAdvisor.jsx:138:    return 
+src\pages\business\dashboardPages\BizUplyAdvisor.jsx:138:    return 
 <div>טוען...</div>;
-src\pages\business\dashboardPages\EsclickAdvisor.jsx:143:      <h1 
-className="esclick-header">🧠 יועץ עסקליק</h1>
-src\pages\business\dashboardPages\EsclickAdvisor.jsx:150:          יועץ 
+src\pages\business\dashboardPages\BizUplyAdvisor.jsx:143:      <h1 
+className="BizUply-header">🧠 יועץ BizUply</h1>
+src\pages\business\dashboardPages\BizUplyAdvisor.jsx:150:          יועץ 
 עסקי
-src\pages\business\dashboardPages\EsclickAdvisor.jsx:157:          יועץ 
+src\pages\business\dashboardPages\BizUplyAdvisor.jsx:157:          יועץ 
 שיווקי
-src\pages\business\dashboardPages\EsclickAdvisor.jsx:163:          שותף 
+src\pages\business\dashboardPages\BizUplyAdvisor.jsx:163:          שותף 
 AI אישי
-src\pages\business\dashboardPages\EsclickAdvisor.jsx:169:          
+src\pages\business\dashboardPages\BizUplyAdvisor.jsx:169:          
 המלצות AI
 src\pages\business\dashboardPages\GoalsPage.jsx:22:        if 
 (!business?._id) throw new Error("לא הוחזר מזהה עסק");
@@ -5079,8 +5079,8 @@ src\pages\business\BusinessDashboardLayout.jsx:23:  { path: "collab",
 label: "🤝 שיתופי פעולה" },
 src\pages\business\BusinessDashboardLayout.jsx:24:  { path: "crm", 
 label: "📇 מערכת CRM" },
-src\pages\business\BusinessDashboardLayout.jsx:25:  { path: "esclick", 
-label: "🧠 יועץ עסקליק" },
+src\pages\business\BusinessDashboardLayout.jsx:25:  { path: "BizUply", 
+label: "🧠 יועץ BizUply" },
 src\pages\business\BusinessDashboardLayout.jsx:26:  { path: "affiliate", 
 label: "👥 תכנית שותפים" },
 src\pages\business\BusinessDashboardLayout.jsx:27:  { path: 
@@ -5137,7 +5137,7 @@ src\pages\business\BusinessDashboardRoutes.jsx:144:          {/* שאר
 src\pages\business\Plans.jsx:11:  // קריאת פרמטר reason מה־URL
 src\pages\business\Plans.jsx:38:      planName = "חבילת מנוי ניסיונית - 
 3 חודשים";
-src\pages\business\Plans.jsx:41:      planName = "חבילת מנוי עסקליק";
+src\pages\business\Plans.jsx:41:      planName = "חבילת מנוי BizUply";
 src\pages\business\Plans.jsx:53:    "ייעוץ שיווקי ועסקי מבוסס בינה 
 מלאכותית עם עד 60 פניות איכותיות בחודש.",
 src\pages\business\Plans.jsx:54:    "שותף AI חכם שמספק פעולות והמלצות 
@@ -5158,7 +5158,7 @@ src\pages\business\Plans.jsx:68:      <h1 className="plans-header">מה
 מקבל העסק שלך?</h1>
 src\pages\business\Plans.jsx:70:      {/* הודעה על סיום ניסיון */}
 src\pages\business\Plans.jsx:73:          תקופת הניסיון החינמית הסתיימה. 
-בחר חבילה כדי להמשיך להשתמש בעסקליק.
+בחר חבילה כדי להמשיך להשתמש בBizUply.
 src\pages\business\Plans.jsx:77:      {/* הודעה על ניסיון פעיל */}
 src\pages\business\Plans.jsx:80:          אתה נמצא בחודש ניסיון חינם. 
 תוכל לשדרג לחבילה בתשלום בכל רגע כדי להבטיח המשך גישה אחרי סיום הניסיון.
@@ -5174,7 +5174,7 @@ src\pages\business\Plans.jsx:132:          המחיר הכולל:{" "}
 src\pages\business\Plans.jsx:140:          הצטרפו עכשיו במחיר השקה מיוחד 
 לזמן מוגבל – אל תפספסו!
 src\pages\business\Plans.jsx:148:          בחר מנוי והתחל לגדול עם 
-עסקליק עכשיו!
+BizUply עכשיו!
 src\pages\client\ClientDashboard.jsx:12:      <h1 
 className="client-dashboard-title">שלום {user.name} 👋</h1>
 src\pages\client\ClientDashboard.jsx:13:      <p 
@@ -5464,9 +5464,9 @@ src\pages\staff\WorkSession.jsx:78:
 {brk.start.toLocaleTimeString()} - {brk.end ? 
 brk.end.toLocaleTimeString() : "בהפסקה..."}
 src\pages\AffiliateProgramFAQ.jsx:5:    question: "מהי תוכנית השותפים של 
-עסקליק וכיצד היא פועלת?",
+BizUply וכיצד היא פועלת?",
 src\pages\AffiliateProgramFAQ.jsx:6:    answer: `תוכנית השותפים של 
-עסקליק היא הזדמנות עסקית משתלמת שמאפשרת לך להרוויח הכנסה נוספת בצורה 
+BizUply היא הזדמנות עסקית משתלמת שמאפשרת לך להרוויח הכנסה נוספת בצורה 
 פשוטה ויעילה, ללא צורך בניהול מלא של תהליך המכירה או במאמץ שיווקי מורכב. 
 באמצעות קבלת קישור הפניה אישי, תוכל להפנות לקוחות פוטנציאליים לעסק, 
 וברגע שהם נרשמים ומבצעים רכישה במערכת — תקבל עמלה כספית על כל עסקה 
@@ -5578,14 +5578,14 @@ src\pages\AffiliateProgramFAQ.jsx:85:- נסה דפדפן או מכשיר אחר.
 src\pages\AffiliateProgramFAQ.jsx:86:- בדוק הודעות תחזוקה או תקלות 
 במערכת.
 src\pages\AffiliateProgramFAQ.jsx:87:- פנה לתמיכה במידת הצורך.`,
-src\pages\AffiliateProgramFAQ.jsx:110:        תוכנית השותפים של עסקליק - 
+src\pages\AffiliateProgramFAQ.jsx:110:        תוכנית השותפים של BizUply - 
 שאלות נפוצות
 src\pages\AffiliateProgramFAQ.jsx:145:                color: "#f06292",  
       // ורוד-אדום
 src\pages\AffiliateProgramFAQ.jsx:146:                marginLeft: 10,    
       // רווח בין סימן השאלה לטקסט
 src\pages\AICompanionGuidePage.jsx:7:      {/* משפט הכותרת הוסר */}
-src\pages\AICompanionGuidePage.jsx:8:      <h1>🧠 בינה מלאכותית בעסקליק 
+src\pages\AICompanionGuidePage.jsx:8:      <h1>🧠 בינה מלאכותית בBizUply 
 – השותף החכם שלך לצמיחת העסק בעידן המודרני</h1>
 src\pages\AICompanionGuidePage.jsx:10:      <h2>למה כל עסק בעידן המודרני 
 זקוק לבינה מלאכותית?</h2>
@@ -5597,10 +5597,10 @@ src\pages\AICompanionGuidePage.jsx:15:        בינה מלאכותית היא �
 אופציה – היא כבר חובה לכל עסק שרוצה להישאר רלוונטי, תחרותי ורווחי. היא 
 מעניקה לך יועץ אישי וזמין, שמנתח את כל המידע העסקי שלך ומספק תובנות 
 והמלצות ממוקדות, בלי שתצטרך לנחש.
-src\pages\AICompanionGuidePage.jsx:18:      <h2>מהו שותף ה-AI של עסקליק 
+src\pages\AICompanionGuidePage.jsx:18:      <h2>מהו שותף ה-AI של BizUply 
 וכיצד הוא עוזר לך?</h2>
 src\pages\AICompanionGuidePage.jsx:20:        שותף ה-AI הוא מערכת חכמה 
-שמשולבת במערכת שלך בעסקליק ומספקת לך כלים וייעוץ מבוססי נתונים בזמן אמת.
+שמשולבת במערכת שלך בBizUply ומספקת לך כלים וייעוץ מבוססי נתונים בזמן אמת.
 src\pages\AICompanionGuidePage.jsx:23:      <h2>מה כולל השותף החכם?</h2>
 src\pages\AICompanionGuidePage.jsx:25:        <li>תובנות מותאמות אישית 
 על בסיס פעילות העסק שלך.</li>
@@ -5637,7 +5637,7 @@ src\pages\AICompanionGuidePage.jsx:50:          עם יועץ עסקי שזמי�
 אתה לא צריך להסתמך רק על תחושות או על מומחים חיצוניים. ה-AI מלווה אותך 
 כל הזמן ומסייע לך ללמוד, להתאים ולשפר.
 src\pages\AICompanionGuidePage.jsx:54:      <h2>איך לנצל נכון את השותף 
-AI של עסקליק?</h2>
+AI של BizUply?</h2>
 src\pages\AICompanionGuidePage.jsx:57:          <strong>התחל מהבנת 
 המטרות שלך</strong><br />
 src\pages\AICompanionGuidePage.jsx:58:          הבהר לעצמך מה חשוב לך 
@@ -5675,7 +5675,7 @@ src\pages\AICompanionGuidePage.jsx:82:        <li>שימור לקוחות וני
 src\pages\AICompanionGuidePage.jsx:83:        <li>שיפור השירות והתפעול: 
 להקטין ביטולי תורים, לייעל תהליכים פנימיים ולהגביר מקצועיות.</li>
 src\pages\AICompanionGuidePage.jsx:86:      <h2>סיכום</h2>
-src\pages\AICompanionGuidePage.jsx:88:        בינה מלאכותית בעסקליק היא 
+src\pages\AICompanionGuidePage.jsx:88:        בינה מלאכותית בBizUply היא 
 הרבה יותר מטכנולוגיה – היא שותף עסקי חכם שנמצא לצידך כל הזמן. בעזרתה 
 תוכל לקבל החלטות מושכלות, לשפר ביצועים, להגדיל הכנסות ולשמור על לקוחות 
 מרוצים – והכל מתוך מערכת אחת אינטגרטיבית.
@@ -5703,7 +5703,7 @@ src\pages\AppointmentBooking.jsx:123:        {booking ? 'שומר…' : 'קבע
 src\pages\AppointmentCRMGuidePage.jsx:7:      {/* משפט הכותרת והפסקה 
 הראשית הוסרו */}
 src\pages\AppointmentCRMGuidePage.jsx:8:      <h1>🧷 ניהול יומן תיאום 
-תורים ופגישות ו-CRM בעסקליק</h1>
+תורים ופגישות ו-CRM בBizUply</h1>
 src\pages\AppointmentCRMGuidePage.jsx:10:      <h2>למה צריך שני כלים 
 נפרדים – יומן תיאום תורים/פגישות ו-CRM?</h2>
 src\pages\AppointmentCRMGuidePage.jsx:12:        בעסקים רבים השירותים 
@@ -5721,7 +5721,7 @@ src\pages\AppointmentCRMGuidePage.jsx:18:        לעומתו, מערכת CRM ה
 לאורך זמן. זהו כלי הכרחי כדי לספק שירות מותאם אישית, לבנות תכניות שימור 
 יעילות ולבצע שיווק ממוקד.
 src\pages\AppointmentCRMGuidePage.jsx:21:      <h2>למה לא כדאי לנהל את 
-היומן מחוץ למערכת עסקליק?</h2>
+היומן מחוץ למערכת BizUply?</h2>
 src\pages\AppointmentCRMGuidePage.jsx:23:        קיימים עסקים שמעדיפים 
 להשתמש ביומן חיצוני (כמו Google Calendar, יומנים ידניים, או מערכות 
 אחרות) או לנהל תיאום תורים בנפרד מה-CRM. למרות שזה עשוי להיראות פתרון 
@@ -5738,8 +5738,8 @@ src\pages\AppointmentCRMGuidePage.jsx:29:        <li>חוסר יכולות שי�
 ושימור – ניתוח נתונים ופילוח לקוחות ליישום מבצעים ושימור הופך לקשה ואף 
 בלתי אפשרי ללא מערכת משולבת.</li>
 src\pages\AppointmentCRMGuidePage.jsx:32:      <h2>איך היומן 
-לפגישות/תורים ו-CRM עובדים יחד בעסקליק?</h2>
-src\pages\AppointmentCRMGuidePage.jsx:34:        המערכת של עסקליק היא 
+לפגישות/תורים ו-CRM עובדים יחד בBizUply?</h2>
+src\pages\AppointmentCRMGuidePage.jsx:34:        המערכת של BizUply היא 
 אינטגרטיבית במלואה: כאשר הלקוח מזמין תור או פגישה – בין אם בקליניקה ובין 
 אם בביתו – ההזמנה נקלטת אוטומטית ביומן העסקי שלך ומסונכרנת בזמן אמת. 
 במקביל, פרטי הלקוח והפגישה מתועדים ב-CRM, כולל ההיסטוריה, הפניות הקודמות 
@@ -5799,7 +5799,7 @@ src\pages\AppointmentCRMGuidePage.jsx:79:        <li>השתמש בדוחות
 ודשבורד לניתוח מגמות ולהתאמת פעילות העסק.</li>
 src\pages\AppointmentCRMGuidePage.jsx:82:      <h2>סיכום</h2>
 src\pages\AppointmentCRMGuidePage.jsx:84:        ניהול משולב של יומן 
-תיאום תורים ופגישות לצד מערכת CRM בעסק שלך בעסקליק הוא הבסיס לניהול 
+תיאום תורים ופגישות לצד מערכת CRM בעסק שלך בBizUply הוא הבסיס לניהול 
 מודרני, יעיל וממוקד לקוח. כלי זה מאפשר לך לנהל בקלות שירותים במיקומים 
 שונים, לעקוב אחרי כל לקוח ולשפר את השירות והשיווק – הכל מתוך פלטפורמה 
 אינטגרטיבית וחכמה.
@@ -5814,7 +5814,7 @@ src\pages\BookingPage.jsx:44:          <option value="">– בחרי שירות
 –</option>
 src\pages\BuildBusinessPage.jsx:7:      <h2>🧷 עריכת העמוד העסקי – מדוע 
 זה חשוב?</h2>
-src\pages\BuildBusinessPage.jsx:9:        העמוד העסקי שלך בעסקליק הוא לא 
+src\pages\BuildBusinessPage.jsx:9:        העמוד העסקי שלך בBizUply הוא לא 
 סתם "כרטיס ביקור דיגיטלי". מדובר בחלון הראווה של העסק שלך. זה המקום שבו 
 לקוחות נחשפים אליך לראשונה, מתרשמים מהשירותים שלך, צורכים מידע, שואלים 
 שאלות ולעיתים גם קובעים פגישה – והכול בלי לדבר איתך אפילו. עמוד עסקי 
@@ -5914,7 +5914,7 @@ src\pages\BuildBusinessPage.jsx:88:      <p><strong>איך לעודד ביקור
 בצורה חכמה?</strong></p>
 src\pages\BuildBusinessPage.jsx:90:        בקש מהלקוחה: <br />
 src\pages\BuildBusinessPage.jsx:91:        "אם היית מרוצה, זה יעזור לי 
-מאוד אם תוכלי להשאיר ביקורת קצרה בפרופיל שלי בעסקליק 😊 זה עוזר ללקוחות 
+מאוד אם תוכלי להשאיר ביקורת קצרה בפרופיל שלי בBizUply 😊 זה עוזר ללקוחות 
 חדשים למצוא אותי."
 src\pages\BuildBusinessPage.jsx:94:      <h2>📅 טאב היומן – קביעת 
 תורים</h2>
@@ -6002,7 +6002,7 @@ src\pages\BuildBusinessPage.jsx:174:        <li>בדיקה סופית של הת�
 src\pages\BusinessCollaborationGuidePage.jsx:7:      {/* משפט הכותרת 
 הוסר */}
 src\pages\BusinessCollaborationGuidePage.jsx:8:      <h1>🧷 שיתופי פעולה 
-בין עסקים בעסקליק – איך לנהל, לשמור ולהצליח</h1>
+בין עסקים בBizUply – איך לנהל, לשמור ולהצליח</h1>
 src\pages\BusinessCollaborationGuidePage.jsx:10:      <h2>למה שיתופי 
 פעולה הם חיוניים לעסק שלך?</h2>
 src\pages\BusinessCollaborationGuidePage.jsx:12:        ברור שכשיש לך 
@@ -6025,7 +6025,7 @@ src\pages\BusinessCollaborationGuidePage.jsx:20:        <li>מפתח
 src\pages\BusinessCollaborationGuidePage.jsx:22:      <p>בקיצור: שיתוף 
 פעולה נכון הוא מנוף לצמיחה מהירה ויציבה.</p>
 src\pages\BusinessCollaborationGuidePage.jsx:24:      <h2>מה כולל הטאב 
-“שיתופי פעולה” בעסקליק ואיך זה עובד?</h2>
+“שיתופי פעולה” בBizUply ואיך זה עובד?</h2>
 src\pages\BusinessCollaborationGuidePage.jsx:25:      <p>הטאב מאפשר לך 
 לנהל את כל תהליך השיתוף במערכת אחת:</p>
 src\pages\BusinessCollaborationGuidePage.jsx:27:        
@@ -6099,7 +6099,7 @@ src\pages\BusinessCollaborationGuidePage.jsx:70:        <li>גם עסקים
 src\pages\BusinessCollaborationGuidePage.jsx:73:      <h2>סיכום</h2>
 src\pages\BusinessCollaborationGuidePage.jsx:75:        שיתופי פעולה הם 
 כלי אסטרטגי שיכול לשדרג את העסק שלך בכל היבט – שיווק, שירות, ניהול 
-ומכירות. מערכת שיתופי הפעולה של עסקליק מאפשרת לך לנהל את כל התהליך בצורה 
+ומכירות. מערכת שיתופי הפעולה של BizUply מאפשרת לך לנהל את כל התהליך בצורה 
 פשוטה, מסודרת, מקצועית ומאובטחת.
 src\pages\BusinessCollaborationGuidePage.jsx:78:        אם תפעל נכון – 
 תבחר שותפים מתאימים, תגדיר מודלים ברורים, תשמור על תקשורת פתוחה ותנהל את 
@@ -6141,13 +6141,13 @@ src\pages\BusinessesList.jsx:35:      // אם יש פרמטר ב־URL – שים
 src\pages\BusinessesList.jsx:47:  // קריאה לעסקים
 src\pages\BusinessesList.jsx:64:  // בכל שינוי פרמטרים ב־URL – שלוף עסקים
 src\pages\BusinessesList.jsx:87:    ? `${seoTitleParts.join(" - ")} | 
-עסקים בעסקליק`
-src\pages\BusinessesList.jsx:88:    : "רשימת עסקים | עסקליק";
+עסקים בBizUply`
+src\pages\BusinessesList.jsx:88:    : "רשימת עסקים | BizUply";
 src\pages\BusinessesList.jsx:98:              ? `מצא עסקים בתחום 
 ${category ? category.label : ""} ${city ? "בעיר " + city.label : ""} 
-בפלטפורמת עסקליק.`
+בפלטפורמת BizUply.`
 src\pages\BusinessesList.jsx:99:              : "חפש עסקים לפי תחום ועיר 
-בפלטפורמת עסקליק."
+בפלטפורמת BizUply."
 src\pages\BusinessesList.jsx:111:        <h1>רשימת עסקים</h1>
 src\pages\BusinessesList.jsx:136:              placeholder="תחום 
 (לדוגמה: חשמלאי)"
@@ -6269,10 +6269,10 @@ src\pages\ChangePassword.jsx:116:        <button type="submit">עדכן
 סיסמה</button>
 src\pages\ChatGuidePage.jsx:7:      {/* הסרנו את המשפט בכותרת הראשית */}
 src\pages\ChatGuidePage.jsx:8:      <h1>🧷 שימוש נכון בצ’אט עם לקוחות 
-בעסקליק</h1>
+בBizUply</h1>
 src\pages\ChatGuidePage.jsx:10:      <h2>📍 איך הצ’אט עובד בפועל?</h2>
 src\pages\ChatGuidePage.jsx:12:        כאשר לקוח נכנס לעמוד העסק שלך 
-בעסקליק, הוא יכול ללחוץ על כפתור הצ’אט ולשלוח אליך הודעה ישירה.
+בBizUply, הוא יכול ללחוץ על כפתור הצ’אט ולשלוח אליך הודעה ישירה.
 src\pages\ChatGuidePage.jsx:13:        ההודעה מגיעה מיד אליך באזור 
 האישי, בטאב "הודעות עסקיות", שם תוכל לקרוא ולענות.
 src\pages\ChatGuidePage.jsx:14:        מגיעות התראות על הודעות חדשות – 
@@ -6298,7 +6298,7 @@ src\pages\ChatGuidePage.jsx:28:        <li>תיעוד מלא: שומרת את כ
 src\pages\ChatGuidePage.jsx:31:      <h2>❓ למה לא טלפון או וואטסאפ?</h2>
 src\pages\ChatGuidePage.jsx:35:            <th>ערוץ</th>
 src\pages\ChatGuidePage.jsx:36:            <th>מגבלות</th>
-src\pages\ChatGuidePage.jsx:37:            <th>יתרון צ’אט עסקליק</th>
+src\pages\ChatGuidePage.jsx:37:            <th>יתרון צ’אט BizUply</th>
 src\pages\ChatGuidePage.jsx:42:            <td>טלפון</td>
 src\pages\ChatGuidePage.jsx:43:            <td>אין תיעוד, גוזל זמן, לא 
 נוח</td>
@@ -6502,7 +6502,7 @@ src\pages\CollaborationsFAQ.jsx:7:שיתוף פעולה עסקי הוא הסכם
 ולהבטיח תוצאות אפקטיביות לאורך זמן. עסקים משולבים יכולים לחלוק מידע, 
 לפתח מבצעים משותפים ולהעצים זה את זה בצורה אסטרטגית.
 src\pages\CollaborationsFAQ.jsx:11:    question: "❓ איך לפרסם הצעת שיתוף 
-פעולה חדשה במערכת עסקליק?",
+פעולה חדשה במערכת BizUply?",
 src\pages\CollaborationsFAQ.jsx:13:כדי לפרסם שיתוף פעולה, יש למלא טופס 
 מפורט הכולל: כותרת ברורה, תיאור מפורט של ההצעה, מה העסק מציע ומה הוא 
 מחפש לקבל, פרטי יצירת קשר, תקציב ותוקף ההצעה. חשוב לדייק בהגדרת הצרכים 
@@ -6543,7 +6543,7 @@ src\pages\CollaborationsFAQ.jsx:39:- ניהול קונפליקטים באופן 
 src\pages\CollaborationsFAQ.jsx:40:- מדידה ובקרה מתמדת.
 src\pages\CollaborationsFAQ.jsx:41:- הערכת סיכונים ותכנון לגיבוי.
 src\pages\CollaborationsFAQ.jsx:42:- קשר רגיל ותקשורתי.
-src\pages\CollaborationsFAQ.jsx:44:פלטפורמת עסקליק תומכת בכל התהליכים 
+src\pages\CollaborationsFAQ.jsx:44:פלטפורמת BizUply תומכת בכל התהליכים 
 הללו ומספקת כלים לניהול שיתופי פעולה חכמים.
 src\pages\CollaborationsFAQ.jsx:48:    question: "❓ איך אוכל לצפות 
 בהצעות שיתופי פעולה שקיבלתי וכיצד לנהל אותן בצורה יעילה?",
@@ -6568,7 +6568,7 @@ src\pages\CollaborationsFAQ.jsx:68:כן, ניתן להגדיר תאריך תוק
 שיגביל את תקופת ההצעה במערכת. ניתן להגדיר גם זמן התחלה וסיום מדויקים.
 src\pages\CollaborationsFAQ.jsx:70:יתרונות: ניהול חכם של הצעות, שיפור 
 תדמית העסק, גמישות תפעולית.
-src\pages\CollaborationsFAQ.jsx:72:עסקליק תומכת ביצירת הסכמים דיגיטליים 
+src\pages\CollaborationsFAQ.jsx:72:BizUply תומכת ביצירת הסכמים דיגיטליים 
 עם חתימות אלקטרוניות ישירות במערכת.
 src\pages\CollaborationsFAQ.jsx:76:    question: "❓ מה עושים אם איני 
 מצליח לשלוח או לפרסם שיתוף פעולה?",
@@ -6586,7 +6586,7 @@ src\pages\CollaborationsFAQ.jsx:90:    question: "❓ כיצד מתקשרים ע
 src\pages\CollaborationsFAQ.jsx:92:תקשורת עם שותף פוטנציאלי כוללת:
 src\pages\CollaborationsFAQ.jsx:94:- שימוש בפרטי יצירת קשר בטופס ההצעה.
 src\pages\CollaborationsFAQ.jsx:95:- מערכת הודעות פנימית וצ'אט עסקי 
-במערכת עסקליק.
+במערכת BizUply.
 src\pages\CollaborationsFAQ.jsx:96:- תקשורת בזמן אמת לצורך תיאום, בירור 
 והבהרות.
 src\pages\CollaborationsFAQ.jsx:97:- שמירה על תקשורת מקצועית, שקופה 
@@ -6609,7 +6609,7 @@ src\pages\CollaborationsFAQ.jsx:114:- קביעת נקודות ביקורת תק�
 src\pages\CollaborationsFAQ.jsx:115:- שמירה על גמישות ופתיחות.
 src\pages\CollaborationsFAQ.jsx:116:- חינוך והדרכה לניהול שותפויות.
 src\pages\CollaborationsFAQ.jsx:117:- גישה חיובית ופרואקטיבית.
-src\pages\CollaborationsFAQ.jsx:119:עסקליק מספקת כלים ותמיכה לניהול 
+src\pages\CollaborationsFAQ.jsx:119:BizUply מספקת כלים ותמיכה לניהול 
 מקצועי ויעיל של שיתופי פעולה.
 src\pages\CollaborationsFAQ.jsx:143:        שאלות ותשובות - שיתופי פעולה 
 עסקיים
@@ -6622,7 +6622,7 @@ src\pages\CrmFAQ.jsx:7:מערכת CRM (Customer Relationship Management) היא
 ושימור הלקוחות. בעזרת CRM ניתן לנתח התנהגויות לקוח, להציע שירות מותאם 
 אישית, ולהגביר את נאמנות הלקוחות. השימוש ב-CRM מייעל את תהליכי המכירה 
 והשירות, חוסך זמן ומשאבים, ומאפשר לך לקבל החלטות מבוססות נתונים. 
-בפלטפורמת עסקליק, מערכת ה-CRM משולבת באופן שמותאם למאפייני העסק שלך 
+בפלטפורמת BizUply, מערכת ה-CRM משולבת באופן שמותאם למאפייני העסק שלך 
 ומאפשרת אינטגרציה עם כלים נוספים לניהול יעיל.
 src\pages\CrmFAQ.jsx:11:    question: "❓ אילו נתונים ופרטים ניתן לראות 
 בפרופיל הלקוח במערכת ה-CRM? ואיך להשתמש בהם לטובת העסק?",
@@ -6707,7 +6707,7 @@ src\pages\CrmFAQ.jsx:100:טיפים לשמירה על יציבות:
 src\pages\CrmFAQ.jsx:101:- שמור על דפדפן מעודכן.
 src\pages\CrmFAQ.jsx:102:- סגור ופתח מחדש את המערכת מדי פעם.
 src\pages\CrmFAQ.jsx:103:- גבה נתונים חשובים.
-src\pages\CrmFAQ.jsx:104:- עקוב אחר מערכת ההתראות של עסקליק.
+src\pages\CrmFAQ.jsx:104:- עקוב אחר מערכת ההתראות של BizUply.
 src\pages\CrmFAQ.jsx:108:    question: "❓ כיצד ניתן לנתח ולשפר את ביצועי 
 הלקוחות באמצעות מערכת ה-CRM?",
 src\pages\CrmFAQ.jsx:110:המערכת מספקת כלים לניתוח נתוני לקוחות לשיפור 
@@ -6825,7 +6825,7 @@ src\pages\CustomerMessagesFAQ.jsx:59:כן, המערכת מאפשרת שליחת 
 מאפשרת העשרה של השיחה ומתן מענה מקצועי ומפורט יותר ללקוחות.
 src\pages\CustomerMessagesFAQ.jsx:63:    question: "❓ כיצד מטפלים 
 בהודעות שגויות או כפולות שנשלחו בטעות?",
-src\pages\CustomerMessagesFAQ.jsx:65:במערכת עסקליק אין אפשרות למחוק או 
+src\pages\CustomerMessagesFAQ.jsx:65:במערכת BizUply אין אפשרות למחוק או 
 לערוך הודעות לאחר השליחה, זאת לשמירה על שקיפות ואמינות התקשורת. אם נשלחה 
 הודעה שגויה, מומלץ לשלוח הודעה נוספת עם הבהרה או התנצלות. כדי להפחית 
 טעויות, מומלץ לקרוא היטב את ההודעה לפני השליחה. תהליך זה מבטיח תקשורת 
@@ -6997,7 +6997,7 @@ src\pages\DashboardFAQ.jsx:122:- בדיקת נתונים וניתוחם: נתח 
 והדוחות בדשבורד, ונסה לזהות מגמות ושינויים במגוון מדדים. התאם את הפעילות 
 העסקית בהתאם למידע (למשל, הגדלת שעות פעילות בימי שיא).
 src\pages\DashboardFAQ.jsx:123:- שימוש בכלים טכנולוגיים: נצל את כלי 
-ה-CRM לניהול לקוחות ותזמון פגישות. השתמש ביועץ עסקליק או כלים אנליטיים 
+ה-CRM לניהול לקוחות ותזמון פגישות. השתמש ביועץ BizUply או כלים אנליטיים 
 נוספים לקבלת המלצות מותאמות אישית.
 src\pages\DashboardFAQ.jsx:125:שילוב של צעדים אלה יסייע לך להגדיל את 
 הפעילות העסקית ולהבטיח שדשבורד העסק ישקף נתונים מעודכנים ומדויקים, מה 
@@ -7005,12 +7005,12 @@ src\pages\DashboardFAQ.jsx:125:שילוב של צעדים אלה יסייע לך
 src\pages\DashboardFAQ.jsx:149:        שאלות ותשובות מפורטות למרכז עזרה 
 - דשבורד העסק
 src\pages\DashboardGuidePage.jsx:7:      {/* משפט הכותרת הוסר */}
-src\pages\DashboardGuidePage.jsx:8:      <h1>🧷 הדשבורד בעסקליק – שליטה 
+src\pages\DashboardGuidePage.jsx:8:      <h1>🧷 הדשבורד בBizUply – שליטה 
 מלאה במבט אחד</h1>
-src\pages\DashboardGuidePage.jsx:10:      <h2>מה זה דשבורד בעסקליק ולמה 
+src\pages\DashboardGuidePage.jsx:10:      <h2>מה זה דשבורד בBizUply ולמה 
 הוא חשוב?</h2>
 src\pages\DashboardGuidePage.jsx:12:        הדשבורד הוא לוח הבקרה המרכזי 
-שלך בעסקליק — המקום שבו כל הנתונים החשובים לעסק מרוכזים ומוצגים בצורה 
+שלך בBizUply — המקום שבו כל הנתונים החשובים לעסק מרוכזים ומוצגים בצורה 
 ברורה, פשוטה ונגישה.
 src\pages\DashboardGuidePage.jsx:13:        הוא מאפשר לך לעקוב בזמן אמת 
 אחר התנהלות העסק, לקבל תובנות על ביצועים, לזהות מגמות ולזהות הזדמנויות 
@@ -7154,269 +7154,269 @@ src\pages\DashboardGuidePage.jsx:129:        הדשבורד הוא כלי ניה
 src\pages\DashboardGuidePage.jsx:130:        למד להסתכל על הנתונים, 
 להבין את המשמעויות שלהם, ולהפעיל פעולות מבוססות מידע – כך תבטיח שהעסק 
 שלך יגדל ויפרח.
-src\pages\EskelikAdvisorFAQ.jsx:5:    question: "מהו יועץ עסקליק ואיך 
+src\pages\BizUplyAdvisorFAQ.jsx:5:    question: "מהו יועץ BizUply ואיך 
 הוא יכול לעזור לי?",
-src\pages\EskelikAdvisorFAQ.jsx:6:    answer: `יועץ עסקליק הוא מערכת 
+src\pages\BizUplyAdvisorFAQ.jsx:6:    answer: `יועץ BizUply הוא מערכת 
 ייעוץ עסקי ושיווקי מתקדמת מבוססת בינה מלאכותית (AI), המיועדת להעניק לך 
 מענה מקצועי, מותאם אישית ופרקטי למגוון רחב של שאלות ואתגרים עסקיים, 
 שיווקיים וניהוליים. השירות פועל 24/7 ומאפשר לך לקבל תובנות והכוונה מהירה 
 מבלי הצורך בפגישות יקרות או בהמתנה ממושכת.
-src\pages\EskelikAdvisorFAQ.jsx:8:מה הוא נותן לך?
-src\pages\EskelikAdvisorFAQ.jsx:10:מענה מיידי לשאלות מקצועיות ומורכבות 
+src\pages\BizUplyAdvisorFAQ.jsx:8:מה הוא נותן לך?
+src\pages\BizUplyAdvisorFAQ.jsx:10:מענה מיידי לשאלות מקצועיות ומורכבות 
 בתחומים כמו ניהול עובדים, שיווק דיגיטלי, ניהול כספים, שיפור שירות לקוחות 
 ועוד.
-src\pages\EskelikAdvisorFAQ.jsx:12:המלצות מותאמות לעסק שלך, בהתחשב 
+src\pages\BizUplyAdvisorFAQ.jsx:12:המלצות מותאמות לעסק שלך, בהתחשב 
 בגודל, תחום הפעילות והצרכים הספציפיים שלך.
-src\pages\EskelikAdvisorFAQ.jsx:14:תכנון אסטרטגי של פעילויות עסקיות, 
+src\pages\BizUplyAdvisorFAQ.jsx:14:תכנון אסטרטגי של פעילויות עסקיות, 
 כולל בניית תכניות שיווק חודשיות, הצעות לייעול תהליכים עסקיים והפחתת 
 עלויות.
-src\pages\EskelikAdvisorFAQ.jsx:16:סיוע בזיהוי הזדמנויות חדשות, פתרון 
+src\pages\BizUplyAdvisorFAQ.jsx:16:סיוע בזיהוי הזדמנויות חדשות, פתרון 
 בעיות תפעוליות והעצמת ביצועי העסק.
-src\pages\EskelikAdvisorFAQ.jsx:18:למה צריך את זה?
-src\pages\EskelikAdvisorFAQ.jsx:19:בעולם העסקי המודרני, קבלת החלטות 
-מהירה ומושכלת היא קריטית להישרדות ולהצלחה. יועץ עסקליק מאפשר לך:
-src\pages\EskelikAdvisorFAQ.jsx:21:לחסוך זמן יקר שנדרש לחיפוש מידע 
+src\pages\BizUplyAdvisorFAQ.jsx:18:למה צריך את זה?
+src\pages\BizUplyAdvisorFAQ.jsx:19:בעולם העסקי המודרני, קבלת החלטות 
+מהירה ומושכלת היא קריטית להישרדות ולהצלחה. יועץ BizUply מאפשר לך:
+src\pages\BizUplyAdvisorFAQ.jsx:21:לחסוך זמן יקר שנדרש לחיפוש מידע 
 ולמידה עצמאית.
-src\pages\EskelikAdvisorFAQ.jsx:23:לקבל תשובות מקצועיות ומעודכנות 
+src\pages\BizUplyAdvisorFAQ.jsx:23:לקבל תשובות מקצועיות ומעודכנות 
 שמבוססות על אלגוריתמים מתקדמים וידע עסקי עדכני.
-src\pages\EskelikAdvisorFAQ.jsx:25:להימנע מטעויות יקרות שעלולות להיגרם 
+src\pages\BizUplyAdvisorFAQ.jsx:25:להימנע מטעויות יקרות שעלולות להיגרם 
 מחוסר ניסיון או מידע לא נכון.
-src\pages\EskelikAdvisorFAQ.jsx:27:לשפר את היעילות והפרודוקטיביות של 
+src\pages\BizUplyAdvisorFAQ.jsx:27:לשפר את היעילות והפרודוקטיביות של 
 העסק באמצעות כלים ממוקדים ותובנות שניתן ליישם במהירות.
-src\pages\EskelikAdvisorFAQ.jsx:29:איך זה יכול לשמש את העסק שלי?
-src\pages\EskelikAdvisorFAQ.jsx:31:בעל עסק קטן או בינוני יכול לקבל תמיכה 
+src\pages\BizUplyAdvisorFAQ.jsx:29:איך זה יכול לשמש את העסק שלי?
+src\pages\BizUplyAdvisorFAQ.jsx:31:בעל עסק קטן או בינוני יכול לקבל תמיכה 
 יומיומית בניהול העסק, מבלי להיעזר ביועץ חיצוני יקר.
-src\pages\EskelikAdvisorFAQ.jsx:33:מאפשר קבלת החלטות מושכלות בתחום 
+src\pages\BizUplyAdvisorFAQ.jsx:33:מאפשר קבלת החלטות מושכלות בתחום 
 השיווק, המכירות, ניהול המשאבים והלקוחות.
-src\pages\EskelikAdvisorFAQ.jsx:35:מסייע בהקמת תהליכים עסקיים מסודרים, 
+src\pages\BizUplyAdvisorFAQ.jsx:35:מסייע בהקמת תהליכים עסקיים מסודרים, 
 קביעת יעדים ומדדי הצלחה, ובקרה שוטפת על פעילות העסק.
-src\pages\EskelikAdvisorFAQ.jsx:37:מחזק את היכולת להתמודד עם תחרות גוברת 
+src\pages\BizUplyAdvisorFAQ.jsx:37:מחזק את היכולת להתמודד עם תחרות גוברת 
 בשוק ועם שינויים מהירים במציאות העסקית.
-src\pages\EskelikAdvisorFAQ.jsx:39:מאפשר לך להתמקד במה שחשוב באמת – 
+src\pages\BizUplyAdvisorFAQ.jsx:39:מאפשר לך להתמקד במה שחשוב באמת – 
 פיתוח העסק, תוך קבלת מענה אמין ותומך לכל שאלה או קושי שמתעוררים בדרך.
-src\pages\EskelikAdvisorFAQ.jsx:41:יועץ עסקליק הוא הכלי הטכנולוגי שיאפשר 
+src\pages\BizUplyAdvisorFAQ.jsx:41:יועץ BizUply הוא הכלי הטכנולוגי שיאפשר 
 לך להפוך את ניהול העסק לחכם, יעיל ומקצועי יותר, עם תמיכה רציפה ונגישה 
 שמתאימה לצרכים המתקדמים של ימינו.`,
-src\pages\EskelikAdvisorFAQ.jsx:44:    question: "כיצד לבחור שאלה מוכנה 
-או לשאול שאלה חופשית ביועץ עסקליק?",
-src\pages\EskelikAdvisorFAQ.jsx:45:    answer: `יועץ עסקליק מציע לך שני 
+src\pages\BizUplyAdvisorFAQ.jsx:44:    question: "כיצד לבחור שאלה מוכנה 
+או לשאול שאלה חופשית ביועץ BizUply?",
+src\pages\BizUplyAdvisorFAQ.jsx:45:    answer: `יועץ BizUply מציע לך שני 
 מסלולי שימוש עיקריים לקבלת ייעוץ עסקי מקצועי, נגיש ומותאם אישית:
-src\pages\EskelikAdvisorFAQ.jsx:47:1. בחירת שאלה מוכנה:
-src\pages\EskelikAdvisorFAQ.jsx:48:המערכת מכילה שאלות מוכנות, שנבנו 
+src\pages\BizUplyAdvisorFAQ.jsx:47:1. בחירת שאלה מוכנה:
+src\pages\BizUplyAdvisorFAQ.jsx:48:המערכת מכילה שאלות מוכנות, שנבנו 
 בהתבסס על הצרכים והשאלות הנפוצות ביותר של בעלי עסקים קטנים ובינוניים. 
 שאלות אלו מכסות תחומים מגוונים כמו שיווק דיגיטלי, ניהול צוות, תכנון 
 פיננסי, התמודדות עם ירידה בהכנסות, שיפור שירות לקוחות ועוד.
-src\pages\EskelikAdvisorFAQ.jsx:49:בחירת שאלה מוכנה מתבצעת בקלות דרך 
+src\pages\BizUplyAdvisorFAQ.jsx:49:בחירת שאלה מוכנה מתבצעת בקלות דרך 
 תפריט פשוט, המאפשר לך לסקור את השאלות לפי קטגוריות ולבחור את זו שנראית 
 לך הרלוונטית ביותר. כך תוכל לקבל במהירות תשובה מקצועית וממוקדת שתסייע לך 
 לפתור בעיות נפוצות או לקבל החלטות נכונות.
-src\pages\EskelikAdvisorFAQ.jsx:51:2. שאילת שאלה חופשית:
-src\pages\EskelikAdvisorFAQ.jsx:52:אם הצורך שלך הוא ספציפי או מורכב 
+src\pages\BizUplyAdvisorFAQ.jsx:51:2. שאילת שאלה חופשית:
+src\pages\BizUplyAdvisorFAQ.jsx:52:אם הצורך שלך הוא ספציפי או מורכב 
 יותר, תוכל לנסח שאלה אישית מדויקת בתיבת הטקסט המיועדת לכך. השאלה שלך 
 תנותח בזמן אמת על ידי מנגנון בינה מלאכותית מתקדם, אשר יספק לך מענה מותאם 
 אישית על בסיס הידע הרחב והעדכני שלו.
-src\pages\EskelikAdvisorFAQ.jsx:53:בנוסף, המערכת תציע לך המלצות נוספות 
+src\pages\BizUplyAdvisorFAQ.jsx:53:בנוסף, המערכת תציע לך המלצות נוספות 
 לפעולה ולשיפור העסק בהתאם להקשר של השאלה, כך שתוכל לקבל תמונה מלאה 
 ומקיפה של הדרכים להתקדמות.
-src\pages\EskelikAdvisorFAQ.jsx:55:מתי לבחור באיזו אופציה?
-src\pages\EskelikAdvisorFAQ.jsx:57:אם אתה מחפש מענה מהיר לבעיה או שאלה 
+src\pages\BizUplyAdvisorFAQ.jsx:55:מתי לבחור באיזו אופציה?
+src\pages\BizUplyAdvisorFAQ.jsx:57:אם אתה מחפש מענה מהיר לבעיה או שאלה 
 נפוצה, בחירת שאלה מוכנה תהיה הדרך היעילה ביותר.
-src\pages\EskelikAdvisorFAQ.jsx:59:אם יש לך צורך בייעוץ ספציפי, מורכב או 
+src\pages\BizUplyAdvisorFAQ.jsx:59:אם יש לך צורך בייעוץ ספציפי, מורכב או 
 מותאם אישית לעסק שלך, שאילת שאלה חופשית תאפשר לך לקבל תשובה מקצועית 
 שמותאמת בדיוק לצרכים שלך.
-src\pages\EskelikAdvisorFAQ.jsx:61:שימוש נכון בשני המסלולים הללו יאפשר 
+src\pages\BizUplyAdvisorFAQ.jsx:61:שימוש נכון בשני המסלולים הללו יאפשר 
 לך לקבל את המידע וההכוונה המדויקים ביותר, במהירות ובנוחות, ולשפר באופן 
 משמעותי את ניהול וקידום העסק שלך.`,
-src\pages\EskelikAdvisorFAQ.jsx:64:    question: "האם התשובות מיועדות 
+src\pages\BizUplyAdvisorFAQ.jsx:64:    question: "האם התשובות מיועדות 
 לכל סוגי העסקים?",
-src\pages\EskelikAdvisorFAQ.jsx:65:    answer: `מערכת יועץ עסקליק מתקדמת 
+src\pages\BizUplyAdvisorFAQ.jsx:65:    answer: `מערכת יועץ BizUply מתקדמת 
 מבוססת בינה מלאכותית, המשתמשת לא רק בידע מקצועי רחב, אלא גם בנתוני העסק 
 הספציפיים שלך, שמתקבלים ישירות מהשרת וממערכות הניהול שלך. זה מאפשר 
 למערכת לספק תשובות והמלצות שמותאמות אישית למצב העסקי, הכלכלי והשיווקי 
 שלך, בהתאם לפרופיל העסק, ביצועים קודמים, פעילות שוטפת ויעדים עסקיים.
-src\pages\EskelikAdvisorFAQ.jsx:67:המשמעות היא שהתשובות אינן כלליות 
+src\pages\BizUplyAdvisorFAQ.jsx:67:המשמעות היא שהתשובות אינן כלליות 
 בלבד, אלא מתבססות על מידע רלוונטי ועדכני המאפשר לך לקבל החלטות מבוססות 
-נתונים, מדויקות ורלוונטיות לצרכים המיוחדים של העסק שלך. כך, יועץ עסקליק 
+נתונים, מדויקות ורלוונטיות לצרכים המיוחדים של העסק שלך. כך, יועץ BizUply 
 מספק תמיכה אמיתית ומותאמת אישית לשיפור ביצועי העסק, לייעול תהליכים 
 ולקבלת החלטות מושכלות.
-src\pages\EskelikAdvisorFAQ.jsx:69:עם זאת, יש לקחת בחשבון שכל עסק הוא 
+src\pages\BizUplyAdvisorFAQ.jsx:69:עם זאת, יש לקחת בחשבון שכל עסק הוא 
 ייחודי וישנם נושאים מורכבים או אסטרטגיים הדורשים ליווי מקצועי מעמיק 
 יותר, כמו ייעוץ משפטי, פיננסי או עסקי פרטני. במקרים אלו מומלץ להיעזר 
 ביועצים מומחים שיכולים להעמיק ולהתאים פתרונות אישיים.
-src\pages\EskelikAdvisorFAQ.jsx:71:יועץ עסקליק הוא כלי חכם, חזק ומותאם 
+src\pages\BizUplyAdvisorFAQ.jsx:71:יועץ BizUply הוא כלי חכם, חזק ומותאם 
 אישית לעסקים קטנים ובינוניים, המסייע לקבלת החלטות מהירות ומדויקות על 
 בסיס נתוני העסק שלך, אך מהווה תוספת ולא תחליף לייעוץ מקצועי פרטני במקרים 
 מורכבים.`,
-src\pages\EskelikAdvisorFAQ.jsx:74:    question: "איך נעשה השימוש ביועץ 
-שיווק במסגרת עסקליק?",
-src\pages\EskelikAdvisorFAQ.jsx:75:    answer: `יועץ השיווק במסגרת 
-"עסקליק" הוא כלי חכם מבוסס בינה מלאכותית, המספק לך מענה מקצועי וממוקד 
+src\pages\BizUplyAdvisorFAQ.jsx:74:    question: "איך נעשה השימוש ביועץ 
+שיווק במסגרת BizUply?",
+src\pages\BizUplyAdvisorFAQ.jsx:75:    answer: `יועץ השיווק במסגרת 
+"BizUply" הוא כלי חכם מבוסס בינה מלאכותית, המספק לך מענה מקצועי וממוקד 
 לשאלות מפתח בתחום השיווק הדיגיטלי והמסורתי. השירות מאפשר לך לקבל המלצות 
 מותאמות אישית, שמבוססות על הנתונים הספציפיים של העסק שלך, תחום הפעילות, 
 קהל היעד והיעדים העסקיים שלך.
-src\pages\EskelikAdvisorFAQ.jsx:77:באמצעות יועץ השיווק תוכל ללמוד כיצד 
+src\pages\BizUplyAdvisorFAQ.jsx:77:באמצעות יועץ השיווק תוכל ללמוד כיצד 
 להביא לידים איכותיים יותר, לבנות תוכנית שיווק חודשית מדויקת וממוקדת, 
 להבין את היתרונות והחסרונות של קמפיינים ממומנים לעומת קמפיינים אורגניים, 
 ולבחור את ערוצי הפרסום המתאימים ביותר עבורך (כגון גוגל, פייסבוק, 
 אינסטגרם, דוא"ל ועוד).
-src\pages\EskelikAdvisorFAQ.jsx:79:השיווק הוא המנוע המרכזי לצמיחה עסקית, 
+src\pages\BizUplyAdvisorFAQ.jsx:79:השיווק הוא המנוע המרכזי לצמיחה עסקית, 
 מכיוון שהוא מביא חשיפה, מעורבות ומכירות. ללא תכנית שיווקית מתוכננת היטב, 
-העסק עלול להישאר מאחור ולפספס הזדמנויות. יועץ השיווק ב"עסקליק" עוזר לך 
+העסק עלול להישאר מאחור ולפספס הזדמנויות. יועץ השיווק ב"BizUply" עוזר לך 
 למקסם את תקציב הפרסום, להתמקד בקהלים רלוונטיים ולהגיב במהירות לשינויים 
 בשוק.
-src\pages\EskelikAdvisorFAQ.jsx:81:הבינה המלאכותית (AI) שמאחורי יועץ 
+src\pages\BizUplyAdvisorFAQ.jsx:81:הבינה המלאכותית (AI) שמאחורי יועץ 
 השיווק מנתחת נתונים בזמן אמת, מגלה מגמות ודפוסים, ומספקת הצעות מבוססות 
 ראיות. היא יודעת להמליץ על אופטימיזציה של קמפיינים, טכניקות לשיפור 
 המרות, ודרכים לשיפור נראות האינטרנטית שלך. כך תוכל לקבל החלטות מבוססות 
 נתונים ולא סתם "להרגיש" מה נכון לעשות.
-src\pages\EskelikAdvisorFAQ.jsx:83:השימוש ביועץ השיווק בעסקליק הוא דרך 
+src\pages\BizUplyAdvisorFAQ.jsx:83:השימוש ביועץ השיווק בBizUply הוא דרך 
 חכמה, חסכונית ויעילה לשפר את ביצועי השיווק, להגביר את החשיפה ואת 
 המעורבות של הלקוחות, ולבסוף להגדיל את ההכנסות בעסק שלך – כל זאת באמצעות 
 כלי מתקדם ונגיש, שמעניק לך תמיכה רציפה ומותאמת לצרכים המדויקים שלך.`,
-src\pages\EskelikAdvisorFAQ.jsx:86:    question: "מה עושים אם השאלה שלי 
+src\pages\BizUplyAdvisorFAQ.jsx:86:    question: "מה עושים אם השאלה שלי 
 לא מופיעה ברשימה?",
-src\pages\EskelikAdvisorFAQ.jsx:87:    answer: `במערכת יועץ עסקליק, יש 
+src\pages\BizUplyAdvisorFAQ.jsx:87:    answer: `במערכת יועץ BizUply, יש 
 לך את האפשרות לשאול כל שאלה עסקית, שיווקית או ניהולית באופן חופשי, גם אם 
 היא לא כלולה ברשימת השאלות המוכנות מראש. פשוט הקלד את השאלה שלך בתיבת 
 הטקסט המיועדת לכך, והמנוע מבוסס הבינה המלאכותית ינתח את התוכן ויחפש 
 עבורך את התשובה המקצועית והרלוונטית ביותר.
-src\pages\EskelikAdvisorFAQ.jsx:89:התשובות מתקבלות במהירות ומבוססות על 
+src\pages\BizUplyAdvisorFAQ.jsx:89:התשובות מתקבלות במהירות ומבוססות על 
 מאגר ידע רחב ועדכני, הכולל מידע עסקי כללי, טכניקות שיווק, ניהול עובדים, 
 פתרון בעיות ועוד. המערכת יודעת לזהות את ההקשר ולספק המלצות מותאמות 
 אישית, כולל צעדים פרקטיים לביצוע.
-src\pages\EskelikAdvisorFAQ.jsx:91:במקרים שבהם השאלה מורכבת או מצריכה 
-טיפול מעמיק יותר, ייתכן שיועץ עסקליק יציע לך דרכי פעולה נוספות, כמו 
+src\pages\BizUplyAdvisorFAQ.jsx:91:במקרים שבהם השאלה מורכבת או מצריכה 
+טיפול מעמיק יותר, ייתכן שיועץ BizUply יציע לך דרכי פעולה נוספות, כמו 
 הפניה לקבלת ייעוץ אנושי מקצועי, המלצה על כלים חיצוניים או קורסים 
 רלוונטיים. כך, תוכל להתמודד עם האתגרים העסקיים שלך בצורה היעילה ביותר, 
 בלי לבזבז זמן על חיפושים או פגישות לא ממוקדות.
-src\pages\EskelikAdvisorFAQ.jsx:93:השימוש בשאלות חופשיות מאפשר לך לקבל 
+src\pages\BizUplyAdvisorFAQ.jsx:93:השימוש בשאלות חופשיות מאפשר לך לקבל 
 פתרונות שמתאימים בדיוק לצרכים הייחודיים של העסק שלך, גם במצבים מיוחדים 
 או לא סטנדרטיים. בנוסף, היכולת לקבל מענה מהיר ומדויק תורמת לחיסכון בזמן, 
 שיפור קבלת ההחלטות והגדלת סיכויי ההצלחה העסקית שלך.`,
-src\pages\EskelikAdvisorFAQ.jsx:96:    question: "האם השירות זמין 24/7?",
-src\pages\EskelikAdvisorFAQ.jsx:97:    answer: `כן, יועץ עסקליק פועל 
+src\pages\BizUplyAdvisorFAQ.jsx:96:    question: "האם השירות זמין 24/7?",
+src\pages\BizUplyAdvisorFAQ.jsx:97:    answer: `כן, יועץ BizUply פועל 
 במתכונת דיגיטלית מלאה וזמין עבורך בכל שעה ובכל יום בשבוע, 24/7. זמינות 
 זו מאפשרת לך לקבל מענה וייעוץ מקצועי מיידי בכל רגע שבו אתה זקוק לו, ללא 
 תלות בשעות עבודה של יועצים אנושיים, תורים או פגישות מתואמות מראש.
-src\pages\EskelikAdvisorFAQ.jsx:99:הזמינות המיידית חשובה מאוד לעסקים, 
+src\pages\BizUplyAdvisorFAQ.jsx:99:הזמינות המיידית חשובה מאוד לעסקים, 
 מכיוון שבתחום העסקי והניהולי לעיתים קרובות מתעוררות שאלות, בעיות או 
 הזדמנויות בלתי צפויות שדורשות תגובה מהירה ומושכלת. במקום להמתין למפגש עם 
-יועץ או לבזבז זמן בחיפוש אחר מידע, יועץ עסקליק מאפשר פתרון מיידי שמאפשר 
+יועץ או לבזבז זמן בחיפוש אחר מידע, יועץ BizUply מאפשר פתרון מיידי שמאפשר 
 לך לקבל החלטות מהירות ומדויקות, גם בשעות לא שגרתיות כמו לילה, סופי שבוע 
 או חגים.
-src\pages\EskelikAdvisorFAQ.jsx:101:בנוסף, היכולת לקבל ייעוץ בכל שעה 
+src\pages\BizUplyAdvisorFAQ.jsx:101:בנוסף, היכולת לקבל ייעוץ בכל שעה 
 תורמת להפחתת לחצים וניהול סיכונים, כי לעיתים זימון פגישה דחופה עם יועץ 
-עסקי יכול להיות מורכב, ועלול לעכב תהליכים חשובים. יועץ עסקליק מספק פתרון 
+עסקי יכול להיות מורכב, ועלול לעכב תהליכים חשובים. יועץ BizUply מספק פתרון 
 זמין וגמיש שמאפשר לך לנהל את העסק ביעילות מרבית, להפיק את המקסימום מכל 
 הזדמנות עסקית ולשפר את התפעול השוטף בכל רגע נתון.
-src\pages\EskelikAdvisorFAQ.jsx:103:לכן, זמינות 24/7 אינה רק נוחות — היא 
+src\pages\BizUplyAdvisorFAQ.jsx:103:לכן, זמינות 24/7 אינה רק נוחות — היא 
 כלי אסטרטגי משמעותי שמאפשר לבעלי עסקים להתמודד עם המציאות העסקית המהירה 
 והדינמית של היום בצורה טובה יותר.`,
-src\pages\EskelikAdvisorFAQ.jsx:106:    question: "כיצד ניתן למקסם את 
-הערך המתקבל מיועץ עסקליק?",
-src\pages\EskelikAdvisorFAQ.jsx:107:    answer: `כדי להפיק את המקסימום 
-מיועץ עסקליק, חשוב לשלב את ההמלצות והמידע המתקבלים כחלק אינטגרלי מניהול 
+src\pages\BizUplyAdvisorFAQ.jsx:106:    question: "כיצד ניתן למקסם את 
+הערך המתקבל מיועץ BizUply?",
+src\pages\BizUplyAdvisorFAQ.jsx:107:    answer: `כדי להפיק את המקסימום 
+מיועץ BizUply, חשוב לשלב את ההמלצות והמידע המתקבלים כחלק אינטגרלי מניהול 
 העסק היומיומי. ראשית, יש להטמיע את ההנחיות והפעולות המוצעות ביומן הניהול 
 שלך, תוך תיאום ושילוב עם מערכת ה-CRM והדשבורד העסקי. כך תוכל לוודא שכל 
 ההמלצות מיושמות בזמן, ושהנתונים מתעדכנים בזמן אמת במערכות השונות, מה 
 שמאפשר לך לקבל תמונת מצב מדויקת ואמינה.
-src\pages\EskelikAdvisorFAQ.jsx:109:מעקב שוטף אחר ביצועים ונתונים הוא 
+src\pages\BizUplyAdvisorFAQ.jsx:109:מעקב שוטף אחר ביצועים ונתונים הוא 
 שלב קריטי למקסום הערך. באמצעות ניתוח התוצאות של פעולות שבוצעו בעקבות 
 ייעוץ ה-AI, תוכל לזהות מה עובד טוב ומה דורש שיפור, ולבצע התאמות מהירות 
 ומושכלות. המערכת מאפשרת לך גם לשאול שאלות המשך ולהעמיק בתחומים ספציפיים 
 לפי הצורך, כך שהתהליך הוא דינמי ומתפתח בהתאם למצב העסקי המשתנה.
-src\pages\EskelikAdvisorFAQ.jsx:111:חשוב לזכור שיועץ עסקליק הוא כלי עזר 
+src\pages\BizUplyAdvisorFAQ.jsx:111:חשוב לזכור שיועץ BizUply הוא כלי עזר 
 חכם שמעניק תובנות והכוונה, אך ההצלחה תלויה גם ביישום עקבי של ההמלצות. 
 שימוש נכון בתובנות יכול להוביל לשיפור משמעותי בניהול העסק, בשיפור השירות 
 ללקוחות, בהגדלת היעילות התפעולית ובהגברת ההכנסות.
-src\pages\EskelikAdvisorFAQ.jsx:113:שילוב עקבי של ייעוץ מקצועי עם ניהול 
+src\pages\BizUplyAdvisorFAQ.jsx:113:שילוב עקבי של ייעוץ מקצועי עם ניהול 
 עסקי שוטף, מעקב מתמיד אחרי תוצאות, ושימוש במערכות האוטומציה של העסק הם 
-המפתח למקסום הערך של יועץ עסקליק ולהובלת העסק שלך להצלחה מתמשכת.`,
-src\pages\EskelikAdvisorFAQ.jsx:116:    question: "איך מבצעים אינטגרציה 
-בין יועץ עסקליק לשאר מערכות הניהול העסקיות?",
-src\pages\EskelikAdvisorFAQ.jsx:117:    answer: `האינטגרציה בין יועץ 
-עסקליק למערכות ניהול עסקיות אחרות מהווה מפתח מרכזי לשיפור היעילות 
-והאפקטיביות בניהול העסק. עסקליק תומכת בחיבור למערכות CRM, דשבורדים 
+המפתח למקסום הערך של יועץ BizUply ולהובלת העסק שלך להצלחה מתמשכת.`,
+src\pages\BizUplyAdvisorFAQ.jsx:116:    question: "איך מבצעים אינטגרציה 
+בין יועץ BizUply לשאר מערכות הניהול העסקיות?",
+src\pages\BizUplyAdvisorFAQ.jsx:117:    answer: `האינטגרציה בין יועץ 
+BizUply למערכות ניהול עסקיות אחרות מהווה מפתח מרכזי לשיפור היעילות 
+והאפקטיביות בניהול העסק. BizUply תומכת בחיבור למערכות CRM, דשבורדים 
 עסקיים, פלטפורמות שיווק, וכלים לניהול לקוחות והזמנות, מה שמאפשר לך לקבל 
 תמונת מצב מקיפה ומעודכנת בכל רגע נתון.
-src\pages\EskelikAdvisorFAQ.jsx:119:האינטגרציה מבוססת על סינכרון נתונים 
-בזמן אמת, כך שהמידע שיועץ עסקליק מספק—כגון המלצות, תובנות ונתונים 
+src\pages\BizUplyAdvisorFAQ.jsx:119:האינטגרציה מבוססת על סינכרון נתונים 
+בזמן אמת, כך שהמידע שיועץ BizUply מספק—כגון המלצות, תובנות ונתונים 
 עסקיים—משתלב אוטומטית במערכות העבודה השוטפות שלך. למשל, אם היועץ מזהה 
 הזדמנות שיווקית או נושא לשיפור בשירות לקוחות, המידע יכול להיכנס ישירות 
 למערכת ה-CRM שלך, שם יוטמע בפעילות השיווקית או בשירות הלקוחות.
-src\pages\EskelikAdvisorFAQ.jsx:121:בנוסף, האינטגרציה מאפשרת קליטת 
-משובים מהמערכות השונות, כך שיועץ עסקליק מתאים את ההמלצות שלו בהתבסס על 
+src\pages\BizUplyAdvisorFAQ.jsx:121:בנוסף, האינטגרציה מאפשרת קליטת 
+משובים מהמערכות השונות, כך שיועץ BizUply מתאים את ההמלצות שלו בהתבסס על 
 הנתונים העדכניים ביותר, ומאפשר התאמה דינמית לשינויים במצב העסק. כך ניתן 
 למנוע כפילויות, לשפר את תהליך קבלת ההחלטות, ולמקסם את התוצאות העסקיות.
-src\pages\EskelikAdvisorFAQ.jsx:123:אינטגרציה יעילה בין יועץ עסקליק 
+src\pages\BizUplyAdvisorFAQ.jsx:123:אינטגרציה יעילה בין יועץ BizUply 
 למערכות ניהול אחרות מאפשרת לך לנהל את העסק בצורה חכמה, ממוקדת ומבוססת 
 נתונים, תוך שימוש בכלים טכנולוגיים מתקדמים המייעלים את התפעול ותומכים 
 בקבלת החלטות מושכלות.`,
-src\pages\EskelikAdvisorFAQ.jsx:126:    question: "אילו שגיאות או תקלות 
-עלולות להתרחש ביועץ עסקליק וכיצד ניתן לפתור אותן?",
-src\pages\EskelikAdvisorFAQ.jsx:127:    answer: `כמו בכל מערכת טכנולוגית 
-מתקדמת, גם ביועץ עסקליק עשויות להתרחש שגיאות או תקלות, הנובעות ממספר 
+src\pages\BizUplyAdvisorFAQ.jsx:126:    question: "אילו שגיאות או תקלות 
+עלולות להתרחש ביועץ BizUply וכיצד ניתן לפתור אותן?",
+src\pages\BizUplyAdvisorFAQ.jsx:127:    answer: `כמו בכל מערכת טכנולוגית 
+מתקדמת, גם ביועץ BizUply עשויות להתרחש שגיאות או תקלות, הנובעות ממספר 
 גורמים אפשריים, כגון תקלה בחיבור האינטרנט, בעיות סינכרון נתונים, עומס על 
 השרתים או באגים במערכת. להלן הדרכה מפורטת לפתרון תקלות נפוצות:
-src\pages\EskelikAdvisorFAQ.jsx:129:בעיה בקבלת תשובות או באיחור בתגובה:
-src\pages\EskelikAdvisorFAQ.jsx:131:בדוק חיבור אינטרנט יציב ומהיר. חיבור 
+src\pages\BizUplyAdvisorFAQ.jsx:129:בעיה בקבלת תשובות או באיחור בתגובה:
+src\pages\BizUplyAdvisorFAQ.jsx:131:בדוק חיבור אינטרנט יציב ומהיר. חיבור 
 חלש או לא יציב עלול לגרום לעיכובים.
-src\pages\EskelikAdvisorFAQ.jsx:133:נסה לרענן את הדפדפן או את האפליקציה 
+src\pages\BizUplyAdvisorFAQ.jsx:133:נסה לרענן את הדפדפן או את האפליקציה 
 בה אתה משתמש.
-src\pages\EskelikAdvisorFAQ.jsx:135:אם הבעיה חוזרת, נסה להיכנס ממכשיר או 
+src\pages\BizUplyAdvisorFAQ.jsx:135:אם הבעיה חוזרת, נסה להיכנס ממכשיר או 
 דפדפן אחר.
-src\pages\EskelikAdvisorFAQ.jsx:137:שגיאות בסינכרון עם נתוני העסק:
-src\pages\EskelikAdvisorFAQ.jsx:139:ודא שהעסק שלך מעודכן במערכת ושהפרטים 
+src\pages\BizUplyAdvisorFAQ.jsx:137:שגיאות בסינכרון עם נתוני העסק:
+src\pages\BizUplyAdvisorFAQ.jsx:139:ודא שהעסק שלך מעודכן במערכת ושהפרטים 
 בשרת תקינים.
-src\pages\EskelikAdvisorFAQ.jsx:141:במידה ויש שגיאות בנתונים המוצגים 
+src\pages\BizUplyAdvisorFAQ.jsx:141:במידה ויש שגיאות בנתונים המוצגים 
 ליועץ, נסה לבצע סנכרון מחדש דרך הגדרות העסק או לפנות לתמיכה.
-src\pages\EskelikAdvisorFAQ.jsx:143:בעיות גישה או כניסה ליועץ:
-src\pages\EskelikAdvisorFAQ.jsx:145:בדוק שההרשאות שלך במערכת מעודכנות 
+src\pages\BizUplyAdvisorFAQ.jsx:143:בעיות גישה או כניסה ליועץ:
+src\pages\BizUplyAdvisorFAQ.jsx:145:בדוק שההרשאות שלך במערכת מעודכנות 
 ושאתה מחובר עם פרופיל העסק הנכון.
-src\pages\EskelikAdvisorFAQ.jsx:147:במידה ושכחת סיסמה או נתקלת בבעיה 
+src\pages\BizUplyAdvisorFAQ.jsx:147:במידה ושכחת סיסמה או נתקלת בבעיה 
 בכניסה, השתמש בפונקציית שחזור הסיסמה או פנה לתמיכה.
-src\pages\EskelikAdvisorFAQ.jsx:149:תקלות טכניות או באגים במערכת:
-src\pages\EskelikAdvisorFAQ.jsx:151:במקרה של תקלות טכניות, מומלץ לעדכן 
+src\pages\BizUplyAdvisorFAQ.jsx:149:תקלות טכניות או באגים במערכת:
+src\pages\BizUplyAdvisorFAQ.jsx:151:במקרה של תקלות טכניות, מומלץ לעדכן 
 את המערכת או הדפדפן לגרסה העדכנית ביותר.
-src\pages\EskelikAdvisorFAQ.jsx:153:אם הבעיה לא נפתרת, יש לפנות לצוות 
-התמיכה של עסקליק עם תיאור מדויק של התקלה, צילומי מסך ומידע על המכשיר 
+src\pages\BizUplyAdvisorFAQ.jsx:153:אם הבעיה לא נפתרת, יש לפנות לצוות 
+התמיכה של BizUply עם תיאור מדויק של התקלה, צילומי מסך ומידע על המכשיר 
 והדפדפן בו אתה משתמש.
-src\pages\EskelikAdvisorFAQ.jsx:155:שגיאות בתוכן התשובות או חוסר התאמה:
-src\pages\EskelikAdvisorFAQ.jsx:157:יועץ עסקליק מבוסס על AI ולכן עלול 
+src\pages\BizUplyAdvisorFAQ.jsx:155:שגיאות בתוכן התשובות או חוסר התאמה:
+src\pages\BizUplyAdvisorFAQ.jsx:157:יועץ BizUply מבוסס על AI ולכן עלול 
 לספק לפעמים תשובות כלליות או שאינן מותאמות במדויק לעסק שלך. במקרים כאלה 
 מומלץ להשתמש בשאלות מפורטות וברורות יותר, או לפנות לייעוץ אישי מקצועי.
-src\pages\EskelikAdvisorFAQ.jsx:159:שמירה על כללי עבודה טובים, בדיקות 
+src\pages\BizUplyAdvisorFAQ.jsx:159:שמירה על כללי עבודה טובים, בדיקות 
 תקופתיות של המערכת ועדכון תדיר של פרטי העסק והנתונים מסייעים להפחית 
-תקלות ולהבטיח שימוש חלק ויעיל ביועץ עסקליק. במידה ומתעוררת תקלה 
+תקלות ולהבטיח שימוש חלק ויעיל ביועץ BizUply. במידה ומתעוררת תקלה 
 משמעותית, צוות התמיכה זמין לעזור ולפתור את הבעיה במהירות האפשרית.`,
-src\pages\EskelikAdvisorFAQ.jsx:162:    question: "כיצד ניתן למנוע בעיות 
-ושגיאות חוזרות ביועץ עסקליק?",
-src\pages\EskelikAdvisorFAQ.jsx:163:    answer: `כדי למנוע תקלות ושגיאות 
-חוזרות ביועץ עסקליק, מומלץ לבצע את הפעולות הבאות באופן שגרתי ומסודר:
-src\pages\EskelikAdvisorFAQ.jsx:165:עדכון מידע ונתונים: הקפד לשמור על 
+src\pages\BizUplyAdvisorFAQ.jsx:162:    question: "כיצד ניתן למנוע בעיות 
+ושגיאות חוזרות ביועץ BizUply?",
+src\pages\BizUplyAdvisorFAQ.jsx:163:    answer: `כדי למנוע תקלות ושגיאות 
+חוזרות ביועץ BizUply, מומלץ לבצע את הפעולות הבאות באופן שגרתי ומסודר:
+src\pages\BizUplyAdvisorFAQ.jsx:165:עדכון מידע ונתונים: הקפד לשמור על 
 פרטי העסק, הלקוחות והשירותים מעודכנים במערכת, כדי להבטיח שהתשובות 
 וההמלצות של היועץ יהיו מדויקות ורלוונטיות.
-src\pages\EskelikAdvisorFAQ.jsx:167:בדיקת חיבור אינטרנט: וודא שהחיבור 
+src\pages\BizUplyAdvisorFAQ.jsx:167:בדיקת חיבור אינטרנט: וודא שהחיבור 
 שלך יציב ומהיר, במיוחד בעת שימוש בשירות בזמן אמת או ביצוע פעולות סינכרון 
 עם השרתים.
-src\pages\EskelikAdvisorFAQ.jsx:169:שימוש בדפדפן עדכני: השתמש בדפדפן 
+src\pages\BizUplyAdvisorFAQ.jsx:169:שימוש בדפדפן עדכני: השתמש בדפדפן 
 מעודכן ונתמך על ידי המערכת, וכבה תוספים או הרחבות העלולים לגרום להתנגשות.
-src\pages\EskelikAdvisorFAQ.jsx:171:בקרה על הרשאות: שמור על הרשאות 
+src\pages\BizUplyAdvisorFAQ.jsx:171:בקרה על הרשאות: שמור על הרשאות 
 נכונות ועדכניות, והגב את הגישה למשתמשים מורשים בלבד.
-src\pages\EskelikAdvisorFAQ.jsx:173:ריענון תדיר של המערכת: בצע ריענון 
+src\pages\BizUplyAdvisorFAQ.jsx:173:ריענון תדיר של המערכת: בצע ריענון 
 תקופתי של הדפדפן או האפליקציה, ופתח מחדש את השירות כדי למנוע הצטברות 
 בעיות טכניות.
-src\pages\EskelikAdvisorFAQ.jsx:175:פנייה מיידית לתמיכה: בכל זיהוי תקלה 
+src\pages\BizUplyAdvisorFAQ.jsx:175:פנייה מיידית לתמיכה: בכל זיהוי תקלה 
 או אי התאמה, דווח במהירות לצוות התמיכה עם פרטים מדויקים, כדי לקבל מענה 
 ופתרון מהירים.
-src\pages\EskelikAdvisorFAQ.jsx:177:הדרכה ושימוש מושכל: השתמש במדריכים 
+src\pages\BizUplyAdvisorFAQ.jsx:177:הדרכה ושימוש מושכל: השתמש במדריכים 
 ובכלים שהמערכת מציעה, כדי למקסם את היעילות ולהפחית טעויות.
-src\pages\EskelikAdvisorFAQ.jsx:179:שמירה על נהלים אלה מייעלת את השימוש 
-ביועץ עסקליק ומבטיחה חווית שירות רציפה ואמינה לעסק שלך.`,
-src\pages\EskelikAdvisorFAQ.jsx:202:        שאלות ותשובות - יועץ עסקליק
-src\pages\EskelikAdvisorFAQ.jsx:239:                color: "#f06292",    
+src\pages\BizUplyAdvisorFAQ.jsx:179:שמירה על נהלים אלה מייעלת את השימוש 
+ביועץ BizUply ומבטיחה חווית שירות רציפה ואמינה לעסק שלך.`,
+src\pages\BizUplyAdvisorFAQ.jsx:202:        שאלות ותשובות - יועץ BizUply
+src\pages\BizUplyAdvisorFAQ.jsx:239:                color: "#f06292",    
     // ורוד-אדום
-src\pages\EskelikAdvisorFAQ.jsx:240:                marginLeft: 10,      
+src\pages\BizUplyAdvisorFAQ.jsx:240:                marginLeft: 10,      
     // רווח בין סימן השאלה לטקסט
 src\pages\HelpCenter.jsx:15:      title: "בניית עמוד עסקי",
 src\pages\HelpCenter.jsx:16:      description: "צעד אחר צעד לבניית עמוד 
@@ -7430,7 +7430,7 @@ src\pages\HelpCenter.jsx:28:      description: "לגלות איך הדשבורד
 src\pages\HelpCenter.jsx:33:      title: "יומן תיאום תורים / CRM",
 src\pages\HelpCenter.jsx:34:      description: "ניהול תורים ולקוחות 
 במקום אחד – פשוט ויעיל כמו שצריך.",
-src\pages\HelpCenter.jsx:39:      title: "יועץ עסקליק ושותף AI",
+src\pages\HelpCenter.jsx:39:      title: "יועץ BizUply ושותף AI",
 src\pages\HelpCenter.jsx:40:      description: "הכירו את היועץ הדיגיטלי 
 שישדרג את העסק עם בינה מלאכותית.",
 src\pages\HelpCenter.jsx:45:      title: "שיתופי פעולה בין עסקים",
@@ -7446,8 +7446,8 @@ businessId ? `/business/${businessId}/dashboard/faq/customer-messages` :
 src\pages\HelpCenter.jsx:55:    { id: 4, title: "שיתופי פעולה", path: 
 businessId ? `/business/${businessId}/dashboard/faq/collaborations` : 
 "/" },
-src\pages\HelpCenter.jsx:57:    { id: 6, title: "יועץ עסקליק", path: 
-businessId ? `/business/${businessId}/dashboard/faq/eskelik-advisor` : 
+src\pages\HelpCenter.jsx:57:    { id: 6, title: "יועץ BizUply", path: 
+businessId ? `/business/${businessId}/dashboard/faq/BizUply-advisor` : 
 "/" },
 src\pages\HelpCenter.jsx:58:    { id: 7, title: "תוכנית שותפים", path: 
 businessId ? `/business/${businessId}/dashboard/faq/affiliate-program` : 
@@ -7459,7 +7459,7 @@ src\pages\HelpCenter.jsx:60:    { id: 9, title: "תמיכה טכנית", path:
 businessId ? `/business/${businessId}/dashboard/faq/technical-support` : 
 "/" },
 src\pages\HelpCenter.jsx:80:      <h1>👋 ברוכים הבאים למרכז העזרה של 
-עסקליק</h1>
+BizUply</h1>
 src\pages\HelpCenter.jsx:81:      <p>כאן תוכלו למצוא תשובות, מדריכים 
 וכלים לניהול העסק הדיגיטלי שלכם.</p>
 src\pages\HelpCenter.jsx:86:          placeholder='חפשו קטגוריה כמו 
@@ -7714,16 +7714,16 @@ src\pages\SearchBusinesses.jsx:96:    setPage(1); // תמיד חוזר לעמו�
 ראשון
 src\pages\SearchBusinesses.jsx:119:  // SEO דינמי
 src\pages\SearchBusinesses.jsx:125:      ? `${seoTitleParts.join(" - ")} 
-| חיפוש עסקים - עסקליק`
-src\pages\SearchBusinesses.jsx:126:      : "חיפוש עסקים | עסקליק";
+| חיפוש עסקים - BizUply`
+src\pages\SearchBusinesses.jsx:126:      : "חיפוש עסקים | BizUply";
 src\pages\SearchBusinesses.jsx:130:      ? `מצא עסקים בתחום ${cat ? cat 
-: ""} ${city ? "בעיר " + city : ""} בפלטפורמת עסקליק. חיפוש נוח, דירוגים 
+: ""} ${city ? "בעיר " + city : ""} בפלטפורמת BizUply. חיפוש נוח, דירוגים 
 אמיתיים, וקבלת פניות מהירות.`
 src\pages\SearchBusinesses.jsx:131:      : "חפש עסקים לפי תחום ועיר 
-בפלטפורמת עסקליק. קבל פניות, קרא חוות דעת ותאם שירות בקלות.";
+בפלטפורמת BizUply. קבל פניות, קרא חוות דעת ותאם שירות בקלות.";
 src\pages\SearchBusinesses.jsx:148:          content={`עסקים, חיפוש 
 עסקים, ${cat ? cat + "," : ""} ${
-src\pages\SearchBusinesses.jsx:150:          } עסקליק, לקוחות, שירותים`}
+src\pages\SearchBusinesses.jsx:150:          } BizUply, לקוחות, שירותים`}
 src\pages\SearchBusinesses.jsx:156:        <h1>רשימת עסקים</h1>
 src\pages\SearchBusinesses.jsx:176:          {/* קטגוריות */}
 src\pages\SearchBusinesses.jsx:181:              placeholder="תחום 
@@ -7762,7 +7762,7 @@ src\pages\technicalSupportFAQs.jsx:20:            <b>פנה לצוות התמי�
 src\pages\technicalSupportFAQs.jsx:21:            אם לאחר קריאת המדריכים 
 והשימוש בבוט הבעיה עדיין קיימת, תוכל לפנות לצוות התמיכה שלנו.<br />
 src\pages\technicalSupportFAQs.jsx:22:            <b>כתובת אימייל:</b> 
-support@esclick.co.il<br />
+support@BizUply.co.il<br />
 src\pages\technicalSupportFAQs.jsx:23:            <b>טלפון:</b> מספר 
 הטלפון הרלוונטי<br />
 src\pages\technicalSupportFAQs.jsx:24:            בעת הפנייה, מומלץ לצרף 
@@ -8109,7 +8109,7 @@ src\pages\troubleshootingFAQs.jsx:116:          <li>אסוף מידע טכני: 
 src\pages\troubleshootingFAQs.jsx:117:          <li>ציין מועד מדויק של 
 התקלה.</li>
 src\pages\troubleshootingFAQs.jsx:118:          <li>שלח את המידע לכתובת 
-התמיכה: support@esclick.co.il או פתח פנייה במערכת.</li>
+התמיכה: support@BizUply.co.il או פתח פנייה במערכת.</li>
 src\pages\troubleshootingFAQs.jsx:119:          <li>כתוב כותרת ברורה 
 ותאר אם הבעיה חוזרת או איך לשחזר אותה.</li>
 src\pages\troubleshootingFAQs.jsx:120:          <li>המתן למענה מהתמיכה 

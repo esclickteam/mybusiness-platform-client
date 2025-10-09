@@ -2,166 +2,166 @@ import React, { useState } from "react";
 
 const faqData = [
   {
-    question: "❓ איך משתמשים בלשוניות השונות בעמוד העסק?",
+    question: "❓ How do I use the different tabs on the business page?",
     answer: `
-עמוד העסק מחולק ללשוניות פונקציונליות המאפשרות ניהול והצגה מקיפה ומסודרת של מידע עסקי ללקוחות ולבעלי העסק כאחד. כל לשונית מתמקדת בתחום תוכן ייחודי, ומאפשרת גישה מהירה ונוחה למידע:
+The business page is divided into functional tabs that allow comprehensive, organized management and presentation of business information to both customers and the business owner. Each tab focuses on a specific content area and enables quick, convenient access to information:
 
-ראשי: מציג סקירה כללית על העסק, כולל שם, תיאור, פרטי יצירת קשר ופרטים חשובים נוספים. לשונית זו מהווה את דף הבית של העסק בפני הלקוחות.
+Main: Shows an overview of the business, including name, description, contact details, and other important information. This tab serves as the business’s homepage for customers.
 
-גלריה: מרכזת את כל תכני המדיה – תמונות וסרטונים – המשמשים להמחשת העסק, המוצרים והשירותים. מאפשרת הצגת תוכן ויזואלי עשיר ואיכותי לשיפור חוויית הלקוח.
+Gallery: Centralizes all media content—photos and videos—used to showcase the business, products, and services. Enables rich, high-quality visual content to enhance the customer experience.
 
-ביקורות: מרכזת את חוות הדעת והדירוגים שהלקוחות השאירו, יחד עם אפשרות לבעל העסק לקבל התראות על כל ביקורת ולעקוב אחרי הדירוג שלו.
+Reviews: Collects customer reviews and ratings, with the option for the business owner to receive notifications for every review and track the overall rating.
 
-שאלות ותשובות: מציגה אוסף של שאלות נפוצות שנשאלות על ידי לקוחות, יחד עם תגובות בעל העסק או צוות התמיכה, לשם מתן מענה מיידי ומקיף.
+Q&A: Displays a collection of frequently asked questions from customers, along with responses from the business owner or support team, to provide immediate and thorough answers.
 
-יומן: מאפשר ניהול תורים, פגישות או הזמנות שירותים במידה והעסק מפעיל מערכת תורים. הכלי מסייע בארגון יעיל של זמני הפעילות מול הלקוחות.
+Calendar: Allows managing appointments, meetings, or service bookings if the business operates a scheduling system. This tool helps organize operating hours with customers efficiently.
 
-צ’אט עם העסק: ממשק לתקשורת ישירה ומיידית בין לקוחות לעסק, המאפשר מענה מהיר לשאלות, בירורים וסיוע פרטני.
+Chat with the business: An interface for direct, real-time communication between customers and the business, enabling quick responses to questions, inquiries, and personal assistance.
 
-כל לשונית בנויה לספק מידע ממוקד ולקדם חוויית משתמש חלקה, המותאמת לצרכים של העסק והלקוחות.
+Each tab is designed to provide focused information and promote a smooth user experience tailored to the needs of the business and its customers.
     `,
   },
   {
-    question: "❓ מה לעשות אם השינויים שערכתי לא מופיעים בעמוד העסק?",
+    question: "❓ What should I do if the changes I made don’t appear on the business page?",
     answer: `
-אם לאחר שמירת השינויים בעמוד העריכה הם לא מופיעים בעמוד העסק ללקוח, מומלץ לבצע את השלבים הבאים לטיפול עצמאי:
+If, after saving changes in the editor, they don’t appear on the public business page, follow these self-help steps:
 
-1. רענון הדפדפן באופן מלא:
-   השתמש בקיצור Ctrl + F5 (או Cmd + Shift + R במק) כדי לרענן את הדף ולנקות את המטמון.
+1. Fully refresh the browser:
+   Use Ctrl + F5 (or Cmd + Shift + R on Mac) to refresh the page and clear the cache.
 
-2. ניקוי מטמון הדפדפן ו-Cookies:
-   מחק את המטמון וה-Cookies בדפדפן שלך, כדי לוודא שהגרסה המעודכנת של האתר נטענת.
+2. Clear browser cache and cookies:
+   Delete your browser’s cache and cookies to ensure the updated version of the site loads.
 
-3. בדיקת חיבור אינטרנט יציב:
-   ודא כי יש לך חיבור אינטרנט תקין ויציב.
+3. Check for a stable internet connection:
+   Make sure your connection is stable and working.
 
-4. בדיקה בדפדפן או מכשיר אחר:
-   נסה לגשת לעמוד העסק ממכשיר או דפדפן אחר כדי לבדוק אם הבעיה מתרחשת בכל הפלטפורמות.
+4. Try a different browser or device:
+   Access the business page from another device or browser to see if the issue occurs everywhere.
 
-5. המתן מספר דקות:
-   לעיתים יש עיכוב זמני בסנכרון הנתונים במערכת. המתן כ-5–10 דקות ונסה לבדוק שוב.
+5. Wait a few minutes:
+   Sometimes there’s a temporary delay in data sync. Wait about 5–10 minutes and check again.
 
-6. התנתקות והתחברות מחדש:
-   התנתק מחשבונך במערכת, סגור את הדפדפן, פתח מחדש והתחבר שוב.
+6. Log out and back in:
+   Log out of your account, close the browser, reopen it, and log in again.
 
-אם לאחר ביצוע כל השלבים הללו השינויים עדיין לא מופיעים, יש לפנות לתמיכה הטכנית עם תיאור מפורט של הבעיה, כולל צילומי מסך, זמן ביצוע העדכון ופרטי הדפדפן.
+If, after completing all these steps, changes still don’t appear, contact technical support with a detailed description of the issue, including screenshots, the time of the update, and your browser details.
     `,
   },
   {
-    question: "❓ איך מוסיפים או עורכים את פרטי העסק שלי?",
+    question: "❓ How do I add or edit my business details?",
     answer: `
-כדי לעדכן את פרטי העסק, יש להיכנס לפאנל הניהול ולבחור בעמוד העסק. שם ניתן לערוך את השדות הבאים: שם העסק, תיאור מפורט, מספר טלפון, אימייל, עיר, קטגוריה, ולעלות לוגו ותמונות ראשיות בגלריה.
+To update business details, go to the admin panel and select the business page. There you can edit the following fields: business name, detailed description, phone number, email, city, category, and upload a logo and main images in the gallery.
 
-לאחר ביצוע השינויים, יש ללחוץ על כפתור "שמור שינויים" כדי לשמור את העדכונים במערכת.
+After making changes, click "Save changes" to store the updates in the system.
 
-בעמוד זה ניתן לערוך את כל התתי עמודים שנמצאים בפרופיל העסקי, להוסיף גלריה, שאלות נפוצות ותשובות, ועוד.
+On this page you can edit all sub-pages in the business profile, add a gallery, FAQs and answers, and more.
     `,
   },
   {
-    question: "❓ כיצד מנהלים את גלריית התמונות של העסק?",
+    question: "❓ How do I manage the business image gallery?",
     answer: `
-בעסק שלך קיימות שתי גלריות עיקריות לניהול תמונות וסרטונים:
+Your business has two main galleries for managing images and videos:
 
-- הגלריה הראשית (טאב ראשי):
-  עד 5 תמונות ראשיות המוצגות בפרופיל העסק.
+- Main gallery (Main tab):
+  Up to 5 primary images displayed on the business profile.
 
-- הגלריה המורחבת (טאב גלריה):
-  מאפשרת להוסיף תמונות וסרטונים נוספים.
+- Extended gallery (Gallery tab):
+  Allows adding additional images and videos.
 
-טיפים לניהול גלריות:
-בחר תמונות באיכות גבוהה, הוסף סרטונים קצרים ושמור על עדכניות התוכן.
+Tips for managing galleries:
+Choose high-quality images, add short videos, and keep content up to date.
     `,
   },
   {
-    question: "❓ למה חשוב להגדיר נכון את קטגוריית העסק והמיקום?",
+    question: "❓ Why is it important to set the business category and location correctly?",
     answer: `
-הגדרה מדויקת של קטגוריית העסק והמיקום חיונית לתפקוד המערכת ולקידום העסק.
+Accurate category and location settings are essential for system performance and business promotion.
 
-היתרונות כוללים:
-- שיפור החשיפה בפלטפורמה
-- הגדלת הפניות וההמרות
-- יצירת שיתופי פעולה מדויקים בין עסקים
+Benefits include:
+- Improved exposure on the platform
+- More inquiries and conversions
+- Precise collaborations between businesses
 
-הגדרה שגויה עלולה לפגוע בחשיפה ולמשוך לקוחות לא רלוונטיים.
+Incorrect settings can harm exposure and attract irrelevant customers.
 
-מומלץ לעדכן את הפרטים בקביעות.
+We recommend updating these details regularly.
     `,
   },
   {
-    question: "❓ מה לעשות במקרה של בעיה בגישה לעמוד העסק או בשימוש במערכת?",
+    question: "❓ What should I do if I have trouble accessing the business page or using the system?",
     answer: `
-בעת תקלות בגישה לעמוד העסק או פאנל הניהול:
+When you encounter access issues for the business page or the admin panel:
 
-1. בדוק חיבור אינטרנט יציב.
-2. נסה דפדפן אחר.
-3. מחק מטמון ו-Cookies.
-4. בצע רענון מלא (Ctrl+F5 או Cmd+Shift+R).
-5. נסה ממכשיר או רשת אחרת.
+1. Check for a stable internet connection.
+2. Try another browser.
+3. Clear cache and cookies.
+4. Perform a hard refresh (Ctrl+F5 or Cmd+Shift+R).
+5. Try from another device or network.
 
-אם הבעיה נמשכת, פנה לתמיכה עם תיאור מפורט וצילומי מסך.
+If the issue persists, contact support with a detailed description and screenshots.
     `,
   },
   {
-    question: "❓ איך להוסיף סרטונים לעמוד העסק ומה היתרונות בכך?",
+    question: "❓ How do I add videos to the business page and what are the benefits?",
     answer: `
-ניתן להוסיף סרטונים בגלריה המורחבת בטאב "גלריה".
+You can add videos in the extended gallery under the "Gallery" tab.
 
-יתרונות:
-- המחשה ויזואלית של שירותים וסביבת עבודה
-- הגברת אמון ומעורבות הלקוחות
+Benefits:
+- Visual demonstration of services and work environment
+- Increased trust and customer engagement
 
-יש לוודא פורמט נתמך (MP4) וגדלי קבצים תקינים.
+Ensure supported format (MP4) and valid file sizes.
     `,
   },
   {
-    question: "❓ איך להוסיף שירותים או קטגוריות שירות חדשות לעמוד העסק?",
+    question: "❓ How do I add services or new service categories to the business page?",
     answer: `
-שירותים וקטגוריות שירות ניתן להוסיף בטאב "יומן" ובמערכת CRM.
+Services and service categories can be added under the "Calendar" tab and in the CRM system.
 
-חשיבות:
-- ניהול יעיל של הזמנות ופגישות
-- שיפור נראות וארגון העסק
-- מיקוד השיווק והגדלת המרות
+Importance:
+- Efficient management of bookings and appointments
+- Improved visibility and organization
+- Focused marketing and increased conversions
     `,
   },
   {
-    question: "❓ כיצד ניתן לנהל ולהתאים את פרטי יצירת הקשר בעמוד העסק?",
+    question: "❓ How can I manage and customize the contact details on the business page?",
     answer: `
-ניהול פרטי יצירת קשר מתבצע בפאנל הניהול תחת לשונית העריכה.
+Manage contact details in the admin panel under the editing tab.
 
-אפשרויות:
-- עדכון טלפון, אימייל, כתובת וקישורים לרשתות חברתיות
-- הגדרת פרטי קשר לסניפים או מחלקות שונות
-- בחירת פרטים שיוצגו לציבור
+Options:
+- Update phone, email, address, and social links
+- Set contact details for branches or departments
+- Choose which details are publicly visible
     `,
   },
   {
-    question: "❓ איך מתמודדים עם תקלות בהעלאת תמונות או שמירת שינויים?",
+    question: "❓ How do I handle issues with uploading images or saving changes?",
     answer: `
-במקרה של בעיה בהעלאת תמונות או שמירת שינויים, מומלץ לעבור על הצעדים הבאים לפני פנייה לתמיכה הטכנית:
+If you run into problems uploading images or saving changes, go through the following steps before contacting support:
 
-בדיקת פורמט הקובץ:
-ודא שהתמונה או הסרטון שברצונך להעלות הם בפורמט נתמך, כגון JPG, PNG לתמונות ו-MP4 לסרטונים.
+Check file format:
+Make sure the image or video you’re uploading is in a supported format, such as JPG or PNG for images and MP4 for videos.
 
-בדיקת גודל הקובץ:
-בדוק שהקובץ אינו חורג מהמגבלה המותרת בגודל (למשל עד 5MB). במידת הצורך, הקטן את גודל הקובץ באמצעות כלי עריכה או המרת פורמט.
+Check file size:
+Ensure the file does not exceed the allowed size (e.g., up to 5MB). If needed, reduce the file size using an editor or format conversion.
 
-רענון הדפדפן:
-בצע רענון מלא של הדף (Ctrl + F5 או Cmd + Shift + R) כדי לוודא שהדפדפן מציג את הגרסה המעודכנת של המערכת.
+Browser refresh:
+Perform a hard refresh of the page (Ctrl + F5 or Cmd + Shift + R) to ensure the browser loads the updated system.
 
-ניקוי מטמון ו-Cookies:
-במידה והבעיה נמשכת, מחק את המטמון וה-Cookies של הדפדפן כדי למנוע טעינת מידע ישן.
+Clear cache and cookies:
+If the issue persists, clear your browser’s cache and cookies to prevent loading old data.
 
-בדיקת חיבור אינטרנט:
-ודא שחיבור האינטרנט שלך יציב ומהיר – חיבור לא יציב עלול לגרום לטעויות בהעלאה.
+Check internet connection:
+Make sure your internet connection is stable and fast—an unstable connection can cause upload errors.
 
-נסיון בדפדפן או מכשיר אחר:
-נסה להעלות את הקובץ בדפדפן או במכשיר אחר, כדי לשלול בעיות מקומיות.
+Try another browser or device:
+Try uploading the file using a different browser or device to rule out local issues.
 
-בדיקת שמירת שינויים:
-ודא שלחצת על כפתור "שמור" לאחר ביצוע השינויים. לפעמים שינויים לא נשמרים ללא אישור מפורש.
+Verify saving changes:
+Make sure you clicked "Save" after making changes. Sometimes changes aren’t saved without explicit confirmation.
 
-אם לאחר ביצוע כל השלבים הללו הבעיה עדיין מתרחשת, יש לפנות לתמיכה הטכנית עם תיאור מפורט של הבעיה, צילומי מסך, פרטי הדפדפן והמערכת שבהם השתמשת.
+If the issue still occurs after all these steps, contact technical support with a detailed description, screenshots, and the browser and system you used.
     `,
   },
 ];
@@ -185,7 +185,7 @@ export default function ProfileFAQ() {
       }}
     >
       <h1 style={{ textAlign: "center", marginBottom: 25 }}>
-        שאלות ותשובות - פרופיל העסק
+        FAQ – Business Profile
       </h1>
       {faqData.map((item, index) => (
         <div

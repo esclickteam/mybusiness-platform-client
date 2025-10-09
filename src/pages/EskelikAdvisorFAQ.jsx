@@ -2,185 +2,184 @@ import React, { useState } from "react";
 
 const faqData = [
   {
-    question: "מהו יועץ עסקליק ואיך הוא יכול לעזור לי?",
-    answer: `יועץ עסקליק הוא מערכת ייעוץ עסקי ושיווקי מתקדמת מבוססת בינה מלאכותית (AI), המיועדת להעניק לך מענה מקצועי, מותאם אישית ופרקטי למגוון רחב של שאלות ואתגרים עסקיים, שיווקיים וניהוליים. השירות פועל 24/7 ומאפשר לך לקבל תובנות והכוונה מהירה מבלי הצורך בפגישות יקרות או בהמתנה ממושכת.
+    question: "What is the BizUply Advisor and how can it help me?",
+    answer: `The BizUply Advisor is an advanced AI-based business and marketing advisory system, designed to provide you with professional, personalized, and practical support for a wide range of business, marketing, and operational questions and challenges. The service operates 24/7 and lets you receive quick insights and guidance without expensive meetings or long waits.
 
-מה הוא נותן לך?
+What does it give you?
 
-מענה מיידי לשאלות מקצועיות ומורכבות בתחומים כמו ניהול עובדים, שיווק דיגיטלי, ניהול כספים, שיפור שירות לקוחות ועוד.
+Immediate answers to professional and complex questions in areas like team management, digital marketing, financial management, customer service improvement, and more.
 
-המלצות מותאמות לעסק שלך, בהתחשב בגודל, תחום הפעילות והצרכים הספציפיים שלך.
+Recommendations tailored to your business, considering its size, industry, and your specific needs.
 
-תכנון אסטרטגי של פעילויות עסקיות, כולל בניית תכניות שיווק חודשיות, הצעות לייעול תהליכים עסקיים והפחתת עלויות.
+Strategic planning of business activities, including building monthly marketing plans, proposing ways to streamline business processes, and reducing costs.
 
-סיוע בזיהוי הזדמנויות חדשות, פתרון בעיות תפעוליות והעצמת ביצועי העסק.
+Help identifying new opportunities, solving operational issues, and boosting your business performance.
 
-למה צריך את זה?
-בעולם העסקי המודרני, קבלת החלטות מהירה ומושכלת היא קריטית להישרדות ולהצלחה. יועץ עסקליק מאפשר לך:
+Why do you need it?
+In today’s business world, fast, well-informed decision-making is critical to survival and success. The BizUply Advisor enables you to:
 
-לחסוך זמן יקר שנדרש לחיפוש מידע ולמידה עצמאית.
+Save valuable time otherwise spent searching for information and self-learning.
 
-לקבל תשובות מקצועיות ומעודכנות שמבוססות על אלגוריתמים מתקדמים וידע עסקי עדכני.
+Get professional, up-to-date answers based on advanced algorithms and current business knowledge.
 
-להימנע מטעויות יקרות שעלולות להיגרם מחוסר ניסיון או מידע לא נכון.
+Avoid costly mistakes caused by lack of experience or incorrect information.
 
-לשפר את היעילות והפרודוקטיביות של העסק באמצעות כלים ממוקדים ותובנות שניתן ליישם במהירות.
+Improve your business efficiency and productivity through focused tools and insights you can quickly apply.
 
-איך זה יכול לשמש את העסק שלי?
+How can it serve my business?
 
-בעל עסק קטן או בינוני יכול לקבל תמיכה יומיומית בניהול העסק, מבלי להיעזר ביועץ חיצוני יקר.
+Small and medium business owners can get daily support managing their business without relying on expensive outside consultants.
 
-מאפשר קבלת החלטות מושכלות בתחום השיווק, המכירות, ניהול המשאבים והלקוחות.
+Make informed decisions in marketing, sales, resource management, and customer relations.
 
-מסייע בהקמת תהליכים עסקיים מסודרים, קביעת יעדים ומדדי הצלחה, ובקרה שוטפת על פעילות העסק.
+Establish organized business processes, set goals and success metrics, and maintain ongoing performance tracking.
 
-מחזק את היכולת להתמודד עם תחרות גוברת בשוק ועם שינויים מהירים במציאות העסקית.
+Strengthen your ability to handle growing market competition and rapid changes in the business environment.
 
-מאפשר לך להתמקד במה שחשוב באמת – פיתוח העסק, תוך קבלת מענה אמין ותומך לכל שאלה או קושי שמתעוררים בדרך.
+Focus on what really matters—growing the business—while getting reliable, supportive answers to any question or challenge along the way.
 
-יועץ עסקליק הוא הכלי הטכנולוגי שיאפשר לך להפוך את ניהול העסק לחכם, יעיל ומקצועי יותר, עם תמיכה רציפה ונגישה שמתאימה לצרכים המתקדמים של ימינו.`,
+The BizUply Advisor is the technological tool that will help make your business management smarter, more efficient, and more professional—with continuous, accessible support that fits the advanced needs of today.`,
   },
   {
-    question: "כיצד לבחור שאלה מוכנה או לשאול שאלה חופשית ביועץ עסקליק?",
-    answer: `יועץ עסקליק מציע לך שני מסלולי שימוש עיקריים לקבלת ייעוץ עסקי מקצועי, נגיש ומותאם אישית:
+    question:
+      "How do I pick a ready-made question or ask a free-form question in the BizUply Advisor?",
+    answer: `The BizUply Advisor offers two main paths for getting professional, accessible, and personalized business advice:
 
-1. בחירת שאלה מוכנה:
-המערכת מכילה שאלות מוכנות, שנבנו בהתבסס על הצרכים והשאלות הנפוצות ביותר של בעלי עסקים קטנים ובינוניים. שאלות אלו מכסות תחומים מגוונים כמו שיווק דיגיטלי, ניהול צוות, תכנון פיננסי, התמודדות עם ירידה בהכנסות, שיפור שירות לקוחות ועוד.
-בחירת שאלה מוכנה מתבצעת בקלות דרך תפריט פשוט, המאפשר לך לסקור את השאלות לפי קטגוריות ולבחור את זו שנראית לך הרלוונטית ביותר. כך תוכל לקבל במהירות תשובה מקצועית וממוקדת שתסייע לך לפתור בעיות נפוצות או לקבל החלטות נכונות.
+1. Choosing a ready-made question:
+The system includes ready-made questions built around the most common needs and questions of small and medium business owners. These cover diverse areas such as digital marketing, team management, financial planning, handling revenue declines, improving customer service, and more.
+Selecting a ready-made question is simple via an easy menu that lets you review questions by category and pick the most relevant one. You’ll quickly receive a professional, focused answer to help you solve common problems or make the right decisions.
 
-2. שאילת שאלה חופשית:
-אם הצורך שלך הוא ספציפי או מורכב יותר, תוכל לנסח שאלה אישית מדויקת בתיבת הטקסט המיועדת לכך. השאלה שלך תנותח בזמן אמת על ידי מנגנון בינה מלאכותית מתקדם, אשר יספק לך מענה מותאם אישית על בסיס הידע הרחב והעדכני שלו.
-בנוסף, המערכת תציע לך המלצות נוספות לפעולה ולשיפור העסק בהתאם להקשר של השאלה, כך שתוכל לקבל תמונה מלאה ומקיפה של הדרכים להתקדמות.
+2. Asking a free-form question:
+If your need is more specific or complex, you can write a precise, personal question in the dedicated text box. Your question is analyzed in real time by an advanced AI engine that provides a personalized response based on its broad and current knowledge.
+In addition, the system suggests further actions and improvement ideas aligned with the context of your question, giving you a complete picture of next steps.
 
-מתי לבחור באיזו אופציה?
+When to use each option?
 
-אם אתה מחפש מענה מהיר לבעיה או שאלה נפוצה, בחירת שאלה מוכנה תהיה הדרך היעילה ביותר.
+If you want a quick response to a common problem or question, a ready-made question is the most efficient route.
 
-אם יש לך צורך בייעוץ ספציפי, מורכב או מותאם אישית לעסק שלך, שאילת שאלה חופשית תאפשר לך לקבל תשובה מקצועית שמותאמת בדיוק לצרכים שלך.
+If you need specific, complex, or highly tailored advice, a free-form question will provide a professional answer that fits your exact needs.
 
-שימוש נכון בשני המסלולים הללו יאפשר לך לקבל את המידע וההכוונה המדויקים ביותר, במהירות ובנוחות, ולשפר באופן משמעותי את ניהול וקידום העסק שלך.`,
+Using both paths wisely lets you quickly get accurate guidance and significantly improve your business management and growth.`,
   },
   {
-    question: "האם התשובות מיועדות לכל סוגי העסקים?",
-    answer: `מערכת יועץ עסקליק מתקדמת מבוססת בינה מלאכותית, המשתמשת לא רק בידע מקצועי רחב, אלא גם בנתוני העסק הספציפיים שלך, שמתקבלים ישירות מהשרת וממערכות הניהול שלך. זה מאפשר למערכת לספק תשובות והמלצות שמותאמות אישית למצב העסקי, הכלכלי והשיווקי שלך, בהתאם לפרופיל העסק, ביצועים קודמים, פעילות שוטפת ויעדים עסקיים.
+    question: "Are the answers meant for all types of businesses?",
+    answer: `The advanced BizUply Advisor uses AI that relies not only on broad professional knowledge, but also on your specific business data, pulled directly from your server and management systems. This enables the system to provide answers and recommendations personalized to your business, financial, and marketing situation—based on your profile, past performance, current activity, and business goals.
 
-המשמעות היא שהתשובות אינן כלליות בלבד, אלא מתבססות על מידע רלוונטי ועדכני המאפשר לך לקבל החלטות מבוססות נתונים, מדויקות ורלוונטיות לצרכים המיוחדים של העסק שלך. כך, יועץ עסקליק מספק תמיכה אמיתית ומותאמת אישית לשיפור ביצועי העסק, לייעול תהליכים ולקבלת החלטות מושכלות.
+This means the answers aren’t merely generic; they’re grounded in relevant, up-to-date information, allowing you to make data-driven, precise decisions tailored to your unique needs. The BizUply Advisor provides real, personalized support to improve performance, streamline processes, and make better decisions.
 
-עם זאת, יש לקחת בחשבון שכל עסק הוא ייחודי וישנם נושאים מורכבים או אסטרטגיים הדורשים ליווי מקצועי מעמיק יותר, כמו ייעוץ משפטי, פיננסי או עסקי פרטני. במקרים אלו מומלץ להיעזר ביועצים מומחים שיכולים להעמיק ולהתאים פתרונות אישיים.
+That said, every business is unique, and some complex or strategic topics require deeper, specialized professional guidance, such as legal, financial, or bespoke business consulting. In such cases, we recommend working with expert consultants who can dive deeper and tailor solutions.
 
-יועץ עסקליק הוא כלי חכם, חזק ומותאם אישית לעסקים קטנים ובינוניים, המסייע לקבלת החלטות מהירות ומדויקות על בסיס נתוני העסק שלך, אך מהווה תוספת ולא תחליף לייעוץ מקצועי פרטני במקרים מורכבים.`,
+The BizUply Advisor is a smart, powerful, and personalized tool for small and medium businesses—helping you make faster, better decisions based on your own data. It complements (not replaces) specialized professional consulting in complex scenarios.`,
   },
   {
-    question: "איך נעשה השימוש ביועץ שיווק במסגרת עסקליק?",
-    answer: `יועץ השיווק במסגרת "עסקליק" הוא כלי חכם מבוסס בינה מלאכותית, המספק לך מענה מקצועי וממוקד לשאלות מפתח בתחום השיווק הדיגיטלי והמסורתי. השירות מאפשר לך לקבל המלצות מותאמות אישית, שמבוססות על הנתונים הספציפיים של העסק שלך, תחום הפעילות, קהל היעד והיעדים העסקיים שלך.
+    question: "How do I use the marketing advisor within BizUply?",
+    answer: `The marketing advisor within BizUply is a smart AI-based tool that provides professional, focused answers to key questions in both digital and traditional marketing. It gives you personalized recommendations based on your business’s unique data, field of activity, target audience, and goals.
 
-באמצעות יועץ השיווק תוכל ללמוד כיצד להביא לידים איכותיים יותר, לבנות תוכנית שיווק חודשית מדויקת וממוקדת, להבין את היתרונות והחסרונות של קמפיינים ממומנים לעומת קמפיינים אורגניים, ולבחור את ערוצי הפרסום המתאימים ביותר עבורך (כגון גוגל, פייסבוק, אינסטגרם, דוא"ל ועוד).
+With the marketing advisor, you can learn how to generate higher-quality leads, build a precise and focused monthly marketing plan, understand pros and cons of paid vs. organic campaigns, and select the best advertising channels for you (Google, Facebook, Instagram, email, and more).
 
-השיווק הוא המנוע המרכזי לצמיחה עסקית, מכיוון שהוא מביא חשיפה, מעורבות ומכירות. ללא תכנית שיווקית מתוכננת היטב, העסק עלול להישאר מאחור ולפספס הזדמנויות. יועץ השיווק ב"עסקליק" עוזר לך למקסם את תקציב הפרסום, להתמקד בקהלים רלוונטיים ולהגיב במהירות לשינויים בשוק.
+Marketing is the central growth engine—it drives exposure, engagement, and sales. Without a well-planned marketing strategy, a business can fall behind and miss opportunities. The BizUply marketing advisor helps you maximize your ad budget, focus on relevant audiences, and respond quickly to market changes.
 
-הבינה המלאכותית (AI) שמאחורי יועץ השיווק מנתחת נתונים בזמן אמת, מגלה מגמות ודפוסים, ומספקת הצעות מבוססות ראיות. היא יודעת להמליץ על אופטימיזציה של קמפיינים, טכניקות לשיפור המרות, ודרכים לשיפור נראות האינטרנטית שלך. כך תוכל לקבל החלטות מבוססות נתונים ולא סתם "להרגיש" מה נכון לעשות.
+The AI behind the advisor analyzes data in real time, detects trends and patterns, and provides evidence-based suggestions. It can recommend campaign optimizations, conversion-rate improvements, and ways to enhance your online visibility. This enables data-driven decisions—not just gut feelings.
 
-השימוש ביועץ השיווק בעסקליק הוא דרך חכמה, חסכונית ויעילה לשפר את ביצועי השיווק, להגביר את החשיפה ואת המעורבות של הלקוחות, ולבסוף להגדיל את ההכנסות בעסק שלך – כל זאת באמצעות כלי מתקדם ונגיש, שמעניק לך תמיכה רציפה ומותאמת לצרכים המדויקים שלך.`,
+Using the marketing advisor is a smart, cost-effective, and efficient way to improve marketing performance, increase exposure and engagement, and ultimately grow your revenue—all through an advanced, accessible tool that provides continuous, tailored support.`,
   },
   {
-    question: "מה עושים אם השאלה שלי לא מופיעה ברשימה?",
-    answer: `במערכת יועץ עסקליק, יש לך את האפשרות לשאול כל שאלה עסקית, שיווקית או ניהולית באופן חופשי, גם אם היא לא כלולה ברשימת השאלות המוכנות מראש. פשוט הקלד את השאלה שלך בתיבת הטקסט המיועדת לכך, והמנוע מבוסס הבינה המלאכותית ינתח את התוכן ויחפש עבורך את התשובה המקצועית והרלוונטית ביותר.
+    question: "What if my question doesn’t appear in the list?",
+    answer: `In the BizUply Advisor, you can ask any business, marketing, or management question freely—even if it’s not in the ready-made list. Simply type your question into the text box, and the AI engine will analyze it and provide the most professional and relevant answer.
 
-התשובות מתקבלות במהירות ומבוססות על מאגר ידע רחב ועדכני, הכולל מידע עסקי כללי, טכניקות שיווק, ניהול עובדים, פתרון בעיות ועוד. המערכת יודעת לזהות את ההקשר ולספק המלצות מותאמות אישית, כולל צעדים פרקטיים לביצוע.
+Responses arrive quickly and are based on a broad, up-to-date knowledge base, including general business information, marketing techniques, staff management, problem-solving, and more. The system understands context and provides personalized recommendations, including practical steps to take.
 
-במקרים שבהם השאלה מורכבת או מצריכה טיפול מעמיק יותר, ייתכן שיועץ עסקליק יציע לך דרכי פעולה נוספות, כמו הפניה לקבלת ייעוץ אנושי מקצועי, המלצה על כלים חיצוניים או קורסים רלוונטיים. כך, תוכל להתמודד עם האתגרים העסקיים שלך בצורה היעילה ביותר, בלי לבזבז זמן על חיפושים או פגישות לא ממוקדות.
+If a question is complex or requires deeper handling, the advisor may suggest additional actions—such as referring you to human experts, recommending external tools, or pointing to relevant courses. This way, you can handle your business challenges efficiently without wasting time searching or scheduling unfocused meetings.
 
-השימוש בשאלות חופשיות מאפשר לך לקבל פתרונות שמתאימים בדיוק לצרכים הייחודיים של העסק שלך, גם במצבים מיוחדים או לא סטנדרטיים. בנוסף, היכולת לקבל מענה מהיר ומדויק תורמת לחיסכון בזמן, שיפור קבלת ההחלטות והגדלת סיכויי ההצלחה העסקית שלך.`,
+Free-form questions let you get solutions tailored exactly to your unique needs—even in special or non-standard situations. Fast, accurate answers help save time, improve decision-making, and increase your chances of business success.`,
   },
   {
-    question: "האם השירות זמין 24/7?",
-    answer: `כן, יועץ עסקליק פועל במתכונת דיגיטלית מלאה וזמין עבורך בכל שעה ובכל יום בשבוע, 24/7. זמינות זו מאפשרת לך לקבל מענה וייעוץ מקצועי מיידי בכל רגע שבו אתה זקוק לו, ללא תלות בשעות עבודה של יועצים אנושיים, תורים או פגישות מתואמות מראש.
+    question: "Is the service available 24/7?",
+    answer: `Yes. The BizUply Advisor is fully digital and available anytime, 24/7. This lets you get immediate, professional guidance whenever you need it—without relying on human consultants’ hours, queues, or scheduled meetings.
 
-הזמינות המיידית חשובה מאוד לעסקים, מכיוון שבתחום העסקי והניהולי לעיתים קרובות מתעוררות שאלות, בעיות או הזדמנויות בלתי צפויות שדורשות תגובה מהירה ומושכלת. במקום להמתין למפגש עם יועץ או לבזבז זמן בחיפוש אחר מידע, יועץ עסקליק מאפשר פתרון מיידי שמאפשר לך לקבל החלטות מהירות ומדויקות, גם בשעות לא שגרתיות כמו לילה, סופי שבוע או חגים.
+Immediate availability is crucial because business and operational questions, issues, and opportunities often appear unexpectedly and require quick, informed responses. Instead of waiting for a meeting or searching for information, the advisor offers instant solutions so you can make fast, accurate decisions—even at night, on weekends, or during holidays.
 
-בנוסף, היכולת לקבל ייעוץ בכל שעה תורמת להפחתת לחצים וניהול סיכונים, כי לעיתים זימון פגישה דחופה עם יועץ עסקי יכול להיות מורכב, ועלול לעכב תהליכים חשובים. יועץ עסקליק מספק פתרון זמין וגמיש שמאפשר לך לנהל את העסק ביעילות מרבית, להפיק את המקסימום מכל הזדמנות עסקית ולשפר את התפעול השוטף בכל רגע נתון.
+Around-the-clock access reduces stress and risk. Urgent meetings with a business consultant can be hard to arrange and may delay important processes. The BizUply Advisor provides a flexible, accessible solution that helps you run your business more efficiently, capitalize on opportunities, and streamline operations at any moment.
 
-לכן, זמינות 24/7 אינה רק נוחות — היא כלי אסטרטגי משמעותי שמאפשר לבעלי עסקים להתמודד עם המציאות העסקית המהירה והדינמית של היום בצורה טובה יותר.`,
+So 24/7 isn’t just convenient—it’s a strategic advantage for handling today’s fast, dynamic business reality.`,
   },
   {
-    question: "כיצד ניתן למקסם את הערך המתקבל מיועץ עסקליק?",
-    answer: `כדי להפיק את המקסימום מיועץ עסקליק, חשוב לשלב את ההמלצות והמידע המתקבלים כחלק אינטגרלי מניהול העסק היומיומי. ראשית, יש להטמיע את ההנחיות והפעולות המוצעות ביומן הניהול שלך, תוך תיאום ושילוב עם מערכת ה-CRM והדשבורד העסקי. כך תוכל לוודא שכל ההמלצות מיושמות בזמן, ושהנתונים מתעדכנים בזמן אמת במערכות השונות, מה שמאפשר לך לקבל תמונת מצב מדויקת ואמינה.
+    question: "How can I maximize the value from the BizUply Advisor?",
+    answer: `To get the most from the BizUply Advisor, integrate its recommendations into your daily operations. Start by implementing suggested actions in your management calendar, while syncing with your CRM and business dashboard. This ensures recommendations are executed on time and that data stays up to date across systems—giving you an accurate, reliable picture.
 
-מעקב שוטף אחר ביצועים ונתונים הוא שלב קריטי למקסום הערך. באמצעות ניתוח התוצאות של פעולות שבוצעו בעקבות ייעוץ ה-AI, תוכל לזהות מה עובד טוב ומה דורש שיפור, ולבצע התאמות מהירות ומושכלות. המערכת מאפשרת לך גם לשאול שאלות המשך ולהעמיק בתחומים ספציפיים לפי הצורך, כך שהתהליך הוא דינמי ומתפתח בהתאם למצב העסקי המשתנה.
+Ongoing performance tracking is essential. By analyzing results of actions taken following AI advice, you can identify what works and what needs improvement, then adapt quickly and wisely. The system also supports follow-up questions and deeper exploration of specific topics—keeping the process dynamic and aligned with your changing business reality.
 
-חשוב לזכור שיועץ עסקליק הוא כלי עזר חכם שמעניק תובנות והכוונה, אך ההצלחה תלויה גם ביישום עקבי של ההמלצות. שימוש נכון בתובנות יכול להוביל לשיפור משמעותי בניהול העסק, בשיפור השירות ללקוחות, בהגדלת היעילות התפעולית ובהגברת ההכנסות.
+Remember: the advisor is a smart assistant that provides insights and guidance, but success also depends on consistent execution. Using insights effectively can significantly improve business management, customer service, operational efficiency, and revenue.
 
-שילוב עקבי של ייעוץ מקצועי עם ניהול עסקי שוטף, מעקב מתמיד אחרי תוצאות, ושימוש במערכות האוטומציה של העסק הם המפתח למקסום הערך של יועץ עסקליק ולהובלת העסק שלך להצלחה מתמשכת.`,
+Consistently combining professional guidance with routine management, continuous measurement, and use of automation is the key to maximizing the BizUply Advisor’s value and driving sustained success.`,
   },
   {
-    question: "איך מבצעים אינטגרציה בין יועץ עסקליק לשאר מערכות הניהול העסקיות?",
-    answer: `האינטגרציה בין יועץ עסקליק למערכות ניהול עסקיות אחרות מהווה מפתח מרכזי לשיפור היעילות והאפקטיביות בניהול העסק. עסקליק תומכת בחיבור למערכות CRM, דשבורדים עסקיים, פלטפורמות שיווק, וכלים לניהול לקוחות והזמנות, מה שמאפשר לך לקבל תמונת מצב מקיפה ומעודכנת בכל רגע נתון.
+    question:
+      "How do I integrate the BizUply Advisor with other business systems?",
+    answer: `Integration between the BizUply Advisor and other business systems is key to improving efficiency and effectiveness. BizUply supports connections with CRMs, business dashboards, marketing platforms, and tools for managing customers and orders—so you always have a comprehensive, real-time view.
 
-האינטגרציה מבוססת על סינכרון נתונים בזמן אמת, כך שהמידע שיועץ עסקליק מספק—כגון המלצות, תובנות ונתונים עסקיים—משתלב אוטומטית במערכות העבודה השוטפות שלך. למשל, אם היועץ מזהה הזדמנות שיווקית או נושא לשיפור בשירות לקוחות, המידע יכול להיכנס ישירות למערכת ה-CRM שלך, שם יוטמע בפעילות השיווקית או בשירות הלקוחות.
+Integration is based on real-time data sync, so the advisor’s information—recommendations, insights, and business data—flows automatically into your operational systems. For example, if the advisor identifies a marketing opportunity or a customer service improvement, it can feed directly into your CRM to be embedded in marketing or service workflows.
 
-בנוסף, האינטגרציה מאפשרת קליטת משובים מהמערכות השונות, כך שיועץ עסקליק מתאים את ההמלצות שלו בהתבסס על הנתונים העדכניים ביותר, ומאפשר התאמה דינמית לשינויים במצב העסק. כך ניתן למנוע כפילויות, לשפר את תהליך קבלת ההחלטות, ולמקסם את התוצאות העסקיות.
+Integration also supports feedback from your systems back into the advisor. It adapts its recommendations based on the most current data, enabling dynamic alignment with your business status. This prevents duplication, improves decision-making, and maximizes results.
 
-אינטגרציה יעילה בין יועץ עסקליק למערכות ניהול אחרות מאפשרת לך לנהל את העסק בצורה חכמה, ממוקדת ומבוססת נתונים, תוך שימוש בכלים טכנולוגיים מתקדמים המייעלים את התפעול ותומכים בקבלת החלטות מושכלות.`,
+Effective integration lets you manage your business in a smarter, more focused, data-driven way—using advanced tools that streamline operations and support well-informed decisions.`,
   },
   {
-    question: "אילו שגיאות או תקלות עלולות להתרחש ביועץ עסקליק וכיצד ניתן לפתור אותן?",
-    answer: `כמו בכל מערכת טכנולוגית מתקדמת, גם ביועץ עסקליק עשויות להתרחש שגיאות או תקלות, הנובעות ממספר גורמים אפשריים, כגון תקלה בחיבור האינטרנט, בעיות סינכרון נתונים, עומס על השרתים או באגים במערכת. להלן הדרכה מפורטת לפתרון תקלות נפוצות:
+    question:
+      "What errors or issues might occur in the BizUply Advisor and how can I fix them?",
+    answer: `Like any advanced tech system, the BizUply Advisor may occasionally encounter errors or issues—due to internet connectivity problems, data-sync issues, server load, or software bugs. Here’s how to handle common cases:
 
-בעיה בקבלת תשובות או באיחור בתגובה:
+Delays or missing answers:
 
-בדוק חיבור אינטרנט יציב ומהיר. חיבור חלש או לא יציב עלול לגרום לעיכובים.
+• Check for a stable, fast internet connection—weak/unstable links cause delays.
+• Refresh your browser or app.
+• If the problem persists, try a different device or browser.
 
-נסה לרענן את הדפדפן או את האפליקציה בה אתה משתמש.
+Data-sync issues with your business data:
 
-אם הבעיה חוזרת, נסה להיכנס ממכשיר או דפדפן אחר.
+• Ensure your business info is up to date and server details are correct.
+• If the advisor shows incorrect data, try re-syncing via business settings or contact support.
 
-שגיאות בסינכרון עם נתוני העסק:
+Access/login issues:
 
-ודא שהעסק שלך מעודכן במערכת ושהפרטים בשרת תקינים.
+• Confirm your permissions are correct and you’re logged into the right business profile.
+• If you forgot your password or can’t log in, use password reset or contact support.
 
-במידה ויש שגיאות בנתונים המוצגים ליועץ, נסה לבצע סנכרון מחדש דרך הגדרות העסק או לפנות לתמיכה.
+Technical glitches or bugs:
 
-בעיות גישה או כניסה ליועץ:
+• Update your system or browser to the latest version.
+• If issues remain, contact BizUply support with a clear description, screenshots, and your device/browser details.
 
-בדוק שההרשאות שלך במערכת מעודכנות ושאתה מחובר עם פרופיל העסק הנכון.
+Content accuracy or mismatch:
 
-במידה ושכחת סיסמה או נתקלת בבעיה בכניסה, השתמש בפונקציית שחזור הסיסמה או פנה לתמיכה.
+• The advisor is AI-based and may sometimes provide general answers. Use clear, detailed questions or seek human consultation for precision.
 
-תקלות טכניות או באגים במערכת:
-
-במקרה של תקלות טכניות, מומלץ לעדכן את המערכת או הדפדפן לגרסה העדכנית ביותר.
-
-אם הבעיה לא נפתרת, יש לפנות לצוות התמיכה של עסקליק עם תיאור מדויק של התקלה, צילומי מסך ומידע על המכשיר והדפדפן בו אתה משתמש.
-
-שגיאות בתוכן התשובות או חוסר התאמה:
-
-יועץ עסקליק מבוסס על AI ולכן עלול לספק לפעמים תשובות כלליות או שאינן מותאמות במדויק לעסק שלך. במקרים כאלה מומלץ להשתמש בשאלות מפורטות וברורות יותר, או לפנות לייעוץ אישי מקצועי.
-
-שמירה על כללי עבודה טובים, בדיקות תקופתיות של המערכת ועדכון תדיר של פרטי העסק והנתונים מסייעים להפחית תקלות ולהבטיח שימוש חלק ויעיל ביועץ עסקליק. במידה ומתעוררת תקלה משמעותית, צוות התמיכה זמין לעזור ולפתור את הבעיה במהירות האפשרית.`,
+Good practices—regular checks and up-to-date business data—help reduce issues and ensure smooth usage. For significant problems, the support team is ready to help quickly.`,
   },
   {
-    question: "כיצד ניתן למנוע בעיות ושגיאות חוזרות ביועץ עסקליק?",
-    answer: `כדי למנוע תקלות ושגיאות חוזרות ביועץ עסקליק, מומלץ לבצע את הפעולות הבאות באופן שגרתי ומסודר:
+    question:
+      "How can I prevent recurring issues and errors in the BizUply Advisor?",
+    answer: `To prevent recurring issues, follow these routine best practices:
 
-עדכון מידע ונתונים: הקפד לשמור על פרטי העסק, הלקוחות והשירותים מעודכנים במערכת, כדי להבטיח שהתשובות וההמלצות של היועץ יהיו מדויקות ורלוונטיות.
+• Keep data updated: Maintain current business, customer, and service details to ensure accurate, relevant recommendations.
 
-בדיקת חיבור אינטרנט: וודא שהחיבור שלך יציב ומהיר, במיוחד בעת שימוש בשירות בזמן אמת או ביצוע פעולות סינכרון עם השרתים.
+• Check internet stability: Ensure a stable, fast connection—especially for real-time features or server sync.
 
-שימוש בדפדפן עדכני: השתמש בדפדפן מעודכן ונתמך על ידי המערכת, וכבה תוספים או הרחבות העלולים לגרום להתנגשות.
+• Use a modern browser: Use a supported, updated browser and disable extensions that may conflict.
 
-בקרה על הרשאות: שמור על הרשאות נכונות ועדכניות, והגב את הגישה למשתמשים מורשים בלבד.
+• Manage permissions: Keep user permissions current and limit access to authorized users only.
 
-ריענון תדיר של המערכת: בצע ריענון תקופתי של הדפדפן או האפליקציה, ופתח מחדש את השירות כדי למנוע הצטברות בעיות טכניות.
+• Periodically refresh: Regularly restart the browser/app to prevent technical buildup.
 
-פנייה מיידית לתמיכה: בכל זיהוי תקלה או אי התאמה, דווח במהירות לצוות התמיכה עם פרטים מדויקים, כדי לקבל מענה ופתרון מהירים.
+• Contact support promptly: Report issues quickly with precise details for fast resolution.
 
-הדרכה ושימוש מושכל: השתמש במדריכים ובכלים שהמערכת מציעה, כדי למקסם את היעילות ולהפחית טעויות.
+• Training and thoughtful use: Leverage built-in guides and tools to maximize efficiency and reduce errors.
 
-שמירה על נהלים אלה מייעלת את השימוש ביועץ עסקליק ומבטיחה חווית שירות רציפה ואמינה לעסק שלך.`,
+These practices streamline your use of the BizUply Advisor and ensure a reliable, continuous experience for your business.`,
   },
 ];
 
-export default function EskelikAdvisorFAQ() {
+export default function BizUplyAdvisorFAQ() {
   const [openIndex, setOpenIndex] = useState(null);
 
   const toggleIndex = (index) => {
@@ -199,7 +198,7 @@ export default function EskelikAdvisorFAQ() {
       }}
     >
       <h1 style={{ textAlign: "center", marginBottom: 30 }}>
-        שאלות ותשובות - יועץ עסקליק
+        FAQ – BizUply Advisor
       </h1>
       {faqData.map(({ question, answer }, index) => (
         <div
@@ -236,8 +235,8 @@ export default function EskelikAdvisorFAQ() {
             <span
               style={{
                 userSelect: "none",
-                color: "#f06292",        // ורוד-אדום
-                marginLeft: 10,          // רווח בין סימן השאלה לטקסט
+                color: "#f06292", // pink-red
+                marginLeft: 10,
                 paddingRight: 2,
                 fontWeight: "bold",
                 fontSize: 24,

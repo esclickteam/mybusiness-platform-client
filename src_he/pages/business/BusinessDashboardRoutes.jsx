@@ -21,7 +21,7 @@ const CartPage = lazy(() => import("./dashboardPages/buildTabs/shopAndCalendar/A
 const BusinessChatPage = lazy(() => import("../../components/BusinessChatPage"));
 const CollabChat = lazy(() => import("./dashboardPages/collabtabs/CollabChat"));
 const AffiliatePage = lazy(() => import("./dashboardPages/AffiliatePage"));
-const EsclickAdvisor = lazy(() => import("./dashboardPages/EsclickAdvisor"));
+const BizUplyAdvisor = lazy(() => import("./dashboardPages/BizUplyAdvisor"));
 const CRMMain = lazy(() => import("./dashboardPages/crmpages/CRMMain"));
 const CRMAppointmentsTab = lazy(() => import("./dashboardPages/crmpages/CRMAppointmentsTab"));
 const CRMClientsTab = lazy(() => import("./dashboardPages/crmpages/CRMClientsTab"));
@@ -46,7 +46,7 @@ import DashboardFAQ from "../DashboardFAQ";
 import CustomerMessagesFAQ from "../CustomerMessagesFAQ";
 import CollaborationsFAQ from "../CollaborationsFAQ";
 import CrmFAQ from "../CrmFAQ";
-import EskelikAdvisorFAQ from "../EskelikAdvisorFAQ";
+import BizUplyAdvisorFAQ from "../BizUplyAdvisorFAQ";
 import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
 import TechnicalSupport from "../technicalSupportFAQs";
 import TroubleshootingFAQ from "../troubleshootingFAQs";
@@ -135,7 +135,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="faq/customer-messages" element={<CustomerMessagesFAQ />} />
           <Route path="faq/collaborations" element={<CollaborationsFAQ />} />
           <Route path="faq/crm" element={<CrmFAQ />} />
-          <Route path="faq/eskelik-advisor" element={<EskelikAdvisorFAQ />} />
+          <Route path="faq/BizUply-advisor" element={<BizUplyAdvisorFAQ />} />
           <Route path="faq/affiliate-program" element={<AffiliateProgramFAQ />} />
           <Route path="faq/technical-support" element={<TechnicalSupport />} />
           <Route path="faq/troubleshooting" element={<TroubleshootingFAQ />} />
@@ -143,7 +143,7 @@ const BusinessDashboardRoutes = () => {
           {/* Other routes */}
           <Route path="cart" element={<CartPage />} />
           <Route path="upgrade" element={<Upgrade />} />
-          <Route path="esclick" element={<EsclickAdvisor />} />
+          <Route path="BizUply" element={<BizUplyAdvisor />} />
           <Route path="goals" element={<GoalsPage />} />
           <Route path="messages" element={<BusinessChatPage />} />
           <Route path="business-messages" element={<CollabChat />} />

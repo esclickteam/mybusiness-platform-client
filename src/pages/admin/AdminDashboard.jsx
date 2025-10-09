@@ -36,7 +36,7 @@ function AdminDashboard() {
         return;
       }
 
-      socketRef.current = io("https://api.esclick.co.il", {
+      socketRef.current = io("https://api.BizUply.co.il", {
         path: "/socket.io",
         auth: {
           token,
@@ -88,63 +88,63 @@ function AdminDashboard() {
 
   return (
     <div className="admin-dashboard">
-      <h1>👑 דשבורד אדמין ראשי</h1>
-      <p className="welcome-admin">שלום, {user?.name || user?.email || "מנהל"}</p>
+      <h1>👑 Main Admin Dashboard</h1>
+      <p className="welcome-admin">Hello, {user?.name || user?.email || "Admin"}</p>
 
       <div className="admin-summary">
         <div className="summary-card">
-          👥 משתמשים במערכת: <strong>{stats.totalUsers}</strong>
+          👥 Users in System: <strong>{stats.totalUsers}</strong>
         </div>
         <div className="summary-card">
-          🏢 עסקים רשומים: <strong>{stats.totalBusinesses}</strong>
+          🏢 Registered Businesses: <strong>{stats.totalBusinesses}</strong>
         </div>
         <div className="summary-card">
-          👥 לקוחות רשומים: <strong>{stats.totalClients}</strong>
+          👥 Registered Clients: <strong>{stats.totalClients}</strong>
         </div>
         <div className="summary-card">
-          💰 סה"כ מכירות: <strong>{stats.totalSales} ₪</strong>
+          💰 Total Sales: <strong>{stats.totalSales} ₪</strong>
         </div>
         <div className="summary-card">
-          🧑‍💼 מנהלים פעילים: <strong>{stats.activeManagers}</strong>
+          🧑‍💼 Active Managers: <strong>{stats.activeManagers}</strong>
         </div>
         <div className="summary-card">
-          🚫 משתמשים חסומים: <strong>{stats.blockedUsers}</strong>
+          🚫 Blocked Users: <strong>{stats.blockedUsers}</strong>
         </div>
       </div>
 
       <div className="admin-actions">
         <Link to="/admin/roles" className="admin-link">
-          🔐 ניהול תפקידים והרשאות
+          🔐 Manage Roles & Permissions
         </Link>
         <Link to="/admin/site-edit" className="admin-link">
-          🖊️ עריכת תוכן האתר
+          🖊️ Edit Site Content
         </Link>
         <Link to="/admin/plans" className="admin-link">
-          📦 ניהול חבילות
+          📦 Manage Plans
         </Link>
         <Link to="/admin/users" className="admin-link">
-          👥 ניהול משתמשים
+          👥 User Management
         </Link>
         <Link to="/admin/logs" className="admin-link">
-          🕐 פעולות מערכת (לוגים)
+          🕐 System Actions (Logs)
         </Link>
         <Link to="/admin/settings" className="admin-link">
-          ⚙️ הגדרות כלליות
+          ⚙️ General Settings
         </Link>
         <Link to="/reset-password" className="admin-link">
-          🔒 שינוי סיסמה
+          🔒 Change Password
         </Link>
 
-        {/* הקישור החדש לניהול משווקים */}
+        {/* New link for managing marketers */}
         <Link to="/admin/affiliates" className="admin-link">
-          🤝 ניהול משווקים (שותפים)
+          🤝 Manage Marketers (Affiliates)
         </Link>
 
         <Link to="/admin/affiliate-payouts" className="admin-link">
-          💸 דו"ח תשלומים לשותפים
+          💸 Affiliate Payout Report
         </Link>
         <Link to="/admin/withdrawals" className="admin-link">
-          🏧 בקשות משיכה לשותפים
+          🏧 Withdrawal Requests for Affiliates
         </Link>
       </div>
     </div>

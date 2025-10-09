@@ -1,11 +1,11 @@
-.esclick-container {
+.BizUply-container {
   padding: 3rem 2rem;
   text-align: center;
   background-color: #f8f5ff;
   min-height: 100vh; /* שומר על גובה מלא למראה אחיד */
 }
 
-.esclick-header {
+.BizUply-header {
   color: #5a2ea6;
   margin-bottom: 1.5rem;
   font-weight: 700;
@@ -145,7 +145,7 @@
 }
 /* טלפונים קטנים (עד 480px) */
 @media (max-width: 480px) {
-  .esclick-container {
+  .BizUply-container {
     padding: 1.5rem 1rem;
   }
 
@@ -177,7 +177,7 @@
 
 /* טלפונים בינוניים וטאבלטים (481px עד 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
-  .esclick-container {
+  .BizUply-container {
     padding: 2rem 1.5rem;
   }
 
@@ -204,7 +204,7 @@
 
 /* טאבלטים גדולים ומחשבים קטנים (769px עד 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
-  .esclick-container {
+  .BizUply-container {
     padding: 3rem 2rem;
   }
 
@@ -224,7 +224,7 @@
 
 /* מחשבים בינוניים וגדולים (מעל 1025px) */
 @media (min-width: 1025px) {
-  .esclick-container {
+  .BizUply-container {
     padding: 3rem 2rem;
   }
 

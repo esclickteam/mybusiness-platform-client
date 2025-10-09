@@ -3,175 +3,197 @@ import "./BuildBusinessPage.css";
 
 export default function BuildBusinessPage() {
   return (
-    <div className="build-business-page-container" dir="rtl" lang="he">
-      <h2>🧷 עריכת העמוד העסקי – מדוע זה חשוב?</h2>
+    <div className="build-business-page-container" dir="ltr" lang="en">
+      <h2>🧷 Editing Your Business Page – Why It Matters</h2>
       <p>
-        העמוד העסקי שלך בעסקליק הוא לא סתם "כרטיס ביקור דיגיטלי". מדובר בחלון הראווה של העסק שלך. זה המקום שבו לקוחות נחשפים אליך לראשונה, מתרשמים מהשירותים שלך, צורכים מידע, שואלים שאלות ולעיתים גם קובעים פגישה – והכול בלי לדבר איתך אפילו. עמוד עסקי בנוי היטב הוא ההבדל בין לקוח מתעניין לבין לקוח שמבצע פעולה בפועל. לכן, כל חלק בו צריך להיבנות עם מחשבה ותשומת לב.
+        Your business page on BizUply isn’t just a “digital business card.” It’s your storefront.
+        It’s where customers first discover you, get impressed by your services, consume information,
+        ask questions, and sometimes even book an appointment—without ever speaking to you.
+        A well-built page is the difference between a curious visitor and a customer who takes action.
+        Every part of it should be crafted with care and intention.
       </p>
 
-      <h2>🧾 הטאב הראשי – לב העמוד</h2>
+      <h2>🧾 The Main Tab – The Heart of the Page</h2>
 
-      <h3>✍ שם העסק</h3>
+      <h3>✍ Business Name</h3>
       <p>
-        השם שלך הוא הדבר הראשון שנחשף לעין המשתמש. הוא מופיע בתוצאות החיפוש, בכותרת העמוד, ובהתכתבויות. לכן, חשוב שהוא יהיה ברור, ייצוגי ומכיל את התחום שלך.
+        Your name is the first thing users see. It appears in search results, at the top of your page,
+        and in conversations. Make sure it’s clear, professional, and includes your field.
       </p>
-      <p><strong>איך לרשום?</strong><br />
-      כתוב את שמך המלא או שם המותג שלך, ולאחר מכן הוסף את תחום ההתמחות שלך.</p>
-      <p><strong>לדוגמה:</strong></p>
+      <p>
+        <strong>How to write it:</strong><br />
+        Use your full name or brand name, then add your specialty.
+      </p>
+      <p><strong>Examples:</strong></p>
       <ul>
-        <li>חגית אמסלם – קוסמטיקה טבעית</li>
-        <li>יוסי כהן – אינסטלציה ושירותי חירום 24/7</li>
+        <li>Hagit Amsalem — Natural Cosmetics</li>
+        <li>Yossi Cohen — Plumbing & 24/7 Emergency Service</li>
       </ul>
-      <p>הוספת התחום תעזור גם למנוע החיפוש להבין במה אתה עוסק, ותשפר את החשיפה שלך.</p>
-
-      <h3>🧾 תיאור העסק</h3>
       <p>
-        זהו אחד הסעיפים הכי חשובים – כאן אתה מספר על עצמך, על מה שאתה עושה, ועל מה שמייחד אותך.
+        Adding the specialty helps search understand what you do and improves your visibility.
       </p>
-      <p><strong>איך כותבים תיאור טוב?</strong></p>
+
+      <h3>🧾 Business Description</h3>
+      <p>
+        One of the most important sections—this is where you tell your story, what you do, and what makes you unique.
+      </p>
+      <p><strong>How to write a great description?</strong></p>
       <ul>
-        <li>פנה בלשון אישית, בגובה העיניים.</li>
-        <li>כתוב מה השירות המרכזי שלך, אבל גם מה מייחד אותך לעומת אחרים בתחום.</li>
-        <li>מומלץ להזכיר ניסיון, הכשרות, תחומי התמחות מיוחדים ואפילו גישה טיפולית או שירותית.</li>
+        <li>Use a warm, approachable tone.</li>
+        <li>State your main service and what differentiates you from others.</li>
+        <li>Mention experience, certifications, specialties, and even your treatment/service approach.</li>
       </ul>
-      <p><strong>דוגמה לפסקת תיאור מקצועית – חגית אמסלם:</strong></p>
+      <p><strong>Sample professional paragraph — Hagit Amsalem:</strong></p>
       <p>
-        אני חגית אמסלם, קוסמטיקאית מוסמכת המתמחה בטיפולי פנים טבעיים עם חומרים אורגניים בלבד. אני משלבת ניסיון של מעל 12 שנים עם תשומת לב אישית לכל לקוח, במטרה להעניק טיפול שמרגיע גם את העור וגם את הנפש. הקליניקה שלי שוכנת ברמת גן ומזמינה אותך לחוויית טיפול ייחודית.
+        I’m Hagit Amsalem, a certified cosmetician specializing in natural facials with only organic ingredients.
+        I combine 12+ years of experience with personal attention for every client—so the treatment calms both skin and mind.
+        My studio is in Ramat Gan. You’re invited to a unique and relaxing experience.
       </p>
-      <p><strong>דוגמה לפסקת תיאור מקצועית – יוסי כהן:</strong></p>
+      <p><strong>Sample professional paragraph — Yossi Cohen:</strong></p>
       <p>
-        אני יוסי כהן, אינסטלטור מוסמך עם ניסיון של מעל 15 שנה, המספק שירותי תיקון, איתור נזילות ושירותי חירום 24/7 באזור המרכז. אני מחויב לשירות מקצועי, מהיר ואמין, ומשתמש בציוד מתקדם לאיתור תקלות במינימום הרס.
-      </p>
-
-      <h3>☎ פרטי יצירת קשר – טלפון ואימייל</h3>
-      <p>
-        אלו הפרטים שיאפשרו ללקוח לפנות אליך בצורה ישירה – לכן חובה לוודא שהם מדויקים. טעות קטנה במספר או באימייל עלולה לגרום לאובדן לקוחות פוטנציאליים. אם אתה משתמש בוואטסאפ עסקי, אפשר גם לציין זאת בתיאור או להוסיף אייקון מתאים בתמונות.
-      </p>
-
-      <h3>🏷 קטגוריה</h3>
-      <p>
-        הקטגוריה עוזרת למיין את העמוד שלך בתוך המערכת. בחר את הקטגוריה שהכי מייצגת את השירות העיקרי שלך. גם אם אתה מציע שירותים נוספים, חשוב להתמקד במילת המפתח המרכזית – למשל "איפור קבוע", "עיסוי רפואי", "ציפורניים", "קוסמטיקה טבעית" וכדומה.
+        I’m Yossi Cohen, a licensed plumber with 15+ years of experience, providing repairs, leak detection,
+        and 24/7 emergency service in the central region. I’m committed to fast, reliable, professional work,
+        using advanced equipment to diagnose issues with minimal disruption.
       </p>
 
-      <h3>📍 עיר</h3>
+      <h3>☎ Contact Details — Phone & Email</h3>
       <p>
-        בחר את העיר המרכזית שבה אתה נותן שירות. גם אם אתה נייד או עובד בכמה ערים, עדיף לציין את המקום שבו מתבצעת רוב העבודה בפועל, או איפה נמצאת הקליניקה.
+        These let customers reach you directly—so accuracy is a must. A small typo can cost you leads.
+        If you use WhatsApp Business, mention it in the description or add a relevant icon in your visuals.
       </p>
 
-      <h2>🖼 טאב הגלריה – הרושם הוויזואלי</h2>
+      <h3>🏷 Category</h3>
       <p>
-        הגלריה היא המקום שבו אפשר להראות ולא רק לספר. תמונה אחת שווה אלף מילים – וללקוח שגולש מהנייד, היא שווה גם הזמנה.
+        The category helps place your page correctly in the system. Choose the one that best represents your
+        primary service. Even if you offer several services, focus on the main keyword—e.g., “Permanent Makeup,”
+        “Medical Massage,” “Nails,” “Natural Cosmetics,” etc.
       </p>
-      <p><strong>מה כדאי לכלול בגלריה?</strong></p>
+
+      <h3>📍 City</h3>
+      <p>
+        Choose the main city where you provide service. Even if you’re mobile or work across multiple cities,
+        list the place where most work happens—or where your studio is located.
+      </p>
+
+      <h2>🖼 Gallery Tab — Visual Impression</h2>
+      <p>
+        The gallery lets you show, not just tell. One picture is worth a thousand words—and on mobile,
+        it can be the difference between browsing and booking.
+      </p>
+      <p><strong>What to include?</strong></p>
       <ul>
-        <li>תמונות של עבודות אמיתיות: לפני/אחרי, תהליכים, תוצאות.</li>
-        <li>תמונות של סביבת העבודה: קליניקה, עמדת עבודה, ציוד נקי ומסודר.</li>
-        <li>אם יש לך סרטונים קצרים – הם יכולים לשדר מקצועיות וביטחון.</li>
+        <li>Real work: before/after, process, and results.</li>
+        <li>Your workspace: studio, station, clean and organized equipment.</li>
+        <li>Short videos that convey professionalism and confidence.</li>
       </ul>
-      <p><strong>מה חשוב לזכור?</strong></p>
+      <p><strong>Remember:</strong></p>
       <ul>
-        <li>אל תעלה תמונות מוקטנות או באיכות נמוכה.</li>
-        <li>עדיף 5 תמונות מצוינות מאשר 15 בינוניות.</li>
-        <li>אל תשתמש בפילטרים מוגזמים – לקוחות רוצים לראות את האמת.</li>
-      </ul>
-
-      <h2>⭐ טאב הביקורות – האמון שלך מול הלקוח</h2>
-      <p>
-        המערכת מאפשרת רק ללקוחות אמיתיים להשאיר ביקורת – זה יוצר אמינות גבוהה. כל ביקורת תופיע יחד עם הדירוג, והיא משפיעה על הציון הכללי של העסק שלך.
-      </p>
-      <p><strong>למה ביקורות כל כך חשובות?</strong></p>
-      <ul>
-        <li>הן מעניקות לגיטימציה ואמינות לעסק.</li>
-        <li>הן מעלות את הדירוג שלך ומגדילות חשיפה.</li>
-        <li>הן עוזרות ללקוח החדש לקבל החלטה.</li>
-      </ul>
-      <p><strong>איך לעודד ביקורות בצורה חכמה?</strong></p>
-      <p>
-        בקש מהלקוחה: <br />
-        "אם היית מרוצה, זה יעזור לי מאוד אם תוכלי להשאיר ביקורת קצרה בפרופיל שלי בעסקליק 😊 זה עוזר ללקוחות חדשים למצוא אותי."
-      </p>
-
-      <h2>📅 טאב היומן – קביעת תורים</h2>
-      <p>
-        היומן מאפשר ללקוחות להזמין תור בצורה דיגיטלית, בלי טלפונים והתכתבויות ארוכות.
-      </p>
-      <p><strong>איך בונים את היומן?</strong></p>
-      <ul>
-        <li>לכל שירות תן שם ברור, זמן משוער (בדקות), מחיר ותיאור.</li>
-        <li>אם יש הבדל בין שירות קל לקצר או שירות מורכב – הגדר אותם בנפרד.</li>
-      </ul>
-      <p><strong>דוגמה טובה להגדרת שירות – חגית אמסלם:</strong></p>
-      <ul>
-        <li>שם השירות: ניקוי פנים עמוק טבעי</li>
-        <li>זמן: 75 דקות</li>
-        <li>מחיר: 290 ש"ח</li>
-        <li>תיאור: ניקוי עמוק עם מסכת חימר ירוק וטיפולי הרגעה, מותאם לעור רגיש.</li>
-      </ul>
-      <p><strong>דוגמה טובה להגדרת שירות – יוסי כהן:</strong></p>
-      <ul>
-        <li>שם השירות: פתיחת סתימה בכיור</li>
-        <li>זמן: 30 דקות</li>
-        <li>מחיר: 250 ש"ח</li>
-        <li>תיאור: פתיחת סתימה קלה באמצעות ציוד חשמלי מקצועי, כולל בדיקת תקינות.</li>
+        <li>Avoid low-quality or compressed images.</li>
+        <li>Five excellent photos beat fifteen mediocre ones.</li>
+        <li>Avoid heavy filters—customers want authenticity.</li>
       </ul>
 
-      <h2>💬 טאב ההודעות – צ’אט ישיר עם לקוחות</h2>
+      <h2>⭐ Reviews Tab — Building Trust</h2>
       <p>
-        המערכת מאפשרת ללקוחות לפנות אליך בקלות מתוך העמוד שלך. כל הודעה תופיע בלשונית "הודעות מלקוחות" ותקבל עליה התראה.
+        Only real customers can leave reviews—this creates high credibility. Each review includes a rating
+        and affects your overall score.
       </p>
-      <p><strong>טיפים לניהול ההודעות:</strong></p>
+      <p><strong>Why reviews matter:</strong></p>
       <ul>
-        <li>השב תוך זמן קצר ככל האפשר – זה משפיע על תחושת השירות.</li>
-        <li>כתוב בשפה אדיבה וברורה.</li>
-        <li>אם יש שאלות שחוזרות על עצמן – העבר אותן לטאב “שאלות ותשובות”.</li>
+        <li>They add legitimacy and trust.</li>
+        <li>They boost your rating and visibility.</li>
+        <li>They help new customers decide.</li>
+      </ul>
+      <p><strong>How to encourage reviews smartly?</strong></p>
+      <p>
+        Ask a customer:<br />
+        “If you were happy, it would really help me if you could leave a short review on my BizUply profile 😊
+        It helps new customers find me.”
+      </p>
+
+      <h2>📅 Calendar Tab — Booking</h2>
+      <p>
+        The calendar lets customers book appointments digitally—no phone calls or long message threads.
+      </p>
+      <p><strong>How to set it up:</strong></p>
+      <ul>
+        <li>Each service needs a clear name, estimated duration (in minutes), price, and description.</li>
+        <li>If there’s a difference between simple/short and complex/long services—create separate services.</li>
+      </ul>
+      <p><strong>Good service example — Hagit Amsalem:</strong></p>
+      <ul>
+        <li>Service name: Deep Natural Facial</li>
+        <li>Duration: 75 minutes</li>
+        <li>Price: ₪290</li>
+        <li>Description: Deep cleanse with green clay mask and soothing care, tailored for sensitive skin.</li>
+      </ul>
+      <p><strong>Good service example — Yossi Cohen:</strong></p>
+      <ul>
+        <li>Service name: Sink Clog Removal</li>
+        <li>Duration: 30 minutes</li>
+        <li>Price: ₪250</li>
+        <li>Description: Light clog removal using professional powered tools, includes functionality check.</li>
       </ul>
 
-      <h2>❓ טאב שאלות ותשובות – FAQ</h2>
+      <h2>💬 Messages Tab — Direct Chat with Customers</h2>
       <p>
-        זה המקום לכתוב תשובות קבועות לשאלות שהלקוחות שלך שואלים שוב ושוב. המטרה היא לחסוך זמן, לייעל את השירות וגם לשדר סדר ומקצועיות.
+        Customers can contact you easily from your page. All messages appear in the “Customer Messages” tab,
+        and you’ll get a notification.
       </p>
-      <p><strong>דוגמאות טובות:</strong></p>
+      <p><strong>Tips for handling messages:</strong></p>
+      <ul>
+        <li>Reply as quickly as possible—service speed matters.</li>
+        <li>Write clearly and politely.</li>
+        <li>If questions repeat, add them to your FAQ tab.</li>
+      </ul>
+
+      <h2>❓ FAQ Tab</h2>
+      <p>
+        Use this space to answer repeat questions in advance. It saves time, improves service,
+        and signals organization and professionalism.
+      </p>
+      <p><strong>Good examples:</strong></p>
       <table>
         <thead>
           <tr>
-            <th>שאלה</th>
-            <th>תשובה</th>
+            <th>Question</th>
+            <th>Answer</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>האם אפשר לשלם באשראי?</td>
-            <td>כן, אפשר לשלם באשראי, ביט ופייבוקס.</td>
+            <td>Can I pay by credit card?</td>
+            <td>Yes—credit card, Bit, and PayBox are accepted.</td>
           </tr>
           <tr>
-            <td>האם השירות כולל תיקון?</td>
-            <td>כן, השירות כולל תיקון אחד עד 60 יום.</td>
+            <td>Does the service include a repair?</td>
+            <td>Yes—one repair is included, up to 60 days.</td>
           </tr>
           <tr>
-            <td>האם אפשר להזמין תור לשישי?</td>
-            <td>כן, בתיאום מראש בלבד.</td>
+            <td>Can I book on Fridays?</td>
+            <td>Yes—by prior arrangement only.</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>✅ שמירה וסיום</h2>
+      <h2>✅ Save & Finish</h2>
       <p>
-        לאחר שמילאת את כל הפרטים בכל הטאבים – לחץ על כפתור "שמור הכל" בתחתית המסך.
-        מומלץ לעבור לתצוגה של "צפייה בפרופיל" מהסרגל הימני, ולבחון איך העמוד שלך נראה מהצד של הלקוח.
+        After filling out all details across the tabs, click “Save All” at the bottom.
+        We recommend switching to “View Profile” from the right sidebar to see how your page looks to customers.
       </p>
       <p>
-        בדוק שכל התמונות נטענות כראוי, שאין שגיאות כתיב, שהשירותים ברורים והמידע זורם.
+        Check that all images load properly, there are no typos, services are clear, and the information flows well.
       </p>
 
-      <h2>💡 לסיכום – כך תוודא שעשית עבודה מקצועית:</h2>
+      <h2>💡 In Summary — Your Professional Checklist</h2>
       <ul>
-        <li>דאג לכותרת ברורה עם התחום שלך.</li>
-        <li>תיאור אישי ומדויק עם ניסיון והבטחה ללקוח.</li>
-        <li>תמונות איכותיות ואמיתיות.</li>
-        <li>שירותים עם פירוט מקצועי, תמחור והסבר.</li>
-        <li>מענה לשאלות חוזרות מראש – דרך טאב FAQ.</li>
-        <li>המלצה פעילה לביקורות מלקוחות מרוצים.</li>
-        <li>בדיקה סופית של התצוגה בפרופיל.</li>
+        <li>A clear headline with your specialty.</li>
+        <li>A personal, precise description with experience and a clear value promise.</li>
+        <li>High-quality, authentic images.</li>
+        <li>Services with professional details, pricing, and explanations.</li>
+        <li>Proactive answers to repeat questions in your FAQ tab.</li>
+        <li>Encourage reviews from happy customers.</li>
+        <li>Final check in “View Profile.”</li>
       </ul>
     </div>
   );

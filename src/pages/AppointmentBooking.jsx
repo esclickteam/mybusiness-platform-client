@@ -14,7 +14,7 @@ export default function AppointmentBooking({ businessId, serviceId }) {
   const [booking, setBooking] = useState(false);
   const [error, setError] = useState('');
 
-  // אפס סטייט כשמשתנה השירות או העסק
+  // Reset state when service or business changes
   useEffect(() => {
     setDate(null);
     setAvailableSlots([]);
@@ -22,7 +22,7 @@ export default function AppointmentBooking({ businessId, serviceId }) {
     setError('');
   }, [businessId, serviceId]);
 
-  // בקשת זמני תורים פנויות
+  // Request available appointment slots
   useEffect(() => {
     if (!date) return;
     setLoadingSlots(true);
@@ -40,12 +40,12 @@ export default function AppointmentBooking({ businessId, serviceId }) {
     .then(res => {
       const slots = res.data.slots || [];
       if (slots.length === 0) {
-        setError('אין תורים זמינים לתאריך זה');
+        setError('No available appointments for this date');
       }
       setAvailableSlots(slots);
     })
     .catch(() => {
-      setError('שגיאה בשליפת זמינות');
+      setError('Error fetching availability');
     })
     .finally(() => setLoadingSlots(false));
   }, [date, businessId, serviceId]);
@@ -53,7 +53,7 @@ export default function AppointmentBooking({ businessId, serviceId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!date || !slot) {
-      setError('בחרי תאריך ושעה');
+      setError('Please select a date and time');
       return;
     }
     setBooking(true);
@@ -65,14 +65,14 @@ export default function AppointmentBooking({ businessId, serviceId }) {
         date: date.toISOString().slice(0,10),
         time: slot
       });
-      alert('✅ התור נקבע בהצלחה!');
-      // איפוס לאחר קביעת תור
+      alert('✅ Appointment booked successfully!');
+      // Reset after booking
       setDate(null);
       setAvailableSlots([]);
       setSlot('');
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'שגיאה בקביעת התור');
+      setError(err.response?.data?.message || 'Error booking appointment');
     } finally {
       setBooking(false);
     }
@@ -87,16 +87,16 @@ export default function AppointmentBooking({ businessId, serviceId }) {
           onChange={setDate}
           inline
           minDate={new Date()}
-          placeholderText="בחרי תאריך"
+          placeholderText="Select a date"
           dateFormat="dd.MM.yyyy"
         />
       </div>
 
-      {loadingSlots && <p>טוען זמינים…</p>}
+      {loadingSlots && <p>Loading available slots…</p>}
 
       {!loadingSlots && date && availableSlots.length > 0 && (
         <div className="inputs">
-          <label>בחרי שעה:</label>
+          <label>Select time:</label>
           <select
             value={slot}
             onChange={e => {
@@ -120,7 +120,7 @@ export default function AppointmentBooking({ businessId, serviceId }) {
         className="save-all-btn styled"
         style={{ marginTop: 16 }}
       >
-        {booking ? 'שומר…' : 'קבע תור'}
+        {booking ? 'Saving…' : 'Book appointment'}
       </button>
     </form>
   );

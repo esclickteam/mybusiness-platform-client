@@ -19,7 +19,7 @@ const technicalSupportFAQs = [
           <li>
             <b>Contact the support team if necessary:</b><br />
             If after reading the guides and using the bot the issue still exists, you can contact our support team.<br />
-            <b>Email address:</b> support@esclick.co.il<br />
+            <b>Email address:</b> support@BizUply.co.il<br />
             <b>Phone:</b> Relevant phone number<br />
             When contacting, it is recommended to include a detailed description of the problem, screenshots, and system details (browser, device, time of the event) so we can assist quickly.
           </li>

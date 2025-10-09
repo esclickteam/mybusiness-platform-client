@@ -38,7 +38,7 @@ function Plans() {
       planName = "Trial Subscription Plan - 3 Months";
     } else {
       totalPrice = prices[selectedDuration] * parseInt(selectedDuration);
-      planName = "Esclick Subscription Plan";
+      planName = "BizUply Subscription Plan";
     }
     navigate("/checkout", {
       state: {
@@ -70,7 +70,7 @@ function Plans() {
       {/* Trial ended notice */}
       {reason === "trial_expired" && (
         <div className="plans-alert plans-alert-error">
-          The free trial period has ended. Choose a plan to continue using Esclick.
+          The free trial period has ended. Choose a plan to continue using BizUply.
         </div>
       )}
 
@@ -145,7 +145,7 @@ function Plans() {
           onClick={handleSelectPlan}
           type="button"
         >
-          Choose a plan and start growing with Esclick now!
+          Choose a plan and start growing with BizUply now!
         </button>
       </div>
     </div>

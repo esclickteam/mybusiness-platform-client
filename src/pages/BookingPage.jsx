@@ -19,15 +19,15 @@ export default function BookingPage() {
         setServices(res.data);
         setError("");
       })
-      .catch(() => setError("שגיאה בטעינת שירותים"))
+      .catch(() => setError("Error loading services"))
       .finally(() => setLoading(false));
   }, [businessId]);
 
   return (
     <div style={{ maxWidth: 600, margin: "auto", padding: "20px" }}>
-      <h2>קביעת תור</h2>
+      <h2>Book an Appointment</h2>
 
-      {loading && <p>טוען שירותים…</p>}
+      {loading && <p>Loading services…</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {!loading && !error && services.length > 0 && (
@@ -41,7 +41,7 @@ export default function BookingPage() {
             marginBottom: "20px"
           }}
         >
-          <option value="">– בחרי שירות –</option>
+          <option value="">– Select a service –</option>
           {services.map(s => (
             <option key={s._id} value={s._id}>
               {s.name}

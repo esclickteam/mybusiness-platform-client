@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useAuth } from "../context/AuthContext";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.BizUply.co.il";
 
 export default function BusinessChat({
   token,

@@ -104,7 +104,7 @@ export default function HelpCenter() {
       id: 6,
       title: "Bizuply Advisor",
       path: businessId
-        ? `/business/${businessId}/dashboard/faq/eskelik-advisor`
+        ? `/business/${businessId}/dashboard/faq/BizUply-advisor`
         : "/",
     },
     {

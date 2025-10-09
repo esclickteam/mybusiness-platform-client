@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 
-const statuses = ["ממתין למענה", "בטיפול", "נסגר"];
+const statuses = ["Awaiting Response", "In Progress", "Closed"];
 
 const getStatusColor = (status) => {
   switch (status) {
-    case "ממתין למענה":
+    case "Awaiting Response":
       return "red";
-    case "בטיפול":
+    case "In Progress":
       return "orange";
-    case "נסגר":
+    case "Closed":
       return "green";
     default:
       return "#555";
@@ -17,7 +17,7 @@ const getStatusColor = (status) => {
 
 const OpenLeadsTable = ({ leads = [] }) => {
   const today = new Date();
-  // אתחול leadList פעם אחת בלבד ללא useEffect
+  // Initialize leadList once without useEffect
   const [leadList, setLeadList] = useState(
     Array.isArray(leads) ? leads : []
   );
@@ -37,36 +37,36 @@ const OpenLeadsTable = ({ leads = [] }) => {
       };
       return updated;
     });
-    // בעתיד: שמירת הסטטוס ב-API
+    // Future: persist status via API
   };
 
-  // אם אין לידים, מציגים הודעה
+  // If no leads, show message
   if (!Array.isArray(leadList) || leadList.length === 0) {
     return (
       <div className="graph-box">
-        <h4>📥 לידים פתוחים</h4>
-        <div>אין לידים פתוחים להצגה</div>
+        <h4>📥 Open Leads</h4>
+        <div>No open leads to display</div>
       </div>
     );
   }
 
   return (
     <div className="graph-box">
-      <h4>📥 לידים פתוחים</h4>
+      <h4>📥 Open Leads</h4>
       <table>
         <thead>
           <tr>
-            <th>שם</th>
-            <th>תאריך</th>
-            <th>סטטוס</th>
-            <th>פעולה</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {leadList.map((lead, i) => (
             <tr key={lead.id || i}>
               <td>{lead.name}</td>
-              <td>{new Date(lead.date).toLocaleDateString("he-IL")}</td>
+              <td>{new Date(lead.date).toLocaleDateString("en-US")}</td>
               <td
                 style={{
                   color: getStatusColor(lead.status),
@@ -74,17 +74,17 @@ const OpenLeadsTable = ({ leads = [] }) => {
                   cursor: "pointer",
                 }}
                 onClick={() => cycleStatus(i)}
-                title="לחצי כדי לשנות סטטוס"
+                title="Click to change status"
               >
                 {lead.status}
               </td>
               <td>
-                <button style={{ fontSize: "12px" }}>טפל עכשיו</button>
+                <button style={{ fontSize: "12px" }}>Handle Now</button>
                 {daysSince(lead.date) > 2 && (
                   <span
-                    style={{ color: "red", fontSize: "12px", marginRight: "8px" }}
+                    style={{ color: "red", fontSize: "12px", marginLeft: "8px" }}
                   >
-                    ⏱️ ישן
+                    ⏱️ Stale
                   </span>
                 )}
               </td>

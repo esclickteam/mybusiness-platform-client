@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const BASE_URL = 'https://esclick.co.il';
+const BASE_URL = 'https://BizUply.co.il';
 
 // Full list of static pages
 const staticPages = [

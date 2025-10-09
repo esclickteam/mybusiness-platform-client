@@ -2,127 +2,127 @@ import React, { useState } from "react";
 
 const faqData = [
   {
-    question: "❓ מה מציג דשבורד העסק שלי?",
+    question: "❓ What does my business dashboard show?",
     answer: `
-דשבורד העסק הוא לוח מחוונים דינמי, המיועד להציג תמונת מצב מקיפה של העסק בזמן אמת, ומאפשר קבלת החלטות מושכלות. הוא כולל:
+The business dashboard is a dynamic control panel designed to present a comprehensive, real-time picture of your business and help you make informed decisions. It includes:
 
-- מספר פגישות: הצגה של סך הפגישות המתוזמנות בשבוע הנוכחי ובחודשים הקרובים, כולל סטטוס (מאושרות, ממתינות לאישור, בוטלות).
-- ביקורות ודירוגים: מספר הביקורות החיוביות והשליליות שהתקבלו, עם אפשרות לנתח ביקורות לפי תקופות זמן, ולזהות מגמות חיוביות או אזורי שיפור.
-- צפיות בפרופיל העסק: נתוני צפייה וחשיפה פר סגמנט לקוחות, כולל שינוי אחוזים לעומת תקופות קודמות, כדי לבחון את האפקטיביות של קמפיינים שיווקיים.
-- גרפים אנליטיים: המחשה ויזואלית של מגמות במכירות, פגישות ופעילות לקוחות לאורך זמן – גרפים ליניאריים, עמודות ונתונים טבלאיים.
-- לוח שנה אינטראקטיבי: הצגת פגישות ואירועים לפי תאריכים, כולל אפשרות לסינון וצפייה לפי סוגי פגישות, לקוחות או עובדים.
+- Number of appointments: A view of all scheduled appointments for the current week and the coming months, including status (approved, pending approval, canceled).
+- Reviews & ratings: The number of positive and negative reviews received, with the ability to analyze reviews by time periods and identify positive trends or areas for improvement.
+- Profile views: Impressions and exposure data per customer segment, including percentage changes compared to previous periods to evaluate the effectiveness of marketing campaigns.
+- Analytical charts: Visual trends for sales, appointments, and customer activity over time—line charts, bar charts, and tabular data.
+- Interactive calendar: Appointments and events by date, including filters and views by appointment types, customers, or staff.
     `,
   },
   {
-    question: "❓ כיצד אוכל לראות את כל הפגישות המתוכננות בשבוע או בחודש?",
+    question: "❓ How can I see all scheduled appointments for the week or month?",
     answer: `
-בלשונית "פגישות" תוכל לצפות בכל הפגישות המתוזמנות בממשק קל ונוח, הכולל:
+In the “Appointments” tab you can view all scheduled appointments via a clear, easy interface that includes:
 
-- לוח שנה חודשי: עם סימון תאריכים שבהם קיימות פגישות. לחץ על תאריך כדי לראות את הפגישות המפורטות באותו יום, כולל שעת התחלה, שם הלקוח ושירות.
-- תצוגת טבלה: רשימה מלאה של כל הפגישות, עם אפשרות למיין לפי תאריך, שם לקוח, סטטוס (מאושר, בוטל וכו’), וסינון מתקדם לפי פרמטרים שונים.
-- דוחות וייצוא: ייצוא הפגישות לקבצי Excel או PDF לצרכי ניהול, דוחות תקופתיים והצגה גרפית.
+- Monthly calendar: Dates with appointments are marked. Click a date to see the full list of that day’s appointments, including start time, customer name, and service.
+- Table view: A full list of all appointments, with sorting by date, customer name, status (approved, canceled, etc.), and advanced filtering by various parameters.
+- Reports & export: Export appointments to Excel or PDF for management needs, periodic reporting, and visual presentations.
     `,
   },
   {
-    question: "❓ איך לפעול אם הפגישות או הצפיות לא מתעדכנות בדשבורד?",
+    question: "❓ What should I do if appointments or views don’t update on the dashboard?",
     answer: `
-שלבים לטיפול בתקלות:
+Troubleshooting steps:
 
-- בדוק יציבות חיבור האינטרנט: בדוק טעינת אתרים אחרים, נסה לעבור לרשת אחרת (WiFi או סלולרי).
-- רענון עמוד: השתמש ב-Ctrl + F5 (או Cmd + Shift + R במק) כדי לבצע רענון מלא עם ניקוי המטמון.
-- ניקוי מטמון הדפדפן ו-Cookies: מטמון ישן עלול לגרום לטעינת מידע לא עדכני. נקה אותם דרך הגדרות הדפדפן.
-- שימוש בדפדפן או מכשיר אחר: נסה לגשת מדפדפן Chrome, Firefox, Edge, או ממחשב אחר.
-- התנתקות מהמערכת והתחברות מחדש: לעיתים עדכון הרשאות או נתונים מתבצע רק אחרי התחברות מחודשת.
-- המתן 5–10 דקות: ייתכן שיש עיכוב בסנכרון הנתונים במערכת. חכה ונסה לבדוק שוב.
-- בדוק הודעות מערכת ותחזוקה: ייתכן שהמערכת נמצאת בעדכון או שיש תקלות ידועות המפורסמות במערכת ההודעות.
+- Check stable internet connectivity: Try loading other sites; switch networks (Wi-Fi / cellular) if needed.
+- Full page refresh: Use Ctrl + F5 (or Cmd + Shift + R on Mac) for a hard refresh that clears cache.
+- Clear browser cache & cookies: Old cache may display stale data. Clear via browser settings.
+- Try a different browser/device: Chrome, Firefox, Edge—or another computer.
+- Log out and log back in: Permission or data updates may apply only after a new login.
+- Wait 5–10 minutes: There may be a brief sync delay. Wait and try again.
+- Check system/maintenance messages: The system may be updating or have a known issue.
 
-אם לאחר כל אלה הבעיה נמשכת, פנה לתמיכה הטכנית עם כל המידע: דפדפן, מערכת הפעלה, תיאור מפורט וזמן האירוע.
+If the problem persists, contact support with full details: browser, OS, description, and time of incident.
     `,
   },
   {
-    question: "❓ מה מסמל לוח השנה בדשבורד?",
+    question: "❓ What does the calendar on the dashboard represent?",
     answer: `
-לוח השנה מציג באופן חזותי את כל הפגישות המתוזמנות בחודש הנבחר.
+The calendar provides a visual view of all scheduled appointments in the selected month.
 
-- כל יום שמסומן מייצג לפחות פגישה אחת, ולחיצה על היום מציגה את רשימת הפגישות המאורגנות לפי שעת התחלה.
-- ניתן לנווט בין חודשים קודמים ועתידיים על מנת לתכנן מראש את הפעילות.
-- מאפשר זיהוי מהיר של ימי עומס או ימי פנוי.
+- Each marked day represents at least one appointment; clicking a day shows a list of appointments ordered by start time.
+- You can navigate to past and future months to plan ahead.
+- Quickly identify busy days and open days.
     `,
   },
   {
-    question: "❓ כיצד לקרוא את גרף \"לקוחות שהזמינו פגישות לפי חודשים\"?",
+    question: "❓ How do I read the “Customers who booked by month” chart?",
     answer: `
-הגרף מייצג את מספר הלקוחות שקבעו פגישות בכל חודש במהלך השנה.
+This chart shows the number of customers who booked appointments each month of the year.
 
-- ניתן להציג את המידע במגוון פורמטים: גרף עמודות, קווים, וטבלה, לצורך ניתוח שונה.
-- הנתונים מאפשרים זיהוי עונות שיא, מגמות עונתיות, ועזרה בתכנון תקציב ופעילויות שיווקיות.
-- ניתן להשתמש במידע כדי להעריך האם פעילויות קידום השפיעו בצורה חיובית.
+- You can display the data in multiple formats: bar chart, line chart, or table for different types of analysis.
+- The data helps identify peak seasons, seasonal trends, and aids in budgeting and marketing planning.
+- Use it to assess whether promotions had a positive impact.
     `,
   },
   {
-    question: "❓ מה הן \"המלצות לפעולה חכמה\" בדשבורד?",
+    question: "❓ What are the “Smart action recommendations” on the dashboard?",
     answer: `
-המערכת משתמשת באנליטיקה מתקדמת לבחינת נתוני העסק ומספקת המלצות מותאמות, כגון:
+The system uses advanced analytics to evaluate your business data and provide tailored recommendations, such as:
 
-- קידום מבצעים או שירותים חדשים במקרה של ירידה בפגישות או הצפיות.
-- תזכורות להמשך פעילות יציבה ושימור לקוחות.
-- המלצות ליצירת קשר עם לקוחות לבקשת ביקורות וחוות דעת.
-- טיפים לאופטימיזציה של תזמון וזמינות תורים.
+- Promote deals or new services in case of a decline in appointments or views.
+- Reminders to maintain steady activity and retain customers.
+- Recommendations to reach out to customers for reviews and feedback.
+- Tips to optimize scheduling and availability.
 
-ההמלצות מופיעות בלשונית נפרדת, ומעודכנות בזמן אמת.
+Recommendations appear in a dedicated section and update in real time.
     `,
   },
   {
-    question: "❓ מה לעשות אם זיהיתי נתונים שגויים או חסרים בדשבורד?",
+    question: "❓ What should I do if I notice incorrect or missing data on the dashboard?",
     answer: `
-- ודא שכל הפגישות שברשותך עודכנו במערכת עם סטטוסים נכונים.
-- בדוק האם קיימת תקלה בסנכרון בין מערכות ניהול הפגישות והדשבורד.
-- בצע רענון מערכת או התנתקות וכניסה מחדש.
-- בדוק אם קיימות הודעות תחזוקה או תקלות שדווחו במערכת.
-- אם הנתונים ממשיכים להיות שגויים, אסוף דוגמאות מדויקות ושלח דווח לתמיכה הטכנית עם צילומי מסך ופרטים מלאים.
+- Make sure all your appointments are updated in the system with the correct statuses.
+- Check for sync issues between the appointments system and the dashboard.
+- Refresh the system or log out and back in.
+- Check for any maintenance notices or known issues reported in the system.
+- If data is still incorrect, collect exact examples and send a report to support with screenshots and full details.
     `,
   },
   {
-    question: "❓ כיצד ניתן לקבל סיכום שבועי או חודשי של פעילות העסק?",
+    question: "❓ How can I get a weekly or monthly summary of business activity?",
     answer: `
-בדשבורד קיימת אפשרות לקבל דוחות סיכום תקופתיים הכוללים:
+The dashboard offers periodic summary reports that include:
 
-- סך הפגישות שהתקיימו בתקופה.
-- נתוני צפייה וחשיפה בפרופיל העסק.
-- סיכום ביקורות ודירוגים.
+- Total appointments held in the period.
+- Profile view and exposure data.
+- Review and rating summaries.
 
-הדוחות ניתנים לצפייה ישירה, הורדה כקובץ PDF או Excel, ושיתוף עם צוות או מנהלים.
+Reports can be viewed directly, downloaded as PDF or Excel, and shared with your team or managers.
     `,
   },
   {
-    question: "❓ מה עושים אם הנתונים בדשבורד העסק לא מתעדכנים בזמן אמת?",
+    question: "❓ What if the business dashboard data isn’t updating in real time?",
     answer: `
-אם נתוני הדשבורד אינם מתעדכנים או מראים מידע ישן, יש לבצע את השלבים הבאים:
+If the dashboard isn’t updating or shows outdated data, follow these steps:
 
-- בדיקת חיבור אינטרנט: ודא שהחיבור יציב ומהיר. חיבור חלש או לא יציב עלול לגרום לטעינת נתונים לא מלאה או איטית.
-- רענון הדשבורד: השתמש בפקודת רענון מלאה בדפדפן (Ctrl + F5 או Cmd + Shift + R) כדי לנקות את המטמון ולטעון מחדש את הנתונים.
-- ניקוי מטמון ו-Cookies: לעיתים דפדפן שומר נתונים ישנים שגורמים לתצוגה לא מעודכנת. יש לנקות Cache ו-Cookies דרך הגדרות הדפדפן.
-- שימוש בדפדפן או מכשיר אחר: נסה לפתוח את הדשבורד בדפדפן שונה (כגון Chrome, Firefox או Edge) או ממכשיר אחר כדי לשלול בעיות ספציפיות.
-- בדיקת הודעות מערכת: בדוק אם המערכת מציגה הודעות תחזוקה או בעיות טכניות שיכולות להשפיע על עדכון הנתונים.
-- התנתקות והתחברות מחדש: לעיתים בעיות בהרשאות או סשן הפעלה נפתרות על ידי יציאה מהמערכת והתחברות מחדש.
-- המתן מספר דקות: יש מערכות שבהן העדכון מתבצע עם פיגור קל. המתן 5–10 דקות ונסה שוב.
+- Check your internet connection: Ensure it’s stable and fast. Weak or unstable connections can cause partial or slow data loads.
+- Refresh the dashboard: Use a hard refresh (Ctrl + F5 or Cmd + Shift + R) to clear cache and reload data.
+- Clear cache & cookies: Browsers sometimes keep old data that leads to outdated displays. Clear via browser settings.
+- Try another browser/device: Open the dashboard in another browser (Chrome, Firefox, Edge) or device to rule out local issues.
+- Check system messages: Look for maintenance notices or technical problems that might affect data updates.
+- Log out and log back in: Session/permission issues often resolve after re-authentication.
+- Wait a few minutes: Some systems update with a slight lag. Wait 5–10 minutes and try again.
 
-אם לאחר כל השלבים הללו הבעיה לא נפתרה, יש לפנות לתמיכה הטכנית עם פרטי דפדפן, מערכת הפעלה, תיאור הבעיה וזמן הופעתה.
+If the issue remains, contact technical support with browser/OS details, a description, and the time of occurrence.
     `,
   },
   {
-    question: "❓ איך ניתן לשפר את הנתונים המוצגים בדשבורד ולהגביר את הפעילות העסקית?",
+    question: "❓ How can I improve the dashboard metrics and increase business activity?",
     answer: `
-שיפור הנתונים בדשבורד מחייב שילוב של פעולות שיווקיות, ניהוליות וטכנולוגיות:
+Improving dashboard metrics requires a mix of marketing, operational, and technical actions:
 
-- קידום ושיווק ממוקד: הפעל קמפיינים ממוקדים ברשתות חברתיות, גוגל ועוד, כדי להגדיל את החשיפה לפרופיל העסק. בצע אופטימיזציה של מילות מפתח ושימוש בתוכן איכותי בעמוד העסק.
-- שיפור חוויית הלקוח: ודא שהמידע בפרופיל העסק מדויק ומעודכן (שעות פעילות, מחירים, שירותים). הוסף תמונות וסרטונים איכותיים שממחישים את השירותים שלך בצורה מקצועית.
-- ניהול יעיל של הפגישות: עדכן את זמינותך בלוח השנה באופן שוטף. השתמש בתזכורות ללקוחות כדי למנוע ביטולים והחסרות.
-- איסוף משוב וביקורות: בקש מלקוחות מרוצים להשאיר ביקורות חיוביות. השב במהירות לפניות וביקורות, גם השליליות, כדי להראות מעורבות ואכפתיות.
-- בדיקת נתונים וניתוחם: נתח את הגרפים והדוחות בדשבורד, ונסה לזהות מגמות ושינויים במגוון מדדים. התאם את הפעילות העסקית בהתאם למידע (למשל, הגדלת שעות פעילות בימי שיא).
-- שימוש בכלים טכנולוגיים: נצל את כלי ה-CRM לניהול לקוחות ותזמון פגישות. השתמש ביועץ עסקליק או כלים אנליטיים נוספים לקבלת המלצות מותאמות אישית.
+- Targeted marketing & promotion: Run focused campaigns on social networks, Google, and more to increase exposure to your profile. Optimize keywords and use quality content on your business page.
+- Better customer experience: Keep your business profile accurate and up to date (hours, pricing, services). Add high-quality photos and videos to showcase your services professionally.
+- Efficient appointment management: Update your availability regularly. Use customer reminders to reduce cancellations and no-shows.
+- Gather feedback & reviews: Ask satisfied customers to leave positive reviews. Respond quickly to inquiries and reviews—even negative ones—to show engagement and care.
+- Data review & analysis: Analyze the dashboard’s charts and reports to identify trends across metrics. Adjust business activity accordingly (e.g., extend hours on peak days).
+- Use technology tools: Leverage the CRM to manage customers and scheduling. Use BizUply Advisor or other analytics tools for tailored recommendations.
 
-שילוב של צעדים אלה יסייע לך להגדיל את הפעילות העסקית ולהבטיח שדשבורד העסק ישקף נתונים מעודכנים ומדויקים, מה שיתרום להצלחה כוללת.
+Combining these steps will help increase activity and ensure your dashboard reflects accurate, current data—contributing to overall success.
     `,
   },
 ];
@@ -141,12 +141,12 @@ export default function DashboardFAQ() {
         margin: "auto",
         fontFamily: "Arial, sans-serif",
         padding: 20,
-        direction: "rtl",
-        textAlign: "right",
+        direction: "ltr",
+        textAlign: "left",
       }}
     >
       <h1 style={{ textAlign: "center", marginBottom: 25 }}>
-        שאלות ותשובות מפורטות למרכז עזרה - דשבורד העסק
+        Detailed Help Center FAQ – Business Dashboard
       </h1>
       {faqData.map((item, index) => (
         <div
@@ -161,7 +161,7 @@ export default function DashboardFAQ() {
             onClick={() => toggle(index)}
             style={{
               width: "100%",
-              textAlign: "right",
+              textAlign: "left",
               background: "rgba(85, 107, 47, 0.5)",
               border: "none",
               padding: "12px 20px",

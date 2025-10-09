@@ -7,53 +7,53 @@ function QuickJobsBoard() {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    // סימולציה למשתמש מסוג לקוח
+    // Simulate a client user
     const mockUser = {
-      name: "דנה",
+      name: "Dana",
       role: "client"
     };
     localStorage.setItem("user", JSON.stringify(mockUser));
     setUserRole("client");
 
-    // עבודות מדומות
+    // Mock jobs
     setJobs([
       {
         id: 1,
-        title: "תיקון דלת",
-        description: "דלת כניסה לא נסגרת טוב",
+        title: "Door Repair",
+        description: "Front door doesn't close properly",
         priceMin: 150,
         priceMax: 250,
         time: "12:00-16:00",
-        date: "היום",
-        address: "תל אביב"
+        date: "Today",
+        address: "Tel Aviv"
       },
       {
         id: 2,
-        title: "התקנת מדף",
-        description: "מדף עץ לקיר גבס",
+        title: "Shelf Installation",
+        description: "Wooden shelf on drywall",
         priceMin: 100,
         priceMax: 180,
-        time: "מחר בבוקר",
-        date: "מחר",
-        address: "חולון"
+        time: "Tomorrow morning",
+        date: "Tomorrow",
+        address: "Holon"
       }
     ]);
   }, []);
 
   return (
     <div className="quick-jobs-board">
-      <h1>⚡ לוח עבודות מהירות</h1>
+      <h1>⚡ Quick Jobs Board</h1>
 
       {userRole === "client" && (
         <div className="quick-job-publish-wrapper">
           <Link to="/quick-jobs/new">
-            <button className="quick-job-publish-button">📤 פרסם עבודה מהירה</button>
+            <button className="quick-job-publish-button">📤 Post a Quick Job</button>
           </Link>
         </div>
       )}
 
       <div className="job-list">
-        <h2>עבודות פנויות</h2>
+        <h2>Available Jobs</h2>
         {jobs.map((job) => (
           <div className="job-card" key={job.id}>
             <h3>{job.title}</h3>
@@ -64,8 +64,8 @@ function QuickJobsBoard() {
 
             {userRole === "business" && (
               <div className="job-actions">
-                <button>📥 קבל עבודה</button>
-                <button>✏️ הצע הצעה אחרת</button>
+                <button>📥 Accept Job</button>
+                <button>✏️ Propose a Different Offer</button>
               </div>
             )}
           </div>

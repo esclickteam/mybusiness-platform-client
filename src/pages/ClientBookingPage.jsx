@@ -5,19 +5,21 @@ import ServicesSelector from "../components/ServicesSelector";
 import ClientCalendar from "./business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar";
 import API from "../api";
 
-// פונקציה שממירה כל פורמט ל-map לפי יום בשבוע
+// Function that converts any format to a map by day of week
 function normalizeWorkHours(data) {
   let map = {};
   if (Array.isArray(data?.workHours)) {
-    data.workHours.forEach(item => {
+    data.workHours.forEach((item) => {
       if (item?.day !== undefined) map[Number(item.day)] = item;
     });
   } else if (
-    data?.workHours && typeof data.workHours === "object" && !Array.isArray(data.workHours)
+    data?.workHours &&
+    typeof data.workHours === "object" &&
+    !Array.isArray(data.workHours)
   ) {
     map = data.workHours;
   } else if (Array.isArray(data)) {
-    data.forEach(item => {
+    data.forEach((item) => {
       if (item?.day !== undefined) map[Number(item.day)] = item;
     });
   }
@@ -25,7 +27,7 @@ function normalizeWorkHours(data) {
 }
 
 export default function ClientBookingPage() {
-  const { businessId } = useParams(); // <-- קבלת ה-businessId מה-URL
+  const { businessId } = useParams(); // <-- Get businessId from URL
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
@@ -41,7 +43,7 @@ export default function ClientBookingPage() {
         ]);
         setServices(svcRes.data.services || svcRes.data || []);
         setCategories(catRes.data || []);
-        setWorkHours(normalizeWorkHours(hoursRes.data)); // ← תמיד normalize!
+        setWorkHours(normalizeWorkHours(hoursRes.data)); // ← always normalize!
       } catch (err) {
         console.error("Error loading booking data:", err);
       }
@@ -63,7 +65,7 @@ export default function ClientBookingPage() {
     <div className="client-booking-page">
       {!selectedService ? (
         <>
-          <h2>בחר שירות</h2>
+          <h2>Select a Service</h2>
           <ServicesSelector
             services={services}
             categories={categories}
@@ -72,15 +74,15 @@ export default function ClientBookingPage() {
         </>
       ) : (
         <>
-          <h2>לתיאום תור: {selectedService.name}</h2>
+          <h2>Book an Appointment: {selectedService.name}</h2>
           <button className="back-to-list" onClick={handleBackToList}>
-            ← בחר שירות אחר
+            ← Choose another service
           </button>
           <ClientCalendar
             workHours={workHours}
             selectedService={selectedService}
             onBackToList={handleBackToList}
-            businessId={businessId}  // <-- כאן העברתי את businessId
+            businessId={businessId} // <-- passing businessId here
           />
         </>
       )}

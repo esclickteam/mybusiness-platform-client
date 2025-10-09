@@ -1,7 +1,7 @@
 export async function loginWithPublicToken(publicToken) {
   try {
     const response = await fetch(
-      `https://esclick.co.il/api/affiliate/login/${publicToken}`,
+      `https://BizUply.co.il/api/affiliate/login/${publicToken}`,
       {
         method: "GET",
         credentials: "include",        // Important for the cookie to be saved automatically

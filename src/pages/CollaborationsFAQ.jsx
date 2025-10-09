@@ -2,121 +2,125 @@ import React, { useState } from "react";
 
 const faqData = [
   {
-    question: "❓ מה זה שיתוף פעולה עסקי ואיך הוא יכול לקדם את העסק שלי?",
+    question: "❓ What is a business collaboration and how can it grow my business?",
     answer: `
-שיתוף פעולה עסקי הוא הסכם בין שני עסקים או יותר לפעול יחד להשגת מטרות עסקיות משותפות, כגון שיווק, מכירות, פיתוח שירותים או שיפור חוויית הלקוח. שיתופי פעולה מאפשרים הגדלת טווח החשיפה, חלוקת עלויות פרסום, גישה לשווקים חדשים וחיזוק אמון הלקוחות. חשוב לבחור שותפים בעלי ערכים משותפים ויעדים תואמים, כדי למנוע קונפליקטים ולהבטיח תוצאות אפקטיביות לאורך זמן. עסקים משולבים יכולים לחלוק מידע, לפתח מבצעים משותפים ולהעצים זה את זה בצורה אסטרטגית.
+A business collaboration is an agreement between two or more businesses to work together toward shared objectives—such as marketing, sales, service development, or improving customer experience. Collaborations expand reach, share advertising costs, provide access to new markets, and strengthen customer trust. It’s important to choose partners with aligned values and goals to avoid conflicts and ensure effective, long-term results. Integrated businesses can share information, create joint promotions, and strategically amplify one another.
     `,
   },
   {
-    question: "❓ איך לפרסם הצעת שיתוף פעולה חדשה במערכת עסקליק?",
+    question: "❓ How do I publish a new collaboration offer in BizUply?",
     answer: `
-כדי לפרסם שיתוף פעולה, יש למלא טופס מפורט הכולל: כותרת ברורה, תיאור מפורט של ההצעה, מה העסק מציע ומה הוא מחפש לקבל, פרטי יצירת קשר, תקציב ותוקף ההצעה. חשוב לדייק בהגדרת הצרכים וההצעות כדי למקד את הפניות ולקבל שותפים מתאימים. לאחר הפרסום, ההצעה מופצת לעסקים הרלוונטיים בהתאם לסינון של תחום פעילות, מיקום וסוג שיתוף הפעולה. כדאי לעקוב באופן שוטף אחרי הפניות, לאשר או לדחות הצעות במהירות ולתחזק תקשורת ברורה עם שותפים פוטנציאליים.
+To publish a collaboration, fill out a detailed form including: a clear title, a thorough description of the offer, what your business provides and what you’re seeking in return, contact details, budget, and expiration date. Be precise about needs and deliverables to focus inquiries and attract suitable partners. After posting, your offer is distributed to relevant businesses based on activity area, location, and collaboration type. Track incoming inquiries, approve or decline quickly, and maintain clear communication with potential partners.
     `,
   },
   {
-    question: "❓ איך לזהות ולבחור שותף שיתופי פעולה מתאים לעסק שלי?",
+    question: "❓ How do I identify and choose a suitable collaboration partner for my business?",
     answer: `
-בחירת שותף מתאים היא גורם מרכזי להצלחת שיתוף הפעולה העסקי. ראשית, יש לוודא שיש התאמה מלאה בין ערכי החברה שלך לערכי השותף הפוטנציאלי, כך ששני הצדדים יפעלו באותה רוח ועם מטרה משותפת. בנוסף, חשוב לבדוק שהשוק היעד של השותף מתאים לעסק שלך כדי למקסם את התועלת.
+Choosing the right partner is key to collaboration success. First, ensure strong alignment between your company’s values and those of the potential partner so both sides operate with a shared mindset and goals. Also verify their target market fits yours to maximize impact.
 
-כדאי לבחון את הרקורד העסקי של השותף, כולל לקוחות משותפים והמלצות כדי לוודא אמינות ומוניטין טוב. יש להעריך האם השותף מביא ערך מוסף, למשל מומחיות מקצועית משלימה, טכנולוגיה חדשנית או גישה ללקוחות חדשים שלא קיימים ברשת שלך.
+Review the partner’s business track record, including shared clients and references, to confirm reliability and reputation. Assess whether they bring added value—such as complementary expertise, innovative technology, or access to new customers that you don’t currently reach.
 
-חשוב מאוד לקיים פגישות היכרות ראשוניות, שבהן מגדירים ציפיות ברורות, תפקידים, לוחות זמנים ואופן התקשורת בין הצדדים. כך ניתן למנוע אי-הבנות בעתיד.
+Hold initial discovery meetings to define expectations, roles, timelines, and communication methods. This helps prevent future misunderstandings.
 
-בנוסף, מומלץ להשתמש בכלים דיגיטליים לניהול שותפויות, כולל מעקב אחר KPI (Key Performance Indicators – מדדי ביצוע מרכזיים).
+It’s also recommended to use digital partnership-management tools, including tracking KPIs (Key Performance Indicators).
     `,
   },
   {
-    question: "❓ מהן הדרכים הטובות ביותר לנהל שיתופי פעולה בצורה יעילה?",
+    question: "❓ What are the best ways to manage collaborations effectively?",
     answer: `
-ניהול שיתופי פעולה מוצלחים דורש תכנון מוקפד ושימת דגש על מספר היבטים מרכזיים:
+Successful collaboration management requires deliberate planning and attention to key areas:
 
-- הגדרת מטרות ויעדים ברורים ומדידים.
-- חלוקת תפקידים ואחריות.
-- תיאום ציפיות.
-- תכנון לוחות זמנים.
-- שימוש בכלים טכנולוגיים לניהול שיתופי פעולה.
-- תיעוד מסודר של החלטות, הוצאות ותוצאות.
-- ניהול קונפליקטים באופן מהיר וגלוי.
-- מדידה ובקרה מתמדת.
-- הערכת סיכונים ותכנון לגיבוי.
-- קשר רגיל ותקשורתי.
+- Define clear, measurable goals.
+- Assign roles and responsibilities.
+- Align expectations.
+- Plan realistic timelines.
+- Use technology tools to manage partnerships.
+- Keep organized records of decisions, costs, and outcomes.
+- Address conflicts quickly and transparently.
+- Measure and monitor continuously.
+- Assess risks and create contingency plans.
+- Maintain regular, open communication.
 
-פלטפורמת עסקליק תומכת בכל התהליכים הללו ומספקת כלים לניהול שיתופי פעולה חכמים.
+The BizUply platform supports these processes with tools for smart collaboration management.
     `,
   },
   {
-    question: "❓ איך אוכל לצפות בהצעות שיתופי פעולה שקיבלתי וכיצד לנהל אותן בצורה יעילה?",
+    question:
+      "❓ How can I view collaboration offers I’ve received and manage them effectively?",
     answer: `
-בלשונית "הצעות שהתקבלו" מוצגות כל ההצעות שהתקבלו מעסקים אחרים. מומלץ להשתמש בכלי הסינון והחיפוש המובנים, לבצע הערכה מעמיקה של התאמת ההצעה, אמינות השותף, תקציב ותוקף ההצעה.
+In the “Received Offers” tab you’ll see all offers submitted by other businesses. Use the built-in filters and search, assess offer fit, partner credibility, budget, and validity period.
 
-התגובה המהירה, תקשורת פתוחה ומקצועית חשובה להצלחת שיתוף הפעולה.
+Timely responses and professional, open communication are crucial for success.
 
-אם ההצעה אינה מתאימה, מומלץ לדחות בצורה מקצועית ומנומסת.
+If an offer isn’t a fit, decline politely and professionally.
     `,
   },
   {
-    question: "❓ מה המשמעות של \"הצעות שנשלחו\" וכיצד לנהל אותן בצורה אפקטיבית?",
+    question:
+      "❓ What does “Sent Offers” mean and how do I manage them effectively?",
     answer: `
-קטגוריית "הצעות שנשלחו" כוללת את כל הצעות שיתוף הפעולה שהגשת ונשלחו לעסקים אחרים. מומלץ לנהל מעקב שוטף, לתעד פניות ותגובות, להגדיר לוחות זמנים למעקב, להיות פרואקטיבי בניהול המו"מ ולהכין תסריט מו"מ.
+The “Sent Offers” category lists all collaboration offers you’ve submitted to other businesses. Track progress regularly, document outreach and responses, set follow-up timelines, be proactive in negotiations, and prepare a negotiation script.
 
-ניהול יעיל של הצעות אלו מגדיל את הפוטנציאל העסקי שלך ומקטין אי-ודאויות.
+Effective management of these offers increases your business potential and reduces uncertainty.
     `,
   },
   {
-    question: "❓ האם יש הגבלת זמן לתוקף שיתוף פעולה?",
+    question: "❓ Is there an expiration period for a collaboration?",
     answer: `
-כן, ניתן להגדיר תאריך תוקף להצעה, שיגביל את תקופת ההצעה במערכת. ניתן להגדיר גם זמן התחלה וסיום מדויקים.
+Yes. You can set an expiration date for an offer, limiting how long it remains active. You can also define exact start and end times.
 
-יתרונות: ניהול חכם של הצעות, שיפור תדמית העסק, גמישות תפעולית.
+Benefits: smarter offer management, stronger brand image, and operational flexibility.
 
-עסקליק תומכת ביצירת הסכמים דיגיטליים עם חתימות אלקטרוניות ישירות במערכת.
+BizUply supports creating digital agreements with electronic signatures directly in the platform.
     `,
   },
   {
-    question: "❓ מה עושים אם איני מצליח לשלוח או לפרסם שיתוף פעולה?",
+    question:
+      "❓ What should I do if I can’t submit or publish a collaboration?",
     answer: `
-כדי לפתור בעיות בשליחת שיתוף פעולה:
+To troubleshoot submission issues:
 
-- ודא שכל שדות הטופס מלאים.
-- בדוק חיבור אינטרנט יציב.
-- בדוק מצב תחזוקה במערכת.
-- רענן את הדף (Ctrl+F5).
-- נסה דפדפן או מכשיר אחר.
-- ודא שיש לך הרשאות מתאימות.
-- פנה לתמיכה הטכנית עם פרטים מלאים אם הבעיה ממשיכה.
+- Make sure all required form fields are completed.
+- Check for a stable internet connection.
+- Check if there’s planned system maintenance.
+- Refresh the page (Ctrl+F5).
+- Try a different browser or device.
+- Confirm you have the proper permissions.
+- If the issue persists, contact technical support with full details.
     `,
   },
   {
-    question: "❓ כיצד מתקשרים עם שותף פוטנציאלי?",
+    question: "❓ How do I communicate with a potential partner?",
     answer: `
-תקשורת עם שותף פוטנציאלי כוללת:
+Communication with a potential partner includes:
 
-- שימוש בפרטי יצירת קשר בטופס ההצעה.
-- מערכת הודעות פנימית וצ'אט עסקי במערכת עסקליק.
-- תקשורת בזמן אמת לצורך תיאום, בירור והבהרות.
-- שמירה על תקשורת מקצועית, שקופה וברורה.
-- תיעוד שיחות והסכמים.
-- קביעת פגישות ותקשורת מחוץ לפלטפורמה במידת הצורך.
-- עדכון שותפים באופן שוטף.
+- Using the contact details provided in the offer form.
+- BizUply’s internal messaging and business chat.
+- Real-time communication for coordination and clarifications.
+- Maintaining professional, transparent, and clear exchanges.
+- Documenting conversations and agreements.
+- Scheduling meetings and, if needed, communicating outside the platform.
+- Providing ongoing updates to partners.
     `,
   },
   {
-    question: "❓ כיצד מתמודדים עם קונפליקטים או בעיות בשיתוף פעולה עסקי?",
+    question:
+      "❓ How do we handle conflicts or issues in a business collaboration?",
     answer: `
-קונפליקטים בשיתוף פעולה:
+Collaboration conflicts:
 
-- שמירה על תקשורת פתוחה, עקבית ושקופה.
-- תיעוד מסודר של החלטות והסכמים.
-- קביעת נהלים וכללי משחק מראש.
-- שימוש בכלי ניטור ודיווח במערכת.
-- פנייה לגישור ופישור במידת הצורך.
-- פנייה לתמיכה הטכנית במקרים טכניים.
-- קביעת נקודות ביקורת תקופתיות.
-- שמירה על גמישות ופתיחות.
-- חינוך והדרכה לניהול שותפויות.
-- גישה חיובית ופרואקטיבית.
+- Keep communication open, consistent, and transparent.
+- Keep organized records of decisions and agreements.
+- Set ground rules and procedures in advance.
+- Use monitoring and reporting tools within the platform.
+- Seek mediation if necessary.
+- Contact technical support for technical issues.
+- Set periodic review checkpoints.
+- Stay flexible and open-minded.
+- Provide training on partnership management.
+- Maintain a positive, proactive approach.
 
-עסקליק מספקת כלים ותמיכה לניהול מקצועי ויעיל של שיתופי פעולה.
+BizUply provides tools and support for professional, effective collaboration management.
     `,
   },
 ];
@@ -135,12 +139,12 @@ export default function CollaborationsFAQ() {
         margin: "auto",
         fontFamily: "Arial, sans-serif",
         padding: 20,
-        direction: "rtl",
-        textAlign: "right",
+        direction: "ltr",
+        textAlign: "left",
       }}
     >
       <h1 style={{ textAlign: "center", marginBottom: 25 }}>
-        שאלות ותשובות - שיתופי פעולה עסקיים
+        Business Collaborations – FAQ
       </h1>
       {faqData.map((item, index) => (
         <div
@@ -155,7 +159,7 @@ export default function CollaborationsFAQ() {
             onClick={() => toggle(index)}
             style={{
               width: "100%",
-              textAlign: "right",
+              textAlign: "left",
               background: "rgba(85, 107, 47, 0.5)",
               border: "none",
               padding: "12px 20px",

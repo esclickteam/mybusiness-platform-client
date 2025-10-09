@@ -117,7 +117,7 @@ export default function AffiliateDashboardPage() {
 
   // ** Personal affiliate link with copy option **
   const affiliateLink = affiliateId
-    ? `https://esclick.co.il/register?ref=${affiliateId}`
+    ? `https://BizUply.co.il/register?ref=${affiliateId}`
     : "Affiliate ID not detected";
 
   // Function to update bank details

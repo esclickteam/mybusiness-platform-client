@@ -10,8 +10,8 @@ const BusinessComparison = ({ stats }) => {
   if (average === 0) {
     return (
       <div className="graph-box">
-        <h4>השוואה לתחום</h4>
-        <p>אין מספיק נתונים להשוואה.</p>
+        <h4>Industry Comparison</h4>
+        <p>Not enough data for a comparison.</p>
       </div>
     );
   }
@@ -22,13 +22,20 @@ const BusinessComparison = ({ stats }) => {
 
   return (
     <div className="graph-box">
-      <h4>📊 השוואה לתחום שלך</h4>
+      <h4>📊 Comparison to Your Industry</h4>
       <p style={{ fontSize: "15px" }}>
-        בתחום <strong>{stats.businessType || "עסקים"}</strong>, ממוצע ההזמנות החודשי הוא:{" "}
-        <strong>{average}</strong>
+        In the <strong>{stats.businessType || "Businesses"}</strong> category, the average monthly
+        orders are: <strong>{average}</strong>
       </p>
-      <p style={{ fontSize: "16px", color: isAbove ? "green" : "red", fontWeight: "bold" }}>
-        העסק שלך: {myOrders} ({isAbove ? "+" : ""}{diffPercent}% {isAbove ? "מעל" : "מתחת"} לממוצע)
+      <p
+        style={{
+          fontSize: "16px",
+          color: isAbove ? "green" : "red",
+          fontWeight: "bold",
+        }}
+      >
+        Your business: {myOrders} ({isAbove ? "+" : ""}
+        {diffPercent}% {isAbove ? "above" : "below"} average)
       </p>
     </div>
   );

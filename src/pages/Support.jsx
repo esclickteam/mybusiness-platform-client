@@ -6,7 +6,7 @@ import "./Support.css";
 export default function Support() {
   const [amount, setAmount] = useState("");
   const [raised, setRaised] = useState(0);
-  const [expanded, setExpanded] = useState(false); // ✅ מצב קריאה מלאה
+  const [expanded, setExpanded] = useState(false); // ✅ Expanded reading state
   const paypalReadyRef = useRef(false);
   const paypalContainerRef = useRef(null);
 

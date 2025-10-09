@@ -6,7 +6,7 @@ export default async function loadAllFAQs() {
     "/crmFaqData.json",
     "/customerMessagesFaqData.json",
     "/dashboardFaqData.json",
-    "/eskelikAdvisorFaqData.json",
+    "/BizUplyAdvisorFaqData.json",
     "/faqData.json",
     "/TechnicalSupportFAQs.json",
     "/troubleshootingFAQs.json",

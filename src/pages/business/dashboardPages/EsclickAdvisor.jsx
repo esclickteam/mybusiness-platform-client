@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { io } from "socket.io-client";
 
-import BusinessAdvisorTab from "./esclickTabs/BusinessAdvisorTab";
-import MarketingAdvisorTab from "./esclickTabs/MarketingAdvisorTab";
-import AiPartnerTab from "./esclickTabs/AiPartnerTab";
-import AiRecommendations from "./esclickTabs/AiRecommendations"; 
-import "./EsclickAdvisor.css";
+import BusinessAdvisorTab from "./BizUplyTabs/BusinessAdvisorTab";
+import MarketingAdvisorTab from "./BizUplyTabs/MarketingAdvisorTab";
+import AiPartnerTab from "./BizUplyTabs/AiPartnerTab";
+import AiRecommendations from "./BizUplyTabs/AiRecommendations"; 
+import "./BizUplyAdvisor.css";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 
-const EsclickAdvisor = () => {
+const BizUplyAdvisor = () => {
   const [activeTab, setActiveTab] = useState("business");
   const [hasBusinessNotification, setHasBusinessNotification] = useState(false);
   const [businessDetails, setBusinessDetails] = useState(null);
@@ -139,8 +139,8 @@ const EsclickAdvisor = () => {
   }
 
   return (
-    <div className="esclick-container">
-      <h1 className="esclick-header">🧠 Esclick Advisor</h1>
+    <div className="BizUply-container">
+      <h1 className="BizUply-header">🧠 BizUply Advisor</h1>
 
       <div className="tab-buttons">
         <button
@@ -175,4 +175,4 @@ const EsclickAdvisor = () => {
   );
 };
 
-export default EsclickAdvisor;
+export default BizUplyAdvisor;

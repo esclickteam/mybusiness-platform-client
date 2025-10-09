@@ -1,24 +1,39 @@
 ﻿// src/data/cities.js
+// Fetch a deduplicated, A–Z sorted list of U.S. cities for an American audience.
 
 export async function fetchCities() {
   try {
     const response = await fetch(
-      "https://data.gov.il/api/3/action/datastore_search?resource_id=9ad3862c-8391-4b2f-84a4-2d4c68625f4b&limit=2000"
+      "https://public.opendatasoft.com/api/records/1.0/search/?dataset=geonames-all-cities-with-a-population-1000&q=&refine.country=United+States&rows=10000"
     );
 
     if (!response.ok) {
-      throw new Error("שגיאה בטעינת הנתונים מה-API");
+      throw new Error("Failed to load data from the cities API");
     }
 
     const data = await response.json();
 
-    // נשלוף רק את שם היישוב
-    const cities = data.result.records.map((r) => r["שם יישוב"]);
+    // Extract city names from the dataset (field: `name`)
+    const rawCities =
+      (data?.records || []).map((r) => r?.fields?.name).filter(Boolean);
 
-    // מסנן כפילויות + ממיין לפי א"ב
-    return [...new Set(cities)].sort();
+    // Deduplicate case-insensitively, then sort A–Z for U.S. audience
+    const seen = new Set();
+    const cities = [];
+    for (const name of rawCities) {
+      const key = name.toLowerCase();
+      if (!seen.has(key)) {
+        seen.add(key);
+        cities.push(name);
+      }
+    }
+
+    // Sort alphabetically (A–Z), case-insensitive, English locale
+    cities.sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+
+    return cities;
   } catch (error) {
-    console.error("שגיאה בטעינת ערים:", error);
+    console.error("Error loading U.S. cities:", error);
     return [];
   }
 }

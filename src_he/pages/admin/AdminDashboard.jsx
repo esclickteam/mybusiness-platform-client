@@ -36,7 +36,7 @@ function AdminDashboard() {
         return;
       }
 
-      socketRef.current = io("https://api.esclick.co.il", {
+      socketRef.current = io("https://api.BizUply.co.il", {
         path: "/socket.io",
         auth: {
           token,

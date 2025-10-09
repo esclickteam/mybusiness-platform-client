@@ -84,8 +84,8 @@ const BusinessesList = () => {
   if (category) seoTitleParts.push(category.label);
   if (city)     seoTitleParts.push(city.label);
   const seoTitle = seoTitleParts.length
-    ? `${seoTitleParts.join(" - ")} | Businesses on Esclick`
-    : "Business List | Esclick";
+    ? `${seoTitleParts.join(" - ")} | Businesses on BizUply`
+    : "Business List | BizUply";
 
   return (
     <div className="list-page">
@@ -95,8 +95,8 @@ const BusinessesList = () => {
           name="description"
           content={
             seoTitleParts.length
-              ? `Find businesses in the field of ${category ? category.label : ""} ${city ? "in the city of " + city.label : ""} on the Esclick platform.`
-              : "Search for businesses by field and city on the Esclick platform."
+              ? `Find businesses in the field of ${category ? category.label : ""} ${city ? "in the city of " + city.label : ""} on the BizUply platform.`
+              : "Search for businesses by field and city on the BizUply platform."
           }
         />
         <link

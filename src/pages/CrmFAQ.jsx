@@ -2,149 +2,157 @@ import React, { useState } from "react";
 
 const faqData = [
   {
-    question: "❓ מהי מערכת CRM וכיצד היא תורמת לניהול העסק שלי?",
+    question: "❓ What is a CRM system and how does it help manage my business?",
     answer: `
-מערכת CRM (Customer Relationship Management) היא כלי טכנולוגי מרכזי לניהול קשרי הלקוחות בעסק שלך. היא מאפשרת לך לארגן, לאחסן ולעקוב אחרי כל המידע הרלוונטי אודות הלקוחות במקום אחד נגיש ומסודר. המערכת מסייעת בשיפור התקשורת עם הלקוחות, תיאום פגישות, ניהול הזמנות, ושימור הלקוחות. בעזרת CRM ניתן לנתח התנהגויות לקוח, להציע שירות מותאם אישית, ולהגביר את נאמנות הלקוחות. השימוש ב-CRM מייעל את תהליכי המכירה והשירות, חוסך זמן ומשאבים, ומאפשר לך לקבל החלטות מבוססות נתונים. בפלטפורמת עסקליק, מערכת ה-CRM משולבת באופן שמותאם למאפייני העסק שלך ומאפשרת אינטגרציה עם כלים נוספים לניהול יעיל.
+A CRM (Customer Relationship Management) system is a core technology tool for managing your business’s customer relationships. It lets you organize, store, and track all relevant customer information in one accessible, structured place. The system improves communication with customers, appointment coordination, order management, and customer retention. With CRM you can analyze customer behavior, offer personalized service, and increase loyalty. Using a CRM streamlines sales and service processes, saves time and resources, and enables data-driven decisions. On the BizUply platform, the CRM is tailored to your business needs and integrates with additional tools for efficient management.
     `,
   },
   {
-    question: "❓ אילו נתונים ופרטים ניתן לראות בפרופיל הלקוח במערכת ה-CRM? ואיך להשתמש בהם לטובת העסק?",
+    question:
+      "❓ What data can I see in a customer's profile in the CRM, and how do I use it for the business?",
     answer: `
-בפרופיל הלקוח במערכת ה-CRM תוכל לגשת למידע מקיף ומפורט הכולל: פרטי יצירת קשר (טלפון, אימייל, כתובת פיזית), היסטוריית רכישות ושירותים שהלקוח הזמין בעבר, ומועדי פגישות עתידיים.
+In the CRM customer profile you’ll find comprehensive details including: contact info (phone, email, physical address), purchase history, previously ordered services, and upcoming appointments.
 
-כיצד להשתמש במידע זה לטובת העסק:
-- התאמת שירות מותאם אישית שמגביר שביעות רצון ומעלה סיכויי מכירה.
-- שימור לקוחות וניהול קשר רציף ואיכותי.
-- תזכורות וניהול לוחות זמנים להפחתת ביטולים.
-- זיהוי הזדמנויות מכירה ושיווק.
-- שיפור תהליכים פנימיים וסינכרון בין צוותי השירות.
-- זיהוי לקוחות בעייתיים או בעלי פוטנציאל לצמיחה.
+How to use this data to benefit the business:
+- Deliver personalized service to boost satisfaction and increase conversion.
+- Retain customers and maintain ongoing, high-quality communication.
+- Use reminders and schedule management to reduce cancellations.
+- Identify sales and marketing opportunities.
+- Improve internal processes and sync across service teams.
+- Spot problematic customers or those with growth potential.
     `,
   },
   {
-    question: "❓ כיצד מתבצע ניהול תיאומים והזמנות במערכת ה-CRM?",
+    question: "❓ How are scheduling and bookings managed in the CRM?",
     answer: `
-ניהול התיאומים נעשה באמצעות לשונית ייעודית המציגה את כל הפגישות, התורים וההזמנות בצורה מסודרת וברורה. ניתן להוסיף, לערוך ולבטל תיאומים, והמערכת שולחת עדכונים אוטומטיים ללקוח ולבעל העסק.
+Scheduling is handled via a dedicated tab that presents all appointments, time slots, and bookings clearly and neatly. You can add, edit, and cancel bookings, and the system automatically notifies both the customer and the business owner.
 
-איך לגרום ללקוח לתאם תור?
-- הנגשה פשוטה דרך האתר, אפליקציה או קישורים ישירים.
-- תזכורות אוטומטיות באמצעות SMS או אימייל.
-- אפשרות לתשלום מראש בזמן התיאום.
-- שירות לקוחות זמין לתמיכה.
-- סנכרון עם יומן הלקוחות, המונע כפילויות וטעויות.
+How to encourage customers to book:
+- Make it simple via the website, app, or direct links.
+- Automatic reminders via SMS or email.
+- Option to pay in advance at booking.
+- Available customer support.
+- Sync with customer calendars to prevent duplicates and errors.
 
-מה חשוב לשים לב בעת תיאום תור?
-- אישור זמינות משאבים.
-- דיוק בפרטי הלקוח.
-- תיעוד מטרת התיאום.
-- שליחת התראות ועדכונים.
-- ניהול עומסים ומדיניות ביטולים.
+What to watch for when scheduling:
+- Confirm resource availability.
+- Accurate customer details.
+- Record the appointment purpose.
+- Send alerts and updates.
+- Manage workload and set a clear cancellation policy.
     `,
   },
   {
-    question: "❓ האם ניתן לערוך או לבטל תיאומים קיימים, וכיצד מתבצע תהליך זה?",
+    question:
+      "❓ Can I edit or cancel existing bookings, and how does that process work?",
     answer: `
-כן, ניתן לערוך או לבטל תיאומים דרך ממשק ניהול התיאומים עם כפתורי "ערוך" ו"בטל". המערכת שולחת עדכונים אוטומטיים ללקוח ומנהלת תיעוד מלא של ההיסטוריה.
+Yes. You can edit or cancel bookings from the scheduling interface using “Edit” and “Cancel” actions. The system automatically updates the customer and maintains a full history log.
 
-איך למנוע ביטולים?
-- שליחת תזכורות אוטומטיות.
-- מתן גמישות בתיאומים עם הגבלות.
-- הבהרת מדיניות ביטולים.
-- אופטימיזציה של זמינות.
+How to reduce cancellations:
+- Send automatic reminders.
+- Offer flexible scheduling within set limits.
+- Communicate a clear cancellation policy.
+- Optimize availability.
 
-איך לשמר את הלקוחות?
-- תקשורת אישית קבועה.
-- מעקב ושיפור שביעות רצון.
-- הצעות והטבות ללקוחות חוזרים.
-- שירות מקצועי וקשוב.
+How to retain customers:
+- Maintain consistent, personal communication.
+- Track and improve satisfaction.
+- Offer perks and benefits for returning customers.
+- Provide professional and attentive service.
     `,
   },
   {
-    question: "❓ כיצד ניתן להוסיף או לעדכן שירותים ומוצרים במערכת ה-CRM?",
+    question:
+      "❓ How can I add or update services and products in the CRM?",
     answer: `
-בלשונית "שירותים" ניתן להוסיף או לעדכן שירותים, כולל תיאור, מחיר, משך זמן ותנאי שירות מיוחדים. חשוב להגדיר משך שירות מדויק למניעת כפילויות ביומן וניהול עומס יעיל.
+In the “Services” tab you can add or update services, including description, price, duration, and special service terms. It’s important to define accurate service duration to prevent calendar overlaps and manage workload efficiently.
 
-לאחר השמירה השירות מתווסף אוטומטית לממשק ההזמנות.
+After saving, the service is automatically added to the booking interface.
 
-מומלץ לעדכן שירותים תדיר כדי למנוע תקלות ולשפר חווית לקוח.
+It’s recommended to update services regularly to prevent issues and improve the customer experience.
     `,
   },
   {
-    question: "❓ איך מנהלים את רשימת הלקוחות במערכת ומבצעים חיפוש יעיל?",
+    question:
+      "❓ How do I manage the customer list and perform efficient searches?",
     answer: `
-בלשונית "לקוחות" מופיעה רשימה מפורטת של כל הלקוחות עם פרטים חיוניים. המערכת כוללת מנוע חיפוש מתקדם לסינון מהיר לפי שם, טלפון או מידע חלקי.
+The “Customers” tab shows a detailed list with key information. The system includes an advanced search engine for quick filtering by name, phone, or partial info.
 
-ניהול נכון כולל תיעוד היסטוריית פגישות, תיאומים, התכתבויות והערות.
+Good management includes tracking appointment history, bookings, communications, and notes.
 
-כיצד להתמודד עם ביטולי תורים תכופים?
-- מדיניות ברורה לגבי ביטולים.
-- התקשרות אישית עם לקוחות בעלי היסטוריה בעייתית.
-- הצעות גמישות ותזכורות.
-- הגבלת הזמנות או דרישת פיקדון במידת הצורך.
+How to handle frequent cancellations:
+- A clear cancellation policy.
+- Personal outreach to customers with problematic history.
+- Flexible options and reminders.
+- Limit bookings or require a deposit when needed.
     `,
   },
   {
-    question: "❓ מה עושים במקרה של תקלות במערכת או כאשר נתונים לא מתעדכנים?",
+    question:
+      "❓ What should I do if the system has issues or data isn’t updating?",
     answer: `
-צעדים לפתרון תקלות:
-1. רענון הדפדפן עם Ctrl+F5 או Cmd+Shift+R.
-2. בדיקת חיבור אינטרנט יציב ומהיר.
-3. יציאה מהמערכת והתחברות מחדש.
-4. ניסיון בדפדפן או מכשיר אחר.
-5. ניקוי מטמון ו-Cookies.
-6. בדיקת הודעות מערכת ותחזוקה מתוכננת.
-7. פנייה לתמיכה הטכנית עם תיעוד מפורט.
+Troubleshooting steps:
+1. Hard refresh the browser (Ctrl+F5 or Cmd+Shift+R).
+2. Ensure a stable, fast internet connection.
+3. Log out and log back in.
+4. Try a different browser or device.
+5. Clear cache and cookies.
+6. Check system messages and planned maintenance.
+7. Contact technical support with detailed documentation.
 
-תקלות נגרמות לעיתים מעומס על השרתים, בעיות רשת, גרסאות דפדפן לא מעודכנות, קונפליקטים במטמון ותחזוקות מערכת.
+Issues may stem from server load, network problems, outdated browsers, cache conflicts, or system maintenance.
 
-טיפים לשמירה על יציבות:
-- שמור על דפדפן מעודכן.
-- סגור ופתח מחדש את המערכת מדי פעם.
-- גבה נתונים חשובים.
-- עקוב אחר מערכת ההתראות של עסקליק.
+Tips for stability:
+- Keep your browser updated.
+- Restart the system periodically.
+- Back up important data.
+- Follow BizUply’s notification center.
     `,
   },
   {
-    question: "❓ כיצד ניתן לנתח ולשפר את ביצועי הלקוחות באמצעות מערכת ה-CRM?",
+    question:
+      "❓ How can I analyze and improve customer performance using the CRM?",
     answer: `
-המערכת מספקת כלים לניתוח נתוני לקוחות לשיפור שירות והגדלת מכירות:
+The system provides tools to analyze customer data for better service and increased sales:
 
-1. ניתוח היסטוריית רכישות ושירותים לזיהוי לקוחות פעילים והזדמנויות.
-2. מעקב אחר תגובות למבצעים וקמפיינים לשיפור תקציבי שיווק.
-3. דוחות זמני תגובה וניהול פניות לשיפור השירות.
-4. שמירת יומן מלא לאינטראקציות עם הלקוח.
-5. התאמת מבצעים אישיים ללקוחות.
-6. זיהוי לקוחות בסיכון לנטישה וטיפול מוקדם.
-7. שיתוף מידע בין צוות העובדים לשיפור אחידות השירות.
+1. Analyze purchase/service history to identify active customers and opportunities.
+2. Track responses to promotions/campaigns to improve marketing budgets.
+3. Reports on response times and inquiry handling to improve service.
+4. Keep a full log of all customer interactions.
+5. Tailor personal offers for customers.
+6. Identify churn-risk customers and intervene early.
+7. Share info across staff to improve service consistency.
 
-שימוש בנתונים כולל קביעת KPI, קמפיינים ממוקדים, ושיפור תהליכים ושימור נאמנות.
+Use the data to define KPIs, run targeted campaigns, and improve processes and loyalty.
     `,
   },
   {
-    question: "❓ מה ההבדל בין מערכת CRM למערכת ניהול תורים בלבד?",
+    question:
+      "❓ What’s the difference between a CRM and an appointments-only system?",
     answer: `
-מערכת ניהול תורים מתמקדת בניהול הזמנים ותיאומים בין העסק ללקוחות, כולל קביעת תאריכים, אישורים, ביטולים ולוח זמנים.
+An appointments system focuses on time management and scheduling between the business and customers, including setting dates, approvals, cancellations, and timetables.
 
-מערכת CRM היא פתרון כוללני הכולל גם ניהול מידע מקיף על הלקוחות, תיעוד אינטראקציות, ניתוח נתונים, ניהול הצעות ותזכורות, ושיווק אוטומטי.
+A CRM is a holistic solution that also includes comprehensive customer information management, interaction logs, data analysis, quotes and reminders, and automated marketing.
 
-שתי המערכות משלימות זו את זו ומסונכרנות באופן מלא, ומאפשרות ניהול מרכזי דרך דשבורד העסק.
+Both systems complement each other and are fully synchronized, enabling centralized management via the business dashboard.
 
-השילוב מאפשר יעול תפעול, שיפור שביעות רצון ויתרון תחרותי.
+The combination streamlines operations, improves satisfaction, and provides a competitive advantage.
     `,
   },
   {
-    question: "❓ מה עליי לעשות במקרה של שגיאות או תקלות במערכת ה-CRM וניהול התורים?",
+    question:
+      "❓ What should I do if I encounter errors or issues in the CRM and scheduling system?",
     answer: `
-כדי לטפל בשגיאות:
-- בדוק חיבור אינטרנט וטעין מחדש (Ctrl+F5 או Cmd+Shift+R).
-- בדוק הודעות מערכת לגבי תחזוקות או עדכונים.
-- נסה לאתר מתי וכיצד השגיאה מתרחשת.
-- ודא שהנתונים שהוזנו נכונים ומלאים.
-- פנה לתמיכה עם תיאור מפורט וצילומי מסך.
-- ודא שיש גיבויים זמינים.
-- השתמש במערכות ניטור להתראה מוקדמת.
+To handle errors:
+- Check internet connection and hard-refresh (Ctrl+F5 or Cmd+Shift+R).
+- Check system messages for maintenance or updates.
+- Identify when and how the error occurs.
+- Ensure inputs are correct and complete.
+- Contact support with a detailed description and screenshots.
+- Ensure backups are available.
+- Use monitoring tools for early alerts.
 
-טיפול מהיר מונע אובדן מידע, שיבושים ושיפור מתמיד בתפעול העסק.
+Quick handling prevents data loss, disruptions, and supports continuous operational improvement.
     `,
   },
 ];
@@ -163,12 +171,12 @@ export default function CrmFAQ() {
         margin: "auto",
         fontFamily: "Arial, sans-serif",
         padding: 20,
-        direction: "rtl",
-        textAlign: "right",
+        direction: "ltr",
+        textAlign: "left",
       }}
     >
       <h1 style={{ textAlign: "center", marginBottom: 25 }}>
-        שאלות ותשובות - מערכת CRM וניהול תורים
+        CRM & Scheduling – FAQ
       </h1>
       {faqData.map((item, index) => (
         <div
@@ -183,7 +191,7 @@ export default function CrmFAQ() {
             onClick={() => toggle(index)}
             style={{
               width: "100%",
-              textAlign: "right",
+              textAlign: "left",
               background: "rgba(85, 107, 47, 0.5)",
               border: "none",
               padding: "12px 20px",

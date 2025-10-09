@@ -1,5 +1,5 @@
 import React from "react";
-import "./Insights.css"; // מומלץ לשים את הסגנון בנפרד (או להשתמש ב-dashboard.css)
+import "./Insights.css"; // Recommended to keep styles separate (or use dashboard.css)
 
 const Insights = ({ stats }) => {
   if (!stats) return null;

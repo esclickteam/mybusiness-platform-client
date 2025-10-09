@@ -8,7 +8,7 @@ A business collaboration is an agreement between two or more businesses to work 
     `,
   },
   {
-    question: "❓ How to publish a new collaboration proposal in the Esclick system?",
+    question: "❓ How to publish a new collaboration proposal in the BizUply system?",
     answer: `
 To publish a collaboration, you need to fill out a detailed form that includes: a clear title, a detailed description of the proposal, what the business offers and what it seeks to receive, contact details, budget, and the validity of the proposal. It is important to be precise in defining needs and offers to target inquiries and receive suitable partners. After publication, the proposal is distributed to relevant businesses according to filtering by field of activity, location, and type of collaboration. It is advisable to regularly monitor inquiries, quickly approve or reject proposals, and maintain clear communication with potential partners.
     `,
@@ -41,7 +41,7 @@ Managing successful collaborations requires careful planning and emphasis on sev
 - Risk assessment and backup planning.
 - Regular and communicative contact.
 
-The Esclick platform supports all these processes and provides tools for managing smart collaborations.
+The BizUply platform supports all these processes and provides tools for managing smart collaborations.
     `,
   },
   {
@@ -69,7 +69,7 @@ Yes, you can set an expiration date for the proposal, which will limit the propo
 
 Benefits: Smart management of proposals, improving the business's image, operational flexibility.
 
-Esclick supports the creation of digital agreements with electronic signatures directly in the system.
+BizUply supports the creation of digital agreements with electronic signatures directly in the system.
     `,
   },
   {
@@ -92,7 +92,7 @@ To resolve issues with sending a collaboration:
 Communication with a potential partner includes:
 
 - Using the contact details in the proposal form.
-- An internal messaging system and business chat in the Esclick system.
+- An internal messaging system and business chat in the BizUply system.
 - Real-time communication for coordination, inquiries, and clarifications.
 - Maintaining professional, transparent, and clear communication.
 - Documenting conversations and agreements.
@@ -116,7 +116,7 @@ Conflicts in collaboration:
 - Education and training for partnership management.
 - A positive and proactive approach.
 
-Esclick provides tools and support for professional and efficient management of collaborations.
+BizUply provides tools and support for professional and efficient management of collaborations.
     `,
   },
 ];

@@ -36,7 +36,7 @@ export default function HelpCenter() {
     },
     {
       id: 5,
-      title: "Eskelik Advisor and AI Partner",
+      title: "BizUply Advisor and AI Partner",
       description: "Meet the digital advisor that will upgrade your business with artificial intelligence.",
       url: businessId ? `/business/${businessId}/dashboard/articles/ai-companion` : "/",
     },
@@ -54,7 +54,7 @@ export default function HelpCenter() {
     { id: 3, title: "Messages from Customers", path: businessId ? `/business/${businessId}/dashboard/faq/customer-messages` : "/" },
     { id: 4, title: "Collaborations", path: businessId ? `/business/${businessId}/dashboard/faq/collaborations` : "/" },
     { id: 5, title: "CRM", path: businessId ? `/business/${businessId}/dashboard/faq/crm` : "/" },
-    { id: 6, title: "Eskelik Advisor", path: businessId ? `/business/${businessId}/dashboard/faq/eskelik-advisor` : "/" },
+    { id: 6, title: "BizUply Advisor", path: businessId ? `/business/${businessId}/dashboard/faq/BizUply-advisor` : "/" },
     { id: 7, title: "Affiliate Program", path: businessId ? `/business/${businessId}/dashboard/faq/affiliate-program` : "/" },
     { id: 8, title: "Troubleshooting and Errors", path: businessId ? `/business/${businessId}/dashboard/faq/troubleshooting` : "/" },
     { id: 9, title: "Technical Support", path: businessId ? `/business/${businessId}/dashboard/faq/technical-support` : "/" },
@@ -77,7 +77,7 @@ export default function HelpCenter() {
 
   return (
     <div className="help-center-container">
-      <h1>👋 Welcome to the Eskelik Help Center</h1>
+      <h1>👋 Welcome to the BizUply Help Center</h1>
       <p>Here you can find answers, guides, and tools to manage your digital business.</p>
 
       <div className="search-bar">

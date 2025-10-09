@@ -20,7 +20,11 @@ const MonthlyComparisonChart = ({ data }) => {
     !Array.isArray(data.lastYear)
   ) {
     console.warn("Invalid or incomplete data for MonthlyComparisonChart:", data);
-    return <p style={{ textAlign: "center", color: "red" }}>אין נתונים להצגה בגרף החודשי</p>;
+    return (
+      <p style={{ textAlign: "center", color: "red" }}>
+        No data to display for the monthly chart
+      </p>
+    );
   }
 
   const chartData = data.months.map((month, index) => ({
@@ -34,7 +38,7 @@ const MonthlyComparisonChart = ({ data }) => {
   return (
     <div className="graph-box" style={{ marginTop: 40 }}>
       <h4 style={{ textAlign: "center", marginBottom: 10 }}>
-        📊 השוואת הכנסות חודשית
+        📊 Monthly Revenue Comparison
       </h4>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart
@@ -46,8 +50,8 @@ const MonthlyComparisonChart = ({ data }) => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="thisYear" fill="#6a5acd" name="השנה" />
-          <Bar dataKey="lastYear" fill="#ffa07a" name="שנה שעברה" />
+          <Bar dataKey="thisYear" fill="#6a5acd" name="This Year" />
+          <Bar dataKey="lastYear" fill="#ffa07a" name="Last Year" />
         </BarChart>
       </ResponsiveContainer>
     </div>

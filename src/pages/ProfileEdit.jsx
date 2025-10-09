@@ -1,6 +1,6 @@
 // src/pages/ProfileEdit.jsx
 import React, { useState } from 'react';
-import './BusinessList.css'; // לשמירה על עיצוב אחיד
+import './BusinessList.css'; // to maintain consistent styling
 
 export default function ProfileEdit() {
   const [city, setCity] = useState('');
@@ -10,7 +10,7 @@ export default function ProfileEdit() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // כאן את יכולה לבצע שליחה לשרת / עדכון פרופיל
+    // here you can send to the server / update the profile
     console.log({ name, email, phone, city });
     alert('Profile saved successfully ✅');
   };

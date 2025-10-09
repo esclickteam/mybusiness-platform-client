@@ -4,87 +4,87 @@ import "./AppointmentCRMGuidePage.css";
 export default function AppointmentCRMGuidePage() {
   return (
     <div className="appointment-crm-container" dir="rtl" lang="he">
-      {/* משפט הכותרת והפסקה הראשית הוסרו */}
-      <h1>🧷 ניהול יומן תיאום תורים ופגישות ו-CRM בעסקליק</h1>
+      {/* Title sentence and the opening paragraph were removed */}
+      <h1>🧷 Managing Appointment/Scheduling Calendar and CRM in BizUply</h1>
 
-      <h2>למה צריך שני כלים נפרדים – יומן תיאום תורים/פגישות ו-CRM?</h2>
+      <h2>Why do you need two separate tools – an Appointment/Meeting Calendar and a CRM?</h2>
       <p>
-        בעסקים רבים השירותים אינם מתקיימים רק במקום אחד, כמו קליניקה או משרד, אלא גם אצל הלקוח בבית או בכל מיקום אחר. לכן, חשוב שהמערכת תתמוך בתיאום גם של תורים במקום קבוע וגם של פגישות ניידות.
+        In many businesses, services are not provided only in a single location like a clinic or an office, but also at the client’s home or any other location. Therefore, it’s important that the system supports scheduling both fixed-location appointments and mobile meetings.
       </p>
       <p>
-        יומן תיאום תורים ופגישות הוא כלי שקוף ללקוחות, המאפשר להם לראות בזמן אמת את זמינותך ולהזמין תור או פגישה בעצמם, בכל מקום שבו השירות ניתן – בבית העסק או בבית הלקוח. זה מפשט עבור הלקוח את תהליך ההזמנה, מונע תלונות ועיכובים, וחוסך לך את הצורך בתיאומים טלפוניים חוזרים.
+        The appointment/meeting calendar is a client-facing tool that lets customers see your availability in real time and book an appointment or meeting by themselves—wherever the service is provided—at your business location or at the client’s home. This simplifies the booking process for the client, prevents complaints and delays, and saves you from repeated phone coordination.
       </p>
       <p>
-        לעומתו, מערכת CRM היא כלי פנימי ועמוק יותר, שמאפשר לנהל מעקב פרטני אחרי כל לקוח, להכיר את ההיסטוריה שלו, לשמור פרטי התקשרות, לתעד פניות ושיחות, ולעקוב אחר פעילותו לאורך זמן. זהו כלי הכרחי כדי לספק שירות מותאם אישית, לבנות תכניות שימור יעילות ולבצע שיווק ממוקד.
+        In contrast, the CRM is a deeper, internal tool that allows you to track each client individually, know their history, store contact details, log inquiries and conversations, and follow their activity over time. It’s essential for delivering personalized service, building effective retention plans, and running targeted marketing.
       </p>
 
-      <h2>למה לא כדאי לנהל את היומן מחוץ למערכת עסקליק?</h2>
+      <h2>Why shouldn’t you manage the calendar outside of BizUply?</h2>
       <p>
-        קיימים עסקים שמעדיפים להשתמש ביומן חיצוני (כמו Google Calendar, יומנים ידניים, או מערכות אחרות) או לנהל תיאום תורים בנפרד מה-CRM. למרות שזה עשוי להיראות פתרון פשוט, בפועל יש לכך חסרונות משמעותיים:
+        Some businesses prefer using an external calendar (such as Google Calendar, paper planners, or other systems) or managing appointment scheduling separately from the CRM. While this may seem simple, it has significant drawbacks:
       </p>
       <ul>
-        <li>אי סינכרון בין המערכות עלול לגרום לתורים כפולים, טעויות תיאום ואיבוד לקוחות.</li>
-        <li>ניהול כפול וגוזל זמן – יש צורך לעדכן פרטים בשתי מערכות, מה שעלול להוביל לשגיאות ושכחות.</li>
-        <li>איבוד מידע חשוב על הלקוח – ללא קשר ישיר ל-CRM, לא תוכל לנהל מעקב על היסטוריית השירותים, הביקורות, והפניות.</li>
-        <li>חוסר יכולות שיווק ושימור – ניתוח נתונים ופילוח לקוחות ליישום מבצעים ושימור הופך לקשה ואף בלתי אפשרי ללא מערכת משולבת.</li>
+        <li>Lack of synchronization between systems can cause double bookings, coordination errors, and lost customers.</li>
+        <li>Duplicate, time-consuming management—needing to update details in two systems increases the risk of mistakes and omissions.</li>
+        <li>Loss of important client information—without a direct link to the CRM, you can’t manage history of services, reviews, and inquiries.</li>
+        <li>Lack of marketing and retention capabilities—data analysis and client segmentation for promotions and retention becomes difficult or even impossible without an integrated system.</li>
       </ul>
 
-      <h2>איך היומן לפגישות/תורים ו-CRM עובדים יחד בעסקליק?</h2>
+      <h2>How do the appointments/meetings calendar and CRM work together in BizUply?</h2>
       <p>
-        המערכת של עסקליק היא אינטגרטיבית במלואה: כאשר הלקוח מזמין תור או פגישה – בין אם בקליניקה ובין אם בביתו – ההזמנה נקלטת אוטומטית ביומן העסקי שלך ומסונכרנת בזמן אמת. במקביל, פרטי הלקוח והפגישה מתועדים ב-CRM, כולל ההיסטוריה, הפניות הקודמות ושאר הנתונים הרלוונטיים.
+        BizUply is fully integrated: when a client books an appointment or a meeting—whether at the clinic or at their home—the booking is automatically recorded in your business calendar and synchronized in real time. At the same time, the client’s details and the meeting are logged in the CRM, including history, previous inquiries, and other relevant data.
       </p>
       <p>
-        כך, כל מידע חיוני זמין לך בלחיצת כפתור, ללא צורך בלחפש בין מערכות שונות, מה שמאפשר לך ניהול מדויק, תכנון חכם ושירות איכותי.
+        As a result, all critical information is available at a click—no need to hunt across different systems—enabling accurate management, smart planning, and quality service.
       </p>
 
-      <h2>מה היתרונות והערך המוסף לעסק שלך?</h2>
+      <h2>What are the advantages and added value for your business?</h2>
       <ul>
-        <li>ניהול יעיל וחסכון זמן רב, בכך שאתה מתרכז במתן השירות ולא בהיבטים אדמיניסטרטיביים מיותרים.</li>
-        <li>שיפור חוויית הלקוח, שמקבל חווית הזמנה נוחה, זמינה, ושקופה.</li>
-        <li>שיווק חכם וממוקד על בסיס נתוני הלקוחות והפניות, תוך אפשרות לניהול שימור מותאם אישית.</li>
-        <li>ניהול גמיש של מיקומי שירות שונים (בקליניקה או בבית הלקוח), מה שמגדיל את טווח השירותים שאתה יכול להציע.</li>
+        <li>Efficient management and significant time savings—focus on delivering service instead of unnecessary admin.</li>
+        <li>Improved customer experience—clients enjoy a convenient, transparent, and always-available booking process.</li>
+        <li>Smart, targeted marketing based on client and inquiry data, with personalized retention capabilities.</li>
+        <li>Flexible management of multiple service locations (at the clinic or the client’s home), expanding the services you can offer.</li>
       </ul>
 
-      <h2>ניהול זמן משך השירותים – איך להימנע מעיכובים ועומס?</h2>
+      <h2>Managing service durations – how to avoid delays and overload?</h2>
       <p>
-        ניהול נכון של משך כל שירות הוא אחד הגורמים המשפיעים ביותר על איכות הניהול ועל שביעות רצון הלקוחות.
+        Properly setting the duration of each service is one of the most impactful factors on operational quality and customer satisfaction.
       </p>
       <ul>
         <li>
-          <strong>הערכת משך השירות במדויק:</strong> הקדש זמן לצפות ולמדוד בעצמך את משך כל שירות כולל ההכנות, זמן הטיפול, והניקיון לאחריו. הוסף מרווח של 5-10 דקות בין תורים כדי לאפשר היערכות ולמנוע הצטברות עיכובים.
+          <strong>Accurately estimate service duration:</strong> spend time watching and measuring the full duration of each service—prep, treatment time, and cleanup afterward. Add a 5–10 minute buffer between appointments to allow setup and prevent cumulative delays.
         </li>
         <li>
-          <strong>קביעת משך התורים ביומן:</strong> קבע את משך התור באופן ברור ומדויק ביומן כך שהלקוחות יוכלו לבחור תור שמתאים להם ויוכלו להיערך בהתאם.
+          <strong>Set appointment durations in the calendar:</strong> define the exact duration so clients can choose a time slot that fits and plan accordingly.
         </li>
         <li>
-          <strong>ניהול עומסים:</strong> בימי עומס, הגדל את מרווח הזמן בין התורים או הגבילו את מספר התורים היומיים כדי לשמור על איכות השירות.
+          <strong>Load management:</strong> on busy days, increase the buffer between appointments or limit the daily number of bookings to maintain service quality.
         </li>
         <li>
-          <strong>שקיפות מול הלקוחות:</strong> עדכן את הלקוחות מראש לגבי משך השירות בפירוט, והבהר אם קיימת אפשרות לתור קצר או ארוך יותר.
+          <strong>Transparency with clients:</strong> inform clients in advance of the service duration, and clarify if shorter or longer options are available.
         </li>
         <li>
-          <strong>תקשורת בזמן אמת:</strong> במקרה של עיכובים, הודע ללקוח הבא כדי לנהל ציפיות, למנוע תסכול ולשמור על יחסי אמון.
+          <strong>Real-time communication:</strong> if delays occur, notify the next client to set expectations, prevent frustration, and maintain trust.
         </li>
         <li>
-          <strong>שימוש במידע היסטורי:</strong> נתח נתונים מהדשבורד לגבי משך השירות בפועל והפרשי זמן בפגישות, ועדכן בהתאם את משכי התורים לקבלת תזמון אופטימלי.
+          <strong>Use historical data:</strong> analyze dashboard data on actual duration and timing gaps, and adjust appointment lengths accordingly for optimal scheduling.
         </li>
       </ul>
 
-      <h2>טיפים לניהול חכם ויעיל של יומן ו-CRM</h2>
+      <h2>Tips for smart and efficient Calendar + CRM management</h2>
       <ul>
-        <li>עדכן את זמני העבודה והמיקומים ביומן לעיתים קרובות, כך שיכללו גם שירותים ניידים בבית הלקוח.</li>
-        <li>בדוק את היומן בכל בוקר, עם התמקדות בתורים לפגישות ניידות, כדי לוודא ניהול תקין של הזמנים.</li>
-        <li>סמן ב-CRM לקוחות לפי סטטוסים כדי לנהל תקשורת ושיווק ממוקד ויעיל.</li>
-        <li>עקוב אחרי היסטוריית השירותים של כל לקוח כדי להתאים לו שירותים מותאמים אישית.</li>
-        <li>השתמש בדוחות ודשבורד לניתוח מגמות ולהתאמת פעילות העסק.</li>
+        <li>Update working hours and locations in the calendar frequently, including mobile services at the client’s home.</li>
+        <li>Review the calendar each morning, focusing on mobile meetings, to ensure proper time management.</li>
+        <li>Tag clients in the CRM by status to run focused, efficient communication and marketing.</li>
+        <li>Track each client’s service history to tailor personalized offerings.</li>
+        <li>Use reports and dashboards to analyze trends and align business activities.</li>
       </ul>
 
-      <h2>סיכום</h2>
+      <h2>Summary</h2>
       <p>
-        ניהול משולב של יומן תיאום תורים ופגישות לצד מערכת CRM בעסק שלך בעסקליק הוא הבסיס לניהול מודרני, יעיל וממוקד לקוח. כלי זה מאפשר לך לנהל בקלות שירותים במיקומים שונים, לעקוב אחרי כל לקוח ולשפר את השירות והשיווק – הכל מתוך פלטפורמה אינטגרטיבית וחכמה.
+        An integrated approach to the appointment/meeting calendar and CRM in your BizUply business is the foundation for modern, efficient, and customer-centric management. It lets you easily run services across locations, track every client, and improve service and marketing—all from a single, smart, integrated platform.
       </p>
       <p>
-        ניהול נכון של משכי השירות בתורים מונע עיכובים ועומס, משפר את חוויית הלקוח ומקנה לך שליטה מלאה ותחושת סדר בשגרת העבודה.
+        Properly setting service durations prevents delays and overload, improves the client experience, and gives you full control and a sense of order in your day-to-day operations.
       </p>
     </div>
   );

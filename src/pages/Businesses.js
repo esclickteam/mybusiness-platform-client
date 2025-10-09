@@ -1,36 +1,36 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const moment = require("moment"); // אל תשכח להתקין: npm install moment
+const moment = require("moment"); // Don't forget to install: npm install moment
 const router = express.Router();
 const Business = require("../models/Business");
 const Appointment = require("../models/Appointment");
 const Lead = require("../models/Lead");
 
-// אימות טוקן
+// Token authentication
 const authenticateToken = (req, res, next) => {
   const token = req.header("Authorization")?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "❌ אין טוקן" });
+  if (!token) return res.status(401).json({ message: "❌ No token" });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "❌ טוקן לא תקין" });
+    if (err) return res.status(403).json({ message: "❌ Invalid token" });
     req.user = user;
     next();
   });
 };
 
-// סטטיסטיקות לדשבורד כולל נתוני שבוע
+// Dashboard stats including weekly data
 router.get("/stats/:id", authenticateToken, async (req, res) => {
   try {
     const business = await Business.findById(req.params.id);
     if (!business) {
-      return res.status(404).json({ message: "❌ עסק לא נמצא" });
+      return res.status(404).json({ message: "❌ Business not found" });
     }
 
-    // שליפת פגישות ולידים
+    // Fetch appointments and leads
     const appointments = await Appointment.find({ businessId: business._id });
     const leads = await Lead.find({ businessId: business._id });
 
-    // חישוב ממוצע בתחום
+    // Average orders in the same field
     let averageOrders = 0;
     if (business.businessType) {
       const similar = await Business.find({ businessType: business.businessType });
@@ -40,30 +40,30 @@ router.get("/stats/:id", authenticateToken, async (req, res) => {
       }
     }
 
-    // נתוני שבוע קודם - ניתן להחליף בנתונים אמיתיים אם יש
+    // Last week's figures – replace with real data if available
     const ordersLastWeek = business.orders_last_week || 3;
     const viewsLastWeek = business.views_last_week || 60;
     const requestsLastWeek = business.requests_last_week || 10;
     const reviewsLastWeek = business.reviews_last_week || 1;
 
-    // חישוב נתוני השבוע האחרון (7 ימים, החל מראשון)
-    const startOfWeek = moment().startOf('week');
+    // Compute data for the last week (7 days, starting Sunday)
+    const startOfWeek = moment().startOf("week");
     const weekly_labels = [];
     const weekly_views = [];
     const weekly_requests = [];
     const weekly_orders = [];
 
     for (let i = 0; i < 7; i++) {
-      const day = moment(startOfWeek).add(i, 'days');
-      weekly_labels.push(day.format('dd')); // לדוגמה: 'א׳', 'ב׳' וכו'
+      const day = moment(startOfWeek).add(i, "days");
+      weekly_labels.push(day.format("dd")); // e.g., 'Su', 'Mo', etc.
 
-      // ספירת פגישות באותו היום
-      const appointmentsOnDay = appointments.filter(appt =>
-        appt.date && moment(appt.date).isSame(day, 'day')
+      // Count appointments on that day
+      const appointmentsOnDay = appointments.filter(
+        (appt) => appt.date && moment(appt.date).isSame(day, "day")
       );
       weekly_orders.push(appointmentsOnDay.length);
 
-      // כאן ניתן להוסיף לוגיקה אמיתית לפי הנתונים שלך
+      // Add real logic here if you have actual data
       weekly_views.push(0);
       weekly_requests.push(0);
     }
@@ -79,7 +79,7 @@ router.get("/stats/:id", authenticateToken, async (req, res) => {
       reviews_last_week: reviewsLastWeek,
       appointments,
       leads,
-      businessType: business.businessType || "כללי",
+      businessType: business.businessType || "General",
       average_orders_in_field: averageOrders,
       weekly_labels,
       weekly_views,
@@ -87,7 +87,9 @@ router.get("/stats/:id", authenticateToken, async (req, res) => {
       weekly_orders,
     });
   } catch (error) {
-    res.status(500).json({ message: "❌ שגיאה בקבלת נתונים", error: error.message });
+    res
+      .status(500)
+      .json({ message: "❌ Error fetching data", error: error.message });
   }
 });
 

@@ -9,31 +9,31 @@ export default function CollaborationPage({ isDevUser }) {
   const [refreshSent, setRefreshSent] = useState(0);
   const [refreshReceived, setRefreshReceived] = useState(0);
 
-  // כשמייצרים הצעה → רענון Sent
+  // When creating a proposal → refresh "Sent"
   const handleSendProposal = async (toBusinessId, message) => {
     try {
       await API.post("/business/my/proposals", { toBusinessId, message });
-      setRefreshSent(f => f + 1);
+      setRefreshSent((f) => f + 1);
     } catch (err) {
       console.error(err);
-      alert("שגיאה בשליחת ההצעה");
+      alert("Error sending the proposal");
     }
   };
 
-  // אחרי אישור/דחייה → רענון Received
+  // After approve/decline → refresh "Received"
   const handleStatusChange = () => {
-    setRefreshReceived(f => f + 1);
+    setRefreshReceived((f) => f + 1);
   };
 
   return (
     <div className="collab-page">
-      {/* טאב חיפוש שותפים */}
+      {/* Find Partners tab */}
       <CollabFindPartnerTab onSend={handleSendProposal} />
 
-      {/* טאב הצעות נשלחו */}
+      {/* Sent Proposals tab */}
       <CollabSentRequestsTab refreshFlag={refreshSent} />
 
-      {/* טאב הצעות שהתקבלו */}
+      {/* Received Proposals tab */}
       <CollabReceivedRequestsTab
         isDevUser={isDevUser}
         refreshFlag={refreshReceived}

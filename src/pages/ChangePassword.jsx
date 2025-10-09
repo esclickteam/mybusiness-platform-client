@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
-import "../styles/ChangePassword.css"; // ✅ זה הייבוא שצריך להוסיף
-
+import "../styles/ChangePassword.css"; // ✅ This is the import you need
 
 const ChangePassword = () => {
   const { user, refreshUserData } = useAuth();
@@ -30,17 +29,17 @@ const ChangePassword = () => {
     const { currentPassword, newPassword, confirmPassword } = form;
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError("❗ כל השדות חובה");
+      setError("❗ All fields are required");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("❗ הסיסמה החדשה ואישור הסיסמה לא תואמים");
+      setError("❗ New password and confirmation do not match");
       return;
     }
 
     if (newPassword.length < 6) {
-      setError("❗ סיסמה חייבת להיות לפחות 6 תווים");
+      setError("❗ Password must be at least 6 characters");
       return;
     }
 
@@ -50,12 +49,12 @@ const ChangePassword = () => {
         newPassword,
       });
 
-      setSuccess("✅ הסיסמה עודכנה בהצלחה!");
+      setSuccess("✅ Password updated successfully!");
 
-      // רענון נתוני המשתמש מהשרת
+      // Refresh user data from the server
       const updatedUser = await refreshUserData();
 
-      // ניתוב לפי תפקיד
+      // Route by role
       switch (updatedUser.role) {
         case "business":
           navigate("/dashboard");
@@ -75,23 +74,22 @@ const ChangePassword = () => {
         default:
           navigate("/");
       }
-
     } catch (err) {
-      console.error("❌ שגיאה בהחלפת סיסמה:", err);
-      setError(err.response?.data?.error || "❌ שגיאת שרת. נסה שוב.");
+      console.error("❌ Error changing password:", err);
+      setError(err.response?.data?.error || "❌ Server error. Please try again.");
     }
   };
 
   return (
-    <div className="change-password-container">
-      <h2>🔒 שינוי סיסמה</h2>
-      <p>מאחר ואתה נכנסת עם סיסמה זמנית, יש להחליף אותה כדי להמשיך.</p>
+    <div className="change-password-container" dir="ltr" lang="en">
+      <h2>🔒 Change Password</h2>
+      <p>Since you logged in with a temporary password, you must change it to continue.</p>
 
       <form onSubmit={handleSubmit}>
         <input
           type="password"
           name="currentPassword"
-          placeholder="סיסמה נוכחית"
+          placeholder="Current password"
           value={form.currentPassword}
           onChange={handleChange}
           required
@@ -99,7 +97,7 @@ const ChangePassword = () => {
         <input
           type="password"
           name="newPassword"
-          placeholder="סיסמה חדשה"
+          placeholder="New password"
           value={form.newPassword}
           onChange={handleChange}
           required
@@ -107,13 +105,13 @@ const ChangePassword = () => {
         <input
           type="password"
           name="confirmPassword"
-          placeholder="אישור סיסמה חדשה"
+          placeholder="Confirm new password"
           value={form.confirmPassword}
           onChange={handleChange}
           required
         />
 
-        <button type="submit">עדכן סיסמה</button>
+        <button type="submit">Update Password</button>
       </form>
 
       {error && <p className="error-message">{error}</p>}

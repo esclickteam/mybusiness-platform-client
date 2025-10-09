@@ -26,7 +26,7 @@ function getOtherBusinessId(conv, myBusinessId) {
   return "";
 }
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.esclick.co.il";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.BizUply.co.il";
 
 function messagesReducer(state, action) {
   switch (action.type) {

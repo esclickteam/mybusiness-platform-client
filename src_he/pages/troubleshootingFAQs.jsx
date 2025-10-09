@@ -115,7 +115,7 @@ const troubleshootingFAQs = [
           <li>Attach a screenshot of the error or issue.</li>
           <li>Gather technical information: device type, operating system, browser, and its version.</li>
           <li>Specify the exact time of the issue.</li>
-          <li>Send the information to the support address: support@esclick.co.il or open a ticket in the system.</li>
+          <li>Send the information to the support address: support@BizUply.co.il or open a ticket in the system.</li>
           <li>Write a clear title and describe if the issue is recurring or how to reproduce it.</li>
           <li>Wait for a response from support with instructions or fixes.</li>
         </ol>

@@ -7,26 +7,26 @@ export default function KanbanBoard({ clientId, businessId }) {
   const [tasks, setTasks] = useState([]);
 
   const statusColumns = {
-    todo: "לביצוע",
-    in_progress: "בתהליך",
-    waiting: "ממתין",
-    completed: "הושלם",
-    cancelled: "בוטל",
+    todo: "To Do",
+    in_progress: "In Progress",
+    waiting: "Waiting",
+    completed: "Completed",
+    cancelled: "Canceled",
   };
 
   useEffect(() => {
     if (!clientId) return;
     API.get(`/crm-extras/tasks/${clientId}`, { params: { businessId } })
       .then((res) => setTasks(res.data))
-      .catch((err) => console.error("שגיאה בשליפת משימות", err));
+      .catch((err) => console.error("Error fetching tasks", err));
   }, [clientId, businessId]);
 
-  // פונקציה לגרירה
+  // Drag handler
   const handleDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
     if (!destination) return;
 
-    // לא זז
+    // No movement
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -37,7 +37,7 @@ export default function KanbanBoard({ clientId, businessId }) {
     const draggedTask = tasks.find((t) => t._id === draggableId);
     if (!draggedTask) return;
 
-    // עדכון סטטוס בשרת
+    // Update status on server
     try {
       const res = await API.patch(`/crm-extras/tasks/${draggableId}`, {
         ...draggedTask,
@@ -48,7 +48,7 @@ export default function KanbanBoard({ clientId, businessId }) {
         prev.map((t) => (t._id === draggableId ? res.data : t))
       );
     } catch (err) {
-      console.error("שגיאה בעדכון סטטוס", err);
+      console.error("Error updating status", err);
     }
   };
 
@@ -88,7 +88,7 @@ export default function KanbanBoard({ clientId, businessId }) {
                             )}
                             {task.dueDate && (
                               <small>
-                                {new Date(task.dueDate).toLocaleString("he-IL", {
+                                {new Date(task.dueDate).toLocaleString("en-US", {
                                   day: "2-digit",
                                   month: "2-digit",
                                   year: "numeric",
