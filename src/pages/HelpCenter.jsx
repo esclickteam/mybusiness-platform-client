@@ -190,7 +190,7 @@ export default function HelpCenter() {
             Go to Business Support
           </button>
         </div>
-      </section>
+       </section>
 
       <ChatBot chatOpen={chatOpen} setChatOpen={setChatOpen} />
     </div>
