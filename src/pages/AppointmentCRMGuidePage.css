@@ -1,0 +1,177 @@
+.appointment-crm-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  direction: rtl;
+  font-family: Arial, sans-serif;
+  color: #222;
+  line-height: 1.6;
+  background-color: #fff;
+  box-sizing: border-box;
+  word-break: break-word; /* למניעת שבירת מילים לא טובה */
+}
+
+.appointment-crm-container h1 {
+  font-size: 2.4rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: #004085; /* מעט כהה יותר לכותרת */
+}
+
+.appointment-crm-container h2 {
+  font-size: 1.8rem;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 5px;
+  width: fit-content;
+  color: #0056b3; /* גוון כחול נעים לכותרות משנה */
+}
+
+.appointment-crm-container h3 {
+  font-size: 1.4rem;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.appointment-crm-container p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+
+.appointment-crm-container ol,
+.appointment-crm-container ul {
+  margin: 0 0 20px 20px;
+  padding: 0;
+  list-style-type: disc;
+}
+
+.appointment-crm-container li {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.appointment-crm-container strong {
+  font-weight: 700;
+}
+
+/* טבלה */
+.appointment-crm-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  table-layout: fixed;
+  word-wrap: break-word;
+  font-size: 1.1rem;
+}
+
+.appointment-crm-container th,
+.appointment-crm-container td {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  text-align: right; /* RTL alignment */
+  vertical-align: top;
+}
+
+.appointment-crm-container th {
+  background-color: #f0f4ff;
+  color: #004085;
+  font-weight: 700;
+}
+
+/* הוספת אפקט קל בהטבעת כותרות ואלמנטים */
+.appointment-crm-container h2:hover,
+.appointment-crm-container h3:hover {
+  color: #003366;
+  cursor: default;
+  transition: color 0.3s ease;
+}
+
+/* רספונסיביות */
+@media (max-width: 600px) {
+  .appointment-crm-container {
+    padding: 15px;
+    margin: 20px;
+  }
+
+  .appointment-crm-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .appointment-crm-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .appointment-crm-container h3 {
+    font-size: 1.2rem;
+  }
+
+  .appointment-crm-container p,
+  .appointment-crm-container li {
+    font-size: 1rem;
+  }
+
+  /* גלילה אופקית לטבלה במובייל */
+  .appointment-crm-container table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+/* טבלטים - ממסכים בגודל 601px עד 900px */
+@media (min-width: 601px) and (max-width: 900px) {
+  .appointment-crm-container {
+    max-width: 90vw;
+    padding: 18px 16px;
+    margin: 30px auto;
+  }
+
+  .appointment-crm-container h1 {
+    font-size: 2rem;
+  }
+
+  .appointment-crm-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .appointment-crm-container h3 {
+    font-size: 1.3rem;
+  }
+
+  .appointment-crm-container p,
+  .appointment-crm-container li {
+    font-size: 1.05rem;
+  }
+}
+
+/* מובייל קטן מאוד - עד 400px */
+@media (max-width: 400px) {
+  .appointment-crm-container {
+    padding: 12px 10px;
+    margin: 15px 10px;
+  }
+
+  .appointment-crm-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .appointment-crm-container h2 {
+    font-size: 1.2rem;
+  }
+
+  .appointment-crm-container h3 {
+    font-size: 1rem;
+  }
+
+  .appointment-crm-container p,
+  .appointment-crm-container li {
+    font-size: 0.9rem;
+  }
+
+  .appointment-crm-container table {
+    font-size: 0.9rem;
+  }
+}

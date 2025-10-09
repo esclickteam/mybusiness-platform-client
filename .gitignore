@@ -1,0 +1,27 @@
+# React / Node.js artifacts
+node_modules/
+.env
+.DS_Store
+
+# לוגים
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# מערכת הפעלה
+Thumbs.db
+ehthumbs.db
+*.swp
+
+# VSCode
+.vscode/
+.history/              # הוספת תיקיית Local History להתעלמות
+
+# מערכת הפצה (Vercel / Railway)
+.vercel
+.railway
+
+# Cache
+.cache/
+.next/
+dist/

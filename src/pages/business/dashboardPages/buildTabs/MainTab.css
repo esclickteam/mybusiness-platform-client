@@ -1,0 +1,403 @@
+.gallery-preview {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  overflow-y: visible;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  position: relative;
+  z-index: 0;
+}
+
+.gallery-item-wrapper {
+  position: relative;
+  overflow: visible;
+  flex: 0 0 auto;
+  width: 120px;
+  height: 120px;
+  z-index: 10;
+  transition: box-shadow 0.2s ease;
+}
+
+/* ✨ הדגשת תמונה בזמן עריכה */
+.gallery-item-wrapper.editing {
+  box-shadow: 0 0 0 3px #b46af1 inset;
+}
+
+.gallery-item {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  border: 2px dashed #b46af1;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.gallery-item:active {
+  transform: scale(0.97);
+}
+
+.gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: var(--gallery-fit, cover);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.gallery-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  border: 2px dashed #b46af1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #b46af1;
+  background-color: white;
+  flex: 0 0 auto;
+  transition: transform 0.2s ease;
+}
+
+.gallery-placeholder.clickable:hover {
+  background-color: #f3e5ff;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.edit-btn,
+.delete-btn {
+  position: absolute;
+  top: 6px;
+  background: white;
+  border: 1px solid #aaa;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  padding: 6px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.edit-btn {
+  left: 6px;
+}
+
+.delete-btn {
+  right: 6px;
+}
+
+.edit-btn:hover,
+.delete-btn:hover {
+  transform: scale(1.1);
+}
+
+
+.phone-display-button {
+  background: linear-gradient(to right, #b46af1, #d19fff);
+  color: white;
+  border-radius: 30px;
+  padding: 10px 20px;
+  font-weight: bold;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  width: fit-content;
+  max-width: 100%;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-inline: auto;
+  text-decoration: none;
+}
+
+/* ✅ פופאפ עריכה גלובלי */
+.fit-select-popup.global {
+  position: relative;
+  background: white;
+  border: 2px solid #b46af1;
+  border-radius: 12px;
+  padding: 10px;
+  z-index: 2000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 160px;
+  max-width: 90vw;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.fit-select-popup.global::before {
+  display: none;
+}
+
+.confirm-btn {
+  background: #b46af1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s ease;
+}
+
+.confirm-btn:hover {
+  background: #a157e8;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* מודל תצוגת תמונה מוגדלת */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  position: relative;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-media {
+  width: 80vmin;
+  height: 80vmin;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 10001;
+  padding: 0.3rem 0.8rem;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.nav-btn.left {
+  left: 10px;
+}
+
+.nav-btn.right {
+  right: 10px;
+}
+
+/* ביקורות */
+.review-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+}
+
+.review-card.improved {
+  border-left: 6px solid #b46af1;
+  padding: 1rem 1rem 1rem 1.5rem;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.review-user {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.review-text {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.review-card .star-text {
+  color: #ffcc00;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* רספונסיביות */
+@media (max-width: 480px) {
+  .gallery-item,
+  .gallery-placeholder {
+    width: 90px;
+    height: 90px;
+  }
+
+  .fit-select-popup.global {
+    width: 90%;
+    max-width: 280px;
+    padding: 12px;
+  }
+
+  .fit-select-popup select {
+    font-size: 1rem;
+  }
+
+  .confirm-btn {
+    font-size: 1rem;
+    padding: 8px 16px;
+  }
+
+  .review-user {
+    font-size: 0.95rem;
+  }
+
+  .review-text {
+    font-size: 0.9rem;
+  }
+
+  .modal-media {
+    width: 90vw;
+    height: 90vw;
+  }
+
+  .phone-display-button {
+    width: 100%;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+}
+/* ✅ הסתרה אוטומטית של כפתורי עריכה בתצוגת הלקוח */
+.preview-section .edit-btn,
+.preview-section .delete-btn,
+.preview-section .gallery-placeholder {
+  display: none !important;
+}
+/* רספונסיביות מלאה לכל המכשירים */
+
+@media (max-width: 1024px) {
+  .gallery-item-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  .modal-media {
+    width: 85vmin;
+    height: 85vmin;
+  }
+
+  .phone-display-button {
+    font-size: 0.95rem;
+    padding: 9px 18px;
+  }
+
+  .review-text {
+    font-size: 0.92rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-item-wrapper {
+    width: 90px;
+    height: 90px;
+  }
+
+  .gallery-preview {
+    gap: 0.4rem;
+    padding-bottom: 0.4rem;
+  }
+
+  .modal-media {
+    width: 90vmin;
+    height: 90vmin;
+  }
+
+  .nav-btn {
+    font-size: 1.8rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .review-user {
+    font-size: 0.95rem;
+  }
+
+  .review-text {
+    font-size: 0.88rem;
+  }
+
+  .phone-display-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .gallery-item-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+
+  .modal-media {
+    width: 95vmin;
+    height: 95vmin;
+  }
+
+  .fit-select-popup.global {
+    width: 92%;
+    padding: 10px;
+  }
+
+  .confirm-btn {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .nav-btn {
+    font-size: 1.6rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .review-text {
+    font-size: 0.85rem;
+  }
+}

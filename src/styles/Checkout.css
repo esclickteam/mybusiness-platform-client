@@ -1,0 +1,151 @@
+.checkout-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f5f7fa;
+    text-align: center;
+    direction: rtl; /* RTL לעברית */
+    padding: 20px; /* רווח פנימי למכשירים קטנים */
+    box-sizing: border-box;
+}
+
+.checkout-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.checkout-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #6a11cb;
+    margin-bottom: 15px;
+}
+
+.checkout-content {
+    font-size: 18px;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+.checkout-price, .checkout-duration {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.error-message {
+    color: #d9534f;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.pay-button, .retry-link {
+    background: #6a11cb;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 100%;
+    margin-bottom: 10px;
+    font-weight: bold;
+    outline: none;
+}
+
+.pay-button:disabled,
+.retry-link:disabled {
+    background: #c7b6f5;
+    cursor: not-allowed;
+}
+
+.pay-button:hover:not(:disabled),
+.retry-link:hover:not(:disabled) {
+    background: #5a0dab;
+}
+
+.return-link {
+    display: block;
+    margin-top: 15px;
+    color: #6a11cb;
+    font-weight: bold;
+    text-decoration: none;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.return-link:hover {
+    text-decoration: underline;
+    color: #430c90;
+}
+
+/* Spinner מקצועי */
+.spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 2px solid #6a11cb;
+    border-radius: 50%;
+    border-top: 2px solid transparent;
+    animation: spin 1s linear infinite;
+    vertical-align: middle;
+    margin-left: 8px;
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* התאמת כפתור "נסה שוב" */
+.retry-link {
+    margin-top: 0.5em;
+    background: #ff9800;
+    color: #fff;
+}
+
+.retry-link:hover:not(:disabled) {
+    background: #f57c00;
+}
+
+/* רספונסיביות למכשירים קטנים */
+@media (max-width: 480px) {
+    .checkout-container {
+        padding: 10px;
+        height: auto; /* גובה גמיש */
+        min-height: 100vh;
+    }
+
+    .checkout-card {
+        padding: 20px;
+        max-width: 100%;
+    }
+
+    .checkout-title {
+        font-size: 24px;
+    }
+
+    .checkout-content {
+        font-size: 16px;
+    }
+
+    .checkout-price, .checkout-duration {
+        font-size: 18px;
+    }
+
+    .pay-button, .retry-link, .return-link {
+        font-size: 18px;
+        padding: 14px 20px;
+    }
+}

@@ -1,0 +1,335 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+
+/* ===== עמוד התמיכה בלבד ===== */
+.support-page {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 50px 20px;
+  font-family: "Poppins", sans-serif;
+  color: #222;
+  line-height: 1.7;
+  background: #f9fafe;
+}
+
+/* ===== Titles ===== */
+.support-page .support-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: left; /* תמיד מיושר שמאלה */
+  margin-bottom: 1.8rem;
+  color: #0f1a4f;
+}
+
+.support-subtitle-wrapper {
+  text-align: left; /* אחידות בכותרות */
+  margin: 2.5rem 0 1.2rem;
+}
+
+.support-page .support-subtitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2b3fa3;
+  display: inline-block;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #c5d9f5;
+}
+
+/* ===== Text ===== */
+.support-page .support-text {
+  font-size: 1.05rem;
+  margin-bottom: 1.2rem;
+  color: #333;
+  line-height: 1.75;
+}
+
+.support-page .support-divider {
+  border: none;
+  border-top: 1px solid #e6e9f0;
+  margin: 2.5rem 0;
+}
+
+.readmore-wrapper {
+  text-align: center;   /* ממרכז את הכפתור */
+  margin-top: 1.2rem;   /* רווח מהטקסט */
+}
+
+.readmore-wrapper .support-btn {
+  display: inline-block;
+  min-width: 160px;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(74, 58, 255, 0.3);
+}
+
+/* ===== Lists ===== */
+.support-page .support-list {
+  margin: 1.5rem 0 2rem;
+  padding-left: 2rem;          /* ריווח לבולטים */
+  font-size: 1.05rem;
+  text-align: left;            /* טקסט שמאלה */
+  list-style-type: disc;       /* נקודות רגילות */
+  list-style-position: outside;/* בולטים בצד */
+  direction: ltr;              /* ✅ תמיד משמאל לימין */
+}
+.support-page .support-list li {
+  margin-bottom: 0.7rem;
+  line-height: 1.6;
+}
+
+/* ===== CTA Section ===== */
+.support-page .support-cta {
+  text-align: center;
+  margin-top: 2.5rem;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(20, 19, 60, 0.08);
+}
+.support-page .support-label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  color: #2b3fa3;
+  font-size: 1.1rem;
+}
+.support-page .support-input {
+  width: 220px;
+  padding: 10px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* ===== Quick Buttons ===== */
+.support-page .support-quick-btn {
+  background: #f5f3ff;
+  border: 1px solid #c5bdf5;
+  border-radius: 8px;
+  margin: 6px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2b3fa3;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.15);
+}
+.support-page .support-quick-btn:hover {
+  background: #6a11cb;
+  border-color: #4a0fa8;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(106, 17, 203, 0.25);
+}
+
+/* ===== Main Button ===== */
+.support-page .support-btn {
+  background-color: #4a3aff;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.support-page .support-btn:hover {
+  background-color: #372bc2;
+}
+
+/* ===== Progress Section - Timeline Style ===== */
+.support-progress-wrapper {
+  margin: 40px 0;
+  text-align: center;
+  position: relative;
+  padding-top: 40px;
+}
+
+.support-progress-bar {
+  position: relative;
+  height: 20px;
+  background: #c2c7e3; 
+  border-radius: 12px;
+  margin: 0 auto 30px;
+  max-width: 700px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.support-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #6a11cb, #3a8ef6, #2575fc);
+  border-radius: 12px;
+  width: 0;
+  transition: width 0.6s ease-in-out;
+  background-size: 200% 100%;
+  animation: progress-stripes 2s linear infinite, glowPulse 3s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(106, 17, 203, 0.6), 
+              0 0 20px rgba(37, 117, 252, 0.4);
+}
+
+@keyframes progress-stripes {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.3); }
+}
+
+.support-progress-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #6a11cb;
+  transform: translateX(-50%);
+}
+
+.support-progress-label {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e2a78;
+  white-space: nowrap;
+}
+
+.support-progress-marker.reached {
+  background: #28a745;
+}
+.support-progress-marker.reached .support-progress-label {
+  color: #28a745;
+}
+
+.support-progress-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1e2a78;
+  margin-bottom: 6px;
+}
+.support-progress-left {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* ===== Images with captions ===== */
+.support-image {
+  margin: 2rem auto;
+  text-align: center;
+}
+.support-image img {
+  max-width: 600px;      
+  width: 100%;           
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
+  margin: 0 auto;
+  display: block;
+}
+.support-image img:hover {
+  transform: scale(1.02);
+}
+.support-image figcaption {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: #444;
+  font-style: italic;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .support-page { 
+    padding: 30px 15px; 
+  }
+
+  .support-image img {
+    max-width: 90%;
+  }
+
+  .donation-box {
+    text-align: center;
+    margin: 20px auto;
+    padding: 15px;
+  }
+  .donation-input-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px auto;
+    max-width: 220px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 12px;
+    background: #fff;
+  }
+  .donation-currency {
+    font-weight: 600;
+    margin-right: 6px;
+    color: #2b3fa3;
+  }
+  .donation-input {
+    border: none;
+    flex: 1;
+    text-align: left;
+    font-size: 1rem;
+    outline: none;
+  }
+  .donation-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .support-progress-wrapper {
+    padding-top: 16px;
+    padding-bottom: 36px;
+  }
+  .support-progress-bar {
+    max-width: 100%;
+  }
+  .support-progress-label {
+    bottom: auto;
+    top: 100%;
+    margin-top: 6px;
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    text-align: center;
+  }
+  .support-progress-marker.last-marker .support-progress-label {
+    transform: translateX(-120%);
+    text-align: right;
+    max-width: 100px;
+  }
+  #paypal-button-container {
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .support-image img {
+    max-width: 100%;
+  }
+  .donation-quick-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .support-progress-label {
+    font-size: 0.75rem;
+  }
+}
+
+/* ===== Header Direction Fix ===== */
+.support-page ~ .app-header, 
+.support-page .app-header, 
+.app-header {
+  direction: ltr;
+  text-align: left;
+}

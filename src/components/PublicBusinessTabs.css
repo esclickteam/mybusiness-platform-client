@@ -1,0 +1,39 @@
+.public-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 24px 0 0;
+    justify-content: center;
+  }
+  
+  .tab {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: #f0eaff;
+    text-decoration: none;
+    color: #333;
+    transition: background 0.2s;
+    font-size: 0.9rem;
+  }
+  
+  .tab:hover {
+    background-color: #e4d6ff;
+  }
+  
+  .tab.active {
+    background-color: #8a2be2;
+    color: white;
+  }
+  @media (max-width: 480px) {
+  .public-tabs {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tab {
+    width: 90%;
+    text-align: center;
+    font-size: 1rem;
+  }
+}

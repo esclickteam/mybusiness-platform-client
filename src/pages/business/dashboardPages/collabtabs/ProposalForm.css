@@ -1,0 +1,219 @@
+/* ProposalForm.css */
+
+/* סגנון כללי לטופס */
+form {
+  max-width: 700px;      /* הגדלנו ל-700 פיקסלים */
+  width: 100%;           /* רוחב מלא, מותאם למיכל האב */
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+  direction: rtl; /* לטקסט בעברית */
+  box-sizing: border-box;
+}
+
+/* כותרת הטופס */
+form h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* סגנון תוויות (labels) */
+form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+
+/* שדות קלט (input, textarea) */
+form input[type="text"],
+form input[type="number"],
+form input[type="date"],
+form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  font-family: Arial, sans-serif;
+  direction: rtl; /* לטקסט בעברית */
+}
+
+/* שינוי גבול בשדה פעיל */
+form input[type="text"]:focus,
+form input[type="number"]:focus,
+form input[type="date"]:focus,
+form textarea:focus {
+  border-color: #3f51b5; /* כחול MUI */
+  outline: none;
+}
+
+/* גודל textarea */
+form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* סגנון כפתור */
+form button[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: #3f51b5;
+  color: white;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: Arial, sans-serif;
+}
+
+form button[type="submit"]:hover:not(:disabled) {
+  background-color: #303f9f;
+}
+
+form button[type="submit"]:disabled {
+  background-color: #9fa8da;
+  cursor: not-allowed;
+}
+
+/* סגנון טקסטי לשגיאות והודעות הצלחה */
+form p {
+  margin-top: -15px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+form p[style*="color: red"] {
+  color: #d32f2f;
+}
+
+form p[style*="color: green"] {
+  color: #388e3c;
+}
+
+/* שדה טקסט קריא בלבד */
+input[readonly] {
+  background-color: #f5f5f5;
+  cursor: default;
+}
+
+/* רספונסיביות למובייל */
+@media (max-width: 600px) {
+  form {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  form button[type="submit"] {
+    font-size: 1rem;
+    padding: 10px;
+  }
+}
+/* רספונסיביות ProposalForm לכל הרמות */
+
+/* Extra Small (עד 480px) */
+@media (max-width: 480px) {
+  form {
+    max-width: 100%;
+    padding: 12px;
+    margin: 8px;
+  }
+  form h2 {
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+  }
+  form input[type="text"],
+  form input[type="number"],
+  form input[type="date"],
+  form textarea {
+    font-size: 0.9rem;
+    padding: 8px 10px;
+    margin-bottom: 16px;
+  }
+  form textarea {
+    min-height: 80px;
+  }
+  form button[type="submit"] {
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+  form p {
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+  }
+}
+
+/* Small (481px עד 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  form {
+    max-width: 90%;
+    padding: 16px 18px;
+    margin: 12px auto;
+  }
+  form h2 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+  form input[type="text"],
+  form input[type="number"],
+  form input[type="date"],
+  form textarea {
+    font-size: 0.95rem;
+    padding: 9px 11px;
+    margin-bottom: 18px;
+  }
+  form textarea {
+    min-height: 90px;
+  }
+  form button[type="submit"] {
+    font-size: 1rem;
+    padding: 11px;
+  }
+  form p {
+    font-size: 0.9rem;
+    margin-bottom: 18px;
+  }
+}
+
+/* Medium ומעלה (769px ומעלה) */
+@media (min-width: 769px) {
+  form {
+    max-width: 700px;
+    padding: 20px;
+    margin: 20px auto;
+  }
+  form h2 {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+  form input[type="text"],
+  form input[type="number"],
+  form input[type="date"],
+  form textarea {
+    font-size: 1rem;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+  }
+  form textarea {
+    min-height: 100px;
+  }
+  form button[type="submit"] {
+    font-size: 1.1rem;
+    padding: 12px;
+  }
+  form p {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+}

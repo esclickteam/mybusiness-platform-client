@@ -1,0 +1,198 @@
+/* גרדיאנט גלובלי כבר ב־index.css */
+.rtl-wrapper {
+  direction: rtl;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* פריסה ראשית */
+.business-dashboard-layout {
+  display: flex;
+  width: 100%;
+  height: 100vh; /* חשוב למלא את הגובה */
+  margin: 0;
+  position: relative;
+  transition: filter 0.3s ease;
+}
+
+/* הסרה של טשטוש התוכן כשסיידבר פתוח במובייל */
+.sidebar-open .business-dashboard-layout {
+  filter: none; /* אין טשטוש */
+  pointer-events: auto;
+  user-select: auto;
+}
+
+/* הסתרה גורפת של כפתור סגירה ישן */
+.close-sidebar-btn {
+  display: none !important;
+}
+
+/* סיידבר (בכל הגדלים – מיקום צד ימין דרך rtl) */
+.sidebar {
+  min-width: 240px !important;
+  padding: 1rem !important;
+  background-color: #d1b3ff9a !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  transition: transform 0.35s ease !important;
+  will-change: transform;
+  z-index: 9002 !important; /* מעל האופרליי */
+  flex-shrink: 0; /* לא יתכווץ */
+  box-shadow: 0 0 20px rgb(124 77 255 / 0.35);
+  border-radius: 12px !important;
+}
+
+/* במובייל – Slide-in/out לפי class */
+.sidebar.mobile {
+  position: fixed !important;
+  top: 0;
+  right: 0;
+  width: 83vw !important;
+  max-width: 350px !important;
+  height: 100vh !important;
+  background: #f9edff !important;
+  box-shadow: -8px 0 36px #0001 !important;
+  transform: translateX(100%) !important; /* ברירת מחדל: סגור */
+  z-index: 9002 !important; /* מעל האופרליי */
+  border-radius: 0 12px 12px 0; /* עיגול בפינות במובייל */
+  transition: transform 0.35s ease !important;
+}
+.sidebar.mobile.open {
+  transform: translateX(0) !important; /* כשלוחצים: פותח */
+}
+
+/* אופרליי של רקע כשהסיידבר פתוח במובייל */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(44, 18, 85, 0.13) !important; /* שקיפות קלה */
+  z-index: 9000 !important; /* מתחת לסיידבר */
+  cursor: pointer;
+  backdrop-filter: none; /* אין טשטוש */
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+.sidebar-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* קישורים פנימיים */
+.sidebar nav {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+}
+.sidebar a {
+  padding: 0.75rem 1rem !important;
+  border-radius: 16px !important; /* עיגול חזק יותר */
+  color: var(--text-secondary) !important;
+  text-decoration: none !important;
+  transition: background 0.2s !important;
+  display: block !important; /* כדי שהעיגול יכסה את כל הרוחב */
+  margin-bottom: 0.3rem !important; /* רווח בין הטאבים */
+}
+.sidebar a.active {
+  background: var(--primary) !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 16px !important; /* עיגול חזק גם לטאב פעיל */
+  box-shadow: 0 4px 8px rgb(92 70 255 / 0.5); /* הצללה להדגשה */
+}
+
+/* תוכן הדשבורד */
+.dashboard-content {
+  flex: 1;
+  padding: 1rem;
+  min-height: 100vh; /* למלא את הגובה */
+  overflow-y: auto;
+  box-sizing: border-box;
+  transition: filter 0.3s ease;
+}
+
+/* כפתור ניווט מובייל מקצועי (MobileNavToggle) */
+.mobile-nav-toggle {
+  position: fixed; /* או absolute בתוך קונטיינר */
+  top: 12px; /* התאמה לגובה הלוגו */
+  left: 80px; /* מיקום ליד הלוגו - תתאים לפי רוחב הלוגו */
+  z-index: 1100;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 0.3s ease;
+}
+
+
+.mobile-nav-toggle svg line {
+  stroke: #333;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-toggle:hover svg line {
+  stroke: #5c46ff; /* צבע הכחול בהארה בריחוף */
+}
+
+.mobile-nav-toggle:focus {
+  outline: 2px solid #5c46ff;
+  outline-offset: 2px;
+}
+
+/* במובייל בלבד – התוכן מתחת לכפתור */
+@media (max-width: 768px) {
+  .business-dashboard-layout {
+    flex-direction: row !important; /* לשמור על פריסה אופקית */
+    height: 100vh;
+  }
+  .dashboard-content {
+    flex: 1;
+    margin-right: 0; /* יתעדכן דינמית לפי מצב הסיידבר */
+    padding: 1rem !important;
+    padding-top: 60px !important; /* למקם מתחת לכפתור */
+    box-sizing: border-box;
+    height: 100vh !important;
+    overflow-y: auto;
+  }
+  .sidebar.mobile {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    width: 83vw !important;
+    max-width: 350px !important;
+    height: 100vh !important;
+    background: #f9edff !important;
+    box-shadow: -8px 0 36px #0001 !important;
+    transform: translateX(100%) !important;
+    transition: transform 0.35s ease !important;
+    z-index: 9002 !important;
+    border-radius: 0 12px 12px 0; /* עיגול בפינות */
+  }
+  .sidebar.mobile.open {
+    transform: translateX(0) !important;
+  }
+}
+
+/* בדסקטופ – הסיידבר תמיד גלוי, הכפתור מוסתר */
+@media (min-width: 769px) {
+  .sidebar {
+    transform: none !important; /* סיידבר תמיד גלוי */
+    position: relative !important;
+    box-shadow: none !important;
+    z-index: auto !important;
+    border-radius: 0 12px 12px 0; /* שמירת עיגול בפינות בצד ימין */
+  }
+  .mobile-nav-toggle {
+    display: none !important;
+  }
+  .sidebar-overlay {
+    display: none !important;
+  }
+}

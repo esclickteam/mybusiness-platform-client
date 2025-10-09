@@ -1,0 +1,102 @@
+.login-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.skeleton-title,
+.skeleton-input,
+.skeleton-button,
+.skeleton-link,
+.skeleton-button-small {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 8px;
+}
+
+.skeleton-input {
+  height: 40px;
+  width: 100%;
+}
+
+.skeleton-button {
+  height: 40px;
+  width: 100%;
+}
+
+.skeleton-extra-options {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.skeleton-link {
+  height: 16px;
+  width: 40%;
+}
+
+.skeleton-button-small {
+  height: 32px;
+  width: 30%;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #e0e0e0;
+  }
+  50% {
+    background-color: #f0f0f0;
+  }
+  100% {
+    background-color: #e0e0e0;
+  }
+}
+/* רספונסיביות למובייל קטן */
+@media (max-width: 480px) {
+  .login-skeleton {
+    padding: 16px;
+    max-width: 90%;
+    gap: 12px;
+  }
+
+  .skeleton-title {
+    width: 80%;
+    height: 20px;
+  }
+
+  .skeleton-input,
+  .skeleton-button {
+    height: 36px;
+  }
+
+  .skeleton-button-small {
+    height: 28px;
+    width: 40%;
+  }
+
+  .skeleton-link {
+    width: 60%;
+    height: 14px;
+  }
+
+  .skeleton-extra-options {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+/* טאבלט (עד 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+  .login-skeleton {
+    max-width: 350px;
+  }
+}

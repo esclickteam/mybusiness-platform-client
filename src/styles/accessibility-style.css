@@ -1,0 +1,87 @@
+/* General styling for Accessibility page */
+.accessibility-page {
+  margin: 0 auto;
+  padding: 50px 30px;
+  max-width: 900px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #ffffff;
+  color: #333;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.accessibility-page h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #6a11cb; /* Bizuply purple */
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.accessibility-page h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e2a78; /* Deep indigo */
+  margin-top: 40px;
+  margin-bottom: 15px;
+}
+
+.accessibility-page p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.accessibility-page ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.accessibility-page ul li {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+/* Links */
+.accessibility-page a {
+  color: #6a11cb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.accessibility-page a:hover {
+  text-decoration: underline;
+  color: #1e2a78;
+}
+
+/* Footer note inside the page */
+.accessibility-page footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .accessibility-page {
+    padding: 30px 20px;
+  }
+  .accessibility-page h1 {
+    font-size: 2rem;
+  }
+  .accessibility-page h2 {
+    font-size: 1.4rem;
+  }
+}
+@media (max-width: 480px) {
+  .accessibility-page {
+    padding: 20px 15px;
+  }
+  .accessibility-page h1 {
+    font-size: 1.6rem;
+  }
+  .accessibility-page h2 {
+    font-size: 1.2rem;
+  }
+}

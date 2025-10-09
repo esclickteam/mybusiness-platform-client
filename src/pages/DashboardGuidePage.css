@@ -1,0 +1,175 @@
+.dashboard-guide-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  direction: rtl;
+  font-family: Arial, sans-serif;
+  color: #222;
+  line-height: 1.6;
+  background-color: #fff;
+  box-sizing: border-box;
+  word-break: break-word; /* למניעת שבירת מילים לא טובה */
+}
+
+.dashboard-guide-container h1 {
+  font-size: 2.4rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: #004085; /* מעט כהה יותר לכותרת */
+}
+
+.dashboard-guide-container h2 {
+  font-size: 1.8rem;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 5px;
+  width: fit-content;
+  color: #0056b3; /* גוון כחול נעים לכותרות משנה */
+}
+
+.dashboard-guide-container h3 {
+  font-size: 1.4rem;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.dashboard-guide-container p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+
+.dashboard-guide-container ol,
+.dashboard-guide-container ul {
+  margin: 0 0 20px 20px;
+  padding: 0;
+  list-style-type: disc;
+}
+
+.dashboard-guide-container li {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.dashboard-guide-container strong {
+  font-weight: 700;
+}
+
+/* טבלה */
+.dashboard-guide-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  table-layout: fixed;
+  word-wrap: break-word;
+  font-size: 1.1rem;
+}
+
+.dashboard-guide-container th,
+.dashboard-guide-container td {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  text-align: right; /* RTL alignment */
+  vertical-align: top;
+}
+
+.dashboard-guide-container th {
+  background-color: #f0f4ff;
+  color: #004085;
+  font-weight: 700;
+}
+
+/* הוספת אפקט קל בהטבעת כותרות ואלמנטים */
+.dashboard-guide-container h2:hover,
+.dashboard-guide-container h3:hover {
+  color: #003366;
+  cursor: default;
+  transition: color 0.3s ease;
+}
+
+/* רספונסיביות */
+@media (max-width: 600px) {
+  .dashboard-guide-container {
+    padding: 15px;
+    margin: 20px;
+  }
+
+  .dashboard-guide-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .dashboard-guide-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .dashboard-guide-container h3 {
+    font-size: 1.2rem;
+  }
+
+  .dashboard-guide-container p,
+  .dashboard-guide-container li {
+    font-size: 1rem;
+  }
+
+  /* גלילה אופקית לטבלה במובייל */
+  .dashboard-guide-container table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+@media (max-width: 900px) {
+  .dashboard-guide-container {
+    max-width: 100%;
+    margin: 30px 15px;
+    padding: 15px;
+  }
+
+  .dashboard-guide-container h1 {
+    font-size: 2rem;
+  }
+
+  .dashboard-guide-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .dashboard-guide-container h3 {
+    font-size: 1.3rem;
+  }
+
+  .dashboard-guide-container p,
+  .dashboard-guide-container li {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-guide-container {
+    padding: 10px;
+    margin: 15px 10px;
+  }
+
+  .dashboard-guide-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-guide-container h2 {
+    font-size: 1.2rem;
+  }
+
+  .dashboard-guide-container h3 {
+    font-size: 1rem;
+  }
+
+  .dashboard-guide-container p,
+  .dashboard-guide-container li {
+    font-size: 0.9rem;
+  }
+
+  .dashboard-guide-container table {
+    font-size: 1rem;
+  }
+}

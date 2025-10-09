@@ -1,0 +1,72 @@
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.kanban-column {
+  background: #f9f9fb;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 300px;
+}
+
+.kanban-column h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #4a3aff;
+}
+
+.kanban-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kanban-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  cursor: grab;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kanban-card.dragging {
+  transform: rotate(3deg) scale(1.05);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.kanban-card strong {
+  font-size: 1rem;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.kanban-card p {
+  margin: 2px 0;
+  font-size: 0.85rem;
+}
+
+.kanban-card small {
+  color: #666;
+  font-size: 0.75rem;
+}
+
+.actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+.actions button {
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.actions .edit { background: #4caf50; color: #fff; }
+.actions .delete { background: #f44336; color: #fff; }

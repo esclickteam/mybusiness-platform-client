@@ -1,0 +1,157 @@
+.calendar-container {
+  width: 100%;
+  max-width: 720px; /* הרחבה ליותר מקום */
+  margin: auto;
+  font-family: 'Alef', sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8f7ff;
+  padding: 16px; /* הוספת ריווח פנימי */
+  box-sizing: border-box;
+}
+
+/* כותרת חודש ושנה */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 16px 0;
+  background: #f5f5f5;
+  position: relative;
+}
+.calendar-header .month-hebrew {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+.calendar-header .year {
+  font-size: 1rem;
+  color: #666;
+  margin-top: 4px;
+}
+.month-arrow {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: #7e5bef;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+.month-arrow:hover,
+.month-arrow:focus {
+  background: #e7e4fd;
+}
+
+/* שבועות */
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #fafafa;
+  border-bottom: 1px solid #ddd;
+}
+.weekday {
+  text-align: center;
+  padding: 8px 0;
+  font-weight: 600;
+  color: #333;
+}
+
+/* גריד של תאריכים */
+.calendar-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px; /* רווח בין התאים */
+  padding: 10px 0;
+}
+.date-cell {
+  border-radius: 12px;
+  background: #fff; /* רקע לבן לנראות נקייה */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1); /* צל עדין */
+  min-height: 90px; /* הגדלת הגובה */
+  position: relative;
+  transition: background 0.2s, box-shadow 0.2s;
+  cursor: default;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 8px;
+}
+.date-cell:nth-child(7n) { /* ביטול גבול ימני לשבת */
+  border-right: none;
+}
+.date-cell:nth-last-child(-n+7) { /* ביטול גבול תחתון בשורה האחרונה */
+  border-bottom: none;
+}
+
+/* תא לחיץ */
+.date-cell.clickable {
+  cursor: pointer;
+  background: #fdf8ff;
+}
+.date-cell.clickable:hover,
+.date-cell.clickable:focus {
+  background: #ece8ff;
+  box-shadow: 0 3px 10px rgba(126, 91, 239, 0.4);
+}
+
+/* תאריך נבחר */
+.date-cell.selected,
+.date-cell.selected.clickable {
+  background: linear-gradient(135deg, #7e5bef 70%, #c8b6ff 120%);
+  color: #fff;
+  box-shadow: 0 3px 12px #7e5bef77;
+}
+.date-cell.selected .date-number {
+  color: #fff;
+}
+
+/* המספר עצמו */
+.date-number {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+  user-select: none;
+  position: relative;
+  z-index: 2;
+}
+
+/* רספונסיביות קלה */
+@media (max-width: 480px) {
+  .calendar-container {
+    max-width: 100%;
+    padding: 10px;
+  }
+  .date-cell {
+    min-height: 70px;
+  }
+  .date-number {
+    font-size: 1rem;
+  }
+}
+@media (max-width: 768px) {
+  .calendar-container {
+    padding: 12px;
+  }
+
+  .date-cell {
+    min-height: 80px;
+  }
+
+  .date-number {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .date-cell {
+    min-height: 60px;
+  }
+
+  .date-number {
+    font-size: 0.95rem;
+  }
+}

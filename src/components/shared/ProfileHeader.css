@@ -1,0 +1,151 @@
+/* src/components/ProfileHeader.css */
+
+.profile-header-wrapper {
+    text-align: center;
+    padding: 1.5rem 1rem 1rem;
+    background-color: #f8ebff;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .profile-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+  }
+  
+  .profile-name-section {
+    text-align: center;
+  }
+  
+  .business-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+    color: #333;
+  }
+  
+  .rating {
+    color: #ffc107;
+    font-weight: bold;
+  }
+  
+  .about-snippet {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    color: #555;
+  }
+  
+  .profile-divider {
+    margin-top: 1rem;
+    border: none;
+    border-top: 1px solid #ddd;
+  }
+  @media (max-width: 480px) {
+  .profile-header-wrapper {
+    padding: 1rem 0.5rem;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .profile-image {
+    width: 70px;
+    height: 70px;
+  }
+
+  .business-name {
+    font-size: 1.3rem;
+  }
+
+  .about-snippet {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .profile-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .business-name {
+    font-size: 1.1rem;
+  }
+
+  .about-snippet {
+    font-size: 0.85rem;
+  }
+}
+/* טאבלטים עד 768px */
+@media (max-width: 768px) {
+  .profile-header {
+    gap: 0.75rem;
+  }
+
+  .profile-image {
+    width: 75px;
+    height: 75px;
+  }
+
+  .business-name {
+    font-size: 1.4rem;
+  }
+
+  .about-snippet {
+    font-size: 0.92rem;
+  }
+}
+
+/* מחשבים בינוניים עד 1024px */
+@media (max-width: 1024px) {
+  .profile-header {
+    gap: 1rem;
+  }
+
+  .profile-image {
+    width: 85px;
+    height: 85px;
+  }
+
+  .business-name {
+    font-size: 1.6rem;
+  }
+
+  .about-snippet {
+    font-size: 1rem;
+  }
+}
+
+/* מסכים גדולים במיוחד */
+@media (min-width: 1281px) {
+  .profile-header-wrapper {
+    padding: 2rem 1.5rem;
+  }
+
+  .profile-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .business-name {
+    font-size: 1.8rem;
+  }
+
+  .about-snippet {
+    font-size: 1.05rem;
+  }
+}

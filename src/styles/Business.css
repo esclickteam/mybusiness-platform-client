@@ -1,0 +1,123 @@
+/* ===== Container ===== */
+.business-join-container {
+  max-width: 1100px;
+  margin: 60px auto 100px;
+  padding: 0 24px;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1c1c1c;
+  background: #fff;
+  direction: ltr;
+}
+
+/* ===== Header ===== */
+.header-section {
+  text-align: center;
+  margin-bottom: 70px;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: #555;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ===== Grid Layout ===== */
+.info-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  margin-bottom: 90px;
+}
+
+@media (max-width: 768px) {
+  .info-section {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ===== Cards ===== */
+.info-box {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 40px 32px;
+  text-align: left;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.info-box:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+  transform: translateY(-4px);
+}
+
+.info-box h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+.info-box ul {
+  list-style: disc inside;
+  margin: 0;
+  padding: 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #444;
+}
+
+.info-box li {
+  margin-bottom: 12px;
+}
+
+/* ===== CTA Section ===== */
+.cta-section {
+  background: #f7f6ff;
+  border-radius: 20px;
+  padding: 60px 30px;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cta-section h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #1c1c1c;
+  margin-bottom: 20px;
+}
+
+.cta-section p {
+  font-size: 1.15rem;
+  color: #555;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+/* ===== Button ===== */
+.join-button {
+  background: #5c3d99;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.2rem;
+  padding: 16px 48px;
+  border-radius: 40px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.join-button:hover {
+  background: #442d73;
+  transform: translateY(-2px);
+}

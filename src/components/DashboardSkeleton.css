@@ -1,0 +1,113 @@
+.dashboard-skeleton {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.skeleton-rect {
+  background: #e0e0e0;
+  border-radius: 8px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* גובה ורוחב עבור כל רכיב כדי לדמות את הממשק */
+
+.skeleton-header {
+  height: 36px;
+  width: 40%;
+}
+
+.skeleton-cards {
+  display: flex;
+  gap: 1rem;
+}
+
+.skeleton-card {
+  flex: 1;
+  height: 100px;
+}
+
+.skeleton-chart {
+  height: 220px;
+  width: 100%;
+}
+
+.skeleton-insights {
+  height: 120px;
+  width: 100%;
+}
+
+.skeleton-actions {
+  height: 100px;
+  width: 100%;
+}
+
+.skeleton-table {
+  height: 150px;
+  width: 100%;
+}
+
+.skeleton-calendar {
+  height: 250px;
+  width: 100%;
+}
+
+.skeleton-weekly-summary {
+  height: 120px;
+  width: 100%;
+}
+
+/* אנימציית pulse נעימה לעין */
+@keyframes pulse {
+  0% {
+    background-color: #f0f0f0;
+  }
+  50% {
+    background-color: #e0e0e0;
+  }
+  100% {
+    background-color: #f0f0f0;
+  }
+}
+@media (max-width: 768px) {
+  .skeleton-cards {
+    flex-direction: column;
+  }
+
+  .skeleton-header {
+    width: 80%;
+  }
+
+  .skeleton-card {
+    height: 80px;
+  }
+
+  .skeleton-chart,
+  .skeleton-insights,
+  .skeleton-actions,
+  .skeleton-table,
+  .skeleton-calendar,
+  .skeleton-weekly-summary {
+    height: auto;
+    min-height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-skeleton {
+    padding: 0.75rem;
+    gap: 0.8rem;
+  }
+
+  .skeleton-header {
+    width: 90%;
+    height: 28px;
+  }
+
+  .skeleton-card {
+    height: 70px;
+  }
+}

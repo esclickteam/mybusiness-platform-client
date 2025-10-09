@@ -1,0 +1,299 @@
+/* ===== טאב הגלריה - צד שמאל ===== */
+.gallery-form-wrapper {
+  display: flex;
+  flex-direction: row;  /* הצגת שני האלמנטים (תמונה/עורך) בסידור אופקי */
+  justify-content: flex-start;
+  padding: 1rem;
+  gap: 20px; /* רווחים בין האלמנטים */
+  overflow: visible !important;
+}
+
+.gallery-form-wrapper.edit-mode {
+  background-color: #f4e8ff;
+  border-radius: 16px;
+}
+
+/* הכפתור "העלאת מדיה" */
+.upload-btn {
+  margin-top: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  background-color: #b46af1;
+  color: white;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  max-width: 220px;
+}
+
+.upload-btn:hover {
+  background-color: #944ee0;
+}
+
+.save-btn {
+  margin-top: 1rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  background: linear-gradient(to right, #b46af1, #c78fff);
+  color: white;
+  font-weight: 600;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.save-btn:hover {
+  background: linear-gradient(to right, #a257e8, #b077f9);
+}
+
+.info-note {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* ===== גריד גלריה ===== */
+.gallery-instagram-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 תמונות בשורה */
+  gap: 12px;
+  margin-top: 1rem;
+  padding: 0 6px;
+  overflow: visible;
+}
+
+.gallery-item-square {
+  position: relative;
+  width: 100%;
+  height: 250px;  /* גובה אחיד */
+  background: #f7f7f7;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.gallery-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* הצגת התמונה בצורה שתמלא את הריבוע בלי לעוות אותה */
+  border-radius: 8px;
+  display: block;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* ===== מודאל צפייה ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  position: relative;
+  max-width: 95vw;
+  max-height: 90vh;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 16px;
+}
+
+.modal-media {
+  max-width: 90vw;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+/* ===== כפתורי ניווט במודאל ===== */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #b46af1;
+  color: white;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  z-index: 10000;
+}
+
+.nav-btn.left {
+  left: -50px;
+}
+
+.nav-btn.right {
+  right: -50px;
+}
+
+/* ===== כפתורי עריכה ===== */
+.edit-btn,
+.delete-btn {
+  position: absolute;
+  top: 6px;
+  width: 34px;
+  height: 34px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  cursor: pointer;
+  z-index: 3;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.edit-btn {
+  left: 6px;
+}
+
+.delete-btn {
+  right: 6px;
+}
+
+.edit-btn:hover svg,
+.delete-btn:hover svg {
+  stroke: #6f44d8;
+}
+
+.edit-btn:hover,
+.delete-btn:hover {
+  transform: scale(1.1);
+  background-color: #f0eaff;
+}
+
+/* ===== רספונסיביות ===== */
+@media (max-width: 768px) {
+  .gallery-instagram-grid {
+    grid-template-columns: repeat(2, 1fr); /* תמונות בשורה אחת כשיש פחות מקום */
+  }
+}
+
+@media (max-width: 500px) {
+  .gallery-instagram-grid {
+    grid-template-columns: repeat(1, 1fr); /* תמונה אחת בשורה כשיש מקום מאוד קטן */
+  }
+}
+
+/* ===== לודר (Spinner) ===== */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #ccc;
+  border-top-color: #b46af1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* רספונסיביות מלאה לתצוגת גלריה */
+
+@media (max-width: 1024px) {
+  .gallery-form-wrapper {
+    flex-direction: column;
+    padding: 1rem 0.5rem;
+    gap: 16px;
+  }
+
+  .upload-btn,
+  .save-btn {
+    width: 100%;
+    max-width: 280px;
+    font-size: 1rem;
+  }
+
+  .gallery-item-square {
+    height: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 0.7rem;
+  }
+
+  .modal-media {
+    max-width: 100%;
+    max-height: 70vh;
+  }
+
+  .gallery-item-square {
+    height: 200px;
+  }
+
+  .upload-btn,
+  .save-btn {
+    font-size: 0.95rem;
+    padding: 0.7rem 1.2rem;
+  }
+
+  .info-note {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-instagram-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-media {
+    max-width: 100%;
+    max-height: 60vh;
+  }
+
+  .nav-btn {
+    font-size: 1.5rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .nav-btn.left {
+    left: -30px;
+  }
+
+  .nav-btn.right {
+    right: -30px;
+  }
+
+  .upload-btn,
+  .save-btn {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    max-width: 100%;
+  }
+
+  .gallery-item-square {
+    height: 180px;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    width: 28px;
+    height: 28px;
+  }
+}

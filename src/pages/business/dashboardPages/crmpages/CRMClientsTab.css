@@ -1,0 +1,374 @@
+.clients-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  flex: 1;
+  color: #222;
+  transition: border-color 0.3s ease;
+}
+.search-input:focus {
+  border-color: #7c4dff;
+  outline: none;
+}
+
+.add-client-btn {
+  background-color: #7c4dff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+.add-client-btn:hover {
+  background-color: #6a3edb;
+}
+
+.add-client-form {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.add-client-form input {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 200px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #222;
+}
+.add-client-form input.address-input {
+  flex: 2;
+  min-width: 300px;
+}
+
+.save-client-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.save-client-btn:hover {
+  background: #45a045;
+}
+
+.clients-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  font-size: 0.95rem;
+  font-family: Arial, sans-serif;
+  color: #222;
+}
+
+.clients-table thead {
+  background-color: #f8f8f8;
+  color: #222;
+  font-weight: 700;
+  text-align: right;
+  user-select: none;
+}
+
+/* תיקון חשוב: כותרת "שם" מיושרת לימין כמו שאר הכותרות */
+.clients-table thead th {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1.5px solid #ddd;
+  border-radius: 10px 10px 0 0;
+  white-space: nowrap;
+  text-align: right; /* וידוא יישור לימין */
+}
+
+.clients-table tbody tr {
+  background: #fff !important; /* לבן קבוע */
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease;
+  border-radius: 10px;
+}
+
+.clients-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.clients-table thead {
+  background: #f8f8f8 !important; /* אפור קבוע */
+  color: #222;
+  font-weight: 700;
+  text-align: right;
+  user-select: none;
+}
+
+/* תא עם גלישת טלפון, אימייל וכתובת */
+.clients-table td.phone-cell,
+.clients-table td.email-cell,
+.clients-table td.address-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* עיצוב כפתור הצגת היסטוריה */
+.show-history-btn {
+  background-color: #7c4dff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+.show-history-btn:hover {
+  background-color: #6a3edb;
+}
+
+/* רספונסיביות - מובייל כמו בתיאומים */
+@media (max-width: 700px) {
+  .clients-table thead {
+    display: none;
+  }
+
+  .clients-table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: 0 0 15px rgba(124, 77, 255, 0.15);
+    border-radius: 12px;
+  }
+
+  .clients-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    text-align: right;
+    white-space: normal;
+    border-bottom: 1px solid #eee;
+    position: relative;
+  }
+
+  /* התווית מעל כל שדה, כולל עמודת "שם" */
+  .clients-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #3a0ca3;
+    flex-basis: 40%;
+    text-align: right;
+    padding-left: 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* תוכן עמודת "שם" מיושר במרכז */
+  .clients-table tbody td:first-child {
+    justify-content: center !important;
+    text-align: center !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .clients-table tbody td:last-child {
+    border-bottom: none;
+    justify-content: center;
+    padding-top: 1rem;
+  }
+
+  .clients-table tbody td.phone-cell,
+  .clients-table tbody td.email-cell,
+  .clients-table tbody td.address-cell {
+    word-break: break-word;
+    max-width: 60%;
+  }
+
+  .show-history-btn {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* רספונסיביות Clients Tab לפי גדלים נוספים */
+
+/* עד 480px */
+@media (max-width: 480px) {
+  .clients-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .search-input {
+    flex: none;
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+  .add-client-btn {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+  }
+  .add-client-form {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .add-client-form input,
+  .add-client-form input.address-input {
+    min-width: 100%;
+    flex: none;
+  }
+  .save-client-btn {
+    width: 100%;
+    padding: 0.6rem;
+  }
+  .clients-table td.phone-cell,
+  .clients-table td.email-cell,
+  .clients-table td.address-cell {
+    max-width: 120px;
+  }
+  .show-history-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* 481px - 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .clients-header {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .search-input {
+    max-width: 300px;
+    font-size: 0.95rem;
+    padding: 0.45rem 0.9rem;
+  }
+  .add-client-btn {
+    width: auto;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  .add-client-form {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .add-client-form input,
+  .add-client-form input.address-input {
+    min-width: 200px;
+    flex: 1;
+  }
+  .save-client-btn {
+    width: auto;
+  }
+  .clients-table td.phone-cell,
+  .clients-table td.email-cell,
+  .clients-table td.address-cell {
+    max-width: 180px;
+  }
+  .show-history-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* 769px ומעלה */
+@media (min-width: 769px) {
+  .clients-header {
+    flex-wrap: nowrap;
+  }
+  .search-input {
+    max-width: 300px;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  .add-client-btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+  .add-client-form {
+    gap: 0.5rem;
+  }
+  .add-client-form input,
+  .add-client-form input.address-input {
+    min-width: 200px;
+    flex: 1;
+  }
+  .save-client-btn {
+    width: auto;
+  }
+  .clients-table td.phone-cell,
+  .clients-table td.email-cell,
+  .clients-table td.address-cell {
+    max-width: 200px;
+  }
+  .show-history-btn {
+    padding: 0.3rem 0.7rem;
+    font-size: 1rem;
+  }
+}
+
+/* ===== כפתורי פעולות נוספים ===== */
+.edit-client-btn {
+  background-color: #ffb300; /* כתום */
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-right: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.edit-client-btn:hover {
+  background-color: #e69a00;
+  transform: scale(1.05);
+}
+
+.delete-client-btn {
+  background-color: #e53935; /* אדום */
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-right: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.delete-client-btn:hover {
+  background-color: #c62828;
+  transform: scale(1.05);
+}
+
+/* במובייל – שיהיו ברוחב מלא */
+@media (max-width: 700px) {
+  .edit-client-btn,
+  .delete-client-btn {
+    width: 100%;
+    margin: 0.3rem 0;
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+}

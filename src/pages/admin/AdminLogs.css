@@ -1,0 +1,130 @@
+/* AdminLogs.css */
+
+.admin-logs {
+    padding: 40px;
+    max-width: 1100px;
+    margin: auto;
+    font-family: Arial, sans-serif;
+    text-align: right;
+  }
+  
+  .admin-logs h1 {
+    color: #4a148c;
+    margin-bottom: 30px;
+  }
+  
+  .log-search {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 30px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+  
+  .logs-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .logs-table th,
+  .logs-table td {
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .logs-table th {
+    background-color: #f3e8ff;
+    color: #4a148c;
+    font-size: 14px;
+  }
+  
+  .logs-table td {
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .back-dashboard {
+    display: inline-block;
+    margin-bottom: 20px;
+    background-color: #ede9fe;
+    padding: 8px 14px;
+    border-radius: 8px;
+    color: #4a148c;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .back-dashboard:hover {
+    background-color: #dcd0fa;
+  }
+  @media (max-width: 480px) {
+  .admin-logs {
+    padding: 20px;
+  }
+
+  .admin-logs h1 {
+    font-size: 20px;
+  }
+
+  .log-search {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+  .admin-logs h1 {
+    font-size: 22px;
+  }
+
+  .log-search {
+    font-size: 14px;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .admin-logs {
+    padding: 30px;
+  }
+
+  .admin-logs h1 {
+    font-size: 24px;
+  }
+
+  .log-search {
+    font-size: 15px;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .admin-logs {
+    max-width: 1400px;
+  }
+
+  .logs-table th,
+  .logs-table td {
+    font-size: 15px;
+    padding: 14px 18px;
+  }
+}

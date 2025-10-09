@@ -1,0 +1,164 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #a855f7, #6c63ff);
+  background-size: 300% 300%;
+  animation: bgMove 12s ease-in-out infinite;
+  padding: 20px;
+}
+
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* תיבת טופס בהירה */
+.login-box {
+  background: #fafafa;
+  border-radius: 18px;
+  padding: 40px 35px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 0.7s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-box h2 {
+  font-family: "Poppins", sans-serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #3b0ca3;
+}
+
+/* שדות */
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.required {
+  color: #d21f1f;
+  margin-left: 2px;
+}
+
+.login-input,
+.password-input {
+  width: 100%;
+  padding: 12px 42px 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.login-input:focus,
+.password-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+  outline: none;
+}
+
+/* עין ממוקמת בפנים, באמצע אנכית */
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #777;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-btn:hover {
+  color: #7c3aed;
+}
+
+/* כפתור התחברות */
+.login-button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #7c3aed, #9333ea);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.login-button:hover {
+  background: linear-gradient(90deg, #9333ea, #7c3aed);
+  transform: translateY(-2px);
+}
+
+/* שכחת סיסמה */
+.forgot-inside-btn {
+  display: inline-block;
+  margin-top: 10px;
+  color: #7c3aed;
+  font-size: 0.95rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* הודעת שגיאה */
+.error-message {
+  color: #d21f1f;
+  margin-top: 12px;
+}
+
+/* לינקים נוספים */
+.login-extra-options {
+  margin-top: 25px;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.signup-link-text {
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+.staff-login-btn {
+  margin-top: 15px;
+  background: #eee;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 10px;
+  width: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.staff-login-btn:hover {
+  background: #e0e0e0;
+}

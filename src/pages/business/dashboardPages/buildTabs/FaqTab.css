@@ -1,0 +1,257 @@
+.faq-tab {
+  padding: 40px;
+  direction: rtl;
+  font-family: 'Heebo', sans-serif;
+  background: linear-gradient(135deg, #f7eaff, #eceeff);
+  border-radius: 20px;
+}
+
+.faq-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.faq-form input,
+.faq-form textarea {
+  background: #f9f9ff;
+  border: 1px solid #d4c4ef;
+  color: #333;
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.faq-form input:focus,
+.faq-form textarea:focus {
+  box-shadow: 0 0 0 2px #b388ff;
+  outline: none;
+}
+
+.faq-form button {
+  width: 160px;
+  text-align: center;
+  padding: 12px;
+  font-size: 16px;
+  background: linear-gradient(to right, #9b59b6, #8e44ad);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-top: 10px;
+}
+
+.faq-form button:hover {
+  background: linear-gradient(to right, #8e44ad, #6c3483);
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.faq-card {
+  position: relative;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.faq-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.faq-header {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.toggle-answer-btn {
+  background: transparent;
+  border: none;
+  color: #7c3aed;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.faq-footer-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.edit-btn,
+.delete-btn,
+.save-edit-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.edit-btn {
+  background: #d1c4e9;
+  color: #4b0082;
+}
+
+.edit-btn:hover {
+  background: #b39ddb;
+}
+
+.delete-btn {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+.delete-btn:hover {
+  background: #ef9a9a;
+}
+
+.save-edit-btn {
+  background: #a5d6a7;
+  color: #1b5e20;
+  margin-top: 8px;
+}
+
+.save-edit-btn:hover {
+  background: #81c784;
+}
+
+.faq-actions-inline {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+  direction: rtl;
+}
+
+.inline-btn {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.inline-btn.edit {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.inline-btn.edit:hover {
+  background-color: #ffe082;
+}
+
+.inline-btn.delete {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.inline-btn.delete:hover {
+  background-color: #f5c6cb;
+}
+
+.faq-answer-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.faq-answer-wrapper.open {
+  max-height: 500px;
+}
+
+/* 💾 כפתור שמור הכל */
+.save-all-button {
+  background: linear-gradient(to right, #9b59b6, #8e44ad);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease;
+}
+
+.save-all-button:hover {
+  background: linear-gradient(to right, #8e44ad, #6c3483);
+}
+/* רספונסיביות מלאה לתצוגת FAQ */
+
+@media (max-width: 1024px) {
+  .faq-tab {
+    padding: 30px 20px;
+  }
+
+  .faq-form input,
+  .faq-form textarea {
+    max-width: 100%;
+  }
+
+  .faq-form button,
+  .save-all-button {
+    width: 100%;
+    max-width: 250px;
+  }
+
+  .faq-footer-actions,
+  .faq-actions-inline {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .faq-tab {
+    padding: 20px 15px;
+  }
+
+  .faq-header {
+    font-size: 15px;
+  }
+
+  .faq-form input,
+  .faq-form textarea {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .faq-form button,
+  .save-all-button {
+    font-size: 15px;
+    padding: 10px 16px;
+  }
+
+  .edit-btn,
+  .delete-btn,
+  .save-edit-btn,
+  .inline-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .faq-footer-actions,
+  .faq-actions-inline {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+}

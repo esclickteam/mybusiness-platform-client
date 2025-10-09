@@ -1,0 +1,251 @@
+/* Profile.css */
+
+.profile-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+  
+  .profile-wrapper section {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+  
+  .profile-wrapper h2 {
+    font-size: 1.5rem;
+    color: #6b4fc4;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* לוגו + שם העסק */
+  .logo-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .logo-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 100%;
+    border: 4px solid #dcd3ff;
+    object-fit: cover;
+  }
+  
+  .name-rating {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .name-rating h2 {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .rating-badge {
+    background-color: #ffdd57;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    display: inline-block;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  /* גלריה */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  
+  .gallery-grid img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+  }
+  
+  .gallery-grid img:hover {
+    transform: scale(1.03);
+  }
+  
+  /* סטוריז */
+  .story-strip {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  
+  .story-thumb {
+    height: 120px;
+    width: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid #dcd3ff;
+  }
+  
+  /* ביקורות */
+  .review-box {
+    background: #f8f4ff;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+  
+  /* שאלות ותשובות */
+  .faq-item {
+    background: #f5f5f5;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  /* שירותים */
+  .service-list li {
+    margin-bottom: 0.6rem;
+    font-size: 1rem;
+  }
+  
+  /* רספונסיביות */
+  @media (max-width: 768px) {
+    .profile-wrapper {
+      padding: 1rem;
+    }
+  
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+  
+    .logo-img {
+      width: 90px;
+      height: 90px;
+    }
+  }
+  /* רספונסיביות - מובייל קטן עד 480px */
+@media (max-width: 480px) {
+  .profile-wrapper {
+    padding: 0.8rem 1rem;
+    gap: 2rem;
+  }
+
+  .logo-img {
+    width: 70px;
+    height: 70px;
+    border-width: 3px;
+  }
+
+  .name-rating h2 {
+    font-size: 1.3rem;
+  }
+
+  .rating-badge {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+  }
+
+  .gallery-grid img {
+    height: 100px;
+  }
+
+  .story-strip {
+    gap: 8px;
+  }
+
+  .story-thumb {
+    height: 90px;
+    width: 60px;
+    border-width: 1.5px;
+  }
+
+  .review-box,
+  .faq-item {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+  }
+
+  .service-list li {
+    font-size: 0.9rem;
+  }
+}
+
+/* טאבלטים ומסכים בינוניים 481px עד 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .profile-wrapper {
+    padding: 1rem 1.5rem;
+  }
+
+  .logo-img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .name-rating h2 {
+    font-size: 1.5rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .gallery-grid img {
+    height: 140px;
+  }
+
+  .story-strip {
+    gap: 10px;
+  }
+
+  .story-thumb {
+    height: 110px;
+    width: 75px;
+  }
+
+  .review-box,
+  .faq-item {
+    font-size: 1rem;
+  }
+
+  .service-list li {
+    font-size: 1rem;
+  }
+}
+
+/* מחשבים בינוניים 769px עד 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .profile-wrapper {
+    max-width: 900px;
+    padding: 1.5rem 2rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
+/* מחשבים גדולים מעל 1025px */
+@media (min-width: 1025px) {
+  .profile-wrapper {
+    max-width: 1200px;
+    padding: 2rem;
+  }
+}

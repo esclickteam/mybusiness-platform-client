@@ -1,0 +1,247 @@
+.calendar-setup-container {
+  max-width: 600px;
+  width: 90%;
+  margin: 40px auto;
+  padding: 24px;
+  background: #f8ecff;
+  border-radius: 16px;
+  text-align: right;
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.calendar-title {
+  margin: 0;
+  color: #7a3df4;
+  font-size: 1.3em;
+}
+
+.weekly-hours-table {
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow-x: auto;
+}
+
+.weekly-hours-table table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+}
+
+.weekly-hours-table th,
+.weekly-hours-table td {
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.weekly-hours-table thead th {
+  font-weight: bold;
+  color: #9075cf;
+  border-bottom: 2px solid #e5d5ff;
+}
+
+.weekly-hours-table tbody tr {
+  background: #faf5ff;
+  border-radius: 8px;
+}
+
+.day-cell {
+  font-weight: 600;
+  color: #333;
+}
+
+.time-input {
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f7f1fd;
+  font-size: 0.95em;
+  width: 80px;
+}
+
+.close-checkbox {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.save-all-btn.styled,
+.cancel-btn.styled {
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.save-all-btn.styled {
+  background: linear-gradient(to right, #a36eff, #d8b4ff);
+  color: #fff;
+  border: none;
+}
+
+.save-all-btn.styled:hover {
+  transform: scale(1.05);
+}
+
+.cancel-btn.styled {
+  background: #fff;
+  border: 2px solid #a36eff;
+  color: #8a60e0;
+}
+
+.cancel-btn.styled:hover {
+  background: #f3e9ff;
+}
+
+.summary {
+  margin-top: 24px;
+  background: #fff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  text-align: right;
+  width: 100%;
+}
+
+.summary strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #7a3df4;
+  font-size: 1.1em;
+}
+
+.summary ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.summary-item {
+  font-size: 0.95em;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.day-label {
+  font-weight: 600;
+}
+
+.closed-label {
+  color: #e04040;
+}
+
+.hours-label {
+  color: #333;
+}
+
+.unset-label {
+  color: #aaa;
+}
+
+@media (max-width: 500px) {
+  .weekly-hours-table table {
+    font-size: 0.85em;
+  }
+  .time-input {
+    width: 60px;
+  }
+}
+
+div.calendar-setup-container > .summary {
+  background: #fff;
+  box-shadow: none;
+}
+@media (max-width: 480px) {
+  .calendar-setup-container {
+    padding: 16px;
+    margin: 20px auto;
+    gap: 16px;
+  }
+
+  .calendar-title {
+    font-size: 1.1em;
+  }
+
+  .weekly-hours-table {
+    padding: 12px 8px;
+  }
+
+  .weekly-hours-table table {
+    font-size: 0.85em;
+  }
+
+  .time-input {
+    width: 60px;
+    font-size: 0.9em;
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .save-all-btn.styled,
+  .cancel-btn.styled {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.95em;
+  }
+
+  .summary {
+    padding: 12px 14px;
+  }
+
+  .summary strong {
+    font-size: 1em;
+  }
+
+  .summary-item {
+    font-size: 0.85em;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 1440px) {
+  .calendar-setup-container {
+    max-width: 700px;
+    padding: 32px;
+  }
+
+  .calendar-title {
+    font-size: 1.5em;
+  }
+
+  .time-input {
+    font-size: 1.1em;
+    width: 90px;
+  }
+
+  .save-all-btn.styled,
+  .cancel-btn.styled {
+    font-size: 1.1em;
+    padding: 12px 26px;
+  }
+
+  .summary strong {
+    font-size: 1.3em;
+  }
+
+  .summary-item {
+    font-size: 1.1em;
+  }
+}

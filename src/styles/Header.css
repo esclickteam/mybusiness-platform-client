@@ -1,0 +1,249 @@
+/* =================================================================== */
+/*                             Header.css                              */
+/* =================================================================== */
+
+/* ===== Header (Desktop) ===== */
+.app-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;        /* הלוגו בצד שמאל */
+  padding: 12px 32px 12px 0;
+  height: 80px;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  z-index: 1502;
+  gap: 40px;
+}
+
+/* Logo */
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0;
+}
+.logo-link .logo {
+  height: auto;
+  max-height: 80px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+.logo-link:hover .logo {
+  transform: scale(1.1);
+}
+
+/* ===== Nav Links (Desktop) ===== */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #222;
+}
+.nav-links a {
+  text-decoration: none;
+  color: #222;
+  transition: color 0.2s;
+  padding: 8px 0;
+}
+.nav-links a:hover,
+.nav-links a.active-link {
+  color: #5e17eb;
+  font-weight: 600;
+}
+
+/* ===== Auth Controls (Desktop) ===== */
+.auth-controls.desktop-only {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-left: auto;
+}
+
+.auth-link {
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+  cursor: pointer;
+  padding: 8px 14px;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+.auth-link:hover {
+  color: #5e17eb;
+}
+.auth-link.logout {
+  color: #c62828;
+}
+.auth-link.logout:hover {
+  color: #a91f1f;
+}
+.hello-user {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+}
+
+/* ===== CTA Button ===== */
+.cta-button {
+  background: #5e17eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 10px 22px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+.cta-button:hover {
+  background: #4315c7;
+  transform: translateY(-1px);
+}
+
+/* ===== Hamburger (mobile only) ===== */
+.menu-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.menu-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #5e17eb;
+  font-size: 24px;
+}
+
+/* ===== Drawer (Hamburger menu) ===== */
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  max-width: 300px;
+  width: 100%;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -4px 0 16px rgba(0,0,0,.1);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .3s;
+  z-index: 1501;
+}
+.side-menu.open { transform: translateX(0); }
+
+.drawer-header {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: #f3e8ff;
+}
+
+.menu-section { margin-top: 24px; }
+.menu-section a {
+  display: block;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #4e2977;
+  font-size: 0.95rem;
+  border-radius: 4px;
+  transition: background .2s, color .2s;
+}
+.menu-section a:hover,
+.menu-section a.active-link {
+  background: #f5f1fa;
+  color: #2d006e;
+  font-weight: 600;
+}
+
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1500;
+}
+
+/* ===== Mobile Auth ===== */
+.mobile-auth {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+.mobile-auth .auth-link,
+.mobile-auth .cta-button {
+  width: 100%;
+  text-align: center;
+}
+
+/* ================= Responsive ================= */
+@media (max-width: 768px) {
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 16px 0 0;
+    height: 70px !important;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: visible;
+  }
+
+  .logo-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+      .logo-link .logo {
+    height: auto !important;
+    max-height: 160px !important;  /* ימלא כמעט את כל ההידר */
+    width: auto !important;
+    display: block;
+  }
+
+  .menu-toggle {
+    position: relative;
+    margin-left: auto;
+    z-index: 10;
+  }
+
+  .nav-links,
+  .auth-controls.desktop-only {
+    display: none !important;
+  }
+}
+
+/* ===== Header Desktop ===== */
+@media (min-width: 1025px) {
+  .mobile-only { display: none !important; }
+  .desktop-only { display: flex; }
+
+   .app-header {
+    height: 70px !important;
+    padding: 0 32px;
+    justify-content: space-between;   /* לוגו בצד שמאל, כפתורים בצד ימין */
+    gap: 40px;
+  }
+
+  .app-header .logo-wrapper .logo-link .logo {
+    height: 250px !important;       /* גודל לוגו קבוע גדול */
+    width: auto !important;
+    max-height: none !important;    /* מבטל הגבלה */
+    max-width: none !important;
+    object-fit: contain;
+    display: block;
+  }
+}

@@ -1,0 +1,227 @@
+/* ====== אזור תוספות (תיעודים + משימות) ====== */
+.client-extras {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 30px;
+}
+
+/* כרטיס כללי */
+.notes-section,
+.tasks-section {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notes-section:hover,
+.tasks-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+}
+
+/* כותרות */
+.notes-section h3,
+.tasks-section h3 {
+  margin-bottom: 16px;
+  color: #4a3aff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* רשימות */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+/* כותרת המשימה ושורה ראשית */
+li .task-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-weight: 600;
+  color: #333;
+}
+
+/* באדג'ים צבעוניים */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.badge.gray {
+  background: #9e9e9e;
+}
+.badge.orange {
+  background: #ff9800;
+}
+.badge.purple {
+  background: #9c27b0;
+}
+.badge.green {
+  background: #4caf50;
+}
+.badge.red {
+  background: #f44336;
+}
+.badge.blue {
+  background: #2196f3;
+}
+
+/* תיאור המשימה */
+li .task-description {
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  padding-top: 4px;
+}
+
+/* מטא דאטה (תאריך/שעה) */
+.task-meta {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* פעולות משימה (עריכה/מחיקה) */
+.task-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.task-actions .btn-edit {
+  background: #4caf50;
+  color: #fff;
+}
+.task-actions .btn-edit:hover {
+  background: #3e8e41;
+}
+
+.task-actions .btn-delete {
+  background: #f44336;
+  color: #fff;
+}
+.task-actions .btn-delete:hover {
+  background: #d32f2f;
+}
+
+/* טפסים */
+textarea,
+input,
+select {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #fafafa;
+  font-size: 0.95rem;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+textarea:focus,
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #6a11cb;
+  box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.15);
+  background: #fff;
+}
+
+/* תוויות */
+label {
+  display: block;
+  margin-top: 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+}
+
+/* בלוק תאריך ושעה */
+.task-datetime {
+  background: #f9f9ff;
+  border: 1px solid #e6e6fa;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+/* כפתורים כלליים */
+.btn-primary {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #5a0fb3, #1f5edb);
+}
+
+/* כל הכפתורים */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+button:hover {
+  transform: translateY(-1px);
+}
+button:active {
+  transform: scale(0.97);
+}
+
+/* טקסט ריק */
+.empty-text {
+  color: #888;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+/* הודעות מערכת (פידבק) */
+.feedback-msg {
+  padding: 12px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  background: #e8f0fe;
+  border: 1px solid #c6dafc;
+}
+.feedback-msg:empty {
+  display: none;
+}

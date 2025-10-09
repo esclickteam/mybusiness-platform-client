@@ -1,0 +1,111 @@
+.actions-container {
+  direction: ltr;
+  background: #fff9f5;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 500px; /* טיפה רחב יותר, נראה מאוזן */
+  margin: 0 auto; /* ממורכז */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ממורכז אנכית */
+  justify-content: center;
+  text-align: center; /* ממורכז טקסטואלית */
+  box-sizing: border-box;
+}
+
+.actions-container.full-width {
+  max-width: 100% !important;
+  margin: 0;
+}
+
+/* כותרת */
+.actions-container h4 {
+  margin-bottom: 0.8rem;
+  font-size: 1.25rem;
+  color: #4b0082;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* ממורכז גם בכותרת */
+  gap: 0.5rem;
+  word-break: break-word;
+}
+
+/* הרשימה */
+.actions-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;           /* ⬅️ ממורכזת */
+  width: fit-content;       /* ⬅️ גודל לפי תוכן בלבד */
+  text-align: left;         /* שומר על יישור פנימי */
+}
+
+/* פריטים */
+.actions-container li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 1rem;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  cursor: default;
+  transition: background-color 0.2s ease;
+  word-break: break-word;
+}
+
+.actions-container li:last-child {
+  border-bottom: none;
+}
+
+.actions-container li:hover {
+  background-color: #f4f4f4;
+  border-radius: 6px;
+}
+
+/* צבעים */
+.actions-container li.success {
+  color: #4caf50;
+  font-weight: 600;
+}
+.actions-container li.warning {
+  color: #d9534f;
+  font-weight: 600;
+}
+.actions-container li.info {
+  color: #2196f3;
+  font-weight: 600;
+}
+
+/* נקודה לפני פריט */
+.actions-container li::before {
+  content: "•";
+  font-size: 1.4rem;
+  line-height: 1;
+  color: #ccc;
+}
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+  .actions-container {
+    padding: 1rem;
+    max-width: 100%;
+    border-radius: 0;
+  }
+  .actions-container h4 {
+    font-size: 1.1rem;
+    flex-wrap: wrap;
+  }
+  .actions-container li {
+    font-size: 0.95rem;
+    padding: 6px 0;
+  }
+}
+
+/* 💻 Tablets */
+@media (max-width: 768px) {
+  .actions-container {
+    padding: 1.25rem;
+    max-width: 90%;
+  }
+}

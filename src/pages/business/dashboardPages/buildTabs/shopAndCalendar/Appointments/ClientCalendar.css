@@ -1,0 +1,336 @@
+/* ClientCalendar.css */
+
+/* =================================================================== */
+/* 1. RTL ל־wrapper                                                    */
+/* =================================================================== */
+.client-calendar-wrapper {
+  direction: rtl !important;
+  text-align: right;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-top: 20px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Alef', sans-serif;
+}
+
+/* =================================================================== */
+/* 2. ניווט חודשים (כפתורי החודש)                                      */
+/* =================================================================== */
+.calendar-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  margin-top: 8px;
+}
+
+.month-nav-btn {
+  background: #f3eaff;
+  border: none;
+  border-radius: 20px;
+  color: #5838e9;
+  padding: 7px 18px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+  user-select: none;
+}
+.month-nav-btn:hover {
+  background: #e1d4fd;
+  color: #29108d;
+}
+
+/* =================================================================== */
+/* 3. תצוגת לוח החודש                                                  */
+/* =================================================================== */
+.month-overview {
+  margin-bottom: 16px;
+}
+
+.calendar-container {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+.calendar-header {
+  text-align: center;
+  padding: 16px 0;
+  background: #f5f5f5;
+}
+.calendar-header .month-hebrew {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+.calendar-header .year {
+  font-size: 1rem;
+  color: #666;
+  margin-top: 4px;
+}
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #fafafa;
+  border-bottom: 1px solid #ddd;
+  direction: rtl;
+}
+.weekday {
+  text-align: center;
+  padding: 8px 0;
+  font-weight: 600;
+  color: #333;
+  user-select: none;
+}
+.calendar-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  direction: rtl;
+}
+.date-cell {
+  border-bottom: 1px solid #eee;
+  border-right: 1px solid #eee;
+  min-height: 80px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.18s;
+  background: #fff;
+  border-radius: 0;
+}
+.date-cell.clickable:hover {
+  background: #f5f1ff;
+}
+.date-cell.selected {
+  background: #7a3df4;
+  color: #fff !important;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.date-cell:nth-child(7n) {
+  border-right: none;
+}
+.date-cell:nth-last-child(-n+7) {
+  border-bottom: none;
+}
+.date-number {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: inherit;
+}
+
+/* =================================================================== */
+/* 4. תצוגת פרטי יום, שעות, טופס                                       */
+/* =================================================================== */
+.selected-date-info {
+  margin-top: 20px;
+  background: #f9f5ff;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #dcd3ff;
+  direction: rtl !important;
+}
+.selected-date-info h4 {
+  margin-bottom: 8px;
+  font-size: 18px;
+  color: #4a3aff;
+  font-weight: 700;
+}
+.selected-date-info p {
+  margin: 4px 0;
+  font-size: 15px;
+  color: #444;
+}
+
+/* רשימת זמני תורים */
+.slot-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.slot-item button {
+  padding: 10px 18px;
+  border-radius: 30px;
+  border: 1px solid #a07bff;
+  background-color: #f0e8ff;
+  color: #4a3aff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+}
+.slot-item button:hover {
+  background-color: #e0d4ff;
+  border-color: #7b5df2;
+}
+
+/* סיכום תיאום */
+.summary-box {
+  margin-top: 1.5rem;
+  background: #fefcff;
+  border: 1px solid #e5dcff;
+  border-radius: 12px;
+  padding: 1rem;
+  direction: rtl !important;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.4;
+  box-shadow: 0 0 8px #d9ceff88;
+}
+.summary-box strong {
+  color: #5e2fcf;
+  margin-right: 4px;
+}
+
+/* הודעת הצלחה */
+.success-message {
+  font-size: 18px;
+  font-weight: 700;
+  color: #5e2fcf;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* טופס הזמנה */
+.booking-form {
+  margin-top: 1.5rem;
+  background: #f8f5ff;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #d9ceff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  direction: rtl !important;
+}
+.booking-form label {
+  font-weight: 700;
+  font-size: 14px;
+  color: #555;
+}
+.booking-form input,
+.booking-form textarea {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background: #fff;
+  resize: none;
+  transition: border-color 0.25s ease;
+}
+.booking-form input:focus,
+.booking-form textarea:focus {
+  border-color: #7a3df4;
+  outline: none;
+  box-shadow: 0 0 6px #d2baff;
+}
+
+/* כפתור אישור תור */
+.confirm-slot-btn {
+  margin-top: 12px;
+  padding: 10px 20px;
+  background-color: #7a3df4;
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+.confirm-slot-btn:hover {
+  background-color: #5e2fcf;
+}
+
+/* כפתור חזרה */
+.back-button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #eae6ff;
+  color: #4a3aff;
+  border: none;
+  border-radius: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+.back-button:hover {
+  background-color: #d7cdff;
+}
+
+/* רספונסיביות */
+@media (max-width: 480px) {
+  .calendar-container {
+    max-width: 100%;
+  }
+  .date-cell {
+    min-height: 60px;
+  }
+  .date-number {
+    font-size: 1rem;
+  }
+}
+@media (max-width: 768px) {
+  .calendar-container {
+    font-size: 0.9rem;
+  }
+
+  .calendar-header .month-hebrew {
+    font-size: 1.4rem;
+  }
+
+  .calendar-header .year {
+    font-size: 0.9rem;
+  }
+
+  .calendar-weekdays,
+  .calendar-dates {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .date-cell {
+    min-height: 55px;
+    font-size: 0.85rem;
+  }
+
+  .selected-date-info h4 {
+    font-size: 16px;
+  }
+
+  .slot-item button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .summary-box {
+    font-size: 14px;
+  }
+
+  .success-message {
+    font-size: 16px;
+  }
+
+  .confirm-slot-btn,
+  .back-button {
+    font-size: 0.95rem;
+    padding: 10px 14px;
+  }
+
+  .booking-form label,
+  .booking-form input,
+  .booking-form textarea {
+    font-size: 13px;
+  }
+}

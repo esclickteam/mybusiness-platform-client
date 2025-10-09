@@ -1,0 +1,218 @@
+/* AdminPlans.css */
+
+.admin-plans {
+    padding: 40px;
+    max-width: 1100px;
+    margin: auto;
+    font-family: Arial, sans-serif;
+    text-align: right;
+  }
+  
+  .admin-plans h1 {
+    color: #4a148c;
+    margin-bottom: 30px;
+  }
+  
+  .plan-form,
+  .coupon-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 40px;
+    align-items: center;
+  }
+  
+  .plan-form input,
+  .plan-form select,
+  .coupon-section input,
+  .coupon-section select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    width: 200px;
+  }
+  
+  .plan-form button,
+  .coupon-section button {
+    background-color: #7c3aed;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .plan-form button:hover,
+  .coupon-section button:hover {
+    background-color: #5b21b6;
+  }
+  
+  .plans-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 50px;
+  }
+  
+  .plans-table th,
+  .plans-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .plans-table th {
+    background-color: #f3e8ff;
+    color: #4a148c;
+    font-size: 14px;
+  }
+  
+  .plans-table td {
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .plans-table td input,
+  .plans-table td select {
+    width: 100%;
+    padding: 6px;
+    font-size: 13px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  
+  .delete-btn,
+  .edit-btn {
+    background-color: #f87171;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 6px;
+  }
+  
+  .edit-btn {
+    background-color: #7c3aed;
+  }
+  
+  .edit-btn:hover {
+    background-color: #5b21b6;
+  }
+  
+  .delete-btn:hover {
+    background-color: #dc2626;
+  }
+  
+  .back-dashboard {
+    display: inline-block;
+    margin-bottom: 20px;
+    background-color: #ede9fe;
+    padding: 8px 14px;
+    border-radius: 8px;
+    color: #4a148c;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .back-dashboard:hover {
+    background-color: #dcd0fa;
+  }
+  
+  .coupon-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .coupon-section h2 {
+    width: 100%;
+    color: #4a148c;
+    margin-bottom: 10px;
+  }
+  
+  .coupon-plans {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .coupon-plans label {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  @media (max-width: 768px) {
+  .admin-plans {
+    padding: 20px;
+  }
+
+  .plan-form input,
+  .plan-form select,
+  .coupon-section input,
+  .coupon-section select {
+    width: 100%;
+    font-size: 13px;
+  }
+
+  .plan-form,
+  .coupon-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .plans-table th,
+  .plans-table td {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .delete-btn,
+  .edit-btn {
+    padding: 5px 8px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-plans h1 {
+    font-size: 20px;
+  }
+
+  .plans-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .back-dashboard {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .admin-plans {
+    max-width: 1300px;
+  }
+
+  .plan-form input,
+  .plan-form select,
+  .coupon-section input,
+  .coupon-section select {
+    font-size: 15px;
+  }
+
+  .plans-table th,
+  .plans-table td {
+    font-size: 15px;
+    padding: 14px;
+  }
+}

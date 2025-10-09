@@ -1,0 +1,179 @@
+.ai-guide-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  direction: rtl;
+  font-family: Arial, sans-serif;
+  color: #222;
+  line-height: 1.6;
+  background-color: #fff;
+  box-sizing: border-box;
+  word-break: break-word; /* למניעת שבירת מילים לא טובה */
+}
+
+.ai-guide-container h1 {
+  font-size: 2.4rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: #004085; /* מעט כהה יותר לכותרת */
+}
+
+.ai-guide-container h2 {
+  font-size: 1.8rem;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 5px;
+  width: fit-content;
+  color: #0056b3; /* גוון כחול נעים לכותרות משנה */
+}
+
+.ai-guide-container h3 {
+  font-size: 1.4rem;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.ai-guide-container p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+
+.ai-guide-container ol,
+.ai-guide-container ul {
+  margin: 0 0 20px 20px;
+  padding: 0;
+  list-style-type: disc;
+}
+
+.ai-guide-container li {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.ai-guide-container strong {
+  font-weight: 700;
+}
+
+/* טבלה */
+.ai-guide-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  table-layout: fixed;
+  word-wrap: break-word;
+  font-size: 1.1rem;
+}
+
+.ai-guide-container th,
+.ai-guide-container td {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  text-align: right; /* RTL alignment */
+  vertical-align: top;
+}
+
+.ai-guide-container th {
+  background-color: #f0f4ff;
+  color: #004085;
+  font-weight: 700;
+}
+
+/* אפקט מעבר צבע לכותרות */
+.ai-guide-container h2:hover,
+.ai-guide-container h3:hover {
+  color: #003366;
+  cursor: default;
+  transition: color 0.3s ease;
+}
+
+/* רספונסיביות */
+@media (max-width: 600px) {
+  .ai-guide-container {
+    padding: 15px;
+    margin: 20px;
+  }
+
+  .ai-guide-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .ai-guide-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .ai-guide-container h3 {
+    font-size: 1.2rem;
+  }
+
+  .ai-guide-container p,
+  .ai-guide-container li {
+    font-size: 1rem;
+  }
+
+  /* גלילה אופקית לטבלה במובייל */
+  .ai-guide-container table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+/* רספונסיביות כללית כבר קיימת ב-600px, נוסיף הרחבות: */
+
+/* לטאבלטים (601px עד 900px) */
+@media (min-width: 601px) and (max-width: 900px) {
+  .ai-guide-container {
+    max-width: 90vw;
+    padding: 18px 16px;
+    margin: 30px auto;
+  }
+
+  .ai-guide-container h1 {
+    font-size: 2rem;
+  }
+
+  .ai-guide-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .ai-guide-container h3 {
+    font-size: 1.3rem;
+  }
+
+  .ai-guide-container p,
+  .ai-guide-container li {
+    font-size: 1.05rem;
+  }
+}
+
+/* למובייל קטן מאוד (עד 400px) */
+@media (max-width: 400px) {
+  .ai-guide-container {
+    padding: 12px 10px;
+    margin: 15px 10px;
+  }
+
+  .ai-guide-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .ai-guide-container h2 {
+    font-size: 1.2rem;
+  }
+
+  .ai-guide-container h3 {
+    font-size: 1rem;
+  }
+
+  .ai-guide-container p,
+  .ai-guide-container li {
+    font-size: 0.9rem;
+  }
+
+  .ai-guide-container table {
+    font-size: 0.9rem;
+  }
+}

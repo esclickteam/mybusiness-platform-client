@@ -1,0 +1,162 @@
+.my-sales {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    text-align: right;
+    font-family: Arial, sans-serif;
+  }
+  
+  .my-sales h1 {
+    color: #4a148c;
+    margin-bottom: 20px;
+  }
+  
+  .sale-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+  
+  .sale-form input,
+  .sale-form select,
+  .sale-form textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .sale-form button {
+    background-color: #7c3aed;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .sale-form button:hover {
+    background-color: #5b21b6;
+  }
+  
+  .sales-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sales-list li {
+    background-color: #f3e8ff;
+    margin-bottom: 12px;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+  }
+  
+  .sales-list li.closed {
+    background-color: #d1fae5;
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+  
+  .sales-list li p {
+    margin: 4px 0;
+  }
+  
+  .sales-list button {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #dcd0fa;
+    color: #4c1d95;
+    transition: 0.2s ease;
+  }
+  
+  .sales-list button:hover {
+    background-color: #c2a6f7;
+  }
+  @media (max-width: 1024px) {
+  .my-sales {
+    padding: 20px;
+    max-width: 90%;
+    margin: 30px auto;
+  }
+
+  .sale-form button {
+    padding: 10px 14px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .my-sales {
+    padding: 15px 12px;
+    max-width: 100%;
+    margin: 20px auto;
+  }
+
+  .sale-form input,
+  .sale-form select,
+  .sale-form textarea {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .sale-form button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .sales-list li {
+    font-size: 14px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .my-sales {
+    padding: 12px 10px;
+    margin: 15px 10px;
+  }
+
+  .my-sales h1 {
+    font-size: 1.5rem;
+  }
+
+  .sale-form input,
+  .sale-form select,
+  .sale-form textarea {
+    font-size: 12px;
+    padding: 7px;
+  }
+
+  .sale-form button {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 14px;
+  }
+
+  .sales-list li {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .sales-list button {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+}

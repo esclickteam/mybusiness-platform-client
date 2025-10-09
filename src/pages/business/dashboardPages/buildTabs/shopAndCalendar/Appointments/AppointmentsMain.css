@@ -1,0 +1,415 @@
+/* עיצוב כללי */
+.services-page-wrapper {
+  background: #f8eeff;
+  padding: 40px 0 30px;
+  min-height: 100vh;
+}
+
+.services-form-box {
+  background: #f7f0ff;
+  border-radius: 28px;
+  box-shadow: 0 6px 36px rgba(146,70,205,0.13);
+  max-width: 650px;
+  margin: 0 auto 36px;
+  padding: 38px 32px 22px;
+  border: 1.5px solid #e3cbff;
+  position: relative;
+}
+
+.services-form-title {
+  text-align: center;
+  font-size: 2.5em;
+  font-weight: 900;
+  color: #7329b8;
+  margin-bottom: 38px;
+  letter-spacing: 1.5px;
+  word-spacing: 2px;
+}
+
+/* כפתורים לסוג השירות */
+.type-toggle-group {
+  display: flex;
+  gap: 1.1em;
+  justify-content: center;
+  margin-bottom: 1.9em;
+}
+.type-toggle-btn {
+  background: #fff;
+  border: 2px solid #d2a6fc;
+  color: #692fc2;
+  font-size: 1.13em;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 0.75em 2.6em;
+  cursor: pointer;
+  transition: all .18s cubic-bezier(.44,.13,.48,.87);
+  box-shadow: 0 1.5px 12px rgba(120,55,180,0.07);
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+.type-toggle-btn.selected,
+.type-toggle-btn:hover,
+.type-toggle-btn:focus {
+  background: linear-gradient(90deg, #b378e9 0%, #ad3bfd 95%);
+  color: #fff;
+  border-color: #9c46e5;
+  box-shadow: 0 4px 19px rgba(132,50,200,0.18);
+  outline: none;
+}
+
+/* קווי הפרדה דקים */
+.hr-sep {
+  border: none;
+  height: 1.5px;
+  background: linear-gradient(to left, #e3cbff 0%, #fff 50%, #e3cbff 100%);
+  margin: 34px 0 24px;
+}
+
+/* קלטים כלליים */
+.services-form-label {
+  font-weight: 700;
+  font-size: 1.12em;
+  color: #8843c6;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+.services-form-input,
+.services-form-textarea,
+.services-form-select {
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  border: 1.5px solid #cdb8f7;
+  font-size: 1.14em;
+  color: #55278d;
+  padding: 14px 12px;
+  margin-bottom: 14px;
+  outline: none;
+  transition: border 0.18s;
+  box-shadow: 0 1.5px 7px rgba(120,55,180,0.06);
+}
+.services-form-input:focus,
+.services-form-textarea:focus,
+.services-form-select:focus {
+  border-color: #964cff;
+}
+
+/* שדות זמן משולבים */
+.time-inputs-row {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.time-label {
+  min-width: 40px;
+  font-size: 1.07em;
+  color: #8456c8;
+}
+
+/* כפתור הוספת שירות */
+.add-service-btn {
+  background: linear-gradient(90deg, #9852ee 20%, #742cd7 100%);
+  color: #fff;
+  font-size: 1.18em;
+  font-weight: 800;
+  border: none;
+  border-radius: 17px;
+  padding: 14px 0;
+  margin: 10px 0 7px;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: 0 3px 16px rgba(145,63,220,0.12);
+  transition: background .19s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6em;
+}
+.add-service-btn:hover,
+.add-service-btn:focus {
+  background: linear-gradient(90deg, #a168ee 20%, #9738e8 100%);
+}
+
+/* כפתור מעבר להגדרת יומן */
+.go-to-calendar-btn {
+  display: block;
+  margin: 36px auto 0;
+  background: linear-gradient(90deg, #a259ff 0%, #7a3df4 90%);
+  color: #fff;
+  font-size: 1em;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 0;
+  width: 200px;
+  max-width: 90%;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(122,61,244,0.10);
+  transition: background .18s, transform .11s;
+}
+.go-to-calendar-btn:hover {
+  background: linear-gradient(90deg, #7a3df4 0%, #5e2fcf 90%);
+  transform: scale(1.04);
+}
+.go-to-calendar-btn:active {
+  transform: scale(0.97);
+}
+
+/* שגיאות קלט */
+.input-error {
+  color: #be233f;
+  font-size: 1.06em;
+  margin: -7px 0 7px;
+  display: block;
+}
+
+/* רשימת שירותים קיימים */
+.defined-services-section {
+  margin-top: 15px;
+  padding-bottom: 20px;
+}
+.defined-services-title {
+  font-size: 1.2em;
+  font-weight: 800;
+  color: #682bba;
+  margin-bottom: 18px;
+  text-align: right;
+  margin-right: 18px;
+}
+
+/* כרטיס שירות */
+.service-card {
+  background: #fff;
+  border: 1.5px solid #ded0fa;
+  border-radius: 22px;
+  padding: 24px 22px 16px;
+  box-shadow: 0 3px 17px rgba(139,59,202,0.11);
+  max-width: 340px;
+  margin: 0 auto 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  position: relative;
+  transition: box-shadow 0.16s;
+}
+.service-card:hover {
+  box-shadow: 0 8px 30px rgba(137,39,170,0.13);
+}
+.service-card .delete-service-btn {
+  position: absolute;
+  left: 17px;
+  top: 18px;
+  background: linear-gradient(90deg, #f2b6e3 0%, #e6c5ff 100%);
+  border: none;
+  color: #863a99;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 1.3em;
+  cursor: pointer;
+  box-shadow: 0 1.5px 7px rgba(202,79,167,0.09);
+  transition: background 0.13s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.service-card .delete-service-btn:hover {
+  background: linear-gradient(90deg, #ee80c3 0%, #c589e9 100%);
+}
+
+.service-card .service-name {
+  font-size: 1.33em;
+  font-weight: 800;
+  color: #7e2fbe;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.service-card .service-price {
+  color: #8439b9;
+  font-size: 1.12em;
+  font-weight: 700;
+  margin: 6px 0 8px;
+  text-align: right;
+}
+.service-card .service-duration {
+  font-size: 1.07em;
+  color: #6d379a;
+  margin-bottom: 6px;
+}
+.service-card .service-type {
+  font-size: 1.05em;
+  color: #9d80b9;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* ממשק בחירת תאריך */
+.date-picker {
+  margin: 20px 0;
+  text-align: right;
+}
+.date-picker input[type="date"] {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #cdb8f7;
+  font-size: 1em;
+  color: #55278d;
+  background: #fff;
+  box-shadow: 0 1px 7px rgba(120,55,180,0.06);
+  outline: none;
+  transition: border .2s;
+}
+.date-picker input[type="date"]:focus {
+  border-color: #964cff;
+}
+
+/* רשת זמנים פנויים */
+.slots-list {
+  margin: 20px auto;
+  max-width: 500px;
+  text-align: right;
+}
+.slots-list h3 {
+  color: #7329b8;
+  margin-bottom: 12px;
+}
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+}
+.slot-btn {
+  padding: 8px 0;
+  background: #f7f0ff;
+  border: 1.5px solid #cdb8f7;
+  border-radius: 12px;
+  color: #692fc2;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s, transform .1s;
+}
+.slot-btn:hover {
+  background: #e3cbff;
+  transform: translateY(-2px);
+}
+.slot-btn.active {
+  background: linear-gradient(90deg, #b378e9 0%, #ad3bfd 95%);
+  color: #fff;
+  border-color: #9c46e5;
+  box-shadow: 0 4px 16px rgba(132,50,200,0.2);
+}
+
+/* כפתור קביעת תור */
+.book-action button {
+  margin: 20px auto;
+  display: block;
+  background: linear-gradient(90deg, #9852ee 20%, #742cd7 100%);
+  color: #fff;
+  font-size: 1.15em;
+  font-weight: 800;
+  padding: 12px 0;
+  width: 100%;
+  max-width: 350px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 3px 16px rgba(145,63,220,0.12);
+  transition: background .2s, transform .1s;
+}
+.book-action button:hover {
+  background: linear-gradient(90deg, #a168ee 20%, #9738e8 100%);
+  transform: scale(1.03);
+}
+.book-action button:active {
+  transform: scale(0.97);
+}
+
+/* תיקוני רספונסיב */
+@media (max-width: 650px) {
+  .services-form-box {
+    padding: 20px 8px 18px;
+  }
+  .service-card {
+    padding: 14px 10px 10px;
+  }
+  .slots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .services-form-title {
+    font-size: 1.8em;
+  }
+
+  .type-toggle-btn {
+    font-size: 0.95em;
+    padding: 0.6em 1.8em;
+  }
+
+  .services-form-label {
+    font-size: 1em;
+  }
+
+  .services-form-input,
+  .services-form-textarea,
+  .services-form-select {
+    font-size: 1em;
+    padding: 12px 10px;
+  }
+
+  .add-service-btn,
+  .go-to-calendar-btn,
+  .book-action button {
+    font-size: 1em;
+    padding: 12px 0;
+  }
+
+  .service-card {
+    margin: 0 auto 20px;
+  }
+
+  .service-card .delete-service-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1em;
+  }
+
+  .slots-grid {
+    gap: 8px;
+  }
+
+  .slot-btn {
+    font-size: 0.95em;
+    padding: 6px 0;
+  }
+}
+
+@media (min-width: 1440px) {
+  .services-form-box {
+    max-width: 720px;
+    padding: 44px 40px 28px;
+  }
+
+  .services-form-title {
+    font-size: 2.8em;
+  }
+
+  .type-toggle-btn {
+    font-size: 1.2em;
+  }
+
+  .services-form-input,
+  .services-form-textarea,
+  .services-form-select {
+    font-size: 1.2em;
+  }
+
+  .service-card {
+    max-width: 380px;
+  }
+}

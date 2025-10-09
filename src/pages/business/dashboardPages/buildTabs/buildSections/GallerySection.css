@@ -1,0 +1,158 @@
+/* GallerySection.css */
+
+/* מיכל הרשת של התמונות בגלריה - צד העריכה */
+.gallery-grid-container.edit {
+  display: grid; /* מחזיר ל-grid במקום flex */
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* שורות ועצמים משתנים */
+  gap: 15px;
+  padding: 10px 0;
+  overflow-x: visible; /* מבטל גלילה אופקית */
+}
+
+/* מיכל הרשת של התמונות בגלריה - צד התצוגה (3 עמודות קבועות) */
+.gallery-grid-container.view {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding: 10px 0;
+  max-width: 100%;      /* מונע חריגה רוחבית */
+  overflow-x: hidden;   /* מונע גלילה אופקית */
+  box-sizing: border-box;
+}
+
+/* עטיפת כל תמונה */
+.gallery-item-wrapper {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  min-width: 140px; /* חשוב עבור גלריית סקרול אופקי בצד עריכה */
+  min-width: 0;     /* מונע חריגה רוחבית מיותרת בתצוגה */
+}
+
+/* התמונה עצמה */
+.gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+/* כפתור מחיקה (מופיע רק בצד העריכה) */
+.delete-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 2px 6px;
+  transition: background 0.2s ease;
+  z-index: 10;
+}
+
+.delete-btn:hover {
+  background: rgba(255, 0, 0, 0.9);
+  color: white;
+}
+
+/* כפתור להוספת תמונות */
+.save-btn {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.save-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #8e44ad, #9b59b6);
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* טקסט כשאין תמונות בגלריה */
+.no-data {
+  text-align: center;
+  font-size: 1rem;
+  color: #888;
+  padding: 1rem;
+}
+/* === רספונסיביות === */
+@media (max-width: 480px) {
+  .gallery-grid-container.view {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .gallery-grid-container.edit {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+
+  .gallery-item-wrapper {
+    height: 100px;
+  }
+
+  .save-btn {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .gallery-grid-container.view {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gallery-item-wrapper {
+    height: 120px;
+  }
+
+  .save-btn {
+    font-size: 0.95rem;
+    padding: 9px 18px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .gallery-grid-container.view {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .gallery-item-wrapper {
+    height: 130px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .gallery-grid-container.view {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .gallery-item-wrapper {
+    height: 160px;
+  }
+
+  .save-btn {
+    font-size: 1.05rem;
+    padding: 12px 24px;
+  }
+}

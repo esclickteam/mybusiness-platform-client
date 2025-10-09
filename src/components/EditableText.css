@@ -1,0 +1,95 @@
+.editable-text {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .editable-span {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: bold;
+    color: #4a148c;
+  }
+  
+  .editable-span:hover .edit-icon {
+    opacity: 1;
+  }
+  
+  .edit-icon {
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+  }
+  
+  .edit-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .edit-box textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+  
+  .edit-box button {
+    align-self: flex-start;
+    background-color: #7c3aed;
+    color: white;
+    padding: 8px 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .edit-box button:hover {
+    background-color: #5b21b6;
+  }
+  
+  .saved-message {
+    margin-top: 6px;
+    color: #22c55e;
+    font-weight: bold;
+  }
+  @media (max-width: 768px) {
+  .edit-box textarea {
+    font-size: 14px;
+    min-height: 80px;
+  }
+
+  .edit-box button {
+    font-size: 14px;
+    padding: 7px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .editable-span {
+    font-size: 14px;
+    gap: 4px;
+  }
+
+  .edit-box textarea {
+    font-size: 13px;
+    padding: 8px;
+    min-height: 60px;
+  }
+
+  .edit-box button {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  .saved-message {
+    font-size: 13px;
+  }
+}

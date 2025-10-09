@@ -1,0 +1,369 @@
+.affiliate-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 2.5rem 3rem;
+  direction: rtl;
+  text-align: right;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #3a0ca3;
+  background: #f5f0ff;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(98, 0, 234, 0.15);
+}
+
+/* בלוקים כלליים */
+.affiliate-section,
+.affiliate-stats,
+.affiliate-info,
+.affiliate-commission-rules,
+.affiliate-bank-section {
+  margin-top: 2.5rem;
+  background-color: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(98, 0, 234, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.affiliate-section:hover,
+.affiliate-stats:hover,
+.affiliate-info:hover,
+.affiliate-commission-rules:hover,
+.affiliate-bank-section:hover {
+  box-shadow: 0 15px 35px rgba(98, 0, 234, 0.2);
+}
+
+/* קישור שותף */
+.affiliate-link-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+  border: 2px solid #9c84f7;
+  border-radius: 12px;
+  margin: 1rem 0;
+  direction: ltr;
+  font-weight: 600;
+  color: #5b3eeb;
+  box-shadow: inset 0 0 6px #e1d9ff;
+  transition: border-color 0.3s ease;
+}
+
+.affiliate-link-input:focus {
+  border-color: #6200ea;
+  outline: none;
+  box-shadow: 0 0 12px #6200eaaa;
+}
+
+/* טבלאות */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 1.5rem;
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(98, 0, 234, 0.15);
+  font-size: 1rem;
+}
+
+table thead {
+  background: linear-gradient(90deg, #7c4dff, #6200ea);
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+table th,
+table td {
+  padding: 1rem 0.8rem;
+  border-bottom: 1px solid #f0e8ff;
+  text-align: center;
+  font-weight: 600;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f9f5ff;
+}
+
+table tbody tr:hover {
+  background-color: #ede7ff;
+  cursor: default;
+  transition: background-color 0.3s ease;
+}
+
+/* סטטיסטיקות */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.stat-card {
+  background-color: white;
+  padding: 1.2rem 1.5rem;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(98, 0, 234, 0.12);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #5a2db7;
+  transition: box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 12px 30px rgba(98, 0, 234, 0.22);
+}
+
+.stat-card h4 {
+  margin-bottom: 0.6rem;
+  font-size: 1.25rem;
+}
+
+.paid {
+  color: #0f9d58;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.unpaid {
+  color: #db4437;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* בחירת חודש */
+.month-selector {
+  margin-top: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 600;
+  color: #5a2db7;
+}
+
+.month-selector label {
+  font-size: 1.1rem;
+}
+
+.month-selector select {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 2px solid #9c84f7;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #5a2db7;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.month-selector select:hover,
+.month-selector select:focus {
+  border-color: #6200ea;
+  outline: none;
+}
+
+/* כפתורים */
+button,
+.payment-button {
+  background-color: #5a2db7;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  margin: 0.7rem 0;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  box-shadow: 0 6px 20px rgba(98, 0, 234, 0.22);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+button:hover,
+.payment-button:hover {
+  background-color: #381d9b;
+  box-shadow: 0 10px 30px rgba(56, 29, 155, 0.7);
+}
+
+/* טופס פרטי חשבון בנק */
+.bank-form-wrapper {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f1ff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(98, 0, 234, 0.12);
+  transition: box-shadow 0.3s ease;
+}
+
+.bank-form-wrapper:hover {
+  box-shadow: 0 14px 35px rgba(98, 0, 234, 0.25);
+}
+
+.bank-details-form label,
+.receipt-upload-form label {
+  font-weight: 700;
+  display: block;
+  margin-top: 1.5rem;
+  margin-bottom: 0.4rem;
+  color: #5a2db7;
+}
+
+.bank-details-form input,
+.receipt-upload-form input,
+input[type="number"] {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 14px;
+  border: 2px solid #9c84f7;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-sizing: border-box;
+  color: #4b2481;
+  transition: border-color 0.3s ease;
+}
+
+.bank-details-form input:focus,
+.receipt-upload-form input:focus,
+input[type="number"]:focus {
+  border-color: #5a2db7;
+  outline: none;
+  box-shadow: 0 0 14px #7c5dff;
+}
+
+/* טופס העלאת קבלה */
+.receipt-upload-form {
+  margin-top: 2rem;
+  background-color: #faf6ff;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 26px rgba(98, 0, 234, 0.15);
+  font-weight: 600;
+  color: #5a2db7;
+  transition: box-shadow 0.3s ease;
+}
+
+.receipt-upload-form:hover {
+  box-shadow: 0 16px 38px rgba(98, 0, 234, 0.3);
+}
+
+.payment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 3rem;
+  padding: 0 1rem;
+}
+
+.payment-actions-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 1.5rem;
+}
+
+.payment-button {
+  background: linear-gradient(90deg, #5a2db7, #7c5dff);
+  font-weight: 700;
+  color: white;
+  padding: 0.9rem 1.6rem;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 7px 25px rgba(98, 0, 234, 0.25);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: none;
+}
+
+.payment-button:hover {
+  background: linear-gradient(90deg, #381d9b, #4b2ba8);
+  box-shadow: 0 12px 40px rgba(56, 29, 155, 0.7);
+}
+
+.payment-button svg {
+  font-size: 1.4rem;
+}
+@media (max-width: 900px) {
+  .affiliate-page {
+    padding: 2rem 1.5rem;
+    max-width: 95%;
+  }
+  .affiliate-section,
+  .affiliate-stats,
+  .affiliate-info,
+  .affiliate-commission-rules,
+  .affiliate-bank-section {
+    padding: 1.5rem 1.2rem;
+  }
+  table th,
+  table td {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+  .stat-card {
+    font-size: 1rem;
+  }
+  .month-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .month-selector label,
+  .month-selector select {
+    font-size: 1rem;
+    width: 100%;
+  }
+  button,
+  .payment-button {
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+    width: 100%;
+    justify-content: center;
+  }
+  .payment-actions-buttons {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .affiliate-page {
+    padding: 1.5rem 1rem;
+  }
+  .affiliate-section,
+  .affiliate-stats,
+  .affiliate-info,
+  .affiliate-commission-rules,
+  .affiliate-bank-section {
+    padding: 1rem;
+  }
+  table th,
+  table td {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.85rem;
+  }
+  .stat-card {
+    font-size: 0.9rem;
+  }
+  .month-selector label,
+  .month-selector select {
+    font-size: 0.9rem;
+  }
+  button,
+  .payment-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.8rem;
+  }
+}

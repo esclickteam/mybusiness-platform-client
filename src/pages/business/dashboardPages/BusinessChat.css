@@ -1,0 +1,262 @@
+/* 📁 src/pages/business/dashboardPages/buildTabs/buildSections/ChatSection.css */
+
+/* עיצוב לתיבת הצ'אט */
+.business-chat-wrapper {
+  display: flex;
+  flex-direction: row;      /* sidebar משמאל, שיחה מימין */
+  height: 80vh;
+  max-width: 1000px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* עיצוב תפריט השיחות */
+.chat-sidebar {
+  width: 30%;
+  border-right: 1px solid #eee;  /* שינינו ל־right */
+  padding: 1rem;
+  background-color: #faf9ff;
+  overflow-y: auto;
+}
+
+/* שאר הסלקטורים לא משתנים */
+.chat-sidebar h3 {
+  color: #8e44ad;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.chat-list-item {
+  padding: 0.8rem;
+  border-radius: 10px;
+  background: #f3edff;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.chat-list-item:hover { background: #e6dcfb; }
+.chat-list-item.active { background: #dcd1f9; font-weight: bold; }
+
+/* עיצוב אזור השיחה הראשי */
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  background: #fdfdff;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.chat-bubble {
+  max-width: 70%;
+  padding: 0.6rem 1rem;
+  margin-bottom: 0.6rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  position: relative;
+}
+
+.chat-bubble.from-me {
+  background: #dcd1f9;
+  align-self: flex-end;
+  margin-left: auto;
+  text-align: right;
+}
+
+.chat-bubble.from-them {
+  background: #f0f0f0;
+  align-self: flex-start;
+  margin-right: auto;
+  text-align: left;  /* הודעות מהלקוח מצופות משמאל */
+}
+
+/* כפתור ושליחת הודעה */
+.chat-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-top: 1px solid #eee;
+  padding-top: 0.5rem;
+}
+.chat-input-bar input {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  background: #fff;
+}
+.chat-input-bar button {
+  background: none;
+  border: none;
+  color: #6c5ce7;
+  cursor: pointer;
+  font-weight: bold;
+  transition: color 0.2s ease-in-out;
+}
+.chat-input-bar button:hover { color: #8e44ad; }
+
+.no-chat-selected {
+  text-align: center;
+  color: #999;
+  margin-top: 4rem;
+  font-size: 1rem;
+  font-style: italic;
+}
+
+/* תוכן חוזה / פרטים נוספים */
+.chat-contract-area {
+  margin-bottom: 1rem;
+  overflow-y: auto;
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .business-chat-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .chat-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  .chat-main {
+    padding: 1rem 0.5rem;
+  }
+
+  .chat-input-bar {
+    flex-wrap: wrap;
+  }
+
+  .chat-input-bar input {
+    width: 100%;
+  }
+
+  .chat-messages {
+    padding: 0.5rem;
+  }
+}
+/* טלפונים קטנים - Extra Small (XS) עד 480px */
+@media (max-width: 480px) {
+  .business-chat-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+  .chat-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .chat-main {
+    padding: 0.5rem;
+  }
+  .chat-input-bar input {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+/* טלפונים סטנדרטיים - Small (SM) מ-481px עד 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .business-chat-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+  .chat-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+  .chat-main {
+    padding: 1rem;
+  }
+  .chat-input-bar input {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* טאבלטים - Medium (MD) מ-769px עד 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .business-chat-wrapper {
+    flex-direction: row;
+    height: 80vh;
+  }
+  .chat-sidebar {
+    width: 35%;
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  .chat-main {
+    padding: 1rem;
+  }
+  .chat-input-bar input {
+    font-size: 1rem;
+  }
+}
+
+/* מחשב סטנדרטי - Large (LG) מ-1025px עד 1440px */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .business-chat-wrapper {
+    flex-direction: row;
+    height: 80vh;
+  }
+  .chat-sidebar {
+    width: 30%;
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+  .chat-main {
+    padding: 1.5rem;
+  }
+  .chat-input-bar input {
+    font-size: 1.1rem;
+  }
+}
+
+/* מסכים רחבים - Extra Large (XL) מ-1441px ומעלה */
+@media (min-width: 1441px) {
+  .business-chat-wrapper {
+    flex-direction: row;
+    height: 80vh;
+    max-width: 1200px;
+  }
+  .chat-sidebar {
+    width: 25%;
+    padding: 1.5rem;
+    font-size: 1.15rem;
+  }
+  .chat-main {
+    padding: 2rem;
+  }
+  .chat-input-bar input {
+    font-size: 1.15rem;
+  }
+}

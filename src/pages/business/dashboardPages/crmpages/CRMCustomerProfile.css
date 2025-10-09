@@ -1,0 +1,279 @@
+/* ====== כרטיס לקוח כללי ====== */
+.crm-customer-profile {
+  background: #fff;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  max-width: 1000px;
+  margin: 30px auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl; /* עברית */
+}
+
+.crm-customer-profile h2 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: #1e3a8a;
+  text-align: center;
+}
+
+.crm-customer-profile p {
+  text-align: center;
+  color: #374151;
+  margin-bottom: 20px;
+}
+
+/* ====== כרטיס יצירת לקוח חדש ====== */
+.add-client-card {
+  max-width: 420px;
+  margin: 30px auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.4s ease;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #f1f1f1;
+  padding-bottom: 0.8rem;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #3a0ca3;
+}
+
+.card-icon {
+  font-size: 1.8rem;
+  background: linear-gradient(135deg, #7c4dff, #3a0ca3);
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.add-client-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.add-client-form input {
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.add-client-form input:focus {
+  border-color: #7c4dff;
+  box-shadow: 0 0 6px rgba(124, 77, 255, 0.3);
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.save-client-btn {
+  flex: 1;
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.save-client-btn:hover {
+  background: #16a34a;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #7c4dff;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cancel-btn:hover {
+  background: #6a3edb;
+}
+
+/* אנימציה עדינה */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ====== כותרת טאבים ====== */
+.tabs-header {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.tabs-header button {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6b7280;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tabs-header button:hover {
+  background: #f3f4f6;
+  color: #1e3a8a;
+}
+
+.tabs-header button.active {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ====== תוכן טאב ====== */
+.tab-content {
+  padding: 15px;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+/* ====== טבלה כללית ====== */
+.appointments-table,
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.appointments-table th,
+.data-table th {
+  background: #f3f4f6;
+  padding: 12px;
+  text-align: right;
+  font-weight: bold;
+  border-bottom: 2px solid #e5e7eb;
+  color: #374151;
+}
+
+.appointments-table td,
+.data-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.appointments-table tr:hover,
+.data-table tr:hover {
+  background: #f9fafc;
+}
+
+/* ====== רשימת קבצים ====== */
+.file-list {
+  list-style: none;
+  padding: 0;
+}
+
+.file-list li {
+  margin-bottom: 10px;
+}
+
+.file-list a {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.file-list a:hover {
+  text-decoration: underline;
+  color: #1d4ed8;
+}
+
+/* ====== Timeline אנכי ====== */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.timeline-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border-right: 4px solid #6a11cb;
+}
+
+.timeline-item strong {
+  color: #111827;
+  font-size: 1rem;
+}
+
+.timeline-item span {
+  font-size: 1.2rem;
+  margin-left: 8px;
+}
+
+.timeline-item p {
+  font-size: 0.9rem;
+  color: #374151;
+  margin: 5px 0 0;
+}
+
+/* ===== רספונסיביות ===== */
+@media (max-width: 768px) {
+  .tabs-header {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .appointments-table th,
+  .appointments-table td,
+  .data-table th,
+  .data-table td {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  .timeline-item {
+    padding: 12px;
+  }
+
+  .add-client-card {
+    margin: 15px;
+    padding: 1.2rem;
+  }
+}

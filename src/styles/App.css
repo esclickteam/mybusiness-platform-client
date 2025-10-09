@@ -1,0 +1,108 @@
+/* styles/App.css */
+
+:root {
+  /* צבעים גלובליים */
+  --bg-start: #fdfcff;
+  --bg-end:   #e4e8ff;
+}
+
+/* רקע גרדיאנט גלובלי על כל האפליקציה */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
+  /* מאפשר גלילה בכל העמודים */
+  overflow: auto;
+}
+
+/* כפתורים בכרטיסיות - צבעוניים, גדולים ומודגשים יותר */
+.action-button {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 5px;
+  background-color: #8e24aa;
+  color: white;
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  transition: 0.3s;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.action-button:hover {
+  background-color: #6a1b9a;
+  transform: scale(1.05);
+}
+
+/* כותרת האתר - גדולה יותר ובצבע סגול */
+.main-title {
+  color: #6a1b9a;
+  font-size: 48px;
+  margin-top: 20px;
+}
+
+/* כפתור תפריט והתחברות - בצד שמאל עם אימוג'ים מתאימים */
+.navbar {
+  display: flex;
+  gap: 15px;
+  margin-left: auto;
+}
+
+.menu-button,
+.login-button {
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.menu-button:hover,
+.login-button:hover {
+  color: #ccc;
+}
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 36px;
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  .action-button {
+    font-size: 16px;
+    padding: 8px 20px;
+  }
+
+  .navbar {
+    justify-content: center;
+    margin-left: 0;
+    gap: 10px;
+  }
+
+  .menu-button,
+  .login-button {
+    font-size: 20px;
+    padding: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-title {
+    font-size: 28px;
+    margin-top: 10px;
+  }
+
+  .action-button {
+    font-size: 14px;
+    padding: 6px 16px;
+  }
+
+  .menu-button,
+  .login-button {
+    font-size: 18px;
+    padding: 3px;
+  }
+}

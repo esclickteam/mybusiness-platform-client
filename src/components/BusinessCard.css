@@ -1,0 +1,212 @@
+:root {
+  --bg-start:       #f0f4ff;
+  --bg-mid:         #f9f7ff;
+  --bg-end:         #fffaf7;
+
+  --card-radius:    24px;
+  --card-shadow:    0 16px 48px rgba(0, 0, 0, 0.08);
+
+  --primary:        #8a2be2;
+  --primary-hover:  #7a23d0;
+
+  --text-main:      #222222;
+  --text-secondary: #555555;
+}
+
+.business-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center; /* ✅ מיושרים למרכז */
+  background: linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: 1.5rem 1.25rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.business-card:hover,
+.business-card:focus-visible {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
+  outline: none;
+}
+
+.business-card__media {
+  width: 96px;
+  height: 96px;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #ddd;
+  background-color: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.business-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.business-card__title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0.5rem 0 0.8rem;
+}
+
+.business-card__info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.business-card__info svg {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.business-card__info strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.business-card__description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  text-align: center; /* ✅ תמיד במרכז */
+  color: #333;
+}
+
+.business-card__btn {
+  margin-top: 1.25rem;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%);
+  color: #fff;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.business-card__btn:hover,
+.business-card__btn:focus-visible {
+  transform: scale(1.05);
+  background: linear-gradient(90deg, var(--primary-hover) 0%, var(--primary) 100%);
+  outline: none;
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .business-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .business-card__media {
+    width: 72px;
+    height: 72px;
+  }
+
+  .business-card__title {
+    font-size: 1.2rem;
+  }
+
+  .business-card__info {
+    font-size: 0.95rem;
+  }
+
+  .business-card__btn {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .business-card {
+    padding: 1rem 0.75rem;
+  }
+
+  .business-card__media {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 0.75rem;
+  }
+
+  .business-card__title {
+    font-size: 1.1rem;
+  }
+
+  .business-card__info {
+    font-size: 0.9rem;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .business-card__btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .business-card {
+    max-width: 380px;
+    padding: 2rem 1.5rem;
+  }
+
+  .business-card__media {
+    width: 100px;
+    height: 100px;
+  }
+
+  .business-card__title {
+    font-size: 1.6rem;
+  }
+
+  .business-card__info {
+    font-size: 1.05rem;
+  }
+
+  .business-card__description {
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+  }
+
+  .business-card__btn {
+    font-size: 1.05rem;
+    padding: 0.7rem 1.75rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .business-card {
+    max-width: 420px;
+  }
+
+  .business-card__title {
+    font-size: 1.75rem;
+  }
+
+  .business-card__info {
+    font-size: 1.1rem;
+  }
+
+  .business-card__btn {
+    font-size: 1.1rem;
+  }
+}

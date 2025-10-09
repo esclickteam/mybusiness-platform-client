@@ -1,0 +1,176 @@
+.chat-guide-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  direction: rtl;
+  font-family: Arial, sans-serif;
+  color: #222;
+  line-height: 1.6;
+  background-color: #fff;
+  box-sizing: border-box;
+  word-break: break-word; /* למניעת שבירת מילים לא טובה */
+}
+
+.chat-guide-container h1 {
+  font-size: 2.4rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: #004085; /* מעט כהה יותר לכותרת */
+}
+
+.chat-guide-container h2 {
+  font-size: 1.8rem;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 5px;
+  width: fit-content;
+  color: #0056b3; /* גוון כחול נעים לכותרות משנה */
+}
+
+.chat-guide-container h3 {
+  font-size: 1.4rem;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.chat-guide-container p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+
+.chat-guide-container ol,
+.chat-guide-container ul {
+  margin: 0 0 20px 20px;
+  padding: 0;
+  list-style-type: disc;
+}
+
+.chat-guide-container li {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.chat-guide-container strong {
+  font-weight: 700;
+}
+
+/* טבלה */
+.chat-guide-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  table-layout: fixed;
+  word-wrap: break-word;
+  font-size: 1.1rem;
+}
+
+.chat-guide-container th,
+.chat-guide-container td {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  text-align: right; /* RTL alignment */
+  vertical-align: top;
+}
+
+.chat-guide-container th {
+  background-color: #f0f4ff;
+  color: #004085;
+  font-weight: 700;
+}
+
+/* הוספת אפקט קל בהטבעת כותרות ואלמנטים */
+.chat-guide-container h2:hover,
+.chat-guide-container h3:hover {
+  color: #003366;
+  cursor: default;
+  transition: color 0.3s ease;
+}
+
+/* רספונסיביות */
+@media (max-width: 600px) {
+  .chat-guide-container {
+    padding: 15px;
+    margin: 20px;
+  }
+
+  .chat-guide-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .chat-guide-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .chat-guide-container h3 {
+    font-size: 1.2rem;
+  }
+
+  .chat-guide-container p,
+  .chat-guide-container li {
+    font-size: 1rem;
+  }
+
+  /* גלילה אופקית לטבלה במובייל */
+  .chat-guide-container table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+@media (max-width: 900px) {
+  .chat-guide-container {
+    max-width: 100%;
+    margin: 30px 15px;
+    padding: 15px;
+  }
+  
+  .chat-guide-container h1 {
+    font-size: 2rem;
+  }
+
+  .chat-guide-container h2 {
+    font-size: 1.6rem;
+  }
+  
+  .chat-guide-container h3 {
+    font-size: 1.3rem;
+  }
+  
+  .chat-guide-container p,
+  .chat-guide-container li {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-guide-container {
+    padding: 10px;
+    margin: 15px 10px;
+  }
+  
+  .chat-guide-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .chat-guide-container h2 {
+    font-size: 1.2rem;
+  }
+  
+  .chat-guide-container h3 {
+    font-size: 1rem;
+  }
+  
+  .chat-guide-container p,
+  .chat-guide-container li {
+    font-size: 0.9rem;
+  }
+  
+  /* טבלה – גלילה אופקית טובה יותר למובייל קטן */
+  .chat-guide-container table {
+    font-size: 1rem;
+  }
+}

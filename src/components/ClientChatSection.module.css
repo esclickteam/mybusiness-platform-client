@@ -1,0 +1,168 @@
+/* src/components/ClientChatSection.module.css */
+
+/* רקע עמוד כללי */
+.whatsappBg {
+  min-height: 100vh;
+  background: #f3edff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* קונטיינר אחיד: כולל גם סיידבר וגם chat, עם צל מקצועי */
+.chatContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 950px;
+  height: 80vh;
+  min-height: 380px;
+  border-radius: 20px;
+  background: #faf7ff;
+  border: 1.5px solid #c3a6fa;
+  box-shadow: 0 4px 32px rgba(163,137,235,0.17);
+  overflow: hidden;
+}
+
+/* סיידבר ימני - חלק מהקונטיינר, לא box נפרד! */
+.sidebarInner {
+  width: 240px;
+  background: #f7f3ff; /* צבע עדין ושקט */
+  border-left: 2px solid #e5dbff;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 16px;
+  /* אין box-shadow! */
+}
+
+/* כותרת הסיידבר */
+.sidebarTitle {
+  margin: 0 0 10px 0;
+  color: #6447c2;
+  font-weight: bold;
+  font-size: 1.12rem;
+  text-align: right;
+}
+
+/* פריט פעיל (שם העסק/לקוח) */
+.convItemActive {
+  padding: 13px 10px;
+  background: #ece6ff;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #4a3aff;
+  text-align: right;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* אזור ההודעות */
+.chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%; /* חשוב */
+  background: none;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* הודעה ריקה */
+.emptyMessage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 1.2rem;
+}
+
+/* Loading/Error */
+.loading,
+.error {
+  color: #777;
+  font-size: 15px;
+  text-align: center;
+  padding: 20px;
+}
+
+/* הכנסת ה-inputBar לתחתית (בהנחה ש-clientChatTab משתמש ב-inputBar דומה) */
+.inputBar {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+/* אופציונלי – למי שרוצה שב־mobile הכל ירד לטור אחד */
+@media (max-width: 700px) {
+  .chatContainer {
+    flex-direction: column-reverse;
+    height: 98vh;
+    min-width: 0;
+    max-width: 98vw;
+  }
+  .sidebarInner {
+    width: 100%;
+    border-left: none;
+    border-top: 2px solid #e5dbff;
+    padding: 14px 8px;
+    min-height: 70px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .chatArea {
+    min-height: 240px;
+  }
+}
+
+/* הסרת צל כפול */
+.sidebarInner {
+  box-shadow: none !important;
+}
+/* מובייל קטן מאוד - למשל אייפון SE */
+@media (max-width: 360px) {
+  .sidebarInner {
+    padding: 10px 6px;
+    font-size: 13px;
+  }
+  .convItemActive {
+    font-size: 13px;
+    padding: 10px 8px;
+  }
+  .emptyMessage {
+    font-size: 1rem;
+  }
+}
+
+/* טאבלטים - אייפד, גלקסי טאבלט וכד' */
+@media (min-width: 700px) and (max-width: 1024px) {
+  .chatContainer {
+    height: 90vh;
+    max-width: 100%;
+    flex-direction: row;
+  }
+  .sidebarInner {
+    width: 220px;
+    font-size: 14px;
+  }
+  .convItemActive {
+    font-size: 14px;
+  }
+}
+
+/* מסכים רחבים מאוד */
+@media (min-width: 1280px) {
+  .chatContainer {
+    max-width: 1150px;
+    height: 85vh;
+  }
+  .sidebarInner {
+    width: 260px;
+  }
+}

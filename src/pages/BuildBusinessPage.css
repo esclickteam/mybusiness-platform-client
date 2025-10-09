@@ -1,0 +1,176 @@
+.build-business-page-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  direction: rtl;
+  font-family: Arial, sans-serif;
+  color: #222;
+  line-height: 1.6;
+  background-color: #fff;
+  box-sizing: border-box;
+  word-break: break-word; /* למניעת שבירת מילים לא טובה */
+}
+
+.build-business-page-container h1 {
+  font-size: 2.4rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: #004085; /* מעט כהה יותר לכותרת */
+}
+
+.build-business-page-container h2 {
+  font-size: 1.8rem;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 5px;
+  width: fit-content;
+  color: #0056b3; /* גוון כחול נעים לכותרות משנה */
+}
+
+.build-business-page-container h3 {
+  font-size: 1.4rem;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.build-business-page-container p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+
+.build-business-page-container ol,
+.build-business-page-container ul {
+  margin: 0 0 20px 20px;
+  padding: 0;
+}
+
+.build-business-page-container li {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.build-business-page-container strong {
+  font-weight: 700;
+}
+
+/* טבלה */
+.build-business-page-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+.build-business-page-container th,
+.build-business-page-container td {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  text-align: right;
+  font-size: 1rem;
+  vertical-align: top;
+}
+
+.build-business-page-container th {
+  background-color: #f1f5f9;
+  color: #004085;
+  font-weight: 700;
+}
+
+/* הוספת אפקט קל בהטבעת כותרות ואלמנטים */
+.build-business-page-container h2:hover,
+.build-business-page-container h3:hover {
+  color: #003366;
+  cursor: default;
+  transition: color 0.3s ease;
+}
+
+/* רספונסיביות */
+@media (max-width: 600px) {
+  .build-business-page-container {
+    padding: 15px;
+    margin: 20px;
+  }
+
+  .build-business-page-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .build-business-page-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .build-business-page-container h3 {
+    font-size: 1.2rem;
+  }
+
+  .build-business-page-container p,
+  .build-business-page-container li {
+    font-size: 1rem;
+  }
+
+  /* גלילה אופקית לטבלה במובייל */
+  .build-business-page-container table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+/* טאבלטים - מסכים בין 601px ל-900px */
+@media (min-width: 601px) and (max-width: 900px) {
+  .build-business-page-container {
+    max-width: 90vw;
+    padding: 18px 16px;
+    margin: 30px auto;
+  }
+
+  .build-business-page-container h1 {
+    font-size: 2rem;
+  }
+
+  .build-business-page-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .build-business-page-container h3 {
+    font-size: 1.3rem;
+  }
+
+  .build-business-page-container p,
+  .build-business-page-container li {
+    font-size: 1.05rem;
+  }
+}
+
+/* מובייל קטן מאוד - עד 400px */
+@media (max-width: 400px) {
+  .build-business-page-container {
+    padding: 12px 10px;
+    margin: 15px 10px;
+  }
+
+  .build-business-page-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .build-business-page-container h2 {
+    font-size: 1.2rem;
+  }
+
+  .build-business-page-container h3 {
+    font-size: 1rem;
+  }
+
+  .build-business-page-container p,
+  .build-business-page-container li {
+    font-size: 0.9rem;
+  }
+
+  .build-business-page-container table {
+    font-size: 0.9rem;
+  }
+}

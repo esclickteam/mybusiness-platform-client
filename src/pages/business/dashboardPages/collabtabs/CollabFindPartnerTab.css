@@ -1,0 +1,225 @@
+:root {
+  --card-bg: #ffffff;
+  --border-color: #d5c2f0;
+  --radius: 16px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --primary: #9b59b6; /* ← צבע כפתור */
+  --accent: #9b59b6;  /* ← שם העסק והלוגו */
+  --my-biz: #fff4d1;
+  --my-biz-border: #f6c90e;
+}
+
+.partners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 1rem;
+  direction: rtl;
+}
+
+/* כרטיס כללי */
+.collab-card {
+  background: #fbf5ff;
+  border-radius: var(--radius);
+  padding: 1.6rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 3px solid var(--border-color);
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.collab-card-inner {
+  display: flex;
+  flex-direction: column; /* ✅ ככה הלוגו בראש ולא בצד */
+  align-items: center;
+  gap: 1rem;
+}
+
+/* לוגו בראש הכרטיס */
+.business-card__media {
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--accent);
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.business-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* תוכן טקסט */
+.collab-card-content {
+  flex: 1;
+  text-align: center; /* ✅ ממורכז מתחת ללוגו */
+}
+
+.business-name {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--accent);
+  margin-bottom: 0.7rem;
+  font-family: "Heebo", sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.my-business-badge {
+  background: var(--my-biz-border);
+  color: #5b4305;
+  font-size: 0.9rem;
+  padding: 0.3em 0.8em;
+  border-radius: 999px;
+  margin-right: 0.5rem;
+  box-shadow: 0 1px 4px #f9e79f88;
+}
+
+.business-category,
+.business-desc {
+  font-size: 0.95rem;
+  color: #4a4a4a;
+  margin-bottom: 6px;
+}
+
+/* כפתור */
+.collab-card-buttons {
+  margin-top: 1.2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.message-box-button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.message-box-button:hover {
+  background-color: var(--accent);
+}
+
+.message-box-button.secondary {
+  background-color: #fff;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.message-box-button.secondary:hover {
+  background-color: #f3e8ff;
+}
+
+.message-box-button:disabled,
+.disabled-action {
+  background: #f1f1f1;
+  color: #b2b2b2;
+  border: 1px dashed #ccc;
+  cursor: not-allowed;
+  pointer-events: none;
+  font-weight: 500;
+  padding: 0.7rem 1.1rem;
+}
+
+/* כרטיס עסק שלי */
+.collab-card.my-business {
+  background: linear-gradient(135deg, var(--my-biz), #fffde0);
+  border: 2px solid var(--my-biz-border);
+  box-shadow: 0 0 0 4px #fff7c2, 0 10px 22px rgba(0, 0, 0, 0.1);
+}
+
+/* רספונסיביות */
+@media (max-width: 480px) {
+  .partners-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0.5rem;
+  }
+  .collab-card {
+    padding: 1rem;
+    min-height: auto;
+  }
+  .business-card__media {
+    width: 96px;
+    height: 96px;
+  }
+  .business-name {
+    font-size: 1.3rem;
+  }
+  .business-category,
+  .business-desc {
+    font-size: 0.85rem;
+  }
+  .message-box-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .partners-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 0.8rem;
+  }
+  .collab-card {
+    padding: 1.3rem;
+  }
+  .business-card__media {
+    width: 100px;
+    height: 100px;
+  }
+  .business-name {
+    font-size: 1.45rem;
+  }
+  .business-category,
+  .business-desc {
+    font-size: 0.9rem;
+  }
+  .message-box-button {
+    font-size: 0.95rem;
+    padding: 0.55rem 1.2rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .partners-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    padding: 1rem;
+  }
+  .collab-card {
+    padding: 1.6rem;
+    min-height: 220px;
+  }
+  .business-card__media {
+    width: 110px;
+    height: 110px;
+  }
+  .business-name {
+    font-size: 1.6rem;
+  }
+  .business-category,
+  .business-desc {
+    font-size: 0.95rem;
+  }
+  .message-box-button {
+    font-size: 1rem;
+    padding: 0.6rem 1.4rem;
+  }
+}

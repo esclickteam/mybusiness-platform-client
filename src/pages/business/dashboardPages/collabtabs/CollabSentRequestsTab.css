@@ -1,0 +1,86 @@
+/* עיצוב עבור טאב 2 – הצעות שנשלחו */
+.collab-tag {
+  margin-top: 0.5rem;
+  display: inline-block;
+  padding: 4px 10px;
+  background-color: #f3e5f5;
+  color: #6a1b9a;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 12px;
+}
+
+.collab-card p strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* עיצוב הכפתורים */
+.collab-card .collab-form-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  font-weight: 500;
+  background-color: #9b59b6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 0.5rem; /* רווח בין הכפתורים */
+}
+
+.collab-card .collab-form-button:hover {
+  background-color: #6c5ce7;
+}
+
+/* מכולת כפתורים לשורות נפרדות אם צריך */
+.collab-card .flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end; /* מיושר לימין */
+}
+@media (max-width: 480px) {
+  .collab-tag {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+  }
+  .collab-card .collab-form-button {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    margin-left: 0.3rem;
+  }
+  .collab-card .flex {
+    justify-content: center;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .collab-tag {
+    font-size: 0.82rem;
+    padding: 3.5px 9px;
+  }
+  .collab-card .collab-form-button {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.9rem;
+    margin-left: 0.4rem;
+  }
+  .collab-card .flex {
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: 769px) {
+  .collab-tag {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+  }
+  .collab-card .collab-form-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    margin-left: 0.5rem;
+  }
+  .collab-card .flex {
+    justify-content: flex-end;
+  }
+}

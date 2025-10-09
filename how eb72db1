@@ -1,0 +1,109 @@
+[33m45f60fd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: reset: moving to HEAD~3
+[33meb72db1[m HEAD@{1}: commit: Use REACT_APP_API_URL or default to https://api.esclick.co.il/api in src/api.js
+[33m8d79d76[m HEAD@{2}: commit: Use only REACT_APP_API_URL in src/api.js, no localhost fallback
+[33m6b4b049[m HEAD@{3}: commit: Require REACT_APP_API_URL in src/api.js and remove localhost fallback
+[33m45f60fd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{4}: commit: Fix refreshUserData to use /api/auth/me endpoint
+[33m39c3ef4[m HEAD@{5}: commit: Support userType in login: send email/username + userType from AuthContext and Login.jsx
+[33m11a78ea[m HEAD@{6}: commit: Use relative /api baseURL in src/api.js for Vercel proxy
+[33m9bb1e8c[m HEAD@{7}: commit: Add Vercel proxy rewrite for /api to Railway backend
+[33m58198d5[m HEAD@{8}: commit: עדכון ProtectedRoute ו-AuthContext לתמיכה ב-identifier וב-requiredPackage
+[33m396e3cc[m HEAD@{9}: commit: revert: הסר select של סוג משתמש ב-Login והחזר לגרסה הקודמת
+[33m610476c[m HEAD@{10}: commit: תקן AuthContext: הסר ייבוא שגוי והנח קוד תקין
+[33m131b86f[m HEAD@{11}: commit: תיקון ProtectedRoute (planrequiredPackage) והפרדת נתיב ציבורי ל־BusinessPage
+[33m4091a18[m HEAD@{12}: commit: הוספת כפתור מחיקה ושיפור ניהול משתמשים בעמוד AdminUsers
+[33m0cda8e2[m HEAD@{13}: commit: שומר token ב־login ומוסיף interceptor
+[33m7c8afe5[m HEAD@{14}: commit: תיקון בעיית שמירת נתוני משתמש (הוספת interceptor ב־api.js)
+[33mc183577[m HEAD@{15}: commit: feat(auth): implement ResetPassword page and flow
+[33m49f9323[m HEAD@{16}: commit: fix(login): use login return value and navigate immediately to dashboard
+[33mc8a2eb9[m HEAD@{17}: commit: chore: update all routing and auth files for proper dashboard navigation
+[33m5017139[m HEAD@{18}: commit: fix(business): set default BusinessDashboardRoutes index to DashboardPage
+[33mafa7ae6[m HEAD@{19}: commit: feat(auth): עדכון AuthContext, login/register ותמיכה בrole וbusinessId
+[33m480e1da[m HEAD@{20}: commit: login דרך refreshUserData לקבלת role מדויק
+[33me853765[m HEAD@{21}: commit: שדרוג התחברות: טעינה מהשרת בלבד וניתוב לפי תפקיד
+[33m52c9597[m HEAD@{22}: commit: ניתוב לפי role לאחר הרשמה אוטומטית
+[33ma8809aa[m HEAD@{23}: commit: עדכון כללי: התחברות לפי תפקיד, טעינה עם context, cookie בפרודקשן
+[33m6e809e2[m HEAD@{24}: commit: עדכון Register: ניתוב לפי תפקיד אחרי הרשמה (business / customer / worker / manager / admin)
+[33m047a831[m HEAD@{25}: commit: תיקון נתיב ייבוא ל־useAuth ב־AdminDashboard
+[33m9b5d951[m HEAD@{26}: commit: הוספת הגנות לפי תפקיד לכל הדשבורדים + שיפור ProtectedRoute ו־Header
+[33m94bdad4[m HEAD@{27}: commit: הרשמה: הוספת role לפי סוג משתמש (business/customer)
+[33m56b1adc[m HEAD@{28}: commit: תיקון כפתור מחיקה ב־AdminUsers כולל טיפול בשגיאות ו-debug
+[33mf8fffe9[m HEAD@{29}: commit: שיפור מחיקת משתמשים: הודעות שגיאה ברורות וסטטוס
+[33ma60619c[m HEAD@{30}: commit: Implement AdminUsers page: fetch, delete & status toggle
+[33maf26dc8[m HEAD@{31}: commit: תיקון תצוגת שדה טלפון להרשמה כבעל עסק + בדיקת debug
+[33m143f874[m HEAD@{32}: commit: הרשמה עם טלפון תקני לבעלי עסקים + userType תואם לשרת
+[33m8a380e4[m HEAD@{33}: commit: שדרוג טופס הרשמה: ולידציה לטלפון ושימוש ב-role
+[33mca30272[m HEAD@{34}: commit: הוספת שדה טלפון בהרשמה + עדכון עיצוב
+[33m2758d98[m HEAD@{35}: commit: שדרוג עיצוב טופס הרשמה + הודעות שגיאה
+[33m8d83f32[m HEAD@{36}: commit: תיקון שגיאת includes בשדה ריק + סינון בטוח
+[33me30aed1[m HEAD@{37}: commit: טעינת משתמשים מ-API עם useEffect + debug ב-console
+[33m370f1fb[m HEAD@{38}: commit: טעינת משתמשים מהשרת + איפוס סיסמה ע״י אדמין
+[33m354722f[m HEAD@{39}: commit: הוספת איפוס סיסמה למשתמשים בדשבורד ניהול
+[33me9182f2[m HEAD@{40}: commit: תיקון תפקיד ל-worker + הוספת שדה אימייל בטופס משתמשים
+[33m0b3a631[m HEAD@{41}: commit: יצירת משתמשים מהדשבורד כולל שליחת סיסמה זמנית במייל
+[33mec66e4f[m HEAD@{42}: commit: דפי שותפים ותשלומים: AffiliatePage, דוח עמלות, טופס בנק
+[33m2f04d4f[m HEAD@{43}: commit: הוספת עמוד שינוי סיסמה זמנית והוספת קישור לדשבורד אדמין
+[33m4a57102[m HEAD@{44}: commit: עמוד שינוי סיסמה לסיסמה זמנית
+[33m03b1c61[m HEAD@{45}: commit: Clean .gitignore for production safety
+[33mbcece58[m HEAD@{46}: commit: שיפור ProtectedRoute טעינה בטוחה לפני הפניה
+[33m49f2dd0[m HEAD@{47}: commit: תיקון התחברות: עדכון login, authContext, api.js והצפנת סיסמה
+[33m04c3dfc[m HEAD@{48}: commit: תקן פונקציית logout: מחיקת token ו-user + clearCookie בשרת
+[33mbc46d41[m HEAD@{49}: commit: תיקון שמירת טוקן דרך cookie בלבד + התאמה לפרודקשן
+[33m1ffbaa5[m HEAD@{50}: commit: עדכון לפרודקשן עם פרוקסי בלבד
+[33mc31e24c[m HEAD@{51}: commit: עדכון proxy לapi.esclick.co.il בקובץ vercel.json
+[33mb349436[m HEAD@{52}: commit: הסרת VITE_API_URL כדי להפעיל proxy דרך vercel.json
+[33m50d08e8[m HEAD@{53}: commit: הוספת debug לטעינת משתמש ב-AuthContext
+[33mda32121[m HEAD@{54}: commit: הוספת עמוד איפוס סיסמה ונתיב API תואם
+[33medb2db7[m HEAD@{55}: commit: תיקון: עטיפת AuthProvider סביב האפליקציה ב-main.jsx
+[33m7e58d4c[m HEAD@{56}: commit: Add .gitignore: ignore node_modules and build artifacts
+[33mee68700[m HEAD@{57}: reset: moving to origin/main
+[33m54680d8[m HEAD@{58}: reset: moving to HEAD@{1}
+[33mee68700[m HEAD@{59}: commit: Refactor: Remove duplicate BrowserRouter/AuthProvider from App.jsx
+[33m54680d8[m HEAD@{60}: reset: moving to HEAD~1
+[33mfde0458[m HEAD@{61}: reset: moving to HEAD
+[33mfde0458[m HEAD@{62}: reset: moving to HEAD~1
+[33m20abb5c[m HEAD@{63}: commit: קבעתי בכפתור ההתחברות שיוצג תמיד 'כניסת עובדים' ותיקנתי את מבנה הApp כדי שיהיה Router/AuthProvider יחיד
+[33mfde0458[m HEAD@{64}: commit: fix(Login): split login modes and payload, add employee login toggle
+[33m54680d8[m HEAD@{65}: commit: עיצוב מותאם לדף ההתחברות וLogin.jsx משולב התחברות רגילה וכניסת עובדים
+[33m259f427[m HEAD@{66}: commit: הסר AuthProvider מ-App.jsx - עכשיו מופיע רק ב-index.jsx
+[33m1d6a822[m HEAD@{67}: commit: עדכון Header: טקסט שחור, לוגו גדול יותר וניווט התנתקות ל/login
+[33md476ae1[m HEAD@{68}: commit: עדכון Header (עיצוב, ניווט, התנתקות), AuthContext ושיפור זרימת התחברות
+[33m7594793[m HEAD@{69}: commit: כלי עיצוב Header: סטייל חדש לאזור אישי, שם משתמש וסקריפט התנתקות
+[33mfc0c406[m HEAD@{70}: commit: הוסף עיצוב ל-Header בפרופיל המשתמש
+[33md1fab36[m HEAD@{71}: commit: הוסף הצגת שם משתמש, כפתור אזור אישי והמשך התנתקות בכותרת
+[33m69d1214[m HEAD@{72}: commit: תקן logout: העבר ניווט ל-Header והסר window.replace מה-AuthContext
+[33mf973b27[m HEAD@{73}: commit: מעדכן Header.jsx: מחכה ל-logout ומפנה ל-login
+[33meeb87db[m HEAD@{74}: commit: עדכון Header.jsx + הסרת Header.css
+[33m3185c64[m HEAD@{75}: commit: הוספת src/styles/Header.css עבור סגנונות כותרת
+[33mbcaa93a[m HEAD@{76}: commit: תקן התנתקות: התחבר ל-useAuth והוסף handleLogout שמפעיל logout
+[33mf5f2b80[m HEAD@{77}: commit: עדכון קוד Login.jsx לגרסה המעודכנת עם API חדש וזרימת ניווט
+[33meb705f8[m HEAD@{78}: commit: עדכון קוד Login.jsx לגרסה המעודכנת עם API חדש וזרימת ניווט
+[33m2b26c87[m HEAD@{79}: commit: Revert Login.jsx to previous version
+[33mb96d4ee[m HEAD@{80}: commit: שנה טקסט הכפתור ל'כניסת עובדים' וה-toggle ל' כניסת עובדים'
+[33m7898762[m HEAD@{81}: commit: Simplify login: only username/password, title 'כניסת עובדים', remove toggles
+[33m523afc1[m HEAD@{82}: commit: Fix JSX syntax in App.jsx; wrap everything in AuthProvider correctly
+[33mfdc922c[m HEAD@{83}: commit: Wrap entire App in AuthProvider and BrowserRouter in src/index.jsx
+[33mb777381[m HEAD@{84}: commit: Wrap <App> in <AuthProvider> and <BrowserRouter> in index.jsx
+[33m4f1e160[m HEAD@{85}: commit: Always refresh user data on mount; remove token check
+[33m08957ce[m HEAD@{86}: commit: Use import.meta.env.DEV in ProtectedRoute instead of hardcoded devMode
+[33meb88135[m HEAD@{87}: commit: Integrate full CollabPage flow with API calls and fix endpoints
+[33mbc7810c[m HEAD@{88}: commit: Fix stats endpoint: use /business/stats instead of /businesses/stats in DashboardPage
+[33ma5503c2[m HEAD@{89}: commit: Fix ChartComponent stats endpoint to /business/stats
+[33m64f3b16[m HEAD@{90}: commit: chore: trigger redeploy
+[33m228269b[m HEAD@{91}: commit: Fix stats endpoint: use /business/stats instead of /businesses/stats
+[33mb2969ed[m HEAD@{92}: commit: תיאור השינוי שבוצע
+[33m475476c[m HEAD@{93}: commit: תיקון שימוש ב-businessId במקום userId בקריאת שיחות + עדכוני API
+[33ma7a145d[m HEAD@{94}: commit: עדכון AuthContext: כולל role, businessId וisTempPassword
+[33mca8428d[m HEAD@{95}: commit: תיקון נתיב stats + עדכון baseURL לVITE_API_URL
+[33mc8153ec[m HEAD@{96}: commit: עדכון Collab.jsx עם הרשאות, devMode וטעינת פרופיל
+[33mb817f68[m HEAD@{97}: commit: עדכון UI + התחברות עם עובדים + שינוי סיסמה
+[33m67a1302[m HEAD@{98}: commit: הוספת עמוד admin לניהול
+[33m7b3a49c[m HEAD@{99}: commit: קומפוננטת טקסט ניתן לעריכה
+[33m76f30be[m HEAD@{100}: commit: הוספת דפי ניהול ראשוניים
+[33m2b14a3e[m HEAD@{101}: commit: הוספת משימות אישיות לסטאף + תיקוני תצוגה
+[33m1721c5d[m HEAD@{102}: commit: הוספת ClientDashboard עם סגנון + קישור בעמוד הראשי
+[33m4940274[m HEAD@{103}: commit: עדכון App.jsx + חיבור לוח עבודות מהירות
+[33mf18e322[m HEAD@{104}: commit: עדכון App.jsx + חיבור לוח עבודות מהירות
+[33mba1461e[m HEAD@{105}: commit: הוספת לוח עבודות מהירות (Quick Jobs)
+[33mf900e50[m HEAD@{106}: commit: עדכון עמוד הבית + תיקוני ניווט וחיפוש
+[33mb19551e[m HEAD@{107}: Branch: renamed refs/heads/master to refs/heads/main
+[33mb19551e[m HEAD@{109}: commit (initial): העלאת פרונט לריפו נפרד

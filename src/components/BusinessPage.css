@@ -1,0 +1,42 @@
+/* src/components/BusinessPage.css */
+
+.business-page-container {
+    /* מרכז את התוכן וריוּח פנימי */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  /* דוגמה לסגנון לכותרת או טקסט שתרצי להוסיף */
+  .business-page-container h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* אם בעתיד תרצי ש־BusinessProfileView יתפרס על כל הרוחב */
+  .business-page-container > * {
+    width: 100%;
+  }
+  @media (max-width: 768px) {
+  .business-page-container {
+    padding: 1.25rem 1rem;
+  }
+
+  .business-page-container h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .business-page-container {
+    padding: 1rem 0.75rem;
+    gap: 1rem;
+  }
+
+  .business-page-container h1 {
+    font-size: 1.3rem;
+  }
+}

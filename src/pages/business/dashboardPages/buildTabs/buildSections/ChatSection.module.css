@@ -1,0 +1,206 @@
+.chatSection {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* עמודת התצוגה משמאל */
+.previewColumn {
+  display: block; /* קודם היה מוסתר, עכשיו מוצג */
+  width: 300px;
+  padding: 1rem;
+  border-right: 1px solid #eee;
+  background-color: #f9f5ff;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* צד שמאל (תצוגה) */
+.chatSidebar {
+  width: 280px;
+  background: #f3edff;
+  padding: 1rem;
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+
+  /* מרכזים את הכפתור */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* עמודת השיחות מימין */
+.chatMain {
+  flex: 1;
+  background: #fff;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* שאר הסגנונות נשארים כפי שהיו */
+.chatSidebar h3 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #6b4fc4;
+}
+
+.loadingScreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 1.1rem;
+}
+
+/* רשימת שיחות */
+.convoList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.convoItem {
+  padding: 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.convoItem:hover {
+  background-color: #f0e0ff;
+}
+
+.selected {
+  background-color: #e4d7ff;
+}
+
+.noConversations {
+  padding: 1rem;
+  text-align: center;
+  color: #666;
+}
+
+/* טעינה ושגיאות */
+.spinner {
+  padding: 1rem;
+  text-align: center;
+  color: #6b4fc4;
+}
+
+.errorBanner {
+  padding: 0.75rem;
+  background: #ffe6e6;
+  color: #a00;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.chatPlaceholder {
+  margin: auto;
+  color: #777;
+}
+
+/* עיצוב הכפתור המדויק */
+.edit-link-button {
+  background: #bb89f9;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 12px 28px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.3s ease;
+  text-align: center;
+  user-select: none;
+  box-shadow: 0 4px 8px rgba(187, 137, 249, 0.5);
+}
+
+.edit-link-button:hover {
+  background: #a16def;
+  box-shadow: 0 6px 12px rgba(161, 109, 239, 0.7);
+}
+
+/* תוספות למרכז הכפתור */
+.form-column {
+  height: 100vh; /* מלא גובה המסך */
+  display: flex;
+  justify-content: center; /* מרכז אופקי */
+  align-items: flex-start; /* יישור למעלה אנכית */
+  padding-top: 2rem; /* רווח מלמעלה */
+}
+
+.edit-link-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+/* רספונסיביות מלאה - התאמה לכל סוגי המסכים */
+@media (max-width: 768px) {
+  .chatSection {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .previewColumn,
+  .chatSidebar {
+    width: 100%;
+    border: none;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .chatMain {
+    padding: 1rem 0.5rem;
+    flex: none;
+  }
+
+  .form-column {
+    height: auto;
+    padding: 1rem;
+    align-items: center;
+  }
+
+  .edit-link-button {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-link-button {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+
+  .chatSidebar h3 {
+    font-size: 1rem;
+  }
+
+  .convoItem {
+    padding: 0.5rem;
+  }
+
+  .errorBanner {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .chatSection {
+    max-width: 1400px;
+    margin: auto;
+  }
+
+  .edit-link-button {
+    font-size: 17px;
+    padding: 14px 32px;
+  }
+}

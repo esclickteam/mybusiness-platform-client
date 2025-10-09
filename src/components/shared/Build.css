@@ -1,0 +1,287 @@
+/* מבנה עמוד כללי */
+.build-wrapper {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  padding: 2rem;
+  background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
+  min-height: 100vh;
+  flex-wrap: wrap;
+  gap: 2rem;
+  direction: rtl;
+  box-sizing: border-box;
+}
+
+/* צד ימין - תצוגה */
+.preview-column {
+  width: 450px;
+  background-color: #f0dbff;
+  border: 8px solid black;
+  border-radius: 40px;
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+  margin: 0 auto;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* צד שמאל - טופס / עיצוב */
+.form-column {
+  width: 520px;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  flex-grow: 1;
+  min-width: 300px;
+  box-sizing: border-box;
+}
+
+.form-column label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.form-column input,
+.form-column textarea,
+.form-column select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-top: 0.3rem;
+}
+
+/* כפתור שמירה */
+.save-btn {
+  margin: 2.5rem auto 0;
+  background: linear-gradient(90deg, #b46af1 0%, #d19fff 100%);
+  color: white;
+  border: none;
+  padding: 1.2rem 3rem;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  text-align: center;
+  width: fit-content;
+  min-width: 250px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.save-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(180, 106, 241, 0.4);
+}
+
+/* טאבים */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem 0.4rem;
+  margin-top: 1.2rem;
+}
+
+.tab {
+  width: 100%;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 20px;
+  background-color: #d6cadf;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.tab.active {
+  background-color: #b46af1;
+  color: white;
+}
+
+/* לוגו */
+.logo-circle {
+  width: 100px;
+  height: 100px;
+  background-color: #d8c2f2;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  border: 3px solid white;
+  transition: transform 0.2s ease;
+}
+
+.logo-circle:active {
+  transform: scale(0.95);
+}
+
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.name-rating {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.rating-badge {
+  background-color: #ffd700;
+  color: black;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.star {
+  margin-right: 0.3rem;
+}
+
+.about-text.center-text {
+  text-align: center;
+}
+
+/* תצוגת גלריה (preview only) */
+.gallery-preview-wrapper {
+  width: 100%;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.gallery-preview-wrapper .gallery-instagram-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 1rem;
+  padding: 0 6px;
+}
+
+.gallery-preview-wrapper .gallery-item-square {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.gallery-preview-wrapper .gallery-item-square img,
+.gallery-preview-wrapper .gallery-item-square video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 10px;
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .build-wrapper {
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .preview-column {
+    width: 100%;
+    max-width: 420px;
+    border-width: 4px;
+  }
+
+  .form-column {
+    width: 100%;
+    max-width: 600px;
+    padding: 1.5rem;
+  }
+
+  .tabs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .save-btn {
+    font-size: 1rem;
+    padding: 1rem 2rem;
+  }
+
+  .gallery-preview-wrapper .gallery-instagram-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .form-column,
+  .preview-column {
+    padding: 1rem;
+    border-radius: 20px;
+  }
+
+  .tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .save-btn {
+    font-size: 0.95rem;
+    padding: 0.8rem 1.5rem;
+  }
+
+  .gallery-preview-wrapper .gallery-instagram-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* טאבלטים גדולים / מחשבים ניידים קטנים (769px–1024px) */
+@media (max-width: 1024px) {
+  .form-column {
+    width: 90%;
+    padding: 1.75rem;
+  }
+
+  .preview-column {
+    width: 400px;
+  }
+
+  .save-btn {
+    font-size: 1.05rem;
+  }
+
+  .gallery-preview-wrapper .gallery-instagram-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* מסכים בינוניים (1025px–1280px) */
+@media (max-width: 1280px) {
+  .build-wrapper {
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .form-column {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .preview-column {
+    width: 440px;
+  }
+
+  .tabs {
+    gap: 0.3rem;
+  }
+}

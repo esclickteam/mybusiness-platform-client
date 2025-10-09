@@ -1,0 +1,59 @@
+.timeline-container {
+  margin-top: 20px;
+}
+
+.timeline-container h3 {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+  color: #1e3a8a;
+}
+
+.no-events {
+  color: #6b7280;
+  text-align: center;
+  font-style: italic;
+}
+
+/* כרטיס אירוע */
+.event-card {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border-right: 5px solid #6a11cb; /* ברירת מחדל */
+  transition: transform 0.2s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+}
+
+/* צבעים לפי סוג */
+.event-card[data-type="call"] { border-right-color: #3b82f6; }
+.event-card[data-type="message"] { border-right-color: #9333ea; }
+.event-card[data-type="meeting"] { border-right-color: #f59e0b; }
+.event-card[data-type="task"] { border-right-color: #10b981; }
+.event-card[data-type="file"] { border-right-color: #ef4444; }
+
+.event-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.event-icon {
+  font-size: 1.2rem;
+}
+
+.event-meta {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.event-notes {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: #374151;
+}

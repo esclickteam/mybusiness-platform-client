@@ -1,0 +1,307 @@
+:root {
+  --main-bg: linear-gradient(145deg, #f5f2fc, #faf9ff);
+  --card-bg: #ffffff;
+  --primary: #9b59b6;
+  --primary-dark: #8e44ad;
+  --accent: #6c5ce7;
+  --text-dark: #2d3436;
+  --text-light: #636e72;
+  --border-color: #e1d9f3;
+  --radius: 14px;
+  --shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  --tab-active: #1a73e8;
+  --tab-inactive: #444;
+  --tab-border: #e0e0e0;
+}
+
+body {
+  background: var(--main-bg);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: var(--text-dark);
+  direction: rtl;
+  text-align: right;
+}
+
+/* טאבים עליונים */
+.tab-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 1rem 0;
+  background-color: #fbfaff;
+  margin-bottom: 1rem;
+  direction: rtl;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--tab-inactive);
+  background-color: #f0f3f5;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-width: auto;
+  width: auto;
+}
+
+.tab:hover {
+  background-color: #eee;
+  color: var(--tab-active);
+}
+
+.tab.active {
+  background-color: #6a1b9a;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* כפתורי קטגוריה */
+.category-tab-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 1.5rem 0;
+  direction: rtl;
+}
+
+.category-tab {
+  background-color: #f4f4f4;
+  color: var(--primary-dark);
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.category-tab:hover {
+  background-color: #eaeaea;
+}
+
+.category-tab.active {
+  background-color: var(--primary-dark);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* כרטיס פרופיל עסקי */
+.collab-container {
+  background: linear-gradient(to bottom right, #f5f2fc, #fdfbff);
+  padding: 2rem;
+  direction: rtl;
+  text-align: right;
+}
+
+.collab-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.business-profile-card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: var(--shadow);
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: all 0.3s ease-in-out;
+  direction: rtl;
+}
+
+.business-profile-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.business-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  direction: rtl;
+}
+
+.business-header-text {
+  flex: 1;
+  text-align: right;
+}
+
+.business-logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary);
+  margin-left: 1rem; /* לדחוף את התמונה מעט לשמאל כששאר התוכן לימין */
+}
+
+.business-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: var(--primary-dark);
+}
+
+.business-category {
+  font-size: 1rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.business-section h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.business-section p,
+.business-section ul {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-dark);
+}
+
+.business-section ul {
+  padding-right: 1.2rem;
+  list-style: disc;
+}
+
+/* עיצוב תיבת הודעה */
+.message-box textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 1rem;
+  resize: vertical;
+  margin-top: 0.5rem;
+}
+
+.message-box button {
+  margin-top: 0.8rem;
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.6rem 1.4rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.message-box button:hover {
+  background-color: var(--accent);
+}
+
+/* תג סטטוס */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+  color: white;
+}
+
+.status-approved {
+  background-color: #00b894;
+}
+
+.status-pending {
+  background-color: #fdcb6e;
+}
+
+.status-denied {
+  background-color: #d63031;
+}
+/* רספונסיביות כללית */
+
+/* טלפונים קטנים עד 480px */
+@media (max-width: 480px) {
+  .business-profile-card {
+    padding: 1.5rem;
+    max-width: 100%;
+  }
+  .business-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .business-logo {
+    width: 70px;
+    height: 70px;
+    margin-left: 0;
+    margin-bottom: 1rem;
+  }
+  .business-name {
+    font-size: 1.4rem;
+  }
+  .business-category {
+    font-size: 0.9rem;
+  }
+  .message-box textarea {
+    font-size: 0.9rem;
+  }
+  .message-box button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* טלפונים סטנדרטיים עד 768px */
+@media (max-width: 768px) {
+  .business-profile-card {
+    padding: 2rem;
+    max-width: 100%;
+  }
+  .business-header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .business-logo {
+    width: 80px;
+    height: 80px;
+    margin-left: 0.5rem;
+  }
+  .business-name {
+    font-size: 1.6rem;
+  }
+  .business-category {
+    font-size: 1rem;
+  }
+}
+
+/* טאבלטים עד 1024px */
+@media (max-width: 1024px) {
+  .business-profile-card {
+    max-width: 700px;
+  }
+}
+
+/* מחשבים סטנדרטיים ומעלה */
+/* לא צריך שינוי, נשאר כפי שהוא */

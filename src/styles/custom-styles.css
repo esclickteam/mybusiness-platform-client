@@ -1,0 +1,37 @@
+/* custom-styles.css */
+.aw-toggle-button {
+    position: fixed !important;
+    top: 600px !important;
+    right: 20px !important;
+    bottom: auto !important;
+    left: calc(100vw - 21px) !important;
+    transform: unset !important;
+    z-index: 999999999 !important;
+    background: #005b96 !important;
+    color: #ffffff !important;
+    padding: .75rem !important;
+    border-radius: 50% !important;
+    font-size: 1.5rem !important;
+    cursor: pointer !important;
+}
+@media (max-width: 480px) {
+  .aw-toggle-button {
+    top: auto !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    left: auto !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.3rem !important;
+    padding: 0.6rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .aw-toggle-button {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 1.1rem !important;
+    padding: 0.5rem !important;
+  }
+}

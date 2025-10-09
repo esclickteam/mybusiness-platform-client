@@ -1,0 +1,248 @@
+.customer-chat-preview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+  direction: rtl;
+}
+
+/* תיבת ההודעות */
+.customer-chat-preview .chat-box {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #f5f2fa;
+  border-radius: 12px;
+  max-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* שורת הודעה */
+.customer-chat-preview .chat-message-row {
+  display: flex;
+  width: 100%;
+}
+
+.customer-chat-preview .chat-message-row.from-customer {
+  justify-content: flex-end;
+}
+
+.customer-chat-preview .chat-message-row.from-customer .chat-bubble {
+  align-self: flex-end !important;
+}
+
+/* בועה כללית */
+.customer-chat-preview .chat-bubble {
+  max-width: 75%;
+  padding: 12px 16px;
+  margin: 6px 0;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  position: relative;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  border: none;
+}
+
+/* הודעת מערכת */
+.customer-chat-preview .chat-bubble.system {
+  align-self: center;
+  background-color: #fff6db;
+  font-style: italic;
+  text-align: center;
+}
+
+/* תצוגה מקדימה */
+.customer-chat-preview .chat-bubble.preview {
+  border: 1px dashed #b68aff;
+  background-color: #e0d3ff;
+  opacity: 0.9;
+}
+
+/* כפתור ✖ למחיקת קובץ */
+.customer-chat-preview .chat-bubble.preview button {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* טיימסטאמפ */
+.customer-chat-preview .timestamp {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* אזור קלט */
+.customer-chat-preview .chat-input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+/* שדות קלט */
+.customer-chat-preview .chat-input-area input[type="text"],
+.customer-chat-preview .chat-input-area textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  resize: none;
+  font-family: inherit;
+}
+
+/* כפתורי קלט */
+.customer-chat-preview .chat-input-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.customer-chat-preview .chat-input-buttons button {
+  flex: 1 1 80px;
+  min-width: 70px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 16px;
+  background-color: #e0d3ff;
+  color: #1f1f1f;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.customer-chat-preview .chat-input-buttons button:hover {
+  background-color: #d0c1f5;
+}
+
+/* תפריט צירוף קובץ */
+.customer-chat-preview .attachment-popup {
+  position: absolute;
+  bottom: 100px;
+  right: 10px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.customer-chat-preview .attachment-popup button {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  text-align: right;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.customer-chat-preview .attachment-popup button:hover {
+  color: #7b4fff;
+}
+
+/* תמונות ווידאו */
+.customer-chat-preview .chat-message-row.from-customer .chat-bubble img,
+.customer-chat-preview .chat-message-row.from-customer .chat-bubble video {
+  max-width: 220px !important;
+  max-height: 220px !important;
+  border-radius: 10px !important;
+  object-fit: cover !important;
+  margin-top: 6px !important;
+  align-self: flex-end !important;
+}
+/* רספונסיביות מלאה לתצוגת צ'אט לקוח */
+
+@media (max-width: 1024px) {
+  .customer-chat-preview {
+    padding: 0.8rem;
+  }
+
+  .customer-chat-preview .chat-bubble {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+
+  .customer-chat-preview .chat-input-buttons button {
+    font-size: 14px;
+    padding: 9px 14px;
+  }
+
+  .customer-chat-preview .chat-input-area input[type="text"],
+  .customer-chat-preview .chat-input-area textarea {
+    font-size: 13px;
+  }
+
+  .customer-chat-preview .attachment-popup {
+    bottom: 90px;
+    right: 8px;
+    padding: 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .customer-chat-preview {
+    padding: 0.5rem;
+  }
+
+  .customer-chat-preview .chat-box {
+    max-height: 300px;
+    padding: 0.4rem;
+  }
+
+  .customer-chat-preview .chat-bubble {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .customer-chat-preview .timestamp {
+    font-size: 10px;
+  }
+
+  .customer-chat-preview .chat-input-buttons {
+    flex-direction: column;
+  }
+
+  .customer-chat-preview .chat-input-buttons button {
+    width: 100%;
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .customer-chat-preview .chat-input-area input[type="text"],
+  .customer-chat-preview .chat-input-area textarea {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .customer-chat-preview .attachment-popup {
+    bottom: 80px;
+    right: 5px;
+    font-size: 13px;
+  }
+
+  .customer-chat-preview .chat-message-row.from-customer .chat-bubble img,
+  .customer-chat-preview .chat-message-row.from-customer .chat-bubble video {
+    max-width: 180px !important;
+    max-height: 180px !important;
+  }
+}
