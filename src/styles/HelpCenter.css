@@ -1,272 +1,243 @@
+/* 🌎 Help Center – Modern LTR Design */
 .help-center-container {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 20px;
-  direction: rtl;
-  font-family: Arial, sans-serif;
-  color: #222;
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 40px 25px;
+  direction: ltr;
+  font-family: "Poppins", "Inter", sans-serif;
+  color: #1e1e2f;
+  background: linear-gradient(180deg, #fafaff 0%, #f3f4ff 100%);
+  animation: fadeIn 0.5s ease-in-out;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🌐 Headings */
 h1 {
-  font-size: 2.2rem;
-  margin-bottom: 10px;
+  font-size: 2.8rem;
+  color: #5a0fb0;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 p {
-  font-size: 1.1rem;
-  margin-bottom: 25px;
+  font-size: 1.15rem;
+  text-align: center;
+  color: #444;
+  margin-bottom: 45px;
 }
 
+/* 🔍 Search Bar */
 .search-bar {
   position: relative;
-  margin-bottom: 30px;
+  max-width: 650px;
+  margin: 0 auto 50px;
 }
 
 .search-bar input {
   width: 100%;
-  padding: 12px 45px 12px 15px;
-  font-size: 1.1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
+  padding: 14px 55px 14px 20px;
+  border-radius: 14px;
+  border: 2px solid #d5ccff;
+  font-size: 1rem;
+  background-color: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
 }
 
 .search-bar input:focus {
-  border-color: #007bff;
+  border-color: #6a11cb;
+  box-shadow: 0 0 10px rgba(106, 17, 203, 0.2);
   outline: none;
 }
 
 .search-icon {
   position: absolute;
+  right: 18px;
   top: 50%;
-  left: 15px;
   transform: translateY(-50%);
   font-size: 22px;
   color: #666;
-  pointer-events: none;
 }
 
-.popular-articles,
-.faqs,
-.recommended-articles,
-.contact-us,
-.faq-categories {
-  margin-bottom: 30px;
-  text-align: center;
+/* 📰 Popular Articles */
+.popular-articles {
+  margin-bottom: 70px;
 }
 
-.faqs h2,
-.recommended-articles h2,
-.contact-us h2,
-.faq-categories h2,
 .popular-articles h2 {
-  font-size: 1.6rem;
-  margin-bottom: 20px;
-  padding-bottom: 5px;
-  border-bottom: 2px solid #007bff;
-  display: inline-block;
+  text-align: center;
+  font-size: 1.9rem;
+  color: #5a0fb0;
+  margin-bottom: 30px;
 }
 
 .articles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
 }
 
 .article-card {
-  background-color: #f0f4ff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  background: #fff;
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 6px 20px rgba(90, 15, 176, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(90, 15, 176, 0.08);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 150px;
+  min-height: 200px;
 }
 
-.article-card p {
-  font-size: 1rem;
-  margin-bottom: 15px;
-  line-height: 1.3;
-  color: #222;
+.article-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 28px rgba(90, 15, 176, 0.2);
+}
+
+.article-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c1250;
+  margin-bottom: 10px;
+}
+
+.article-description {
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  flex-grow: 1;
 }
 
 .more-info-button {
-  display: inline-block;
-  background-color: #0066ff;
-  color: white;
-  padding: 8px 16px;
+  align-self: flex-start;
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: #fff;
+  padding: 10px 22px;
   border-radius: 25px;
+  font-weight: 600;
   text-decoration: none;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: fit-content;
-  user-select: none;
+  transition: all 0.25s ease;
 }
 
-.more-info-button:hover,
-.more-info-button:focus {
-  background-color: #004ecc;
-  outline: none;
+.more-info-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(90, 15, 176, 0.3);
 }
 
-.faqs ul,
-.recommended-articles ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.faqs li,
-.recommended-articles li {
-  padding: 10px 0;
-  border-bottom: 1px solid #ddd;
-  font-size: 1.1rem;
-}
-
-.contact-us a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.contact-us a:hover,
-.contact-us a:focus {
-  text-decoration: underline;
-}
-
-.support-button {
-  background-color: #0066ff;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  font-size: 1.1rem;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  user-select: none;
-  display: inline-block;
-  margin-top: 15px;
-}
-
-.support-button:hover,
-.support-button:focus {
-  background-color: #004ecc;
-  outline: none;
-}
-
+/* 📚 FAQ Categories */
 .faq-categories {
-  margin-bottom: 40px;
+  margin-bottom: 70px;
+}
+
+.faq-categories h2 {
+  text-align: center;
+  font-size: 1.9rem;
+  color: #5a0fb0;
+  margin-bottom: 30px;
 }
 
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 25px;
 }
 
 .category-card {
-  background-color: #e7f0ff;
-  border-radius: 10px;
-  padding: 18px;
+  background: linear-gradient(145deg, #ffffff, #f4f4ff);
+  border: 1px solid rgba(90, 15, 176, 0.1);
+  border-radius: 16px;
+  padding: 30px 20px;
+  text-align: center;
+  color: #4a148c;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.category-card:hover {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: #fff;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(90, 15, 176, 0.25);
+}
+
+/* 💬 Contact Section */
+.contact-us {
+  text-align: center;
+  margin-top: 80px;
+}
+
+.contact-us h2 {
+  font-size: 1.8rem;
+  color: #2c1250;
+  margin-bottom: 20px;
+}
+
+.support-button {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  border: none;
+  border-radius: 30px;
+  color: #fff;
+  padding: 14px 36px;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #004a99;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
-  user-select: none;
-  text-align: center;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-.category-card:hover,
-.category-card:focus {
-  background-color: #0066ff;
-  color: white;
-  outline: none;
+.support-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(90, 15, 176, 0.25);
 }
 
-/* עיצוב הצ'אט בוט */
+/* 🤖 ChatBot */
 .chatbot-section {
   position: fixed !important;
-  bottom: 20px !important;
-  left: 20px !important;
-  width: 350px !important;
-  max-height: 500px !important;
-  background-color: #fff !important;
-  border-radius: 14px !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-  z-index: 10000 !important;
+  bottom: 25px !important;
+  right: 25px !important;
+  width: 360px !important;
+  max-height: 520px !important;
+  background: #fff !important;
+  border-radius: 18px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
   overflow: hidden !important;
+  z-index: 9999 !important;
+  transition: all 0.3s ease-in-out !important;
 }
 
 .chatbot-section > header {
-  background-color: #007bff !important;
-  color: white !important;
-  padding: 12px 20px !important;
+  background: linear-gradient(90deg, #6a11cb, #2575fc) !important;
+  color: #fff !important;
+  padding: 14px 22px !important;
   font-weight: 700 !important;
   font-size: 18px !important;
-  letter-spacing: 0.5px !important;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
-  user-select: none !important;
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
+  letter-spacing: 0.5px !important;
 }
 
 .chatbot-section > header button {
-  background-color: transparent !important;
+  background: transparent !important;
   border: none !important;
   color: white !important;
   font-size: 24px !important;
-  font-weight: bold !important;
   cursor: pointer !important;
-  line-height: 1 !important;
-  padding: 0 6px !important;
 }
 
 .chatbot-messages {
   flex: 1 !important;
   overflow-y: auto !important;
   padding: 20px !important;
-  background-color: #f6f8fa !important;
-  font-size: 15px !important;
-  line-height: 1.5 !important;
-  color: #333 !important;
-}
-
-.chatbot-messages p {
-  margin: 5px 0 !important;
-  padding: 12px 18px !important;
-  border-radius: 25px !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
-  max-width: 75% !important;
-  white-space: pre-line !important;
-  font-size: 15px !important;
-}
-
-.chatbot-messages .user {
-  background-color: #daf5d4 !important;
-  color: #222 !important;
-  align-self: flex-end !important;
-  border-bottom-right-radius: 0 !important;
-  border-bottom-left-radius: 25px !important;
-  font-weight: 400 !important;
-  text-align: left !important;
-  display: inline-block !important;
-}
-
-.chatbot-messages .bot {
-  background-color: #e8eaed !important;
-  color: #222 !important;
-  align-self: flex-start !important;
-  border-bottom-left-radius: 0 !important;
-  border-bottom-right-radius: 25px !important;
-  font-weight: 500 !important;
-  text-align: left !important;
-  display: inline-block !important;
+  background-color: #f8f9fb !important;
 }
 
 .chatbot-input {
@@ -284,120 +255,54 @@ p {
   padding: 10px 18px !important;
   font-size: 15px !important;
   outline: none !important;
-  direction: rtl !important;
   transition: border-color 0.3s ease !important;
 }
 
 .chatbot-input input:focus {
-  border-color: #007bff !important;
+  border-color: #6a11cb !important;
 }
 
 .chatbot-input button {
   margin-left: 12px !important;
-  background-color: #007bff !important;
+  background: linear-gradient(90deg, #6a11cb, #2575fc) !important;
   border: none !important;
   border-radius: 50% !important;
   width: 42px !important;
   height: 42px !important;
   color: white !important;
   cursor: pointer !important;
-  font-weight: bold !important;
   font-size: 20px !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
-  box-shadow: 0 3px 8px rgba(0, 123, 255, 0.6) !important;
-  transition: background-color 0.3s ease !important;
+  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3) !important;
+  transition: all 0.3s ease !important;
 }
 
 .chatbot-input button:hover {
-  background-color: #0056b3 !important;
+  transform: scale(1.05) !important;
 }
 
-@media (max-width: 600px) {
-  .articles-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .categories-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chatbot-section {
-    width: 90% !important;
-    bottom: 10px !important;
-    left: 5% !important;
-    max-height: 400px !important;
-  }
-}
-/* מסכים גדולים מאוד (לרוחב מעל 1200px) */
-@media (min-width: 1201px) {
-  .help-center-container {
-    max-width: 1100px;
-    padding: 30px 40px;
-  }
-  .articles-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .categories-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .chatbot-section {
-    width: 400px !important;
-    max-height: 600px !important;
-    bottom: 30px !important;
-    left: 30px !important;
-  }
-}
-
-/* מסכים בינוניים (769px עד 1200px) */
-@media (min-width: 769px) and (max-width: 1200px) {
-  .help-center-container {
-    max-width: 900px;
-    padding: 25px 30px;
-  }
-  .articles-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .categories-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .chatbot-section {
-    width: 350px !important;
-    max-height: 500px !important;
-    bottom: 20px !important;
-    left: 20px !important;
-  }
-}
-
-/* מסכים קטנים (601px עד 768px) */
-@media (min-width: 601px) and (max-width: 768px) {
-  .articles-grid,
-  .categories-grid {
+/* 📱 Responsive */
+@media (max-width: 992px) {
+  .articles-grid, .categories-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .chatbot-section {
-    width: 300px !important;
-    max-height: 450px !important;
-    bottom: 15px !important;
-    left: 15px !important;
-  }
 }
 
-/* מובייל (עד 600px) */
 @media (max-width: 600px) {
-  .articles-grid,
-  .categories-grid {
+  .articles-grid, .categories-grid {
     grid-template-columns: 1fr;
   }
+
   .help-center-container {
-    padding: 15px 10px;
-    margin: 20px 10px;
+    margin: 30px 10px;
+    padding: 20px;
   }
+
   .chatbot-section {
     width: 90% !important;
-    max-height: 400px !important;
-    bottom: 10px !important;
-    left: 5% !important;
+    right: 5% !important;
+    bottom: 15px !important;
   }
 }
