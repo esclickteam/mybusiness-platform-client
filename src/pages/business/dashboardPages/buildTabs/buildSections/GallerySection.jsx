@@ -18,7 +18,7 @@ export default function GallerySection({
   useEffect(() => {
     const onClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // אין צורך בניקוי מיוחד
+        // no special cleanup needed
       }
     };
     document.addEventListener("mousedown", onClickOutside);
@@ -31,7 +31,7 @@ export default function GallerySection({
   }));
   const uniqueImages = dedupeByPreview(wrapped);
 
-  // טיפול בסיום גרירה - עדכון הסדר
+  // Handle drag end - update order
   const onDragEnd = (result) => {
     if (!result.destination) return;
 
@@ -45,7 +45,7 @@ export default function GallerySection({
   return (
     <>
       <div className="form-column" ref={containerRef}>
-        <h3>העלאת תמונות לגלריה</h3>
+        <h3>Upload Gallery Images</h3>
         <input
           type="file"
           name="gallery"
@@ -62,7 +62,7 @@ export default function GallerySection({
           onClick={() => galleryInputRef.current?.click()}
           disabled={isSaving}
         >
-          הוספת תמונות
+          Add Images
         </button>
 
         <DragDropContext onDragEnd={onDragEnd}>
@@ -88,14 +88,14 @@ export default function GallerySection({
                       >
                         <img
                           src={preview}
-                          alt={`תמונת גלריה ${index + 1}`}
+                          alt={`Gallery Image ${index + 1}`}
                           className="gallery-img"
                         />
                         <button
                           className="delete-btn"
                           onClick={() => handleDeleteImage(publicId)}
                           type="button"
-                          title="מחיקה"
+                          title="Delete"
                           disabled={isSaving}
                         >
                           🗑️
@@ -114,7 +114,7 @@ export default function GallerySection({
       <div className="preview-column">
         {renderTopBar?.()}
 
-        <h3 className="section-title">הגלריה שלנו</h3>
+        <h3 className="section-title">Our Gallery</h3>
         <div className="gallery-grid-container view">
           {uniqueImages.length > 0 ? (
             uniqueImages.map(({ preview, publicId }, i) => (
@@ -124,13 +124,13 @@ export default function GallerySection({
               >
                 <ImageLoader
                   src={preview}
-                  alt={`תמונת גלריה ${i + 1}`}
+                  alt={`Gallery Image ${i + 1}`}
                   className="gallery-img"
                 />
               </div>
             ))
           ) : (
-            <p className="no-data">אין תמונות בגלריה</p>
+            <p className="no-data">No images in the gallery</p>
           )}
         </div>
       </div>
