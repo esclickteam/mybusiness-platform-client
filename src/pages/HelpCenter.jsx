@@ -187,7 +187,7 @@ export default function HelpCenter() {
             className="support-button"
             aria-label="Go to Business Support page"
           >
-            Go to Business Support
+             Go to Business Support
           </button>
         </div>
        </section>
