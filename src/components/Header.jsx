@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo_final.svg"; // SVG logo
-import { FaBars, FaChevronLeft } from "react-icons/fa";
+import { FaBars, FaChevronLeft, FaBell } from "react-icons/fa"; // ← נוספה אייקון פעמון
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
@@ -18,8 +18,8 @@ export default function Header() {
   const { user, logout, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   if (loading) return null;
 
@@ -72,6 +72,16 @@ export default function Header() {
             </>
           ) : (
             <>
+              {/* 🔔 Notification Bell */}
+              <div
+                className="notification-bell"
+                onClick={() => setShowNotifications(!showNotifications)}
+                title="Notifications"
+              >
+                <FaBell size={18} />
+                <span className="notification-dot" />
+              </div>
+
               <span className="hello-user">Hello, {user.name}</span>
               <Link to="/dashboard" className="auth-link">
                 My Account
@@ -90,6 +100,14 @@ export default function Header() {
           </button>
         </div>
       </nav>
+
+      {/* 🔔 Notifications dropdown */}
+      {showNotifications && (
+        <div className="notifications-dropdown">
+          <p className="notif-header">Notifications</p>
+          <div className="notif-item">No new notifications 🎉</div>
+        </div>
+      )}
 
       {/* Mobile side drawer */}
       {menuOpen && (
