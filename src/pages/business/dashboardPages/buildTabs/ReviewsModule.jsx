@@ -223,7 +223,6 @@ const ReviewsModule = ({ reviews = [], isPreview, currentUser, businessId, socke
                     businessId={businessId}
                     socket={socket}
                     onSuccess={(review) => {
-                      // Instantly add the new review to the list
                       setLiveReviews((prev) => [review, ...prev]);
                       setShowReviewForm(false);
                     }}
