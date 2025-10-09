@@ -47,7 +47,7 @@ const GalleryTab = ({
           file,
           url: URL.createObjectURL(file),
           type: isVideo ? "video" : "image",
-          loading: true, // ⏳ סימון כטעינה
+          loading: true, // ⏳ mark as loading
         };
       })
       .filter((img) => !existingIds.includes(img.id));
@@ -59,7 +59,7 @@ const GalleryTab = ({
       galleryTabImages: updatedImages,
     }));
 
-    // סימולציית טעינה של 1.5 שניות
+    // simulate 1.5s loading
     setTimeout(() => {
       setBusinessDetails((prev) => ({
         ...prev,
@@ -73,16 +73,16 @@ const GalleryTab = ({
   return (
     <div className="gallery-form-wrapper edit-mode">
       <div className="image-preview">
-        {/* הצגת התמונה מצד שמאל */}
+        {/* display image on the left side */}
         {galleryTabImages.length > 0 && (
-          <img src={galleryTabImages[0].url} alt="תמונה" className="image-preview-side" />
+          <img src={galleryTabImages[0].url} alt="Image" className="image-preview-side" />
         )}
       </div>
 
       <div className="form-content">
-        <h2>🎨 עיצוב הגלריה</h2>
-        <h4>העלאת מדיה</h4>
-        <p className="info-note">ניתן להעלות תמונות או סרטונים</p>
+        <h2>🎨 Gallery Design</h2>
+        <h4>Upload Media</h4>
+        <p className="info-note">You can upload images or videos</p>
         <input
           type="file"
           multiple
@@ -91,9 +91,9 @@ const GalleryTab = ({
           onChange={handleUpload}
         />
         <button onClick={() => galleryTabInputRef.current.click()} className="upload-btn">
-          ➕ הוספת מדיה
+          ➕ Add Media
         </button>
-        <p className="info-note">ניתן לגרור ולשנות את הסדר</p>
+        <p className="info-note">You can drag to reorder</p>
 
         <GalleryDndKit
           images={galleryTabImages}
@@ -111,7 +111,7 @@ const GalleryTab = ({
         />
 
         <button className="save-btn" onClick={handleConfirmEdit}>
-          שמור
+          Save
         </button>
       </div>
     </div>

@@ -10,22 +10,22 @@ function AdminUsers() {
   const [filter, setFilter] = useState("all");
   const [users, setUsers] = useState([]);
 
-  // שליפת משתמשים
+  // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // נתיב יחסי ללא `/api`—baseURL כבר מגדיר `/api`
+        // Relative path without `/api` — baseURL already sets `/api`
         const res = await API.get("/admin/users");
         setUsers(res.data);
       } catch (err) {
-        console.error("❌ שגיאה בטעינת המשתמשים:", err);
-        alert("❌ שגיאה בטעינת המשתמשים");
+        console.error("❌ Error loading users:", err);
+        alert("❌ Error loading users");
       }
     };
     fetchUsers();
   }, []);
 
-  // סינון לפי חיפוש ותפקיד
+  // Filter by search and role
   const filtered = users.filter((u) => {
     const term = search.toLowerCase();
     const matchSearch =
@@ -37,21 +37,21 @@ function AdminUsers() {
     return matchSearch && matchRole;
   });
 
-  // מחיקת משתמש
+  // Delete user
   const handleDelete = async (id) => {
-    if (!window.confirm("❗ פעולה בלתי הפיכה\nהאם למחוק את המשתמש?")) return;
+    if (!window.confirm("❗ Irreversible action\nDelete this user?")) return;
     try {
       await API.delete(`/admin/users/${id}`);
 
       setUsers((prev) => prev.filter((u) => u._id !== id));
-      alert("✅ המשתמש נמחק בהצלחה");
+      alert("✅ User deleted successfully");
     } catch (err) {
-      console.error("❌ שגיאה במחיקה:", err.response?.data || err.message);
-      alert(err.response?.data?.error || "❌ שגיאה כללית");
+      console.error("❌ Error deleting user:", err.response?.data || err.message);
+      alert(err.response?.data?.error || "❌ General error");
     }
   };
 
-  // החלפת סטטוס משתמש
+  // Toggle user status
   const handleStatusToggle = async (id, currentStatus) => {
     const newStatus = currentStatus === "active" ? "blocked" : "active";
     try {
@@ -63,46 +63,46 @@ function AdminUsers() {
         )
       );
     } catch (err) {
-      console.error("❌ שגיאה בעדכון סטטוס:", err.response?.data || err.message);
-      alert(err.response?.data?.error || "❌ שגיאה בעדכון הסטטוס");
+      console.error("❌ Error updating status:", err.response?.data || err.message);
+      alert(err.response?.data?.error || "❌ Error updating status");
     }
   };
 
   return (
     <div className="admin-users">
       <Link to="/admin/dashboard" className="back-dashboard">
-        🔙 חזרה לדשבורד
+        🔙 Back to Dashboard
       </Link>
-      <h1>👥 ניהול משתמשים</h1>
+      <h1>👥 User Management</h1>
 
       <div className="filter-bar">
         <input
           type="text"
-          placeholder="🔍 חיפוש לפי טלפון / שם / שם משתמש / אימייל"
+          placeholder="🔍 Search by phone / name / username / email"
           className="user-search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="all">הכל</option>
-          <option value="customer">לקוחות</option>
-          <option value="business">עסקים</option>
-          <option value="worker">עובדים</option>
-          <option value="manager">מנהלים</option>
-          <option value="admin">אדמינים</option>
+          <option value="all">All</option>
+          <option value="customer">Customers</option>
+          <option value="business">Businesses</option>
+          <option value="worker">Workers</option>
+          <option value="manager">Managers</option>
+          <option value="admin">Admins</option>
         </select>
       </div>
 
       <table className="users-table">
         <thead>
           <tr>
-            <th>שם</th>
-            <th>שם משתמש</th>
-            <th>אימייל</th>
-            <th>טלפון</th>
-            <th>תפקיד</th>
-            <th>סטטוס</th>
-            <th>פעולות</th>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -117,7 +117,7 @@ function AdminUsers() {
               <td className="actions-cell">
                 <button
                   className="delete-btn"
-                  title="מחיקת משתמש"
+                  title="Delete user"
                   onClick={() => handleDelete(user._id)}
                 >
                   <FaTrashAlt />
@@ -125,7 +125,7 @@ function AdminUsers() {
                 <button
                   className="status-btn"
                   title={
-                    user.status === "active" ? "חסום משתמש" : "הפעל משתמש"
+                    user.status === "active" ? "Block user" : "Activate user"
                   }
                   onClick={() =>
                     handleStatusToggle(user._id, user.status || "active")

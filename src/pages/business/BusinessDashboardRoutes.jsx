@@ -5,11 +5,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from '../../utils/lazyWithPreload';
 
-// דפי עריכה ודשבורד
+// Editing pages and dashboard
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
 const DashboardPage = lazyWithPreload(() => import("./dashboardPages/DashboardPage"));
 
-// רכיבים נוספים
+// Additional components
 const Collab = lazy(() => import("./dashboardPages/Collab"));
 const CollabBusinessProfileTab = lazy(() => import("./dashboardPages/collabtabs/CollabBusinessProfileTab"));
 const CollabFindPartnerTab = lazy(() => import("./dashboardPages/collabtabs/CollabFindPartnerTab"));
@@ -32,8 +32,7 @@ const HelpCenter = lazy(() => import("../HelpCenter"));
 const WorkHoursTab = lazy(() => import("./dashboardPages/crmpages/WorkHoursTab.jsx"));
 
 
-
-// דפי מדריכים חדשים
+// New guide pages
 const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessPage"));
 const ChatGuidePage = lazy(() => import("../ChatGuidePage"));
 const DashboardGuidePage = lazy(() => import("../DashboardGuidePage"));
@@ -41,7 +40,7 @@ const AppointmentCRMGuidePage = lazy(() => import("../AppointmentCRMGuidePage"))
 const BusinessCollaborationGuidePage = lazy(() => import("../BusinessCollaborationGuidePage"));
 const AICompanionGuidePage = lazy(() => import("../AICompanionGuidePage"));
 
-// דפי FAQ - רכיבים עצמאיים
+// FAQ pages – standalone components
 import ProfileFAQ from "../ProfileFAQ";
 import DashboardFAQ from "../DashboardFAQ";
 import CustomerMessagesFAQ from "../CustomerMessagesFAQ";
@@ -52,14 +51,14 @@ import AffiliateProgramFAQ from "../AffiliateProgramFAQ";
 import TechnicalSupport from "../technicalSupportFAQs";
 import TroubleshootingFAQ from "../troubleshootingFAQs";
 
-// קומפוננטות פרופיל עסקי
+// Business profile component
 const BusinessProfilePage = lazy(() => import("../BusinessProfilePage"));
 
-// רכיב להצגת FAQ (מערך שאלות ותשובות)
+// Component to display FAQ (Q&A array)
 function FAQPage({ faqs }) {
   return (
     <div style={{ maxWidth: 900, margin: "auto", padding: 20, fontFamily: "Arial, sans-serif", lineHeight: 1.6 }}>
-      <h1>שאלות ותשובות</h1>
+      <h1>Questions & Answers</h1>
       {faqs.map(({ question, answer }, idx) => (
         <section key={idx} style={{ marginBottom: 30 }}>
           <h2 style={{ color: "#3a0ca3" }}>{question}</h2>
@@ -90,23 +89,23 @@ const BusinessDashboardRoutes = () => {
   }, [businessId, queryClient]);
 
   if (!businessId) {
-    return <div>טוען מידע העסק...</div>;
+    return <div>Loading business info...</div>;
   }
 
   return (
-    <Suspense fallback={<div>🔄 טוען דשבורד...</div>}>
+    <Suspense fallback={<div>🔄 Loading dashboard...</div>}>
       <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>
-          {/* ברירת מחדל מפנה ל-דשבורד */}
+          {/* Default redirects to dashboard */}
           <Route index element={<Navigate to="dashboard" replace />} />
 
-          {/* דף דשבורד ראשי ותתי טאבים תחתיו */}
+          {/* Main dashboard page and its sub-tabs */}
           <Route path="dashboard" element={<DashboardPage />} />
 
-          {/* דף פרופיל עסקי תחת אותו Layout */}
+          {/* Business profile page under the same layout */}
           <Route path="dashboard/profile" element={<BusinessProfilePage />} />
 
-          {/* שיתופי פעולה עם תתי־טאבים */}
+          {/* Collaborations with sub-tabs */}
           <Route path="collab" element={<Collab />}>
             <Route index element={<Navigate to="profile" replace />} />
             <Route path="profile" element={<CollabBusinessProfileTab />} />
@@ -118,11 +117,11 @@ const BusinessDashboardRoutes = () => {
             <Route path="market" element={<CollabMarketTab />} />
           </Route>
 
-          {/* עריכה */}
+          {/* Editing */}
           <Route path="edit" element={<BuildBusinessPage />} />
           <Route path="build" element={<BuildBusinessPage />} />
 
-          {/* דפי מדריכים */}
+          {/* Guide pages */}
           <Route path="articles/build-business-page" element={<BuildBusinessGuidePage />} />
           <Route path="articles/chat-guide" element={<ChatGuidePage />} />
           <Route path="articles/dashboard-guide" element={<DashboardGuidePage />} />
@@ -130,7 +129,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="articles/business-collaboration" element={<BusinessCollaborationGuidePage />} />
           <Route path="articles/ai-companion" element={<AICompanionGuidePage />} />
 
-          {/* דפי FAQ */}
+          {/* FAQ pages */}
           <Route path="faq/profile" element={<ProfileFAQ />} />
           <Route path="faq/dashboard" element={<DashboardFAQ />} />
           <Route path="faq/customer-messages" element={<CustomerMessagesFAQ />} />
@@ -141,7 +140,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="faq/technical-support" element={<TechnicalSupport />} />
           <Route path="faq/troubleshooting" element={<TroubleshootingFAQ />} />
 
-          {/* שאר הנתיבים */}
+          {/* Other routes */}
           <Route path="cart" element={<CartPage />} />
           <Route path="upgrade" element={<Upgrade />} />
           <Route path="esclick" element={<EsclickAdvisor />} />

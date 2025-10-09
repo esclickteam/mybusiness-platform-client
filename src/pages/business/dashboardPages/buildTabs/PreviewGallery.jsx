@@ -18,7 +18,7 @@ const GalleryEditorWithPreview = ({
 
   const galleryTabImages = businessDetails?.galleryTabImages || [];
 
-  // ✅ פונקציית מחיקה פנימית
+  // ✅ Internal delete function
   const handleDeleteGalleryTabImage = (indexToRemove) => {
     setBusinessDetails((prev) => ({
       ...prev,
@@ -70,9 +70,9 @@ const GalleryEditorWithPreview = ({
   return (
     <div className="preview-gallery-wrapper" style={{ display: "flex", gap: "32px" }}>
       <div className="gallery-form-side" style={{ flex: 1 }}>
-        <h2>🎨 עיצוב הגלריה</h2>
-        <h4>העלאת מדיה</h4>
-        <p className="info-note">ניתן להעלות תמונות או סרטונים</p>
+        <h2>🎨 Gallery Design</h2>
+        <h4>Upload Media</h4>
+        <p className="info-note">You can upload images or videos</p>
         <input
           type="file"
           multiple
@@ -84,9 +84,9 @@ const GalleryEditorWithPreview = ({
           onClick={() => galleryTabInputRef.current.click()}
           className="upload-btn"
         >
-          ➕ הוספת מדיה
+          ➕ Add Media
         </button>
-        <p className="info-note">ניתן לגרור ולשנות את הסדר</p>
+        <p className="info-note">You can drag and reorder the items</p>
 
         <GalleryDndKit
           images={galleryTabImages}
@@ -98,7 +98,7 @@ const GalleryEditorWithPreview = ({
           }
           setActiveImageIndex={setActiveImageIndex}
           isForm={true}
-          onDelete={handleDeleteGalleryTabImage} // ✅ מחובר פנימית
+          onDelete={handleDeleteGalleryTabImage} // ✅ Connected internally
           setEditIndex={setEditGalleryTabIndex}
           editIndex={editGalleryTabIndex}
           handleFitChange={handleFitChange}
@@ -106,12 +106,12 @@ const GalleryEditorWithPreview = ({
         />
 
         <button className="save-btn" onClick={handleConfirmEdit}>
-          שמור
+          Save
         </button>
       </div>
 
       <div className="gallery-preview-side gallery-preview-wrapper" style={{ flex: 1 }}>
-        <h3>תצוגה מקדימה</h3>
+        <h3>Preview</h3>
         <div className="gallery-instagram-grid">
           {galleryTabImages.map((item, index) => (
             <div

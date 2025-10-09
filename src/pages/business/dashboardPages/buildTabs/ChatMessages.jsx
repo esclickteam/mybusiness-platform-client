@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import './ChatMessages.css';
-import VoiceBubble from './VoiceBubble'; // נגן אודיו
+import VoiceBubble from './VoiceBubble'; // Audio player
 
 const ChatMessages = ({ messages, currentClientId }) => {
   const endRef = useRef(null);
 
-  // גלילה אוטומטית לתחתית כשל הודעות מתעדכנות
+  // Auto-scroll to bottom when messages update
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -16,7 +16,7 @@ const ChatMessages = ({ messages, currentClientId }) => {
         const safeClientId = msg.clientId?.toString().trim();
         const safeCurrentId = currentClientId?.toString().trim();
 
-        // האם ההודעה מהלקוח הנוכחי (משתמש בצד שלו)
+        // Is the message from the current client (user side)
         const isSelf = safeClientId && safeCurrentId && safeClientId === safeCurrentId;
 
         const fromClass = isSelf
@@ -30,16 +30,16 @@ const ChatMessages = ({ messages, currentClientId }) => {
             <div className="chat-bubble">
               <span className="sender-label">
                 {fromClass === 'from-customer'
-                  ? 'אתה (לקוח)'
+                  ? 'You (Customer)'
                   : fromClass === 'from-business'
-                  ? 'עסק'
-                  : 'מערכת'}
+                  ? 'Business'
+                  : 'System'}
               </span>
 
-              {/* טקסט */}
+              {/* Text */}
               {msg.text && <p>{msg.text}</p>}
 
-              {/* קובץ - תמונה, וידאו, אודיו, או קישור */}
+              {/* File - image, video, audio, or link */}
               {msg.file && (
                 msg.file.type?.startsWith('image') ||
                 /\.(png|jpe?g|gif|webp)$/i.test(msg.file.url) ? (

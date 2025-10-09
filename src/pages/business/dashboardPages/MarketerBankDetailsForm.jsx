@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import API from "@api"; // axios מוגדר מראש
+import API from "@api"; // pre-configured axios
 import "./MarketerBankDetailsForm.css";
 
 export default function MarketerBankDetailsForm() {
@@ -41,7 +41,7 @@ export default function MarketerBankDetailsForm() {
     setSuccessMsg(null);
 
     try {
-      if (!user?.affiliateId) throw new Error("משווק לא מזוהה");
+      if (!user?.affiliateId) throw new Error("Affiliate marketer not identified");
 
       const payload = {
         affiliateId: user.affiliateId,
@@ -53,17 +53,16 @@ export default function MarketerBankDetailsForm() {
       };
 
       const res = await API.put("/affiliate-marketer/marketers/bank-details", payload, {
-
         withCredentials: true,
       });
 
       if (res.status === 200) {
-        setSuccessMsg("פרטי הבנק עודכנו בהצלחה!");
+        setSuccessMsg("Bank details updated successfully!");
       } else {
-        throw new Error("שגיאה בעדכון הפרטים");
+        throw new Error("Error updating bank details");
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "שגיאה בלתי צפויה");
+      setError(err.response?.data?.message || err.message || "Unexpected error");
     } finally {
       setLoading(false);
     }
@@ -71,12 +70,12 @@ export default function MarketerBankDetailsForm() {
 
   return (
     <section className="marketer-bank-details-form">
-      <h2>עדכון פרטי חשבון בנק - משווק</h2>
+      <h2>Update Bank Account Details - Marketer</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           name="bankName"
-          placeholder="שם הבנק"
+          placeholder="Bank Name"
           value={form.bankName}
           onChange={handleChange}
           required
@@ -84,7 +83,7 @@ export default function MarketerBankDetailsForm() {
         <input
           type="text"
           name="branchNumber"
-          placeholder="מספר סניף"
+          placeholder="Branch Number"
           value={form.branchNumber}
           onChange={handleChange}
           required
@@ -92,7 +91,7 @@ export default function MarketerBankDetailsForm() {
         <input
           type="text"
           name="accountNumber"
-          placeholder="מספר חשבון"
+          placeholder="Account Number"
           value={form.accountNumber}
           onChange={handleChange}
           required
@@ -100,7 +99,7 @@ export default function MarketerBankDetailsForm() {
         <input
           type="text"
           name="fullName"
-          placeholder="שם מלא"
+          placeholder="Full Name"
           value={form.fullName}
           onChange={handleChange}
           required
@@ -108,13 +107,13 @@ export default function MarketerBankDetailsForm() {
         <input
           type="text"
           name="idNumber"
-          placeholder='מספר ת"ז'
+          placeholder="ID Number"
           value={form.idNumber}
           onChange={handleChange}
           required
         />
         <button type="submit" disabled={loading}>
-          {loading ? "שומר..." : "שמור פרטים"}
+          {loading ? "Saving..." : "Save Details"}
         </button>
       </form>
       {error && <p className="error">{error}</p>}

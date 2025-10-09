@@ -135,38 +135,38 @@ const EsclickAdvisor = () => {
   };
 
   if (loading) {
-    return <div>טוען...</div>;
+    return <div>Loading...</div>;
   }
 
   return (
     <div className="esclick-container">
-      <h1 className="esclick-header">🧠 יועץ עסקליק</h1>
+      <h1 className="esclick-header">🧠 Esclick Advisor</h1>
 
       <div className="tab-buttons">
         <button
           className={activeTab === "business" ? "active" : ""}
           onClick={() => handleTabChange("business")}
         >
-          יועץ עסקי
+          Business Advisor
           {hasBusinessNotification && <span className="notification-dot" />}
         </button>
         <button
           className={activeTab === "marketing" ? "active" : ""}
           onClick={() => handleTabChange("marketing")}
         >
-          יועץ שיווקי
+          Marketing Advisor
         </button>
         <button
           className={activeTab === "partner" ? "active" : ""}
           onClick={() => handleTabChange("partner")}
         >
-          שותף AI אישי
+          Personal AI Partner
         </button>
         <button
           className={activeTab === "recommendations" ? "active" : ""}
           onClick={() => handleTabChange("recommendations")}
         >
-          המלצות AI
+          AI Recommendations
         </button>
       </div>
 

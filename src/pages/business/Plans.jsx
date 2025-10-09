@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/Plans.css";
 
 function Plans() {
@@ -8,7 +8,7 @@ function Plans() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // קריאת פרמטר reason מה־URL
+  // Read 'reason' param from the URL
   const queryParams = new URLSearchParams(location.search);
   const reason = queryParams.get("reason");
 
@@ -35,10 +35,10 @@ function Plans() {
     let planName;
     if (selectedDuration === "test") {
       totalPrice = testPrices.test;
-      planName = "חבילת מנוי ניסיונית - 3 חודשים";
+      planName = "Trial Subscription Plan - 3 Months";
     } else {
       totalPrice = prices[selectedDuration] * parseInt(selectedDuration);
-      planName = "חבילת מנוי עסקליק";
+      planName = "Esclick Subscription Plan";
     }
     navigate("/checkout", {
       state: {
@@ -50,34 +50,34 @@ function Plans() {
   };
 
   const features = [
-    "ייעוץ שיווקי ועסקי מבוסס בינה מלאכותית עם עד 60 פניות איכותיות בחודש.",
-    "שותף AI חכם שמספק פעולות והמלצות עסקיות.",
-    "פלטפורמה לשיתופי פעולה עסקיים.",
-    "עמוד עסקי מקצועי עם גלריה, שאלות נפוצות ועוד.",
-    "מערכת ניהול תורים חכמה ללקוחות.",
-    "צ'אט שירות לקוחות בזמן אמת.",
-    "מערכת ביקורות אמינה ללקוחות אמיתיים.",
-    "גישה מלאה וללא הגבלה לכל המערכות.",
-    "CRM חכם לניהול קשרי לקוחות.",
-    "דשבורד אנליטי לניטור תזכורות ופגישות.",
-    "התראות חכמות לאירועים חשובים.",
+    "AI-powered marketing and business consulting with up to 60 quality inquiries per month.",
+    "A smart AI partner that provides actions and business recommendations.",
+    "A platform for business collaborations.",
+    "A professional business page with a gallery, FAQs, and more.",
+    "An intelligent appointment management system for clients.",
+    "Real-time customer service chat.",
+    "A reliable review system for real customers.",
+    "Full, unlimited access to all systems.",
+    "Smart CRM for customer relationship management.",
+    "An analytical dashboard to monitor reminders and meetings.",
+    "Smart alerts for important events.",
   ];
 
   return (
     <div className="plans-wrapper" dir="rtl">
-      <h1 className="plans-header">מה מקבל העסק שלך?</h1>
+      <h1 className="plans-header">What does your business get?</h1>
 
-      {/* הודעה על סיום ניסיון */}
+      {/* Trial ended notice */}
       {reason === "trial_expired" && (
         <div className="plans-alert plans-alert-error">
-          תקופת הניסיון החינמית הסתיימה. בחר חבילה כדי להמשיך להשתמש בעסקליק.
+          The free trial period has ended. Choose a plan to continue using Esclick.
         </div>
       )}
 
-      {/* הודעה על ניסיון פעיל */}
+      {/* Active trial notice */}
       {trialActive && (
         <div className="plans-alert plans-alert-info">
-          אתה נמצא בחודש ניסיון חינם. תוכל לשדרג לחבילה בתשלום בכל רגע כדי להבטיח המשך גישה אחרי סיום הניסיון.
+          You are currently on a free trial month. You can upgrade to a paid plan at any time to ensure continued access after the trial ends.
         </div>
       )}
 
@@ -93,22 +93,22 @@ function Plans() {
         <div
           className="plans-duration-selector"
           role="radiogroup"
-          aria-label="בחירת תקופת מנוי"
+          aria-label="Choose subscription duration"
         >
           {durations.map((d) => {
             let label = "";
             let price = 0;
             if (d === "test") {
-              label = "חבילת ניסיון (3 חודשים)";
+              label = "Trial Plan (3 months)";
               price = (testPrices.test / 3).toFixed(2);
             } else if (d === "1") {
-              label = "חודשי";
+              label = "Monthly";
               price = prices["1"];
             } else if (d === "3") {
-              label = "3 חודשים";
+              label = "3 Months";
               price = prices["3"];
             } else if (d === "12") {
-              label = "שנתי";
+              label = "Yearly";
               price = prices["12"];
             }
             return (
@@ -122,14 +122,14 @@ function Plans() {
                 type="button"
               >
                 {label}
-                <span className="duration-price">{price} ₪ לחודש</span>
+                <span className="duration-price">{price} ₪ per month</span>
               </button>
             );
           })}
         </div>
 
         <div className="total-price" aria-live="polite">
-          המחיר הכולל:{" "}
+          Total price:{" "}
           {selectedDuration === "test"
             ? testPrices.test
             : prices[selectedDuration] * parseInt(selectedDuration)}
@@ -137,7 +137,7 @@ function Plans() {
         </div>
 
         <div className="launch-price-banner" role="alert">
-          הצטרפו עכשיו במחיר השקה מיוחד לזמן מוגבל – אל תפספסו!
+          Join now at a special launch price for a limited time — don’t miss out!
         </div>
 
         <button
@@ -145,7 +145,7 @@ function Plans() {
           onClick={handleSelectPlan}
           type="button"
         >
-          בחר מנוי והתחל לגדול עם עסקליק עכשיו!
+          Choose a plan and start growing with Esclick now!
         </button>
       </div>
     </div>

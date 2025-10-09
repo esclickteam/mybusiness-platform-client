@@ -21,7 +21,7 @@ const CollabContractForm = ({
     confidentiality: false,
     senderSignature: "",
     receiverSignature: "",
-    status: "ממתין לאישור",
+    status: "Pending Approval",
     receiver: { businessName: partnerBusiness.name || "" },
     sender: { businessName: currentUser.businessName || "" },
   });
@@ -59,7 +59,7 @@ const CollabContractForm = ({
     setForm((prev) => ({
       ...prev,
       senderSignature: dataURL,
-      status: prev.receiverSignature ? "ממתין לאישור" : "ממתין לחתימת שותף",
+      status: prev.receiverSignature ? "Pending Approval" : "Waiting for Partner Signature",
     }));
   };
 
@@ -69,7 +69,7 @@ const CollabContractForm = ({
     setForm((prev) => ({
       ...prev,
       receiverSignature: dataURL,
-      status: "ממתין לאישור",
+      status: "Pending Approval",
     }));
   };
 
@@ -81,26 +81,26 @@ const CollabContractForm = ({
       !form.receiving ||
       !form.type
     ) {
-      alert("נא למלא את כל השדות החיוניים.");
+      alert("Please fill in all required fields.");
       return;
     }
 
     if (!form.cancelAnytime && (!form.startDate || !form.endDate)) {
-      alert("נא למלא תאריכי התחלה וסיום או לבחור 'ניתן לבטל בכל שלב'.");
+      alert("Please provide start and end dates or select 'Can be canceled at any time'.");
       return;
     }
 
     if (!form.senderSignature) {
-      alert("נא לחתום חתימת שולח.");
+      alert("Please add the sender's signature.");
       return;
     }
 
     if (!form.receiverSignature && currentUser.businessName === form.receiver.businessName) {
-      alert("ההסכם ממתין לחתימת העסק השותף.");
+      alert("The agreement is waiting for the partner business's signature.");
       return;
     }
 
-    const newStatus = form.senderSignature && form.receiverSignature ? "מאושר" : form.status;
+    const newStatus = form.senderSignature && form.receiverSignature ? "Approved" : form.status;
 
     onSubmit({
       ...form,
@@ -110,20 +110,20 @@ const CollabContractForm = ({
 
   const isSender = currentUser.businessName === (form.sender?.businessName || currentUser.businessName);
   const isReceiver = currentUser.businessName === (form.receiver?.businessName || partnerBusiness.name);
-  const isReadOnly = form.status === "מאושר";
+  const isReadOnly = form.status === "Approved";
 
   return (
     <div className="contract-form-container">
-      <h2 className="contract-title">🤝 הסכם שיתוף פעולה</h2>
+      <h2 className="contract-title">🤝 Collaboration Agreement</h2>
 
       <form className="contract-form" onSubmit={(e) => e.preventDefault()}>
         <div>
-          <label>שם העסק שלך:</label>
+          <label>Your Business Name:</label>
           <div className="static-field">{currentUser.businessName}</div>
         </div>
 
         <div>
-          <label>שם העסק השותף:</label>
+          <label>Partner Business Name:</label>
           <input
             type="text"
             name="partnerName"
@@ -134,27 +134,27 @@ const CollabContractForm = ({
                 receiver: { businessName: e.target.value },
               }))
             }
-            placeholder="הזן שם העסק השותף"
+            placeholder="Enter the partner business name"
             required
             disabled={!isSender || isReadOnly}
           />
         </div>
 
         <div>
-          <label>כותרת ההסכם:</label>
+          <label>Agreement Title:</label>
           <input
             type="text"
             name="title"
             value={form.title}
             onChange={handleChange}
-            placeholder="כותרת ההסכם (למשל: קמפיין קיץ)"
+            placeholder="Agreement title (e.g., Summer Campaign)"
             required
             disabled={isReadOnly}
           />
         </div>
 
         <div>
-          <label>תיאור שיתוף הפעולה:</label>
+          <label>Collaboration Description:</label>
           <textarea
             name="description"
             value={form.description}
@@ -166,7 +166,7 @@ const CollabContractForm = ({
         </div>
 
         <div>
-          <label>מה תספק במסגרת ההסכם:</label>
+          <label>What you will provide under the agreement:</label>
           <textarea
             name="giving"
             value={form.giving}
@@ -178,7 +178,7 @@ const CollabContractForm = ({
         </div>
 
         <div>
-          <label>מה תקבל במסגרת ההסכם:</label>
+          <label>What you will receive under the agreement:</label>
           <textarea
             name="receiving"
             value={form.receiving}
@@ -190,7 +190,7 @@ const CollabContractForm = ({
         </div>
 
         <div>
-          <label>סוג שיתוף פעולה:</label>
+          <label>Collaboration Type:</label>
           <select
             name="type"
             value={form.type}
@@ -198,15 +198,15 @@ const CollabContractForm = ({
             required
             disabled={isReadOnly}
           >
-            <option value="">בחר סוג</option>
-            <option value="חד צדדי">חד צדדי</option>
-            <option value="דו צדדי">דו צדדי</option>
-            <option value="עם עמלות">עם עמלות</option>
+            <option value="">Select type</option>
+            <option value="חד צדדי">One-sided</option>
+            <option value="דו צדדי">Two-sided</option>
+            <option value="עם עמלות">With commissions</option>
           </select>
         </div>
 
         <div>
-          <label>עמלה / תשלום (אם יש):</label>
+          <label>Commission / Payment (if any):</label>
           <input
             type="text"
             name="payment"
@@ -216,7 +216,7 @@ const CollabContractForm = ({
           />
         </div>
 
-        <label>תוקף ההסכם:</label>
+        <label>Agreement Validity:</label>
         <div className="flex">
           <input
             type="date"
@@ -245,7 +245,7 @@ const CollabContractForm = ({
               onChange={handleChange}
               disabled={isReadOnly}
             />
-            ניתן לבטל את ההסכם בכל שלב
+            The agreement can be canceled at any time
           </label>
 
           <label>
@@ -256,18 +256,18 @@ const CollabContractForm = ({
               onChange={handleChange}
               disabled={isReadOnly}
             />
-            סעיף סודיות
+            Confidentiality clause
           </label>
         </div>
 
-        {/* חתימת השולח */}
+        {/* Sender signature */}
         <div>
-          <label>חתימת {currentUser.businessName}:</label>
+          <label>Signature of {currentUser.businessName}:</label>
           {form.senderSignature ? (
             <div>
               <img
                 src={form.senderSignature}
-                alt="חתימה"
+                alt="Signature"
                 className="form-signature-image"
               />
               {!isReadOnly && isSender && (
@@ -278,11 +278,11 @@ const CollabContractForm = ({
                     setForm((prev) => ({
                       ...prev,
                       senderSignature: "",
-                      status: "ממתין לחתימת שותף",
+                      status: "Waiting for Partner Signature",
                     }))
                   }
                 >
-                  🗑️ חתום מחדש
+                  🗑️ Re-sign
                 </button>
               )}
             </div>
@@ -303,21 +303,21 @@ const CollabContractForm = ({
                   className="collab-form-button mt-2"
                   onClick={saveSenderSignature}
                 >
-                  ✍️ שמור חתימה
+                  ✍️ Save signature
                 </button>
               </>
             )
           )}
         </div>
 
-        {/* חתימת המקבל */}
+        {/* Receiver signature */}
         <div>
-          <label>חתימת {form.receiver?.businessName || partnerBusiness.name}:</label>
+          <label>Signature of {form.receiver?.businessName || partnerBusiness.name}:</label>
           {form.receiverSignature ? (
             <div>
               <img
                 src={form.receiverSignature}
-                alt="חתימה"
+                alt="Signature"
                 className="form-signature-image"
               />
               {!isReadOnly && isReceiver && (
@@ -328,11 +328,11 @@ const CollabContractForm = ({
                     setForm((prev) => ({
                       ...prev,
                       receiverSignature: "",
-                      status: "ממתין לאישור",
+                      status: "Pending Approval",
                     }))
                   }
                 >
-                  🗑️ חתום מחדש
+                  🗑️ Re-sign
                 </button>
               )}
             </div>
@@ -353,7 +353,7 @@ const CollabContractForm = ({
                   className="collab-form-button mt-2"
                   onClick={saveReceiverSignature}
                 >
-                  ✍️ שמור חתימה
+                  ✍️ Save signature
                 </button>
               </>
             )
@@ -362,7 +362,7 @@ const CollabContractForm = ({
 
         {(isSender || isReceiver) && !isReadOnly && (
           <button type="button" className="collab-form-button" onClick={handleSend}>
-            📩 שלח את ההסכם
+            📩 Send Agreement
           </button>
         )}
       </form>
