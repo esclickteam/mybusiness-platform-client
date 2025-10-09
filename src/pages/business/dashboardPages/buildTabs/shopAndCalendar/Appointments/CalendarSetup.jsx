@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "./CalendarSetup.css";
 
-// ימי השבוע בעברית לפי אינדקס יום בשבוע (0=ראשון, 6=שבת)
+// Weekdays in English by index (0=Sunday, 6=Saturday)
 const weekdays = [
-  "ראשון",
-  "שני",
-  "שלישי",
-  "רביעי",
-  "חמישי",
-  "שישי",
-  "שבת"
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday"
 ];
 
-// ברירת מחדל לשעות עבודה (אפשר להכניס מהשרת או מקומית)
+// Default working hours – including Saturday
 const defaultWeeklyHours = {
   0: { start: "09:00", end: "18:00" },
   1: { start: "09:00", end: "18:00" },
@@ -20,18 +20,18 @@ const defaultWeeklyHours = {
   3: { start: "09:00", end: "18:00" },
   4: { start: "09:00", end: "18:00" },
   5: { start: "09:00", end: "14:00" },
-  6: null // סגור בשבת
+  6: { start: "09:00", end: "18:00" } // ✅ Saturday open by default
 };
 
 export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSave, onCancel }) {
   const [weeklyHours, setWeeklyHours] = useState(initialHours);
 
-  // סנכרון פנימי: עדכון weeklyHours בכל שינוי של initialHours בפרופס
+  // Sync internal state with initialHours prop
   useEffect(() => {
     setWeeklyHours(initialHours);
   }, [initialHours]);
 
-  // שינוי בשעות התחלה/סיום עבור יום ספציפי
+  // Change start/end time for a specific day
   const handleChange = (dayIdx, field, value) => {
     setWeeklyHours(prev => ({
       ...prev,
@@ -41,7 +41,7 @@ export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSav
     }));
   };
 
-  // לחיצה על "סגור" / "פתח" עבור יום ספציפי
+  // Toggle open/closed for a specific day
   const handleToggleClosed = dayIdx => {
     setWeeklyHours(prev => ({
       ...prev,
@@ -49,27 +49,27 @@ export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSav
     }));
   };
 
-  // פונקציית שמירה
+  // Save function
   const handleSave = () => {
     if (onSave) {
       onSave(weeklyHours);
     } else {
-      alert("השעות נשמרו");
+      alert("Working hours saved successfully ✅");
     }
   };
 
   return (
     <div className="calendar-setup-container">
-      <h2 className="calendar-title">🗓️ הגדרת שעות פעילות קבועות לשבוע</h2>
+      <h2 className="calendar-title">🗓️ Set Weekly Working Hours (Including Saturday)</h2>
 
       <div className="weekly-hours-table">
         <table>
           <thead>
             <tr>
-              <th>יום</th>
-              <th>התחלה</th>
-              <th>סיום</th>
-              <th>סגור</th>
+              <th>Day</th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Closed</th>
             </tr>
           </thead>
           <tbody>
@@ -100,7 +100,7 @@ export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSav
                     className="close-checkbox"
                     checked={weeklyHours[i] === null}
                     onChange={() => handleToggleClosed(i)}
-                    aria-label={`סגור ${name}`}
+                    aria-label={`Closed ${name}`}
                   />
                 </td>
               </tr>
@@ -111,29 +111,29 @@ export default function CalendarSetup({ initialHours = defaultWeeklyHours, onSav
 
       <div className="actions">
         <button className="save-all-btn styled" onClick={handleSave}>
-          💾 שמור שעות שבועיות
+          💾 Save Weekly Hours
         </button>
         {onCancel && (
           <button className="cancel-btn styled" onClick={onCancel}>
-            חזור
+            Back
           </button>
         )}
       </div>
 
       <div className="summary">
-        <strong>🗓️ סיכום שעות פעילות:</strong>
+        <strong>🗓️ Summary of Working Hours:</strong>
         <ul>
           {weekdays.map((name, i) => (
             <li key={i} className="summary-item">
               <span className="day-label">{name}:</span>
               {weeklyHours[i] === null ? (
-                <span className="closed-label">סגור</span>
+                <span className="closed-label">Closed</span>
               ) : weeklyHours[i]?.start && weeklyHours[i]?.end ? (
                 <span className="hours-label">
                   {weeklyHours[i].start} – {weeklyHours[i].end}
                 </span>
               ) : (
-                <span className="hours-label">לא הוגדר</span>
+                <span className="hours-label">Not set</span>
               )}
             </li>
           ))}

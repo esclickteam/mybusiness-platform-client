@@ -9,23 +9,23 @@ export default function ClientDashboard() {
 
   return (
     <div className="client-dashboard">
-      <h1 className="client-dashboard-title">שלום {user.name} 👋</h1>
-      <p className="client-dashboard-subtitle">מה תרצה לעשות היום?</p>
+      <h1 className="client-dashboard-title">Hello {user.name} 👋</h1>
+      <p className="client-dashboard-subtitle">What would you like to do today?</p>
 
       <div className="client-tabs">
-        {/* החלפתי NavLink ל-Link עם נתיב חיצוני */}
+        {/* Replaced NavLink with Link for external path */}
         <Link to="/search" className="client-tab-button">
-          🔎 חיפוש עסקים
+          🔎 Search Businesses
         </Link>
 
-        {/* שאר הטאבים נשארים כמו שהם */}
+        {/* Other tabs remain the same */}
         <NavLink
           to="orders"
           className={({ isActive }) =>
             `client-tab-button ${isActive ? "active" : ""}`
           }
         >
-          📄 הפגישות שלי
+          📄 My Appointments
         </NavLink>
 
         <NavLink
@@ -34,7 +34,7 @@ export default function ClientDashboard() {
             `client-tab-button ${isActive ? "active" : ""}`
           }
         >
-          💬 ההודעות שלי
+          💬 My Messages
         </NavLink>
 
         <NavLink
@@ -43,7 +43,7 @@ export default function ClientDashboard() {
             `client-tab-button ${isActive ? "active" : ""}`
           }
         >
-          ⭐ מועדפים
+          ⭐ Favorites
         </NavLink>
       </div>
 

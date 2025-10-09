@@ -109,11 +109,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       setConversations(convs);
       if (!selectedConversation && convs.length > 0) {
         setSelectedConversation(convs[0]);
-        console.log("[fetchConversations] set selectedConversation to first conversation", convs[0]._id);
+        console.log("[fetchConversations] selected first conversation", convs[0]._id);
       }
     } catch (err) {
       setConversations([]);
-      setError("לא הצלחנו לטעון שיחות");
+      setError("Failed to load conversations");
       console.error("[fetchConversations] error:", err);
     }
   }, [refreshAccessToken, selectedConversation]);
@@ -177,7 +177,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
   useEffect(() => {
     if (!socketRef.current) return;
-    console.log("[joinRooms] joining rooms for conversations:", conversations.map(c => c._id));
+    console.log("[joinRooms] joining rooms:", conversations.map(c => c._id));
     conversations.forEach((conv) => {
       const isBusinessConversation = conv.conversationType === "business-business";
       socketRef.current.emit("joinConversation", conv._id, isBusinessConversation);
@@ -251,18 +251,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         return;
       }
       if (normalized.conversationId !== selectedConversation._id) {
-        console.log("[handleNewMessage] message conversationId does not match selectedConversation._id");
-        console.log("message conversationId:", normalized.conversationId, "selectedConversation._id:", selectedConversation._id);
+        console.log("[handleNewMessage] conversationId mismatch");
         return;
       }
 
       dispatchMessages((prevMessages) => {
         const exists = prevMessages.some((m) => m._id === normalized._id);
-        if (exists) {
-          console.log("[handleNewMessage] message already exists in state, ignoring");
-          return prevMessages;
-        }
-        console.log("[handleNewMessage] adding message to state:", normalized._id);
+        if (exists) return prevMessages;
         return [...prevMessages, normalized];
       });
 
@@ -346,7 +341,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     const timeoutId = setTimeout(() => {
       if (!ackReceived) {
         dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
-        alert("שליחת ההודעה לקחה יותר מדי זמן. אנא נסה שנית.");
+        alert("Message sending took too long. Please try again.");
       }
     }, 10000);
 
@@ -356,13 +351,13 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       console.log("[sendMessage] ack:", ack);
 
       if (!ack) {
-        alert("קיבלנו תשובה ריקה מהשרת. אנא נסה שנית.");
+        alert("Empty server response. Please try again.");
         dispatchMessages({ type: "replace", payload: { ...optimistic, sending: false, failed: true } });
         return;
       }
 
       if (!ack.ok) {
-        alert("שליחת הודעה נכשלה: " + (ack.error || "שגיאה לא ידועה"));
+        alert("Failed to send message: " + (ack.error || "Unknown error"));
         dispatchMessages({ type: "remove", payload: tempId });
         return;
       }
@@ -372,14 +367,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           ...ack.message,
           fromBusinessId: ack.message.fromBusinessId || ack.message.from,
           toBusinessId: ack.message.toBusinessId || ack.message.to,
-          tempId, // לשימוש להחלפת ההודעה הזמנית
+          tempId,
           sending: false,
           failed: false,
         };
-        dispatchMessages({
-          type: "replace",
-          payload: real,
-        });
+        dispatchMessages({ type: "replace", payload: real });
       }
     });
   };
@@ -397,6 +389,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         overflow: "hidden",
       }}
     >
+      {/* Sidebar with conversations */}
       <Box
         sx={{
           width: 270,
@@ -405,21 +398,11 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           overflowY: "auto",
         }}
       >
-        <Box
-          sx={{
-            fontWeight: 700,
-            color: "#764ae6",
-            fontSize: 19,
-            px: 2.5,
-            py: 2,
-          }}
-        >
-          הודעות עסקיות
+        <Box sx={{ fontWeight: 700, color: "#764ae6", fontSize: 19, px: 2.5, py: 2 }}>
+          Business Messages
         </Box>
         {conversations.length === 0 && (
-          <Box sx={{ p: 3, color: "#bbb", textAlign: "center" }}>
-            אין שיחות עסקיות
-          </Box>
+          <Box sx={{ p: 3, color: "#bbb", textAlign: "center" }}>No conversations</Box>
         )}
         {conversations
           .filter((conv) => conv && Array.isArray(conv.messages))
@@ -427,7 +410,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             const otherId = getOtherBusinessId(conv, myBusinessId);
             const partner =
               conv.participantsInfo?.find((b) => b._id.toString() === otherId) || {
-                businessName: "עסק",
+                businessName: "Business",
               };
             const lastMsg = conv.messages?.[conv.messages.length - 1]?.text || "";
 
@@ -442,10 +425,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   background:
                     selectedConversation?._id === conv._id ? "#f3f0fe" : "#fff",
                 }}
-                onClick={() => {
-                  console.log("[conversation clicked] setting selectedConversation:", conv._id);
-                  setSelectedConversation(conv);
-                }}
+                onClick={() => setSelectedConversation(conv)}
               >
                 <Box sx={{ fontWeight: 600 }}>{partner.businessName}</Box>
                 <Box
@@ -457,13 +437,14 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {lastMsg || "אין הודעות"}
+                  {lastMsg || "No messages"}
                 </Box>
               </Box>
             );
           })}
       </Box>
 
+      {/* Chat area */}
       <Box
         sx={{
           flex: 1,
@@ -477,24 +458,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
           {selectedConversation ? (
             Array.isArray(messages) && messages.length > 0 ? (
               <>
-                <Box
-                  sx={{
-                    mb: 2,
-                    color: "#6d4fc4",
-                    fontWeight: 600,
-                    fontSize: 17,
-                  }}
-                >
-                  שיחה עם{" "}
+                <Box sx={{ mb: 2, color: "#6d4fc4", fontWeight: 600, fontSize: 17 }}>
+                  Chat with{" "}
                   {selectedConversation.participantsInfo?.find(
                     (b) => b._id.toString() !== myBusinessId.toString()
-                  )?.businessName || "עסק"}
+                  )?.businessName || "Business"}
                 </Box>
+
                 {messages.map((msg, i) => {
                   const fromId = msg.fromBusinessId || msg.from || msg.fromId;
                   const isMine = fromId?.toString() === myBusinessId?.toString();
-
-                  console.log(`[renderMessage] #${i} fromId: ${fromId}, isMine: ${isMine}`);
 
                   return (
                     <Box
@@ -520,7 +493,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                           borderBottomRightRadius: 16,
                         }}
                       >
-                        <Box>{msg?.text ?? "[אין טקסט להציג]"}</Box>
+                        <Box>{msg?.text ?? "[No text]"}</Box>
                         <Box
                           sx={{
                             fontSize: 11,
@@ -530,7 +503,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                           }}
                         >
                           {(msg.timestamp || msg.createdAt) &&
-                            new Date(msg.timestamp || msg.createdAt).toLocaleTimeString("he-IL", {
+                            new Date(msg.timestamp || msg.createdAt).toLocaleTimeString("en-US", {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}
@@ -546,12 +519,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               </>
             ) : (
               <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
-                {error || "אין הודעות בשיחה זו"}
+                {error || "No messages in this chat"}
               </Box>
             )
           ) : (
             <Box sx={{ color: "#bbb", textAlign: "center", mt: 12 }}>
-              בחרי שיחה עסקית מהעמודה הימנית
+              Select a business chat from the left panel
             </Box>
           )}
         </Box>
@@ -576,7 +549,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             <TextField
               fullWidth
               size="medium"
-              placeholder="כתוב הודעה..."
+              placeholder="Type a message..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               autoComplete="off"
@@ -615,7 +588,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
               }}
               disabled={!input.trim()}
             >
-              שלח
+              Send
             </Button>
           </form>
         )}

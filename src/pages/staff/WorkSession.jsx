@@ -37,7 +37,7 @@ function WorkSession() {
     setIsWorking(false);
     setIsOnBreak(false);
     clearInterval(intervalId);
-    alert("✔️ משמרת הסתיימה. משך כולל: " + formatTime(timer));
+    alert("✔️ Shift ended. Total duration: " + formatTime(timer));
   };
 
   const toggleBreak = () => {
@@ -56,26 +56,33 @@ function WorkSession() {
 
   return (
     <div className="work-session">
-      <h1>🕒 ניהול משמרת</h1>
+      <h1>🕒 Shift Management</h1>
 
       {!isWorking ? (
-        <button onClick={startSession} className="session-button">▶️ התחל משמרת</button>
+        <button onClick={startSession} className="session-button">
+          ▶️ Start Shift
+        </button>
       ) : (
         <>
-          <p>⏳ זמן עבודה: <strong>{formatTime(timer)}</strong></p>
+          <p>
+            ⏳ Work Time: <strong>{formatTime(timer)}</strong>
+          </p>
 
           <button onClick={toggleBreak} className="session-button">
-            {isOnBreak ? "🔙 חזרה מהפסקה" : "☕ צא להפסקה"}
+            {isOnBreak ? "🔙 Return from Break" : "☕ Take a Break"}
           </button>
 
-          <button onClick={endSession} className="session-button end">🔚 סיים משמרת</button>
+          <button onClick={endSession} className="session-button end">
+            🔚 End Shift
+          </button>
 
           <div className="breaks-list">
-            <h4>הפסקות:</h4>
+            <h4>Breaks:</h4>
             <ul>
               {breaks.map((brk, idx) => (
                 <li key={idx}>
-                  {brk.start.toLocaleTimeString()} - {brk.end ? brk.end.toLocaleTimeString() : "בהפסקה..."}
+                  {brk.start.toLocaleTimeString()} -{" "}
+                  {brk.end ? brk.end.toLocaleTimeString() : "On Break..."}
                 </li>
               ))}
             </ul>

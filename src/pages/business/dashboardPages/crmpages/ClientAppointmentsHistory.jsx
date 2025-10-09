@@ -20,7 +20,7 @@ const ClientAppointmentsHistory = ({ businessId, email, phone, onClose }) => {
         const res = await API.get(`/appointments/appointments-by-client?${params.toString()}`);
         setAppointments(res.data);
       } catch (err) {
-        setError("שגיאה בטעינת היסטוריית התורים");
+        setError("Error loading appointment history");
       } finally {
         setLoading(false);
       }
@@ -30,44 +30,51 @@ const ClientAppointmentsHistory = ({ businessId, email, phone, onClose }) => {
   }, [businessId, email, phone]);
 
   return (
-    <div style={{
-      position: "fixed",
-      top: "10%",
-      left: "10%",
-      right: "10%",
-      bottom: "10%",
-      backgroundColor: "#fff",
-      border: "1px solid #ccc",
-      borderRadius: "8px",
-      padding: "20px",
-      overflowY: "auto",
-      boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-      zIndex: 1000,
-      color: "black", // הוספתי צבע טקסט שחור לכל הקונטיינר
-    }}>
-      <button 
-        onClick={onClose} 
-        style={{ float: "right", fontSize: "18px", padding: "5px 10px", cursor: "pointer" }}
+    <div
+      style={{
+        position: "fixed",
+        top: "10%",
+        left: "10%",
+        right: "10%",
+        bottom: "10%",
+        backgroundColor: "#fff",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        padding: "20px",
+        overflowY: "auto",
+        boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+        zIndex: 1000,
+        color: "black", // Added default black text color
+      }}
+    >
+      <button
+        onClick={onClose}
+        style={{
+          float: "right",
+          fontSize: "18px",
+          padding: "5px 10px",
+          cursor: "pointer",
+        }}
         aria-label="Close appointments history"
       >
         ✖
       </button>
-      <h3>היסטוריית תורים</h3>
+      <h3>Appointment History</h3>
 
-      {loading && <p>טוען תורים...</p>}
+      {loading && <p>Loading appointments...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {!loading && appointments.length === 0 && <p>אין תורים להציג</p>}
+      {!loading && appointments.length === 0 && <p>No appointments to display</p>}
 
       {!loading && appointments.length > 0 && (
         <table style={{ width: "100%", borderCollapse: "collapse", color: "black" }}>
           <thead>
             <tr style={{ backgroundColor: "#eee" }}>
-              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>תאריך</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>שעה</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>שירות</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>סטטוס</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>הערות</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>Date</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>Time</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>Service</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>Status</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px", color: "black" }}>Notes</th>
             </tr>
           </thead>
           <tbody>

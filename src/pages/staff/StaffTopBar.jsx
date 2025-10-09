@@ -51,34 +51,38 @@ function StaffTopBar() {
   return (
     <div className="staff-top-bar">
       <div className="left-section">
-        <span>⏱ זמן משמרת: <strong>{formatTime(timer)}</strong></span>
+        <span>
+          ⏱ Shift Time: <strong>{formatTime(timer)}</strong>
+        </span>
         <span className={isOnBreak ? "break-status" : "active-status"}>
-          {isOnBreak ? "בהפסקה" : isWorking ? "פעיל" : "לא פעיל"}
+          {isOnBreak ? "On Break" : isWorking ? "Active" : "Inactive"}
         </span>
       </div>
 
       <div className="middle-section">
         <input
           type="text"
-          placeholder="🔎 חפש מספר טלפון..."
+          placeholder="🔎 Search phone number..."
           value={searchPhone}
           onChange={(e) => setSearchPhone(e.target.value)}
         />
-        <button onClick={handleSearch}>חפש</button>
+        <button onClick={handleSearch}>Search</button>
       </div>
 
       <div className="right-section">
         {!isWorking ? (
-          <button onClick={startSession}>▶️ התחלת משמרת</button>
+          <button onClick={startSession}>▶️ Start Shift</button>
         ) : (
           <>
             <button onClick={toggleBreak}>
-              {isOnBreak ? "🔙 חזרה מהפסקה" : "☕ הפסקה"}
+              {isOnBreak ? "🔙 Return from Break" : "☕ Break"}
             </button>
-            <button onClick={stopSession}>🔚 סיום</button>
+            <button onClick={stopSession}>🔚 End</button>
           </>
         )}
-        <button onClick={() => alert("📞 פונקציית חיוג תתווסף בקרוב")}>📞 חיוג</button>
+        <button onClick={() => alert("📞 Call function will be added soon")}>
+          📞 Call
+        </button>
       </div>
     </div>
   );

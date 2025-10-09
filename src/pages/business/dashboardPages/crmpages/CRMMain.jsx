@@ -4,13 +4,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import "./CRMMain.css";
 
 const crmTabs = [
-  { path: "work-hours", label: "⏰ שעות פעילות" },
-  { path: "services", label: "🛠️ שירותים" },
-  { path: "appointments", label: "📆 תיאומים" },
-  { path: "clients", label: "👥 לקוחות" },
+  { path: "work-hours", label: "⏰ Work Hours" },
+  { path: "services", label: "🛠️ Services" },
+  { path: "appointments", label: "📆 Appointments" },
+  { path: "clients", label: "👥 Clients" },
 ];
 
-// פונקציות fetch לדוגמה (החלף לפי הקוד שלך)
+// Example fetch functions (replace with your actual API calls)
 async function fetchAppointments() {
   const res = await fetch("/api/appointments");
   return res.json();

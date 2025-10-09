@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import API from '@api'; // axios instance עם withCredentials: true ו-baseURL מותאם ל-/api/business
+import API from '@api'; // axios instance with withCredentials: true and baseURL set to /api/business
 import { useBusinessServices } from '@context/BusinessServicesContext';
 import './ShopTab.css';
 
 const ShopTab = () => {
   const { products, setProducts } = useBusinessServices();
-  const [categories, setCategories] = useState(['כללי']);
+  const [categories, setCategories] = useState(['General']);
   const [newCategory, setNewCategory] = useState('');
 
   const [formData, setFormData] = useState({
@@ -13,7 +13,7 @@ const ShopTab = () => {
     description: '',
     price: '',
     image: null,
-    category: 'כללי',
+    category: 'General',
   });
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -28,7 +28,7 @@ const ShopTab = () => {
 
   const allProviders = ['Tranzila', 'Meshulam', 'Max', 'PayPlus', 'Cardcom', 'Isracard', 'Hyp'];
 
-  // --- טען מוצרים וקופונים בהתחלה ---
+  // --- Load products and coupons on mount ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -39,14 +39,14 @@ const ShopTab = () => {
         setProducts(prodRes.data || []);
         setCoupons(couponRes.data || []);
       } catch (err) {
-        console.error('שגיאה בטעינת נתונים:', err);
-        alert('שגיאה בטעינת נתונים');
+        console.error('Error loading data:', err);
+        alert('Error loading data');
       }
     };
     fetchData();
   }, [setProducts]);
 
-  // --- קטגוריות ---
+  // --- Categories ---
   const handleAddCategory = e => {
     e.preventDefault();
     const trimmed = newCategory.trim();
@@ -59,11 +59,11 @@ const ShopTab = () => {
   const handleDeleteCategory = cat => {
     setCategories(prev => prev.filter(c => c !== cat));
     if (formData.category === cat) {
-      setFormData(prev => ({ ...prev, category: 'כללי' }));
+      setFormData(prev => ({ ...prev, category: 'General' }));
     }
   };
 
-  // --- שינויי טופס מוצר ---
+  // --- Product form changes ---
   const handleFormChange = e => {
     const { name, value, files } = e.target;
     if (name === 'image') {
@@ -75,7 +75,7 @@ const ShopTab = () => {
     }
   };
 
-  // --- הוספת מוצר ---
+  // --- Add product ---
   const handleAddProduct = async e => {
     e.preventDefault();
     if (!formData.name || !formData.price) return;
@@ -88,33 +88,33 @@ const ShopTab = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setProducts(prev => [...prev, res.data]);
-      setFormData({ name: '', description: '', price: '', image: null, category: 'כללי' });
+      setFormData({ name: '', description: '', price: '', image: null, category: 'General' });
       setImagePreview(null);
     } catch (err) {
-      console.error('שגיאה בהוספת מוצר:', err);
-      alert('שגיאה בהוספת מוצר');
+      console.error('Error adding product:', err);
+      alert('Error adding product');
     }
   };
 
-  // --- מחיקת מוצר ---
+  // --- Delete product ---
   const handleDeleteProduct = async productId => {
-    if (!productId || !window.confirm('האם למחוק מוצר זה?')) return;
+    if (!productId || !window.confirm('Delete this product?')) return;
     try {
       await API.delete(`/business/my/products/${productId}`);
       setProducts(prev => prev.filter(p => (p._id || p.id) !== productId));
     } catch (err) {
-      console.error('שגיאה במחיקת מוצר:', err);
-      alert('שגיאה במחיקת מוצר');
+      console.error('Error deleting product:', err);
+      alert('Error deleting product');
     }
   };
 
-  // --- סליקה ---
+  // --- Payment providers ---
   const handleProviderSelect = e => setSelectedProvider(e.target.value);
   const handleKeyChange = e => {
     setPaymentKeys(prev => ({ ...prev, [selectedProvider]: e.target.value }));
   };
 
-  // --- קופונים ---
+  // --- Coupons ---
   const handleAddCoupon = async e => {
     e.preventDefault();
     if (!coupon.code || !coupon.discount) return;
@@ -123,36 +123,37 @@ const ShopTab = () => {
       setCoupons(prev => [...prev, res.data]);
       setCoupon({ code: '', discount: '', start: '', expiry: '' });
     } catch (err) {
-      console.error('שגיאה ביצירת קופון:', err);
-      alert('שגיאה ביצירת קופון');
+      console.error('Error creating coupon:', err);
+      alert('Error creating coupon');
     }
   };
 
   const handleDeleteCoupon = async id => {
-    if (!window.confirm('האם למחוק קופון זה?')) return;
+    if (!window.confirm('Delete this coupon?')) return;
     try {
       await API.delete(`/business/my/coupons/${id}`);
       setCoupons(prev => prev.filter(c => c.id !== id && c._id !== id));
     } catch (err) {
-      console.error('שגיאה במחיקת קופון:', err);
-      alert('שגיאה במחיקת קופון');
+      console.error('Error deleting coupon:', err);
+      alert('Error deleting coupon');
     }
   };
 
   return (
     <div className="shop-editor">
-      <h2 className="title">🔧 ניהול החנות שלך</h2>
-      {/* קטגוריות */}
+      <h2 className="title">🔧 Manage Your Store</h2>
+
+      {/* Categories */}
       <div className="category-section">
-        <label>📁 קטגוריות</label>
+        <label>📁 Categories</label>
         <form className="category-manager" onSubmit={handleAddCategory}>
           <input
             type="text"
             value={newCategory}
             onChange={e => setNewCategory(e.target.value)}
-            placeholder="שם קטגוריה חדשה"
+            placeholder="New category name"
           />
-          <button type="submit">הוספה</button>
+          <button type="submit">Add</button>
         </form>
         <div className="category-list">
           {categories.map((cat, i) => (
@@ -164,23 +165,23 @@ const ShopTab = () => {
         </div>
       </div>
 
-      {/* טופס הוספת מוצר */}
+      {/* Add Product Form */}
       <form className="product-form" onSubmit={handleAddProduct}>
-        <input name="name" value={formData.name} onChange={handleFormChange} placeholder="שם המוצר" required />
-        <textarea name="description" value={formData.description} onChange={handleFormChange} placeholder="תיאור..." rows={2} />
-        <input name="price" type="number" value={formData.price} onChange={handleFormChange} placeholder="מחיר ₪" required />
+        <input name="name" value={formData.name} onChange={handleFormChange} placeholder="Product name" required />
+        <textarea name="description" value={formData.description} onChange={handleFormChange} placeholder="Description..." rows={2} />
+        <input name="price" type="number" value={formData.price} onChange={handleFormChange} placeholder="Price ₪" required />
         <select name="category" value={formData.category} onChange={handleFormChange}>
           {categories.map((cat, i) => (<option key={i} value={cat}>{cat}</option>))}
         </select>
         <input type="file" name="image" accept="image/*" onChange={handleFormChange} />
-        {imagePreview && <img src={imagePreview} alt="תצוגת מוצר" className="preview-image" />}
-        <button type="submit">💾 שמירה</button>
+        {imagePreview && <img src={imagePreview} alt="Product preview" className="preview-image" />}
+        <button type="submit">💾 Save</button>
       </form>
 
-      {/* רשימת מוצרים קיימים */}
+      {/* Product List */}
       {products.length > 0 && (
         <div className="preview-products-list">
-          <h3>📦 מוצרים קיימים</h3>
+          <h3>📦 Existing Products</h3>
           <div className="product-cards-list">
             {products.map((p, i) => {
               const pid = p._id || p.id;
@@ -205,15 +206,15 @@ const ShopTab = () => {
         </div>
       )}
 
-      {/* הגדרות סליקה */}
+      {/* Payment Settings */}
       <div className="payment-settings">
-        <h4>💳 הגדרת סליקה לעסק</h4>
+        <h4>💳 Payment Setup for Business</h4>
         <select
           value={selectedProvider || ""}
           onChange={handleProviderSelect}
           className="provider-select"
         >
-          <option value="" disabled>בחר ספק סליקה</option>
+          <option value="" disabled>Select Payment Provider</option>
           {allProviders.map(provider => (
             <option key={provider} value={provider}>
               {provider}
@@ -224,40 +225,40 @@ const ShopTab = () => {
           <div className="payment-inputs">
             <input
               type="text"
-              placeholder={`מפתח עבור ${selectedProvider}`}
+              placeholder={`Key for ${selectedProvider}`}
               value={paymentKeys[selectedProvider] || ''}
               onChange={handleKeyChange}
             />
-            <p className="payment-info">שמור את המפתח לאימות תשלומים.</p>
+            <p className="payment-info">Save this key for payment authentication.</p>
           </div>
         )}
       </div>
 
-      {/* סוגי תשלום */}
+      {/* Payment Methods */}
       <div className="payment-methods">
-        <h4>⚙️ סוג תשלום זמין ללקוחות</h4>
+        <h4>⚙️ Payment Options for Customers</h4>
         <select
           className="select-input"
           value={paymentMethod}
           onChange={e => setPaymentMethod(e.target.value)}
         >
-          <option value="online">תשלום אונליין בלבד</option>
-          <option value="phone">תשלום טלפוני בלבד</option>
-          <option value="both">שניהם</option>
+          <option value="online">Online Payment Only</option>
+          <option value="phone">Phone Payment Only</option>
+          <option value="both">Both</option>
         </select>
       </div>
 
-      {/* הגדרות משלוח */}
+      {/* Shipping Settings */}
       <div className="shipping-settings">
-        <h4>🚚 אפשרות משלוח</h4>
-        <p className="note">עלות המשלוח תתווסף למחיר הסופי של ההזמנה.</p>
+        <h4>🚚 Shipping Options</h4>
+        <p className="note">Shipping cost will be added to the final order price.</p>
         <select
           className="select-input"
           value={shippingType}
           onChange={e => setShippingType(e.target.value)}
         >
-          <option value="free">משלוח חינם</option>
-          <option value="paid">משלוח בתשלום</option>
+          <option value="free">Free Shipping</option>
+          <option value="paid">Paid Shipping</option>
         </select>
         {shippingType === 'paid' && (
           <input
@@ -265,28 +266,28 @@ const ShopTab = () => {
             className="shipping-cost-input"
             value={shippingCost}
             onChange={e => setShippingCost(Number(e.target.value))}
-            placeholder="סכום ₪"
+            placeholder="Amount ₪"
             min="0"
           />
         )}
       </div>
 
-      {/* קופונים */}
+      {/* Coupons */}
       <form className="coupon-section" onSubmit={handleAddCoupon}>
-        <h4>🎟️ יצירת קופון הנחה</h4>
-        <input type="text" value={coupon.code} onChange={e => setCoupon(prev => ({ ...prev, code: e.target.value }))} placeholder="קוד קופון (SUMMER10)" required />
-        <input type="number" value={coupon.discount} onChange={e => setCoupon(prev => ({ ...prev, discount: e.target.value }))} placeholder="אחוז הנחה (10)" required />
+        <h4>🎟️ Create Discount Coupon</h4>
+        <input type="text" value={coupon.code} onChange={e => setCoupon(prev => ({ ...prev, code: e.target.value }))} placeholder="Coupon Code (SUMMER10)" required />
+        <input type="number" value={coupon.discount} onChange={e => setCoupon(prev => ({ ...prev, discount: e.target.value }))} placeholder="Discount Percentage (10)" required />
         <input type="date" value={coupon.start} onChange={e => setCoupon(prev => ({ ...prev, start: e.target.value }))} />
         <input type="date" value={coupon.expiry} onChange={e => setCoupon(prev => ({ ...prev, expiry: e.target.value }))} />
-        <button type="submit">➕ הוספת קופון</button>
+        <button type="submit">➕ Add Coupon</button>
       </form>
 
       {coupons.length > 0 && (
         <div className="coupons-table">
-          <h4>🧾 קופונים קיימים</h4>
+          <h4>🧾 Existing Coupons</h4>
           <table>
             <thead>
-              <tr><th>קוד</th><th>הנחה</th><th>מתאריך</th><th>עד</th><th>מחיקה</th></tr>
+              <tr><th>Code</th><th>Discount</th><th>From</th><th>Until</th><th>Delete</th></tr>
             </thead>
             <tbody>
               {coupons.map((c, i) => (

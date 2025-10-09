@@ -13,11 +13,11 @@ export default function CRMCustomerFile({ client, businessId }) {
     notes: "",
   });
 
-  // ✅ טעינת פגישות ואירועים מהשרת כשהתיק נפתח
+  // ✅ Load appointments and CRM events when customer file opens
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // === שליפת פגישות לפי crmClientId ===
+        // === Fetch appointments by crmClientId ===
         const apptRes = await API.get(`/appointments/by-client/${client._id}`, {
           params: { businessId },
         });
@@ -25,13 +25,13 @@ export default function CRMCustomerFile({ client, businessId }) {
         const appointments = apptRes.data.map((appt) => ({
           id: appt._id,
           type: "meeting",
-          title: appt.serviceName || "פגישה",
+          title: appt.serviceName || "Meeting",
           date: `${appt.date} ${appt.time}`,
           notes: appt.note || "",
-          readonly: true, // פגישות אי אפשר למחוק/לערוך כאן
+          readonly: true, // Meetings cannot be deleted/edited here
         }));
 
-        // === שליפת אירועי CRM נוספים ===
+        // === Fetch additional CRM events ===
         const eventsRes = await API.get(`/crm-events/${client._id}`);
         const crmEvents = eventsRes.data.map((ev) => ({
           id: ev._id,
@@ -41,23 +41,23 @@ export default function CRMCustomerFile({ client, businessId }) {
           notes: ev.notes,
         }));
 
-        // מיזוג הכל יחד
+        // Merge all together and sort by date
         setEvents([...appointments, ...crmEvents].sort((a, b) =>
           (b.date || "").localeCompare(a.date || "")
         ));
       } catch (err) {
-        console.error("❌ שגיאה בטעינת נתונים:", err);
-        toast.error("❌ שגיאה בטעינת נתונים");
+        console.error("❌ Error loading data:", err);
+        toast.error("❌ Error loading data");
       }
     };
 
     if (client?._id) fetchData();
   }, [client?._id, businessId]);
 
-  // ✅ הוספת אירוע CRM חדש
+  // ✅ Add a new CRM event
   const addEvent = async () => {
     if (!newEvent.title) {
-      toast.error("❌ חייבים למלא כותרת");
+      toast.error("❌ Title is required");
       return;
     }
 
@@ -82,69 +82,69 @@ export default function CRMCustomerFile({ client, businessId }) {
       setNewEvent({ type: "call", title: "", date: "", notes: "" });
 
       if (res.data.type === "task" && res.data.date) {
-        toast.info(`✅ נוספה משימה ל-${res.data.date}: ${res.data.title}`);
+        toast.info(`✅ Task added for ${res.data.date}: ${res.data.title}`);
       }
     } catch (err) {
-      console.error("❌ שגיאה בהוספת אירוע:", err);
-      toast.error("❌ שגיאה בהוספת אירוע");
+      console.error("❌ Error adding event:", err);
+      toast.error("❌ Error adding event");
     }
   };
 
-  // ✅ מחיקת אירוע
+  // ✅ Delete event
   const deleteEvent = async (id) => {
     try {
       await API.delete(`/crm-events/${id}`);
       setEvents(events.filter((e) => e.id !== id));
-      toast.success("🗑️ האירוע נמחק בהצלחה");
+      toast.success("🗑️ Event deleted successfully");
     } catch (err) {
-      console.error("❌ שגיאה במחיקת אירוע:", err);
-      toast.error("❌ שגיאה במחיקת אירוע");
+      console.error("❌ Error deleting event:", err);
+      toast.error("❌ Error deleting event");
     }
   };
 
-  // ✅ עדכון אירוע (כותרת/הערות)
+  // ✅ Update event (title/notes)
   const updateEvent = async (id, field, value) => {
     try {
       const res = await API.put(`/crm-events/${id}`, { [field]: value });
       setEvents(events.map((e) => (e.id === id ? { ...e, ...res.data } : e)));
-      toast.success("✏️ האירוע עודכן בהצלחה");
+      toast.success("✏️ Event updated successfully");
     } catch (err) {
-      console.error("❌ שגיאה בעדכון אירוע:", err);
-      toast.error("❌ שגיאה בעדכון אירוע");
+      console.error("❌ Error updating event:", err);
+      toast.error("❌ Error updating event");
     }
   };
 
   const typeLabels = {
-    call: "📞 שיחה",
-    message: "💬 הודעה",
-    meeting: "📅 פגישה",
-    task: "✅ משימה",
-    file: "📄 תוכן",
+    call: "📞 Call",
+    message: "💬 Message",
+    meeting: "📅 Meeting",
+    task: "✅ Task",
+    file: "📄 File",
   };
 
   return (
     <div className="crm-customer-profile">
-      <h2>תיק לקוח – {client?.fullName}</h2>
+      <h2>Customer File – {client?.fullName}</h2>
       <p>
         📞 {client?.phone} | ✉️ {client?.email}
       </p>
 
-      {/* טופס הוספת אירוע */}
+      {/* Add Event Form */}
       <div className="add-event-form">
         <select
           value={newEvent.type}
           onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
         >
-          <option value="call">שיחה</option>
-          <option value="message">הודעה</option>
-          <option value="meeting">פגישה</option>
-          <option value="task">משימה</option>
-          <option value="file">תוכן</option>
+          <option value="call">Call</option>
+          <option value="message">Message</option>
+          <option value="meeting">Meeting</option>
+          <option value="task">Task</option>
+          <option value="file">File</option>
         </select>
 
         <input
           type="text"
-          placeholder="כותרת"
+          placeholder="Title"
           value={newEvent.title}
           onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
         />
@@ -156,18 +156,18 @@ export default function CRMCustomerFile({ client, businessId }) {
         />
 
         <textarea
-          placeholder="הערות"
+          placeholder="Notes"
           value={newEvent.notes}
           onChange={(e) => setNewEvent({ ...newEvent, notes: e.target.value })}
         />
 
-        <button onClick={addEvent}>➕ הוסף</button>
+        <button onClick={addEvent}>➕ Add</button>
       </div>
 
       {/* Timeline */}
       <ul className="event-timeline">
         {events.length === 0 ? (
-          <li>אין אירועים ללקוח זה</li>
+          <li>No events for this client</li>
         ) : (
           events.map((e) => (
             <li key={e.id}>
@@ -181,7 +181,7 @@ export default function CRMCustomerFile({ client, businessId }) {
               >
                 {e.title}
               </strong>{" "}
-              – {e.date || "ללא תאריך"}
+              – {e.date || "No date"}
               <p
                 contentEditable={!e.readonly}
                 suppressContentEditableWarning
@@ -196,7 +196,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                   className="delete-btn"
                   onClick={() => deleteEvent(e.id)}
                 >
-                  🗑️ מחק
+                  🗑️ Delete
                 </button>
               )}
             </li>

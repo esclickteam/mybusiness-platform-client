@@ -8,7 +8,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import API from "../../../../api";
-import { useAuth } from "../../../../context/AuthContext"; // ודא ייבוא נכון
+import { useAuth } from "../../../../context/AuthContext"; // Ensure correct import
 import "./ProposalForm.css";
 
 export default function ProposalForm({
@@ -17,7 +17,7 @@ export default function ProposalForm({
   onClose,
   onSent,
 }) {
-  const { user } = useAuth(); // מזהה העסק שלך
+  const { user } = useAuth(); // Sender business identity
 
   const [formData, setFormData] = useState({
     toBusinessId: toBusiness?._id || "",
@@ -51,7 +51,7 @@ export default function ProposalForm({
     setError(null);
     setSuccessMessage("");
 
-    // בדיקה של כל השדות הדרושים
+    // Validate required fields
     if (
       !formData.title.trim() ||
       !formData.description.trim() ||
@@ -59,16 +59,16 @@ export default function ProposalForm({
       !formData.contactName.trim() ||
       !formData.phone.trim()
     ) {
-      setError("נא למלא את כל השדות הנדרשים");
+      setError("Please fill in all required fields");
       setLoading(false);
       return;
     }
 
     try {
-      // שליחת ההצעה – **הערה: עכשיו נשלח גם את fromBusinessId**
+      // Sending the proposal — now includes fromBusinessId
       const res = await API.post("/business/my/proposals", {
-        fromBusinessId: user?.businessId,             // ← מזהה העסק שלך (השולח)
-        toBusinessId: formData.toBusinessId,          // ← מזהה העסק המקבל (הנמען)
+        fromBusinessId: user?.businessId, // ← sender business ID
+        toBusinessId: formData.toBusinessId, // ← recipient business ID
         message: {
           title: formData.title,
           description: formData.description,
@@ -91,7 +91,7 @@ export default function ProposalForm({
       }
 
       if (res.status === 200 || res.status === 201) {
-        setSuccessMessage("ההצעה נשלחה בהצלחה!");
+        setSuccessMessage("Proposal sent successfully!");
         setFormData({
           toBusinessId: toBusiness?._id || "",
           title: "",
@@ -106,10 +106,10 @@ export default function ProposalForm({
         }
         onClose();
       } else {
-        setError("שליחה נכשלה, נסה שוב.");
+        setError("Sending failed. Please try again.");
       }
     } catch (err) {
-      setError("שגיאה בשליחה: " + (err.response?.data?.message || err.message));
+      setError("Error sending proposal: " + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -126,29 +126,29 @@ export default function ProposalForm({
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        direction: "rtl",
+        direction: "ltr",
       }}
     >
       <Typography variant="h5" component="h2" textAlign="center" gutterBottom>
-        טופס הצעה בין עסק לעסק
+        Business-to-Business Proposal Form
       </Typography>
 
       <TextField
-        label="עסק שולח (מאת)"
+        label="From (Your Business)"
         value={fromBusinessName || ""}
         disabled
         fullWidth
       />
 
       <TextField
-        label="עסק מקבל (אל)"
+        label="To (Receiving Business)"
         value={toBusiness?.businessName || ""}
         disabled
         fullWidth
       />
 
       <TextField
-        label="כותרת הצעה"
+        label="Proposal Title"
         name="title"
         value={formData.title}
         onChange={handleChange}
@@ -157,7 +157,7 @@ export default function ProposalForm({
       />
 
       <TextField
-        label="תיאור הצעה"
+        label="Proposal Description"
         name="description"
         value={formData.description}
         onChange={handleChange}
@@ -168,7 +168,7 @@ export default function ProposalForm({
       />
 
       <TextField
-        label="סכום (אם רלוונטי)"
+        label="Amount (if applicable)"
         name="amount"
         type="number"
         inputProps={{ min: 0, step: 0.01 }}
@@ -178,7 +178,7 @@ export default function ProposalForm({
       />
 
       <TextField
-        label="תאריך תוקף"
+        label="Valid Until"
         name="validUntil"
         type="date"
         InputLabelProps={{ shrink: true }}
@@ -189,7 +189,7 @@ export default function ProposalForm({
       />
 
       <TextField
-        label="שם איש קשר"
+        label="Contact Person"
         name="contactName"
         value={formData.contactName}
         onChange={handleChange}
@@ -198,7 +198,7 @@ export default function ProposalForm({
       />
 
       <TextField
-        label="טלפון"
+        label="Phone Number"
         name="phone"
         value={formData.phone}
         onChange={handleChange}
@@ -215,7 +215,7 @@ export default function ProposalForm({
         disabled={loading}
         sx={{ mt: 2 }}
       >
-        {loading ? <CircularProgress size={24} color="inherit" /> : "שלח הצעה"}
+        {loading ? <CircularProgress size={24} color="inherit" /> : "Send Proposal"}
       </Button>
     </Box>
   );

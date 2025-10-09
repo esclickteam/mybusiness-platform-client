@@ -9,7 +9,7 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // פורמט תאריך YYYY-MM-DD
+  // Format date as YYYY-MM-DD
   const formatDate = (date) => date.toISOString().slice(0, 10);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
       }
     )
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch slots");
+        if (!res.ok) throw new Error("Failed to fetch available slots");
         return res.json();
       })
       .then((data) => {
@@ -42,13 +42,13 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
 
   return (
     <div className="crm-available-slots">
-      <h3>🗓️ זמינות תורים לפי יומן</h3>
-      <Calendar locale="he-IL" value={selectedDate} onChange={setSelectedDate} />
+      <h3>🗓️ Available Appointments by Calendar</h3>
+      <Calendar locale="en-US" value={selectedDate} onChange={setSelectedDate} />
 
-      <h4>תאריך נבחר: {selectedDate.toLocaleDateString("he-IL")}</h4>
+      <h4>Selected Date: {selectedDate.toLocaleDateString("en-US")}</h4>
 
-      {loading && <p>טוען נתונים...</p>}
-      {error && <p style={{ color: "red" }}>שגיאה: {error}</p>}
+      {loading && <p>Loading data...</p>}
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
       {!loading && !error && (
         <>
@@ -59,7 +59,7 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
               ))}
             </ul>
           ) : (
-            <p>אין שעות פנויות ביום זה</p>
+            <p>No available time slots on this day</p>
           )}
         </>
       )}

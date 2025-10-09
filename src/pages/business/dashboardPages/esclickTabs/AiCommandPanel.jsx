@@ -24,7 +24,7 @@ export default function AiCommandPanel({ businessId, token, profile }) {
       });
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || "שגיאה בשליחת הפקודה");
+      if (!res.ok) throw new Error(data.error || "Error sending the command");
 
       setResponse(data);
       setPrompt("");
@@ -42,11 +42,11 @@ export default function AiCommandPanel({ businessId, token, profile }) {
         margin: "auto",
         padding: 20,
         fontFamily: "Arial, sans-serif",
-        direction: "rtl",
-        textAlign: "right",
+        direction: "ltr",
+        textAlign: "left",
       }}
     >
-      <h2>שותף AI - בקש פעולה או תשובה</h2>
+      <h2>AI Partner – Request an Action or Answer</h2>
 
       <textarea
         rows={4}
@@ -58,11 +58,11 @@ export default function AiCommandPanel({ businessId, token, profile }) {
           border: "1px solid #ccc",
           resize: "vertical",
         }}
-        placeholder="כתוב כאן את הבקשה שלך לשותף AI..."
+        placeholder="Write your request for the AI partner here..."
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
         disabled={loading}
-        aria-label="בקשה לשותף AI"
+        aria-label="AI Partner Request"
       />
 
       <button
@@ -82,12 +82,12 @@ export default function AiCommandPanel({ businessId, token, profile }) {
         aria-disabled={loading || !prompt.trim()}
         aria-busy={loading}
       >
-        {loading ? "שולח..." : "שלח"}
+        {loading ? "Sending..." : "Send"}
       </button>
 
       {error && (
         <p style={{ color: "red", marginTop: 10 }} role="alert" aria-live="assertive">
-          שגיאה: {error}
+          Error: {error}
         </p>
       )}
 
@@ -104,12 +104,12 @@ export default function AiCommandPanel({ businessId, token, profile }) {
           }}
           aria-live="polite"
         >
-          <h3>תשובת AI:</h3>
+          <h3>AI Response:</h3>
           <p>{response.answer}</p>
 
           {response.action && (
             <>
-              <h4>פעולה שמומלצת לביצוע:</h4>
+              <h4>Recommended Action:</h4>
               <pre
                 style={{
                   backgroundColor: "#ddd",

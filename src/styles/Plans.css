@@ -70,7 +70,7 @@
 }
 
 .duration-btn {
-  position: relative; /* ← זה מה שחסר */
+  position: relative; /* ← This was missing */
   background: #d6ceff;
   border: none;
   border-radius: 12px;
@@ -122,7 +122,7 @@
   background: #371a9e;
 }
 
-/* --- מדיה קווירי רספונסיבי --- */
+/* --- Responsive Media Query --- */
 
 @media (max-width: 600px) {
   .plans-wrapper {
@@ -193,7 +193,7 @@
   }
 }
 
-/* רספונסיביות למסכי טבלט גדולים (901px - 1024px) */
+/* Responsiveness for large tablets (901px - 1024px) */
 @media (min-width: 901px) and (max-width: 1024px) {
   .plans-wrapper {
     max-width: 450px;
@@ -213,7 +213,7 @@
   }
 }
 
-/* רספונסיביות למסכי דסקטופ קטנים (1025px - 1200px) */
+/* Responsiveness for small desktop screens (1025px - 1200px) */
 @media (min-width: 1025px) and (max-width: 1200px) {
   .plans-wrapper {
     max-width: 500px;
@@ -236,12 +236,12 @@
 .launch-price-banner {
   margin-bottom: 20px;
   padding: 14px 20px;
-  background: linear-gradient(145deg, #ff4d4d, #ff9999); /* אדום־כתום הדרגתי */
+  background: linear-gradient(145deg, #ff4d4d, #ff9999); /* Red-Orange gradient */
   font-weight: 900;
   font-size: 1.2rem;
   border-radius: 16px;
   text-align: center;
-  color: #fffdfd; /* טקסט בהיר */
+  color: #fffdfd; /* Light text */
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
   box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
   animation: pulseRed 2.5s infinite ease-in-out;
@@ -256,7 +256,6 @@
   }
 }
 
-
 .features-list {
   list-style: none;
   padding: 0;
@@ -264,7 +263,7 @@
   text-align: right;
   font-weight: 700;
   font-size: 1rem;
-  color: #4b2bd9; /* צבע טקסט סגול כהה מהקוד שלך */
+  color: #4b2bd9; /* Dark purple text color from your design */
 }
 
 .features-list-item {
@@ -281,7 +280,7 @@
 .check-icon {
   width: 24px;
   height: 24px;
-  background-color: #6e4fff; /* סגול כהה כמו .checkmark שלך */
+  background-color: #6e4fff; /* Dark purple like .checkmark */
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -302,17 +301,16 @@
   color: #4b2bd9;
 }
 
-/* הדגשת מסלול מומלץ (שנתי) */
+/* Highlight the recommended plan (annual) */
 .duration-btn.recommended {
   background: #fffadc;
-  color: #2b1e00; /* כהה טבעי */
+  color: #2b1e00; /* Natural dark */
   border: 2px solid #ffd100;
   box-shadow: 0 10px 25px rgba(132, 96, 255, 0.35);
 }
 
-
 .duration-btn.recommended::after {
-  content: "מומלץ";
+  content: "Recommended";
   position: absolute;
   top: -12px;
   left: 50%;
@@ -326,7 +324,7 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* הצגת מחיר כולל */
+/* Display total price */
 .total-price {
   font-weight: 800;
   font-size: 1.25rem;
@@ -335,13 +333,13 @@
   text-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
-/* אנימציה לכפתור נבחר */
+/* Animation for selected button */
 .duration-btn.active {
   transform: scale(1.05);
   transition: transform 0.25s ease, background 0.3s ease;
 }
 
-/* עיצוב לחבילת ניסיון */
+/* Styling for trial plan */
 .duration-btn.test {
   border: 2px solid #ffa500;
   background: #fff8e1;
@@ -360,7 +358,7 @@
   transition: transform 0.25s ease, background 0.3s ease;
 }
 
-/* פס הודעה כללי */
+/* General notification banner */
 .plans-alert {
   padding: 12px 16px;
   margin-bottom: 20px;
@@ -371,14 +369,14 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
-/* פס התראה על סיום ניסיון (אדום) */
+/* Alert bar for trial ending (red) */
 .plans-alert-error {
   background: linear-gradient(145deg, #ff4d4d, #ff9999);
   color: #fff;
   text-shadow: 0 1px 2px rgba(0,0,0,0.25);
 }
 
-/* פס הודעה על ניסיון פעיל (כחול/סגול) */
+/* Info bar for active trial (blue/purple) */
 .plans-alert-info {
   background: linear-gradient(145deg, #8ec5fc, #e0c3fc);
   color: #2d1055;

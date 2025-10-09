@@ -17,16 +17,16 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
   const abortControllerRef = useRef(null);
 
   const presetQuestions = [
-    "איך להביא יותר לידים לעסק?",
-    "איך לבנות תוכנית שיווק חודשית?",
-    "מה ההבדל בין קמפיין ממומן לאורגני?",
-    "איך לשפר אחוזי המרה באתר?",
-    "באיזה רשת חברתית כדאי להתמקד?"
+    "How to get more leads for my business?",
+    "How to build a monthly marketing plan?",
+    "What’s the difference between paid and organic campaigns?",
+    "How to improve conversion rates on my website?",
+    "Which social network should I focus on?"
   ];
 
   const aiPackages = [
-    { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 99, type: "ai-package" },
-    { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 139, type: "ai-package" }
+    { id: "ai_200", label: "AI Package – 200 Questions", price: 99, type: "ai-package" },
+    { id: "ai_500", label: "AI Package – 500 Questions", price: 139, type: "ai-package" }
   ];
 
   const refreshRemainingQuestions = useCallback(async () => {
@@ -55,7 +55,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
       if (remainingQuestions !== null && remainingQuestions <= 0) {
         setMessages(prev => [
           ...prev,
-          { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש שאלות נוספות." }
+          { role: "assistant", content: "❗ You’ve reached your monthly question limit. You can purchase additional AI questions." }
         ]);
         return;
       }
@@ -77,7 +77,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
         const response = await API.post("/chat/marketing-advisor", payload, { signal: controller.signal });
         setMessages(prev => [
           ...prev,
-          { role: "assistant", content: response.data.answer || "❌ לא התקבלה תשובה מהשרת." }
+          { role: "assistant", content: response.data.answer || "❌ No response received from server." }
         ]);
         setRemainingQuestions(prev => (prev !== null ? Math.max(prev - 1, 0) : null));
         await refreshRemainingQuestions();
@@ -85,13 +85,13 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
         if (error.name === "AbortError") return;
 
         if (error.response?.status === 403) {
-          const msg = error.response?.data?.error || "❗ הגעת למגבלת השאלות החודשית.";
+          const msg = error.response?.data?.error || "❗ You’ve reached your monthly question limit.";
           setRemainingQuestions(0);
           setMessages(prev => [...prev, { role: "assistant", content: msg }]);
           return;
         }
 
-        setMessages(prev => [...prev, { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." }]);
+        setMessages(prev => [...prev, { role: "assistant", content: "⚠️ Server error or no active credits." }]);
       } finally {
         setLoading(false);
       }
@@ -124,7 +124,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
   const handlePurchaseExtra = async () => {
     if (purchaseLoading || !selectedPackage) return;
     if (!businessId) {
-      setPurchaseError("לא נמצא מזהה עסק. אנא היכנס מחדש.");
+      setPurchaseError("Business ID not found. Please log in again.");
       return;
     }
 
@@ -146,11 +146,11 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
         return;
       }
 
-      setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
+      setPurchaseMessage(`Successfully purchased ${selectedPackage.label} for ₪${selectedPackage.price}.`);
       setSelectedPackage(null);
       await refreshRemainingQuestions();
     } catch (e) {
-      setPurchaseError(e.message || "שגיאה ברכישת החבילה");
+      setPurchaseError(e.message || "Error purchasing package");
     } finally {
       setPurchaseLoading(false);
     }
@@ -165,12 +165,12 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
 
   return (
     <div className="advisor-chat-container">
-      <h2>יועץ שיווקי 📈</h2>
-      <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
+      <h2>Marketing Advisor 📈</h2>
+      <p>Select a preset question or start a free chat:</p>
 
       {remainingQuestions !== null && (
         <p style={{ fontSize: 22, opacity: 0.7 }}>
-          יתרה חודשית: נשארו {remainingQuestions} שאלות
+          Monthly balance: {remainingQuestions} questions left
         </p>
       )}
 
@@ -194,7 +194,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
 
       {remainingQuestions !== null && remainingQuestions <= 0 && (
         <div className="purchase-extra-container">
-          <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
+          <p>You’ve reached your monthly question limit. You can purchase an additional AI package:</p>
           {aiPackages.map((pkg) => (
             <label key={pkg.id} className="radio-label">
               <input
@@ -205,11 +205,11 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
                 checked={selectedPackage?.id === pkg.id}
                 onChange={() => setSelectedPackage(pkg)}
               />
-              {pkg.label} - {pkg.price} ש"ח
+              {pkg.label} - ₪{pkg.price}
             </label>
           ))}
           <button onClick={handlePurchaseExtra} disabled={purchaseLoading || !selectedPackage}>
-            {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
+            {purchaseLoading ? "Purchasing..." : "Purchase Package"}
           </button>
           {purchaseMessage && <p className="success">{purchaseMessage}</p>}
           {purchaseError && <p className="error">{purchaseError}</p>}
@@ -241,7 +241,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
               )}
             </div>
           ))}
-          {loading && <div className="bubble assistant">⌛ מחשב תשובה...</div>}
+          {loading && <div className="bubble assistant">⌛ Calculating response...</div>}
           <div ref={bottomRef} style={{ height: 1 }} />
         </div>
       </div>
@@ -249,7 +249,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
       <div className="chat-input">
         <input
           type="text"
-          placeholder="כתבי שאלה משלך..."
+          placeholder="Type your question..."
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
@@ -260,7 +260,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
           onClick={handleSubmit}
           disabled={loading || !userInput.trim() || (remainingQuestions !== null && remainingQuestions <= 0)}
         >
-          שליחה
+          Send
         </button>
       </div>
     </div>

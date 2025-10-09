@@ -17,34 +17,33 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   const abortControllerRef = useRef(null);
 
   const presetQuestions = [
-    "איך להעלות מחירים בלי לאבד לקוחות?",
-    "איך להתמודד עם ירידה בהכנסות?",
-    "מה הדרך הכי טובה לנהל עובדים?",
-    "איך אפשר לשפר שירות לקוחות?",
-    "איך בונים תוכנית עסקית פשוטה?"
+    "How to raise prices without losing customers?",
+    "How to deal with a drop in income?",
+    "What is the best way to manage employees?",
+    "How can customer service be improved?",
+    "How to build a simple business plan?"
   ];
 
   const aiPackages = [
-    { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 99, type: "ai-package" },
-    { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 139, type: "ai-package" }
+    { id: "ai_200", label: "AI package with 200 questions", price: 99, type: "ai-package" },
+    { id: "ai_500", label: "AI package with 500 questions", price: 139, type: "ai-package" }
   ];
 
   const refreshRemainingQuestions = useCallback(async () => {
-  if (!businessId) return;
-  try {
-    // חשוב: לשלוף לפי ה-ID שמגיע ב-props, לא /business/my
-    const res = await API.get(`/business/${businessId}?t=${Date.now()}`);
-    const business = res.data.business;
+    if (!businessId) return;
+    try {
+      // Important: Fetch by the ID received in props, not /business/my
+      const res = await API.get(`/business/${businessId}?t=${Date.now()}`);
+      const business = res.data.business;
 
-    const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
-    const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
-    const remaining = Math.max(maxQuestions - usedQuestions, 0);
-    setRemainingQuestions(remaining);
-  } catch (error) {
-    setRemainingQuestions(null);
-  }
-}, [businessId]);
-
+      const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
+      const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
+      const remaining = Math.max(maxQuestions - usedQuestions, 0);
+      setRemainingQuestions(remaining);
+    } catch (error) {
+      setRemainingQuestions(null);
+    }
+  }, [businessId]);
 
   useEffect(() => {
     refreshRemainingQuestions();
@@ -57,7 +56,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       if (remainingQuestions !== null && remainingQuestions <= 0) {
         setMessages(prev => [
           ...prev,
-          { role: "assistant", content: "❗ הגעת למגבלת השאלות החודשית. ניתן לרכוש שאלות נוספות." }
+          { role: "assistant", content: "❗ You have reached your monthly question limit. You can purchase more questions." }
         ]);
         return;
       }
@@ -78,27 +77,27 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       try {
         const response = await API.post("/chat/business-advisor", payload, { signal: controller.signal });
 
-        // הצלחה
+        // Success
         setMessages(prev => [
           ...prev,
-          { role: "assistant", content: response.data.answer || "❌ לא התקבלה תשובה מהשרת." }
+          { role: "assistant", content: response.data.answer || "❌ No response received from the server." }
         ]);
         setRemainingQuestions(prev => (prev !== null ? Math.max(prev - 1, 0) : null));
 
-        // סנכרון מול השרת
+        // Sync with server
         await refreshRemainingQuestions();
       } catch (error) {
         if (error.name === "AbortError") return;
 
-        // טיפול נכון ב־403
+        // Proper handling for 403
         if (error.response?.status === 403) {
-          const msg = error.response?.data?.error || "❗ הגעת למגבלת השאלות החודשית.";
+          const msg = error.response?.data?.error || "❗ You have reached your monthly question limit.";
           setRemainingQuestions(0);
           setMessages(prev => [...prev, { role: "assistant", content: msg }]);
           return;
         }
 
-        setMessages(prev => [...prev, { role: "assistant", content: "⚠️ שגיאה בשרת או שאין קרדיטים פעילים." }]);
+        setMessages(prev => [...prev, { role: "assistant", content: "⚠️ Server error or no active credits." }]);
       } finally {
         setLoading(false);
       }
@@ -131,7 +130,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   const handlePurchaseExtra = async () => {
     if (purchaseLoading || !selectedPackage) return;
     if (!businessId) {
-      setPurchaseError("לא נמצא מזהה עסק. אנא היכנס מחדש.");
+      setPurchaseError("Business ID not found. Please log in again.");
       return;
     }
 
@@ -154,13 +153,13 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         return;
       }
 
-      setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
+      setPurchaseMessage(`The ${selectedPackage.label} was successfully purchased for ${selectedPackage.price}₪.`);
       setSelectedPackage(null);
 
-      // רענון המונה אחרי רכישה
+      // Refresh counter after purchase
       await refreshRemainingQuestions();
     } catch (e) {
-      setPurchaseError(e.message || "שגיאה ברכישת החבילה");
+      setPurchaseError(e.message || "Error purchasing the package");
     } finally {
       setPurchaseLoading(false);
     }
@@ -175,17 +174,17 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
   return (
     <div className="advisor-chat-container">
-      <h2>יועץ עסקי 🤝</h2>
-      <p>בחר/י שאלה מוכנה או שיחה חופשית:</p>
+      <h2>Business Advisor 🤝</h2>
+      <p>Select a preset question or start a free conversation:</p>
 
-      {/* מונה קטן (אופציונלי) */}
+      {/* Optional counter */}
       {remainingQuestions !== null && (
         <p style={{ fontSize: 22, opacity: 0.7 }}>
-          יתרה חודשית: נשארו {remainingQuestions} שאלות
+          Monthly balance: {remainingQuestions} questions remaining
         </p>
       )}
 
-      {/* לפני תחילת השיחה – כפתורי שאלות מוכנות בלבד */}
+      {/* Before starting chat – only preset questions */}
       {!startedChat && (
         <>
           <div className="preset-questions-container">
@@ -204,10 +203,10 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         </>
       )}
 
-      {/* בלוק הרכישה מופיע תמיד כשאין יתרה */}
+      {/* Purchase block appears when no balance left */}
       {remainingQuestions !== null && remainingQuestions <= 0 && (
         <div className="purchase-extra-container">
-          <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
+          <p>You have reached your monthly question limit. You can purchase an additional AI package:</p>
 
           {aiPackages.map((pkg) => (
             <label key={pkg.id} className="radio-label">
@@ -219,12 +218,12 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
                 checked={selectedPackage?.id === pkg.id}
                 onChange={() => setSelectedPackage(pkg)}
               />
-              {pkg.label} - {pkg.price} ש"ח
+              {pkg.label} - {pkg.price}₪
             </label>
           ))}
 
           <button onClick={handlePurchaseExtra} disabled={purchaseLoading || !selectedPackage}>
-            {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
+            {purchaseLoading ? "Purchasing..." : "Purchase Package"}
           </button>
 
           {purchaseMessage && <p className="success">{purchaseMessage}</p>}
@@ -257,7 +256,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
               )}
             </div>
           ))}
-          {loading && <div className="bubble assistant">⌛ מחשב תשובה...</div>}
+          {loading && <div className="bubble assistant">⌛ Generating answer...</div>}
           <div ref={bottomRef} style={{ height: 1 }} />
         </div>
       </div>
@@ -265,7 +264,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       <div className="chat-input">
         <input
           type="text"
-          placeholder="כתבי שאלה משלך..."
+          placeholder="Write your own question..."
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
@@ -276,7 +275,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           onClick={handleSubmit}
           disabled={loading || !userInput.trim() || (remainingQuestions !== null && remainingQuestions <= 0)}
         >
-          שליחה
+          Send
         </button>
       </div>
     </div>

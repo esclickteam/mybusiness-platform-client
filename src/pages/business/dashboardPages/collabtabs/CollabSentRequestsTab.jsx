@@ -18,7 +18,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         setError(null);
       } catch (err) {
         console.error("Error loading sent proposals:", err);
-        setError("שגיאה בטעינת הצעות שנשלחו");
+        setError("Error loading sent proposals");
       } finally {
         setLoading(false);
         console.log("Finished fetchSentRequests, loading set to false");
@@ -29,23 +29,23 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
 
   const handleCancelProposal = async (proposalId) => {
     console.log("handleCancelProposal called with proposalId:", proposalId);
-    if (!window.confirm("האם למחוק את ההצעה?")) return;
+    if (!window.confirm("Are you sure you want to delete this proposal?")) return;
     try {
       await API.delete(`/business/my/proposals/${proposalId}`);
       setSentRequests((prev) => prev.filter((p) => p.proposalId !== proposalId));
-      alert("ההצעה בוטלה בהצלחה");
+      alert("Proposal successfully cancelled");
       console.log("Proposal cancelled and state updated");
     } catch (err) {
-      console.error("שגיאה בביטול ההצעה:", err.response || err.message || err);
-      alert("שגיאה בביטול ההצעה");
+      console.error("Error cancelling proposal:", err.response || err.message || err);
+      alert("Error cancelling the proposal");
     }
   };
 
   const handleResendProposal = (proposal) => {
     console.log("handleResendProposal called for proposal:", proposal);
     alert(
-      `פונקציית שליחה מחדש - לשלוח שוב את ההצעה ל: ${
-        proposal.toBusinessId?.businessName || "לא ידוע"
+      `Resend function – resend the proposal to: ${
+        proposal.toBusinessId?.businessName || "Unknown"
       }`
     );
   };
@@ -55,14 +55,14 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
     return str.replace(/^"+|"+$/g, "");
   };
 
-  if (loading) return <p>טוען הצעות שנשלחו...</p>;
+  if (loading) return <p>Loading sent proposals...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div
       className="collab-section"
       style={{
-        direction: "rtl",
+        direction: "ltr",
         fontFamily: "Arial, sans-serif",
         maxWidth: 700,
         margin: "auto",
@@ -72,17 +72,16 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
         className="collab-title"
         style={{ color: "#6b46c1", marginBottom: 20, textAlign: "center" }}
       >
-        📤 הצעות שנשלחו
+        📤 Sent Proposals
       </h3>
 
       {sentRequests.length === 0 ? (
-        <p style={{ textAlign: "center" }}>לא נשלחו עדיין הצעות.</p>
+        <p style={{ textAlign: "center" }}>No proposals have been sent yet.</p>
       ) : (
         sentRequests.map((req) => {
           console.log("Rendering proposal message:", req.message);
 
           const rawMsg = req.message ?? {};
-
           const {
             title = "",
             description = "",
@@ -108,29 +107,29 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
               }}
             >
               <p>
-                <strong>עסק שולח:</strong> {req.fromBusinessId?.businessName || "-"}
+                <strong>From Business:</strong> {req.fromBusinessId?.businessName || "-"}
               </p>
               <p>
-                <strong>עסק מקבל:</strong> {req.toBusinessId?.businessName || "-"}
+                <strong>To Business:</strong> {req.toBusinessId?.businessName || "-"}
               </p>
 
-              <p><strong>כותרת:</strong></p>
+              <p><strong>Title:</strong></p>
               <p>{cleanTitle || "-"}</p>
 
-              <p><strong>תיאור:</strong></p>
+              <p><strong>Description:</strong></p>
               <p>{cleanDescription || "-"}</p>
 
               <p>
-                <strong>סכום:</strong> {budget != null ? budget : "-"}
+                <strong>Amount:</strong> {budget != null ? budget : "-"}
               </p>
               <p>
-                <strong>תאריך תוקף:</strong>{" "}
+                <strong>Valid Until:</strong>{" "}
                 {expiryDate
-                  ? new Date(expiryDate).toLocaleDateString("he-IL")
+                  ? new Date(expiryDate).toLocaleDateString("en-US")
                   : "-"}
               </p>
               <p>
-                <strong>סטטוס:</strong> {req.status || "-"}
+                <strong>Status:</strong> {req.status || "-"}
               </p>
 
               <div
@@ -153,7 +152,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                   }}
                   onClick={() => handleResendProposal(req)}
                 >
-                  📨 שלח שוב
+                  📨 Resend
                 </button>
                 <button
                   style={{
@@ -167,7 +166,7 @@ export default function CollabSentRequestsTab({ refreshFlag }) {
                   }}
                   onClick={() => handleCancelProposal(req.proposalId)}
                 >
-                  🗑️ ביטול
+                  🗑️ Cancel
                 </button>
               </div>
             </div>

@@ -14,8 +14,8 @@ export default function CollabPendingTab({ token }) {
         });
         setPendingCollabs(res.data.pendingCollaborations);
       } catch (err) {
-        console.error("שגיאה בטעינת שיתופי פעולה בהמתנה:", err);
-        setError("אירעה שגיאה בעת טעינת הנתונים.");
+        console.error("Error loading pending collaborations:", err);
+        setError("An error occurred while loading the data.");
       } finally {
         setLoading(false);
       }
@@ -24,9 +24,9 @@ export default function CollabPendingTab({ token }) {
     fetchPendingCollabs();
   }, [token]);
 
-  if (loading) return <p>טוען שיתופי פעולה בהמתנה...</p>;
+  if (loading) return <p>Loading pending collaborations...</p>;
   if (error) return <p>{error}</p>;
-  if (pendingCollabs.length === 0) return <p>אין שיתופי פעולה בהמתנה.</p>;
+  if (pendingCollabs.length === 0) return <p>No pending collaborations.</p>;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -38,15 +38,20 @@ export default function CollabPendingTab({ token }) {
             padding: "16px",
             borderRadius: "8px",
             boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-            direction: "rtl",
+            direction: "ltr",
           }}
         >
-          <p><strong>שולח:</strong> {collab.fromBusinessId?.businessName}</p>
-          <p><strong>מקבל:</strong> {collab.toBusinessId?.businessName}</p>
-          <p><strong>כותרת:</strong> {collab.subject}</p>
-          <p><strong>תיאור:</strong> {collab.description}</p>
-          <p><strong>תוקף:</strong> {collab.expiresAt ? new Date(collab.expiresAt).toLocaleDateString("he-IL") : "לא זמין"}</p>
-          <p><strong>סטטוס:</strong> {collab.status || "בהמתנה"}</p>
+          <p><strong>From:</strong> {collab.fromBusinessId?.businessName}</p>
+          <p><strong>To:</strong> {collab.toBusinessId?.businessName}</p>
+          <p><strong>Subject:</strong> {collab.subject}</p>
+          <p><strong>Description:</strong> {collab.description}</p>
+          <p>
+            <strong>Expires On:</strong>{" "}
+            {collab.expiresAt
+              ? new Date(collab.expiresAt).toLocaleDateString("en-US")
+              : "Unavailable"}
+          </p>
+          <p><strong>Status:</strong> {collab.status || "Pending"}</p>
         </div>
       ))}
     </div>

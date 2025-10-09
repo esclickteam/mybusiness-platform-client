@@ -9,13 +9,13 @@ function convertNaturalDateToISO(text) {
   const now = new Date();
   const lowerText = text.toLowerCase();
 
-  if (lowerText.includes("מחר")) {
+  if (lowerText.includes("tomorrow")) {
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const yyyy = tomorrow.getFullYear();
     const mm = String(tomorrow.getMonth() + 1).padStart(2, "0");
     const dd = String(tomorrow.getDate()).padStart(2, "0");
-    return text.replace(/מחר/gi, `${yyyy}-${mm}-${dd}`);
+    return text.replace(/tomorrow/gi, `${yyyy}-${mm}-${dd}`);
   }
 
   return text;
@@ -47,17 +47,17 @@ const AiPartnerTab = ({
   const [commandText, setCommandText] = useState("");
   const [commandResponse, setCommandResponse] = useState(null);
 
-  // קרדיטים וניהול רכישה
+  // Credits and purchase management
   const [remainingQuestions, setRemainingQuestions] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [purchaseMessage, setPurchaseMessage] = useState("");
   const [purchaseError, setPurchaseError] = useState("");
 
-  // חבילות AI קבועות (כמו ביועץ עסקי ושיווקי)
+  // Fixed AI packages (like in Business/Marketing Advisor)
   const aiPackages = [
-    { id: "ai_200", label: "חבילת AI של 200 שאלות", price: 1, type: "ai-package" },
-    { id: "ai_500", label: "חבילת AI של 500 שאלות", price: 1, type: "ai-package" },
+    { id: "ai_200", label: "AI package with 200 questions", price: 1, type: "ai-package" },
+    { id: "ai_500", label: "AI package with 500 questions", price: 1, type: "ai-package" },
   ];
 
   const bottomRef = useRef(null);
@@ -180,7 +180,7 @@ const AiPartnerTab = ({
     s.on("newAiSuggestion", (suggestion) => {
       if (notificationSound.current) notificationSound.current.play();
       if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("הודעת AI חדשה", {
+        new Notification("New AI Message", {
           body: suggestion.text || suggestion.recommendation,
           icon: "/logo192.png",
         });
@@ -284,7 +284,7 @@ const AiPartnerTab = ({
 
       setRemainingQuestions((prev) => (prev !== null ? Math.max(prev - 1, 0) : null));
     } catch (err) {
-      alert("שגיאה בשליחת פקודת AI: " + err.message);
+      alert("Error sending AI command: " + err.message);
     } finally {
       setLoading(false);
       setCommandText("");
@@ -324,11 +324,11 @@ const AiPartnerTab = ({
         setSuggestions((prev) =>
           prev.map((s) => (s.id === id ? { ...s, status: "sent", text: filteredText } : s))
         );
-        alert("ההמלצה אושרה ונשלחה ללקוח!");
+        alert("Recommendation approved and sent to the client!");
         setActiveSuggestion(null);
       } catch (err) {
         console.error("Error approving suggestion:", err);
-        alert("שגיאה באישור ההמלצה: " + err.message);
+        alert("Error approving recommendation: " + err.message);
       } finally {
         setLoading(false);
       }
@@ -362,12 +362,12 @@ const AiPartnerTab = ({
             s.id === id ? { ...s, text: newText, isEdited: true, editedText: newText, status: "sent" } : s
           )
         );
-        alert("ההמלצה עודכנה ונשלחה בהצלחה!");
+        alert("Recommendation updated and sent successfully!");
         setActiveSuggestion(null);
         setEditing(false);
       } catch (err) {
         console.error("Error updating recommendation:", err);
-        alert("שגיאה בעדכון ההמלצה: " + err.message);
+        alert("Error updating recommendation: " + err.message);
       } finally {
         setLoading(false);
       }
@@ -417,12 +417,12 @@ const AiPartnerTab = ({
         return;
       }
 
-      setPurchaseMessage(`נרכשה ${selectedPackage.label} בהצלחה במחיר ${selectedPackage.price} ש"ח.`);
+      setPurchaseMessage(`Successfully purchased ${selectedPackage.label} for ${selectedPackage.price}₪.`);
       setSelectedPackage(null);
 
       await refreshRemainingQuestions();
     } catch (e) {
-      setPurchaseError(e.message || "שגיאה ברכישת החבילה");
+      setPurchaseError(e.message || "Error purchasing package");
     } finally {
       setPurchaseLoading(false);
     }
@@ -430,11 +430,11 @@ const AiPartnerTab = ({
 
   return (
     <div className="ai-partner-container">
-      <h2>🤖 שותף AI אישי לעסק</h2>
+      <h2>🤖 AI Business Partner</h2>
 
       <div style={{ margin: "1rem 0" }}>
         <button className="toggle-suggestions-btn" onClick={() => setShowHistory((prev) => !prev)}>
-          ראה היסטוריית פקודות
+          View Command History
         </button>
       </div>
 
@@ -443,9 +443,9 @@ const AiPartnerTab = ({
           className="ai-command-history"
           style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ccc", padding: "1rem" }}
         >
-          {loadingHistory && <p>טוען היסטוריה...</p>}
-          {historyError && <p style={{ color: "red" }}>שגיאה בטעינת היסטוריה: {historyError}</p>}
-          {!loadingHistory && !historyError && aiCommandHistory.length === 0 && <p>אין פקודות AI קודמות.</p>}
+          {loadingHistory && <p>Loading history...</p>}
+          {historyError && <p style={{ color: "red" }}>Error loading history: {historyError}</p>}
+          {!loadingHistory && !historyError && aiCommandHistory.length === 0 && <p>No previous AI commands.</p>}
           {!loadingHistory && !historyError && aiCommandHistory.length > 0 && (
             <ul>
               {aiCommandHistory.map((cmd) => (
@@ -455,8 +455,8 @@ const AiPartnerTab = ({
                     marginBottom: "1rem",
                     borderBottom: "1px solid #ddd",
                     paddingBottom: "0.5rem",
-                    direction: "rtl",
-                    textAlign: "right",
+                    direction: "ltr",
+                    textAlign: "left",
                   }}
                 >
                   <div
@@ -466,13 +466,13 @@ const AiPartnerTab = ({
                       marginBottom: "0.3rem",
                     }}
                   >
-                    {new Date(cmd.createdAt).toLocaleString("he-IL", {
+                    {new Date(cmd.createdAt).toLocaleString("en-US", {
                       dateStyle: "short",
                       timeStyle: "short",
                     })}
                   </div>
                   <div>
-                    <strong>פקודה:</strong>
+                    <strong>Command:</strong>
                     <pre
                       style={{
                         whiteSpace: "pre-wrap",
@@ -486,7 +486,7 @@ const AiPartnerTab = ({
                     </pre>
                   </div>
                   <div>
-                    <strong>תשובת AI:</strong>
+                    <strong>AI Response:</strong>
                     <pre
                       style={{
                         whiteSpace: "pre-wrap",
@@ -512,20 +512,20 @@ const AiPartnerTab = ({
               rows={3}
               value={commandText}
               onChange={(e) => setCommandText(e.target.value)}
-              placeholder="כתוב פקודה ל-AI (למשל: תאם פגישה או סכם לי פגישות השבוע)"
+              placeholder="Write a command to AI (e.g., schedule a meeting or summarize this week’s meetings)"
               disabled={loading || (remainingQuestions !== null && remainingQuestions <= 0)}
             />
             <button
               onClick={sendAiCommand}
               disabled={loading || !commandText.trim() || (remainingQuestions !== null && remainingQuestions <= 0)}
             >
-              שלח ל-AI
+              Send to AI
             </button>
           </div>
 
           {remainingQuestions !== null && remainingQuestions <= 0 && (
             <div className="purchase-extra-container" style={{ marginTop: "1rem" }}>
-              <p>הגעת למגבלת השאלות החודשית. ניתן לרכוש חבילת AI נוספת:</p>
+              <p>You’ve reached the monthly question limit. You can purchase an additional AI package:</p>
               {aiPackages.map((pkg) => (
                 <label key={pkg.id} className="radio-label">
                   <input
@@ -536,11 +536,11 @@ const AiPartnerTab = ({
                     checked={selectedPackage?.id === pkg.id}
                     onChange={() => setSelectedPackage(pkg)}
                   />
-                  {pkg.label} - {pkg.price} ש"ח
+                  {pkg.label} - {pkg.price}₪
                 </label>
               ))}
               <button onClick={handlePurchaseExtra} disabled={purchaseLoading || !selectedPackage}>
-                {purchaseLoading ? "רוכש..." : "רכוש חבילה"}
+                {purchaseLoading ? "Processing..." : "Buy Package"}
               </button>
 
               {purchaseMessage && <p className="success">{purchaseMessage}</p>}
@@ -569,7 +569,7 @@ const AiPartnerTab = ({
       {activeSuggestion && (
         <div className="modal-overlay" onClick={() => setActiveSuggestion(null)}>
           <div className="modal-content approve-recommendation-box" onClick={(e) => e.stopPropagation()}>
-            <h4>הודעת AI חדשה</h4>
+            <h4>New AI Message</h4>
 
             {editing ? (
               <>
@@ -590,7 +590,7 @@ const AiPartnerTab = ({
                     }}
                     disabled={loading || !editedText.trim()}
                   >
-                    אשר ושלח
+                    Approve & Send
                   </button>
                   <button
                     disabled={loading}
@@ -599,7 +599,7 @@ const AiPartnerTab = ({
                       setEditedText(activeSuggestion.text);
                     }}
                   >
-                    ביטול
+                    Cancel
                   </button>
                 </div>
               </>
@@ -621,17 +621,17 @@ const AiPartnerTab = ({
                       }}
                       disabled={loading}
                     >
-                      אשר ושלח מידית
+                      Approve & Send Immediately
                     </button>
                     <button disabled={loading} onClick={() => setEditing(true)}>
-                      ערוך
+                      Edit
                     </button>
                     <button disabled={loading} onClick={() => rejectSuggestion(activeSuggestion.id)}>
-                      דחה
+                      Reject
                     </button>
                   </div>
                 ) : (
-                  <p>ההמלצה אושרה ונשלחה ללקוח.</p>
+                  <p>The recommendation has been approved and sent to the client.</p>
                 )}
               </>
             )}

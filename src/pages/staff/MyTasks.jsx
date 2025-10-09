@@ -20,9 +20,9 @@ function MyTasks() {
       phone,
       date,
       time,
-      status: "ממתינה",
+      status: "Pending",
       completed: false,
-      attempts
+      attempts,
     };
     setTasks([...tasks, newTask]);
     setDescription("");
@@ -34,46 +34,56 @@ function MyTasks() {
   };
 
   const handleToggleComplete = (id) => {
-    setTasks(tasks.filter(task => task.id !== id));
+    setTasks(tasks.filter((task) => task.id !== id));
   };
 
   const handleDeleteTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id));
+    setTasks(tasks.filter((task) => task.id !== id));
   };
 
   const handleIncreaseAttempts = (id) => {
-    setTasks(tasks.map(task =>
-      task.id === id && task.attempts < 4 ? { ...task, attempts: task.attempts + 1 } : task
-    ));
+    setTasks(
+      tasks.map((task) =>
+        task.id === id && task.attempts < 4
+          ? { ...task, attempts: task.attempts + 1 }
+          : task
+      )
+    );
   };
 
   const handleDecreaseAttempts = (id) => {
-    setTasks(tasks.map(task =>
-      task.id === id && task.attempts > 0 ? { ...task, attempts: task.attempts - 1 } : task
-    ));
+    setTasks(
+      tasks.map((task) =>
+        task.id === id && task.attempts > 0
+          ? { ...task, attempts: task.attempts - 1 }
+          : task
+      )
+    );
   };
 
   return (
     <div className="my-tasks">
-      <h1>📋 משימות אישיות</h1>
+      <h1>📋 Personal Tasks</h1>
 
-      <Link to="/staff/dashboard" className="back-dashboard">🔙 חזרה לדשבורד</Link>
+      <Link to="/staff/dashboard" className="back-dashboard">
+        🔙 Back to Dashboard
+      </Link>
 
       <div className="task-form">
         <input
           type="text"
-          placeholder="תיאור המשימה"
+          placeholder="Task Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
         <textarea
-          placeholder="פרטים נוספים"
+          placeholder="Additional Details"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
         ></textarea>
         <input
           type="tel"
-          placeholder="טלפון לחזרה (אופציונלי)"
+          placeholder="Callback Phone (optional)"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
@@ -87,27 +97,40 @@ function MyTasks() {
           value={time}
           onChange={(e) => setTime(e.target.value)}
         />
-        <button onClick={handleAddTask}>➕ הוסף משימה</button>
+        <button onClick={handleAddTask}>➕ Add Task</button>
       </div>
 
       <ul className="task-list">
         {tasks.map((task) => (
           <li key={task.id} className={task.completed ? "completed" : ""}>
-            <p><strong>{task.description}</strong></p>
+            <p>
+              <strong>{task.description}</strong>
+            </p>
             {task.details && <p>📝 {task.details}</p>}
             {task.phone && <p>📞 {task.phone}</p>}
-            <p>📅 {task.date} {task.time && `⏰ ${task.time}`}</p>
-            <p>סטטוס: {task.completed ? "בוצע" : task.status}</p>
-            <p>🔁 ניסיונות השגה: {task.attempts}</p>
+            <p>
+              📅 {task.date} {task.time && `⏰ ${task.time}`}
+            </p>
+            <p>Status: {task.completed ? "Completed" : task.status}</p>
+            <p>🔁 Contact Attempts: {task.attempts}</p>
 
             <div className="task-actions">
               <button onClick={() => handleToggleComplete(task.id)}>
-                {task.completed ? "↩️ בטל ביצוע" : "✔️ סמן כבוצע"}
+                {task.completed ? "↩️ Undo Complete" : "✔️ Mark as Done"}
               </button>
-              <button onClick={() => handleIncreaseAttempts(task.id)}>➕ ניסיון</button>
-              <button onClick={() => handleDecreaseAttempts(task.id)}>➖</button>
+              <button onClick={() => handleIncreaseAttempts(task.id)}>
+                ➕ Attempt
+              </button>
+              <button onClick={() => handleDecreaseAttempts(task.id)}>
+                ➖
+              </button>
               {!task.phone && (
-                <button onClick={() => handleDeleteTask(task.id)} className="delete">🗑️ מחק</button>
+                <button
+                  onClick={() => handleDeleteTask(task.id)}
+                  className="delete"
+                >
+                  🗑️ Delete
+                </button>
               )}
             </div>
           </li>

@@ -60,7 +60,8 @@
     background-color: #e0e0e0;
   }
 }
-/* רספונסיביות למובייל קטן */
+
+/* Responsiveness for small mobile devices */
 @media (max-width: 480px) {
   .login-skeleton {
     padding: 16px;
@@ -94,7 +95,7 @@
   }
 }
 
-/* טאבלט (עד 768px) */
+/* Tablet (up to 768px) */
 @media (max-width: 768px) and (min-width: 481px) {
   .login-skeleton {
     max-width: 350px;

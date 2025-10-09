@@ -11,7 +11,7 @@ import AiModal from "../../../../components/AiModal";
 export default function CollabBusinessProfileTab({ socket }) {
   const [profileData, setProfileData] = useState(null);
 
-  // --- לוגו: preview ו-file מנוהלים כאן ---
+  // --- Logo: preview and file are managed here ---
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
 
@@ -33,7 +33,7 @@ export default function CollabBusinessProfileTab({ socket }) {
     loading: aiLoading,
   } = useAi();
 
-  // טעינת פרופיל ו־myBusinessId במקביל
+  // Load profile and myBusinessId in parallel
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
@@ -42,14 +42,12 @@ export default function CollabBusinessProfileTab({ socket }) {
         API.get("/business-chat/me"),
       ]);
 
-      // תמיכה במבנה response עם business או ישירות
-      const businessData =
-        profileRes.data.business || profileRes.data || null;
+      const businessData = profileRes.data.business || profileRes.data || null;
 
       if (businessData) {
         setProfileData(businessData);
 
-        // עדכון logoPreview עם URL קבוע מהשרת (לא URL זמני)
+        // Update logoPreview with a permanent server URL (not temporary)
         if (typeof businessData.logo === "string") {
           setLogoPreview(businessData.logo);
         } else if (businessData.logo && businessData.logo.preview) {
@@ -58,13 +56,13 @@ export default function CollabBusinessProfileTab({ socket }) {
           setLogoPreview(null);
         }
 
-        setMyBusinessName(businessData.businessName || "עסק שלי");
+        setMyBusinessName(businessData.businessName || "My Business");
       }
       if (businessIdRes.data.myBusinessId) {
         setMyBusinessId(businessIdRes.data.myBusinessId);
       }
     } catch (err) {
-      alert("שגיאה בטעינת פרטי העסק");
+      alert("Error loading business details");
       console.error(err);
     } finally {
       setLoading(false);
@@ -86,7 +84,7 @@ export default function CollabBusinessProfileTab({ socket }) {
     return () => socket.off("newRecommendation", handleNewRecommendation);
   }, [socket, handleNewRecommendation]);
 
-  // שחרור URL של ה־logoPreview כשמשתנה הקובץ או כשהרכיב מתפרק
+  // Revoke logoPreview URL when the file changes or component unmounts
   useEffect(() => {
     return () => {
       if (logoPreview && logoFile) {
@@ -95,26 +93,25 @@ export default function CollabBusinessProfileTab({ socket }) {
     };
   }, [logoPreview, logoFile]);
 
-  // --- ניהול שינוי לוגו עם יצירת preview זמני ---
+  // --- Handle logo change with temporary preview creation ---
   const handleLogoChange = useCallback(
     (e) => {
       const file = e.target.files[0];
       if (file) {
-        // שחרור preview קודם אם היה
         if (logoPreview && logoFile) {
           URL.revokeObjectURL(logoPreview);
         }
         setLogoFile(file);
-        setLogoPreview(URL.createObjectURL(file)); // preview זמני להצגה מיידית
+        setLogoPreview(URL.createObjectURL(file)); // temporary preview
       }
     },
     [logoPreview, logoFile]
   );
 
-  // --- מחיקת לוגו עם עדכון ממשק ושליפת נתונים מחדש ---
+  // --- Delete logo and refresh data ---
   const handleDeleteLogo = useCallback(async () => {
     if (saving || isDeletingLogo) return;
-    if (!window.confirm("אתה בטוח שברצונך למחוק את הלוגו?")) return;
+    if (!window.confirm("Are you sure you want to delete the logo?")) return;
 
     try {
       setIsDeletingLogo(true);
@@ -122,28 +119,26 @@ export default function CollabBusinessProfileTab({ socket }) {
       const response = await API.delete("/business/my/logo");
 
       if (response.status !== 200 && response.status !== 204) {
-        alert("שגיאה במחיקת הלוגו");
+        alert("Error deleting logo");
         setIsDeletingLogo(false);
         return;
       }
 
-      // ניקוי הלוגו בממשק
       setLogoPreview(null);
       setLogoFile(null);
 
-      // עדכון פרופיל עם ה-URL החדש
       await fetchData();
 
-      alert("הלוגו נמחק בהצלחה");
+      alert("Logo deleted successfully");
     } catch (err) {
-      alert("שגיאה במחיקת הלוגו");
+      alert("Error deleting logo");
       console.error(err);
     } finally {
       setIsDeletingLogo(false);
     }
   }, [saving, isDeletingLogo, fetchData]);
 
-  // --- שמירת פרופיל כולל העלאת לוגו ---
+  // --- Save profile including logo upload ---
   const handleSaveProfile = useCallback(
     async (e) => {
       e.preventDefault();
@@ -160,42 +155,42 @@ export default function CollabBusinessProfileTab({ socket }) {
         email: formData.get("email"),
       };
       try {
-        console.log("🚀 מתחילים שמירת פרופיל...");
+        console.log("🚀 Starting profile save...");
         if (logoFile) {
-          console.log("📤 מעלה לוגו חדש:", logoFile);
+          console.log("📤 Uploading new logo:", logoFile);
           const logoFormData = new FormData();
           logoFormData.append("logo", logoFile);
           const logoRes = await API.put("/business/my/logo", logoFormData, {
             headers: { "Content-Type": "multipart/form-data" },
           });
-          console.log("🟢 תשובת השרת לאחר העלאת הלוגו:", logoRes);
+          console.log("🟢 Server response after logo upload:", logoRes);
 
           if (logoRes.status === 200) {
             updatedData.logo = logoRes.data.logo;
             setLogoPreview(logoRes.data.logo);
             setLogoFile(null);
-            console.log("✅ הלוגו עודכן בהצלחה ל-URL:", logoRes.data.logo);
+            console.log("✅ Logo successfully updated to URL:", logoRes.data.logo);
           } else {
-            console.warn("⚠️ העלאת לוגו נכשלה:", logoRes);
+            console.warn("⚠️ Logo upload failed:", logoRes);
           }
         } else {
-          console.log("אין לוגו חדש להעלות.");
+          console.log("No new logo to upload.");
         }
 
         const profileRes = await API.put("/business/profile", updatedData);
-        console.log("🟢 תשובת השרת לאחר שמירת הפרופיל:", profileRes);
+        console.log("🟢 Server response after saving profile:", profileRes);
 
         if (profileRes.status === 200) {
           await fetchData();
           setShowEditProfile(false);
-          console.log("✅ שמירת הפרופיל הושלמה בהצלחה");
+          console.log("✅ Profile saved successfully");
         } else {
-          console.warn("⚠️ שמירת פרופיל נכשלה:", profileRes);
-          alert("שגיאה בשמירת הפרופיל");
+          console.warn("⚠️ Profile save failed:", profileRes);
+          alert("Error saving profile");
         }
       } catch (err) {
-        console.error("❌ שגיאה בשמירת הפרופיל:", err);
-        alert("שגיאה בשמירת הפרופיל");
+        console.error("❌ Error saving profile:", err);
+        alert("Error saving profile");
       } finally {
         setSaving(false);
       }
@@ -211,13 +206,13 @@ export default function CollabBusinessProfileTab({ socket }) {
       .filter((line) => line.length > 0);
   }, [profileData]);
 
-  if (loading || !profileData) return <div className="loading-text">טוען...</div>;
+  if (loading || !profileData) return <div className="loading-text">Loading...</div>;
 
   const safeProfile = {
-    businessName: profileData.businessName || "שם לא זמין",
-    category: profileData.category || "קטגוריה לא זמינה",
-    area: profileData.area || "אזור לא זמין",
-    about: profileData.description || "אין תיאור",
+    businessName: profileData.businessName || "Name unavailable",
+    category: profileData.category || "Category unavailable",
+    area: profileData.area || "Area unavailable",
+    about: profileData.description || "No description",
     collabPref: collabPrefLines,
     contact: profileData.contact || "-",
     phone: profileData.phone || "-",
@@ -228,15 +223,15 @@ export default function CollabBusinessProfileTab({ socket }) {
     <>
       <section className="profile-wrapper">
         <header className="profile-header">
-          <h1>📇 פרופיל עסקי</h1>
+          <h1>📇 Business Profile</h1>
         </header>
 
         <article className="profile-card">
           <div className="profile-top">
             <label htmlFor="logo-upload" className="profile-logo-label">
               <img
-                src={logoPreview || "https://via.placeholder.com/150?text=לוגו"}
-                alt="לוגו העסק"
+                src={logoPreview || "https://via.placeholder.com/150?text=Logo"}
+                alt="Business logo"
                 className="profile-logo"
               />
               <input
@@ -254,43 +249,37 @@ export default function CollabBusinessProfileTab({ socket }) {
             </div>
 
             <div className="profile-actions">
-              <button
-                className="btn-primary"
-                onClick={() => setShowEditProfile(true)}
-              >
-                ✏️ עריכת פרופיל
+              <button className="btn-primary" onClick={() => setShowEditProfile(true)}>
+                ✏️ Edit Profile
               </button>
-              <button
-                className="btn-secondary"
-                onClick={() => setShowBusinessChat(true)}
-              >
-                💬 הודעות עסקיות
+              <button className="btn-secondary" onClick={() => setShowBusinessChat(true)}>
+                💬 Business Messages
               </button>
               {logoPreview && (
                 <button
                   className="btn-danger"
                   onClick={handleDeleteLogo}
                   disabled={saving || isDeletingLogo}
-                  title="מחק לוגו"
+                  title="Delete Logo"
                 >
-                  {isDeletingLogo ? "מוחק..." : "❌ מחק לוגו"}
+                  {isDeletingLogo ? "Deleting..." : "❌ Delete Logo"}
                 </button>
               )}
             </div>
           </div>
 
           <div className="profile-section">
-            <h3>📍 אזור פעילות</h3>
+            <h3>📍 Operating Area</h3>
             <p>{safeProfile.area}</p>
           </div>
 
           <div className="profile-section">
-            <h3>📝 על העסק</h3>
+            <h3>📝 About the Business</h3>
             <p>{safeProfile.about}</p>
           </div>
 
           <div className="profile-section">
-            <h3>🤝 שיתופי פעולה רצויים</h3>
+            <h3>🤝 Preferred Collaborations</h3>
             {safeProfile.collabPref.length > 0 ? (
               <ul className="profile-collab-list">
                 {safeProfile.collabPref.map((line, i) => (
@@ -298,57 +287,57 @@ export default function CollabBusinessProfileTab({ socket }) {
                 ))}
               </ul>
             ) : (
-              <p>אין שיתופי פעולה מוזנים.</p>
+              <p>No collaborations listed.</p>
             )}
           </div>
 
           <div className="profile-section profile-contact">
-            <h3>📞 פרטי קשר</h3>
+            <h3>📞 Contact Information</h3>
             <p>
-              <strong>איש קשר:</strong> {safeProfile.contact}
+              <strong>Contact Name:</strong> {safeProfile.contact}
             </p>
             <p>
-              <strong>טלפון:</strong> {safeProfile.phone}
+              <strong>Phone:</strong> {safeProfile.phone}
             </p>
             <p>
-              <strong>אימייל:</strong> {safeProfile.email}
+              <strong>Email:</strong> {safeProfile.email}
             </p>
           </div>
         </article>
       </section>
 
-      {/* מודאל עריכת פרופיל */}
+      {/* Edit Profile Modal */}
       <Modal open={showEditProfile} onClose={() => setShowEditProfile(false)}>
         <Box className="modal-box">
-          <h2>עריכת פרופיל עסקי</h2>
+          <h2>Edit Business Profile</h2>
           <form onSubmit={handleSaveProfile} className="profile-form">
-            <label>שם העסק</label>
+            <label>Business Name</label>
             <input name="businessName" defaultValue={safeProfile.businessName} required />
 
-            <label>תחום</label>
+            <label>Category</label>
             <input name="category" defaultValue={safeProfile.category} required />
 
-            <label>אזור פעילות</label>
+            <label>Operating Area</label>
             <input name="area" defaultValue={safeProfile.area} required />
 
-            <label>על העסק</label>
+            <label>About</label>
             <textarea name="about" defaultValue={safeProfile.about} rows="3" />
 
-            <label>שיתופי פעולה רצויים</label>
+            <label>Preferred Collaborations</label>
             <textarea name="collabPref" defaultValue={profileData.collabPref || ""} rows="3" />
 
-            <label>שם איש קשר</label>
+            <label>Contact Name</label>
             <input name="contact" defaultValue={safeProfile.contact} required />
 
-            <label>טלפון</label>
+            <label>Phone</label>
             <input name="phone" defaultValue={safeProfile.phone} required />
 
-            <label>אימייל</label>
+            <label>Email</label>
             <input name="email" defaultValue={safeProfile.email} required />
 
             <div className="modal-buttons">
               <button type="submit" className="btn-primary" disabled={saving}>
-                {saving ? "שומר..." : "💾 שמירה"}
+                {saving ? "Saving..." : "💾 Save"}
               </button>
               <button
                 type="button"
@@ -356,19 +345,15 @@ export default function CollabBusinessProfileTab({ socket }) {
                 onClick={() => setShowEditProfile(false)}
                 disabled={saving}
               >
-                ❌ ביטול
+                ❌ Cancel
               </button>
             </div>
           </form>
         </Box>
       </Modal>
 
-      {/* מודאל צ'אט עסקי */}
-      <Modal
-        open={showBusinessChat}
-        onClose={() => setShowBusinessChat(false)}
-        className="chat-modal"
-      >
+      {/* Business Chat Modal */}
+      <Modal open={showBusinessChat} onClose={() => setShowBusinessChat(false)} className="chat-modal">
         <Box className="chat-box">
           {myBusinessId && (
             <div className="collab-chat-root">
@@ -383,7 +368,7 @@ export default function CollabBusinessProfileTab({ socket }) {
         </Box>
       </Modal>
 
-      {/* מודאל AI */}
+      {/* AI Modal */}
       <AiModal
         loading={aiLoading}
         activeSuggestion={activeSuggestion}
