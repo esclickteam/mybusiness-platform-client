@@ -96,7 +96,7 @@ const AdminWithdrawalsPage = () => {
                 <tr key={w.id}>
                   <td>{w.businessName || w.name || "—"}</td>
                   <td>{w.phone}</td>
-                  <td>₪{Number(w.amount).toFixed(2)}</td>
+                  <td>${Number(w.amount).toFixed(2)}</td>
                   <td>{w.bankName}</td>
                   <td>{w.branch}</td>
                   <td>{w.account}</td>

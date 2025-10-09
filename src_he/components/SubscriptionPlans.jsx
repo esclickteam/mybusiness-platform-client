@@ -31,7 +31,7 @@ const SubscriptionPlans = ({ userPlan }) => {
             {plans.map(plan => (
                 <div key={plan.name} className={`plan ${plan.name === currentPlan.name ? 'selected' : ''}`}>
                     <h3>{plan.name}</h3>
-                    <p>{plan.price} ₪ / month</p>
+                    <p>{plan.price} $ / month</p>
                     <ul>
                         {plan.features.map(feature => (
                             <li key={feature}>{feature}</li>

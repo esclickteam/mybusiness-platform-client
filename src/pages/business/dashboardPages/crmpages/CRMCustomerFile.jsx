@@ -178,7 +178,7 @@ export default function CRMCustomerFile({
                         <tr key={inv._id}>
                           <td>{inv.number}</td>
                           <td>{inv.date}</td>
-                          <td>{inv.amount} ₪</td>
+                          <td>{inv.amount} $</td>
                           <td>{inv.status}</td>
                         </tr>
                       ))}

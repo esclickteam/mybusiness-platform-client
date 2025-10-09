@@ -155,7 +155,7 @@ function CreateCollabForm({ onSuccess }) {
       </label>
 
       <label>
-        Budget (₪):
+        Budget ($):
         <input
           type="number"
           name="budget"
@@ -267,7 +267,7 @@ export default function CollabMarketTab({ isDevUser }) {
                   <strong>What the business offers:</strong> {item.offers.join(", ")}
                 </p>
                 <p>
-                  <strong>Budget:</strong> ₪{item.budget}
+                  <strong>Budget:</strong> ${item.budget}
                 </p>
                 <p>
                   <strong>Valid Until:</strong>{" "}

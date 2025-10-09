@@ -195,7 +195,7 @@ const ServiceList = ({
             <div className="card-content">
               <h4>{srv.name}</h4>
               {srv.description && <p className="description">{srv.description}</p>}
-              {srv.price && <p className="price">{srv.price} ₪</p>}
+              {srv.price && <p className="price">{srv.price} $</p>}
               <span>{formatDuration(srv.duration)}</span>
               <p style={{ marginTop: 8, fontSize: 13, color: '#666' }}>
                 Type: {srv.appointmentType === 'on_site' ? 'Home Service' : 'Appointment at Business'}

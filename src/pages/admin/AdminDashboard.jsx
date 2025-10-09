@@ -102,7 +102,7 @@ function AdminDashboard() {
           👥 Registered Clients: <strong>{stats.totalClients}</strong>
         </div>
         <div className="summary-card">
-          💰 Total Sales: <strong>{stats.totalSales} ₪</strong>
+          💰 Total Sales: <strong>{stats.totalSales} $</strong>
         </div>
         <div className="summary-card">
           🧑‍💼 Active Managers: <strong>{stats.activeManagers}</strong>

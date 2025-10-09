@@ -106,7 +106,7 @@ const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
                     }}
                   />
                 </p>
-                <p>Total: ₪ {item.price * item.quantity}</p>
+                <p>Total: $ {item.price * item.quantity}</p>
               </div>
 
               <button className="remove-btn" onClick={() => handleRemove(i)}>🗑️</button>
@@ -125,9 +125,9 @@ const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
       </div>
 
       <div className="summary">
-        <p>🧾 Before discount: {totalBefore.toFixed(2)} ₪</p>
-        {discount > 0 && <p className="discount">💸 Discount: {discount.toFixed(2)} ₪</p>}
-        <h3>💰 Total to pay: {final.toFixed(2)} ₪</h3>
+        <p>🧾 Before discount: {totalBefore.toFixed(2)} $</p>
+        {discount > 0 && <p className="discount">💸 Discount: {discount.toFixed(2)} $</p>}
+        <h3>💰 Total to pay: {final.toFixed(2)} $</h3>
       </div>
 
       <div className="cart-actions">

@@ -168,7 +168,7 @@ const ShopTab = () => {
       <form className="product-form" onSubmit={handleAddProduct}>
         <input name="name" value={formData.name} onChange={handleFormChange} placeholder="Product name" required />
         <textarea name="description" value={formData.description} onChange={handleFormChange} placeholder="Description..." rows={2} />
-        <input name="price" type="number" value={formData.price} onChange={handleFormChange} placeholder="Price ₪" required />
+        <input name="price" type="number" value={formData.price} onChange={handleFormChange} placeholder="Price $" required />
         <select name="category" value={formData.category} onChange={handleFormChange}>
           {categories.map((cat, i) => (<option key={i} value={cat}>{cat}</option>))}
         </select>
@@ -194,7 +194,7 @@ const ShopTab = () => {
                     <h4>{p.name}</h4>
                     <p className="description">{p.description}</p>
                     <div className="info-row">
-                      <span>{p.price} ₪</span>
+                      <span>{p.price} $</span>
                       <span>{p.category}</span>
                     </div>
                   </div>
@@ -265,7 +265,7 @@ const ShopTab = () => {
             className="shipping-cost-input"
             value={shippingCost}
             onChange={e => setShippingCost(Number(e.target.value))}
-            placeholder="Amount ₪"
+            placeholder="Amount $"
             min="0"
           />
         )}

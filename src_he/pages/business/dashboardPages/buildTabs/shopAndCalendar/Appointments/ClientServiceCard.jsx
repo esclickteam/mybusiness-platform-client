@@ -19,7 +19,7 @@ const ClientServiceCard = ({
       {service.description && (
         <p className="service-description">{service.description}</p>
       )}
-      {service.price && <p className="price">{service.price} ₪</p>}
+      {service.price && <p className="price">{service.price} $</p>}
       <p>⏱️ {formatDuration(service.duration)}</p>
       <button
         className="go-to-calendar-btn"

@@ -36,7 +36,7 @@ function ManagerDashboard() {
 
       <div className="top-summary">
         <div className="summary-box">👥 Team Size: <strong>{stats.teamSize}</strong></div>
-        <div className="summary-box">💰 Total Sales This Month: <strong>{stats.totalSales} ₪</strong></div>
+        <div className="summary-box">💰 Total Sales This Month: <strong>{stats.totalSales} $</strong></div>
         <div className="summary-box">📞 Calls Yesterday: <strong>{stats.totalCalls}</strong></div>
         <div className="summary-box">📦 Active Plans: <strong>{stats.activePlans}</strong></div>
         <div className="summary-box">📋 Open Tasks: <strong>{stats.openTasks}</strong></div>

@@ -132,7 +132,7 @@ export default function CollabActiveTab({ userBusinessId, token }) {
               <strong>Proposal Description:</strong> {proposal.message || "-"}
             </p>
             <p>
-              <strong>Amount:</strong> {proposal.amount ? `${proposal.amount} ₪` : "-"}
+              <strong>Amount:</strong> {proposal.amount ? `${proposal.amount} $` : "-"}
             </p>
             <p>
               <strong>Expiration Date:</strong>{" "}

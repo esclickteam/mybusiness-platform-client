@@ -59,7 +59,7 @@ export default function AffiliateDashboardPage() {
   // Handle withdrawal request
   const handleWithdrawRequest = async () => {
     if (withdrawAmount < 200) {
-      alert('Minimum withdrawal amount is ₪200');
+      alert('Minimum withdrawal amount is $200');
       return;
     }
     if (withdrawAmount > currentBalance) {
@@ -170,8 +170,8 @@ export default function AffiliateDashboardPage() {
               <tr>
                 <th>Month</th>
                 <th>Purchases</th>
-                <th>Paid (₪)</th>
-                <th>Unpaid (₪)</th>
+                <th>Paid ($)</th>
+                <th>Unpaid ($)</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -183,8 +183,8 @@ export default function AffiliateDashboardPage() {
                   <tr key={stat._id}>
                     <td>{stat.month}</td>
                     <td>{stat.purchases}</td>
-                    <td>₪{paid.toFixed(2)}</td>
-                    <td>₪{unpaid.toFixed(2)}</td>
+                    <td>${paid.toFixed(2)}</td>
+                    <td>${unpaid.toFixed(2)}</td>
                     <td className={stat.paymentStatus === "paid" ? "paid" : "unpaid"}>
                       {stat.paymentStatus === "paid" ? "Paid ✅" : "Pending"}
                     </td>
@@ -199,13 +199,13 @@ export default function AffiliateDashboardPage() {
       <section className="affiliate-bank-section">
         <h2>💵 Payment Actions</h2>
         <p>
-          Your available balance for withdrawal: <strong>₪{currentBalance.toFixed(2)}</strong>
+          Your available balance for withdrawal: <strong>${currentBalance.toFixed(2)}</strong>
         </p>
         <p>
-          Unpaid commissions: <strong>₪{totalUnpaidCommissions.toFixed(2)}</strong>
+          Unpaid commissions: <strong>${totalUnpaidCommissions.toFixed(2)}</strong>
         </p>
         {currentBalance < 200 ? (
-          <p className="error">Minimum withdrawal amount: ₪200</p>
+          <p className="error">Minimum withdrawal amount: $200</p>
         ) : (
           <>
             <input

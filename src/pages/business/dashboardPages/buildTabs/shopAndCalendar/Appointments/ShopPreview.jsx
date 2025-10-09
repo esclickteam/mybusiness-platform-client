@@ -74,7 +74,7 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
                   <div className="item-details">
                     <h4>{item.name}</h4>
                     <p>Quantity: {item.quantity}</p>
-                    <p>Total: ₪ {item.price * item.quantity}</p>
+                    <p>Total: $ {item.price * item.quantity}</p>
                   </div>
                   <button className="remove-btn" onClick={() => handleRemoveFromCart(i)}>🗑️</button>
                 </div>
@@ -92,10 +92,10 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
           </div>
 
           <div className="summary">
-            <p>📟 Before Discount: ₪ {base.toFixed(2)}</p>
-            {discount > 0 && <p className="discount">💸 Discount: ₪ {discount.toFixed(2)}</p>}
-            {shippingCost > 0 && <p>🚚 Shipping: ₪ {shippingCost.toFixed(2)}</p>}
-            <h3>💰 Total to Pay: ₪ {final.toFixed(2)}</h3>
+            <p>📟 Before Discount: $ {base.toFixed(2)}</p>
+            {discount > 0 && <p className="discount">💸 Discount: $ {discount.toFixed(2)}</p>}
+            {shippingCost > 0 && <p>🚚 Shipping: $ {shippingCost.toFixed(2)}</p>}
+            <h3>💰 Total to Pay: $ {final.toFixed(2)}</h3>
           </div>
 
           <button className="pay-btn" onClick={() => setShowPayment(true)}>Proceed to Payment 💳</button>
@@ -130,7 +130,7 @@ const ShopPreview = ({ products, cart, setCart, coupon, business }) => {
                 </div>
                 <div className="product-info">
                   <h4>{p.name}</h4>
-                  <p>{p.price} ₪</p>
+                  <p>{p.price} $</p>
                   {p.description && (
                     <details className="product-description">
                       <summary>Show Description</summary>

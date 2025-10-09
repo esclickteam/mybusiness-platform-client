@@ -59,7 +59,7 @@ function QuickJobsBoard() {
             <h3>{job.title}</h3>
             <p>{job.description}</p>
             <p>📅 {job.date} | 🕒 {job.time}</p>
-            <p>💰 {job.priceMin}₪ - {job.priceMax}₪</p>
+            <p>💰 {job.priceMin}$ - {job.priceMax}$</p>
             <p>📍 {job.address}</p>
 
             {userRole === "business" && (

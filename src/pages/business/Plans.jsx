@@ -122,7 +122,7 @@ function Plans() {
                 type="button"
               >
                 {label}
-                <span className="duration-price">{price} ₪ per month</span>
+                <span className="duration-price">{price} $ per month</span>
               </button>
             );
           })}
@@ -133,7 +133,7 @@ function Plans() {
           {selectedDuration === "test"
             ? testPrices.test
             : prices[selectedDuration] * parseInt(selectedDuration)}
-          {" "}₪
+          {" "}$
         </div>
 
         <div className="launch-price-banner" role="alert">

@@ -111,7 +111,7 @@ const AppointmentPayment = ({ onBack, onSubmit }) => {
                 time: "Phone",
                 service: "Consultation Service",
                 duration: 30,
-                total: "200 ₪",
+                total: "200 $",
                 status: "New",
                 id: Date.now(),
               };

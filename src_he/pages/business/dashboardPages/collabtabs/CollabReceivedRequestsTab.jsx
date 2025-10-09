@@ -145,7 +145,7 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
               <p>
                 <strong>Amount:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>
-                  {amount != null ? amount + " ₪" : "-"}
+                  {amount != null ? amount + " $" : "-"}
                 </span>
               </p>
               <p>

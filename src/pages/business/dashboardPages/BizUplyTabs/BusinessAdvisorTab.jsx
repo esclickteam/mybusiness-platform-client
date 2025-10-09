@@ -153,7 +153,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         return;
       }
 
-      setPurchaseMessage(`The ${selectedPackage.label} was successfully purchased for ${selectedPackage.price}₪.`);
+      setPurchaseMessage(`The ${selectedPackage.label} was successfully purchased for ${selectedPackage.price}$.`);
       setSelectedPackage(null);
 
       // Refresh counter after purchase
@@ -218,7 +218,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
                 checked={selectedPackage?.id === pkg.id}
                 onChange={() => setSelectedPackage(pkg)}
               />
-              {pkg.label} - {pkg.price}₪
+              {pkg.label} - {pkg.price}$
             </label>
           ))}
 

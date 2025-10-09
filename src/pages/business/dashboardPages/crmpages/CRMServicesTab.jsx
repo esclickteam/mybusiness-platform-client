@@ -217,7 +217,7 @@ const CRMServicesTab = () => {
           </div>
 
           <label>
-            Price (₪):
+            Price ($):
             <input
               type="number"
               value={newService.price}
@@ -252,7 +252,7 @@ const CRMServicesTab = () => {
           <tr>
             <th>Name + Image + Description</th>
             <th>Duration (min)</th>
-            <th>Price (₪)</th>
+            <th>Price ($)</th>
             <th>Actions</th>
           </tr>
         </thead>

@@ -110,7 +110,7 @@ export default function Checkout() {
       <div className="checkout-card" dir="ltr">
         <h1>🔹 Payment for {planName}</h1>
         <p className="checkout-price">
-          Final price: <strong>{totalPrice} ₪</strong>
+          Final price: <strong>{totalPrice} $</strong>
         </p>
         <p className="checkout-duration">
           Subscription length: <strong>{monthsCount} {durationLabel}</strong>

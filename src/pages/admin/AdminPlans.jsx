@@ -10,7 +10,7 @@ function AdminPlans() {
 
   const [form, setForm] = useState({ name: "", price: "", duration: "Month", features: "", trialDays: "" });
   const [editId, setEditId] = useState(null);
-  const [coupon, setCoupon] = useState({ code: "", discount: "", type: "₪", plans: [], start: "", end: "" });
+  const [coupon, setCoupon] = useState({ code: "", discount: "", type: "$", plans: [], start: "", end: "" });
   const [coupons, setCoupons] = useState([]);
   const [editCouponId, setEditCouponId] = useState(null);
 
@@ -56,7 +56,7 @@ function AdminPlans() {
       const newCoupon = { ...coupon, id: Date.now() };
       setCoupons([...coupons, newCoupon]);
     }
-    setCoupon({ code: "", discount: "", type: "₪", plans: [], start: "", end: "" });
+    setCoupon({ code: "", discount: "", type: "$", plans: [], start: "", end: "" });
     setEditCouponId(null);
   };
 
@@ -83,7 +83,7 @@ function AdminPlans() {
 
       <div className="plan-form">
         <input type="text" name="name" placeholder="Plan Name" value={form.name} onChange={handleChange} />
-        <input type="number" name="price" placeholder="Price (₪)" value={form.price} onChange={handleChange} />
+        <input type="number" name="price" placeholder="Price ($)" value={form.price} onChange={handleChange} />
         <select name="duration" value={form.duration} onChange={handleChange}>
           <option value="Month">Month</option>
           <option value="3 Months">3 Months</option>
@@ -132,7 +132,7 @@ function AdminPlans() {
         <input type="text" name="code" placeholder="Coupon Code" value={coupon.code} onChange={handleCouponChange} />
         <input type="number" name="discount" placeholder="Discount" value={coupon.discount} onChange={handleCouponChange} />
         <select name="type" value={coupon.type} onChange={handleCouponChange}>
-          <option value="₪">₪ (Shekels)</option>
+          <option value="$">$ (Shekels)</option>
           <option value="%">% (Percent)</option>
         </select>
         <input type="date" name="start" value={coupon.start} onChange={handleCouponChange} />

@@ -25,7 +25,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
       <tr>
         <td>${item.name}</td>
         <td>${item.quantity}</td>
-        <td>₪ ${item.price * item.quantity}</td>
+        <td>$ ${item.price * item.quantity}</td>
       </tr>
     `).join('');
   };
@@ -48,7 +48,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
       to_name: customer.name,
       to_email: customer.email,
       phone: customer.phone,
-      total: `${total.toFixed(2)} ₪`,
+      total: `${total.toFixed(2)} $`,
       date: new Date().toLocaleString('en-IL'),
       payment_note: selectedMethod === 'phone'
         ? "We will contact you to complete your payment by phone."
@@ -123,7 +123,7 @@ const PaymentSection = ({ paymentMethod, onBack, cart = [], business }) => {
           <p>Confirmation sent to: <strong>{customer.email}</strong></p>
           <p>Phone: <strong>{customer.phone}</strong></p>
           <p>Address: <strong>{customer.address}</strong></p>
-          <p>Total Amount: <strong>{calculateTotal().toFixed(2)} ₪</strong></p>
+          <p>Total Amount: <strong>{calculateTotal().toFixed(2)} $</strong></p>
         </div>
       );
     }

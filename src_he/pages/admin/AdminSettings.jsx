@@ -7,7 +7,7 @@ function AdminSettings() {
     timezone: "Asia/Jerusalem",
     language: "Hebrew",
     dateFormat: "DD/MM/YYYY",
-    currency: "₪",
+    currency: "$",
     supportEmail: "support@example.com",
     supportPhone: "03-5555555",
     enablePopups: true,
@@ -52,7 +52,7 @@ function AdminSettings() {
         </label>
         <label>💸 Currency:
           <select name="currency" value={settings.currency} onChange={handleChange}>
-            <option value="₪">₪</option>
+            <option value="$">$</option>
             <option value="$">$</option>
             <option value="€">€</option>
           </select>

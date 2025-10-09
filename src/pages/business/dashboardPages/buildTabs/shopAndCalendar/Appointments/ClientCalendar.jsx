@@ -348,7 +348,7 @@ export default function ClientCalendar({
                 ⏱️ Duration: {Math.floor(selectedSlot.duration / 60)}:
                 {(selectedSlot.duration % 60).toString().padStart(2, "0")}
               </p>
-              <p>💰 Price: {selectedSlot.price} ₪</p>
+              <p>💰 Price: {selectedSlot.price} $</p>
 
               <div className="booking-form">
                 <label>Full Name:</label>

@@ -124,14 +124,14 @@ export default function BuildBusinessPage() {
       <ul>
         <li>Service name: Deep Natural Facial</li>
         <li>Duration: 75 minutes</li>
-        <li>Price: ₪290</li>
+        <li>Price: $290</li>
         <li>Description: Deep cleanse with green clay mask and soothing care, tailored for sensitive skin.</li>
       </ul>
       <p><strong>Good service example — Yossi Cohen:</strong></p>
       <ul>
         <li>Service name: Sink Clog Removal</li>
         <li>Duration: 30 minutes</li>
-        <li>Price: ₪250</li>
+        <li>Price: $250</li>
         <li>Description: Light clog removal using professional powered tools, includes functionality check.</li>
       </ul>
 

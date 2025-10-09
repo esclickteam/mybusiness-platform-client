@@ -46,15 +46,15 @@ function MySales() {
 
       <div className="sales-summary">
         <p>🔢 Number of Sales: <strong>{totalSales}</strong></p>
-        <p>💰 Total Amount: <strong>{totalAmount} ₪</strong></p>
-        <p>🧾 Estimated Commission (5%): <strong>{commission.toFixed(2)} ₪</strong></p>
+        <p>💰 Total Amount: <strong>{totalAmount} $</strong></p>
+        <p>🧾 Estimated Commission (5%): <strong>{commission.toFixed(2)} $</strong></p>
       </div>
 
       <ul className="sales-list">
         {sales.map((sale) => (
           <li key={sale.id}>
             <p><strong>{sale.client}</strong> – {sale.phone}</p>
-            <p>🛍️ Package: {sale.plan} | 💰 {sale.amount} ₪ | 📅 {sale.date}</p>
+            <p>🛍️ Package: {sale.plan} | 💰 {sale.amount} $ | 📅 {sale.date}</p>
           </li>
         ))}
       </ul>

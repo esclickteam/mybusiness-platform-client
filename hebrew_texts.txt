@@ -1331,7 +1331,7 @@ src\pages\admin\AdminDashboard.jsx:99:          🏢 עסקים רשומים:
 src\pages\admin\AdminDashboard.jsx:102:          👥 לקוחות רשומים: 
 <strong>{stats.totalClients}</strong>
 src\pages\admin\AdminDashboard.jsx:105:          💰 סה"כ מכירות: 
-<strong>{stats.totalSales} ₪</strong>
+<strong>{stats.totalSales} $</strong>
 src\pages\admin\AdminDashboard.jsx:108:          🧑‍💼 מנהלים פעילים: 
 <strong>{stats.activeManagers}</strong>
 src\pages\admin\AdminDashboard.jsx:111:          🚫 משתמשים חסומים: 
@@ -1429,7 +1429,7 @@ src\pages\admin\AdminPlans.jsx:82:      <h1>📦 ניהול חבילות</h1>
 src\pages\admin\AdminPlans.jsx:85:        <input type="text" name="name" 
 placeholder="שם חבילה" value={form.name} onChange={handleChange} />
 src\pages\admin\AdminPlans.jsx:86:        <input type="number" 
-name="price" placeholder="מחיר (₪)" value={form.price} 
+name="price" placeholder="מחיר ($)" value={form.price} 
 onChange={handleChange} />
 src\pages\admin\AdminPlans.jsx:88:          <option 
 value="חודש">חודש</option>
@@ -1469,7 +1469,7 @@ onChange={handleCouponChange} />
 src\pages\admin\AdminPlans.jsx:133:        <input type="number" 
 name="discount" placeholder="הנחה" value={coupon.discount} 
 onChange={handleCouponChange} />
-src\pages\admin\AdminPlans.jsx:135:          <option value="₪">₪ 
+src\pages\admin\AdminPlans.jsx:135:          <option value="$">$ 
 (שקלים)</option>
 src\pages\admin\AdminPlans.jsx:136:          <option value="%">% 
 (אחוזים)</option>
@@ -2128,17 +2128,17 @@ CartPage.jsx:90:                {item.size && <p>מידה: {item.size}</p>}
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 CartPage.jsx:92:                  כמות:
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
-CartPage.jsx:109:                <p>סה"כ: ₪ {item.price * 
+CartPage.jsx:109:                <p>סה"כ: $ {item.price * 
 item.quantity}</p>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 CartPage.jsx:121:          placeholder="הכנס קוד קופון (למשל: SUMMER10)"
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
-CartPage.jsx:128:        <p>🧾 לפני הנחה: {totalBefore.toFixed(2)} ₪</p>
+CartPage.jsx:128:        <p>🧾 לפני הנחה: {totalBefore.toFixed(2)} $</p>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 CartPage.jsx:129:        {discount > 0 && <p className="discount">💸 
-הנחה: {discount.toFixed(2)} ₪</p>}
+הנחה: {discount.toFixed(2)} $</p>}
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
-CartPage.jsx:130:        <h3>💰 סה"כ לתשלום: {final.toFixed(2)} ₪</h3>
+CartPage.jsx:130:        <h3>💰 סה"כ לתשלום: {final.toFixed(2)} $</h3>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 CartPage.jsx:134:        <button className="back-btn" 
 onClick={handleBack}>⬅️ חזרה לחנות</button>
@@ -2190,7 +2190,7 @@ ClientCalendar.jsx:348:                ⏱️ משך:
 {Math.floor(selectedSlot.duration / 60)}:
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 ClientCalendar.jsx:351:              <p>💰 עלות: {selectedSlot.price} 
-₪</p>
+$</p>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 ClientCalendar.jsx:354:                <label>שם מלא:</label>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
@@ -2264,7 +2264,7 @@ PaymentSection.jsx:105:          <p>כתובת:
 <strong>{customer.address}</strong></p>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 PaymentSection.jsx:106:          <p>סה״כ לתשלום: 
-<strong>{calculateTotal().toFixed(2)} ₪</strong></p>
+<strong>{calculateTotal().toFixed(2)} $</strong></p>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 PaymentSection.jsx:114:          <p>🔐 תשלום אונליין</p>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
@@ -2367,21 +2367,21 @@ ShopPreview.jsx:65:            <p className="empty-cart">העגלה שלך רי�
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 ShopPreview.jsx:73:                    <p>כמות: {item.quantity}</p>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
-ShopPreview.jsx:74:                    <p>סה״כ: ₪ {item.price * 
+ShopPreview.jsx:74:                    <p>סה״כ: $ {item.price * 
 item.quantity}</p>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 ShopPreview.jsx:85:              placeholder="הכנס קוד קופון (למשל: 
 SUMMER10)"
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
-ShopPreview.jsx:92:            <p>📟 לפני הנחה: ₪ {base.toFixed(2)}</p>
+ShopPreview.jsx:92:            <p>📟 לפני הנחה: $ {base.toFixed(2)}</p>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 ShopPreview.jsx:93:            {discount > 0 && <p 
-className="discount">💸 הנחה: ₪ {discount.toFixed(2)}</p>}
+className="discount">💸 הנחה: $ {discount.toFixed(2)}</p>}
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
-ShopPreview.jsx:94:            {shippingCost > 0 && <p>🚚 משלוח: ₪ 
+ShopPreview.jsx:94:            {shippingCost > 0 && <p>🚚 משלוח: $ 
 {shippingCost.toFixed(2)}</p>}
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
-ShopPreview.jsx:95:            <h3>💰 לתשלום: ₪ {final.toFixed(2)}</h3>
+ShopPreview.jsx:95:            <h3>💰 לתשלום: $ {final.toFixed(2)}</h3>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 ShopPreview.jsx:98:          <button className="pay-btn" onClick={() => 
 setShowPayment(true)}>לתשלום 💳</button>
@@ -2465,7 +2465,7 @@ value={formData.description} onChange={handleFormChange}
 placeholder="תיאור..." rows={2} />
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 ShopTab.jsx:171:        <input name="price" type="number" 
-value={formData.price} onChange={handleFormChange} placeholder="מחיר ₪" 
+value={formData.price} onChange={handleFormChange} placeholder="מחיר $" 
 required />
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 ShopTab.jsx:176:        {imagePreview && <img src={imagePreview} 
@@ -2513,7 +2513,7 @@ ShopTab.jsx:259:          <option value="free">משלוח חינם</option>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 ShopTab.jsx:260:          <option value="paid">משלוח בתשלום</option>
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
-ShopTab.jsx:268:            placeholder="סכום ₪"
+ShopTab.jsx:268:            placeholder="סכום $"
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
 ShopTab.jsx:274:      {/* קופונים */}
 src\pages\business\dashboardPages\buildTabs\shopAndCalendar\Appointments\
@@ -2948,7 +2948,7 @@ src\pages\business\dashboardPages\collabtabs\CollabActiveTab.jsx:131:
           <strong>תיאור הצעה:</strong> {proposal.message || "-"}
 src\pages\business\dashboardPages\collabtabs\CollabActiveTab.jsx:134:    
           <strong>סכום:</strong> {proposal.amount ? `${proposal.amount} 
-₪` : "-"}
+$` : "-"}
 src\pages\business\dashboardPages\collabtabs\CollabActiveTab.jsx:137:    
           <strong>תוקף הצעה:</strong>{" "}
 src\pages\business\dashboardPages\collabtabs\CollabActiveTab.jsx:141:    
@@ -3183,7 +3183,7 @@ src\pages\business\dashboardPages\collabtabs\CollabMarketTab.jsx:146:
 src\pages\business\dashboardPages\collabtabs\CollabMarketTab.jsx:153:    
       placeholder="טלפון ליצירת קשר"
 src\pages\business\dashboardPages\collabtabs\CollabMarketTab.jsx:158:    
-    תקציב (₪):
+    תקציב ($):
 src\pages\business\dashboardPages\collabtabs\CollabMarketTab.jsx:165:    
       placeholder="תקציב משוער"
 src\pages\business\dashboardPages\collabtabs\CollabMarketTab.jsx:170:    
@@ -3206,7 +3206,7 @@ src\pages\business\dashboardPages\collabtabs\CollabMarketTab.jsx:264:
 src\pages\business\dashboardPages\collabtabs\CollabMarketTab.jsx:267:    
               <strong>מה העסק נותן:</strong> {item.offers.join(", ")}
 src\pages\business\dashboardPages\collabtabs\CollabMarketTab.jsx:270:    
-              <strong>תקציב:</strong> ₪{item.budget}
+              <strong>תקציב:</strong> ${item.budget}
 src\pages\business\dashboardPages\collabtabs\CollabMarketTab.jsx:273:    
               <strong>תוקף עד:</strong>{" "}
 src\pages\business\dashboardPages\collabtabs\CollabMarketTab.jsx:281:    
@@ -4387,9 +4387,9 @@ src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:171:
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:172:        
         <th>רכישות</th>
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:173:        
-        <th>שולם (₪)</th>
+        <th>שולם ($)</th>
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:174:        
-        <th>לא שולם (₪)</th>
+        <th>לא שולם ($)</th>
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:175:        
         <th>סטטוס</th>
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:189:        
@@ -4397,11 +4397,11 @@ src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:189:
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:200:        
 <h2>💵 פעולות תשלום</h2>
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:202:        
-  יתרתך הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong>
+  יתרתך הזמינה למשיכה: <strong>${currentBalance.toFixed(2)}</strong>
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:205:        
-  עמלות לא משולמות: <strong>₪{totalUnpaidCommissions.toFixed(2)}</strong>
+  עמלות לא משולמות: <strong>${totalUnpaidCommissions.toFixed(2)}</strong>
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:208:        
-  <p className="error">סכום מינימום למשיכה: 200 ₪</p>
+  <p className="error">סכום מינימום למשיכה: 200 $</p>
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:217:        
       placeholder="סכום למשיכה"
 src\pages\business\dashboardPages\AffiliateDashboardPage.jsx:220:        
@@ -4481,9 +4481,9 @@ src\pages\business\dashboardPages\AffiliatePage.jsx:176:
 src\pages\business\dashboardPages\AffiliatePage.jsx:177:                
 <th>רכישות</th>
 src\pages\business\dashboardPages\AffiliatePage.jsx:178:                
-<th>שולם (₪)</th>
+<th>שולם ($)</th>
 src\pages\business\dashboardPages\AffiliatePage.jsx:179:                
-<th>לא שולם (₪)</th>
+<th>לא שולם ($)</th>
 src\pages\business\dashboardPages\AffiliatePage.jsx:180:                
 <th>סטטוס תשלום</th>
 src\pages\business\dashboardPages\AffiliatePage.jsx:203:                 
@@ -4497,7 +4497,7 @@ src\pages\business\dashboardPages\AffiliatePage.jsx:216:      {/* 💵
 src\pages\business\dashboardPages\AffiliatePage.jsx:218:        <h2>💵 
 פעולות תשלום</h2>
 src\pages\business\dashboardPages\AffiliatePage.jsx:220:          יתרתך 
-הזמינה למשיכה: <strong>₪{currentBalance.toFixed(2)}</strong>
+הזמינה למשיכה: <strong>${currentBalance.toFixed(2)}</strong>
 src\pages\business\dashboardPages\AffiliatePage.jsx:225:            סכום 
 מינימום למשיכה הוא 200 ש"ח.
 src\pages\business\dashboardPages\AffiliatePage.jsx:235:              
@@ -5169,7 +5169,7 @@ src\pages\business\Plans.jsx:105:              label = "חודשי";
 src\pages\business\Plans.jsx:108:              label = "3 חודשים";
 src\pages\business\Plans.jsx:111:              label = "שנתי";
 src\pages\business\Plans.jsx:125:                <span 
-className="duration-price">{price} ₪ לחודש</span>
+className="duration-price">{price} $ לחודש</span>
 src\pages\business\Plans.jsx:132:          המחיר הכולל:{" "}
 src\pages\business\Plans.jsx:140:          הצטרפו עכשיו במחיר השקה מיוחד 
 לזמן מוגבל – אל תפספסו!
@@ -5292,7 +5292,7 @@ className="summary-box">👥 גודל צוות:
 <strong>{stats.teamSize}</strong></div>
 src\pages\manager\ManagerDashboard.jsx:39:        <div 
 className="summary-box">💰 סה"כ מכירות החודש: <strong>{stats.totalSales} 
-₪</strong></div>
+$</strong></div>
 src\pages\manager\ManagerDashboard.jsx:40:        <div 
 className="summary-box">📞 שיחות אתמול: 
 <strong>{stats.totalCalls}</strong></div>
@@ -5338,11 +5338,11 @@ className="back-dashboard">🔙 חזרה לדשבורד</Link>
 src\pages\staff\MySales.jsx:48:        <p>🔢 מספר מכירות: 
 <strong>{totalSales}</strong></p>
 src\pages\staff\MySales.jsx:49:        <p>💰 סכום כולל: 
-<strong>{totalAmount} ₪</strong></p>
+<strong>{totalAmount} $</strong></p>
 src\pages\staff\MySales.jsx:50:        <p>🧾 עמלה משוערת (5%): 
-<strong>{commission.toFixed(2)} ₪</strong></p>
+<strong>{commission.toFixed(2)} $</strong></p>
 src\pages\staff\MySales.jsx:57:            <p>🛍️ חבילה: {sale.plan} | 
-💰 {sale.amount} ₪ | 📅 {sale.date}</p>
+💰 {sale.amount} $ | 📅 {sale.date}</p>
 src\pages\staff\MyTasks.jsx:23:      status: "ממתינה",
 src\pages\staff\MyTasks.jsx:58:      <h1>📋 משימות אישיות</h1>
 src\pages\staff\MyTasks.jsx:60:      <Link to="/staff/dashboard" 
@@ -6460,7 +6460,7 @@ src\pages\Checkout.jsx:109:  const durationLabel = monthsCount === 1 ?
 "חודש" : "חודשים";
 src\pages\Checkout.jsx:114:        <h1>🔹 תשלום עבור {planName}</h1>
 src\pages\Checkout.jsx:116:          מחיר סופי: <strong>{totalPrice} 
-₪</strong>
+$</strong>
 src\pages\Checkout.jsx:119:          משך המנוי: <strong>{monthsCount} 
 {durationLabel}</strong>
 src\pages\Checkout.jsx:122:        <label 

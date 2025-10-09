@@ -117,7 +117,7 @@ const AdminPayoutPage = () => {
                   <tr key={idx}>
                     <td>{partner.businessName}</td>
                     <td>{partner.phone}</td>
-                    <td>₪{partner.amount.toFixed(2)}</td>
+                    <td>${partner.amount.toFixed(2)}</td>
                     <td>{partner.bankName}</td>
                     <td>{partner.branch}</td>
                     <td>{partner.account}</td>

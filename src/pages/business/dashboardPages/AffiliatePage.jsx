@@ -77,7 +77,7 @@ const AffiliatePage = () => {
   const handleWithdrawRequest = async () => {
     const amount = Number(withdrawAmount);
     if (isNaN(amount) || amount < 200) {
-      return alert("Minimum withdrawal amount is ₪200");
+      return alert("Minimum withdrawal amount is $200");
     }
     if (amount > currentBalance) {
       return alert("Withdrawal amount exceeds available balance");
@@ -175,8 +175,8 @@ const AffiliatePage = () => {
               <tr>
                 <th>Month</th>
                 <th>Purchases</th>
-                <th>Paid (₪)</th>
-                <th>Unpaid (₪)</th>
+                <th>Paid ($)</th>
+                <th>Unpaid ($)</th>
                 <th>Payment Status</th>
               </tr>
             </thead>
@@ -188,8 +188,8 @@ const AffiliatePage = () => {
                   <tr key={s.month || i}>
                     <td>{s.month || "-"}</td>
                     <td>{s.purchases || 0}</td>
-                    <td>₪{paid.toFixed(2)}</td>
-                    <td>₪{unpaid.toFixed(2)}</td>
+                    <td>${paid.toFixed(2)}</td>
+                    <td>${unpaid.toFixed(2)}</td>
                     <td
                       className={
                         s.paymentStatus === "paid"
@@ -217,12 +217,12 @@ const AffiliatePage = () => {
       <section className="affiliate-bank-section">
         <h2>💵 Payment Actions</h2>
         <p>
-          Your available balance for withdrawal: <strong>₪{currentBalance.toFixed(2)}</strong>
+          Your available balance for withdrawal: <strong>${currentBalance.toFixed(2)}</strong>
         </p>
 
         {currentBalance < 200 ? (
           <p style={{ color: "red", fontWeight: "bold" }}>
-            Minimum withdrawal amount is ₪200.
+            Minimum withdrawal amount is $200.
           </p>
         ) : (
           <>
@@ -232,7 +232,7 @@ const AffiliatePage = () => {
               max={currentBalance}
               value={withdrawAmount}
               onChange={(e) => setWithdrawAmount(e.target.value)}
-              placeholder="Minimum withdrawal amount: ₪200"
+              placeholder="Minimum withdrawal amount: $200"
             />
             <button
               onClick={handleWithdrawRequest}

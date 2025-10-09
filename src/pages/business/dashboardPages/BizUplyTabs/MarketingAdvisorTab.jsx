@@ -146,7 +146,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
         return;
       }
 
-      setPurchaseMessage(`Successfully purchased ${selectedPackage.label} for ₪${selectedPackage.price}.`);
+      setPurchaseMessage(`Successfully purchased ${selectedPackage.label} for $${selectedPackage.price}.`);
       setSelectedPackage(null);
       await refreshRemainingQuestions();
     } catch (e) {
@@ -205,7 +205,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
                 checked={selectedPackage?.id === pkg.id}
                 onChange={() => setSelectedPackage(pkg)}
               />
-              {pkg.label} - ₪{pkg.price}
+              {pkg.label} - ${pkg.price}
             </label>
           ))}
           <button onClick={handlePurchaseExtra} disabled={purchaseLoading || !selectedPackage}>
