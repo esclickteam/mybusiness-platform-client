@@ -1,3 +1,4 @@
+// src/pages/business/MainSection.jsx
 import React, { useRef, useState } from "react";
 import Select from "react-select";
 import "react-phone-input-2/lib/style.css";
@@ -87,18 +88,18 @@ export default function MainSection({
     }
   }
 
- const inputStyle = {
-  width: "100%",
-  padding: "10px 14px",
-  borderRadius: "10px",
-  border: "1px solid #e3e6ed",
-  fontSize: "1rem",
-  background: "#fff",
-  transition: "0.2s ease",
-  boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-  direction: "ltr",      // ✅ כיוון טקסט משמאל לימין
-  textAlign: "left",     // ✅ יישור הטקסט וה-placeholder לשמאל
-};
+  const inputStyle = {
+    width: "100%",
+    padding: "10px 14px",
+    borderRadius: "10px",
+    border: "1px solid #e3e6ed",
+    fontSize: "1rem",
+    background: "#fff",
+    transition: "0.2s ease",
+    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+    direction: "ltr",
+    textAlign: "left",
+  };
 
   return (
     <div
@@ -239,13 +240,20 @@ export default function MainSection({
           }
           disabled={isSaving}
           inputProps={{ name: "phone", required: true }}
+          containerStyle={{
+            direction: "ltr",
+            position: "relative",
+          }}
           inputStyle={{
             ...inputStyle,
-            paddingLeft: "50px",
+            paddingLeft: "60px",
           }}
           buttonStyle={{
             border: "none",
             background: "transparent",
+            position: "absolute",
+            left: "10px",
+            right: "auto",
           }}
         />
 
@@ -282,7 +290,7 @@ export default function MainSection({
           }}
         />
 
-        {/* ✅ CITY AUTOCOMPLETE */}
+        {/* CITY AUTOCOMPLETE */}
         <label style={{ marginTop: "0.75rem" }}>City (United States only)</label>
         <CityAutocomplete
           value={city}
