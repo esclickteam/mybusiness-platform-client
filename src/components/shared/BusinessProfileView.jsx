@@ -101,10 +101,12 @@ export default function BusinessProfileView() {
   });
 
   const { data: reviews = [], refetch: refetchReviews } = useQuery({
-    queryKey: ['reviews', bizId],
-    queryFn: () => API.get(`/reviews/${bizId}`).then(res => res.data.reviews || []),
-    enabled: !!bizId
-  });
+  queryKey: ['reviews', bizId],
+  queryFn: () => 
+    API.get(`/business/${bizId}/profile`)
+      .then(res => res.data.reviews || res.data.business?.reviews || []),
+  enabled: !!bizId
+});
 
   // Sync data to state
   useEffect(() => {
