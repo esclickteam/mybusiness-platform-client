@@ -10,6 +10,8 @@
   border-radius: 10px;
   font-size: 15px;
   outline: none;
+  direction: ltr;         /* ✅ טקסט משמאל לימין */
+  text-align: left;       /* ✅ מיקום placeholder לשמאל */
 }
 
 .city-autocomplete input:focus {
