@@ -107,7 +107,7 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
         });
       } else {
         // fallback: regular fetch
-        const response = await fetch("/api/reviews", {
+        const response = await fetch(`/api/business/${businessId}/reviews`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
