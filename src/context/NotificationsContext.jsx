@@ -45,8 +45,6 @@ function reducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
       const list = action.payload.map(normalizeNotification);
-
-      // הסרת כפילויות של המלצות AI לעומת הודעות רגילות
       const filtered = [];
       const aiThreads = new Set(
         list.filter((n) => n.type === "recommendation").map((n) => n.threadId)
@@ -58,9 +56,7 @@ function reducer(state, action) {
           filtered.push(n);
         }
       }
-
       const unreadCount = filtered.reduce((sum, n) => sum + n.unreadCount, 0);
-      console.log("[SET_NOTIFICATIONS] filtered:", filtered);
       return { notifications: filtered, unreadCount };
     }
 
@@ -71,18 +67,15 @@ function reducer(state, action) {
       const newNotif = normalizeNotification(action.payload);
       console.log("[ADD_NOTIFICATION] newNotif:", newNotif);
 
-      // אל תוסיף הודעת לקוח אם כבר יש המלצה של AI באותו thread
       if (
         newNotif.type === "message" &&
         state.notifications.some(
           (n) => n.threadId === newNotif.threadId && n.type === "recommendation"
         )
       ) {
-        console.log("[ADD_NOTIFICATION] AI recommendation exists, skipping regular");
         return state;
       }
 
-      // אם זו המלצת AI — החלף את ההתראה הרגילה
       if (newNotif.type === "recommendation") {
         const list = [
           newNotif,
@@ -92,7 +85,6 @@ function reducer(state, action) {
         return { notifications: list, unreadCount };
       }
 
-      // התראה רגילה – אל תוסיף כפילויות
       const exists = state.notifications.some(
         (n) =>
           n.id === newNotif.id ||
@@ -175,6 +167,21 @@ export function NotificationsProvider({ children }) {
         dispatch({ type: "ADD_NOTIFICATION", payload: notif });
       });
 
+      // ⭐ ביקורות חדשות
+      socket.on("newReview", (review) => {
+        console.log("[Socket] newReview:", review);
+        const notif = {
+          type: "review",
+          text: `⭐ New review added: "${review.comment}"`,
+          actorName: "Customer",
+          timestamp: review.createdAt || new Date().toISOString(),
+          read: false,
+          unreadCount: 1,
+          targetUrl: `/business/${user.businessId}/dashboard/reviews`,
+        };
+        dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+      });
+
       // 🤖 התראות AI
       socket.on("newRecommendationNotification", (notif) => {
         console.log("[Socket] newRecommendationNotification:", notif);
@@ -198,6 +205,7 @@ export function NotificationsProvider({ children }) {
       socket.off("connect", setupListeners);
       socket.off("newMessage");
       socket.off("newNotification");
+      socket.off("newReview"); // ✅ נוסף
       socket.off("newRecommendationNotification");
       socket.off("notificationBundle");
     };
