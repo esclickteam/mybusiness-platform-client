@@ -151,18 +151,6 @@ export default function BusinessProfileView() {
   }
 });
 
-  // ✅ מאזין לעדכונים חיים מהשרת (Redis → Socket.IO → לקוח)
-  const handleProfileViewsUpdate = ({ views_count }) => {
-    console.log("📡 Real-time profileViewsUpdated:", views_count);
-    setProfileViewsCount(views_count);
-  };
-
-  socket.on("profileViewsUpdated", handleProfileViewsUpdate);
-
-  // ניקוי מאזין כשהקומפוננטה מתנתקת
-  return () => {
-    socket.off("profileViewsUpdated", handleProfileViewsUpdate);
-  };
 }, [socket, bizId, user?.businessId]);
 
 
