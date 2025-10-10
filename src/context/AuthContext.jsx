@@ -1,8 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API, { setAuthToken } from "../api";
-import createSocket from "../socket"; // singleton socket helper
+import { createSocket } from "../socket"; // v4 singleton socket helper
 
+/* ==========================
+   🧩 Normalize User
+   ========================== */
 function normalizeUser(user) {
   if (!user) return null;
 
@@ -24,17 +27,17 @@ function normalizeUser(user) {
         ? user.isSubscriptionValid
         : computedIsValid,
     subscriptionStatus: user.status || user.subscriptionPlan || "free",
-
     daysLeft:
       user.subscriptionEnd && computedIsValid
         ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
         : 0,
-
-    // ✅ Access if the user is in trial, has paid, or is pending activation
     hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
 }
 
+/* ==========================
+   🔄 Refresh Token (Single Flight)
+   ========================== */
 let ongoingRefresh = null;
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
@@ -60,12 +63,14 @@ export async function singleFlightRefresh() {
   return ongoingRefresh;
 }
 
+/* ==========================
+   🔐 Context
+   ========================== */
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [socket, setSocket] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("businessDetails");
@@ -76,12 +81,20 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  // ✅ Create singleton socket (only once)
+  const socket = useMemo(() => {
+    // no async call here, the createSocket handles connection later
+    return null;
+  }, []);
+
+  /* ==========================
+     👤 Fetch / Refresh User
+     ========================== */
   const refreshUser = async (force = false) => {
     try {
       const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
         withCredentials: true,
       });
-      console.log("refreshUser - user data received:", data);
       const normalized = normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
@@ -92,6 +105,9 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /* ==========================
+     🚪 Login
+     ========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
     setError(null);
@@ -113,7 +129,7 @@ export function AuthProvider({ children }) {
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // ✅ Navigation after login
+      // Redirect logic
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
@@ -148,6 +164,9 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /* ==========================
+     🧾 Staff Login
+     ========================== */
   const staffLogin = async (username, password) => {
     setLoading(true);
     setError(null);
@@ -180,6 +199,9 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /* ==========================
+     🤝 Affiliate Login
+     ========================== */
   const affiliateLogin = async (publicToken) => {
     setLoading(true);
     setError(null);
@@ -202,6 +224,9 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /* ==========================
+     🚪 Logout
+     ========================== */
   const logout = async () => {
     setLoading(true);
     try {
@@ -214,15 +239,16 @@ export function AuthProvider({ children }) {
     setToken(null);
     setUser(null);
     socket?.disconnect();
-    setSocket(null);
     setLoading(false);
     navigate("/login", { replace: true });
   };
 
+  /* ==========================
+     ⚙️ Initialize Auth + Socket
+     ========================== */
   useEffect(() => {
     if (!token) {
-      socket?.disconnect();
-      setSocket(null);
+      socket?.disconnect?.();
       setUser(null);
       localStorage.removeItem("businessDetails");
       setInitialized(true);
@@ -236,12 +262,13 @@ export function AuthProvider({ children }) {
       try {
         const freshUser = await refreshUser(true);
         if (!freshUser) throw new Error("No fresh user data");
-
         setUser(freshUser);
 
-        const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
-        setSocket(newSocket);
+        // ✅ Initialize singleton socket
+        const socketInstance = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
+        if (socketInstance && !socketInstance.connected) socketInstance.connect();
 
+        // Handle redirect after registration/login
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
@@ -256,19 +283,17 @@ export function AuthProvider({ children }) {
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
           const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && freshUser.hasAccess; // ✅ change
-          if (!shouldSkip) {
-            navigate(savedRedirect, { replace: true });
-          }
+          const shouldSkip = isPlans && freshUser.hasAccess;
+          if (!shouldSkip) navigate(savedRedirect, { replace: true });
           sessionStorage.removeItem("postLoginRedirect");
           return;
         }
 
-        // ✅ Direct redirect to dashboard if it's a business with businessId and on the home page
         if (freshUser.role === "business" && freshUser.businessId && location.pathname === "/") {
           navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
         }
-      } catch {
+      } catch (err) {
+        console.error("[Auth] init error:", err);
         await logout();
       } finally {
         setLoading(false);
@@ -277,12 +302,18 @@ export function AuthProvider({ children }) {
     })();
   }, [token, navigate, location.pathname]);
 
+  /* ==========================
+     🕒 Success Message Timeout
+     ========================== */
   useEffect(() => {
     if (!successMessage) return;
     const t = setTimeout(() => setSuccessMessage(null), 4000);
     return () => clearTimeout(t);
   }, [successMessage]);
 
+  /* ==========================
+     📦 Context Value
+     ========================== */
   const ctx = {
     token,
     user,
@@ -293,20 +324,9 @@ export function AuthProvider({ children }) {
     logout,
     staffLogin,
     affiliateLogin,
-    fetchWithAuth: async (fn) => {
-      try {
-        return await fn();
-      } catch (err) {
-        if ([401, 403].includes(err.response?.status)) {
-          await logout();
-          setError("❌ Please sign in again");
-        }
-        throw err;
-      }
-    },
     refreshAccessToken: singleFlightRefresh,
     refreshUser,
-    socket,
+    socket, // shared singleton instance
     setUser,
   };
 
@@ -318,6 +338,9 @@ export function AuthProvider({ children }) {
   );
 }
 
+/* ==========================
+   📡 Hook
+   ========================== */
 export function useAuth() {
   return useContext(AuthContext);
 }
