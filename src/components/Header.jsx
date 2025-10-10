@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo_final.svg";
-import { FaBars, FaChevronLeft, FaBell } from "react-icons/fa";
+import { FaBars, FaChevronLeft } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
-import { useNotifications } from "../context/NotificationsContext"; // ✅ חיבור אמיתי
+import FacebookStyleNotifications from "../components/FacebookStyleNotifications"; // ✅ הרכיב החדש
 import "../styles/Header.css";
 
 const navLinks = [
@@ -16,12 +16,9 @@ const navLinks = [
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
-  const { notifications, unreadCount, markAsRead } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
-
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
 
   if (loading) return null;
 
@@ -46,28 +43,22 @@ export default function Header() {
     setMenuOpen(false);
   };
 
-  const handleNotificationClick = (notif) => {
-    markAsRead(notif.id);
-    if (notif.targetUrl) navigate(notif.targetUrl);
-    setShowNotifications(false);
-  };
-
   return (
     <>
       <nav className="app-header">
-        {/* Logo */}
+        {/* 🔹 Logo */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Logo" className="logo" />
           </Link>
         </div>
 
-        {/* Desktop navigation */}
+        {/* 🔹 Desktop Navigation */}
         <div className="nav-links desktop-only">
           {navLinks.map((item) => link(item.to, item.label))}
         </div>
 
-        {/* Desktop actions */}
+        {/* 🔹 Desktop Actions */}
         <div className="auth-controls desktop-only">
           {!user ? (
             <>
@@ -80,15 +71,8 @@ export default function Header() {
             </>
           ) : (
             <>
-              {/* 🔔 Notification Bell */}
-              <div
-                className="notification-bell"
-                onClick={() => setShowNotifications(!showNotifications)}
-                title="Notifications"
-              >
-                <FaBell size={18} />
-                {unreadCount > 0 && <span className="notification-dot" />}
-              </div>
+              {/* 🔔 Facebook-Style Notifications */}
+              <FacebookStyleNotifications />
 
               <span className="hello-user">Hello, {user.name}</span>
               <Link to="/dashboard" className="auth-link">
@@ -101,54 +85,34 @@ export default function Header() {
           )}
         </div>
 
-        {/* Mobile hamburger menu */}
+        {/* 🔹 Mobile Hamburger Menu */}
         <div className="menu-toggle mobile-only">
-          <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>
+          <button
+            className="menu-button"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
             {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
           </button>
         </div>
       </nav>
 
-      {/* 🔔 Notifications dropdown */}
-      {showNotifications && user && (
-        <div className="notifications-dropdown">
-          <p className="notif-header">Notifications</p>
-
-          {notifications.length === 0 ? (
-            <div className="notif-item empty">No new notifications 🎉</div>
-          ) : (
-            notifications.map((notif) => (
-              <div
-                key={notif.id}
-                className={`notif-item ${notif.read ? "read" : "unread"}`}
-                onClick={() => handleNotificationClick(notif)}
-              >
-                <p>{notif.text}</p>
-                <small>
-                  {new Date(notif.timestamp).toLocaleString("en-US", {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                  })}
-                </small>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-
-      {/* Mobile side drawer */}
+      {/* 🔹 Mobile Drawer */}
       {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
           <div className="side-menu open">
             <div className="drawer-header">
-              <button className="back-button" onClick={() => setMenuOpen(false)}>
+              <button
+                className="back-button"
+                onClick={() => setMenuOpen(false)}
+              >
                 <FaChevronLeft size={18} />
                 <span>Back</span>
               </button>
             </div>
 
             <div className="menu-scroll">
+              {/* Auth / CTA */}
               <div className="mobile-auth">
                 {!user ? (
                   <>
@@ -187,6 +151,7 @@ export default function Header() {
                 )}
               </div>
 
+              {/* Navigation Links */}
               <div className="menu-section">
                 {navLinks.map((item) => link(item.to, item.label))}
               </div>
