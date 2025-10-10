@@ -190,10 +190,12 @@ const ReviewsModule = ({
       setLiveReviews((prev) => [review, ...prev]);
     };
 
-    socket.on("reviewCreated", handleNewReview);
+    socket.on("newReview", handleNewReview);
+
 
     return () => {
-      socket.off("reviewCreated", handleNewReview);
+      socket.off("newReview", handleNewReview);
+
     };
   }, [socket, businessId]);
 

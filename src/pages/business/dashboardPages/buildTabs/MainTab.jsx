@@ -51,8 +51,8 @@ export default function MainTab({ businessDetails, socket }) {
       });
     }
 
-    socket.on("reviewCreated", handleNewReview);
-    return () => socket.off("reviewCreated", handleNewReview);
+    socket.on("newReview", handleNewReview);
+    return () => socket.off("newReview", handleNewReview);
   }, [socket]);
 
   const lastTwoReviews = reviews.slice(0, 2);
