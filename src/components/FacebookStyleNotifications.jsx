@@ -88,7 +88,7 @@ export default function FacebookStyleNotifications() {
             {/* Notifications List */}
             <div className="fb-list">
               {filtered.length === 0 ? (
-                <p className="fb-empty">No new notifications 🎉</p>
+                <p className="fb-empty">No new notifications </p>
               ) : (
                 filtered.map((n) => (
                   <div
