@@ -331,10 +331,9 @@ const DashboardPage = () => {
       setRecommendations((prev) => [...prev, rec])
     );
 
-    /* ✅ Unified real-time listener (Redis) */
     /* ✅ Unified Real-time Listener — handles all Redis → Socket.IO events */
 /* ✅ Unified Real-time Listener — handles all Redis → Socket.IO events */
-/* ✅ Unified Real-time Listener — handles all Redis → Socket.IO events */
+sock.off("businessUpdates");
 sock.on("businessUpdates", (payload) => {
   try {
     const data = typeof payload === "string" ? JSON.parse(payload) : payload;
