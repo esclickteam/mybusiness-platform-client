@@ -1,4 +1,3 @@
-// src/pages/business/MainSection.jsx
 import React, { useRef, useState } from "react";
 import Select from "react-select";
 import "react-phone-input-2/lib/style.css";
@@ -6,6 +5,7 @@ import PhoneInput from "react-phone-input-2";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
 import ALL_CATEGORIES from "../../../../../data/categories";
 import ImageLoader from "@components/ImageLoader";
+import CityAutocomplete from "@components/CityAutocomplete"; // ✅ חדש
 
 const categoryOptions = ALL_CATEGORIES.map((cat) => ({
   value: cat,
@@ -280,17 +280,13 @@ export default function MainSection({
           }}
         />
 
-        {/* CITY */}
-        <label style={{ marginTop: "0.75rem" }}>City *</label>
-        <input
-          type="text"
-          name="address.city"
+        {/* ✅ CITY AUTOCOMPLETE */}
+        <label style={{ marginTop: "0.75rem" }}>City (United States only)</label>
+        <CityAutocomplete
           value={city}
-          onChange={handleInputChange}
-          placeholder="Enter city (e.g. New York)"
-          required
-          disabled={isSaving}
-          style={inputStyle}
+          onChange={(val) =>
+            handleInputChange({ target: { name: "address.city", value: val } })
+          }
         />
 
         {/* LOGO */}
