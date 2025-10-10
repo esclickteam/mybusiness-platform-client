@@ -139,19 +139,20 @@ export default function BusinessProfileView() {
   // לא נרשום צפייה אם זה בעל העסק עצמו
   if (user?.businessId && user.businessId === bizId) return;
 
-  // ✅ שליחת צפייה לשרת
-  socket.emit("profileView", { businessId: bizId, src: "public" }, (res) => {
-  if (res?.ok) {
-    // נעדכן מיד לפי הנתון החדש שחוזר מהשרת
-    if (res.stats?.views_count !== undefined) {
-      setProfileViewsCount(res.stats.views_count);
-    }
-  } else {
-    console.error("❌ Failed to register profile view:", res?.error);
-  }
-});
+  // ✅ שליחת צפייה לשרת – רק פעם אחת
+  const hasSentView = window.__sentProfileView ?? (window.__sentProfileView = new Set());
+  if (hasSentView.has(bizId)) return; // כבר נשלח לעסק הזה
 
+  hasSentView.add(bizId);
+  socket.emit("profileView", { businessId: bizId, src: "public" }, (res) => {
+    if (res?.ok && res.stats?.views_count !== undefined) {
+      setProfileViewsCount(res.stats.views_count);
+    } else if (res?.error) {
+      console.error("❌ Failed to register profile view:", res.error);
+    }
+  });
 }, [socket, bizId, user?.businessId]);
+
 
 
   const sortedReviews = useMemo(() => {
