@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../images/logo_final.svg"; // SVG logo
-import { FaBars, FaChevronLeft, FaBell } from "react-icons/fa"; // ← נוספה אייקון פעמון
+import logo from "../images/logo_final.svg";
+import { FaBars, FaChevronLeft, FaBell } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { useNotifications } from "../context/NotificationsContext"; // ✅ חיבור אמיתי
 import "../styles/Header.css";
 
-// Shared links (main navigation categories)
 const navLinks = [
   { to: "/features", label: "Features" },
   { to: "/solutions", label: "Solutions" },
@@ -16,8 +16,10 @@ const navLinks = [
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
+  const { notifications, unreadCount, markAsRead } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -42,6 +44,12 @@ export default function Header() {
       console.error("❌ Logout failed:", err);
     }
     setMenuOpen(false);
+  };
+
+  const handleNotificationClick = (notif) => {
+    markAsRead(notif.id);
+    if (notif.targetUrl) navigate(notif.targetUrl);
+    setShowNotifications(false);
   };
 
   return (
@@ -79,7 +87,7 @@ export default function Header() {
                 title="Notifications"
               >
                 <FaBell size={18} />
-                <span className="notification-dot" />
+                {unreadCount > 0 && <span className="notification-dot" />}
               </div>
 
               <span className="hello-user">Hello, {user.name}</span>
@@ -102,10 +110,29 @@ export default function Header() {
       </nav>
 
       {/* 🔔 Notifications dropdown */}
-      {showNotifications && (
+      {showNotifications && user && (
         <div className="notifications-dropdown">
           <p className="notif-header">Notifications</p>
-          <div className="notif-item">No new notifications 🎉</div>
+
+          {notifications.length === 0 ? (
+            <div className="notif-item empty">No new notifications 🎉</div>
+          ) : (
+            notifications.map((notif) => (
+              <div
+                key={notif.id}
+                className={`notif-item ${notif.read ? "read" : "unread"}`}
+                onClick={() => handleNotificationClick(notif)}
+              >
+                <p>{notif.text}</p>
+                <small>
+                  {new Date(notif.timestamp).toLocaleString("en-US", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}
+                </small>
+              </div>
+            ))
+          )}
         </div>
       )}
 
@@ -122,7 +149,6 @@ export default function Header() {
             </div>
 
             <div className="menu-scroll">
-              {/* Auth/CTA section */}
               <div className="mobile-auth">
                 {!user ? (
                   <>
@@ -161,7 +187,6 @@ export default function Header() {
                 )}
               </div>
 
-              {/* Navigation links */}
               <div className="menu-section">
                 {navLinks.map((item) => link(item.to, item.label))}
               </div>
