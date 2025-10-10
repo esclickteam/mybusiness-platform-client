@@ -298,7 +298,7 @@
   color: #555;
 }
 .notifications-dropdown .notif-item:hover {
-  background: #f9f5ff;
+   background: #f9f5ff;
   color: #5e17eb;
   cursor: pointer;
 }
