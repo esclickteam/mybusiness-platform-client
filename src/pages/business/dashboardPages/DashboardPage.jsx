@@ -336,45 +336,82 @@ const DashboardPage = () => {
     );
 
     /* ✅ Unified real-time listener (Redis) */
-    sock.on("businessUpdates", (payload) => {
-      try {
-        const data = typeof payload === "string" ? JSON.parse(payload) : payload;
-        if (!data?.type) return;
+    /* ✅ Unified Real-time Listener — handles all Redis → Socket.IO events */
+sock.on("businessUpdates", (payload) => {
+  try {
+    const data = typeof payload === "string" ? JSON.parse(payload) : payload;
+    if (!data?.type) return;
 
-        switch (data.type) {
-          case "dashboardUpdate":
-            debouncedSetStats(data.data);
-            break;
+    const { type, data: eventData } = data;
+    console.log("📡 [Live Update]", type, eventData);
 
-          case "profileViewsUpdated":
-            setStats((s) => (s ? { ...s, views_count: data.data.views_count } : s));
-            break;
+    switch (type) {
+      // 🔹 עדכון כללי של לוח הבקרה (סטטיסטיקות)
+      case "dashboardUpdate":
+        debouncedSetStats(eventData);
+        break;
 
-          case "newReview":
-            setStats((s) =>
-              s
-                ? {
-                    ...s,
-                    reviews: [...(s.reviews || []), data.data],
-                    reviews_count: (s.reviews_count || 0) + 1,
-                  }
-                : s
-            );
-            break;
+      // 🔹 צפיות בפרופיל
+      case "profileViewsUpdated":
+        setStats((s) =>
+          s ? { ...s, views_count: eventData.views_count } : s
+        );
+        break;
 
-          case "appointmentCreated":
-          case "appointmentUpdated":
-          case "appointmentDeleted":
-            refreshAppointmentsFromAPI();
-            break;
+      // 🔹 פגישות — כל שינוי גורם לריענון מיידי
+      case "appointmentCreated":
+      case "appointmentUpdated":
+      case "appointmentDeleted":
+        refreshAppointmentsFromAPI();
+        break;
 
-          default:
-            console.log("📡 Unhandled businessUpdates event:", data.type);
-        }
-      } catch (err) {
-        console.error("Error parsing businessUpdates payload:", err);
-      }
-    });
+      // 🔹 ביקורות חדשות
+      case "newReview":
+        setStats((s) =>
+          s
+            ? {
+                ...s,
+                reviews: [...(s.reviews || []), eventData],
+                reviews_count: (s.reviews_count || 0) + 1,
+              }
+            : s
+        );
+        break;
+
+      // 🔹 התראות (כולל באנדל)
+      case "newNotification":
+      case "notificationBundle":
+        setStats((s) =>
+          s
+            ? {
+                ...s,
+                notifications_count:
+                  eventData.count || s.notifications_count || 0,
+              }
+            : s
+        );
+        break;
+
+      // 🔹 הודעות חדשות בצ׳אט
+      case "newMessage":
+        setStats((s) =>
+          s
+            ? {
+                ...s,
+                messages_count: (s.messages_count || 0) + 1,
+              }
+            : s
+        );
+        break;
+
+      default:
+        console.log("📡 [Unhandled Event]", type);
+    }
+  } catch (err) {
+    console.error("❌ Error parsing businessUpdates payload:", err);
+  }
+});
+
   };
 
   loadStats();
