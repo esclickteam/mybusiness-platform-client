@@ -1,17 +1,10 @@
-// src/pages/business/MainSection.jsx
 import React, { useRef, useState } from "react";
-import Select from "react-select";
 import "react-phone-input-2/lib/style.css";
 import PhoneInput from "react-phone-input-2";
 import { dedupeByPreview } from "../../../../../utils/dedupe";
-import ALL_CATEGORIES from "../../../../../data/categories";
 import ImageLoader from "@components/ImageLoader";
-import CityAutocomplete from "@components/CityAutocomplete"; // ✅ חדש
-
-const categoryOptions = ALL_CATEGORIES.map((cat) => ({
-  value: cat,
-  label: cat,
-}));
+import CityAutocomplete from "@components/CityAutocomplete";
+import CategoryAutocomplete from "@components/CategoryAutocomplete"; // ✅ חדש
 
 export default function MainSection({
   businessDetails = {},
@@ -39,8 +32,6 @@ export default function MainSection({
   }));
 
   const limitedMainImgs = dedupeByPreview(wrappedMainImages).slice(0, 6);
-  const wrapSelectChange = (name) => (option) =>
-    handleInputChange({ target: { name, value: option ? option.value : "" } });
 
   const {
     businessName = "",
@@ -269,25 +260,13 @@ export default function MainSection({
           style={inputStyle}
         />
 
-        {/* CATEGORY */}
+        {/* ✅ CATEGORY AUTOCOMPLETE */}
         <label style={{ marginTop: "0.75rem" }}>Category *</label>
-        <Select
-          options={categoryOptions}
-          value={categoryOptions.find((o) => o.value === category) || null}
-          onChange={wrapSelectChange("category")}
-          isDisabled={isSaving}
-          placeholder="Select category"
-          isClearable
-          styles={{
-            control: (base) => ({
-              ...base,
-              ...inputStyle,
-              cursor: "pointer",
-              borderRadius: "10px",
-              boxShadow: "none",
-              ":hover": { borderColor: "#6a11cb" },
-            }),
-          }}
+        <CategoryAutocomplete
+          value={category}
+          onChange={(val) =>
+            handleInputChange({ target: { name: "category", value: val } })
+          }
         />
 
         {/* CITY AUTOCOMPLETE */}
