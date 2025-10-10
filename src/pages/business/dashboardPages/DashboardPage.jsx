@@ -322,11 +322,7 @@ const DashboardPage = () => {
 
     /* 🧠 Core event listeners */
     sock.on("dashboardUpdate", (newStats) => debouncedSetStats(newStats));
-
-    sock.on("profileViewsUpdated", ({ views_count }) => {
-      setStats((s) => (s ? { ...s, views_count } : s));
-    });
-
+    
     sock.on("appointmentCreated", refreshAppointmentsFromAPI);
     sock.on("appointmentUpdated", refreshAppointmentsFromAPI);
     sock.on("appointmentDeleted", refreshAppointmentsFromAPI);
