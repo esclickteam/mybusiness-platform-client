@@ -130,20 +130,30 @@ export default function BusinessProfileView() {
     setSchedule(sched);
   }, [workHoursData]);
 
-  useEffect(() => {
+ useEffect(() => {
   if (!socket || !bizId) return;
 
-  // ✅ מצטרף לחדר העסק כדי לקבל עדכונים בזמן אמת
-  socket.emit("joinBusinessRoom", bizId);
+  // הצטרפות לחדר פעם אחת בלבד
+  if (!socket._joinedRooms) socket._joinedRooms = new Set();
+  if (!socket._joinedRooms.has(bizId)) {
+    socket.emit("joinBusinessRoom", bizId);
+    socket._joinedRooms.add(bizId);
+  }
 
-  // לא נרשום צפייה אם זה בעל העסק עצמו
-  if (user?.businessId && user.businessId === bizId) return;
+  // לא נשלח צפייה אם זה בעל העסק עצמו
+  if (user?.businessId === bizId) return;
 
-  // ✅ שליחת צפייה לשרת – רק פעם אחת
-  const hasSentView = window.__sentProfileView ?? (window.__sentProfileView = new Set());
-  if (hasSentView.has(bizId)) return; // כבר נשלח לעסק הזה
+  // הגנה כפולה: גם sessionStorage וגם window
+  const viewedKey = `viewed_${bizId}`;
+  const hasSentView =
+    window.__sentProfileView ?? (window.__sentProfileView = new Set());
+
+  if (hasSentView.has(bizId) || sessionStorage.getItem(viewedKey)) return;
 
   hasSentView.add(bizId);
+  sessionStorage.setItem(viewedKey, "1");
+
+  // ✅ שליחת צפייה רק פעם אחת אמיתית
   socket.emit("profileView", { businessId: bizId, src: "public" }, (res) => {
     if (res?.ok && res.stats?.views_count !== undefined) {
       setProfileViewsCount(res.stats.views_count);
@@ -151,7 +161,8 @@ export default function BusinessProfileView() {
       console.error("❌ Failed to register profile view:", res.error);
     }
   });
-}, [socket, bizId, user?.businessId]);
+}, [socket, bizId]);
+
 
 
 
