@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
 import BusinessCardSkeleton from "../components/BusinessCardSkeleton";
-import ALL_CATEGORIES from "../data/categories"; // ✅ ייבוא הקטגוריות
-import { fetchCities } from "../data/cities"; // ✅ טעינת ערים (GeoDB API)
-import CityAutocomplete from "@components/CityAutocomplete"; // ✅ כמו בעמוד עסק
-import Select from "react-select"; // ✅ dropdown מקצועי לקטגוריות
+import ALL_CATEGORIES from "../data/categories";
+import { fetchCities } from "../data/cities";
+import CityAutocomplete from "@components/CityAutocomplete";
+import Select from "react-select";
 import { Helmet } from "react-helmet";
 import "./BusinessList.css";
 
 const ITEMS_PER_PAGE = 9;
+const DEBOUNCE_DELAY = 600; // 0.6 שניות
 
 function normalize(str) {
   return str
@@ -27,8 +28,9 @@ export default function SearchBusinesses() {
 
   const [all, setAll] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
+  const [searched, setSearched] = useState(false);
 
   const [cat, setCat] = useState(searchParams.get("category") || "");
   const [city, setCity] = useState(searchParams.get("city") || "");
@@ -36,13 +38,9 @@ export default function SearchBusinesses() {
   const [loadingCities, setLoadingCities] = useState(true);
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
 
-  /* ✅ כל הקטגוריות */
-  const categoryOptions = ALL_CATEGORIES.map((c) => ({
-    value: c,
-    label: c,
-  }));
+  const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
 
-  /* -------------------- Load Businesses -------------------- */
+  /* Load all businesses */
   useEffect(() => {
     API.get("/business")
       .then((r) => {
@@ -52,7 +50,7 @@ export default function SearchBusinesses() {
       .catch(console.error);
   }, []);
 
-  /* -------------------- Load Cities (with cache) -------------------- */
+  /* Load cities (with cache) */
   useEffect(() => {
     const loadCities = async () => {
       const cache = localStorage.getItem("allCities");
@@ -69,7 +67,7 @@ export default function SearchBusinesses() {
     loadCities();
   }, []);
 
-  /* -------------------- Sync URL params -------------------- */
+  /* Update URL when filters change */
   useEffect(() => {
     const params = new URLSearchParams();
     if (cat) params.set("category", cat);
@@ -78,9 +76,10 @@ export default function SearchBusinesses() {
     setSearchParams(params, { replace: true });
   }, [cat, city, page, setSearchParams]);
 
-  /* -------------------- Search Handler -------------------- */
-  const handleSearch = () => {
-    setPage(1);
+  /* Debounced Auto-Search */
+  const handleSearch = useCallback(() => {
+    if (!all.length) return;
+    setSearching(true);
     const normCat = normalize(cat);
     const normCity = normalize(city);
     const result = all.filter((b) => {
@@ -91,41 +90,35 @@ export default function SearchBusinesses() {
     });
     setFiltered(result);
     setSearched(true);
-  };
+    setTimeout(() => setSearching(false), 300);
+  }, [all, cat, city]);
 
-  /* -------------------- Pagination -------------------- */
+  useEffect(() => {
+    const timeout = setTimeout(() => handleSearch(), DEBOUNCE_DELAY);
+    return () => clearTimeout(timeout);
+  }, [cat, city, handleSearch]);
+
+  /* Pagination */
   const start = (page - 1) * ITEMS_PER_PAGE;
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  /* -------------------- SEO -------------------- */
-  const seoTitleParts = [];
-  if (cat) seoTitleParts.push(cat);
-  if (city) seoTitleParts.push(city);
+  /* SEO meta */
   const seoTitle =
-    seoTitleParts.length > 0
-      ? `${seoTitleParts.join(" - ")} | Business Search - Bizuply`
+    cat || city
+      ? `${cat || ""}${cat && city ? " – " : ""}${city || ""} | Search | Bizuply`
       : "Business Search | Bizuply";
 
-  const seoDescription =
-    seoTitleParts.length > 0
-      ? `Find businesses in the ${cat ? cat : ""} field ${
-          city ? "in " + city : ""
-        } on the Bizuply platform.`
-      : "Search businesses by field and city on the Bizuply platform.";
-
-  /* -------------------- UI -------------------- */
   return (
     <div className="list-page">
       <Helmet>
         <title>{seoTitle}</title>
-        <meta name="description" content={seoDescription} />
       </Helmet>
 
       <div className="business-list-container">
-        <h1>Business List</h1>
+        <h1>Find Businesses</h1>
 
-        {/* 🔍 Filters Section */}
+        {/* 🔍 Filters */}
         <div
           style={{
             display: "flex",
@@ -136,12 +129,13 @@ export default function SearchBusinesses() {
             marginBottom: "1.5rem",
           }}
         >
-          {/* 🏙️ City */}
+          {/* 🏙 City */}
           <div style={{ width: "250px" }}>
             <CityAutocomplete
               value={city}
               onChange={(val) => setCity(val)}
-              placeholder="City (United States only)"
+              placeholder="City (United States)"
+              disabled={loadingCities}
             />
           </div>
 
@@ -164,56 +158,48 @@ export default function SearchBusinesses() {
               }}
             />
           </div>
-
-          {/* 🔎 Search Button */}
-          <button
-            onClick={handleSearch}
-            disabled={loading}
-            style={{
-              background: "linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)",
-              color: "#fff",
-              border: "none",
-              borderRadius: "30px",
-              padding: "10px 24px",
-              fontWeight: 600,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-            }}
-          >
-            🔍 Search
-          </button>
         </div>
 
         {/* 🧩 Results */}
         <div className="business-list">
-          {loading
-            ? Array(ITEMS_PER_PAGE)
-                .fill()
-                .map((_, i) => <BusinessCardSkeleton key={i} />)
-            : !searched
-            ? <p className="no-search">Click “Search” to see results</p>
-            : pageItems.length > 0
-            ? pageItems.map((b) => (
-                <BusinessCard
-                  key={b._id}
-                  business={b}
-                  onClick={() => navigate(`/business/${b._id}`)}
-                />
-              ))
-            : <p className="no-results">No businesses found</p>}
+          {loading || searching ? (
+            Array(ITEMS_PER_PAGE)
+              .fill()
+              .map((_, i) => <BusinessCardSkeleton key={i} />)
+          ) : !searched ? (
+            <p className="no-search">Start typing to see results 👇</p>
+          ) : pageItems.length > 0 ? (
+            pageItems.map((b) => (
+              <BusinessCard
+                key={b._id}
+                business={b}
+                onClick={() => navigate(`/business/${b._id}`)}
+              />
+            ))
+          ) : (
+            <p className="no-results">
+              No businesses found {city && `in ${city}`}{" "}
+              {cat && `for ${cat.toLowerCase()}`} yet.
+            </p>
+          )}
         </div>
 
         {/* ⏩ Pagination */}
         {searched && totalPages > 1 && (
           <div className="pagination">
-            <button onClick={() => setPage((p) => Math.max(p - 1, 1))} disabled={page === 1}>
+            <button
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              disabled={page === 1}
+            >
               Previous
             </button>
-            <span>{page} of {totalPages}</span>
-            <button onClick={() => setPage((p) => Math.min(p + 1, totalPages))} disabled={page === totalPages}>
+            <span>
+              {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+              disabled={page === totalPages}
+            >
               Next
             </button>
           </div>
