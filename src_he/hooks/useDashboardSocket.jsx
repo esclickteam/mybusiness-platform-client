@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.BizUply.co.il";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
 export default function useDashboardSocket({ token, businessId, refreshAccessToken, logout }) {
   const [stats, setStats] = useState(null);

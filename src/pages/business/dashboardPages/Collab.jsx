@@ -48,7 +48,7 @@ export default function Collab() {
 
   // Connect to Socket.IO
   useEffect(() => {
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.BizUply.co.il";
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
     const newSocket = io(SOCKET_URL, {
       auth: { token: localStorage.getItem("token") },

@@ -1,5 +1,5 @@
 [33m45f60fd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: reset: moving to HEAD~3
-[33meb72db1[m HEAD@{1}: commit: Use REACT_APP_API_URL or default to https://api.BizUply.co.il/api in src/api.js
+[33meb72db1[m HEAD@{1}: commit: Use REACT_APP_API_URL or default to https://api.bizuply.com/api in src/api.js
 [33m8d79d76[m HEAD@{2}: commit: Use only REACT_APP_API_URL in src/api.js, no localhost fallback
 [33m6b4b049[m HEAD@{3}: commit: Require REACT_APP_API_URL in src/api.js and remove localhost fallback
 [33m45f60fd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{4}: commit: Fix refreshUserData to use /api/auth/me endpoint
@@ -49,7 +49,7 @@
 [33m04c3dfc[m HEAD@{48}: commit: תקן פונקציית logout: מחיקת token ו-user + clearCookie בשרת
 [33mbc46d41[m HEAD@{49}: commit: תיקון שמירת טוקן דרך cookie בלבד + התאמה לפרודקשן
 [33m1ffbaa5[m HEAD@{50}: commit: עדכון לפרודקשן עם פרוקסי בלבד
-[33mc31e24c[m HEAD@{51}: commit: עדכון proxy לapi.BizUply.co.il בקובץ vercel.json
+[33mc31e24c[m HEAD@{51}: commit: עדכון proxy לapi.bizuply.com בקובץ vercel.json
 [33mb349436[m HEAD@{52}: commit: הסרת VITE_API_URL כדי להפעיל proxy דרך vercel.json
 [33m50d08e8[m HEAD@{53}: commit: הוספת debug לטעינת משתמש ב-AuthContext
 [33mda32121[m HEAD@{54}: commit: הוספת עמוד איפוס סיסמה ונתיב API תואם

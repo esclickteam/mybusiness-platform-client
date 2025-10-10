@@ -7762,7 +7762,7 @@ src\pages\technicalSupportFAQs.jsx:20:            <b>פנה לצוות התמי�
 src\pages\technicalSupportFAQs.jsx:21:            אם לאחר קריאת המדריכים 
 והשימוש בבוט הבעיה עדיין קיימת, תוכל לפנות לצוות התמיכה שלנו.<br />
 src\pages\technicalSupportFAQs.jsx:22:            <b>כתובת אימייל:</b> 
-support@BizUply.co.il<br />
+support@bizuply.com<br />
 src\pages\technicalSupportFAQs.jsx:23:            <b>טלפון:</b> מספר 
 הטלפון הרלוונטי<br />
 src\pages\technicalSupportFAQs.jsx:24:            בעת הפנייה, מומלץ לצרף 
@@ -8109,7 +8109,7 @@ src\pages\troubleshootingFAQs.jsx:116:          <li>אסוף מידע טכני: 
 src\pages\troubleshootingFAQs.jsx:117:          <li>ציין מועד מדויק של 
 התקלה.</li>
 src\pages\troubleshootingFAQs.jsx:118:          <li>שלח את המידע לכתובת 
-התמיכה: support@BizUply.co.il או פתח פנייה במערכת.</li>
+התמיכה: support@bizuply.com או פתח פנייה במערכת.</li>
 src\pages\troubleshootingFAQs.jsx:119:          <li>כתוב כותרת ברורה 
 ותאר אם הבעיה חוזרת או איך לשחזר אותה.</li>
 src\pages\troubleshootingFAQs.jsx:120:          <li>המתן למענה מהתמיכה 

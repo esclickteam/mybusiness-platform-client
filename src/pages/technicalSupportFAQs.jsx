@@ -19,7 +19,7 @@ const technicalSupportFAQs = [
           <li>
             <b>Contact the support team if needed:</b><br />
             If after reading the guides and using the bot the issue still exists, you can contact our support team.<br />
-            <b>Email:</b> support@BizUply.co.il<br />
+            <b>Email:</b> support@bizuply.com<br />
             <b>Phone:</b> Relevant phone number<br />
             When contacting us, include a detailed description of the issue, screenshots, and system details (browser, device, time of event) so we can assist quickly.
           </li>

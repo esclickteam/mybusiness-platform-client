@@ -46,7 +46,7 @@ function AdminAffiliates() {
       const res = await API.post("/admin/affiliates", form);
       if (res.data.success) {
         setMessage("✅ Marketer created successfully!");
-        setAffiliateUrl(`https://BizUply.co.il/affiliate/auto-login/${res.data.affiliate.publicToken}`);
+        setAffiliateUrl(`https://bizuply.com/affiliate/auto-login/${res.data.affiliate.publicToken}`);
 
         setForm({
           name: "",

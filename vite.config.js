@@ -27,7 +27,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'https://api.BizUply.co.il',
+        target: 'https://api.bizuply.com',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/api')

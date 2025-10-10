@@ -28,7 +28,7 @@ const tabs = [
 ];
 
 // Replace here with your server address
-const SOCKET_URL = "https://api.BizUply.co.il";
+const SOCKET_URL = "https://api.bizuply.com";
 
 // Creating socket connection outside the component
 const socket = io(SOCKET_URL, { autoConnect: false });

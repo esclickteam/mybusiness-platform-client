@@ -2,7 +2,7 @@
 import { io } from "socket.io-client";
 import { getUserRole } from "./utils/authHelpers";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.BizUply.co.il";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
 let socketInstance = null;  // singleton instance
 let currentToken   = null;  // last used token

@@ -115,7 +115,7 @@ const troubleshootingFAQs = [
           <li>Attach a screenshot of the error or issue.</li>
           <li>Gather technical info: device type, OS, browser and its version.</li>
           <li>Specify the exact time the issue occurred.</li>
-          <li>Send the information to support@BizUply.co.il or open a ticket in the system.</li>
+          <li>Send the information to support@bizuply.com or open a ticket in the system.</li>
           <li>Write a clear subject and describe whether the issue is recurring or how to reproduce it.</li>
           <li>Wait for support to respond with guidance or fixes.</li>
         </ol>

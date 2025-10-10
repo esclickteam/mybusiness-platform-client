@@ -117,7 +117,7 @@ export default function AffiliateDashboardPage() {
 
   // ** Add personal affiliate link with copy option **
   const affiliateLink = affiliateId
-    ? `https://BizUply.co.il/register?ref=${affiliateId}`
+    ? `https://bizuply.com/register?ref=${affiliateId}`
     : "Affiliate ID not recognized";
 
   // Function to update bank details
