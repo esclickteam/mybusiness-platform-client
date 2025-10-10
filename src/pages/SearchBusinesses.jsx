@@ -42,7 +42,8 @@ export default function SearchBusinesses() {
   const wrapperCityRef = useRef(null);
 
   const [cities, setCities] = useState([]);
-  the [loadingCities, setLoadingCities] = useState(true);
+  const [loadingCities, setLoadingCities] = useState(true);
+
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 
