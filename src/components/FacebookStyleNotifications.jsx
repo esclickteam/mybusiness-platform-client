@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 import "./FacebookStyleNotifications.css";
 
 export default function FacebookStyleNotifications() {
+  const { user } = useAuth();
   const [tab, setTab] = useState("all");
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    fetchNotifications();
-  }, []);
+    // ✅ רק אם המשתמש הוא עסק — נטען התראות
+    if (user?.businessId) {
+      fetchNotifications();
+    }
+  }, [user?.businessId]);
 
   const fetchNotifications = async () => {
     try {
@@ -28,7 +33,7 @@ export default function FacebookStyleNotifications() {
         prev.map((n) => (n.id === id ? { ...n, read: true } : n))
       );
     } catch (err) {
-      console.error("Error marking notification as read:", err);
+      console.error("Error marking as read:", err);
     }
   };
 
@@ -45,9 +50,11 @@ export default function FacebookStyleNotifications() {
     return new Date(timestamp).toLocaleDateString("en-US");
   };
 
+  // ✅ אם המשתמש לא עסק – אין צורך להציג פעמון בכלל
+  if (!user?.businessId) return null;
+
   return (
     <div className="fb-notif-wrapper">
-      {/* Bell Icon */}
       <button className="fb-bell" onClick={() => setOpen(!open)}>
         🔔
         {notifications.some((n) => !n.read) && (
@@ -57,7 +64,6 @@ export default function FacebookStyleNotifications() {
         )}
       </button>
 
-      {/* Animated Panel */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -67,7 +73,6 @@ export default function FacebookStyleNotifications() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.15 }}
           >
-            {/* Tabs */}
             <div className="fb-tabs">
               <button
                 className={tab === "all" ? "active" : ""}
@@ -85,10 +90,9 @@ export default function FacebookStyleNotifications() {
 
             <div className="fb-section-title">Recent</div>
 
-            {/* Notifications List */}
             <div className="fb-list">
               {filtered.length === 0 ? (
-                <p className="fb-empty">No new notifications </p>
+                <p className="fb-empty">No new notifications 🎉</p>
               ) : (
                 filtered.map((n) => (
                   <div
