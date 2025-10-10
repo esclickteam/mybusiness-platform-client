@@ -277,77 +277,125 @@ const DashboardPage = () => {
 
   /* socket lifecycle */
   useEffect(() => {
-    if (!initialized || !businessId) return;
+  if (!initialized || !businessId) return;
 
-    let isMounted = true;
-    let reconnectTimeout = null;
+  let isMounted = true;
+  let reconnectTimeout = null;
 
-    const setupSocket = async () => {
-      const token = await refreshAccessToken();
-      if (!token) {
-        logout();
-        return;
+  const setupSocket = async () => {
+    const token = await refreshAccessToken();
+    if (!token) {
+      logout();
+      return;
+    }
+
+    const sock = await createSocket(refreshAccessToken, logout, businessId);
+    if (!sock || !isMounted) return;
+
+    socketRef.current = sock;
+    reconnectAttempts.current = 0;
+
+    /* ✅ Join business room */
+    sock.on("connect", () => {
+      sock.emit("joinBusinessRoom", businessId);
+      sock.emit("subscribeToBusinessUpdates", businessId);
+    });
+
+    /* 🔁 Handle disconnect & auto-reconnect */
+    sock.on("disconnect", () => {
+      if (isMounted && reconnectAttempts.current < maxReconnectAttempts) {
+        const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
+        reconnectTimeout = setTimeout(() => {
+          reconnectAttempts.current += 1;
+          setupSocket();
+        }, delay);
       }
+    });
 
-      const sock = await createSocket(refreshAccessToken, logout, businessId);
-      if (!sock || !isMounted) return;
+    /* 🔐 Handle token refresh */
+    sock.on("tokenExpired", async () => {
+      const newToken = await refreshAccessToken();
+      if (!newToken) return logout();
+      sock.auth.token = newToken;
+      sock.emit("authenticate", { token: newToken });
+    });
 
-      socketRef.current = sock;
-      reconnectAttempts.current = 0;
+    /* 🧠 Core event listeners */
+    sock.on("dashboardUpdate", (newStats) => debouncedSetStats(newStats));
 
-      sock.on("connect", () => {
-        sock.emit("joinBusinessRoom", businessId);
-      });
+    sock.on("profileViewsUpdated", ({ views_count }) => {
+      setStats((s) => (s ? { ...s, views_count } : s));
+    });
 
-      sock.on("disconnect", () => {
-        if (isMounted && reconnectAttempts.current < maxReconnectAttempts) {
-          const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
-          reconnectTimeout = setTimeout(() => {
-            reconnectAttempts.current += 1;
-            setupSocket();
-          }, delay);
+    sock.on("appointmentCreated", refreshAppointmentsFromAPI);
+    sock.on("appointmentUpdated", refreshAppointmentsFromAPI);
+    sock.on("appointmentDeleted", refreshAppointmentsFromAPI);
+
+    sock.on("newRecommendation", (rec) =>
+      setRecommendations((prev) => [...prev, rec])
+    );
+
+    /* ✅ Unified real-time listener (Redis) */
+    sock.on("businessUpdates", (payload) => {
+      try {
+        const data = typeof payload === "string" ? JSON.parse(payload) : payload;
+        if (!data?.type) return;
+
+        switch (data.type) {
+          case "dashboardUpdate":
+            debouncedSetStats(data.data);
+            break;
+
+          case "profileViewsUpdated":
+            setStats((s) => (s ? { ...s, views_count: data.data.views_count } : s));
+            break;
+
+          case "newReview":
+            setStats((s) =>
+              s
+                ? {
+                    ...s,
+                    reviews: [...(s.reviews || []), data.data],
+                    reviews_count: (s.reviews_count || 0) + 1,
+                  }
+                : s
+            );
+            break;
+
+          case "appointmentCreated":
+          case "appointmentUpdated":
+          case "appointmentDeleted":
+            refreshAppointmentsFromAPI();
+            break;
+
+          default:
+            console.log("📡 Unhandled businessUpdates event:", data.type);
         }
-      });
+      } catch (err) {
+        console.error("Error parsing businessUpdates payload:", err);
+      }
+    });
+  };
 
-      sock.on("tokenExpired", async () => {
-        const newToken = await refreshAccessToken();
-        if (!newToken) return logout();
-        sock.auth.token = newToken;
-        sock.emit("authenticate", { token: newToken });
-      });
+  loadStats();
+  refreshAppointmentsFromAPI();
+  setupSocket();
 
-      sock.on("dashboardUpdate", (newStats) => debouncedSetStats(newStats));
-      sock.on("profileViewsUpdated", ({ views_count }) => {
-        setStats((s) => (s ? { ...s, views_count } : s));
-      });
+  return () => {
+    isMounted = false;
+    if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    socketRef.current?.disconnect();
+    socketRef.current = null;
+  };
+}, [
+  initialized,
+  businessId,
+  logout,
+  refreshAccessToken,
+  debouncedSetStats,
+  refreshAppointmentsFromAPI,
+]);
 
-      sock.on("appointmentCreated", refreshAppointmentsFromAPI);
-      sock.on("appointmentUpdated", refreshAppointmentsFromAPI);
-      sock.on("appointmentDeleted", refreshAppointmentsFromAPI);
-
-      sock.on("newRecommendation", (rec) =>
-        setRecommendations((prev) => [...prev, rec])
-      );
-    };
-
-    loadStats();
-    refreshAppointmentsFromAPI();
-    setupSocket();
-
-    return () => {
-      isMounted = false;
-      if (reconnectTimeout) clearTimeout(reconnectTimeout);
-      socketRef.current?.disconnect();
-      socketRef.current = null;
-    };
-  }, [
-    initialized,
-    businessId,
-    logout,
-    refreshAccessToken,
-    debouncedSetStats,
-    refreshAppointmentsFromAPI,
-  ]);
 
   /* mark messages read */
   useEffect(() => {
