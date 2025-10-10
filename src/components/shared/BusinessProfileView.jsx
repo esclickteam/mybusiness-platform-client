@@ -129,27 +129,45 @@ export default function BusinessProfileView() {
   }, [workHoursData]);
 
   useEffect(() => {
-    if (!socket || !bizId) return;
+  if (!socket || !bizId) return;
 
-    // Don't count views from the owner
-    if (user?.businessId && user.businessId === bizId) return;
+  // ✅ מצטרף לחדר העסק כדי לקבל עדכונים בזמן אמת
+  socket.emit("joinBusinessRoom", bizId);
 
-    socket.emit(
-      "profileView",
-      { businessId: bizId, src: "public" }, // indicates a public view
-      (res) => {
-        if (res?.ok) {
-          if (!res.skipped) {
-            setProfileViewsCount(res.stats?.views_count || 0);
-          } else {
-            console.log("View skipped:", res.reason);
-          }
+  // לא נרשום צפייה אם זה בעל העסק עצמו
+  if (user?.businessId && user.businessId === bizId) return;
+
+  // ✅ שליחת צפייה לשרת
+  socket.emit(
+    "profileView",
+    { businessId: bizId, src: "public" },
+    (res) => {
+      if (res?.ok) {
+        if (!res.skipped) {
+          setProfileViewsCount(res.stats?.views_count || 0);
         } else {
-          console.error("Failed to register profile view:", res?.error);
+          console.log("View skipped:", res.reason);
         }
+      } else {
+        console.error("Failed to register profile view:", res?.error);
       }
-    );
-  }, [socket, bizId, user?.businessId]);
+    }
+  );
+
+  // ✅ מאזין לעדכונים חיים מהשרת (Redis → Socket.IO → לקוח)
+  const handleProfileViewsUpdate = ({ views_count }) => {
+    console.log("📡 Real-time profileViewsUpdated:", views_count);
+    setProfileViewsCount(views_count);
+  };
+
+  socket.on("profileViewsUpdated", handleProfileViewsUpdate);
+
+  // ניקוי מאזין כשהקומפוננטה מתנתקת
+  return () => {
+    socket.off("profileViewsUpdated", handleProfileViewsUpdate);
+  };
+}, [socket, bizId, user?.businessId]);
+
 
   const sortedReviews = useMemo(() => {
     return [...reviews].sort(
