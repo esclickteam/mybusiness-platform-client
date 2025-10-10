@@ -26,7 +26,8 @@ export default function MainTab({ businessDetails, socket }) {
     async function fetchInitialReviews() {
       if (!businessDetails?._id) return;
       try {
-        const res = await fetch(`/api/reviews/business/${businessDetails._id}?limit=2`);
+        const res = await fetch(`/api/business/${businessDetails._id}/profile`);
+
         if (res.ok) {
           const data = await res.json();
           setReviews(data.reviews || []);
