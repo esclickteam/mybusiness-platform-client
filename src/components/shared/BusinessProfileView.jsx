@@ -138,21 +138,16 @@ export default function BusinessProfileView() {
   if (user?.businessId && user.businessId === bizId) return;
 
   // ✅ שליחת צפייה לשרת
-  socket.emit(
-    "profileView",
-    { businessId: bizId, src: "public" },
-    (res) => {
-      if (res?.ok) {
-        if (!res.skipped) {
-          setProfileViewsCount(res.stats?.views_count || 0);
-        } else {
-          console.log("View skipped:", res.reason);
-        }
-      } else {
-        console.error("Failed to register profile view:", res?.error);
-      }
+  socket.emit("profileView", { businessId: bizId, src: "public" }, (res) => {
+  if (res?.ok) {
+    // נעדכן מיד לפי הנתון החדש שחוזר מהשרת
+    if (res.stats?.views_count !== undefined) {
+      setProfileViewsCount(res.stats.views_count);
     }
-  );
+  } else {
+    console.error("❌ Failed to register profile view:", res?.error);
+  }
+});
 
   // ✅ מאזין לעדכונים חיים מהשרת (Redis → Socket.IO → לקוח)
   const handleProfileViewsUpdate = ({ views_count }) => {
