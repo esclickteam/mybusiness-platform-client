@@ -14,11 +14,13 @@ const initialState = {
   unreadCount: 0,
 };
 
+/* ==========================
+   🧩 Helper: Normalize Notification
+   ========================== */
 function normalizeNotification(notif) {
   console.log("[normalizeNotification] input:", notif);
 
   let text = notif.text;
-  // ✅ Handle task reminder notifications
   if (notif.type === "taskReminder" && !text?.startsWith("⏰")) {
     text = `⏰ ${text}`;
   }
@@ -36,12 +38,15 @@ function normalizeNotification(notif) {
   };
 }
 
+/* ==========================
+   ⚙️ Reducer
+   ========================== */
 function reducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
-      let list = action.payload.map(normalizeNotification);
+      const list = action.payload.map(normalizeNotification);
 
-      // Special rules for AI recommendations
+      // הסרת כפילויות של המלצות AI לעומת הודעות רגילות
       const filtered = [];
       const aiThreads = new Set(
         list.filter((n) => n.type === "recommendation").map((n) => n.threadId)
@@ -53,6 +58,7 @@ function reducer(state, action) {
           filtered.push(n);
         }
       }
+
       const unreadCount = filtered.reduce((sum, n) => sum + n.unreadCount, 0);
       console.log("[SET_NOTIFICATIONS] filtered:", filtered);
       return { notifications: filtered, unreadCount };
@@ -65,7 +71,7 @@ function reducer(state, action) {
       const newNotif = normalizeNotification(action.payload);
       console.log("[ADD_NOTIFICATION] newNotif:", newNotif);
 
-      // Don’t add a regular client message if there’s already an AI recommendation for the same thread
+      // אל תוסיף הודעת לקוח אם כבר יש המלצה של AI באותו thread
       if (
         newNotif.type === "message" &&
         state.notifications.some(
@@ -76,7 +82,7 @@ function reducer(state, action) {
         return state;
       }
 
-      // If it’s an AI recommendation, replace the regular one for that thread
+      // אם זו המלצת AI — החלף את ההתראה הרגילה
       if (newNotif.type === "recommendation") {
         const list = [
           newNotif,
@@ -86,7 +92,7 @@ function reducer(state, action) {
         return { notifications: list, unreadCount };
       }
 
-      // Regular notification — avoid duplicates
+      // התראה רגילה – אל תוסיף כפילויות
       const exists = state.notifications.some(
         (n) =>
           n.id === newNotif.id ||
@@ -110,10 +116,14 @@ function reducer(state, action) {
   }
 }
 
+/* ==========================
+   🧠 Provider
+   ========================== */
 export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  /* === Fetch existing notifications === */
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications", {
@@ -125,7 +135,7 @@ export function NotificationsProvider({ children }) {
         dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
       }
     } catch (err) {
-      console.error(err);
+      console.error("[fetchNotifications] failed:", err);
     }
   }, []);
 
@@ -133,14 +143,23 @@ export function NotificationsProvider({ children }) {
     if (user?.businessId) fetchNotifications();
   }, [user?.businessId, fetchNotifications]);
 
+  /* === Socket real-time listeners === */
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
-    const onConnect = () => {
+    const setupListeners = () => {
+      console.log("[Socket] joining business room", user.businessId);
       socket.emit("joinBusinessRoom", user.businessId);
 
-      // 📩 New messages
+      // 🔔 התראות כלליות
+      socket.on("newNotification", (notif) => {
+        console.log("[Socket] newNotification:", notif);
+        dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+      });
+
+      // ✉️ הודעות חדשות
       socket.on("newMessage", (msg) => {
+        console.log("[Socket] newMessage:", msg);
         const senderRole = msg.role || "client";
         const notif = {
           threadId: msg.conversationId,
@@ -156,55 +175,65 @@ export function NotificationsProvider({ children }) {
         dispatch({ type: "ADD_NOTIFICATION", payload: notif });
       });
 
-      // 🔔 General notifications (including taskReminder)
-      socket.on("newNotification", (notif) => {
-        dispatch({ type: "ADD_NOTIFICATION", payload: notif });
-      });
-
-      // 🤖 AI notifications
+      // 🤖 התראות AI
       socket.on("newRecommendationNotification", (notif) => {
+        console.log("[Socket] newRecommendationNotification:", notif);
         dispatch({ type: "ADD_NOTIFICATION", payload: notif });
       });
 
-      // 📊 Update unread messages count
-      socket.on("unreadMessagesCount", (count) => {
-        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: count });
+      // 🔢 עדכון מונה כולל (notificationBundle)
+      socket.on("notificationBundle", (data) => {
+        console.log("[Socket] notificationBundle:", data);
+        if (typeof data?.count === "number") {
+          dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data.count });
+        }
       });
     };
 
-    socket.on("connect", onConnect);
-    if (socket.connected) onConnect();
+    // מאזינים גם אם כבר מחובר
+    if (socket.connected) setupListeners();
+    socket.on("connect", setupListeners);
 
     return () => {
-      socket.off("connect", onConnect);
+      socket.off("connect", setupListeners);
       socket.off("newMessage");
       socket.off("newNotification");
       socket.off("newRecommendationNotification");
-      socket.off("unreadMessagesCount");
+      socket.off("notificationBundle");
     };
   }, [socket, user?.businessId]);
 
+  /* === Mark as read === */
   const markAsRead = useCallback(
     async (id) => {
-      await fetch(`/api/business/my/notifications/${id}/read`, {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      dispatch({
-        type: "UPDATE_UNREAD_COUNT",
-        payload: Math.max(state.unreadCount - 1, 0),
-      });
+      try {
+        await fetch(`/api/business/my/notifications/${id}/read`, {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        dispatch({
+          type: "UPDATE_UNREAD_COUNT",
+          payload: Math.max(state.unreadCount - 1, 0),
+        });
+      } catch (err) {
+        console.error("[markAsRead] failed:", err);
+      }
     },
     [state.unreadCount]
   );
 
+  /* === Clear all read notifications === */
   const clearRead = useCallback(async () => {
-    const res = await fetch("/api/business/my/notifications/clearRead", {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
-    const data = await res.json();
-    if (data.ok) dispatch({ type: "CLEAR_ALL" });
+    try {
+      const res = await fetch("/api/business/my/notifications/clearRead", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      const data = await res.json();
+      if (data.ok) dispatch({ type: "CLEAR_ALL" });
+    } catch (err) {
+      console.error("[clearRead] failed:", err);
+    }
   }, []);
 
   return (
@@ -221,6 +250,9 @@ export function NotificationsProvider({ children }) {
   );
 }
 
+/* ==========================
+   📡 Hook
+   ========================== */
 export function useNotifications() {
   return useContext(NotificationsContext);
 }
