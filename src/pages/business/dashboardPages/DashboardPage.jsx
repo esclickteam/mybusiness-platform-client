@@ -337,6 +337,8 @@ const DashboardPage = () => {
 
     /* ✅ Unified real-time listener (Redis) */
     /* ✅ Unified Real-time Listener — handles all Redis → Socket.IO events */
+/* ✅ Unified Real-time Listener — handles all Redis → Socket.IO events */
+/* ✅ Unified Real-time Listener — handles all Redis → Socket.IO events */
 sock.on("businessUpdates", (payload) => {
   try {
     const data = typeof payload === "string" ? JSON.parse(payload) : payload;
@@ -351,11 +353,17 @@ sock.on("businessUpdates", (payload) => {
         debouncedSetStats(eventData);
         break;
 
-      // 🔹 צפיות בפרופיל
+      // 🔹 צפיות בפרופיל (עם הגנה כפולה + בדיקת שינוי אמיתי)
       case "profileViewsUpdated":
-        setStats((s) =>
-          s ? { ...s, views_count: eventData.views_count } : s
-        );
+        setStats((s) => {
+          if (!s) return s;
+
+          // 🧠 מניעת עדכון כפול אם הערך זהה או קטן יותר
+          if (!eventData?.views_count || s.views_count >= eventData.views_count)
+            return s;
+
+          return { ...s, views_count: eventData.views_count };
+        });
         break;
 
       // 🔹 פגישות — כל שינוי גורם לריענון מיידי
@@ -365,20 +373,23 @@ sock.on("businessUpdates", (payload) => {
         refreshAppointmentsFromAPI();
         break;
 
-      // 🔹 ביקורות חדשות
-      case "newReview":
-        setStats((s) =>
-          s
-            ? {
-                ...s,
-                reviews: [...(s.reviews || []), eventData],
-                reviews_count: (s.reviews_count || 0) + 1,
-              }
-            : s
-        );
-        break;
+      // 🔹 ביקורות חדשות (עם בדיקת כפילות)
+      case "newReview": {
+        setStats((s) => {
+          if (!s) return s;
+          const exists = s.reviews?.some((r) => r._id === eventData._id);
+          if (exists) return s; // ⛔ מניעת ספירה כפולה
 
-      // 🔹 התראות (כולל באנדל)
+          return {
+            ...s,
+            reviews: [...(s.reviews || []), eventData],
+            reviews_count: (s.reviews_count || 0) + 1,
+          };
+        });
+        break;
+      }
+
+      // 🔹 התראות חדשות (כולל באנדלים)
       case "newNotification":
       case "notificationBundle":
         setStats((s) =>
@@ -411,6 +422,23 @@ sock.on("businessUpdates", (payload) => {
     console.error("❌ Error parsing businessUpdates payload:", err);
   }
 });
+
+/* ✅ Direct socket event fallback — for servers that emit 'newReview' directly */
+sock.on("newReview", (reviewData) => {
+  console.log("📡 [Direct Socket] newReview", reviewData);
+  setStats((s) => {
+    if (!s) return s;
+    const exists = s.reviews?.some((r) => r._id === reviewData._id);
+    if (exists) return s;
+
+    return {
+      ...s,
+      reviews: [...(s.reviews || []), reviewData],
+      reviews_count: (s.reviews_count || 0) + 1,
+    };
+  });
+});
+
 
   };
 
