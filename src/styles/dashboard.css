@@ -287,8 +287,3 @@ html, body {
   color: #0f172a !important;
 }
 
-.weekly-summary-card .card-value,
-.smart-summary-card .card-value {
-  color: #0f172a !important;
-  font-weight: 800 !important;
-}
