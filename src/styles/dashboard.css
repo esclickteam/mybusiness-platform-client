@@ -33,11 +33,13 @@
   --hover-scale: 1.03;
 }
 
+/* ========= Global ========= */
 html, body {
-  background: var(--bg);
+  background: var(--bg) !important; /* ✅ שומר על הרקע הנכון מהרגע הראשון */
   color: var(--text);
   direction: ltr;
   font-family: "Poppins", "Inter", sans-serif;
+  transition: none !important; /* ✅ מבטל הבהוב בצבע בטעינה */
 }
 
 * { box-sizing: border-box; }
