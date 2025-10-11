@@ -14,10 +14,10 @@ import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
-import { FaTimes } from "react-icons/fa"; // ✅ כפתור סגירה במובייל
+import { FaTimes, FaBars } from "react-icons/fa";
 
 /* ============================
-   🧭 רשימת טאבים (ללא אייקונים)
+   🧭 רשימת טאבים
    ============================ */
 const tabs = [
   { path: "dashboard", label: "Dashboard" },
@@ -30,7 +30,7 @@ const tabs = [
 ];
 
 /* ============================
-   🔌 חיבור Socket.io לשרת
+   🔌 Socket.io
    ============================ */
 const SOCKET_URL = "https://api.bizuply.com";
 const socket = io(SOCKET_URL, { autoConnect: false });
@@ -46,7 +46,7 @@ export default function BusinessDashboardLayout({ children }) {
   const isDashboardPath = location.pathname.includes("/dashboard");
 
   /* ============================
-     🧠 ניהול חיבור Socket לעסק
+     Socket.io – הצטרפות לעסק
      ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
@@ -56,7 +56,7 @@ export default function BusinessDashboardLayout({ children }) {
   }, [user?.businessId]);
 
   /* ============================
-     🚀 Prefetch של נתונים חשובים
+     Prefetch נתונים
      ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
@@ -84,7 +84,7 @@ export default function BusinessDashboardLayout({ children }) {
   }, [user?.businessId, queryClient]);
 
   /* ============================
-     🔐 הרשאות משתמש
+     הרשאות
      ============================ */
   useEffect(() => {
     if (!loading && user?.role !== "business") {
@@ -104,32 +104,30 @@ export default function BusinessDashboardLayout({ children }) {
   }, [user, loading, location.search, location.state, navigate]);
 
   /* ============================
-     📱 ניהול מובייל ודשבורד
+     מובייל / דסקטופ
      ============================ */
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
-  const [showSidebar, setShowSidebar] = useState(
-    !isMobileInit || isDashboardPath
-  );
+  const [showSidebar, setShowSidebar] = useState(!isMobileInit);
   const sidebarRef = useRef(null);
 
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      setShowSidebar(!mobile || (mobile && isDashboardPath));
+      if (!mobile) setShowSidebar(true);
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [isDashboardPath]);
+  }, []);
 
   /* ============================
-     🔄 ניהול Focus ו־Escape במובייל
+     מקשים (Tab / Escape)
      ============================ */
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
     const sel =
-      'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const els = sidebarRef.current.querySelectorAll(sel);
     if (!els.length) return;
     const first = els[0],
@@ -150,35 +148,24 @@ export default function BusinessDashboardLayout({ children }) {
 
     document.addEventListener("keydown", onKey);
     first.focus();
-
     return () => document.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
-  /* ============================
-     🕓 טעינה
-     ============================ */
   if (loading) return <p className="loading">Loading information…</p>;
 
-  /* ============================
-     🎨 Layout מלא
-     ============================ */
   return (
     <BusinessServicesProvider>
       <AiProvider>
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
-            {/* ========================
-                📂 Sidebar – גלוי תמיד בדשבורד במובייל
-               ======================== */}
+            {/* 📂 Sidebar */}
             {(!isMobile || showSidebar) && (
               <aside
                 className={`sidebar ${isMobile ? "mobile open" : ""}`}
                 ref={sidebarRef}
                 aria-modal={isMobile && showSidebar ? "true" : undefined}
                 role={isMobile && showSidebar ? "dialog" : undefined}
-                id="sidebar"
               >
-                {/* 🔹 לוגו + כפתור סגירה במובייל */}
                 <div className="sidebar-logo">
                   <img
                     src="/bizuply logo.png"
@@ -196,10 +183,8 @@ export default function BusinessDashboardLayout({ children }) {
                   )}
                 </div>
 
-                {/* 🔹 כותרת הסיידבר */}
                 <h2>Business Management</h2>
 
-                {/* 🔹 ניווט */}
                 <nav>
                   {user?.role === "business" && (
                     <NavLink
@@ -212,7 +197,6 @@ export default function BusinessDashboardLayout({ children }) {
                       View Public Profile
                     </NavLink>
                   )}
-
                   {tabs.map(({ path, label }) => (
                     <NavLink
                       key={path}
@@ -235,9 +219,27 @@ export default function BusinessDashboardLayout({ children }) {
               </aside>
             )}
 
-            {/* ========================
-                💬 תוכן הדשבורד
-               ======================== */}
+            {/* 🔹 Overlay כהה ברקע במובייל */}
+            {isMobile && showSidebar && (
+              <div
+                className="sidebar-overlay"
+                onClick={() => setShowSidebar(false)}
+                aria-label="Close menu"
+              />
+            )}
+
+            {/* 🔹 כפתור פתיחה ☰ */}
+            {isMobile && !showSidebar && (
+              <button
+                className="sidebar-open-btn"
+                aria-label="Open menu"
+                onClick={() => setShowSidebar(true)}
+              >
+                <FaBars size={20} />
+              </button>
+            )}
+
+            {/* 💬 תוכן */}
             <main
               className="dashboard-content"
               tabIndex={-1}
