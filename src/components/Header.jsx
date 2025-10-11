@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo_final.svg";
 import { FaBars, FaChevronLeft } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
-import FacebookStyleNotifications from "../components/FacebookStyleNotifications"; // ✅ הפעמון
 import "../styles/Header.css";
 
 const navLinks = [
@@ -14,27 +13,29 @@ const navLinks = [
   { to: "/about", label: "About" },
 ];
 
-export default function Header({ onMenuClick }) {
+export default function Header() {
   const { user, logout, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // ✅ נזהה אם אנחנו בדשבורד (כולל נתיבי עסקים)
+  // ✅ נזהה אם אנחנו בדשבורד
   const isDashboard =
     location.pathname.includes("/dashboard") ||
     location.pathname.includes("/business/");
 
-  // ✅ בזמן טעינה — בדשבורד בלבד מציגים Header ריק יציב
-  if (isDashboard && loading) {
-    return (
-      <nav className="app-header header-loading">
-        <div className="logo-wrapper">
-          <img src={logo} alt="Bizuply Logo" className="logo" />
-        </div>
-      </nav>
-    );
-  }
+  // ✅ בדשבורד לא מציגים כלום
+  if (isDashboard) return null;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+    } catch (err) {
+      console.error("❌ Logout failed:", err);
+    }
+    setMenuOpen(false);
+  };
 
   const link = (to, label) => (
     <Link
@@ -47,48 +48,22 @@ export default function Header({ onMenuClick }) {
     </Link>
   );
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/");
-    } catch (err) {
-      console.error("❌ Logout failed:", err);
-    }
-    setMenuOpen(false);
-  };
-
   return (
     <>
       <nav className="app-header">
-        {/* 🔹 Logo + Notifications */}
+        {/* 🔹 לוגו */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
-            <img src={logo} alt="Logo" className="logo" />
+            <img src={logo} alt="Bizuply Logo" className="logo" />
           </Link>
-
-          {/* ✅ הפעמון מוצג רק אם המשתמש הוא עסק */}
-          {user?.businessId && <FacebookStyleNotifications />}
-
-          {/* ✅ כפתור ההמבורגר במובייל — בתוך ההידר בדשבורד בלבד */}
-          {isDashboard && (
-            <button
-              className="menu-btn mobile-only"
-              onClick={onMenuClick}
-              aria-label="Open sidebar"
-            >
-              <FaBars size={22} />
-            </button>
-          )}
         </div>
 
-        {/* 🔹 Desktop Navigation — רק מחוץ לדשבורד */}
-        {!isDashboard && (
-          <div className="nav-links desktop-only">
-            {navLinks.map((item) => link(item.to, item.label))}
-          </div>
-        )}
+        {/* 🔹 ניווט בדסקטופ */}
+        <div className="nav-links desktop-only">
+          {navLinks.map((item) => link(item.to, item.label))}
+        </div>
 
-        {/* 🔹 Desktop Actions */}
+        {/* 🔹 פעולות משתמש */}
         <div className="auth-controls desktop-only">
           {!user ? (
             <>
@@ -112,21 +87,19 @@ export default function Header({ onMenuClick }) {
           )}
         </div>
 
-        {/* 🔹 Mobile Hamburger Menu — ❌ רק לאתר הציבורי, לא לדשבורד */}
-        {!isDashboard && (
-          <div className="menu-toggle mobile-only">
-            <button
-              className="menu-button"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
-            </button>
-          </div>
-        )}
+        {/* 🔹 ✅ המבורגר רק במובייל הציבורי */}
+        <div className="menu-toggle mobile-only">
+          <button
+            className="menu-button"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
+          </button>
+        </div>
       </nav>
 
-      {/* 🔹 Mobile Drawer */}
-      {menuOpen && !isDashboard && (
+      {/* 🔹 תפריט צד למובייל */}
+      {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
           <div className="side-menu open">
@@ -179,11 +152,9 @@ export default function Header({ onMenuClick }) {
                 )}
               </div>
 
-              {!isDashboard && (
-                <div className="menu-section">
-                  {navLinks.map((item) => link(item.to, item.label))}
-                </div>
-              )}
+              <div className="menu-section">
+                {navLinks.map((item) => link(item.to, item.label))}
+              </div>
             </div>
           </div>
         </>
