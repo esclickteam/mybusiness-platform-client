@@ -177,45 +177,60 @@ html {
 }
 
 /* 🔹 Sidebar Logo Styling */
+/* 🔹 Sidebar */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0.8rem;      /* ✅ רווח קטן בלבד למעלה */
+  padding-bottom: 1.5rem;
+  background: linear-gradient(180deg, #e6d3ff 0%, #d1b3ff 100%);
+  color: #0f172a;
+  min-height: 100vh;
+  width: 250px;
+  box-shadow: 0 0 20px rgba(124, 77, 255, 0.25);
+  border-radius: 12px;
+  position: relative;
+}
+
+/* 🔹 לוגו צמוד למעלה */
 .sidebar-logo {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 0.3rem;      /* מצמיד ללמעלה */
-  margin-bottom: 0.2rem;   /* כמעט בלי רווח מתחת ללוגו */
+  margin: 0;                /* ❌ ביטול כל רווח */
   padding: 0;
 }
 
 .sidebar-logo-img {
-  width: 85%;               /* ✅ תופס כמעט את כל רוחב הסיידבר */
-  max-width: 200px;         /* כדי שלא יגדל מדי במסך רחב */
+  width: 85%;
+  max-width: 200px;
   height: auto;
   object-fit: contain;
-  border-radius: 0;
-  box-shadow: none;
-  filter: none;
+  margin-top: 0;            /* ✅ צמוד לגמרי לחלק העליון */
   transition: transform 0.25s ease-in-out;
 }
 
 .sidebar-logo-img:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
-/* 🔹 כותרת ראשית */
+/* 🔹 כותרת */
 .sidebar h2 {
   font-size: 1.25rem;
   font-weight: 800;
-  margin-top: 0.2rem;      /* כמעט נוגע בלוגו */
-  margin-bottom: 0.6rem;   /* מצמיד את הקישורים למעלה */
+  margin-top: 0.6rem;       /* רווח קטן אחרי הלוגו */
+  margin-bottom: 0.8rem;
   text-align: center;
   color: #0f172a;
 }
 
-/* 🔹 ניווט */
+/* 🔹 תפריט קישורים */
 .sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;             /* רווח אחיד וקטן בין הקישורים */
-  margin-top: 0;           /* ביטול כל מרווח עודף */
-  padding-top: 0;
+  gap: 0.6rem;
+  width: 100%;
+  align-items: center;
 }
