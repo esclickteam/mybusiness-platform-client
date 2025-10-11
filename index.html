@@ -17,6 +17,46 @@
 
   <base href="/" />
 
+  <!-- ✅ 🔥 Critical Theme Colors - Load before React -->
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --surface-2: #f3f5fb;
+      --border: #e8ecf5;
+
+      --text: #0f172a;
+      --muted: #475569;
+
+      --violet: #6a11cb;
+      --violet-600: #5a0fb0;
+      --violet-100: #efe6fb;
+
+      --blue: #2575fc;
+      --blue-50: #e9f0ff;
+
+      --pink-50: #ffe6ef;
+
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+
+      --ring: rgba(106, 17, 203, 0.28);
+      --shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+
+      /* 🎨 נוסיף גם gradient אחיד למראה עשיר כבר מהטעינה הראשונה */
+      --accent-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      transition: none !important;
+      margin: 0;
+      font-family: "Poppins", Arial, sans-serif;
+    }
+  </style>
+
   <!-- ✅ Favicon / App Icons -->
   <link rel="icon" type="image/png" sizes="16x16"  href="/icons/icon-16x16.png?v=3" />
   <link rel="icon" type="image/png" sizes="32x32"  href="/icons/icon-32x32.png?v=3" />
@@ -38,16 +78,6 @@
   <!-- Global CSS -->
   <link rel="stylesheet" href="/index.css" />
 
-  <!-- Inline critical CSS -->
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #fff;
-      direction: ltr;
-    }
-  </style>
-
   <!-- CardCom LowProfile SDK -->
   <script
     src="https://secure.cardcom.solutions/EasyCheckout/js/Checkout.js"
@@ -56,11 +86,9 @@
   ></script>
 </head>
 <body>
-  <!-- React app will be mounted here -->
   <div id="root"></div>
   <div id="popup-root"></div>
 
-  <!-- Main React script -->
   <script type="module" src="/src/index.jsx" defer></script>
 </body>
 </html>
