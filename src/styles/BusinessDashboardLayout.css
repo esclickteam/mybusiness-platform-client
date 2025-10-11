@@ -187,7 +187,8 @@ html {
 }
 
 .sidebar-logo-img {
-  width: 120px;            /* טיפה קטן, נראה יותר מדויק */
+  width: 85%;               /* ✅ תופס כמעט את כל רוחב הסיידבר */
+  max-width: 200px;         /* כדי שלא יגדל מדי במסך רחב */
   height: auto;
   object-fit: contain;
   border-radius: 0;
