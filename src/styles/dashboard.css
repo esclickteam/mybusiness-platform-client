@@ -327,17 +327,16 @@ body, html, #root {
 }
 
 html, body {
-  height: auto !important;
+  height: 100% !important;
   min-height: 100vh !important;
-  overflow-y: auto !important; /* מאפשר גלילה אחת */
-  overflow-x: hidden !important; /* מונע גלילה אופקית */
+  overflow: hidden !important; /* אין גלילה כפולה על ה־body */
 }
 
 /* ✅ רק ה־root (האפליקציה הראשית של React) מקבל גלילה אחת */
 #root {
   height: auto !important;
   min-height: 100vh !important;
-  overflow-y: visible !important; /* מאפשר שהתוכן יזרום עד הסוף */
+  overflow-y: auto !important;
   overflow-x: hidden !important;
   overscroll-behavior: contain !important;
 }
