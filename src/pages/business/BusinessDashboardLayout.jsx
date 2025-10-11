@@ -14,12 +14,11 @@ import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
-import { FaTimes, FaBars } from "react-icons/fa"; // ✅ כפתור סגירה + פתיחה
+import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 
-
 /* ============================
-   🧭 רשימת טאבים (ללא אייקונים)
+   🧭 רשימת טאבים
    ============================ */
 const tabs = [
   { path: "dashboard", label: "Dashboard" },
@@ -44,8 +43,6 @@ export default function BusinessDashboardLayout({ children }) {
   const location = useLocation();
   const queryClient = useQueryClient();
   const { unreadCount: messagesCount } = useNotifications();
-
-  const isDashboardPath = location.pathname.includes("/dashboard");
 
   /* ============================
      🧠 חיבור Socket לעסק
@@ -117,7 +114,7 @@ export default function BusinessDashboardLayout({ children }) {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      if (!mobile) setShowSidebar(true); // דסקטופ תמיד גלוי
+      if (!mobile) setShowSidebar(true);
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -153,9 +150,6 @@ export default function BusinessDashboardLayout({ children }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
-  /* ============================
-     טעינה
-     ============================ */
   if (loading) return <p className="loading">Loading information…</p>;
 
   /* ============================
@@ -224,13 +218,46 @@ export default function BusinessDashboardLayout({ children }) {
                     </NavLink>
                   ))}
                 </nav>
+
+                {/* 👤 אזור משתמש בתחתית ההמבורגר (מובייל בלבד) */}
+                {isMobile && (
+                  <div className="sidebar-footer">
+                    <span className="user-name">Hello, {user?.name}</span>
+                    <button
+                      className="logout-btn"
+                      onClick={() => {
+                        navigate("/");
+                        localStorage.clear();
+                      }}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
               </aside>
             )}
 
-            {/* 🔔 פעמון קבוע ליד הסיידבר */}
-<div className="dashboard-bell desktop">
-  <FacebookStyleNotifications />
-</div>
+            {/* 🧭 Header עליון לדסקטופ */}
+            {!isMobile && (
+              <header className="dashboard-header">
+                <div className="dashboard-header-left">
+                  <FacebookStyleNotifications />
+                </div>
+
+                <div className="dashboard-header-right">
+                  <span className="user-name">Hello, {user?.name}</span>
+                  <button
+                    className="logout-btn"
+                    onClick={() => {
+                      navigate("/");
+                      localStorage.clear();
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
+              </header>
+            )}
 
             {/* 🔹 כפתור פתיחה במובייל */}
             {isMobile && !showSidebar && (
@@ -243,10 +270,12 @@ export default function BusinessDashboardLayout({ children }) {
               </button>
             )}
 
-            {/* 🔔 פעמון בצד שמאל */}
-<div className="dashboard-bell">
-  <FacebookStyleNotifications />
-</div>
+            {/* 🔔 פעמון למובייל בצד שמאל */}
+            {isMobile && (
+              <div className="dashboard-bell">
+                <FacebookStyleNotifications />
+              </div>
+            )}
 
             {/* 🔹 תוכן */}
             <main

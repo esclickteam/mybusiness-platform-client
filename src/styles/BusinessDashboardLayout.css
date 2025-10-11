@@ -345,3 +345,109 @@ footer {
     display: none;
   }
 }
+
+/* ===========================
+   🧭 Header עליון לדסקטופ
+   =========================== */
+.dashboard-header {
+  position: fixed;
+  top: 0;
+  left: 250px;
+  right: 0;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  z-index: 9050;
+}
+
+.dashboard-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboard-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #1e1b2e;
+  font-size: 15px;
+}
+
+.logout-btn {
+  background: linear-gradient(90deg, #6a11cb, #5e17eb);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 12px rgba(106, 17, 203, 0.2);
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(106, 17, 203, 0.3);
+}
+
+/* מרווח לתוכן בדסקטופ – שלא יעלה מתחת ל-header */
+@media (min-width: 769px) {
+  .dashboard-content {
+    margin-top: 64px !important;
+  }
+}
+
+/* ===========================
+   📱 מובייל – Hello + Logout בתחתית ההמבורגר
+   =========================== */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* ✅ מפריד את הניווט מה-footer */
+    padding-bottom: 1rem;
+  }
+
+  .sidebar-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
+    margin-top: 1rem;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .sidebar-footer .user-name {
+    display: block;
+    font-weight: 600;
+    color: #2a165f;
+    margin-bottom: 0.6rem;
+  }
+
+  .sidebar-footer .logout-btn {
+    background: linear-gradient(90deg, #6a11cb, #5e17eb);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    width: 80%;
+    margin: 0 auto;
+    display: inline-block;
+    box-shadow: 0 4px 10px rgba(106, 17, 203, 0.25);
+  }
+
+  .sidebar-footer .logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(106, 17, 203, 0.3);
+  }
+}
