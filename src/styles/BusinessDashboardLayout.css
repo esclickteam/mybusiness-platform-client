@@ -209,11 +209,11 @@
   font-size: 13px;
   font-weight: 700;
   color: #fff;
-  background: radial-gradient(circle at 30% 30%, #ff4d8d, #b30075); /* ורוד-סגול זוהר */
-  border-radius: 9999px;
-  margin-left: 8px;
+  background: radial-gradient(circle at 30% 30%, #9b00ff, #5a00d0); /* סגול עמוק עם נגיעת ניאון */
+  border-radius: 50%;
+  margin-left: 10px;
   padding: 0 6px;
-  box-shadow: 0 0 10px rgba(255, 64, 160, 0.8), 0 0 4px rgba(179, 0, 117, 0.6); /* זוהר ורדרד */
+  box-shadow: 0 0 12px rgba(155, 0, 255, 0.8), 0 0 6px rgba(90, 0, 208, 0.6); /* זוהר סגול חזק */
   animation: pulse 1.6s infinite ease-in-out;
   position: relative;
   top: -1px;
