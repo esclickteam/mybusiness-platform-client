@@ -227,6 +227,11 @@ export default function BusinessDashboardLayout({ children }) {
               </aside>
             )}
 
+            {/* 🔔 פעמון קבוע ליד הסיידבר */}
+<div className="dashboard-bell desktop">
+  <FacebookStyleNotifications />
+</div>
+
             {/* 🔹 כפתור פתיחה במובייל */}
             {isMobile && !showSidebar && (
               <button

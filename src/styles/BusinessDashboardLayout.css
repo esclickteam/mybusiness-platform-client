@@ -319,6 +319,16 @@ footer {
   color: #0f172a !important;
 }
 
+.dashboard-bell.desktop {
+  position: fixed;
+  top: 20px;
+  left: 270px; /* יושב ממש ליד הסיידבר */
+  z-index: 9003;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .dashboard-bell {
   position: fixed;
   top: 16px;
