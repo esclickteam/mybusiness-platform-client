@@ -39,7 +39,6 @@ export default function BusinessDashboardLayout({ children }) {
   const location = useLocation();
   const queryClient = useQueryClient();
 
-  // ✅ נשלף ישירות מהקונטקסט (אין צורך ב־useEffect כפול)
   const { unreadCount: messagesCount } = useNotifications();
 
   useEffect(() => {
@@ -147,7 +146,17 @@ export default function BusinessDashboardLayout({ children }) {
                 role={isMobile && showSidebar ? "dialog" : undefined}
                 id="sidebar"
               >
+                {/* 🔹 לוגו מעל הכותרת */}
+                <div className="sidebar-logo">
+                  <img
+                    src="/bizuply logo.png"
+                    alt="BizUply Logo"
+                    className="sidebar-logo-img"
+                  />
+                </div>
+
                 <h2>Business Management</h2>
+
                 <nav>
                   {user?.role === "business" && (
                     <NavLink
