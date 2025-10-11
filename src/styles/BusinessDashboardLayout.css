@@ -204,29 +204,39 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
-  height: 20px;
+  min-width: 22px;
+  height: 22px;
   font-size: 12px;
   font-weight: 700;
   color: #fff;
-  background: #ff1744; /* 🔥 אדום-ורוד בוהק */
-  border: 2px solid #fff; /* גבול לבן ליצירת ניגודיות מול הרקע */
+  background: linear-gradient(145deg, #ff1744, #ff3b5f); /* מעבר צבע חלק */
+  border: 2px solid #fff; /* ניגוד מול רקע בהיר */
   border-radius: 9999px;
   margin-left: 8px;
   padding: 0 6px;
-  box-shadow: 0 0 8px rgba(255, 23, 68, 0.7); /* זוהר רך */
-  animation: pulse 1.6s infinite ease-in-out;
+  box-shadow: 0 0 10px rgba(255, 23, 68, 0.55); /* זוהר עדין */
+  animation: badgePulse 2.2s ease-in-out infinite; /* אנימציה רגועה */
   position: relative;
   top: -1px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+  cursor: default;
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.15); opacity: 0.9; }
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(255, 23, 68, 0.5);
+  }
+  50% {
+    transform: scale(1.12);
+    box-shadow: 0 0 16px rgba(255, 23, 68, 0.8);
+  }
 }
 
-/* כשהטאב פעיל — דגש נוסף */
+/* כשהטאב פעיל — זוהר עדין יותר */
 .sidebar a.active .badge {
-  background: #ff3b5f;
-  box-shadow: 0 0 10px rgba(255, 59, 95, 0.8);
+  background: linear-gradient(145deg, #ff3b5f, #ff1f4a);
+  box-shadow: 0 0 14px rgba(255, 59, 95, 0.75);
+  transform: scale(1.08);
 }
