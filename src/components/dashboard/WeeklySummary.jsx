@@ -60,12 +60,11 @@ const WeeklySummary = ({ stats }) => {
             borderRadius: 12,
             flex: 1,
             minWidth: 180,
+            color: "#0f172a", // 🖤 כל הטקסטים בכרטיס בשחור
           }}
         >
           <div style={{ fontSize: 14, marginBottom: 8 }}>⭐ Positive Reviews</div>
-          <div style={{ fontSize: 24, fontWeight: "bold", color: "#0f172a" }}>
-            {currentReviews}
-          </div>
+          <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentReviews}</div>
           <div style={{ fontSize: 12, color: reviewsChange.color }}>
             {reviewsChange.arrow} {reviewsChange.text}
           </div>
@@ -79,12 +78,11 @@ const WeeklySummary = ({ stats }) => {
             borderRadius: 12,
             flex: 1,
             minWidth: 180,
+            color: "#0f172a",
           }}
         >
           <div style={{ fontSize: 14, marginBottom: 8 }}>👀 Profile Views</div>
-          <div style={{ fontSize: 24, fontWeight: "bold", color: "#0f172a" }}>
-            {currentViews}
-          </div>
+          <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentViews}</div>
           <div style={{ fontSize: 12, color: viewsChange.color }}>
             {viewsChange.arrow} {viewsChange.text}
           </div>
@@ -98,12 +96,11 @@ const WeeklySummary = ({ stats }) => {
             borderRadius: 12,
             flex: 1,
             minWidth: 180,
+            color: "#0f172a",
           }}
         >
           <div style={{ fontSize: 14, marginBottom: 8 }}>📅 Appointments</div>
-          <div style={{ fontSize: 24, fontWeight: "bold", color: "#0f172a" }}>
-            {currentAppointments}
-          </div>
+          <div style={{ fontSize: 24, fontWeight: "bold" }}>{currentAppointments}</div>
           <div style={{ fontSize: 12, color: appointmentsChange.color }}>
             {appointmentsChange.arrow} {appointmentsChange.text}
           </div>
