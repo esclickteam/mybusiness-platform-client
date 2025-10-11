@@ -15,7 +15,9 @@ import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
 
-// 🔹 רשימת טאבים בלי אייקונים
+/* ============================
+   🧭 רשימת טאבים (ללא אייקונים)
+   ============================ */
 const tabs = [
   { path: "dashboard", label: "Dashboard" },
   { path: "build", label: "Edit Business Page" },
@@ -26,10 +28,10 @@ const tabs = [
   { path: "help-center", label: "Help Center" },
 ];
 
-// Replace here with your server address
+/* ============================
+   🔌 חיבור Socket.io לשרת
+   ============================ */
 const SOCKET_URL = "https://api.bizuply.com";
-
-// Create socket connection outside the component
 const socket = io(SOCKET_URL, { autoConnect: false });
 
 export default function BusinessDashboardLayout({ children }) {
@@ -38,9 +40,16 @@ export default function BusinessDashboardLayout({ children }) {
   const { businessId } = useParams();
   const location = useLocation();
   const queryClient = useQueryClient();
-
   const { unreadCount: messagesCount } = useNotifications();
 
+  /* ============================
+     🧩 זיהוי אם אנחנו בתוך הדשבורד
+     ============================ */
+  const isDashboardPath = location.pathname.includes("/dashboard");
+
+  /* ============================
+     🧠 ניהול חיבור Socket לעסק
+     ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
 
@@ -52,12 +61,19 @@ export default function BusinessDashboardLayout({ children }) {
     };
   }, [user?.businessId]);
 
+  /* ============================
+     🚀 Prefetch של נתונים חשובים
+     ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
+
+    // פרופיל עסק
     queryClient.prefetchQuery(
       ["business-profile", user.businessId],
       () => API.get(`/business/${user.businessId}`).then((res) => res.data)
     );
+
+    // הודעות שלא נקראו
     queryClient.prefetchQuery(
       ["unread-messages", user.businessId],
       () =>
@@ -65,6 +81,8 @@ export default function BusinessDashboardLayout({ children }) {
           (res) => res.data
         )
     );
+
+    // תורים עם שירותים
     queryClient.prefetchQuery(
       ["crm-appointments", user.businessId],
       () =>
@@ -74,14 +92,19 @@ export default function BusinessDashboardLayout({ children }) {
     );
   }, [user?.businessId, queryClient]);
 
+  /* ============================
+     🔐 הרשאות משתמש
+     ============================ */
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
       return;
     }
+
     const params = new URLSearchParams(location.search);
     const tabQ = params.get("tab");
     const tabS = location.state?.activeTab;
+
     if (tabQ && tabs.some((t) => t.path === tabQ)) {
       navigate(`./${tabQ}`, { replace: true });
     } else if (tabS && tabs.some((t) => t.path === tabS)) {
@@ -89,21 +112,30 @@ export default function BusinessDashboardLayout({ children }) {
     }
   }, [user, loading, location.search, location.state, navigate]);
 
+  /* ============================
+     📱 ניהול מובייל ודשבורד
+     ============================ */
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
-  const [showSidebar, setShowSidebar] = useState(!isMobileInit);
+  const [showSidebar, setShowSidebar] = useState(
+    !isMobileInit || isDashboardPath // ✅ גלוי רק אם דשבורד או דסקטופ
+  );
   const sidebarRef = useRef(null);
 
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      setShowSidebar(!mobile);
+      // ✅ רק במובייל בדשבורד שומרים סיידבר גלוי
+      setShowSidebar(!mobile || (mobile && isDashboardPath));
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, []);
+  }, [isDashboardPath]);
 
+  /* ============================
+     🔄 ניהול מקשים ו־Focus במובייל
+     ============================ */
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
     const sel =
@@ -112,6 +144,7 @@ export default function BusinessDashboardLayout({ children }) {
     if (!els.length) return;
     const first = els[0],
       last = els[els.length - 1];
+
     const onKey = (e) => {
       if (e.key === "Tab") {
         if (e.shiftKey && document.activeElement === first) {
@@ -124,20 +157,31 @@ export default function BusinessDashboardLayout({ children }) {
       }
       if (e.key === "Escape") setShowSidebar(false);
     };
+
     document.addEventListener("keydown", onKey);
     first.focus();
+
     return () => document.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
+  /* ============================
+     🕓 טעינה
+     ============================ */
   if (loading) {
     return <p className="loading">Loading information…</p>;
   }
 
+  /* ============================
+     🎨 Layout מלא
+     ============================ */
   return (
     <BusinessServicesProvider>
       <AiProvider>
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
+            {/* ========================
+                📂 Sidebar – גלוי תמיד בדשבורד במובייל
+               ======================== */}
             {(!isMobile || showSidebar) && (
               <aside
                 className={`sidebar ${isMobile ? "mobile open" : ""}`}
@@ -146,7 +190,7 @@ export default function BusinessDashboardLayout({ children }) {
                 role={isMobile && showSidebar ? "dialog" : undefined}
                 id="sidebar"
               >
-                {/* 🔹 לוגו מעל הכותרת */}
+                {/* 🔹 לוגו בחלק העליון */}
                 <div className="sidebar-logo">
                   <img
                     src="/bizuply logo.png"
@@ -155,8 +199,10 @@ export default function BusinessDashboardLayout({ children }) {
                   />
                 </div>
 
+                {/* 🔹 כותרת הסיידבר */}
                 <h2>Business Management</h2>
 
+                {/* 🔹 ניווט */}
                 <nav>
                   {user?.role === "business" && (
                     <NavLink
@@ -169,6 +215,7 @@ export default function BusinessDashboardLayout({ children }) {
                       View Public Profile
                     </NavLink>
                   )}
+
                   {tabs.map(({ path, label }) => (
                     <NavLink
                       key={path}
@@ -182,6 +229,8 @@ export default function BusinessDashboardLayout({ children }) {
                       }
                     >
                       {label}
+
+                      {/* 🔔 באדג' הודעות */}
                       {path === "messages" && messagesCount > 0 && (
                         <span className="badge">{messagesCount}</span>
                       )}
@@ -191,19 +240,9 @@ export default function BusinessDashboardLayout({ children }) {
               </aside>
             )}
 
-            {isMobile && showSidebar && (
-              <div
-                className="sidebar-overlay"
-                onClick={() => setShowSidebar(false)}
-                aria-label="Close menu"
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") setShowSidebar(false);
-                }}
-              />
-            )}
-
+            {/* ========================
+                💬 תוכן הדשבורד
+               ======================== */}
             <main
               className="dashboard-content"
               tabIndex={-1}

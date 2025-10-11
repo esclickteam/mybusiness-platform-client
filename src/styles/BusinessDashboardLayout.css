@@ -2,12 +2,11 @@
    Bizuply – SaaS PRO Dashboard (LTR)
    =========================== */
 
-/* גרדיאנט גלובלי כבר ב־index.css */
 .ltr-wrapper {
   direction: ltr;
   min-height: 100vh;
   display: flex;
-  flex-direction: column; /* ✅ מבנה אנכי */
+  flex-direction: column;
   box-sizing: border-box;
 }
 
@@ -32,7 +31,7 @@
 }
 
 /* ===========================
-   🟣 Sidebar – UX מלא
+   🟣 Sidebar – UX Premium
    =========================== */
 .sidebar {
   position: fixed !important;
@@ -80,16 +79,17 @@
 }
 
 /* ===========================
-   🔹 כותרת ראשית
+   🔹 כותרת
    =========================== */
 .sidebar h2 {
-  font-size: 1.25rem;
-  font-weight: 800;
-  margin-top: 0.4rem;
-  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 1rem 0 0.8rem;
   text-align: center;
-  color: #0f172a;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+  color: #3a2b5a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
 }
 
 /* ===========================
@@ -98,8 +98,7 @@
 .sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0;
+  gap: 0.4rem;
   padding: 0 1.2rem;
   flex-grow: 1;
 }
@@ -107,28 +106,28 @@
 .sidebar a {
   position: relative;
   display: flex;
-  justify-content: space-between; /* מאפשר לבאדג' להיות בקצה */
+  justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
-  border-radius: 16px;
-  color: #0f172a;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  color: #1e1b2e;
+  font-weight: 500;
   text-decoration: none;
   transition: all 0.25s ease;
-  font-weight: 500;
-  background: transparent;
 }
 
 .sidebar a:hover {
-  background: rgba(255, 255, 255, 0.55);
-  transform: translateY(-1px);
+  background: linear-gradient(90deg, rgba(255,255,255,0.65), rgba(250,240,255,0.7));
+  box-shadow: 0 4px 10px rgba(106,17,203,0.1);
+  transform: translateX(6px);
 }
 
 .sidebar a.active {
-  background: #d9c4ff !important;
+  background: linear-gradient(90deg, #d7c0ff 0%, #c4a8ff 100%);
   color: #0f172a !important;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(106, 17, 203, 0.25);
-  transform: scale(1.01);
+  box-shadow: 0 4px 14px rgba(106,17,203,0.25);
+  transform: translateX(6px);
 }
 
 /* 🔴 Badge Notification */
@@ -140,22 +139,33 @@
   height: 22px;
   font-size: 12px;
   font-weight: 700;
-  color: #fff; /* 🟣 טקסט לבן ברור */
-  background: radial-gradient(circle at 30% 30%, #ff3b30, #c51162); /* 🔥 גרדיאנט ורוד-אדום */
-  border: 2px solid rgba(255, 255, 255, 0.4); /* ✅ גבול עדין לא חותך */
+  color: #fff;
+  background: linear-gradient(145deg, #ff3366, #ff1744);
+  border: 1px solid rgba(255,255,255,0.5);
   border-radius: 9999px;
   margin-left: 8px;
   padding: 0 6px;
-  box-shadow: 0 0 8px rgba(255, 23, 68, 0.7);
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.6);
   animation: pulse 1.8s infinite ease-in-out;
   position: relative;
   top: -1px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* ✅ שומר על קריאות המספר */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
 }
-
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.15); opacity: 0.9; }
+}
+
+/* מצבי צבעים נוספים */
+.badge.success { background: linear-gradient(145deg, #00c853, #00e676); }
+.badge.warning { background: linear-gradient(145deg, #ffb300, #ff9100); }
+.badge.info { background: linear-gradient(145deg, #3f51b5, #5c6bc0); }
+
+/* לחיצה – micro interaction */
+.sidebar a:active {
+  background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(215,192,255,0.4) 60%);
+  transform: scale(0.98);
+  transition: all 0.05s ease-in-out;
 }
 
 /* ===========================
