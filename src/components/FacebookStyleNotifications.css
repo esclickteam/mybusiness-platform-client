@@ -1,5 +1,5 @@
 /* ===================================================
-   🔔 Bizuply Notification Style
+   🔔 Facebook-style Notification (accurate design)
    =================================================== */
 
 .fb-notif-wrapper {
@@ -7,83 +7,78 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-left: 14px;
+  margin-left: 6px; /* צמוד ללוגו */
 }
 
-/* פעמון */
+/* ===== 🔔 פעמון ===== */
 .fb-bell {
-  background: linear-gradient(145deg, #f6edff, #ece2ff);
+  background: #f0f2f5;
   border: none;
-  cursor: pointer;
-  font-size: 22px;
-  border-radius: 16px;
-  padding: 10px 12px;
-  transition: all 0.25s ease-in-out;
-  box-shadow: 0 2px 8px rgba(94, 23, 235, 0.15);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #5e17eb;
+  font-size: 18px;
+  color: #050505;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease-in-out;
 }
 
 .fb-bell:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 12px rgba(94, 23, 235, 0.25);
-  color: #4315c7;
+  background: #e4e6eb;
+  transform: scale(1.03);
 }
 
-/* מספר ההתראות */
+/* ===== 🔴 בועה עם המספר ===== */
 .fb-count {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #9333ea; /* סגול מודגש */
+  top: 3px;
+  right: 3px;
+  background: #e41e3f;
   color: #fff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   border-radius: 50%;
-  min-width: 20px;
-  height: 20px;
+  min-width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 8px rgba(147, 51, 234, 0.6);
-  animation: badgePulse 1.8s infinite ease-in-out;
+  line-height: 1;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes badgePulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.15); opacity: 0.9; }
-}
-
-/* פאנל ההתראות */
+/* ===== פאנל ההתראות ===== */
 .fb-panel {
   position: absolute;
   top: 115%;
   left: 0;
   width: 340px;
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(94, 23, 235, 0.15);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  z-index: 999;
+  z-index: 9999;
   direction: rtl;
-  font-family: "Poppins", "Segoe UI", Arial, sans-serif;
-  animation: fadeIn 0.25s ease-in-out;
+  font-family: "Segoe UI", Arial, sans-serif;
+  animation: fadeIn 0.2s ease;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-6px); }
+  from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* טאבים */
+/* ===== טאבים ===== */
 .fb-tabs {
   display: flex;
   justify-content: space-between;
   padding: 10px 12px;
   border-bottom: 1px solid #eee;
-  background: #f8f5ff;
+  background: #f9fafb;
 }
 
 .fb-tabs button {
@@ -95,26 +90,15 @@
   padding: 8px 0;
   cursor: pointer;
   border-radius: 8px;
-  transition: all 0.2s;
 }
 
 .fb-tabs button.active {
-  background: #ede4ff;
-  color: #5e17eb;
+  background: #e7f3ff;
+  color: #1877f2;
   font-weight: 600;
-  box-shadow: 0 0 4px rgba(94, 23, 235, 0.1);
 }
 
-/* כותרת קטגוריה */
-.fb-section-title {
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #666;
-  border-bottom: 1px solid #f2f2f2;
-}
-
-/* רשימה */
+/* ===== רשימת ההתראות ===== */
 .fb-list {
   max-height: 400px;
   overflow-y: auto;
@@ -131,11 +115,11 @@
 }
 
 .fb-item.unread {
-  background: #f3e8ff;
+  background: #f0f6ff;
 }
 
 .fb-item:hover {
-  background: #f7f3ff;
+  background: #f6f6f6;
 }
 
 .fb-text-content p {
@@ -155,7 +139,7 @@
 .fb-dot {
   width: 10px;
   height: 10px;
-  background: #5e17eb;
+  background: #1877f2;
   border-radius: 50%;
   flex-shrink: 0;
   margin-right: 10px;

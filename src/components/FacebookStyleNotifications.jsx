@@ -11,7 +11,6 @@ export default function FacebookStyleNotifications() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // ✅ רק אם המשתמש הוא עסק — נטען התראות
     if (user?.businessId) {
       fetchNotifications();
     }
@@ -50,13 +49,12 @@ export default function FacebookStyleNotifications() {
     return new Date(timestamp).toLocaleDateString("en-US");
   };
 
-  // ✅ אם המשתמש לא עסק – אין צורך להציג פעמון בכלל
   if (!user?.businessId) return null;
 
   return (
     <div className="fb-notif-wrapper">
       <button className="fb-bell" onClick={() => setOpen(!open)}>
-        🔔
+        <i className="fa-regular fa-bell"></i>
         {notifications.some((n) => !n.read) && (
           <span className="fb-count">
             {notifications.filter((n) => !n.read).length}
@@ -92,7 +90,7 @@ export default function FacebookStyleNotifications() {
 
             <div className="fb-list">
               {filtered.length === 0 ? (
-                <p className="fb-empty">No new notifications </p>
+                <p className="fb-empty">No new notifications</p>
               ) : (
                 filtered.map((n) => (
                   <div
