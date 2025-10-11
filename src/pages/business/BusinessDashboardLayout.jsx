@@ -37,12 +37,44 @@ const SOCKET_URL = "https://api.bizuply.com";
 const socket = io(SOCKET_URL, { autoConnect: false });
 
 export default function BusinessDashboardLayout({ children }) {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth(); // ⬅️ נדרש logout מהקונטקסט
   const navigate = useNavigate();
   const { businessId } = useParams();
   const location = useLocation();
   const queryClient = useQueryClient();
   const { unreadCount: messagesCount } = useNotifications();
+
+  /* יציאה מרוכזת — עובדת גם בדסקטופ וגם במובייל */
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showSidebar, setShowSidebar] = useState(!isMobile);
+  const sidebarRef = useRef(null);
+
+  const handleLogout = async () => {
+    try {
+      // ניתוק socket אם מחובר
+      if (socket?.connected) socket.disconnect();
+
+      // יציאה אמיתית מהמערכת
+      if (typeof logout === "function") {
+        await logout();
+      } else {
+        // fallback אם אין logout בקונטקסט
+        localStorage.clear();
+      }
+
+      // ניקוי cache אם רוצים (אופציונלי)
+      // await queryClient.clear();
+
+      // סגירת המבורגר במובייל (אופציונלי)
+      setShowSidebar(false);
+
+      // ניווט לדף הבית
+      navigate("/", { replace: true });
+    } catch (e) {
+      console.error("Logout failed:", e);
+      navigate("/", { replace: true });
+    }
+  };
 
   /* ============================
      🧠 חיבור Socket לעסק
@@ -51,7 +83,9 @@ export default function BusinessDashboardLayout({ children }) {
     if (!user?.businessId) return;
     if (!socket.connected) socket.connect();
     socket.emit("joinBusinessRoom", user.businessId);
-    return () => socket.emit("leaveRoom", `business-${user.businessId}`);
+    return () => {
+      socket.emit("leaveRoom", `business-${user.businessId}`);
+    };
   }, [user?.businessId]);
 
   /* ============================
@@ -103,34 +137,29 @@ export default function BusinessDashboardLayout({ children }) {
   }, [user, loading, location.search, location.state, navigate]);
 
   /* ============================
-     📱 מובייל ודסקטופ
+     📱 מובייל ודסקטופ — Resize
      ============================ */
-  const isMobileInit = window.innerWidth <= 768;
-  const [isMobile, setIsMobile] = useState(isMobileInit);
-  const [showSidebar, setShowSidebar] = useState(!isMobileInit);
-  const sidebarRef = useRef(null);
-
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      if (!mobile) setShowSidebar(true);
+      if (!mobile) setShowSidebar(true); // דסקטופ: התפריט תמיד פתוח
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
   /* ============================
-     🔄 מקשים במובייל
+     🔄 מקשים במובייל (Focus trap)
      ============================ */
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
     const sel =
       'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-    const els = sidebarRef.current.querySelectorAll(sel);
+    const els = sidebarRef.current?.querySelectorAll(sel) ?? [];
     if (!els.length) return;
-    const first = els[0],
-      last = els[els.length - 1];
+    const first = els[0];
+    const last = els[els.length - 1];
 
     const onKey = (e) => {
       if (e.key === "Tab") {
@@ -195,6 +224,7 @@ export default function BusinessDashboardLayout({ children }) {
                       className={({ isActive }) =>
                         isActive ? "active" : undefined
                       }
+                      onClick={() => isMobile && setShowSidebar(false)}
                     >
                       View Public Profile
                     </NavLink>
@@ -210,6 +240,7 @@ export default function BusinessDashboardLayout({ children }) {
                       className={({ isActive }) =>
                         isActive ? "active" : undefined
                       }
+                      onClick={() => isMobile && setShowSidebar(false)}
                     >
                       {label}
                       {path === "messages" && messagesCount > 0 && (
@@ -223,13 +254,7 @@ export default function BusinessDashboardLayout({ children }) {
                 {isMobile && (
                   <div className="sidebar-footer">
                     <span className="user-name">Hello, {user?.name}</span>
-                    <button
-                      className="logout-btn"
-                      onClick={() => {
-                        navigate("/");
-                        localStorage.clear();
-                      }}
-                    >
+                    <button className="logout-btn" onClick={handleLogout}>
                       Logout
                     </button>
                   </div>
@@ -246,13 +271,7 @@ export default function BusinessDashboardLayout({ children }) {
 
                 <div className="dashboard-header-right">
                   <span className="user-name">Hello, {user?.name}</span>
-                  <button
-                    className="logout-btn"
-                    onClick={() => {
-                      navigate("/");
-                      localStorage.clear();
-                    }}
-                  >
+                  <button className="logout-btn" onClick={handleLogout}>
                     Logout
                   </button>
                 </div>
