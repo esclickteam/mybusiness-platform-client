@@ -181,18 +181,15 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1.2rem;
-  margin-top: 0.8rem;
-  /* ❌ ביטול רקע נפרד */
-  background: none !important;
-  position: relative;
+  margin-top: 0.3rem;      /* מצמיד ללמעלה */
+  margin-bottom: 0.2rem;   /* כמעט בלי רווח מתחת ללוגו */
+  padding: 0;
 }
 
 .sidebar-logo-img {
-  width: 130px;
+  width: 120px;            /* טיפה קטן, נראה יותר מדויק */
   height: auto;
   object-fit: contain;
-  /* ✅ הסרת הצללה ורקע כדי להשתלב ברקע הסיידבר */
   border-radius: 0;
   box-shadow: none;
   filter: none;
@@ -201,5 +198,23 @@ html {
 
 .sidebar-logo-img:hover {
   transform: scale(1.05);
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+}
+
+/* 🔹 כותרת ראשית */
+.sidebar h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-top: 0.2rem;      /* כמעט נוגע בלוגו */
+  margin-bottom: 0.6rem;   /* מצמיד את הקישורים למעלה */
+  text-align: center;
+  color: #0f172a;
+}
+
+/* 🔹 ניווט */
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;             /* רווח אחיד וקטן בין הקישורים */
+  margin-top: 0;           /* ביטול כל מרווח עודף */
+  padding-top: 0;
 }
