@@ -128,3 +128,15 @@ button {
 @media (max-width: 480px) {
   body { font-size: 13px; }
 }
+
+/* ================================
+   🧩 שכבת רקע קבועה למניעת פלאש לבן
+   ================================ */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
+  z-index: -1; /* תמיד מאחורי כל התוכן */
+  pointer-events: none;
+}

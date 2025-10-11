@@ -1,14 +1,14 @@
-// src/context/AuthContext.jsx
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API, { setAuthToken } from "../api";
-import { createSocket } from "../socket";
+import createSocket from "../socket"; // singleton socket helper
 
-/* ==========================
+/* ===========================
    🧩 Normalize User
-   ========================== */
+   =========================== */
 function normalizeUser(user) {
   if (!user) return null;
+
   const now = new Date();
   let computedIsValid = false;
 
@@ -29,42 +29,38 @@ function normalizeUser(user) {
     subscriptionStatus: user.status || user.subscriptionPlan || "free",
     daysLeft:
       user.subscriptionEnd && computedIsValid
-        ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
+        ? Math.ceil(
+            (new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24)
+          )
         : 0,
     hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
 }
 
-/* ==========================
-   🎨 Theme Helper
-   ========================== */
-function applyTheme(user) {
-  const theme = user?.role === "business" ? "business" : "light";
-  document.body.setAttribute("data-theme", theme);
-  document.documentElement.setAttribute("data-theme", theme);
-  const bg = theme === "business" ? "#f6f7fb" : "#ffffff";
-  document.body.style.background = bg;
-  document.documentElement.style.background = bg;
-  localStorage.setItem("theme", theme);
-}
-
-/* ==========================
-   🔄 Refresh Token (Single Flight)
-   ========================== */
+/* ===========================
+   🔁 Token Refresh (single-flight)
+   =========================== */
 let ongoingRefresh = null;
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
-    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
+    ongoingRefresh = API.post("/auth/refresh-token", null, {
+      withCredentials: true,
+    })
       .then((res) => {
         const { accessToken, user: refreshedUser } = res.data;
         if (!accessToken) throw new Error("No new token");
+
         localStorage.setItem("token", accessToken);
         setAuthToken(accessToken);
+
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
-          localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
-          applyTheme(normalizedUser);
+          localStorage.setItem(
+            "businessDetails",
+            JSON.stringify(normalizedUser)
+          );
         }
+
         return accessToken;
       })
       .finally(() => {
@@ -74,21 +70,16 @@ export async function singleFlightRefresh() {
   return ongoingRefresh;
 }
 
-/* ==========================
-   🔐 Context
-   ========================== */
+/* ===========================
+   ⚙️ Context
+   =========================== */
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // ✨ טוען theme בסיסי מיידית בזמן רינדור ראשון
-  if (typeof document !== "undefined" && !document.body.getAttribute("data-theme")) {
-    const savedTheme = localStorage.getItem("theme");
-    document.body.setAttribute("data-theme", savedTheme || "light");
-    document.body.style.background = savedTheme === "business" ? "#f6f7fb" : "#ffffff";
-  }
-
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [socket, setSocket] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("businessDetails");
@@ -98,11 +89,10 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const socket = useMemo(() => null, []);
 
-  /* ==========================
-     👤 Refresh User
-     ========================== */
+  /* ===========================
+     👤 Refresh user data
+     =========================== */
   const refreshUser = async (force = false) => {
     try {
       const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
@@ -111,7 +101,6 @@ export function AuthProvider({ children }) {
       const normalized = normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
-      applyTheme(normalized);
       return normalized;
     } catch (e) {
       console.error("Failed to refresh user", e);
@@ -119,9 +108,9 @@ export function AuthProvider({ children }) {
     }
   };
 
-  /* ==========================
-     🚪 Login (Fixed)
-     ========================== */
+  /* ===========================
+     🔐 Login
+     =========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
     setError(null);
@@ -138,30 +127,23 @@ export function AuthProvider({ children }) {
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      // 🧠 נטען משתמש ונעדכן theme לפני הניווט
       const freshUser = await refreshUser(true);
       const normalizedUser = freshUser || normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // 🎨 החלת theme מיידית לפני כל navigate
-      const theme = normalizedUser?.role === "business" ? "business" : "light";
-      document.body.setAttribute("data-theme", theme);
-      document.documentElement.setAttribute("data-theme", theme);
-      const bg = theme === "business" ? "#f6f7fb" : "#ffffff";
-      document.body.style.background = bg;
-      document.documentElement.style.background = bg;
-      localStorage.setItem("theme", theme);
+      // ✅ רקע קבוע לפני ניווט (מונע פלאש)
+      document.body.style.background =
+        "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
 
-      // ⏱ השהיה קצרה כדי לאפשר לדפדפן להחיל צבע לפני הניווט
-      await new Promise((res) => setTimeout(res, 50));
-
-      // 🧭 ניווט
+      // ✅ ניווט אחרי התחברות
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
           if (normalizedUser.role === "business" && normalizedUser.businessId) {
-            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+            navigate(`/business/${normalizedUser.businessId}/dashboard`, {
+              replace: true,
+            });
           } else {
             navigate("/dashboard", { replace: true });
           }
@@ -169,8 +151,13 @@ export function AuthProvider({ children }) {
           const isPlans = redirectUrl === "/plans";
           const shouldSkip = isPlans && normalizedUser.hasAccess;
           if (!shouldSkip) {
-            if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
-              navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+            if (
+              redirectUrl === "/dashboard" &&
+              normalizedUser.businessId
+            ) {
+              navigate(`/business/${normalizedUser.businessId}/dashboard`, {
+                replace: true,
+              });
             } else {
               navigate(redirectUrl, { replace: true });
             }
@@ -183,17 +170,79 @@ export function AuthProvider({ children }) {
     } catch (e) {
       setError(
         e.response?.status >= 400 && e.response?.status < 500
-          ? "❌ Incorrect email or password"
-          : "❌ Server error, please try again"
+          ? "❌ אימייל או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסה שוב"
       );
       setLoading(false);
       throw e;
     }
   };
 
-  /* ==========================
+  /* ===========================
+     🧑‍💼 Staff login
+     =========================== */
+  const staffLogin = async (username, password) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await API.post(
+        "/auth/staff-login",
+        { username: username.trim(), password },
+        { withCredentials: true }
+      );
+      const { accessToken, user: staffUser } = data;
+      localStorage.setItem("token", accessToken);
+      setAuthToken(accessToken);
+      setToken(accessToken);
+
+      const freshUser = await refreshUser(true);
+      const normalizedStaffUser = freshUser || normalizeUser(staffUser);
+      setUser(normalizedStaffUser);
+      localStorage.setItem("businessDetails", JSON.stringify(normalizedStaffUser));
+
+      setLoading(false);
+      return normalizedStaffUser;
+    } catch (e) {
+      setError(
+        e.response?.status >= 400 && e.response?.status < 500
+          ? "❌ שם משתמש או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסה שוב"
+      );
+      setLoading(false);
+      throw e;
+    }
+  };
+
+  /* ===========================
+     🤝 Affiliate login
+     =========================== */
+  const affiliateLogin = async (publicToken) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await API.get(`/affiliate/login/${publicToken}`, {
+        withCredentials: true,
+      });
+      if (!data.success) throw new Error("משווק לא נמצא");
+
+      const freshUser = await refreshUser(true);
+      const normalized = freshUser || normalizeUser(data);
+      setUser(normalized);
+      localStorage.setItem("businessDetails", JSON.stringify(normalized));
+
+      setToken(null);
+      setLoading(false);
+      return normalized;
+    } catch (e) {
+      setError(e.message || "שגיאה בכניסה כמשווק");
+      setLoading(false);
+      throw e;
+    }
+  };
+
+  /* ===========================
      🚪 Logout
-     ========================== */
+     =========================== */
   const logout = async () => {
     setLoading(true);
     try {
@@ -203,20 +252,21 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("token");
     localStorage.removeItem("businessDetails");
     localStorage.removeItem("dashboardStats");
-    localStorage.removeItem("theme");
     setToken(null);
     setUser(null);
     socket?.disconnect();
+    setSocket(null);
     setLoading(false);
     navigate("/login", { replace: true });
   };
 
-  /* ==========================
-     ⚙️ Initialize Auth
-     ========================== */
+  /* ===========================
+     ⚡ Initialize on mount
+     =========================== */
   useEffect(() => {
     if (!token) {
-      socket?.disconnect?.();
+      socket?.disconnect();
+      setSocket(null);
       setUser(null);
       localStorage.removeItem("businessDetails");
       setInitialized(true);
@@ -230,20 +280,23 @@ export function AuthProvider({ children }) {
       try {
         const freshUser = await refreshUser(true);
         if (!freshUser) throw new Error("No fresh user data");
+
         setUser(freshUser);
 
-        const socketInstance = await createSocket(
+        const newSocket = await createSocket(
           singleFlightRefresh,
           logout,
           freshUser.businessId
         );
-        if (socketInstance && !socketInstance.connected) socketInstance.connect();
+        setSocket(newSocket);
 
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
           if (freshUser.role === "business" && freshUser.businessId) {
-            navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
+            navigate(`/business/${freshUser.businessId}/dashboard`, {
+              replace: true,
+            });
           } else {
             navigate("/dashboard", { replace: true });
           }
@@ -254,16 +307,23 @@ export function AuthProvider({ children }) {
         if (savedRedirect) {
           const isPlans = savedRedirect === "/plans";
           const shouldSkip = isPlans && freshUser.hasAccess;
-          if (!shouldSkip) navigate(savedRedirect, { replace: true });
+          if (!shouldSkip) {
+            navigate(savedRedirect, { replace: true });
+          }
           sessionStorage.removeItem("postLoginRedirect");
           return;
         }
 
-        if (freshUser.role === "business" && freshUser.businessId && location.pathname === "/") {
-          navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
+        if (
+          freshUser.role === "business" &&
+          freshUser.businessId &&
+          location.pathname === "/"
+        ) {
+          navigate(`/business/${freshUser.businessId}/dashboard`, {
+            replace: true,
+          });
         }
-      } catch (err) {
-        console.error("[Auth] init error:", err);
+      } catch {
         await logout();
       } finally {
         setLoading(false);
@@ -272,16 +332,18 @@ export function AuthProvider({ children }) {
     })();
   }, [token, navigate, location.pathname]);
 
-  useEffect(() => {
-    if (user) applyTheme(user);
-  }, [user]);
-
+  /* ===========================
+     🕓 Success message timeout
+     =========================== */
   useEffect(() => {
     if (!successMessage) return;
     const t = setTimeout(() => setSuccessMessage(null), 4000);
     return () => clearTimeout(t);
   }, [successMessage]);
 
+  /* ===========================
+     🧩 Context value
+     =========================== */
   const ctx = {
     token,
     user,
@@ -290,33 +352,60 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
+    staffLogin,
+    affiliateLogin,
+    fetchWithAuth: async (fn) => {
+      try {
+        return await fn();
+      } catch (err) {
+        if ([401, 403].includes(err.response?.status)) {
+          await logout();
+          setError("❌ יש להתחבר מחדש");
+        }
+        throw err;
+      }
+    },
     refreshAccessToken: singleFlightRefresh,
     refreshUser,
     socket,
     setUser,
   };
 
-  if (!initialized) {
-    document.body.setAttribute("data-theme", "light");
-    document.body.style.background = "#ffffff";
+  /* ===========================
+     🧩 Loader בזמן טעינה ראשונית
+     =========================== */
+  if (loading && !initialized) {
     return (
-      <div className="auth-loading-screen">
-        <div className="loader" />
+      <div
+        style={{
+          background: "linear-gradient(to bottom, #f6f7fb, #e8ebf8)",
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div className="spinner"></div>
       </div>
     );
   }
 
+  /* ===========================
+     ✅ Render
+     =========================== */
   return (
     <AuthContext.Provider value={ctx}>
-      {successMessage && <div className="global-success-toast">{successMessage}</div>}
+      {successMessage && (
+        <div className="global-success-toast">{successMessage}</div>
+      )}
       {children}
     </AuthContext.Provider>
   );
 }
 
-/* ==========================
-   📡 Hook
-   ========================== */
+/* ===========================
+   🔗 Hook
+   =========================== */
 export function useAuth() {
   return useContext(AuthContext);
 }
