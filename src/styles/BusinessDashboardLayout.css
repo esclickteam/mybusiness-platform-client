@@ -45,7 +45,7 @@
   width: 250px !important;
   height: 100vh !important;
   background: linear-gradient(180deg, #e6d3ff 0%, #d1b3ff 100%) !important;
-  padding: 2rem 1rem !important;
+  padding: 0.8rem 1rem 2rem !important;  /* ⬅️ צמצום הריווח העליון */
   color: #0f172a !important;
   display: flex;
   flex-direction: column;
@@ -181,19 +181,20 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 0.3rem;      /* מצמיד ללמעלה */
-  margin-bottom: 0.2rem;   /* כמעט בלי רווח מתחת ללוגו */
+  margin-top: 0;             /* ❗ הסרת רווח עליון */
+  margin-bottom: 0.4rem;     /* רווח עדין מתחת ללוגו */
   padding: 0;
+  position: sticky;          /* נשאר למעלה גם בגלילה */
+  top: 0;
+  background: inherit;
+  z-index: 10;
 }
 
 .sidebar-logo-img {
-  width: 85%;               /* ✅ תופס כמעט את כל רוחב הסיידבר */
-  max-width: 200px;         /* כדי שלא יגדל מדי במסך רחב */
+  width: 85%;
+  max-width: 200px;
   height: auto;
   object-fit: contain;
-  border-radius: 0;
-  box-shadow: none;
-  filter: none;
   transition: transform 0.25s ease-in-out;
 }
 
@@ -205,8 +206,8 @@ html {
 .sidebar h2 {
   font-size: 1.25rem;
   font-weight: 800;
-  margin-top: 0.2rem;      /* כמעט נוגע בלוגו */
-  margin-bottom: 0.6rem;   /* מצמיד את הקישורים למעלה */
+  margin-top: 0.2rem;        /* צמוד ללוגו */
+  margin-bottom: 0.6rem;
   text-align: center;
   color: #0f172a;
 }
@@ -215,7 +216,8 @@ html {
 .sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;             /* רווח אחיד וקטן בין הקישורים */
-  margin-top: 0;           /* ביטול כל מרווח עודף */
+  gap: 0.5rem;
+  margin-top: 0;             /* אין רווח מיותר אחרי הכותרת */
   padding-top: 0;
 }
+
