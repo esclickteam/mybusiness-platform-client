@@ -1,15 +1,31 @@
+/* ✅ מעטפת הפעמון ליד הלוגו */
 .fb-notif-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 1rem; /* רווח קטן מהלוגו */
 }
 
+/* 🔔 כפתור הפעמון */
 .fb-bell {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 22px;
   position: relative;
+  color: #6a11cb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
+.fb-bell:hover {
+  transform: scale(1.1);
+  color: #8a2be2;
+}
+
+/* 🔢 מונה ההתראות */
 .fb-count {
   position: absolute;
   top: -6px;
@@ -22,12 +38,14 @@
   padding: 2px 5px;
   min-width: 16px;
   text-align: center;
+  box-shadow: 0 0 6px rgba(24, 119, 242, 0.5);
 }
 
+/* 📬 פאנל ההתראות */
 .fb-panel {
   position: absolute;
   top: 115%;
-  right: 0;
+  left: 0; /* ✅ במקום right — כדי שייפתח לצד שמאל */
   width: 340px;
   background: #fff;
   border-radius: 12px;
@@ -36,8 +54,21 @@
   z-index: 999;
   direction: rtl;
   font-family: "Segoe UI", Arial, sans-serif;
+  animation: slideDown 0.2s ease;
 }
 
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🧭 טאבים עליונים */
 .fb-tabs {
   display: flex;
   justify-content: space-between;
@@ -55,6 +86,7 @@
   padding: 8px 0;
   cursor: pointer;
   border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
 }
 
 .fb-tabs button.active {
@@ -63,6 +95,7 @@
   font-weight: 600;
 }
 
+/* 🔹 כותרת מקטע */
 .fb-section-title {
   padding: 10px 14px;
   font-size: 13px;
@@ -71,11 +104,13 @@
   border-bottom: 1px solid #f2f2f2;
 }
 
+/* 📜 רשימת התראות */
 .fb-list {
   max-height: 400px;
   overflow-y: auto;
 }
 
+/* 📨 פריט התראה */
 .fb-item {
   display: flex;
   justify-content: space-between;
@@ -94,6 +129,7 @@
   background: #f6f6f6;
 }
 
+/* 📄 טקסט ההתראה */
 .fb-text-content p {
   margin: 0;
   color: #111;
@@ -108,6 +144,7 @@
   margin-top: 2px;
 }
 
+/* 🔵 נקודת unread */
 .fb-dot {
   width: 10px;
   height: 10px;
@@ -117,8 +154,22 @@
   margin-right: 10px;
 }
 
+/* 😴 הודעה שאין התראות */
 .fb-empty {
   text-align: center;
   color: #888;
   padding: 20px 0;
+}
+
+/* 📱 רספונסיביות */
+@media (max-width: 768px) {
+  .fb-panel {
+    left: auto;
+    right: 0;
+    width: 90vw;
+  }
+
+  .fb-notif-wrapper {
+    margin-left: 0.5rem;
+  }
 }

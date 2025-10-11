@@ -11,10 +11,7 @@ export default function FacebookStyleNotifications() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // ✅ רק אם המשתמש הוא עסק — נטען התראות
-    if (user?.businessId) {
-      fetchNotifications();
-    }
+    if (user?.businessId) fetchNotifications();
   }, [user?.businessId]);
 
   const fetchNotifications = async () => {
@@ -50,11 +47,12 @@ export default function FacebookStyleNotifications() {
     return new Date(timestamp).toLocaleDateString("en-US");
   };
 
-  // ✅ אם המשתמש לא עסק – אין צורך להציג פעמון בכלל
+  // ❌ אם המשתמש אינו עסק — לא מציגים את הפעמון
   if (!user?.businessId) return null;
 
   return (
-    <div className="fb-notif-wrapper">
+    <div className="notif-left-wrapper">
+      {/* ✅ פעמון ליד הלוגו */}
       <button className="fb-bell" onClick={() => setOpen(!open)}>
         🔔
         {notifications.some((n) => !n.read) && (
