@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo_final.svg";
 import { FaBars, FaChevronLeft } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
-import FacebookStyleNotifications from "../components/FacebookStyleNotifications";
+import FacebookStyleNotifications from "../components/FacebookStyleNotifications"; // ✅ הפעמון
 import "../styles/Header.css";
 
 const navLinks = [
@@ -22,19 +22,8 @@ export default function Header() {
 
   if (loading) return null;
 
-  const isDashboard =
-    location.pathname.includes("/dashboard") ||
-    location.pathname.includes("/business/");
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/");
-    } catch (err) {
-      console.error("❌ Logout failed:", err);
-    }
-    setMenuOpen(false);
-  };
+  // ✅ נזהה אם אנחנו בדשבורד (כולל נתיבי עסקים)
+  const isDashboard = location.pathname.includes("/dashboard") || location.pathname.includes("/business/");
 
   const link = (to, label) => (
     <Link
@@ -47,76 +36,73 @@ export default function Header() {
     </Link>
   );
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+    } catch (err) {
+      console.error("❌ Logout failed:", err);
+    }
+    setMenuOpen(false);
+  };
+
   return (
     <>
-      {/* ========================
-         📊 DASHBOARD HEADER
-      ======================== */}
-      {isDashboard ? (
-        <header className="dashboard-topbar">
-          <div className="dashboard-left">
-            {/* 🔹 לוגו ליד הסיידבר */}
-            <img src={logo} alt="Bizuply Logo" className="dashboard-logo" />
+      <nav className="app-header">
+        {/* 🔹 Logo + Notifications */}
+        <div className="logo-wrapper">
+          <Link to="/" className="logo-link">
+            <img src={logo} alt="Logo" className="logo" />
+          </Link>
 
-            {/* 🔹 פעמון ההתראות ליד הלוגו */}
-            {user?.businessId && <FacebookStyleNotifications />}
-          </div>
-        </header>
-      ) : (
-        /* ========================
-           🌐 REGULAR HEADER
-        ======================== */
-        <nav className="app-header">
-          <div className="logo-wrapper">
-            <Link to="/" className="logo-link">
-              <img src={logo} alt="Logo" className="logo" />
-            </Link>
+          {/* ✅ הפעמון מוצג רק אם המשתמש הוא עסק */}
+          {user?.businessId && <FacebookStyleNotifications />}
+        </div>
 
-            {user?.businessId && <FacebookStyleNotifications />}
-          </div>
-
+        {/* 🔹 Desktop Navigation — רק מחוץ לדשבורד */}
+        {!isDashboard && (
           <div className="nav-links desktop-only">
             {navLinks.map((item) => link(item.to, item.label))}
           </div>
+        )}
 
-          <div className="auth-controls desktop-only">
-            {!user ? (
-              <>
-                <Link to="/login" className="auth-link">
-                  Login
-                </Link>
-                <Link to="/register" className="cta-button">
-                  Try it Free
-                </Link>
-              </>
-            ) : (
-              <>
-                <span className="hello-user">Hello, {user.name}</span>
-                <Link to="/dashboard" className="auth-link">
-                  My Account
-                </Link>
-                <button onClick={handleLogout} className="auth-link logout">
-                  Logout
-                </button>
-              </>
-            )}
-          </div>
+        {/* 🔹 Desktop Actions */}
+        <div className="auth-controls desktop-only">
+          {!user ? (
+            <>
+              <Link to="/login" className="auth-link">
+                Login
+              </Link>
+              <Link to="/register" className="cta-button">
+                Try it Free
+              </Link>
+            </>
+          ) : (
+            <>
+              <span className="hello-user">Hello, {user.name}</span>
+              <Link to="/dashboard" className="auth-link">
+                My Account
+              </Link>
+              <button onClick={handleLogout} className="auth-link logout">
+                Logout
+              </button>
+            </>
+          )}
+        </div>
 
-          <div className="menu-toggle mobile-only">
-            <button
-              className="menu-button"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
-            </button>
-          </div>
-        </nav>
-      )}
+        {/* 🔹 Mobile Hamburger Menu */}
+        <div className="menu-toggle mobile-only">
+          <button
+            className="menu-button"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
+          </button>
+        </div>
+      </nav>
 
-      {/* ========================
-         📱 Mobile Drawer
-      ======================== */}
-      {menuOpen && !isDashboard && (
+      {/* 🔹 Mobile Drawer */}
+      {menuOpen && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
           <div className="side-menu open">
@@ -169,9 +155,12 @@ export default function Header() {
                 )}
               </div>
 
-              <div className="menu-section">
-                {navLinks.map((item) => link(item.to, item.label))}
-              </div>
+              {/* 🔹 גם בתפריט נייד — להסתיר קטגוריות בדשבורד */}
+              {!isDashboard && (
+                <div className="menu-section">
+                  {navLinks.map((item) => link(item.to, item.label))}
+                </div>
+              )}
             </div>
           </div>
         </>
