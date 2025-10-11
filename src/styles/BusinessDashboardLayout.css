@@ -141,9 +141,13 @@
 }
 
 footer {
-  background: #f6f7fb;
-  z-index: 1;
-  position: relative;
+  margin-left: 250px; /* ✅ דוחף את הפוטר בדיוק כמו התוכן */
+  width: calc(100% - 250px); /* ✅ שלא ייצא מהמסך */
+  box-sizing: border-box;
+  background: linear-gradient(90deg, #411f8f, #6a11cb); /* דוגמה לעיצוב */
+  color: #fff;
+  padding: 2rem;
+  text-align: center;
 }
 
 /* ===========================
