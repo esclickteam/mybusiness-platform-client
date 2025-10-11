@@ -58,7 +58,7 @@ const WeeklySummary = ({ stats }) => {
         {/* Reviews Card */}
         <div
           style={{
-            backgroundColor: "#0f172a",
+            backgroundColor: "#FFF7CC",
             padding: 20,
             borderRadius: 12,
             flex: 1,
@@ -75,7 +75,7 @@ const WeeklySummary = ({ stats }) => {
         {/* Profile Views Card */}
         <div
           style={{
-            backgroundColor: "#0f172a",
+            backgroundColor: "#E6E0FF",
             padding: 20,
             borderRadius: 12,
             flex: 1,
@@ -92,7 +92,7 @@ const WeeklySummary = ({ stats }) => {
         {/* Appointments Card */}
         <div
           style={{
-            backgroundColor: "#0f172a",
+            backgroundColor: "#F9F0F7",
             padding: 20,
             borderRadius: 12,
             flex: 1,
