@@ -41,7 +41,6 @@ html, body {
   font-family: "Poppins", "Inter", sans-serif;
   transition: none !important;
 }
-
 * { box-sizing: border-box; }
 
 /* ========= Main Container ========= */
@@ -144,7 +143,6 @@ html, body {
   text-align: center;
   transition: all 0.25s ease;
 }
-
 .dashboard-card {
   flex: 0 1 260px;
   min-width: 220px;
@@ -280,31 +278,35 @@ html, body {
    🟣 Sidebar – Business Panel Refined
    =========================== */
 .sidebar {
-  position: fixed !important; /* ננעל בצד שמאל */
+  position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   right: auto !important;
-
   min-width: 240px !important;
   height: 100vh !important;
 
-  /* ✅ ריווח פנימי נעים */
   padding: 2.2rem 1rem 1.5rem !important;
-
   background: linear-gradient(180deg, #e6d3ff 0%, #d1b3ff 100%) !important;
   color: #0f172a !important;
   font-weight: 600;
   overflow-y: auto !important;
   flex-shrink: 0;
 
-  /* ✅ צל וגבולות רכים */
   box-shadow: 4px 0 20px rgba(124, 77, 255, 0.25);
   border-radius: 0 16px 16px 0 !important;
 
-  /* ✅ אפקט פתיחה חלק */
   transition: transform 0.35s ease, box-shadow 0.3s ease !important;
   will-change: transform;
   z-index: 9002 !important;
+}
+
+/* כותרת */
+.sidebar h2 {
+  margin-top: 0;
+  margin-bottom: 1.8rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 /* קישורים */
@@ -313,7 +315,7 @@ html, body {
   border-radius: 16px !important;
   color: #0f172a !important;
   text-decoration: none !important;
-  transition: background 0.2s, color 0.2s !important;
+  transition: all 0.25s ease !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
