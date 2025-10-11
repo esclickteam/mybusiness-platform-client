@@ -287,3 +287,26 @@ html, body {
   color: #0f172a !important;
 }
 
+html, body {
+  height: auto !important;
+  overflow-y: auto !important;
+}
+
+/* ביטול גלילה פנימית של מבנה הדשבורד */
+.business-dashboard-layout {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow: visible !important;
+}
+
+/* ביטול overflow פנימי מיותר של תוכן הדשבורד */
+.dashboard-content {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow: visible !important;
+}
+
+/* שמירה על גלילה חלקה ואחידה בכל האתר */
+html {
+  scroll-behavior: smooth !important;
+}

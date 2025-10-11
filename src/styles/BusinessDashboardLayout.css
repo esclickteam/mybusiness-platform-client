@@ -96,11 +96,12 @@
   margin-bottom: 0.3rem !important; /* רווח בין הטאבים */
 }
 .sidebar a.active {
-  background: var(--primary) !important;
-  color: #fff !important;
-  font-weight: 600;
-  border-radius: 16px !important; /* עיגול חזק גם לטאב פעיל */
-  box-shadow: 0 4px 8px rgb(92 70 255 / 0.5); /* הצללה להדגשה */
+  background: #d7c0ff !important; /* סגול בהיר רך - לא מסנוור */
+  color: #0f172a !important;       /* טקסט כהה וברור */
+  font-weight: 700;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 12px rgba(106, 17, 203, 0.25);
+  transition: all 0.25s ease;
 }
 
 /* תוכן הדשבורד */
