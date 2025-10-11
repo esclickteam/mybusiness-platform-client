@@ -153,7 +153,7 @@ export default function BusinessChatTab({
 
   const openConversation = async (id) => {
     try {
-      const res = await API.post(`/conversations/${id}/mark-read`);
+      const res = await API.post(`/business/conversations/${id}/mark-read`);
       if (res.data.unreadCount !== undefined) {
         setUnreadCounts((prev) => ({ ...prev, [id]: 0 }));
       }
