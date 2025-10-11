@@ -44,16 +44,24 @@
       --ring: rgba(106, 17, 203, 0.28);
       --shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
 
-      /* 🎨 נוסיף גם gradient אחיד למראה עשיר כבר מהטעינה הראשונה */
+      /* 🎨 Gradient אחיד לרקע בסיסי */
       --accent-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
     }
 
-    body {
+    html, body {
       background-color: var(--bg);
       color: var(--text);
       transition: none !important;
       margin: 0;
       font-family: "Poppins", Arial, sans-serif;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    /* 🚀 רקע אחיד במקרה של טעינה איטית או מעבר דפים */
+    #root {
+      background: var(--bg);
+      min-height: 100vh;
     }
   </style>
 
@@ -74,6 +82,15 @@
   <!-- Preload fonts and critical CSS -->
   <link rel="preload" href="/fonts/myfont.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
   <link rel="preload" href="/index.css" as="style" />
+
+  <!-- 🟣 Preload dashboard styles early to prevent white flash -->
+  <link
+    rel="preload"
+    href="/src/styles/dashboard.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript><link rel="stylesheet" href="/src/styles/dashboard.css" /></noscript>
 
   <!-- Global CSS -->
   <link rel="stylesheet" href="/index.css" />
