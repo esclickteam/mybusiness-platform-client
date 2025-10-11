@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API, { setAuthToken } from "../api";
-import { createSocket } from "../socket"; // v4 singleton socket helper
+import { createSocket } from "../socket";
 
 /* ==========================
    🧩 Normalize User
@@ -36,6 +36,24 @@ function normalizeUser(user) {
 }
 
 /* ==========================
+   🎨 Theme Helper
+   ========================== */
+function applyTheme(user) {
+  const savedTheme = localStorage.getItem("theme");
+
+  // ✅ אם כבר נשמר theme, נטען אותו קודם
+  if (savedTheme) {
+    document.body.setAttribute("data-theme", savedTheme);
+    return;
+  }
+
+  // אחרת נגדיר theme לפי סוג המשתמש (דוגמה)
+  const theme = user?.role === "business" ? "dark" : "light";
+  document.body.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+}
+
+/* ==========================
    🔄 Refresh Token (Single Flight)
    ========================== */
 let ongoingRefresh = null;
@@ -52,6 +70,7 @@ export async function singleFlightRefresh() {
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
           localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+          applyTheme(normalizedUser);
         }
 
         return accessToken;
@@ -81,11 +100,7 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // ✅ Create singleton socket (only once)
-  const socket = useMemo(() => {
-    // no async call here, the createSocket handles connection later
-    return null;
-  }, []);
+  const socket = useMemo(() => null, []);
 
   /* ==========================
      👤 Fetch / Refresh User
@@ -98,6 +113,7 @@ export function AuthProvider({ children }) {
       const normalized = normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
+      applyTheme(normalized);
       return normalized;
     } catch (e) {
       console.error("Failed to refresh user", e);
@@ -128,8 +144,8 @@ export function AuthProvider({ children }) {
       const normalizedUser = freshUser || normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+      applyTheme(normalizedUser);
 
-      // Redirect logic
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
@@ -165,66 +181,6 @@ export function AuthProvider({ children }) {
   };
 
   /* ==========================
-     🧾 Staff Login
-     ========================== */
-  const staffLogin = async (username, password) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await API.post(
-        "/auth/staff-login",
-        { username: username.trim(), password },
-        { withCredentials: true }
-      );
-      const { accessToken, user: staffUser } = data;
-      localStorage.setItem("token", accessToken);
-      setAuthToken(accessToken);
-      setToken(accessToken);
-
-      const freshUser = await refreshUser(true);
-      const normalizedStaffUser = freshUser || normalizeUser(staffUser);
-      setUser(normalizedStaffUser);
-      localStorage.setItem("businessDetails", JSON.stringify(normalizedStaffUser));
-
-      setLoading(false);
-      return normalizedStaffUser;
-    } catch (e) {
-      setError(
-        e.response?.status >= 400 && e.response?.status < 500
-          ? "❌ Incorrect username or password"
-          : "❌ Server error, please try again"
-      );
-      setLoading(false);
-      throw e;
-    }
-  };
-
-  /* ==========================
-     🤝 Affiliate Login
-     ========================== */
-  const affiliateLogin = async (publicToken) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await API.get(`/affiliate/login/${publicToken}`, { withCredentials: true });
-      if (!data.success) throw new Error("Affiliate not found");
-
-      const freshUser = await refreshUser(true);
-      const normalized = freshUser || normalizeUser(data);
-      setUser(normalized);
-      localStorage.setItem("businessDetails", JSON.stringify(normalized));
-
-      setToken(null);
-      setLoading(false);
-      return normalized;
-    } catch (e) {
-      setError(e.message || "Error logging in as affiliate");
-      setLoading(false);
-      throw e;
-    }
-  };
-
-  /* ==========================
      🚪 Logout
      ========================== */
   const logout = async () => {
@@ -236,6 +192,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("token");
     localStorage.removeItem("businessDetails");
     localStorage.removeItem("dashboardStats");
+    localStorage.removeItem("theme");
     setToken(null);
     setUser(null);
     socket?.disconnect();
@@ -247,6 +204,10 @@ export function AuthProvider({ children }) {
      ⚙️ Initialize Auth + Socket
      ========================== */
   useEffect(() => {
+    // 🟢 טעינת theme מיידית בפתיחה
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) document.body.setAttribute("data-theme", savedTheme);
+
     if (!token) {
       socket?.disconnect?.();
       setUser(null);
@@ -264,11 +225,9 @@ export function AuthProvider({ children }) {
         if (!freshUser) throw new Error("No fresh user data");
         setUser(freshUser);
 
-        // ✅ Initialize singleton socket
         const socketInstance = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         if (socketInstance && !socketInstance.connected) socketInstance.connect();
 
-        // Handle redirect after registration/login
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
@@ -322,13 +281,22 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
-    staffLogin,
-    affiliateLogin,
     refreshAccessToken: singleFlightRefresh,
     refreshUser,
-    socket, // shared singleton instance
+    socket,
     setUser,
   };
+
+  /* ==========================
+     🌀 Prevent UI flash before init
+     ========================== */
+  if (!initialized) {
+    return (
+      <div className="auth-loading-screen">
+        <div className="loader" />
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={ctx}>
