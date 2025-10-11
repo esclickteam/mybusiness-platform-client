@@ -14,6 +14,7 @@ import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
+import { FaTimes } from "react-icons/fa"; // ✅ כפתור סגירה במובייל
 
 /* ============================
    🧭 רשימת טאבים (ללא אייקונים)
@@ -42,9 +43,6 @@ export default function BusinessDashboardLayout({ children }) {
   const queryClient = useQueryClient();
   const { unreadCount: messagesCount } = useNotifications();
 
-  /* ============================
-     🧩 זיהוי אם אנחנו בתוך הדשבורד
-     ============================ */
   const isDashboardPath = location.pathname.includes("/dashboard");
 
   /* ============================
@@ -52,13 +50,9 @@ export default function BusinessDashboardLayout({ children }) {
      ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
-
     if (!socket.connected) socket.connect();
     socket.emit("joinBusinessRoom", user.businessId);
-
-    return () => {
-      socket.emit("leaveRoom", `business-${user.businessId}`);
-    };
+    return () => socket.emit("leaveRoom", `business-${user.businessId}`);
   }, [user?.businessId]);
 
   /* ============================
@@ -67,13 +61,11 @@ export default function BusinessDashboardLayout({ children }) {
   useEffect(() => {
     if (!user?.businessId) return;
 
-    // פרופיל עסק
     queryClient.prefetchQuery(
       ["business-profile", user.businessId],
       () => API.get(`/business/${user.businessId}`).then((res) => res.data)
     );
 
-    // הודעות שלא נקראו
     queryClient.prefetchQuery(
       ["unread-messages", user.businessId],
       () =>
@@ -82,7 +74,6 @@ export default function BusinessDashboardLayout({ children }) {
         )
     );
 
-    // תורים עם שירותים
     queryClient.prefetchQuery(
       ["crm-appointments", user.businessId],
       () =>
@@ -118,7 +109,7 @@ export default function BusinessDashboardLayout({ children }) {
   const isMobileInit = window.innerWidth <= 768;
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const [showSidebar, setShowSidebar] = useState(
-    !isMobileInit || isDashboardPath // ✅ גלוי רק אם דשבורד או דסקטופ
+    !isMobileInit || isDashboardPath
   );
   const sidebarRef = useRef(null);
 
@@ -126,7 +117,6 @@ export default function BusinessDashboardLayout({ children }) {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      // ✅ רק במובייל בדשבורד שומרים סיידבר גלוי
       setShowSidebar(!mobile || (mobile && isDashboardPath));
     };
     window.addEventListener("resize", onResize);
@@ -134,7 +124,7 @@ export default function BusinessDashboardLayout({ children }) {
   }, [isDashboardPath]);
 
   /* ============================
-     🔄 ניהול מקשים ו־Focus במובייל
+     🔄 ניהול Focus ו־Escape במובייל
      ============================ */
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
@@ -167,9 +157,7 @@ export default function BusinessDashboardLayout({ children }) {
   /* ============================
      🕓 טעינה
      ============================ */
-  if (loading) {
-    return <p className="loading">Loading information…</p>;
-  }
+  if (loading) return <p className="loading">Loading information…</p>;
 
   /* ============================
      🎨 Layout מלא
@@ -190,13 +178,22 @@ export default function BusinessDashboardLayout({ children }) {
                 role={isMobile && showSidebar ? "dialog" : undefined}
                 id="sidebar"
               >
-                {/* 🔹 לוגו בחלק העליון */}
+                {/* 🔹 לוגו + כפתור סגירה במובייל */}
                 <div className="sidebar-logo">
                   <img
                     src="/bizuply logo.png"
                     alt="BizUply Logo"
                     className="sidebar-logo-img"
                   />
+                  {isMobile && (
+                    <button
+                      className="sidebar-close-btn"
+                      aria-label="Close menu"
+                      onClick={() => setShowSidebar(false)}
+                    >
+                      <FaTimes size={18} />
+                    </button>
+                  )}
                 </div>
 
                 {/* 🔹 כותרת הסיידבר */}
@@ -229,8 +226,6 @@ export default function BusinessDashboardLayout({ children }) {
                       }
                     >
                       {label}
-
-                      {/* 🔔 באדג' הודעות */}
                       {path === "messages" && messagesCount > 0 && (
                         <span className="badge">{messagesCount}</span>
                       )}

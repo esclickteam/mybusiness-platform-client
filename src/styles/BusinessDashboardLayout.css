@@ -255,3 +255,35 @@ footer {
 .sidebar a {
   color: #0f172a !important;
 }
+
+.sidebar-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5e17eb;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(106, 17, 203, 0.25);
+  transition: all 0.25s ease;
+  z-index: 9100;
+}
+
+/* אנימציה עדינה */
+.sidebar-close-btn:hover {
+  background: #fff;
+  transform: rotate(90deg);
+}
+
+/* ✅ מוצג רק במובייל */
+@media (min-width: 769px) {
+  .sidebar-close-btn {
+    display: none !important;
+  }
+}
