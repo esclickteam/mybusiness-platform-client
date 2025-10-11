@@ -40,39 +40,17 @@ export default function BusinessDashboardLayout({ children }) {
   const location = useLocation();
   const queryClient = useQueryClient();
 
-  const { unreadCount: unreadFromContext } = useNotifications();
-  const [messagesCount, setMessagesCount] = useState(unreadFromContext || 0);
-
-  useEffect(() => {
-    setMessagesCount(unreadFromContext || 0);
-  }, [unreadFromContext]);
-
-  const updateMessagesCount = (newCount) => {
-    setMessagesCount(newCount);
-  };
+  // ✅ נשלף ישירות מהקונטקסט (אין צורך ב־useEffect כפול)
+  const { unreadCount: messagesCount } = useNotifications();
 
   useEffect(() => {
     if (!user?.businessId) return;
 
-    if (!socket.connected) {
-      socket.connect();
-    }
-
-    const roomName = "business-" + user.businessId;
-    socket.emit("joinRoom", roomName);
-
-    const handleNewMessage = (message) => {
-      console.log("New message received:", message);
-      if (message.toId === user.businessId) {
-        setMessagesCount((count) => count + 1);
-      }
-    };
-
-    socket.on("newMessage", handleNewMessage);
+    if (!socket.connected) socket.connect();
+    socket.emit("joinBusinessRoom", user.businessId);
 
     return () => {
-      socket.emit("leaveRoom", roomName);
-      socket.off("newMessage", handleNewMessage);
+      socket.emit("leaveRoom", `business-${user.businessId}`);
     };
   }, [user?.businessId]);
 
@@ -160,7 +138,7 @@ export default function BusinessDashboardLayout({ children }) {
   return (
     <BusinessServicesProvider>
       <AiProvider>
-        <div className={`rtl-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
+        <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
             {(!isMobile || showSidebar) && (
               <aside
@@ -224,14 +202,7 @@ export default function BusinessDashboardLayout({ children }) {
               aria-live="polite"
               aria-atomic="true"
             >
-              {children ?? (
-                <Outlet
-                  context={{
-                    unreadCount: messagesCount,
-                    updateMessagesCount,
-                  }}
-                />
-              )}
+              {children ?? <Outlet />}
             </main>
           </div>
         </div>
