@@ -5,6 +5,7 @@ import {
   useNavigate,
   useParams,
   useLocation,
+  Link,
 } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
@@ -14,10 +15,12 @@ import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
-import { FaTimes, FaBars } from "react-icons/fa"; // ✅ כפתור סגירה + פתיחה
+import { FaTimes, FaBars } from "react-icons/fa";
+import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
+import logo from "../../images/logo_final.svg";
 
 /* ============================
-   🧭 רשימת טאבים (ללא אייקונים)
+   🧭 רשימת טאבים
    ============================ */
 const tabs = [
   { path: "dashboard", label: "Dashboard" },
@@ -29,24 +32,19 @@ const tabs = [
   { path: "help-center", label: "Help Center" },
 ];
 
-/* ============================
-   🔌 Socket.io
-   ============================ */
 const SOCKET_URL = "https://api.bizuply.com";
 const socket = io(SOCKET_URL, { autoConnect: false });
 
 export default function BusinessDashboardLayout({ children }) {
-  const { user, loading } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
   const { businessId } = useParams();
   const location = useLocation();
   const queryClient = useQueryClient();
   const { unreadCount: messagesCount } = useNotifications();
 
-  const isDashboardPath = location.pathname.includes("/dashboard");
-
   /* ============================
-     🧠 חיבור Socket לעסק
+     🧠 Socket
      ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
@@ -56,30 +54,22 @@ export default function BusinessDashboardLayout({ children }) {
   }, [user?.businessId]);
 
   /* ============================
-     🚀 Prefetch נתונים חשובים
+     🚀 Prefetch
      ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
 
     queryClient.prefetchQuery(
       ["business-profile", user.businessId],
-      () => API.get(`/business/${user.businessId}`).then((res) => res.data)
+      () => API.get(`/business/${user.businessId}`).then((r) => r.data)
     );
 
     queryClient.prefetchQuery(
       ["unread-messages", user.businessId],
       () =>
         API.get(`/messages/unread-count?businessId=${user.businessId}`).then(
-          (res) => res.data
+          (r) => r.data
         )
-    );
-
-    queryClient.prefetchQuery(
-      ["crm-appointments", user.businessId],
-      () =>
-        API.get(
-          `/appointments/all-with-services?businessId=${user.businessId}`
-        ).then((res) => res.data)
     );
   }, [user?.businessId, queryClient]);
 
@@ -89,71 +79,35 @@ export default function BusinessDashboardLayout({ children }) {
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
-      return;
     }
-
-    const params = new URLSearchParams(location.search);
-    const tabQ = params.get("tab");
-    const tabS = location.state?.activeTab;
-
-    if (tabQ && tabs.some((t) => t.path === tabQ)) {
-      navigate(`./${tabQ}`, { replace: true });
-    } else if (tabS && tabs.some((t) => t.path === tabS)) {
-      navigate(`./${tabS}`, { replace: true });
-    }
-  }, [user, loading, location.search, location.state, navigate]);
+  }, [user, loading, navigate]);
 
   /* ============================
      📱 מובייל ודסקטופ
      ============================ */
-  const isMobileInit = window.innerWidth <= 768;
-  const [isMobile, setIsMobile] = useState(isMobileInit);
-  const [showSidebar, setShowSidebar] = useState(!isMobileInit);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showSidebar, setShowSidebar] = useState(!isMobile);
   const sidebarRef = useRef(null);
 
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      if (!mobile) setShowSidebar(true); // דסקטופ תמיד גלוי
+      if (!mobile) setShowSidebar(true);
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* ============================
-     🔄 מקשים במובייל
-     ============================ */
-  useEffect(() => {
-    if (!isMobile || !showSidebar) return;
-    const sel =
-      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-    const els = sidebarRef.current.querySelectorAll(sel);
-    if (!els.length) return;
-    const first = els[0],
-      last = els[els.length - 1];
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+    } catch (err) {
+      console.error("❌ Logout failed:", err);
+    }
+  };
 
-    const onKey = (e) => {
-      if (e.key === "Tab") {
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-      if (e.key === "Escape") setShowSidebar(false);
-    };
-
-    document.addEventListener("keydown", onKey);
-    first.focus();
-    return () => document.removeEventListener("keydown", onKey);
-  }, [isMobile, showSidebar]);
-
-  /* ============================
-     טעינה
-     ============================ */
   if (loading) return <p className="loading">Loading information…</p>;
 
   /* ============================
@@ -164,35 +118,62 @@ export default function BusinessDashboardLayout({ children }) {
       <AiProvider>
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
-            {/* 🔹 Sidebar */}
-            {(!isMobile || showSidebar) && (
-              <aside
-                className={`sidebar ${isMobile ? "mobile open" : ""}`}
-                ref={sidebarRef}
-                aria-modal={isMobile && showSidebar ? "true" : undefined}
-                role={isMobile && showSidebar ? "dialog" : undefined}
-              >
-                <div className="sidebar-logo">
-                  <img
-                    src="/bizuply logo.png"
-                    alt="BizUply Logo"
-                    className="sidebar-logo-img"
-                  />
-                  {isMobile && (
-                    <button
-                      className="sidebar-close-btn"
-                      aria-label="Close menu"
-                      onClick={() => setShowSidebar(false)}
-                    >
-                      <FaTimes size={18} />
-                    </button>
-                  )}
+            {/* ✅ Header למובייל בלבד */}
+            {isMobile && (
+              <nav className="dashboard-header">
+                <div className="header-left">
+                  {user?.businessId && <FacebookStyleNotifications />}
                 </div>
+                <div className="header-center">
+                  <img src={logo} alt="BizUply" className="dashboard-logo" />
+                </div>
+                <div className="header-right">
+                  <button
+                    className="menu-button"
+                    onClick={() => setShowSidebar(true)}
+                  >
+                    <FaBars size={22} />
+                  </button>
+                </div>
+              </nav>
+            )}
 
-                <h2>Business Management</h2>
+            {/* ✅ Sidebar */}
+            {(!isMobile || showSidebar) && (
+              <>
+                {isMobile && (
+                  <div
+                    className="sidebar-overlay"
+                    onClick={() => setShowSidebar(false)}
+                  />
+                )}
+                <aside
+                  className={`sidebar ${isMobile ? "mobile open" : ""}`}
+                  ref={sidebarRef}
+                  style={{
+                    right: isMobile ? 0 : "auto",
+                    left: isMobile ? "auto" : 0,
+                  }}
+                >
+                  <div className="sidebar-logo">
+                    <img
+                      src={logo}
+                      alt="BizUply Logo"
+                      className="sidebar-logo-img"
+                    />
+                    {isMobile && (
+                      <button
+                        className="sidebar-close-btn"
+                        aria-label="Close menu"
+                        onClick={() => setShowSidebar(false)}
+                      >
+                        <FaTimes size={18} />
+                      </button>
+                    )}
+                  </div>
 
-                <nav>
-                  {user?.role === "business" && (
+                  <h2>Business Management</h2>
+                  <nav>
                     <NavLink
                       to={`/business/${businessId}`}
                       end
@@ -202,47 +183,50 @@ export default function BusinessDashboardLayout({ children }) {
                     >
                       View Public Profile
                     </NavLink>
-                  )}
-                  {tabs.map(({ path, label }) => (
-                    <NavLink
-                      key={path}
-                      to={`/business/${businessId}/dashboard/${path}`}
-                      end={
-                        location.pathname ===
-                        `/business/${businessId}/dashboard/${path}`
-                      }
-                      className={({ isActive }) =>
-                        isActive ? "active" : undefined
-                      }
+
+                    {tabs.map(({ path, label }) => (
+                      <NavLink
+                        key={path}
+                        to={`/business/${businessId}/dashboard/${path}`}
+                        className={({ isActive }) =>
+                          isActive ? "active" : undefined
+                        }
+                      >
+                        {label}
+                        {path === "messages" && messagesCount > 0 && (
+                          <span className="badge">{messagesCount}</span>
+                        )}
+                      </NavLink>
+                    ))}
+                  </nav>
+
+                  <div className="sidebar-divider" />
+
+                  {/* ✅ אזור אישי */}
+                  <div className="sidebar-account">
+                    <span className="hello-user">
+                      Hello, {user?.name || "Guest"}
+                    </span>
+                    <Link
+                      to="/dashboard"
+                      className="auth-link full-width"
+                      onClick={() => setShowSidebar(false)}
                     >
-                      {label}
-                      {path === "messages" && messagesCount > 0 && (
-                        <span className="badge">{messagesCount}</span>
-                      )}
-                    </NavLink>
-                  ))}
-                </nav>
-              </aside>
+                      My Account
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="logout-btn full-width"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </aside>
+              </>
             )}
 
-            {/* 🔹 כפתור פתיחה במובייל */}
-            {isMobile && !showSidebar && (
-              <button
-                className="sidebar-open-btn"
-                aria-label="Open menu"
-                onClick={() => setShowSidebar(true)}
-              >
-                <FaBars size={20} />
-              </button>
-            )}
-
-            {/* 🔹 תוכן */}
-            <main
-              className="dashboard-content"
-              tabIndex={-1}
-              aria-live="polite"
-              aria-atomic="true"
-            >
+            {/* ✅ תוכן */}
+            <main className="dashboard-content">
               {children ?? <Outlet />}
             </main>
           </div>
