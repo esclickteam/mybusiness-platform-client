@@ -204,26 +204,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  font-size: 11px;
-  font-weight: 600;
+  min-width: 20px;
+  height: 20px;
+  font-size: 12px;
+  font-weight: 700;
   color: #fff;
-  background: #ef4444; /* אדום חזק */
+  background: #ff1744; /* 🔥 אדום-ורוד בוהק */
+  border: 2px solid #fff; /* גבול לבן ליצירת ניגודיות מול הרקע */
   border-radius: 9999px;
-  margin-right: 6px;
-  padding: 0 5px;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
-  animation: pulse 1.5s infinite;
+  margin-left: 8px;
+  padding: 0 6px;
+  box-shadow: 0 0 8px rgba(255, 23, 68, 0.7); /* זוהר רך */
+  animation: pulse 1.6s infinite ease-in-out;
+  position: relative;
+  top: -1px;
 }
 
 @keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.85;
-  }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.9; }
+}
+
+/* כשהטאב פעיל — דגש נוסף */
+.sidebar a.active .badge {
+  background: #ff3b5f;
+  box-shadow: 0 0 10px rgba(255, 59, 95, 0.8);
 }
