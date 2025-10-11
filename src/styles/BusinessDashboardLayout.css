@@ -1,6 +1,6 @@
 /* גרדיאנט גלובלי כבר ב־index.css */
 .rtl-wrapper {
-  direction: rtl;
+  direction: ltr;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -92,8 +92,11 @@
   color: var(--text-secondary) !important;
   text-decoration: none !important;
   transition: background 0.2s !important;
-  display: block !important; /* כדי שהעיגול יכסה את כל הרוחב */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important; /* כדי לאפשר בועה מימין */
   margin-bottom: 0.3rem !important; /* רווח בין הטאבים */
+  position: relative;
 }
 .sidebar a.active {
   background: var(--primary) !important;
@@ -130,7 +133,6 @@
   justify-content: center;
   transition: filter 0.3s ease;
 }
-
 
 .mobile-nav-toggle svg line {
   stroke: #333;
@@ -194,5 +196,34 @@
   }
   .sidebar-overlay {
     display: none !important;
+  }
+}
+
+/* 💬 בועה אדומה ליד Customer Messages */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: #ef4444; /* אדום חזק */
+  border-radius: 9999px;
+  margin-right: 6px;
+  padding: 0 5px;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.85;
   }
 }

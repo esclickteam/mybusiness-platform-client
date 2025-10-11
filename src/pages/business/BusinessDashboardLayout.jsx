@@ -13,18 +13,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
-
 import { io } from "socket.io-client";
 
+// 🔹 רשימת טאבים בלי אייקונים
 const tabs = [
-  { path: "dashboard", label: "📊 Dashboard" },
-  { path: "build", label: "🧱 Edit Business Page" },
-  { path: "messages", label: "💬 Customer Messages" },
-  { path: "collab", label: "🤝 Collaborations" },
-  { path: "crm", label: "📇 CRM System" },
-  { path: "BizUply", label: "🧠 BizUply Advisor" },
-  { path: "affiliate", label: "👥 Affiliate Program" },
-  { path: "help-center", label: "❓ Help Center" },
+  { path: "dashboard", label: "Dashboard" },
+  { path: "build", label: "Edit Business Page" },
+  { path: "messages", label: "Customer Messages" },
+  { path: "collab", label: "Collaborations" },
+  { path: "crm", label: "CRM System" },
+  { path: "BizUply", label: "BizUply Advisor" },
+  { path: "affiliate", label: "Affiliate Program" },
+  { path: "help-center", label: "Help Center" },
 ];
 
 // Replace here with your server address
@@ -40,8 +40,7 @@ export default function BusinessDashboardLayout({ children }) {
   const location = useLocation();
   const queryClient = useQueryClient();
 
-  const { unreadMessagesCount: unreadFromContext } = useNotifications();
-
+  const { unreadCount: unreadFromContext } = useNotifications();
   const [messagesCount, setMessagesCount] = useState(unreadFromContext || 0);
 
   useEffect(() => {
@@ -59,16 +58,13 @@ export default function BusinessDashboardLayout({ children }) {
       socket.connect();
     }
 
-    const roomName = "businessbusiness-" + user.businessId;
-
+    const roomName = "business-" + user.businessId;
     socket.emit("joinRoom", roomName);
 
     const handleNewMessage = (message) => {
       console.log("New message received:", message);
-
       if (message.toId === user.businessId) {
         setMessagesCount((count) => count + 1);
-        alert(`New message from ${message.fromId}`);
       }
     };
 
@@ -184,7 +180,7 @@ export default function BusinessDashboardLayout({ children }) {
                         isActive ? "active" : undefined
                       }
                     >
-                      👀 View Public Profile
+                      View Public Profile
                     </NavLink>
                   )}
                   {tabs.map(({ path, label }) => (
@@ -221,8 +217,6 @@ export default function BusinessDashboardLayout({ children }) {
                 }}
               />
             )}
-
-            {/* Professional mobile nav button removed from layout — add in Header */}
 
             <main
               className="dashboard-content"
