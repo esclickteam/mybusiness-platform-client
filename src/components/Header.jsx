@@ -22,6 +22,9 @@ export default function Header() {
 
   if (loading) return null;
 
+  // ✅ נזהה אם אנחנו בדשבורד (כולל נתיבי עסקים)
+  const isDashboard = location.pathname.includes("/dashboard") || location.pathname.includes("/business/");
+
   const link = (to, label) => (
     <Link
       key={to}
@@ -52,14 +55,16 @@ export default function Header() {
             <img src={logo} alt="Logo" className="logo" />
           </Link>
 
-          {/* ✅ הפעמון עבר לכאן - ליד הלוגו */}
+          {/* ✅ הפעמון מוצג רק אם המשתמש הוא עסק */}
           {user?.businessId && <FacebookStyleNotifications />}
         </div>
 
-        {/* 🔹 Desktop Navigation */}
-        <div className="nav-links desktop-only">
-          {navLinks.map((item) => link(item.to, item.label))}
-        </div>
+        {/* 🔹 Desktop Navigation — רק מחוץ לדשבורד */}
+        {!isDashboard && (
+          <div className="nav-links desktop-only">
+            {navLinks.map((item) => link(item.to, item.label))}
+          </div>
+        )}
 
         {/* 🔹 Desktop Actions */}
         <div className="auth-controls desktop-only">
@@ -150,9 +155,12 @@ export default function Header() {
                 )}
               </div>
 
-              <div className="menu-section">
-                {navLinks.map((item) => link(item.to, item.label))}
-              </div>
+              {/* 🔹 גם בתפריט נייד — להסתיר קטגוריות בדשבורד */}
+              {!isDashboard && (
+                <div className="menu-section">
+                  {navLinks.map((item) => link(item.to, item.label))}
+                </div>
+              )}
             </div>
           </div>
         </>
