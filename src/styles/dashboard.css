@@ -283,7 +283,7 @@ html, body {
 
 /* ✅ ביטול רקעים קודמים ממסכים אחרים */
 body, html, #root {
-  background: linear-gradient(180deg, #040404 0%, #f6f7fb 100%) !important;
+  background: linear-gradient(180deg, #f8f9ff 0%, #f6f7fb 100%) !important;
 }
 
 /* 🎨 הקונטיינר הראשי של הדשבורד */
