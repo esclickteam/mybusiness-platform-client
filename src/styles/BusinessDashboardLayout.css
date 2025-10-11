@@ -280,18 +280,28 @@ html, body {
    🟣 Sidebar – Business Panel Refined
    =========================== */
 .sidebar {
+  position: fixed !important; /* ננעל בצד שמאל */
+  top: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+
   min-width: 240px !important;
+  height: 100vh !important;
   padding: 1rem !important;
+
   background: linear-gradient(180deg, #e6d3ff 0%, #d1b3ff 100%) !important;
   color: #0f172a !important;
-  height: 100vh !important;
-  overflow-y: auto !important;
-  transition: transform 0.35s ease !important;
-  flex-shrink: 0;
-  box-shadow: 0 0 20px rgb(124 77 255 / 0.25);
-  border-radius: 12px !important;
-  z-index: 9002 !important;
   font-weight: 600;
+
+  overflow-y: auto !important;
+  flex-shrink: 0;
+
+  box-shadow: 4px 0 20px rgba(124, 77, 255, 0.25); /* ✅ צל לשמאל */
+  border-radius: 0 12px 12px 0 !important; /* ✅ עיגול רק בצד ימין */
+  z-index: 9002 !important;
+
+  transition: transform 0.35s ease, box-shadow 0.3s ease !important;
+  will-change: transform;
 }
 
 /* קישורים */
