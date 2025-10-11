@@ -128,6 +128,11 @@ const DashboardPage = () => {
   } = useAuth();
   const businessId = getBusinessId();
 
+   useEffect(() => {
+    document.body.style.backgroundColor = "#f6f7fb";
+    document.documentElement.style.backgroundColor = "#f6f7fb";
+  }, []);
+
   /* refs */
   const cardsRef = useRef(null);
   const insightsRef = useRef(null);
