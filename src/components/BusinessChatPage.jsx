@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useOutletContext, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import API from "../api";
 import { useSocket } from "../context/socketContext";
+import { useNotifications } from "../context/NotificationsContext"; // ✅ חדש
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
   const rawBusinessId = user?.businessId || user?.business?._id;
   const businessId = (rawBusinessId?._id ?? rawBusinessId)?.toString();
 
-  const { updateMessagesCount } = useOutletContext();
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
   const [unreadCounts, setUnreadCounts] = useState({});
   const socket = useSocket();
   const location = useLocation();
 
+  const { unreadCount, markAsRead } = useNotifications(); // ✅ שימוש במערכת ההתראות החדשה
+
+  /* 🧩 עוזר לנרמל שיחות */
   const normaliseConversation = (c) => ({
     ...c,
     conversationId: (c.conversationId ?? c._id ?? c.id)?.toString() ?? "",
@@ -30,7 +33,7 @@ export default function BusinessChatPage() {
     conversationType: c.conversationType || "user-business",
   });
 
-  // Checks query parameter threadId and opens conversation if matched
+  /* 🔍 בודק query param לפתיחת שיחה */
   useEffect(() => {
     if (!initialized || !businessId || convos.length === 0) return;
 
@@ -50,24 +53,23 @@ export default function BusinessChatPage() {
           delete next[threadId];
           return next;
         });
+        markAsRead?.(threadId); // ✅ מסמן כהודעה שנקראה
       }
     }
-  }, [location.search, convos, initialized, businessId]);
+  }, [location.search, convos, initialized, businessId, markAsRead]);
 
-  // Loads conversations from the server and updates list + unread counters
+  /* 📦 טוען שיחות */
   useEffect(() => {
     if (!initialized || !businessId) return;
 
     API.get("/messages/client-conversations")
       .then(({ data }) => {
-        // Filter only user-business conversations
         const listRaw = (data.conversations ?? data ?? []).filter(
           (c) => (c.conversationType || "user-business") === "user-business"
         );
 
         const list = listRaw.map(normaliseConversation);
 
-        // Remove duplicates by clientId
         const deduped = list.reduce((acc, conv) => {
           if (!acc.find((c) => c.clientId === conv.clientId)) acc.push(conv);
           return acc;
@@ -81,7 +83,7 @@ export default function BusinessChatPage() {
         });
         setUnreadCounts(counts);
 
-        // Select initial conversation if none selected yet
+        // בחירת שיחה ראשונה כברירת מחדל
         if (!selected && deduped.length) {
           const {
             conversationId,
@@ -100,15 +102,32 @@ export default function BusinessChatPage() {
       .catch((err) => {
         console.error("Error fetching client conversations:", err);
       });
-  }, [initialized, businessId]);
+  }, [initialized, businessId, selected]);
 
-  // Updates unread message count for dashboard or other places
+  /* 💬 עדכון מיידי בזמן אמת */
   useEffect(() => {
-    const total = Object.values(unreadCounts).reduce((acc, v) => acc + v, 0);
-    updateMessagesCount?.(total);
-  }, [unreadCounts, updateMessagesCount]);
+    if (!socket || !businessId) return;
 
-  // Handle conversation selection
+    socket.emit("joinBusinessRoom", businessId);
+
+    const handleNewMessage = (msg) => {
+      if (msg?.toId === businessId) {
+        setUnreadCounts((prev) => ({
+          ...prev,
+          [msg.conversationId]: (prev[msg.conversationId] || 0) + 1,
+        }));
+      }
+    };
+
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.emit("leaveRoom", `business-${businessId}`);
+    };
+  }, [socket, businessId]);
+
+  /* 🧭 בחירת שיחה */
   const handleSelect = (conversationId, partnerId, partnerName) => {
     const convo = convos.find((c) => c.conversationId === conversationId);
     const type = convo?.conversationType || "user-business";
@@ -119,6 +138,7 @@ export default function BusinessChatPage() {
       delete next[conversationId];
       return next;
     });
+    markAsRead?.(conversationId); // ✅ סימון כהודעה שנקראה
   };
 
   if (!initialized) {
