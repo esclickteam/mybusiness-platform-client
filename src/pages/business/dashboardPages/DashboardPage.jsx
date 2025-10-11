@@ -129,9 +129,17 @@ const DashboardPage = () => {
   const businessId = getBusinessId();
 
    useEffect(() => {
-    document.body.style.backgroundColor = "#f6f7fb";
-    document.documentElement.style.backgroundColor = "#f6f7fb";
-  }, []);
+  const lightBg = "#f6f7fb";
+  document.body.style.background = lightBg;
+  document.documentElement.style.background = lightBg;
+
+  // איפוס classים שגורמים לרקע כחול
+  document.body.classList.remove("dark-theme", "gradient-bg", "biz-dashboard-bg");
+
+  // גם root הראשי
+  const appRoot = document.getElementById("root");
+  if (appRoot) appRoot.style.background = lightBg;
+}, []);
 
   /* refs */
   const cardsRef = useRef(null);

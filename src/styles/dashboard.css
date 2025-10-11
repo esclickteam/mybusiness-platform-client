@@ -280,3 +280,15 @@ html, body {
   background-clip: text;
   color: transparent;
 }
+
+/* ✅ ביטול רקעים קודמים ממסכים אחרים */
+html, body, #root {
+  background: #f6f7fb !important;
+}
+
+/* ביטול כל רקע כחול שמורכב מהגרדיאנטים הישנים */
+body.dark-theme,
+body.gradient-bg,
+.biz-dashboard-bg {
+  background: #f6f7fb !important;
+}
