@@ -101,19 +101,21 @@ export default function Header() {
           )}
         </div>
 
-        {/* 🔹 Mobile Hamburger Menu */}
-        <div className="menu-toggle mobile-only">
-          <button
-            className="menu-button"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
-          </button>
-        </div>
+        {/* 🔹 Mobile Hamburger Menu — ❌ מוסתר בדשבורד */}
+        {!isDashboard && (
+          <div className="menu-toggle mobile-only">
+            <button
+              className="menu-button"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* 🔹 Mobile Drawer */}
-      {menuOpen && (
+      {menuOpen && !isDashboard && (
         <>
           <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
           <div className="side-menu open">
