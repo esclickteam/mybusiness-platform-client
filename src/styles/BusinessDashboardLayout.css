@@ -287,21 +287,24 @@ html, body {
 
   min-width: 240px !important;
   height: 100vh !important;
-  padding: 1rem !important;
+
+  /* ✅ ריווח פנימי נעים */
+  padding: 2.2rem 1rem 1.5rem !important;
 
   background: linear-gradient(180deg, #e6d3ff 0%, #d1b3ff 100%) !important;
   color: #0f172a !important;
   font-weight: 600;
-
   overflow-y: auto !important;
   flex-shrink: 0;
 
-  box-shadow: 4px 0 20px rgba(124, 77, 255, 0.25); /* ✅ צל לשמאל */
-  border-radius: 0 12px 12px 0 !important; /* ✅ עיגול רק בצד ימין */
-  z-index: 9002 !important;
+  /* ✅ צל וגבולות רכים */
+  box-shadow: 4px 0 20px rgba(124, 77, 255, 0.25);
+  border-radius: 0 16px 16px 0 !important;
 
+  /* ✅ אפקט פתיחה חלק */
   transition: transform 0.35s ease, box-shadow 0.3s ease !important;
   will-change: transform;
+  z-index: 9002 !important;
 }
 
 /* קישורים */
