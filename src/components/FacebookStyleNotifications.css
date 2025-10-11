@@ -1,49 +1,89 @@
+/* ===================================================
+   🔔 Bizuply Notification Style
+   =================================================== */
+
 .fb-notif-wrapper {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 14px;
 }
 
+/* פעמון */
 .fb-bell {
-  background: none;
+  background: linear-gradient(145deg, #f6edff, #ece2ff);
   border: none;
   cursor: pointer;
-  font-size: 20px;
-  position: relative;
+  font-size: 22px;
+  border-radius: 16px;
+  padding: 10px 12px;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 2px 8px rgba(94, 23, 235, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5e17eb;
 }
 
+.fb-bell:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(94, 23, 235, 0.25);
+  color: #4315c7;
+}
+
+/* מספר ההתראות */
 .fb-count {
   position: absolute;
   top: -6px;
   right: -6px;
-  background: #1877f2;
+  background: #9333ea; /* סגול מודגש */
   color: #fff;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   border-radius: 50%;
-  padding: 2px 5px;
-  min-width: 16px;
-  text-align: center;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(147, 51, 234, 0.6);
+  animation: badgePulse 1.8s infinite ease-in-out;
 }
 
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.9; }
+}
+
+/* פאנל ההתראות */
 .fb-panel {
   position: absolute;
   top: 115%;
-  right: 0;
+  left: 0;
   width: 340px;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(94, 23, 235, 0.15);
   overflow: hidden;
   z-index: 999;
   direction: rtl;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+  animation: fadeIn 0.25s ease-in-out;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* טאבים */
 .fb-tabs {
   display: flex;
   justify-content: space-between;
   padding: 10px 12px;
   border-bottom: 1px solid #eee;
-  background: #f9fafb;
+  background: #f8f5ff;
 }
 
 .fb-tabs button {
@@ -55,14 +95,17 @@
   padding: 8px 0;
   cursor: pointer;
   border-radius: 8px;
+  transition: all 0.2s;
 }
 
 .fb-tabs button.active {
-  background: #e7f3ff;
-  color: #1877f2;
+  background: #ede4ff;
+  color: #5e17eb;
   font-weight: 600;
+  box-shadow: 0 0 4px rgba(94, 23, 235, 0.1);
 }
 
+/* כותרת קטגוריה */
 .fb-section-title {
   padding: 10px 14px;
   font-size: 13px;
@@ -71,6 +114,7 @@
   border-bottom: 1px solid #f2f2f2;
 }
 
+/* רשימה */
 .fb-list {
   max-height: 400px;
   overflow-y: auto;
@@ -87,11 +131,11 @@
 }
 
 .fb-item.unread {
-  background: #f0f6ff;
+  background: #f3e8ff;
 }
 
 .fb-item:hover {
-  background: #f6f6f6;
+  background: #f7f3ff;
 }
 
 .fb-text-content p {
@@ -111,7 +155,7 @@
 .fb-dot {
   width: 10px;
   height: 10px;
-  background: #1877f2;
+  background: #5e17eb;
   border-radius: 50%;
   flex-shrink: 0;
   margin-right: 10px;
