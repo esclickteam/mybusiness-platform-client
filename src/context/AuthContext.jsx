@@ -70,7 +70,7 @@ export async function singleFlightRefresh() {
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
           localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
-          applyTheme(normalizedUser);
+          applyTheme(normalizedUser); // שומר על theme עקבי גם אחרי רענון טוקן
         }
 
         return accessToken;
@@ -88,7 +88,7 @@ export async function singleFlightRefresh() {
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  /* ✨ שינוי חשוב: החלת theme לפני כל רינדור ✨
+  /* ✨ החלת theme לפני כל רינדור ✨
      אם כבר יש data-theme על ה-body לא ניגע; אחרת נטען מה-localStorage או ברירת מחדל "light".
      זה מונע הבהוב/שינוי צבעים בין התחברות לריענון. */
   if (typeof document !== "undefined" && !document.body.getAttribute("data-theme")) {
@@ -131,7 +131,7 @@ export function AuthProvider({ children }) {
   };
 
   /* ==========================
-     🚪 Login
+     🚪 Login (UPDATED)
      ========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
@@ -149,11 +149,15 @@ export function AuthProvider({ children }) {
       setAuthToken(accessToken);
       setToken(accessToken);
 
+      // ✅ נטען את המשתמש ונחיל theme מיידית לפני הניווט
       const freshUser = await refreshUser(true);
       const normalizedUser = freshUser || normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
-      applyTheme(normalizedUser);
+      applyTheme(normalizedUser); // 🟣 חשוב: לפני הניווט
+
+      // השהייה זעירה כדי לאפשר ל-DOM לעדכן data-theme לפני הצגת הדשבורד
+      await new Promise((res) => setTimeout(res, 50));
 
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
