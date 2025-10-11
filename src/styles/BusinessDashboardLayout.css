@@ -6,6 +6,8 @@
 .ltr-wrapper {
   direction: ltr;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column; /* ✅ מבנה אנכי */
   box-sizing: border-box;
 }
 
@@ -14,13 +16,12 @@
    =========================== */
 .business-dashboard-layout {
   display: flex;
-  align-items: flex-start;   /* ✅ חדש – מיישר את הסיידבר והתוכן למעלה */
+  align-items: stretch; /* ✅ גורם לסיידבר והתוכן להיות באותו גובה */
+  flex: 1;              /* ✅ ממלא את כל הגובה בין ההדר לפוטר */
   width: 100%;
-  min-height: 100vh;
+  background: #f6f7fb;
   margin: 0;
   position: relative;
-  background: #f6f7fb;
-  overflow: hidden;          /* מונע פסי גלילה כפולים */
   transition: filter 0.3s ease;
 }
 
@@ -36,22 +37,16 @@
 .sidebar {
   position: sticky !important;
   top: 0 !important;
-  left: 0 !important;
   width: 250px !important;
-   min-height: 100vh !important;
+  height: auto !important;     /* ✅ במקום min-height */
   background: linear-gradient(180deg, #ead7ff 0%, #d3b5ff 100%) !important;
-  padding: 0 !important; /* אין רווחים מסביב */
-  color: #0f172a !important;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
   box-shadow: 4px 0 30px rgba(124, 77, 255, 0.25);
   border-radius: 0 20px 20px 0 !important;
-  overflow: hidden !important; /* ❌ ביטול גלילה */
-  z-index: 9002 !important;
-  transition: transform 0.35s ease !important;
-  will-change: transform;
+  overflow: hidden !important;
 }
 
 /* ===========================
