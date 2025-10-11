@@ -327,17 +327,26 @@ body, html, #root {
 }
 
 html, body {
-  height: auto !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+  height: 100% !important;
+  min-height: 100vh !important;
+  overflow: hidden !important; /* אין גלילה כפולה על ה־body */
 }
 
-/* במידה ויש wrapper פנימי שמגלגל - ננקה גם אותו */
-#root,
-.dp-root,
-.dashboard-content,
-.dp-layout,
-.dp-main {
+/* ✅ רק ה־root (האפליקציה הראשית של React) מקבל גלילה אחת */
+#root {
   height: auto !important;
+  min-height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+}
+
+/* ביטול גלילות פנימיות בתוך אלמנטים של הדשבורד */
+.dp-root,
+.dp-layout,
+.dashboard-content,
+.dp-main,
+.dashboard-container {
   overflow: visible !important;
+  height: auto !important;
 }
