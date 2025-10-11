@@ -1,3 +1,7 @@
+// ⚡ Apply saved theme before React renders anything
+const savedTheme = localStorage.getItem("theme") || "dark";
+document.body.setAttribute("data-theme", savedTheme);
+
 import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -6,7 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 /* Contexts */
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
-import useIdleLogout from "./hooks/useIdleLogout";  
+import useIdleLogout from "./hooks/useIdleLogout";
 import "./styles/index.css";
 
 // Polyfill for Buffer (required by some libraries)
