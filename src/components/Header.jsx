@@ -20,10 +20,21 @@ export default function Header() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  if (loading) return null;
-
   // ✅ נזהה אם אנחנו בדשבורד (כולל נתיבי עסקים)
-  const isDashboard = location.pathname.includes("/dashboard") || location.pathname.includes("/business/");
+  const isDashboard =
+    location.pathname.includes("/dashboard") ||
+    location.pathname.includes("/business/");
+
+  // ✅ בזמן טעינה — בדשבורד בלבד מציגים Header ריק יציב
+  if (isDashboard && loading) {
+    return (
+      <nav className="app-header header-loading">
+        <div className="logo-wrapper">
+          <img src={logo} alt="Bizuply Logo" className="logo" />
+        </div>
+      </nav>
+    );
+  }
 
   const link = (to, label) => (
     <Link
