@@ -14,19 +14,19 @@ const DashboardCards = React.memo(({ stats = {} }) => {
       label: "Profile Views",
       value: stats.views_count ?? 0,
       icon: "👁️",
-      bgColor: "#f0ebff",
+      bgColor: "#0f172a",
     },
     {
       label: "Reviews",
       value: stats.reviews_count ?? 0,
       icon: "⭐",
-      bgColor: "#fff7d6",
+      bgColor: "#0f172a",
     },
     {
       label: "Appointments",
       value: stats.appointments_count ?? 0,
       icon: "📅",
-      bgColor: "#f9f0f7",
+      bgColor: "#0f172a",
     },
   ];
 
