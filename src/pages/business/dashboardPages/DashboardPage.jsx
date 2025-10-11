@@ -11,7 +11,6 @@ import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
-import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";

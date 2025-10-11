@@ -22,6 +22,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
 import useIdleLogout from "./hooks/useIdleLogout";
 import "./styles/index.css";
+import "./styles/dashboard.css"; 
 
 // Polyfill for Buffer (required by some libraries)
 import { Buffer } from "buffer";
