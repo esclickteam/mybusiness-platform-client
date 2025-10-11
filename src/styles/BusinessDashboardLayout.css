@@ -136,20 +136,21 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
-  height: 20px;
+  min-width: 22px;
+  height: 22px;
   font-size: 12px;
   font-weight: 700;
-  color: #fff;
-  background: #ff1744; /* אדום-ורוד */
-  border: 2px solid #fff;
+  color: #fff; /* 🟣 טקסט לבן ברור */
+  background: radial-gradient(circle at 30% 30%, #ff3b30, #c51162); /* 🔥 גרדיאנט ורוד-אדום */
+  border: 2px solid rgba(255, 255, 255, 0.4); /* ✅ גבול עדין לא חותך */
   border-radius: 9999px;
   margin-left: 8px;
   padding: 0 6px;
   box-shadow: 0 0 8px rgba(255, 23, 68, 0.7);
-  animation: pulse 1.6s infinite ease-in-out;
+  animation: pulse 1.8s infinite ease-in-out;
   position: relative;
   top: -1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* ✅ שומר על קריאות המספר */
 }
 
 @keyframes pulse {
