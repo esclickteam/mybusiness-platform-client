@@ -38,9 +38,45 @@ html, body {
   color: var(--text);
   direction: ltr;
   font-family: "Poppins", "Inter", sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* מונע גלילה כפולה על body */
 }
 
 * { box-sizing: border-box; }
+
+/* ✅ אפליקציה ראשית עם גלילה אחת בלבד */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;   /* תופס לפחות גובה מלא */
+  height: auto;        /* מתרחב לפי התוכן */
+  overflow-y: auto;    /* גלילה אחת נקייה */
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+/* ===== מבנה עמוד כללי ===== */
+.main-content {
+  flex: 1; /* דוחף את הפוטר למטה כשהתוכן קצר */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== פוטר דביק לתחתית ===== */
+footer, .dashboard-footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 16px 0;
+  background: #f3f1ff;
+  border-top: 1px solid #e4e0fa;
+  color: var(--violet-600);
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 -4px 10px rgba(0,0,0,0.03);
+}
 
 /* ========= Main Container ========= */
 .dashboard-container {
@@ -119,7 +155,7 @@ html, body {
 }
 .dashboard-nav .active {
   background: linear-gradient(180deg, var(--violet) 0%, var(--blue) 100%);
-  color: #fff;
+  color: #fff !important;
   border-color: transparent;
   box-shadow: 0 8px 20px rgba(106, 17, 203, .25);
 }
@@ -128,7 +164,7 @@ html, body {
   .dashboard-nav button { flex: 0 0 30%; min-width: 100px; }
 }
 
-/* ========= KPI Cards (Premium UX) ========= */
+/* ========= KPI Cards ========= */
 .dashboard-cards-container {
   display: flex;
   justify-content: center;
@@ -142,7 +178,6 @@ html, body {
   text-align: center;
   transition: all 0.25s ease;
 }
-
 .dashboard-card {
   flex: 0 1 260px;
   min-width: 220px;
@@ -157,69 +192,9 @@ html, body {
   position: relative;
   animation: fadeUp 0.5s ease both;
 }
-
 .dashboard-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 22px rgba(106, 17, 203, 0.12);
-}
-
-/* אייקון */
-.card-icon {
-  font-size: 28px;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: center;
-}
-
-/* טקסטים */
-.card-title {
-  font-size: 14px;
-  color: var(--muted);
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.card-value {
-  font-size: 26px;
-  font-weight: 900;
-  color: var(--text);
-}
-
-/* וריאציות צבע */
-.dashboard-card[data-variant="violet"] {
-  background: linear-gradient(180deg, #f4edff 0%, #f0e8ff 100%);
-}
-
-.dashboard-card[data-variant="pink"] {
-  background: linear-gradient(180deg, #fff4f7 0%, #ffeef1 100%);
-}
-
-.dashboard-card[data-variant="blue"] {
-  background: linear-gradient(180deg, #f3f7ff 0%, #eef3ff 100%);
-}
-
-/* אנימציית כניסה */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* רספונסיביות */
-@media (max-width: 768px) {
-  .dashboard-cards-container { gap: 16px; }
-  .dashboard-card { flex: 0 1 45%; min-width: 180px; }
-  .card-value { font-size: 22px; }
-}
-
-@media (max-width: 480px) {
-  .dashboard-cards-container {
-    flex-direction: column;
-    align-items: center;
-  }
-  .dashboard-card {
-    width: 90%;
-    max-width: 320px;
-  }
 }
 
 /* ========= Charts / Boxes ========= */
@@ -256,95 +231,12 @@ html, body {
   font-weight: 800;
 }
 
-/* ========= Topbar Title Center ========= */
-.dp-topbar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 1.5rem 0;
-  background: transparent;
-}
-
-.dp-brand-titles {
-  text-align: center;
-}
-
-.dp-brand-titles h1 {
-  font-size: clamp(24px, 2.5vw, 38px);
-  font-weight: 900;
-  letter-spacing: -0.3px;
-  margin: 0;
-  background: linear-gradient(90deg, var(--violet) 0%, var(--blue) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* ✅ ביטול רקעים קודמים ממסכים אחרים */
+/* ========= רקע אחיד ========= */
 body, html, #root {
   background: linear-gradient(180deg, #f8f9ff 0%, #f6f7fb 100%) !important;
 }
 
-/* 🎨 הקונטיינר הראשי של הדשבורד */
-.dashboard-container,
-.dp-root {
-  background: var(--surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  border-radius: 20px;
-  padding: 20px;
-}
-
-/* הצד השמאלי – סיידבר */
-.dp-sidebar {
-  background: linear-gradient(180deg, #e8e1ff 0%, #e5dbff 100%);
-  color: #fff;
-  border-radius: 0 16px 16px 0;
-}
-
-/* טקסטים בסיידבר */
-.dp-sidebar a,
-.dp-sidebar nav button {
-  color: #fff;
-  font-weight: 600;
-}
-
-/* רקע לבן-בהיר למרכז */
-.dp-main {
-  background: #fafaff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: inset 0 0 0 1px #ebeaf9;
-}
-
-.dashboard-nav button {
-  color: #000 !important; /* שחור לטקסט של כל הכפתורים */
-}
-
-/* כפתור פעיל – עדיין לבן כדי לשמור על הניגודיות מול הגרדיאנט */
-.dashboard-nav .active {
-  color: #fff !important;
-}
-
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden; /* לא נותנים ל-body לגלול */
-}
-
-/* ✅ רק ה־root (האפליקציה הראשית של React) מקבל גלילה אחת */
-#root {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;           /* תופס את כל המסך */
-  overflow-y: auto;        /* מאפשר גלילה אחת נקייה */
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  scroll-behavior: smooth;
-}
-
-/* ביטול גלילות פנימיות בתוך אלמנטים של הדשבורד */
+/* ביטול גלילות פנימיות מיותרות */
 .dp-root,
 .dp-layout,
 .dashboard-content,
