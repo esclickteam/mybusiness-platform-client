@@ -249,7 +249,8 @@ footer {
 .sidebar-open-btn {
   position: fixed;
   top: 16px;
-  left: 16px;
+  right: 16px; /* ✅ במקום left */
+  left: auto;  /* ✅ מבטל את הצד השמאלי */
   background: rgba(255, 255, 255, 0.85);
   border: none;
   border-radius: 50%;
