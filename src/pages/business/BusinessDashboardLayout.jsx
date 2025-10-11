@@ -15,9 +15,10 @@ import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
 import { FaTimes, FaBars } from "react-icons/fa";
+import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 
 /* ============================
-   🧭 רשימת טאבים
+   🧭 טאבים ראשיים
    ============================ */
 const tabs = [
   { path: "dashboard", label: "Dashboard" },
@@ -36,7 +37,7 @@ const SOCKET_URL = "https://api.bizuply.com";
 const socket = io(SOCKET_URL, { autoConnect: false });
 
 export default function BusinessDashboardLayout({ children }) {
-  const { user, loading } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
   const { businessId } = useParams();
   const location = useLocation();
@@ -46,7 +47,7 @@ export default function BusinessDashboardLayout({ children }) {
   const isDashboardPath = location.pathname.includes("/dashboard");
 
   /* ============================
-     Socket.io – הצטרפות לעסק
+     Socket.io
      ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
@@ -73,14 +74,6 @@ export default function BusinessDashboardLayout({ children }) {
           (res) => res.data
         )
     );
-
-    queryClient.prefetchQuery(
-      ["crm-appointments", user.businessId],
-      () =>
-        API.get(
-          `/appointments/all-with-services?businessId=${user.businessId}`
-        ).then((res) => res.data)
-    );
   }, [user?.businessId, queryClient]);
 
   /* ============================
@@ -91,47 +84,36 @@ export default function BusinessDashboardLayout({ children }) {
       navigate("/", { replace: true });
       return;
     }
-
-    const params = new URLSearchParams(location.search);
-    const tabQ = params.get("tab");
-    const tabS = location.state?.activeTab;
-
-    if (tabQ && tabs.some((t) => t.path === tabQ)) {
-      navigate(`./${tabQ}`, { replace: true });
-    } else if (tabS && tabs.some((t) => t.path === tabS)) {
-      navigate(`./${tabS}`, { replace: true });
-    }
-  }, [user, loading, location.search, location.state, navigate]);
+  }, [user, loading, navigate]);
 
   /* ============================
      מובייל / דסקטופ
      ============================ */
-  const isMobileInit = window.innerWidth <= 768;
-  const [isMobile, setIsMobile] = useState(isMobileInit);
-  const [showSidebar, setShowSidebar] = useState(!isMobileInit);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showSidebar, setShowSidebar] = useState(!isMobile);
   const sidebarRef = useRef(null);
 
   useEffect(() => {
-    const onResize = () => {
+    const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       if (!mobile) setShowSidebar(true);
     };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   /* ============================
-     מקשים (Tab / Escape)
+     מקשי ניווט (Tab / ESC)
      ============================ */
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
-    const sel =
+    const selectable =
       'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-    const els = sidebarRef.current.querySelectorAll(sel);
-    if (!els.length) return;
-    const first = els[0],
-      last = els[els.length - 1];
+    const elements = sidebarRef.current.querySelectorAll(selectable);
+    if (!elements.length) return;
+    const first = elements[0];
+    const last = elements[elements.length - 1];
 
     const onKey = (e) => {
       if (e.key === "Tab") {
@@ -151,8 +133,11 @@ export default function BusinessDashboardLayout({ children }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
-  if (loading) return <p className="loading">Loading information…</p>;
+  if (loading) return <p className="loading">Loading...</p>;
 
+  /* ============================
+     🎨 Layout מלא
+     ============================ */
   return (
     <BusinessServicesProvider>
       <AiProvider>
@@ -166,37 +151,62 @@ export default function BusinessDashboardLayout({ children }) {
                 aria-modal={isMobile && showSidebar ? "true" : undefined}
                 role={isMobile && showSidebar ? "dialog" : undefined}
               >
-                <div className="sidebar-logo">
-                  <img
-                    src="/bizuply logo.png"
-                    alt="BizUply Logo"
-                    className="sidebar-logo-img"
-                  />
-                  {isMobile && (
-                    <button
-                      className="sidebar-close-btn"
-                      aria-label="Close menu"
-                      onClick={() => setShowSidebar(false)}
-                    >
-                      <FaTimes size={18} />
-                    </button>
+                <div className="sidebar-header">
+                  <div className="sidebar-logo">
+                    <img
+                      src="/bizuply logo.png"
+                      alt="BizUply"
+                      className="sidebar-logo-img"
+                    />
+                    {isMobile && (
+                      <button
+                        className="sidebar-close-btn"
+                        onClick={() => setShowSidebar(false)}
+                        aria-label="Close"
+                      >
+                        <FaTimes size={18} />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* 🔔 התראות */}
+                  <div className="sidebar-notifications">
+                    <FacebookStyleNotifications />
+                  </div>
+
+                  {/* 👋 שלום + כפתורי חשבון */}
+                  {user && (
+                    <div className="sidebar-user">
+                      <p className="sidebar-hello">
+                        Hello, <strong>{user.fullName || "Business Owner"}</strong>
+                      </p>
+                      <button
+                        className="sidebar-account-btn"
+                        onClick={() => navigate("/account")}
+                      >
+                        My Account
+                      </button>
+                      <button
+                        className="sidebar-logout-btn"
+                        onClick={logout}
+                      >
+                        Logout
+                      </button>
+                    </div>
                   )}
                 </div>
 
                 <h2>Business Management</h2>
 
                 <nav>
-                  {user?.role === "business" && (
-                    <NavLink
-                      to={`/business/${businessId}`}
-                      end
-                      className={({ isActive }) =>
-                        isActive ? "active" : undefined
-                      }
-                    >
-                      View Public Profile
-                    </NavLink>
-                  )}
+                  <NavLink
+                    to={`/business/${businessId}`}
+                    end
+                    className={({ isActive }) => (isActive ? "active" : undefined)}
+                  >
+                    View Public Profile
+                  </NavLink>
+
                   {tabs.map(({ path, label }) => (
                     <NavLink
                       key={path}
@@ -205,9 +215,7 @@ export default function BusinessDashboardLayout({ children }) {
                         location.pathname ===
                         `/business/${businessId}/dashboard/${path}`
                       }
-                      className={({ isActive }) =>
-                        isActive ? "active" : undefined
-                      }
+                      className={({ isActive }) => (isActive ? "active" : undefined)}
                     >
                       {label}
                       {path === "messages" && messagesCount > 0 && (
@@ -219,33 +227,28 @@ export default function BusinessDashboardLayout({ children }) {
               </aside>
             )}
 
-            {/* 🔹 Overlay כהה ברקע במובייל */}
+            {/* 🔹 Overlay כהה במובייל */}
             {isMobile && showSidebar && (
               <div
                 className="sidebar-overlay"
                 onClick={() => setShowSidebar(false)}
-                aria-label="Close menu"
+                aria-label="Close"
               />
             )}
 
-            {/* 🔹 כפתור פתיחה ☰ */}
+            {/* ☰ כפתור פתיחה */}
             {isMobile && !showSidebar && (
               <button
                 className="sidebar-open-btn"
-                aria-label="Open menu"
                 onClick={() => setShowSidebar(true)}
+                aria-label="Open Menu"
               >
                 <FaBars size={20} />
               </button>
             )}
 
             {/* 💬 תוכן */}
-            <main
-              className="dashboard-content"
-              tabIndex={-1}
-              aria-live="polite"
-              aria-atomic="true"
-            >
+            <main className="dashboard-content" tabIndex={-1}>
               {children ?? <Outlet />}
             </main>
           </div>
