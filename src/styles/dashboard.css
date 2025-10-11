@@ -133,17 +133,18 @@ html, body {
 /* ========= KPI Cards (Premium UX) ========= */
 .dashboard-cards-container {
   display: flex;
-  justify-content: center;
+  justify-content: center;      /* ממקם במרכז */
   align-items: stretch;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;            /* ❗ לא שובר שורה בדסקטופ */
   gap: 24px;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 10px 0 20px;
   text-align: center;
   transition: all 0.25s ease;
 }
+
 
 .dashboard-card {
   flex: 0 1 260px;
