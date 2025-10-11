@@ -29,11 +29,12 @@ html, body {
   text-align: left;
 
   /* ✅ צבע בסיס מיידי למניעת פלאש לבן */
-  background-color: var(--bg-start);
-  background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
+  background-color: #f6f7fb; /* קבוע מראש כדי שייטען מיד */
+  background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
   color: var(--text-color);
 
-  transition: background-color 0.3s ease, background 0.4s ease, color 0.3s ease;
+  /* ⚡ מניעת הבהוב מעבר נושא */
+  transition: none !important;
 
   overflow-x: hidden;
   overflow-y: scroll;
@@ -41,6 +42,11 @@ html, body {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ✅ ברגע שנטען נושא (theme) — אפשר להחזיר מעבר רך */
+body.theme-ready {
+  transition: background-color 0.3s ease, background 0.4s ease, color 0.3s ease;
 }
 
 /* ===========================
