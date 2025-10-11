@@ -23,7 +23,6 @@ const tabs = [
   { path: "collab", label: "Collaborations" },
   { path: "crm", label: "CRM System" },
   { path: "BizUply", label: "BizUply Advisor" },
-  { path: "affiliate", label: "Affiliate Program" },
   { path: "help-center", label: "Help Center" },
 ];
 
