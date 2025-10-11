@@ -9,7 +9,6 @@ import { createSocket } from "../socket";
    ========================== */
 function normalizeUser(user) {
   if (!user) return null;
-
   const now = new Date();
   let computedIsValid = false;
 
@@ -41,16 +40,11 @@ function normalizeUser(user) {
    ========================== */
 function applyTheme(user) {
   const theme = user?.role === "business" ? "business" : "light";
-
-  // ✅ הגדרת theme גלובלית
   document.body.setAttribute("data-theme", theme);
   document.documentElement.setAttribute("data-theme", theme);
-
-  // ✅ רקע מיידי למניעת פלאש לבן
   const bg = theme === "business" ? "#f6f7fb" : "#ffffff";
   document.body.style.background = bg;
   document.documentElement.style.background = bg;
-
   localStorage.setItem("theme", theme);
 }
 
@@ -64,16 +58,13 @@ export async function singleFlightRefresh() {
       .then((res) => {
         const { accessToken, user: refreshedUser } = res.data;
         if (!accessToken) throw new Error("No new token");
-
         localStorage.setItem("token", accessToken);
         setAuthToken(accessToken);
-
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
           localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
-          applyTheme(normalizedUser); // 🎨 החלת theme גם אחרי refresh
+          applyTheme(normalizedUser);
         }
-
         return accessToken;
       })
       .finally(() => {
@@ -89,7 +80,7 @@ export async function singleFlightRefresh() {
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // ✨ החלת theme מוקדמת לפני רינדור ראשון
+  // ✨ טוען theme בסיסי מיידית בזמן רינדור ראשון
   if (typeof document !== "undefined" && !document.body.getAttribute("data-theme")) {
     const savedTheme = localStorage.getItem("theme");
     document.body.setAttribute("data-theme", savedTheme || "light");
@@ -107,11 +98,10 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-
   const socket = useMemo(() => null, []);
 
   /* ==========================
-     👤 Fetch / Refresh User
+     👤 Refresh User
      ========================== */
   const refreshUser = async (force = false) => {
     try {
@@ -130,7 +120,7 @@ export function AuthProvider({ children }) {
   };
 
   /* ==========================
-     🚪 Login
+     🚪 Login (Fixed)
      ========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
@@ -148,17 +138,25 @@ export function AuthProvider({ children }) {
       setAuthToken(accessToken);
       setToken(accessToken);
 
+      // 🧠 נטען משתמש ונעדכן theme לפני הניווט
       const freshUser = await refreshUser(true);
       const normalizedUser = freshUser || normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // 🎨 החל theme לפני ניווט
-      applyTheme(normalizedUser);
+      // 🎨 החלת theme מיידית לפני כל navigate
+      const theme = normalizedUser?.role === "business" ? "business" : "light";
+      document.body.setAttribute("data-theme", theme);
+      document.documentElement.setAttribute("data-theme", theme);
+      const bg = theme === "business" ? "#f6f7fb" : "#ffffff";
+      document.body.style.background = bg;
+      document.documentElement.style.background = bg;
+      localStorage.setItem("theme", theme);
 
-      // ⏱ זמן קצר כדי לוודא שה־DOM מעודכן
-      await new Promise((res) => setTimeout(res, 300));
+      // ⏱ השהיה קצרה כדי לאפשר לדפדפן להחיל צבע לפני הניווט
+      await new Promise((res) => setTimeout(res, 50));
 
+      // 🧭 ניווט
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
@@ -214,7 +212,7 @@ export function AuthProvider({ children }) {
   };
 
   /* ==========================
-     ⚙️ Initialize Auth + Socket
+     ⚙️ Initialize Auth
      ========================== */
   useEffect(() => {
     if (!token) {
@@ -274,23 +272,16 @@ export function AuthProvider({ children }) {
     })();
   }, [token, navigate, location.pathname]);
 
-  /* 🎨 שמירה על theme מעודכן בכל שינוי משתמש */
   useEffect(() => {
     if (user) applyTheme(user);
   }, [user]);
 
-  /* ==========================
-     🕒 Success Message Timeout
-     ========================== */
   useEffect(() => {
     if (!successMessage) return;
     const t = setTimeout(() => setSuccessMessage(null), 4000);
     return () => clearTimeout(t);
   }, [successMessage]);
 
-  /* ==========================
-     📦 Context Value
-     ========================== */
   const ctx = {
     token,
     user,
@@ -305,10 +296,9 @@ export function AuthProvider({ children }) {
     setUser,
   };
 
-  /* ==========================
-     🌀 Prevent UI flash before init
-     ========================== */
   if (!initialized) {
+    document.body.setAttribute("data-theme", "light");
+    document.body.style.background = "#ffffff";
     return (
       <div className="auth-loading-screen">
         <div className="loader" />
