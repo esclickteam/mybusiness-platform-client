@@ -133,11 +133,17 @@
    💡 תוכן הדשבורד
    =========================== */
 .dashboard-content {
-  margin-left: 250px;  /* מפנה מקום לסיידבר */
+  flex: 1;
+  margin-left: 250px;                     /* מפנה מקום לסיידבר */
   background: #f6f7fb;
   min-height: 100vh;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 3rem 3rem 5rem;
   box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
 footer {
