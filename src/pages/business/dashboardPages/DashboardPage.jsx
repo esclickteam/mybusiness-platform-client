@@ -119,44 +119,14 @@ export function preloadDashboardComponents() {
  *************************/
 const DashboardPage = () => {
   const {
-  user,
-  initialized,
-  logout,
-  refreshAccessToken,
-  refreshUser,
-  setUser,
-} = useAuth();
-
-const businessId = getBusinessId();
-
-/* 🎨 חכה שה-theme ייטען לפני הצגת הדשבורד */
-const [themeReady, setThemeReady] = useState(false);
-
-useEffect(() => {
-  const current = document.body.getAttribute("data-theme");
-  if (current) {
-    setThemeReady(true);
-    return;
-  }
-
-  // נעקוב אחרי שינוי data-theme (כש-AuthContext מחיל אותו)
-  const observer = new MutationObserver(() => {
-    if (document.body.getAttribute("data-theme")) {
-      setThemeReady(true);
-      observer.disconnect();
-    }
-  });
-
-  observer.observe(document.body, { attributes: true, attributeFilter: ["data-theme"] });
-  return () => observer.disconnect();
-}, []);
-
-/* אם ה-theme עדיין לא מוכן – נציג Skeleton */
-if (!initialized || !themeReady) {
-  return <DashboardSkeleton />;
-}
-
-
+    user,
+    initialized,
+    logout,
+    refreshAccessToken,
+    refreshUser,
+    setUser,
+  } = useAuth();
+  const businessId = getBusinessId();
 
   /* refs */
   const cardsRef = useRef(null);
@@ -307,185 +277,77 @@ if (!initialized || !themeReady) {
 
   /* socket lifecycle */
   useEffect(() => {
-  if (!initialized || !businessId) return;
+    if (!initialized || !businessId) return;
 
-  let isMounted = true;
-  let reconnectTimeout = null;
+    let isMounted = true;
+    let reconnectTimeout = null;
 
-  const setupSocket = async () => {
-    const token = await refreshAccessToken();
-    if (!token) {
-      logout();
-      return;
-    }
-
-    const sock = await createSocket(refreshAccessToken, logout, businessId);
-    if (!sock || !isMounted) return;
-
-    socketRef.current = sock;
-    reconnectAttempts.current = 0;
-
-    /* ✅ Join business room */
-    sock.on("connect", () => {
-      sock.emit("joinBusinessRoom", businessId);
-      sock.emit("subscribeToBusinessUpdates", businessId);
-    });
-
-    /* 🔁 Handle disconnect & auto-reconnect */
-    sock.on("disconnect", () => {
-      if (isMounted && reconnectAttempts.current < maxReconnectAttempts) {
-        const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
-        reconnectTimeout = setTimeout(() => {
-          reconnectAttempts.current += 1;
-          setupSocket();
-        }, delay);
-      }
-    });
-
-    /* 🔐 Handle token refresh */
-    sock.on("tokenExpired", async () => {
-      const newToken = await refreshAccessToken();
-      if (!newToken) return logout();
-      sock.auth.token = newToken;
-      sock.emit("authenticate", { token: newToken });
-    });
-
-    /* 🧠 Core event listeners */
-    sock.on("dashboardUpdate", (newStats) => debouncedSetStats(newStats));
-    
-    sock.on("appointmentCreated", refreshAppointmentsFromAPI);
-    sock.on("appointmentUpdated", refreshAppointmentsFromAPI);
-    sock.on("appointmentDeleted", refreshAppointmentsFromAPI);
-
-    sock.on("newRecommendation", (rec) =>
-      setRecommendations((prev) => [...prev, rec])
-    );
-
-    /* ✅ Unified Real-time Listener — handles all Redis → Socket.IO events */
-/* ✅ Unified Real-time Listener — handles all Redis → Socket.IO events */
-sock.off("businessUpdates");
-sock.on("businessUpdates", (payload) => {
-  try {
-    const data = typeof payload === "string" ? JSON.parse(payload) : payload;
-    if (!data?.type) return;
-
-    const { type, data: eventData } = data;
-    console.log("📡 [Live Update]", type, eventData);
-
-    switch (type) {
-      // 🔹 עדכון כללי של לוח הבקרה (סטטיסטיקות)
-      case "dashboardUpdate":
-        debouncedSetStats(eventData);
-        break;
-
-      // 🔹 צפיות בפרופיל (עם הגנה כפולה + בדיקת שינוי אמיתי)
-      case "profileViewsUpdated":
-        setStats((s) => {
-          if (!s) return s;
-
-          // 🧠 מניעת עדכון כפול אם הערך זהה או קטן יותר
-          if (!eventData?.views_count || s.views_count >= eventData.views_count)
-            return s;
-
-          return { ...s, views_count: eventData.views_count };
-        });
-        break;
-
-      // 🔹 פגישות — כל שינוי גורם לריענון מיידי
-      case "appointmentCreated":
-      case "appointmentUpdated":
-      case "appointmentDeleted":
-        refreshAppointmentsFromAPI();
-        break;
-
-      // 🔹 ביקורות חדשות (עם בדיקת כפילות)
-      case "newReview": {
-        setStats((s) => {
-          if (!s) return s;
-          const exists = s.reviews?.some((r) => r._id === eventData._id);
-          if (exists) return s; // ⛔ מניעת ספירה כפולה
-
-          return {
-            ...s,
-            reviews: [...(s.reviews || []), eventData],
-            reviews_count: (s.reviews_count || 0) + 1,
-          };
-        });
-        break;
+    const setupSocket = async () => {
+      const token = await refreshAccessToken();
+      if (!token) {
+        logout();
+        return;
       }
 
-      // 🔹 התראות חדשות (כולל באנדלים)
-      case "newNotification":
-      case "notificationBundle":
-        setStats((s) =>
-          s
-            ? {
-                ...s,
-                notifications_count:
-                  eventData.count || s.notifications_count || 0,
-              }
-            : s
-        );
-        break;
+      const sock = await createSocket(refreshAccessToken, logout, businessId);
+      if (!sock || !isMounted) return;
 
-      // 🔹 הודעות חדשות בצ׳אט
-      case "newMessage":
-        setStats((s) =>
-          s
-            ? {
-                ...s,
-                messages_count: (s.messages_count || 0) + 1,
-              }
-            : s
-        );
-        break;
+      socketRef.current = sock;
+      reconnectAttempts.current = 0;
 
-      default:
-        console.log("📡 [Unhandled Event]", type);
-    }
-  } catch (err) {
-    console.error("❌ Error parsing businessUpdates payload:", err);
-  }
-});
+      sock.on("connect", () => {
+        sock.emit("joinBusinessRoom", businessId);
+      });
 
-/* ✅ Direct socket event fallback — for servers that emit 'newReview' directly */
-sock.on("newReview", (reviewData) => {
-  console.log("📡 [Direct Socket] newReview", reviewData);
-  setStats((s) => {
-    if (!s) return s;
-    const exists = s.reviews?.some((r) => r._id === reviewData._id);
-    if (exists) return s;
+      sock.on("disconnect", () => {
+        if (isMounted && reconnectAttempts.current < maxReconnectAttempts) {
+          const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
+          reconnectTimeout = setTimeout(() => {
+            reconnectAttempts.current += 1;
+            setupSocket();
+          }, delay);
+        }
+      });
 
-    return {
-      ...s,
-      reviews: [...(s.reviews || []), reviewData],
-      reviews_count: (s.reviews_count || 0) + 1,
+      sock.on("tokenExpired", async () => {
+        const newToken = await refreshAccessToken();
+        if (!newToken) return logout();
+        sock.auth.token = newToken;
+        sock.emit("authenticate", { token: newToken });
+      });
+
+      sock.on("dashboardUpdate", (newStats) => debouncedSetStats(newStats));
+      sock.on("profileViewsUpdated", ({ views_count }) => {
+        setStats((s) => (s ? { ...s, views_count } : s));
+      });
+
+      sock.on("appointmentCreated", refreshAppointmentsFromAPI);
+      sock.on("appointmentUpdated", refreshAppointmentsFromAPI);
+      sock.on("appointmentDeleted", refreshAppointmentsFromAPI);
+
+      sock.on("newRecommendation", (rec) =>
+        setRecommendations((prev) => [...prev, rec])
+      );
     };
-  });
-});
 
+    loadStats();
+    refreshAppointmentsFromAPI();
+    setupSocket();
 
-  };
-
-  loadStats();
-  refreshAppointmentsFromAPI();
-  setupSocket();
-
-  return () => {
-    isMounted = false;
-    if (reconnectTimeout) clearTimeout(reconnectTimeout);
-    socketRef.current?.disconnect();
-    socketRef.current = null;
-  };
-}, [
-  initialized,
-  businessId,
-  logout,
-  refreshAccessToken,
-  debouncedSetStats,
-  refreshAppointmentsFromAPI,
-]);
-
+    return () => {
+      isMounted = false;
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      socketRef.current?.disconnect();
+      socketRef.current = null;
+    };
+  }, [
+    initialized,
+    businessId,
+    logout,
+    refreshAccessToken,
+    debouncedSetStats,
+    refreshAppointmentsFromAPI,
+  ]);
 
   /* mark messages read */
   useEffect(() => {
