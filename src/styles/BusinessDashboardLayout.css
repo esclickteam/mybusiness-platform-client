@@ -204,17 +204,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  font-size: 12px;
+  min-width: 22px;
+  height: 22px;
+  font-size: 13px;
   font-weight: 700;
   color: #fff;
-  background: #ff1744; /* 🔥 אדום-ורוד בוהק */
-  border: 2px solid #fff; /* גבול לבן ליצירת ניגודיות מול הרקע */
+  background: radial-gradient(circle at 30% 30%, #ff4d8d, #b30075); /* ורוד-סגול זוהר */
   border-radius: 9999px;
   margin-left: 8px;
   padding: 0 6px;
-  box-shadow: 0 0 8px rgba(255, 23, 68, 0.7); /* זוהר רך */
+  box-shadow: 0 0 10px rgba(255, 64, 160, 0.8), 0 0 4px rgba(179, 0, 117, 0.6); /* זוהר ורדרד */
   animation: pulse 1.6s infinite ease-in-out;
   position: relative;
   top: -1px;
