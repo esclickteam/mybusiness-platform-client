@@ -14,8 +14,7 @@ import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
-import { FaTimes, FaBars } from "react-icons/fa";
-import FacebookStyleNotifications from "../../components/FacebookStyleNotifications"; // ✅ פעמון ההתראות
+import { FaTimes, FaBars } from "react-icons/fa"; // ✅ כפתור סגירה + פתיחה
 
 /* ============================
    🧭 רשימת טאבים (ללא אייקונים)
@@ -44,8 +43,10 @@ export default function BusinessDashboardLayout({ children }) {
   const queryClient = useQueryClient();
   const { unreadCount: messagesCount } = useNotifications();
 
+  const isDashboardPath = location.pathname.includes("/dashboard");
+
   /* ============================
-     🧠 Socket חיבור לעסק
+     🧠 חיבור Socket לעסק
      ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
@@ -163,35 +164,6 @@ export default function BusinessDashboardLayout({ children }) {
       <AiProvider>
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
-
-            {/* 🔹 HEADER */}
-            <header className="dashboard-header">
-              {/* צד ימין – כפתור ההמבורגר */}
-              <div className="header-right">
-                <button
-                  className="sidebar-open-btn"
-                  aria-label="Open sidebar"
-                  onClick={() => setShowSidebar(true)}
-                >
-                  <FaBars size={20} />
-                </button>
-              </div>
-
-              {/* מרכז – לוגו */}
-              <div className="header-center">
-                <img
-                  src="/bizuply logo.png"
-                  alt="BizUply"
-                  className="dashboard-header-logo"
-                />
-              </div>
-
-              {/* צד שמאל – פעמון ההתראות */}
-              <div className="header-left">
-                <FacebookStyleNotifications />
-              </div>
-            </header>
-
             {/* 🔹 Sidebar */}
             {(!isMobile || showSidebar) && (
               <aside
@@ -251,6 +223,17 @@ export default function BusinessDashboardLayout({ children }) {
                   ))}
                 </nav>
               </aside>
+            )}
+
+            {/* 🔹 כפתור פתיחה במובייל */}
+            {isMobile && !showSidebar && (
+              <button
+                className="sidebar-open-btn"
+                aria-label="Open menu"
+                onClick={() => setShowSidebar(true)}
+              >
+                <FaBars size={20} />
+              </button>
             )}
 
             {/* 🔹 תוכן */}
