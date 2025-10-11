@@ -15,13 +15,15 @@
 .business-dashboard-layout {
   display: flex;
   width: 100%;
-  min-height: 100vh; /* ✅ גובה מלא */
+  min-height: 100vh;
   margin: 0;
   position: relative;
+  background: #f6f7fb;
+  overflow: hidden; /* ✅ מונע פסי גלילה כפולים */
   transition: filter 0.3s ease;
 }
 
-/* ביטול טשטוש כשסיידבר פתוח במובייל */
+/* הסרה של טשטוש כשסיידבר פתוח */
 .sidebar-open .business-dashboard-layout {
   filter: none;
   pointer-events: auto;
@@ -34,13 +36,13 @@
 }
 
 /* ===========================
-   🟣 Sidebar – UX מלא בצד שמאל
+   🟣 Sidebar – קבוע בצד שמאל UX מלא
    =========================== */
 .sidebar {
-  position: fixed !important;  /* ✅ תמיד קבוע בצד */
+  position: fixed !important;
   top: 0 !important;
-  left: 0 !important;           /* ✅ במקום right */
-  min-width: 240px !important;
+  left: 0 !important;
+  width: 250px !important;
   height: 100vh !important;
   background: linear-gradient(180deg, #e6d3ff 0%, #d1b3ff 100%) !important;
   padding: 2rem 1rem !important;
@@ -49,7 +51,6 @@
   flex-direction: column;
   justify-content: flex-start;
   overflow-y: auto !important;
-  flex-shrink: 0;
   box-shadow: 4px 0 20px rgba(124, 77, 255, 0.25);
   border-radius: 0 16px 16px 0 !important;
   z-index: 9002 !important;
@@ -97,7 +98,7 @@
 .dashboard-content {
   flex: 1;
   padding: 2rem;
-  margin-left: 240px; /* ✅ מפנה מקום לסיידבר משמאל */
+  margin-left: 250px; /* ✅ מפנה מקום לסיידבר */
   background: #f6f7fb;
   min-height: 100vh;
   overflow-y: auto;
@@ -105,16 +106,21 @@
   transition: all 0.3s ease;
 }
 
+/* גלילה חלקה ואחידה */
+html {
+  scroll-behavior: smooth !important;
+}
+
 /* ===========================
    📱 מובייל – Slide-in עדין
    =========================== */
 @media (max-width: 768px) {
-  .sidebar.mobile {
+  .sidebar {
     position: fixed !important;
     top: 0;
     left: 0 !important;
     width: 80vw !important;
-    max-width: 350px !important;
+    max-width: 340px !important;
     height: 100vh !important;
     background: #f9edff !important;
     box-shadow: 8px 0 36px rgba(0, 0, 0, 0.1) !important;
@@ -124,13 +130,17 @@
     transition: transform 0.35s ease !important;
   }
 
-  .sidebar.mobile.open {
+  .sidebar.open {
     transform: translateX(0) !important; /* ✅ פתיחה */
   }
 
   .dashboard-content {
     margin-left: 0 !important;
     padding-top: 60px !important;
+  }
+
+  body {
+    overflow-x: hidden !important;
   }
 }
 
