@@ -1,6 +1,16 @@
 // ⚡ Apply saved theme before React renders anything
-const savedTheme = localStorage.getItem("theme") || "dark";
+const savedTheme = localStorage.getItem("theme") || "light"; // ✅ השתמש ב-light כברירת מחדל כדי למנוע מצב כהה מיותר
 document.body.setAttribute("data-theme", savedTheme);
+
+// 🩶 וודא שגם ה-root מקבל רקע לפני שריאקט מתחיל לטעון
+document.documentElement.style.backgroundColor =
+  savedTheme === "dark" ? "#0f172a" : "#f6f7fb";
+document.body.style.backgroundColor =
+  savedTheme === "dark" ? "#0f172a" : "#f6f7fb";
+document.getElementById("root")?.style?.setProperty(
+  "background-color",
+  savedTheme === "dark" ? "#0f172a" : "#f6f7fb"
+);
 
 import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
