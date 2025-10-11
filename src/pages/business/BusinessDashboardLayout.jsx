@@ -15,6 +15,8 @@ import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
 import { FaTimes, FaBars } from "react-icons/fa"; // ✅ כפתור סגירה + פתיחה
+import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
+
 
 /* ============================
    🧭 רשימת טאבים (ללא אייקונים)
