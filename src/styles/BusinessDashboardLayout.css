@@ -196,3 +196,9 @@
     display: none !important;
   }
 }
+
+.sidebar,
+.sidebar h2,
+.sidebar a {
+  color: #0f172a !important;
+}
