@@ -1,203 +1,165 @@
+/* ===========================
+   Bizuply – SaaS PRO Dashboard (LTR)
+   =========================== */
+
 /* גרדיאנט גלובלי כבר ב־index.css */
-.rtl-wrapper {
-  direction: rtl;
+.ltr-wrapper {
+  direction: ltr;
   min-height: 100vh;
   box-sizing: border-box;
 }
 
-/* פריסה ראשית */
+/* ===========================
+   🔹 פריסה ראשית
+   =========================== */
 .business-dashboard-layout {
   display: flex;
   width: 100%;
-  height: 100vh; /* חשוב למלא את הגובה */
+  min-height: 100vh; /* ✅ גובה מלא */
   margin: 0;
   position: relative;
   transition: filter 0.3s ease;
 }
 
-/* הסרה של טשטוש התוכן כשסיידבר פתוח במובייל */
+/* ביטול טשטוש כשסיידבר פתוח במובייל */
 .sidebar-open .business-dashboard-layout {
-  filter: none; /* אין טשטוש */
+  filter: none;
   pointer-events: auto;
   user-select: auto;
 }
 
-/* הסתרה גורפת של כפתור סגירה ישן */
+/* הסתרת כפתור ישן */
 .close-sidebar-btn {
   display: none !important;
 }
 
-/* סיידבר (בכל הגדלים – מיקום צד ימין דרך rtl) */
+/* ===========================
+   🟣 Sidebar – UX מלא בצד שמאל
+   =========================== */
 .sidebar {
+  position: fixed !important;  /* ✅ תמיד קבוע בצד */
+  top: 0 !important;
+  left: 0 !important;           /* ✅ במקום right */
   min-width: 240px !important;
-  padding: 1rem !important;
-  background-color: #d1b3ff9a !important;
   height: 100vh !important;
+  background: linear-gradient(180deg, #e6d3ff 0%, #d1b3ff 100%) !important;
+  padding: 2rem 1rem !important;
+  color: #0f172a !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   overflow-y: auto !important;
+  flex-shrink: 0;
+  box-shadow: 4px 0 20px rgba(124, 77, 255, 0.25);
+  border-radius: 0 16px 16px 0 !important;
+  z-index: 9002 !important;
   transition: transform 0.35s ease !important;
   will-change: transform;
-  z-index: 9002 !important; /* מעל האופרליי */
-  flex-shrink: 0; /* לא יתכווץ */
-  box-shadow: 0 0 20px rgb(124 77 255 / 0.35);
-  border-radius: 12px !important;
 }
 
-/* במובייל – Slide-in/out לפי class */
-.sidebar.mobile {
-  position: fixed !important;
-  top: 0;
-  right: 0;
-  width: 83vw !important;
-  max-width: 350px !important;
-  height: 100vh !important;
-  background: #f9edff !important;
-  box-shadow: -8px 0 36px #0001 !important;
-  transform: translateX(100%) !important; /* ברירת מחדל: סגור */
-  z-index: 9002 !important; /* מעל האופרליי */
-  border-radius: 0 12px 12px 0; /* עיגול בפינות במובייל */
-  transition: transform 0.35s ease !important;
-}
-.sidebar.mobile.open {
-  transform: translateX(0) !important; /* כשלוחצים: פותח */
-}
-
-/* אופרליי של רקע כשהסיידבר פתוח במובייל */
-.sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(44, 18, 85, 0.13) !important; /* שקיפות קלה */
-  z-index: 9000 !important; /* מתחת לסיידבר */
-  cursor: pointer;
-  backdrop-filter: none; /* אין טשטוש */
-  transition: opacity 0.3s ease;
-  opacity: 1;
-}
-.sidebar-overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* קישורים פנימיים */
+/* ===========================
+   🔸 קישורים
+   =========================== */
 .sidebar nav {
   display: flex !important;
   flex-direction: column !important;
   gap: 0.5rem !important;
 }
+
 .sidebar a {
+  display: block !important;
   padding: 0.75rem 1rem !important;
-  border-radius: 16px !important; /* עיגול חזק יותר */
-  color: var(--text-secondary) !important;
+  border-radius: 16px !important;
+  color: #0f172a !important;
   text-decoration: none !important;
-  transition: background 0.2s !important;
-  display: block !important; /* כדי שהעיגול יכסה את כל הרוחב */
-  margin-bottom: 0.3rem !important; /* רווח בין הטאבים */
+  margin-bottom: 0.3rem !important;
+  transition: all 0.25s ease !important;
+  font-weight: 500;
 }
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
 .sidebar a.active {
-  background: #d7c0ff !important; /* סגול בהיר רך - לא מסנוור */
-  color: #0f172a !important;       /* טקסט כהה וברור */
+  background: #d7c0ff !important; /* סגול רך UX */
+  color: #0f172a !important;      /* טקסט כהה וברור */
   font-weight: 700;
   border-radius: 16px !important;
   box-shadow: 0 4px 12px rgba(106, 17, 203, 0.25);
   transition: all 0.25s ease;
 }
 
-/* תוכן הדשבורד */
+/* ===========================
+   💡 תוכן הדשבורד
+   =========================== */
 .dashboard-content {
   flex: 1;
-  padding: 1rem;
-  min-height: 100vh; /* למלא את הגובה */
+  padding: 2rem;
+  margin-left: 240px; /* ✅ מפנה מקום לסיידבר משמאל */
+  background: #f6f7fb;
+  min-height: 100vh;
   overflow-y: auto;
   box-sizing: border-box;
-  transition: filter 0.3s ease;
-}
-
-/* כפתור ניווט מובייל מקצועי (MobileNavToggle) */
-.mobile-nav-toggle {
-  position: fixed; /* או absolute בתוך קונטיינר */
-  top: 12px; /* התאמה לגובה הלוגו */
-  left: 80px; /* מיקום ליד הלוגו - תתאים לפי רוחב הלוגו */
-  z-index: 1100;
-  width: 40px;
-  height: 40px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: filter 0.3s ease;
-}
-
-
-.mobile-nav-toggle svg line {
-  stroke: #333;
   transition: all 0.3s ease;
 }
 
-.mobile-nav-toggle:hover svg line {
-  stroke: #5c46ff; /* צבע הכחול בהארה בריחוף */
-}
-
-.mobile-nav-toggle:focus {
-  outline: 2px solid #5c46ff;
-  outline-offset: 2px;
-}
-
-/* במובייל בלבד – התוכן מתחת לכפתור */
+/* ===========================
+   📱 מובייל – Slide-in עדין
+   =========================== */
 @media (max-width: 768px) {
-  .business-dashboard-layout {
-    flex-direction: row !important; /* לשמור על פריסה אופקית */
-    height: 100vh;
-  }
-  .dashboard-content {
-    flex: 1;
-    margin-right: 0; /* יתעדכן דינמית לפי מצב הסיידבר */
-    padding: 1rem !important;
-    padding-top: 60px !important; /* למקם מתחת לכפתור */
-    box-sizing: border-box;
-    height: 100vh !important;
-    overflow-y: auto;
-  }
   .sidebar.mobile {
     position: fixed !important;
     top: 0;
-    right: 0;
-    width: 83vw !important;
+    left: 0 !important;
+    width: 80vw !important;
     max-width: 350px !important;
     height: 100vh !important;
     background: #f9edff !important;
-    box-shadow: -8px 0 36px #0001 !important;
-    transform: translateX(100%) !important;
-    transition: transform 0.35s ease !important;
+    box-shadow: 8px 0 36px rgba(0, 0, 0, 0.1) !important;
+    transform: translateX(-100%) !important; /* ברירת מחדל: סגור */
     z-index: 9002 !important;
-    border-radius: 0 12px 12px 0; /* עיגול בפינות */
+    border-radius: 0 12px 12px 0;
+    transition: transform 0.35s ease !important;
   }
+
   .sidebar.mobile.open {
-    transform: translateX(0) !important;
+    transform: translateX(0) !important; /* ✅ פתיחה */
+  }
+
+  .dashboard-content {
+    margin-left: 0 !important;
+    padding-top: 60px !important;
   }
 }
 
-/* בדסקטופ – הסיידבר תמיד גלוי, הכפתור מוסתר */
+/* ===========================
+   🖥️ בדסקטופ – סיידבר גלוי תמיד
+   =========================== */
 @media (min-width: 769px) {
   .sidebar {
-    transform: none !important; /* סיידבר תמיד גלוי */
-    position: relative !important;
-    box-shadow: none !important;
-    z-index: auto !important;
-    border-radius: 0 12px 12px 0; /* שמירת עיגול בפינות בצד ימין */
+    transform: none !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    height: 100vh !important;
+    border-radius: 0 16px 16px 0 !important;
+    box-shadow: 4px 0 20px rgba(124, 77, 255, 0.25);
   }
+
   .mobile-nav-toggle {
     display: none !important;
   }
+
   .sidebar-overlay {
     display: none !important;
   }
 }
 
+/* ===========================
+   🎨 צבעים אחידים
+   =========================== */
 .sidebar,
 .sidebar h2,
 .sidebar a {
