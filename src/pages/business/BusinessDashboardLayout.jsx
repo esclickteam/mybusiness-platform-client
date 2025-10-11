@@ -238,6 +238,11 @@ export default function BusinessDashboardLayout({ children }) {
               </button>
             )}
 
+            {/* 🔔 פעמון בצד שמאל */}
+<div className="dashboard-bell">
+  <FacebookStyleNotifications />
+</div>
+
             {/* 🔹 תוכן */}
             <main
               className="dashboard-content"

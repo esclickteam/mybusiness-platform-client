@@ -319,4 +319,19 @@ footer {
   color: #0f172a !important;
 }
 
+.dashboard-bell {
+  position: fixed;
+  top: 16px;
+  left: 16px; /* ✅ צד שמאל */
+  z-index: 9200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+/* לא להציג בדסקטופ */
+@media (min-width: 769px) {
+  .dashboard-bell {
+    display: none;
+  }
+}
