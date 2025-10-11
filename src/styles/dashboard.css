@@ -330,26 +330,33 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* לא נותנים ל-body לגלול */
+  overflow-x: hidden;  /* מונע גלילה לרוחב */
+  overflow-y: auto;    /* ✅ מאפשר גלילה רגילה לכל הדף */
 }
 
-/* ✅ רק ה־root (האפליקציה הראשית של React) מקבל גלילה אחת */
 #root {
   display: flex;
   flex-direction: column;
-  height: 100vh;           /* תופס את כל המסך */
-  overflow-y: auto;        /* מאפשר גלילה אחת נקייה */
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  scroll-behavior: smooth;
+  min-height: 100vh;  /* תופס את כל המסך */
 }
 
-/* ביטול גלילות פנימיות בתוך אלמנטים של הדשבורד */
+/* החלק המרכזי (דוחף את הפוטר למטה) */
 .dp-root,
 .dp-layout,
-.dashboard-content,
-.dp-main,
-.dashboard-container {
-  overflow: visible !important;
+.dashboard-container,
+.dp-main {
+  flex: 1;
   height: auto !important;
+  overflow: visible !important;
+}
+
+/* ✅ footer תמיד בתחתית */
+footer {
+  margin-top: auto; /* דוחף לתחתית */
+  background: var(--surface-2, #f3f5fb);
+  color: var(--muted, #475569);
+  text-align: center;
+  padding: 1.2rem;
+  border-top: 1px solid var(--border, #e8ecf5);
+  font-size: 0.9rem;
 }
