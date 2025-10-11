@@ -325,3 +325,19 @@ body, html, #root {
 .dashboard-nav .active {
   color: #fff !important;
 }
+
+html, body {
+  height: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* במידה ויש wrapper פנימי שמגלגל - ננקה גם אותו */
+#root,
+.dp-root,
+.dashboard-content,
+.dp-layout,
+.dp-main {
+  height: auto !important;
+  overflow: visible !important;
+}
