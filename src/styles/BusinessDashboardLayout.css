@@ -204,19 +204,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  font-size: 13px;
-  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  font-size: 11px;
+  font-weight: 600;
   color: #fff;
-  background: radial-gradient(circle at 30% 30%, #9b00ff, #5a00d0); /* סגול עמוק עם נגיעת ניאון */
-  border-radius: 50%;
-  margin-left: 10px;
-  padding: 0 6px;
-  box-shadow: 0 0 12px rgba(155, 0, 255, 0.8), 0 0 6px rgba(90, 0, 208, 0.6); /* זוהר סגול חזק */
-  animation: pulse 1.6s infinite ease-in-out;
-  position: relative;
-  top: -1px;
+  background: #ef4444; /* אדום חזק */
+  border-radius: 9999px;
+  margin-right: 6px;
+  padding: 0 5px;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+  animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
