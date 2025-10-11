@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo_final.svg";
 import { FaBars, FaChevronLeft } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
-import FacebookStyleNotifications from "../components/FacebookStyleNotifications"; // ✅ הרכיב החדש
+import FacebookStyleNotifications from "../components/FacebookStyleNotifications"; // ✅ הפעמון
 import "../styles/Header.css";
 
 const navLinks = [
@@ -46,11 +46,14 @@ export default function Header() {
   return (
     <>
       <nav className="app-header">
-        {/* 🔹 Logo */}
+        {/* 🔹 Logo + Notifications */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Logo" className="logo" />
           </Link>
+
+          {/* ✅ הפעמון עבר לכאן - ליד הלוגו */}
+          {user?.businessId && <FacebookStyleNotifications />}
         </div>
 
         {/* 🔹 Desktop Navigation */}
@@ -71,9 +74,6 @@ export default function Header() {
             </>
           ) : (
             <>
-              {/* 🔔 Facebook-Style Notifications */}
-              <FacebookStyleNotifications />
-
               <span className="hello-user">Hello, {user.name}</span>
               <Link to="/dashboard" className="auth-link">
                 My Account
@@ -112,7 +112,6 @@ export default function Header() {
             </div>
 
             <div className="menu-scroll">
-              {/* Auth / CTA */}
               <div className="mobile-auth">
                 {!user ? (
                   <>
@@ -151,7 +150,6 @@ export default function Header() {
                 )}
               </div>
 
-              {/* Navigation Links */}
               <div className="menu-section">
                 {navLinks.map((item) => link(item.to, item.label))}
               </div>
