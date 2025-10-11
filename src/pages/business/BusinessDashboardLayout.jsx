@@ -18,7 +18,7 @@ import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 
 /* ============================
-   🧭 טאבים
+   🧭 טאבים ראשיים
    ============================ */
 const tabs = [
   { path: "dashboard", label: "Dashboard" },
@@ -44,11 +44,11 @@ export default function BusinessDashboardLayout({ children }) {
   const queryClient = useQueryClient();
   const { unreadCount: messagesCount } = useNotifications();
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [showSidebar, setShowSidebar] = useState(!isMobile);
-  const sidebarRef = useRef(null);
+  const isDashboardPath = location.pathname.includes("/dashboard");
 
-  /* 🔌 Socket.io */
+  /* ============================
+     Socket.io
+     ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
     if (!socket.connected) socket.connect();
@@ -56,13 +56,17 @@ export default function BusinessDashboardLayout({ children }) {
     return () => socket.emit("leaveRoom", `business-${user.businessId}`);
   }, [user?.businessId]);
 
-  /* 📦 Prefetch */
+  /* ============================
+     Prefetch נתונים
+     ============================ */
   useEffect(() => {
     if (!user?.businessId) return;
+
     queryClient.prefetchQuery(
       ["business-profile", user.businessId],
       () => API.get(`/business/${user.businessId}`).then((res) => res.data)
     );
+
     queryClient.prefetchQuery(
       ["unread-messages", user.businessId],
       () =>
@@ -72,7 +76,23 @@ export default function BusinessDashboardLayout({ children }) {
     );
   }, [user?.businessId, queryClient]);
 
-  /* 📱 מובייל / ריסייז */
+  /* ============================
+     הרשאות
+     ============================ */
+  useEffect(() => {
+    if (!loading && user?.role !== "business") {
+      navigate("/", { replace: true });
+      return;
+    }
+  }, [user, loading, navigate]);
+
+  /* ============================
+     מובייל / דסקטופ
+     ============================ */
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showSidebar, setShowSidebar] = useState(!isMobile);
+  const sidebarRef = useRef(null);
+
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -83,110 +103,155 @@ export default function BusinessDashboardLayout({ children }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  /* ============================
+     מקשי ניווט (Tab / ESC)
+     ============================ */
+  useEffect(() => {
+    if (!isMobile || !showSidebar) return;
+    const selectable =
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const elements = sidebarRef.current.querySelectorAll(selectable);
+    if (!elements.length) return;
+    const first = elements[0];
+    const last = elements[elements.length - 1];
+
+    const onKey = (e) => {
+      if (e.key === "Tab") {
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+      if (e.key === "Escape") setShowSidebar(false);
+    };
+
+    document.addEventListener("keydown", onKey);
+    first.focus();
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isMobile, showSidebar]);
+
   if (loading) return <p className="loading">Loading...</p>;
 
+  /* ============================
+     🎨 Layout מלא
+     ============================ */
   return (
     <BusinessServicesProvider>
       <AiProvider>
-        <div className="business-dashboard-wrapper">
-          {/* 🔹 HEADER עליון – רק במובייל */}
-          {isMobile && (
-            <header className="dashboard-topbar">
-              {/* שמאל – התראות */}
-              <div className="topbar-left">
-                <FacebookStyleNotifications />
-              </div>
-
-              {/* מרכז – לוגו */}
-              <div className="topbar-center">
-                <img
-                  src="/bizuply logo.png"
-                  alt="BizUply Logo"
-                  className="topbar-logo"
-                />
-              </div>
-
-              {/* ימין – המבורגר */}
-              <div className="topbar-right">
-                <button
-                  className="sidebar-open-btn"
-                  onClick={() => setShowSidebar(true)}
-                  aria-label="Open Menu"
-                >
-                  <FaBars size={20} />
-                </button>
-              </div>
-            </header>
-          )}
-
-          {/* 📂 Sidebar */}
-          {(!isMobile || showSidebar) && (
-            <aside
-              className={`sidebar ${isMobile ? "mobile open" : ""}`}
-              ref={sidebarRef}
-            >
-              <div className="sidebar-logo">
-                <img
-                  src="/bizuply logo.png"
-                  alt="BizUply"
-                  className="sidebar-logo-img"
-                />
-                {isMobile && (
-                  <button
-                    className="sidebar-close-btn"
-                    onClick={() => setShowSidebar(false)}
-                    aria-label="Close"
-                  >
-                    <FaTimes size={18} />
-                  </button>
-                )}
-              </div>
-
-              <h2>Business Management</h2>
-
-              <nav>
-                <NavLink
-                  to={`/business/${businessId}`}
-                  end
-                  className={({ isActive }) => (isActive ? "active" : undefined)}
-                >
-                  View Public Profile
-                </NavLink>
-
-                {tabs.map(({ path, label }) => (
-                  <NavLink
-                    key={path}
-                    to={`/business/${businessId}/dashboard/${path}`}
-                    end={
-                      location.pathname ===
-                      `/business/${businessId}/dashboard/${path}`
-                    }
-                    className={({ isActive }) =>
-                      isActive ? "active" : undefined
-                    }
-                  >
-                    {label}
-                    {path === "messages" && messagesCount > 0 && (
-                      <span className="badge">{messagesCount}</span>
+        <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
+          <div className="business-dashboard-layout">
+            {/* 📂 Sidebar */}
+            {(!isMobile || showSidebar) && (
+              <aside
+                className={`sidebar ${isMobile ? "mobile open" : ""}`}
+                ref={sidebarRef}
+                aria-modal={isMobile && showSidebar ? "true" : undefined}
+                role={isMobile && showSidebar ? "dialog" : undefined}
+              >
+                <div className="sidebar-header">
+                  <div className="sidebar-logo">
+                    <img
+                      src="/bizuply logo.png"
+                      alt="BizUply"
+                      className="sidebar-logo-img"
+                    />
+                    {isMobile && (
+                      <button
+                        className="sidebar-close-btn"
+                        onClick={() => setShowSidebar(false)}
+                        aria-label="Close"
+                      >
+                        <FaTimes size={18} />
+                      </button>
                     )}
+                  </div>
+
+                  {/* 🔔 התראות */}
+                  <div className="sidebar-notifications">
+                    <FacebookStyleNotifications />
+                  </div>
+
+                  {/* 👋 שלום + כפתורי חשבון */}
+                  {user && (
+                    <div className="sidebar-user">
+                      <p className="sidebar-hello">
+                        Hello, <strong>{user.fullName || "Business Owner"}</strong>
+                      </p>
+                      <button
+                        className="sidebar-account-btn"
+                        onClick={() => navigate("/account")}
+                      >
+                        My Account
+                      </button>
+                      <button
+                        className="sidebar-logout-btn"
+                        onClick={logout}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <h2>Business Management</h2>
+
+                <nav>
+                  <NavLink
+                    to={`/business/${businessId}`}
+                    end
+                    className={({ isActive }) => (isActive ? "active" : undefined)}
+                  >
+                    View Public Profile
                   </NavLink>
-                ))}
-              </nav>
-            </aside>
-          )}
 
-          {/* 🔹 Overlay כהה במובייל */}
-          {isMobile && showSidebar && (
-            <div
-              className="sidebar-overlay"
-              onClick={() => setShowSidebar(false)}
-            />
-          )}
+                  {tabs.map(({ path, label }) => (
+                    <NavLink
+                      key={path}
+                      to={`/business/${businessId}/dashboard/${path}`}
+                      end={
+                        location.pathname ===
+                        `/business/${businessId}/dashboard/${path}`
+                      }
+                      className={({ isActive }) => (isActive ? "active" : undefined)}
+                    >
+                      {label}
+                      {path === "messages" && messagesCount > 0 && (
+                        <span className="badge">{messagesCount}</span>
+                      )}
+                    </NavLink>
+                  ))}
+                </nav>
+              </aside>
+            )}
 
-          {/* 💬 תוכן */}
-          <main className="dashboard-content" tabIndex={-1}>
-            {children ?? <Outlet />}
-          </main>
+            {/* 🔹 Overlay כהה במובייל */}
+            {isMobile && showSidebar && (
+              <div
+                className="sidebar-overlay"
+                onClick={() => setShowSidebar(false)}
+                aria-label="Close"
+              />
+            )}
+
+            {/* ☰ כפתור פתיחה */}
+            {isMobile && !showSidebar && (
+              <button
+                className="sidebar-open-btn"
+                onClick={() => setShowSidebar(true)}
+                aria-label="Open Menu"
+              >
+                <FaBars size={20} />
+              </button>
+            )}
+
+            {/* 💬 תוכן */}
+            <main className="dashboard-content" tabIndex={-1}>
+              {children ?? <Outlet />}
+            </main>
+          </div>
         </div>
       </AiProvider>
     </BusinessServicesProvider>
