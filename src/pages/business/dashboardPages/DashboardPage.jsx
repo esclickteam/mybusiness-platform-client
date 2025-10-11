@@ -11,6 +11,7 @@ import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
 import { getBusinessId } from "../../../utils/authHelpers";
+import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
@@ -127,18 +128,6 @@ const DashboardPage = () => {
   } = useAuth();
   const businessId = getBusinessId();
 
-   useEffect(() => {
-  const lightBg = "#f6f7fb";
-  document.body.style.background = lightBg;
-  document.documentElement.style.background = lightBg;
-
-  // איפוס classים שגורמים לרקע כחול
-  document.body.classList.remove("dark-theme", "gradient-bg", "biz-dashboard-bg");
-
-  // גם root הראשי
-  const appRoot = document.getElementById("root");
-  if (appRoot) appRoot.style.background = lightBg;
-}, []);
 
   /* refs */
   const cardsRef = useRef(null);

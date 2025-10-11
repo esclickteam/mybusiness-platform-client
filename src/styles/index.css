@@ -1,19 +1,40 @@
-/* ===== משתני צבעים גלובליים ===== */
+/* ===========================
+   🎨 משתני צבעים גלובליים
+   =========================== */
+
+/* ברירת מחדל (light / ציבורי) */
 :root {
-  --bg-start: #fdfcff;  /* צבע הרקע ההתחלתי (פסטל בהיר) */
-  --bg-end:   #e4e8ff;  /* צבע הרקע הסופי (פסטל בהיר יותר) */
+  --bg-start: #fdfcff;
+  --bg-end: #e4e8ff;
+  --text-color: #0f172a;
 }
 
-/* ===== סגנונות כלליים לדף ===== */
+/* מצב לעסקים / דשבורד */
+[data-theme="business"],
+[data-theme="dark"] {
+  --bg-start: #f6f7fb;
+  --bg-end: #e8ebf8;
+  --text-color: #0f172a;
+}
+
+/* ===========================
+   🧩 עיצוב כללי
+   =========================== */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: Arial, sans-serif;
+  font-family: "Poppins", "Arial", sans-serif;
   direction: rtl;
   text-align: left;
-  background-color: var(--bg-start); /* צבע בסיס למניעת פלאש לבן */
+
+  /* ✅ צבע בסיס מיידי למניעת פלאש לבן */
+  background-color: var(--bg-start);
   background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
+  color: var(--text-color);
+
+  transition: background-color 0.3s ease, background 0.4s ease, color 0.3s ease;
+
   overflow-x: hidden;
   overflow-y: scroll;
   position: relative;
@@ -22,18 +43,24 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ===== סגנונות כלליים לכל אלמנט ===== */
+/* ===========================
+   עיצוב כללי לכל האלמנטים
+   =========================== */
 *, *::before, *::after {
   box-sizing: inherit;
 }
 
-/* ===== סגנונות לקישורים ===== */
+/* ===========================
+   קישורים
+   =========================== */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* ===== סגנונות לכפתורים ===== */
+/* ===========================
+   כפתורים
+   =========================== */
 button {
   cursor: pointer;
   font: inherit;
@@ -43,26 +70,29 @@ button {
   color: inherit;
 }
 
-/* ===== נגישות: סגנון לכפתורי נגישות אם יחליטו להציג ===== */
+/* ===========================
+   נגישות
+   =========================== */
 #accessibility-button {
-  visibility: hidden; /* מחליף display:none לשמירת נגישות */
+  visibility: hidden;
   position: absolute;
   left: -9999px;
 }
 
-/* ===== אלמנטים עם position: fixed ===== */
-#accessibility-widget, .some-other-fixed-element {
+#accessibility-widget,
+.some-other-fixed-element {
   position: fixed;
   z-index: 1000;
 }
 
-/* ===== אנימציה לספינר ===== */
+/* ===========================
+   אנימציית Spinner
+   =========================== */
 @keyframes spin {
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-/* מחלקת spinner כללית */
 .spinner {
   width: 48px;
   height: 48px;
@@ -73,30 +103,22 @@ button {
   margin: auto;
   display: block;
 }
-/* התאמה למסכים גדולים */
+
+/* ===========================
+   טיפוגרפיה רספונסיבית
+   =========================== */
 @media (min-width: 1200px) {
-  body {
-    font-size: 18px;
-  }
+  body { font-size: 18px; }
 }
 
-/* התאמה למסכים בינוניים */
 @media (min-width: 768px) and (max-width: 1199px) {
-  body {
-    font-size: 16px;
-  }
+  body { font-size: 16px; }
 }
 
-/* התאמה למסכים קטנים (מובייל וטאבלט קטן) */
 @media (max-width: 767px) {
-  body {
-    font-size: 14px;
-  }
+  body { font-size: 14px; }
 }
 
-/* התאמה לטלפונים קטנים מאוד */
 @media (max-width: 480px) {
-  body {
-    font-size: 13px;
-  }
+  body { font-size: 13px; }
 }

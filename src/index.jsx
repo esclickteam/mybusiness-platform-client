@@ -1,17 +1,4 @@
-// ⚡ Apply saved theme before React renders anything
-const savedTheme = localStorage.getItem("theme") || "light"; // ✅ השתמש ב-light כברירת מחדל כדי למנוע מצב כהה מיותר
-document.body.setAttribute("data-theme", savedTheme);
-
-// 🩶 וודא שגם ה-root מקבל רקע לפני שריאקט מתחיל לטעון
-document.documentElement.style.backgroundColor =
-  savedTheme === "dark" ? "#0f172a" : "#f6f7fb";
-document.body.style.backgroundColor =
-  savedTheme === "dark" ? "#0f172a" : "#f6f7fb";
-document.getElementById("root")?.style?.setProperty(
-  "background-color",
-  savedTheme === "dark" ? "#0f172a" : "#f6f7fb"
-);
-
+// src/main.jsx  או  src/index.jsx
 import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -22,22 +9,47 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
 import useIdleLogout from "./hooks/useIdleLogout";
 import "./styles/index.css";
-import "./styles/dashboard.css"; 
 
-// Polyfill for Buffer (required by some libraries)
+// Polyfill ל-Buffer (חלק מהספריות דורשות)
 import { Buffer } from "buffer";
 if (!window.Buffer) window.Buffer = Buffer;
 
+/* ==========================================================
+   🎨 טעינת Theme מוקדמת לפני כל דבר אחר
+   ========================================================== */
+const savedTheme = localStorage.getItem("theme");
+const defaultTheme = savedTheme || "light";
+
+// רקע בסיסי לפי theme האחרון
+if (defaultTheme === "business" || defaultTheme === "dark") {
+  document.body.style.background = "#f6f7fb";
+  document.documentElement.style.background = "#f6f7fb";
+} else {
+  document.body.style.background = "#ffffff";
+  document.documentElement.style.background = "#ffffff";
+}
+
+// הוספת מאפיין data-theme לשימוש ב-CSS
+document.body.setAttribute("data-theme", defaultTheme);
+
+/* ==========================================================
+   🔁 React Query + Suspense
+   ========================================================== */
 const queryClient = new QueryClient();
 const App = lazy(() => import("./App"));
 
-// Component wrapping App with idle logout
+/* ==========================================================
+   ⏳ עטיפת App עם Idle Logout
+   ========================================================== */
 function AppWithIdleLogout() {
   const { logout } = useAuth();
-  useIdleLogout(logout, 10 * 60 * 1000); // Logout after 10 minutes of inactivity
+  useIdleLogout(logout, 10 * 60 * 1000); // יציאה אחרי 10 דקות אי פעילות
   return <App />;
 }
 
+/* ==========================================================
+   🚀 Render Root
+   ========================================================== */
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
