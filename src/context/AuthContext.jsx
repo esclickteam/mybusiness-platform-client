@@ -29,9 +29,7 @@ function normalizeUser(user) {
     subscriptionStatus: user.status || user.subscriptionPlan || "free",
     daysLeft:
       user.subscriptionEnd && computedIsValid
-        ? Math.ceil(
-            (new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24)
-          )
+        ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
         : 0,
     hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
@@ -43,9 +41,7 @@ function normalizeUser(user) {
 let ongoingRefresh = null;
 export async function singleFlightRefresh() {
   if (!ongoingRefresh) {
-    ongoingRefresh = API.post("/auth/refresh-token", null, {
-      withCredentials: true,
-    })
+    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
       .then((res) => {
         const { accessToken, user: refreshedUser } = res.data;
         if (!accessToken) throw new Error("No new token");
@@ -55,10 +51,7 @@ export async function singleFlightRefresh() {
 
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
-          localStorage.setItem(
-            "businessDetails",
-            JSON.stringify(normalizedUser)
-          );
+          localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
         }
 
         return accessToken;
@@ -109,7 +102,7 @@ export function AuthProvider({ children }) {
   };
 
   /* ===========================
-     🔐 Login
+     🔐 Login (optimized, no flash)
      =========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
@@ -120,30 +113,32 @@ export function AuthProvider({ children }) {
         { email: email.trim().toLowerCase(), password },
         { withCredentials: true }
       );
+
       const { accessToken, user: loggedInUser, redirectUrl } = data;
       if (!accessToken) throw new Error("No access token received");
 
+      // ✅ שמירת טוקן והגדרתו מראש
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      const freshUser = await refreshUser(true);
-      const normalizedUser = freshUser || normalizeUser(loggedInUser);
+      // ✅ שמירת המשתמש כבר עכשיו למניעת פלאש
+      const normalizedUser = normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // ✅ רקע קבוע לפני ניווט (מונע פלאש)
-      document.body.style.background =
-        "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
+      // ✅ רקע קבוע לפני ניווט
+      document.body.style.background = "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
+
+      // ✅ רענון במקביל (לא חוסם ניווט)
+      refreshUser(true).catch(() => {});
 
       // ✅ ניווט אחרי התחברות
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
           if (normalizedUser.role === "business" && normalizedUser.businessId) {
-            navigate(`/business/${normalizedUser.businessId}/dashboard`, {
-              replace: true,
-            });
+            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
           } else {
             navigate("/dashboard", { replace: true });
           }
@@ -151,13 +146,8 @@ export function AuthProvider({ children }) {
           const isPlans = redirectUrl === "/plans";
           const shouldSkip = isPlans && normalizedUser.hasAccess;
           if (!shouldSkip) {
-            if (
-              redirectUrl === "/dashboard" &&
-              normalizedUser.businessId
-            ) {
-              navigate(`/business/${normalizedUser.businessId}/dashboard`, {
-                replace: true,
-              });
+            if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
+              navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
             } else {
               navigate(redirectUrl, { replace: true });
             }
@@ -195,11 +185,11 @@ export function AuthProvider({ children }) {
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      const freshUser = await refreshUser(true);
-      const normalizedStaffUser = freshUser || normalizeUser(staffUser);
+      const normalizedStaffUser = normalizeUser(staffUser);
       setUser(normalizedStaffUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedStaffUser));
 
+      refreshUser(true).catch(() => {});
       setLoading(false);
       return normalizedStaffUser;
     } catch (e) {
@@ -225,12 +215,12 @@ export function AuthProvider({ children }) {
       });
       if (!data.success) throw new Error("משווק לא נמצא");
 
-      const freshUser = await refreshUser(true);
-      const normalized = freshUser || normalizeUser(data);
+      const normalized = normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
 
       setToken(null);
+      refreshUser(true).catch(() => {});
       setLoading(false);
       return normalized;
     } catch (e) {
@@ -283,20 +273,14 @@ export function AuthProvider({ children }) {
 
         setUser(freshUser);
 
-        const newSocket = await createSocket(
-          singleFlightRefresh,
-          logout,
-          freshUser.businessId
-        );
+        const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
 
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
           if (freshUser.role === "business" && freshUser.businessId) {
-            navigate(`/business/${freshUser.businessId}/dashboard`, {
-              replace: true,
-            });
+            navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
           } else {
             navigate("/dashboard", { replace: true });
           }
@@ -307,21 +291,13 @@ export function AuthProvider({ children }) {
         if (savedRedirect) {
           const isPlans = savedRedirect === "/plans";
           const shouldSkip = isPlans && freshUser.hasAccess;
-          if (!shouldSkip) {
-            navigate(savedRedirect, { replace: true });
-          }
+          if (!shouldSkip) navigate(savedRedirect, { replace: true });
           sessionStorage.removeItem("postLoginRedirect");
           return;
         }
 
-        if (
-          freshUser.role === "business" &&
-          freshUser.businessId &&
-          location.pathname === "/"
-        ) {
-          navigate(`/business/${freshUser.businessId}/dashboard`, {
-            replace: true,
-          });
+        if (freshUser.role === "business" && freshUser.businessId && location.pathname === "/") {
+          navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
         }
       } catch {
         await logout();
@@ -395,9 +371,7 @@ export function AuthProvider({ children }) {
      =========================== */
   return (
     <AuthContext.Provider value={ctx}>
-      {successMessage && (
-        <div className="global-success-toast">{successMessage}</div>
-      )}
+      {successMessage && <div className="global-success-toast">{successMessage}</div>}
       {children}
     </AuthContext.Provider>
   );
