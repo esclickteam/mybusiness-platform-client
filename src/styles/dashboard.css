@@ -1,9 +1,9 @@
 /* ===========================
    Bizuply – SaaS PRO UI (LTR)
-   Light + Dark Business Dashboard Theme
+   Light Business Dashboard Theme
    =========================== */
 
-/* 🎨 Light Palette (default) */
+/* 🎨 Soft Palette */
 :root {
   --bg:          #f6f7fb;
   --surface:     #ffffff;
@@ -68,7 +68,6 @@ html, body {
   background-clip: text;
   color: transparent;
 }
-
 .greeting {
   display: inline-block;
   margin-left: 8px;
@@ -85,9 +84,7 @@ html, body {
   padding: 10px 12px;
   border-radius: 12px;
 }
-
 .loading-text { color: var(--muted); }
-
 .error-text {
   color: #b42318;
   background: #fff1f2;
@@ -102,7 +99,6 @@ html, body {
   flex-wrap: wrap;
   margin-top: 2px;
 }
-
 .dashboard-nav button {
   padding: 10px 16px;
   border-radius: 999px;
@@ -115,27 +111,24 @@ html, body {
   cursor: pointer;
   transition: .22s ease;
 }
-
 .dashboard-nav button:hover {
   background: #d8c9ff;
   color: #231c59;
   border-color: #a391f0;
   transform: translateY(-1px);
 }
-
 .dashboard-nav .active {
   background: linear-gradient(180deg, var(--violet) 0%, var(--blue) 100%);
   color: #fff;
   border-color: transparent;
   box-shadow: 0 8px 20px rgba(106, 17, 203, .25);
 }
-
 @media (max-width: 768px) {
   .dashboard-nav { max-width: 380px; margin: 0 auto; }
   .dashboard-nav button { flex: 0 0 30%; min-width: 100px; }
 }
 
-/* ========= KPI Cards ========= */
+/* ========= KPI Cards (Premium UX) ========= */
 .dashboard-cards-container {
   display: flex;
   justify-content: center;
@@ -170,7 +163,7 @@ html, body {
   box-shadow: 0 10px 22px rgba(106, 17, 203, 0.12);
 }
 
-/* Card content */
+/* אייקון */
 .card-icon {
   font-size: 28px;
   margin-bottom: 8px;
@@ -178,6 +171,7 @@ html, body {
   justify-content: center;
 }
 
+/* טקסטים */
 .card-title {
   font-size: 14px;
   color: var(--muted);
@@ -191,7 +185,7 @@ html, body {
   color: var(--text);
 }
 
-/* KPI color variants */
+/* וריאציות צבע */
 .dashboard-card[data-variant="violet"] {
   background: linear-gradient(180deg, #f4edff 0%, #f0e8ff 100%);
 }
@@ -204,13 +198,13 @@ html, body {
   background: linear-gradient(180deg, #f3f7ff 0%, #eef3ff 100%);
 }
 
-/* Animation */
+/* אנימציית כניסה */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
+/* רספונסיביות */
 @media (max-width: 768px) {
   .dashboard-cards-container { gap: 16px; }
   .dashboard-card { flex: 0 1 45%; min-width: 180px; }
@@ -236,7 +230,6 @@ html, body {
   justify-content: center;
   width: 100%;
 }
-
 .graph-box {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -250,13 +243,11 @@ html, body {
   flex-direction: column;
   gap: 12px;
 }
-
 .graph-box.full-width {
   flex: 1 1 100%;
   max-width: 100%;
   min-width: auto;
 }
-
 .graph-box h4, .chart-container h3 {
   text-align: center;
   margin: 6px 0 10px;
@@ -265,7 +256,7 @@ html, body {
   font-weight: 800;
 }
 
-/* ========= Topbar ========= */
+/* ========= Topbar Title Center ========= */
 .dp-topbar {
   display: flex;
   justify-content: center;
@@ -290,12 +281,12 @@ html, body {
   color: transparent;
 }
 
-/* ✅ Remove previous gradients */
+/* ✅ ביטול רקעים קודמים ממסכים אחרים */
 body, html, #root {
-  background: linear-gradient(180deg, #f8f9ff 0%, #f6f7fb 100%) !important;
+  background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%) !important;
 }
 
-/* ========= Layout ========= */
+/* 🎨 הקונטיינר הראשי של הדשבורד */
 .dashboard-container,
 .dp-root {
   background: var(--surface);
@@ -304,18 +295,21 @@ body, html, #root {
   padding: 20px;
 }
 
+/* הצד השמאלי – סיידבר */
 .dp-sidebar {
   background: linear-gradient(180deg, #e8e1ff 0%, #e5dbff 100%);
   color: #fff;
   border-radius: 0 16px 16px 0;
 }
 
+/* טקסטים בסיידבר */
 .dp-sidebar a,
 .dp-sidebar nav button {
   color: #fff;
   font-weight: 600;
 }
 
+/* רקע לבן-בהיר למרכז */
 .dp-main {
   background: #fafaff;
   border-radius: 16px;
@@ -324,9 +318,10 @@ body, html, #root {
 }
 
 .dashboard-nav button {
-  color: #000 !important;
+  color: #000 !important; /* שחור לטקסט של כל הכפתורים */
 }
 
+/* כפתור פעיל – עדיין לבן כדי לשמור על הניגודיות מול הגרדיאנט */
 .dashboard-nav .active {
   color: #fff !important;
 }
@@ -335,16 +330,17 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow-x: hidden;  /* מונע גלילה לרוחב */
+  overflow-y: auto;    /* ✅ מאפשר גלילה רגילה לכל הדף */
 }
 
 #root {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100vh;  /* תופס את כל המסך */
 }
 
+/* החלק המרכזי (דוחף את הפוטר למטה) */
 .dp-root,
 .dp-layout,
 .dashboard-container,
@@ -354,9 +350,9 @@ html, body {
   overflow: visible !important;
 }
 
-/* ✅ Footer always at bottom */
+/* ✅ footer תמיד בתחתית */
 footer {
-  margin-top: auto;
+  margin-top: auto; /* דוחף לתחתית */
   background: var(--surface-2, #f3f5fb);
   color: var(--muted, #475569);
   text-align: center;
@@ -365,81 +361,3 @@ footer {
   font-size: 0.9rem;
 }
 
-/* ===============================
-   🌙 Dark Mode – Bizuply Override
-   =============================== */
-
-[data-theme="dark"] {
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --surface-2: #334155;
-  --border: #475569;
-  --text: #f8fafc;
-  --muted: #cbd5e1;
-  --violet: #a855f7;
-  --violet-600: #9333ea;
-  --violet-100: #4c1d95;
-  --blue: #60a5fa;
-  --blue-50: #1d4ed8;
-  --pink-50: #fda4af;
-  --ring: rgba(168, 85, 247, 0.28);
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-}
-
-/* ✅ Force override of bright gradient */
-html[data-theme="dark"],
-html[data-theme="dark"] body,
-html[data-theme="dark"] #root {
-  background: var(--bg) !important;
-  color: var(--text) !important;
-}
-
-/* ✅ Sidebar dark mode */
-[data-theme="dark"] .dp-sidebar {
-  background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%) !important;
-  color: #e2e8f0 !important;
-}
-
-[data-theme="dark"] .dp-sidebar a,
-[data-theme="dark"] .dp-sidebar nav button {
-  color: #e2e8f0 !important;
-}
-
-/* ✅ Dashboard containers and boxes */
-[data-theme="dark"] .dashboard-container,
-[data-theme="dark"] .graph-box,
-[data-theme="dark"] .dp-main {
-  background: var(--surface) !important;
-  border-color: var(--border) !important;
-  box-shadow: var(--shadow) !important;
-}
-
-/* ✅ Nav buttons */
-[data-theme="dark"] .dashboard-nav button {
-  background: #3b0764 !important;
-  color: #e9d5ff !important;
-  border-color: #6b21a8 !important;
-}
-
-[data-theme="dark"] .dashboard-nav .active {
-  background: linear-gradient(180deg, var(--violet) 0%, var(--blue) 100%) !important;
-  color: #fff !important;
-  border-color: transparent !important;
-}
-
-/* ✅ Headings and text */
-[data-theme="dark"] .card-title,
-[data-theme="dark"] h1,
-[data-theme="dark"] h2,
-[data-theme="dark"] h3,
-[data-theme="dark"] h4,
-[data-theme="dark"] h5 {
-  color: var(--text) !important;
-}
-
-/* ✅ Footer dark */
-[data-theme="dark"] footer {
-  background: var(--surface-2) !important;
-  color: var(--muted) !important;
-  border-top: 1px solid var(--border) !important;
-}
