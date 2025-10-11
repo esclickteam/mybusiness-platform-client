@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API, { setAuthToken } from "../api";
@@ -39,17 +40,17 @@ function normalizeUser(user) {
    🎨 Theme Helper
    ========================== */
 function applyTheme(user) {
-  const savedTheme = localStorage.getItem("theme");
+  const theme = user?.role === "business" ? "business" : "light";
 
-  // אם כבר נשמר theme — נטען אותו
-  if (savedTheme) {
-    document.body.setAttribute("data-theme", savedTheme);
-    return;
-  }
-
-  // אחרת נגדיר theme לפי סוג המשתמש (דוגמה)
-  const theme = user?.role === "business" ? "dark" : "light";
+  // ✅ הגדרת theme גלובלית
   document.body.setAttribute("data-theme", theme);
+  document.documentElement.setAttribute("data-theme", theme);
+
+  // ✅ רקע מיידי למניעת פלאש לבן
+  const bg = theme === "business" ? "#f6f7fb" : "#ffffff";
+  document.body.style.background = bg;
+  document.documentElement.style.background = bg;
+
   localStorage.setItem("theme", theme);
 }
 
@@ -70,7 +71,7 @@ export async function singleFlightRefresh() {
         if (refreshedUser) {
           const normalizedUser = normalizeUser(refreshedUser);
           localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
-          applyTheme(normalizedUser); // שומר על theme עקבי גם אחרי רענון טוקן
+          applyTheme(normalizedUser); // 🎨 החלת theme גם אחרי refresh
         }
 
         return accessToken;
@@ -88,12 +89,11 @@ export async function singleFlightRefresh() {
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  /* ✨ החלת theme לפני כל רינדור ✨
-     אם כבר יש data-theme על ה-body לא ניגע; אחרת נטען מה-localStorage או ברירת מחדל "light".
-     זה מונע הבהוב/שינוי צבעים בין התחברות לריענון. */
+  // ✨ החלת theme מוקדמת לפני רינדור ראשון
   if (typeof document !== "undefined" && !document.body.getAttribute("data-theme")) {
     const savedTheme = localStorage.getItem("theme");
     document.body.setAttribute("data-theme", savedTheme || "light");
+    document.body.style.background = savedTheme === "business" ? "#f6f7fb" : "#ffffff";
   }
 
   const navigate = useNavigate();
@@ -108,7 +108,6 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // אפשר להחליף למימוש אמיתי אם צריך, כרגע נשמר כפי שהיה
   const socket = useMemo(() => null, []);
 
   /* ==========================
@@ -131,7 +130,7 @@ export function AuthProvider({ children }) {
   };
 
   /* ==========================
-     🚪 Login (UPDATED)
+     🚪 Login
      ========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
@@ -149,15 +148,16 @@ export function AuthProvider({ children }) {
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      // ✅ נטען את המשתמש ונחיל theme מיידית לפני הניווט
       const freshUser = await refreshUser(true);
       const normalizedUser = freshUser || normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
-      applyTheme(normalizedUser); // 🟣 חשוב: לפני הניווט
 
-      // השהייה זעירה כדי לאפשר ל-DOM לעדכן data-theme לפני הצגת הדשבורד
-      await new Promise((res) => setTimeout(res, 50));
+      // 🎨 החל theme לפני ניווט
+      applyTheme(normalizedUser);
+
+      // ⏱ זמן קצר כדי לוודא שה־DOM מעודכן
+      await new Promise((res) => setTimeout(res, 300));
 
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
@@ -217,7 +217,6 @@ export function AuthProvider({ children }) {
      ⚙️ Initialize Auth + Socket
      ========================== */
   useEffect(() => {
-    // אם אין טוקן — ננטרל הכל ונסיים את האתחול
     if (!token) {
       socket?.disconnect?.();
       setUser(null);
@@ -274,6 +273,11 @@ export function AuthProvider({ children }) {
       }
     })();
   }, [token, navigate, location.pathname]);
+
+  /* 🎨 שמירה על theme מעודכן בכל שינוי משתמש */
+  useEffect(() => {
+    if (user) applyTheme(user);
+  }, [user]);
 
   /* ==========================
      🕒 Success Message Timeout
