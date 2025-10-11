@@ -14,7 +14,7 @@ const navLinks = [
   { to: "/about", label: "About" },
 ];
 
-export default function Header() {
+export default function Header({ onMenuClick }) {
   const { user, logout, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -68,6 +68,17 @@ export default function Header() {
 
           {/* ✅ הפעמון מוצג רק אם המשתמש הוא עסק */}
           {user?.businessId && <FacebookStyleNotifications />}
+
+          {/* ✅ כפתור ההמבורגר במובייל — בתוך ההידר בדשבורד בלבד */}
+          {isDashboard && (
+            <button
+              className="menu-btn mobile-only"
+              onClick={onMenuClick}
+              aria-label="Open sidebar"
+            >
+              <FaBars size={22} />
+            </button>
+          )}
         </div>
 
         {/* 🔹 Desktop Navigation — רק מחוץ לדשבורד */}
@@ -101,7 +112,7 @@ export default function Header() {
           )}
         </div>
 
-        {/* 🔹 Mobile Hamburger Menu — ❌ מוסתר בדשבורד */}
+        {/* 🔹 Mobile Hamburger Menu — ❌ רק לאתר הציבורי, לא לדשבורד */}
         {!isDashboard && (
           <div className="menu-toggle mobile-only">
             <button
@@ -168,7 +179,6 @@ export default function Header() {
                 )}
               </div>
 
-              {/* 🔹 גם בתפריט נייד — להסתיר קטגוריות בדשבורד */}
               {!isDashboard && (
                 <div className="menu-section">
                   {navLinks.map((item) => link(item.to, item.label))}

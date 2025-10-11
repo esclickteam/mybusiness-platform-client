@@ -14,7 +14,8 @@ import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
-import { FaTimes, FaBars } from "react-icons/fa"; // ✅ כפתור סגירה + פתיחה
+import { FaTimes, FaBars } from "react-icons/fa";
+import Header from "../../components/Header"; // ✅ נוספה השורה
 
 /* ============================
    🧭 רשימת טאבים (ללא אייקונים)
@@ -164,6 +165,10 @@ export default function BusinessDashboardLayout({ children }) {
       <AiProvider>
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
+
+            {/* ✅ HEADER למעלה עם כפתור המבורגר במובייל */}
+            <Header onMenuClick={() => setShowSidebar(true)} />
+
             {/* 🔹 Sidebar */}
             {(!isMobile || showSidebar) && (
               <aside
@@ -225,16 +230,7 @@ export default function BusinessDashboardLayout({ children }) {
               </aside>
             )}
 
-            {/* 🔹 כפתור פתיחה במובייל */}
-            {isMobile && !showSidebar && (
-              <button
-                className="sidebar-open-btn"
-                aria-label="Open menu"
-                onClick={() => setShowSidebar(true)}
-              >
-                <FaBars size={20} />
-              </button>
-            )}
+            {/* ❌ נמחק הכפתור הצף הישן של ההמבורגר */}
 
             {/* 🔹 תוכן */}
             <main

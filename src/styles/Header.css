@@ -355,3 +355,47 @@
   pointer-events: none;
   user-select: none;
 }
+
+/* =================================================================== */
+/*                        📱 Sidebar Hamburger (Dashboard)              */
+/* =================================================================== */
+
+.menu-btn.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .menu-btn.mobile-only {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: none;
+    color: #5e17eb;
+    font-size: 22px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(94, 23, 235, 0.2);
+    cursor: pointer;
+    margin-left: auto;        /* ✅ מצמיד לימין */
+    margin-right: 6px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .menu-btn.mobile-only:hover {
+    background: #f5edff;
+    transform: scale(1.05);
+  }
+
+  /* יישור מדויק לגובה הפעמון */
+  .logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .notification-bell {
+    margin-right: 4px;
+  }
+}
