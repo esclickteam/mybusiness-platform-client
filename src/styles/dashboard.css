@@ -317,23 +317,11 @@ body, html, #root {
   box-shadow: inset 0 0 0 1px #ebeaf9;
 }
 
-/* ביטול רקע סגלגל מאחורי הטאבים */
-.business-dashboard-layout > .dashboard-nav,
-.dp-root .dashboard-nav,
-.dp-main .dashboard-nav {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
+.dashboard-nav button {
+  color: #000 !important; /* שחור לטקסט של כל הכפתורים */
 }
 
-/* ביטול רקע גם מה־wrapper שמעל ה-nav */
-.business-dashboard-layout,
-.dp-main > div:first-child {
-  background: transparent !important;
-}
-
-/* תיקון ריווח למראה חלק */
-.dashboard-nav {
-  margin-top: 8px !important;
-  padding: 0 !important;
+/* כפתור פעיל – עדיין לבן כדי לשמור על הניגודיות מול הגרדיאנט */
+.dashboard-nav .active {
+  color: #fff !important;
 }
