@@ -41,7 +41,7 @@ function normalizeUser(user) {
 function applyTheme(user) {
   const savedTheme = localStorage.getItem("theme");
 
-  // ✅ אם כבר נשמר theme, נטען אותו קודם
+  // אם כבר נשמר theme — נטען אותו
   if (savedTheme) {
     document.body.setAttribute("data-theme", savedTheme);
     return;
@@ -88,6 +88,14 @@ export async function singleFlightRefresh() {
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  /* ✨ שינוי חשוב: החלת theme לפני כל רינדור ✨
+     אם כבר יש data-theme על ה-body לא ניגע; אחרת נטען מה-localStorage או ברירת מחדל "light".
+     זה מונע הבהוב/שינוי צבעים בין התחברות לריענון. */
+  if (typeof document !== "undefined" && !document.body.getAttribute("data-theme")) {
+    const savedTheme = localStorage.getItem("theme");
+    document.body.setAttribute("data-theme", savedTheme || "light");
+  }
+
   const navigate = useNavigate();
   const location = useLocation();
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -100,6 +108,7 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  // אפשר להחליף למימוש אמיתי אם צריך, כרגע נשמר כפי שהיה
   const socket = useMemo(() => null, []);
 
   /* ==========================
@@ -204,10 +213,7 @@ export function AuthProvider({ children }) {
      ⚙️ Initialize Auth + Socket
      ========================== */
   useEffect(() => {
-    // 🟢 טעינת theme מיידית בפתיחה
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) document.body.setAttribute("data-theme", savedTheme);
-
+    // אם אין טוקן — ננטרל הכל ונסיים את האתחול
     if (!token) {
       socket?.disconnect?.();
       setUser(null);
@@ -225,7 +231,11 @@ export function AuthProvider({ children }) {
         if (!freshUser) throw new Error("No fresh user data");
         setUser(freshUser);
 
-        const socketInstance = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
+        const socketInstance = await createSocket(
+          singleFlightRefresh,
+          logout,
+          freshUser.businessId
+        );
         if (socketInstance && !socketInstance.connected) socketInstance.connect();
 
         const justRegistered = sessionStorage.getItem("justRegistered");
