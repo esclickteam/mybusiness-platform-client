@@ -119,14 +119,43 @@ export function preloadDashboardComponents() {
  *************************/
 const DashboardPage = () => {
   const {
-    user,
-    initialized,
-    logout,
-    refreshAccessToken,
-    refreshUser,
-    setUser,
-  } = useAuth();
-  const businessId = getBusinessId();
+  user,
+  initialized,
+  logout,
+  refreshAccessToken,
+  refreshUser,
+  setUser,
+} = useAuth();
+
+const businessId = getBusinessId();
+
+/* 🎨 חכה שה-theme ייטען לפני הצגת הדשבורד */
+const [themeReady, setThemeReady] = useState(false);
+
+useEffect(() => {
+  const current = document.body.getAttribute("data-theme");
+  if (current) {
+    setThemeReady(true);
+    return;
+  }
+
+  // נעקוב אחרי שינוי data-theme (כש-AuthContext מחיל אותו)
+  const observer = new MutationObserver(() => {
+    if (document.body.getAttribute("data-theme")) {
+      setThemeReady(true);
+      observer.disconnect();
+    }
+  });
+
+  observer.observe(document.body, { attributes: true, attributeFilter: ["data-theme"] });
+  return () => observer.disconnect();
+}, []);
+
+/* אם ה-theme עדיין לא מוכן – נציג Skeleton */
+if (!initialized || !themeReady) {
+  return <DashboardSkeleton />;
+}
+
 
 
   /* refs */
