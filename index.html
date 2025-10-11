@@ -17,6 +17,17 @@
 
   <base href="/" />
 
+  <!-- ⚡ Prevent white flash before React loads -->
+  <script>
+    (function() {
+      // ✅ קובע את מצב הנושא והרקע לפני טעינת React
+      document.documentElement.setAttribute('data-theme', 'business');
+      document.documentElement.style.background = 'linear-gradient(to bottom, #f6f7fb, #e8ebf8)';
+      document.documentElement.style.backgroundColor = '#f6f7fb';
+      document.body && (document.body.style.backgroundColor = '#f6f7fb');
+    })();
+  </script>
+
   <!-- ✅ 🔥 Critical Theme Colors - Load before React -->
   <style>
     :root {
@@ -50,6 +61,7 @@
 
     html, body {
       background-color: var(--bg);
+      background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
       color: var(--text);
       transition: none !important;
       margin: 0;
