@@ -254,12 +254,17 @@
 
 .notification-bell {
   position: relative;
-  margin-right: 10px;
-  cursor: pointer;
-  color: #333;
-  transition: color 0.3s ease;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  margin-left: 14px;                /* ריווח מצד ימין של הלוגו */
+  cursor: pointer;
+  color: #5e17eb;                   /* צבע סגול עסקלק */
+  background: linear-gradient(145deg, #f6edff, #ece2ff);
+  border-radius: 14px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(94, 23, 235, 0.15);
+  transition: all 0.25s ease-in-out;
 }
 .notification-bell:hover {
   color: #5e17eb;
