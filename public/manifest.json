@@ -1,16 +1,25 @@
 {
-  "name": "BizUply",
+  "name": "BizUply — Business Platform",
   "short_name": "BizUply",
+  "description": "BizUply is an advanced business platform for managing clients, bookings, payments, and automation — all in one place.",
   "lang": "en-US",
   "dir": "ltr",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#6200ea",
+  "theme_color": "#6a11cb",
+  "categories": ["business", "productivity", "management", "tools"],
   "icons": [
     {
       "src": "/favicon-48x48.png",
       "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
       "type": "image/png"
     },
     {
@@ -26,9 +35,37 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/apple-touch-icon-180x180.png",
+      "src": "/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/dashboard-preview.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/mobile-preview.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icons/dashboard-icon.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Messages",
+      "short_name": "Messages",
+      "url": "/messages",
+      "icons": [{ "src": "/icons/chat-icon.png", "sizes": "96x96" }]
     }
   ]
 }
