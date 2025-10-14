@@ -204,6 +204,14 @@ label {
   background: #e0e0e0;
 }
 
+/* יישור תוכן בתוך שדות הקלט לשמאל */
+.login-input,
+.password-input {
+  text-align: left !important;
+  direction: ltr; /* מוודא שהמייל והסיסמה יוצגו נכון באנגלית */
+}
+
+
 /* רספונסיביות */
 @media (max-width: 480px) {
   .login-box {
@@ -236,8 +244,3 @@ label {
   }
 }
 
-.login-input,
-.password-input {
-  text-align: left !important;
-  direction: ltr; /* מוודא שהמייל והסיסמה יוצגו נכון באנגלית */
-}
