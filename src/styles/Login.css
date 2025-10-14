@@ -95,7 +95,7 @@ label {
   position: absolute;
   right: 12px;
   top: 50%;
-  transform: translateY(-58%); /* ✅ הרמה עדינה שמיישרת בול לפי גובה הטקסט */
+  transform: translateY(-44%);
   border: none;
   background: none;
   cursor: pointer;
