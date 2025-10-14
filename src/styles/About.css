@@ -1,119 +1,118 @@
+/* ===========================================
+   BizUply – About Page Styles
+   =========================================== */
+
 .about-container {
   max-width: 1100px;
-  margin: 60px auto 80px;
-  padding: 50px 40px;
-  background: linear-gradient(135deg, #ffffff 0%, #f9faff 100%);
-  border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(50, 40, 90, 0.1);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #2a2a2a;
-  direction: ltr; /* ✅ באנגלית */
-  text-align: center;
-  user-select: none;
-  overflow: hidden;
-}
-
-.about-title {
-  font-size: 3rem;
-  font-weight: 800;
-  color: #1e2a78;
-  margin-bottom: 30px;
-  letter-spacing: 0.5px;
-  text-shadow: 0 1px 2px rgba(30, 42, 120, 0.1);
-}
-
-.about-section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #2b3fa3;
-  margin: 50px 0 20px;
-  border-bottom: 3px solid #6a11cb;
-  padding-bottom: 10px;
-}
-
-.about-paragraph {
-  font-size: 1.15rem;
+  margin: 0 auto;
+  padding: 80px 24px;
+  font-family: "Poppins", "Inter", sans-serif;
+  color: #0f172a;
   line-height: 1.7;
-  max-width: 800px;
-  margin: 0 auto 40px;
-  font-weight: 400;
-  color: #444;
 }
 
+/* ---------- Title ---------- */
+.about-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #4b0082; /* deep violet tone */
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* ---------- Section Headings ---------- */
+.about-section-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-top: 60px;
+  margin-bottom: 18px;
+  color: #6a11cb;
+  text-transform: capitalize;
+}
+
+/* ---------- Paragraphs ---------- */
+.about-paragraph {
+  font-size: 1.05rem;
+  color: #1e293b;
+  margin-bottom: 24px;
+}
+
+/* ---------- Lists ---------- */
 .about-list {
-  max-width: 850px;
-  margin: 0 auto 60px;
-  padding: 0;
-  list-style: none;
-  text-align: left; /* ✅ באנגלית */
+  margin: 20px 0 40px;
+  padding-left: 22px;
 }
 
 .about-list li {
-  background: #f4f6ff;
-  padding: 18px 22px;
-  margin-bottom: 18px;
-  border-radius: 14px;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  margin-bottom: 14px;
+  color: #374151;
+  position: relative;
+  padding-left: 6px;
+}
+
+.about-list li strong {
+  color: #4b0082;
+  font-weight: 600;
+}
+
+/* ---------- Emphasis ---------- */
+.about-paragraph em {
+  font-style: italic;
+  color: #6a11cb;
+}
+
+/* ---------- Links (if used in text) ---------- */
+.about-container a {
+  color: #6a11cb;
   font-weight: 500;
-  color: #2b3fa3;
-  box-shadow: 0 4px 12px rgba(40, 60, 120, 0.15);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  text-decoration: none;
+  transition: color 0.25s ease;
 }
 
-.about-list li:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 22px rgba(40, 60, 120, 0.25);
+.about-container a:hover {
+  color: #4b0082;
+  text-decoration: underline;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
+/* ---------- Responsive ---------- */
+@media (max-width: 992px) {
   .about-container {
-    padding: 30px 20px;
+    padding: 60px 20px;
   }
 
   .about-title {
-    font-size: 2.2rem;
+    font-size: 2.1rem;
   }
 
   .about-section-title {
     font-size: 1.5rem;
+    margin-top: 50px;
   }
 
   .about-paragraph {
     font-size: 1rem;
   }
-
-  .about-list li {
-    font-size: 1rem;
-    padding: 14px 18px;
-  }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .about-container {
-    padding: 20px 15px;
-    margin: 30px 10px 40px;
+    padding: 50px 16px;
   }
 
   .about-title {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
+    font-size: 1.9rem;
   }
 
   .about-section-title {
-    font-size: 1.2rem;
-    margin: 30px 0 15px;
-    padding-bottom: 6px;
-    border-bottom-width: 2px;
+    font-size: 1.35rem;
   }
 
   .about-paragraph {
     font-size: 0.95rem;
-    line-height: 1.6;
   }
 
   .about-list li {
-    font-size: 0.9rem;
-    padding: 12px 16px;
+    font-size: 0.95rem;
   }
 }

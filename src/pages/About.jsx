@@ -1,108 +1,133 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { FaUsers, FaRobot, FaChartLine, FaHandshake } from "react-icons/fa";
 import "../styles/About.css";
 
 function About() {
   return (
     <div className="about-container">
       <Helmet>
-        {/* ✅ Title & Description */}
-        <title>About Us - Bizuply | The All-in-One Business Platform</title>
+        <title>About BizUply | All-in-One Business Management Platform</title>
         <meta
           name="description"
-          content="Bizuply – the all-in-one platform for businesses. Manage clients, appointments, digital services, and collaborations in one smart solution."
+          content="Learn about BizUply — an all-in-one SaaS platform that helps business owners manage clients, communication, scheduling, and growth efficiently."
+        />
+        <meta
+          name="keywords"
+          content="BizUply, business management, SaaS platform, CRM, automation, AI tools, small business software, business collaboration"
         />
         <link rel="canonical" href="https://bizuply.com/about" />
-
-        {/* ✅ Robots */}
         <meta name="robots" content="index, follow" />
 
-        {/* ✅ Open Graph (Facebook, LinkedIn, WhatsApp) */}
-        <meta property="og:title" content="About Bizuply" />
+        {/* Open Graph */}
+        <meta property="og:title" content="About BizUply" />
         <meta
           property="og:description"
-          content="Learn more about Bizuply’s mission to empower small businesses worldwide with smart automation and AI tools."
+          content="Discover BizUply — the smart business management platform that simplifies communication, collaboration, and growth."
         />
         <meta property="og:url" content="https://bizuply.com/about" />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:site_name" content="BizUply" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
 
-        {/* ✅ Twitter Cards */}
+        {/* Twitter Cards */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="About Bizuply" />
+        <meta name="twitter:title" content="About BizUply" />
         <meta
           name="twitter:description"
-          content="Bizuply helps small and medium businesses grow smarter with AI-driven tools and automation."
+          content="BizUply helps small and medium businesses manage clients, automation, and communication — all in one platform."
         />
         <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
-      {/* Hero Section */}
-      <section className="about-hero">
-        <h1>
-          About <span>Bizuply</span>
-        </h1>
-        <p>
-          Bizuply is the all-in-one platform that helps businesses manage clients,
-          bookings, digital services, and collaborations — all in one place.
-        </p>
-      </section>
+      <h1 className="about-title">About BizUply</h1>
 
-      {/* Vision Section */}
-      <section className="about-section">
-        <h2>Our Vision</h2>
-        <p>
-          Empowering small and medium-sized businesses worldwide with simple,
-          powerful, and innovative tools that make growth effortless.
-        </p>
-      </section>
+      <p className="about-paragraph">
+        Welcome to <strong>BizUply</strong> — a modern SaaS platform built to
+        help business owners manage every aspect of their operations in one
+        intuitive place. From client communication and reputation management to
+        collaborations and automation — BizUply connects everything that matters
+        to your business. Founded by entrepreneurs who understand real business
+        challenges, our mission is to simplify management, strengthen
+        connections, and support long-term growth.
+      </p>
 
-      {/* Features Section */}
-      <section className="about-features">
-        <div className="feature">
-          <FaUsers className="feature-icon" />
-          <h3>Smart Client Management</h3>
-          <p>
-            Centralize requests, bookings, and communications in one dashboard.
-          </p>
-        </div>
+      <h2 className="about-section-title">Our Vision</h2>
+      <p className="about-paragraph">
+        We believe technology should work for business owners — not the other
+        way around. Our vision is to make powerful business tools accessible,
+        simple, and effective for every small and medium-sized business. BizUply
+        empowers entrepreneurs to grow smarter by combining usability,
+        innovation, and real human connection.
+      </p>
 
-        <div className="feature">
-          <FaRobot className="feature-icon" />
-          <h3>Automation Tools</h3>
-          <p>
-            Save time with AI-powered scheduling, reminders, and workflows.
-          </p>
-        </div>
+      <h2 className="about-section-title">Our Journey</h2>
+      <p className="about-paragraph">
+        BizUply was founded with one goal — to bring all essential business
+        tools under one roof. Instead of managing separate systems for CRM,
+        scheduling, messaging, reviews, and partnerships, we created a unified
+        platform that simplifies everything. Built with real user feedback,
+        BizUply continues to evolve with AI-driven insights that make daily
+        management faster, easier, and more meaningful.
+      </p>
 
-        <div className="feature">
-          <FaChartLine className="feature-icon" />
-          <h3>Analytics & Insights</h3>
-          <p>
-            Track performance and make data-driven decisions with ease.
-          </p>
-        </div>
+      <h2 className="about-section-title">What BizUply Offers</h2>
+      <ul className="about-list">
+        <li>
+          <strong>Smart CRM & Communication:</strong> Manage customer data,
+          messages, and relationships efficiently from one dashboard.
+        </li>
+        <li>
+          <strong>Interactive Business Page:</strong> Showcase your services,
+          reviews, and chat directly with clients.
+        </li>
+        <li>
+          <strong>Ratings & Reviews System:</strong> Build credibility with
+          verified client feedback.
+        </li>
+        <li>
+          <strong>Business Collaborations:</strong> Connect with complementary
+          businesses to create new growth opportunities.
+        </li>
+        <li>
+          <strong>AI Business Assistant:</strong> Automate tasks, analyze
+          activity, and get intelligent recommendations to boost performance.
+        </li>
+      </ul>
 
-        <div className="feature">
-          <FaHandshake className="feature-icon" />
-          <h3>Business Collaborations</h3>
-          <p>
-            Connect with complementary businesses and unlock new opportunities.
-          </p>
-        </div>
-      </section>
+      <h2 className="about-section-title">Our Values</h2>
+      <p className="about-paragraph">
+        BizUply is built on three core principles that guide everything we do:
+      </p>
+      <ul className="about-list">
+        <li>
+          <strong>Transparency & Simplicity —</strong> Intuitive tools that
+          empower you to focus on what truly matters.
+        </li>
+        <li>
+          <strong>Innovation with Purpose —</strong> Practical solutions inspired
+          by real business challenges.
+        </li>
+        <li>
+          <strong>Community & Collaboration —</strong> A growing network of
+          professionals dedicated to shared success.
+        </li>
+      </ul>
 
-      {/* Mission Section */}
-      <section className="about-section">
-        <h2>Our Mission</h2>
-        <p>
-          To be the digital home for businesses worldwide — simplifying
-          operations, boosting growth, and creating unforgettable client
-          experiences.
-        </p>
-      </section>
+      <h2 className="about-section-title">Looking Ahead</h2>
+      <p className="about-paragraph">
+        We’re continuously improving BizUply to be the most reliable digital
+        workspace for small and medium businesses. Our goal is to empower every
+        entrepreneur with tools, insights, and automation that drive efficient,
+        sustainable growth.
+      </p>
+
+      <h2 className="about-section-title">In a Few Words</h2>
+      <p className="about-paragraph">
+        BizUply is more than a management system — it’s a smarter way to run a
+        business. By uniting technology, communication, and community, we help
+        businesses stay organized, connected, and future-ready, so you can focus
+        on what you do best: leading, creating, and growing.
+      </p>
     </div>
   );
 }
