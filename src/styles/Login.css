@@ -94,8 +94,8 @@ label {
 .password-toggle-btn {
   position: absolute;
   right: 12px;
-  top: 43%; /* ✅ במקום 50%, מרימה טיפה למעלה */
-  transform: translateY(-50%);
+  top: 50%;
+  transform: translateY(-58%); /* ✅ הרמה עדינה שמיישרת בול לפי גובה הטקסט */
   border: none;
   background: none;
   cursor: pointer;
