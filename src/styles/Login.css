@@ -226,7 +226,7 @@ label {
   }
 
    .password-toggle-btn {
-    right: 2px; /* זהה לדסקטופ */
+    right: -10px; /* זהה לדסקטופ */
     top: 50%; /* ממורכז אנכית בדיוק */
     transform: translateY(-105%); /* ✅ אותו גובה כמו בדסקטופ */
     background: transparent !important;
