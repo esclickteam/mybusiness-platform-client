@@ -20,7 +20,6 @@
     <!-- ⚡ Prevent white flash before React loads -->
     <script>
       (function () {
-        // ✅ Theme + Background before React mounts
         document.documentElement.setAttribute("data-theme", "business");
         document.documentElement.style.background =
           "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
@@ -29,7 +28,7 @@
       })();
     </script>
 
-    <!-- ✅ 🔥 Critical Theme Colors - Load before React -->
+    <!-- 🟣 Core Theme Variables -->
     <style>
       :root {
         --bg: #f6f7fb;
@@ -56,7 +55,6 @@
         --ring: rgba(106, 17, 203, 0.28);
         --shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
 
-        /* 🎨 Gradient אחיד לרקע בסיסי */
         --accent-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
       }
 
@@ -72,7 +70,6 @@
         overflow-x: hidden;
       }
 
-      /* ✅ רקע קבוע מאחורי הכל (נשאר גם כשReact מחליף DOM) */
       #initial-bg {
         position: fixed;
         inset: 0;
@@ -81,57 +78,28 @@
         pointer-events: none;
       }
 
-      /* 🚀 רקע אחיד בזמן טעינה איטית או מעבר דפים */
       #root {
         background: var(--bg);
         min-height: 100vh;
       }
     </style>
 
-    <!-- ✅ Favicon / App Icons -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="/icons/icon-16x16.png?v=3"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="/icons/icon-32x32.png?v=3"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="48x48"
-      href="/icons/icon-48x48.png?v=3"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="/icons/icon-192x192.png?v=3"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="512x512"
-      href="/icons/icon-512x512.png?v=3"
-    />
+    <!-- ✅ Modern Favicon / PWA Icons -->
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="/icons/icon-180x180.png?v=3"
+      href="/apple-touch-icon.png"
     />
-    <link rel="shortcut icon" href="/favicon.ico?v=3" />
-
-    <!-- Theme color -->
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#6200ea" />
-    <link rel="manifest" href="/manifest.json?v=3" />
+
+    <!-- 🌍 SEO -->
     <meta http-equiv="Content-Language" content="en" />
 
-    <!-- Preload fonts and critical CSS -->
+    <!-- ⚙️ Preload Fonts + Styles -->
     <link
       rel="preload"
       href="/fonts/myfont.woff2"
@@ -141,7 +109,7 @@
     />
     <link rel="preload" href="/index.css" as="style" />
 
-    <!-- 🟣 Preload dashboard styles early to prevent white flash -->
+    <!-- 🟣 Preload dashboard CSS -->
     <link
       rel="preload"
       href="/src/styles/dashboard.css"
@@ -150,10 +118,10 @@
     />
     <noscript><link rel="stylesheet" href="/src/styles/dashboard.css" /></noscript>
 
-    <!-- Global CSS -->
+    <!-- 🧩 Global CSS -->
     <link rel="stylesheet" href="/index.css" />
 
-    <!-- CardCom LowProfile SDK -->
+    <!-- 💳 CardCom SDK -->
     <script
       src="https://secure.cardcom.solutions/EasyCheckout/js/Checkout.js"
       async
@@ -162,12 +130,14 @@
   </head>
 
   <body>
-    <!-- ✅ שכבת רקע קבועה נגד פלאש -->
+    <!-- ✅ Fixed background layer -->
     <div id="initial-bg"></div>
 
+    <!-- React root mounts here -->
     <div id="root"></div>
     <div id="popup-root"></div>
 
+    <!-- 🚀 Main React Entry -->
     <script type="module" src="/src/index.jsx" defer></script>
   </body>
 </html>
