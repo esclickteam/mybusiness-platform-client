@@ -235,3 +235,9 @@ label {
     outline: none !important;
   }
 }
+
+.login-input,
+.password-input {
+  text-align: left !important;
+  direction: ltr; /* מוודא שהמייל והסיסמה יוצגו נכון באנגלית */
+}
