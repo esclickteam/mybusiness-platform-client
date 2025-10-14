@@ -1,5 +1,11 @@
 .footer {
-  background: linear-gradient(135deg, #1e2a78, #6a11cb); /* רקע מודרני */
+  width: 100vw; /* ✅ נמתח את הפוטר על כל רוחב המסך */
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background: linear-gradient(135deg, #1e2a78, #6a11cb);
   color: #fff;
   padding: 50px 20px 20px;
   margin-top: 40px;
