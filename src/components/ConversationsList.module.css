@@ -132,3 +132,8 @@
     font-size: 1rem;
   }
 }
+
+.conversationsList,
+.conversationsList * {
+  color: #0f172a !important;
+}
