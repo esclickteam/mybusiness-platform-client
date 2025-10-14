@@ -1,8 +1,9 @@
-// src/main.jsx  או  src/index.jsx
+// src/main.jsx או src/index.jsx
 import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async"; // ✅ נוספה השורה החשובה הזו
 
 /* Contexts */
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -52,16 +53,18 @@ function AppWithIdleLogout() {
    ========================================================== */
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <NotificationsProvider>
-            <Suspense fallback={<div className="spinner" />}>
-              <AppWithIdleLogout />
-            </Suspense>
-          </NotificationsProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <NotificationsProvider>
+              <Suspense fallback={<div className="spinner" />}>
+                <AppWithIdleLogout />
+              </Suspense>
+            </NotificationsProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   </React.StrictMode>
 );

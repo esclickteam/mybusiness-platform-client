@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "@formspree/react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async"; // ✅ עודכן לגרסה הנכונה
 import "../styles/Contact.css";
 
 function Contact() {
@@ -11,7 +11,7 @@ function Contact() {
     message: "",
   });
 
-  const [state, handleSubmit] = useForm("mwpoojlv"); // replace with your Formspree ID
+  const [state, handleSubmit] = useForm("mwpoojlv"); // ✅ החלף ל-ID שלך אם נדרש
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -60,6 +60,7 @@ function Contact() {
   return (
     <div className="contact-container">
       <Helmet>
+        {/* ✅ Title & Description */}
         <title>Contact Us - Bizuply | We're Here to Help</title>
         <meta
           name="description"
@@ -67,9 +68,32 @@ function Contact() {
         />
         <meta
           name="keywords"
-          content="contact, support, Bizuply, questions, help, business"
+          content="contact, support, Bizuply, questions, help, business, customer service"
         />
-        <link rel="canonical" href="https://yourdomain.com/contact" />
+        <link rel="canonical" href="https://bizuply.com/contact" />
+
+        {/* ✅ Robots */}
+        <meta name="robots" content="index, follow" />
+
+        {/* ✅ Open Graph (Facebook, LinkedIn, WhatsApp) */}
+        <meta property="og:title" content="Contact Bizuply – We're Here to Help" />
+        <meta
+          property="og:description"
+          content="Reach out to the Bizuply team for support, questions, or business inquiries. We're always happy to help."
+        />
+        <meta property="og:url" content="https://bizuply.com/contact" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
+
+        {/* ✅ Twitter Cards */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Contact Bizuply – We're Here to Help" />
+        <meta
+          name="twitter:description"
+          content="Get in touch with Bizuply for support and business inquiries. Quick response guaranteed."
+        />
+        <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
       <h1 className="contact-title">Contact Us</h1>
@@ -123,10 +147,7 @@ function Contact() {
       </form>
 
       {status && (
-        <div
-          className={`status-msg ${status.type}`}
-          style={{ marginTop: "1rem" }}
-        >
+        <div className={`status-msg ${status.type}`} style={{ marginTop: "1rem" }}>
           {status.message}
         </div>
       )}

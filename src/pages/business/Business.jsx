@@ -1,12 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async"; // ✅ מעודכן לגרסה הנכונה
 import "../../styles/Business.css";
 
 function BusinessJoin() {
   return (
     <div className="business-join-container">
       <Helmet>
+        {/* ✅ Title & Description */}
         <title>
           Join Businesses - Collaborations, Clients & Smart Management | Bizuply
         </title>
@@ -18,7 +19,30 @@ function BusinessJoin() {
           name="keywords"
           content="join business, collaborations, client inquiries, CRM, smart management, Bizuply"
         />
-        <link rel="canonical" href="https://yourdomain.com/join" />
+        <link rel="canonical" href="https://bizuply.com/join" />
+
+        {/* ✅ Robots */}
+        <meta name="robots" content="index, follow" />
+
+        {/* ✅ Open Graph (Facebook / LinkedIn / WhatsApp) */}
+        <meta property="og:title" content="Join Bizuply – Collaborate & Grow Smarter" />
+        <meta
+          property="og:description"
+          content="Join the leading business platform to get client inquiries, AI tools, and collaboration opportunities that help your business grow faster."
+        />
+        <meta property="og:url" content="https://bizuply.com/join" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
+
+        {/* ✅ Twitter Cards */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Join Bizuply – Collaborate & Grow Smarter" />
+        <meta
+          name="twitter:description"
+          content="Connect with businesses, get new clients, and manage everything in one platform with Bizuply."
+        />
+        <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
       {/* Title Section */}

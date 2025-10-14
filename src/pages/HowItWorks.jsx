@@ -1,24 +1,50 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async"; // ✅ מעודכן לגרסה הנכונה
 import "../styles/HowItWorks.css";
 
 function HowItWorks() {
   return (
     <div className="howitworks-container" dir="ltr">
       <Helmet>
+        {/* ✅ Basic SEO */}
         <title>How It Works - Bizuply | Platform Guide</title>
         <meta
           name="description"
-          content="A simple guide on how Bizuply connects businesses with clients, how to manage your business, schedule services, and improve communication."
+          content="A simple guide on how Bizuply connects businesses with clients, manages appointments, and improves communication with smart automation tools."
         />
         <meta
           name="keywords"
-          content="Bizuply, how it works, platform guide, business management, scheduling, communication between businesses and clients"
+          content="Bizuply, how it works, business management, scheduling, communication, automation, clients, SaaS"
         />
-        <link rel="canonical" href="https://yourdomain.com/how-it-works" />
+        <link rel="canonical" href="https://bizuply.com/how-it-works" />
+
+        {/* ✅ Robots */}
+        <meta name="robots" content="index, follow" />
+
+        {/* ✅ Open Graph */}
+        <meta property="og:title" content="How Bizuply Works – Simple Platform Guide" />
+        <meta
+          property="og:description"
+          content="Learn how Bizuply helps businesses manage clients, bookings, and collaborations in one smart system."
+        />
+        <meta property="og:url" content="https://bizuply.com/how-it-works" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
+
+        {/* ✅ Twitter Cards */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="How Bizuply Works – Simple Platform Guide" />
+        <meta
+          name="twitter:description"
+          content="Step-by-step guide to Bizuply: managing clients, booking services, and growing your business with smart automation."
+        />
+        <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
+      {/* ==========================
+          🧭 Page Title & Intro
+      ========================== */}
       <h1 className="howitworks-title">How It Works - Bizuply</h1>
       <p className="howitworks-subtitle">
         Learn step by step how our platform works, how it helps you manage your
@@ -26,6 +52,9 @@ function HowItWorks() {
         businesses and clients.
       </p>
 
+      {/* ==========================
+          🪄 Step 1
+      ========================== */}
       <div className="howitworks-section">
         <h2>Step 1: Create a Business or Client Profile</h2>
         <h3>For Businesses:</h3>
@@ -53,6 +82,9 @@ function HowItWorks() {
         </ul>
       </div>
 
+      {/* ==========================
+          🔍 Step 2
+      ========================== */}
       <div className="howitworks-section">
         <h2>Step 2: Smart Business & Service Search</h2>
         <ul>
@@ -71,6 +103,9 @@ function HowItWorks() {
         </ul>
       </div>
 
+      {/* ==========================
+          📅 Step 3
+      ========================== */}
       <div className="howitworks-section">
         <h2>Step 3: Scheduling & Managing Appointments</h2>
         <ul>
@@ -84,6 +119,9 @@ function HowItWorks() {
         </ul>
       </div>
 
+      {/* ==========================
+          💬 Step 4
+      ========================== */}
       <div className="howitworks-section">
         <h2>Step 4: Direct Communication</h2>
         <h3>Online Chat:</h3>
@@ -106,6 +144,9 @@ function HowItWorks() {
         </ul>
       </div>
 
+      {/* ==========================
+          📊 Step 5
+      ========================== */}
       <div className="howitworks-section">
         <h2>Step 5: Tracking & Managing Your Activity</h2>
         <h3>For Businesses:</h3>
@@ -126,6 +167,9 @@ function HowItWorks() {
         </ul>
       </div>
 
+      {/* ==========================
+          ⭐ Simplicity
+      ========================== */}
       <div className="howitworks-section">
         <h2>Why Is It So Simple?</h2>
         <ul>
@@ -134,31 +178,6 @@ function HowItWorks() {
           <li>Support at every step of the way.</li>
         </ul>
       </div>
-
-      {/* Footer */}
-      <footer className="footer">
-        <ul className="footer-links">
-          <li>
-            <Link to="/about">📖 About Us</Link>
-          </li>
-          <li>
-            <Link to="/how-it-works">⚙ How It Works</Link>
-          </li>
-          <li>
-            <Link to="/join">✏ Join as a Business</Link>
-          </li>
-          <li>
-            <Link to="/faq">❓ FAQ</Link>
-          </li>
-          <li>
-            <Link to="/terms">📜 Terms & Conditions</Link>
-          </li>
-          <li>
-            <Link to="/contact">📞 Contact Us</Link>
-          </li>
-        </ul>
-        <p className="copyright">© All rights reserved | Bizuply</p>
-      </footer>
     </div>
   );
 }
