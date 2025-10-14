@@ -3,21 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 🧠 SEO -->
+    <title>BizUply — Business Platform</title>
     <meta
       name="description"
-      content="Advanced business platform - connect businesses with clients, manage business profiles, scheduling, and more."
+      content="BizUply — advanced business platform for managing clients, profiles, bookings, payments, and automation in one place."
     />
-    <meta name="author" content="BizUply" />
     <meta
       name="keywords"
-      content="business, services, clients, business platform, store, appointments, customer management"
+      content="bizuply, business platform, crm, scheduling, bookings, saas, ai assistant, automation, business management"
     />
+    <meta name="author" content="BizUply" />
+    <meta http-equiv="Content-Language" content="en" />
 
-    <title>BizUply - Business Platform</title>
-
-    <base href="/" />
-
-    <!-- ⚡ Prevent white flash before React loads -->
+    <!-- ⚡ Prevent white flash before React mounts -->
     <script>
       (function () {
         document.documentElement.setAttribute("data-theme", "business");
@@ -28,7 +28,7 @@
       })();
     </script>
 
-    <!-- 🟣 Core Theme Variables -->
+    <!-- 🎨 Theme Variables -->
     <style>
       :root {
         --bg: #f6f7fb;
@@ -45,8 +45,6 @@
 
         --blue: #2575fc;
         --blue-50: #e9f0ff;
-
-        --pink-50: #ffe6ef;
 
         --success: #16a34a;
         --warning: #f59e0b;
@@ -85,19 +83,35 @@
     </style>
 
     <!-- ✅ Modern Favicon / PWA Icons -->
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="%PUBLIC_URL%/favicon.svg"
+    />
+    <link
+      rel="alternate icon"
+      type="image/png"
+      href="%PUBLIC_URL%/favicon-96x96.png"
+      sizes="96x96"
+    />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="/apple-touch-icon.png"
+      href="%PUBLIC_URL%/apple-touch-icon.png"
     />
-    <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#6200ea" />
+    <link rel="manifest" href="%PUBLIC_URL%/site.webmanifest" />
+    <meta name="theme-color" content="#6a11cb" />
 
-    <!-- 🌍 SEO -->
-    <meta http-equiv="Content-Language" content="en" />
+    <!-- 🧩 Social Preview -->
+    <meta property="og:title" content="BizUply — Business Platform" />
+    <meta
+      property="og:description"
+      content="Manage clients, profiles, bookings and payments — all in one smart platform."
+    />
+    <meta property="og:image" content="%PUBLIC_URL%/social-preview.png" />
+    <meta property="og:url" content="https://bizuply.com" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <!-- ⚙️ Preload Fonts + Styles -->
     <link
