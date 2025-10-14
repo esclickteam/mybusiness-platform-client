@@ -219,13 +219,14 @@ label {
 }
 
 @media (max-width: 480px) {
-  .password-toggle-btn {
-    right: 8px !important;
-    transform: translateY(-43%);
+  .password-input {
+    font-size: 14px;
+    padding: 11px 42px 11px 12px;
+    background: #fff; /* ✅ נשאר לבן מלא גם במובייל */
   }
 
-  .password-input {
-    padding: 11px 38px 11px 10px;
-    font-size: 14px;
+  .password-toggle-btn {
+    right: 10px;
+    transform: translateY(-43%);
   }
 }
