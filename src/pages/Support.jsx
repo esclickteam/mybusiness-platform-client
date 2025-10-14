@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { io } from "socket.io-client";
 import "./Support.css";
 

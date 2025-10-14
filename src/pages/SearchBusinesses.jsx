@@ -7,7 +7,7 @@ import ALL_CATEGORIES from "../data/categories";
 import { fetchCities } from "../data/cities";
 import CityAutocomplete from "@components/CityAutocomplete";
 import Select from "react-select";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import "./BusinessList.css";
 
 const ITEMS_PER_PAGE = 9;

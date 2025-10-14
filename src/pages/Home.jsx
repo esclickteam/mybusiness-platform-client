@@ -1,4 +1,5 @@
-import { Helmet } from "react-helmet";
+import React from "react";
+import { Helmet } from "react-helmet-async"; // ✅ עודכן לגרסה הנכונה
 import "../styles/Home.css";
 import { Link } from "react-router-dom";
 import {
@@ -14,11 +15,38 @@ export default function Home() {
   return (
     <main className="esd-page">
       <Helmet>
+        {/* ✅ Basic SEO */}
         <title>Bizuply — Everything Your Business Needs. In One Place.</title>
         <meta
           name="description"
-          content="Manage clients, schedule appointments, automate with AI, collaborate and grow — all in one platform."
+          content="Manage clients, schedule appointments, automate with AI, collaborate and grow — all in one smart business platform."
         />
+        <meta
+          name="keywords"
+          content="Bizuply, business platform, CRM, scheduling, AI automation, client management, collaborations, SaaS for SMBs"
+        />
+        <link rel="canonical" href="https://bizuply.com/" />
+        <meta name="robots" content="index, follow" />
+
+        {/* ✅ Open Graph */}
+        <meta property="og:title" content="Bizuply — Everything Your Business Needs. In One Place." />
+        <meta
+          property="og:description"
+          content="The all-in-one business platform for managing clients, bookings, AI automations and growth — all in one place."
+        />
+        <meta property="og:url" content="https://bizuply.com/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
+
+        {/* ✅ Twitter Cards */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Bizuply — Everything Your Business Needs. In One Place." />
+        <meta
+          name="twitter:description"
+          content="Grow smarter with Bizuply: manage clients, automate tasks, and collaborate — all in one platform."
+        />
+        <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
       {/* ===== HERO ===== */}
@@ -326,7 +354,10 @@ export default function Home() {
       <section className="esd-cta" aria-labelledby="cta-title">
         <div className="esd-cta__inner">
           <h2 id="cta-title">Ready to grow smarter?</h2>
-          <Link to="/get-started" className="esd-btn esd-btn--primary esd-btn--lg">
+          <Link
+            to="/get-started"
+            className="esd-btn esd-btn--primary esd-btn--lg"
+          >
             Start Today
           </Link>
         </div>

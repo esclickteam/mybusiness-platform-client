@@ -1,21 +1,43 @@
 import React from "react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async"; // ✅ עודכן לגרסה הנכונה
 import "../styles/Terms.css";
 
 function Terms() {
   return (
     <div className="terms-container">
       <Helmet>
+        {/* ✅ Basic SEO */}
         <title>Terms of Service & Privacy Policy - Bizuply</title>
         <meta
           name="description"
-          content="Bizuply Terms of Service & Privacy Policy — usage rules, security, refunds, copyright, and accessibility."
+          content="Bizuply Terms of Service & Privacy Policy — usage rules, security, refunds, copyright, and accessibility for businesses using the platform."
         />
         <meta
           name="keywords"
-          content="Bizuply, Terms of Service, Privacy Policy, Refund Policy, Copyright, Accessibility"
+          content="Bizuply, Terms of Service, Privacy Policy, Refund Policy, Copyright, Accessibility, Business Platform"
         />
         <link rel="canonical" href="https://bizuply.com/terms" />
+        <meta name="robots" content="index, follow" />
+
+        {/* ✅ Open Graph */}
+        <meta property="og:title" content="Bizuply Terms of Service & Privacy Policy" />
+        <meta
+          property="og:description"
+          content="Review Bizuply’s terms, privacy policy, and user rights for businesses and clients."
+        />
+        <meta property="og:url" content="https://bizuply.com/terms" />
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
+
+        {/* ✅ Twitter Cards */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Bizuply Terms of Service & Privacy Policy" />
+        <meta
+          name="twitter:description"
+          content="Learn about Bizuply’s terms of service, privacy, and refund policies."
+        />
+        <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
       <h1 className="terms-title">Terms of Service & Privacy Policy</h1>

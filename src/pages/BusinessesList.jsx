@@ -6,7 +6,7 @@ import BusinessCard from "../components/BusinessCard";
 import ALL_CATEGORIES from "../data/categories";
 import { fetchCities } from "../data/cities"; // 👈 import the dynamic cities function
 import { FaSearch } from "react-icons/fa";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import "./BusinessList.css";
 
 const BusinessesList = () => {
