@@ -94,7 +94,7 @@ label {
 .password-toggle-btn {
   position: absolute;
   right: 12px;
-  top: 46%; /* ✅ במקום 50%, מרימה טיפה למעלה */
+  top: 43%; /* ✅ במקום 50%, מרימה טיפה למעלה */
   transform: translateY(-50%);
   border: none;
   background: none;
