@@ -226,7 +226,8 @@ label {
   }
 
   .password-toggle-btn {
-    right: 10px;
+    right: 12px;
+    top: 50%;
     transform: translateY(-105%);
     background: transparent !important;
     box-shadow: none !important;
