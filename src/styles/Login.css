@@ -204,84 +204,28 @@ label {
   background: #e0e0e0;
 }
 
-/* ===========================
-   📱 רספונסיביות מלאה למובייל
-   =========================== */
+/* רספונסיביות */
 @media (max-width: 480px) {
-  .login-container {
-    height: auto;
-    padding: 40px 16px;
-  }
-
   .login-box {
-    padding: 28px 22px;
-    border-radius: 14px;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    padding: 30px 25px;
   }
-
   .login-box h2 {
-    font-size: 1.55rem;
-    margin-bottom: 20px;
+    font-size: 1.6rem;
   }
-
-  .form-group {
-    margin-bottom: 16px;
-  }
-
-  label {
-    font-size: 0.9rem;
-  }
-
   .login-input,
   .password-input {
     font-size: 14px;
-    padding: 11px 40px 11px 12px;
   }
+}
 
+@media (max-width: 480px) {
   .password-toggle-btn {
-    right: 10px;
-    transform: translateY(-44%); /* ✅ שמירה על גובה טקסט גם במובייל */
+    right: 8px !important;
+    transform: translateY(-43%);
   }
 
-  .login-button {
-    font-size: 1rem;
-    padding: 12px;
-    margin-top: 8px;
-  }
-
-  .forgot-inside-btn {
-    font-size: 0.9rem;
-    margin-top: 10px;
-  }
-
-  .signup-link-text {
-    display: block;
-    margin-top: 4px;
-  }
-
-  .staff-login-btn {
-    padding: 9px;
-    font-size: 0.9rem;
-    margin-top: 12px;
-  }
-}
-
-/* ===========================
-   📱 טאבלטים קטנים (עד 768px)
-   =========================== */
-@media (max-width: 768px) {
-  .login-box {
-    max-width: 360px;
-  }
-
-  .login-box h2 {
-    font-size: 1.7rem;
-  }
-
-  .login-input,
   .password-input {
-    font-size: 15px;
+    padding: 11px 38px 11px 10px;
+    font-size: 14px;
   }
 }
-
-
