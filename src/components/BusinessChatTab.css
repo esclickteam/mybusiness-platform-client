@@ -518,3 +518,19 @@
     font-size: 20px !important;
   }
 }
+
+.chat-container,
+.chat-container * {
+  color: #0f172a !important; /* שחור אלגנטי ונקי */
+}
+
+/* אם את רוצה גם למנוע טשטוש או שקיפות על טקסטים */
+.message,
+.message .content,
+.system-message,
+.typing-indicator,
+.inputField,
+.inputField::placeholder {
+  color: #0f172a !important;
+  opacity: 1 !important;
+}
