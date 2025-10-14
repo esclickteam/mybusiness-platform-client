@@ -1,3 +1,7 @@
+/* ===========================
+   💜 BizUply – Login Page
+   =========================== */
+
 .login-container {
   display: flex;
   justify-content: center;
@@ -15,7 +19,7 @@
   100% { background-position: 0% 50%; }
 }
 
-/* תיבת טופס בהירה */
+/* תיבת התחברות */
 .login-box {
   background: #fafafa;
   border-radius: 18px;
@@ -32,6 +36,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* כותרת */
 .login-box h2 {
   font-family: "Poppins", sans-serif;
   font-size: 1.9rem;
@@ -40,7 +45,7 @@
   color: #3b0ca3;
 }
 
-/* שדות */
+/* קבוצת שדות */
 .form-group {
   margin-bottom: 20px;
   text-align: left;
@@ -57,15 +62,18 @@ label {
   margin-left: 2px;
 }
 
+/* שדות קלט */
 .login-input,
 .password-input {
   width: 100%;
-  padding: 12px 42px 12px 14px;
+  padding: 12px 44px 12px 14px; /* מקום לעין */
   border-radius: 12px;
   border: 1px solid #ccc;
   background: #fff;
   font-size: 15px;
   transition: 0.3s;
+  color: #0f172a;
+  font-family: "Poppins", sans-serif;
 }
 
 .login-input:focus,
@@ -75,9 +83,10 @@ label {
   outline: none;
 }
 
-/* עין ממוקמת בפנים, באמצע אנכית */
+/* עין בפנים השדה */
 .password-input-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .password-toggle-btn {
@@ -92,10 +101,17 @@ label {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 18px;
+  padding: 0;
+  transition: color 0.25s ease;
 }
 
 .password-toggle-btn:hover {
   color: #7c3aed;
+}
+
+.password-toggle-btn:focus {
+  outline: none;
 }
 
 /* כפתור התחברות */
@@ -111,6 +127,7 @@ label {
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 10px;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.25);
 }
 
 .login-button:hover {
@@ -121,22 +138,30 @@ label {
 /* שכחת סיסמה */
 .forgot-inside-btn {
   display: inline-block;
-  margin-top: 10px;
+  margin-top: 12px;
   color: #7c3aed;
   font-size: 0.95rem;
   background: none;
   border: none;
   cursor: pointer;
   text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.25s ease;
+}
+
+.forgot-inside-btn:hover {
+  color: #5e17eb;
 }
 
 /* הודעת שגיאה */
 .error-message {
   color: #d21f1f;
   margin-top: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-/* לינקים נוספים */
+/* קישורים נוספים */
 .login-extra-options {
   margin-top: 25px;
   color: #444;
@@ -146,8 +171,14 @@ label {
 .signup-link-text {
   color: #7c3aed;
   font-weight: 600;
+  transition: color 0.25s ease;
 }
 
+.signup-link-text:hover {
+  color: #5e17eb;
+}
+
+/* כפתור צוות */
 .staff-login-btn {
   margin-top: 15px;
   background: #eee;
@@ -157,8 +188,24 @@ label {
   width: 100%;
   border-radius: 10px;
   cursor: pointer;
+  font-weight: 600;
+  transition: background 0.25s ease;
 }
 
 .staff-login-btn:hover {
   background: #e0e0e0;
+}
+
+/* רספונסיביות */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 30px 25px;
+  }
+  .login-box h2 {
+    font-size: 1.6rem;
+  }
+  .login-input,
+  .password-input {
+    font-size: 14px;
+  }
 }
