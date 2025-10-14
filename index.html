@@ -20,10 +20,8 @@
     <!-- ⚡ Prevent white flash before React mounts -->
     <script>
       (function () {
-        document.documentElement.setAttribute("data-theme", "business");
         document.documentElement.style.background =
           "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
-        document.documentElement.style.backgroundColor = "#f6f7fb";
         document.body && (document.body.style.backgroundColor = "#f6f7fb");
       })();
     </script>
@@ -55,11 +53,11 @@
         background-color: var(--bg);
         background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
         color: var(--text);
-        transition: none !important;
         margin: 0;
         font-family: "Poppins", Arial, sans-serif;
         min-height: 100%;
         overflow-x: hidden;
+        transition: none !important;
       }
 
       #initial-bg {
@@ -76,27 +74,29 @@
       }
     </style>
 
-    <!-- ✅ Modern Favicon / PWA Icons -->
+    <!-- ✅ Modern Favicon (SVG only – fully transparent) -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link
-      rel="alternate icon"
-      type="image/png"
-      href="/favicon-96x96.png"
-      sizes="96x96"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/apple-touch-icon.png"
-    />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#6a11cb" />
+
+    <!-- 💡 Optional: Different icon for dark/light mode -->
+    <link
+      rel="icon"
+      href="/favicon-light.svg"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="icon"
+      href="/favicon-dark.svg"
+      media="(prefers-color-scheme: dark)"
+    />
 
     <!-- 🧩 Social Preview -->
     <meta property="og:title" content="BizUply — Business Platform" />
     <meta
       property="og:description"
-      content="Manage clients, profiles, bookings and payments — all in one smart platform."
+      content="Manage clients, profiles, bookings, and payments — all in one smart platform."
     />
     <meta property="og:image" content="/social-preview.png" />
     <meta property="og:url" content="https://bizuply.com" />
@@ -112,8 +112,6 @@
       crossorigin="anonymous"
     />
     <link rel="preload" href="/index.css" as="style" />
-
-    <!-- 🟣 Preload dashboard CSS -->
     <link
       rel="preload"
       href="/src/styles/dashboard.css"
@@ -134,10 +132,7 @@
   </head>
 
   <body>
-    <!-- ✅ Fixed background layer -->
     <div id="initial-bg"></div>
-
-    <!-- React root mounts here -->
     <div id="root"></div>
     <div id="popup-root"></div>
 
