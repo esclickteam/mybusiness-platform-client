@@ -69,8 +69,8 @@
 }
 
 .sidebar-logo-img {
-  width: 80%;
-  max-width: 190px;
+  width: 100%;
+  max-width: 260px;
   height: auto;
   object-fit: contain;
   transition: transform 0.25s ease-in-out;
