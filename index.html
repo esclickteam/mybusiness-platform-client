@@ -74,22 +74,29 @@
       }
     </style>
 
-    <!-- ✅ Modern Favicon (SVG only – fully transparent) -->
-     
-    <link rel="icon" type="image/svg+xml" href="/favicon-new.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <!-- ✅ Modern Favicon (SVG fully transparent + absolute URLs for Google) -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="https://bizuply.com/favicon-new.svg"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://bizuply.com/apple-touch-icon.png"
+    />
+    <link rel="manifest" href="https://bizuply.com/site.webmanifest" />
     <meta name="theme-color" content="#6a11cb" />
 
     <!-- 💡 Optional: Different icon for dark/light mode -->
     <link
       rel="icon"
-      href="/favicon-light.svg"
+      href="https://bizuply.com/favicon-light.svg"
       media="(prefers-color-scheme: light)"
     />
     <link
       rel="icon"
-      href="/favicon-dark.svg"
+      href="https://bizuply.com/favicon-dark.svg"
       media="(prefers-color-scheme: dark)"
     />
 
@@ -97,12 +104,28 @@
     <meta property="og:title" content="BizUply — Business Platform" />
     <meta
       property="og:description"
-      content="Manage clients, profiles, bookings, and payments — all in one smart platform."
+      content="Manage clients, profiles, bookings and payments — all in one smart platform."
     />
-    <meta property="og:image" content="/social-preview.png" />
+    <meta property="og:image" content="https://bizuply.com/social-preview.png" />
     <meta property="og:url" content="https://bizuply.com" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- 📦 Structured Data (required for Google favicon display) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "BizUply",
+      "url": "https://bizuply.com",
+      "logo": "https://bizuply.com/favicon-new.svg",
+      "sameAs": [
+        "https://www.facebook.com/bizuply",
+        "https://www.instagram.com/bizuply",
+        "https://www.linkedin.com/company/bizuply"
+      ]
+    }
+    </script>
 
     <!-- ⚙️ Preload Fonts + Styles -->
     <link
