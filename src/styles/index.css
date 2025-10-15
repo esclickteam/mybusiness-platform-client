@@ -176,3 +176,10 @@ html::before {
   scrollbar-width: thin;
   scrollbar-color: #8b5cf6 #e6e6ef; /* Firefox */
 }
+
+/* ===========================
+   🚫 הסתרת פס גלילה זמנית בזמן מעבר עמודים
+   =========================== */
+body.loading {
+  overflow: hidden !important;
+}

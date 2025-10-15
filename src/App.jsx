@@ -52,7 +52,9 @@ const Register = lazy(() => import("./pages/Register"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 const StaffLogin = lazy(() => import("./pages/StaffLogin"));
-const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
+const BusinessProfileView = lazy(() =>
+  import("./components/shared/BusinessProfileView")
+);
 const BookingPage = lazy(() => import("./pages/BookingPage"));
 const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
 const MessagesPage = lazy(() => import("./pages/client/MessagesPage"));
@@ -73,7 +75,9 @@ const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const AdminAffiliates = lazy(() => import("./pages/admin/AdminAffiliates"));
-const AffiliatePage = lazy(() => import("./pages/business/dashboardPages/AffiliatePage"));
+const AffiliatePage = lazy(() =>
+  import("./pages/business/dashboardPages/AffiliatePage")
+);
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
 const Features = lazy(() => import("./pages/Features"));
@@ -99,11 +103,20 @@ export default function App() {
     preloadDashboardComponents();
   }, []);
 
+  // ✅ הסתרת פס גלילה בזמן טעינת מעבר עמודים
+  useEffect(() => {
+    document.body.classList.add("loading"); // מוסיף class שמסתיר את הסקרול
+    const timeout = setTimeout(() => {
+      document.body.classList.remove("loading"); // מסיר אחרי סיום המעבר
+    }, 700); // משך המעבר (0.35s כפול 2 לביטחון)
+    return () => clearTimeout(timeout);
+  }, [location.pathname]);
+
   if (loading) return <LoginSkeleton />;
 
   return (
     <NotificationsProvider>
-      <Header onToggleNotifications={() => setShowNotifications(v => !v)} />
+      <Header onToggleNotifications={() => setShowNotifications((v) => !v)} />
       <ScrollToTop />
 
       {/* ✅ אזור גלילה יחיד למניעת סקרול כפול */}
@@ -133,6 +146,8 @@ export default function App() {
                     zIndex: 9999,
                     background: "linear-gradient(180deg, #f6f7fb, #e8ebf8)",
                     pointerEvents: "none",
+                    height: "100vh", // ✅ מבטיח גובה מלא בזמן טעינה
+                    overflow: "hidden",
                   }}
                 />
               }
@@ -143,6 +158,7 @@ export default function App() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.35, ease: "easeInOut" }}
+                style={{ minHeight: "100vh", overflow: "hidden" }}
               >
                 <Routes location={location} key={location.pathname}>
                   <Route path="/" element={<HomePage />} />
@@ -381,7 +397,9 @@ export default function App() {
 
                 {/* Global AI modal & notifications */}
                 <AiModal />
-                {showNotifications && <Notifications onClose={() => setShowNotifications(false)} />}
+                {showNotifications && (
+                  <Notifications onClose={() => setShowNotifications(false)} />
+                )}
                 <Footer />
               </motion.div>
             </Suspense>
