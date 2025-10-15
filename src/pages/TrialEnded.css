@@ -1,0 +1,76 @@
+.trial-ended-wrapper {
+  background: linear-gradient(135deg, #a855f7, #6c63ff);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.trial-ended-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 50px 40px;
+  max-width: 520px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+}
+
+.emoji {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.trial-ended-card h1 {
+  font-size: 1.9rem;
+  color: #4a148c;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.desc {
+  color: #555;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.upgrade-btn {
+  background: linear-gradient(90deg, #7e22ce, #6c63ff);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upgrade-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.contact-btn {
+  background: none;
+  color: #6c63ff;
+  border: 2px solid #6c63ff;
+  border-radius: 10px;
+  padding: 12px 26px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.contact-btn:hover {
+  background: #f5f3ff;
+}
+
+.small-text {
+  font-size: 0.9rem;
+  color: #777;
+  margin-top: 30px;
+}

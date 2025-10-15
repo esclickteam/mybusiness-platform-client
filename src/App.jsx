@@ -83,6 +83,8 @@ const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
 const Features = lazy(() => import("./pages/Features"));
 const Solutions = lazy(() => import("./pages/Solutions"));
 const Support = lazy(() => import("./pages/Support"));
+const TrialEnded = lazy(() => import("./pages/TrialEnded"));
+
 
 // Smooth scroll to top
 function ScrollToTop() {
@@ -189,6 +191,8 @@ export default function App() {
                   <Route path="/support" element={<Support />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/solutions" element={<Solutions />} />
+                  <Route path="/trial-ended" element={<TrialEnded />} />
+
 
                   {/* Collaboration */}
                   <Route
