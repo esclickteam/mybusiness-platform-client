@@ -45,23 +45,17 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   =========================== */
   useEffect(() => {
     const timeout = setTimeout(() => {
-      const path = location.pathname;
+      // ✅ מציגים מודאל רק אם המשתמש נמצא באזור הדשבורד העסקי
+      const isDashboardArea = /^\/business\/[A-Za-z0-9]+\/dashboard/.test(location.pathname);
 
-      // ✅ נציג מודאל רק אם:
-      // 1️⃣ המשתמש עסק
-      // 2️⃣ הניסיון נגמר
-      // 3️⃣ הנתיב הוא הדשבורד (ולא עמודים ציבוריים)
-      // 4️⃣ המשתמש כבר התחבר (לא כניסה ראשונה לאתר)
-      const isDashboardArea = /^\/business\/[A-Za-z0-9]+\/dashboard/.test(path);
-      const notHomepage = path !== "/" && !["/plans", "/pricing", "/about", "/contact"].includes(path);
-
-      if (isBusiness && !isTrialActive && isDashboardArea && notHomepage) {
-        console.log("🎯 ניסיון נגמר – מציג מודאל רק לאחר התחברות לדשבורד");
+      if (isBusiness && !isTrialActive && isDashboardArea) {
+        console.log("🎯 ניסיון נגמר – מציג מודאל רק לאחר כניסה לדשבורד העסקי");
         setShowTrialModal(true);
       }
 
       setCheckedTrial(true);
     }, 300);
+
     return () => clearTimeout(timeout);
   }, [isBusiness, isTrialActive, location.pathname]);
 
@@ -106,13 +100,7 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   /* ===========================
      💳 מנוי שפג (לא ניסיון)
   =========================== */
-  if (
-    isBusiness &&
-    !isSubscriptionValid &&
-    !isTrialActive &&
-    !showTrialModal &&
-    !location.pathname.includes("/business/")
-  ) {
+  if (isBusiness && !isSubscriptionValid && !isTrialActive && !showTrialModal) {
     console.log("🚀 מנוי לא פעיל – הפניה לעמוד pricing");
     return <Navigate to="/pricing" replace />;
   }
