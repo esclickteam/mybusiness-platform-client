@@ -44,20 +44,25 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
      🧠 בדיקה לאחר טעינה
   =========================== */
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      // ✅ מציגים מודאל רק אם המשתמש נמצא באזור הדשבורד העסקי
-      const isDashboardArea = /^\/business\/[A-Za-z0-9]+\/dashboard/.test(location.pathname);
+    if (!initialized || !user) return;
 
+    const timeout = setTimeout(() => {
+      const path = location.pathname;
+      const isDashboardArea = /^\/business\/[A-Za-z0-9]+\/dashboard/.test(path);
+
+      // ✅ מציגים מודאל רק אם המשתמש נכנס לדשבורד עסקי
       if (isBusiness && !isTrialActive && isDashboardArea) {
-        console.log("🎯 ניסיון נגמר – מציג מודאל רק לאחר כניסה לדשבורד העסקי");
+        console.log("🎯 ניסיון נגמר – מציג מודאל לפני טעינת הדשבורד");
         setShowTrialModal(true);
+      } else {
+        setShowTrialModal(false);
       }
 
       setCheckedTrial(true);
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [isBusiness, isTrialActive, location.pathname]);
+  }, [initialized, user, isBusiness, isTrialActive, location.pathname]);
 
   /* ===========================
      ⏳ טעינה
@@ -90,10 +95,10 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }
 
   /* ===========================
-     ⚠️ סיום ניסיון – הצגת מודאל
+     ⚠️ ניסיון חינם הסתיים – הצגת מודאל
   =========================== */
   if (showTrialModal) {
-    console.log("💜 TrialExpiredModal מוצג!");
+    console.log("💜 TrialExpiredModal מוצג לפני טעינת הדשבורד!");
     return <TrialExpiredModal />;
   }
 
