@@ -102,7 +102,7 @@ export function AuthProvider({ children }) {
   };
 
   /* ===========================
-     🔐 Login (optimized, no flash)
+     🔐 Login
      =========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
@@ -117,23 +117,17 @@ export function AuthProvider({ children }) {
       const { accessToken, user: loggedInUser, redirectUrl } = data;
       if (!accessToken) throw new Error("No access token received");
 
-      // ✅ שמירת טוקן והגדרתו מראש
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      // ✅ שמירת המשתמש כבר עכשיו למניעת פלאש
       const normalizedUser = normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // ✅ רקע קבוע לפני ניווט
       document.body.style.background = "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
-
-      // ✅ רענון במקביל (לא חוסם ניווט)
       refreshUser(true).catch(() => {});
 
-      // ✅ ניווט אחרי התחברות
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
@@ -163,68 +157,6 @@ export function AuthProvider({ children }) {
           ? "❌ אימייל או סיסמה שגויים"
           : "❌ שגיאה בשרת, נסה שוב"
       );
-      setLoading(false);
-      throw e;
-    }
-  };
-
-  /* ===========================
-     🧑‍💼 Staff login
-     =========================== */
-  const staffLogin = async (username, password) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await API.post(
-        "/auth/staff-login",
-        { username: username.trim(), password },
-        { withCredentials: true }
-      );
-      const { accessToken, user: staffUser } = data;
-      localStorage.setItem("token", accessToken);
-      setAuthToken(accessToken);
-      setToken(accessToken);
-
-      const normalizedStaffUser = normalizeUser(staffUser);
-      setUser(normalizedStaffUser);
-      localStorage.setItem("businessDetails", JSON.stringify(normalizedStaffUser));
-
-      refreshUser(true).catch(() => {});
-      setLoading(false);
-      return normalizedStaffUser;
-    } catch (e) {
-      setError(
-        e.response?.status >= 400 && e.response?.status < 500
-          ? "❌ שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסה שוב"
-      );
-      setLoading(false);
-      throw e;
-    }
-  };
-
-  /* ===========================
-     🤝 Affiliate login
-     =========================== */
-  const affiliateLogin = async (publicToken) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await API.get(`/affiliate/login/${publicToken}`, {
-        withCredentials: true,
-      });
-      if (!data.success) throw new Error("משווק לא נמצא");
-
-      const normalized = normalizeUser(data);
-      setUser(normalized);
-      localStorage.setItem("businessDetails", JSON.stringify(normalized));
-
-      setToken(null);
-      refreshUser(true).catch(() => {});
-      setLoading(false);
-      return normalized;
-    } catch (e) {
-      setError(e.message || "שגיאה בכניסה כמשווק");
       setLoading(false);
       throw e;
     }
@@ -272,7 +204,6 @@ export function AuthProvider({ children }) {
         if (!freshUser) throw new Error("No fresh user data");
 
         setUser(freshUser);
-
         const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
 
@@ -296,7 +227,23 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        if (freshUser.role === "business" && freshUser.businessId && location.pathname === "/") {
+        // ✅ שינוי קריטי: הפניה לדשבורד רק אם יש מנוי פעיל או ניסיון פעיל
+        const hasActiveTrial =
+          freshUser.subscriptionPlan === "trial" &&
+          freshUser.subscriptionEnd &&
+          new Date(freshUser.subscriptionEnd) > new Date();
+
+        const hasActiveSubscription =
+          freshUser.subscriptionPlan !== "trial" &&
+          freshUser.subscriptionEnd &&
+          new Date(freshUser.subscriptionEnd) > new Date();
+
+        if (
+          freshUser.role === "business" &&
+          freshUser.businessId &&
+          location.pathname === "/" &&
+          (hasActiveTrial || hasActiveSubscription)
+        ) {
           navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
         }
       } catch {
@@ -328,8 +275,6 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
-    staffLogin,
-    affiliateLogin,
     fetchWithAuth: async (fn) => {
       try {
         return await fn();
