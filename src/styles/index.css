@@ -180,6 +180,7 @@ html::before {
 /* ===========================
    🚫 הסתרת פס גלילה זמנית בזמן מעבר עמודים
    =========================== */
-body.loading {
+body.loading,
+body.loading .app-scroll-area {
   overflow: hidden !important;
 }
