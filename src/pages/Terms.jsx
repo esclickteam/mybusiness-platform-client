@@ -773,7 +773,7 @@ function Terms() {
 
   <ul>
     <li><strong>Email:</strong> support@bizuply.com</li>
-    <li><strong>Business Address:</strong> BizUply Inc., 85 Broad Street, New York, NY 10004, USA</li>
+    <li><strong>Business Address:</strong> BizUply , New York, NY , USA</li>
   </ul>
 
   <p>
