@@ -1,130 +1,82 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import React, { useState } from "react";
 import "../../styles/Plans.css";
 
-function Plans() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+export default function Plans() {
+  const [selectedPeriod, setSelectedPeriod] = useState("monthly");
 
-  const plans = [
-    {
-      id: "1",
-      title: "Monthly Plan",
-      price: 150,
-      duration: "per month",
-      savings: null,
-      description: "Full access to all BizUply features. Flexible and cancel anytime.",
-      features: [
-        "AI-powered business assistant",
-        "Smart CRM for clients & appointments",
-        "Automated WhatsApp & email reminders",
-        "Booking, payments, and reviews system",
-      ],
-      buttonText: "Try Free for 14 Days",
-      highlight: false,
-    },
-    {
-      id: "3",
-      title: "Quarterly Plan",
-      price: 420,
-      duration: "every 3 months",
-      savings: "Save $30",
-      description: "Perfect for growing businesses with consistent client flow.",
-      features: [
-        "Everything in Monthly plan",
-        "Advanced analytics dashboard",
-        "AI automations and marketing insights",
-        "Priority support and setup assistance",
-      ],
-      buttonText: "Try Free for 14 Days",
-      highlight: true,
-      badge: "Most Popular",
-    },
-    {
-      id: "12",
-      title: "Yearly Plan",
-      price: 1500,
-      duration: "per year",
-      savings: "Save $300",
-      description: "Best value — designed for professionals and studios.",
-      features: [
-        "Everything in Quarterly plan",
-        "Dedicated account manager",
-        "Early access to new BizUply AI features",
-        "VIP onboarding & training",
-      ],
-      buttonText: "Try Free for 14 Days",
-      highlight: false,
-    },
-  ];
-
-  const handleSelectPlan = (plan) => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    navigate("/checkout", {
-      state: {
-        planName: `BizUply ${plan.title}`,
-        totalPrice: plan.price,
-        duration: plan.id,
-      },
-    });
+  const plans = {
+    monthly: { price: 150, total: 150, save: 0 },
+    yearly: { price: 1600, total: 1600, save: 200 }, // $200 savings compared to monthly
   };
+
+  const { price, total, save } = plans[selectedPeriod];
 
   return (
     <div className="plans-page">
-      {/* 💜 Header */}
+      {/* 🌟 Header */}
       <header className="plans-header">
-       <h1>Pick the plan that's right for you</h1>
-
-
+        <h1>Choose Your BizUply Plan</h1>
         <p>
-          Experience BizUply’s full power — one system, one price, unlimited possibilities.
-          Start your free 14-day trial today.
+          All the tools your business needs — in one smart platform.  
+          Start your <strong>14-day free trial</strong> today. No credit card required.
         </p>
       </header>
 
-      {/* 💎 Plans Grid */}
-      <section className="plans-grid">
-        {plans.map((plan) => (
-          <div
-            key={plan.id}
-            className={`plan-card ${plan.highlight ? "highlight" : ""}`}
+      {/* 🔘 Toggle Between Monthly / Yearly */}
+      <div className="plans-toggle">
+        {["monthly", "yearly"].map((period) => (
+          <button
+            key={period}
+            className={`toggle-btn ${selectedPeriod === period ? "active" : ""}`}
+            onClick={() => setSelectedPeriod(period)}
           >
-            {plan.badge && <div className="plan-badge">{plan.badge}</div>}
-            <h2>{plan.title}</h2>
-            <p className="plan-desc">{plan.description}</p>
-
-            <div className="plan-price">
-              ${plan.price}
-              <span> / {plan.duration}</span>
-            </div>
-
-            {plan.savings && <p className="plan-savings">{plan.savings}</p>}
-
-            <ul className="plan-features">
-              {plan.features.map((f, i) => (
-                <li key={i}>
-                  <span className="checkmark">✓</span> {f}
-                </li>
-              ))}
-            </ul>
-
-            <button
-              className={`plan-btn ${plan.highlight ? "primary" : "secondary"}`}
-              onClick={() => handleSelectPlan(plan)}
-            >
-              {plan.buttonText}
-            </button>
-          </div>
+            {period === "monthly" ? "Monthly" : "Yearly"}
+          </button>
         ))}
-      </section>
+      </div>
 
-      
+      {/* 💼 Main Plan Card */}
+      <section className="plan-card-container">
+        <div className="plan-card highlight">
+          <h2>BizUply Professional Plan</h2>
+          <p className="plan-desc">
+            Access every BizUply feature — including your AI Partner, CRM, messaging,  
+            client reviews, and collaboration tools — all from one powerful dashboard.
+          </p>
+
+          <div className="plan-price">
+            <span className="price">${price}</span>
+            <span className="duration">
+              {selectedPeriod === "monthly" ? "/month" : "/year"}
+            </span>
+          </div>
+
+          <ul className="plan-features">
+            <li>🌐 Professional Business Page</li>
+            <li>👥 Smart CRM for Clients & Appointments</li>
+            <li>💬 Built-in Messaging System</li>
+            <li>⭐ Ratings & Reviews Management</li>
+            <li>🤝 Business Collaboration Network</li>
+            <li>🧠 AI Business Advisor & Smart Insights</li>
+          </ul>
+
+          <button className="plan-btn primary">Try Free for 14 Days</button>
+
+          {/* 🧾 Summary Box */}
+          <div className="summary-box">
+            <div className="summary-row">
+              <span>Total to pay:</span>
+              <strong>${total}</strong>
+            </div>
+            {save > 0 && (
+              <div className="summary-row save">
+                <span>You save:</span>
+                <strong>${save}</strong>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
-
-export default Plans;
