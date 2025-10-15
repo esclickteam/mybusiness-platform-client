@@ -113,7 +113,7 @@ export default function App() {
           flex: 1,
           overflowY: "auto",
           overflowX: "hidden",
-          height: "100vh",
+          minHeight: "100vh",
           backgroundColor: "#fff",
         }}
       >

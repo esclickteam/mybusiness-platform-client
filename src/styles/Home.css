@@ -43,6 +43,7 @@ body {
 
 .esd-page {
   overflow-x: hidden;
+  overflow-y: visible; /* ✅ ביטול גלילה פנימית */
   direction: ltr;
   text-align: left;
 }

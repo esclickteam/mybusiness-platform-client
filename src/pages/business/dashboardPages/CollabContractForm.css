@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-  overflow-y: auto; /* גלילה פנימית אם תוכן גבוה */
+  overflow-y: visible;
   position: relative;
   box-sizing: border-box;
 }
