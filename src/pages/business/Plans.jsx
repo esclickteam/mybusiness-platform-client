@@ -8,10 +8,10 @@ export default function Plans() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading, initialized } = useAuth();
 
   const plans = {
-    monthly: { price: 1, total: 1, save: 0 }, // בדיקה: $1 בלבד
+    monthly: { price: 1, total: 1, save: 0 }, // בדיקה ב-$1 בלבד
     yearly: { price: 1, total: 1, save: 0 },
   };
 
@@ -52,13 +52,14 @@ export default function Plans() {
     const res = await fetch("/api/paypal/create-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include", // ✅ נדרש כדי לשלוח session
       body: JSON.stringify({
         amount: total,
         planName:
           selectedPeriod === "monthly"
             ? "BizUply Monthly Plan"
             : "BizUply Yearly Plan",
-        userId: user?._id, // ✅ מזהה המשתמש שלך
+        userId: user?._id, // ✅ מזהה המשתמש
       }),
     });
 
@@ -73,6 +74,7 @@ export default function Plans() {
   const captureOrder = async (orderId) => {
     const res = await fetch(`/api/paypal/capture/${orderId}`, {
       method: "POST",
+      credentials: "include",
     });
     if (!res.ok) throw new Error("Failed to capture order");
     const data = await res.json();
@@ -83,13 +85,17 @@ export default function Plans() {
      🚀 הפעלת PayPal Checkout
   ======================================== */
   const handlePayPalCheckout = async () => {
+    if (authLoading || !initialized) {
+      alert("Please wait until your account finishes loading...");
+      return;
+    }
+
     if (!user?._id) {
       alert("Please log in first.");
       return;
     }
 
     setLoading(true);
-
     try {
       const paypal = window.paypal;
       if (!paypal) {
@@ -100,7 +106,7 @@ export default function Plans() {
 
       // מנקה כל כפתור קודם כדי למנוע כפילויות
       const container = document.getElementById("paypal-button-container");
-      container.innerHTML = "";
+      if (container) container.innerHTML = "";
 
       paypal
         .Buttons({
@@ -125,6 +131,20 @@ export default function Plans() {
     }
   };
 
+  /* ========================================
+     ⏳ מצב טעינה ראשונית
+  ======================================== */
+  if (authLoading || !initialized) {
+    return (
+      <div className="plans-loading">
+        <p>Loading your account...</p>
+      </div>
+    );
+  }
+
+  /* ========================================
+     🧭 תצוגת עמוד
+  ======================================== */
   return (
     <div className="plans-page">
       {/* 🌟 Header */}
@@ -139,8 +159,8 @@ export default function Plans() {
             </>
           ) : (
             <>
-              Your free trial has ended. Choose a plan below to continue enjoying
-              BizUply.
+              Your free trial has ended. Choose a plan below to continue
+              enjoying BizUply.
             </>
           )}
         </p>
@@ -199,7 +219,10 @@ export default function Plans() {
               Processing...
             </button>
           ) : trialExpired ? (
-            <button className="plan-btn purchase" onClick={handlePayPalCheckout}>
+            <button
+              className="plan-btn purchase"
+              onClick={handlePayPalCheckout}
+            >
               Subscribe Now
             </button>
           ) : (
