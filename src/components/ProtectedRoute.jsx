@@ -18,27 +18,25 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
 
   /* ===========================
      💳 תוקף מנוי
+     נחשב תקף אם התאריך ב־subscriptionEnd עדיין לא עבר
   =========================== */
   const isSubscriptionValid = useMemo(() => {
     if (!isBusiness) return true;
-    if (typeof user?.isSubscriptionValid === "boolean") return user.isSubscriptionValid;
-    if (user?.subscriptionStart && user?.subscriptionEnd) {
+    if (user?.subscriptionEnd) {
       return new Date(user.subscriptionEnd) > new Date();
     }
     return false;
-  }, [isBusiness, user?.isSubscriptionValid, user?.subscriptionStart, user?.subscriptionEnd]);
+  }, [isBusiness, user?.subscriptionEnd]);
 
   /* ===========================
-     🕓 ניסיון חינם (14 יום)
+     🕓 ניסיון חינם (trial) לפי subscriptionPlan
+     אם התוכנית היא trial והתוקף עבר — הניסיון הסתיים
   =========================== */
   const isTrialActive = useMemo(() => {
-    if (!user?.createdAt) return false;
-    const trialDays = 14;
-    const created = new Date(user.createdAt);
-    const expires = new Date(created);
-    expires.setDate(created.getDate() + trialDays);
-    return new Date() < expires;
-  }, [user?.createdAt]);
+    if (user?.subscriptionPlan !== "trial") return false;
+    if (!user?.subscriptionEnd) return false;
+    return new Date(user.subscriptionEnd) > new Date();
+  }, [user?.subscriptionPlan, user?.subscriptionEnd]);
 
   /* ===========================
      🧠 בדיקה לאחר טעינה
@@ -50,8 +48,8 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
       const path = location.pathname;
       const isDashboardArea = /^\/business\/[A-Za-z0-9]+\/dashboard/.test(path);
 
-      // ✅ מציגים מודאל רק אם המשתמש נכנס לדשבורד עסקי
-      if (isBusiness && !isTrialActive && isDashboardArea) {
+      // ✅ מציגים מודאל רק אם מדובר בעסק, ניסיון נגמר, והנתיב הוא דשבורד
+      if (isBusiness && user?.subscriptionPlan === "trial" && !isTrialActive && isDashboardArea) {
         console.log("🎯 ניסיון נגמר – מציג מודאל לפני טעינת הדשבורד");
         setShowTrialModal(true);
       } else {
@@ -95,7 +93,7 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }
 
   /* ===========================
-     ⚠️ ניסיון חינם הסתיים – הצגת מודאל
+     ⚠️ ניסיון חינם הסתיים – הצגת מודאל לפני הדשבורד
   =========================== */
   if (showTrialModal) {
     console.log("💜 TrialExpiredModal מוצג לפני טעינת הדשבורד!");
@@ -103,10 +101,16 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }
 
   /* ===========================
-     💳 מנוי שפג (לא ניסיון)
+     💳 מנוי בתשלום שפג תוקף
+     (כלומר זה לא ניסיון אלא תוכנית אמיתית)
   =========================== */
-  if (isBusiness && !isSubscriptionValid && !isTrialActive && !showTrialModal) {
-    console.log("🚀 מנוי לא פעיל – הפניה לעמוד pricing");
+  if (
+    isBusiness &&
+    !isSubscriptionValid &&
+    user?.subscriptionPlan !== "trial" &&
+    !showTrialModal
+  ) {
+    console.log("🚀 מנוי בתשלום לא פעיל – הפניה לעמוד pricing");
     return <Navigate to="/pricing" replace />;
   }
 
