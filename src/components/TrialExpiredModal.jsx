@@ -20,7 +20,7 @@ export default function TrialExpiredModal() {
 
         <button
           className="upgrade-btn"
-          onClick={() => navigate("/pricing")}
+          onClick={() => navigate("/plans")}
         >
           Upgrade Now
         </button>
