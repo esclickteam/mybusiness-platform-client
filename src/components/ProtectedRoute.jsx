@@ -1,20 +1,13 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Unauthorized from "./Unauthorized";
+import TrialExpiredModal from "./TrialExpiredModal"; // נוסיף רכיב חדש
 
-/**
- * A generic guard for protected routes.
- *
- * @param {React.ReactNode} children   JSX children to render when access is granted.
- * @param {string[]}        roles      Allowed roles (case-insensitive). Empty → any logged-in user.
- * @param {string|null}     requiredPackage  Restrict access to a specific subscription plan (e.g., "daily").
- */
 export default function ProtectedRoute({ children, roles = [], requiredPackage = null }) {
   const { user, loading, initialized } = useAuth();
   const location = useLocation();
-
-  console.log("🔍 ProtectedRoute user object:", user);
+  const [showTrialModal, setShowTrialModal] = useState(false);
 
   const isBusiness = useMemo(
     () => (user?.role || "").toLowerCase() === "business",
@@ -26,46 +19,48 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     [user?.role]
   );
 
-  // Calculate business subscription validity — supports trial logic as well
+  // ✅ בדיקת תוקף מנוי
   const isSubscriptionValid = useMemo(() => {
-    if (!isBusiness) return true; // Only businesses require a subscription
+    if (!isBusiness) return true;
     if (typeof user?.isSubscriptionValid === "boolean") return user.isSubscriptionValid;
-
-    // Client-side calculation by dates if not returned by the server
     if (user?.subscriptionStart && user?.subscriptionEnd) {
       const now = new Date();
-      const end = new Date(user.subscriptionEnd);
-      return end > now;
+      return new Date(user.subscriptionEnd) > now;
     }
     return false;
   }, [isBusiness, user?.isSubscriptionValid, user?.subscriptionStart, user?.subscriptionEnd]);
 
-  console.log("📊 isBusiness:", isBusiness);
-  console.log("📊 isSubscriptionValid (computed):", isSubscriptionValid);
+  // ✅ בדיקת ניסיון פעיל (14 ימים)
+  const isTrialActive = useMemo(() => {
+    if (!user?.createdAt) return false;
+    const trialDays = 14;
+    const created = new Date(user.createdAt);
+    const expires = new Date(created);
+    expires.setDate(created.getDate() + trialDays);
+    return new Date() < expires;
+  }, [user?.createdAt]);
 
-  const normalizedRoles = useMemo(
-    () => roles.map((r) => r.toLowerCase()),
-    [roles]
-  );
+  useEffect(() => {
+    // אם עברו 14 יום והמשתמש בעסק
+    if (isBusiness && !isTrialActive && location.pathname.startsWith("/business")) {
+      setShowTrialModal(true);
+    }
+  }, [isBusiness, isTrialActive, location.pathname]);
 
-  // Loading
+  // מצב טעינה
   if (loading || !initialized) {
     return (
-      <div style={{ textAlign: "center", padding: "2rem" }} role="status" aria-live="polite">
-        🔄 Loading data...
-      </div>
+      <div style={{ textAlign: "center", padding: "2rem" }}>🔄 Loading data...</div>
     );
   }
 
-  // Not logged in
+  // לא מחובר
   if (!user) {
-    const staffRoles = ["worker", "manager", "מנהל", "admin"];
-    const needsStaffLogin = normalizedRoles.some((r) => staffRoles.includes(r));
-    const loginPath = needsStaffLogin ? "/staff-login" : "/login";
-    return <Navigate to={loginPath} replace state={{ from: location }} />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  // Role authorization
+  // בדיקת הרשאות
+  const normalizedRoles = roles.map((r) => r.toLowerCase());
   if (
     normalizedRoles.length &&
     !normalizedRoles.includes((user.role || "").toLowerCase()) &&
@@ -74,24 +69,22 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return <Unauthorized />;
   }
 
-  // Business subscription check — redirect to packages if not valid and not in active trial
-  const isTrialActive =
-    user?.subscriptionPlan === "trial" &&
-    user?.subscriptionEnd &&
-    new Date(user.subscriptionEnd) > new Date();
+  // ✅ אם הניסיון נגמר – הצג מודאל וחסום גישה לדשבורד
+  if (showTrialModal) {
+    return <TrialExpiredModal />;
+  }
 
+  // ✅ אם אין מנוי פעיל אחרי ניסיון
   if (isBusiness && !isSubscriptionValid && !isTrialActive) {
-    const reason =
-      user?.subscriptionPlan === "trial" ? "trial_expired" : "plan_expired";
-    return <Navigate to={`/packages?reason=${reason}`} replace />;
+    return <Navigate to="/pricing" replace />;
   }
 
-  // Specific package requirement
+  // דרישת חבילה ספציפית
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
-    return <Navigate to="/packages" replace />;
+    return <Navigate to="/pricing" replace />;
   }
 
-  // Business without businessId
+  // עסק ללא businessId
   if (isBusiness && !user.businessId) {
     return <Navigate to="/create-business" replace />;
   }
