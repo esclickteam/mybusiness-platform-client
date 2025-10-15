@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./TrialExpiredModal.css";
 
 /**
@@ -8,6 +9,21 @@ import "./TrialExpiredModal.css";
  */
 export default function TrialExpiredModal() {
   const navigate = useNavigate();
+  const { logout } = useAuth(); // 👈 נשתמש בזה כדי לוודא יציאה מהדשבורד
+
+  /* ===========================
+     🔙 חזרה לדף הבית
+     נבצע ניתוק כדי למנוע מהProtectedRoute
+     להחזיר שוב למודאל לאחר הניווט
+  =========================== */
+  const handleBackHome = async () => {
+    try {
+      await logout(); // ניתוק המשתמש
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+    navigate("/", { replace: true }); // ניווט לדף הבית
+  };
 
   return (
     <div className="trial-overlay">
@@ -42,7 +58,7 @@ export default function TrialExpiredModal() {
 
           <button
             className="back-btn"
-            onClick={() => navigate("/home")}
+            onClick={handleBackHome}
           >
             ← Back to Home
           </button>
