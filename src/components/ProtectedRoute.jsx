@@ -10,9 +10,15 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   const [showTrialModal, setShowTrialModal] = useState(false);
   const [checkedTrial, setCheckedTrial] = useState(false);
 
+  /* ===========================
+     🟣 זיהוי סוג המשתמש
+  =========================== */
   const isBusiness = (user?.role || "").toLowerCase() === "business";
   const isAffiliate = (user?.role || "").toLowerCase() === "affiliate";
 
+  /* ===========================
+     💳 תוקף מנוי
+  =========================== */
   const isSubscriptionValid = useMemo(() => {
     if (!isBusiness) return true;
     if (typeof user?.isSubscriptionValid === "boolean") return user.isSubscriptionValid;
@@ -22,6 +28,9 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return false;
   }, [isBusiness, user?.isSubscriptionValid, user?.subscriptionStart, user?.subscriptionEnd]);
 
+  /* ===========================
+     🕓 בדיקת ניסיון חינם (14 יום)
+  =========================== */
   const isTrialActive = useMemo(() => {
     if (!user?.createdAt) return false;
     const trialDays = 14;
@@ -36,25 +45,46 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   =========================== */
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (isBusiness && !isTrialActive && location.pathname.includes("business")) {
-        console.log("🎯 ניסיון חינם נגמר – מציג מודאל");
+      const path = location.pathname;
+
+      // ✅ נציג מודאל רק אם:
+      // 1️⃣ המשתמש עסק
+      // 2️⃣ הניסיון נגמר
+      // 3️⃣ הנתיב תואם בדיוק למבנה /business/:id/dashboard
+      const isDashboardArea = /^\/business\/[A-Za-z0-9]+\/dashboard/.test(path);
+
+      if (isBusiness && !isTrialActive && isDashboardArea) {
+        console.log("🎯 ניסיון חינם נגמר – מציג מודאל רק בדשבורד");
         setShowTrialModal(true);
       }
+
       setCheckedTrial(true);
     }, 150); // עיכוב קל למניעת התנגשויות עם redirect
+
     return () => clearTimeout(timeout);
   }, [isBusiness, isTrialActive, location.pathname]);
 
+  /* ===========================
+     ⏳ טעינה
+  =========================== */
   if (loading || !initialized || !checkedTrial) {
     return (
-      <div style={{ textAlign: "center", padding: "2rem" }}>🔄 Loading data...</div>
+      <div style={{ textAlign: "center", padding: "2rem" }}>
+        🔄 Loading data...
+      </div>
     );
   }
 
+  /* ===========================
+     🚫 לא מחובר
+  =========================== */
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
+  /* ===========================
+     🔐 הרשאות לפי תפקיד
+  =========================== */
   const normalizedRoles = roles.map((r) => r.toLowerCase());
   if (
     normalizedRoles.length &&
@@ -64,31 +94,44 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return <Unauthorized />;
   }
 
-  /* ✅ סיום ניסיון – הצגת מודאל */
+  /* ===========================
+     ⚠️ סיום ניסיון – הצגת מודאל
+  =========================== */
   if (showTrialModal) {
     console.log("💜 TrialExpiredModal מוצג!");
     return <TrialExpiredModal />;
   }
 
-  /* ✅ מנוי שפג (לא ניסיון) */
+  /* ===========================
+     💳 מנוי שפג (לא ניסיון)
+  =========================== */
   if (
     isBusiness &&
     !isSubscriptionValid &&
     !isTrialActive &&
     !showTrialModal &&
-    !location.pathname.includes("business")
+    !location.pathname.includes("/business/")
   ) {
     console.log("🚀 מנוי לא פעיל – הפניה לעמוד pricing");
     return <Navigate to="/pricing" replace />;
   }
 
+  /* ===========================
+     📦 דרישת חבילה ספציפית
+  =========================== */
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
     return <Navigate to="/pricing" replace />;
   }
 
+  /* ===========================
+     🏗️ עסק ללא businessId
+  =========================== */
   if (isBusiness && !user.businessId) {
     return <Navigate to="/create-business" replace />;
   }
 
+  /* ===========================
+     ✅ גישה מאושרת
+  =========================== */
   return <>{children}</>;
 }
