@@ -80,9 +80,13 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }
 
   /* 📦 דרישת חבילה ספציפית */
-  if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
-    return <Navigate to="/pricing" replace />;
-  }
+  if (
+  requiredPackage &&
+  user.subscriptionPlan !== requiredPackage &&
+  user.subscriptionPlan !== "trial"
+) {
+  return <Navigate to="/plans" replace />;
+}
 
   /* 🏗️ עסק ללא businessId */
   if (isBusiness && !user.businessId) {
