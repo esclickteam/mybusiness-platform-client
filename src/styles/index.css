@@ -25,7 +25,7 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: "Poppins", "Arial", sans-serif;
-  direction: rtl;
+  direction: ltr;
   text-align: left;
 
   /* ✅ צבע בסיס מיידי למניעת פלאש לבן */
