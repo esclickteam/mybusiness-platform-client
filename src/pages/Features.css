@@ -1,10 +1,23 @@
+.features-page {
+  background: linear-gradient(180deg, #f5f6ff 0%, #ede9ff 100%);
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 40px;
+}
+
+/* Container */
 .features-container {
   max-width: 950px;
-  margin: 0 auto;
+  margin: 0 auto 80px;
   padding: 60px 25px;
   background: #ffffff;
   color: #0f172a;
   line-height: 1.8;
+  border-radius: 18px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
 }
 
 /* Hero */
@@ -24,7 +37,6 @@
   background-clip: text;
   color: transparent;
   margin-bottom: 1rem;
-  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .features-subtitle {
@@ -101,38 +113,4 @@
 .cta-button:hover,
 .cta-button-outline:hover {
   opacity: 0.9;
-}
-
-/* Footer */
-.footer {
-  border-top: 1px solid #e5e7eb;
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  text-align: center;
-}
-
-.footer-links {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 0.5rem;
-}
-
-.footer-links li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-.footer-links a {
-  color: #6a11cb;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.footer-links a:hover {
-  text-decoration: underline;
-}
-
-copyright {
-  font-size: 0.9rem;
-  color: #64748b;
 }
