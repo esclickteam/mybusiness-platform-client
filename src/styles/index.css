@@ -38,8 +38,7 @@ body {
   transition: none !important;
 
   /* ✅ מניעת סקרול כפול */
-  overflow: hidden; /* היה כאן overflow-y: scroll — גרם לסקרול כפול */
-  overflow-x: hidden;
+  overflow: hidden; /* אין גלילה כלל ב-body */
 
   position: relative;
   box-sizing: border-box;
@@ -152,6 +151,28 @@ html::before {
   position: fixed;
   inset: 0;
   background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
-  z-index: -1; /* תמיד מאחורי כל התוכן */
+  z-index: -1;
   pointer-events: none;
+}
+
+/* ================================
+   🌈 פס גלילה מותאם (בתוך app-scroll-area בלבד)
+   ================================ */
+.app-scroll-area::-webkit-scrollbar {
+  width: 10px;
+}
+
+.app-scroll-area::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #a855f7, #6366f1);
+  border-radius: 10px;
+}
+
+.app-scroll-area::-webkit-scrollbar-track {
+  background: #e6e6ef;
+  border-radius: 10px;
+}
+
+.app-scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: #8b5cf6 #e6e6ef; /* Firefox */
 }
