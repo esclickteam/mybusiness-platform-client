@@ -51,15 +51,18 @@ export default function Plans() {
 
     const res = await fetch("/api/paypal/create-order", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include", // ✅ נדרש כדי לשלוח session
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.accessToken}`, // ✅ חובה כדי לזהות משתמש
+      },
+      credentials: "include",
       body: JSON.stringify({
         amount: total,
         planName:
           selectedPeriod === "monthly"
             ? "BizUply Monthly Plan"
             : "BizUply Yearly Plan",
-        userId: user?._id, // ✅ מזהה המשתמש
+        userId: user?._id,
       }),
     });
 
@@ -74,8 +77,12 @@ export default function Plans() {
   const captureOrder = async (orderId) => {
     const res = await fetch(`/api/paypal/capture/${orderId}`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${user?.accessToken}`, // ✅ נדרש גם כאן
+      },
       credentials: "include",
     });
+
     if (!res.ok) throw new Error("Failed to capture order");
     const data = await res.json();
     return data;
