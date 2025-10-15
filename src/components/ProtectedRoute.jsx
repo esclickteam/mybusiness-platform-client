@@ -2,13 +2,20 @@ import React, { useMemo, useState, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Unauthorized from "./Unauthorized";
-import TrialExpiredModal from "./TrialExpiredModal"; // נוסיף רכיב חדש
+import TrialExpiredModal from "./TrialExpiredModal"; // ✅ מודאל סיום ניסיון
 
+/**
+ * 💜 ProtectedRoute – Access guard for BizUply routes
+ * Includes 14-day trial logic for business users only.
+ */
 export default function ProtectedRoute({ children, roles = [], requiredPackage = null }) {
   const { user, loading, initialized } = useAuth();
   const location = useLocation();
   const [showTrialModal, setShowTrialModal] = useState(false);
 
+  /* ===========================
+     🟣 זיהוי סוג המשתמש
+  =========================== */
   const isBusiness = useMemo(
     () => (user?.role || "").toLowerCase() === "business",
     [user?.role]
@@ -19,18 +26,21 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     [user?.role]
   );
 
-  // ✅ בדיקת תוקף מנוי
+  /* ===========================
+     💼 בדיקת תוקף מנוי קיים
+  =========================== */
   const isSubscriptionValid = useMemo(() => {
-    if (!isBusiness) return true;
+    if (!isBusiness) return true; // רק עסקים נדרשים למנוי
     if (typeof user?.isSubscriptionValid === "boolean") return user.isSubscriptionValid;
     if (user?.subscriptionStart && user?.subscriptionEnd) {
-      const now = new Date();
-      return new Date(user.subscriptionEnd) > now;
+      return new Date(user.subscriptionEnd) > new Date();
     }
     return false;
   }, [isBusiness, user?.isSubscriptionValid, user?.subscriptionStart, user?.subscriptionEnd]);
 
-  // ✅ בדיקת ניסיון פעיל (14 ימים)
+  /* ===========================
+     🕓 בדיקת ניסיון חינם (14 ימים)
+  =========================== */
   const isTrialActive = useMemo(() => {
     if (!user?.createdAt) return false;
     const trialDays = 14;
@@ -41,25 +51,31 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }, [user?.createdAt]);
 
   useEffect(() => {
-    // אם עברו 14 יום והמשתמש בעסק
+    // אם המשתמש עסק, הניסיון נגמר, והוא נכנס לדשבורד
     if (isBusiness && !isTrialActive && location.pathname.startsWith("/business")) {
       setShowTrialModal(true);
     }
   }, [isBusiness, isTrialActive, location.pathname]);
 
-  // מצב טעינה
+  /* ===========================
+     ⏳ מצב טעינה
+  =========================== */
   if (loading || !initialized) {
     return (
       <div style={{ textAlign: "center", padding: "2rem" }}>🔄 Loading data...</div>
     );
   }
 
-  // לא מחובר
+  /* ===========================
+     🚫 לא מחובר
+  =========================== */
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  // בדיקת הרשאות
+  /* ===========================
+     🔐 הרשאות לפי תפקיד
+  =========================== */
   const normalizedRoles = roles.map((r) => r.toLowerCase());
   if (
     normalizedRoles.length &&
@@ -69,25 +85,37 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return <Unauthorized />;
   }
 
-  // ✅ אם הניסיון נגמר – הצג מודאל וחסום גישה לדשבורד
+  /* ===========================
+     ⚠️ סיום ניסיון – הצגת מודאל
+  =========================== */
   if (showTrialModal) {
     return <TrialExpiredModal />;
   }
 
-  // ✅ אם אין מנוי פעיל אחרי ניסיון
+  /* ===========================
+     💳 אם אין מנוי פעיל (לא ניסיון)
+  =========================== */
   if (isBusiness && !isSubscriptionValid && !isTrialActive) {
+    // אפשר להשאיר כדי לתפוס מקרים עתידיים (לא רק ניסיון)
     return <Navigate to="/pricing" replace />;
   }
 
-  // דרישת חבילה ספציפית
+  /* ===========================
+     📦 דרישת חבילה ספציפית
+  =========================== */
   if (requiredPackage && user.subscriptionPlan !== requiredPackage) {
     return <Navigate to="/pricing" replace />;
   }
 
-  // עסק ללא businessId
+  /* ===========================
+     🏗️ עסק ללא businessId
+  =========================== */
   if (isBusiness && !user.businessId) {
     return <Navigate to="/create-business" replace />;
   }
 
+  /* ===========================
+     ✅ גישה מאושרת
+  =========================== */
   return <>{children}</>;
 }
