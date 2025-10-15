@@ -11,7 +11,7 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   const [checkedTrial, setCheckedTrial] = useState(false);
 
   /* ===========================
-     🟣 זיהוי סוג המשתמש
+     🟣 סוג משתמש
   =========================== */
   const isBusiness = (user?.role || "").toLowerCase() === "business";
   const isAffiliate = (user?.role || "").toLowerCase() === "affiliate";
@@ -29,7 +29,7 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }, [isBusiness, user?.isSubscriptionValid, user?.subscriptionStart, user?.subscriptionEnd]);
 
   /* ===========================
-     🕓 בדיקת ניסיון חינם (14 יום)
+     🕓 ניסיון חינם (14 יום)
   =========================== */
   const isTrialActive = useMemo(() => {
     if (!user?.createdAt) return false;
@@ -50,17 +50,18 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
       // ✅ נציג מודאל רק אם:
       // 1️⃣ המשתמש עסק
       // 2️⃣ הניסיון נגמר
-      // 3️⃣ הנתיב תואם בדיוק למבנה /business/:id/dashboard
+      // 3️⃣ הנתיב הוא הדשבורד (ולא עמודים ציבוריים)
+      // 4️⃣ המשתמש כבר התחבר (לא כניסה ראשונה לאתר)
       const isDashboardArea = /^\/business\/[A-Za-z0-9]+\/dashboard/.test(path);
+      const notHomepage = path !== "/" && !["/plans", "/pricing", "/about", "/contact"].includes(path);
 
-      if (isBusiness && !isTrialActive && isDashboardArea) {
-        console.log("🎯 ניסיון חינם נגמר – מציג מודאל רק בדשבורד");
+      if (isBusiness && !isTrialActive && isDashboardArea && notHomepage) {
+        console.log("🎯 ניסיון נגמר – מציג מודאל רק לאחר התחברות לדשבורד");
         setShowTrialModal(true);
       }
 
       setCheckedTrial(true);
-    }, 150); // עיכוב קל למניעת התנגשויות עם redirect
-
+    }, 300);
     return () => clearTimeout(timeout);
   }, [isBusiness, isTrialActive, location.pathname]);
 
