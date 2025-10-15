@@ -20,7 +20,8 @@
 /* ===========================
    🧩 עיצוב כללי
    =========================== */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -29,22 +30,24 @@ html, body {
   text-align: left;
 
   /* ✅ צבע בסיס מיידי למניעת פלאש לבן */
-  background-color: #f6f7fb; /* קבוע מראש כדי שייטען מיד */
+  background-color: #f6f7fb; /* נטען מיד */
   background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
   color: var(--text-color);
 
-  /* ⚡ מניעת הבהוב מעבר נושא */
+  /* ⚡ מניעת הבהוב במעבר נושא */
   transition: none !important;
 
+  /* ✅ מניעת סקרול כפול */
+  overflow: hidden; /* היה כאן overflow-y: scroll — גרם לסקרול כפול */
   overflow-x: hidden;
-  overflow-y: scroll;
+
   position: relative;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ✅ ברגע שנטען נושא (theme) — אפשר להחזיר מעבר רך */
+/* ✅ כשנטען נושא (theme) — החזרת מעבר רך */
 body.theme-ready {
   transition: background-color 0.3s ease, background 0.4s ease, color 0.3s ease;
 }
@@ -95,8 +98,12 @@ button {
    אנימציית Spinner
    =========================== */
 @keyframes spin {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .spinner {
@@ -114,19 +121,27 @@ button {
    טיפוגרפיה רספונסיבית
    =========================== */
 @media (min-width: 1200px) {
-  body { font-size: 18px; }
+  body {
+    font-size: 18px;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
-  body { font-size: 16px; }
+  body {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 767px) {
-  body { font-size: 14px; }
+  body {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
-  body { font-size: 13px; }
+  body {
+    font-size: 13px;
+  }
 }
 
 /* ================================
