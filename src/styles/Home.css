@@ -368,3 +368,84 @@ body {
   .esd-btn { padding: 12px 22px; font-size: 16px; }
   .esd-service { padding: 20px 16px; }
 }
+/* ===============================
+   ✨ Run Your Business Section
+   =============================== */
+.esd-value__grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(2, 1fr); /* ✅ שתי כרטיסיות בשורה */
+}
+
+.esd-value__item {
+  background: var(--card);
+  border-radius: var(--radii-22);
+  box-shadow: var(--shadow-md);
+  color: #fff;
+  padding: 40px 28px;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+.esd-value__item:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+.esd-value__item h3 {
+  color: var(--gold);
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+.esd-value__item p {
+  color: #e0e4ff;
+  font-size: 17px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ===============================
+   ✨ Our Services Section
+   =============================== */
+.esd-services__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* ✅ שתי כרטיסיות בשורה */
+  gap: 28px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.esd-service {
+  background: var(--card);
+  border-radius: var(--radii-20);
+  padding: 40px 28px;
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  text-align: left;
+}
+.esd-service:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+.esd-service h4 {
+  color: var(--gold);
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+.esd-service p {
+  color: #e0e4ff;
+  font-size: 17px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 📱 Responsive – במובייל עמודה אחת */
+@media (max-width: 768px) {
+  .esd-value__grid,
+  .esd-services__grid {
+    grid-template-columns: 1fr;
+  }
+}

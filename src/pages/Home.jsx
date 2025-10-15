@@ -1,5 +1,5 @@
 import React from "react";
-import { Helmet } from "react-helmet-async"; // ✅ עודכן לגרסה הנכונה
+import { Helmet } from "react-helmet-async";
 import "../styles/Home.css";
 import { Link } from "react-router-dom";
 import {
@@ -15,7 +15,6 @@ export default function Home() {
   return (
     <main className="esd-page">
       <Helmet>
-        {/* ✅ Basic SEO */}
         <title>Bizuply — Everything Your Business Needs. In One Place.</title>
         <meta
           name="description"
@@ -28,8 +27,11 @@ export default function Home() {
         <link rel="canonical" href="https://bizuply.com/" />
         <meta name="robots" content="index, follow" />
 
-        {/* ✅ Open Graph */}
-        <meta property="og:title" content="Bizuply — Everything Your Business Needs. In One Place." />
+        {/* Open Graph */}
+        <meta
+          property="og:title"
+          content="Bizuply — Everything Your Business Needs. In One Place."
+        />
         <meta
           property="og:description"
           content="The all-in-one business platform for managing clients, bookings, AI automations and growth — all in one place."
@@ -39,9 +41,12 @@ export default function Home() {
         <meta property="og:site_name" content="Bizuply" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
 
-        {/* ✅ Twitter Cards */}
+        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Bizuply — Everything Your Business Needs. In One Place." />
+        <meta
+          name="twitter:title"
+          content="Bizuply — Everything Your Business Needs. In One Place."
+        />
         <meta
           name="twitter:description"
           content="Grow smarter with Bizuply: manage clients, automate tasks, and collaborate — all in one platform."
@@ -140,8 +145,10 @@ export default function Home() {
         <h2 id="blocks-title" className="esd-section-title">
           Run your business without the busywork
         </h2>
-        <div className="esd-blocks__grid">
-          <article className="esd-block">
+
+        {/* ✅ עודכן לתצוגת שתי כרטיסיות בשורה */}
+        <div className="esd-value__grid">
+          <article className="esd-value__item">
             <h3>Bookings that just work</h3>
             <p>
               Smart scheduling, reminders, cancellations and rescheduling — all
@@ -151,7 +158,8 @@ export default function Home() {
               Learn more
             </Link>
           </article>
-          <article className="esd-block">
+
+          <article className="esd-value__item">
             <h3>Conversations in one place</h3>
             <p>
               Central inbox for all client messages, quick replies and
@@ -161,7 +169,8 @@ export default function Home() {
               Learn more
             </Link>
           </article>
-          <article className="esd-block">
+
+          <article className="esd-value__item">
             <h3>Lightweight CRM</h3>
             <p>
               Client cards, history, tags and tasks. Import/Export and
@@ -171,7 +180,8 @@ export default function Home() {
               Learn more
             </Link>
           </article>
-          <article className="esd-block">
+
+          <article className="esd-value__item">
             <h3>AI that actually helps</h3>
             <p>
               Actionable suggestions, follow-ups, and automations that save
@@ -194,6 +204,7 @@ export default function Home() {
           Our services
         </h2>
 
+        {/* ✅ גם כאן שתי כרטיסיות בשורה */}
         <div className="esd-services__grid">
           <article className="esd-service">
             <span className="esd-service__badge">Core</span>
@@ -206,6 +217,7 @@ export default function Home() {
               Details
             </Link>
           </article>
+
           <article className="esd-service">
             <span className="esd-service__badge">Core</span>
             <h4>Messages</h4>
@@ -217,6 +229,7 @@ export default function Home() {
               Details
             </Link>
           </article>
+
           <article className="esd-service">
             <span className="esd-service__badge">Plus</span>
             <h4>CRM</h4>
@@ -228,6 +241,7 @@ export default function Home() {
               Details
             </Link>
           </article>
+
           <article className="esd-service">
             <span className="esd-service__badge">Pro</span>
             <h4>Insights & AI</h4>
@@ -250,7 +264,7 @@ export default function Home() {
 
         <ul className="esd-why__grid">
           <li className="esd-why__item">
-            <div className="esd-why__icon" aria-hidden="true">
+            <div className="esd-why__icon">
               <FaBolt />
             </div>
             <div>
@@ -258,9 +272,8 @@ export default function Home() {
               <p>Be up and running in minutes — not weeks.</p>
             </div>
           </li>
-
           <li className="esd-why__item">
-            <div className="esd-why__icon" aria-hidden="true">
+            <div className="esd-why__icon">
               <FaMobileAlt />
             </div>
             <div>
@@ -268,9 +281,8 @@ export default function Home() {
               <p>Looks great on every device, everywhere.</p>
             </div>
           </li>
-
           <li className="esd-why__item">
-            <div className="esd-why__icon" aria-hidden="true">
+            <div className="esd-why__icon">
               <FaRobot />
             </div>
             <div>
@@ -278,9 +290,8 @@ export default function Home() {
               <p>Real insights and suggestions that move the needle.</p>
             </div>
           </li>
-
           <li className="esd-why__item">
-            <div className="esd-why__icon" aria-hidden="true">
+            <div className="esd-why__icon">
               <FaLock />
             </div>
             <div>
@@ -288,9 +299,8 @@ export default function Home() {
               <p>Encrypted data and standards you can trust.</p>
             </div>
           </li>
-
           <li className="esd-why__item">
-            <div className="esd-why__icon" aria-hidden="true">
+            <div className="esd-why__icon">
               <FaUserAlt />
             </div>
             <div>
@@ -298,9 +308,8 @@ export default function Home() {
               <p>Help center, guides and real chat support.</p>
             </div>
           </li>
-
           <li className="esd-why__item">
-            <div className="esd-why__icon" aria-hidden="true">
+            <div className="esd-why__icon">
               <FaDollarSign />
             </div>
             <div>
