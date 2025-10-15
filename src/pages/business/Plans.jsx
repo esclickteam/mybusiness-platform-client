@@ -11,9 +11,9 @@ export default function Plans() {
   const { user } = useAuth();
 
   const plans = {
-    monthly: { price: 150, total: 150, save: 0 },
-    yearly: { price: 1600, total: 1600, save: 200 },
-  };
+  monthly: { price: 1, total: 1, save: 0 }, // לבדיקה ב-$1 בלבד
+  yearly: { price: 1, total: 1, save: 0 },
+};
 
   const { price, total, save } = plans[selectedPeriod];
 
