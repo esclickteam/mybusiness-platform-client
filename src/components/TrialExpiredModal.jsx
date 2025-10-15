@@ -42,7 +42,7 @@ export default function TrialExpiredModal() {
 
           <button
             className="back-btn"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/home")}
           >
             ← Back to Home
           </button>
