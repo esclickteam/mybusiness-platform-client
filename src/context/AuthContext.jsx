@@ -117,17 +117,23 @@ export function AuthProvider({ children }) {
       const { accessToken, user: loggedInUser, redirectUrl } = data;
       if (!accessToken) throw new Error("No access token received");
 
+      // ✅ שמירת טוקן והגדרתו מראש
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
 
+      // ✅ שמירת המשתמש כבר עכשיו
       const normalizedUser = normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
+      // ✅ רקע בסיסי
       document.body.style.background = "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
+
+      // ✅ רענון לא חוסם
       refreshUser(true).catch(() => {});
 
+      // ✅ ניווט לאחר התחברות
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
@@ -136,15 +142,12 @@ export function AuthProvider({ children }) {
           } else {
             navigate("/dashboard", { replace: true });
           }
-        } else if (redirectUrl) {
-          const isPlans = redirectUrl === "/plans";
-          const shouldSkip = isPlans && normalizedUser.hasAccess;
-          if (!shouldSkip) {
-            if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
-              navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
-            } else {
-              navigate(redirectUrl, { replace: true });
-            }
+        } else if (redirectUrl && redirectUrl !== "/plans") {
+          // ❌ אין יותר הפניה אוטומטית ל־/plans
+          if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
+            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+          } else {
+            navigate(redirectUrl, { replace: true });
           }
         }
       }
@@ -219,15 +222,13 @@ export function AuthProvider({ children }) {
         }
 
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
-        if (savedRedirect) {
-          const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && freshUser.hasAccess;
-          if (!shouldSkip) navigate(savedRedirect, { replace: true });
+        if (savedRedirect && savedRedirect !== "/plans") {
+          navigate(savedRedirect, { replace: true });
           sessionStorage.removeItem("postLoginRedirect");
           return;
         }
 
-        // ✅ שינוי קריטי: הפניה לדשבורד רק אם יש מנוי פעיל או ניסיון פעיל
+        // ✅ ניווט לדשבורד רק אם המנוי או הניסיון פעיל
         const hasActiveTrial =
           freshUser.subscriptionPlan === "trial" &&
           freshUser.subscriptionEnd &&
