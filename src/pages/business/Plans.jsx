@@ -208,7 +208,7 @@ export default function Plans() {
               className="plan-btn purchase"
               onClick={handlePayPalCheckout}
             >
-              Subscribe with PayPal
+              Subscribe Now
             </button>
           ) : (
             <button
