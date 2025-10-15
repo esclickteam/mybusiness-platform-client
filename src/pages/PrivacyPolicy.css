@@ -1,0 +1,161 @@
+/* ============================================
+   💼 BizUply — Legal Pages (Terms / Privacy)
+   ============================================ */
+
+.terms-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 24px;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-family: "Inter", "Poppins", sans-serif;
+  line-height: 1.7;
+}
+
+.terms-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 12px;
+  color: #4b0082; /* Deep violet for brand consistency */
+}
+
+.terms-date {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #64748b;
+  margin-bottom: 50px;
+}
+
+.terms-section {
+  margin-bottom: 60px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 40px;
+}
+
+.terms-section:last-child {
+  border-bottom: none;
+}
+
+.terms-section h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #3b0764;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.terms-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #5b21b6;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.terms-section p {
+  font-size: 1rem;
+  margin-bottom: 14px;
+  color: #1e293b;
+}
+
+.terms-section ul {
+  padding-left: 1.5rem;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.terms-section li {
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: #334155;
+  list-style-type: disc;
+}
+
+/* ============================
+   🟣 Links and Emphasis
+   ============================ */
+.terms-section strong {
+  color: #4b0082;
+  font-weight: 600;
+}
+
+.terms-section a {
+  color: #6a11cb;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.terms-section a:hover {
+  color: #2575fc;
+  text-decoration: underline;
+}
+
+/* ============================
+   📱 Responsive Design
+   ============================ */
+@media (max-width: 768px) {
+  .terms-container {
+    padding: 60px 16px;
+  }
+
+  .terms-title {
+    font-size: 2rem;
+  }
+
+  .terms-section h2 {
+    font-size: 1.4rem;
+  }
+
+  .terms-section h3 {
+    font-size: 1.15rem;
+  }
+
+  .terms-section p,
+  .terms-section li {
+    font-size: 0.96rem;
+  }
+}
+
+/* ============================
+   🧾 Highlight Blocks
+   ============================ */
+.terms-highlight {
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+  border-left: 4px solid #9333ea;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  color: #3b0764;
+  font-weight: 500;
+}
+
+.terms-warning {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border-left: 4px solid #dc2626;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  color: #7f1d1d;
+  font-weight: 500;
+}
+
+/* ============================
+   ✨ Subtle Animations
+   ============================ */
+.terms-section h2,
+.terms-section h3 {
+  position: relative;
+  animation: fadeInSlide 0.4s ease both;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
