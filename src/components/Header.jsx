@@ -8,8 +8,8 @@ import "../styles/Header.css";
 const navLinks = [
   { to: "/features", label: "Features" },
   { to: "/solutions", label: "Solutions" },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/resources", label: "Resources" },
+  { to: "/how-it-works", label: "How it Works" },
+  { to: "/plans", label: "Plans" },
   { to: "/about", label: "About" },
 ];
 
