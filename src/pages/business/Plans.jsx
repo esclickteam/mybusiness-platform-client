@@ -58,6 +58,10 @@ export default function Plans() {
   <li><span className="checkmark">✔</span> Ratings & Reviews Management</li>
   <li><span className="checkmark">✔</span> Business Collaboration Network</li>
   <li><span className="checkmark">✔</span> AI Business Advisor & Smart Insights</li>
+  <li><span className="checkmark">✔</span> Create and Track Client Tasks or Follow-ups</li>
+  <li><span className="checkmark">✔</span> Log and Document Client Calls or Meetings</li>
+  <li><span className="checkmark">✔</span> Automated Notifications and Smart Alerts</li>
+  <li><span className="checkmark">✔</span> Predictive Analytics & Personalized Recommendations</li>
 </ul>
 
           <button className="plan-btn primary">Try Free for 14 Days</button>
