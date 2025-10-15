@@ -1,8 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/Plans.css";
 
 export default function Plans() {
   const [selectedPeriod, setSelectedPeriod] = useState("monthly");
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const plans = {
     monthly: { price: 150, total: 150, save: 0 },
@@ -11,14 +15,29 @@ export default function Plans() {
 
   const { price, total, save } = plans[selectedPeriod];
 
+  // 🕓 בדיקה אם הניסיון פג
+  const now = new Date();
+  const trialExpired =
+    user?.subscriptionPlan === "trial" &&
+    user?.subscriptionEnd &&
+    new Date(user.subscriptionEnd) < now;
+
   return (
     <div className="plans-page">
       {/* 🌟 Header */}
       <header className="plans-header">
         <h1>Choose Your BizUply Plan</h1>
         <p>
-          All the tools your business needs — in one smart platform.  
-          Start your <strong>14-day free trial</strong> today. No credit card required.
+          All the tools your business needs — in one smart platform.{" "}
+          {!trialExpired ? (
+            <>
+              Start your <strong>14-day free trial</strong> today. No credit card required.
+            </>
+          ) : (
+            <>
+              Your free trial has ended. Choose a plan below to continue enjoying BizUply.
+            </>
+          )}
         </p>
       </header>
 
@@ -52,19 +71,28 @@ export default function Plans() {
           </div>
 
           <ul className="plan-features">
-  <li><span className="checkmark">✔</span> Professional Business Page</li>
-  <li><span className="checkmark">✔</span> Smart CRM for Clients & Appointments</li>
-  <li><span className="checkmark">✔</span> Built-in Messaging System</li>
-  <li><span className="checkmark">✔</span> Ratings & Reviews Management</li>
-  <li><span className="checkmark">✔</span> Business Collaboration Network</li>
-  <li><span className="checkmark">✔</span> AI Business Advisor & Smart Insights</li>
-  <li><span className="checkmark">✔</span> Create and Track Client Tasks or Follow-ups</li>
-  <li><span className="checkmark">✔</span> Log and Document Client Calls or Meetings</li>
-  <li><span className="checkmark">✔</span> Automated Notifications and Smart Alerts</li>
-  <li><span className="checkmark">✔</span> Predictive Analytics & Personalized Recommendations</li>
-</ul>
+            <li><span className="checkmark">✔</span> Professional Business Page</li>
+            <li><span className="checkmark">✔</span> Smart CRM for Clients & Appointments</li>
+            <li><span className="checkmark">✔</span> Built-in Messaging System</li>
+            <li><span className="checkmark">✔</span> Ratings & Reviews Management</li>
+            <li><span className="checkmark">✔</span> Business Collaboration Network</li>
+            <li><span className="checkmark">✔</span> AI Business Advisor & Smart Insights</li>
+            <li><span className="checkmark">✔</span> Create and Track Client Tasks or Follow-ups</li>
+            <li><span className="checkmark">✔</span> Log and Document Client Calls or Meetings</li>
+            <li><span className="checkmark">✔</span> Automated Notifications and Smart Alerts</li>
+            <li><span className="checkmark">✔</span> Predictive Analytics & Personalized Recommendations</li>
+          </ul>
 
-          <button className="plan-btn primary">Try Free for 14 Days</button>
+          {/* 🔘 CTA Button */}
+          {!trialExpired ? (
+            <button className="plan-btn primary" onClick={() => navigate("/checkout")}>
+              Try Free for 14 Days
+            </button>
+          ) : (
+            <button className="plan-btn purchase" onClick={() => navigate("/checkout")}>
+              Subscribe Now
+            </button>
+          )}
 
           {/* 🧾 Summary Box */}
           <div className="summary-box">
