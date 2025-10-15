@@ -51,7 +51,7 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }, [user?.createdAt]);
 
   useEffect(() => {
-    // אם המשתמש עסק, הניסיון נגמר, והוא נכנס לדשבורד
+    // אם המשתמש עסק, הניסיון נגמר, והוא נמצא בדשבורד
     if (isBusiness && !isTrialActive && location.pathname.startsWith("/business")) {
       setShowTrialModal(true);
     }
@@ -87,16 +87,19 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
 
   /* ===========================
      ⚠️ סיום ניסיון – הצגת מודאל
+     (💜 מקבל עדיפות לפני כל הפניה אחרת)
   =========================== */
   if (showTrialModal) {
+    console.log("💜 TrialExpiredModal מוצג!");
     return <TrialExpiredModal />;
   }
 
   /* ===========================
      💳 אם אין מנוי פעיל (לא ניסיון)
+     מגיע רק אם זה לא ניסוי חינם
   =========================== */
-  if (isBusiness && !isSubscriptionValid && !isTrialActive) {
-    // אפשר להשאיר כדי לתפוס מקרים עתידיים (לא רק ניסיון)
+  if (isBusiness && !isSubscriptionValid && isTrialActive === false && !showTrialModal) {
+    console.log("🚀 מנוי לא פעיל – הפניה לעמוד pricing");
     return <Navigate to="/pricing" replace />;
   }
 
