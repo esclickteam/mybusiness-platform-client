@@ -26,19 +26,31 @@ export default function Plans() {
   /* ========================================
      💳 טעינת PayPal SDK
   ======================================== */
-  useEffect(() => {
-    const existingScript = document.querySelector("#paypal-sdk");
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.id = "paypal-sdk";
-      script.src = `https://www.paypal.com/sdk/js?client-id=${
-        import.meta.env.VITE_PAYPAL_CLIENT_ID
-      }&currency=USD`;
-      script.async = true;
-      script.onload = () => console.log("✅ PayPal SDK loaded");
-      document.body.appendChild(script);
-    }
-  }, []);
+  /* ========================================
+   💳 טעינת PayPal SDK (preload once)
+======================================== */
+useEffect(() => {
+  // אם כבר נטען – לא נטען שוב
+  if (window.paypal) return;
+
+  const script = document.createElement("script");
+  script.id = "paypal-sdk";
+  script.src = `https://www.paypal.com/sdk/js?client-id=${
+    import.meta.env.VITE_PAYPAL_CLIENT_ID
+  }&currency=USD`;
+  script.async = true;
+
+  script.onload = () => {
+    console.log("✅ PayPal SDK loaded successfully");
+  };
+
+  script.onerror = () => {
+    console.error("❌ Failed to load PayPal SDK");
+  };
+
+  document.body.appendChild(script);
+}, []);
+
 
   /* ========================================
      ⚡ יצירת הזמנה בשרת
