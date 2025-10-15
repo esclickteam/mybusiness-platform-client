@@ -22,17 +22,20 @@ body {
 .howitworks-title {
   font-size: 3.5rem;
   font-weight: 900;
-  color: #ffd700; /* זהב */
   text-align: center;
   margin-bottom: 40px;
-  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(90deg, #2563eb, #6a11cb);
+  background-clip: text;           /* ✅ גרסה סטנדרטית */
+  -webkit-background-clip: text;   /* ✅ תאימות ל-WebKit (Chrome/Safari) */
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
 }
 
 /* תת־כותרת */
 .howitworks-subtitle {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #f0f0f0;
+  color: #0f0f0f;
   margin-bottom: 60px;
   text-align: center;
   line-height: 1.6;
