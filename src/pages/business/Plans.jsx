@@ -77,7 +77,9 @@ function Plans() {
     <div className="plans-page">
       {/* 💜 Header */}
       <header className="plans-header">
-        <h1>Plans built for every business</h1>
+       <h1>Pick the plan that's right for you</h1>
+
+
         <p>
           Experience BizUply’s full power — one system, one price, unlimited possibilities.
           Start your free 14-day trial today.
@@ -120,16 +122,7 @@ function Plans() {
         ))}
       </section>
 
-      {/* 🧠 Footer Philosophy */}
-      <footer className="plans-footer">
-        <h3>💜 One platform for all businesses</h3>
-        <p>
-          Whether you’re an independent professional or a growing company — BizUply
-          gives you the same advanced tools trusted by top businesses.
-          <br />
-          Full automation. Smart insights. Seamless growth.
-        </p>
-      </footer>
+      
     </div>
   );
 }
