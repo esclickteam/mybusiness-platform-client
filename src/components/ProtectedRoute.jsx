@@ -12,25 +12,19 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   const { user, loading, initialized } = useAuth();
   const location = useLocation();
   const [showTrialModal, setShowTrialModal] = useState(false);
+  const [checkedTrial, setCheckedTrial] = useState(false); // ✅ נוודא שהבדיקה הסתיימה לפני redirect
 
   /* ===========================
      🟣 זיהוי סוג המשתמש
   =========================== */
-  const isBusiness = useMemo(
-    () => (user?.role || "").toLowerCase() === "business",
-    [user?.role]
-  );
-
-  const isAffiliate = useMemo(
-    () => (user?.role || "").toLowerCase() === "affiliate",
-    [user?.role]
-  );
+  const isBusiness = (user?.role || "").toLowerCase() === "business";
+  const isAffiliate = (user?.role || "").toLowerCase() === "affiliate";
 
   /* ===========================
      💼 בדיקת תוקף מנוי קיים
   =========================== */
   const isSubscriptionValid = useMemo(() => {
-    if (!isBusiness) return true; // רק עסקים נדרשים למנוי
+    if (!isBusiness) return true;
     if (typeof user?.isSubscriptionValid === "boolean") return user.isSubscriptionValid;
     if (user?.subscriptionStart && user?.subscriptionEnd) {
       return new Date(user.subscriptionEnd) > new Date();
@@ -50,17 +44,21 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     return new Date() < expires;
   }, [user?.createdAt]);
 
+  /* ===========================
+     🧠 בדיקה לאחר טעינה
+  =========================== */
   useEffect(() => {
-    // אם המשתמש עסק, הניסיון נגמר, והוא נמצא בדשבורד
     if (isBusiness && !isTrialActive && location.pathname.startsWith("/business")) {
+      console.log("🎯 ניסיון חינם נגמר – מציג מודאל");
       setShowTrialModal(true);
     }
+    setCheckedTrial(true); // ✅ רק אחרי שהבדיקה רצה נסמן שהכול מוכן
   }, [isBusiness, isTrialActive, location.pathname]);
 
   /* ===========================
      ⏳ מצב טעינה
   =========================== */
-  if (loading || !initialized) {
+  if (loading || !initialized || !checkedTrial) {
     return (
       <div style={{ textAlign: "center", padding: "2rem" }}>🔄 Loading data...</div>
     );
@@ -95,10 +93,15 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }
 
   /* ===========================
-     💳 אם אין מנוי פעיל (לא ניסיון)
-     מגיע רק אם זה לא ניסוי חינם
+     💳 מנוי שפג (לא ניסיון חינם)
   =========================== */
-  if (isBusiness && !isSubscriptionValid && isTrialActive === false && !showTrialModal) {
+  if (
+    isBusiness &&
+    !isSubscriptionValid &&
+    !isTrialActive &&
+    !showTrialModal &&
+    !location.pathname.startsWith("/business")
+  ) {
     console.log("🚀 מנוי לא פעיל – הפניה לעמוד pricing");
     return <Navigate to="/pricing" replace />;
   }
