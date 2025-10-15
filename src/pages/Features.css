@@ -1,0 +1,138 @@
+.features-container {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 60px 25px;
+  background: #ffffff;
+  color: #0f172a;
+  line-height: 1.8;
+}
+
+/* Hero */
+.features-hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.features-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.features-subtitle {
+  font-size: 1.1rem;
+  color: #334155;
+  margin-top: 0.8rem;
+}
+
+/* Feature Blocks */
+.feature-block {
+  margin-bottom: 3rem;
+}
+
+.feature-title {
+  color: #5a0fb0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+}
+
+.feature-text {
+  font-size: 1.05rem;
+  color: #334155;
+  margin-bottom: 0.8rem;
+}
+
+.feature-list {
+  list-style-type: "• ";
+  margin-left: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.feature-list li {
+  margin-bottom: 0.4rem;
+}
+
+.feature-result {
+  font-weight: 600;
+  color: #5a0fb0;
+}
+
+/* Summary */
+.feature-summary {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.feature-cta {
+  margin-top: 1.5rem;
+}
+
+.cta-button {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: white;
+  padding: 0.8rem 1.6rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.cta-button-outline {
+  border: 2px solid #6a11cb;
+  color: #6a11cb;
+  padding: 0.8rem 1.6rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.cta-button:hover,
+.cta-button-outline:hover {
+  opacity: 0.9;
+}
+
+/* Footer */
+.footer {
+  border-top: 1px solid #e5e7eb;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  text-align: center;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+.footer-links li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+.footer-links a {
+  color: #6a11cb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+copyright {
+  font-size: 0.9rem;
+  color: #64748b;
+}
