@@ -1,153 +1,135 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/Plans.css";
 
 function Plans() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  // Read 'reason' param from the URL
-  const queryParams = new URLSearchParams(location.search);
-  const reason = queryParams.get("reason");
+  const plans = [
+    {
+      id: "1",
+      title: "Monthly Plan",
+      price: 150,
+      duration: "per month",
+      savings: null,
+      description: "Full access to all BizUply features. Flexible and cancel anytime.",
+      features: [
+        "AI-powered business assistant",
+        "Smart CRM for clients & appointments",
+        "Automated WhatsApp & email reminders",
+        "Booking, payments, and reviews system",
+      ],
+      buttonText: "Try Free for 14 Days",
+      highlight: false,
+    },
+    {
+      id: "3",
+      title: "Quarterly Plan",
+      price: 420,
+      duration: "every 3 months",
+      savings: "Save $30",
+      description: "Perfect for growing businesses with consistent client flow.",
+      features: [
+        "Everything in Monthly plan",
+        "Advanced analytics dashboard",
+        "AI automations and marketing insights",
+        "Priority support and setup assistance",
+      ],
+      buttonText: "Try Free for 14 Days",
+      highlight: true,
+      badge: "Most Popular",
+    },
+    {
+      id: "12",
+      title: "Yearly Plan",
+      price: 1500,
+      duration: "per year",
+      savings: "Save $300",
+      description: "Best value — designed for professionals and studios.",
+      features: [
+        "Everything in Quarterly plan",
+        "Dedicated account manager",
+        "Early access to new BizUply AI features",
+        "VIP onboarding & training",
+      ],
+      buttonText: "Try Free for 14 Days",
+      highlight: false,
+    },
+  ];
 
-  const isTrial = user?.subscriptionPlan === "trial";
-  const trialActive = isTrial && user?.isSubscriptionValid;
-
-  const isTestUser = user?.isTestUser || false;
-  const durations = isTestUser ? ["test", "1", "3", "12"] : ["1", "3", "12"];
-  const [selectedDuration, setSelectedDuration] = useState(
-    isTestUser ? "test" : "1"
-  );
-
-  const prices = { "1": 399, "3": 379, "12": 329 };
-  const testPrices = { test: 3 };
-
-  const handleDurationChange = (duration) => setSelectedDuration(duration);
-
-  const handleSelectPlan = () => {
+  const handleSelectPlan = (plan) => {
     if (!user) {
       navigate("/login");
       return;
     }
-    let totalPrice;
-    let planName;
-    if (selectedDuration === "test") {
-      totalPrice = testPrices.test;
-      planName = "Trial Subscription Plan - 3 Months";
-    } else {
-      totalPrice = prices[selectedDuration] * parseInt(selectedDuration);
-      planName = "BizUply Subscription Plan";
-    }
     navigate("/checkout", {
       state: {
-        planName,
-        totalPrice,
-        duration: selectedDuration === "test" ? "3" : selectedDuration,
+        planName: `BizUply ${plan.title}`,
+        totalPrice: plan.price,
+        duration: plan.id,
       },
     });
   };
 
-  const features = [
-    "AI-powered marketing and business consulting with up to 60 quality inquiries per month.",
-    "A smart AI partner that provides actions and business recommendations.",
-    "A platform for business collaborations.",
-    "A professional business page with a gallery, FAQs, and more.",
-    "An intelligent appointment management system for clients.",
-    "Real-time customer service chat.",
-    "A reliable review system for real customers.",
-    "Full, unlimited access to all systems.",
-    "Smart CRM for customer relationship management.",
-    "An analytical dashboard to monitor reminders and meetings.",
-    "Smart alerts for important events.",
-  ];
-
   return (
-    <div className="plans-wrapper" dir="rtl">
-      <h1 className="plans-header">What does your business get?</h1>
+    <div className="plans-page">
+      {/* 💜 Header */}
+      <header className="plans-header">
+        <h1>Plans built for every business</h1>
+        <p>
+          Experience BizUply’s full power — one system, one price, unlimited possibilities.
+          Start your free 14-day trial today.
+        </p>
+      </header>
 
-      {/* Trial ended notice */}
-      {reason === "trial_expired" && (
-        <div className="plans-alert plans-alert-error">
-          The free trial period has ended. Choose a plan to continue using BizUply.
-        </div>
-      )}
+      {/* 💎 Plans Grid */}
+      <section className="plans-grid">
+        {plans.map((plan) => (
+          <div
+            key={plan.id}
+            className={`plan-card ${plan.highlight ? "highlight" : ""}`}
+          >
+            {plan.badge && <div className="plan-badge">{plan.badge}</div>}
+            <h2>{plan.title}</h2>
+            <p className="plan-desc">{plan.description}</p>
 
-      {/* Active trial notice */}
-      {trialActive && (
-        <div className="plans-alert plans-alert-info">
-          You are currently on a free trial month. You can upgrade to a paid plan at any time to ensure continued access after the trial ends.
-        </div>
-      )}
+            <div className="plan-price">
+              ${plan.price}
+              <span> / {plan.duration}</span>
+            </div>
 
-      <div className="plans-card">
-        <ul className="plans-list">
-          {features.map((text, idx) => (
-            <li key={idx} className="plans-list-item">
-              <span className="checkmark" aria-hidden="true">✔</span> {text}
-            </li>
-          ))}
-        </ul>
+            {plan.savings && <p className="plan-savings">{plan.savings}</p>}
 
-        <div
-          className="plans-duration-selector"
-          role="radiogroup"
-          aria-label="Choose subscription duration"
-        >
-          {durations.map((d) => {
-            let label = "";
-            let price = 0;
-            if (d === "test") {
-              label = "Trial Plan (3 months)";
-              price = (testPrices.test / 3).toFixed(2);
-            } else if (d === "1") {
-              label = "Monthly";
-              price = prices["1"];
-            } else if (d === "3") {
-              label = "3 Months";
-              price = prices["3"];
-            } else if (d === "12") {
-              label = "Yearly";
-              price = prices["12"];
-            }
-            return (
-              <button
-                key={d}
-                onClick={() => handleDurationChange(d)}
-                className={`duration-btn ${d} ${selectedDuration === d ? "active" : ""} ${d === "12" ? "recommended" : ""}`}
-                role="radio"
-                aria-checked={selectedDuration === d}
-                tabIndex={selectedDuration === d ? 0 : -1}
-                type="button"
-              >
-                {label}
-                <span className="duration-price">{price} $ per month</span>
-              </button>
-            );
-          })}
-        </div>
+            <ul className="plan-features">
+              {plan.features.map((f, i) => (
+                <li key={i}>
+                  <span className="checkmark">✓</span> {f}
+                </li>
+              ))}
+            </ul>
 
-        <div className="total-price" aria-live="polite">
-          Total price:{" "}
-          {selectedDuration === "test"
-            ? testPrices.test
-            : prices[selectedDuration] * parseInt(selectedDuration)}
-          {" "}$
-        </div>
+            <button
+              className={`plan-btn ${plan.highlight ? "primary" : "secondary"}`}
+              onClick={() => handleSelectPlan(plan)}
+            >
+              {plan.buttonText}
+            </button>
+          </div>
+        ))}
+      </section>
 
-        <div className="launch-price-banner" role="alert">
-          Join now at a special launch price for a limited time — don’t miss out!
-        </div>
-
-        <button
-          className="subscribe-btn"
-          onClick={handleSelectPlan}
-          type="button"
-        >
-          Choose a plan and start growing with BizUply now!
-        </button>
-      </div>
+      {/* 🧠 Footer Philosophy */}
+      <footer className="plans-footer">
+        <h3>💜 One platform for all businesses</h3>
+        <p>
+          Whether you’re an independent professional or a growing company — BizUply
+          gives you the same advanced tools trusted by top businesses.
+          <br />
+          Full automation. Smart insights. Seamless growth.
+        </p>
+      </footer>
     </div>
   );
 }
