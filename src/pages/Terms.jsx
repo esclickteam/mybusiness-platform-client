@@ -675,7 +675,6 @@ function Terms() {
 
 
      <section className="terms-section">
-  <h2>13. Waiver of Claims and Limitation of Actions</h2>
 
   <h2>13. Waiver of Claims, Refunds, and Limitation of Actions</h2>
 
