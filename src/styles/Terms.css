@@ -1,102 +1,151 @@
-/* 🌟 Page Background */
+/* ============================
+   💜 BizUply – Terms of Service Style
+   ============================ */
+
+/* 🌈 Background */
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #c3d0f7 0%, #ffffff 100%);
-  direction: ltr;
-  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #2c2c2c;
-  line-height: 1.75;
+  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #e9dcff 0%, #ffffff 100%);
+  color: #2e2e2e;
+  line-height: 1.8;
   font-weight: 400;
+  direction: ltr;
+  overflow-x: hidden;
 }
 
-/* 🌟 Container */
+/* 🌟 Main Container */
 .terms-container {
-  max-width: 920px;
-  margin: 50px auto 80px auto;
-  padding: 45px 60px;
-  background: #fff;
+  max-width: 960px;
+  margin: 70px auto 100px auto;
+  padding: 60px 70px;
+  background: #ffffff;
   border-radius: 25px;
-  box-shadow: 0 15px 50px rgba(74, 20, 140, 0.2);
-  text-align: left;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 20px 60px rgba(111, 45, 168, 0.25);
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .terms-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 25px 70px rgba(74, 20, 140, 0.35);
+  box-shadow: 0 25px 80px rgba(111, 45, 168, 0.35);
+  transform: translateY(-4px);
 }
 
-/* 🌟 Title */
+/* 🌟 Header Title */
 .terms-title {
-  font-size: 42px;
-  color: #4a148c;
-  font-weight: 900;
-  margin-bottom: 45px;
-  letter-spacing: 1px;
   text-align: center;
-  text-shadow: 0 1px 5px rgba(74, 20, 140, 0.2);
+  font-size: 44px;
+  font-weight: 900;
+  color: #5e35b1;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 6px rgba(93, 33, 153, 0.25);
+}
+
+/* 🌟 Last Updated */
+.terms-date {
+  text-align: center;
+  color: #7a7a7a;
+  font-size: 16px;
+  margin-bottom: 50px;
+  font-style: italic;
 }
 
 /* 🌟 Sections */
 .terms-section {
-  margin-bottom: 35px;
+  margin-bottom: 45px;
 }
 
 .terms-section h2 {
   font-size: 28px;
-  color: #6a1b9a;
   font-weight: 700;
-  margin-bottom: 15px;
+  color: #6a1b9a;
+  background: linear-gradient(90deg, #f6e9ff 0%, #efe3ff 100%);
+  padding: 10px 14px;
   border-left: 6px solid #9c27b0;
-  padding-left: 12px;
-  background: #f7e9ff;
-  border-radius: 8px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 10px rgba(156, 39, 176, 0.15);
 }
 
-.terms-section p {
-  font-size: 18px;
-  color: #444;
-  line-height: 1.8;
+.terms-section p,
+.terms-section li {
+  font-size: 17.5px;
+  color: #3a3a3a;
   margin-bottom: 16px;
   text-align: justify;
 }
 
-/* 🌟 Back to top */
+/* 🌿 Bullet Lists */
+.terms-section ul {
+  padding-left: 30px;
+  margin-bottom: 20px;
+}
+
+.terms-section li::marker {
+  color: #9c27b0;
+}
+
+/* ⚖️ Legal Note (highlighted cross-reference) */
+.legal-note {
+  background: linear-gradient(90deg, #f8f3ff, #f3e9ff);
+  border-left: 5px solid #b06ef8;
+  color: #4a148c;
+  padding: 12px 18px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* 🌟 Back to Top Button */
 .back-to-top {
   position: fixed;
   bottom: 35px;
   right: 35px;
-  background: #6a1b9a;
+  background: linear-gradient(135deg, #7e57c2, #9c27b0);
   color: #fff;
   padding: 12px 18px;
   border-radius: 50px;
   font-size: 15px;
   cursor: pointer;
-  box-shadow: 0 8px 15px rgba(106, 27, 154, 0.4);
-  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 8px 18px rgba(156, 39, 176, 0.45);
+  transition: all 0.3s ease;
   z-index: 1000;
 }
 
 .back-to-top:hover {
-  background: #9c27b0;
-  transform: scale(1.1);
+  background: linear-gradient(135deg, #9c27b0, #b16cff);
+  transform: scale(1.08);
 }
 
-/* 🌟 Responsive */
+/* 🖥️ Responsive Design */
 @media (max-width: 768px) {
   .terms-container {
-    padding: 30px 20px;
-    width: 95%;
-    margin: 30px auto 60px auto;
+    padding: 35px 25px;
+    margin: 40px auto 70px auto;
+    width: 92%;
   }
+
   .terms-title {
-    font-size: 32px;
+    font-size: 34px;
   }
+
   .terms-section h2 {
     font-size: 22px;
+    padding: 8px 12px;
   }
-  .terms-section p {
-    font-size: 16px;
+
+  .terms-section p,
+  .terms-section li {
+    font-size: 15.5px;
+  }
+
+  .back-to-top {
+    bottom: 25px;
+    right: 25px;
+    padding: 10px 14px;
+    font-size: 14px;
   }
 }
