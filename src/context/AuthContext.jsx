@@ -114,27 +114,39 @@ export function AuthProvider({ children }) {
         { withCredentials: true }
       );
 
-      const { accessToken, user: loggedInUser, redirectUrl } = data;
+      const { accessToken, user: loggedInUser } = data;
       if (!accessToken) throw new Error("No access token received");
 
-      // ✅ שמירת טוקן והגדרתו מראש
+      // ✅ שמירת טוקן
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      // ✅ שמירת המשתמש כבר עכשיו
+      // ✅ נירמול משתמש
       const normalizedUser = normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // ✅ רקע בסיסי
       document.body.style.background = "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
-
-      // ✅ רענון לא חוסם
       refreshUser(true).catch(() => {});
 
-      // ✅ ניווט לאחר התחברות
+      // ✅ ניתוב אחרי התחברות
       if (!skipRedirect) {
+        const isTrialExpired =
+          normalizedUser.role === "business" &&
+          normalizedUser.subscriptionPlan === "trial" &&
+          normalizedUser.subscriptionEnd &&
+          new Date(normalizedUser.subscriptionEnd) < new Date();
+
+        // 🟣 ניסיון פג → רק מודאל
+        if (isTrialExpired) {
+          console.log("⚠️ ניסיון פג – מציגים מודאל בלבד");
+          navigate("/trial-expired", { replace: true });
+          setLoading(false);
+          return;
+        }
+
+        // ✅ ניסיון פעיל / מנוי פעיל
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
           if (normalizedUser.role === "business" && normalizedUser.businessId) {
@@ -142,18 +154,11 @@ export function AuthProvider({ children }) {
           } else {
             navigate("/dashboard", { replace: true });
           }
-        } else if (redirectUrl && redirectUrl !== "/plans") {
-          // ❌ אין יותר הפניה אוטומטית ל־/plans
-          if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
-            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
-          } else {
-            navigate(redirectUrl, { replace: true });
-          }
         }
       }
 
       setLoading(false);
-      return { user: normalizedUser, redirectUrl };
+      return { user: normalizedUser };
     } catch (e) {
       setError(
         e.response?.status >= 400 && e.response?.status < 500
@@ -210,25 +215,22 @@ export function AuthProvider({ children }) {
         const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
 
-        const justRegistered = sessionStorage.getItem("justRegistered");
-        if (justRegistered) {
-          sessionStorage.removeItem("justRegistered");
-          if (freshUser.role === "business" && freshUser.businessId) {
-            navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
-          } else {
-            navigate("/dashboard", { replace: true });
-          }
+        // 🟣 ניסיון פג – מעבר למסך מודאל בלבד
+        const isTrialExpired =
+          freshUser.role === "business" &&
+          freshUser.subscriptionPlan === "trial" &&
+          freshUser.subscriptionEnd &&
+          new Date(freshUser.subscriptionEnd) < new Date();
+
+        if (isTrialExpired) {
+          console.log("⚠️ ניסיון פג – מעבר למסך מודאל בלבד");
+          navigate("/trial-expired", { replace: true });
+          setLoading(false);
+          setInitialized(true);
           return;
         }
 
-        const savedRedirect = sessionStorage.getItem("postLoginRedirect");
-        if (savedRedirect && savedRedirect !== "/plans") {
-          navigate(savedRedirect, { replace: true });
-          sessionStorage.removeItem("postLoginRedirect");
-          return;
-        }
-
-        // ✅ ניווט לדשבורד רק אם המנוי או הניסיון פעיל
+        // ✅ אם יש ניסיון/מנוי פעיל – ממשיכים לדשבורד
         const hasActiveTrial =
           freshUser.subscriptionPlan === "trial" &&
           freshUser.subscriptionEnd &&
@@ -276,19 +278,8 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
-    fetchWithAuth: async (fn) => {
-      try {
-        return await fn();
-      } catch (err) {
-        if ([401, 403].includes(err.response?.status)) {
-          await logout();
-          setError("❌ יש להתחבר מחדש");
-        }
-        throw err;
-      }
-    },
-    refreshAccessToken: singleFlightRefresh,
     refreshUser,
+    refreshAccessToken: singleFlightRefresh,
     socket,
     setUser,
   };
