@@ -30,7 +30,7 @@ import { preloadDashboardComponents } from "./pages/business/dashboardPages/Dash
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
 
-// Public Pages
+// ✅ Lazy Imports – Pages
 const HomePage = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
@@ -52,7 +52,9 @@ const Register = lazy(() => import("./pages/Register"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 const StaffLogin = lazy(() => import("./pages/StaffLogin"));
-const BusinessProfileView = lazy(() => import("./components/shared/BusinessProfileView"));
+const BusinessProfileView = lazy(() =>
+  import("./components/shared/BusinessProfileView")
+);
 const BookingPage = lazy(() => import("./pages/BookingPage"));
 const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
 const MessagesPage = lazy(() => import("./pages/client/MessagesPage"));
@@ -73,20 +75,35 @@ const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const AdminAffiliates = lazy(() => import("./pages/admin/AdminAffiliates"));
-const AffiliatePage = lazy(() => import("./pages/business/dashboardPages/AffiliatePage"));
+const AffiliatePage = lazy(() =>
+  import("./pages/business/dashboardPages/AffiliatePage")
+);
 const BusinessProfilePage = lazy(() => import("./pages/BusinessProfilePage"));
 const Collab = lazy(() => import("./pages/business/dashboardPages/Collab"));
 const Features = lazy(() => import("./pages/Features"));
 const Solutions = lazy(() => import("./pages/Solutions"));
 const Support = lazy(() => import("./pages/Support"));
 
-// Smooth scroll to top
-function ScrollToTop() {
+/* ============================================================
+   ✅ ScrollToTopSmooth – גרסה משופרת בלי קפיצה כפולה
+   ============================================================ */
+function ScrollToTopSmooth() {
   const { pathname } = useLocation();
-  React.useEffect(() => window.scrollTo(0, 0), [pathname]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }, 350); // מחכה לסיום האנימציה
+
+    return () => clearTimeout(timeout);
+  }, [pathname]);
+
   return null;
 }
 
+/* ============================================================
+   ✅ APP MAIN
+   ============================================================ */
 export default function App() {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -101,32 +118,32 @@ export default function App() {
 
   if (loading) return <LoginSkeleton />;
 
- return (
-  <NotificationsProvider>
-    <Header onToggleNotifications={() => setShowNotifications(v => !v)} />
-    <ScrollToTop />
-    <AiProvider>
-      <AnimatePresence mode="wait">
-        <Suspense
-  fallback={
-    <motion.div
-      key="page-loader"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25, ease: "easeInOut" }}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 9999,
-        background: "linear-gradient(180deg, #f6f7fb, #e8ebf8)",
-        pointerEvents: "none",
-      }}
-    />
-  }
->
-
-
+  return (
+    <NotificationsProvider>
+      <Header onToggleNotifications={() => setShowNotifications(v => !v)} />
+      <ScrollToTopSmooth />
+      <AiProvider>
+        <AnimatePresence mode="wait">
+          <Suspense
+            fallback={
+              <motion.div
+                key="page-loader"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  zIndex: 9999,
+                  background: "linear-gradient(180deg, #f6f7fb, #e8ebf8)",
+                  pointerEvents: "none",
+                }}
+                onAnimationStart={() => (document.body.style.overflow = "hidden")}
+                onAnimationComplete={() => (document.body.style.overflow = "")}
+              />
+            }
+          >
             <motion.div
               key={location.pathname}
               initial={{ opacity: 0, y: 10 }}
@@ -135,6 +152,7 @@ export default function App() {
               transition={{ duration: 0.35, ease: "easeInOut" }}
             >
               <Routes location={location} key={location.pathname}>
+                {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -156,10 +174,19 @@ export default function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/staff-login" element={<StaffLogin />} />
-                <Route path="/business/:businessId" element={<BusinessProfileView />} />
+                <Route
+                  path="/business/:businessId"
+                  element={<BusinessProfileView />}
+                />
                 <Route path="/book/:businessId" element={<BookingPage />} />
-                <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
-                <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
+                <Route
+                  path="/admin/withdrawals"
+                  element={<AdminWithdrawalsPage />}
+                />
+                <Route
+                  path="/affiliate/:publicToken"
+                  element={<AffiliateAutoLogin />}
+                />
                 <Route path="/support" element={<Support />} />
                 <Route path="/features" element={<Features />} />
                 <Route path="/solutions" element={<Solutions />} />
@@ -179,7 +206,13 @@ export default function App() {
                   path="/business-profile/:businessId"
                   element={
                     <ProtectedRoute
-                      roles={["business", "customer", "worker", "manager", "admin"]}
+                      roles={[
+                        "business",
+                        "customer",
+                        "worker",
+                        "manager",
+                        "admin",
+                      ]}
                     >
                       <BusinessProfilePage
                         currentUserBusinessId={user?.businessId || null}
@@ -188,7 +221,7 @@ export default function App() {
                   }
                 />
 
-                {/* Client chat */}
+                {/* Client Chat */}
                 <Route
                   path="/business/:businessId/messages"
                   element={
@@ -198,7 +231,7 @@ export default function App() {
                   }
                 />
 
-                {/* Business dashboard */}
+                {/* Business Dashboard */}
                 <Route
                   path="/business/:businessId/dashboard/*"
                   element={
@@ -208,7 +241,7 @@ export default function App() {
                   }
                 />
 
-                {/* Business chat */}
+                {/* Business Chat */}
                 <Route
                   path="/business/:businessId/chat/*"
                   element={
@@ -218,7 +251,7 @@ export default function App() {
                   }
                 />
 
-                {/* Client dashboard */}
+                {/* Client Dashboard */}
                 <Route
                   path="/client/dashboard/*"
                   element={
@@ -355,7 +388,7 @@ export default function App() {
                   }
                 />
 
-                {/* Affiliate pages */}
+                {/* Affiliate */}
                 <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
                 <Route
                   path="/affiliate/dashboard/*"
@@ -369,9 +402,11 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
 
-              {/* Global AI modal & notifications */}
+              {/* Global UI */}
               <AiModal />
-              {showNotifications && <Notifications onClose={() => setShowNotifications(false)} />}
+              {showNotifications && (
+                <Notifications onClose={() => setShowNotifications(false)} />
+              )}
               <Footer />
             </motion.div>
           </Suspense>
@@ -381,7 +416,9 @@ export default function App() {
   );
 }
 
-// Business chat list
+/* ============================================================
+   ✅ Business Chat Wrappers
+   ============================================================ */
 export function BusinessChatListWrapper() {
   const { businessId } = useParams();
   const [convos, setConvos] = useState([]);
@@ -391,7 +428,7 @@ export function BusinessChatListWrapper() {
     ? pathname.split("/").pop()
     : null;
 
-  React.useEffect(() => {
+  useEffect(() => {
     API.get("/messages/conversations", { withCredentials: true })
       .then((res) => setConvos(res.data))
       .catch(console.error);
