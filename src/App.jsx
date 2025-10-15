@@ -101,36 +101,32 @@ export default function App() {
 
   if (loading) return <LoginSkeleton />;
 
-  return (
-    <NotificationsProvider>
-      <Header onToggleNotifications={() => setShowNotifications(v => !v)} />
-      <ScrollToTop />
-      <AiProvider>
-        <AnimatePresence mode="wait">
-          <Suspense
-            fallback={
-              <motion.div
-                key="loader"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                className="page-loader"
-                style={{
-                  height: "100vh",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  background: "linear-gradient(180deg, #f5f6ff, #ede9ff)",
-                  color: "#6a11cb",
-                  fontWeight: 600,
-                  fontSize: "1.4rem",
-                }}
-              >
-                Loading page…
-              </motion.div>
-            }
-          >
+ return (
+  <NotificationsProvider>
+    <Header onToggleNotifications={() => setShowNotifications(v => !v)} />
+    <ScrollToTop />
+    <AiProvider>
+      <AnimatePresence mode="wait">
+        <Suspense
+  fallback={
+    <motion.div
+      key="page-loader"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease: "easeInOut" }}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        background: "linear-gradient(180deg, #f6f7fb, #e8ebf8)",
+        pointerEvents: "none",
+      }}
+    />
+  }
+>
+
+
             <motion.div
               key={location.pathname}
               initial={{ opacity: 0, y: 10 }}
