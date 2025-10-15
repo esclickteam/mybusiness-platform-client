@@ -8,7 +8,9 @@ export default function Plans() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-  const { user, loading: authLoading, initialized } = useAuth();
+
+  // ✅ נשלף גם את token מה־AuthContext
+  const { user, token, loading: authLoading, initialized } = useAuth();
 
   const plans = {
     monthly: { price: 1, total: 1, save: 0 }, // בדיקה ב-$1 בלבד
@@ -44,7 +46,7 @@ export default function Plans() {
      ⚡ יצירת הזמנה בשרת
   ======================================== */
   const createOrder = async () => {
-    if (!user?._id) {
+    if (!user?._id || !token) {
       alert("Please log in before subscribing.");
       return;
     }
@@ -53,7 +55,7 @@ export default function Plans() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${user?.accessToken}`, // ✅ חובה כדי לזהות משתמש
+        Authorization: `Bearer ${token}`, // ✅ נשלח טוקן אמיתי
       },
       credentials: "include",
       body: JSON.stringify({
@@ -78,7 +80,7 @@ export default function Plans() {
     const res = await fetch(`/api/paypal/capture/${orderId}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${user?.accessToken}`, // ✅ נדרש גם כאן
+        Authorization: `Bearer ${token}`, // ✅ גם כאן נדרש
       },
       credentials: "include",
     });
@@ -97,7 +99,7 @@ export default function Plans() {
       return;
     }
 
-    if (!user?._id) {
+    if (!user?._id || !token) {
       alert("Please log in first.");
       return;
     }
@@ -111,7 +113,6 @@ export default function Plans() {
         return;
       }
 
-      // מנקה כל כפתור קודם כדי למנוע כפילויות
       const container = document.getElementById("paypal-button-container");
       if (container) container.innerHTML = "";
 
@@ -154,7 +155,6 @@ export default function Plans() {
   ======================================== */
   return (
     <div className="plans-page">
-      {/* 🌟 Header */}
       <header className="plans-header">
         <h1>Choose Your BizUply Plan</h1>
         <p>
@@ -173,7 +173,6 @@ export default function Plans() {
         </p>
       </header>
 
-      {/* 🔘 Toggle Between Monthly / Yearly */}
       <div className="plans-toggle">
         {["monthly", "yearly"].map((period) => (
           <button
@@ -188,7 +187,6 @@ export default function Plans() {
         ))}
       </div>
 
-      {/* 💼 Main Plan Card */}
       <section className="plan-card-container">
         <div className="plan-card highlight">
           <h2>BizUply Professional Plan</h2>
@@ -218,7 +216,6 @@ export default function Plans() {
             <li>✔ Predictive Analytics & Personalized Recommendations</li>
           </ul>
 
-          {/* 🔘 CTA Button */}
           {success ? (
             <button className="plan-btn success">✅ Payment Successful!</button>
           ) : loading ? (
@@ -241,7 +238,6 @@ export default function Plans() {
             </button>
           )}
 
-          {/* 🧾 Summary Box */}
           <div className="summary-box">
             <div className="summary-row">
               <span>Total to pay:</span>
@@ -255,7 +251,6 @@ export default function Plans() {
             )}
           </div>
 
-          {/* 🪙 PayPal Button Container */}
           <div id="paypal-button-container" style={{ marginTop: "1rem" }}></div>
         </div>
       </section>
