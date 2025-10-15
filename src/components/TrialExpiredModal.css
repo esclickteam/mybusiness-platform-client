@@ -1,82 +1,158 @@
-/* ============================
-   💜 BizUply – Trial Expired Modal
-   ============================ */
+/* ===========================
+   💜 TrialExpired Modal – UX Premium
+   =========================== */
 
 .trial-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(5px);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 15, 30, 0.65);
+  backdrop-filter: blur(8px);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 999999 !important; /* ✅ מבטיח שהמודאל מעל הכל */
-  animation: fadeIn 0.3s ease-in-out;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
 }
 
 .trial-modal {
-  background: #fff;
+  background: linear-gradient(180deg, #ffffff 0%, #faf7ff 100%);
   border-radius: 18px;
-  padding: 40px 35px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  padding: 40px 30px;
   max-width: 420px;
-  width: 90%;
+  width: 100%;
   text-align: center;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
-  animation: popIn 0.35s ease;
+  animation: fadeIn 0.6s ease-in-out;
+  position: relative;
 }
 
-.trial-title {
-  color: #6c63ff;
-  font-size: 1.6rem;
-  margin-bottom: 15px;
-}
-
-.trial-text {
-  color: #444;
-  font-size: 1rem;
-  line-height: 1.5;
+/* 🔹 Progress Bar */
+.trial-progress {
+  width: 100%;
+  height: 6px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
   margin-bottom: 25px;
 }
 
+.trial-progress-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff8b8b, #ff4d4d);
+  animation: progressPulse 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes progressPulse {
+  from { opacity: 0.6; transform: scaleX(0.98); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+
+.trial-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #3c0068;
+  margin-bottom: 12px;
+}
+
+.trial-text {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.trial-urgency {
+  font-size: 0.9rem;
+  color: #7b3ef3;
+  font-weight: 600;
+  margin-bottom: 25px;
+}
+
+.trial-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
 .upgrade-btn {
-  background: linear-gradient(135deg, #a855f7, #6c63ff);
+  background: linear-gradient(90deg, #7b61ff, #6c63ff);
   color: #fff;
   border: none;
-  padding: 12px 28px;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 10px;
+  padding: 12px 0;
   font-weight: 600;
   font-size: 1rem;
-  transition: 0.3s ease;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .upgrade-btn:hover {
-  transform: translateY(-2px);
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+}
+
+.back-btn {
+  background: #fff;
+  border: 2px solid #7b61ff;
+  color: #7b61ff;
+  border-radius: 10px;
+  padding: 12px 0;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.back-btn:hover {
+  background: #f4f0ff;
+}
+
+.contact-link {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.contact-link span {
+  color: #7b61ff;
+  font-weight: 500;
+  transition: color 0.25s ease;
+}
+
+.contact-link:hover span {
+  color: #5a41d4;
 }
 
 .note {
-  color: #777;
   font-size: 0.9rem;
-  margin-top: 20px;
+  color: #555;
+  margin-top: 25px;
+  line-height: 1.4;
 }
 
+/* אנימציות */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
+/* רספונסיביות */
+@media (max-width: 480px) {
+  .trial-modal {
+    padding: 30px 20px;
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+
+  .trial-title {
+    font-size: 1.4rem;
+  }
+
+  .upgrade-btn,
+  .back-btn {
+    font-size: 0.95rem;
   }
 }
