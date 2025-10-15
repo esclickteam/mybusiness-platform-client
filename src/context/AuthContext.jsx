@@ -102,7 +102,7 @@ export function AuthProvider({ children }) {
   };
 
   /* ===========================
-     🔐 Login
+     🔐 Login (optimized, no flash)
      =========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
@@ -122,42 +122,38 @@ export function AuthProvider({ children }) {
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      // ✅ שמירת המשתמש כבר עכשיו
+      // ✅ שמירת המשתמש כבר עכשיו למניעת פלאש
       const normalizedUser = normalizeUser(loggedInUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
-      // ✅ רקע בסיסי
+      // ✅ רקע קבוע לפני ניווט
       document.body.style.background = "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
 
-      // ✅ רענון לא חוסם
+      // ✅ רענון במקביל (לא חוסם ניווט)
       refreshUser(true).catch(() => {});
 
-      // ✅ ניווט לאחר התחברות
+      // ✅ ניווט אחרי התחברות
       if (!skipRedirect) {
-  const isTrialExpired =
-    normalizedUser.subscriptionPlan === "trial" &&
-    normalizedUser.subscriptionEnd &&
-    new Date(normalizedUser.subscriptionEnd) < new Date();
-
-  // 🟣 אם הניסיון פג – לא מנתבים לשום עמוד, רק מציגים מודאל
-  if (normalizedUser.role === "business" && isTrialExpired) {
-    console.log("⚠️ ניסיון פג – נשארים באותו עמוד ומציגים מודאל בלבד");
-    navigate("/trial-expired", { replace: true });
-    return;
-  }
-
-  // ✅ ניסיון פעיל או מנוי פעיל
-  if (normalizedUser.hasAccess) {
-    sessionStorage.setItem("justRegistered", "true");
-    if (normalizedUser.role === "business" && normalizedUser.businessId) {
-      navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
-    } else {
-      navigate("/dashboard", { replace: true });
-    }
-  }
-}
-
+        if (normalizedUser.hasAccess) {
+          sessionStorage.setItem("justRegistered", "true");
+          if (normalizedUser.role === "business" && normalizedUser.businessId) {
+            navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+          } else {
+            navigate("/dashboard", { replace: true });
+          }
+        } else if (redirectUrl) {
+          const isPlans = redirectUrl === "/plans";
+          const shouldSkip = isPlans && normalizedUser.hasAccess;
+          if (!shouldSkip) {
+            if (redirectUrl === "/dashboard" && normalizedUser.businessId) {
+              navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+            } else {
+              navigate(redirectUrl, { replace: true });
+            }
+          }
+        }
+      }
 
       setLoading(false);
       return { user: normalizedUser, redirectUrl };
@@ -167,6 +163,68 @@ export function AuthProvider({ children }) {
           ? "❌ אימייל או סיסמה שגויים"
           : "❌ שגיאה בשרת, נסה שוב"
       );
+      setLoading(false);
+      throw e;
+    }
+  };
+
+  /* ===========================
+     🧑‍💼 Staff login
+     =========================== */
+  const staffLogin = async (username, password) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await API.post(
+        "/auth/staff-login",
+        { username: username.trim(), password },
+        { withCredentials: true }
+      );
+      const { accessToken, user: staffUser } = data;
+      localStorage.setItem("token", accessToken);
+      setAuthToken(accessToken);
+      setToken(accessToken);
+
+      const normalizedStaffUser = normalizeUser(staffUser);
+      setUser(normalizedStaffUser);
+      localStorage.setItem("businessDetails", JSON.stringify(normalizedStaffUser));
+
+      refreshUser(true).catch(() => {});
+      setLoading(false);
+      return normalizedStaffUser;
+    } catch (e) {
+      setError(
+        e.response?.status >= 400 && e.response?.status < 500
+          ? "❌ שם משתמש או סיסמה שגויים"
+          : "❌ שגיאה בשרת, נסה שוב"
+      );
+      setLoading(false);
+      throw e;
+    }
+  };
+
+  /* ===========================
+     🤝 Affiliate login
+     =========================== */
+  const affiliateLogin = async (publicToken) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await API.get(`/affiliate/login/${publicToken}`, {
+        withCredentials: true,
+      });
+      if (!data.success) throw new Error("משווק לא נמצא");
+
+      const normalized = normalizeUser(data);
+      setUser(normalized);
+      localStorage.setItem("businessDetails", JSON.stringify(normalized));
+
+      setToken(null);
+      refreshUser(true).catch(() => {});
+      setLoading(false);
+      return normalized;
+    } catch (e) {
+      setError(e.message || "שגיאה בכניסה כמשווק");
       setLoading(false);
       throw e;
     }
@@ -214,6 +272,7 @@ export function AuthProvider({ children }) {
         if (!freshUser) throw new Error("No fresh user data");
 
         setUser(freshUser);
+
         const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
 
@@ -229,29 +288,15 @@ export function AuthProvider({ children }) {
         }
 
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
-        if (savedRedirect && savedRedirect !== "/plans") {
-          navigate(savedRedirect, { replace: true });
+        if (savedRedirect) {
+          const isPlans = savedRedirect === "/plans";
+          const shouldSkip = isPlans && freshUser.hasAccess;
+          if (!shouldSkip) navigate(savedRedirect, { replace: true });
           sessionStorage.removeItem("postLoginRedirect");
           return;
         }
 
-        // ✅ ניווט לדשבורד רק אם המנוי או הניסיון פעיל
-        const hasActiveTrial =
-          freshUser.subscriptionPlan === "trial" &&
-          freshUser.subscriptionEnd &&
-          new Date(freshUser.subscriptionEnd) > new Date();
-
-        const hasActiveSubscription =
-          freshUser.subscriptionPlan !== "trial" &&
-          freshUser.subscriptionEnd &&
-          new Date(freshUser.subscriptionEnd) > new Date();
-
-        if (
-          freshUser.role === "business" &&
-          freshUser.businessId &&
-          location.pathname === "/" &&
-          (hasActiveTrial || hasActiveSubscription)
-        ) {
+        if (freshUser.role === "business" && freshUser.businessId && location.pathname === "/") {
           navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
         }
       } catch {
@@ -283,6 +328,8 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
+    staffLogin,
+    affiliateLogin,
     fetchWithAuth: async (fn) => {
       try {
         return await fn();
