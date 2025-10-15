@@ -11,9 +11,9 @@ export default function Plans() {
   const { user } = useAuth();
 
   const plans = {
-  monthly: { price: 1, total: 1, save: 0 }, // לבדיקה ב-$1 בלבד
-  yearly: { price: 1, total: 1, save: 0 },
-};
+    monthly: { price: 1, total: 1, save: 0 }, // בדיקה ב-$1 בלבד
+    yearly: { price: 1, total: 1, save: 0 },
+  };
 
   const { price, total, save } = plans[selectedPeriod];
 
@@ -53,6 +53,7 @@ export default function Plans() {
           selectedPeriod === "monthly"
             ? "BizUply Monthly Plan"
             : "BizUply Yearly Plan",
+        userId: String(user?._id || ""), // ✅ נשלח מזהה המשתמש
       }),
     });
     const data = await res.json();
@@ -87,10 +88,32 @@ export default function Plans() {
         .Buttons({
           createOrder: async () => await createOrder(),
           onApprove: async (data) => {
-            await captureOrder(data.orderID);
-            setLoading(false);
-            setSuccess(true);
-            setTimeout(() => navigate("/dashboard"), 2000);
+            try {
+              const result = await captureOrder(data.orderID);
+
+              // 💾 עדכון משתמש במונגו מיד אחרי תשלום
+              await fetch("/api/subscription/confirm", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${user?.token || ""}`,
+                },
+                body: JSON.stringify({
+                  userId: user?._id,
+                  plan: selectedPeriod,
+                  orderId: data.orderID,
+                  paypalData: result,
+                }),
+              });
+
+              setLoading(false);
+              setSuccess(true);
+              setTimeout(() => navigate("/dashboard"), 2000);
+            } catch (err) {
+              console.error("❌ Error after payment:", err);
+              alert("Payment succeeded but user update failed. Please contact support.");
+              setLoading(false);
+            }
           },
           onError: (err) => {
             console.error("PayPal error:", err);
@@ -159,43 +182,16 @@ export default function Plans() {
           </div>
 
           <ul className="plan-features">
-            <li>
-              <span className="checkmark">✔</span> Professional Business Page
-            </li>
-            <li>
-              <span className="checkmark">✔</span> Smart CRM for Clients &
-              Appointments
-            </li>
-            <li>
-              <span className="checkmark">✔</span> Built-in Messaging System
-            </li>
-            <li>
-              <span className="checkmark">✔</span> Ratings & Reviews Management
-            </li>
-            <li>
-              <span className="checkmark">✔</span> Business Collaboration
-              Network
-            </li>
-            <li>
-              <span className="checkmark">✔</span> AI Business Advisor & Smart
-              Insights
-            </li>
-            <li>
-              <span className="checkmark">✔</span> Create and Track Client Tasks
-              or Follow-ups
-            </li>
-            <li>
-              <span className="checkmark">✔</span> Log and Document Client Calls
-              or Meetings
-            </li>
-            <li>
-              <span className="checkmark">✔</span> Automated Notifications and
-              Smart Alerts
-            </li>
-            <li>
-              <span className="checkmark">✔</span> Predictive Analytics &
-              Personalized Recommendations
-            </li>
+            <li><span className="checkmark">✔</span> Professional Business Page</li>
+            <li><span className="checkmark">✔</span> Smart CRM for Clients & Appointments</li>
+            <li><span className="checkmark">✔</span> Built-in Messaging System</li>
+            <li><span className="checkmark">✔</span> Ratings & Reviews Management</li>
+            <li><span className="checkmark">✔</span> Business Collaboration Network</li>
+            <li><span className="checkmark">✔</span> AI Business Advisor & Smart Insights</li>
+            <li><span className="checkmark">✔</span> Create and Track Client Tasks</li>
+            <li><span className="checkmark">✔</span> Log and Document Client Calls</li>
+            <li><span className="checkmark">✔</span> Automated Notifications</li>
+            <li><span className="checkmark">✔</span> Predictive Analytics</li>
           </ul>
 
           {/* 🔘 CTA Button */}
