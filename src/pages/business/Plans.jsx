@@ -52,13 +52,13 @@ export default function Plans() {
           </div>
 
           <ul className="plan-features">
-            <li>🌐 Professional Business Page</li>
-            <li>👥 Smart CRM for Clients & Appointments</li>
-            <li>💬 Built-in Messaging System</li>
-            <li>⭐ Ratings & Reviews Management</li>
-            <li>🤝 Business Collaboration Network</li>
-            <li>🧠 AI Business Advisor & Smart Insights</li>
-          </ul>
+  <li><span className="checkmark">✔</span> Professional Business Page</li>
+  <li><span className="checkmark">✔</span> Smart CRM for Clients & Appointments</li>
+  <li><span className="checkmark">✔</span> Built-in Messaging System</li>
+  <li><span className="checkmark">✔</span> Ratings & Reviews Management</li>
+  <li><span className="checkmark">✔</span> Business Collaboration Network</li>
+  <li><span className="checkmark">✔</span> AI Business Advisor & Smart Insights</li>
+</ul>
 
           <button className="plan-btn primary">Try Free for 14 Days</button>
 
