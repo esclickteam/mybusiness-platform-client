@@ -100,16 +100,7 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
     );
   }
 
-  /* ===========================
-     📦 דרישת חבילה ספציפית (לא נוגע לניסיון)
-  =========================== */
-  if (
-    requiredPackage &&
-    user.subscriptionPlan !== requiredPackage &&
-    user.subscriptionPlan !== "trial"
-  ) {
-    return <Navigate to="/plans" replace />;
-  }
+
 
   /* ===========================
      🏗️ עסק ללא businessId
