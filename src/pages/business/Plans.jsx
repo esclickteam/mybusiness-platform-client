@@ -53,7 +53,7 @@ export default function Plans() {
           selectedPeriod ===  "monthly"
             ? "BizUply Monthly Plan"
             : "BizUply Yearly Plan",
-        userId: String(user?.userId || user?._id || ""), // ✅ נשלח מזהה המשתמש
+        userId: user?._id, 
       }),
     });
     const data = await res.json();
