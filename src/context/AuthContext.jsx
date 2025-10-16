@@ -6,8 +6,14 @@ import createSocket from "../socket"; // singleton socket helper
 /* ===========================
    🧩 Normalize User
    =========================== */
+/* ===========================
+   🧩 Normalize User
+   =========================== */
 function normalizeUser(user) {
   if (!user) return null;
+
+  // ✅ טיפול במקרה שיש רק id ואין _id
+  const _id = user._id || user.id;
 
   const now = new Date();
   let computedIsValid = false;
@@ -21,6 +27,7 @@ function normalizeUser(user) {
 
   return {
     ...user,
+    _id, // ✅ מבטיח שתמיד יהיה user._id
     hasPaid: Boolean(user?.hasPaid),
     isSubscriptionValid:
       typeof user?.isSubscriptionValid === "boolean"
@@ -34,6 +41,7 @@ function normalizeUser(user) {
     hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
 }
+
 
 /* ===========================
    🔁 Token Refresh (single-flight)
