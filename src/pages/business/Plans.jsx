@@ -23,6 +23,8 @@ export default function Plans() {
     user?.subscriptionEnd &&
     new Date(user.subscriptionEnd) < now;
 
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+
   /* ========================================
      💳 טעינת PayPal SDK
   ======================================== */
@@ -44,16 +46,16 @@ export default function Plans() {
      ⚡ יצירת הזמנה בשרת
   ======================================== */
   const createOrder = async () => {
-    const res = await fetch("/api/paypal/create-order", {
+    const res = await fetch(`${API_BASE}/api/paypal/create-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         amount: total,
         planName:
-          selectedPeriod ===   "monthly"
+          selectedPeriod === "monthly"
             ? "BizUply Monthly Plan"
             : "BizUply Yearly Plan",
-        userId: user?._id, 
+        userId: user?._id,
       }),
     });
     const data = await res.json();
@@ -61,10 +63,10 @@ export default function Plans() {
   };
 
   /* ========================================
-     💰 אישור תשלום
+     💰 אישור תשלום (CAPTURE)
   ======================================== */
   const captureOrder = async (orderId) => {
-    const res = await fetch(`/api/paypal/capture/${orderId}`, {
+    const res = await fetch(`${API_BASE}/api/paypal/capture/${orderId}`, {
       method: "POST",
     });
     const data = await res.json();
@@ -84,6 +86,10 @@ export default function Plans() {
         return;
       }
 
+      // מנקים כל כפתור קודם כדי למנוע כפילויות
+      const container = document.getElementById("paypal-button-container");
+      container.innerHTML = "";
+
       paypal
         .Buttons({
           createOrder: async () => await createOrder(),
@@ -92,7 +98,7 @@ export default function Plans() {
               const result = await captureOrder(data.orderID);
 
               // 💾 עדכון משתמש במונגו מיד אחרי תשלום
-              await fetch("/api/subscription/confirm", {
+              await fetch(`${API_BASE}/api/paypal/subscription/confirm`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -154,9 +160,7 @@ export default function Plans() {
         {["monthly", "yearly"].map((period) => (
           <button
             key={period}
-            className={`toggle-btn ${
-              selectedPeriod === period ? "active" : ""
-            }`}
+            className={`toggle-btn ${selectedPeriod === period ? "active" : ""}`}
             onClick={() => setSelectedPeriod(period)}
           >
             {period === "monthly" ? "Monthly" : "Yearly"}
@@ -182,16 +186,16 @@ export default function Plans() {
           </div>
 
           <ul className="plan-features">
-            <li><span className="checkmark">✔</span> Professional Business Page</li>
-            <li><span className="checkmark">✔</span> Smart CRM for Clients & Appointments</li>
-            <li><span className="checkmark">✔</span> Built-in Messaging System</li>
-            <li><span className="checkmark">✔</span> Ratings & Reviews Management</li>
-            <li><span className="checkmark">✔</span> Business Collaboration Network</li>
-            <li><span className="checkmark">✔</span> AI Business Advisor & Smart Insights</li>
-            <li><span className="checkmark">✔</span> Create and Track Client Tasks</li>
-            <li><span className="checkmark">✔</span> Log and Document Client Calls</li>
-            <li><span className="checkmark">✔</span> Automated Notifications</li>
-            <li><span className="checkmark">✔</span> Predictive Analytics</li>
+            <li>✔ Professional Business Page</li>
+            <li>✔ Smart CRM for Clients & Appointments</li>
+            <li>✔ Built-in Messaging System</li>
+            <li>✔ Ratings & Reviews Management</li>
+            <li>✔ Business Collaboration Network</li>
+            <li>✔ AI Business Advisor & Smart Insights</li>
+            <li>✔ Create and Track Client Tasks</li>
+            <li>✔ Log and Document Client Calls</li>
+            <li>✔ Automated Notifications</li>
+            <li>✔ Predictive Analytics</li>
           </ul>
 
           {/* 🔘 CTA Button */}
@@ -200,17 +204,11 @@ export default function Plans() {
           ) : loading ? (
             <button className="plan-btn loading">Processing...</button>
           ) : trialExpired ? (
-            <button
-              className="plan-btn purchase"
-              onClick={handlePayPalCheckout}
-            >
+            <button className="plan-btn purchase" onClick={handlePayPalCheckout}>
               Subscribe Now
             </button>
           ) : (
-            <button
-              className="plan-btn primary"
-              onClick={() => navigate("/checkout")}
-            >
+            <button className="plan-btn primary" onClick={() => navigate("/checkout")}>
               Try Free for 14 Days
             </button>
           )}
