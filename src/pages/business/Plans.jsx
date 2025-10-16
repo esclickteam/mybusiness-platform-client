@@ -8,7 +8,7 @@ export default function Plans() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-  const { user, initialized, loading: authLoading } = useAuth();
+  const { user } = useAuth();
 
   const plans = {
     monthly: { price: 1, total: 1, save: 0 }, // בדיקה ב-$1 בלבד
@@ -16,9 +16,8 @@ export default function Plans() {
   };
 
   const { price, total, save } = plans[selectedPeriod];
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
-  const now = new Date();
 
+  const now = new Date();
   const trialExpired =
     user?.subscriptionPlan === "trial" &&
     user?.subscriptionEnd &&
@@ -45,53 +44,30 @@ export default function Plans() {
      ⚡ יצירת הזמנה בשרת
   ======================================== */
   const createOrder = async () => {
-    try {
-      if (!user?._id) {
-        console.warn("⚠️ No user._id found — cannot create order!");
-        alert("User not loaded yet. Please log in again.");
-        return;
-      }
-
-      const body = {
+    const res = await fetch("/api/paypal/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         amount: total,
         planName:
-          selectedPeriod === "monthly"
+          selectedPeriod ===  "monthly"
             ? "BizUply Monthly Plan"
             : "BizUply Yearly Plan",
-        userId: user._id,
-      };
-
-      console.log("📦 Sending create-order body:", body);
-
-      const res = await fetch(`${API_BASE}/api/paypal/create-order`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      const data = await res.json();
-      console.log("✅ create-order response:", data);
-
-      if (!data.id) throw new Error("No PayPal order ID returned");
-      return data.id;
-    } catch (err) {
-      console.error("❌ createOrder failed:", err);
-      alert("Error creating order. Please try again.");
-      setLoading(false);
-      throw err;
-    }
+        userId: user?._id, 
+      }),
+    });
+    const data = await res.json();
+    return data.id;
   };
 
   /* ========================================
-     💰 אישור תשלום (CAPTURE)
+     💰 אישור תשלום
   ======================================== */
   const captureOrder = async (orderId) => {
-    console.log("💰 Capturing PayPal order:", orderId);
-    const res = await fetch(`${API_BASE}/api/paypal/capture/${orderId}`, {
+    const res = await fetch(`/api/paypal/capture/${orderId}`, {
       method: "POST",
     });
     const data = await res.json();
-    console.log("✅ capture response:", data);
     return data;
   };
 
@@ -99,19 +75,7 @@ export default function Plans() {
      🚀 הפעלת PayPal Checkout
   ======================================== */
   const handlePayPalCheckout = async () => {
-    if (!initialized || authLoading) {
-      alert("Please wait until your account is fully loaded...");
-      return;
-    }
-
-    if (!user?._id) {
-      alert("User not loaded yet. Please log in again.");
-      return;
-    }
-
-    console.log("🚀 Starting PayPal checkout for user:", user._id);
     setLoading(true);
-
     try {
       const paypal = window.paypal;
       if (!paypal) {
@@ -120,55 +84,41 @@ export default function Plans() {
         return;
       }
 
-      // מנקים כל כפתור קודם כדי למנוע כפילויות
-      const container = document.getElementById("paypal-button-container");
-      container.innerHTML = "";
-
       paypal
         .Buttons({
           createOrder: async () => await createOrder(),
           onApprove: async (data) => {
             try {
-              console.log("✅ Payment approved:", data);
               const result = await captureOrder(data.orderID);
 
               // 💾 עדכון משתמש במונגו מיד אחרי תשלום
-              console.log("📩 Updating user subscription with:", {
-                userId: user._id,
-                plan: selectedPeriod,
-                orderId: data.orderID,
-              });
-
-              await fetch(`${API_BASE}/api/paypal/subscription/confirm`, {
+              await fetch("/api/subscription/confirm", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${user?.token || ""}`,
                 },
                 body: JSON.stringify({
-                  userId: user._id,
+                  userId: user?._id,
                   plan: selectedPeriod,
                   orderId: data.orderID,
                   paypalData: result,
                 }),
               });
 
-              console.log("🎉 Payment + user update success!");
               setLoading(false);
               setSuccess(true);
               setTimeout(() => navigate("/dashboard"), 2000);
             } catch (err) {
               console.error("❌ Error after payment:", err);
-              alert(
-                "Payment succeeded but user update failed. Please contact support."
-              );
+              alert("Payment succeeded but user update failed. Please contact support.");
               setLoading(false);
             }
           },
           onError: (err) => {
-            console.error("💥 PayPal error:", err);
-            alert("Payment failed. Please try again.");
+            console.error("PayPal error:", err);
             setLoading(false);
+            alert("Payment failed. Please try again.");
           },
         })
         .render("#paypal-button-container");
@@ -178,29 +128,6 @@ export default function Plans() {
     }
   };
 
-  /* ========================================
-     ⏳ Loading guard
-  ======================================== */
-  if (!initialized || authLoading) {
-    return (
-      <div className="plans-loading">
-        <p>Loading your account...</p>
-      </div>
-    );
-  }
-
-  if (!user?._id) {
-    return (
-      <div className="plans-loading">
-        <p>Session expired. Please log in again.</p>
-        <button onClick={() => navigate("/login")}>Go to Login</button>
-      </div>
-    );
-  }
-
-  /* ========================================
-     🖼️ Render UI
-  ======================================== */
   return (
     <div className="plans-page">
       {/* 🌟 Header */}
@@ -215,8 +142,8 @@ export default function Plans() {
             </>
           ) : (
             <>
-              Your free trial has ended. Choose a plan below to continue
-              enjoying BizUply.
+              Your free trial has ended. Choose a plan below to continue enjoying
+              BizUply.
             </>
           )}
         </p>
@@ -255,16 +182,16 @@ export default function Plans() {
           </div>
 
           <ul className="plan-features">
-            <li>✔ Professional Business Page</li>
-            <li>✔ Smart CRM for Clients & Appointments</li>
-            <li>✔ Built-in Messaging System</li>
-            <li>✔ Ratings & Reviews Management</li>
-            <li>✔ Business Collaboration Network</li>
-            <li>✔ AI Business Advisor & Smart Insights</li>
-            <li>✔ Create and Track Client Tasks</li>
-            <li>✔ Log and Document Client Calls</li>
-            <li>✔ Automated Notifications</li>
-            <li>✔ Predictive Analytics</li>
+            <li><span className="checkmark">✔</span> Professional Business Page</li>
+            <li><span className="checkmark">✔</span> Smart CRM for Clients & Appointments</li>
+            <li><span className="checkmark">✔</span> Built-in Messaging System</li>
+            <li><span className="checkmark">✔</span> Ratings & Reviews Management</li>
+            <li><span className="checkmark">✔</span> Business Collaboration Network</li>
+            <li><span className="checkmark">✔</span> AI Business Advisor & Smart Insights</li>
+            <li><span className="checkmark">✔</span> Create and Track Client Tasks</li>
+            <li><span className="checkmark">✔</span> Log and Document Client Calls</li>
+            <li><span className="checkmark">✔</span> Automated Notifications</li>
+            <li><span className="checkmark">✔</span> Predictive Analytics</li>
           </ul>
 
           {/* 🔘 CTA Button */}
@@ -273,7 +200,10 @@ export default function Plans() {
           ) : loading ? (
             <button className="plan-btn loading">Processing...</button>
           ) : trialExpired ? (
-            <button className="plan-btn purchase" onClick={handlePayPalCheckout}>
+            <button
+              className="plan-btn purchase"
+              onClick={handlePayPalCheckout}
+            >
               Subscribe Now
             </button>
           ) : (
