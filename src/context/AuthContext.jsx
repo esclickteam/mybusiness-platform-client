@@ -6,9 +6,25 @@ import createSocket from "../socket"; // singleton socket helper
 /* ===========================
    🧩 Normalize User
    =========================== */
+/* ===========================
+   🧩 Normalize User – תיקון מלא
+   =========================== */
 function normalizeUser(user) {
   if (!user) return null;
 
+  // ✅ מיפוי ודאות: אם מגיע רק id (כמו מ-API Express/Mongo) – נוודא שגם _id קיים
+  if (user.id && !user._id) user._id = user.id;
+
+  // ✅ מקרים נדירים: אם _id קיים כאובייקט (ObjectId מלא ממונגו)
+  if (typeof user._id === "object" && user._id.$oid) {
+    user._id = user._id.$oid;
+  }
+
+  // ✅ מקרים מיוחדים – affiliate/staff משתמשים
+  if (user.affiliateId && !user.role) user.role = "affiliate";
+  if (user.staffRole && !user.role) user.role = "staff";
+
+  // ✅ בדיקת תוקף מנוי
   const now = new Date();
   let computedIsValid = false;
 
@@ -16,24 +32,37 @@ function normalizeUser(user) {
     computedIsValid = new Date(user.subscriptionEnd) > now;
   }
 
+  // ✅ מצבים מיוחדים
   const isTrialing = user.subscriptionPlan === "trial" && computedIsValid;
   const isPendingActivation = user.status === "pending_activation";
 
+  // ✅ החזרה מאוחדת ונקייה
   return {
     ...user,
+
+    // חיזוק מבני נתונים
+    _id: user._id?.toString() || "",
+    businessId: user.businessId || null,
+    role: user.role || "business",
+
+    // לוגיקה עסקית
     hasPaid: Boolean(user?.hasPaid),
     isSubscriptionValid:
       typeof user?.isSubscriptionValid === "boolean"
         ? user.isSubscriptionValid
         : computedIsValid,
+
     subscriptionStatus: user.status || user.subscriptionPlan || "free",
     daysLeft:
       user.subscriptionEnd && computedIsValid
         ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
         : 0,
+
+    // האם המשתמש פעיל
     hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
 }
+
 
 /* ===========================
    🔁 Token Refresh (single-flight)
