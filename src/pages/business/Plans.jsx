@@ -50,7 +50,7 @@ export default function Plans() {
       body: JSON.stringify({
         amount: total,
         planName:
-          selectedPeriod === "monthly"
+          selectedPeriod ===  "monthly"
             ? "BizUply Monthly Plan"
             : "BizUply Yearly Plan",
         userId: String(user?.userId || user?._id || ""), // ✅ נשלח מזהה המשתמש
