@@ -8,7 +8,7 @@ export default function Plans() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-  const { user, initialized } = useAuth();
+  const { user, initialized, loading: authLoading } = useAuth();
 
   const plans = {
     monthly: { price: 1, total: 1, save: 0 }, // בדיקה ב-$1 בלבד
@@ -46,9 +46,6 @@ export default function Plans() {
   ======================================== */
   const createOrder = async () => {
     try {
-      console.log("🟢 Creating PayPal order...");
-      console.log("👤 Current user before order:", user);
-
       if (!user?._id) {
         console.warn("⚠️ No user._id found — cannot create order!");
         alert("User not loaded yet. Please log in again.");
@@ -102,15 +99,18 @@ export default function Plans() {
      🚀 הפעלת PayPal Checkout
   ======================================== */
   const handlePayPalCheckout = async () => {
-    setLoading(true);
+    if (!initialized || authLoading) {
+      alert("Please wait until your account is fully loaded...");
+      return;
+    }
 
     if (!user?._id) {
       alert("User not loaded yet. Please log in again.");
-      setLoading(false);
       return;
     }
 
     console.log("🚀 Starting PayPal checkout for user:", user._id);
+    setLoading(true);
 
     try {
       const paypal = window.paypal;
@@ -159,7 +159,9 @@ export default function Plans() {
               setTimeout(() => navigate("/dashboard"), 2000);
             } catch (err) {
               console.error("❌ Error after payment:", err);
-              alert("Payment succeeded but user update failed. Please contact support.");
+              alert(
+                "Payment succeeded but user update failed. Please contact support."
+              );
               setLoading(false);
             }
           },
@@ -179,10 +181,19 @@ export default function Plans() {
   /* ========================================
      ⏳ Loading guard
   ======================================== */
-  if (!initialized) {
+  if (!initialized || authLoading) {
     return (
       <div className="plans-loading">
-        <p>Loading user data...</p>
+        <p>Loading your account...</p>
+      </div>
+    );
+  }
+
+  if (!user?._id) {
+    return (
+      <div className="plans-loading">
+        <p>Session expired. Please log in again.</p>
+        <button onClick={() => navigate("/login")}>Go to Login</button>
       </div>
     );
   }
@@ -204,8 +215,8 @@ export default function Plans() {
             </>
           ) : (
             <>
-              Your free trial has ended. Choose a plan below to continue enjoying
-              BizUply.
+              Your free trial has ended. Choose a plan below to continue
+              enjoying BizUply.
             </>
           )}
         </p>
@@ -216,7 +227,9 @@ export default function Plans() {
         {["monthly", "yearly"].map((period) => (
           <button
             key={period}
-            className={`toggle-btn ${selectedPeriod === period ? "active" : ""}`}
+            className={`toggle-btn ${
+              selectedPeriod === period ? "active" : ""
+            }`}
             onClick={() => setSelectedPeriod(period)}
           >
             {period === "monthly" ? "Monthly" : "Yearly"}
@@ -264,7 +277,10 @@ export default function Plans() {
               Subscribe Now
             </button>
           ) : (
-            <button className="plan-btn primary" onClick={() => navigate("/checkout")}>
+            <button
+              className="plan-btn primary"
+              onClick={() => navigate("/checkout")}
+            >
               Try Free for 14 Days
             </button>
           )}
