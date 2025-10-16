@@ -8,7 +8,7 @@ export default function Plans() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, initialized } = useAuth();
 
   const plans = {
     monthly: { price: 1, total: 1, save: 0 }, // בדיקה ב-$1 בלבד
@@ -16,14 +16,13 @@ export default function Plans() {
   };
 
   const { price, total, save } = plans[selectedPeriod];
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
   const now = new Date();
+
   const trialExpired =
     user?.subscriptionPlan === "trial" &&
     user?.subscriptionEnd &&
     new Date(user.subscriptionEnd) < now;
-
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
   /* ========================================
      💳 טעינת PayPal SDK
@@ -46,30 +45,56 @@ export default function Plans() {
      ⚡ יצירת הזמנה בשרת
   ======================================== */
   const createOrder = async () => {
-    const res = await fetch(`${API_BASE}/api/paypal/create-order`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    try {
+      console.log("🟢 Creating PayPal order...");
+      console.log("👤 Current user before order:", user);
+
+      if (!user?._id) {
+        console.warn("⚠️ No user._id found — cannot create order!");
+        alert("User not loaded yet. Please log in again.");
+        return;
+      }
+
+      const body = {
         amount: total,
         planName:
           selectedPeriod === "monthly"
             ? "BizUply Monthly Plan"
             : "BizUply Yearly Plan",
-        userId: user?._id,
-      }),
-    });
-    const data = await res.json();
-    return data.id;
+        userId: user._id,
+      };
+
+      console.log("📦 Sending create-order body:", body);
+
+      const res = await fetch(`${API_BASE}/api/paypal/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      console.log("✅ create-order response:", data);
+
+      if (!data.id) throw new Error("No PayPal order ID returned");
+      return data.id;
+    } catch (err) {
+      console.error("❌ createOrder failed:", err);
+      alert("Error creating order. Please try again.");
+      setLoading(false);
+      throw err;
+    }
   };
 
   /* ========================================
      💰 אישור תשלום (CAPTURE)
   ======================================== */
   const captureOrder = async (orderId) => {
+    console.log("💰 Capturing PayPal order:", orderId);
     const res = await fetch(`${API_BASE}/api/paypal/capture/${orderId}`, {
       method: "POST",
     });
     const data = await res.json();
+    console.log("✅ capture response:", data);
     return data;
   };
 
@@ -78,6 +103,15 @@ export default function Plans() {
   ======================================== */
   const handlePayPalCheckout = async () => {
     setLoading(true);
+
+    if (!user?._id) {
+      alert("User not loaded yet. Please log in again.");
+      setLoading(false);
+      return;
+    }
+
+    console.log("🚀 Starting PayPal checkout for user:", user._id);
+
     try {
       const paypal = window.paypal;
       if (!paypal) {
@@ -95,9 +129,16 @@ export default function Plans() {
           createOrder: async () => await createOrder(),
           onApprove: async (data) => {
             try {
+              console.log("✅ Payment approved:", data);
               const result = await captureOrder(data.orderID);
 
               // 💾 עדכון משתמש במונגו מיד אחרי תשלום
+              console.log("📩 Updating user subscription with:", {
+                userId: user._id,
+                plan: selectedPeriod,
+                orderId: data.orderID,
+              });
+
               await fetch(`${API_BASE}/api/paypal/subscription/confirm`, {
                 method: "POST",
                 headers: {
@@ -105,13 +146,14 @@ export default function Plans() {
                   Authorization: `Bearer ${user?.token || ""}`,
                 },
                 body: JSON.stringify({
-                  userId: user?._id,
+                  userId: user._id,
                   plan: selectedPeriod,
                   orderId: data.orderID,
                   paypalData: result,
                 }),
               });
 
+              console.log("🎉 Payment + user update success!");
               setLoading(false);
               setSuccess(true);
               setTimeout(() => navigate("/dashboard"), 2000);
@@ -122,9 +164,9 @@ export default function Plans() {
             }
           },
           onError: (err) => {
-            console.error("PayPal error:", err);
-            setLoading(false);
+            console.error("💥 PayPal error:", err);
             alert("Payment failed. Please try again.");
+            setLoading(false);
           },
         })
         .render("#paypal-button-container");
@@ -134,6 +176,20 @@ export default function Plans() {
     }
   };
 
+  /* ========================================
+     ⏳ Loading guard
+  ======================================== */
+  if (!initialized) {
+    return (
+      <div className="plans-loading">
+        <p>Loading user data...</p>
+      </div>
+    );
+  }
+
+  /* ========================================
+     🖼️ Render UI
+  ======================================== */
   return (
     <div className="plans-page">
       {/* 🌟 Header */}

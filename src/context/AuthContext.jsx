@@ -6,14 +6,15 @@ import createSocket from "../socket"; // singleton socket helper
 /* ===========================
    🧩 Normalize User
    =========================== */
-/* ===========================
-   🧩 Normalize User
-   =========================== */
 function normalizeUser(user) {
   if (!user) return null;
 
+  // 🔍 DEBUG: הצגת נתוני המשתמש שמגיעים מהשרת
+  console.log("🧩 normalizeUser input:", user);
+
   // ✅ טיפול במקרה שיש רק id ואין _id
   const _id = user._id || user.id;
+  console.log("✅ normalized _id:", _id);
 
   const now = new Date();
   let computedIsValid = false;
@@ -25,7 +26,7 @@ function normalizeUser(user) {
   const isTrialing = user.subscriptionPlan === "trial" && computedIsValid;
   const isPendingActivation = user.status === "pending_activation";
 
-  return {
+  const normalizedUser = {
     ...user,
     _id, // ✅ מבטיח שתמיד יהיה user._id
     hasPaid: Boolean(user?.hasPaid),
@@ -40,8 +41,10 @@ function normalizeUser(user) {
         : 0,
     hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
-}
 
+  console.log("🎯 normalizeUser output:", normalizedUser);
+  return normalizedUser;
+}
 
 /* ===========================
    🔁 Token Refresh (single-flight)
@@ -99,18 +102,20 @@ export function AuthProvider({ children }) {
       const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
         withCredentials: true,
       });
+      console.log("🔁 refreshUser() data:", data);
       const normalized = normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
+      console.log("✅ Refreshed user set:", normalized);
       return normalized;
     } catch (e) {
-      console.error("Failed to refresh user", e);
+      console.error("❌ Failed to refresh user", e);
       return null;
     }
   };
 
   /* ===========================
-     🔐 Login (optimized, no flash)
+     🔐 Login
      =========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
@@ -125,20 +130,23 @@ export function AuthProvider({ children }) {
       const { accessToken, user: loggedInUser, redirectUrl } = data;
       if (!accessToken) throw new Error("No access token received");
 
-      // ✅ שמירת טוקן והגדרתו מראש
+      console.log("🔐 Logged in user before normalize:", loggedInUser);
+
+      // ✅ שמירת טוקן
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
 
-      // ✅ שמירת המשתמש כבר עכשיו למניעת פלאש
+      // ✅ שמירת המשתמש עם normalization
       const normalizedUser = normalizeUser(loggedInUser);
+      console.log("✅ Normalized user after login:", normalizedUser);
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
       // ✅ רקע קבוע לפני ניווט
       document.body.style.background = "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
 
-      // ✅ רענון במקביל (לא חוסם ניווט)
+      // ✅ רענון במקביל
       refreshUser(true).catch(() => {});
 
       // ✅ ניווט אחרי התחברות
@@ -171,68 +179,6 @@ export function AuthProvider({ children }) {
           ? "❌ אימייל או סיסמה שגויים"
           : "❌ שגיאה בשרת, נסה שוב"
       );
-      setLoading(false);
-      throw e;
-    }
-  };
-
-  /* ===========================
-     🧑‍💼 Staff login
-     =========================== */
-  const staffLogin = async (username, password) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await API.post(
-        "/auth/staff-login",
-        { username: username.trim(), password },
-        { withCredentials: true }
-      );
-      const { accessToken, user: staffUser } = data;
-      localStorage.setItem("token", accessToken);
-      setAuthToken(accessToken);
-      setToken(accessToken);
-
-      const normalizedStaffUser = normalizeUser(staffUser);
-      setUser(normalizedStaffUser);
-      localStorage.setItem("businessDetails", JSON.stringify(normalizedStaffUser));
-
-      refreshUser(true).catch(() => {});
-      setLoading(false);
-      return normalizedStaffUser;
-    } catch (e) {
-      setError(
-        e.response?.status >= 400 && e.response?.status < 500
-          ? "❌ שם משתמש או סיסמה שגויים"
-          : "❌ שגיאה בשרת, נסה שוב"
-      );
-      setLoading(false);
-      throw e;
-    }
-  };
-
-  /* ===========================
-     🤝 Affiliate login
-     =========================== */
-  const affiliateLogin = async (publicToken) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await API.get(`/affiliate/login/${publicToken}`, {
-        withCredentials: true,
-      });
-      if (!data.success) throw new Error("משווק לא נמצא");
-
-      const normalized = normalizeUser(data);
-      setUser(normalized);
-      localStorage.setItem("businessDetails", JSON.stringify(normalized));
-
-      setToken(null);
-      refreshUser(true).catch(() => {});
-      setLoading(false);
-      return normalized;
-    } catch (e) {
-      setError(e.message || "שגיאה בכניסה כמשווק");
       setLoading(false);
       throw e;
     }
@@ -277,37 +223,15 @@ export function AuthProvider({ children }) {
     (async () => {
       try {
         const freshUser = await refreshUser(true);
-        if (!freshUser) throw new Error("No fresh user data");
+        console.log("🌐 Loaded freshUser:", freshUser);
 
+        if (!freshUser) throw new Error("No fresh user data");
         setUser(freshUser);
 
         const newSocket = await createSocket(singleFlightRefresh, logout, freshUser.businessId);
         setSocket(newSocket);
-
-        const justRegistered = sessionStorage.getItem("justRegistered");
-        if (justRegistered) {
-          sessionStorage.removeItem("justRegistered");
-          if (freshUser.role === "business" && freshUser.businessId) {
-            navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
-          } else {
-            navigate("/dashboard", { replace: true });
-          }
-          return;
-        }
-
-        const savedRedirect = sessionStorage.getItem("postLoginRedirect");
-        if (savedRedirect) {
-          const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && freshUser.hasAccess;
-          if (!shouldSkip) navigate(savedRedirect, { replace: true });
-          sessionStorage.removeItem("postLoginRedirect");
-          return;
-        }
-
-        if (freshUser.role === "business" && freshUser.businessId && location.pathname === "/") {
-          navigate(`/business/${freshUser.businessId}/dashboard`, { replace: true });
-        }
-      } catch {
+      } catch (err) {
+        console.error("❌ Init error:", err);
         await logout();
       } finally {
         setLoading(false);
@@ -326,7 +250,7 @@ export function AuthProvider({ children }) {
   }, [successMessage]);
 
   /* ===========================
-     🧩 Context value
+     ✅ Render Context
      =========================== */
   const ctx = {
     token,
@@ -336,28 +260,12 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
-    staffLogin,
-    affiliateLogin,
-    fetchWithAuth: async (fn) => {
-      try {
-        return await fn();
-      } catch (err) {
-        if ([401, 403].includes(err.response?.status)) {
-          await logout();
-          setError("❌ יש להתחבר מחדש");
-        }
-        throw err;
-      }
-    },
     refreshAccessToken: singleFlightRefresh,
     refreshUser,
     socket,
     setUser,
   };
 
-  /* ===========================
-     🧩 Loader בזמן טעינה ראשונית
-     =========================== */
   if (loading && !initialized) {
     return (
       <div
@@ -374,9 +282,6 @@ export function AuthProvider({ children }) {
     );
   }
 
-  /* ===========================
-     ✅ Render
-     =========================== */
   return (
     <AuthContext.Provider value={ctx}>
       {successMessage && <div className="global-success-toast">{successMessage}</div>}
