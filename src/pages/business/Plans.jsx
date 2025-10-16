@@ -8,10 +8,10 @@ export default function Plans() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-  const { user, initialized, refreshUser } = useAuth();
+  const { user, initialized } = useAuth();
 
   const plans = {
-    monthly: { price: 1, total: 1, save: 0 },
+    monthly: { price: 1, total: 1, save: 0 }, // בדיקה ב-$1 בלבד
     yearly: { price: 1, total: 1, save: 0 },
   };
 
@@ -24,7 +24,9 @@ export default function Plans() {
     user?.subscriptionEnd &&
     new Date(user.subscriptionEnd) < now;
 
-  /* 💳 טעינת PayPal SDK */
+  /* ========================================
+     💳 טעינת PayPal SDK
+  ======================================== */
   useEffect(() => {
     const existingScript = document.querySelector("#paypal-sdk");
     if (!existingScript) {
@@ -39,73 +41,78 @@ export default function Plans() {
     }
   }, []);
 
-  /* ✅ ודא שהמשתמש מעודכן */
-  useEffect(() => {
-    if (initialized && !user?._id) {
-      console.warn("⚠️ User not loaded after init — refreshing...");
-      refreshUser(true);
-    }
-  }, [initialized, user, refreshUser]);
-
-  /* ⚡ יצירת הזמנה בשרת */
+  /* ========================================
+     ⚡ יצירת הזמנה בשרת
+  ======================================== */
   const createOrder = async () => {
-    if (!user?._id) {
-      alert("User not loaded yet. Please log in again.");
-      console.error("🚫 Missing user._id when creating order");
-      return;
+    try {
+      console.log("🟢 Creating PayPal order...");
+      console.log("👤 Current user before order:", user);
+
+      if (!user?._id) {
+        console.warn("⚠️ No user._id found — cannot create order!");
+        alert("User not loaded yet. Please log in again.");
+        return;
+      }
+
+      const body = {
+        amount: total,
+        planName:
+          selectedPeriod === "monthly"
+            ? "BizUply Monthly Plan"
+            : "BizUply Yearly Plan",
+        userId: user._id,
+      };
+
+      console.log("📦 Sending create-order body:", body);
+
+      const res = await fetch(`${API_BASE}/api/paypal/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      console.log("✅ create-order response:", data);
+
+      if (!data.id) throw new Error("No PayPal order ID returned");
+      return data.id;
+    } catch (err) {
+      console.error("❌ createOrder failed:", err);
+      alert("Error creating order. Please try again.");
+      setLoading(false);
+      throw err;
     }
-
-    const body = {
-      amount: total,
-      planName:
-        selectedPeriod === "monthly"
-          ? "BizUply Monthly Plan"
-          : "BizUply Yearly Plan",
-      userId: user._id,
-    };
-
-    console.log("📦 create-order body:", body);
-
-    const res = await fetch(`${API_BASE}/api/paypal/create-order`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    const data = await res.json();
-    console.log("✅ create-order response:", data);
-
-    if (!data.id) throw new Error("No PayPal order ID returned");
-    return data.id;
   };
 
-  /* 💰 אישור תשלום */
+  /* ========================================
+     💰 אישור תשלום (CAPTURE)
+  ======================================== */
   const captureOrder = async (orderId) => {
-    console.log("💰 Capturing order:", orderId);
+    console.log("💰 Capturing PayPal order:", orderId);
     const res = await fetch(`${API_BASE}/api/paypal/capture/${orderId}`, {
       method: "POST",
     });
     const data = await res.json();
+    console.log("✅ capture response:", data);
     return data;
   };
 
-  /* 🚀 Checkout */
+  /* ========================================
+     🚀 הפעלת PayPal Checkout
+  ======================================== */
   const handlePayPalCheckout = async () => {
     setLoading(true);
+
+    if (!user?._id) {
+      alert("User not loaded yet. Please log in again.");
+      setLoading(false);
+      return;
+    }
+
+    console.log("🚀 Starting PayPal checkout for user:", user._id);
+
     try {
-      if (!initialized) {
-        alert("Please wait a moment until your profile is ready.");
-        setLoading(false);
-        return;
-      }
-
-      if (!user?._id) {
-        alert("User not loaded yet. Please log in again.");
-        console.error("🚫 user missing in handlePayPalCheckout");
-        setLoading(false);
-        return;
-      }
-
       const paypal = window.paypal;
       if (!paypal) {
         alert("PayPal SDK not loaded yet. Please refresh the page.");
@@ -113,6 +120,7 @@ export default function Plans() {
         return;
       }
 
+      // מנקים כל כפתור קודם כדי למנוע כפילויות
       const container = document.getElementById("paypal-button-container");
       container.innerHTML = "";
 
@@ -120,57 +128,90 @@ export default function Plans() {
         .Buttons({
           createOrder: async () => await createOrder(),
           onApprove: async (data) => {
-            const result = await captureOrder(data.orderID);
-            await fetch(`${API_BASE}/api/paypal/subscription/confirm`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
+            try {
+              console.log("✅ Payment approved:", data);
+              const result = await captureOrder(data.orderID);
+
+              // 💾 עדכון משתמש במונגו מיד אחרי תשלום
+              console.log("📩 Updating user subscription with:", {
                 userId: user._id,
                 plan: selectedPeriod,
                 orderId: data.orderID,
-                paypalData: result,
-              }),
-            });
+              });
 
-            setLoading(false);
-            setSuccess(true);
-            setTimeout(() => navigate("/dashboard"), 2000);
+              await fetch(`${API_BASE}/api/paypal/subscription/confirm`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${user?.token || ""}`,
+                },
+                body: JSON.stringify({
+                  userId: user._id,
+                  plan: selectedPeriod,
+                  orderId: data.orderID,
+                  paypalData: result,
+                }),
+              });
+
+              console.log("🎉 Payment + user update success!");
+              setLoading(false);
+              setSuccess(true);
+              setTimeout(() => navigate("/dashboard"), 2000);
+            } catch (err) {
+              console.error("❌ Error after payment:", err);
+              alert("Payment succeeded but user update failed. Please contact support.");
+              setLoading(false);
+            }
           },
           onError: (err) => {
-            console.error("PayPal error:", err);
+            console.error("💥 PayPal error:", err);
             alert("Payment failed. Please try again.");
             setLoading(false);
           },
         })
         .render("#paypal-button-container");
     } catch (err) {
-      console.error("❌ Checkout error:", err);
+      console.error("Checkout error:", err);
       setLoading(false);
     }
   };
 
-  /* מצב טעינה עד שהמשתמש מוכן */
+  /* ========================================
+     ⏳ Loading guard
+  ======================================== */
   if (!initialized) {
     return (
       <div className="plans-loading">
-        <p>Loading your account...</p>
+        <p>Loading user data...</p>
       </div>
     );
   }
 
+  /* ========================================
+     🖼️ Render UI
+  ======================================== */
   return (
     <div className="plans-page">
+      {/* 🌟 Header */}
       <header className="plans-header">
         <h1>Choose Your BizUply Plan</h1>
         <p>
-          {!trialExpired
-            ? "Start your 14-day free trial today. No credit card required."
-            : "Your free trial has ended. Choose a plan below to continue enjoying BizUply."}
+          All the tools your business needs — in one smart platform.{" "}
+          {!trialExpired ? (
+            <>
+              Start your <strong>14-day free trial</strong> today. No credit
+              card required.
+            </>
+          ) : (
+            <>
+              Your free trial has ended. Choose a plan below to continue enjoying
+              BizUply.
+            </>
+          )}
         </p>
       </header>
 
+      {/* 🔘 Toggle Between Monthly / Yearly */}
       <div className="plans-toggle">
         {["monthly", "yearly"].map((period) => (
           <button
@@ -183,9 +224,15 @@ export default function Plans() {
         ))}
       </div>
 
+      {/* 💼 Main Plan Card */}
       <section className="plan-card-container">
         <div className="plan-card highlight">
           <h2>BizUply Professional Plan</h2>
+          <p className="plan-desc">
+            Access every BizUply feature — including your AI Partner, CRM,
+            messaging, client reviews, and collaboration tools — all from one
+            powerful dashboard.
+          </p>
 
           <div className="plan-price">
             <span className="price">${price}</span>
@@ -194,6 +241,20 @@ export default function Plans() {
             </span>
           </div>
 
+          <ul className="plan-features">
+            <li>✔ Professional Business Page</li>
+            <li>✔ Smart CRM for Clients & Appointments</li>
+            <li>✔ Built-in Messaging System</li>
+            <li>✔ Ratings & Reviews Management</li>
+            <li>✔ Business Collaboration Network</li>
+            <li>✔ AI Business Advisor & Smart Insights</li>
+            <li>✔ Create and Track Client Tasks</li>
+            <li>✔ Log and Document Client Calls</li>
+            <li>✔ Automated Notifications</li>
+            <li>✔ Predictive Analytics</li>
+          </ul>
+
+          {/* 🔘 CTA Button */}
           {success ? (
             <button className="plan-btn success">✅ Payment Successful!</button>
           ) : loading ? (
@@ -208,6 +269,7 @@ export default function Plans() {
             </button>
           )}
 
+          {/* 🧾 Summary Box */}
           <div className="summary-box">
             <div className="summary-row">
               <span>Total to pay:</span>
@@ -221,6 +283,7 @@ export default function Plans() {
             )}
           </div>
 
+          {/* 🪙 PayPal Button Container */}
           <div id="paypal-button-container" style={{ marginTop: "1rem" }}></div>
         </div>
       </section>
