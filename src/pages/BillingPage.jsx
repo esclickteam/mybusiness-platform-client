@@ -110,7 +110,7 @@ export default function SubscriptionPlanCard() {
         )}
 
         <div className="billing-support">
-          Need help? <a href="/help-center">Contact Support</a>
+          Need help? <a href="/contact">Contact Support</a>
         </div>
       </div>
     </div>
