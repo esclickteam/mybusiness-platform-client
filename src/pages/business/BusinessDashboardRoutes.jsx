@@ -39,6 +39,8 @@ const DashboardGuidePage = lazy(() => import("../DashboardGuidePage"));
 const AppointmentCRMGuidePage = lazy(() => import("../AppointmentCRMGuidePage"));
 const BusinessCollaborationGuidePage = lazy(() => import("../BusinessCollaborationGuidePage"));
 const AICompanionGuidePage = lazy(() => import("../AICompanionGuidePage"));
+const BillingPage = lazy(() => import("../BillingPage"));
+
 
 // FAQ pages – standalone components
 import ProfileFAQ from "../ProfileFAQ";
@@ -148,6 +150,8 @@ const BusinessDashboardRoutes = () => {
           <Route path="messages" element={<BusinessChatPage />} />
           <Route path="business-messages" element={<CollabChat />} />
           <Route path="affiliate" element={<AffiliatePage />} />
+          <Route path="billing" element={<BillingPage />} />
+
 
           <Route path="crm" element={<CRMMain />}>
             <Route index element={<Navigate to="appointments" replace />} />

@@ -84,7 +84,6 @@ const Features = lazy(() => import("./pages/Features"));
 const Solutions = lazy(() => import("./pages/Solutions"));
 const Support = lazy(() => import("./pages/Support"));
 const TrialEnded = lazy(() => import("./pages/TrialEnded"));
-const BillingPage = lazy(() => import("./pages/BillingPage"));
 
 
 
@@ -195,7 +194,6 @@ export default function App() {
                   <Route path="/features" element={<Features />} />
                   <Route path="/solutions" element={<Solutions />} />
                   <Route path="/trial-ended" element={<TrialEnded />} />
-                  <Route path="billing" element={<BillingPage />} />
 
 
 
