@@ -12,8 +12,10 @@ export default function Plans() {
   const { user } = useAuth();
 
   const monthlyPlanId = "P-0JB4726150008570HNDY7UMI"; // ✅ Plan ID (Recurring)
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+  const API_BASE = import.meta.env.VITE_API_URL || ""; // 👈 תואם למשתנה הקיים ב־Vercel
   const userId = user?._id || user?.userId || user?.id;
+
+  console.log("🔗 API_BASE:", API_BASE);
 
   const now = new Date();
   const trialExpired =
@@ -59,7 +61,6 @@ export default function Plans() {
         return;
       }
 
-      // מנקה כפתורים קודמים
       const container = document.getElementById("paypal-button-container");
       container.innerHTML = "";
 
@@ -84,7 +85,7 @@ export default function Plans() {
                   console.log("✅ Monthly subscription approved:", data);
                   try {
                     const res = await fetch(
-                      `${API_BASE}/api/paypal/subscription/success`,
+                      `${API_BASE}/paypal/subscription/success`,
                       {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -110,7 +111,7 @@ export default function Plans() {
             : {
                 // 💰 מנוי שנתי חד-פעמי
                 createOrder: async function () {
-                  const res = await fetch(`${API_BASE}/api/paypal/create-order`, {
+                  const res = await fetch(`${API_BASE}/paypal/create-order`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -125,10 +126,10 @@ export default function Plans() {
                 onApprove: async function (data, actions) {
                   console.log("✅ Yearly payment approved:", data);
                   try {
-                    await fetch(`${API_BASE}/api/paypal/capture/${data.orderID}`, {
+                    await fetch(`${API_BASE}/paypal/capture/${data.orderID}`, {
                       method: "POST",
                     });
-                    await fetch(`${API_BASE}/api/paypal/subscription/confirm`, {
+                    await fetch(`${API_BASE}/paypal/subscription/confirm`, {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({

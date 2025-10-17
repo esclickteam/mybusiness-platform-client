@@ -12,8 +12,11 @@ export default function SubscriptionPlanCard() {
   const [cancelled, setCancelled] = useState(user?.subscriptionCancelled || false);
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
+
+  // 🧩 שימוש במשתנה הסביבה הקיים (עם /api)
   const API_BASE = import.meta.env.VITE_API_URL || "";
 
+  console.log("🔗 API_BASE:", API_BASE);
 
   /* 🚫 ביטול חידוש אוטומטי */
   const handleCancel = async () => {
@@ -21,7 +24,7 @@ export default function SubscriptionPlanCard() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/api/paypal/subscription/cancel`, {
+      const res = await fetch(`${API_BASE}/paypal/subscription/cancel`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user?._id }),
@@ -31,7 +34,7 @@ export default function SubscriptionPlanCard() {
       setCancelled(true);
       alert("Auto-renewal cancelled. You’ll keep access until your billing period ends.");
     } catch (err) {
-      console.error(err);
+      console.error("❌ Cancel subscription error:", err);
       alert("Failed to cancel renewal. Please contact support.");
     } finally {
       setLoading(false);
@@ -41,17 +44,25 @@ export default function SubscriptionPlanCard() {
   /* 💰 שליפת היסטוריית תשלומים */
   useEffect(() => {
     if (!user?._id) return;
+
     const fetchPayments = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/paypal/payments/user/${user._id}`);
+        console.log("📡 Fetching payments from:", `${API_BASE}/paypal/payments/user/${user._id}`);
+        const res = await fetch(`${API_BASE}/paypal/payments/user/${user._id}`);
+        console.log("🔎 Response status:", res.status);
+
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data = await res.json();
+        console.log("✅ Payments data:", data);
+
         setPayments(data || []);
       } catch (err) {
-        console.error("Failed to load payments:", err);
+        console.error("❌ Failed to load payments:", err);
       } finally {
         setLoadingPayments(false);
       }
     };
+
     fetchPayments();
   }, [user?._id]);
 
