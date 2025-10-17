@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import "../styles/Plans.css";
+import "../styles/Billing.css"; // ✅ נפרד מ-Plans.css
 
 /**
  * 💳 SubscriptionPlanCard
- * עמוד הצגת מנוי – Billing & Subscription
+ * הצגת פרטי מנוי וביטול דרך עמוד Billing
  */
 export default function SubscriptionPlanCard() {
   const { user } = useAuth();
@@ -61,64 +61,58 @@ export default function SubscriptionPlanCard() {
 
   /* 🎨 תצוגה */
   return (
-    <div className="subscription-card">
-      <h2 className="subscription-title">My Subscription</h2>
-
-      <div className="subscription-info">
-        <div className="info-row">
-          <span>Plan:</span>
-          <strong>{planName}</strong>
+    <div className="billing-page">
+      <div className="billing-container">
+        <div className="billing-header">
+          <h1>Billing & Subscription</h1>
+          <p>Manage your active plan, payments, and renewals.</p>
         </div>
 
-        <div className="info-row">
-          <span>Status:</span>
-          <strong className={statusClass}>{statusText}</strong>
+        <div className="subscription-info">
+          <div className="info-row">
+            <span>Plan:</span>
+            <strong>{planName}</strong>
+          </div>
+
+          <div className="info-row">
+            <span>Status:</span>
+            <strong className={statusClass}>{statusText}</strong>
+          </div>
+
+          <div className="info-row">
+            <span>{plan === "monthly" ? "Next Billing:" : "Valid Until:"}</span>
+            <strong>{endDate}</strong>
+          </div>
+
+          <div className="info-row">
+            <span>Billing Type:</span>
+            <strong>{billingType}</strong>
+          </div>
         </div>
 
-        <div className="info-row">
-          <span>{plan === "monthly" ? "Next Billing:" : "Valid Until:"}</span>
-          <strong>{endDate}</strong>
-        </div>
+        {isActive && plan === "monthly" && (
+          <button
+            className="cancel-btn"
+            onClick={handleCancel}
+            disabled={loading}
+          >
+            {loading ? "Cancelling..." : "Cancel Subscription"}
+          </button>
+        )}
 
-        <div className="info-row">
-          <span>Billing Type:</span>
-          <strong>{billingType}</strong>
+        {!isActive && (
+          <button
+            className="renew-btn"
+            onClick={() => (window.location.href = "/plans")}
+          >
+            Renew / Upgrade Plan
+          </button>
+        )}
+
+        <div className="billing-support">
+          Need help? <a href="/help-center">Contact Support</a>
         </div>
       </div>
-
-      {isActive && plan === "monthly" && (
-        <button
-          className="cancel-btn"
-          onClick={handleCancel}
-          disabled={loading}
-        >
-          {loading ? "Cancelling..." : "Cancel Subscription"}
-        </button>
-      )}
-
-      {!isActive && (
-        <button
-          className="renew-btn"
-          onClick={() => (window.location.href = "/plans")}
-        >
-          Renew / Upgrade Plan
-        </button>
-      )}
-
-      <p
-        style={{
-          textAlign: "center",
-          marginTop: "1.2rem",
-          color: "#666",
-          fontSize: "0.9rem",
-        }}
-      >
-        Need help?{" "}
-        <a href="/help-center" style={{ color: "#6c63ff", fontWeight: 500 }}>
-          Contact Support
-        </a>
-        .
-      </p>
     </div>
   );
 }
