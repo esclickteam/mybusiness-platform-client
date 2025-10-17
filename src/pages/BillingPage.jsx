@@ -13,10 +13,12 @@ export default function SubscriptionPlanCard() {
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
 
-  // 🧩 שימוש במשתנה הסביבה הקיים (כולל /api)
+  // 🧩 תואם למשתנה הקיים ב־Vercel
   const API_BASE = import.meta.env.VITE_API_URL || "";
+  const userId = user?._id || user?.userId || user?.id;
 
   console.log("🔗 API_BASE:", API_BASE);
+  console.log("👤 userId:", userId);
 
   /* 🚫 ביטול חידוש אוטומטי */
   const handleCancel = async () => {
@@ -27,7 +29,7 @@ export default function SubscriptionPlanCard() {
       const res = await fetch(`${API_BASE}/paypal/subscription/cancel`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user?._id }),
+        body: JSON.stringify({ userId }),
       });
 
       if (!res.ok) throw new Error("Failed to cancel subscription");
@@ -43,10 +45,10 @@ export default function SubscriptionPlanCard() {
 
   /* 💰 שליפת היסטוריית תשלומים */
   useEffect(() => {
-    if (!user || !user._id) return; // ✅ נוודא שהמשתמש קיים
+    if (!userId) return;
 
     const fetchPayments = async () => {
-      const url = `${API_BASE}/paypal/payments/user/${user._id}`;
+      const url = `${API_BASE}/paypal/payments/user/${userId}`;
       console.log("📡 Fetching payments from:", url);
 
       try {
@@ -66,7 +68,7 @@ export default function SubscriptionPlanCard() {
     };
 
     fetchPayments();
-  }, [user, user?._id, API_BASE]); // ✅ נוספה גם תלות ב־user
+  }, [userId, API_BASE]);
 
   /* 📅 נתונים כלליים */
   const plan = user?.subscriptionPlan || "trial";
@@ -183,7 +185,7 @@ export default function SubscriptionPlanCard() {
                         className={`status-badge ${
                           p.status === "paid" || p.status === "active"
                             ? "paid"
-                            : p.status.includes("cancelled")
+                            : p.status?.includes("cancelled")
                             ? "cancelled"
                             : "pending"
                         }`}
