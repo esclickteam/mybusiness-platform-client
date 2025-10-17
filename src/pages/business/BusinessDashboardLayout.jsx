@@ -26,6 +26,7 @@ const tabs = [
   { path: "messages", label: "Customer Messages" },
   { path: "collab", label: "Collaborations" },
   { path: "crm", label: "CRM System" },
+  { path: "billing", label: "Billing & Subscription" }, // 💳 חדש
   { path: "BizUply", label: "BizUply Advisor" },
   { path: "help-center", label: "Help Center" },
 ];
@@ -37,38 +38,24 @@ const SOCKET_URL = "https://api.bizuply.com";
 const socket = io(SOCKET_URL, { autoConnect: false });
 
 export default function BusinessDashboardLayout({ children }) {
-  const { user, loading, logout } = useAuth(); // ⬅️ נדרש logout מהקונטקסט
+  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
   const { businessId } = useParams();
   const location = useLocation();
   const queryClient = useQueryClient();
   const { unreadCount: messagesCount } = useNotifications();
 
-  /* יציאה מרוכזת — עובדת גם בדסקטופ וגם במובייל */
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
   const sidebarRef = useRef(null);
 
+  /* 🚪 יציאה */
   const handleLogout = async () => {
     try {
-      // ניתוק socket אם מחובר
       if (socket?.connected) socket.disconnect();
-
-      // יציאה אמיתית מהמערכת
-      if (typeof logout === "function") {
-        await logout();
-      } else {
-        // fallback אם אין logout בקונטקסט
-        localStorage.clear();
-      }
-
-      // ניקוי cache אם רוצים (אופציונלי)
-      // await queryClient.clear();
-
-      // סגירת המבורגר במובייל (אופציונלי)
+      if (typeof logout === "function") await logout();
+      else localStorage.clear();
       setShowSidebar(false);
-
-      // ניווט לדף הבית
       navigate("/", { replace: true });
     } catch (e) {
       console.error("Logout failed:", e);
@@ -76,9 +63,7 @@ export default function BusinessDashboardLayout({ children }) {
     }
   };
 
-  /* ============================
-     🧠 חיבור Socket לעסק
-     ============================ */
+  /* 🧠 חיבור Socket לעסק */
   useEffect(() => {
     if (!user?.businessId) return;
     if (!socket.connected) socket.connect();
@@ -88,9 +73,7 @@ export default function BusinessDashboardLayout({ children }) {
     };
   }, [user?.businessId]);
 
-  /* ============================
-     🚀 Prefetch נתונים חשובים
-     ============================ */
+  /* 🚀 Prefetch נתונים חשובים */
   useEffect(() => {
     if (!user?.businessId) return;
 
@@ -116,9 +99,7 @@ export default function BusinessDashboardLayout({ children }) {
     );
   }, [user?.businessId, queryClient]);
 
-  /* ============================
-     🔐 הרשאות
-     ============================ */
+  /* 🔐 הרשאות */
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -136,22 +117,18 @@ export default function BusinessDashboardLayout({ children }) {
     }
   }, [user, loading, location.search, location.state, navigate]);
 
-  /* ============================
-     📱 מובייל ודסקטופ — Resize
-     ============================ */
+  /* 📱 Resize */
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      if (!mobile) setShowSidebar(true); // דסקטופ: התפריט תמיד פתוח
+      if (!mobile) setShowSidebar(true);
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* ============================
-     🔄 מקשים במובייל (Focus trap)
-     ============================ */
+  /* ⌨️ Focus trap במובייל */
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
     const sel =
@@ -181,9 +158,7 @@ export default function BusinessDashboardLayout({ children }) {
 
   if (loading) return <p className="loading">Loading information…</p>;
 
-  /* ============================
-     🎨 Layout
-     ============================ */
+  /* 🎨 Layout */
   return (
     <BusinessServicesProvider>
       <AiProvider>
@@ -250,7 +225,7 @@ export default function BusinessDashboardLayout({ children }) {
                   ))}
                 </nav>
 
-                {/* 👤 אזור משתמש בתחתית ההמבורגר (מובייל בלבד) */}
+                {/* 👤 אזור משתמש במובייל */}
                 {isMobile && (
                   <div className="sidebar-footer">
                     <span className="user-name">Hello, {user?.name}</span>
@@ -262,13 +237,12 @@ export default function BusinessDashboardLayout({ children }) {
               </aside>
             )}
 
-            {/* 🧭 Header עליון לדסקטופ */}
+            {/* 🧭 Header לדסקטופ */}
             {!isMobile && (
               <header className="dashboard-header">
                 <div className="dashboard-header-left">
                   <FacebookStyleNotifications />
                 </div>
-
                 <div className="dashboard-header-right">
                   <span className="user-name">Hello, {user?.name}</span>
                   <button className="logout-btn" onClick={handleLogout}>
@@ -278,7 +252,7 @@ export default function BusinessDashboardLayout({ children }) {
               </header>
             )}
 
-            {/* 🔹 כפתור פתיחה במובייל */}
+            {/* ☰ פתיחת תפריט במובייל */}
             {isMobile && !showSidebar && (
               <button
                 className="sidebar-open-btn"
@@ -289,14 +263,14 @@ export default function BusinessDashboardLayout({ children }) {
               </button>
             )}
 
-            {/* 🔔 פעמון למובייל בצד שמאל */}
+            {/* 🔔 פעמון למובייל */}
             {isMobile && (
               <div className="dashboard-bell">
                 <FacebookStyleNotifications />
               </div>
             )}
 
-            {/* 🔹 תוכן */}
+            {/* 🧩 תוכן דינמי */}
             <main
               className="dashboard-content"
               tabIndex={-1}

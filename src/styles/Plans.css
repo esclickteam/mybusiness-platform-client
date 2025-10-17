@@ -139,3 +139,86 @@
   color: #059669;
   font-weight: 600;
 }
+
+.subscription-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 30px 40px;
+  max-width: 600px;
+  margin: 2rem auto;
+  text-align: left;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.subscription-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #1f1f1f;
+}
+
+.subscription-info {
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  padding: 1rem 0;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.6rem 0;
+  font-size: 1rem;
+}
+
+.status-active {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.status-cancelled {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.cancel-btn,
+.renew-btn {
+  width: 100%;
+  margin-top: 1.4rem;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.cancel-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #dc2626;
+}
+
+.renew-btn {
+  background: linear-gradient(135deg, #6c63ff, #a855f7);
+  color: white;
+}
+
+.renew-btn:hover {
+  opacity: 0.9;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
