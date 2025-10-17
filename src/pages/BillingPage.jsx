@@ -42,7 +42,7 @@ export default function SubscriptionPlanCard() {
     if (!user?._id) return;
     const fetchPayments = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/payments/user/${user._id}`);
+        const res = await fetch(`${API_BASE}/api/paypal/payments/user/${user._id}`);
         const data = await res.json();
         setPayments(data || []);
       } catch (err) {
