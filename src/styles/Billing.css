@@ -40,7 +40,9 @@
   margin: 0;
 }
 
-/* Info Section */
+/* ===============================
+   📋 Info Section
+   =============================== */
 .subscription-info {
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
@@ -65,7 +67,15 @@
   font-weight: 600;
 }
 
-/* Status */
+/* ===============================
+   🔘 Status Styles
+   =============================== */
+.status-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .status-active {
   color: #16a34a;
   font-weight: 600;
@@ -76,7 +86,20 @@
   font-weight: 600;
 }
 
-/* Buttons */
+.status-cancelled-soon {
+  color: #eab308; /* צהוב זהב */
+  font-weight: 600;
+}
+
+.tooltip-icon {
+  font-size: 0.9rem;
+  cursor: help;
+  user-select: none;
+}
+
+/* ===============================
+   🧭 Buttons
+   =============================== */
 .cancel-btn,
 .renew-btn {
   width: 100%;
@@ -110,7 +133,9 @@
   box-shadow: 0 8px 18px rgba(109, 40, 217, 0.35);
 }
 
-/* Support Link */
+/* ===============================
+   📞 Support Link
+   =============================== */
 .billing-support {
   text-align: center;
   margin-top: 1.4rem;
@@ -128,7 +153,9 @@
   text-decoration: underline;
 }
 
-/* Animation */
+/* ===============================
+   ✨ Animation
+   =============================== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -138,4 +165,75 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+
+.payment-history {
+  margin-top: 2.5rem;
+}
+
+.payment-history h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2e1065;
+  margin-bottom: 1rem;
+}
+
+.payment-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #faf9ff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.payment-table th {
+  background: #ede9fe;
+  color: #4b0082;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+}
+
+.payment-table td {
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.payment-table tr:hover {
+  background: #f8f6ff;
+}
+
+.no-payments {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}
+
+/* Status badges */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-badge.paid {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-badge.cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge.pending {
+  background: #fef9c3;
+  color: #a16207;
 }

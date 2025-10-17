@@ -1,20 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import "../styles/Billing.css"; // ✅ נפרד מ-Plans.css
+import "../styles/Billing.css";
 
 /**
- * 💳 SubscriptionPlanCard
- * הצגת פרטי מנוי וביטול דרך עמוד Billing
+ * 💳 Billing & Subscription Page
+ * כולל ניהול מנוי + היסטוריית תשלומים
  */
 export default function SubscriptionPlanCard() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [cancelled, setCancelled] = useState(false);
+  const [cancelled, setCancelled] = useState(user?.subscriptionCancelled || false);
+  const [payments, setPayments] = useState([]);
+  const [loadingPayments, setLoadingPayments] = useState(true);
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
-  /* 🚫 ביטול מנוי */
+  /* 🚫 ביטול חידוש אוטומטי */
   const handleCancel = async () => {
-    if (!window.confirm("Are you sure you want to cancel your subscription?")) return;
+    if (!window.confirm("Are you sure you want to cancel your subscription renewal?")) return;
     setLoading(true);
 
     try {
@@ -26,18 +28,35 @@ export default function SubscriptionPlanCard() {
 
       if (!res.ok) throw new Error("Failed to cancel subscription");
       setCancelled(true);
-      alert("Your subscription has been cancelled.");
+      alert("Auto-renewal cancelled. You’ll keep access until your billing period ends.");
     } catch (err) {
       console.error(err);
-      alert("Failed to cancel subscription. Please contact support.");
+      alert("Failed to cancel renewal. Please contact support.");
     } finally {
       setLoading(false);
     }
   };
 
-  /* 📅 נתונים */
+  /* 💰 שליפת היסטוריית תשלומים */
+  useEffect(() => {
+    if (!user?._id) return;
+    const fetchPayments = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/payments/user/${user._id}`);
+        const data = await res.json();
+        setPayments(data || []);
+      } catch (err) {
+        console.error("Failed to load payments:", err);
+      } finally {
+        setLoadingPayments(false);
+      }
+    };
+    fetchPayments();
+  }, [user?._id]);
+
+  /* 📅 נתונים כלליים */
   const plan = user?.subscriptionPlan || "trial";
-  const isActive = user?.isSubscriptionValid && !cancelled;
+  const isActive = user?.isSubscriptionValid && !(!cancelled && user?.subscriptionStatus === "CANCELLED");
   const endDate = user?.subscriptionEnd
     ? new Date(user.subscriptionEnd).toLocaleDateString()
     : "—";
@@ -56,18 +75,30 @@ export default function SubscriptionPlanCard() {
       ? "One-time payment"
       : "Trial Access";
 
-  const statusClass = isActive ? "status-active" : "status-cancelled";
-  const statusText = isActive ? "Active" : "Cancelled / Expired";
+  // 🧠 סטטוס חכם
+  let statusText = "Cancelled / Expired";
+  let statusClass = "status-cancelled";
+  let tooltip = "";
 
-  /* 🎨 תצוגה */
+  if (isActive && cancelled) {
+    statusText = "Active (auto-renew cancelled)";
+    statusClass = "status-cancelled-soon";
+    tooltip = "Your plan remains active until the end of your current billing period.";
+  } else if (isActive) {
+    statusText = "Active";
+    statusClass = "status-active";
+  }
+
   return (
     <div className="billing-page">
       <div className="billing-container">
+        {/* 🧭 Header */}
         <div className="billing-header">
           <h1>Billing & Subscription</h1>
-          <p>Manage your active plan, payments, and renewals.</p>
+          <p>Manage your current plan, payments, and renewals.</p>
         </div>
 
+        {/* 💳 Subscription Info */}
         <div className="subscription-info">
           <div className="info-row">
             <span>Plan:</span>
@@ -76,7 +107,10 @@ export default function SubscriptionPlanCard() {
 
           <div className="info-row">
             <span>Status:</span>
-            <strong className={statusClass}>{statusText}</strong>
+            <div className="status-wrapper" title={tooltip}>
+              <strong className={statusClass}>{statusText}</strong>
+              {tooltip && <span className="tooltip-icon">ℹ️</span>}
+            </div>
           </div>
 
           <div className="info-row">
@@ -90,13 +124,10 @@ export default function SubscriptionPlanCard() {
           </div>
         </div>
 
-        {isActive && plan === "monthly" && (
-          <button
-            className="cancel-btn"
-            onClick={handleCancel}
-            disabled={loading}
-          >
-            {loading ? "Cancelling..." : "Cancel Subscription"}
+        {/* 🔘 Buttons */}
+        {isActive && plan === "monthly" && !cancelled && (
+          <button className="cancel-btn" onClick={handleCancel} disabled={loading}>
+            {loading ? "Cancelling..." : "Cancel Auto-Renewal"}
           </button>
         )}
 
@@ -109,6 +140,50 @@ export default function SubscriptionPlanCard() {
           </button>
         )}
 
+        {/* 💰 Payment History */}
+        <div className="payment-history">
+          <h2>Payment History</h2>
+          {loadingPayments ? (
+            <p>Loading payments...</p>
+          ) : payments.length === 0 ? (
+            <p className="no-payments">No payments found.</p>
+          ) : (
+            <table className="payment-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Plan</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.map((p) => (
+                  <tr key={p._id}>
+                    <td>{new Date(p.createdAt).toLocaleDateString()}</td>
+                    <td>{p.plan?.toUpperCase() || "-"}</td>
+                    <td>${p.amount?.toFixed(2) || "0.00"}</td>
+                    <td>
+                      <span
+                        className={`status-badge ${
+                          p.status === "paid" || p.status === "active"
+                            ? "paid"
+                            : p.status.includes("cancelled")
+                            ? "cancelled"
+                            : "pending"
+                        }`}
+                      >
+                        {p.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* 📞 Support */}
         <div className="billing-support">
           Need help? <a href="/contact">Contact Support</a>
         </div>
