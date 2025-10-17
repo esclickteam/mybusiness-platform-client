@@ -13,13 +13,7 @@ export default function SubscriptionPlanCard() {
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
 
-  // 📦 משתנה סביבה שמגיע מה־env שלך
   const API_BASE = import.meta.env.VITE_API_URL || "";
-  // 💡 נוודא שהקריאות לא יכפילו את "/api"
-  const BASE_URL = API_BASE.endsWith("/api")
-    ? API_BASE.replace("/api", "")
-    : API_BASE;
-
   const userId = user?._id || user?.userId || user?.id;
 
   /* 🚫 ביטול חידוש אוטומטי */
@@ -28,8 +22,8 @@ export default function SubscriptionPlanCard() {
     setLoading(true);
 
     try {
-      // ✅ קריאה נכונה שתמיד תפגע בנתיב הנכון
-      const res = await fetch(`${BASE_URL}/api/paypal/subscription/cancel`, {
+      // ✅ אין /api נוסף
+      const res = await fetch(`${API_BASE}/paypal/subscription/cancel`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
@@ -52,8 +46,8 @@ export default function SubscriptionPlanCard() {
 
     const fetchPayments = async () => {
       try {
-        // ✅ גם כאן — הקריאה מבוססת על BASE_URL
-        const res = await fetch(`${BASE_URL}/api/paypal/payments/user/${userId}`);
+        // ✅ גם כאן בלי /api נוסף
+        const res = await fetch(`${API_BASE}/paypal/payments/user/${userId}`);
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data = await res.json();
         setPayments(Array.isArray(data) ? data : []);
@@ -65,7 +59,7 @@ export default function SubscriptionPlanCard() {
     };
 
     fetchPayments();
-  }, [userId, BASE_URL]);
+  }, [userId, API_BASE]);
 
   /* 📅 נתונים כלליים */
   const plan = user?.subscriptionPlan || "trial";
