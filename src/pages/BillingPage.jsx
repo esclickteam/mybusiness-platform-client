@@ -22,6 +22,7 @@ export default function SubscriptionPlanCard() {
     setLoading(true);
 
     try {
+      // ✅ אין /api נוסף
       const res = await fetch(`${API_BASE}/paypal/subscription/cancel`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,6 +46,7 @@ export default function SubscriptionPlanCard() {
 
     const fetchPayments = async () => {
       try {
+        // ✅ גם כאן בלי /api נוסף
         const res = await fetch(`${API_BASE}/paypal/payments/user/${userId}`);
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data = await res.json();
