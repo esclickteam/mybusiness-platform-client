@@ -13,7 +13,9 @@ export default function SubscriptionPlanCard() {
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
 
-  const API_BASE = import.meta.env.VITE_API_URL || "";
+  const rawBase = import.meta.env.VITE_API_URL || "";
+  // ✅ אם כבר יש /api בסוף, לא נוסיף שוב
+  const API_BASE = rawBase.endsWith("/api") ? rawBase : `${rawBase}/api`;
   const userId = user?._id || user?.userId || user?.id;
 
   /* 🚫 ביטול חידוש אוטומטי */
@@ -22,14 +24,13 @@ export default function SubscriptionPlanCard() {
     setLoading(true);
 
     try {
-      // ✅ אין /api נוסף
       const res = await fetch(`${API_BASE}/paypal/subscription/cancel`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
       });
 
-      if (!res.ok) throw new Error("Failed to cancel subscription");
+      if (!res.ok) throw new Error(`Failed to cancel subscription (${res.status})`);
       setCancelled(true);
       alert("Auto-renewal cancelled. You’ll keep access until your billing period ends.");
     } catch (err) {
@@ -46,7 +47,6 @@ export default function SubscriptionPlanCard() {
 
     const fetchPayments = async () => {
       try {
-        // ✅ גם כאן בלי /api נוסף
         const res = await fetch(`${API_BASE}/paypal/payments/user/${userId}`);
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data = await res.json();
