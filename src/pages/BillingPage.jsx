@@ -13,7 +13,7 @@ export default function SubscriptionPlanCard() {
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
 
-  // 🧩 שימוש במשתנה הסביבה הקיים (עם /api)
+  // 🧩 שימוש במשתנה הסביבה הקיים (כולל /api)
   const API_BASE = import.meta.env.VITE_API_URL || "";
 
   console.log("🔗 API_BASE:", API_BASE);
@@ -43,19 +43,21 @@ export default function SubscriptionPlanCard() {
 
   /* 💰 שליפת היסטוריית תשלומים */
   useEffect(() => {
-    if (!user?._id) return;
+    if (!user || !user._id) return; // ✅ נוודא שהמשתמש קיים
 
     const fetchPayments = async () => {
+      const url = `${API_BASE}/paypal/payments/user/${user._id}`;
+      console.log("📡 Fetching payments from:", url);
+
       try {
-        console.log("📡 Fetching payments from:", `${API_BASE}/paypal/payments/user/${user._id}`);
-        const res = await fetch(`${API_BASE}/paypal/payments/user/${user._id}`);
+        const res = await fetch(url);
         console.log("🔎 Response status:", res.status);
 
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data = await res.json();
         console.log("✅ Payments data:", data);
 
-        setPayments(data || []);
+        setPayments(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("❌ Failed to load payments:", err);
       } finally {
@@ -64,11 +66,12 @@ export default function SubscriptionPlanCard() {
     };
 
     fetchPayments();
-  }, [user?._id]);
+  }, [user, user?._id, API_BASE]); // ✅ נוספה גם תלות ב־user
 
   /* 📅 נתונים כלליים */
   const plan = user?.subscriptionPlan || "trial";
-  const isActive = user?.isSubscriptionValid && !(!cancelled && user?.subscriptionStatus === "CANCELLED");
+  const isActive =
+    user?.isSubscriptionValid && !(!cancelled && user?.subscriptionStatus === "CANCELLED");
   const endDate = user?.subscriptionEnd
     ? new Date(user.subscriptionEnd).toLocaleDateString()
     : "—";
