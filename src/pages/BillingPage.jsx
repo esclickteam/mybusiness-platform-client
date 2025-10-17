@@ -4,7 +4,7 @@ import "../styles/Billing.css";
 
 /**
  * 💳 Billing & Subscription Page
- * כולל ניהול מנוי + היסטוריית תשלומים
+ * כולל ניהול מנוי + היסטוריית תשלומים בעיצוב UX מקצועי
  */
 export default function SubscriptionPlanCard() {
   const { user } = useAuth();
@@ -13,12 +13,8 @@ export default function SubscriptionPlanCard() {
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
 
-  // 🧩 תואם למשתנה הקיים ב־Vercel
   const API_BASE = import.meta.env.VITE_API_URL || "";
   const userId = user?._id || user?.userId || user?.id;
-
-  console.log("🔗 API_BASE:", API_BASE);
-  console.log("👤 userId:", userId);
 
   /* 🚫 ביטול חידוש אוטומטי */
   const handleCancel = async () => {
@@ -48,17 +44,10 @@ export default function SubscriptionPlanCard() {
     if (!userId) return;
 
     const fetchPayments = async () => {
-      const url = `${API_BASE}/paypal/payments/user/${userId}`;
-      console.log("📡 Fetching payments from:", url);
-
       try {
-        const res = await fetch(url);
-        console.log("🔎 Response status:", res.status);
-
+        const res = await fetch(`${API_BASE}/paypal/payments/user/${userId}`);
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data = await res.json();
-        console.log("✅ Payments data:", data);
-
         setPayments(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("❌ Failed to load payments:", err);
@@ -92,7 +81,6 @@ export default function SubscriptionPlanCard() {
       ? "One-time payment"
       : "Trial Access";
 
-  // 🧠 סטטוס חכם
   let statusText = "Cancelled / Expired";
   let statusClass = "status-cancelled";
   let tooltip = "";
@@ -108,7 +96,7 @@ export default function SubscriptionPlanCard() {
 
   return (
     <div className="billing-page">
-      <div className="billing-container">
+      <div className="billing-container fade-in">
         {/* 🧭 Header */}
         <div className="billing-header">
           <h1>Billing & Subscription</h1>
@@ -116,7 +104,7 @@ export default function SubscriptionPlanCard() {
         </div>
 
         {/* 💳 Subscription Info */}
-        <div className="subscription-info">
+        <div className="subscription-info card">
           <div className="info-row">
             <span>Plan:</span>
             <strong>{planName}</strong>
@@ -139,29 +127,25 @@ export default function SubscriptionPlanCard() {
             <span>Billing Type:</span>
             <strong>{billingType}</strong>
           </div>
+
+          {isActive && plan === "monthly" && !cancelled && (
+            <button className="cancel-btn" onClick={handleCancel} disabled={loading}>
+              {loading ? "Cancelling..." : "Cancel Auto-Renewal"}
+            </button>
+          )}
+
+          {!isActive && (
+            <button className="renew-btn" onClick={() => (window.location.href = "/plans")}>
+              Renew / Upgrade Plan
+            </button>
+          )}
         </div>
 
-        {/* 🔘 Buttons */}
-        {isActive && plan === "monthly" && !cancelled && (
-          <button className="cancel-btn" onClick={handleCancel} disabled={loading}>
-            {loading ? "Cancelling..." : "Cancel Auto-Renewal"}
-          </button>
-        )}
-
-        {!isActive && (
-          <button
-            className="renew-btn"
-            onClick={() => (window.location.href = "/plans")}
-          >
-            Renew / Upgrade Plan
-          </button>
-        )}
-
         {/* 💰 Payment History */}
-        <div className="payment-history">
+        <div className="payment-history card">
           <h2>Payment History</h2>
           {loadingPayments ? (
-            <p>Loading payments...</p>
+            <p className="loading">Loading payments...</p>
           ) : payments.length === 0 ? (
             <p className="no-payments">No payments found.</p>
           ) : (
@@ -190,7 +174,11 @@ export default function SubscriptionPlanCard() {
                             : "pending"
                         }`}
                       >
-                        {p.status}
+                        {p.status === "paid"
+                          ? "Completed"
+                          : p.status === "active"
+                          ? "Active"
+                          : p.status?.charAt(0).toUpperCase() + p.status?.slice(1)}
                       </span>
                     </td>
                   </tr>

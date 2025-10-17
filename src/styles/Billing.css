@@ -20,7 +20,16 @@
   width: 100%;
   max-width: 540px;
   animation: fadeIn 0.5s ease-in-out;
+  transition: all 0.3s ease;
 }
+
+.billing-container:hover {
+  box-shadow: 0 10px 40px rgba(109, 40, 217, 0.15);
+}
+
+/* ===============================
+   🧭 Header
+   =============================== */
 
 .billing-header {
   text-align: center;
@@ -43,6 +52,7 @@
 /* ===============================
    📋 Info Section
    =============================== */
+
 .subscription-info {
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
@@ -70,6 +80,7 @@
 /* ===============================
    🔘 Status Styles
    =============================== */
+
 .status-wrapper {
   display: flex;
   align-items: center;
@@ -100,6 +111,7 @@
 /* ===============================
    🧭 Buttons
    =============================== */
+
 .cancel-btn,
 .renew-btn {
   width: 100%;
@@ -110,6 +122,7 @@
   padding: 14px 20px;
   cursor: pointer;
   transition: 0.3s ease;
+  margin-top: 10px;
 }
 
 .cancel-btn {
@@ -118,8 +131,14 @@
   box-shadow: 0 5px 12px rgba(239, 68, 68, 0.3);
 }
 
-.cancel-btn:hover {
+.cancel-btn:hover:not(:disabled) {
   background: #dc2626;
+  transform: translateY(-2px);
+}
+
+.cancel-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .renew-btn {
@@ -134,39 +153,8 @@
 }
 
 /* ===============================
-   📞 Support Link
+   💰 Payment History
    =============================== */
-.billing-support {
-  text-align: center;
-  margin-top: 1.4rem;
-  font-size: 0.95rem;
-  color: #555;
-}
-
-.billing-support a {
-  color: #6d28d9;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.billing-support a:hover {
-  text-decoration: underline;
-}
-
-/* ===============================
-   ✨ Animation
-   =============================== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 
 .payment-history {
   margin-top: 2.5rem;
@@ -189,12 +177,13 @@
 }
 
 .payment-table th {
-  background: #ede9fe;
+  background: linear-gradient(90deg, #ede9fe, #f5f3ff);
   color: #4b0082;
   font-weight: 600;
   text-align: left;
   padding: 12px 16px;
   font-size: 0.95rem;
+  border-bottom: 2px solid #e2d9ff;
 }
 
 .payment-table td {
@@ -202,6 +191,7 @@
   border-top: 1px solid #eee;
   font-size: 0.95rem;
   color: #333;
+  transition: background 0.2s;
 }
 
 .payment-table tr:hover {
@@ -212,15 +202,28 @@
   text-align: center;
   color: #777;
   font-style: italic;
+  padding: 12px;
 }
 
-/* Status badges */
+.loading {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+/* ===============================
+   🏷️ Status Badges
+   =============================== */
+
 .status-badge {
   padding: 4px 10px;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 500;
   text-transform: capitalize;
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
 }
 
 .status-badge.paid {
@@ -236,4 +239,69 @@
 .status-badge.pending {
   background: #fef9c3;
   color: #a16207;
+}
+
+/* ===============================
+   📞 Support Link
+   =============================== */
+
+.billing-support {
+  text-align: center;
+  margin-top: 1.6rem;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.billing-support a {
+  color: #6d28d9;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.billing-support a:hover {
+  text-decoration: underline;
+  color: #4b0082;
+}
+
+/* ===============================
+   ✨ Animation
+   =============================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+   📱 Responsive
+   =============================== */
+
+@media (max-width: 640px) {
+  .billing-container {
+    padding: 30px 24px;
+    border-radius: 14px;
+  }
+
+  .billing-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .payment-table th,
+  .payment-table td {
+    font-size: 0.85rem;
+    padding: 10px 12px;
+  }
 }
