@@ -12,7 +12,8 @@ export default function SubscriptionPlanCard() {
   const [cancelled, setCancelled] = useState(user?.subscriptionCancelled || false);
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+  const API_BASE = import.meta.env.VITE_API_URL || "";
+
 
   /* 🚫 ביטול חידוש אוטומטי */
   const handleCancel = async () => {
