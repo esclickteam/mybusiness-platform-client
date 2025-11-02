@@ -1,4 +1,3 @@
-// src/pages/Register.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import API from "../api";
@@ -12,7 +11,7 @@ const Register = () => {
     phone: "",
     password: "",
     confirmPassword: "",
-    userType: "business", 
+    userType: "business",
     businessName: "",
     referralCode: "",
   });
@@ -21,6 +20,7 @@ const Register = () => {
   const { login } = useAuth();
   const [searchParams] = useSearchParams();
 
+  // ✅ שמירת referral מה-URL
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) {
@@ -36,7 +36,18 @@ const Register = () => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const isValidPhone = (phone) => /^05\d{8}$/.test(phone);
+  // ✅ ולידציה חדשה – מאפשרת מספרים בינלאומיים
+  const isValidPhone = (phone) => {
+    const cleaned = phone.trim().replace(/\s|-/g, "");
+    const regex =
+      /^(?:0\d{8,9}|\+972\d{8,9}|\+1\d{10}|1\d{10}|\+[1-9]\d{7,14})$/;
+    // כולל:
+    // 05XXXXXXXX / 0XXXXXXXXX — ישראל
+    // +972XXXXXXXX / +972XXXXXXXXX — ישראל בינ"ל
+    // +1XXXXXXXXXX / 1XXXXXXXXXX — ארה"ב וקנדה
+    // +44XXXXXXXXXX — בריטניה וכו'
+    return regex.test(cleaned);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,6 +72,7 @@ const Register = () => {
       setError("⚠️ Passwords do not match");
       return;
     }
+
     if (userType === "business") {
       if (!businessName.trim()) {
         setError("⚠️ Please enter a business name to register as a business owner");
@@ -71,7 +83,9 @@ const Register = () => {
         return;
       }
       if (!isValidPhone(phone.trim())) {
-        setError("⚠️ Please enter a valid Israeli phone number (10 digits starting with 05)");
+        setError(
+          "⚠️ Please enter a valid phone number (e.g., 05..., +972..., +1..., +44...)"
+        );
         return;
       }
     }
@@ -92,7 +106,7 @@ const Register = () => {
         { withCredentials: true }
       );
 
-      // Auto-login after registration
+      // ✅ Auto-login אחרי הרשמה
       const { user } = await login(email.trim().toLowerCase(), password, {
         skipRedirect: true,
       });
@@ -102,11 +116,11 @@ const Register = () => {
         return;
       }
 
-      // Redirect based on user type
+      // ✅ הפניה לפי סוג המשתמש
       if (userType === "business") {
-        navigate("/dashboard"); // Business → dashboard
+        navigate("/dashboard");
       } else {
-        navigate("/client/dashboard/search"); // Customer → client dashboard
+        navigate("/client/dashboard/search");
       }
     } catch (err) {
       console.error("❌ Registration error:", err.response?.data || err.message);
@@ -141,6 +155,7 @@ const Register = () => {
           onChange={handleChange}
           required
         />
+
         {formData.userType === "business" && (
           <>
             <input
@@ -154,13 +169,14 @@ const Register = () => {
             <input
               type="tel"
               name="phone"
-              placeholder="Phone Number"
+              placeholder="Phone Number (e.g., +972..., +1..., 05...)"
               value={formData.phone}
               onChange={handleChange}
               required
             />
           </>
         )}
+
         {formData.referralCode && (
           <input
             type="text"
@@ -170,6 +186,7 @@ const Register = () => {
             placeholder="Referral Code"
           />
         )}
+
         <input
           type="password"
           name="password"
