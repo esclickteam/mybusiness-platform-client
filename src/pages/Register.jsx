@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import "../styles/Register.css";
 
 const Register = () => {
@@ -15,12 +17,13 @@ const Register = () => {
     businessName: "",
     referralCode: "",
   });
+
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
   const [searchParams] = useSearchParams();
 
-  // ✅ שמירת referral מה-URL
+  // ✅ שמירת קוד הפניה (referral) מה-URL
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) {
@@ -36,16 +39,10 @@ const Register = () => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // ✅ ולידציה חדשה – מאפשרת מספרים בינלאומיים
+  // ✅ ולידציה בינלאומית לפי תקן E.164
   const isValidPhone = (phone) => {
     const cleaned = phone.trim().replace(/\s|-/g, "");
-    const regex =
-      /^(?:0\d{8,9}|\+972\d{8,9}|\+1\d{10}|1\d{10}|\+[1-9]\d{7,14})$/;
-    // כולל:
-    // 05XXXXXXXX / 0XXXXXXXXX — ישראל
-    // +972XXXXXXXX / +972XXXXXXXXX — ישראל בינ"ל
-    // +1XXXXXXXXXX / 1XXXXXXXXXX — ארה"ב וקנדה
-    // +44XXXXXXXXXX — בריטניה וכו'
+    const regex = /^\+?[1-9]\d{7,14}$/;
     return regex.test(cleaned);
   };
 
@@ -84,7 +81,7 @@ const Register = () => {
       }
       if (!isValidPhone(phone.trim())) {
         setError(
-          "⚠️ Please enter a valid phone number (e.g., 05..., +972..., +1..., +44...)"
+          "⚠️ Please enter a valid phone number (e.g., +972..., +1..., +44...)"
         );
         return;
       }
@@ -99,7 +96,8 @@ const Register = () => {
           phone: userType === "business" ? phone.trim() : "",
           password,
           userType,
-          businessName: userType === "business" ? businessName.trim() : undefined,
+          businessName:
+            userType === "business" ? businessName.trim() : undefined,
           referralCode:
             userType === "business" ? referralCode || undefined : undefined,
         },
@@ -138,6 +136,7 @@ const Register = () => {
     <div className="register-container">
       <h2>Register</h2>
       <p>Select your account type and enter your details</p>
+
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -147,6 +146,7 @@ const Register = () => {
           onChange={handleChange}
           required
         />
+
         <input
           type="email"
           name="email"
@@ -166,14 +166,34 @@ const Register = () => {
               onChange={handleChange}
               required
             />
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone Number (e.g., +972..., +1..., 05...)"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
+
+            {/* ✅ Phone input with country flags */}
+            <div className="phone-input-wrapper">
+              <PhoneInput
+                country={"il"} // 🇮🇱 ברירת מחדל
+                enableSearch={true}
+                value={formData.phone}
+                onChange={(phone) =>
+                  setFormData((prev) => ({ ...prev, phone: `+${phone}` }))
+                }
+                inputStyle={{
+                  width: "100%",
+                  height: "48px",
+                  borderRadius: "10px",
+                  border: "1px solid #c8c8c8",
+                  paddingLeft: "48px",
+                  fontSize: "16px",
+                }}
+                buttonStyle={{
+                  border: "none",
+                  backgroundColor: "transparent",
+                }}
+                dropdownStyle={{
+                  maxHeight: "200px",
+                }}
+                placeholder="Enter phone number"
+              />
+            </div>
           </>
         )}
 
@@ -195,6 +215,7 @@ const Register = () => {
           onChange={handleChange}
           required
         />
+
         <input
           type="password"
           name="confirmPassword"
@@ -204,6 +225,7 @@ const Register = () => {
           required
         />
 
+        {/* ✅ בחירת סוג משתמש */}
         <div className="radio-container">
           <div className="radio-option">
             <input
