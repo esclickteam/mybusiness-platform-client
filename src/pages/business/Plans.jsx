@@ -7,21 +7,25 @@ export default function Plans() {
   const [selectedPeriod, setSelectedPeriod] = useState("monthly");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const monthlyPlanId = "P-0JB4726150008570HNDY7UMI"; // ✅ Plan ID (Recurring)
-  const API_BASE = import.meta.env.VITE_API_URL || ""; // 👈 תואם למשתנה הקיים ב־Vercel
-  const userId = user?._id || user?.userId || user?.id;
+  const plans = {
+    monthly: { price: 1, total: 1, save: 0 }, // בדיקה ב-$1 בלבד
+    yearly: { price: 1, total: 1, save: 0 },
+  };
 
-  console.log("🔗 API_BASE:", API_BASE);
+  const { price, total, save } = plans[selectedPeriod];
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
   const now = new Date();
   const trialExpired =
     user?.subscriptionPlan === "trial" &&
     user?.subscriptionEnd &&
     new Date(user.subscriptionEnd) < now;
+
+  // 🧩 מזהה מאוחד – תומך בכל סוג של שדה שמגיע מהשרת
+  const userId = user?._id || user?.userId || user?.id;
 
   /* ========================================
      💳 טעינת PayPal SDK
@@ -33,7 +37,7 @@ export default function Plans() {
       script.id = "paypal-sdk";
       script.src = `https://www.paypal.com/sdk/js?client-id=${
         import.meta.env.VITE_PAYPAL_CLIENT_ID
-      }&vault=true&intent=subscription&currency=USD&locale=en_US`;
+      }&currency=USD&locale=en_US`;
       script.async = true;
       script.onload = () => console.log("✅ PayPal SDK loaded");
       document.body.appendChild(script);
@@ -41,12 +45,69 @@ export default function Plans() {
   }, []);
 
   /* ========================================
-     🚀 יצירת תשלום לפי סוג מנוי
+     ⚡ יצירת הזמנה בשרת
+  ======================================== */
+  const createOrder = async () => {
+    try {
+      if (!userId) {
+        alert("User not loaded yet. Please log in again.");
+        throw new Error("Missing userId");
+      }
+
+      const body = {
+        amount: total,
+        planName:
+          selectedPeriod === "monthly"
+            ? "BizUply Monthly Plan"
+            : "BizUply Yearly Plan",
+        userId, // ✅ שולח את המזהה התקין
+      };
+
+      console.log("📦 Sending create-order body:", body);
+
+      const res = await fetch(`${API_BASE}/api/paypal/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("❌ create-order failed:", res.status, text);
+        throw new Error("Failed to create PayPal order");
+      }
+
+      const data = await res.json();
+      console.log("✅ create-order response:", data);
+
+      if (!data.id) throw new Error("No PayPal order ID returned");
+      return data.id;
+    } catch (err) {
+      console.error("💥 createOrder error:", err);
+      alert("Error creating PayPal order. Please try again.");
+      setLoading(false);
+      throw err;
+    }
+  };
+
+  /* ========================================
+     💰 אישור תשלום (CAPTURE)
+  ======================================== */
+  const captureOrder = async (orderId) => {
+    console.log("💰 Capturing order:", orderId);
+    const res = await fetch(`${API_BASE}/api/paypal/capture/${orderId}`, {
+      method: "POST",
+    });
+    const data = await res.json();
+    console.log("✅ capture response:", data);
+    return data;
+  };
+
+  /* ========================================
+     🚀 הפעלת PayPal Checkout
   ======================================== */
   const handlePayPalCheckout = async () => {
     setLoading(true);
-    setError(null);
-
     try {
       if (!userId) {
         alert("User not loaded yet. Please log in again.");
@@ -61,105 +122,68 @@ export default function Plans() {
         return;
       }
 
+      // מנקה כפתורים קודמים
       const container = document.getElementById("paypal-button-container");
       container.innerHTML = "";
 
       paypal
         .Buttons({
-          style: {
-            shape: "rect",
-            color: "gold",
-            layout: "vertical",
-            label: "paypal",
-          },
+          createOrder: async () => await createOrder(),
+          onApprove: async (data) => {
+            try {
+              console.log("✅ Payment approved:", data);
+              const result = await captureOrder(data.orderID);
 
-          ...(selectedPeriod === "monthly"
-            ? {
-                // 🌀 מנוי חודשי מתחדש
-                createSubscription: function (data, actions) {
-                  return actions.subscription.create({
-                    plan_id: monthlyPlanId,
-                  });
-                },
-                onApprove: async function (data) {
-                  console.log("✅ Monthly subscription approved:", data);
-                  try {
-                    const res = await fetch(
-                      `${API_BASE}/paypal/subscription/success`,
-                      {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          userId,
-                          subscriptionId: data.subscriptionID,
-                          plan: "monthly",
-                        }),
-                      }
-                    );
-                    if (!res.ok) throw new Error("Failed to save subscription");
-                    console.log("🎉 Monthly subscription saved to DB");
-                    setSuccess(true);
-                    setTimeout(() => navigate("/dashboard"), 2000);
-                  } catch (err) {
-                    console.error("❌ Error saving subscription:", err);
-                    setError("Payment succeeded but updating your account failed.");
-                  } finally {
-                    setLoading(false);
-                  }
-                },
+              // 💾 עדכון מנוי לאחר תשלום
+              console.log("📩 Updating user subscription:", {
+                userId,
+                plan: selectedPeriod,
+                orderId: data.orderID,
+              });
+
+              const confirmRes = await fetch(
+                `${API_BASE}/api/paypal/subscription/confirm`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${user?.token || ""}`,
+                  },
+                  body: JSON.stringify({
+                    userId,
+                    plan: selectedPeriod,
+                    orderId: data.orderID,
+                    paypalData: result,
+                  }),
+                }
+              );
+
+              if (!confirmRes.ok) {
+                console.error("❌ Failed to confirm subscription");
+                alert("Payment succeeded but user update failed.");
+              } else {
+                console.log("🎉 Payment + subscription update success!");
+                setSuccess(true);
+                setTimeout(() => navigate("/dashboard"), 2000);
               }
-            : {
-                // 💰 מנוי שנתי חד-פעמי
-                createOrder: async function () {
-                  const res = await fetch(`${API_BASE}/paypal/create-order`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      amount: 1,
-                      planName: "BizUply Yearly Plan",
-                      userId,
-                    }),
-                  });
-                  const data = await res.json();
-                  return data.id;
-                },
-                onApprove: async function (data, actions) {
-                  console.log("✅ Yearly payment approved:", data);
-                  try {
-                    await fetch(`${API_BASE}/paypal/capture/${data.orderID}`, {
-                      method: "POST",
-                    });
-                    await fetch(`${API_BASE}/paypal/subscription/confirm`, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        userId,
-                        plan: "yearly",
-                        orderId: data.orderID,
-                      }),
-                    });
-                    console.log("🎉 Yearly payment recorded successfully");
-                    setSuccess(true);
-                    setTimeout(() => navigate("/dashboard"), 2000);
-                  } catch (err) {
-                    console.error("❌ Error saving yearly plan:", err);
-                    setError("Payment succeeded but updating your account failed.");
-                  } finally {
-                    setLoading(false);
-                  }
-                },
-              }),
-
+            } catch (err) {
+              console.error("❌ Error after payment:", err);
+              alert(
+                "Payment succeeded but user update failed. Please contact support."
+              );
+            } finally {
+              setLoading(false);
+            }
+          },
           onError: (err) => {
             console.error("💥 PayPal error:", err);
-            setError("Payment failed. Please try again.");
+            alert("Payment failed. Please try again.");
             setLoading(false);
           },
         })
         .render("#paypal-button-container");
     } catch (err) {
       console.error("Checkout error:", err);
-      setError("Unexpected error occurred.");
       setLoading(false);
     }
   };
@@ -187,12 +211,13 @@ export default function Plans() {
         </p>
       </header>
 
-      {/* Toggle Between Monthly / Yearly */}
       <div className="plans-toggle">
         {["monthly", "yearly"].map((period) => (
           <button
             key={period}
-            className={`toggle-btn ${selectedPeriod === period ? "active" : ""}`}
+            className={`toggle-btn ${
+              selectedPeriod === period ? "active" : ""
+            }`}
             onClick={() => setSelectedPeriod(period)}
           >
             {period === "monthly" ? "Monthly" : "Yearly"}
@@ -200,7 +225,6 @@ export default function Plans() {
         ))}
       </div>
 
-      {/* Plan Card */}
       <section className="plan-card-container">
         <div className="plan-card highlight">
           <h2>BizUply Professional Plan</h2>
@@ -211,7 +235,7 @@ export default function Plans() {
           </p>
 
           <div className="plan-price">
-            <span className="price">$1</span>
+            <span className="price">${price}</span>
             <span className="duration">
               {selectedPeriod === "monthly" ? "/month" : "/year"}
             </span>
@@ -247,23 +271,17 @@ export default function Plans() {
             </button>
           )}
 
-          {error && <p className="error-text">{error}</p>}
-
           <div className="summary-box">
             <div className="summary-row">
               <span>Total to pay:</span>
-              <strong>
-                {selectedPeriod === "monthly" ? "$1 / month" : "$1 / year"}
-              </strong>
+              <strong>${total}</strong>
             </div>
-            <div className="summary-row">
-              <span>Billing type:</span>
-              <strong>
-                {selectedPeriod === "monthly"
-                  ? "Recurring (auto-renewal)"
-                  : "One-time payment"}
-              </strong>
-            </div>
+            {save > 0 && (
+              <div className="summary-row save">
+                <span>You save:</span>
+                <strong>${save}</strong>
+              </div>
+            )}
           </div>
 
           <div id="paypal-button-container" style={{ marginTop: "1rem" }}></div>
