@@ -32,7 +32,6 @@ function Footer() {
           <ul>
             <li><Link to="/about" className="footer-link">About Us</Link></li>
             <li><Link to="/business" className="footer-link">Join as a Business</Link></li>
-            <li><Link to="/careers" className="footer-link">Careers</Link></li>
           </ul>
         </div>
 
