@@ -81,7 +81,7 @@ const Register = () => {
       }
       if (!isValidPhone(phone.trim())) {
         setError(
-          "⚠️ Please enter a valid phone number (e.g., +972..., +1..., +44...)"
+          "⚠️ Please enter a valid phone number (e.g., +1..., +972..., +44...)"
         );
         return;
       }
@@ -167,10 +167,10 @@ const Register = () => {
               required
             />
 
-            {/* ✅ Phone input with country flags */}
+            {/* ✅ Phone input with country flags - default US 🇺🇸 */}
             <div className="phone-input-wrapper">
               <PhoneInput
-                country={"il"} // 🇮🇱 ברירת מחדל
+                country={"us"} // 🇺🇸 ברירת מחדל
                 enableSearch={true}
                 value={formData.phone}
                 onChange={(phone) =>
