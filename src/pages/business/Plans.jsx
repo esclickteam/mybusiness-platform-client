@@ -16,7 +16,7 @@ export default function Plans() {
   };
 
   const { price, total, save } = plans[selectedPeriod];
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE = import.meta.env.VITE_API_URL;
   const userId = user?._id || user?.userId || user?.id;
 
   const now = new Date();
