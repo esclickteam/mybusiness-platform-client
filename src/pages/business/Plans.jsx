@@ -38,9 +38,14 @@ export default function Plans() {
         return;
       }
 
+      // 🔥 DEBUG LOGS
+      console.log("API_BASE =", API_BASE);
+      console.log("REQUEST URL =", `${API_BASE}/stripe/checkout/create-checkout-session`);
+      console.log("USER ID =", userId);
+      console.log("PLAN =", selectedPeriod);
+
+
       const res = await fetch(`${API_BASE}/stripe/checkout/create-checkout-session`, {
-
-
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
