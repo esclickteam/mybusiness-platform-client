@@ -27,7 +27,7 @@ export default function Plans() {
 
 
   /* ========================================
-        🟦 STRIPE CHECKOUT
+      🟦 STRIPE CHECKOUT
   ======================================== */
   const handleStripeCheckout = async () => {
     try {
@@ -37,13 +37,6 @@ export default function Plans() {
         alert("User data not loaded yet.");
         return;
       }
-
-      // 🔥 DEBUG LOGS
-      console.log("API_BASE =", API_BASE);
-      console.log("REQUEST URL =", `${API_BASE}/stripe/checkout/create-checkout-session`);
-      console.log("USER ID =", userId);
-      console.log("PLAN =", selectedPeriod);
-
 
       const res = await fetch(`${API_BASE}/stripe/checkout/create-checkout-session`, {
         method: "POST",
@@ -139,16 +132,12 @@ export default function Plans() {
             <button className="plan-btn success">✅ Payment Successful!</button>
           ) : loading ? (
             <button className="plan-btn loading">Processing…</button>
-          ) : trialExpired ? (
-            <button className="plan-btn purchase" onClick={handleStripeCheckout}>
-              Subscribe Now
-            </button>
           ) : (
             <button
               className="plan-btn primary"
-              onClick={() => navigate("/checkout")}
+              onClick={handleStripeCheckout}
             >
-              Try Free for 14 Days
+              {trialExpired ? "Subscribe Now" : "Try Free for 14 Days"}
             </button>
           )}
 
