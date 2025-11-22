@@ -38,7 +38,8 @@ export default function Plans() {
         return;
       }
 
-      const res = await fetch(`${API_BASE}/stripe/checkout/create-payment-link`, {
+      const res = await fetch(`${API_BASE}/stripe/create-payment-link`, {
+
 
 
         method: "POST",
