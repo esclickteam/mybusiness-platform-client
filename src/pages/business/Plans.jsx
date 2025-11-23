@@ -38,7 +38,7 @@ export default function Plans() {
         return;
       }
 
-      const res = await fetch(`${API_BASE}/stripe/checkout/create-checkout-session`, {
+      const res = await fetch(`${API_BASE}/stripe/create-checkout-session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
