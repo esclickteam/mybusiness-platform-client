@@ -24,7 +24,7 @@ export default function SubscriptionPlanCard() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/paypal/subscription/cancel`, {
+      const res = await fetch(`${API_BASE}/stripe/cancel-subscription`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
@@ -47,7 +47,7 @@ export default function SubscriptionPlanCard() {
 
     const fetchPayments = async () => {
       try {
-        const res = await fetch(`${API_BASE}/paypal/payments/user/${userId}`);
+        const res = await fetch(`${API_BASE}/stripe/payments/user/${userId}`);
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data = await res.json();
         setPayments(Array.isArray(data) ? data : []);
