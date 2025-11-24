@@ -22,6 +22,7 @@ function normalizeUser(user) {
   return {
     ...user,
     hasPaid: Boolean(user?.hasPaid),
+    subscriptionCancelled: Boolean(user?.subscriptionCancelled),
     isSubscriptionValid:
       typeof user?.isSubscriptionValid === "boolean"
         ? user.isSubscriptionValid
