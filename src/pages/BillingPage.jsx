@@ -31,7 +31,8 @@ export default function SubscriptionPlanCard() {
 
       if (!res.ok) throw new Error(`Failed to cancel subscription (${res.status})`);
 
-      await refreshUser();
+      // ⭐⭐ הכי חשוב – יוצר עדכון LIVE בשניות
+      await refreshUser(true);
 
       alert("Auto-renewal cancelled. You’ll keep access until the end of your billing cycle.");
       
