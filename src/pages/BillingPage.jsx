@@ -6,7 +6,7 @@ import "../styles/Billing.css";
  * 💳 Billing & Subscription Page – Professional Canva-Style UX
  */
 export default function SubscriptionPlanCard() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
@@ -31,8 +31,10 @@ export default function SubscriptionPlanCard() {
 
       if (!res.ok) throw new Error(`Failed to cancel subscription (${res.status})`);
 
+      await refreshUser();
+
       alert("Auto-renewal cancelled. You’ll keep access until the end of your billing cycle.");
-      window.location.reload();
+      
     } catch (err) {
       console.error("❌ Cancel subscription error:", err);
       alert("Failed to cancel renewal. Please contact support.");
@@ -67,7 +69,6 @@ export default function SubscriptionPlanCard() {
     ? new Date(user.subscriptionEnd).toLocaleDateString()
     : "—";
 
-  // ✔ Canva style
   const statusText = user?.isSubscriptionValid ? "Active" : "Cancelled / Expired";
   const statusClass = user?.isSubscriptionValid ? "status-active" : "status-cancelled";
 
@@ -90,7 +91,7 @@ export default function SubscriptionPlanCard() {
   return (
     <div className="billing-page">
       <div className="billing-container fade-in">
-        
+
         {/* 🧭 Header */}
         <div className="billing-header">
           <h1>Billing & Subscription</h1>
@@ -110,7 +111,6 @@ export default function SubscriptionPlanCard() {
             <strong className={statusClass}>{statusText}</strong>
           </div>
 
-          {/* ✔ Canva style message */}
           {user?.isSubscriptionValid && isCancelled && (
             <div className="note-canva">
               You will lose access on <strong>{endDate}</strong>
@@ -127,7 +127,7 @@ export default function SubscriptionPlanCard() {
             <strong>{billingType}</strong>
           </div>
 
-          {/* CTA Buttons */}
+          {/* Buttons */}
           {user?.isSubscriptionValid && plan === "monthly" && !isCancelled && (
             <button className="cancel-btn" onClick={handleCancel} disabled={loading}>
               {loading ? "Cancelling..." : "Cancel Auto-Renewal"}
@@ -195,7 +195,6 @@ export default function SubscriptionPlanCard() {
           )}
         </div>
 
-        {/* 📞 Support */}
         <div className="billing-support">
           Need help? <a href="/contact">Contact Support</a>
         </div>
