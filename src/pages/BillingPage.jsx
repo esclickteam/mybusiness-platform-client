@@ -2,16 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Billing.css";
 
-/**
- * 💳 Billing & Subscription Page – Professional Canva-Style UX
- */
 export default function SubscriptionPlanCard() {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, setUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
 
-  const isCancelled = user?.subscriptionCancelled || false;
+  const isCancelled = Boolean(user?.subscriptionCancelled);
+  const isActive = Boolean(user?.isSubscriptionValid);
 
   const rawBase = import.meta.env.VITE_API_URL || "";
   const API_BASE = rawBase.endsWith("/api") ? rawBase : `${rawBase}/api`;
@@ -31,11 +29,16 @@ export default function SubscriptionPlanCard() {
 
       if (!res.ok) throw new Error(`Failed to cancel subscription (${res.status})`);
 
-      // ⭐⭐ הכי חשוב – יוצר עדכון LIVE בשניות
+      // ⭐ עדכון מיידי ב־UI
+      setUser((prev) => ({
+        ...prev,
+        subscriptionCancelled: true,
+      }));
+
+      // ⭐ רענון מהשרת
       await refreshUser(true);
 
       alert("Auto-renewal cancelled. You’ll keep access until the end of your billing cycle.");
-      
     } catch (err) {
       console.error("❌ Cancel subscription error:", err);
       alert("Failed to cancel renewal. Please contact support.");
@@ -66,12 +69,13 @@ export default function SubscriptionPlanCard() {
 
   /* 📅 נתוני מנוי */
   const plan = user?.subscriptionPlan || "trial";
+
   const endDate = user?.subscriptionEnd
     ? new Date(user.subscriptionEnd).toLocaleDateString()
     : "—";
 
-  const statusText = user?.isSubscriptionValid ? "Active" : "Cancelled / Expired";
-  const statusClass = user?.isSubscriptionValid ? "status-active" : "status-cancelled";
+  const statusText = isActive ? (isCancelled ? "Active (auto-renew off)" : "Active") : "Expired";
+  const statusClass = isActive ? "status-active" : "status-cancelled";
 
   const planName =
     plan === "yearly"
@@ -93,13 +97,11 @@ export default function SubscriptionPlanCard() {
     <div className="billing-page">
       <div className="billing-container fade-in">
 
-        {/* 🧭 Header */}
         <div className="billing-header">
           <h1>Billing & Subscription</h1>
           <p>Manage your current plan, payments, and renewals.</p>
         </div>
 
-        {/* 💳 Subscription Info */}
         <div className="subscription-info card">
 
           <div className="info-row">
@@ -112,9 +114,10 @@ export default function SubscriptionPlanCard() {
             <strong className={statusClass}>{statusText}</strong>
           </div>
 
-          {user?.isSubscriptionValid && isCancelled && (
+          {/* הערה שמופיעה רק אחרי ביטול */}
+          {isActive && isCancelled && (
             <div className="note-canva">
-              You will lose access on <strong>{endDate}</strong>
+              Your subscription will end on <strong>{endDate}</strong>.
             </div>
           )}
 
@@ -128,27 +131,27 @@ export default function SubscriptionPlanCard() {
             <strong>{billingType}</strong>
           </div>
 
-          {/* Buttons */}
-          {user?.isSubscriptionValid && plan === "monthly" && !isCancelled && (
+          {/* כפתור ביטול */}
+          {isActive && plan === "monthly" && !isCancelled && (
             <button className="cancel-btn" onClick={handleCancel} disabled={loading}>
               {loading ? "Cancelling..." : "Cancel Auto-Renewal"}
             </button>
           )}
 
-          {user?.isSubscriptionValid && isCancelled && (
+          {/* כפתור חידוש */}
+          {isActive && isCancelled && (
             <button className="renew-btn" onClick={() => (window.location.href = "/plans")}>
               Resume Subscription
             </button>
           )}
 
-          {!user?.isSubscriptionValid && (
+          {!isActive && (
             <button className="renew-btn" onClick={() => (window.location.href = "/plans")}>
               Renew / Upgrade Plan
             </button>
           )}
         </div>
 
-        {/* 💰 Payment History */}
         <div className="payment-history card">
           <h2>Payment History</h2>
 

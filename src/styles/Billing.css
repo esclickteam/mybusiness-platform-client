@@ -81,12 +81,6 @@
    🔘 Status Styles
    =============================== */
 
-.status-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
 .status-active {
   color: #16a34a;
   font-weight: 600;
@@ -97,15 +91,20 @@
   font-weight: 600;
 }
 
+/* כשהמנוי עדיין פעיל אבל מבוטל לחידוש */
 .status-cancelled-soon {
-  color: #eab308; /* צהוב זהב */
+  color: #eab308;
   font-weight: 600;
 }
 
-.tooltip-icon {
-  font-size: 0.9rem;
-  cursor: help;
-  user-select: none;
+.note-canva {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #666;
+  background: #f8f8f8;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 3px solid #6a5acd;
 }
 
 /* ===============================
@@ -240,17 +239,6 @@
   background: #fef9c3;
   color: #a16207;
 }
-
-.note-canva {
-  margin-top: 6px;
-  font-size: 14px;
-  color: #666;
-  background: #f8f8f8;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border-left: 3px solid #6a5acd;
-}
-
 
 /* ===============================
    📞 Support Link
