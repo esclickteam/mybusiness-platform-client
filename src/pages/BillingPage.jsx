@@ -4,7 +4,10 @@ import "../styles/Billing.css";
 
 export default function SubscriptionPlanCard() {
   const { user, refreshUser, setUser } = useAuth();
-  const [loading, setLoading] = useState(false);
+
+  const [loadingCancel, setLoadingCancel] = useState(false);
+  const [loadingResume, setLoadingResume] = useState(false);
+
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
 
@@ -13,12 +16,15 @@ export default function SubscriptionPlanCard() {
 
   const rawBase = import.meta.env.VITE_API_URL || "";
   const API_BASE = rawBase.endsWith("/api") ? rawBase : `${rawBase}/api`;
+
   const userId = user?._id || user?.userId || user?.id;
 
-  /* 🚫 ביטול חידוש אוטומטי */
+  /* =========================================================
+      🚫 Cancel Auto Renew
+  ========================================================= */
   const handleCancel = async () => {
     if (!window.confirm("Are you sure you want to cancel auto-renewal?")) return;
-    setLoading(true);
+    setLoadingCancel(true);
 
     try {
       const res = await fetch(`${API_BASE}/stripe/cancel-subscription`, {
@@ -29,13 +35,12 @@ export default function SubscriptionPlanCard() {
 
       if (!res.ok) throw new Error(`Failed to cancel subscription (${res.status})`);
 
-      // ⭐ עדכון מיידי ב־UI
+      // Update UI immediately
       setUser((prev) => ({
         ...prev,
         subscriptionCancelled: true,
       }));
 
-      // ⭐ רענון מהשרת
       await refreshUser(true);
 
       alert("Auto-renewal cancelled. You’ll keep access until the end of your billing cycle.");
@@ -43,11 +48,46 @@ export default function SubscriptionPlanCard() {
       console.error("❌ Cancel subscription error:", err);
       alert("Failed to cancel renewal. Please contact support.");
     } finally {
-      setLoading(false);
+      setLoadingCancel(false);
     }
   };
 
-  /* 💰 היסטוריית תשלומים */
+  /* =========================================================
+      🔄 Resume Auto Renew
+  ========================================================= */
+  const handleResume = async () => {
+    if (!window.confirm("Resume auto-renewal for your subscription?")) return;
+    setLoadingResume(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/stripe/resume-subscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!res.ok) throw new Error(`Resume failed (${res.status})`);
+
+      // Update UI immediately
+      setUser((prev) => ({
+        ...prev,
+        subscriptionCancelled: false,
+      }));
+
+      await refreshUser(true);
+
+      alert("Auto-renewal has been restored.");
+    } catch (err) {
+      console.error("❌ Resume subscription error:", err);
+      alert("Failed to resume subscription. Please contact support.");
+    } finally {
+      setLoadingResume(false);
+    }
+  };
+
+  /* =========================================================
+      💰 Load Payment History
+  ========================================================= */
   useEffect(() => {
     if (!userId) return;
 
@@ -55,6 +95,7 @@ export default function SubscriptionPlanCard() {
       try {
         const res = await fetch(`${API_BASE}/stripe/payments/user/${userId}`);
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
+
         const data = await res.json();
         setPayments(Array.isArray(data) ? data : []);
       } catch (err) {
@@ -67,14 +108,21 @@ export default function SubscriptionPlanCard() {
     fetchPayments();
   }, [userId, API_BASE]);
 
-  /* 📅 נתוני מנוי */
+  /* =========================================================
+      📅 Subscription Details
+  ========================================================= */
   const plan = user?.subscriptionPlan || "trial";
 
   const endDate = user?.subscriptionEnd
     ? new Date(user.subscriptionEnd).toLocaleDateString()
     : "—";
 
-  const statusText = isActive ? (isCancelled ? "Active (auto-renew off)" : "Active") : "Expired";
+  const statusText = isActive
+    ? isCancelled
+      ? "Active (auto-renew off)"
+      : "Active"
+    : "Expired";
+
   const statusClass = isActive ? "status-active" : "status-cancelled";
 
   const planName =
@@ -96,14 +144,12 @@ export default function SubscriptionPlanCard() {
   return (
     <div className="billing-page">
       <div className="billing-container fade-in">
-
         <div className="billing-header">
           <h1>Billing & Subscription</h1>
           <p>Manage your current plan, payments, and renewals.</p>
         </div>
 
         <div className="subscription-info card">
-
           <div className="info-row">
             <span>Plan:</span>
             <strong>{planName}</strong>
@@ -114,7 +160,6 @@ export default function SubscriptionPlanCard() {
             <strong className={statusClass}>{statusText}</strong>
           </div>
 
-          {/* הערה שמופיעה רק אחרי ביטול */}
           {isActive && isCancelled && (
             <div className="note-canva">
               Your subscription will end on <strong>{endDate}</strong>.
@@ -131,27 +176,40 @@ export default function SubscriptionPlanCard() {
             <strong>{billingType}</strong>
           </div>
 
-          {/* כפתור ביטול */}
+          {/* CANCEL BUTTON */}
           {isActive && plan === "monthly" && !isCancelled && (
-            <button className="cancel-btn" onClick={handleCancel} disabled={loading}>
-              {loading ? "Cancelling..." : "Cancel Auto-Renewal"}
+            <button
+              className="cancel-btn"
+              onClick={handleCancel}
+              disabled={loadingCancel}
+            >
+              {loadingCancel ? "Cancelling..." : "Cancel Auto-Renewal"}
             </button>
           )}
 
-          {/* כפתור חידוש */}
+          {/* RESUME BUTTON */}
           {isActive && isCancelled && (
-            <button className="renew-btn" onClick={() => (window.location.href = "/plans")}>
-              Resume Subscription
+            <button
+              className="renew-btn"
+              onClick={handleResume}
+              disabled={loadingResume}
+            >
+              {loadingResume ? "Resuming..." : "Resume Subscription"}
             </button>
           )}
 
+          {/* EXPIRED */}
           {!isActive && (
-            <button className="renew-btn" onClick={() => (window.location.href = "/plans")}>
+            <button
+              className="renew-btn"
+              onClick={() => (window.location.href = "/plans")}
+            >
               Renew / Upgrade Plan
             </button>
           )}
         </div>
 
+        {/* PAYMENT HISTORY */}
         <div className="payment-history card">
           <h2>Payment History</h2>
 
@@ -189,7 +247,8 @@ export default function SubscriptionPlanCard() {
                           ? "Completed"
                           : p.status === "active"
                           ? "Active"
-                          : p.status?.charAt(0).toUpperCase() + p.status?.slice(1)}
+                          : p.status?.charAt(0).toUpperCase() +
+                            p.status?.slice(1)}
                       </span>
                     </td>
                   </tr>
