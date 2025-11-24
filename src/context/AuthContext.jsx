@@ -19,20 +19,22 @@ function normalizeUser(user) {
   const isTrialing = user.subscriptionPlan === "trial" && computedIsValid;
   const isPendingActivation = user.status === "pending_activation";
 
-  return {
-    ...user,
-    hasPaid: Boolean(user?.hasPaid),
-    isSubscriptionValid:
-      typeof user?.isSubscriptionValid === "boolean"
-        ? user.isSubscriptionValid
-        : computedIsValid,
-    subscriptionStatus: user.status || user.subscriptionPlan || "free",
-    daysLeft:
-      user.subscriptionEnd && computedIsValid
-        ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
-        : 0,
-    hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
-  };
+ return {
+  ...user,
+  hasPaid: Boolean(user?.hasPaid),
+
+  // ⭐ ALWAYS computed dynamically – never from DB / localStorage
+  isSubscriptionValid: computedIsValid,
+
+  subscriptionStatus: user.status || user.subscriptionPlan || "free",
+
+  daysLeft:
+    user.subscriptionEnd && computedIsValid
+      ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
+      : 0,
+
+  hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
+};
 }
 
 /* ===========================
