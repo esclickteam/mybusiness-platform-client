@@ -3,24 +3,23 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/Billing.css";
 
 /**
- * 💳 Billing & Subscription Page
- * כולל ניהול מנוי + היסטוריית תשלומים בעיצוב UX מקצועי
+ * 💳 Billing & Subscription Page – Professional Canva-Style UX
  */
 export default function SubscriptionPlanCard() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [cancelled, setCancelled] = useState(user?.subscriptionCancelled || false);
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
 
+  const isCancelled = user?.subscriptionCancelled || false;
+
   const rawBase = import.meta.env.VITE_API_URL || "";
-  // ✅ אם כבר יש /api בסוף, לא נוסיף שוב
   const API_BASE = rawBase.endsWith("/api") ? rawBase : `${rawBase}/api`;
   const userId = user?._id || user?.userId || user?.id;
 
   /* 🚫 ביטול חידוש אוטומטי */
   const handleCancel = async () => {
-    if (!window.confirm("Are you sure you want to cancel your subscription renewal?")) return;
+    if (!window.confirm("Are you sure you want to cancel auto-renewal?")) return;
     setLoading(true);
 
     try {
@@ -31,8 +30,9 @@ export default function SubscriptionPlanCard() {
       });
 
       if (!res.ok) throw new Error(`Failed to cancel subscription (${res.status})`);
-      setCancelled(true);
-      alert("Auto-renewal cancelled. You’ll keep access until your billing period ends.");
+
+      alert("Auto-renewal cancelled. You’ll keep access until the end of your billing cycle.");
+      window.location.reload();
     } catch (err) {
       console.error("❌ Cancel subscription error:", err);
       alert("Failed to cancel renewal. Please contact support.");
@@ -41,7 +41,7 @@ export default function SubscriptionPlanCard() {
     }
   };
 
-  /* 💰 שליפת היסטוריית תשלומים */
+  /* 💰 היסטוריית תשלומים */
   useEffect(() => {
     if (!userId) return;
 
@@ -61,13 +61,15 @@ export default function SubscriptionPlanCard() {
     fetchPayments();
   }, [userId, API_BASE]);
 
-  /* 📅 נתונים כלליים */
+  /* 📅 נתוני מנוי */
   const plan = user?.subscriptionPlan || "trial";
-  const isActive =
-    user?.isSubscriptionValid && !(!cancelled && user?.subscriptionStatus === "CANCELLED");
   const endDate = user?.subscriptionEnd
     ? new Date(user.subscriptionEnd).toLocaleDateString()
     : "—";
+
+  // ✔ Canva style
+  const statusText = user?.isSubscriptionValid ? "Active" : "Cancelled / Expired";
+  const statusClass = user?.isSubscriptionValid ? "status-active" : "status-cancelled";
 
   const planName =
     plan === "yearly"
@@ -78,27 +80,17 @@ export default function SubscriptionPlanCard() {
 
   const billingType =
     plan === "monthly"
-      ? "Recurring (auto-renew)"
+      ? isCancelled
+        ? "Recurring (auto-renew off)"
+        : "Recurring (auto-renew)"
       : plan === "yearly"
       ? "One-time payment"
       : "Trial Access";
 
-  let statusText = "Cancelled / Expired";
-  let statusClass = "status-cancelled";
-  let tooltip = "";
-
-  if (isActive && cancelled) {
-    statusText = "Active (auto-renew cancelled)";
-    statusClass = "status-cancelled-soon";
-    tooltip = "Your plan remains active until the end of your current billing period.";
-  } else if (isActive) {
-    statusText = "Active";
-    statusClass = "status-active";
-  }
-
   return (
     <div className="billing-page">
       <div className="billing-container fade-in">
+        
         {/* 🧭 Header */}
         <div className="billing-header">
           <h1>Billing & Subscription</h1>
@@ -107,6 +99,7 @@ export default function SubscriptionPlanCard() {
 
         {/* 💳 Subscription Info */}
         <div className="subscription-info card">
+
           <div className="info-row">
             <span>Plan:</span>
             <strong>{planName}</strong>
@@ -114,11 +107,15 @@ export default function SubscriptionPlanCard() {
 
           <div className="info-row">
             <span>Status:</span>
-            <div className="status-wrapper" title={tooltip}>
-              <strong className={statusClass}>{statusText}</strong>
-              {tooltip && <span className="tooltip-icon">ℹ️</span>}
-            </div>
+            <strong className={statusClass}>{statusText}</strong>
           </div>
+
+          {/* ✔ Canva style message */}
+          {user?.isSubscriptionValid && isCancelled && (
+            <div className="note-canva">
+              You will lose access on <strong>{endDate}</strong>
+            </div>
+          )}
 
           <div className="info-row">
             <span>{plan === "monthly" ? "Next Billing:" : "Valid Until:"}</span>
@@ -130,13 +127,20 @@ export default function SubscriptionPlanCard() {
             <strong>{billingType}</strong>
           </div>
 
-          {isActive && plan === "monthly" && !cancelled && (
+          {/* CTA Buttons */}
+          {user?.isSubscriptionValid && plan === "monthly" && !isCancelled && (
             <button className="cancel-btn" onClick={handleCancel} disabled={loading}>
               {loading ? "Cancelling..." : "Cancel Auto-Renewal"}
             </button>
           )}
 
-          {!isActive && (
+          {user?.isSubscriptionValid && isCancelled && (
+            <button className="renew-btn" onClick={() => (window.location.href = "/plans")}>
+              Resume Subscription
+            </button>
+          )}
+
+          {!user?.isSubscriptionValid && (
             <button className="renew-btn" onClick={() => (window.location.href = "/plans")}>
               Renew / Upgrade Plan
             </button>
@@ -146,6 +150,7 @@ export default function SubscriptionPlanCard() {
         {/* 💰 Payment History */}
         <div className="payment-history card">
           <h2>Payment History</h2>
+
           {loadingPayments ? (
             <p className="loading">Loading payments...</p>
           ) : payments.length === 0 ? (

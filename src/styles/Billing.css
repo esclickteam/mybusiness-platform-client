@@ -241,6 +241,17 @@
   color: #a16207;
 }
 
+.note-canva {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #666;
+  background: #f8f8f8;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 3px solid #6a5acd;
+}
+
+
 /* ===============================
    📞 Support Link
    =============================== */
