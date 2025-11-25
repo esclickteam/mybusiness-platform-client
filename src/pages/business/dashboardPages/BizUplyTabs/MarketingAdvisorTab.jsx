@@ -9,10 +9,7 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
   const [messages, setMessages] = useState([]);
   const [startedChat, setStartedChat] = useState(false);
   const [remainingQuestions, setRemainingQuestions] = useState(null);
-  const [selectedPackage, setSelectedPackage] = useState(null);
-  const [purchaseLoading, setPurchaseLoading] = useState(false);
-  const [purchaseMessage, setPurchaseMessage] = useState("");
-  const [purchaseError, setPurchaseError] = useState("");
+
   const bottomRef = useRef(null);
   const abortControllerRef = useRef(null);
 
@@ -24,11 +21,9 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
     "Which social network should I focus on?"
   ];
 
-  const aiPackages = [
-    { id: "ai_200", label: "AI Package – 200 Questions", price: 99, type: "ai-package" },
-    { id: "ai_500", label: "AI Package – 500 Questions", price: 139, type: "ai-package" }
-  ];
-
+  /* =========================================================
+      📌 Load remaining monthly AI questions
+  ========================================================= */
   const refreshRemainingQuestions = useCallback(async () => {
     if (!businessId) return;
     try {
@@ -36,9 +31,9 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
       const business = res.data.business;
 
       const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
-      const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
-      const remaining = Math.max(maxQuestions - usedQuestions, 0);
-      setRemainingQuestions(remaining);
+      const used = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
+
+      setRemainingQuestions(Math.max(maxQuestions - used, 0));
     } catch {
       setRemainingQuestions(null);
     }
@@ -46,8 +41,11 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
 
   useEffect(() => {
     refreshRemainingQuestions();
-  }, [refreshRemainingQuestions, businessId]);
+  }, [refreshRemainingQuestions]);
 
+  /* =========================================================
+      🤖 Send message to AI
+  ========================================================= */
   const sendMessage = useCallback(
     async (promptText, conversationMessages) => {
       if (!businessId || !promptText.trim() || loading) return;
@@ -55,12 +53,13 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
       if (remainingQuestions !== null && remainingQuestions <= 0) {
         setMessages(prev => [
           ...prev,
-          { role: "assistant", content: "❗ You’ve reached your monthly question limit. You can purchase additional AI questions." }
+          { role: "assistant", content: "❗ You’ve reached your monthly question limit." }
         ]);
         return;
       }
 
       setLoading(true);
+
       if (abortControllerRef.current) abortControllerRef.current.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
@@ -75,23 +74,33 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
 
       try {
         const response = await API.post("/chat/marketing-advisor", payload, { signal: controller.signal });
+
         setMessages(prev => [
           ...prev,
-          { role: "assistant", content: response.data.answer || "❌ No response received from server." }
+          {
+            role: "assistant",
+            content: response.data.answer || "❌ No response received from server."
+          }
         ]);
+
         setRemainingQuestions(prev => (prev !== null ? Math.max(prev - 1, 0) : null));
         await refreshRemainingQuestions();
-      } catch (error) {
-        if (error.name === "AbortError") return;
+      } catch (err) {
+        if (err.name === "AbortError") return;
 
-        if (error.response?.status === 403) {
-          const msg = error.response?.data?.error || "❗ You’ve reached your monthly question limit.";
+        if (err.response?.status === 403) {
           setRemainingQuestions(0);
-          setMessages(prev => [...prev, { role: "assistant", content: msg }]);
+          setMessages(prev => [
+            ...prev,
+            { role: "assistant", content: err.response.data.error || "❗ Limit reached." }
+          ]);
           return;
         }
 
-        setMessages(prev => [...prev, { role: "assistant", content: "⚠️ Server error or no active credits." }]);
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", content: "⚠️ Server error." }
+        ]);
       } finally {
         setLoading(false);
       }
@@ -99,74 +108,45 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
     [businessId, businessDetails, conversationId, userId, messages, loading, remainingQuestions, refreshRemainingQuestions]
   );
 
-  const handleSubmit = useCallback(() => {
+  /* =========================================================
+      📨 Send user message
+  ========================================================= */
+  const handleSubmit = () => {
     if (!userInput.trim() || loading) return;
+
     const userMessage = { role: "user", content: userInput };
     const newMessages = [...messages, userMessage];
+
     setMessages(newMessages);
     sendMessage(userInput, newMessages);
+
     setUserInput("");
     setStartedChat(true);
-  }, [userInput, loading, messages, sendMessage]);
-
-  const handlePresetQuestion = useCallback(
-    (question) => {
-      if (loading) return;
-      const userMessage = { role: "user", content: question };
-      const newMessages = [...messages, userMessage];
-      setMessages(newMessages);
-      sendMessage(question, newMessages);
-      setStartedChat(true);
-    },
-    [loading, messages, sendMessage]
-  );
-
-  const handlePurchaseExtra = async () => {
-    if (purchaseLoading || !selectedPackage) return;
-    if (!businessId) {
-      setPurchaseError("Business ID not found. Please log in again.");
-      return;
-    }
-
-    setPurchaseLoading(true);
-    setPurchaseMessage("");
-    setPurchaseError("");
-
-    try {
-      const url = selectedPackage.type === "ai-package" ? "/cardcomAI/ai-package" : "/purchase-package";
-      const res = await API.post(url, {
-        packageId: selectedPackage.id,
-        businessId,
-        packageType: selectedPackage.type,
-        price: selectedPackage.price
-      });
-
-      if (res.data.paymentUrl) {
-        window.location.href = res.data.paymentUrl;
-        return;
-      }
-
-      setPurchaseMessage(`Successfully purchased ${selectedPackage.label} for $${selectedPackage.price}.`);
-      setSelectedPackage(null);
-      await refreshRemainingQuestions();
-    } catch (e) {
-      setPurchaseError(e.message || "Error purchasing package");
-    } finally {
-      setPurchaseLoading(false);
-    }
   };
 
+  const handlePresetQuestion = (question) => {
+    if (loading) return;
+
+    const userMessage = { role: "user", content: question };
+    const newMessages = [...messages, userMessage];
+
+    setMessages(newMessages);
+    sendMessage(question, newMessages);
+
+    setStartedChat(true);
+  };
+
+  /* =========================================================
+      🔽 Scroll to bottom on new messages
+  ========================================================= */
   useEffect(() => {
-    const timer = setTimeout(() => {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 50);
-    return () => clearTimeout(timer);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   return (
     <div className="advisor-chat-container">
       <h2>Marketing Advisor 📈</h2>
-      <p>Select a preset question or start a free chat:</p>
+      <p>Select a preset question or start chatting:</p>
 
       {remainingQuestions !== null && (
         <p style={{ fontSize: 22, opacity: 0.7 }}>
@@ -192,56 +172,20 @@ const MarketingAdvisorTab = ({ businessId, conversationId, userId, businessDetai
         </>
       )}
 
-      {remainingQuestions !== null && remainingQuestions <= 0 && (
-        <div className="purchase-extra-container">
-          <p>You’ve reached your monthly question limit. You can purchase an additional AI package:</p>
-          {aiPackages.map((pkg) => (
-            <label key={pkg.id} className="radio-label">
-              <input
-                type="radio"
-                name="question-package"
-                value={pkg.id}
-                disabled={purchaseLoading}
-                checked={selectedPackage?.id === pkg.id}
-                onChange={() => setSelectedPackage(pkg)}
-              />
-              {pkg.label} - ${pkg.price}
-            </label>
-          ))}
-          <button onClick={handlePurchaseExtra} disabled={purchaseLoading || !selectedPackage}>
-            {purchaseLoading ? "Purchasing..." : "Purchase Package"}
-          </button>
-          {purchaseMessage && <p className="success">{purchaseMessage}</p>}
-          {purchaseError && <p className="error">{purchaseError}</p>}
-        </div>
-      )}
-
       <div className="chat-box-wrapper">
         <div className="chat-box">
           {messages.map((msg, idx) => (
             <div key={idx} className={`bubble ${msg.role}`}>
               {msg.role === "assistant" ? (
-                <Markdown
-                  options={{
-                    overrides: {
-                      p: {
-                        component: (props) => (
-                          <p style={{ margin: "0.2em 0", direction: "rtl", textAlign: "right" }}>
-                            {props.children}
-                          </p>
-                        )
-                      }
-                    }
-                  }}
-                >
-                  {msg.content}
-                </Markdown>
+                <Markdown>{msg.content}</Markdown>
               ) : (
                 msg.content
               )}
             </div>
           ))}
-          {loading && <div className="bubble assistant">⌛ Calculating response...</div>}
+
+          {loading && <div className="bubble assistant">⌛ Thinking...</div>}
+
           <div ref={bottomRef} style={{ height: 1 }} />
         </div>
       </div>

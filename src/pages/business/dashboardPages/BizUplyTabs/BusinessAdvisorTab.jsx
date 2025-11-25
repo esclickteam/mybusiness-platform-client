@@ -1,3 +1,5 @@
+// --- CLEAN VERSION: NO PAYMENTS, NO PACKAGES ---
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Markdown from "markdown-to-jsx";
 import API from "@api";
@@ -9,10 +11,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
   const [messages, setMessages] = useState([]);
   const [startedChat, setStartedChat] = useState(false);
   const [remainingQuestions, setRemainingQuestions] = useState(null);
-  const [selectedPackage, setSelectedPackage] = useState(null);
-  const [purchaseLoading, setPurchaseLoading] = useState(false);
-  const [purchaseMessage, setPurchaseMessage] = useState("");
-  const [purchaseError, setPurchaseError] = useState("");
+
   const bottomRef = useRef(null);
   const abortControllerRef = useRef(null);
 
@@ -24,30 +23,27 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     "How to build a simple business plan?"
   ];
 
-  const aiPackages = [
-    { id: "ai_200", label: "AI package with 200 questions", price: 99, type: "ai-package" },
-    { id: "ai_500", label: "AI package with 500 questions", price: 139, type: "ai-package" }
-  ];
-
   const refreshRemainingQuestions = useCallback(async () => {
     if (!businessId) return;
+
     try {
-      // Important: Fetch by the ID received in props, not /business/my
       const res = await API.get(`/business/${businessId}?t=${Date.now()}`);
       const business = res.data.business;
 
       const maxQuestions = 60 + (business.extraQuestionsAllowed || 0);
-      const usedQuestions = (business.monthlyQuestionCount || 0) + (business.extraQuestionsUsed || 0);
-      const remaining = Math.max(maxQuestions - usedQuestions, 0);
-      setRemainingQuestions(remaining);
-    } catch (error) {
+      const usedQuestions =
+        (business.monthlyQuestionCount || 0) +
+        (business.extraQuestionsUsed || 0);
+
+      setRemainingQuestions(Math.max(maxQuestions - usedQuestions, 0));
+    } catch {
       setRemainingQuestions(null);
     }
   }, [businessId]);
 
   useEffect(() => {
     refreshRemainingQuestions();
-  }, [refreshRemainingQuestions, businessId]);
+  }, [refreshRemainingQuestions]);
 
   const sendMessage = useCallback(
     async (promptText, conversationMessages) => {
@@ -56,12 +52,16 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       if (remainingQuestions !== null && remainingQuestions <= 0) {
         setMessages(prev => [
           ...prev,
-          { role: "assistant", content: "❗ You have reached your monthly question limit. You can purchase more questions." }
+          {
+            role: "assistant",
+            content: "❗ You have reached your monthly question limit."
+          }
         ]);
         return;
       }
 
       setLoading(true);
+
       if (abortControllerRef.current) abortControllerRef.current.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
@@ -75,29 +75,42 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       };
 
       try {
-        const response = await API.post("/chat/business-advisor", payload, { signal: controller.signal });
+        const response = await API.post("/chat/business-advisor", payload, {
+          signal: controller.signal
+        });
 
-        // Success
         setMessages(prev => [
           ...prev,
-          { role: "assistant", content: response.data.answer || "❌ No response received from the server." }
+          {
+            role: "assistant",
+            content: response.data.answer || "❌ No response from server."
+          }
         ]);
-        setRemainingQuestions(prev => (prev !== null ? Math.max(prev - 1, 0) : null));
 
-        // Sync with server
+        setRemainingQuestions(prev =>
+          prev !== null ? Math.max(prev - 1, 0) : null
+        );
+
         await refreshRemainingQuestions();
       } catch (error) {
         if (error.name === "AbortError") return;
 
-        // Proper handling for 403
         if (error.response?.status === 403) {
-          const msg = error.response?.data?.error || "❗ You have reached your monthly question limit.";
           setRemainingQuestions(0);
-          setMessages(prev => [...prev, { role: "assistant", content: msg }]);
+          setMessages(prev => [
+            ...prev,
+            {
+              role: "assistant",
+              content: error.response.data.error || "❗ Limit reached."
+            }
+          ]);
           return;
         }
 
-        setMessages(prev => [...prev, { role: "assistant", content: "⚠️ Server error or no active credits." }]);
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", content: "⚠️ Server error." }
+        ]);
       } finally {
         setLoading(false);
       }
@@ -105,86 +118,44 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     [businessId, businessDetails, conversationId, userId, messages, loading, remainingQuestions, refreshRemainingQuestions]
   );
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = () => {
     if (!userInput.trim() || loading) return;
+
     const userMessage = { role: "user", content: userInput };
     const newMessages = [...messages, userMessage];
+
     setMessages(newMessages);
     sendMessage(userInput, newMessages);
     setUserInput("");
     setStartedChat(true);
-  }, [userInput, loading, messages, sendMessage]);
+  };
 
-  const handlePresetQuestion = useCallback(
-    (question) => {
-      if (loading) return;
-      const userMessage = { role: "user", content: question };
-      const newMessages = [...messages, userMessage];
-      setMessages(newMessages);
-      sendMessage(question, newMessages);
-      setStartedChat(true);
-    },
-    [loading, messages, sendMessage]
-  );
+  const handlePresetQuestion = (question) => {
+    if (loading) return;
 
-  const handlePurchaseExtra = async () => {
-    if (purchaseLoading || !selectedPackage) return;
-    if (!businessId) {
-      setPurchaseError("Business ID not found. Please log in again.");
-      return;
-    }
+    const userMessage = { role: "user", content: question };
+    const newMessages = [...messages, userMessage];
 
-    setPurchaseLoading(true);
-    setPurchaseMessage("");
-    setPurchaseError("");
-
-    try {
-      const url = selectedPackage.type === "ai-package" ? "/cardcomAI/ai-package" : "/purchase-package";
-
-      const res = await API.post(url, {
-        packageId: selectedPackage.id,
-        businessId,
-        packageType: selectedPackage.type,
-        price: selectedPackage.price
-      });
-
-      if (res.data.paymentUrl) {
-        window.location.href = res.data.paymentUrl;
-        return;
-      }
-
-      setPurchaseMessage(`The ${selectedPackage.label} was successfully purchased for ${selectedPackage.price}$.`);
-      setSelectedPackage(null);
-
-      // Refresh counter after purchase
-      await refreshRemainingQuestions();
-    } catch (e) {
-      setPurchaseError(e.message || "Error purchasing the package");
-    } finally {
-      setPurchaseLoading(false);
-    }
+    setMessages(newMessages);
+    sendMessage(question, newMessages);
+    setStartedChat(true);
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 50);
-    return () => clearTimeout(timer);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   return (
     <div className="advisor-chat-container">
       <h2>Business Advisor 🤝</h2>
-      <p>Select a preset question or start a free conversation:</p>
+      <p>Select a preset question or start a conversation:</p>
 
-      {/* Optional counter */}
       {remainingQuestions !== null && (
         <p style={{ fontSize: 22, opacity: 0.7 }}>
           Monthly balance: {remainingQuestions} questions remaining
         </p>
       )}
 
-      {/* Before starting chat – only preset questions */}
       {!startedChat && (
         <>
           <div className="preset-questions-container">
@@ -203,60 +174,18 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         </>
       )}
 
-      {/* Purchase block appears when no balance left */}
-      {remainingQuestions !== null && remainingQuestions <= 0 && (
-        <div className="purchase-extra-container">
-          <p>You have reached your monthly question limit. You can purchase an additional AI package:</p>
-
-          {aiPackages.map((pkg) => (
-            <label key={pkg.id} className="radio-label">
-              <input
-                type="radio"
-                name="question-package"
-                value={pkg.id}
-                disabled={purchaseLoading}
-                checked={selectedPackage?.id === pkg.id}
-                onChange={() => setSelectedPackage(pkg)}
-              />
-              {pkg.label} - {pkg.price}$
-            </label>
-          ))}
-
-          <button onClick={handlePurchaseExtra} disabled={purchaseLoading || !selectedPackage}>
-            {purchaseLoading ? "Purchasing..." : "Purchase Package"}
-          </button>
-
-          {purchaseMessage && <p className="success">{purchaseMessage}</p>}
-          {purchaseError && <p className="error">{purchaseError}</p>}
-        </div>
-      )}
-
       <div className="chat-box-wrapper">
         <div className="chat-box">
           {messages.map((msg, idx) => (
             <div key={idx} className={`bubble ${msg.role}`}>
               {msg.role === "assistant" ? (
-                <Markdown
-                  options={{
-                    overrides: {
-                      p: {
-                        component: (props) => (
-                          <p style={{ margin: "0.2em 0", direction: "rtl", textAlign: "right" }}>
-                            {props.children}
-                          </p>
-                        )
-                      }
-                    }
-                  }}
-                >
-                  {msg.content}
-                </Markdown>
+                <Markdown>{msg.content}</Markdown>
               ) : (
                 msg.content
               )}
             </div>
           ))}
-          {loading && <div className="bubble assistant">⌛ Generating answer...</div>}
+          {loading && <div className="bubble assistant">⌛ Thinking...</div>}
           <div ref={bottomRef} style={{ height: 1 }} />
         </div>
       </div>
@@ -264,7 +193,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       <div className="chat-input">
         <input
           type="text"
-          placeholder="Write your own question..."
+          placeholder="Write your question..."
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
@@ -273,7 +202,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
         />
         <button
           onClick={handleSubmit}
-          disabled={loading || !userInput.trim() || (remainingQuestions !== null && remainingQuestions <= 0)}
+          disabled={loading || !userInput.trim()}
         >
           Send
         </button>
