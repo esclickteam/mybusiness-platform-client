@@ -1,0 +1,72 @@
+.unsub-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #fafbff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.unsub-card {
+  background: #ffffff;
+  padding: 50px 60px;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  animation: pop 0.4s ease;
+}
+
+.unsub-card h1 {
+  font-size: 32px;
+  color: #2a2a2a;
+  margin-bottom: 15px;
+}
+
+.unsub-card h2 {
+  font-size: 24px;
+  color: #3a3a3a;
+  margin-bottom: 12px;
+}
+
+.unsub-card p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #5a5a5a;
+}
+
+.unsub-emoji {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.fade {
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Loader */
+.loader {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 20px;
+  border: 5px solid #e3e3e3;
+  border-top-color: #6c63ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

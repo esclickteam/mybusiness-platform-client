@@ -29,6 +29,8 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
+import Unsubscribe from "./pages/Unsubscribe";
+
 
 // Public Pages
 const HomePage = lazy(() => import("./pages/Home"));
@@ -194,6 +196,9 @@ export default function App() {
                   <Route path="/features" element={<Features />} />
                   <Route path="/solutions" element={<Solutions />} />
                   <Route path="/trial-ended" element={<TrialEnded />} />
+                  <Route path="/unsubscribe" element={<Unsubscribe />} />
+
+
 
 
 
