@@ -32,7 +32,7 @@ export default function Unsubscribe() {
 
       default:
         return (
-          <div className="unsub-card fade">
+           <div className="unsub-card fade">
             <div className="unsub-emoji">⚠️</div>
             <h1>Invalid request</h1>
             <p>Missing unsubscribe parameters.</p>
