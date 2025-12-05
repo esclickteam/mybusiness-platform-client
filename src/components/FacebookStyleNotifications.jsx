@@ -5,11 +5,14 @@ import { useAuth } from "../context/AuthContext";
 import "./FacebookStyleNotifications.css";
 
 export default function FacebookStyleNotifications() {
-  const { user } = useAuth();
+  const { user, socket } = useAuth();   // ⬅️ מוסיפים socket!
   const [tab, setTab] = useState("all");
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
 
+  /* ================================
+     📌  Load notifications on mount
+  ================================= */
   useEffect(() => {
     if (user?.businessId) fetchNotifications();
   }, [user?.businessId]);
@@ -23,6 +26,51 @@ export default function FacebookStyleNotifications() {
     }
   };
 
+  /* ================================
+     🔥 REAL-TIME NOTIFICATIONS (Missing Before)
+  ================================= */
+  useEffect(() => {
+    if (!socket || !user?.businessId) return;
+
+    console.log("📡 Listening for live notifications...");
+
+    // הלקוח מצטרף לחדר העסק
+    socket.emit("joinRoom", user.businessId);
+
+    // 1️⃣ הודעה חדשה
+    socket.on("businessUpdates", (event) => {
+      console.log("🔥 LIVE EVENT:", event);
+
+      const { type, data } = event;
+
+      if (type === "newNotification") {
+        setNotifications((prev) => [data, ...prev]);
+      }
+
+      if (type === "newMessage") {
+        const notif = {
+          id: Date.now().toString(),
+          text: "✉️ New message from a customer",
+          timestamp: new Date().toISOString(),
+          read: false,
+          unreadCount: 1,
+        };
+        setNotifications((prev) => [notif, ...prev]);
+      }
+
+      if (type === "newRecommendationNotification") {
+        setNotifications((prev) => [data, ...prev]);
+      }
+    });
+
+    return () => {
+      socket.off("businessUpdates");
+    };
+  }, [socket, user?.businessId]);
+
+  /* ================================
+     📌 Mark Notification as Read
+  ================================= */
   const markAsRead = async (id) => {
     try {
       await API.put(`/business/my/notifications/${id}/read`);
@@ -34,6 +82,9 @@ export default function FacebookStyleNotifications() {
     }
   };
 
+  /* ================================
+     📌 Filter by tab
+  ================================= */
   const filtered =
     tab === "unread"
       ? notifications.filter((n) => !n.read)
@@ -47,12 +98,11 @@ export default function FacebookStyleNotifications() {
     return new Date(timestamp).toLocaleDateString("en-US");
   };
 
-  // ❌ אם המשתמש אינו עסק — לא מציגים את הפעמון
   if (!user?.businessId) return null;
 
   return (
     <div className="notif-left-wrapper">
-      {/* ✅ פעמון ליד הלוגו */}
+      {/* Bell button */}
       <button className="fb-bell" onClick={() => setOpen(!open)}>
         🔔
         {notifications.some((n) => !n.read) && (
