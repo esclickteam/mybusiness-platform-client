@@ -17,7 +17,7 @@ let initialized = false;     // Prevent duplicate setup
  * @param {string|null}                businessId
  */
 export async function createSocket(getValidAccessToken, onLogout, businessId = null) {
-  // If instance already exists and is active → just return it
+  // ⛔ If instance exists & connected → return it
   if (socketInstance && socketInstance.connected) {
     return socketInstance;
   }
@@ -30,7 +30,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
   }
   currentToken = token;
 
-  // Verify role + businessId
+  // Validate role & businessId requirement
   const role = getUserRole();
   const needBiz = ["business", "business-dashboard"];
   if (needBiz.includes(role) && !businessId) {
@@ -39,26 +39,21 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     return null;
   }
 
-  // Create a new singleton instance only once
-  if (!socketInstance) {
-    socketInstance = io(SOCKET_URL, {
-      path: "/socket.io",
-      transports: ["websocket"],
-      withCredentials: true,
-      reconnection: true,
-      autoConnect: false, // connect manually after setting auth
-    });
-  }
+  // Create NEW socket instance ALWAYS with proper auth (important!)
+  socketInstance = io(SOCKET_URL, {
+    path: "/socket.io",
+    transports: ["websocket"],
+    withCredentials: true,
+    reconnection: true,
+    autoConnect: true,  // ⬅️ Connect instantly with auth
+    auth: {
+      token,
+      role,
+      businessId,       // ⬅️ CRITICAL: Required so server joins business rooms
+    },
+  });
 
-  // Set auth each time before connect
-  socketInstance.auth = { token, role, businessId };
-
-  // --- Connect only if not already connected ---
-  if (!socketInstance.connected) {
-    socketInstance.connect();
-  }
-
-  // Initialize event listeners only once
+  // Initialize listeners once
   if (!initialized) {
     initialized = true;
 
@@ -70,7 +65,9 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
       console.log(`🔴 WS disconnected: ${reason}`);
     });
 
-    // Handle expired JWT → refresh & reconnect
+    /**
+     * 🔁 Auto-refresh token when expired
+     */
     const refreshAndReconnect = async () => {
       try {
         const newToken = await getValidAccessToken();
@@ -79,9 +76,17 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
           onLogout?.();
           return;
         }
+
         currentToken = newToken;
-        socketInstance.auth.token = newToken;
-        socketInstance.io.opts.auth.token = newToken;
+
+        // Update auth & reconnect
+        socketInstance.auth = {
+          token: newToken,
+          role,
+          businessId,
+        };
+        socketInstance.io.opts.auth = socketInstance.auth;
+
         if (!socketInstance.connected) socketInstance.connect();
       } catch (err) {
         console.error("[Socket] Token refresh error:", err);
@@ -96,6 +101,18 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
       } else {
         console.warn("[Socket] connect_error:", err.message);
       }
+    });
+
+    /**
+     * 📡 Forward server-side businessUpdates to the app
+     */
+    socketInstance.on("businessUpdates", (payload) => {
+      console.log("📩 [Socket] businessUpdates received:", payload);
+
+      // Fire global event accessible everywhere (notifications, inbox, CRM, etc.)
+      window.dispatchEvent(
+        new CustomEvent("biz:businessUpdates", { detail: payload })
+      );
     });
   }
 
