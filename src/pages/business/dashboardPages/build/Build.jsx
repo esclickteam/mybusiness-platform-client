@@ -247,10 +247,18 @@ export default function Build() {
 
   // עדכון מידי של תצוגה
   setBusinessDetails((prev) => ({
-    ...prev,
-    logo: { preview: previewUrl, publicId: prev.logoId || null },
-  }));
+  ...prev,
+  logo: {
+    preview: previewUrl,           // מציג מיידית
+    publicId: prev.logoId || null, // שומר ID עד שיהיה חדש מהשרת
+  },
+}));
 
+// 🔥 שולח לכל האתר שהעסק עודכן — הפרופיל הציבורי מתרענן לבד
+window.dispatchEvent(new Event("business-profile-updated"));
+
+
+  
   // מכינים FormData
   const fd = new FormData();
   fd.append("logo", file);
@@ -267,12 +275,15 @@ export default function Build() {
     if (res.status === 200) {
       // עדכון לנתוני Cloudinary
       setBusinessDetails((prev) => ({
-        ...prev,
-        logo: {
-          preview: res.data.logo,   // קישור אמיתי משרת
-          publicId: res.data.logoId,
-        },
-      }));
+  ...prev,
+  logo: {
+    preview: res.data.logo,   // קישור אמיתי מהשרת
+    publicId: res.data.logoId,
+  },
+}));
+
+// 🔥 שולח לכל המערכת שהפרופיל עודכן — הפרופיל הציבורי מתרענן אוטומטית
+window.dispatchEvent(new Event("business-profile-updated"));
     }
   } catch (err) {
     console.error("❌ Error uploading logo:", err);
@@ -385,10 +396,13 @@ export default function Build() {
 
   // ⭐ מציגה מייד בגלריה
   setBusinessDetails((prev) => ({
-    ...prev,
-    gallery: [...prev.gallery, ...tempPreviews],
-    galleryImageIds: [...prev.galleryImageIds, ...tempPreviews.map(() => null)], // משבצת publicId זמני
-  }));
+  ...prev,
+  gallery: [...prev.gallery, ...tempPreviews],
+  galleryImageIds: [...prev.galleryImageIds, ...tempPreviews.map(() => null)],
+}));
+
+// 🔥 עדכון חי לכל המערכת — הפרופיל הציבורי מתרענן מייד
+window.dispatchEvent(new Event("business-profile-updated"));
 
   // upload לשרת
   const fd = new FormData();
@@ -405,10 +419,14 @@ export default function Build() {
 
       // ⭐ אחרי שהשרת מחזיר תשובה — מחליפים את התמונות הזמניות
       setBusinessDetails((prev) => ({
-        ...prev,
-        gallery: urls,
-        galleryImageIds: ids,
-      }));
+  ...prev,
+  gallery: urls,
+  galleryImageIds: ids,
+}));
+
+// 🔥 טריגר שמודיע לכל האפליקציה שהגלריה עודכנה — 
+// כולל פרופיל ציבורי שמתעדכן מיד בלי refresh
+window.dispatchEvent(new Event("business-profile-updated"));
     }
   } catch (err) {
     console.error("Error uploading gallery:", err);
