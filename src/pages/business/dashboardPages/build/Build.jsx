@@ -13,6 +13,7 @@ const ShopSection    = lazy(() => import("../buildTabs/buildSections/ShopSection
 const ChatSection    = lazy(() => import("../buildTabs/buildSections/ChatSection"));
 const FaqSection     = lazy(() => import("../buildTabs/buildSections/FaqSection"));
 
+
 const TABS = [
   "Main",
   "Gallery",
@@ -52,6 +53,8 @@ export default function Build() {
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [lockAutosave, setLockAutosave] = useState(false);
+
 
   // Autosave setup
   const [firstLoad, setFirstLoad] = useState(true);
@@ -163,7 +166,8 @@ export default function Build() {
 
   // Autosave debounce
   useEffect(() => {
-    if (firstLoad) return;
+    if (firstLoad || lockAutosave) return;
+
     clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(async () => {
       setIsSaving(true);
