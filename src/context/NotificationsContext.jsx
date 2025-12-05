@@ -62,7 +62,7 @@ function reducer(state, action) {
 }
 
 
-    case "UPDATE_UNREAD_COUNT":
+     case "UPDATE_UNREAD_COUNT":
       return { ...state, unreadCount: action.payload };
 
     case "CLEAR_ALL":
