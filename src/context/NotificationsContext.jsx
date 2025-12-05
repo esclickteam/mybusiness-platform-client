@@ -15,12 +15,11 @@ const initialState = {
 };
 
 /* ==========================
-   🧩 Helper: Normalize Notification
-   ========================== */
+   🧩 Normalize Notification
+========================== */
 function normalizeNotification(notif) {
-  console.log("[normalizeNotification] input:", notif);
-
   let text = notif.text;
+
   if (notif.type === "taskReminder" && !text?.startsWith("⏰")) {
     text = `⏰ ${text}`;
   }
@@ -40,15 +39,18 @@ function normalizeNotification(notif) {
 
 /* ==========================
    ⚙️ Reducer
-   ========================== */
+========================== */
 function reducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
       const list = action.payload.map(normalizeNotification);
+
+      // Handle AI merging rule
       const filtered = [];
       const aiThreads = new Set(
         list.filter((n) => n.type === "recommendation").map((n) => n.threadId)
       );
+
       for (const n of list) {
         if (aiThreads.has(n.threadId)) {
           if (n.type === "recommendation") filtered.push(n);
@@ -56,6 +58,7 @@ function reducer(state, action) {
           filtered.push(n);
         }
       }
+
       const unreadCount = filtered.reduce((sum, n) => sum + n.unreadCount, 0);
       return { notifications: filtered, unreadCount };
     }
@@ -65,26 +68,8 @@ function reducer(state, action) {
 
     case "ADD_NOTIFICATION": {
       const newNotif = normalizeNotification(action.payload);
-      console.log("[ADD_NOTIFICATION] newNotif:", newNotif);
 
-      if (
-        newNotif.type === "message" &&
-        state.notifications.some(
-          (n) => n.threadId === newNotif.threadId && n.type === "recommendation"
-        )
-      ) {
-        return state;
-      }
-
-      if (newNotif.type === "recommendation") {
-        const list = [
-          newNotif,
-          ...state.notifications.filter((n) => n.threadId !== newNotif.threadId),
-        ];
-        const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
-        return { notifications: list, unreadCount };
-      }
-
+      // Prevent duplication
       const exists = state.notifications.some(
         (n) =>
           n.id === newNotif.id ||
@@ -92,9 +77,11 @@ function reducer(state, action) {
             n.threadId === newNotif.threadId &&
             n.type === newNotif.type)
       );
+
       const list = exists
         ? state.notifications
         : [newNotif, ...state.notifications];
+
       const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
 
       return { notifications: list, unreadCount };
@@ -110,7 +97,7 @@ function reducer(state, action) {
 
 /* ==========================
    🧠 Provider
-   ========================== */
+========================== */
 export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -135,7 +122,9 @@ export function NotificationsProvider({ children }) {
     if (user?.businessId) fetchNotifications();
   }, [user?.businessId, fetchNotifications]);
 
-  /* === Socket real-time listeners === */
+  /* =========================================
+     SOCKET REAL-TIME LISTENERS (UPDATED)
+  ========================================= */
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
@@ -143,71 +132,67 @@ export function NotificationsProvider({ children }) {
       console.log("[Socket] joining business room", user.businessId);
       socket.emit("joinBusinessRoom", user.businessId);
 
-      // 🔔 התראות כלליות
-      socket.on("newNotification", (notif) => {
-        console.log("[Socket] newNotification:", notif);
-        dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+      /* ===========================
+         🔥 MAIN FIX — Redis → Socket
+      =========================== */
+      socket.on("businessUpdates", (event) => {
+        console.log("[Socket] businessUpdates:", event);
+        const { type, data } = event;
+
+        // Standard notification created in backend
+        if (type === "newNotification") {
+          dispatch({ type: "ADD_NOTIFICATION", payload: data });
+        }
+
+        // New message alert
+        if (type === "newMessage") {
+          const notif = {
+            threadId: data.conversationId,
+            text: "✉️ New message from a customer",
+            timestamp: data.timestamp || new Date().toISOString(),
+            read: false,
+            unreadCount: 1,
+            type: "message",
+            actorName: "Customer",
+            targetUrl: `/conversations/${data.conversationId}`,
+          };
+          dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+        }
+
+        // AI recommendation
+        if (type === "newRecommendationNotification") {
+          dispatch({ type: "ADD_NOTIFICATION", payload: data });
+        }
+
+        // Unread count update
+        if (type === "unreadMessagesCount") {
+          dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data });
+        }
       });
 
-      // ✉️ הודעות חדשות
-      socket.on("newMessage", (msg) => {
-        console.log("[Socket] newMessage:", msg);
-        const senderRole = msg.role || "client";
-        const notif = {
-          threadId: msg.conversationId,
-          text: `✉️ New message from ${
-            senderRole === "client" ? "a customer" : "a business"
-          }`,
-          timestamp: msg.timestamp || msg.createdAt,
-          read: false,
-          unreadCount: 1,
-          type: "message",
-          actorName: senderRole === "client" ? "Customer" : "Business",
-        };
-        dispatch({ type: "ADD_NOTIFICATION", payload: notif });
-      });
+      /* Legacy listeners (optional for fallback) */
 
-      // ⭐ ביקורות חדשות
       socket.on("newReview", (review) => {
-        console.log("[Socket] newReview:", review);
         const notif = {
           type: "review",
-          text: `⭐ New review added: "${review.comment}"`,
-          actorName: "Customer",
+          text: `⭐ New review: "${review.comment}"`,
           timestamp: review.createdAt || new Date().toISOString(),
           read: false,
           unreadCount: 1,
           targetUrl: `/business/${user.businessId}/dashboard/reviews`,
+          actorName: "Customer",
         };
         dispatch({ type: "ADD_NOTIFICATION", payload: notif });
       });
-
-      // 🤖 התראות AI
-      socket.on("newRecommendationNotification", (notif) => {
-        console.log("[Socket] newRecommendationNotification:", notif);
-        dispatch({ type: "ADD_NOTIFICATION", payload: notif });
-      });
-
-      // 🔢 עדכון מונה כולל (notificationBundle)
-      socket.on("notificationBundle", (data) => {
-        console.log("[Socket] notificationBundle:", data);
-        if (typeof data?.count === "number") {
-          dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data.count });
-        }
-      });
     };
 
-    // מאזינים גם אם כבר מחובר
     if (socket.connected) setupListeners();
     socket.on("connect", setupListeners);
 
     return () => {
+      socket.off("businessUpdates");
+      socket.off("newReview");
       socket.off("connect", setupListeners);
-      socket.off("newMessage");
-      socket.off("newNotification");
-      socket.off("newReview"); // ✅ נוסף
-      socket.off("newRecommendationNotification");
-      socket.off("notificationBundle");
     };
   }, [socket, user?.businessId]);
 
@@ -230,7 +215,7 @@ export function NotificationsProvider({ children }) {
     [state.unreadCount]
   );
 
-  /* === Clear all read notifications === */
+  /* === Clear all read === */
   const clearRead = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications/clearRead", {
@@ -260,7 +245,7 @@ export function NotificationsProvider({ children }) {
 
 /* ==========================
    📡 Hook
-   ========================== */
+========================== */
 export function useNotifications() {
   return useContext(NotificationsContext);
 }
