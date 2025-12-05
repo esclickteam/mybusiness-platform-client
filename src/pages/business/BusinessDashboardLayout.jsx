@@ -44,24 +44,22 @@ export default function BusinessDashboardLayout({ children }) {
   const queryClient = useQueryClient();
 
   /* ============================
-     📩 Unread Messages Count (ONLY CHAT)
+     📩 Unread Messages Count (ONLY CHAT) — FIXED FOR V5
   ============================ */
-  const { data: unreadChat } = useQuery(
-    ["unread-messages", user?.businessId],
-    () =>
+  const { data: unreadChat } = useQuery({
+    queryKey: ["unread-messages", user?.businessId],
+    queryFn: () =>
       API.get(`/messages/unread-count?businessId=${user.businessId}`).then(
         (res) => res.data
       ),
-    {
-      enabled: !!user?.businessId,
-      refetchInterval: 6000, // שמירה על סנכרון חי
-    }
-  );
+    enabled: !!user?.businessId,
+    refetchInterval: 6000,
+  });
 
   const messagesCount = unreadChat?.count || 0;
 
   /* ============================
-     📱 Responsive Sidebar
+     📱 Sidebar state
   ============================ */
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
@@ -73,6 +71,7 @@ export default function BusinessDashboardLayout({ children }) {
       if (socket?.connected) socket.disconnect();
       if (typeof logout === "function") await logout();
       else localStorage.clear();
+
       setShowSidebar(false);
       navigate("/", { replace: true });
     } catch (e) {
@@ -86,6 +85,7 @@ export default function BusinessDashboardLayout({ children }) {
     if (!user?.businessId) return;
     if (!socket.connected) socket.connect();
     socket.emit("joinBusinessRoom", user.businessId);
+
     return () => {
       socket.emit("leaveRoom", `business-${user.businessId}`);
     };
@@ -95,26 +95,27 @@ export default function BusinessDashboardLayout({ children }) {
   useEffect(() => {
     if (!user?.businessId) return;
 
-    queryClient.prefetchQuery(
-      ["business-profile", user.businessId],
-      () => API.get(`/business/${user.businessId}`).then((res) => res.data)
-    );
+    queryClient.prefetchQuery({
+      queryKey: ["business-profile", user.businessId],
+      queryFn: () =>
+        API.get(`/business/${user.businessId}`).then((res) => res.data),
+    });
 
-    queryClient.prefetchQuery(
-      ["unread-messages", user.businessId],
-      () =>
+    queryClient.prefetchQuery({
+      queryKey: ["unread-messages", user.businessId],
+      queryFn: () =>
         API.get(`/messages/unread-count?businessId=${user.businessId}`).then(
           (res) => res.data
-        )
-    );
+        ),
+    });
 
-    queryClient.prefetchQuery(
-      ["crm-appointments", user.businessId],
-      () =>
+    queryClient.prefetchQuery({
+      queryKey: ["crm-appointments", user.businessId],
+      queryFn: () =>
         API.get(
           `/appointments/all-with-services?businessId=${user.businessId}`
-        ).then((res) => res.data)
-    );
+        ).then((res) => res.data),
+    });
   }, [user?.businessId, queryClient]);
 
   /* 🔐 Permissions */
@@ -149,10 +150,13 @@ export default function BusinessDashboardLayout({ children }) {
   /* Focus Trap */
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
+
     const sel =
       'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const els = sidebarRef.current?.querySelectorAll(sel) ?? [];
+
     if (!els.length) return;
+
     const first = els[0];
     const last = els[els.length - 1];
 
@@ -166,11 +170,13 @@ export default function BusinessDashboardLayout({ children }) {
           first.focus();
         }
       }
+
       if (e.key === "Escape") setShowSidebar(false);
     };
 
     document.addEventListener("keydown", onKey);
     first.focus();
+
     return () => document.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
@@ -240,7 +246,7 @@ export default function BusinessDashboardLayout({ children }) {
                     >
                       {label}
 
-                      {/* ❤️ Badge ONLY for chat messages */}
+                      {/* ❤️ Badge ONLY for real chat messages */}
                       {path === "messages" && messagesCount > 0 && (
                         <span className="badge">{messagesCount}</span>
                       )}
@@ -264,6 +270,7 @@ export default function BusinessDashboardLayout({ children }) {
                 <div className="dashboard-header-left">
                   <FacebookStyleNotifications />
                 </div>
+
                 <div className="dashboard-header-right">
                   <span className="user-name">Hello, {user?.name}</span>
                   <button className="logout-btn" onClick={handleLogout}>
