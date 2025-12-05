@@ -44,21 +44,20 @@ export default function BusinessDashboardLayout({ children }) {
   const queryClient = useQueryClient();
 
   /* ============================
-     📩 Unread Messages Count (ONLY CHAT) — FIXED FOR V5
-  ============================ */
+     📩 FIXED — REAL CHAT UNREAD COUNT
+============================ */
   const { data: unreadChat } = useQuery({
-  queryKey: ["unread-messages", user?.businessId],
-  queryFn: () =>
-    API.get(`/chat/unread-count`).then((res) => res.data),
-  enabled: !!user?.businessId,
-  refetchInterval: 6000,
-});
+    queryKey: ["unread-messages", user?.businessId],
+    queryFn: () => API.get(`/chat/unread-count`).then((res) => res.data),
+    enabled: !!user?.businessId,
+    refetchInterval: 6000,
+  });
 
-const messagesCount = unreadChat?.count || 0;
+  const messagesCount = unreadChat?.count || 0;
 
   /* ============================
-     📱 Sidebar state
-  ============================ */
+     📱 Sidebar
+============================ */
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
   const sidebarRef = useRef(null);
@@ -72,8 +71,7 @@ const messagesCount = unreadChat?.count || 0;
 
       setShowSidebar(false);
       navigate("/", { replace: true });
-    } catch (e) {
-      console.error("Logout failed:", e);
+    } catch {
       navigate("/", { replace: true });
     }
   };
@@ -89,7 +87,7 @@ const messagesCount = unreadChat?.count || 0;
     };
   }, [user?.businessId]);
 
-  /* 🚀 Prefetch Data */
+  /* 🚀 Prefetch (UPDATED TO CHAT ROUTE) */
   useEffect(() => {
     if (!user?.businessId) return;
 
@@ -100,10 +98,9 @@ const messagesCount = unreadChat?.count || 0;
     });
 
     queryClient.prefetchQuery({
-  queryKey: ["unread-messages", user.businessId],
-  queryFn: () =>
-    API.get(`/chat/unread-count`).then((res) => res.data),
-});
+      queryKey: ["unread-messages", user.businessId],
+      queryFn: () => API.get(`/chat/unread-count`).then((res) => res.data),
+    });
 
     queryClient.prefetchQuery({
       queryKey: ["crm-appointments", user.businessId],
@@ -150,7 +147,6 @@ const messagesCount = unreadChat?.count || 0;
     const sel =
       'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const els = sidebarRef.current?.querySelectorAll(sel) ?? [];
-
     if (!els.length) return;
 
     const first = els[0];
@@ -166,7 +162,6 @@ const messagesCount = unreadChat?.count || 0;
           first.focus();
         }
       }
-
       if (e.key === "Escape") setShowSidebar(false);
     };
 
@@ -180,7 +175,7 @@ const messagesCount = unreadChat?.count || 0;
 
   /* ============================
      🎨 Layout
-  ============================ */
+============================ */
   return (
     <BusinessServicesProvider>
       <AiProvider>
@@ -242,7 +237,6 @@ const messagesCount = unreadChat?.count || 0;
                     >
                       {label}
 
-                      {/* ❤️ Badge ONLY for real chat messages */}
                       {path === "messages" && messagesCount > 0 && (
                         <span className="badge">{messagesCount}</span>
                       )}
