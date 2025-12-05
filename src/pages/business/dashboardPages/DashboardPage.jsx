@@ -56,16 +56,26 @@ function debounce(func, wait) {
 }
 
 function enrichAppointment(appt, business = {}) {
+
+  // שם הלקוח ממוספר נכון מכל מקור אפשרי
+  const clientName =
+    appt.clientName?.trim() ||
+    appt.name?.trim() ||                 // במקרה שהשרת שלח name
+    appt.client?.name?.trim() ||         // במקרה שהפגישה נטענה עם client object
+    "Unknown";
+
+  // שם השירות
   let serviceName = appt.serviceName?.trim();
   if (!serviceName && business.services) {
     const service = business.services.find(
-      (s) => s._id.toString() === appt.serviceId?.toString()
+      (s) => s._id?.toString() === appt.serviceId?.toString()
     );
     serviceName = service?.name;
   }
+
   return {
     ...appt,
-    clientName: appt.clientName?.trim() || "Unknown",
+    clientName,
     serviceName: serviceName || "Unknown",
   };
 }
@@ -482,9 +492,20 @@ sock.on("newReview", (reviewData) => {
 
   /* derived */
   const effectiveStats = stats || {};
-  const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
-    enrichAppointment(appt, effectiveStats)
-  );
+
+// בדיקה אם באמת נטענו פגישות מהשרת
+const hasLoadedAppointments =
+  effectiveStats.appointments &&
+  Array.isArray(effectiveStats.appointments) &&
+  effectiveStats.appointments.length > 0;
+
+// רק אם יש פגישות נטענות - נייצר enrichedAppointments
+const enrichedAppointments = hasLoadedAppointments
+  ? effectiveStats.appointments.map((appt) =>
+      enrichAppointment(appt, effectiveStats)
+    )
+  : [];
+
   const getUpcomingAppointmentsCount = (appointments) => {
     const now = new Date();
     const endOfWeek = new Date();
@@ -635,14 +656,20 @@ sock.on("newReview", (reviewData) => {
             </div>
             <div className="dp-card dp-card--panel">
               <Suspense fallback={<div className="dp-loading-sm">🔄 Loading calendar...</div>}>
-                <CalendarView
-                  appointments={enrichedAppointments}
-                  onDateClick={setSelectedDate}
-                  selectedDate={selectedDate}
-                />
-              </Suspense>
-            </div>
-          </section>
+
+                 {hasLoadedAppointments ? (
+        <CalendarView
+          appointments={enrichedAppointments}
+          onDateClick={setSelectedDate}
+          selectedDate={selectedDate}
+        />
+      ) : (
+        <div className="dp-loading-sm">Loading calendar...</div>
+      )}
+
+    </Suspense>
+  </div>
+</section>
 
           {/* Next actions */}
           <section ref={nextActionsRef} className="dp-section">
