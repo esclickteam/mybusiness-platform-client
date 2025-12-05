@@ -459,12 +459,10 @@ export default function Build() {
       <div className="topbar-preview">
         <div className="logo-circle" onClick={handleLogoClick}>
           {businessDetails.logo?.preview ? (
-            <img src={businessDetails.logo.preview} className="logo-img" />
-          ) : businessDetails.logo ? (
-            <img src={businessDetails.logo} className="logo-img" />
-          ) : (
-            <span>Logo</span>
-          )}
+  <img src={businessDetails.logo.preview} className="logo-img" />
+) : (
+  <span>Logo</span>
+)}
           <input
             type="file"
             accept="image/*"
