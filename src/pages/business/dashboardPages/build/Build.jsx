@@ -228,51 +228,66 @@ export default function Build() {
     logoInputRef.current?.click();
   };
 
-  const handleLogoChange = async e => {
+  const handleLogoChange = async (e) => {
+  console.log("🔥 handleLogoChange fired");
+
   const file = e.target.files?.[0];
+  console.log("📁 Selected file:", file);
   if (!file) return;
+
+  // מניעת בחירה חוזרת של אותו קובץ
+  e.target.value = null;
 
   // 🔥 מכבים autosave
   setLockAutosave(true);
 
-  e.target.value = null;
+  // יצירת preview חדש
+  const previewUrl = URL.createObjectURL(file);
+  console.log("🖼 Preview URL:", previewUrl);
 
-  if (businessDetails.logo?.preview?.startsWith('blob:')) {
-    URL.revokeObjectURL(businessDetails.logo.preview);
-  }
-
-  const preview = URL.createObjectURL(file);
-  setBusinessDetails(prev => ({
+  // עדכון מידי של תצוגה
+  setBusinessDetails((prev) => ({
     ...prev,
-    logo: { preview }
+    logo: { preview: previewUrl, publicId: prev.logoId || null },
   }));
 
+  // מכינים FormData
   const fd = new FormData();
-  fd.append('logo', file);
+  fd.append("logo", file);
 
   try {
-    const res = await API.put('/business/my/logo', fd, {
-      headers: { "Content-Type": "multipart/form-data" }
+    console.log("⬆ Uploading to /business/my/logo ...");
+
+    const res = await API.put("/business/my/logo", fd, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
+    console.log("✅ Upload response:", res.data);
+
     if (res.status === 200) {
-      setBusinessDetails(prev => ({
+      // עדכון לנתוני Cloudinary
+      setBusinessDetails((prev) => ({
         ...prev,
         logo: {
-          preview:  res.data.logo,
-          publicId: res.data.logoId
-        }
+          preview: res.data.logo,   // קישור אמיתי משרת
+          publicId: res.data.logoId,
+        },
       }));
     }
   } catch (err) {
-    console.error('Error uploading logo:', err);
+    console.error("❌ Error uploading logo:", err);
   } finally {
-    URL.revokeObjectURL(preview);
+    // אין למחוק preview לפני זמן — זה שובף את התצוגה
+    setTimeout(() => {
+      console.log("🧹 Cleaning preview URL");
+      URL.revokeObjectURL(previewUrl);
+    }, 500);
 
-    // 🔥 מחזירים autosave
+    // הפעלה מחדש של autosave
     setLockAutosave(false);
   }
 };
+
 
 
   // ===== MAIN IMAGES =====
