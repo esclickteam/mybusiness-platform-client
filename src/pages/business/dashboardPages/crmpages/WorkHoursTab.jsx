@@ -55,7 +55,7 @@ export default function WorkHoursTab() {
   };
 
   return (
-    <div className="calendar-setup-container">
+    <div className="calendar-setup-container" style={{ direction: "ltr", textAlign: "left" }}>
       <h2 className="calendar-title">🗓️ Set Weekly Business Hours</h2>
 
       <div className="weekly-hours-table">
@@ -68,10 +68,14 @@ export default function WorkHoursTab() {
               <th>Closed</th>
             </tr>
           </thead>
+
           <tbody>
             {weekdays.map((name, i) => (
               <tr key={i}>
+                {/* DAY */}
                 <td className="day-cell">{name}</td>
+
+                {/* START */}
                 <td>
                   <input
                     type="time"
@@ -81,6 +85,8 @@ export default function WorkHoursTab() {
                     disabled={weeklyHours[i] === null}
                   />
                 </td>
+
+                {/* END */}
                 <td>
                   <input
                     type="time"
@@ -90,6 +96,8 @@ export default function WorkHoursTab() {
                     disabled={weeklyHours[i] === null}
                   />
                 </td>
+
+                {/* CLOSED */}
                 <td>
                   <input
                     type="checkbox"
