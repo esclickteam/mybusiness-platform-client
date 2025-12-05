@@ -388,7 +388,7 @@ export function AuthProvider({ children }) {
   /* ===========================
      Loader while initializing
   =========================== */
-  if (!initialized) {
+  if (loading && !initialized) {
     return (
       <div
         style={{
