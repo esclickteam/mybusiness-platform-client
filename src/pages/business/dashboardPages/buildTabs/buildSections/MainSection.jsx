@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import "react-phone-input-2/lib/style.css";
 import PhoneInput from "react-phone-input-2";
-import { dedupeByPreview } from "../../../../../utils/dedupe";
 import ImageLoader from "@components/ImageLoader";
 import CityAutocomplete from "@components/CityAutocomplete";
 import CategoryAutocomplete from "@components/CategoryAutocomplete";
@@ -26,15 +25,25 @@ export default function MainSection({
 
   if (!businessDetails._id) return null;
 
-  const wrappedMainImages = (businessDetails.mainImages || []).map((url, idx) => ({
+  // ❌ לא dedupe – מציג בדיוק את מה שיש
+  const mainImages = (businessDetails.mainImages || []).map((url, idx) => ({
     preview: url,
     publicId: (businessDetails.mainImageIds || [])[idx] || null,
   }));
 
-  const limitedMainImgs = dedupeByPreview(wrappedMainImages).slice(0, 6);
-  const { businessName="", description="", phone="", email="", category="", address={}, logo=null } = businessDetails;
+  const limitedMainImgs = mainImages.slice(0, 6);
 
-  const { city="" } = address;
+  const {
+    businessName = "",
+    description = "",
+    phone = "",
+    email = "",
+    category = "",
+    address = {},
+    logo = null,
+  } = businessDetails;
+
+  const { city = "" } = address;
 
   async function handleDeleteLogo() {
     if (isSaving || isDeletingLogo) return;
@@ -49,7 +58,7 @@ export default function MainSection({
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-        }
+        },
       });
 
       if (!response.ok) {
@@ -60,7 +69,6 @@ export default function MainSection({
 
       handleInputChange({ target: { name: "logo", value: "" } });
       alert("Logo deleted successfully");
-
     } catch (err) {
       console.error(err);
       alert("Error deleting logo");
@@ -99,7 +107,6 @@ export default function MainSection({
           boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
         }}
       >
-        {/* 🔥 חשוב — אותו topBar למדורים שונים */}
         {renderTopBar?.()}
 
         <div
@@ -210,7 +217,6 @@ export default function MainSection({
         {/* LOGO */}
         <label style={{ marginTop: "0.75rem" }}>Logo</label>
 
-        {/* 🔥 input יחיד ללוגו */}
         <input
           type="file"
           ref={logoInputRef}
@@ -255,6 +261,7 @@ export default function MainSection({
 
         {/* MAIN IMAGES */}
         <label style={{ marginTop: "0.75rem" }}>Main Images</label>
+
         <input
           type="file"
           multiple
@@ -267,7 +274,7 @@ export default function MainSection({
         <div className="gallery-preview" style={{ marginTop: "10px" }}>
           {limitedMainImgs.map(({ preview, publicId }, i) => (
             <div key={i} style={{ display: "inline-block", position: "relative" }}>
-              <ImageLoader src={preview} alt="" className="gallery-img" />
+              <ImageLoader src={preview} className="gallery-img" />
               <button
                 onClick={() => handleDeleteImage(publicId)}
                 style={{

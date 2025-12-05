@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import ImageLoader from "@components/ImageLoader";
-import { dedupeByPreview } from "../../../../../utils/dedupe";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import "./GallerySection.css";
 
@@ -9,46 +8,43 @@ export default function GallerySection({
   galleryInputRef,
   handleGalleryChange,
   handleDeleteImage,
-  setGalleryOrder,  
+  setGalleryOrder,
   isSaving,
   renderTopBar
 }) {
   const containerRef = useRef();
 
   useEffect(() => {
-    const onClickOutside = e => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        // no special cleanup needed
-      }
-    };
+    const onClickOutside = e => {};
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  const wrapped = (businessDetails.gallery || []).map((url, idx) => ({
+  // ❌ לא dedupe — נותנים לכל תמונה להופיע גם אם יש blob דומה
+  const images = (businessDetails.gallery || []).map((url, idx) => ({
     preview: url,
     publicId: (businessDetails.galleryImageIds || [])[idx] || `temp-${idx}`
   }));
-  const uniqueImages = dedupeByPreview(wrapped);
 
-  // Handle drag end - update order
   const onDragEnd = (result) => {
     if (!result.destination) return;
 
-    const items = Array.from(uniqueImages);
+    const items = Array.from(images);
     const [removed] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, removed);
 
+    // מעדכן סדר ב־parent
     setGalleryOrder(items);
   };
 
   return (
     <>
+      {/* LEFT SIDE – EDIT MODE */}
       <div className="form-column" ref={containerRef}>
         <h3>Upload Gallery Images</h3>
+
         <input
           type="file"
-          name="gallery"
           multiple
           accept="image/*"
           style={{ display: "none" }}
@@ -56,6 +52,7 @@ export default function GallerySection({
           onChange={handleGalleryChange}
           disabled={isSaving}
         />
+
         <button
           type="button"
           className="save-btn"
@@ -73,7 +70,7 @@ export default function GallerySection({
                 {...provided.droppableProps}
                 ref={provided.innerRef}
               >
-                {uniqueImages.map(({ preview, publicId }, index) => (
+                {images.map(({ preview, publicId }, index) => (
                   <Draggable key={publicId} draggableId={publicId} index={index}>
                     {(provided) => (
                       <div
@@ -81,21 +78,12 @@ export default function GallerySection({
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        style={{
-                          userSelect: "none",
-                          ...provided.draggableProps.style,
-                        }}
                       >
-                        <img
-                          src={preview}
-                          alt={`Gallery Image ${index + 1}`}
-                          className="gallery-img"
-                        />
+                        <img src={preview} alt="" className="gallery-img" />
+
                         <button
                           className="delete-btn"
                           onClick={() => handleDeleteImage(publicId)}
-                          type="button"
-                          title="Delete"
                           disabled={isSaving}
                         >
                           🗑️
@@ -104,6 +92,7 @@ export default function GallerySection({
                     )}
                   </Draggable>
                 ))}
+
                 {provided.placeholder}
               </div>
             )}
@@ -111,22 +100,17 @@ export default function GallerySection({
         </DragDropContext>
       </div>
 
+      {/* RIGHT SIDE – PUBLIC PREVIEW */}
       <div className="preview-column">
         {renderTopBar?.()}
 
         <h3 className="section-title">Our Gallery</h3>
+
         <div className="gallery-grid-container view">
-          {uniqueImages.length > 0 ? (
-            uniqueImages.map(({ preview, publicId }, i) => (
-              <div
-                key={publicId || `preview-${i}`}
-                className="gallery-item-wrapper image-wrapper"
-              >
-                <ImageLoader
-                  src={preview}
-                  alt={`Gallery Image ${i + 1}`}
-                  className="gallery-img"
-                />
+          {images.length > 0 ? (
+            images.map(({ preview, publicId }, i) => (
+              <div key={publicId} className="gallery-item-wrapper image-wrapper">
+                <ImageLoader src={preview} className="gallery-img" />
               </div>
             ))
           ) : (

@@ -374,39 +374,50 @@ export default function Build() {
   };
 
   // ===== GALLERY =====
-  const handleGalleryChange = async e => {
-    const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
-    if (!files.length) return;
-    e.target.value = null;
+  const handleGalleryChange = async (e) => {
+  const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
+  if (!files.length) return;
 
-    const tempPreviews = files.map(f => URL.createObjectURL(f));
-    setBusinessDetails(prev => ({
-      ...prev,
-      gallery: [...prev.gallery, ...tempPreviews]
-    }));
+  e.target.value = null;
 
-    const fd = new FormData();
-    files.forEach(f => fd.append("gallery", f));
-    try {
-      const res = await API.put("/business/my/gallery", fd, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-      if (res.status === 200) {
-        const urls = (res.data.gallery || []).map(u => `${u}?v=${Date.now()}`);
-        const ids  = res.data.galleryImageIds || [];
-        setBusinessDetails(prev => ({
-          ...prev,
-          gallery: urls,
-          galleryImageIds: ids
-        }));
-      }
-    } catch (err) {
-      console.error(err);
-      alert("❌ Error uploading gallery");
-    } finally {
-      tempPreviews.forEach(URL.revokeObjectURL);
+  // יוצרת previews מיידיים
+  const tempPreviews = files.map((f) => URL.createObjectURL(f));
+
+  // ⭐ מציגה מייד בגלריה
+  setBusinessDetails((prev) => ({
+    ...prev,
+    gallery: [...prev.gallery, ...tempPreviews],
+    galleryImageIds: [...prev.galleryImageIds, ...tempPreviews.map(() => null)], // משבצת publicId זמני
+  }));
+
+  // upload לשרת
+  const fd = new FormData();
+  files.forEach((f) => fd.append("gallery", f));
+
+  try {
+    const res = await API.put("/business/my/gallery", fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    if (res.status === 200) {
+      const urls = res.data.gallery.map((u) => `${u}?v=${Date.now()}`);
+      const ids = res.data.galleryImageIds || [];
+
+      // ⭐ אחרי שהשרת מחזיר תשובה — מחליפים את התמונות הזמניות
+      setBusinessDetails((prev) => ({
+        ...prev,
+        gallery: urls,
+        galleryImageIds: ids,
+      }));
     }
-  };
+  } catch (err) {
+    console.error("Error uploading gallery:", err);
+    alert("❌ Error uploading gallery");
+  } finally {
+    tempPreviews.forEach((u) => URL.revokeObjectURL(u));
+  }
+};
+
 
   const handleDeleteGalleryImage = async publicId => {
     if (!publicId) return;
