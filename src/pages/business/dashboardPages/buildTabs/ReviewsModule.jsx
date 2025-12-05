@@ -163,6 +163,7 @@ const ReviewsModule = ({
   const [liveReviews, setLiveReviews] = useState(reviews);
   const contentRef = useRef(null);
 
+  // 🔹 Permission check
   useEffect(() => {
     const checkReviewPermission = async () => {
       try {
@@ -181,21 +182,23 @@ const ReviewsModule = ({
     checkReviewPermission();
   }, [currentUser, businessId]);
 
+  // 🔥 LIVE REAL-TIME REVIEWS
   useEffect(() => {
     if (!socket || !businessId) return;
 
-    socket.emit("joinRoom", `business-${businessId}`);
+    // ⬅️ תואם לשרת
+    socket.emit("joinBusinessRoom", businessId);
 
     const handleNewReview = (review) => {
+      console.log("🔥 LIVE REVIEW ARRIVED:", review);
       setLiveReviews((prev) => [review, ...prev]);
     };
 
-    socket.on("newReview", handleNewReview);
-
+    // ⬅️ תואם לשרת
+    socket.on("review:new", handleNewReview);
 
     return () => {
-      socket.off("newReview", handleNewReview);
-
+      socket.off("review:new", handleNewReview);
     };
   }, [socket, businessId]);
 
