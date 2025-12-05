@@ -163,7 +163,40 @@ export default function BusinessProfileView() {
   });
 }, [socket, bizId]);
 
+useEffect(() => {
+  if (!socket || !bizId) return;
 
+  const handleNewReview = (review) => {
+    console.log("🔥 PUBLIC PROFILE RECEIVED NEW REVIEW:", review);
+
+    // Normalize incoming review
+    const normalizedReview = {
+      _id: review._id,
+      rating: review.rating || review.averageScore || 0,
+      averageScore: review.rating || review.averageScore || 0,
+      comment: review.comment || "",
+      createdAt: review.date || new Date().toISOString(),
+      client: {
+        name: review.client?.name || "Anonymous",
+      },
+      ratings: review.ratings || {},
+    };
+
+    // Update in cache immediately
+    queryClient.setQueryData(["reviews", bizId], (old = []) => {
+      return [normalizedReview, ...old];
+    });
+
+    // Force React Query to re-run query
+    queryClient.refetchQueries(["reviews", bizId], { exact: true });
+  };
+
+  socket.on("review:new", handleNewReview);
+
+  return () => {
+    socket.off("review:new", handleNewReview);
+  };
+}, [socket, bizId, queryClient]);
 
 
   const sortedReviews = useMemo(() => {
