@@ -8,8 +8,7 @@ import {
 } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
-import { useNotifications } from "../../context/NotificationsContext";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
@@ -18,22 +17,22 @@ import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 
 /* ============================
-   🧭 רשימת טאבים
-   ============================ */
+   🧭 Tabs
+============================ */
 const tabs = [
   { path: "dashboard", label: "Dashboard" },
   { path: "build", label: "Edit Business Page" },
   { path: "messages", label: "Customer Messages" },
   { path: "collab", label: "Collaborations" },
   { path: "crm", label: "CRM System" },
-  { path: "billing", label: "Billing & Subscription" }, // 💳 חדש
+  { path: "billing", label: "Billing & Subscription" },
   { path: "BizUply", label: "BizUply Advisor" },
   { path: "help-center", label: "Help Center" },
 ];
 
 /* ============================
    🔌 Socket.io
-   ============================ */
+============================ */
 const SOCKET_URL = "https://api.bizuply.com";
 const socket = io(SOCKET_URL, { autoConnect: false });
 
@@ -43,13 +42,32 @@ export default function BusinessDashboardLayout({ children }) {
   const { businessId } = useParams();
   const location = useLocation();
   const queryClient = useQueryClient();
-  const { unreadCount: messagesCount } = useNotifications();
 
+  /* ============================
+     📩 Unread Messages Count (ONLY CHAT)
+  ============================ */
+  const { data: unreadChat } = useQuery(
+    ["unread-messages", user?.businessId],
+    () =>
+      API.get(`/messages/unread-count?businessId=${user.businessId}`).then(
+        (res) => res.data
+      ),
+    {
+      enabled: !!user?.businessId,
+      refetchInterval: 6000, // שמירה על סנכרון חי
+    }
+  );
+
+  const messagesCount = unreadChat?.count || 0;
+
+  /* ============================
+     📱 Responsive Sidebar
+  ============================ */
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
   const sidebarRef = useRef(null);
 
-  /* 🚪 יציאה */
+  /* 🚪 Logout */
   const handleLogout = async () => {
     try {
       if (socket?.connected) socket.disconnect();
@@ -63,7 +81,7 @@ export default function BusinessDashboardLayout({ children }) {
     }
   };
 
-  /* 🧠 חיבור Socket לעסק */
+  /* 🧠 Socket Join */
   useEffect(() => {
     if (!user?.businessId) return;
     if (!socket.connected) socket.connect();
@@ -73,7 +91,7 @@ export default function BusinessDashboardLayout({ children }) {
     };
   }, [user?.businessId]);
 
-  /* 🚀 Prefetch נתונים חשובים */
+  /* 🚀 Prefetch Data */
   useEffect(() => {
     if (!user?.businessId) return;
 
@@ -99,7 +117,7 @@ export default function BusinessDashboardLayout({ children }) {
     );
   }, [user?.businessId, queryClient]);
 
-  /* 🔐 הרשאות */
+  /* 🔐 Permissions */
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -117,7 +135,7 @@ export default function BusinessDashboardLayout({ children }) {
     }
   }, [user, loading, location.search, location.state, navigate]);
 
-  /* 📱 Resize */
+  /* 📱 Window Resize */
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -128,7 +146,7 @@ export default function BusinessDashboardLayout({ children }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* ⌨️ Focus trap במובייל */
+  /* Focus Trap */
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
     const sel =
@@ -158,7 +176,9 @@ export default function BusinessDashboardLayout({ children }) {
 
   if (loading) return <p className="loading">Loading information…</p>;
 
-  /* 🎨 Layout */
+  /* ============================
+     🎨 Layout
+  ============================ */
   return (
     <BusinessServicesProvider>
       <AiProvider>
@@ -204,6 +224,7 @@ export default function BusinessDashboardLayout({ children }) {
                       View Public Profile
                     </NavLink>
                   )}
+
                   {tabs.map(({ path, label }) => (
                     <NavLink
                       key={path}
@@ -218,6 +239,8 @@ export default function BusinessDashboardLayout({ children }) {
                       onClick={() => isMobile && setShowSidebar(false)}
                     >
                       {label}
+
+                      {/* ❤️ Badge ONLY for chat messages */}
                       {path === "messages" && messagesCount > 0 && (
                         <span className="badge">{messagesCount}</span>
                       )}
@@ -225,7 +248,6 @@ export default function BusinessDashboardLayout({ children }) {
                   ))}
                 </nav>
 
-                {/* 👤 אזור משתמש במובייל */}
                 {isMobile && (
                   <div className="sidebar-footer">
                     <span className="user-name">Hello, {user?.name}</span>
@@ -237,7 +259,6 @@ export default function BusinessDashboardLayout({ children }) {
               </aside>
             )}
 
-            {/* 🧭 Header לדסקטופ */}
             {!isMobile && (
               <header className="dashboard-header">
                 <div className="dashboard-header-left">
@@ -252,7 +273,7 @@ export default function BusinessDashboardLayout({ children }) {
               </header>
             )}
 
-            {/* ☰ פתיחת תפריט במובייל */}
+            {/* ☰ Mobile Menu */}
             {isMobile && !showSidebar && (
               <button
                 className="sidebar-open-btn"
@@ -263,14 +284,13 @@ export default function BusinessDashboardLayout({ children }) {
               </button>
             )}
 
-            {/* 🔔 פעמון למובייל */}
+            {/* 🔔 Bell on mobile */}
             {isMobile && (
               <div className="dashboard-bell">
                 <FacebookStyleNotifications />
               </div>
             )}
 
-            {/* 🧩 תוכן דינמי */}
             <main
               className="dashboard-content"
               tabIndex={-1}
