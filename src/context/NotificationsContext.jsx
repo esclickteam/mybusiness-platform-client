@@ -21,12 +21,15 @@ function normalizeNotification(notif) {
   return {
     id: notif.id || notif._id?.toString(),
     threadId: notif.threadId || null,
-    text: notif.text,
+    text: notif.text || "",
     read: notif.read ?? false,
-    timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
+    timestamp:
+      notif.timestamp && !isNaN(new Date(notif.timestamp))
+        ? new Date(notif.timestamp).toISOString()
+        : new Date().toISOString(),
     unreadCount: notif.unreadCount ?? (notif.read ? 0 : 1),
-    type: notif.type,
-    actorName: notif.actorName || null,
+    type: notif.type || "message",
+    actorName: notif.actorName || "Customer",
     targetUrl: notif.targetUrl || null,
   };
 }
@@ -46,10 +49,18 @@ function reducer(state, action) {
       const newNotif = normalizeNotification(action.payload);
       const list = [...state.notifications];
 
-      let idx =
-        newNotif.threadId
-          ? list.findIndex((n) => n.threadId === newNotif.threadId)
-          : list.findIndex((n) => n.id === newNotif.id);
+      // ✅ מניעת כפילויות
+      const alreadyExists = list.some(
+        (n) =>
+          n.text === newNotif.text &&
+          Math.abs(new Date(n.timestamp) - new Date(newNotif.timestamp)) < 2000
+      );
+      if (alreadyExists) return state;
+
+      // ✅ אם קיים לפי threadId, נעדכן במקום
+      const idx = newNotif.threadId
+        ? list.findIndex((n) => n.threadId === newNotif.threadId)
+        : list.findIndex((n) => n.id === newNotif.id);
 
       if (idx !== -1) {
         list[idx] = { ...list[idx], ...newNotif };
@@ -80,7 +91,7 @@ export function NotificationsProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   /* ==========================
-      LOAD NOTIFICATIONS (API)
+      LOAD INITIAL NOTIFICATIONS
   =========================== */
   const fetchNotifications = useCallback(async () => {
     try {
@@ -110,54 +121,26 @@ export function NotificationsProvider({ children }) {
     const setupListeners = () => {
       socket.emit("joinBusinessRoom", user.businessId);
 
-      /* --------------------------------------------------
-         1)  Unwrapped events:
-             socket.emit("newNotification", data)
-             socket.emit("notificationBundle", data)
-      -------------------------------------------------- */
-      socket.on("newNotification", (data) => {
-        console.log("📩 [SOCKET] newNotification:", data);
-
-        if (!data || !data.timestamp || !data.type) {
-          console.warn("❌ Ignored malformed newNotification:", data);
-          return;
-        }
-
-        dispatch({ type: "ADD_NOTIFICATION", payload: data });
-      });
-
-      socket.on("notificationBundle", (data) => {
-        console.log("🔄 [SOCKET] notificationBundle:", data);
-
-        if (!data || typeof data.count !== "number") return;
-
-        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data.count });
-      });
-
-      /* --------------------------------------------------
-         2)  Wrapped events from Redis Relay:
-             socket.emit("businessUpdates", { type, data })
-      -------------------------------------------------- */
+      // ✅ האזנה לאירועי Redis Relay
       socket.on("businessUpdates", (event) => {
-        console.log("🔥 [SOCKET] businessUpdates:", event);
-
         if (!event || typeof event !== "object") return;
-
         const { type, data } = event;
-
         if (!type) return;
 
         switch (type) {
-          case "newNotification":
-            if (!data || !data.timestamp || !data.type) {
-              console.warn("❌ Ignored legacy/wrong newNotification:", data);
-              return;
-            }
-            dispatch({ type: "ADD_NOTIFICATION", payload: data });
+          case "newNotification": {
+            const cleanData = {
+              ...data,
+              timestamp: data.timestamp || new Date().toISOString(),
+              type: data.type || "message",
+            };
+            dispatch({ type: "ADD_NOTIFICATION", payload: cleanData });
             break;
+          }
 
           case "notificationBundle":
-            dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data.count });
+            if (typeof data?.count === "number")
+              dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data.count });
             break;
 
           case "newReview":
@@ -170,13 +153,13 @@ export function NotificationsProvider({ children }) {
                 unreadCount: 1,
                 type: "review",
                 targetUrl: `/business/${user.businessId}/dashboard/reviews`,
-                actorName: "Customer",
+                actorName: data.clientName || "Customer",
               },
             });
             break;
 
           default:
-            console.log("ℹ️ Unhandled businessUpdate event:", event);
+            console.log("ℹ️ Unhandled businessUpdate:", event);
         }
       });
     };
@@ -185,8 +168,6 @@ export function NotificationsProvider({ children }) {
     socket.on("connect", setupListeners);
 
     return () => {
-      socket.off("newNotification");
-      socket.off("notificationBundle");
       socket.off("businessUpdates");
       socket.off("connect", setupListeners);
     };
