@@ -351,46 +351,39 @@ export default function ClientCalendar({
               <p>💰 Price: {selectedSlot.price} $</p>
 
 
-              <div style={{ direction: "ltr", textAlign: "left" }}>
-  <div className="booking-form">
-    <label>Full Name:</label>
-    <input
-      value={clientName}
-      onChange={(e) => setClientName(e.target.value)}
-      placeholder="Enter full name"
-    />
-    
-    <label>Phone:</label>
-    <input
-      value={clientPhone}
-      onChange={(e) => setClientPhone(e.target.value)}
-      placeholder="Enter phone number"
-    />
-
-    <label>Address:</label>
-    <input
-      value={clientAddress}
-      onChange={(e) => setClientAddress(e.target.value)}
-      placeholder="Enter address"
-    />
-
-    <label>Email (for confirmation):</label>
-    <input
-      value={clientEmail}
-      onChange={(e) => setClientEmail(e.target.value)}
-      type="email"
-      placeholder="Enter email"
-    />
-
-    <label>Note (optional):</label>
-    <textarea
-      value={clientNote}
-      onChange={(e) => setClientNote(e.target.value)}
-      placeholder="Additional note"
-    />
-  </div>
-</div>
-
+              <div className="booking-form">
+                <label>Full Name:</label>
+                <input
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  placeholder="Enter full name"
+                />
+                <label>Phone:</label>
+                <input
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  placeholder="Enter phone number"
+                />
+                <label>Address:</label>
+                <input
+                  value={clientAddress}
+                  onChange={(e) => setClientAddress(e.target.value)}
+                  placeholder="Enter address"
+                />
+                <label>Email (for confirmation):</label>
+                <input
+                  value={clientEmail}
+                  onChange={(e) => setClientEmail(e.target.value)}
+                  type="email"
+                  placeholder="Enter email"
+                />
+                <label>Note (optional):</label>
+                <textarea
+                  value={clientNote}
+                  onChange={(e) => setClientNote(e.target.value)}
+                  placeholder="Additional note"
+                />
+              </div>
 
               <button className="confirm-slot-btn" onClick={handleSubmitBooking}>
                 📅 Confirm Booking

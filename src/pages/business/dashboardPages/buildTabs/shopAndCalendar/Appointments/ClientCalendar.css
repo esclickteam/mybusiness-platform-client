@@ -334,3 +334,9 @@
     font-size: 13px;
   }
 }
+
+.booking-form input::placeholder,
+.booking-form textarea::placeholder {
+  direction: ltr !important;
+  text-align: left !important;
+}
