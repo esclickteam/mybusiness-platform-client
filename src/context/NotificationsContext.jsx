@@ -121,7 +121,6 @@ export function NotificationsProvider({ children }) {
     const setupListeners = () => {
       socket.emit("joinBusinessRoom", user.businessId);
 
-      // ✅ האזנה לאירועי Redis Relay
       socket.on("businessUpdates", (event) => {
         if (!event || typeof event !== "object") return;
         const { type, data } = event;
@@ -129,12 +128,15 @@ export function NotificationsProvider({ children }) {
 
         switch (type) {
           case "newNotification": {
-            const cleanData = {
-              ...data,
-              timestamp: data.timestamp || new Date().toISOString(),
-              type: data.type || "message",
-            };
-            dispatch({ type: "ADD_NOTIFICATION", payload: cleanData });
+            // הצגת התראה רק אם זה הודעה חדשה ולא פרטי השיחה
+            if (data && data.text && data.text.includes("New incoming message")) {
+              const cleanData = {
+                ...data,
+                timestamp: data.timestamp || new Date().toISOString(),
+                type: data.type || "message",
+              };
+              dispatch({ type: "ADD_NOTIFICATION", payload: cleanData });
+            }
             break;
           }
 
@@ -143,23 +145,8 @@ export function NotificationsProvider({ children }) {
               dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data.count });
             break;
 
-          case "newReview":
-            dispatch({
-              type: "ADD_NOTIFICATION",
-              payload: {
-                text: `⭐ New review: "${data.comment}"`,
-                timestamp: data.createdAt || new Date().toISOString(),
-                read: false,
-                unreadCount: 1,
-                type: "review",
-                targetUrl: `/business/${user.businessId}/dashboard/reviews`,
-                actorName: data.clientName || "Customer",
-              },
-            });
-            break;
-
           default:
-            console.log("ℹ️ Unhandled businessUpdate:", event);
+            console.log("[Socket] Unhandled businessUpdate:", event);
         }
       });
     };
