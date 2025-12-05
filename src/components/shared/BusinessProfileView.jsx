@@ -268,22 +268,6 @@ export default function BusinessProfileView() {
     setSelectedService(null);
   };
 
-  useEffect(() => {
-  if (!bizId) return;
-
-  const refresh = () => {
-    console.log("♻️ Business updated — refreshing public profile…");
-
-    // מרענן את כל הנתונים החיוניים
-    queryClient.invalidateQueries(['business', bizId]);
-    queryClient.invalidateQueries(['reviews', bizId]);
-    queryClient.invalidateQueries(['workHours', bizId]);
-  };
-
-  window.addEventListener("business-profile-updated", refresh);
-  return () => window.removeEventListener("business-profile-updated", refresh);
-}, [bizId, queryClient]);
-
   return (
     <div className="profile-page">
       <div className="business-profile-view full-style">
