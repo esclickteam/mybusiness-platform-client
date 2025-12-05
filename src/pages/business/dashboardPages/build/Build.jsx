@@ -162,77 +162,46 @@ export default function Build() {
   }, []);
 
   // Autosave debounce
-  // Autosave debounce
-useEffect(() => {
-  if (firstLoad) return;
+  useEffect(() => {
+    if (firstLoad) return;
+    clearTimeout(saveTimeout.current);
+    saveTimeout.current = setTimeout(async () => {
+      setIsSaving(true);
+      try {
+        const payload = {
+          businessName: businessDetails.businessName,
+          category:     businessDetails.category,
+          description:  businessDetails.description,
+          phone:        businessDetails.phone,
+          email:        businessDetails.email,
+          address:      { city: businessDetails.address.city },
+        };
+        const res = await API.patch('/business/my', payload);
+        if (res.status === 200) {
+          setBusinessDetails(prev => ({
+            ...prev,
+            ...res.data,
+            logo: prev.logo,
+            logoId: prev.logoId
+          }));
+        }
+      } catch (err) {
+        console.error('Autosave failed:', err);
+      } finally {
+        setIsSaving(false);
+      }
+    }, 1000);
 
-  clearTimeout(saveTimeout.current);
-
-  saveTimeout.current = setTimeout(async () => {
-    setIsSaving(true);
-
-    try {
-      const payload = {
-        businessName: businessDetails.businessName,
-        category:     businessDetails.category,
-        description:  businessDetails.description,
-        phone:        businessDetails.phone,
-        email:        businessDetails.email,
-        address:      { city: businessDetails.address.city },
-      };
-
-      const res = await API.patch("/business/my", payload);
-
-      // ❗ חשוב מאוד:
-      // לא לגעת ב־res.data בכלל כי השרת מחזיר אובייקט חלקי → יוצר קריסה
-      // רק שומרים את מה שכבר יש ב־state
-
-      setBusinessDetails(prev => ({
-        ...prev,
-
-        businessName: businessDetails.businessName,
-        category:     businessDetails.category,
-        description:  businessDetails.description,
-        phone:        businessDetails.phone,
-        email:        businessDetails.email,
-
-        address: {
-          ...prev.address,
-          city: businessDetails.address.city
-        },
-
-        // שמירה מלאה של כל השדות שאסור לדרוס
-        logo:            prev.logo,
-        logoId:          prev.logoId,
-        gallery:         prev.gallery,
-        galleryImageIds: prev.galleryImageIds,
-        mainImages:      prev.mainImages,
-        mainImageIds:    prev.mainImageIds,
-        faqs:            prev.faqs,
-        reviews:         prev.reviews,
-        workHours:       prev.workHours
-      }));
-
-    } catch (err) {
-      console.error("Autosave failed:", err);
-    } finally {
-      setIsSaving(false);
-    }
-
-  }, 800); // שמתי 800ms שיהיה מהיר יותר
-
-  return () => clearTimeout(saveTimeout.current);
-}, [
-  firstLoad,
-  businessDetails.businessName,
-  businessDetails.category,
-  businessDetails.description,
-  businessDetails.phone,
-  businessDetails.email,
-  businessDetails.address.city
-]);
-
-
+    return () => clearTimeout(saveTimeout.current);
+  }, [
+    firstLoad,
+    businessDetails.businessName,
+    businessDetails.category,
+    businessDetails.description,
+    businessDetails.phone,
+    businessDetails.email,
+    businessDetails.address.city
+  ]);
 
   // ===== INPUT CHANGE =====
   const handleInputChange = ({ target: { name, value } }) => {
@@ -490,10 +459,12 @@ useEffect(() => {
       <div className="topbar-preview">
         <div className="logo-circle" onClick={handleLogoClick}>
           {businessDetails.logo?.preview ? (
-  <img src={businessDetails.logo.preview} className="logo-img" />
-) : (
-  <span>Logo</span>
-)}
+            <img src={businessDetails.logo.preview} className="logo-img" />
+          ) : businessDetails.logo ? (
+            <img src={businessDetails.logo} className="logo-img" />
+          ) : (
+            <span>Logo</span>
+          )}
           <input
             type="file"
             accept="image/*"
