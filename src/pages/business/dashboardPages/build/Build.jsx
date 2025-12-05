@@ -479,97 +479,98 @@ export default function Build() {
 
   // ===== TOP BAR =====
   const renderTopBar = () => {
-    const avg = businessDetails.reviews.length
-      ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
-      : 0;
+  const avg = businessDetails.reviews.length
+    ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) /
+      businessDetails.reviews.length
+    : 0;
 
-    return (
-      <div className="topbar-preview">
-        <div className="logo-circle" onClick={handleLogoClick}>
-          {businessDetails.logo?.preview ? (
-            <img src={businessDetails.logo.preview} className="logo-img" />
-          ) : businessDetails.logo ? (
-            <img src={businessDetails.logo} className="logo-img" />
-          ) : (
-            <span>Logo</span>
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            ref={logoInputRef}
-            onChange={handleLogoChange}
-          />
-        </div>
-
-        <div className="name-rating">
-          <h2>{businessDetails.businessName || "Business Name"}</h2>
-          <div className="rating-badge">
-            <span className="star">★</span>
-            <span>{avg.toFixed(1)} / 5</span>
-          </div>
-        </div>
-
-        {businessDetails.category && (
-          <p className="preview-category">
-            <strong>Category:</strong> {businessDetails.category}
-          </p>
+  return (
+    <div className="topbar-preview">
+      <div className="logo-circle" onClick={() => logoInputRef.current?.click()}>
+        {businessDetails.logo?.preview ? (
+          <img src={businessDetails.logo.preview} className="logo-img" />
+        ) : businessDetails.logo ? (
+          <img src={businessDetails.logo} className="logo-img" />
+        ) : (
+          <span>Logo</span>
         )}
+        
+             </div>
 
-        {businessDetails.description && (
-          <p className="preview-description">
-            <strong>Description:</strong> {businessDetails.description}
-          </p>
-        )}
-        {businessDetails.phone && (
-          <p className="preview-phone">
-            <strong>Phone:</strong> {businessDetails.phone}
-          </p>
-        )}
-        {businessDetails.address.city && (
-          <p className="preview-city">
-            <strong>City:</strong> {businessDetails.address.city}
-          </p>
-        )}
-
-        <hr className="divider" />
-
-        <div className="tabs">
-          {TABS.map(tab => (
-            <button
-              key={tab}
-              type="button"
-              className={`tab ${tab === currentTab ? "active" : ""}`}
-              onClick={() => setCurrentTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
+      <div className="name-rating">
+        <h2>{businessDetails.businessName || "Business Name"}</h2>
+        <div className="rating-badge">
+          <span className="star">★</span>
+          <span>{avg.toFixed(1)} / 5</span>
         </div>
       </div>
-    );
-  };
+
+      {businessDetails.category && (
+        <p className="preview-category">
+          <strong>Category:</strong> {businessDetails.category}
+        </p>
+      )}
+
+      {businessDetails.description && (
+        <p className="preview-description">
+          <strong>Description:</strong> {businessDetails.description}
+        </p>
+      )}
+
+      {businessDetails.phone && (
+        <p className="preview-phone">
+          <strong>Phone:</strong> {businessDetails.phone}
+        </p>
+      )}
+      {businessDetails.address.city && (
+        <p className="preview-city">
+          <strong>City:</strong> {businessDetails.address.city}
+        </p>
+      )}
+
+      <hr className="divider" />
+
+      <div className="tabs">
+        {TABS.map(tab => (
+          <button
+            key={tab}
+            type="button"
+            className={`tab ${tab === currentTab ? "active" : ""}`}
+            onClick={() => setCurrentTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 
   const renderTabContent = () => {
     switch (currentTab) {
       case "Main":
         return (
           <MainSection
-            businessDetails={businessDetails}
-            reviews={businessDetails.reviews}
-            handleInputChange={handleInputChange}
-            handleMainImagesChange={handleMainImagesChange}
-            handleDeleteImage={handleDeleteMainImage}
-            handleEditImage={openMainImageEdit}
-            handleSave={handleSave}
-            showViewProfile={showViewProfile}
-            navigate={navigate}
-            currentUser={currentUser}
-            renderTopBar={renderTopBar}
-            logoInputRef={logoInputRef}
-            mainImagesInputRef={mainImagesInputRef}
-            isSaving={isSaving}
-          />
+    businessDetails={businessDetails}
+    reviews={businessDetails.reviews}
+    handleInputChange={handleInputChange}
+    handleMainImagesChange={handleMainImagesChange}
+    handleDeleteImage={handleDeleteMainImage}
+
+    handleLogoChange={handleLogoChange}   // ← הוספתי!
+
+    handleEditImage={openMainImageEdit}
+    handleSave={handleSave}
+    showViewProfile={showViewProfile}
+    navigate={navigate}
+    currentUser={currentUser}
+    renderTopBar={renderTopBar}
+    logoInputRef={logoInputRef}
+    mainImagesInputRef={mainImagesInputRef}
+    isSaving={isSaving}
+/>
+
         );
       case "Gallery":
         return (
