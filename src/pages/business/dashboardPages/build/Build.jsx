@@ -162,8 +162,10 @@ export default function Build() {
   }, []);
 
   // Autosave debounce
-  useEffect(() => {
+  // Autosave debounce
+useEffect(() => {
   if (firstLoad) return;
+
   clearTimeout(saveTimeout.current);
 
   saveTimeout.current = setTimeout(async () => {
@@ -181,37 +183,35 @@ export default function Build() {
 
       const res = await API.patch("/business/my", payload);
 
-      if (res.status === 200) {
+      // ❗ חשוב מאוד:
+      // לא לגעת ב־res.data בכלל כי השרת מחזיר אובייקט חלקי → יוצר קריסה
+      // רק שומרים את מה שכבר יש ב־state
 
-        // 🔥 חשוב: חלק מהשרתים מחזירים "business", חלק מחזירים ישירות את האובייקט
-        const updated = res.data.business || res.data || {};
+      setBusinessDetails(prev => ({
+        ...prev,
 
-        setBusinessDetails(prev => ({
-          ...prev,
+        businessName: businessDetails.businessName,
+        category:     businessDetails.category,
+        description:  businessDetails.description,
+        phone:        businessDetails.phone,
+        email:        businessDetails.email,
 
-          businessName: updated.businessName ?? prev.businessName,
-          category:     updated.category     ?? prev.category,
-          description:  updated.description  ?? prev.description,
-          phone:        updated.phone        ?? prev.phone,
-          email:        updated.email        ?? prev.email,
+        address: {
+          ...prev.address,
+          city: businessDetails.address.city
+        },
 
-          address: {
-            ...prev.address,
-            city: updated.address?.city ?? prev.address.city,
-          },
-
-          // לא מוחקים שום דבר נוסף מה-state
-          logo: prev.logo,
-          logoId: prev.logoId,
-          gallery: prev.gallery,
-          galleryImageIds: prev.galleryImageIds,
-          mainImages: prev.mainImages,
-          mainImageIds: prev.mainImageIds,
-          faqs: prev.faqs,
-          reviews: prev.reviews,
-          workHours: prev.workHours,
-        }));
-      }
+        // שמירה מלאה של כל השדות שאסור לדרוס
+        logo:            prev.logo,
+        logoId:          prev.logoId,
+        gallery:         prev.gallery,
+        galleryImageIds: prev.galleryImageIds,
+        mainImages:      prev.mainImages,
+        mainImageIds:    prev.mainImageIds,
+        faqs:            prev.faqs,
+        reviews:         prev.reviews,
+        workHours:       prev.workHours
+      }));
 
     } catch (err) {
       console.error("Autosave failed:", err);
@@ -219,7 +219,7 @@ export default function Build() {
       setIsSaving(false);
     }
 
-  }, 1000);
+  }, 800); // שמתי 800ms שיהיה מהיר יותר
 
   return () => clearTimeout(saveTimeout.current);
 }, [
