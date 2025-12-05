@@ -462,3 +462,10 @@
   padding-left: 60px !important; /* מקום לדגל */
   padding-right: 12px !important;
 }
+
+.form-column input,
+.form-column textarea,
+.form-column select {
+  direction: ltr !important;
+  text-align: left !important;
+}
