@@ -46,13 +46,20 @@ function reducer(state, action) {
   const newNotif = normalizeNotification(action.payload);
 
   const list = [...state.notifications];
-  const idx = list.findIndex(n => n.id === newNotif.id);
+
+  let idx;
+
+  if (newNotif.threadId) {
+    // 🟣 מאחד לפי שיחה
+    idx = list.findIndex(n => n.threadId === newNotif.threadId);
+  } else {
+    // 🟢 מאחד לפי ID להתראות כלליות
+    idx = list.findIndex(n => n.id === newNotif.id);
+  }
 
   if (idx !== -1) {
-    // 🟣 איחוד ההתראה (למקרה שהגיע עדכון של unreadCount)
     list[idx] = { ...list[idx], ...newNotif };
   } else {
-    // 🟢 התראה חדשה
     list.unshift(newNotif);
   }
 
@@ -60,6 +67,7 @@ function reducer(state, action) {
 
   return { notifications: list, unreadCount };
 }
+
 
 
      case "UPDATE_UNREAD_COUNT":
