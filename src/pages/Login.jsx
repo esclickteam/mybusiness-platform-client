@@ -32,6 +32,7 @@ export default function Login() {
   const [showForgot, setShowForgot] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Preload dashboard
   useEffect(() => {
     DashboardPage.preload().finally(() => setDashPreloadDone(true));
   }, []);
@@ -51,13 +52,15 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = form.email.trim().toLowerCase();
-      const { user: loggedInUser, redirectUrl } = await login(
-        cleanEmail,
-        form.password
-      );
 
-      if (redirectUrl) {
-        navigate(redirectUrl, { replace: true });
+      // קבלת פרמטר redirect מה-URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectParam = urlParams.get("redirect"); // example: /business/6931df33f751f7bccd0df079/dashboard/crm/work-hours
+
+      const { user: loggedInUser } = await login(cleanEmail, form.password);
+
+      if (redirectParam) {
+        navigate(redirectParam, { replace: true });
       } else {
         if (loggedInUser?.role === "affiliate") {
           navigate("/affiliate/dashboard", { replace: true });
@@ -88,7 +91,6 @@ export default function Login() {
     <div className="login-container">
       <div className="login-box" aria-live="polite" aria-busy={loading}>
         <h2>Login</h2>
-
         <form onSubmit={handleSubmit} noValidate>
           <div className="form-group">
             <label htmlFor="email">
@@ -129,32 +131,7 @@ export default function Login() {
                 className="password-toggle-btn"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.67 21.67 0 0 1 5.06-6.94M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-5.12M1 1l22 22" />
-                  </svg>
-                )}
+                {showPassword ? "Hide" : "Show"}
               </button>
             </div>
           </div>
@@ -165,7 +142,7 @@ export default function Login() {
             disabled={loading}
             aria-live="polite"
           >
-            {loading ? "🔄 Logging in..." : "Sign in"}
+            {loading ? "Logging in..." : "Sign in"}
           </button>
 
           <button
