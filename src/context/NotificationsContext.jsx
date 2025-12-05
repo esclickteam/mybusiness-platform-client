@@ -18,16 +18,10 @@ const initialState = {
    NORMALIZE NOTIFICATION
 ========================== */
 function normalizeNotification(notif) {
-  let text = notif.text;
-
-  if (notif.type === "taskReminder" && !text?.startsWith("⏰")) {
-    text = `⏰ ${text}`;
-  }
-
   return {
     id: notif.id || notif._id?.toString(),
     threadId: notif.threadId || null,
-    text,
+    text: notif.text,
     read: notif.read ?? false,
     timestamp: notif.timestamp || notif.createdAt || new Date().toISOString(),
     unreadCount: notif.unreadCount ?? (notif.read ? 0 : 1),
@@ -44,45 +38,25 @@ function reducer(state, action) {
   switch (action.type) {
     case "SET_NOTIFICATIONS": {
       const list = action.payload.map(normalizeNotification);
-
-      // AI grouping logic
-      const filtered = [];
-      const aiThreads = new Set(
-        list.filter((n) => n.type === "recommendation").map((n) => n.threadId)
-      );
-
-      for (const n of list) {
-        if (aiThreads.has(n.threadId)) {
-          if (n.type === "recommendation") filtered.push(n);
-        } else {
-          filtered.push(n);
-        }
-      }
-
-      const unreadCount = filtered.reduce((sum, n) => sum + n.unreadCount, 0);
-      return { notifications: filtered, unreadCount };
+      const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
+      return { notifications: list, unreadCount };
     }
-
-    case "UPDATE_UNREAD_COUNT":
-      return { ...state, unreadCount: action.payload };
 
     case "ADD_NOTIFICATION": {
       const newNotif = normalizeNotification(action.payload);
 
       const exists = state.notifications.some(
-        (n) =>
-          n.id === newNotif.id ||
-          (n.threadId === newNotif.threadId && n.type === newNotif.type)
+        (n) => n.id === newNotif.id
       );
 
-      const list = exists
-        ? state.notifications
-        : [newNotif, ...state.notifications];
-
+      const list = exists ? state.notifications : [newNotif, ...state.notifications];
       const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
 
       return { notifications: list, unreadCount };
     }
+
+    case "UPDATE_UNREAD_COUNT":
+      return { ...state, unreadCount: action.payload };
 
     case "CLEAR_ALL":
       return { notifications: [], unreadCount: 0 };
@@ -99,12 +73,13 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  /* --- Load stored notifications --- */
+  /* Load saved notifications */
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+
       const data = await res.json();
       if (data.ok && data.notifications) {
         dispatch({ type: "SET_NOTIFICATIONS", payload: data.notifications });
@@ -119,7 +94,7 @@ export function NotificationsProvider({ children }) {
   }, [user?.businessId, fetchNotifications]);
 
   /* ==========================
-        SOCKET LISTENERS
+     SOCKET LISTENERS
   ========================== */
   useEffect(() => {
     if (!socket || !user?.businessId) return;
@@ -132,58 +107,35 @@ export function NotificationsProvider({ children }) {
 
         const { type, data } = event;
 
-        /** ────────────────
-         *  STANDARD NOTIFICATION
-         */
+        /** 1️⃣ Notifications stored in Mongo */
         if (type === "newNotification") {
           dispatch({ type: "ADD_NOTIFICATION", payload: data });
         }
 
-        /** ────────────────
-         *   NEW MESSAGE
-         */
-        if (type === "newMessage") {
-          const notif = {
-            threadId: data.conversationId,
-            text: "✉️ New message from a customer",
-            timestamp: data.timestamp || new Date().toISOString(),
-            read: false,
-            unreadCount: 1,
-            type: "message",
-            actorName: "Customer",
-            targetUrl: `/conversations/${data.conversationId}`,
-          };
-          dispatch({ type: "ADD_NOTIFICATION", payload: notif });
-        }
-
-        /** ────────────────
-         *   AI RECOMMENDATION
-         */
+        /** 2️⃣ AI Recommendation Notification */
         if (type === "newRecommendationNotification") {
           dispatch({ type: "ADD_NOTIFICATION", payload: data });
         }
 
-        /** ────────────────
-         *   UNREAD COUNT UPDATE
-         */
+        /** 3️⃣ Unread messages count */
         if (type === "unreadMessagesCount") {
           dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data });
         }
 
-        /** ────────────────
-         *  NEW REVIEW (legacy)
-         */
+        /** 4️⃣ New Review */
         if (type === "newReview") {
-          const notif = {
-            type: "review",
-            text: `⭐ New review: "${data.comment}"`,
-            timestamp: data.createdAt || new Date().toISOString(),
-            read: false,
-            unreadCount: 1,
-            targetUrl: `/business/${user.businessId}/dashboard/reviews`,
-            actorName: "Customer",
-          };
-          dispatch({ type: "ADD_NOTIFICATION", payload: notif });
+          dispatch({
+            type: "ADD_NOTIFICATION",
+            payload: {
+              text: `⭐ New review: "${data.comment}"`,
+              timestamp: data.createdAt || new Date().toISOString(),
+              read: false,
+              unreadCount: 1,
+              type: "review",
+              targetUrl: `/business/${user.businessId}/dashboard/reviews`,
+              actorName: "Customer",
+            },
+          });
         }
       });
     };
@@ -198,7 +150,7 @@ export function NotificationsProvider({ children }) {
   }, [socket, user?.businessId]);
 
   /* ==========================
-        MARK AS READ
+     MARK AS READ
   ========================== */
   const markAsRead = useCallback(
     async (id) => {
@@ -220,7 +172,7 @@ export function NotificationsProvider({ children }) {
   );
 
   /* ==========================
-        CLEAR ALL READ
+     CLEAR ALL
   ========================== */
   const clearRead = useCallback(async () => {
     try {
@@ -228,8 +180,11 @@ export function NotificationsProvider({ children }) {
         method: "DELETE",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+
       const data = await res.json();
-      if (data.ok) dispatch({ type: "CLEAR_ALL" });
+      if (data.ok) {
+        dispatch({ type: "CLEAR_ALL" });
+      }
     } catch (err) {
       console.error("[clearRead] failed:", err);
     }
@@ -249,9 +204,6 @@ export function NotificationsProvider({ children }) {
   );
 }
 
-/* ==========================
-   HOOK
-========================== */
 export function useNotifications() {
   return useContext(NotificationsContext);
 }
