@@ -230,9 +230,17 @@ export default function BusinessChatTab({
     };
 
     const handleNewNotification = (notification) => {
-      addNotification(notification); // Update via Context instead of local state
-      console.log("New notification received:", notification);
-    };
+  // נוסיף סינון לפי סוג
+  if (
+    notification.type === "message" &&
+    notification.fromRole === "client" // לוודא שזו הודעה מלקוח
+  ) {
+    addNotification(notification); // רק במקרה הזה נעדכן
+    console.log("📩 New client message notification:", notification);
+  } else {
+    console.log("ℹ️ Ignored notification:", notification.type);
+  }
+};
 
     const handleConnect = () => {
       const isBizConv = conversationType === "business-business";
