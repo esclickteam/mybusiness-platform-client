@@ -33,15 +33,44 @@ const CRMAppointmentsTab = () => {
   const [businessSchedule, setBusinessSchedule] = useState(null);
 
   // === Convert business schedule object into array ===
-  const scheduleArray = useMemo(() => {
-    if (!businessSchedule) return [];
-    if (Array.isArray(businessSchedule)) return businessSchedule;
-    return Object.entries(businessSchedule).map(([day, { start, end }]) => ({
-      day,
+  // === Convert business schedule object into array (SAFE VERSION) ===
+const scheduleArray = useMemo(() => {
+  if (!businessSchedule) return [];
+
+  return Object.entries(businessSchedule).map(([day, value]) => {
+    // יום סגור כללית
+    if (!value || value === null) {
+      return {
+        day: Number(day),
+        start: null,
+        end: null,
+        closed: true,
+      };
+    }
+
+    // התחלה/סיום לא תקינים ⇒ גם יום סגור
+    const start = value.start || null;
+    const end = value.end || null;
+
+    if (!start || !end) {
+      return {
+        day: Number(day),
+        start: null,
+        end: null,
+        closed: true,
+      };
+    }
+
+    // יום תקין ופתוח
+    return {
+      day: Number(day),
       start,
       end,
-    }));
-  }, [businessSchedule]);
+      closed: false,
+    };
+  });
+}, [businessSchedule]);
+
 
   // === Fetch services ===
   useEffect(() => {
