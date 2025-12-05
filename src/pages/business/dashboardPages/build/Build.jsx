@@ -163,45 +163,74 @@ export default function Build() {
 
   // Autosave debounce
   useEffect(() => {
-    if (firstLoad) return;
-    clearTimeout(saveTimeout.current);
-    saveTimeout.current = setTimeout(async () => {
-      setIsSaving(true);
-      try {
-        const payload = {
-          businessName: businessDetails.businessName,
-          category:     businessDetails.category,
-          description:  businessDetails.description,
-          phone:        businessDetails.phone,
-          email:        businessDetails.email,
-          address:      { city: businessDetails.address.city },
-        };
-        const res = await API.patch('/business/my', payload);
-        if (res.status === 200) {
-          setBusinessDetails(prev => ({
-            ...prev,
-            ...res.data,
-            logo: prev.logo,
-            logoId: prev.logoId
-          }));
-        }
-      } catch (err) {
-        console.error('Autosave failed:', err);
-      } finally {
-        setIsSaving(false);
-      }
-    }, 1000);
+  if (firstLoad) return;
+  clearTimeout(saveTimeout.current);
 
-    return () => clearTimeout(saveTimeout.current);
-  }, [
-    firstLoad,
-    businessDetails.businessName,
-    businessDetails.category,
-    businessDetails.description,
-    businessDetails.phone,
-    businessDetails.email,
-    businessDetails.address.city
-  ]);
+  saveTimeout.current = setTimeout(async () => {
+    setIsSaving(true);
+
+    try {
+      const payload = {
+        businessName: businessDetails.businessName,
+        category:     businessDetails.category,
+        description:  businessDetails.description,
+        phone:        businessDetails.phone,
+        email:        businessDetails.email,
+        address:      { city: businessDetails.address.city },
+      };
+
+      const res = await API.patch("/business/my", payload);
+
+      if (res.status === 200) {
+        const updated = res.data;
+
+        setBusinessDetails(prev => ({
+          ...prev,
+
+          // נשמרים מהשרת רק השדות שיכולים להתעדכן
+          businessName: updated.businessName ?? prev.businessName,
+          category:     updated.category     ?? prev.category,
+          description:  updated.description  ?? prev.description,
+          phone:        updated.phone        ?? prev.phone,
+          email:        updated.email        ?? prev.email,
+
+          address: {
+            ...prev.address,
+            city: updated.address?.city ?? prev.address.city,
+          },
+
+          // שומר את הלוגו בדיוק כמו שהוא
+          logo: prev.logo,
+          logoId: prev.logoId,
+          
+          // שדות נוספים שאסור למחוק
+          gallery:         prev.gallery,
+          galleryImageIds: prev.galleryImageIds,
+          mainImages:      prev.mainImages,
+          mainImageIds:    prev.mainImageIds,
+          faqs:            prev.faqs,
+          reviews:         prev.reviews,
+          workHours:       prev.workHours,
+        }));
+      }
+    } catch (err) {
+      console.error("Autosave failed:", err);
+    } finally {
+      setIsSaving(false);
+    }
+  }, 1000);
+
+  return () => clearTimeout(saveTimeout.current);
+}, [
+  firstLoad,
+  businessDetails.businessName,
+  businessDetails.category,
+  businessDetails.description,
+  businessDetails.phone,
+  businessDetails.email,
+  businessDetails.address.city
+]);
+
 
   // ===== INPUT CHANGE =====
   const handleInputChange = ({ target: { name, value } }) => {
