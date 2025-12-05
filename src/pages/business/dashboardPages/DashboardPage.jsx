@@ -157,6 +157,8 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(true);
+
 
   /* scroll + hash cleanup */
   useEffect(() => {
@@ -236,11 +238,21 @@ const DashboardPage = () => {
 
   /* debounced stats setter */
   const debouncedSetStats = useRef(
-    debounce((newStats) => {
-      setStats(newStats);
-      localStorage.setItem("dashboardStats", JSON.stringify(newStats));
-    }, 300)
-  ).current;
+  debounce((newStats) => {
+    // ❗️ לא שומרים פגישות במטמון כדי למנוע הצגת מידע ישן
+    const {
+      appointments,
+      appointments_count,
+      ...safeStats
+    } = newStats;
+
+    // עדכון סטייט
+    setStats(newStats);
+
+    // שמירת רק הנתונים הבטוחים ל־localStorage
+    localStorage.setItem("dashboardStats", JSON.stringify(safeStats));
+  }, 300)
+).current;
 
   /* fetch stats */
   const loadStats = async () => {
@@ -249,35 +261,50 @@ const DashboardPage = () => {
     setError(null);
 
     const cached = localStorage.getItem("dashboardStats");
-    if (cached) setStats(JSON.parse(cached));
+    if (cached) {
+  const parsed = JSON.parse(cached);
+  delete parsed.appointments;          // ❗ לא לטעון פגישות ישנות!
+  delete parsed.appointments_count;     // ❗ לא לטעון כמות ישנה!
+  setStats(parsed);
+}
 
     try {
-      const data = await fetchDashboardStats(businessId, refreshAccessToken);
-      setStats(data);
-      localStorage.setItem("dashboardStats", JSON.stringify(data));
-    } catch (err) {
-      setError("❌ Error loading data from server.");
-      if (err.message === "No token") logout();
-    } finally {
-      setLoading(false);
-    }
+  const data = await fetchDashboardStats(businessId, refreshAccessToken);
+
+  // ❗ לא שומרים appointments במטמון
+  const { appointments, appointments_count, ...safeData } = data;
+
+  setStats(data);
+
+  // שומרים רק את הנתונים הבטוחים
+  localStorage.setItem("dashboardStats", JSON.stringify(safeData));
+
+} catch (err) {
+  setError("❌ Error loading data from server.");
+  if (err.message === "No token") logout();
+} finally {
+  setLoading(false);
+}
   };
 
   /* refresh appointments on server notification */
   const refreshAppointmentsFromAPI = useCallback(async () => {
-    if (!businessId) return;
-    try {
-      const appts = await fetchAppointments(businessId, refreshAccessToken);
-      setStats((oldStats) => ({
-        ...oldStats,
-        appointments: appts,
-        appointments_count: appts.length,
-      }));
-    } catch (err) {
-      console.error("Error refreshing appointments from API:", err);
-    }
-  }, [businessId, refreshAccessToken]);
+  if (!businessId) return;
+  setAppointmentsLoading(true);
 
+  try {
+    const appts = await fetchAppointments(businessId, refreshAccessToken);
+    setStats((oldStats) => ({
+      ...oldStats,
+      appointments: appts,
+      appointments_count: appts.length,
+    }));
+  } catch (err) {
+    console.error("Error refreshing appointments from API:", err);
+  } finally {
+    setAppointmentsLoading(false);
+  }
+}, [businessId, refreshAccessToken]);
   /* socket lifecycle */
   useEffect(() => {
   if (!initialized || !businessId) return;
