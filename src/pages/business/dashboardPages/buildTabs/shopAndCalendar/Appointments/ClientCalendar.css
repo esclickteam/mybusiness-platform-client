@@ -1,7 +1,7 @@
 /* ClientCalendar.css */
 
 /* =================================================================== */
-/* 1. RTL ל־wrapper                                                    */
+/* 1. Wrapper כללי (נשאר RTL כי כל הממשק בעברית)                      */
 /* =================================================================== */
 .client-calendar-wrapper {
   direction: rtl !important;
@@ -13,12 +13,12 @@
   margin-top: 20px;
   max-width: 600px;
   margin-left: auto;
-  margin-left: auto;
+  margin-right: auto;
   font-family: 'Alef', sans-serif;
 }
 
 /* =================================================================== */
-/* 2. ניווט חודשים (כפתורי החודש)                                      */
+/* 2. ניווט חודשים                                                     */
 /* =================================================================== */
 .calendar-nav {
   display: flex;
@@ -47,7 +47,7 @@
 }
 
 /* =================================================================== */
-/* 3. תצוגת לוח החודש                                                  */
+/* 3. לוח חודש                                                         */
 /* =================================================================== */
 .month-overview {
   margin-bottom: 16px;
@@ -101,7 +101,6 @@
   cursor: pointer;
   transition: background 0.18s;
   background: #fff;
-  border-radius: 0;
 }
 .date-cell.clickable:hover {
   background: #f5f1ff;
@@ -128,7 +127,7 @@
 }
 
 /* =================================================================== */
-/* 4. תצוגת פרטי יום, שעות, טופס                                       */
+/* 4. תצוגת יום ושעות                                                 */
 /* =================================================================== */
 .selected-date-info {
   margin-top: 20px;
@@ -144,13 +143,8 @@
   color: #4a3aff;
   font-weight: 700;
 }
-.selected-date-info p {
-  margin: 4px 0;
-  font-size: 15px;
-  color: #444;
-}
 
-/* רשימת זמני תורים */
+/* רשימת שעות */
 .slot-list {
   list-style: none;
   padding: 0;
@@ -167,15 +161,15 @@
   color: #4a3aff;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  user-select: none;
 }
 .slot-item button:hover {
   background-color: #e0d4ff;
   border-color: #7b5df2;
 }
 
-/* סיכום תיאום */
+/* =================================================================== */
+/* 5. סיכום הזמנה                                                      */
+/* =================================================================== */
 .summary-box {
   margin-top: 1.5rem;
   background: #fefcff;
@@ -183,26 +177,19 @@
   border-radius: 12px;
   padding: 1rem;
   direction: rtl !important;
-  font-size: 15px;
-  color: #333;
-  line-height: 1.4;
   box-shadow: 0 0 8px #d9ceff88;
 }
-.summary-box strong {
-  color: #5e2fcf;
-  margin-left: 4px;
-}
 
-/* הודעת הצלחה */
 .success-message {
   font-size: 18px;
   font-weight: 700;
   color: #5e2fcf;
-  margin-bottom: 1rem;
   text-align: center;
 }
 
-/* טופס הזמנה */
+/* =================================================================== */
+/* 6. טופס הזמנה — כולו LTR                                           */
+/* =================================================================== */
 .booking-form {
   margin-top: 1.5rem;
   background: #f8f5ff;
@@ -212,13 +199,17 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  direction: rtl !important;
+  direction: ltr !important;   /* ←←← שינינו מכאן */
+  text-align: left !important;
 }
+
 .booking-form label {
   font-weight: 700;
   font-size: 14px;
   color: #555;
+  text-align: left !important;
 }
+
 .booking-form input,
 .booking-form textarea {
   padding: 10px 14px;
@@ -226,17 +217,20 @@
   border: 1px solid #ccc;
   font-size: 14px;
   background: #fff;
-  resize: none;
-  transition: border-color 0.25s ease;
-}
-.booking-form input:focus,
-.booking-form textarea:focus {
-  border-color: #7a3df4;
-  outline: none;
-  box-shadow: 0 0 6px #d2baff;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
-/* כפתור אישור תור */
+/* placeholder גם LTR */
+.booking-form input::placeholder,
+.booking-form textarea::placeholder {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* =================================================================== */
+/* 7. כפתורים                                                          */
+/* =================================================================== */
 .confirm-slot-btn {
   margin-top: 12px;
   padding: 10px 20px;
@@ -246,14 +240,11 @@
   border-radius: 24px;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  user-select: none;
 }
 .confirm-slot-btn:hover {
   background-color: #5e2fcf;
 }
 
-/* כפתור חזרה */
 .back-button {
   margin-top: 10px;
   padding: 8px 16px;
@@ -263,80 +254,18 @@
   border-radius: 20px;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  user-select: none;
 }
 .back-button:hover {
   background-color: #d7cdff;
 }
 
-/* רספונסיביות */
+/* =================================================================== */
+/* 8. רספונסיביות                                                     */
+/* =================================================================== */
 @media (max-width: 480px) {
-  .calendar-container {
-    max-width: 100%;
-  }
-  .date-cell {
-    min-height: 60px;
-  }
-  .date-number {
-    font-size: 1rem;
-  }
+  .date-cell { min-height: 60px; }
 }
+
 @media (max-width: 768px) {
-  .calendar-container {
-    font-size: 0.9rem;
-  }
-
-  .calendar-header .month-hebrew {
-    font-size: 1.4rem;
-  }
-
-  .calendar-header .year {
-    font-size: 0.9rem;
-  }
-
-  .calendar-weekdays,
-  .calendar-dates {
-    grid-template-columns: repeat(7, 1fr);
-  }
-
-  .date-cell {
-    min-height: 55px;
-    font-size: 0.85rem;
-  }
-
-  .selected-date-info h4 {
-    font-size: 16px;
-  }
-
-  .slot-item button {
-    padding: 8px 12px;
-    font-size: 0.9rem;
-  }
-
-  .summary-box {
-    font-size: 14px;
-  }
-
-  .success-message {
-    font-size: 16px;
-  }
-
-  .confirm-slot-btn,
-  .back-button {
-    font-size: 0.95rem;
-    padding: 10px 14px;
-  }
-
-  .booking-form label,
-  .booking-form input,
-  .booking-form textarea {
-    font-size: 13px;
-  }
-}
-
-.booking-form input::placeholder,
-.booking-form textarea::placeholder {
-  direction: ltr !important;
-  text-align: left !important;
+  .date-cell { min-height: 55px; }
 }
