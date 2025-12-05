@@ -129,7 +129,7 @@ export function NotificationsProvider({ children }) {
         switch (type) {
           case "newNotification": {
             // הצגת התראה רק אם זה הודעה חדשה ולא פרטי השיחה
-            if (data && data.text && data.text.includes("New incoming message")) {
+            if (data && data.text && !data.text.includes("New incoming message")) {
               const cleanData = {
                 ...data,
                 timestamp: data.timestamp || new Date().toISOString(),
