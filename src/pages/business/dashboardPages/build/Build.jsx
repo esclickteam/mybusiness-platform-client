@@ -225,42 +225,51 @@ export default function Build() {
   };
 
   const handleLogoChange = async e => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = null;
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    if (businessDetails.logo?.preview?.startsWith('blob:')) {
-      URL.revokeObjectURL(businessDetails.logo.preview);
+  // 🔥 מכבים autosave
+  setLockAutosave(true);
+
+  e.target.value = null;
+
+  if (businessDetails.logo?.preview?.startsWith('blob:')) {
+    URL.revokeObjectURL(businessDetails.logo.preview);
+  }
+
+  const preview = URL.createObjectURL(file);
+  setBusinessDetails(prev => ({
+    ...prev,
+    logo: { preview }
+  }));
+
+  const fd = new FormData();
+  fd.append('logo', file);
+
+  try {
+    const res = await API.put('/business/my/logo', fd, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+
+    if (res.status === 200) {
+      setBusinessDetails(prev => ({
+        ...prev,
+        logo: {
+          preview:  res.data.logo,
+          publicId: res.data.logoId
+        }
+      }));
     }
+  } catch (err) {
+    console.error('Error uploading logo:', err);
+  } finally {
+    URL.revokeObjectURL(preview);
 
-    const preview = URL.createObjectURL(file);
-    setBusinessDetails(prev => ({
-      ...prev,
-      logo: { preview }
-    }));
+    // 🔥 מחזירים autosave
+    setLockAutosave(false);
+  }
+};
 
-    const fd = new FormData();
-    fd.append('logo', file);
-
-    try {
-      const res = await API.put('/business/my/logo', fd);
-      if (res.status === 200) {
-        setBusinessDetails(prev => ({
-          ...prev,
-          logo: {
-            preview:  res.data.logo,
-            publicId: res.data.logoId
-          }
-        }));
-      } else {
-        console.warn('Logo upload failed:', res);
-      }
-    } catch (err) {
-      console.error('Error uploading logo:', err);
-    } finally {
-      URL.revokeObjectURL(preview);
-    }
-  };
 
   // ===== MAIN IMAGES =====
   const handleMainImagesChange = async e => {
