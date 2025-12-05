@@ -137,6 +137,16 @@ export function AuthProvider({ children }) {
 
       refreshUser(true).catch(() => {});
 
+      /* ⭐️⭐️⭐️ NEW — PRIORITY REDIRECT FROM URL ⭐️⭐️⭐️ */
+      const urlRedirect = new URLSearchParams(window.location.search).get("redirect");
+      if (urlRedirect) {
+        navigate(urlRedirect, { replace: true });
+        setLoading(false);
+        return { user: normalizedUser, redirectUrl: urlRedirect };
+      }
+      /* ⭐️⭐️⭐️ END NEW CODE ⭐️⭐️⭐️ */
+
+      // Existing redirect flow
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
