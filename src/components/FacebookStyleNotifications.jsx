@@ -44,19 +44,16 @@ export default function FacebookStyleNotifications() {
 
       /* 1️⃣ Standard backend-created notification */
       if (type === "newNotification") {
-        setNotifications((prev) => [data, ...prev]);
+        // הצגת התראה רק אם זה לא הודעה מלקוח
+        if (data && data.text && !data.text.includes("New incoming message")) {
+          setNotifications((prev) => [data, ...prev]);
+        }
       }
 
-      /* 2️⃣ New message */
+      /* 2️⃣ New message - לא להציגה*/
       if (type === "newMessage") {
-        const notif = {
-          id: Date.now().toString(),
-          text: "✉️ New message from a customer",
-          timestamp: new Date().toISOString(),
-          read: false,
-          unreadCount: 1,
-        };
-        setNotifications((prev) => [notif, ...prev]);
+        // כאן אנחנו לא רוצים להציג את ההתראות של ההודעות
+        console.log("Skipping message notification:", data);
       }
 
       /* 3️⃣ AI notifications */
