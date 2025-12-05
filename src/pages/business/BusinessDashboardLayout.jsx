@@ -47,16 +47,14 @@ export default function BusinessDashboardLayout({ children }) {
      📩 Unread Messages Count (ONLY CHAT) — FIXED FOR V5
   ============================ */
   const { data: unreadChat } = useQuery({
-    queryKey: ["unread-messages", user?.businessId],
-    queryFn: () =>
-      API.get(`/messages/unread-count?businessId=${user.businessId}`).then(
-        (res) => res.data
-      ),
-    enabled: !!user?.businessId,
-    refetchInterval: 6000,
-  });
+  queryKey: ["unread-messages", user?.businessId],
+  queryFn: () =>
+    API.get(`/chat/unread-count`).then((res) => res.data),
+  enabled: !!user?.businessId,
+  refetchInterval: 6000,
+});
 
-  const messagesCount = unreadChat?.count || 0;
+const messagesCount = unreadChat?.count || 0;
 
   /* ============================
      📱 Sidebar state
@@ -102,12 +100,10 @@ export default function BusinessDashboardLayout({ children }) {
     });
 
     queryClient.prefetchQuery({
-      queryKey: ["unread-messages", user.businessId],
-      queryFn: () =>
-        API.get(`/messages/unread-count?businessId=${user.businessId}`).then(
-          (res) => res.data
-        ),
-    });
+  queryKey: ["unread-messages", user.businessId],
+  queryFn: () =>
+    API.get(`/chat/unread-count`).then((res) => res.data),
+});
 
     queryClient.prefetchQuery({
       queryKey: ["crm-appointments", user.businessId],
