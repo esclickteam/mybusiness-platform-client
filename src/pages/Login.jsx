@@ -25,6 +25,10 @@ export default function Login() {
   const { fetchNotifications } = useNotifications();
   const navigate = useNavigate();
 
+  // ⭐️ NEW — קריאת redirect מה־URL
+  const searchParams = new URLSearchParams(window.location.search);
+  const redirectParam = searchParams.get("redirect");
+
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [dashPreloadDone, setDashPreloadDone] = useState(false);
@@ -51,25 +55,37 @@ export default function Login() {
     setLoading(true);
     try {
       const cleanEmail = form.email.trim().toLowerCase();
+
+      // login מחזיר user + redirectUrl אם יש
       const { user: loggedInUser, redirectUrl } = await login(
         cleanEmail,
         form.password
       );
 
-      if (redirectUrl) {
-        navigate(redirectUrl, { replace: true });
-      } else {
-        if (loggedInUser?.role === "affiliate") {
-          navigate("/affiliate/dashboard", { replace: true });
-        } else if (loggedInUser?.role === "business") {
-          navigate(`/business/${loggedInUser.businessId}/dashboard`, {
-            replace: true,
-          });
-        } else {
-          navigate("/client/dashboard", { replace: true });
-        }
+      // ⭐️ 1️⃣ PRIORITY — redirect מה־URL
+      if (redirectParam) {
+        navigate(redirectParam, { replace: true });
+        return;
       }
 
+      // ⭐️ 2️⃣ redirect שהגיע מהשרת
+      if (redirectUrl) {
+        navigate(redirectUrl, { replace: true });
+        return;
+      }
+
+      // ⭐️ 3️⃣ ברירת מחדל — אם אין redirect
+      if (loggedInUser?.role === "affiliate") {
+        navigate("/affiliate/dashboard", { replace: true });
+      } else if (loggedInUser?.role === "business") {
+        navigate(`/business/${loggedInUser.businessId}/dashboard`, {
+          replace: true,
+        });
+      } else {
+        navigate("/client/dashboard", { replace: true });
+      }
+
+      // טוען נוטיפיקציות לאחר התחברות
       setTimeout(() => {
         if (typeof fetchNotifications === "function") fetchNotifications();
       }, 1000);
