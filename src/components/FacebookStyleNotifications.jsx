@@ -5,14 +5,11 @@ import { useAuth } from "../context/AuthContext";
 import "./FacebookStyleNotifications.css";
 
 export default function FacebookStyleNotifications() {
-  const { user, socket } = useAuth();
+  const { user } = useAuth();
   const [tab, setTab] = useState("all");
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
 
-  /* --------------------------------------------------
-     Load notifications on mount
-  -------------------------------------------------- */
   useEffect(() => {
     if (user?.businessId) fetchNotifications();
   }, [user?.businessId]);
@@ -26,50 +23,6 @@ export default function FacebookStyleNotifications() {
     }
   };
 
-  /* --------------------------------------------------
-     🔥 REAL-TIME LISTENER (businessUpdates ONLY)
-  -------------------------------------------------- */
-  useEffect(() => {
-    if (!socket || !user?.businessId) return;
-
-    console.log("📡 Listening for live notifications...");
-
-    // 💡 זה האירוע הנכון (ולא joinRoom)
-    socket.emit("joinBusinessRoom", user.businessId);
-
-    socket.on("businessUpdates", (event) => {
-      console.log("🔥 LIVE EVENT:", event);
-
-      const { type, data } = event;
-
-      /* 1️⃣ Standard backend-created notification */
-      if (type === "newNotification") {
-        // הצגת התראה רק אם זה לא הודעה מלקוח
-        if (data && data.text && !data.text.includes("New incoming message")) {
-          setNotifications((prev) => [data, ...prev]);
-        }
-      }
-
-      /* 2️⃣ New message - לא להציגה*/
-      if (type === "newMessage") {
-        // כאן אנחנו לא רוצים להציג את ההתראות של ההודעות
-        console.log("Skipping message notification:", data);
-      }
-
-      /* 3️⃣ AI notifications */
-      if (type === "newRecommendationNotification") {
-        setNotifications((prev) => [data, ...prev]);
-      }
-    });
-
-    return () => {
-      socket.off("businessUpdates");
-    };
-  }, [socket, user?.businessId]);
-
-  /* --------------------------------------------------
-     Mark as Read
-  -------------------------------------------------- */
   const markAsRead = async (id) => {
     try {
       await API.put(`/business/my/notifications/${id}/read`);
@@ -81,9 +34,6 @@ export default function FacebookStyleNotifications() {
     }
   };
 
-  /* --------------------------------------------------
-     Filter logic
-  -------------------------------------------------- */
   const filtered =
     tab === "unread"
       ? notifications.filter((n) => !n.read)
@@ -97,13 +47,12 @@ export default function FacebookStyleNotifications() {
     return new Date(timestamp).toLocaleDateString("en-US");
   };
 
+  // ❌ אם המשתמש אינו עסק — לא מציגים את הפעמון
   if (!user?.businessId) return null;
 
-  /* --------------------------------------------------
-     UI
-  -------------------------------------------------- */
   return (
     <div className="notif-left-wrapper">
+      {/* ✅ פעמון ליד הלוגו */}
       <button className="fb-bell" onClick={() => setOpen(!open)}>
         🔔
         {notifications.some((n) => !n.read) && (
@@ -141,7 +90,7 @@ export default function FacebookStyleNotifications() {
 
             <div className="fb-list">
               {filtered.length === 0 ? (
-                <p className="fb-empty">No new notifications</p>
+                <p className="fb-empty">No new notifications </p>
               ) : (
                 filtered.map((n) => (
                   <div
