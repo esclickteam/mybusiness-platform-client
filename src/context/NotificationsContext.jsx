@@ -43,17 +43,24 @@ function reducer(state, action) {
     }
 
     case "ADD_NOTIFICATION": {
-      const newNotif = normalizeNotification(action.payload);
+  const newNotif = normalizeNotification(action.payload);
 
-      const exists = state.notifications.some(
-        (n) => n.id === newNotif.id
-      );
+  const list = [...state.notifications];
+  const idx = list.findIndex(n => n.id === newNotif.id);
 
-      const list = exists ? state.notifications : [newNotif, ...state.notifications];
-      const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
+  if (idx !== -1) {
+    // 🟣 איחוד ההתראה (למקרה שהגיע עדכון של unreadCount)
+    list[idx] = { ...list[idx], ...newNotif };
+  } else {
+    // 🟢 התראה חדשה
+    list.unshift(newNotif);
+  }
 
-      return { notifications: list, unreadCount };
-    }
+  const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
+
+  return { notifications: list, unreadCount };
+}
+
 
     case "UPDATE_UNREAD_COUNT":
       return { ...state, unreadCount: action.payload };
