@@ -46,13 +46,10 @@ function reducer(state, action) {
       const newNotif = normalizeNotification(action.payload);
       const list = [...state.notifications];
 
-      let idx;
-
-      if (newNotif.threadId) {
-        idx = list.findIndex((n) => n.threadId === newNotif.threadId);
-      } else {
-        idx = list.findIndex((n) => n.id === newNotif.id);
-      }
+      let idx =
+        newNotif.threadId
+          ? list.findIndex((n) => n.threadId === newNotif.threadId)
+          : list.findIndex((n) => n.id === newNotif.id);
 
       if (idx !== -1) {
         list[idx] = { ...list[idx], ...newNotif };
@@ -82,7 +79,9 @@ export function NotificationsProvider({ children }) {
   const { user, socket } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  /* Load saved notifications */
+  /* ==========================
+      LOAD NOTIFICATIONS (API)
+  =========================== */
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications", {
@@ -103,58 +102,81 @@ export function NotificationsProvider({ children }) {
   }, [user?.businessId, fetchNotifications]);
 
   /* ==========================
-     SOCKET LISTENERS
-  ========================== */
+      SOCKET LISTENERS
+  =========================== */
   useEffect(() => {
     if (!socket || !user?.businessId) return;
 
     const setupListeners = () => {
       socket.emit("joinBusinessRoom", user.businessId);
 
+      /* --------------------------------------------------
+         1)  Unwrapped events:
+             socket.emit("newNotification", data)
+             socket.emit("notificationBundle", data)
+      -------------------------------------------------- */
+      socket.on("newNotification", (data) => {
+        console.log("📩 [SOCKET] newNotification:", data);
+
+        if (!data || !data.timestamp || !data.type) {
+          console.warn("❌ Ignored malformed newNotification:", data);
+          return;
+        }
+
+        dispatch({ type: "ADD_NOTIFICATION", payload: data });
+      });
+
+      socket.on("notificationBundle", (data) => {
+        console.log("🔄 [SOCKET] notificationBundle:", data);
+
+        if (!data || typeof data.count !== "number") return;
+
+        dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data.count });
+      });
+
+      /* --------------------------------------------------
+         2)  Wrapped events from Redis Relay:
+             socket.emit("businessUpdates", { type, data })
+      -------------------------------------------------- */
       socket.on("businessUpdates", (event) => {
-        console.log("🔥 businessUpdates:", event);
+        console.log("🔥 [SOCKET] businessUpdates:", event);
+
+        if (!event || typeof event !== "object") return;
 
         const { type, data } = event;
 
-        /* ================================================
-           ❗ חסימת נוטיפיקציות ישנות שמגיעות מה-Relay
-           ================================================ */
-        if (type === "newNotification") {
-          if (!data.unreadCount || !data.timestamp || !data.type) {
-            console.warn("❌ Ignored legacy newNotification", data);
-            return;
-          }
+        if (!type) return;
 
-          dispatch({ type: "ADD_NOTIFICATION", payload: data });
-          return;
-        }
+        switch (type) {
+          case "newNotification":
+            if (!data || !data.timestamp || !data.type) {
+              console.warn("❌ Ignored legacy/wrong newNotification:", data);
+              return;
+            }
+            dispatch({ type: "ADD_NOTIFICATION", payload: data });
+            break;
 
-        /* AI recommendation */
-        if (type === "newRecommendationNotification") {
-          dispatch({ type: "ADD_NOTIFICATION", payload: data });
-          return;
-        }
+          case "notificationBundle":
+            dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data.count });
+            break;
 
-        /* Unread message counter */
-        if (type === "unreadMessagesCount") {
-          dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data });
-          return;
-        }
+          case "newReview":
+            dispatch({
+              type: "ADD_NOTIFICATION",
+              payload: {
+                text: `⭐ New review: "${data.comment}"`,
+                timestamp: data.createdAt || new Date().toISOString(),
+                read: false,
+                unreadCount: 1,
+                type: "review",
+                targetUrl: `/business/${user.businessId}/dashboard/reviews`,
+                actorName: "Customer",
+              },
+            });
+            break;
 
-        /* New Review */
-        if (type === "newReview") {
-          dispatch({
-            type: "ADD_NOTIFICATION",
-            payload: {
-              text: `⭐ New review: "${data.comment}"`,
-              timestamp: data.createdAt || new Date().toISOString(),
-              read: false,
-              unreadCount: 1,
-              type: "review",
-              targetUrl: `/business/${user.businessId}/dashboard/reviews`,
-              actorName: "Customer",
-            },
-          });
+          default:
+            console.log("ℹ️ Unhandled businessUpdate event:", event);
         }
       });
     };
@@ -163,14 +185,16 @@ export function NotificationsProvider({ children }) {
     socket.on("connect", setupListeners);
 
     return () => {
+      socket.off("newNotification");
+      socket.off("notificationBundle");
       socket.off("businessUpdates");
       socket.off("connect", setupListeners);
     };
   }, [socket, user?.businessId]);
 
   /* ==========================
-     MARK AS READ
-  ========================== */
+      MARK AS READ
+  =========================== */
   const markAsRead = useCallback(
     async (id) => {
       try {
@@ -191,8 +215,8 @@ export function NotificationsProvider({ children }) {
   );
 
   /* ==========================
-     CLEAR ALL
-  ========================== */
+      CLEAR ALL
+  =========================== */
   const clearRead = useCallback(async () => {
     try {
       const res = await fetch("/api/business/my/notifications/clearRead", {
