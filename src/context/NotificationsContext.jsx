@@ -43,34 +43,28 @@ function reducer(state, action) {
     }
 
     case "ADD_NOTIFICATION": {
-  const newNotif = normalizeNotification(action.payload);
+      const newNotif = normalizeNotification(action.payload);
+      const list = [...state.notifications];
 
-  const list = [...state.notifications];
+      let idx;
 
-  let idx;
+      if (newNotif.threadId) {
+        idx = list.findIndex((n) => n.threadId === newNotif.threadId);
+      } else {
+        idx = list.findIndex((n) => n.id === newNotif.id);
+      }
 
-  if (newNotif.threadId) {
-    // 🟣 מאחד לפי שיחה
-    idx = list.findIndex(n => n.threadId === newNotif.threadId);
-  } else {
-    // 🟢 מאחד לפי ID להתראות כלליות
-    idx = list.findIndex(n => n.id === newNotif.id);
-  }
+      if (idx !== -1) {
+        list[idx] = { ...list[idx], ...newNotif };
+      } else {
+        list.unshift(newNotif);
+      }
 
-  if (idx !== -1) {
-    list[idx] = { ...list[idx], ...newNotif };
-  } else {
-    list.unshift(newNotif);
-  }
+      const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
+      return { notifications: list, unreadCount };
+    }
 
-  const unreadCount = list.reduce((sum, n) => sum + n.unreadCount, 0);
-
-  return { notifications: list, unreadCount };
-}
-
-
-
-     case "UPDATE_UNREAD_COUNT":
+    case "UPDATE_UNREAD_COUNT":
       return { ...state, unreadCount: action.payload };
 
     case "CLEAR_ALL":
@@ -122,22 +116,32 @@ export function NotificationsProvider({ children }) {
 
         const { type, data } = event;
 
-        /** 1️⃣ Notifications stored in Mongo */
+        /* ================================================
+           ❗ חסימת נוטיפיקציות ישנות שמגיעות מה-Relay
+           ================================================ */
         if (type === "newNotification") {
+          if (!data.unreadCount || !data.timestamp || !data.type) {
+            console.warn("❌ Ignored legacy newNotification", data);
+            return;
+          }
+
           dispatch({ type: "ADD_NOTIFICATION", payload: data });
+          return;
         }
 
-        /** 2️⃣ AI Recommendation Notification */
+        /* AI recommendation */
         if (type === "newRecommendationNotification") {
           dispatch({ type: "ADD_NOTIFICATION", payload: data });
+          return;
         }
 
-        /** 3️⃣ Unread messages count */
+        /* Unread message counter */
         if (type === "unreadMessagesCount") {
           dispatch({ type: "UPDATE_UNREAD_COUNT", payload: data });
+          return;
         }
 
-        /** 4️⃣ New Review */
+        /* New Review */
         if (type === "newReview") {
           dispatch({
             type: "ADD_NOTIFICATION",
