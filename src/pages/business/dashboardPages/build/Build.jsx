@@ -182,12 +182,13 @@ export default function Build() {
       const res = await API.patch("/business/my", payload);
 
       if (res.status === 200) {
-        const updated = res.data;
+
+        // 🔥 חשוב: חלק מהשרתים מחזירים "business", חלק מחזירים ישירות את האובייקט
+        const updated = res.data.business || res.data || {};
 
         setBusinessDetails(prev => ({
           ...prev,
 
-          // נשמרים מהשרת רק השדות שיכולים להתעדכן
           businessName: updated.businessName ?? prev.businessName,
           category:     updated.category     ?? prev.category,
           description:  updated.description  ?? prev.description,
@@ -199,25 +200,25 @@ export default function Build() {
             city: updated.address?.city ?? prev.address.city,
           },
 
-          // שומר את הלוגו בדיוק כמו שהוא
+          // לא מוחקים שום דבר נוסף מה-state
           logo: prev.logo,
           logoId: prev.logoId,
-          
-          // שדות נוספים שאסור למחוק
-          gallery:         prev.gallery,
+          gallery: prev.gallery,
           galleryImageIds: prev.galleryImageIds,
-          mainImages:      prev.mainImages,
-          mainImageIds:    prev.mainImageIds,
-          faqs:            prev.faqs,
-          reviews:         prev.reviews,
-          workHours:       prev.workHours,
+          mainImages: prev.mainImages,
+          mainImageIds: prev.mainImageIds,
+          faqs: prev.faqs,
+          reviews: prev.reviews,
+          workHours: prev.workHours,
         }));
       }
+
     } catch (err) {
       console.error("Autosave failed:", err);
     } finally {
       setIsSaving(false);
     }
+
   }, 1000);
 
   return () => clearTimeout(saveTimeout.current);
@@ -230,6 +231,7 @@ export default function Build() {
   businessDetails.email,
   businessDetails.address.city
 ]);
+
 
 
   // ===== INPUT CHANGE =====
