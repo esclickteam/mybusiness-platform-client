@@ -23,11 +23,13 @@ function normalize(msg, userId) {
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
+      console.log("📜 Setting messages:", action.payload);  // לוג של שליחת היסטוריית הודעות
       return [
         ...new Map(action.payload.map(m => [m._id || m.tempId, m])).values(),
       ];
 
     case "append":
+      console.log("📩 Appending new message:", action.payload);  // לוג של הודעה חדשה
       if (
         state.some(
           m =>
@@ -35,6 +37,7 @@ function messagesReducer(state, action) {
             m.tempId === action.payload.tempId
         )
       ) {
+        console.log("⏩ Skipping duplicate message:", action.payload);  // לוג אם הודעה כפולה
         return state;
       }
       return [...state, action.payload];
@@ -71,6 +74,8 @@ export default function ClientChatTab({
       if (res.ok) {
         const normalized = res.messages.map((m) => normalize(m, userId));
         dispatch({ type: "set", payload: normalized });
+      } else {
+        console.error("❌ Error loading history:", res.error);  // לוג אם יש בעיה בהיסטוריה
       }
     });
 
@@ -85,7 +90,7 @@ export default function ClientChatTab({
     if (!socket) return;
 
     const handler = (msg) => {
-      console.log("📩 NEW MESSAGE:", msg);
+      console.log("📩 NEW MESSAGE:", msg);  // לוג של הודעה חדשה שמתקבלת
       dispatch({ type: "append", payload: normalize(msg, userId) });
     };
 
@@ -108,13 +113,18 @@ export default function ClientChatTab({
      SEND MESSAGE — NO OPTIMISM!
 ------------------------------------------------------------- */
   const sendMessage = () => {
-    if (!input.trim() || sending) return;
+    if (!input.trim() || sending) {
+      console.log("⏩ Message skipped: No text or already sending.");  // לוג אם לא נשלחה הודעה
+      return;
+    }
 
     const text = input.trim();
     const tempId = uuidv4();
 
-    setSending(true);
-    setInput("");
+    console.log("📤 Sending message:", text);  // לוג של הודעה שנשלחת
+
+    setSending(true);  // מגדיר את שליחה כהמתנה
+    setInput("");  // מנקה את השדה אחרי שליחה
 
     socket.emit(
       "sendMessage",
@@ -126,10 +136,12 @@ export default function ClientChatTab({
         tempId,
       },
       (ack) => {
-        setSending(false);
+        setSending(false);  // עדכון סטטוס שליחת ההודעה
 
         if (!ack.ok) {
-          console.error("❌ Failed sending message:", ack.error);
+          console.error("❌ Failed sending message:", ack.error);  // לוג אם שליחה נכשלה
+        } else {
+          console.log("✅ Message sent successfully:", ack.message);  // לוג של הודעה שנשלחה בהצלחה
         }
       }
     );
