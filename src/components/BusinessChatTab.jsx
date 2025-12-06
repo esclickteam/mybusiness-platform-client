@@ -13,80 +13,10 @@ function normalize(msg) {
     ...msg,
     _id: String(msg._id || msg.tempId),
     tempId: msg.tempId || null,
+    text: msg.text || msg.content || "",
     timestamp:
       msg.createdAt || msg.timestamp || new Date().toISOString(),
   };
-}
-
-/* ---------------------------------------------------
-   WHATSAPP-STYLE AUDIO PLAYER
---------------------------------------------------- */
-function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
-  if (!src) return null;
-
-  const audioRef = useRef(null);
-  const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const onTime = () => setProgress(audio.currentTime);
-    const onEnded = () => {
-      setPlaying(false);
-      setProgress(0);
-    };
-
-    audio.addEventListener("timeupdate", onTime);
-    audio.addEventListener("ended", onEnded);
-
-    return () => {
-      audio.removeEventListener("timeupdate", onTime);
-      audio.removeEventListener("ended", onEnded);
-    };
-  }, [src]);
-
-  const togglePlay = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    playing ? audio.pause() : audio.play();
-    setPlaying(!playing);
-  };
-
-  const formatTime = (t) =>
-    `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(
-      2,
-      "0"
-    )}`;
-
-  return (
-    <div className="custom-audio-player">
-      <button
-        onClick={togglePlay}
-        className={`play-pause ${playing ? "playing" : ""}`}
-      >
-        {playing ? "❚❚" : "▶"}
-      </button>
-
-      <div className="progress-dots">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className={`dot ${
-              i <= (progress / duration) * 20 ? "active" : ""
-            }`}
-          />
-        ))}
-      </div>
-
-      <div className="time-display">
-        {formatTime(progress)} / {formatTime(duration)}
-      </div>
-
-      <audio ref={audioRef} src={src} preload="metadata" />
-    </div>
-  );
 }
 
 /* ---------------------------------------------------
@@ -166,6 +96,7 @@ export default function BusinessChatTab({
     }
 
     let cancelled = false;
+
     (async () => {
       try {
         const res = await API.get(
@@ -173,6 +104,7 @@ export default function BusinessChatTab({
           { params: { page: 0, limit: 50 } }
         );
         if (cancelled) return;
+
         dispatch({
           type: "set",
           payload: res.data.messages.map(normalize),
@@ -188,20 +120,13 @@ export default function BusinessChatTab({
   }, [conversationId]);
 
   /* ---------------------------------------------------
-     SOCKET EVENTS — FIXED (NO DUPLICATES)
+     SOCKET EVENTS — NO DUPLICATES
 --------------------------------------------------- */
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    const isBizConv = conversationType === "business-business";
-
     const join = () => {
-      socket.emit(
-        "joinConversation",
-        conversationType,
-        conversationId,
-        isBizConv
-      );
+      socket.emit("joinRoom", conversationId);
     };
 
     socket.on("connect", join);
@@ -227,14 +152,9 @@ export default function BusinessChatTab({
       socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
-      socket.emit(
-        "leaveConversation",
-        conversationType,
-        conversationId,
-        isBizConv
-      );
+      socket.emit("leaveRoom", conversationId);
     };
-  }, [socket, conversationId, conversationType, businessId, customerId]);
+  }, [socket, conversationId, customerId]);
 
   /* ---------------------------------------------------
      AUTO SCROLL
@@ -261,8 +181,8 @@ export default function BusinessChatTab({
         _id: tempId,
         tempId,
         conversationId,
-        from: businessId,
-        to: customerId,
+        fromId: businessId,
+        toId: customerId,
         text,
         timestamp: new Date().toISOString(),
         sending: true,
@@ -283,6 +203,7 @@ export default function BusinessChatTab({
       },
       (ack) => {
         setSending(false);
+
         dispatch({
           type: "updateStatus",
           payload: {
@@ -330,29 +251,15 @@ export default function BusinessChatTab({
           <div
             key={`${m._id}-${m.tempId}-${i}`}
             className={`message ${
-              String(m.fromId || m.from) === String(businessId)
+              String(m.fromId) === String(businessId)
                 ? "mine"
                 : "theirs"
             } ${m.sending ? "sending" : ""} ${
               m.failed ? "failed" : ""
             }`}
           >
-            {m.fileUrl ? (
-              m.fileType?.startsWith("audio") ? (
-                <WhatsAppAudioPlayer
-                  src={m.fileUrl}
-                  duration={m.fileDuration}
-                />
-              ) : m.fileType?.startsWith("image") ? (
-                <img src={m.fileUrl} className="msg-image" alt="" />
-              ) : (
-                <a href={m.fileUrl} download>
-                  {m.fileName}
-                </a>
-              )
-            ) : (
-              <div className="text">{m.text}</div>
-            )}
+            <div className="text">{m.text}</div>
+
             <div className="meta">
               <span className="time">{formatTime(m.timestamp)}</span>
             </div>
