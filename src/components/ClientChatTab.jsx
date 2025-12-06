@@ -193,52 +193,52 @@ export default function ClientChatTab({
   }, [conversationId]);
 
   /* -------------------------------------------------------------
-     SOCKET — FIXED, NO DUPLICATES
+     SOCKET — REAL TIME FIXED
 ------------------------------------------------------------- */
+  useEffect(() => {
+    if (!socket || !conversationId) return;
+
+    /* ---- JOIN THE CORRECT SERVER ROOM ---- */
+    const join = () => {
+      socket.emit(
+        "joinConversation",
+        conversationType,
+        conversationId,
+        false,         // isBusinessConversation
+        (res) => console.log("JOIN RESP:", res)
+      );
+    };
+
+    socket.on("connect", join);
+    if (socket.connected) join();
+
+    /* ---- HANDLE REAL-TIME INCOMING MESSAGES ---- */
+    const handleNewMessage = (msg) => {
+      if (String(msg.fromId || msg.from) === String(userId)) return;
+
+      dispatch({
+        type: "append",
+        payload: normalize(msg, userId, businessId),
+      });
+    };
+
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.emit(
+        "leaveConversation",
+        conversationType,
+        conversationId,
+        false
+      );
+
+      socket.off("connect", join);
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket, conversationId, userId]);
+
   /* -------------------------------------------------------------
-   SOCKET — FIXED, NO DUPLICATES + REAL TIME WORKING
-------------------------------------------------------------- */
-useEffect(() => {
-  if (!socket || !conversationId) return;
-
-  // ✔️ הצטרפות לחדר לפי conversationId
-  const joinRoom = () => {
-    socket.emit("joinRoom", conversationId);
-  };
-
-  socket.on("connect", joinRoom);
-
-  if (socket.connected) joinRoom();
-
-  // ✔️ קבלת הודעות
-  const handleNewMessage = (msg) => {
-
-    // ❗ לא לבדוק msg.conversationId — השרת לא שולח את זה
-    // הלקוח יקבל הודעות רק אם הוא בחדר הנכון
-
-    // מניעת כפילות — אם זו ההודעה של הלקוח עצמו, לא מוסיפים
-    if (String(msg.fromId || msg.from) === String(userId)) return;
-
-    dispatch({
-      type: "append",
-      payload: normalize(msg, userId, businessId),
-    });
-  };
-
-  socket.on("newMessage", handleNewMessage);
-
-  return () => {
-    socket.off("connect", joinRoom);
-    socket.off("newMessage", handleNewMessage);
-
-    socket.emit("leaveRoom", conversationId);
-  };
-}, [socket, conversationId, userId]);
-
-
-
-  /* -------------------------------------------------------------
-     SCROLL
+     SCROLL DOWN
 ------------------------------------------------------------- */
   useEffect(() => {
     if (!listRef.current) return;
@@ -246,16 +246,16 @@ useEffect(() => {
   }, [messages]);
 
   /* -------------------------------------------------------------
-     SEND MESSAGE — OPTIMISTIC UI
+     SEND MESSAGE
 ------------------------------------------------------------- */
   const sendMessage = () => {
     if (!input.trim() || sending) return;
 
     const tempId = uuidv4();
     setSending(true);
+
     const text = input.trim();
 
-    // OPTIMISTIC
     dispatch({
       type: "append",
       payload: {

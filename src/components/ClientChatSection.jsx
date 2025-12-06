@@ -17,14 +17,12 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
 
-  const safeSetBusinessId = (newId) =>
-    setBusinessId((prev) => newId ?? prev);
-
+  const safeSetBusinessId = (newId) => setBusinessId((prev) => newId ?? prev);
   const socketRef = useRef(null);
 
-  /* ============================
+  /* ============================================================
         SOCKET INIT
-  ============================ */
+  ============================================================ */
   useEffect(() => {
     if (!initialized || !userId) return;
     if (socketRef.current) return;
@@ -46,6 +44,7 @@ export default function ClientChatSection() {
         setError("Socket disconnected unexpectedly: " + reason);
       }
     });
+
     socketRef.current.on("connect_error", (err) =>
       setError("Socket connection error: " + err.message)
     );
@@ -56,34 +55,43 @@ export default function ClientChatSection() {
     };
   }, [initialized, userId]);
 
-  /* ============================
-     AUTO JOIN ROOM FIX — CRITICAL
-  ============================ */
+  /* ============================================================
+        AUTO JOIN FIX — JOIN THE CORRECT SERVER ROOM
+  ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
-    if (!socket) return;
+    if (!socket || !conversationId) return;
 
-    const tryJoin = () => {
-      if (conversationId) {
-        console.log("CLIENT JOIN ROOM", conversationId);
-        socket.emit("joinRoom", conversationId);
-      }
+    const joinConversationRoom = () => {
+      console.log("CLIENT JOIN → user-business room:", conversationId);
+
+      socket.emit(
+        "joinConversation",
+        "user-business",
+        conversationId,
+        false, // isBizConv
+        (res) => console.log("JOIN RESPONSE:", res)
+      );
     };
 
-    // Join immediately if possible
-    tryJoin();
+    joinConversationRoom();
 
-    // Join again after reconnect
-    socket.on("connect", tryJoin);
+    socket.on("connect", joinConversationRoom);
 
     return () => {
-      socket.off("connect", tryJoin);
+      socket.emit(
+        "leaveConversation",
+        "user-business",
+        conversationId,
+        false
+      );
+      socket.off("connect", joinConversationRoom);
     };
   }, [conversationId]);
 
-  /* ============================
-     LOAD CONVERSATION METADATA
-  ============================ */
+  /* ============================================================
+        LOAD CONVERSATION METADATA
+  ============================================================ */
   useEffect(() => {
     setLoading(true);
     setError("");
@@ -149,9 +157,9 @@ export default function ClientChatSection() {
     }
   }, [threadId, clientId, businessIdFromParams]);
 
-  /* ============================
-       LOAD BUSINESS NAME
-  ============================ */
+  /* ============================================================
+        LOAD BUSINESS NAME
+  ============================================================ */
   useEffect(() => {
     if (businessId && !businessName) {
       const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
@@ -170,9 +178,9 @@ export default function ClientChatSection() {
     }
   }, [businessId, businessName]);
 
-  /* ============================
-      SOCKET: HISTORY + EVENTS
-  ============================ */
+  /* ============================================================
+        SOCKET — HISTORY + REALTIME
+  ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !socket.connected || !conversationId) {
@@ -182,7 +190,6 @@ export default function ClientChatSection() {
 
     setLoading(true);
 
-    /* Load message history */
     socket.emit("getHistory", { conversationId }, (res) => {
       if (res.ok) {
         setMessages(Array.isArray(res.messages) ? res.messages : []);
@@ -194,42 +201,25 @@ export default function ClientChatSection() {
       setLoading(false);
     });
 
-    /* Handle incoming messages */
     const handleNew = (msg) => {
       setMessages((prev) => {
-        const idx = prev.findIndex(
-          (m) =>
-            m._id === msg._id ||
-            (m.tempId && msg.tempId && m.tempId === msg.tempId)
+        const exists = prev.some(
+          (m) => m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
         );
-        if (idx !== -1) {
-          const next = [...prev];
-          next[idx] = { ...next[idx], ...msg };
-          return next;
-        }
-        return [...prev, msg];
+        return exists ? prev : [...prev, msg];
       });
     };
 
-    const handleApproved = (msg) =>
-      setMessages((prev) =>
-        prev.map((m) =>
-          m._id === msg._id ? { ...m, status: "approved" } : m
-        )
-      );
-
     socket.on("newMessage", handleNew);
-    socket.on("messageApproved", handleApproved);
 
     return () => {
       socket.off("newMessage", handleNew);
-      socket.off("messageApproved", handleApproved);
     };
   }, [conversationId]);
 
-  /* ============================
-            UI
-  ============================ */
+  /* ============================================================
+        UI
+  ============================================================ */
   if (loading) return <div className={styles.loading}>Loading…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
 
