@@ -68,10 +68,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
         </div>
       )}
 
-      <button
-        onClick={togglePlay}
-        className={`play-pause ${playing ? "playing" : ""}`}
-      >
+      <button onClick={togglePlay} className={`play-pause ${playing ? "playing" : ""}`}>
         {playing ? "❚❚" : "▶"}
       </button>
 
@@ -113,19 +110,12 @@ function messagesReducer(state, action) {
     }
 
     case "append": {
-      const idx = state.findIndex(
+      const exists = state.some(
         (m) =>
-          m._id === action.payload._id ||
-          m._id === action.payload.tempId ||
-          m.tempId === action.payload._id
+          (m._id && action.payload._id && m._id === action.payload._id) ||
+          (m.tempId && action.payload.tempId && m.tempId === action.payload.tempId)
       );
-
-      if (idx !== -1) {
-        const updated = [...state];
-        updated[idx] = { ...updated[idx], ...action.payload };
-        return updated;
-      }
-
+      if (exists) return state;
       return [...state, action.payload];
     }
 
@@ -177,9 +167,7 @@ export default function BusinessChatTab({
         const res = await API.get(`/messages/${conversationId}/history`, {
           params: { page: 0, limit: 50 },
         });
-
         if (cancelled) return;
-
         const msgs = res.data.messages.map(normalize);
         dispatch({ type: "set", payload: msgs });
       } catch (err) {
@@ -193,7 +181,7 @@ export default function BusinessChatTab({
   }, [conversationId]);
 
   /* ---------------------------------------------------
-     SOCKET REAL-TIME EVENTS
+     SOCKET REAL-TIME EVENTS (✅ FIXED)
 --------------------------------------------------- */
   useEffect(() => {
     if (!socket || !conversationId) return;
@@ -208,9 +196,16 @@ export default function BusinessChatTab({
     if (socket.connected) join();
 
     const handleMessage = (msg) => {
-      if (String(msg.fromId || msg.from) === String(businessId)) return;
-
       const safe = normalize(msg);
+
+      // 🧩 אל תוסיף הודעה שכבר קיימת לפי tempId או _id
+      const alreadyExists = messages.some(
+        (m) =>
+          (m._id && safe._id && m._id === safe._id) ||
+          (m.tempId && safe.tempId && m.tempId === safe.tempId)
+      );
+      if (alreadyExists) return;
+
       if (msg.conversationId === conversationId) {
         dispatch({ type: "append", payload: safe });
       }
@@ -231,10 +226,9 @@ export default function BusinessChatTab({
       socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
-
       socket.emit("leaveConversation", conversationType, conversationId, isBizConv);
     };
-  }, [socket, conversationId, conversationType, businessId, customerId]);
+  }, [socket, conversationId, conversationType, businessId, customerId, messages]);
 
   /* ---------------------------------------------------
      SCROLL TO BOTTOM ON UPDATE
@@ -283,7 +277,6 @@ export default function BusinessChatTab({
       },
       (ack) => {
         setSending(false);
-
         dispatch({
           type: "updateStatus",
           payload: {
@@ -302,7 +295,6 @@ export default function BusinessChatTab({
   /* ---------------------------------------------------
      RENDER
 --------------------------------------------------- */
-
   if (!businessId) {
     return (
       <div className="chat-container business">
@@ -311,15 +303,10 @@ export default function BusinessChatTab({
     );
   }
 
-  const sorted = [...messages].sort(
-    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-  );
+  const sorted = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
   const formatTime = (ts) =>
-    new Date(ts).toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    new Date(ts).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 
   return (
     <div className="chat-container business">
@@ -350,7 +337,6 @@ export default function BusinessChatTab({
             ) : (
               <div className="text">{m.text}</div>
             )}
-
             <div className="meta">
               <span className="time">{formatTime(m.timestamp)}</span>
             </div>
