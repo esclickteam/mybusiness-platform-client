@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { AiProvider } from "../../context/AiContext";
@@ -44,20 +44,37 @@ export default function BusinessDashboardLayout({ children }) {
   const queryClient = useQueryClient();
 
   /* ============================
-     📩 FIXED — REAL CHAT UNREAD COUNT
-============================ */
-  const { data: unreadChat } = useQuery({
-    queryKey: ["unread-messages", user?.businessId],
-    queryFn: () => API.get(`/chat/unread-count`).then((res) => res.data),
-    enabled: !!user?.businessId,
-    refetchInterval: 6000,
-  });
+     📩 LIVE UNREAD CHAT COUNT
+  ============================ */
+  const [messagesCount, setMessagesCount] = useState(0);
 
-  const messagesCount = unreadChat?.count || 0;
+  useEffect(() => {
+    if (!user?.businessId) return;
+
+    // טעינה ראשונית מהשרת
+    API.get(`/chat/unread-count`)
+      .then((res) => setMessagesCount(res.data?.count || 0))
+      .catch(() => setMessagesCount(0));
+
+    // התחברות לסוקט
+    if (!socket.connected) socket.connect();
+    socket.emit("joinRoom", `business-${user.businessId}`);
+
+    // האזנה לעדכוני badge בזמן אמת
+    socket.on("unreadCountUpdate", (data) => {
+      console.log("📨 Live unread count:", data.count);
+      setMessagesCount(data.count || 0);
+    });
+
+    return () => {
+      socket.off("unreadCountUpdate");
+      socket.emit("leaveRoom", `business-${user.businessId}`);
+    };
+  }, [user?.businessId]);
 
   /* ============================
      📱 Sidebar
-============================ */
+  ============================ */
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
   const sidebarRef = useRef(null);
@@ -76,18 +93,7 @@ export default function BusinessDashboardLayout({ children }) {
     }
   };
 
-  /* 🧠 Socket Join */
-  useEffect(() => {
-    if (!user?.businessId) return;
-    if (!socket.connected) socket.connect();
-    socket.emit("joinBusinessRoom", user.businessId);
-
-    return () => {
-      socket.emit("leaveRoom", `business-${user.businessId}`);
-    };
-  }, [user?.businessId]);
-
-  /* 🚀 Prefetch (UPDATED TO CHAT ROUTE) */
+  /* 🚀 Prefetch Data */
   useEffect(() => {
     if (!user?.businessId) return;
 
@@ -95,11 +101,6 @@ export default function BusinessDashboardLayout({ children }) {
       queryKey: ["business-profile", user.businessId],
       queryFn: () =>
         API.get(`/business/${user.businessId}`).then((res) => res.data),
-    });
-
-    queryClient.prefetchQuery({
-      queryKey: ["unread-messages", user.businessId],
-      queryFn: () => API.get(`/chat/unread-count`).then((res) => res.data),
     });
 
     queryClient.prefetchQuery({
@@ -140,7 +141,7 @@ export default function BusinessDashboardLayout({ children }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* Focus Trap */
+  /* ♿ Focus Trap (for mobile) */
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
 
@@ -175,7 +176,7 @@ export default function BusinessDashboardLayout({ children }) {
 
   /* ============================
      🎨 Layout
-============================ */
+  ============================ */
   return (
     <BusinessServicesProvider>
       <AiProvider>
@@ -236,7 +237,6 @@ export default function BusinessDashboardLayout({ children }) {
                       onClick={() => isMobile && setShowSidebar(false)}
                     >
                       {label}
-
                       {path === "messages" && messagesCount > 0 && (
                         <span className="badge">{messagesCount}</span>
                       )}
