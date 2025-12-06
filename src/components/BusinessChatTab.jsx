@@ -206,40 +206,26 @@ export default function BusinessChatTab({
      SOCKET — REAL TIME
 --------------------------------------------------- */
   useEffect(() => {
-  if (!socket || !conversationId) return;
+    if (!socket || !conversationId) return;
 
-  const isBizConv = conversationType === "business-business";
+    const isBizConv = conversationType === "business-business";
 
-  /* JOIN THE CORRECT ROOM */
-  const join = () => {
-    console.log("⚡ Business connected — joining conversation room:", conversationId);
-    socket.emit("joinConversation", conversationType, conversationId, isBizConv);
-  };
+    /* JOIN ROOM */
+    const join = () => {
+      socket.emit("joinConversation", conversationType, conversationId, isBizConv);
+    };
 
-  socket.on("connect", join);
-  if (socket.connected) join();
-
+    socket.on("connect", join);
+    if (socket.connected) join();
 
     /* NEW MESSAGE */
     const handleMessage = (msg) => {
+      // 💥 Prevent duplicates — ignore your own messages
+      if (String(msg.fromId || msg.from) === String(businessId)) return;
+
       const safe = normalize(msg);
-      const convId = msg.conversationId;
-
-      if (convId === conversationId) {
+      if (msg.conversationId === conversationId) {
         dispatch({ type: "append", payload: safe });
-      } else {
-        dispatch({ type: "append", payload: safe });
-
-        setUnreadCounts((prev) => ({
-          ...prev,
-          [convId]: (prev[convId] || 0) + 1,
-        }));
-
-        setFirstMessageAlert({
-          conversationId: convId,
-          text: msg.text,
-          timestamp: msg.timestamp,
-        });
       }
     };
 
@@ -252,29 +238,18 @@ export default function BusinessChatTab({
       handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
     };
 
-    /* NOTIFICATIONS */
-    const handleNewNotification = (n) => {
-      if (n.type === "message" && n.fromRole === "client") {
-        addNotification(n);
-      }
-    };
-
     socket.on("newMessage", handleMessage);
     socket.on("typing", handleTyping);
-    socket.on("newNotification", handleNewNotification);
-    socket.on("newRecommendationNotification", handleNewNotification);
 
     return () => {
       socket.off("connect", join);
       socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
-      socket.off("newNotification", handleNewNotification);
-      socket.off("newRecommendationNotification", handleNewNotification);
       clearTimeout(handleTyping._t);
 
       socket.emit("leaveConversation", conversationType, conversationId, isBizConv);
     };
-  }, [socket, businessId, conversationId, conversationType, customerId, addNotification]);
+  }, [socket, conversationId, conversationType, businessId, customerId]);
 
   /* ---------------------------------------------------
      SCROLL TO BOTTOM
@@ -295,7 +270,6 @@ export default function BusinessChatTab({
 
     setSending(true);
 
-    // Optimistic UI
     dispatch({
       type: "append",
       payload: {
@@ -341,7 +315,7 @@ export default function BusinessChatTab({
   };
 
   /* ---------------------------------------------------
-     RENDER UI
+     RENDER
 --------------------------------------------------- */
   const sorted = [...messages].sort(
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
@@ -361,8 +335,6 @@ export default function BusinessChatTab({
       </div>
 
       <div className="message-list" ref={listRef}>
-        {sorted.length === 0 && <div className="empty">No messages yet</div>}
-
         {sorted.map((m, i) => (
           <div
             key={`${m._id}-${m.tempId}-${i}`}
@@ -370,7 +342,6 @@ export default function BusinessChatTab({
               String(m.from) === String(businessId) ? "mine" : "theirs"
             } ${m.sending ? "sending" : ""} ${m.failed ? "failed" : ""}`}
           >
-            {/* TEXT OR FILE */}
             {m.fileUrl ? (
               m.fileType?.startsWith("audio") ? (
                 <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} />
@@ -391,16 +362,8 @@ export default function BusinessChatTab({
           </div>
         ))}
 
-        {isTyping && <div className="typing-indicator">The client is typing...</div>}
+        {isTyping && <div className="typing-indicator">The client is typing…</div>}
       </div>
-
-      {/* FIRST MESSAGE POPUP */}
-      {firstMessageAlert && (
-        <div className="first-message-alert">
-          New first message: "{firstMessageAlert.text}"
-          <button onClick={() => setFirstMessageAlert(null)}>×</button>
-        </div>
-      )}
 
       <div className="inputBar">
         <textarea
@@ -417,8 +380,6 @@ export default function BusinessChatTab({
               sendMessage();
             }
           }}
-          rows={1}
-          disabled={sending}
         />
 
         <button

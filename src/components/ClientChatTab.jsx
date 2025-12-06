@@ -3,9 +3,9 @@ import { v4 as uuidv4 } from "uuid";
 import API from "../api";
 import "./ClientChatTab.css";
 
-/* ------------------------------------------------------------------
+/* -------------------------------------------------------------
    AUDIO PLAYER
------------------------------------------------------------------- */
+------------------------------------------------------------- */
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   if (!src) return null;
 
@@ -35,9 +35,8 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-
     playing ? audio.pause() : audio.play();
-    setPlaying((p) => !p);
+    setPlaying(!playing);
   };
 
   const formatTime = (t) =>
@@ -50,15 +49,12 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
     <div className={`custom-audio-player ${userAvatar ? "with-avatar" : "no-avatar"}`}>
       {userAvatar && (
         <div className="avatar-wrapper">
-          <img src={userAvatar} alt="avatar" />
+          <img src={userAvatar} alt="" />
           <div className="mic-icon">🎤</div>
         </div>
       )}
 
-      <button
-        onClick={togglePlay}
-        className={`play-pause ${playing ? "playing" : ""}`}
-      >
+      <button onClick={togglePlay} className={`play-pause ${playing ? "playing" : ""}`}>
         {playing ? "❚❚" : "▶"}
       </button>
 
@@ -77,18 +73,15 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   );
 }
 
-/* ------------------------------------------------------------------
+/* -------------------------------------------------------------
    NORMALIZE
------------------------------------------------------------------- */
+------------------------------------------------------------- */
 function normalize(msg, userId, businessId) {
   const fromId = String(msg.fromId || msg.from || "");
 
   let role = "business";
-
-  if (msg.client && String(msg.client) === String(userId)) role = "client";
-  else if (msg.business && String(msg.business) === String(businessId)) role = "business";
-  else if (fromId === String(userId)) role = "client";
-  else if (fromId === String(businessId)) role = "business";
+  if (fromId === String(userId)) role = "client";
+  if (fromId === String(businessId)) role = "business";
 
   return {
     ...msg,
@@ -104,9 +97,9 @@ function normalize(msg, userId, businessId) {
   };
 }
 
-/* ------------------------------------------------------------------
-   REDUCER
------------------------------------------------------------------- */
+/* -------------------------------------------------------------
+   REDUCER — no duplicates allowed
+------------------------------------------------------------- */
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set": {
@@ -116,8 +109,8 @@ function messagesReducer(state, action) {
           !unique.some(
             (m) =>
               m._id === msg._id ||
-              m._id === msg.tempId ||
-              m.tempId === msg._id
+              m.tempId === msg._id ||
+              m._id === msg.tempId
           )
         ) {
           unique.push(msg);
@@ -127,17 +120,13 @@ function messagesReducer(state, action) {
     }
 
     case "append": {
-      const idx = state.findIndex(
+      const exists = state.find(
         (m) =>
           m._id === action.payload._id ||
-          m._id === action.payload.tempId ||
-          m.tempId === action.payload._id
+          m.tempId === action.payload._id ||
+          m._id === action.payload.tempId
       );
-      if (idx !== -1) {
-        const updated = [...state];
-        updated[idx] = { ...updated[idx], ...action.payload };
-        return updated;
-      }
+      if (exists) return state;
       return [...state, action.payload];
     }
 
@@ -154,9 +143,9 @@ function messagesReducer(state, action) {
   }
 }
 
-/* ------------------------------------------------------------------
+/* -------------------------------------------------------------
    MAIN COMPONENT
------------------------------------------------------------------- */
+------------------------------------------------------------- */
 export default function ClientChatTab({
   socket,
   conversationId,
@@ -169,30 +158,14 @@ export default function ClientChatTab({
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   const listRef = useRef(null);
 
-  /* ------------------------------------------------------------------
-     JOIN ROOMS — FIXED REAL-TIME LOGIC
-  ------------------------------------------------------------------ */
+  /* -------------------------------------------------------------
+     LOAD HISTORY
+------------------------------------------------------------- */
   useEffect(() => {
-    if (!socket || !conversationId || !userId) {
-      dispatch({ type: "set", payload: [] });
-      return;
-    }
-
-    const isBizConv = conversationType === "business-business";
-
-    const join = () => {
-      console.log("⚡ Client connected — joining rooms...");
-      socket.emit("joinRoom", `client-${userId}`);
-      socket.emit("joinConversation", conversationType, conversationId, isBizConv);
-    };
-
-    socket.on("connect", join);
-
-    if (socket.connected) join();
+    if (!conversationId || !userId) return;
 
     let cancelled = false;
 
@@ -201,94 +174,117 @@ export default function ClientChatTab({
         const res = await API.get(`/messages/${conversationId}/history`, {
           params: { page: 0, limit: 50 },
         });
-
         if (cancelled) return;
 
-        const msgs = (res.data.messages || []).map((msg) =>
+        const msgs = res.data.messages.map((msg) =>
           normalize(msg, userId, businessId)
         );
 
         dispatch({ type: "set", payload: msgs });
         setLoading(false);
-      } catch (err) {
-        setError("Error loading history");
+      } catch (error) {
         setLoading(false);
       }
     })();
 
     return () => {
       cancelled = true;
-      socket.off("connect", join);
-      socket.emit("leaveConversation", conversationId, isBizConv);
-      socket.emit("leaveRoom", `client-${userId}`);
     };
-  }, [socket, conversationId, userId, conversationType, businessId]);
+  }, [conversationId]);
 
-  /* ------------------------------------------------------------------
-     SOCKET LISTENERS
-  ------------------------------------------------------------------ */
+  /* -------------------------------------------------------------
+     SOCKET — FIXED, NO DUPLICATES
+------------------------------------------------------------- */
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !conversationId) return;
 
+    /* JOIN */
+    const join = () => {
+      socket.emit("joinConversation", conversationType, conversationId, false);
+    };
+    socket.on("connect", join);
+    if (socket.connected) join();
+
+    /* HANDLE INCOMING MESSAGE */
     const handleNewMessage = (msg) => {
+      // ❌ אם ההודעה נשלחה ע"י הלקוח — לא להציג אותה שוב
+      if (String(msg.fromId || msg.from) === String(userId)) return;
+
       if (msg.conversationId !== conversationId) return;
-      dispatch({ type: "append", payload: normalize(msg, userId, businessId) });
+      dispatch({
+        type: "append",
+        payload: normalize(msg, userId, businessId),
+      });
     };
 
     socket.on("newMessage", handleNewMessage);
 
     return () => {
+      socket.off("connect", join);
       socket.off("newMessage", handleNewMessage);
+      socket.emit("leaveConversation", conversationId);
     };
-  }, [socket, conversationId]);
+  }, [socket, conversationId, userId]);
 
-  /* ------------------------------------------------------------------
-     AUTO SCROLL
-  ------------------------------------------------------------------ */
+  /* -------------------------------------------------------------
+     SCROLL
+------------------------------------------------------------- */
   useEffect(() => {
     if (!listRef.current) return;
     listRef.current.scrollTop = listRef.current.scrollHeight;
   }, [messages]);
 
-  /* ------------------------------------------------------------------
-     SEND MESSAGE
-  ------------------------------------------------------------------ */
+  /* -------------------------------------------------------------
+     SEND MESSAGE — OPTIMISTIC UI
+------------------------------------------------------------- */
   const sendMessage = () => {
     if (!input.trim() || sending) return;
 
-    setSending(true);
     const tempId = uuidv4();
+    setSending(true);
+    const text = input.trim();
 
-    // Optimistic UI
+    // OPTIMISTIC
     dispatch({
       type: "append",
       payload: {
         _id: tempId,
         tempId,
         conversationId,
-        from: userId,
-        text: input,
+        fromId: userId,
+        text,
         timestamp: new Date().toISOString(),
         sending: true,
         role: "client",
       },
     });
 
-    const payload = {
-      conversationId,
-      from: userId,
-      to: businessId,
-      text: input.trim(),
-      tempId,
-      conversationType,
-    };
-
     setInput("");
 
-    socket.emit("sendMessage", payload, (ack) => {
-      setSending(false);
+    socket.emit(
+      "sendMessage",
+      {
+        conversationId,
+        from: userId,
+        to: businessId,
+        text,
+        tempId,
+        conversationType,
+      },
+      (ack) => {
+        setSending(false);
 
-      if (ack.ok && ack.message) {
+        if (!ack.ok) {
+          dispatch({
+            type: "updateStatus",
+            payload: {
+              id: tempId,
+              updates: { sending: false, failed: true },
+            },
+          });
+          return;
+        }
+
         dispatch({
           type: "updateStatus",
           payload: {
@@ -296,27 +292,21 @@ export default function ClientChatTab({
             updates: normalize(ack.message, userId, businessId),
           },
         });
-      } else {
-        dispatch({
-          type: "updateStatus",
-          payload: {
-            id: tempId,
-            updates: { sending: false, failed: true },
-          },
-        });
       }
-    });
+    );
   };
 
-  /* ------------------------------------------------------------------
+  /* -------------------------------------------------------------
      UI
-  ------------------------------------------------------------------ */
+------------------------------------------------------------- */
   return (
     <div className="chat-container client">
       <div className="message-list" ref={listRef}>
         {loading && <div className="loading">Loading...</div>}
 
-        {!loading && messages.length === 0 && <div className="empty">No messages yet</div>}
+        {!loading && messages.length === 0 && (
+          <div className="empty">No messages yet</div>
+        )}
 
         {messages.map((m) => (
           <div
@@ -327,16 +317,9 @@ export default function ClientChatTab({
           >
             {m.fileUrl ? (
               m.fileType?.startsWith("audio") ? (
-                <WhatsAppAudioPlayer
-                  src={m.fileUrl}
-                  duration={m.fileDuration}
-                />
+                <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} />
               ) : (
-                <img
-                  src={m.fileUrl}
-                  alt="file"
-                  className="msg-image"
-                />
+                <img src={m.fileUrl} className="msg-image" alt="" />
               )
             ) : (
               <div className="text">{m.text}</div>
@@ -353,8 +336,6 @@ export default function ClientChatTab({
       </div>
 
       <div className="inputBar">
-        {error && <div className="error-alert">⚠ {error}</div>}
-
         <textarea
           className="inputField"
           placeholder="Type a message..."
