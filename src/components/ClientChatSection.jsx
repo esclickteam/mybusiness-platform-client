@@ -40,20 +40,20 @@ export default function ClientChatSection() {
     });
 
     socketRef.current.on("connect", () => {
-      console.log("✅ Connected to socket:", socketRef.current.id);
+      console.log("✅ Socket connected:", socketRef.current.id);
       setError("");
     });
 
     socketRef.current.on("disconnect", (reason) => {
       console.warn("⚠️ Socket disconnected:", reason);
       if (reason !== "io client disconnect") {
-        setError("The connection to the chat server was disconnected.");
+        setError("Chat connection was interrupted.");
       }
     });
 
     socketRef.current.on("connect_error", (err) => {
-      console.error("❌ Socket connection error:", err);
-      setError("Error connecting to chat: " + err.message);
+      console.error("❌ Connection error:", err);
+      setError("Chat connection error: " + err.message);
     });
 
     return () => {
@@ -74,7 +74,7 @@ export default function ClientChatSection() {
     setError("");
 
     if (conversationId) {
-      console.log("💬 Existing conversation found:", conversationId);
+      console.log("💬 Joining existing conversation:", conversationId);
 
       socket.emit(
         "joinConversation",
@@ -82,7 +82,7 @@ export default function ClientChatSection() {
         conversationId,
         false,
         (res) => {
-          if (res?.ok) console.log("✅ Joined existing conversation:", res);
+          if (res?.ok) console.log("✅ Joined existing room:", res);
           else console.warn("⚠️ Failed to join room:", res?.error);
           setLoading(false);
         }
@@ -92,6 +92,7 @@ export default function ClientChatSection() {
     }
 
     console.log("🆕 Creating new conversation...");
+
     socket.emit(
       "startConversation",
       { otherUserId: businessId, isBusinessToBusiness: false },
@@ -112,7 +113,7 @@ export default function ClientChatSection() {
           );
         } else {
           console.error("❌ Failed to create conversation:", res?.error);
-          setError("Unable to create a new conversation with the business.");
+          setError("Unable to create a chat with this business.");
         }
 
         setLoading(false);
@@ -122,13 +123,13 @@ export default function ClientChatSection() {
 
   /* ===========================================================
      3. Load message history ONLY
-     ❗️ Removed all listeners — ClientChatTab is the only listener
+     ❗️ No listeners here – ClientChatTab handles real-time
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !conversationId) return;
 
-    console.log("📜 Loading message history:", conversationId);
+    console.log("📜 Loading history for:", conversationId);
     setLoading(true);
 
     socket.emit("getHistory", { conversationId }, (res) => {
@@ -137,10 +138,11 @@ export default function ClientChatSection() {
         setMessages(Array.isArray(res.messages) ? res.messages : []);
         setError("");
       } else {
-        console.error("❌ Error loading messages:", res.error);
+        console.error("❌ History error:", res.error);
         setMessages([]);
-        setError("Error loading messages");
+        setError("Failed to load messages.");
       }
+
       setLoading(false);
     });
   }, [conversationId]);
@@ -164,13 +166,13 @@ export default function ClientChatSection() {
         setBusinessName(name);
       })
       .catch((err) => {
-        console.error("Error fetching business name:", err);
+        console.error("Failed to load business name:", err);
         setBusinessName("Unknown business");
       });
   }, [businessId, businessName]);
 
   /* ===========================================================
-     5. Loading + Error UI
+     5. Loading / Error UI
   ============================================================ */
   if (loading)
     return (
@@ -210,7 +212,6 @@ export default function ClientChatSection() {
           <ClientChatTab
             socket={socketRef.current}
             conversationId={conversationId}
-            setConversationId={setConversationId}
             businessId={businessId}
             userId={userId}
             messages={messages}
