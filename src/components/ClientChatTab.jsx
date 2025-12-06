@@ -42,8 +42,7 @@ function messagesReducer(state, action) {
         console.log("⏩ Skipping duplicate message:", action.payload);  // לוג אם הודעה כפולה
         return state;
       }
-      // הוסף את ההודעה החדשה בסדר נכון (הודעות ישנות יהיו בתחילת הרשימה)
-      return [action.payload, ...state];
+      return [...state, action.payload];
 
     default:
       return state;
