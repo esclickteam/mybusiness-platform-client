@@ -24,8 +24,10 @@ function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
       console.log("📜 Setting messages:", action.payload);  // לוג של שליחת היסטוריית הודעות
+      // מיון ההודעות לפי timestamp לפני הצגתן
+      const sortedMessages = action.payload.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
       return [
-        ...new Map(action.payload.map(m => [m._id || m.tempId, m])).values(),
+        ...new Map(sortedMessages.map(m => [m._id || m.tempId, m])).values(),
       ];
 
     case "append":
@@ -40,7 +42,8 @@ function messagesReducer(state, action) {
         console.log("⏩ Skipping duplicate message:", action.payload);  // לוג אם הודעה כפולה
         return state;
       }
-      return [...state, action.payload];
+      // הוסף את ההודעה החדשה בסדר נכון (הודעות ישנות יהיו בתחילת הרשימה)
+      return [action.payload, ...state];
 
     default:
       return state;
