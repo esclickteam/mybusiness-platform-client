@@ -31,12 +31,18 @@ function messagesReducer(state, action) {
       ];
 
     case "append":
+      // מניעת כפילויות לפי id, tempId, או טקסט וזהות
       if (
         state.some(
           (m) =>
             m._id === action.payload._id ||
             m.tempId === action.payload._id ||
-            m._id === action.payload.tempId
+            m._id === action.payload.tempId ||
+            (m.text === action.payload.text &&
+              m.role === action.payload.role &&
+              Math.abs(
+                new Date(m.timestamp) - new Date(action.payload.timestamp)
+              ) < 1000)
         )
       ) {
         return state;
@@ -76,7 +82,6 @@ export default function ClientChatTab({
   ------------------------------------------------------------- */
   useEffect(() => {
     if (!conversationId || !userId) return;
-
     let cancelled = false;
 
     (async () => {
@@ -102,20 +107,17 @@ export default function ClientChatTab({
   }, [conversationId, userId, businessId]);
 
   /* -------------------------------------------------------------
-     SOCKET — REAL TIME MESSAGES (עם מניעת כפילויות)
+     SOCKET — REAL TIME MESSAGES (עם מניעת כפילויות אמיתית)
   ------------------------------------------------------------- */
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    // ניקוי מאזינים ישנים כדי למנוע כפילויות
+    // ניקוי כל האזנות ישנות
     socket.off("newMessage");
 
     const handleNewMessage = (msg) => {
-      // לא נוסיף הודעה שכבר קיימת
-      dispatch({
-        type: "append",
-        payload: normalize(msg, userId, businessId),
-      });
+      const normalized = normalize(msg, userId, businessId);
+      dispatch({ type: "append", payload: normalized });
     };
 
     socket.on("newMessage", handleNewMessage);
