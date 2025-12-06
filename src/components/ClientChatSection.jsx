@@ -24,7 +24,6 @@ export default function ClientChatSection() {
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId) return;
-
     if (socketRef.current) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
@@ -82,11 +81,8 @@ export default function ClientChatSection() {
         conversationId,
         false,
         (res) => {
-          if (res?.ok) {
-            console.log("✅ Joined existing conversation room:", res);
-          } else {
-            console.warn("⚠️ Failed to join room:", res?.error);
-          }
+          if (res?.ok) console.log("✅ Joined existing conversation room:", res);
+          else console.warn("⚠️ Failed to join room:", res?.error);
           setLoading(false);
         }
       );
@@ -146,21 +142,24 @@ export default function ClientChatSection() {
       setLoading(false);
     });
 
+    // ✅ מניעת כפילויות אמיתית
     const handleNewMessage = (msg) => {
       console.log("📩 New message received:", msg);
       setMessages((prev) => {
-        const exists = prev.find(
+        const exists = prev.some(
           (m) =>
-            m._id === msg._id ||
+            (m._id && msg._id && m._id === msg._id) ||
             (m.tempId && msg.tempId && m.tempId === msg.tempId)
         );
-        if (exists) return prev;
+        if (exists) {
+          console.log("⏩ Duplicate message skipped:", msg.text);
+          return prev;
+        }
         return [...prev, msg];
       });
     };
 
     socket.on("newMessage", handleNewMessage);
-
     return () => {
       socket.off("newMessage", handleNewMessage);
     };
