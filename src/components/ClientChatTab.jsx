@@ -195,36 +195,47 @@ export default function ClientChatTab({
   /* -------------------------------------------------------------
      SOCKET — FIXED, NO DUPLICATES
 ------------------------------------------------------------- */
-  useEffect(() => {
-    if (!socket || !conversationId) return;
+  /* -------------------------------------------------------------
+   SOCKET — FIXED, NO DUPLICATES + REAL TIME WORKING
+------------------------------------------------------------- */
+useEffect(() => {
+  if (!socket || !conversationId) return;
 
-    /* JOIN */
-    const join = () => {
-      socket.emit("joinConversation", conversationType, conversationId, false);
-    };
-    socket.on("connect", join);
-    if (socket.connected) join();
+  // ✔️ הצטרפות לחדר לפי conversationId
+  const joinRoom = () => {
+    socket.emit("joinRoom", conversationId);
+  };
 
-    /* HANDLE INCOMING MESSAGE */
-    const handleNewMessage = (msg) => {
-      // ❌ אם ההודעה נשלחה ע"י הלקוח — לא להציג אותה שוב
-      if (String(msg.fromId || msg.from) === String(userId)) return;
+  socket.on("connect", joinRoom);
 
-      if (msg.conversationId !== conversationId) return;
-      dispatch({
-        type: "append",
-        payload: normalize(msg, userId, businessId),
-      });
-    };
+  if (socket.connected) joinRoom();
 
-    socket.on("newMessage", handleNewMessage);
+  // ✔️ קבלת הודעות
+  const handleNewMessage = (msg) => {
 
-    return () => {
-      socket.off("connect", join);
-      socket.off("newMessage", handleNewMessage);
-      socket.emit("leaveConversation", conversationId);
-    };
-  }, [socket, conversationId, userId]);
+    // ❗ לא לבדוק msg.conversationId — השרת לא שולח את זה
+    // הלקוח יקבל הודעות רק אם הוא בחדר הנכון
+
+    // מניעת כפילות — אם זו ההודעה של הלקוח עצמו, לא מוסיפים
+    if (String(msg.fromId || msg.from) === String(userId)) return;
+
+    dispatch({
+      type: "append",
+      payload: normalize(msg, userId, businessId),
+    });
+  };
+
+  socket.on("newMessage", handleNewMessage);
+
+  return () => {
+    socket.off("connect", joinRoom);
+    socket.off("newMessage", handleNewMessage);
+
+    socket.emit("leaveRoom", conversationId);
+  };
+}, [socket, conversationId, userId]);
+
+
 
   /* -------------------------------------------------------------
      SCROLL
