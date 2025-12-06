@@ -14,8 +14,6 @@ function normalize(msg, userId) {
     text: msg.text || msg.content || "",
     timestamp: msg.timestamp || msg.createdAt || new Date().toISOString(),
     role: String(msg.fromId) === String(userId) ? "client" : "business",
-    sending: msg.sending || false,
-    failed: msg.failed || false,
   };
 }
 
@@ -26,29 +24,20 @@ function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
       return [
-        ...new Map(
-          action.payload.map((m) => [m._id || m.tempId, m])
-        ).values(),
+        ...new Map(action.payload.map(m => [m._id || m.tempId, m])).values(),
       ];
 
     case "append":
       if (
         state.some(
-          (m) =>
-            (m._id && m._id === action.payload._id) ||
-            (m.tempId && m.tempId === action.payload.tempId)
+          m =>
+            m._id === action.payload._id ||
+            m.tempId === action.payload.tempId
         )
       ) {
-        return state; // skip duplicate
+        return state;
       }
       return [...state, action.payload];
-
-    case "update":
-      return state.map((msg) =>
-        msg._id === action.payload.id || msg.tempId === action.payload.id
-          ? { ...msg, ...action.payload.updates }
-          : msg
-      );
 
     default:
       return state;
@@ -71,7 +60,7 @@ export default function ClientChatTab({
   const listRef = useRef(null);
 
   /* -------------------------------------------------------------
-     LOAD HISTORY (FROM SOCKET ONLY)
+     LOAD HISTORY FROM SERVER
 ------------------------------------------------------------- */
   useEffect(() => {
     if (!socket || !conversationId) return;
@@ -85,7 +74,7 @@ export default function ClientChatTab({
       }
     });
 
-    // הצטרפות אמיתית לחדר
+    // חיבור אמיתי לחדר
     socket.emit("joinRoom", conversationId);
   }, [socket, conversationId, userId]);
 
@@ -97,8 +86,7 @@ export default function ClientChatTab({
 
     const handler = (msg) => {
       console.log("📩 NEW MESSAGE:", msg);
-      const normalized = normalize(msg, userId);
-      dispatch({ type: "append", payload: normalized });
+      dispatch({ type: "append", payload: normalize(msg, userId) });
     };
 
     socket.on("newMessage", handler);
@@ -117,7 +105,7 @@ export default function ClientChatTab({
   }, [messages]);
 
   /* -------------------------------------------------------------
-     SEND MESSAGE
+     SEND MESSAGE — NO OPTIMISM!
 ------------------------------------------------------------- */
   const sendMessage = () => {
     if (!input.trim() || sending) return;
@@ -126,22 +114,6 @@ export default function ClientChatTab({
     const tempId = uuidv4();
 
     setSending(true);
-
-    // הודעה אופטימית
-    dispatch({
-      type: "append",
-      payload: normalize(
-        {
-          tempId,
-          fromId: userId,
-          toId: businessId,
-          text,
-          sending: true,
-        },
-        userId
-      ),
-    });
-
     setInput("");
 
     socket.emit(
@@ -149,6 +121,7 @@ export default function ClientChatTab({
       {
         conversationId,
         from: userId,
+        to: businessId,
         text,
         tempId,
       },
@@ -156,21 +129,8 @@ export default function ClientChatTab({
         setSending(false);
 
         if (!ack.ok) {
-          dispatch({
-            type: "update",
-            payload: { id: tempId, updates: { sending: false, failed: true } },
-          });
-          return;
+          console.error("❌ Failed sending message:", ack.error);
         }
-
-        // החלפת ההודעה הזמנית בהודעה האמיתית
-        dispatch({
-          type: "update",
-          payload: {
-            id: tempId,
-            updates: normalize(ack.message, userId),
-          },
-        });
       }
     );
   };
@@ -184,9 +144,7 @@ export default function ClientChatTab({
         {messages.map((m) => (
           <div
             key={m._id || m.tempId}
-            className={`message ${m.role === "client" ? "mine" : "theirs"} ${
-              m.sending ? "sending" : ""
-            } ${m.failed ? "failed" : ""}`}
+            className={`message ${m.role === "client" ? "mine" : "theirs"}`}
           >
             <div className="text">{m.text}</div>
             <div className="meta">
