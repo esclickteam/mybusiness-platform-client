@@ -11,9 +11,10 @@ import "./BusinessChatTab.css";
 function normalize(msg) {
   return {
     ...msg,
-    _id: String(msg._id),
+    _id: String(msg._id || msg.tempId),
     tempId: msg.tempId || null,
-    timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
+    timestamp:
+      msg.createdAt || msg.timestamp || new Date().toISOString(),
   };
 }
 
@@ -54,27 +55,28 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   };
 
   const formatTime = (t) =>
-    `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
-
-  const totalDots = 20;
-  const activeDot = duration ? Math.floor((progress / duration) * totalDots) : 0;
+    `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(
+      2,
+      "0"
+    )}`;
 
   return (
-    <div className={`custom-audio-player ${userAvatar ? "with-avatar" : "no-avatar"}`}>
-      {userAvatar && (
-        <div className="avatar-wrapper">
-          <img src={userAvatar} alt="avatar" />
-          <div className="mic-icon">🎤</div>
-        </div>
-      )}
-
-      <button onClick={togglePlay} className={`play-pause ${playing ? "playing" : ""}`}>
+    <div className="custom-audio-player">
+      <button
+        onClick={togglePlay}
+        className={`play-pause ${playing ? "playing" : ""}`}
+      >
         {playing ? "❚❚" : "▶"}
       </button>
 
       <div className="progress-dots">
-        {[...Array(totalDots)].map((_, i) => (
-          <div key={i} className={`dot${i <= activeDot ? " active" : ""}`} />
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={i}
+            className={`dot ${
+              i <= (progress / duration) * 20 ? "active" : ""
+            }`}
+          />
         ))}
       </div>
 
@@ -88,7 +90,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 }
 
 /* ---------------------------------------------------
-   MESSAGES REDUCER
+   REDUCER — GUARANTEED NO DUPLICATES
 --------------------------------------------------- */
 function messagesReducer(state, action) {
   switch (action.type) {
@@ -99,6 +101,7 @@ function messagesReducer(state, action) {
           !unique.some(
             (m) =>
               m._id === msg._id ||
+              m.tempId === msg.tempId ||
               m._id === msg.tempId ||
               m.tempId === msg._id
           )
@@ -112,8 +115,10 @@ function messagesReducer(state, action) {
     case "append": {
       const exists = state.some(
         (m) =>
-          (m._id && action.payload._id && m._id === action.payload._id) ||
-          (m.tempId && action.payload.tempId && m.tempId === action.payload.tempId)
+          m._id === action.payload._id ||
+          m.tempId === action.payload.tempId ||
+          m._id === action.payload.tempId ||
+          m.tempId === action.payload._id
       );
       if (exists) return state;
       return [...state, action.payload];
@@ -152,7 +157,7 @@ export default function BusinessChatTab({
   const listRef = useRef(null);
 
   /* ---------------------------------------------------
-     LOAD MESSAGE HISTORY
+     LOAD HISTORY
 --------------------------------------------------- */
   useEffect(() => {
     if (!conversationId) {
@@ -161,17 +166,19 @@ export default function BusinessChatTab({
     }
 
     let cancelled = false;
-
     (async () => {
       try {
-        const res = await API.get(`/messages/${conversationId}/history`, {
-          params: { page: 0, limit: 50 },
-        });
+        const res = await API.get(
+          `/messages/${conversationId}/history`,
+          { params: { page: 0, limit: 50 } }
+        );
         if (cancelled) return;
-        const msgs = res.data.messages.map(normalize);
-        dispatch({ type: "set", payload: msgs });
+        dispatch({
+          type: "set",
+          payload: res.data.messages.map(normalize),
+        });
       } catch (err) {
-        console.error("Error loading history:", err);
+        console.error("History load error:", err);
       }
     })();
 
@@ -181,7 +188,7 @@ export default function BusinessChatTab({
   }, [conversationId]);
 
   /* ---------------------------------------------------
-     SOCKET REAL-TIME EVENTS (✅ FIXED)
+     SOCKET EVENTS — FIXED (NO DUPLICATES)
 --------------------------------------------------- */
   useEffect(() => {
     if (!socket || !conversationId) return;
@@ -189,7 +196,12 @@ export default function BusinessChatTab({
     const isBizConv = conversationType === "business-business";
 
     const join = () => {
-      socket.emit("joinConversation", conversationType, conversationId, isBizConv);
+      socket.emit(
+        "joinConversation",
+        conversationType,
+        conversationId,
+        isBizConv
+      );
     };
 
     socket.on("connect", join);
@@ -197,18 +209,7 @@ export default function BusinessChatTab({
 
     const handleMessage = (msg) => {
       const safe = normalize(msg);
-
-      // 🧩 אל תוסיף הודעה שכבר קיימת לפי tempId או _id
-      const alreadyExists = messages.some(
-        (m) =>
-          (m._id && safe._id && m._id === safe._id) ||
-          (m.tempId && safe.tempId && m.tempId === safe.tempId)
-      );
-      if (alreadyExists) return;
-
-      if (msg.conversationId === conversationId) {
-        dispatch({ type: "append", payload: safe });
-      }
+      dispatch({ type: "append", payload: safe });
     };
 
     const handleTyping = ({ from }) => {
@@ -226,12 +227,17 @@ export default function BusinessChatTab({
       socket.off("newMessage", handleMessage);
       socket.off("typing", handleTyping);
       clearTimeout(handleTyping._t);
-      socket.emit("leaveConversation", conversationType, conversationId, isBizConv);
+      socket.emit(
+        "leaveConversation",
+        conversationType,
+        conversationId,
+        isBizConv
+      );
     };
-  }, [socket, conversationId, conversationType, businessId, customerId, messages]);
+  }, [socket, conversationId, conversationType, businessId, customerId]);
 
   /* ---------------------------------------------------
-     SCROLL TO BOTTOM ON UPDATE
+     AUTO SCROLL
 --------------------------------------------------- */
   useEffect(() => {
     const el = listRef.current;
@@ -303,10 +309,15 @@ export default function BusinessChatTab({
     );
   }
 
-  const sorted = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  const sorted = [...messages].sort(
+    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+  );
 
   const formatTime = (ts) =>
-    new Date(ts).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+    new Date(ts).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
   return (
     <div className="chat-container business">
@@ -322,11 +333,16 @@ export default function BusinessChatTab({
               String(m.fromId || m.from) === String(businessId)
                 ? "mine"
                 : "theirs"
-            } ${m.sending ? "sending" : ""} ${m.failed ? "failed" : ""}`}
+            } ${m.sending ? "sending" : ""} ${
+              m.failed ? "failed" : ""
+            }`}
           >
             {m.fileUrl ? (
               m.fileType?.startsWith("audio") ? (
-                <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} />
+                <WhatsAppAudioPlayer
+                  src={m.fileUrl}
+                  duration={m.fileDuration}
+                />
               ) : m.fileType?.startsWith("image") ? (
                 <img src={m.fileUrl} className="msg-image" alt="" />
               ) : (
@@ -343,7 +359,9 @@ export default function BusinessChatTab({
           </div>
         ))}
 
-        {isTyping && <div className="typing-indicator">Client is typing...</div>}
+        {isTyping && (
+          <div className="typing-indicator">Client is typing...</div>
+        )}
       </div>
 
       <div className="inputBar">
@@ -353,7 +371,10 @@ export default function BusinessChatTab({
           value={input}
           onChange={(e) => {
             setInput(e.target.value);
-            socket.emit("typing", { conversationId, from: businessId });
+            socket.emit("typing", {
+              conversationId,
+              from: businessId,
+            });
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {

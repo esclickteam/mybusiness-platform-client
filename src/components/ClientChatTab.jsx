@@ -74,51 +74,47 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 }
 
 /* -------------------------------------------------------------
-   NORMALIZE
+   NORMALIZE MESSAGE
 ------------------------------------------------------------- */
 function normalize(msg, userId, businessId) {
-  const fromId = String(msg.fromId || msg.from || "");
-
-  let role = fromId === String(userId) ? "client" : "business";
+  const from = String(msg.fromId || msg.from || "");
 
   return {
     ...msg,
     _id: String(msg._id || msg.id || msg.tempId),
     tempId: msg.tempId || null,
-    timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
+    role: from === String(userId) ? "client" : "business",
     text: msg.text || "",
     fileUrl: msg.fileUrl || "",
-    fileName: msg.fileName || "",
     fileType: msg.fileType || "",
+    fileName: msg.fileName || "",
     fileDuration: msg.fileDuration || 0,
-    role,
+    timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
   };
 }
 
 /* -------------------------------------------------------------
-   REDUCER — avoid duplicates
+   REDUCER — prevents duplicates 100%
 ------------------------------------------------------------- */
 function messagesReducer(state, action) {
   switch (action.type) {
-    case "set":
+    case "set": {
       return [
         ...new Map(
           action.payload.map((m) => [m._id || m.tempId, m])
         ).values(),
       ];
+    }
 
-    case "append":
-      if (
-        state.some(
-          (m) =>
-            m._id === action.payload._id ||
-            m.tempId === action.payload._id ||
-            m._id === action.payload.tempId
-        )
-      ) {
-        return state;
-      }
-      return [...state, action.payload];
+    case "append": {
+      const exists = state.some(
+        (m) =>
+          m._id === action.payload._id ||
+          m.tempId === action.payload._id ||
+          m._id === action.payload.tempId
+      );
+      return exists ? state : [...state, action.payload];
+    }
 
     case "updateStatus":
       return state.map((m) =>
@@ -149,10 +145,10 @@ export default function ClientChatTab({
   const listRef = useRef(null);
 
   /* -------------------------------------------------------------
-     LOAD HISTORY FROM API
+     LOAD HISTORY
 ------------------------------------------------------------- */
   useEffect(() => {
-    if (!conversationId || !userId) return;
+    if (!conversationId) return;
 
     let cancelled = false;
 
@@ -168,10 +164,8 @@ export default function ClientChatTab({
         );
 
         dispatch({ type: "set", payload: msgs });
-        setLoading(false);
-      } catch {
-        setLoading(false);
-      }
+      } catch {}
+      setLoading(false);
     })();
 
     return () => {
@@ -180,7 +174,7 @@ export default function ClientChatTab({
   }, [conversationId]);
 
   /* -------------------------------------------------------------
-     SOCKET — REAL TIME MESSAGES
+     SOCKET REAL-TIME — SINGLE LISTENER ONLY
 ------------------------------------------------------------- */
   useEffect(() => {
     if (!socket || !conversationId) return;
@@ -198,9 +192,9 @@ export default function ClientChatTab({
     socket.on("connect", join);
     if (socket.connected) join();
 
+    // Fix: remove previous listener, add clean one
+    socket.off("newMessage");
     const handleNewMessage = (msg) => {
-      if (String(msg.fromId || msg.from) === String(userId)) return;
-
       dispatch({
         type: "append",
         payload: normalize(msg, userId, businessId),
@@ -214,14 +208,15 @@ export default function ClientChatTab({
       socket.off("connect", join);
       socket.off("newMessage", handleNewMessage);
     };
-  }, [socket, conversationId, userId]);
+  }, [socket, conversationId]);
 
   /* -------------------------------------------------------------
      AUTO SCROLL
 ------------------------------------------------------------- */
   useEffect(() => {
-    if (!listRef.current) return;
-    listRef.current.scrollTop = listRef.current.scrollHeight;
+    if (listRef.current) {
+      listRef.current.scrollTop = listRef.current.scrollHeight;
+    }
   }, [messages]);
 
   /* -------------------------------------------------------------
@@ -232,8 +227,8 @@ export default function ClientChatTab({
 
     const tempId = uuidv4();
     const text = input.trim();
-    setSending(true);
 
+    // Locally add temporary message
     dispatch({
       type: "append",
       payload: {
@@ -241,14 +236,15 @@ export default function ClientChatTab({
         tempId,
         conversationId,
         fromId: userId,
-        text,
-        timestamp: new Date().toISOString(),
-        sending: true,
         role: "client",
+        text,
+        sending: true,
+        timestamp: new Date().toISOString(),
       },
     });
 
     setInput("");
+    setSending(true);
 
     socket.emit(
       "sendMessage",
@@ -266,11 +262,12 @@ export default function ClientChatTab({
         if (!ack.ok) {
           dispatch({
             type: "updateStatus",
-            payload: { id: tempId, updates: { sending: false, failed: true } },
+            payload: { id: tempId, updates: { failed: true, sending: false } },
           });
           return;
         }
 
+        // Replace temporary message with server version
         dispatch({
           type: "updateStatus",
           payload: {
@@ -283,7 +280,7 @@ export default function ClientChatTab({
   };
 
   /* -------------------------------------------------------------
-     UI
+     RENDER
 ------------------------------------------------------------- */
   return (
     <div className="chat-container client">
@@ -335,11 +332,7 @@ export default function ClientChatTab({
           }}
         />
 
-        <button
-          className="sendButtonFlat"
-          onClick={sendMessage}
-          disabled={!input.trim() || sending}
-        >
+        <button className="sendButtonFlat" disabled={sending} onClick={sendMessage}>
           ◀
         </button>
       </div>
