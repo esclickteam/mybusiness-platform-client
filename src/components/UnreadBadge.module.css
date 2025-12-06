@@ -1,0 +1,23 @@
+/* UnreadBadge.module.css */
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;      /* צבע הרקע של ההתראה (אדום) */
+  color: white;               /* צבע הטקסט (לבן) */
+  border-radius: 50%;         /* עיצוב עגלגל */
+  padding: 5px 10px;          /* רווחים פנימיים */
+  font-size: 14px;            /* גודל הטקסט */
+  font-weight: bold;          /* טקסט בולט */
+  display: flex;
+  justify-content: center;    /* ממרכז את התוכן אופקית */
+  align-items: center;        /* ממרכז את התוכן אנכית */
+  min-width: 20px;            /* גודל מינימלי לרוחב */
+  height: 20px;               /* גובה מינימלי */
+  box-sizing: border-box;     /* כולל את ה-padding בתוך הגודל הכללי */
+  z-index: 10;                /* שים את ה-badge מעל אלמנטים אחרים */
+}
+
+.badge:empty {
+  display: none;              /* לא מציג את ה-badge אם אין ספירה */
+}

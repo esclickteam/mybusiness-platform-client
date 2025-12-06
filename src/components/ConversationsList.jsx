@@ -118,6 +118,7 @@ export default function ConversationsList({
             >
               <span>{displayName}</span>
               <div className={styles.badgeWrapper}>
+                {/* Badge to display unread count */}
                 <UnreadBadge conversationId={convoId} count={unreadCount} />
               </div>
             </div>

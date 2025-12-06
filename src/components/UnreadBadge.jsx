@@ -1,6 +1,6 @@
-// src/components/UnreadBadge.jsx
 import React, { useEffect, useState } from "react";
 import { useSocket } from "../context/socketContext";  // Import the socket from Context
+import styles from "./UnreadBadge.module.css";  // Import the CSS module
 
 /**
  * Displays a badge with the count of unread messages in real-time.
@@ -35,5 +35,5 @@ export default function UnreadBadge({ conversationId }) {
   }, [socket, conversationId]);
 
   if (count <= 0) return null;  // אם אין הודעות לא נקראות, לא מציגים את ה־badge
-  return <span className="badge">{count}</span>;  // הצגת ה־badge עם כמות ההודעות
+  return <span className={styles.badge}>{count}</span>;  // הצגת ה־badge עם כמות ההודעות
 }
