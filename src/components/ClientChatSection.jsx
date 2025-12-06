@@ -20,7 +20,7 @@ export default function ClientChatSection() {
   const socketRef = useRef(null);
 
   /* ===========================================================
-     1. Connect to Socket
+     🔌 1. Create Socket connection
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId) return;
@@ -40,20 +40,20 @@ export default function ClientChatSection() {
     });
 
     socketRef.current.on("connect", () => {
-      console.log("✅ Socket connected:", socketRef.current.id);
+      console.log("✅ Connected to socket:", socketRef.current.id);
       setError("");
     });
 
     socketRef.current.on("disconnect", (reason) => {
       console.warn("⚠️ Socket disconnected:", reason);
       if (reason !== "io client disconnect") {
-        setError("Chat connection was interrupted.");
+        setError("The connection to the chat server was disconnected.");
       }
     });
 
     socketRef.current.on("connect_error", (err) => {
-      console.error("❌ Connection error:", err);
-      setError("Chat connection error: " + err.message);
+      console.error("❌ Socket connection error:", err);
+      setError("Error connecting to chat: " + err.message);
     });
 
     return () => {
@@ -64,7 +64,7 @@ export default function ClientChatSection() {
   }, [initialized, userId]);
 
   /* ===========================================================
-     2. Create or open conversation
+     🧠 2. Create a new conversation if none exists
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId || !businessId || !socketRef.current) return;
@@ -74,25 +74,22 @@ export default function ClientChatSection() {
     setError("");
 
     if (conversationId) {
-      console.log("💬 Joining existing conversation:", conversationId);
-
+      console.log("💬 Existing conversation found:", conversationId);
       socket.emit(
         "joinConversation",
         "user-business",
         conversationId,
         false,
         (res) => {
-          if (res?.ok) console.log("✅ Joined existing room:", res);
+          if (res?.ok) console.log("✅ Joined existing conversation room:", res);
           else console.warn("⚠️ Failed to join room:", res?.error);
           setLoading(false);
         }
       );
-
       return;
     }
 
     console.log("🆕 Creating new conversation...");
-
     socket.emit(
       "startConversation",
       { otherUserId: businessId, isBusinessToBusiness: false },
@@ -100,36 +97,36 @@ export default function ClientChatSection() {
         if (res?.ok) {
           console.log("✅ New conversation created:", res.conversationId);
           setConversationId(res.conversationId);
-
           socket.emit(
             "joinConversation",
             "user-business",
             res.conversationId,
             false,
             (joinRes) => {
-              if (joinRes?.ok) console.log("📥 Joined new room:", joinRes);
-              else console.warn("⚠️ Failed to join room:", joinRes?.error);
+              if (joinRes?.ok) {
+                console.log("📥 Joined room after creation:", joinRes);
+              } else {
+                console.warn("⚠️ Failed to join room:", joinRes?.error);
+              }
             }
           );
         } else {
           console.error("❌ Failed to create conversation:", res?.error);
-          setError("Unable to create a chat with this business.");
+          setError("Unable to create a new conversation with the business.");
         }
-
         setLoading(false);
       }
     );
   }, [initialized, userId, businessId, conversationId]);
 
   /* ===========================================================
-     3. Load message history ONLY
-     ❗️ No listeners here – ClientChatTab handles real-time
+     💬 3. Load message history and listen for new messages
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !conversationId) return;
 
-    console.log("📜 Loading history for:", conversationId);
+    console.log("📜 Loading message history for conversation:", conversationId);
     setLoading(true);
 
     socket.emit("getHistory", { conversationId }, (res) => {
@@ -138,17 +135,38 @@ export default function ClientChatSection() {
         setMessages(Array.isArray(res.messages) ? res.messages : []);
         setError("");
       } else {
-        console.error("❌ History error:", res.error);
+        console.error("❌ Error loading messages:", res.error);
         setMessages([]);
-        setError("Failed to load messages.");
+        setError("Error loading messages");
       }
-
       setLoading(false);
     });
+
+    // ✅ מניעת כפילויות אמיתית
+    const handleNewMessage = (msg) => {
+      console.log("📩 New message received:", msg);
+      setMessages((prev) => {
+        const exists = prev.some(
+          (m) =>
+            (m._id && msg._id && m._id === msg._id) ||
+            (m.tempId && msg.tempId && m.tempId === msg.tempId)
+        );
+        if (exists) {
+          console.log("⏩ Duplicate message skipped:", msg.text);
+          return prev;
+        }
+        return [...prev, msg];
+      });
+    };
+
+    socket.on("newMessage", handleNewMessage);
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
   }, [conversationId]);
 
   /* ===========================================================
-     4. Load Business Name
+     🧱 4. Load business name (if missing)
   ============================================================ */
   useEffect(() => {
     if (!businessId || businessName) return;
@@ -166,13 +184,13 @@ export default function ClientChatSection() {
         setBusinessName(name);
       })
       .catch((err) => {
-        console.error("Failed to load business name:", err);
+        console.error("Error fetching business name:", err);
         setBusinessName("Unknown business");
       });
   }, [businessId, businessName]);
 
   /* ===========================================================
-     5. Loading / Error UI
+     🖼️ 5. States: loading / error / render chat
   ============================================================ */
   if (loading)
     return (
@@ -196,7 +214,7 @@ export default function ClientChatSection() {
     );
 
   /* ===========================================================
-     6. Render Chat
+     💬 6. Chat UI
   ============================================================ */
   return (
     <div className={styles.whatsappBg}>
@@ -212,6 +230,7 @@ export default function ClientChatSection() {
           <ClientChatTab
             socket={socketRef.current}
             conversationId={conversationId}
+            setConversationId={setConversationId}
             businessId={businessId}
             userId={userId}
             messages={messages}
