@@ -18,14 +18,18 @@ export default function ClientChatSection() {
   const [messages, setMessages] = useState([]);
 
   const safeSetBusinessId = (newId) => setBusinessId((prev) => newId ?? prev);
+
   const socketRef = useRef(null);
 
   /* ============================================================
-        SOCKET INIT
+        SOCKET INIT — FIX: NO DUPLICATE SOCKETS
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId) return;
-    if (socketRef.current) return;
+
+    if (socketRef.current && socketRef.current.connected) {
+      return; // לא לפתוח סוקט חדש!
+    }
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
@@ -35,48 +39,60 @@ export default function ClientChatSection() {
       transports: ["websocket"],
       auth: { token, role: "chat" },
       withCredentials: true,
-      autoConnect: true,
+      autoConnect: false, // 🔥 חשוב!!
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 800,
     });
 
-    socketRef.current.on("connect", () => setError(""));
+    socketRef.current.connect();
+
+    socketRef.current.on("connect", () => {
+      console.log("CLIENT SOCKET CONNECTED");
+      setError("");
+    });
+
     socketRef.current.on("disconnect", (reason) => {
+      console.warn("Socket disconnected:", reason);
       if (reason !== "io client disconnect") {
-        setError("Socket disconnected unexpectedly: " + reason);
+        setError("Socket disconnected: " + reason);
       }
     });
 
-    socketRef.current.on("connect_error", (err) =>
-      setError("Socket connection error: " + err.message)
-    );
+    socketRef.current.on("connect_error", (err) => {
+      console.error("Socket error:", err.message);
+      setError("Socket connection error: " + err.message);
+    });
 
     return () => {
-      socketRef.current?.disconnect();
-      socketRef.current = null;
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
   }, [initialized, userId]);
 
   /* ============================================================
-        AUTO JOIN FIX — JOIN THE CORRECT SERVER ROOM
+        AUTO JOIN SERVER ROOM (REAL FIX)
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !conversationId) return;
 
-    const joinConversationRoom = () => {
-      console.log("CLIENT JOIN → user-business room:", conversationId);
-
+    const join = () => {
+      console.log("JOIN → user-business:", conversationId);
       socket.emit(
         "joinConversation",
         "user-business",
         conversationId,
-        false, // isBizConv
+        false,
         (res) => console.log("JOIN RESPONSE:", res)
       );
     };
 
-    joinConversationRoom();
+    if (socket.connected) join();
 
-    socket.on("connect", joinConversationRoom);
+    socket.on("connect", join);
 
     return () => {
       socket.emit(
@@ -85,7 +101,7 @@ export default function ClientChatSection() {
         conversationId,
         false
       );
-      socket.off("connect", joinConversationRoom);
+      socket.off("connect", join);
     };
   }, [conversationId]);
 
@@ -139,11 +155,6 @@ export default function ClientChatSection() {
         .then((data) => {
           if (!data.ok) throw new Error(data.error || "Error loading conversation");
 
-          const participants = data.conversation.participants || [];
-          if (!participants.includes(clientId)) {
-            throw new Error("Conversation does not include this client");
-          }
-
           setConversationId(threadId);
           setBusinessName(data.conversation.businessName || "");
           safeSetBusinessId(businessIdFromParams);
@@ -170,21 +181,25 @@ export default function ClientChatSection() {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.business?.businessName) setBusinessName(data.business.businessName);
-          else if (data.businessName) setBusinessName(data.businessName);
-          else setBusinessName("Unknown business");
+          setBusinessName(
+            data.business?.businessName ||
+              data.businessName ||
+              "Unknown business"
+          );
         })
         .catch(() => setBusinessName("Unknown business"));
     }
   }, [businessId, businessName]);
 
   /* ============================================================
-        SOCKET — HISTORY + REALTIME
+        LOAD HISTORY + LISTEN FOR MESSAGES
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
-    if (!socket || !socket.connected || !conversationId) {
-      setMessages([]);
+    if (!socket || !conversationId) return;
+
+    if (!socket.connected) {
+      console.warn("Socket not ready yet – waiting...");
       return;
     }
 
@@ -204,7 +219,9 @@ export default function ClientChatSection() {
     const handleNew = (msg) => {
       setMessages((prev) => {
         const exists = prev.some(
-          (m) => m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
+          (m) =>
+            m._id === msg._id ||
+            (m.tempId && msg.tempId && m.tempId === msg.tempId)
         );
         return exists ? prev : [...prev, msg];
       });

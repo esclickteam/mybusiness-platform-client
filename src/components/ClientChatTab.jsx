@@ -79,13 +79,11 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 function normalize(msg, userId, businessId) {
   const fromId = String(msg.fromId || msg.from || "");
 
-  let role = "business";
-  if (fromId === String(userId)) role = "client";
-  if (fromId === String(businessId)) role = "business";
+  let role = fromId === String(userId) ? "client" : "business";
 
   return {
     ...msg,
-    _id: String(msg._id),
+    _id: String(msg._id || msg.id || msg.tempId),
     tempId: msg.tempId || null,
     timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
     text: msg.text || "",
@@ -98,45 +96,36 @@ function normalize(msg, userId, businessId) {
 }
 
 /* -------------------------------------------------------------
-   REDUCER — no duplicates allowed
+   REDUCER — avoid duplicates
 ------------------------------------------------------------- */
 function messagesReducer(state, action) {
   switch (action.type) {
-    case "set": {
-      const unique = [];
-      action.payload.forEach((msg) => {
-        if (
-          !unique.some(
-            (m) =>
-              m._id === msg._id ||
-              m.tempId === msg._id ||
-              m._id === msg.tempId
-          )
-        ) {
-          unique.push(msg);
-        }
-      });
-      return unique;
-    }
+    case "set":
+      return [
+        ...new Map(
+          action.payload.map((m) => [m._id || m.tempId, m])
+        ).values(),
+      ];
 
-    case "append": {
-      const exists = state.find(
-        (m) =>
-          m._id === action.payload._id ||
-          m.tempId === action.payload._id ||
-          m._id === action.payload.tempId
-      );
-      if (exists) return state;
+    case "append":
+      if (
+        state.some(
+          (m) =>
+            m._id === action.payload._id ||
+            m.tempId === action.payload._id ||
+            m._id === action.payload.tempId
+        )
+      ) {
+        return state;
+      }
       return [...state, action.payload];
-    }
 
-    case "updateStatus": {
+    case "updateStatus":
       return state.map((m) =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
           : m
       );
-    }
 
     default:
       return state;
@@ -149,7 +138,6 @@ function messagesReducer(state, action) {
 export default function ClientChatTab({
   socket,
   conversationId,
-  setConversationId,
   businessId,
   userId,
   conversationType = "user-business",
@@ -158,11 +146,10 @@ export default function ClientChatTab({
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const listRef = useRef(null);
 
   /* -------------------------------------------------------------
-     LOAD HISTORY
+     LOAD HISTORY FROM API
 ------------------------------------------------------------- */
   useEffect(() => {
     if (!conversationId || !userId) return;
@@ -182,7 +169,7 @@ export default function ClientChatTab({
 
         dispatch({ type: "set", payload: msgs });
         setLoading(false);
-      } catch (error) {
+      } catch {
         setLoading(false);
       }
     })();
@@ -193,18 +180,17 @@ export default function ClientChatTab({
   }, [conversationId]);
 
   /* -------------------------------------------------------------
-     SOCKET — REAL TIME FIXED
+     SOCKET — REAL TIME MESSAGES
 ------------------------------------------------------------- */
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    /* ---- JOIN THE CORRECT SERVER ROOM ---- */
     const join = () => {
       socket.emit(
         "joinConversation",
         conversationType,
         conversationId,
-        false,         // isBusinessConversation
+        false,
         (res) => console.log("JOIN RESP:", res)
       );
     };
@@ -212,7 +198,6 @@ export default function ClientChatTab({
     socket.on("connect", join);
     if (socket.connected) join();
 
-    /* ---- HANDLE REAL-TIME INCOMING MESSAGES ---- */
     const handleNewMessage = (msg) => {
       if (String(msg.fromId || msg.from) === String(userId)) return;
 
@@ -225,20 +210,14 @@ export default function ClientChatTab({
     socket.on("newMessage", handleNewMessage);
 
     return () => {
-      socket.emit(
-        "leaveConversation",
-        conversationType,
-        conversationId,
-        false
-      );
-
+      socket.emit("leaveConversation", conversationType, conversationId, false);
       socket.off("connect", join);
       socket.off("newMessage", handleNewMessage);
     };
   }, [socket, conversationId, userId]);
 
   /* -------------------------------------------------------------
-     SCROLL DOWN
+     AUTO SCROLL
 ------------------------------------------------------------- */
   useEffect(() => {
     if (!listRef.current) return;
@@ -252,9 +231,8 @@ export default function ClientChatTab({
     if (!input.trim() || sending) return;
 
     const tempId = uuidv4();
-    setSending(true);
-
     const text = input.trim();
+    setSending(true);
 
     dispatch({
       type: "append",
@@ -288,10 +266,7 @@ export default function ClientChatTab({
         if (!ack.ok) {
           dispatch({
             type: "updateStatus",
-            payload: {
-              id: tempId,
-              updates: { sending: false, failed: true },
-            },
+            payload: { id: tempId, updates: { sending: false, failed: true } },
           });
           return;
         }
