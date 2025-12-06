@@ -297,7 +297,7 @@ export default function BusinessDashboardLayout({ children }) {
               </button>
             )}
 
-            {/* 🔔 Bell on mobile */}
+             {/* 🔔 Bell on mobilee */}
             {isMobile && (
               <div className="dashboard-bell">
                 <FacebookStyleNotifications />
@@ -315,6 +315,6 @@ export default function BusinessDashboardLayout({ children }) {
           </div>
         </div>
       </AiProvider>
-    </BusinessServicesProvider>
+      </BusinessServicesProvider>
   );
 }
