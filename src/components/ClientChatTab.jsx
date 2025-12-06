@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
-import API from "../api"; // axios with pre-configured token
-import { useSocket } from "../context/socketContext";
+import API from "../api";
 import "./ClientChatTab.css";
 
+/* ------------------------------------------------------------------
+   AUDIO PLAYER
+------------------------------------------------------------------ */
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   if (!src) return null;
 
@@ -23,6 +25,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("ended", onEnded);
+
     return () => {
       audio.removeEventListener("timeupdate", onTime);
       audio.removeEventListener("ended", onEnded);
@@ -32,12 +35,9 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (playing) {
-      audio.pause();
-    } else {
-      audio.play();
-    }
-    setPlaying(!playing);
+
+    playing ? audio.pause() : audio.play();
+    setPlaying((p) => !p);
   };
 
   const formatTime = (t) =>
@@ -54,60 +54,59 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
           <div className="mic-icon">🎤</div>
         </div>
       )}
+
       <button
         onClick={togglePlay}
         className={`play-pause ${playing ? "playing" : ""}`}
-        aria-label={playing ? "Pause" : "Play"}
       >
         {playing ? "❚❚" : "▶"}
       </button>
+
       <div className="progress-dots">
         {[...Array(totalDots)].map((_, i) => (
           <div key={i} className={`dot${i <= activeDot ? " active" : ""}`} />
         ))}
       </div>
+
       <div className="time-display">
         {formatTime(progress)} / {formatTime(duration)}
       </div>
+
       <audio ref={audioRef} src={src} preload="metadata" />
     </div>
   );
 }
 
-// Updated normalize function including businessId
+/* ------------------------------------------------------------------
+   NORMALIZE
+------------------------------------------------------------------ */
 function normalize(msg, userId, businessId) {
   const fromId = String(msg.fromId || msg.from || "");
-  const userIdStr = String(userId);
-  const businessIdStr = String(businessId);
 
-  let role = "business"; // default
+  let role = "business";
 
-  if (msg.client && String(msg.client) === userIdStr) {
-    role = "client";
-  } else if (msg.business && String(msg.business) === businessIdStr) {
-    role = "business";
-  } else if (fromId === userIdStr) {
-    role = "client";
-  } else if (fromId === businessIdStr) {
-    role = "business";
-  } else {
-    role = "unknown";
-  }
+  if (msg.client && String(msg.client) === String(userId)) role = "client";
+  else if (msg.business && String(msg.business) === String(businessId)) role = "business";
+  else if (fromId === String(userId)) role = "client";
+  else if (fromId === String(businessId)) role = "business";
 
   return {
     ...msg,
     _id: String(msg._id),
     tempId: msg.tempId || null,
     timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
-    fileUrl: msg.fileUrl || msg.url || "",
-    fileName: msg.fileName || msg.originalName || "",
-    fileType: msg.fileType || msg.mimeType || "",
-    fileDuration: msg.fileDuration || msg.duration || 0,
-    text: msg.text || msg.content || "",
+    text: msg.text || "",
+    fileUrl: msg.fileUrl || "",
+    fileName: msg.fileName || "",
+    fileType: msg.fileType || "",
+    fileDuration: msg.fileDuration || 0,
     role,
   };
 }
 
+/* ------------------------------------------------------------------
+   REDUCER
+------------------------------------------------------------------ */
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set": {
@@ -116,44 +115,48 @@ function messagesReducer(state, action) {
         if (
           !unique.some(
             (m) =>
-              (m._id && (m._id === msg._id || m._id === msg.tempId)) ||
-              (m.tempId && (m.tempId === msg._id || m.tempId === msg.tempId))
+              m._id === msg._id ||
+              m._id === msg.tempId ||
+              m.tempId === msg._id
           )
         ) {
           unique.push(msg);
         }
       });
-      console.log("[Reducer] set messages, total:", unique.length);
       return unique;
     }
+
     case "append": {
       const idx = state.findIndex(
         (m) =>
-          (m._id && (m._id === action.payload._id || m._id === action.payload.tempId)) ||
-          (m.tempId && (m.tempId === action.payload._id || m.tempId === action.payload.tempId))
+          m._id === action.payload._id ||
+          m._id === action.payload.tempId ||
+          m.tempId === action.payload._id
       );
       if (idx !== -1) {
-        const next = [...state];
-        next[idx] = { ...next[idx], ...action.payload };
-        console.log("[Reducer] append: updated existing message", action.payload._id);
-        return next;
+        const updated = [...state];
+        updated[idx] = { ...updated[idx], ...action.payload };
+        return updated;
       }
-      console.log("[Reducer] append: new message", action.payload._id);
       return [...state, action.payload];
     }
+
     case "updateStatus": {
-      console.log("[Reducer] updateStatus for message id", action.payload.id);
       return state.map((m) =>
         m._id === action.payload.id || m.tempId === action.payload.id
           ? { ...m, ...action.payload.updates }
           : m
       );
     }
+
     default:
       return state;
   }
 }
 
+/* ------------------------------------------------------------------
+   MAIN COMPONENT
+------------------------------------------------------------------ */
 export default function ClientChatTab({
   socket,
   conversationId,
@@ -168,208 +171,185 @@ export default function ClientChatTab({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const messagesRef = useRef(messages);
   const listRef = useRef(null);
 
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
-
+  /* ------------------------------------------------------------------
+     JOIN ROOMS — FIXED REAL-TIME LOGIC
+  ------------------------------------------------------------------ */
   useEffect(() => {
     if (!socket || !conversationId || !userId) {
       dispatch({ type: "set", payload: [] });
-      setLoading(false);
       return;
     }
 
-    setLoading(true);
-    setError("");
-
-    socket.emit("joinRoom", `client-${userId}`);
     const isBizConv = conversationType === "business-business";
-    socket.emit("joinConversation", conversationId, isBizConv);
+
+    const join = () => {
+      console.log("⚡ Client connected — joining rooms...");
+      socket.emit("joinRoom", `client-${userId}`);
+      socket.emit("joinConversation", conversationType, conversationId, isBizConv);
+    };
+
+    socket.on("connect", join);
+
+    if (socket.connected) join();
 
     let cancelled = false;
+
     (async () => {
       try {
         const res = await API.get(`/messages/${conversationId}/history`, {
           params: { page: 0, limit: 50 },
         });
+
         if (cancelled) return;
+
         const msgs = (res.data.messages || []).map((msg) =>
           normalize(msg, userId, businessId)
         );
+
         dispatch({ type: "set", payload: msgs });
-        setError("");
+        setLoading(false);
       } catch (err) {
-        setError("Error loading history: " + (err.message || err));
-        dispatch({ type: "set", payload: [] });
+        setError("Error loading history");
+        setLoading(false);
       }
-      setLoading(false);
     })();
 
     return () => {
       cancelled = true;
+      socket.off("connect", join);
       socket.emit("leaveConversation", conversationId, isBizConv);
       socket.emit("leaveRoom", `client-${userId}`);
     };
   }, [socket, conversationId, userId, conversationType, businessId]);
 
+  /* ------------------------------------------------------------------
+     SOCKET LISTENERS
+  ------------------------------------------------------------------ */
   useEffect(() => {
-    if (!socket || !conversationId) return;
+    if (!socket) return;
 
     const handleNewMessage = (msg) => {
       if (msg.conversationId !== conversationId) return;
       dispatch({ type: "append", payload: normalize(msg, userId, businessId) });
     };
 
-    const handleMessageApproved = (msg) => {
-      if (msg.conversationId !== conversationId) return;
-      dispatch({
-        type: "updateStatus",
-        payload: {
-          id: msg._id,
-          updates: { status: "approved", ...msg },
-        },
-      });
-    };
-
     socket.on("newMessage", handleNewMessage);
-    socket.on("messageApproved", handleMessageApproved);
 
     return () => {
       socket.off("newMessage", handleNewMessage);
-      socket.off("messageApproved", handleMessageApproved);
     };
-  }, [socket, conversationId, userId, businessId]);
+  }, [socket, conversationId]);
 
+  /* ------------------------------------------------------------------
+     AUTO SCROLL
+  ------------------------------------------------------------------ */
   useEffect(() => {
     if (!listRef.current) return;
-    const el = listRef.current;
-    const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
-    if (isNearBottom) el.scrollTop = el.scrollHeight;
+    listRef.current.scrollTop = listRef.current.scrollHeight;
   }, [messages]);
 
+  /* ------------------------------------------------------------------
+     SEND MESSAGE
+  ------------------------------------------------------------------ */
   const sendMessage = () => {
-    if (!businessId) {
-      setError("businessId is not defined");
-      return;
-    }
-    if (!input.trim() || sending || !socket || !socket.connected) {
-      if (!socket.connected) setError("Socket is not connected");
-      return;
-    }
+    if (!input.trim() || sending) return;
 
     setSending(true);
-    setError("");
     const tempId = uuidv4();
 
-    if (!conversationId) {
-      socket.emit(
-        "createConversationAndSendMessage",
-        {
-          from: userId,
-          to: businessId,
-          text: input.trim(),
-          conversationType,
-          tempId,
-        },
-        (ack) => {
-          setSending(false);
-          if (ack.ok && ack.conversationId && ack.message) {
-            setConversationId && setConversationId(ack.conversationId);
-            dispatch({ type: "set", payload: [normalize(ack.message, userId, businessId)] });
-            setInput("");
-          } else {
-            setError("Error creating conversation");
-          }
-        }
-      );
-    } else {
-      const optimisticMsg = {
+    // Optimistic UI
+    dispatch({
+      type: "append",
+      payload: {
         _id: tempId,
         tempId,
         conversationId,
         from: userId,
-        text: input.trim(),
+        text: input,
         timestamp: new Date().toISOString(),
         sending: true,
-      };
-      dispatch({ type: "append", payload: optimisticMsg });
-      setInput("");
+        role: "client",
+      },
+    });
 
-      socket.emit(
-        "sendMessage",
-        {
-          conversationId,
-          from: userId,
-          to: businessId,
-          text: optimisticMsg.text,
-          tempId,
-          conversationType,
-        },
-        (ack) => {
-          setSending(false);
-          if (ack.ok && ack.message) {
-            dispatch({
-              type: "updateStatus",
-              payload: {
-                id: tempId,
-                updates: { sending: false, ...normalize(ack.message, userId, businessId) },
-              },
-            });
-          } else {
-            setError("Error sending message: " + (ack.error || "Unknown"));
-            dispatch({
-              type: "updateStatus",
-              payload: { id: tempId, updates: { sending: false, failed: true } },
-            });
-          }
-        }
-      );
-    }
+    const payload = {
+      conversationId,
+      from: userId,
+      to: businessId,
+      text: input.trim(),
+      tempId,
+      conversationType,
+    };
+
+    setInput("");
+
+    socket.emit("sendMessage", payload, (ack) => {
+      setSending(false);
+
+      if (ack.ok && ack.message) {
+        dispatch({
+          type: "updateStatus",
+          payload: {
+            id: tempId,
+            updates: normalize(ack.message, userId, businessId),
+          },
+        });
+      } else {
+        dispatch({
+          type: "updateStatus",
+          payload: {
+            id: tempId,
+            updates: { sending: false, failed: true },
+          },
+        });
+      }
+    });
   };
 
-  const sortedMessages = [...messages].sort(
-    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-  );
-
+  /* ------------------------------------------------------------------
+     UI
+  ------------------------------------------------------------------ */
   return (
     <div className="chat-container client">
       <div className="message-list" ref={listRef}>
         {loading && <div className="loading">Loading...</div>}
-        {!loading && sortedMessages.length === 0 && <div className="empty">No messages yet</div>}
-        {sortedMessages.map((m) => {
-          console.log("Message role:", m.role, m);
-          return (
-            <div
-              key={m._id || m.tempId}
-              className={`message${m.role === "client" ? " mine" : " theirs"}${m.sending ? " sending" : ""}${m.failed ? " failed" : ""}`}
-            >
-              {m.fileUrl ? (
-                /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(m.fileUrl) ? (
-                  <img src={m.fileUrl} alt={m.fileName || "image"} style={{ maxWidth: 200, borderRadius: 8 }} />
-                ) : m.fileType?.startsWith("audio") ? (
-                  <WhatsAppAudioPlayer src={m.fileUrl} duration={m.fileDuration} userAvatar={null} />
-                ) : (
-                  <a href={m.fileUrl} target="_blank" rel="noopener noreferrer" download>
-                    {m.fileName || "Download file"}
-                  </a>
-                )
+
+        {!loading && messages.length === 0 && <div className="empty">No messages yet</div>}
+
+        {messages.map((m) => (
+          <div
+            key={m._id || m.tempId}
+            className={`message ${m.role === "client" ? "mine" : "theirs"} ${
+              m.sending ? "sending" : ""
+            } ${m.failed ? "failed" : ""}`}
+          >
+            {m.fileUrl ? (
+              m.fileType?.startsWith("audio") ? (
+                <WhatsAppAudioPlayer
+                  src={m.fileUrl}
+                  duration={m.fileDuration}
+                />
               ) : (
-                <div className="text">{m.text}</div>
-              )}
-              <div className="meta">
-                <span className="time">
-                  {new Date(m.timestamp).toLocaleTimeString("en-GB", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-              </div>
+                <img
+                  src={m.fileUrl}
+                  alt="file"
+                  className="msg-image"
+                />
+              )
+            ) : (
+              <div className="text">{m.text}</div>
+            )}
+
+            <div className="meta">
+              {new Date(m.timestamp).toLocaleTimeString("en-GB", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       <div className="inputBar">
@@ -386,14 +366,12 @@ export default function ClientChatTab({
               sendMessage();
             }
           }}
-          disabled={sending}
-          rows={1}
         />
+
         <button
           className="sendButtonFlat"
           onClick={sendMessage}
-          disabled={sending || !input.trim()}
-          type="button"
+          disabled={!input.trim() || sending}
         >
           ◀
         </button>
