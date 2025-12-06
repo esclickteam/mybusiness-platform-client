@@ -109,6 +109,8 @@
   margin-left: 6px;
 }
 
+
+
 /* הודעת מערכת */
 .system-message {
   background: #f1f1f6;
@@ -455,7 +457,7 @@
   /* העסק – לימין */
   align-self: flex-end;
   margin-left: 32px;
-  margin-left: 0;
+  margin-right: 0;
   text-align: left;
   background: #e3ffe5;
   border-radius: 18px 18px 4px 18px;
@@ -464,12 +466,13 @@
 .chat-container.business .message.theirs {
   /* הלקוח – לשמאל */
   align-self: flex-start;
-  margin-left: 32px;
+  margin-right: 32px;
   margin-left: 0;
   text-align: left;
   background: #fff;
   border-radius: 18px 18px 18px 4px;
 }
+
 @media (max-width: 768px) {
   .chat-container {
     height: 100vh;
