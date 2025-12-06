@@ -20,7 +20,7 @@ export default function ClientChatSection() {
   const socketRef = useRef(null);
 
   /* ===========================================================
-     🔌 1. יצירת חיבור Socket
+     🔌 1. Create Socket connection
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId) return;
@@ -48,13 +48,13 @@ export default function ClientChatSection() {
     socketRef.current.on("disconnect", (reason) => {
       console.warn("⚠️ Socket disconnected:", reason);
       if (reason !== "io client disconnect") {
-        setError("החיבור לשרת הצ'אט התנתק.");
+        setError("The connection to the chat server was disconnected.");
       }
     });
 
     socketRef.current.on("connect_error", (err) => {
       console.error("❌ Socket connection error:", err);
-      setError("שגיאה בהתחברות לצ'אט: " + err.message);
+      setError("Error connecting to chat: " + err.message);
     });
 
     return () => {
@@ -65,7 +65,7 @@ export default function ClientChatSection() {
   }, [initialized, userId]);
 
   /* ===========================================================
-     🧠 2. יצירת שיחה חדשה אם אין קיימת
+     🧠 2. Create a new conversation if none exists
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId || !businessId || !socketRef.current) return;
@@ -116,7 +116,7 @@ export default function ClientChatSection() {
           );
         } else {
           console.error("❌ Failed to create conversation:", res?.error);
-          setError("לא ניתן ליצור שיחה חדשה מול העסק.");
+          setError("Unable to create a new conversation with the business.");
         }
         setLoading(false);
       }
@@ -124,7 +124,7 @@ export default function ClientChatSection() {
   }, [initialized, userId, businessId, conversationId]);
 
   /* ===========================================================
-     💬 3. טעינת הודעות היסטוריות והאזנה להודעות חדשות
+     💬 3. Load message history and listen for new messages
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
@@ -141,7 +141,7 @@ export default function ClientChatSection() {
       } else {
         console.error("❌ Error loading messages:", res.error);
         setMessages([]);
-        setError("שגיאה בטעינת ההודעות");
+        setError("Error loading messages");
       }
       setLoading(false);
     });
@@ -150,7 +150,9 @@ export default function ClientChatSection() {
       console.log("📩 New message received:", msg);
       setMessages((prev) => {
         const exists = prev.find(
-          (m) => m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
+          (m) =>
+            m._id === msg._id ||
+            (m.tempId && msg.tempId && m.tempId === msg.tempId)
         );
         if (exists) return prev;
         return [...prev, msg];
@@ -165,7 +167,7 @@ export default function ClientChatSection() {
   }, [conversationId]);
 
   /* ===========================================================
-     🧱 4. טעינת שם העסק (אם חסר)
+     🧱 4. Load business name (if missing)
   ============================================================ */
   useEffect(() => {
     if (!businessId || businessName) return;
@@ -179,25 +181,23 @@ export default function ClientChatSection() {
       .then((res) => res.json())
       .then((data) => {
         const name =
-          data?.business?.businessName ||
-          data?.businessName ||
-          "עסק ללא שם";
+          data?.business?.businessName || data?.businessName || "Unnamed business";
         setBusinessName(name);
       })
       .catch((err) => {
         console.error("Error fetching business name:", err);
-        setBusinessName("עסק לא ידוע");
+        setBusinessName("Unknown business");
       });
   }, [businessId, businessName]);
 
   /* ===========================================================
-     🖼️ 5. מצבים: טעינה / שגיאה / הצגת צ'אט
+     🖼️ 5. States: loading / error / render chat
   ============================================================ */
   if (loading)
     return (
       <div className={styles.loadingWrapper}>
         <div className={styles.spinner}></div>
-        <p>טוען את השיחה...</p>
+        <p>Loading the conversation...</p>
       </div>
     );
 
@@ -209,21 +209,21 @@ export default function ClientChatSection() {
           onClick={() => window.location.reload()}
           className="bg-purple-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-purple-700 transition"
         >
-          רענן
+          Refresh
         </button>
       </div>
     );
 
   /* ===========================================================
-     💬 6. תצוגת הצ'אט
+     💬 6. Chat UI
   ============================================================ */
   return (
     <div className={styles.whatsappBg}>
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
-          <h3 className={styles.sidebarTitle}>צ'אט עם העסק</h3>
+          <h3 className={styles.sidebarTitle}>Chat with the business</h3>
           <div className={styles.convItemActive}>
-            {businessName || "עסק לא ידוע"}
+            {businessName || "Unknown business"}
           </div>
         </aside>
 

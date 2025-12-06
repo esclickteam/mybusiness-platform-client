@@ -45,17 +45,17 @@
 
 /* User (client) message – aligned to the right */
 .chat-container.client .message.mine {
-  margin-left: auto;
   margin-left: 32px;
+  margin-right: auto; /* ✅ משנה צד */
   background: #dcf8c6;
   text-align: left;
   border-radius: 18px 18px 4px 18px;
 }
 
-/* Business message – aligned to the left */
+/* הודעה של העסק — צד שמאל */
 .chat-container.client .message.theirs {
-  margin-left: auto;
-  margin-left: 32px;
+  margin-right: 32px;
+  margin-left: auto; /* ✅ נשארת שמאל */
   background: #fff;
   text-align: left;
   border-radius: 18px 18px 18px 4px;
