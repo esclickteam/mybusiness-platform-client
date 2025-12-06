@@ -22,22 +22,22 @@ export default function ClientChatSection() {
   const safeSetBusinessId = (newId) => setBusinessId((prev) => newId ?? prev);
 
   /* ============================================================
-      SOCKET INIT — FIXED + LOGS
+      INIT SOCKET (once)
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId) return;
 
     if (socketRef.current && socketRef.current.connected) {
-      console.log("⚠️ Socket already connected — skipping init");
+      console.log("⚠️ Socket already active — skipping init");
       return;
     }
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
 
-    console.log("🔌 INIT SOCKET:", socketUrl);
+    console.log("🔌 INIT SOCKET →", socketUrl);
 
-    socketRef.current = io(socketUrl, {
+    const s = io(socketUrl, {
       path: "/socket.io",
       transports: ["websocket"],
       auth: { token, role: "chat" },
@@ -47,119 +47,39 @@ export default function ClientChatSection() {
       reconnectionDelay: 500,
     });
 
-    socketRef.current.connect();
+    socketRef.current = s;
 
-    socketRef.current.on("connect", () => {
-      console.log("🟢 SOCKET CONNECTED:", socketRef.current.id);
+    s.connect();
+
+    s.on("connect", () => {
+      console.log("🟢 SOCKET CONNECTED:", s.id);
       setError("");
     });
 
-    socketRef.current.on("disconnect", (reason) => {
+    s.on("disconnect", (reason) => {
       console.warn("🔴 SOCKET DISCONNECTED:", reason);
     });
 
-    socketRef.current.on("connect_error", (err) => {
-      console.error("❌ CONNECT ERROR:", err.message);
-      setError("Socket connection error: " + err.message);
+    s.on("connect_error", (err) => {
+      console.error("❌ SOCKET ERROR:", err.message);
+      setError("Socket error: " + err.message);
     });
 
     return () => {
       console.log("🔌 CLEANUP SOCKET");
-      socketRef.current?.disconnect();
-      socketRef.current = null;
+      s.disconnect();
     };
   }, [initialized, userId]);
 
   /* ============================================================
-      LOAD HISTORY (Safe + retriable)
-  ============================================================ */
-  const loadHistory = () => {
-    const socket = socketRef.current;
-
-    if (!socket || !conversationId) {
-      console.log("⏳ loadHistory WAITING for socket/conversationId…");
-      return;
-    }
-
-    if (!socket.connected) {
-      console.log("⚠️ loadHistory postponed — retry when connected");
-
-      socket.once("connect", () => {
-        console.log("🔁 RETRY HISTORY AFTER CONNECT");
-        loadHistory();
-      });
-
-      return;
-    }
-
-    console.log("📜 Loading history for:", conversationId);
-    setLoading(true);
-
-    socket.emit("getHistory", { conversationId }, (res) => {
-      console.log("📥 HISTORY RESPONSE:", res);
-
-      if (res.ok) {
-        setMessages(res.messages || []);
-      } else {
-        setMessages([]);
-      }
-
-      setLoading(false);
-    });
-  };
-
-  /* ============================================================
-      JOIN ROOM → then load history → then listen
-  ============================================================ */
-  useEffect(() => {
-    const socket = socketRef.current;
-
-    if (!socket || !conversationId) {
-      console.log("⏳ Waiting for socket or conversationId for JOIN…");
-      return;
-    }
-
-    const joinRoom = () => {
-      console.log(`📌 JOINING ROOM: user-business-${conversationId}`);
-
-      socket.emit(
-        "joinConversation",
-        "user-business",
-        conversationId,
-        false,
-        (res) => {
-          console.log("📥 JOIN RESPONSE:", res);
-          if (res?.ok) loadHistory();
-        }
-      );
-    };
-
-    if (socket.connected) {
-      console.log("🟢 socket already connected → joining room now");
-      joinRoom();
-    }
-
-    socket.on("connect", () => {
-      console.log("🔄 SOCKET RECONNECTED → join room again");
-      joinRoom();
-    });
-
-    return () => {
-      console.log(`🚪 LEAVING ROOM: user-business-${conversationId}`);
-      socket.emit("leaveConversation", "user-business", conversationId, false);
-    };
-  }, [conversationId]);
-
-  /* ============================================================
-      LISTEN FOR NEW MESSAGES
+      GLOBAL newMessage LISTENER (runs once only)
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket) return;
 
     const handleNew = (msg) => {
-      console.log("💬 NEW MESSAGE RECEIVED:", msg);
-
+      console.log("💬 NEW MESSAGE:", msg);
       setMessages((prev) => {
         const exists = prev.some(
           (m) => m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
@@ -169,15 +89,91 @@ export default function ClientChatSection() {
     };
 
     socket.on("newMessage", handleNew);
+    console.log("🟢 Attached newMessage listener");
 
     return () => {
-      console.log("🔕 Removing newMessage listener");
       socket.off("newMessage", handleNew);
+      console.log("🔴 Removed newMessage listener");
     };
-  }, []);
+  }, []); // RUNS ONCE — REQUIRED
 
   /* ============================================================
-      LOAD METADATA (BUSINESS + CONVERSATION)
+      LOAD HISTORY (only after join + socket ready)
+  ============================================================ */
+  const loadHistory = () => {
+    const socket = socketRef.current;
+    if (!socket || !conversationId) return;
+
+    if (!socket.connected) {
+      console.log("⏳ Socket not ready — retry history after connect");
+      socket.once("connect", loadHistory);
+      return;
+    }
+
+    console.log("📜 Loading history for:", conversationId);
+
+    socket.emit("getHistory", { conversationId }, (res) => {
+      console.log("📥 HISTORY RESPONSE:", res);
+
+      setLoading(false); // ← חשוב! לא להשאיר מסך תקוע
+
+      if (res.ok) {
+        setMessages(res.messages || []);
+      } else {
+        setMessages([]);
+      }
+    });
+  };
+
+  /* ============================================================
+      JOIN ROOM → THEN HISTORY
+  ============================================================ */
+  useEffect(() => {
+    const socket = socketRef.current;
+
+    if (!socket || !conversationId) {
+      console.log("⏳ Waiting for socket/conversationId for JOIN…");
+      return;
+    }
+
+    const join = () => {
+      console.log("📌 JOIN ROOM user-business →", conversationId);
+
+      socket.emit(
+        "joinConversation",
+        "user-business",
+        conversationId,
+        false,
+        (res) => {
+          console.log("📥 JOIN RESPONSE:", res);
+
+          // 🚀 לא נתקע על לודינג
+          setLoading(false);
+
+          if (res?.ok) loadHistory();
+        }
+      );
+    };
+
+    if (socket.connected) {
+      console.log("🟢 socket already connected → joining");
+      join();
+    }
+
+    socket.on("connect", () => {
+      console.log("🔄 SOCKET RECONNECTED → joining again");
+      join();
+    });
+
+    return () => {
+      console.log("🚪 LEAVE ROOM:", conversationId);
+      socket.emit("leaveConversation", "user-business", conversationId, false);
+      socket.off("connect", join);
+    };
+  }, [conversationId]);
+
+  /* ============================================================
+      LOAD CONVERSATION METADATA
   ============================================================ */
   useEffect(() => {
     setLoading(true);
@@ -188,12 +184,11 @@ export default function ClientChatSection() {
 
     console.log("📂 Loading conversation metadata…");
 
-    // Load conversation that matches business
     if (!threadId || !clientId) {
       fetch(`${baseUrl}/api/messages/user-conversations`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-        .then((res) => res.json())
+        .then((r) => r.json())
         .then((data) => {
           console.log("📥 Conversations:", data);
 
@@ -208,43 +203,40 @@ export default function ClientChatSection() {
 
             if (!conv) conv = data.conversations[0];
 
-            console.log("✔ SELECTED CONVERSATION:", conv);
+            console.log("✔ SELECTED CONV:", conv);
 
             setConversationId(conv.conversationId);
-            setBusinessName(conv.otherParty?.name || "");
+            setBusinessName(conv.otherParty?.name || "Unknown business");
             safeSetBusinessId(conv.otherParty?.id);
           } else {
-            console.log("⚠️ No conversations found");
             setConversationId(null);
-            setBusinessName("");
+            setBusinessName("Unknown business");
             safeSetBusinessId(businessIdFromParams);
           }
 
-          setLoading(false);
+          // ⚠️ אל תכווי loading כאן — החדר עדיין לא נטען!
         })
         .catch((err) => {
-          console.error("❌ Error loading conversations:", err);
-          setError("Error loading conversations");
+          console.error("❌ metadata error:", err);
+          setError("Error loading conversation");
           setLoading(false);
         });
     } else {
-      // Load specific conversation by threadId
       fetch(`${baseUrl}/api/conversations/${threadId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-        .then((res) => res.json())
+        .then((r) => r.json())
         .then((data) => {
           console.log("📥 Conversation:", data);
 
-          if (!data.ok) throw new Error(data.error || "Error loading conversation");
+          if (!data.ok) throw new Error(data.error);
 
           setConversationId(threadId);
-          setBusinessName(data.conversation.businessName || "");
+          setBusinessName(data.conversation.businessName || "Unknown business");
           safeSetBusinessId(businessIdFromParams);
-          setLoading(false);
         })
         .catch((err) => {
-          console.error("❌ Error:", err);
+          console.error("❌ metadata error:", err);
           setError(err.message);
           setLoading(false);
         });
@@ -254,7 +246,7 @@ export default function ClientChatSection() {
   /* ============================================================
       UI
   ============================================================ */
-  if (loading) return <div className={styles.loading}>Loading…</div>;
+  if (loading) return <div className={styles.loading}>Loading...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
 
   return (
