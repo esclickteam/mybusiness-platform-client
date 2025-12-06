@@ -22,50 +22,55 @@ export default function ClientChatSection() {
   const socketRef = useRef(null);
 
   /* ============================================================
-        SOCKET INIT — FIX: NO DUPLICATE SOCKETS
+        SOCKET INIT — FIX + LOGS
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId) return;
 
     if (socketRef.current && socketRef.current.connected) {
-      return; // לא לפתוח סוקט חדש!
+      console.log("⚠️ socket already connected, skipping init");
+      return;
     }
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
+
+    console.log("🔌 INIT SOCKET →", socketUrl);
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       transports: ["websocket"],
       auth: { token, role: "chat" },
       withCredentials: true,
-      autoConnect: false, // 🔥 חשוב!!
+      autoConnect: false,
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 800,
     });
 
+    // Connect now
     socketRef.current.connect();
 
     socketRef.current.on("connect", () => {
-      console.log("CLIENT SOCKET CONNECTED");
+      console.log("🟢 SOCKET CONNECTED:", socketRef.current.id);
       setError("");
     });
 
     socketRef.current.on("disconnect", (reason) => {
-      console.warn("Socket disconnected:", reason);
+      console.warn("🔴 SOCKET DISCONNECTED:", reason);
       if (reason !== "io client disconnect") {
         setError("Socket disconnected: " + reason);
       }
     });
 
     socketRef.current.on("connect_error", (err) => {
-      console.error("Socket error:", err.message);
+      console.error("❌ CONNECT ERROR:", err.message);
       setError("Socket connection error: " + err.message);
     });
 
     return () => {
       if (socketRef.current) {
+        console.log("🔌 SOCKET CLEANUP → disconnect");
         socketRef.current.disconnect();
         socketRef.current = null;
       }
@@ -73,34 +78,49 @@ export default function ClientChatSection() {
   }, [initialized, userId]);
 
   /* ============================================================
-        AUTO JOIN SERVER ROOM (REAL FIX)
+        AUTO JOIN ROOM — FULL LOGGING
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
-    if (!socket || !conversationId) return;
+    if (!socket || !conversationId) {
+      console.log("⏳ Waiting for socket or conversationId…");
+      return;
+    }
 
     const join = () => {
-      console.log("JOIN → user-business:", conversationId);
+      console.log(
+        `📌 JOINING ROOM → user-business-${conversationId}`
+      );
       socket.emit(
         "joinConversation",
         "user-business",
         conversationId,
         false,
-        (res) => console.log("JOIN RESPONSE:", res)
+        (res) => console.log("📥 JOIN RESPONSE:", res)
       );
     };
 
-    if (socket.connected) join();
+    if (socket.connected) {
+      console.log("🔄 socket already connected — joining room now");
+      join();
+    }
 
-    socket.on("connect", join);
+    socket.on("connect", () => {
+      console.log("🔄 SOCKET RECONNECTED — joining room again");
+      join();
+    });
 
     return () => {
+      console.log(
+        `🚪 LEAVE ROOM → user-business-${conversationId}`
+      );
       socket.emit(
         "leaveConversation",
         "user-business",
         conversationId,
         false
       );
+
       socket.off("connect", join);
     };
   }, [conversationId]);
@@ -115,12 +135,16 @@ export default function ClientChatSection() {
     const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
     const token = localStorage.getItem("token");
 
+    console.log("📂 Loading conversation metadata…");
+
     if (!threadId || !clientId) {
       fetch(`${baseUrl}/api/messages/user-conversations`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log("📥 Conversations:", data);
+
           if (Array.isArray(data.conversations) && data.conversations.length) {
             let conv = null;
 
@@ -132,18 +156,22 @@ export default function ClientChatSection() {
 
             if (!conv) conv = data.conversations[0];
 
+            console.log("✔ SELECTED CONVERSATION:", conv);
+
             setConversationId(conv.conversationId);
             setBusinessName(conv.otherParty?.name || "");
             safeSetBusinessId(conv.otherParty?.id);
           } else {
+            console.log("⚠️ No conversations found");
             setConversationId(null);
             setBusinessName("");
             safeSetBusinessId(businessIdFromParams);
           }
+
           setLoading(false);
         })
         .catch((err) => {
-          console.error(err);
+          console.error("❌ Error:", err);
           setError("Error loading user conversations");
           setLoading(false);
         });
@@ -153,6 +181,8 @@ export default function ClientChatSection() {
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log("📥 Conversation:", data);
+
           if (!data.ok) throw new Error(data.error || "Error loading conversation");
 
           setConversationId(threadId);
@@ -161,7 +191,7 @@ export default function ClientChatSection() {
           setLoading(false);
         })
         .catch((err) => {
-          console.error(err);
+          console.error("❌ Error:", err);
           setError(err.message);
           setLoading(false);
         });
@@ -169,43 +199,27 @@ export default function ClientChatSection() {
   }, [threadId, clientId, businessIdFromParams]);
 
   /* ============================================================
-        LOAD BUSINESS NAME
-  ============================================================ */
-  useEffect(() => {
-    if (businessId && !businessName) {
-      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
-      const token = localStorage.getItem("token");
-
-      fetch(`${baseUrl}/api/business/${businessId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setBusinessName(
-            data.business?.businessName ||
-              data.businessName ||
-              "Unknown business"
-          );
-        })
-        .catch(() => setBusinessName("Unknown business"));
-    }
-  }, [businessId, businessName]);
-
-  /* ============================================================
-        LOAD HISTORY + LISTEN FOR MESSAGES
+        LOAD HISTORY + LISTEN FOR LIVE MESSAGES
+        (FULL LOGGING)
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
-    if (!socket || !conversationId) return;
-
-    if (!socket.connected) {
-      console.warn("Socket not ready yet – waiting...");
+    if (!socket || !conversationId) {
+      console.log("⏳ Waiting for socket or conversation before loading history…");
       return;
     }
 
+    if (!socket.connected) {
+      console.warn("⚠️ Socket not ready yet — history load postponed");
+      return;
+    }
+
+    console.log("📜 Loading message history for:", conversationId);
     setLoading(true);
 
     socket.emit("getHistory", { conversationId }, (res) => {
+      console.log("📥 HISTORY RESPONSE:", res);
+
       if (res.ok) {
         setMessages(Array.isArray(res.messages) ? res.messages : []);
         setError("");
@@ -217,6 +231,8 @@ export default function ClientChatSection() {
     });
 
     const handleNew = (msg) => {
+      console.log("💬 NEW MESSAGE RECEIVED:", msg);
+
       setMessages((prev) => {
         const exists = prev.some(
           (m) =>
@@ -230,6 +246,7 @@ export default function ClientChatSection() {
     socket.on("newMessage", handleNew);
 
     return () => {
+      console.log("🔕 Removing newMessage listener");
       socket.off("newMessage", handleNew);
     };
   }, [conversationId]);
