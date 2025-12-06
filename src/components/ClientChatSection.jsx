@@ -57,6 +57,31 @@ export default function ClientChatSection() {
   }, [initialized, userId]);
 
   /* ============================
+     AUTO JOIN ROOM FIX — CRITICAL
+  ============================ */
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+
+    const tryJoin = () => {
+      if (conversationId) {
+        console.log("CLIENT JOIN ROOM", conversationId);
+        socket.emit("joinRoom", conversationId);
+      }
+    };
+
+    // Join immediately if possible
+    tryJoin();
+
+    // Join again after reconnect
+    socket.on("connect", tryJoin);
+
+    return () => {
+      socket.off("connect", tryJoin);
+    };
+  }, [conversationId]);
+
+  /* ============================
      LOAD CONVERSATION METADATA
   ============================ */
   useEffect(() => {
@@ -196,17 +221,9 @@ export default function ClientChatSection() {
     socket.on("newMessage", handleNew);
     socket.on("messageApproved", handleApproved);
 
-    /* ============================
-          🔥 CRITICAL FIX!!
-       הלקוח חייב להצטרף לחדר
-    ============================ */
-    socket.emit("joinRoom", conversationId);
-
     return () => {
       socket.off("newMessage", handleNew);
       socket.off("messageApproved", handleApproved);
-
-      socket.emit("leaveRoom", conversationId);
     };
   }, [conversationId]);
 
