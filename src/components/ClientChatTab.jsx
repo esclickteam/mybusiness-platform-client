@@ -64,7 +64,9 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
         ))}
       </div>
 
-      <div className="time-display">{formatTime(progress)} / {formatTime(duration)}</div>
+      <div className="time-display">
+        {formatTime(progress)} / {formatTime(duration)}
+      </div>
 
       <audio ref={audioRef} src={src} preload="metadata" />
     </div>
@@ -72,47 +74,51 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 }
 
 /* -------------------------------------------------------------
-   NORMALIZE MESSAGE
+   NORMALIZE
 ------------------------------------------------------------- */
 function normalize(msg, userId, businessId) {
-  const from = String(msg.fromId || msg.from || "");
+  const fromId = String(msg.fromId || msg.from || "");
+
+  let role = fromId === String(userId) ? "client" : "business";
 
   return {
     ...msg,
     _id: String(msg._id || msg.id || msg.tempId),
     tempId: msg.tempId || null,
-    role: from === String(userId) ? "client" : "business",
+    timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
     text: msg.text || "",
     fileUrl: msg.fileUrl || "",
-    fileType: msg.fileType || "",
     fileName: msg.fileName || "",
+    fileType: msg.fileType || "",
     fileDuration: msg.fileDuration || 0,
-    timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
+    role,
   };
 }
 
 /* -------------------------------------------------------------
-   REDUCER — prevents duplicates 100%
+   REDUCER — avoid duplicates
 ------------------------------------------------------------- */
 function messagesReducer(state, action) {
   switch (action.type) {
-    case "set": {
+    case "set":
       return [
         ...new Map(
           action.payload.map((m) => [m._id || m.tempId, m])
         ).values(),
       ];
-    }
 
-    case "append": {
-      const exists = state.some(
-        (m) =>
-          m._id === action.payload._id ||
-          m.tempId === action.payload._id ||
-          m._id === action.payload.tempId
-      );
-      return exists ? state : [...state, action.payload];
-    }
+    case "append":
+      if (
+        state.some(
+          (m) =>
+            m._id === action.payload._id ||
+            m.tempId === action.payload._id ||
+            m._id === action.payload.tempId
+        )
+      ) {
+        return state;
+      }
+      return [...state, action.payload];
 
     case "updateStatus":
       return state.map((m) =>
@@ -143,10 +149,10 @@ export default function ClientChatTab({
   const listRef = useRef(null);
 
   /* -------------------------------------------------------------
-     LOAD HISTORY
+     LOAD HISTORY FROM API
 ------------------------------------------------------------- */
   useEffect(() => {
-    if (!conversationId) return;
+    if (!conversationId || !userId) return;
 
     let cancelled = false;
 
@@ -162,8 +168,10 @@ export default function ClientChatTab({
         );
 
         dispatch({ type: "set", payload: msgs });
-      } catch {}
-      setLoading(false);
+        setLoading(false);
+      } catch {
+        setLoading(false);
+      }
     })();
 
     return () => {
@@ -172,19 +180,48 @@ export default function ClientChatTab({
   }, [conversationId]);
 
   /* -------------------------------------------------------------
-     ❌ REMOVE REAL-TIME LISTENER — THIS FIXES DUPLICATIONS
+     SOCKET — REAL TIME MESSAGES
 ------------------------------------------------------------- */
-  // ❗️ DO NOT LISTEN TO newMessage HERE  
-  // ClientChatSection ALREADY listens and adds messages.
-  // If you listen here too → duplication.
+  useEffect(() => {
+    if (!socket || !conversationId) return;
+
+    const join = () => {
+      socket.emit(
+        "joinConversation",
+        conversationType,
+        conversationId,
+        false,
+        (res) => console.log("JOIN RESP:", res)
+      );
+    };
+
+    socket.on("connect", join);
+    if (socket.connected) join();
+
+    const handleNewMessage = (msg) => {
+      if (String(msg.fromId || msg.from) === String(userId)) return;
+
+      dispatch({
+        type: "append",
+        payload: normalize(msg, userId, businessId),
+      });
+    };
+
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.emit("leaveConversation", conversationType, conversationId, false);
+      socket.off("connect", join);
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket, conversationId, userId]);
 
   /* -------------------------------------------------------------
      AUTO SCROLL
 ------------------------------------------------------------- */
   useEffect(() => {
-    if (listRef.current) {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
-    }
+    if (!listRef.current) return;
+    listRef.current.scrollTop = listRef.current.scrollHeight;
   }, [messages]);
 
   /* -------------------------------------------------------------
@@ -195,8 +232,8 @@ export default function ClientChatTab({
 
     const tempId = uuidv4();
     const text = input.trim();
+    setSending(true);
 
-    // Locally add temporary message
     dispatch({
       type: "append",
       payload: {
@@ -204,15 +241,14 @@ export default function ClientChatTab({
         tempId,
         conversationId,
         fromId: userId,
-        role: "client",
         text,
-        sending: true,
         timestamp: new Date().toISOString(),
+        sending: true,
+        role: "client",
       },
     });
 
     setInput("");
-    setSending(true);
 
     socket.emit(
       "sendMessage",
@@ -230,7 +266,7 @@ export default function ClientChatTab({
         if (!ack.ok) {
           dispatch({
             type: "updateStatus",
-            payload: { id: tempId, updates: { failed: true, sending: false } },
+            payload: { id: tempId, updates: { sending: false, failed: true } },
           });
           return;
         }
@@ -247,7 +283,7 @@ export default function ClientChatTab({
   };
 
   /* -------------------------------------------------------------
-     RENDER
+     UI
 ------------------------------------------------------------- */
   return (
     <div className="chat-container client">
@@ -299,7 +335,11 @@ export default function ClientChatTab({
           }}
         />
 
-        <button className="sendButtonFlat" disabled={sending} onClick={sendMessage}>
+        <button
+          className="sendButtonFlat"
+          onClick={sendMessage}
+          disabled={!input.trim() || sending}
+        >
           ◀
         </button>
       </div>
