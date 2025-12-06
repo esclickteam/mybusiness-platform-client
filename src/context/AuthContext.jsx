@@ -109,23 +109,6 @@ export function AuthProvider({ children }) {
   };
 
   /* ===========================
-     ✅ getValidAccessToken - חדש!
-  =========================== */
-  const getValidAccessToken = async () => {
-    let currentToken = localStorage.getItem("token");
-    if (currentToken) return currentToken;
-
-    try {
-      const newToken = await singleFlightRefresh();
-      return newToken;
-    } catch (err) {
-      console.error("❌ Failed to refresh token:", err);
-      await logout();
-      return null;
-    }
-  };
-
-  /* ===========================
      🔐 Login
   =========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
@@ -154,13 +137,16 @@ export function AuthProvider({ children }) {
 
       refreshUser(true).catch(() => {});
 
+      /* ⭐️⭐️⭐️ NEW — PRIORITY REDIRECT FROM URL ⭐️⭐️⭐️ */
       const urlRedirect = new URLSearchParams(window.location.search).get("redirect");
       if (urlRedirect) {
         navigate(urlRedirect, { replace: true });
         setLoading(false);
         return { user: normalizedUser, redirectUrl: urlRedirect };
       }
+      /* ⭐️⭐️⭐️ END NEW CODE ⭐️⭐️⭐️ */
 
+      // Existing redirect flow
       if (!skipRedirect) {
         if (normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
@@ -394,7 +380,6 @@ export function AuthProvider({ children }) {
     },
 
     refreshAccessToken: singleFlightRefresh,
-    getValidAccessToken, // ✅ נוסף כאן
     refreshUser,
     socket,
     setUser,
