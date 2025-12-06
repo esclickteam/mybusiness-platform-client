@@ -149,60 +149,71 @@ export default function ClientChatSection() {
   }, [businessId, businessName]);
 
   // Listen for messages and history via socket
-  useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket || !socket.connected || !conversationId) {
+  // Listen for messages and history via socket
+useEffect(() => {
+  const socket = socketRef.current;
+  if (!socket || !socket.connected || !conversationId) {
+    setMessages([]);
+    return;
+  }
+
+  setLoading(true);
+
+  socket.emit("getHistory", { conversationId }, (res) => {
+    if (res.ok) {
+      setMessages(Array.isArray(res.messages) ? res.messages : []);
+      setError("");
+    } else {
       setMessages([]);
-      return;
+      setError("Error loading messages: " + (res.error || "Unknown"));
     }
+    setLoading(false);
+  });
 
-    setLoading(true);
-
-    socket.emit("getHistory", { conversationId }, (res) => {
-      if (res.ok) {
-        setMessages(Array.isArray(res.messages) ? res.messages : []);
-        setError("");
-      } else {
-        setMessages([]);
-        setError("Error loading messages: " + (res.error || "Unknown"));
-      }
-      setLoading(false);
-    });
-
-    const handleNew = (msg) => {
-      setMessages((prev) => {
-        const idx = prev.findIndex(
-          (m) =>
-            m._id === msg._id ||
-            (m.tempId && msg.tempId && m.tempId === msg.tempId)
-        );
-        if (idx !== -1) {
-          const next = [...prev];
-          next[idx] = { ...next[idx], ...msg };
-          return next;
-        }
-        return [...prev, msg];
-      });
-    };
-
-    const handleApproved = (msg) =>
-      setMessages((prev) =>
-        prev.map((m) => (m._id === msg._id ? { ...m, status: "approved" } : m))
+  const handleNew = (msg) => {
+    setMessages((prev) => {
+      const idx = prev.findIndex(
+        (m) =>
+          m._id === msg._id ||
+          (m.tempId && msg.tempId && m.tempId === msg.tempId)
       );
+      if (idx !== -1) {
+        const next = [...prev];
+        next[idx] = { ...next[idx], ...msg };
+        return next;
+      }
+      return [...prev, msg];
+    });
+  };
 
-    socket.on("newMessage", handleNew);
-    socket.on("messageApproved", handleApproved);
+  const handleApproved = (msg) =>
+    setMessages((prev) =>
+      prev.map((m) => (m._id === msg._id ? { ...m, status: "approved" } : m))
+    );
 
-    socket.emit("joinConversation", conversationId);
-    if (businessId) socket.emit("joinRoom", businessId);
+  socket.on("newMessage", handleNew);
+  socket.on("messageApproved", handleApproved);
 
-    return () => {
-      socket.off("newMessage", handleNew);
-      socket.off("messageApproved", handleApproved);
-      socket.emit("leaveConversation", conversationId);
-      if (businessId) socket.emit("leaveRoom", businessId);
-    };
-  }, [conversationId, businessId]);
+  // ❌ WRONG
+  // socket.emit("joinConversation", conversationId);
+
+  // ✅ CORRECT
+  socket.emit("joinConversation", "userbusiness", conversationId, false);
+
+
+  if (businessId) socket.emit("joinRoom", businessId);
+
+  return () => {
+    socket.off("newMessage", handleNew);
+    socket.off("messageApproved", handleApproved);
+
+    socket.emit("leaveConversation", "userbusiness", conversationId, false);
+
+
+    if (businessId) socket.emit("leaveRoom", businessId);
+  };
+}, [conversationId, businessId]);
+
 
   if (loading) return <div className={styles.loading}>Loading…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
