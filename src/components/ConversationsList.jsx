@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSocket } from "../context/socketContext";
 import UnreadBadge from "./UnreadBadge";
@@ -23,6 +23,7 @@ export default function ConversationsList({
   unreadCountsByConversation = {},
 }) {
   const socket = useSocket();
+  const [selectedId, setSelectedId] = useState(selectedConversationId); // מניעת פתיחה אוטומטית של שיחה
 
   // -------- API ENDPOINT ----------
   const endpoint = isBusiness
@@ -83,6 +84,17 @@ export default function ConversationsList({
     return acc;
   }, []);
 
+  // -------- HANDLE SELECT ----------
+  const handleSelect = (convoId, partnerId, displayName) => {
+    console.log("SELECT CONVERSATION", {
+      convoId,
+      partnerId,
+      displayName,
+    });
+    onSelect(convoId, partnerId, displayName);
+    setSelectedId(convoId); // עדכון השיחה שנבחרה
+  };
+
   // -------- RENDER ----------
   return (
     <div className={styles.conversationsList}>
@@ -98,22 +110,13 @@ export default function ConversationsList({
             ? conv.clientName
             : conv.businessName || partnerId;
           const unreadCount = unreadCountsByConversation[convoId] || 0;
-          const isActive = convoId === selectedConversationId;
-
-          const handleSelect = () => {
-            console.log("SELECT CONVERSATION", {
-              convoId,
-              partnerId,
-              displayName,
-            });
-            onSelect(convoId, partnerId, displayName);
-          };
+          const isActive = convoId === selectedId; // השתמש ב-selectedId במקום selectedConversationId
 
           return (
             <div
               key={convoId}
               className={`${styles.convItem} ${isActive ? styles.active : ""}`}
-              onClick={handleSelect}
+              onClick={() => handleSelect(convoId, partnerId, displayName)}
               style={{ position: "relative" }}
             >
               <span>{displayName}</span>
