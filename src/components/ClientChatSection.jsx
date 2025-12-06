@@ -17,38 +17,36 @@ export default function ClientChatSection() {
   const [error, setError] = useState("");
   const [messages, setMessages] = useState([]);
 
-  const safeSetBusinessId = (newId) => setBusinessId((prev) => newId ?? prev);
-
   const socketRef = useRef(null);
 
+  const safeSetBusinessId = (newId) => setBusinessId((prev) => newId ?? prev);
+
   /* ============================================================
-        SOCKET INIT — FIX + LOGS
+      SOCKET INIT — FIXED + LOGS
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId) return;
 
     if (socketRef.current && socketRef.current.connected) {
-      console.log("⚠️ socket already connected, skipping init");
+      console.log("⚠️ Socket already connected — skipping init");
       return;
     }
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
 
-    console.log("🔌 INIT SOCKET →", socketUrl);
+    console.log("🔌 INIT SOCKET:", socketUrl);
 
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       transports: ["websocket"],
       auth: { token, role: "chat" },
-      withCredentials: true,
       autoConnect: false,
       reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 800,
+      reconnectionAttempts: 20,
+      reconnectionDelay: 500,
     });
 
-    // Connect now
     socketRef.current.connect();
 
     socketRef.current.on("connect", () => {
@@ -58,9 +56,6 @@ export default function ClientChatSection() {
 
     socketRef.current.on("disconnect", (reason) => {
       console.warn("🔴 SOCKET DISCONNECTED:", reason);
-      if (reason !== "io client disconnect") {
-        setError("Socket disconnected: " + reason);
-      }
     });
 
     socketRef.current.on("connect_error", (err) => {
@@ -69,64 +64,120 @@ export default function ClientChatSection() {
     });
 
     return () => {
-      if (socketRef.current) {
-        console.log("🔌 SOCKET CLEANUP → disconnect");
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+      console.log("🔌 CLEANUP SOCKET");
+      socketRef.current?.disconnect();
+      socketRef.current = null;
     };
   }, [initialized, userId]);
 
   /* ============================================================
-        AUTO JOIN ROOM — FULL LOGGING
+      LOAD HISTORY (Safe + retriable)
   ============================================================ */
-  useEffect(() => {
+  const loadHistory = () => {
     const socket = socketRef.current;
+
     if (!socket || !conversationId) {
-      console.log("⏳ Waiting for socket or conversationId…");
+      console.log("⏳ loadHistory WAITING for socket/conversationId…");
       return;
     }
 
-    const join = () => {
-      console.log(
-        `📌 JOINING ROOM → user-business-${conversationId}`
-      );
+    if (!socket.connected) {
+      console.log("⚠️ loadHistory postponed — retry when connected");
+
+      socket.once("connect", () => {
+        console.log("🔁 RETRY HISTORY AFTER CONNECT");
+        loadHistory();
+      });
+
+      return;
+    }
+
+    console.log("📜 Loading history for:", conversationId);
+    setLoading(true);
+
+    socket.emit("getHistory", { conversationId }, (res) => {
+      console.log("📥 HISTORY RESPONSE:", res);
+
+      if (res.ok) {
+        setMessages(res.messages || []);
+      } else {
+        setMessages([]);
+      }
+
+      setLoading(false);
+    });
+  };
+
+  /* ============================================================
+      JOIN ROOM → then load history → then listen
+  ============================================================ */
+  useEffect(() => {
+    const socket = socketRef.current;
+
+    if (!socket || !conversationId) {
+      console.log("⏳ Waiting for socket or conversationId for JOIN…");
+      return;
+    }
+
+    const joinRoom = () => {
+      console.log(`📌 JOINING ROOM: user-business-${conversationId}`);
+
       socket.emit(
         "joinConversation",
         "user-business",
         conversationId,
         false,
-        (res) => console.log("📥 JOIN RESPONSE:", res)
+        (res) => {
+          console.log("📥 JOIN RESPONSE:", res);
+          if (res?.ok) loadHistory();
+        }
       );
     };
 
     if (socket.connected) {
-      console.log("🔄 socket already connected — joining room now");
-      join();
+      console.log("🟢 socket already connected → joining room now");
+      joinRoom();
     }
 
     socket.on("connect", () => {
-      console.log("🔄 SOCKET RECONNECTED — joining room again");
-      join();
+      console.log("🔄 SOCKET RECONNECTED → join room again");
+      joinRoom();
     });
 
     return () => {
-      console.log(
-        `🚪 LEAVE ROOM → user-business-${conversationId}`
-      );
-      socket.emit(
-        "leaveConversation",
-        "user-business",
-        conversationId,
-        false
-      );
-
-      socket.off("connect", join);
+      console.log(`🚪 LEAVING ROOM: user-business-${conversationId}`);
+      socket.emit("leaveConversation", "user-business", conversationId, false);
     };
   }, [conversationId]);
 
   /* ============================================================
-        LOAD CONVERSATION METADATA
+      LISTEN FOR NEW MESSAGES
+  ============================================================ */
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+
+    const handleNew = (msg) => {
+      console.log("💬 NEW MESSAGE RECEIVED:", msg);
+
+      setMessages((prev) => {
+        const exists = prev.some(
+          (m) => m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
+        );
+        return exists ? prev : [...prev, msg];
+      });
+    };
+
+    socket.on("newMessage", handleNew);
+
+    return () => {
+      console.log("🔕 Removing newMessage listener");
+      socket.off("newMessage", handleNew);
+    };
+  }, []);
+
+  /* ============================================================
+      LOAD METADATA (BUSINESS + CONVERSATION)
   ============================================================ */
   useEffect(() => {
     setLoading(true);
@@ -137,6 +188,7 @@ export default function ClientChatSection() {
 
     console.log("📂 Loading conversation metadata…");
 
+    // Load conversation that matches business
     if (!threadId || !clientId) {
       fetch(`${baseUrl}/api/messages/user-conversations`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -171,11 +223,12 @@ export default function ClientChatSection() {
           setLoading(false);
         })
         .catch((err) => {
-          console.error("❌ Error:", err);
-          setError("Error loading user conversations");
+          console.error("❌ Error loading conversations:", err);
+          setError("Error loading conversations");
           setLoading(false);
         });
     } else {
+      // Load specific conversation by threadId
       fetch(`${baseUrl}/api/conversations/${threadId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -199,60 +252,7 @@ export default function ClientChatSection() {
   }, [threadId, clientId, businessIdFromParams]);
 
   /* ============================================================
-        LOAD HISTORY + LISTEN FOR LIVE MESSAGES
-        (FULL LOGGING)
-  ============================================================ */
-  useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket || !conversationId) {
-      console.log("⏳ Waiting for socket or conversation before loading history…");
-      return;
-    }
-
-    if (!socket.connected) {
-      console.warn("⚠️ Socket not ready yet — history load postponed");
-      return;
-    }
-
-    console.log("📜 Loading message history for:", conversationId);
-    setLoading(true);
-
-    socket.emit("getHistory", { conversationId }, (res) => {
-      console.log("📥 HISTORY RESPONSE:", res);
-
-      if (res.ok) {
-        setMessages(Array.isArray(res.messages) ? res.messages : []);
-        setError("");
-      } else {
-        setMessages([]);
-        setError("Error loading messages");
-      }
-      setLoading(false);
-    });
-
-    const handleNew = (msg) => {
-      console.log("💬 NEW MESSAGE RECEIVED:", msg);
-
-      setMessages((prev) => {
-        const exists = prev.some(
-          (m) =>
-            m._id === msg._id ||
-            (m.tempId && msg.tempId && m.tempId === msg.tempId)
-        );
-        return exists ? prev : [...prev, msg];
-      });
-    };
-
-    socket.on("newMessage", handleNew);
-
-    return () => {
-      console.log("🔕 Removing newMessage listener");
-      socket.off("newMessage", handleNew);
-    };
-  }, [conversationId]);
-
-  /* ============================================================
-        UI
+      UI
   ============================================================ */
   if (loading) return <div className={styles.loading}>Loading…</div>;
   if (error) return <div className={styles.error}>{error}</div>;
