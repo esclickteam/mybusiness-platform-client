@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useReducer,
-} from "react";
+import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 import API from "../api";
 import { useSocket } from "../context/socketContext";
@@ -11,7 +6,7 @@ import { useNotifications } from "../context/NotificationsContext";
 import "./BusinessChatTab.css";
 
 /* ---------------------------------------------------
-   NORMALIZE
+   NORMALIZE MESSAGE
 --------------------------------------------------- */
 function normalize(msg) {
   return {
@@ -23,7 +18,7 @@ function normalize(msg) {
 }
 
 /* ---------------------------------------------------
-   WHATSAPP STYLE AUDIO PLAYER
+   WHATSAPP-STYLE AUDIO PLAYER
 --------------------------------------------------- */
 function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
   if (!src) return null;
@@ -96,7 +91,7 @@ function WhatsAppAudioPlayer({ src, userAvatar, duration = 0 }) {
 }
 
 /* ---------------------------------------------------
-   REDUCER
+   MESSAGES REDUCER
 --------------------------------------------------- */
 function messagesReducer(state, action) {
   switch (action.type) {
@@ -164,15 +159,10 @@ export default function BusinessChatTab({
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [firstMessageAlert, setFirstMessageAlert] = useState(null);
-
-  const [unreadCounts, setUnreadCounts] = useState({});
-  const unreadCount = unreadCounts[conversationId] || 0;
-
   const listRef = useRef(null);
 
   /* ---------------------------------------------------
-     LOAD HISTORY
+     LOAD MESSAGE HISTORY
 --------------------------------------------------- */
   useEffect(() => {
     if (!conversationId) {
@@ -203,14 +193,13 @@ export default function BusinessChatTab({
   }, [conversationId]);
 
   /* ---------------------------------------------------
-     SOCKET — REAL TIME
+     SOCKET REAL-TIME EVENTS
 --------------------------------------------------- */
   useEffect(() => {
     if (!socket || !conversationId) return;
 
     const isBizConv = conversationType === "business-business";
 
-    /* JOIN ROOM */
     const join = () => {
       socket.emit("joinConversation", conversationType, conversationId, isBizConv);
     };
@@ -218,9 +207,7 @@ export default function BusinessChatTab({
     socket.on("connect", join);
     if (socket.connected) join();
 
-    /* NEW MESSAGE */
     const handleMessage = (msg) => {
-      // 💥 Prevent duplicates — ignore your own messages
       if (String(msg.fromId || msg.from) === String(businessId)) return;
 
       const safe = normalize(msg);
@@ -229,10 +216,8 @@ export default function BusinessChatTab({
       }
     };
 
-    /* CLIENT TYPING */
     const handleTyping = ({ from }) => {
       if (String(from) !== String(customerId)) return;
-
       setIsTyping(true);
       clearTimeout(handleTyping._t);
       handleTyping._t = setTimeout(() => setIsTyping(false), 1800);
@@ -252,7 +237,7 @@ export default function BusinessChatTab({
   }, [socket, conversationId, conversationType, businessId, customerId]);
 
   /* ---------------------------------------------------
-     SCROLL TO BOTTOM
+     SCROLL TO BOTTOM ON UPDATE
 --------------------------------------------------- */
   useEffect(() => {
     const el = listRef.current;
@@ -317,6 +302,15 @@ export default function BusinessChatTab({
   /* ---------------------------------------------------
      RENDER
 --------------------------------------------------- */
+
+  if (!businessId) {
+    return (
+      <div className="chat-container business">
+        <div className="loading">Loading chat...</div>
+      </div>
+    );
+  }
+
   const sorted = [...messages].sort(
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
   );
@@ -331,7 +325,6 @@ export default function BusinessChatTab({
     <div className="chat-container business">
       <div className="chat-header">
         <h3>{customerName}</h3>
-        {unreadCount > 0 && <div className="unread-badge">{unreadCount}</div>}
       </div>
 
       <div className="message-list" ref={listRef}>
@@ -339,7 +332,9 @@ export default function BusinessChatTab({
           <div
             key={`${m._id}-${m.tempId}-${i}`}
             className={`message ${
-              String(m.from) === String(businessId) ? "mine" : "theirs"
+              String(m.fromId || m.from) === String(businessId)
+                ? "mine"
+                : "theirs"
             } ${m.sending ? "sending" : ""} ${m.failed ? "failed" : ""}`}
           >
             {m.fileUrl ? (
@@ -362,7 +357,7 @@ export default function BusinessChatTab({
           </div>
         ))}
 
-        {isTyping && <div className="typing-indicator">The client is typing…</div>}
+        {isTyping && <div className="typing-indicator">Client is typing...</div>}
       </div>
 
       <div className="inputBar">
