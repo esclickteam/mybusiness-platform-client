@@ -20,7 +20,7 @@ export default function ClientChatSection() {
   const socketRef = useRef(null);
 
   /* ===========================================================
-     🔌 1. Create Socket connection
+     1) SOCKET INITIALIZATION (one time only)
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId) return;
@@ -40,111 +40,97 @@ export default function ClientChatSection() {
     });
 
     socketRef.current.on("connect", () => {
-      console.log("✅ Connected to socket:", socketRef.current.id);
+      console.log("✅ Connected:", socketRef.current.id);
       setError("");
     });
 
     socketRef.current.on("disconnect", (reason) => {
-      console.warn("⚠️ Socket disconnected:", reason);
-      if (reason !== "io client disconnect") {
-        setError("The connection to the chat server was disconnected.");
-      }
+      console.warn("⚠️ Disconnected:", reason);
     });
 
     socketRef.current.on("connect_error", (err) => {
-      console.error("❌ Socket connection error:", err);
+      console.error("❌ Socket error:", err);
       setError("Error connecting to chat: " + err.message);
     });
 
     return () => {
-      console.log("🔌 Disconnecting socket...");
+      console.log("🔌 Disconnect socket");
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
   }, [initialized, userId]);
 
   /* ===========================================================
-     🧠 2. Create a new conversation if none exists
+     2) OPEN EXISTING OR CREATE NEW CONVERSATION
   ============================================================ */
   useEffect(() => {
-    if (!initialized || !userId || !businessId || !socketRef.current) return;
-
     const socket = socketRef.current;
-    setLoading(true);
-    setError("");
+    if (!socket || !initialized || !userId || !businessId) return;
 
+    setLoading(true);
+
+    // EXISTING conversation
     if (conversationId) {
-      console.log("💬 Existing conversation found:", conversationId);
-      socket.emit(
-        "joinConversation",
-        "user-business",
-        conversationId,
-        false,
-        (res) => {
-          if (res?.ok) console.log("✅ Joined existing conversation room:", res);
-          else console.warn("⚠️ Failed to join room:", res?.error);
-          setLoading(false);
-        }
-      );
+      console.log("💬 Joining existing conversation:", conversationId);
+
+      socket.emit("joinRoom", conversationId, (res) => {
+        console.log("📌 Joined room:", conversationId);
+        setLoading(false);
+      });
+
       return;
     }
 
+    // NEW conversation
     console.log("🆕 Creating new conversation...");
+
     socket.emit(
       "startConversation",
       { otherUserId: businessId, isBusinessToBusiness: false },
       (res) => {
         if (res?.ok) {
-          console.log("✅ New conversation created:", res.conversationId);
+          console.log("🎉 Conversation created:", res.conversationId);
           setConversationId(res.conversationId);
-          socket.emit(
-            "joinConversation",
-            "user-business",
-            res.conversationId,
-            false,
-            (joinRes) => {
-              if (joinRes?.ok) {
-                console.log("📥 Joined room after creation:", joinRes);
-              } else {
-                console.warn("⚠️ Failed to join room:", joinRes?.error);
-              }
-            }
-          );
+
+          socket.emit("joinRoom", res.conversationId, (joinRes) => {
+            console.log("📌 Joined new room:", res.conversationId);
+          });
         } else {
           console.error("❌ Failed to create conversation:", res?.error);
-          setError("Unable to create a new conversation with the business.");
+          setError("Unable to open chat with this business.");
         }
+
         setLoading(false);
       }
     );
   }, [initialized, userId, businessId, conversationId]);
 
   /* ===========================================================
-     💬 3. Load message history and listen for new messages
+     3) LOAD HISTORY + LISTEN FOR REAL-TIME MESSAGES
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !conversationId) return;
 
-    console.log("📜 Loading message history for conversation:", conversationId);
+    console.log("📜 Fetching message history:", conversationId);
     setLoading(true);
 
     socket.emit("getHistory", { conversationId }, (res) => {
       if (res.ok) {
-        console.log(`✅ Loaded ${res.messages.length} messages`);
+        console.log(`📥 Loaded ${res.messages.length} messages`);
         setMessages(Array.isArray(res.messages) ? res.messages : []);
-        setError("");
       } else {
-        console.error("❌ Error loading messages:", res.error);
+        console.error("❌ Error loading history:", res.error);
         setMessages([]);
-        setError("Error loading messages");
+        setError("Error loading messages.");
       }
       setLoading(false);
     });
 
-    // ✅ מניעת כפילויות אמיתית
+    /* ---- REAL-TIME INCOMING MESSAGES ---- */
     const handleNewMessage = (msg) => {
-      console.log("📩 New message received:", msg);
+      console.log("💬 New message:", msg);
+
       setMessages((prev) => {
         const exists = prev.some(
           (m) =>
@@ -152,7 +138,7 @@ export default function ClientChatSection() {
             (m.tempId && msg.tempId && m.tempId === msg.tempId)
         );
         if (exists) {
-          console.log("⏩ Duplicate message skipped:", msg.text);
+          console.log("⏩ Duplicate skipped");
           return prev;
         }
         return [...prev, msg];
@@ -160,13 +146,15 @@ export default function ClientChatSection() {
     };
 
     socket.on("newMessage", handleNewMessage);
+
+    // Cleanup listener
     return () => {
       socket.off("newMessage", handleNewMessage);
     };
   }, [conversationId]);
 
   /* ===========================================================
-     🧱 4. Load business name (if missing)
+     4) LOAD BUSINESS NAME
   ============================================================ */
   useEffect(() => {
     if (!businessId || businessName) return;
@@ -180,17 +168,14 @@ export default function ClientChatSection() {
       .then((res) => res.json())
       .then((data) => {
         const name =
-          data?.business?.businessName || data?.businessName || "Unnamed business";
+          data?.business?.businessName || data?.businessName || "Business";
         setBusinessName(name);
       })
-      .catch((err) => {
-        console.error("Error fetching business name:", err);
-        setBusinessName("Unknown business");
-      });
+      .catch(() => setBusinessName("Unknown"));
   }, [businessId, businessName]);
 
   /* ===========================================================
-     🖼️ 5. States: loading / error / render chat
+     5) UI STATES
   ============================================================ */
   if (loading)
     return (
@@ -206,7 +191,7 @@ export default function ClientChatSection() {
         <p className="text-red-500">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="bg-purple-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-purple-700 transition"
+          className="bg-purple-600 text-white px-4 py-2 rounded-lg"
         >
           Refresh
         </button>
@@ -214,7 +199,7 @@ export default function ClientChatSection() {
     );
 
   /* ===========================================================
-     💬 6. Chat UI
+     6) RENDER CHAT UI
   ============================================================ */
   return (
     <div className={styles.whatsappBg}>
@@ -222,7 +207,7 @@ export default function ClientChatSection() {
         <aside className={styles.sidebarInner}>
           <h3 className={styles.sidebarTitle}>Chat with the business</h3>
           <div className={styles.convItemActive}>
-            {businessName || "Unknown business"}
+            {businessName || "Business"}
           </div>
         </aside>
 

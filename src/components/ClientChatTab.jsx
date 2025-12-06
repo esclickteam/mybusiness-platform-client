@@ -1,59 +1,53 @@
 import React, { useEffect, useRef, useState, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
-import API from "../api";
 import "./ClientChatTab.css";
 
 /* -------------------------------------------------------------
    NORMALIZE MESSAGE
 ------------------------------------------------------------- */
-function normalize(msg, userId, businessId) {
-  const fromId = String(msg.fromId || msg.from || "");
-  const role = fromId === String(userId) ? "client" : "business";
-
+function normalize(msg, userId) {
   return {
-    ...msg,
-    _id: String(msg._id || msg.id || msg.tempId),
+    _id: msg._id || msg.id || msg.tempId,
     tempId: msg.tempId || null,
-    timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
-    text: msg.text || "",
-    role,
+    fromId: String(msg.fromId),
+    toId: String(msg.toId),
+    text: msg.text || msg.content || "",
+    timestamp: msg.timestamp || msg.createdAt || new Date().toISOString(),
+    role: String(msg.fromId) === String(userId) ? "client" : "business",
+    sending: msg.sending || false,
+    failed: msg.failed || false,
   };
 }
 
 /* -------------------------------------------------------------
-   REDUCER — מניעת כפילויות
+   REDUCER — מניעת כפילויות יציבה
 ------------------------------------------------------------- */
 function messagesReducer(state, action) {
   switch (action.type) {
     case "set":
       return [
-        ...new Map(action.payload.map((m) => [m._id || m.tempId, m])).values(),
+        ...new Map(
+          action.payload.map((m) => [m._id || m.tempId, m])
+        ).values(),
       ];
 
     case "append":
-      // מניעת כפילויות לפי id, tempId, או טקסט וזהות
       if (
         state.some(
           (m) =>
-            m._id === action.payload._id ||
-            m.tempId === action.payload._id ||
-            m._id === action.payload.tempId ||
-            (m.text === action.payload.text &&
-              m.role === action.payload.role &&
-              Math.abs(
-                new Date(m.timestamp) - new Date(action.payload.timestamp)
-              ) < 1000)
+            (m._id && m._id === action.payload._id) ||
+            (m.tempId && m.tempId === action.payload.tempId)
         )
       ) {
-        return state;
+        return state; // skip duplicate
       }
       return [...state, action.payload];
 
-    case "updateStatus":
-      return state.map((m) =>
-        m._id === action.payload.id || m.tempId === action.payload.id
-          ? { ...m, ...action.payload.updates }
-          : m
+    case "update":
+      return state.map((msg) =>
+        msg._id === action.payload.id || msg.tempId === action.payload.id
+          ? { ...msg, ...action.payload.updates }
+          : msg
       );
 
     default:
@@ -69,71 +63,54 @@ export default function ClientChatTab({
   conversationId,
   businessId,
   userId,
-  conversationType = "user-business",
 }) {
   const [messages, dispatch] = useReducer(messagesReducer, []);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [loading, setLoading] = useState(true);
+
   const listRef = useRef(null);
 
   /* -------------------------------------------------------------
-     LOAD HISTORY FROM API
-  ------------------------------------------------------------- */
-  useEffect(() => {
-    if (!conversationId || !userId) return;
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const res = await API.get(`/messages/${conversationId}/history`, {
-          params: { page: 0, limit: 50 },
-        });
-        if (cancelled) return;
-
-        const msgs = res.data.messages.map((msg) =>
-          normalize(msg, userId, businessId)
-        );
-        dispatch({ type: "set", payload: msgs });
-        setLoading(false);
-      } catch {
-        setLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [conversationId, userId, businessId]);
-
-  /* -------------------------------------------------------------
-     SOCKET — REAL TIME MESSAGES (עם מניעת כפילויות אמיתית)
-  ------------------------------------------------------------- */
+     LOAD HISTORY (FROM SOCKET ONLY)
+------------------------------------------------------------- */
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    // ניקוי כל האזנות ישנות
-    socket.off("newMessage");
+    console.log("📜 Loading history via socket:", conversationId);
 
-    const handleNewMessage = (msg) => {
-      const normalized = normalize(msg, userId, businessId);
+    socket.emit("getHistory", { conversationId }, (res) => {
+      if (res.ok) {
+        const normalized = res.messages.map((m) => normalize(m, userId));
+        dispatch({ type: "set", payload: normalized });
+      }
+    });
+
+    // הצטרפות אמיתית לחדר
+    socket.emit("joinRoom", conversationId);
+  }, [socket, conversationId, userId]);
+
+  /* -------------------------------------------------------------
+     SOCKET — REAL TIME
+------------------------------------------------------------- */
+  useEffect(() => {
+    if (!socket) return;
+
+    const handler = (msg) => {
+      console.log("📩 NEW MESSAGE:", msg);
+      const normalized = normalize(msg, userId);
       dispatch({ type: "append", payload: normalized });
     };
 
-    socket.on("newMessage", handleNewMessage);
-
-    // הצטרפות לחדר
-    socket.emit("joinConversation", conversationType, conversationId, false);
+    socket.on("newMessage", handler);
 
     return () => {
-      socket.emit("leaveConversation", conversationType, conversationId, false);
-      socket.off("newMessage", handleNewMessage);
+      socket.off("newMessage", handler);
     };
-  }, [socket, conversationId, userId, businessId, conversationType]);
+  }, [socket, userId]);
 
   /* -------------------------------------------------------------
      AUTO SCROLL
-  ------------------------------------------------------------- */
+------------------------------------------------------------- */
   useEffect(() => {
     if (!listRef.current) return;
     listRef.current.scrollTop = listRef.current.scrollHeight;
@@ -141,58 +118,57 @@ export default function ClientChatTab({
 
   /* -------------------------------------------------------------
      SEND MESSAGE
-  ------------------------------------------------------------- */
+------------------------------------------------------------- */
   const sendMessage = () => {
     if (!input.trim() || sending) return;
 
-    const tempId = uuidv4();
     const text = input.trim();
+    const tempId = uuidv4();
+
     setSending(true);
 
-    // הודעה זמנית (אופטימית)
+    // הודעה אופטימית
     dispatch({
       type: "append",
-      payload: {
-        _id: tempId,
-        tempId,
-        conversationId,
-        fromId: userId,
-        text,
-        timestamp: new Date().toISOString(),
-        sending: true,
-        role: "client",
-      },
+      payload: normalize(
+        {
+          tempId,
+          fromId: userId,
+          toId: businessId,
+          text,
+          sending: true,
+        },
+        userId
+      ),
     });
 
     setInput("");
 
-    // שליחה לשרת
     socket.emit(
       "sendMessage",
       {
         conversationId,
         from: userId,
-        to: businessId,
         text,
         tempId,
-        conversationType,
       },
       (ack) => {
         setSending(false);
 
         if (!ack.ok) {
           dispatch({
-            type: "updateStatus",
+            type: "update",
             payload: { id: tempId, updates: { sending: false, failed: true } },
           });
           return;
         }
 
+        // החלפת ההודעה הזמנית בהודעה האמיתית
         dispatch({
-          type: "updateStatus",
+          type: "update",
           payload: {
             id: tempId,
-            updates: normalize(ack.message, userId, businessId),
+            updates: normalize(ack.message, userId),
           },
         });
       }
@@ -201,16 +177,10 @@ export default function ClientChatTab({
 
   /* -------------------------------------------------------------
      UI
-  ------------------------------------------------------------- */
+------------------------------------------------------------- */
   return (
     <div className="chat-container client">
       <div className="message-list" ref={listRef}>
-        {loading && <div className="loading">Loading...</div>}
-
-        {!loading && messages.length === 0 && (
-          <div className="empty">No messages yet</div>
-        )}
-
         {messages.map((m) => (
           <div
             key={m._id || m.tempId}
@@ -220,7 +190,7 @@ export default function ClientChatTab({
           >
             <div className="text">{m.text}</div>
             <div className="meta">
-              {new Date(m.timestamp).toLocaleTimeString("en-GB", {
+              {new Date(m.timestamp).toLocaleTimeString("he-IL", {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
