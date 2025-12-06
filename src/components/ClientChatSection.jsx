@@ -20,16 +20,24 @@ export default function ClientChatSection() {
   const socketRef = useRef(null);
 
   /* ===========================================================
-     1️⃣ יצירת חיבור Socket יחיד
+     1️⃣ יצירת חיבור Socket יחיד עם בדיקות בטוחות
   ============================================================ */
   useEffect(() => {
     if (!initialized || !userId || socketRef.current) return;
 
     (async () => {
       try {
-        const socket = await createSocket(getValidAccessToken, logout, businessId);
+        // ✅ ודא שהפונקציות קיימות, אחרת ספק גרסאות דיפולטיביות
+        const tokenGetter =
+          typeof getValidAccessToken === "function"
+            ? getValidAccessToken
+            : async () => localStorage.getItem("token");
+
+        const logoutHandler = typeof logout === "function" ? logout : () => {};
+
+        const socket = await createSocket(tokenGetter, logoutHandler, businessId);
         socketRef.current = socket;
-        console.log("✅ Connected to global socket:", socket.id);
+        console.log("✅ Connected to global socket:", socket?.id);
       } catch (err) {
         console.error("❌ Error initializing socket:", err);
         setError("Unable to connect to chat server.");
@@ -44,7 +52,7 @@ export default function ClientChatSection() {
   }, [initialized, userId, businessId]);
 
   /* ===========================================================
-     2️⃣ יצירת שיחה חדשה או הצטרפות קיימת
+     2️⃣ יצירת שיחה חדשה או הצטרפות לשיחה קיימת
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
@@ -95,7 +103,7 @@ export default function ClientChatSection() {
   }, [initialized, userId, businessId, conversationId]);
 
   /* ===========================================================
-     3️⃣ טעינת היסטוריית הודעות והאזנה להודעות חדשות
+     3️⃣ טעינת היסטוריית הודעות והאזנה בזמן אמת
   ============================================================ */
   useEffect(() => {
     const socket = socketRef.current;
