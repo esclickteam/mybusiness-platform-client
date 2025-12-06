@@ -13,209 +13,220 @@ export default function ClientChatSection() {
   const [conversationId, setConversationId] = useState(threadId || null);
   const [businessName, setBusinessName] = useState("");
   const [businessId, setBusinessId] = useState(businessIdFromParams || null);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [messages, setMessages] = useState([]);
-
-  // Prevent overwriting valid values with null/undefined
-  const safeSetBusinessId = (newId) => setBusinessId((prev) => newId ?? prev);
 
   const socketRef = useRef(null);
 
-  // Create socket connection
+  /* ===========================================================
+     🔌 1. יצירת חיבור Socket
+  ============================================================ */
   useEffect(() => {
     if (!initialized || !userId) return;
+
     if (socketRef.current) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL;
     const token = localStorage.getItem("token");
 
+    console.log("🌐 Connecting to socket:", socketUrl);
+
     socketRef.current = io(socketUrl, {
       path: "/socket.io",
       transports: ["websocket"],
-      auth: { token, role: "chat" },
+      auth: { token },
       withCredentials: true,
       autoConnect: true,
     });
 
-    socketRef.current.on("connect", () => setError(""));
+    socketRef.current.on("connect", () => {
+      console.log("✅ Connected to socket:", socketRef.current.id);
+      setError("");
+    });
 
     socketRef.current.on("disconnect", (reason) => {
+      console.warn("⚠️ Socket disconnected:", reason);
       if (reason !== "io client disconnect") {
-        setError("Socket disconnected unexpectedly: " + reason);
+        setError("החיבור לשרת הצ'אט התנתק.");
       }
     });
 
-    socketRef.current.on("connect_error", (err) =>
-      setError("Socket connection error: " + err.message)
-    );
+    socketRef.current.on("connect_error", (err) => {
+      console.error("❌ Socket connection error:", err);
+      setError("שגיאה בהתחברות לצ'אט: " + err.message);
+    });
 
     return () => {
+      console.log("🔌 Disconnecting socket...");
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
   }, [initialized, userId]);
 
-  // Load conversations based on parameters
+  /* ===========================================================
+     🧠 2. יצירת שיחה חדשה אם אין קיימת
+  ============================================================ */
   useEffect(() => {
+    if (!initialized || !userId || !businessId || !socketRef.current) return;
+
+    const socket = socketRef.current;
     setLoading(true);
     setError("");
 
-    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
-    const token = localStorage.getItem("token");
-
-    if (!threadId || !clientId) {
-      fetch(`${baseUrl}/api/messages/user-conversations`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (Array.isArray(data.conversations) && data.conversations.length) {
-            let conv = null;
-            if (businessIdFromParams) {
-              conv = data.conversations.find(
-                (c) => String(c.otherParty?.id) === String(businessIdFromParams)
-              );
-            }
-            if (!conv) conv = data.conversations[0];
-
-            setConversationId(conv.conversationId);
-            setBusinessName(conv.otherParty?.name || "");
-            safeSetBusinessId(conv.otherParty?.id);
+    if (conversationId) {
+      console.log("💬 Existing conversation found:", conversationId);
+      socket.emit(
+        "joinConversation",
+        "user-business",
+        conversationId,
+        false,
+        (res) => {
+          if (res?.ok) {
+            console.log("✅ Joined existing conversation room:", res);
           } else {
-            setConversationId(null);
-            setBusinessName("");
-            safeSetBusinessId(businessIdFromParams);
+            console.warn("⚠️ Failed to join room:", res?.error);
           }
           setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching user conversations:", err);
-          setError("Error loading user conversations");
-          setLoading(false);
-        });
-    } else {
-      fetch(`${baseUrl}/api/conversations/${threadId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (!data.ok) throw new Error(data.error || "Error loading conversation");
-          const participants = data.conversation.participants || [];
-          if (!participants.includes(clientId)) {
-            throw new Error("The conversation does not include the requested client");
-          }
-          setConversationId(threadId);
-          setBusinessName(data.conversation.businessName || "");
-          safeSetBusinessId(businessIdFromParams);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching specific conversation:", err);
-          setError(err.message);
-          setLoading(false);
-        });
-    }
-  }, [threadId, clientId, businessIdFromParams]);
-
-  // Load business name if missing
-  useEffect(() => {
-    if (businessId && !businessName) {
-      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
-      const token = localStorage.getItem("token");
-
-      fetch(`${baseUrl}/api/business/${businessId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error("Failed to fetch business name");
-          return res.json();
-        })
-        .then((data) => {
-          // According to server response structure
-          if (data.business?.businessName) {
-            setBusinessName(data.business.businessName);
-          } else if (data.businessName) {
-            setBusinessName(data.businessName);
-          } else {
-            setBusinessName("Unknown business");
-          }
-        })
-        .catch((err) => {
-          console.error("Error fetching business name:", err);
-          setBusinessName("Unknown business");
-        });
-    }
-  }, [businessId, businessName]);
-
-  // Listen for messages and history via socket
-  useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket || !socket.connected || !conversationId) {
-      setMessages([]);
+        }
+      );
       return;
     }
 
+    console.log("🆕 Creating new conversation...");
+    socket.emit(
+      "startConversation",
+      { otherUserId: businessId, isBusinessToBusiness: false },
+      (res) => {
+        if (res?.ok) {
+          console.log("✅ New conversation created:", res.conversationId);
+          setConversationId(res.conversationId);
+          socket.emit(
+            "joinConversation",
+            "user-business",
+            res.conversationId,
+            false,
+            (joinRes) => {
+              if (joinRes?.ok) {
+                console.log("📥 Joined room after creation:", joinRes);
+              } else {
+                console.warn("⚠️ Failed to join room:", joinRes?.error);
+              }
+            }
+          );
+        } else {
+          console.error("❌ Failed to create conversation:", res?.error);
+          setError("לא ניתן ליצור שיחה חדשה מול העסק.");
+        }
+        setLoading(false);
+      }
+    );
+  }, [initialized, userId, businessId, conversationId]);
+
+  /* ===========================================================
+     💬 3. טעינת הודעות היסטוריות והאזנה להודעות חדשות
+  ============================================================ */
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket || !conversationId) return;
+
+    console.log("📜 Loading message history for conversation:", conversationId);
     setLoading(true);
 
     socket.emit("getHistory", { conversationId }, (res) => {
       if (res.ok) {
+        console.log(`✅ Loaded ${res.messages.length} messages`);
         setMessages(Array.isArray(res.messages) ? res.messages : []);
         setError("");
       } else {
+        console.error("❌ Error loading messages:", res.error);
         setMessages([]);
-        setError("Error loading messages: " + (res.error || "Unknown"));
+        setError("שגיאה בטעינת ההודעות");
       }
       setLoading(false);
     });
 
-    const handleNew = (msg) => {
+    const handleNewMessage = (msg) => {
+      console.log("📩 New message received:", msg);
       setMessages((prev) => {
-        const idx = prev.findIndex(
-          (m) =>
-            m._id === msg._id ||
-            (m.tempId && msg.tempId && m.tempId === msg.tempId)
+        const exists = prev.find(
+          (m) => m._id === msg._id || (m.tempId && msg.tempId && m.tempId === msg.tempId)
         );
-        if (idx !== -1) {
-          const next = [...prev];
-          next[idx] = { ...next[idx], ...msg };
-          return next;
-        }
+        if (exists) return prev;
         return [...prev, msg];
       });
     };
 
-    const handleApproved = (msg) =>
-      setMessages((prev) =>
-        prev.map((m) => (m._id === msg._id ? { ...m, status: "approved" } : m))
-      );
-
-    socket.on("newMessage", handleNew);
-    socket.on("messageApproved", handleApproved);
-
-    socket.emit("joinConversation", conversationId);
-    if (businessId) socket.emit("joinRoom", businessId);
+    socket.on("newMessage", handleNewMessage);
 
     return () => {
-      socket.off("newMessage", handleNew);
-      socket.off("messageApproved", handleApproved);
-      socket.emit("leaveConversation", conversationId);
-      if (businessId) socket.emit("leaveRoom", businessId);
+      socket.off("newMessage", handleNewMessage);
     };
-  }, [conversationId, businessId]);
+  }, [conversationId]);
 
-  if (loading) return <div className={styles.loading}>Loading…</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
+  /* ===========================================================
+     🧱 4. טעינת שם העסק (אם חסר)
+  ============================================================ */
+  useEffect(() => {
+    if (!businessId || businessName) return;
 
+    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
+    const token = localStorage.getItem("token");
+
+    fetch(`${baseUrl}/api/business/${businessId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const name =
+          data?.business?.businessName ||
+          data?.businessName ||
+          "עסק ללא שם";
+        setBusinessName(name);
+      })
+      .catch((err) => {
+        console.error("Error fetching business name:", err);
+        setBusinessName("עסק לא ידוע");
+      });
+  }, [businessId, businessName]);
+
+  /* ===========================================================
+     🖼️ 5. מצבים: טעינה / שגיאה / הצגת צ'אט
+  ============================================================ */
+  if (loading)
+    return (
+      <div className={styles.loadingWrapper}>
+        <div className={styles.spinner}></div>
+        <p>טוען את השיחה...</p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className={styles.errorWrapper}>
+        <p className="text-red-500">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="bg-purple-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-purple-700 transition"
+        >
+          רענן
+        </button>
+      </div>
+    );
+
+  /* ===========================================================
+     💬 6. תצוגת הצ'אט
+  ============================================================ */
   return (
     <div className={styles.whatsappBg}>
       <div className={styles.chatContainer}>
         <aside className={styles.sidebarInner}>
-          <h3 className={styles.sidebarTitle}>Chat with the business</h3>
+          <h3 className={styles.sidebarTitle}>צ'אט עם העסק</h3>
           <div className={styles.convItemActive}>
-            {businessName || "Unknown business"}
+            {businessName || "עסק לא ידוע"}
           </div>
         </aside>
+
         <section className={styles.chatArea}>
           <ClientChatTab
             socket={socketRef.current}
