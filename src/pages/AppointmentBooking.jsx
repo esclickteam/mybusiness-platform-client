@@ -23,7 +23,7 @@ export default function AppointmentBooking({ businessId, serviceId }) {
   }, [businessId, serviceId]);
 
   // Request available appointment slots
-  useEffect(() => {
+   useEffect(() => {
     if (!date) return;
     setLoadingSlots(true);
     setAvailableSlots([]);
