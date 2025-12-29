@@ -467,7 +467,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 
                 {messages.map((msg, i) => {
   const fromId = msg.fromBusinessId || msg.from || msg.fromId;
-  const isMine = fromId?.toString() === myBusinessId?.toString();
+  const toId = msg.toBusinessId || msg.to;
+
+  // 🧠 UX-only: קובע אם זו הודעה שלי
+  const isMine =
+    fromId?.toString() === myBusinessId?.toString() &&
+    toId?.toString() !== myBusinessId?.toString();
 
   const otherBusiness =
     selectedConversation?.participantsInfo?.find(
@@ -484,12 +489,12 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
       }}
     >
       <Box sx={{ maxWidth: 340 }}>
-        {/* 🏷️ שם העסק השולח */}
+        {/* 🏷️ שם העסק */}
         <Box
           sx={{
             fontSize: 11,
             fontWeight: 600,
-            color: isMine ? "#6d4fc4" : "#999",
+            color: isMine ? "#6d4fc4" : "#555",
             mb: 0.4,
             textAlign: isMine ? "right" : "left",
           }}
@@ -499,13 +504,16 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             : otherBusiness?.businessName || "Business"}
         </Box>
 
-        {/* 💬 בועת ההודעה */}
+        {/* 💬 בועת הודעה */}
         <Box
           sx={{
-            background: isMine ? "#e6ddff" : "#fff",
-            p: 1.2,
+            background: isMine ? "#e6ddff" : "#ffffff",
+            border: isMine ? "1px solid #d6c8ff" : "1px solid #eee",
+            p: 1.3,
             borderRadius: 2,
-            boxShadow: 1,
+            boxShadow: isMine
+              ? "0 4px 10px rgba(109,79,196,0.25)"
+              : "0 2px 6px rgba(0,0,0,0.08)",
             wordBreak: "break-word",
             color: "#333",
             borderTopLeftRadius: isMine ? 16 : 4,
@@ -541,6 +549,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
     </Box>
   );
 })}
+
 
 
                 <div ref={messagesEndRef} />
