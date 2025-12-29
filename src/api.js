@@ -40,6 +40,7 @@ const isAuthEndpoint = (url) => {
 let isRefreshing = false;
 let refreshSubscribers = [];
 
+// Refresh token helpers
 function onRefreshed(token) {
   refreshSubscribers.forEach((callback) => callback(token));
   refreshSubscribers = [];
@@ -49,7 +50,7 @@ function addRefreshSubscriber(callback) {
   refreshSubscribers.push(callback);
 }
 
-// Request interceptor: adds Authorization header to every request
+// Request interceptor
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -58,10 +59,19 @@ API.interceptors.request.use(
     } else {
       delete config.headers["Authorization"];
     }
+
+    // 🔥 FIX: אם זה FormData — לא לקבוע JSON!
     if (config.data && !(config.data instanceof FormData)) {
       config.headers["Content-Type"] = "application/json";
+    } else {
+      // חשוב מאוד! אחרת העלאת קבצים תיכשל
+      delete config.headers["Content-Type"];
     }
-    console.log(`API Request: ${config.method.toUpperCase()} ${config.baseURL}${config.url}`);
+
+    console.log(
+      `API Request: ${config.method.toUpperCase()} ${config.baseURL}${config.url}`
+    );
+
     return config;
   },
   (error) => {
@@ -70,20 +80,22 @@ API.interceptors.request.use(
   }
 );
 
-// Response interceptor: handles error responses, including token refresh
+// Response interceptor
 API.interceptors.response.use(
   (response) => {
     console.log(`API Response: ${response.status} ${response.config.url}`);
     return response;
   },
+
   async (error) => {
     const { response, config } = error;
+
     if (!response) {
       console.error("Network error:", error);
       return Promise.reject(new Error("Network error"));
     }
 
-    // Handle 401/403 for non-authentication requests
+    // Handle unauthorized (refresh token)
     if (
       (response.status === 401 || response.status === 403) &&
       !isAuthEndpoint(config.url) &&
@@ -94,10 +106,7 @@ API.interceptors.response.use(
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           addRefreshSubscriber((token) => {
-            if (!token) {
-              reject(new Error("Failed to refresh token"));
-              return;
-            }
+            if (!token) return reject(new Error("Failed to refresh token"));
             config.headers["Authorization"] = `Bearer ${token}`;
             resolve(API(config));
           });
@@ -105,18 +114,22 @@ API.interceptors.response.use(
       }
 
       isRefreshing = true;
+
       try {
         const refreshResponse = await axios.post(
           `${BASE_URL}/auth/refresh-token`,
           null,
           { withCredentials: true }
         );
+
         const newToken = refreshResponse.data.accessToken;
+
         if (newToken) {
           localStorage.setItem("token", newToken);
           setAuthToken(newToken);
           config.headers["Authorization"] = `Bearer ${newToken}`;
           onRefreshed(newToken);
+
           return API(config);
         }
       } catch (err) {
@@ -132,13 +145,16 @@ API.interceptors.response.use(
     // Handle standard errors
     const contentType = response.headers["content-type"] || "";
     let message;
+
     if (!contentType.includes("application/json")) {
-      message = typeof response.data === "string"
-        ? response.data
-        : JSON.stringify(response.data);
+      message =
+        typeof response.data === "string"
+          ? response.data
+          : JSON.stringify(response.data);
     } else {
       message = response.data?.message || JSON.stringify(response.data);
     }
+
     console.error(`API Error ${response.status}:`, message);
     return Promise.reject(new Error(message));
   }

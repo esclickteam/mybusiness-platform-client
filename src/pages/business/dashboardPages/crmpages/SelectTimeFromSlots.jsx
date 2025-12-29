@@ -7,20 +7,33 @@ const SelectTimeFromSlots = ({
   onChange,
   businessId,
   serviceId,
-  schedule = [], // Schedule passed as a prop
+  schedule = [],
 }) => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loading, setLoading] = useState(false);
   const [localSelectedTime, setLocalSelectedTime] = useState(selectedTime || "");
 
-  // Check if the selected date has a valid schedule
+  /**
+   * Validate if selected date has working hours
+   */
   const isDayValid = (schedule, date) => {
-    if (!schedule || schedule.length === 0) return false;
-    const dayOfWeek = new Date(date).getDay(); // 0 = Sunday, 6 = Saturday
-    const daySchedule = schedule.find(s => Number(s.day) === dayOfWeek);
-    return daySchedule && daySchedule.start && daySchedule.end;
+    if (!schedule || schedule.length === 0 || !date) return false;
+
+    const dayOfWeek = new Date(date).getDay(); // 0=Sun..6=Sat
+    const daySchedule = schedule.find((s) => Number(s.day) === dayOfWeek);
+
+    if (!daySchedule) return false;
+    if (daySchedule.closed === true) return false;
+
+    // Start/end must exist
+    if (!daySchedule.start || !daySchedule.end) return false;
+
+    return true;
   };
 
+  /**
+   * Load available slots
+   */
   useEffect(() => {
     if (!businessId || !serviceId || !date) {
       setAvailableSlots([]);
@@ -28,8 +41,8 @@ const SelectTimeFromSlots = ({
       return;
     }
 
+    // If the business is closed this day — no API request
     if (!isDayValid(schedule, date)) {
-      // If there's no valid schedule for this day, don't load slots
       setAvailableSlots([]);
       setLocalSelectedTime("");
       return;
@@ -53,39 +66,41 @@ const SelectTimeFromSlots = ({
     fetchSlots();
   }, [businessId, serviceId, date, schedule]);
 
-  // Sync external selectedTime with local state
+  /**
+   * Sync external selected time
+   */
   useEffect(() => {
     setLocalSelectedTime(selectedTime || "");
   }, [selectedTime]);
 
-  if (loading) return <p>Loading available times...</p>;
+  /**
+   * View
+   */
   if (!date) return <p>Please select a date first</p>;
-  if (availableSlots.length === 0) return <p>No available slots for this date</p>;
+  if (!isDayValid(schedule, date)) return <p>This day is closed</p>;
 
-  const handleTimeSelect = (time) => {
-    setLocalSelectedTime(time);
-    onChange(time);
-  };
-
-  const handleChangeTime = () => {
-    setLocalSelectedTime("");
-    onChange("");
-  };
+  if (loading) return <p>Loading available times...</p>;
+  if (availableSlots.length === 0)
+    return <p>No available slots for this date</p>;
 
   return (
     <div className="time-select-wrapper">
       <label>Time:</label>
+
       {localSelectedTime ? (
         <div>
           <span>Selected time: {localSelectedTime}</span>
-          <button onClick={handleChangeTime} style={{ marginLeft: "10px" }}>
+          <button onClick={() => onChange("")} style={{ marginLeft: "10px" }}>
             Change time
           </button>
         </div>
       ) : (
         <select
           value={localSelectedTime}
-          onChange={(e) => handleTimeSelect(e.target.value)}
+          onChange={(e) => {
+            setLocalSelectedTime(e.target.value);
+            onChange(e.target.value);
+          }}
         >
           <option value="">Select a time</option>
           {availableSlots.map((time) => (

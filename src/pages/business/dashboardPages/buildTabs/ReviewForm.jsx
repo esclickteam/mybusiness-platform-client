@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import jwtDecode from "jwt-decode"; // Install with: npm install jwt-decode
+import jwtDecode from "jwt-decode"; 
 import "./ReviewForm.css";
 
 const ratingFields = [
@@ -28,36 +28,6 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
     return (sum / ratingFields.length).toFixed(1);
   };
 
-  const sendRecommendation = async (avgRating, clientId, reviewText) => {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No auth token, please log in again");
-
-    const payload = {
-      businessId,
-      clientId,
-      conversationId,
-      text: reviewText,
-      reviewRating: parseFloat(avgRating),
-    };
-
-    const res = await fetch("/api/chat/createRecommendation", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || "Error creating recommendation");
-    }
-
-    const data = await res.json();
-    console.log("Recommendation created:", data);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -65,48 +35,44 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
 
     try {
       const token = localStorage.getItem("token");
-      if (!token) throw new Error("No auth token, please log in again");
+      if (!token) throw new Error("No auth token");
 
       const decoded = jwtDecode(token);
       const clientId = decoded.userId;
-      if (!clientId) throw new Error("Invalid token - missing userId");
 
       const reviewData = {
         business: businessId,
         client: clientId,
-        ratings: {
-          service: ratings.service,
-          professional: ratings.professional,
-          timing: ratings.timing,
-          availability: ratings.availability,
-          value: ratings.value,
-          goal: ratings.goal,
-          experience: ratings.experience,
-        },
-        averageScore: parseFloat(calculateAverage()),
         comment: text,
+        averageScore: parseFloat(calculateAverage()),
+
+        // 🔥 Flatten fields (this is what server expects)
+        service: ratings.service,
+        professional: ratings.professional,
+        timing: ratings.timing,
+        availability: ratings.availability,
+        value: ratings.value,
+        goal: ratings.goal,
+        experience: ratings.experience,
       };
 
       if (socket && socket.connected) {
-        // send via socket
-        socket.emit("createReview", reviewData, async (res) => {
-          if (res.ok) {
-            try {
-              await sendRecommendation(reviewData.averageScore, clientId, text);
-            } catch (recErr) {
-              console.error("Error creating recommendation:", recErr);
-            }
-            onSuccess && onSuccess(res.review);
-            setRatings({});
-            setText("");
-            setIsSubmitting(false);
-          } else {
+        socket.emit("createReview", reviewData, (res) => {
+          if (!res.ok) {
             setError(res.error || "Error submitting review");
             setIsSubmitting(false);
+            return;
           }
+
+          // 📌 Pass the new review upward
+          onSuccess && onSuccess(res.review);
+
+          // Reset form
+          setRatings({});
+          setText("");
+          setIsSubmitting(false);
         });
       } else {
-        // fallback: regular fetch
         const response = await fetch(`/api/business/${businessId}/reviews`, {
           method: "POST",
           headers: {
@@ -114,22 +80,15 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(reviewData),
-          credentials: "include",
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-          const data = await response.json();
           throw new Error(data.error || "Error submitting review");
         }
 
-        const data = await response.json();
         onSuccess && onSuccess(data.review);
-
-        try {
-          await sendRecommendation(reviewData.averageScore, clientId, text);
-        } catch (recErr) {
-          console.error("Error creating recommendation:", recErr);
-        }
 
         setRatings({});
         setText("");
@@ -156,7 +115,9 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
             <option value="">Select rating</option>
             {[5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1].map((n) => (
               <option key={n} value={n}>
-                {"★".repeat(Math.round(n)) + "☆".repeat(5 - Math.round(n))} ({n})
+                {"★".repeat(Math.round(n)) +
+                  "☆".repeat(5 - Math.round(n))}{" "}
+                ({n})
               </option>
             ))}
           </select>

@@ -350,6 +350,7 @@ export default function ClientCalendar({
               </p>
               <p>💰 Price: {selectedSlot.price} $</p>
 
+
               <div className="booking-form">
                 <label>Full Name:</label>
                 <input

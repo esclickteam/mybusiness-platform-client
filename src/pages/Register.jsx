@@ -18,7 +18,7 @@ const Register = () => {
     referralCode: "",
   });
 
-  const [error, setError] = useState("");
+   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
   const [searchParams] = useSearchParams();

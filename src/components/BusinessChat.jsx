@@ -15,11 +15,12 @@ export default function BusinessChat({
   getValidAccessToken,
   onLogout,
 }) {
-  const { refreshAccessToken, logout } = useAuth();
+  const { refreshAccessToken } = useAuth();
   const [socket, setSocket] = useState(null);
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [firstMessageSent, setFirstMessageSent] = useState(false);
   const messagesEndRef = useRef(null);
 
   const previousOtherBusinessId = useRef(null);
@@ -58,9 +59,13 @@ export default function BusinessChat({
             return;
           }
           console.log("↩️ getHistory:", h);
-          if (h.ok) setMessages(h.messages);
+          if (h.ok) {
+            setMessages(h.messages);
+            // ✅ אם ההיסטוריה מכילה הודעה אחת בלבד — זו ההודעה הראשונה שכבר נשלחה
+            if (h.messages.length === 1) setFirstMessageSent(true);
+          }
 
-          // Mark messages as read when history is fetched
+          // Mark messages as read
           socket.emit("markMessagesRead", res.conversationId, (ackMark) => {
             if (!ackMark?.ok) {
               console.warn("Failed to mark messages as read:", ackMark?.error);
@@ -133,16 +138,15 @@ export default function BusinessChat({
     };
   }, [token, role, myBusinessId, myBusinessName, getValidAccessToken, refreshAccessToken, onLogout]);
 
-  // Listener for newMessage — ensures socket joins the room if conversationId changes
+  // Listener for new messages
   useEffect(() => {
     if (!socket || !conversationId) return;
 
-    // Ensure connection to the conversation room (in case of disconnect/change)
     socket.emit("joinConversation", conversationId, (ack) => {
       if (!ack?.ok) {
-        console.error("Failed to join conversation on newMessage listener:", ack?.error);
+        console.error("Failed to join conversation:", ack?.error);
       } else {
-        console.log(`Joined conversation room ${conversationId} for message listening`);
+        console.log(`Joined conversation room ${conversationId}`);
       }
     });
 
@@ -150,29 +154,27 @@ export default function BusinessChat({
       console.log("📥 newMessage:", msg);
       if (msg.conversationId === conversationId) {
         setMessages((prev) => [...prev, msg]);
-
-        // Mark messages as read
-        socket.emit("markMessagesRead", conversationId, (ackMark) => {
-          if (!ackMark?.ok) {
-            console.warn("Failed to mark messages as read:", ackMark?.error);
-          } else {
-            console.log("Marked messages as read");
-          }
-        });
+        socket.emit("markMessagesRead", conversationId);
       }
     };
 
     socket.on("newMessage", handler);
-
-    return () => {
-      socket.off("newMessage", handler);
-    };
+    return () => socket.off("newMessage", handler);
   }, [socket, conversationId]);
 
+  /* ===========================================================
+     SEND MESSAGE (כולל מניעת כפילויות)
+  ============================================================ */
   const sendMessage = () => {
     console.log("▶️ sendMessage()", { conversationId, text: input });
     if (!input.trim() || !socket || !conversationId) {
       console.warn("🚫 Abort send (empty or no socket or no conversationId)");
+      return;
+    }
+
+    // 🧩 מניעת כפילות בהודעה הראשונה
+    if (firstMessageSent && messages.length === 1 && messages[0].text === input.trim()) {
+      console.log("⏩ Skipped duplicate first message:", input);
       return;
     }
 
@@ -193,6 +195,7 @@ export default function BusinessChat({
       if (ack.ok) {
         setMessages((prev) => [...prev, ack.message]);
         setInput("");
+        setFirstMessageSent(true); // ✅ מסמן שההודעה הראשונה נשלחה
       } else {
         console.error("❗️ sendMessage failed:", ack.error);
         alert("Message sending failed: " + ack.error);

@@ -13,6 +13,7 @@ const ShopSection    = lazy(() => import("../buildTabs/buildSections/ShopSection
 const ChatSection    = lazy(() => import("../buildTabs/buildSections/ChatSection"));
 const FaqSection     = lazy(() => import("../buildTabs/buildSections/FaqSection"));
 
+
 const TABS = [
   "Main",
   "Gallery",
@@ -52,6 +53,8 @@ export default function Build() {
   const [showViewProfile, setShowViewProfile] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [lockAutosave, setLockAutosave] = useState(false);
+
 
   // Autosave setup
   const [firstLoad, setFirstLoad] = useState(true);
@@ -163,7 +166,8 @@ export default function Build() {
 
   // Autosave debounce
   useEffect(() => {
-    if (firstLoad) return;
+    if (firstLoad || lockAutosave) return;
+
     clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(async () => {
       setIsSaving(true);
@@ -224,43 +228,78 @@ export default function Build() {
     logoInputRef.current?.click();
   };
 
-  const handleLogoChange = async e => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = null;
+  const handleLogoChange = async (e) => {
+  console.log("🔥 handleLogoChange fired");
 
-    if (businessDetails.logo?.preview?.startsWith('blob:')) {
-      URL.revokeObjectURL(businessDetails.logo.preview);
+  const file = e.target.files?.[0];
+  console.log("📁 Selected file:", file);
+  if (!file) return;
+
+  // מניעת בחירה חוזרת של אותו קובץ
+  e.target.value = null;
+
+  // 🔥 מכבים autosave
+  setLockAutosave(true);
+
+  // יצירת preview חדש
+  const previewUrl = URL.createObjectURL(file);
+  console.log("🖼 Preview URL:", previewUrl);
+
+  // עדכון מידי של תצוגה
+  setBusinessDetails((prev) => ({
+  ...prev,
+  logo: {
+    preview: previewUrl,           // מציג מיידית
+    publicId: prev.logoId || null, // שומר ID עד שיהיה חדש מהשרת
+  },
+}));
+
+// 🔥 שולח לכל האתר שהעסק עודכן — הפרופיל הציבורי מתרענן לבד
+window.dispatchEvent(new Event("business-profile-updated"));
+
+
+  
+  // מכינים FormData
+  const fd = new FormData();
+  fd.append("logo", file);
+
+  try {
+    console.log("⬆ Uploading to /business/my/logo ...");
+
+    const res = await API.put("/business/my/logo", fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    console.log("✅ Upload response:", res.data);
+
+    if (res.status === 200) {
+      // עדכון לנתוני Cloudinary
+      setBusinessDetails((prev) => ({
+  ...prev,
+  logo: {
+    preview: res.data.logo,   // קישור אמיתי מהשרת
+    publicId: res.data.logoId,
+  },
+}));
+
+// 🔥 שולח לכל המערכת שהפרופיל עודכן — הפרופיל הציבורי מתרענן אוטומטית
+window.dispatchEvent(new Event("business-profile-updated"));
     }
+  } catch (err) {
+    console.error("❌ Error uploading logo:", err);
+  } finally {
+    // אין למחוק preview לפני זמן — זה שובף את התצוגה
+    setTimeout(() => {
+      console.log("🧹 Cleaning preview URL");
+      URL.revokeObjectURL(previewUrl);
+    }, 500);
 
-    const preview = URL.createObjectURL(file);
-    setBusinessDetails(prev => ({
-      ...prev,
-      logo: { preview }
-    }));
+    // הפעלה מחדש של autosave
+    setLockAutosave(false);
+  }
+};
 
-    const fd = new FormData();
-    fd.append('logo', file);
 
-    try {
-      const res = await API.put('/business/my/logo', fd);
-      if (res.status === 200) {
-        setBusinessDetails(prev => ({
-          ...prev,
-          logo: {
-            preview:  res.data.logo,
-            publicId: res.data.logoId
-          }
-        }));
-      } else {
-        console.warn('Logo upload failed:', res);
-      }
-    } catch (err) {
-      console.error('Error uploading logo:', err);
-    } finally {
-      URL.revokeObjectURL(preview);
-    }
-  };
 
   // ===== MAIN IMAGES =====
   const handleMainImagesChange = async e => {
@@ -346,39 +385,57 @@ export default function Build() {
   };
 
   // ===== GALLERY =====
-  const handleGalleryChange = async e => {
-    const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
-    if (!files.length) return;
-    e.target.value = null;
+  const handleGalleryChange = async (e) => {
+  const files = Array.from(e.target.files || []).slice(0, GALLERY_MAX);
+  if (!files.length) return;
 
-    const tempPreviews = files.map(f => URL.createObjectURL(f));
-    setBusinessDetails(prev => ({
-      ...prev,
-      gallery: [...prev.gallery, ...tempPreviews]
-    }));
+  e.target.value = null;
 
-    const fd = new FormData();
-    files.forEach(f => fd.append("gallery", f));
-    try {
-      const res = await API.put("/business/my/gallery", fd, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-      if (res.status === 200) {
-        const urls = (res.data.gallery || []).map(u => `${u}?v=${Date.now()}`);
-        const ids  = res.data.galleryImageIds || [];
-        setBusinessDetails(prev => ({
-          ...prev,
-          gallery: urls,
-          galleryImageIds: ids
-        }));
-      }
-    } catch (err) {
-      console.error(err);
-      alert("❌ Error uploading gallery");
-    } finally {
-      tempPreviews.forEach(URL.revokeObjectURL);
+  // יוצרת previews מיידיים
+  const tempPreviews = files.map((f) => URL.createObjectURL(f));
+
+  // ⭐ מציגה מייד בגלריה
+  setBusinessDetails((prev) => ({
+  ...prev,
+  gallery: [...prev.gallery, ...tempPreviews],
+  galleryImageIds: [...prev.galleryImageIds, ...tempPreviews.map(() => null)],
+}));
+
+// 🔥 עדכון חי לכל המערכת — הפרופיל הציבורי מתרענן מייד
+window.dispatchEvent(new Event("business-profile-updated"));
+
+  // upload לשרת
+  const fd = new FormData();
+  files.forEach((f) => fd.append("gallery", f));
+
+  try {
+    const res = await API.put("/business/my/gallery", fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    if (res.status === 200) {
+      const urls = res.data.gallery.map((u) => `${u}?v=${Date.now()}`);
+      const ids = res.data.galleryImageIds || [];
+
+      // ⭐ אחרי שהשרת מחזיר תשובה — מחליפים את התמונות הזמניות
+      setBusinessDetails((prev) => ({
+  ...prev,
+  gallery: urls,
+  galleryImageIds: ids,
+}));
+
+// 🔥 טריגר שמודיע לכל האפליקציה שהגלריה עודכנה — 
+// כולל פרופיל ציבורי שמתעדכן מיד בלי refresh
+window.dispatchEvent(new Event("business-profile-updated"));
     }
-  };
+  } catch (err) {
+    console.error("Error uploading gallery:", err);
+    alert("❌ Error uploading gallery");
+  } finally {
+    tempPreviews.forEach((u) => URL.revokeObjectURL(u));
+  }
+};
+
 
   const handleDeleteGalleryImage = async publicId => {
     if (!publicId) return;
@@ -451,97 +508,98 @@ export default function Build() {
 
   // ===== TOP BAR =====
   const renderTopBar = () => {
-    const avg = businessDetails.reviews.length
-      ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) / businessDetails.reviews.length
-      : 0;
+  const avg = businessDetails.reviews.length
+    ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) /
+      businessDetails.reviews.length
+    : 0;
 
-    return (
-      <div className="topbar-preview">
-        <div className="logo-circle" onClick={handleLogoClick}>
-          {businessDetails.logo?.preview ? (
-            <img src={businessDetails.logo.preview} className="logo-img" />
-          ) : businessDetails.logo ? (
-            <img src={businessDetails.logo} className="logo-img" />
-          ) : (
-            <span>Logo</span>
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            ref={logoInputRef}
-            onChange={handleLogoChange}
-          />
-        </div>
-
-        <div className="name-rating">
-          <h2>{businessDetails.businessName || "Business Name"}</h2>
-          <div className="rating-badge">
-            <span className="star">★</span>
-            <span>{avg.toFixed(1)} / 5</span>
-          </div>
-        </div>
-
-        {businessDetails.category && (
-          <p className="preview-category">
-            <strong>Category:</strong> {businessDetails.category}
-          </p>
+  return (
+    <div className="topbar-preview">
+      <div className="logo-circle" onClick={() => logoInputRef.current?.click()}>
+        {businessDetails.logo?.preview ? (
+          <img src={businessDetails.logo.preview} className="logo-img" />
+        ) : businessDetails.logo ? (
+          <img src={businessDetails.logo} className="logo-img" />
+        ) : (
+          <span>Logo</span>
         )}
+        
+             </div>
 
-        {businessDetails.description && (
-          <p className="preview-description">
-            <strong>Description:</strong> {businessDetails.description}
-          </p>
-        )}
-        {businessDetails.phone && (
-          <p className="preview-phone">
-            <strong>Phone:</strong> {businessDetails.phone}
-          </p>
-        )}
-        {businessDetails.address.city && (
-          <p className="preview-city">
-            <strong>City:</strong> {businessDetails.address.city}
-          </p>
-        )}
-
-        <hr className="divider" />
-
-        <div className="tabs">
-          {TABS.map(tab => (
-            <button
-              key={tab}
-              type="button"
-              className={`tab ${tab === currentTab ? "active" : ""}`}
-              onClick={() => setCurrentTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
+      <div className="name-rating">
+        <h2>{businessDetails.businessName || "Business Name"}</h2>
+        <div className="rating-badge">
+          <span className="star">★</span>
+          <span>{avg.toFixed(1)} / 5</span>
         </div>
       </div>
-    );
-  };
+
+      {businessDetails.category && (
+        <p className="preview-category">
+          <strong>Category:</strong> {businessDetails.category}
+        </p>
+      )}
+
+      {businessDetails.description && (
+        <p className="preview-description">
+          <strong>Description:</strong> {businessDetails.description}
+        </p>
+      )}
+
+      {businessDetails.phone && (
+        <p className="preview-phone">
+          <strong>Phone:</strong> {businessDetails.phone}
+        </p>
+      )}
+      {businessDetails.address.city && (
+        <p className="preview-city">
+          <strong>City:</strong> {businessDetails.address.city}
+        </p>
+      )}
+
+      <hr className="divider" />
+
+      <div className="tabs">
+        {TABS.map(tab => (
+          <button
+            key={tab}
+            type="button"
+            className={`tab ${tab === currentTab ? "active" : ""}`}
+            onClick={() => setCurrentTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 
   const renderTabContent = () => {
     switch (currentTab) {
       case "Main":
         return (
           <MainSection
-            businessDetails={businessDetails}
-            reviews={businessDetails.reviews}
-            handleInputChange={handleInputChange}
-            handleMainImagesChange={handleMainImagesChange}
-            handleDeleteImage={handleDeleteMainImage}
-            handleEditImage={openMainImageEdit}
-            handleSave={handleSave}
-            showViewProfile={showViewProfile}
-            navigate={navigate}
-            currentUser={currentUser}
-            renderTopBar={renderTopBar}
-            logoInputRef={logoInputRef}
-            mainImagesInputRef={mainImagesInputRef}
-            isSaving={isSaving}
-          />
+    businessDetails={businessDetails}
+    reviews={businessDetails.reviews}
+    handleInputChange={handleInputChange}
+    handleMainImagesChange={handleMainImagesChange}
+    handleDeleteImage={handleDeleteMainImage}
+
+    handleLogoChange={handleLogoChange}   // ← הוספתי!
+
+    handleEditImage={openMainImageEdit}
+    handleSave={handleSave}
+    showViewProfile={showViewProfile}
+    navigate={navigate}
+    currentUser={currentUser}
+    renderTopBar={renderTopBar}
+    logoInputRef={logoInputRef}
+    mainImagesInputRef={mainImagesInputRef}
+    isSaving={isSaving}
+/>
+
         );
       case "Gallery":
         return (

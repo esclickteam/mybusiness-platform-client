@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
-import { useNotifications } from "../../context/NotificationsContext";
 import { useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
@@ -18,22 +17,22 @@ import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 
 /* ============================
-   🧭 רשימת טאבים
-   ============================ */
+   🧭 Tabs
+============================ */
 const tabs = [
   { path: "dashboard", label: "Dashboard" },
   { path: "build", label: "Edit Business Page" },
   { path: "messages", label: "Customer Messages" },
   { path: "collab", label: "Collaborations" },
   { path: "crm", label: "CRM System" },
-  { path: "billing", label: "Billing & Subscription" }, // 💳 חדש
+  { path: "billing", label: "Billing & Subscription" },
   { path: "BizUply", label: "BizUply Advisor" },
   { path: "help-center", label: "Help Center" },
 ];
 
 /* ============================
    🔌 Socket.io
-   ============================ */
+============================ */
 const SOCKET_URL = "https://api.bizuply.com";
 const socket = io(SOCKET_URL, { autoConnect: false });
 
@@ -43,63 +42,93 @@ export default function BusinessDashboardLayout({ children }) {
   const { businessId } = useParams();
   const location = useLocation();
   const queryClient = useQueryClient();
-  const { unreadCount: messagesCount } = useNotifications();
 
+  /* ============================
+     📩 LIVE UNREAD CHAT COUNT
+  ============================ */
+  const [messagesCount, setMessagesCount] = useState(0);
+
+  useEffect(() => {
+    if (!user?.businessId) return;
+
+    // טעינה ראשונית מהשרת
+    API.get(`/chat/unread-count`)
+      .then((res) => {
+        console.log("Unread count from API:", res.data?.count); // לוג של נתוני ה־API
+        setMessagesCount(res.data?.count || 0);
+      })
+      .catch((error) => {
+        console.error("Error fetching unread count:", error); // לוג של שגיאה אם יש
+        setMessagesCount(0);
+      });
+
+    // התחברות לסוקט
+    if (!socket.connected) {
+      socket.connect();
+      console.log("Socket connected successfully"); // לוג של התחברות מוצלחת
+    }
+
+    socket.emit("joinRoom", `business-${user.businessId}`);
+    console.log(`Socket joined room: business-${user.businessId}`); // לוג של התחברות לחדר
+
+    // האזנה לעדכוני badge בזמן אמת
+    socket.on("unreadCountUpdate", (data) => {
+      console.log("📨 Live unread count received via socket:", data.count); // לוג של עדכון בזמן אמת
+      setMessagesCount(data.count || 0);
+      console.log("Updated unread count state:", messagesCount); // לוג של העדכון ב־state
+    });
+
+    // טיפול בסגירת הסוקט
+    return () => {
+      socket.off("unreadCountUpdate");
+      socket.emit("leaveRoom", `business-${user.businessId}`);
+      console.log(`Socket left room: business-${user.businessId}`); // לוג של יציאה מהחדר
+    };
+  }, [user?.businessId]);
+
+  /* ============================
+     📱 Sidebar
+  ============================ */
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
   const sidebarRef = useRef(null);
 
-  /* 🚪 יציאה */
+  /* 🚪 Logout */
   const handleLogout = async () => {
     try {
       if (socket?.connected) socket.disconnect();
+      console.log("Socket disconnected"); // לוג של ניתוק הסוקט
       if (typeof logout === "function") await logout();
       else localStorage.clear();
+
       setShowSidebar(false);
       navigate("/", { replace: true });
-    } catch (e) {
-      console.error("Logout failed:", e);
+    } catch (error) {
+      console.error("Logout Error:", error); // לוג של שגיאה בעת התנתקות
       navigate("/", { replace: true });
     }
   };
 
-  /* 🧠 חיבור Socket לעסק */
-  useEffect(() => {
-    if (!user?.businessId) return;
-    if (!socket.connected) socket.connect();
-    socket.emit("joinBusinessRoom", user.businessId);
-    return () => {
-      socket.emit("leaveRoom", `business-${user.businessId}`);
-    };
-  }, [user?.businessId]);
-
-  /* 🚀 Prefetch נתונים חשובים */
+  /* 🚀 Prefetch Data */
   useEffect(() => {
     if (!user?.businessId) return;
 
-    queryClient.prefetchQuery(
-      ["business-profile", user.businessId],
-      () => API.get(`/business/${user.businessId}`).then((res) => res.data)
-    );
+    queryClient.prefetchQuery({
+      queryKey: ["business-profile", user.businessId],
+      queryFn: () =>
+        API.get(`/business/${user.businessId}`).then((res) => res.data),
+    });
 
-    queryClient.prefetchQuery(
-      ["unread-messages", user.businessId],
-      () =>
-        API.get(`/messages/unread-count?businessId=${user.businessId}`).then(
-          (res) => res.data
-        )
-    );
-
-    queryClient.prefetchQuery(
-      ["crm-appointments", user.businessId],
-      () =>
+    queryClient.prefetchQuery({
+      queryKey: ["crm-appointments", user.businessId],
+      queryFn: () =>
         API.get(
           `/appointments/all-with-services?businessId=${user.businessId}`
-        ).then((res) => res.data)
-    );
+        ).then((res) => res.data),
+    });
   }, [user?.businessId, queryClient]);
 
-  /* 🔐 הרשאות */
+  /* 🔐 Permissions */
   useEffect(() => {
     if (!loading && user?.role !== "business") {
       navigate("/", { replace: true });
@@ -117,7 +146,7 @@ export default function BusinessDashboardLayout({ children }) {
     }
   }, [user, loading, location.search, location.state, navigate]);
 
-  /* 📱 Resize */
+  /* 📱 Window Resize */
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -128,13 +157,15 @@ export default function BusinessDashboardLayout({ children }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* ⌨️ Focus trap במובייל */
+  /* ♿ Focus Trap (for mobile) */
   useEffect(() => {
     if (!isMobile || !showSidebar) return;
+
     const sel =
       'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const els = sidebarRef.current?.querySelectorAll(sel) ?? [];
     if (!els.length) return;
+
     const first = els[0];
     const last = els[els.length - 1];
 
@@ -153,12 +184,15 @@ export default function BusinessDashboardLayout({ children }) {
 
     document.addEventListener("keydown", onKey);
     first.focus();
+
     return () => document.removeEventListener("keydown", onKey);
   }, [isMobile, showSidebar]);
 
   if (loading) return <p className="loading">Loading information…</p>;
 
-  /* 🎨 Layout */
+  /* ============================
+     🎨 Layout
+  ============================ */
   return (
     <BusinessServicesProvider>
       <AiProvider>
@@ -204,6 +238,7 @@ export default function BusinessDashboardLayout({ children }) {
                       View Public Profile
                     </NavLink>
                   )}
+
                   {tabs.map(({ path, label }) => (
                     <NavLink
                       key={path}
@@ -225,7 +260,6 @@ export default function BusinessDashboardLayout({ children }) {
                   ))}
                 </nav>
 
-                {/* 👤 אזור משתמש במובייל */}
                 {isMobile && (
                   <div className="sidebar-footer">
                     <span className="user-name">Hello, {user?.name}</span>
@@ -237,12 +271,12 @@ export default function BusinessDashboardLayout({ children }) {
               </aside>
             )}
 
-            {/* 🧭 Header לדסקטופ */}
             {!isMobile && (
               <header className="dashboard-header">
                 <div className="dashboard-header-left">
                   <FacebookStyleNotifications />
                 </div>
+
                 <div className="dashboard-header-right">
                   <span className="user-name">Hello, {user?.name}</span>
                   <button className="logout-btn" onClick={handleLogout}>
@@ -252,7 +286,7 @@ export default function BusinessDashboardLayout({ children }) {
               </header>
             )}
 
-            {/* ☰ פתיחת תפריט במובייל */}
+            {/* ☰ Mobile Menu */}
             {isMobile && !showSidebar && (
               <button
                 className="sidebar-open-btn"
@@ -263,14 +297,13 @@ export default function BusinessDashboardLayout({ children }) {
               </button>
             )}
 
-            {/* 🔔 פעמון למובייל */}
+             {/* 🔔 Bell on mobilee */}
             {isMobile && (
               <div className="dashboard-bell">
                 <FacebookStyleNotifications />
               </div>
             )}
 
-            {/* 🧩 תוכן דינמי */}
             <main
               className="dashboard-content"
               tabIndex={-1}
@@ -282,6 +315,6 @@ export default function BusinessDashboardLayout({ children }) {
           </div>
         </div>
       </AiProvider>
-    </BusinessServicesProvider>
+      </BusinessServicesProvider>
   );
 }

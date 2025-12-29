@@ -444,3 +444,28 @@
     padding: 3rem;
   }
 }
+
+
+.react-tel-input .flag-dropdown {
+  left: 10px !important;
+  right: auto !important;
+}
+
+/* שהשדה לא יידחף ימינה בגלל RTL */
+.react-tel-input {
+  direction: ltr !important;
+}
+
+/* שהטקסט יישאר מיושר לשמאל */
+.react-tel-input .form-control {
+  text-align: left !important;
+  padding-left: 60px !important; /* מקום לדגל */
+  padding-right: 12px !important;
+}
+
+.form-column input,
+.form-column textarea,
+.form-column select {
+  direction: ltr !important;
+  text-align: left !important;
+}
