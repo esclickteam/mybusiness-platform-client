@@ -465,26 +465,17 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   )?.businessName || "Business"}
                 </Box>
 
-                // 🔹 קביעה חד־פעמית: מי שלח את ההודעה הראשונה
-const firstMsgFromId =
-  messages[0]?.fromBusinessId || messages[0]?.from || messages[0]?.fromId;
-
-const firstMessageIsMine =
-  firstMsgFromId?.toString() === myBusinessId?.toString();
-
-{messages.map((msg, i) => {
+                {messages.map((msg, i) => {
   const fromId = msg.fromBusinessId || msg.from || msg.fromId;
+  const toId = msg.toBusinessId || msg.to;
 
-  // 🧠 קביעה אמיתית של צד ההודעה (UX-only)
-  let isMine;
-
-  if (i === 0) {
-    // ההודעה הראשונה – לפי מי באמת שלח
-    isMine = fromId?.toString() === myBusinessId?.toString();
-  } else {
-    // שאר ההודעות – ההפך מהראשונה
-    isMine = firstMessageIsMine;
-  }
+  // 🧠 קביעה יציבה של isMine
+  const isMine =
+    // מצב תקין – from/to עובדים
+    (fromId?.toString() === myBusinessId?.toString() &&
+      toId?.toString() !== myBusinessId?.toString()) ||
+    // fallback – הודעות שנשלחו מהקליינט (optimistic / socket)
+    msg.sending === true;
 
   const otherBusiness =
     selectedConversation?.participantsInfo?.find(
@@ -536,7 +527,6 @@ const firstMessageIsMine =
         >
           <Box>{msg?.text ?? "[No text]"}</Box>
 
-          {/* ⏱ זמן + סטטוס */}
           <Box
             sx={{
               fontSize: 11,
