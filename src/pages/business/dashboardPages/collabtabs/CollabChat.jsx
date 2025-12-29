@@ -465,14 +465,26 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                   )?.businessName || "Business"}
                 </Box>
 
-                {messages.map((msg, i) => {
-  const fromId = msg.fromBusinessId || msg.from || msg.fromId;
-  const toId = msg.toBusinessId || msg.to;
+                // 🔹 קביעה חד־פעמית: מי שלח את ההודעה הראשונה
+const firstMsgFromId =
+  messages[0]?.fromBusinessId || messages[0]?.from || messages[0]?.fromId;
 
-  // 🧠 UX-only: קובע אם זו הודעה שלי
-  const isMine =
-    fromId?.toString() === myBusinessId?.toString() &&
-    toId?.toString() !== myBusinessId?.toString();
+const firstMessageIsMine =
+  firstMsgFromId?.toString() === myBusinessId?.toString();
+
+{messages.map((msg, i) => {
+  const fromId = msg.fromBusinessId || msg.from || msg.fromId;
+
+  // 🧠 קביעה אמיתית של צד ההודעה (UX-only)
+  let isMine;
+
+  if (i === 0) {
+    // ההודעה הראשונה – לפי מי באמת שלח
+    isMine = fromId?.toString() === myBusinessId?.toString();
+  } else {
+    // שאר ההודעות – ההפך מהראשונה
+    isMine = firstMessageIsMine;
+  }
 
   const otherBusiness =
     selectedConversation?.participantsInfo?.find(
@@ -536,10 +548,7 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
             {(msg.timestamp || msg.createdAt) &&
               new Date(msg.timestamp || msg.createdAt).toLocaleTimeString(
                 "en-US",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }
+                { hour: "2-digit", minute: "2-digit" }
               )}
             {msg.sending && " ⏳"}
             {msg.failed && " ❌"}
