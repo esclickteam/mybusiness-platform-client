@@ -466,90 +466,54 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 </Box>
 
                 {messages.map((msg, i) => {
-  const fromId = msg.fromBusinessId || msg.from || msg.fromId;
-  const toId = msg.toBusinessId || msg.to;
+                  const fromId = msg.fromBusinessId || msg.from || msg.fromId;
+                  const isMine = fromId?.toString() === myBusinessId?.toString();
 
-  // 🧠 קביעה יציבה של isMine
-  const isMine =
-    // מצב תקין – from/to עובדים
-    (fromId?.toString() === myBusinessId?.toString() &&
-      toId?.toString() !== myBusinessId?.toString()) ||
-    // fallback – הודעות שנשלחו מהקליינט (optimistic / socket)
-    msg.sending === true;
-
-  const otherBusiness =
-    selectedConversation?.participantsInfo?.find(
-      (b) => b._id.toString() !== myBusinessId.toString()
-    );
-
-  return (
-    <Box
-      key={msg?._id ? msg._id.toString() : `pending-${i}`}
-      sx={{
-        display: "flex",
-        justifyContent: isMine ? "flex-end" : "flex-start",
-        mb: 1.6,
-      }}
-    >
-      <Box sx={{ maxWidth: 340 }}>
-        {/* 🏷️ שם העסק */}
-        <Box
-          sx={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: isMine ? "#6d4fc4" : "#555",
-            mb: 0.4,
-            textAlign: isMine ? "right" : "left",
-          }}
-        >
-          {isMine
-            ? `You · ${myBusinessName}`
-            : otherBusiness?.businessName || "Business"}
-        </Box>
-
-        {/* 💬 בועת הודעה */}
-        <Box
-          sx={{
-            background: isMine ? "#e6ddff" : "#ffffff",
-            border: isMine ? "1px solid #d6c8ff" : "1px solid #eee",
-            p: 1.3,
-            borderRadius: 2,
-            boxShadow: isMine
-              ? "0 4px 10px rgba(109,79,196,0.25)"
-              : "0 2px 6px rgba(0,0,0,0.08)",
-            wordBreak: "break-word",
-            color: "#333",
-            borderTopLeftRadius: isMine ? 16 : 4,
-            borderTopRightRadius: isMine ? 4 : 16,
-            borderBottomLeftRadius: 16,
-            borderBottomRightRadius: 16,
-          }}
-        >
-          <Box>{msg?.text ?? "[No text]"}</Box>
-
-          <Box
-            sx={{
-              fontSize: 11,
-              color: "#888",
-              mt: 0.5,
-              textAlign: isMine ? "right" : "left",
-            }}
-          >
-            {(msg.timestamp || msg.createdAt) &&
-              new Date(msg.timestamp || msg.createdAt).toLocaleTimeString(
-                "en-US",
-                { hour: "2-digit", minute: "2-digit" }
-              )}
-            {msg.sending && " ⏳"}
-            {msg.failed && " ❌"}
-          </Box>
-        </Box>
-      </Box>
-    </Box>
-  );
-})}
-
-
+                  return (
+                    <Box
+                      key={msg?._id ? msg._id.toString() : `pending-${i}`}
+                      sx={{
+                        display: "flex",
+                        justifyContent: isMine ? "flex-end" : "flex-start",
+                        mb: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          background: isMine ? "#e6ddff" : "#fff",
+                          p: 1.2,
+                          borderRadius: 2,
+                          maxWidth: 340,
+                          boxShadow: 1,
+                          wordBreak: "break-word",
+                          color: isMine ? "black" : "#333",
+                          borderTopLeftRadius: isMine ? 16 : 2,
+                          borderTopRightRadius: isMine ? 2 : 16,
+                          borderBottomLeftRadius: 16,
+                          borderBottomRightRadius: 16,
+                        }}
+                      >
+                        <Box>{msg?.text ?? "[No text]"}</Box>
+                        <Box
+                          sx={{
+                            fontSize: 11,
+                            color: "#888",
+                            mt: 0.5,
+                            textAlign: isMine ? "right" : "left",
+                          }}
+                        >
+                          {(msg.timestamp || msg.createdAt) &&
+                            new Date(msg.timestamp || msg.createdAt).toLocaleTimeString("en-US", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          {msg.sending && <span> ⏳</span>}
+                          {msg.failed && <span> ❌</span>}
+                        </Box>
+                      </Box>
+                    </Box>
+                  );
+                })}
 
                 <div ref={messagesEndRef} />
               </>
