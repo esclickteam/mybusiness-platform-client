@@ -466,54 +466,82 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
                 </Box>
 
                 {messages.map((msg, i) => {
-                  const fromId = msg.fromBusinessId || msg.from || msg.fromId;
-                  const isMine = fromId?.toString() === myBusinessId?.toString();
+  const fromId = msg.fromBusinessId || msg.from || msg.fromId;
+  const isMine = fromId?.toString() === myBusinessId?.toString();
 
-                  return (
-                    <Box
-                      key={msg?._id ? msg._id.toString() : `pending-${i}`}
-                      sx={{
-                        display: "flex",
-                        justifyContent: isMine ? "flex-end" : "flex-start",
-                        mb: 1,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          background: isMine ? "#e6ddff" : "#fff",
-                          p: 1.2,
-                          borderRadius: 2,
-                          maxWidth: 340,
-                          boxShadow: 1,
-                          wordBreak: "break-word",
-                          color: isMine ? "black" : "#333",
-                          borderTopLeftRadius: isMine ? 16 : 2,
-                          borderTopRightRadius: isMine ? 2 : 16,
-                          borderBottomLeftRadius: 16,
-                          borderBottomRightRadius: 16,
-                        }}
-                      >
-                        <Box>{msg?.text ?? "[No text]"}</Box>
-                        <Box
-                          sx={{
-                            fontSize: 11,
-                            color: "#888",
-                            mt: 0.5,
-                            textAlign: isMine ? "right" : "left",
-                          }}
-                        >
-                          {(msg.timestamp || msg.createdAt) &&
-                            new Date(msg.timestamp || msg.createdAt).toLocaleTimeString("en-US", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          {msg.sending && <span> ⏳</span>}
-                          {msg.failed && <span> ❌</span>}
-                        </Box>
-                      </Box>
-                    </Box>
-                  );
-                })}
+  const otherBusiness =
+    selectedConversation?.participantsInfo?.find(
+      (b) => b._id.toString() !== myBusinessId.toString()
+    );
+
+  return (
+    <Box
+      key={msg?._id ? msg._id.toString() : `pending-${i}`}
+      sx={{
+        display: "flex",
+        justifyContent: isMine ? "flex-end" : "flex-start",
+        mb: 1.6,
+      }}
+    >
+      <Box sx={{ maxWidth: 340 }}>
+        {/* 🏷️ שם העסק השולח */}
+        <Box
+          sx={{
+            fontSize: 11,
+            fontWeight: 600,
+            color: isMine ? "#6d4fc4" : "#999",
+            mb: 0.4,
+            textAlign: isMine ? "right" : "left",
+          }}
+        >
+          {isMine
+            ? `You · ${myBusinessName}`
+            : otherBusiness?.businessName || "Business"}
+        </Box>
+
+        {/* 💬 בועת ההודעה */}
+        <Box
+          sx={{
+            background: isMine ? "#e6ddff" : "#fff",
+            p: 1.2,
+            borderRadius: 2,
+            boxShadow: 1,
+            wordBreak: "break-word",
+            color: "#333",
+            borderTopLeftRadius: isMine ? 16 : 4,
+            borderTopRightRadius: isMine ? 4 : 16,
+            borderBottomLeftRadius: 16,
+            borderBottomRightRadius: 16,
+          }}
+        >
+          <Box>{msg?.text ?? "[No text]"}</Box>
+
+          {/* ⏱ זמן + סטטוס */}
+          <Box
+            sx={{
+              fontSize: 11,
+              color: "#888",
+              mt: 0.5,
+              textAlign: isMine ? "right" : "left",
+            }}
+          >
+            {(msg.timestamp || msg.createdAt) &&
+              new Date(msg.timestamp || msg.createdAt).toLocaleTimeString(
+                "en-US",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              )}
+            {msg.sending && " ⏳"}
+            {msg.failed && " ❌"}
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+})}
+
 
                 <div ref={messagesEndRef} />
               </>
