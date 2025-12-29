@@ -199,89 +199,77 @@ export default function BusinessDashboardLayout({ children }) {
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
             {/* 🔹 Sidebar */}
-{(!isMobile || showSidebar) && (
-  <aside
-    className={`sidebar ${isMobile ? "mobile open" : ""}`}
-    ref={sidebarRef}
-    aria-modal={isMobile && showSidebar ? "true" : undefined}
-    role={isMobile && showSidebar ? "dialog" : undefined}
-  >
-    {/* Logo */}
-    <div className="sidebar-logo">
-      <img
-        src="/bizuply logo.png"
-        alt="BizUply Logo"
-        className="sidebar-logo-img"
-      />
-      {isMobile && (
-        <button
-          className="sidebar-close-btn"
-          aria-label="Close menu"
-          onClick={() => setShowSidebar(false)}
-        >
-          <FaTimes size={18} />
-        </button>
-      )}
-    </div>
-
-    {/* Navigation */}
-    <nav className="sidebar-nav">
-      {/* Public profile */}
-      {user?.role === "business" && (
-        <NavLink
-          to={`/business/${businessId}`}
-          end
-          className={({ isActive }) =>
-            `nav-item standalone ${isActive ? "active" : ""}`
-          }
-          onClick={() => isMobile && setShowSidebar(false)}
-        >
-          View Public Profile
-        </NavLink>
-      )}
-
-      {/* Sections */}
-      {SIDEBAR_SECTIONS.map((section) => (
-        <div key={section.title} className="nav-section">
-          <div className="nav-section-title">{section.title}</div>
-
-          {tabs
-            .filter((t) => section.items.includes(t.path))
-            .map(({ path, label }) => (
-              <NavLink
-                key={path}
-                to={`/business/${businessId}/dashboard/${path}`}
-                end={
-                  location.pathname ===
-                  `/business/${businessId}/dashboard/${path}`
-                }
-                className={({ isActive }) =>
-                  `nav-item ${isActive ? "active" : ""}`
-                }
-                onClick={() => isMobile && setShowSidebar(false)}
+            {(!isMobile || showSidebar) && (
+              <aside
+                className={`sidebar ${isMobile ? "mobile open" : ""}`}
+                ref={sidebarRef}
+                aria-modal={isMobile && showSidebar ? "true" : undefined}
+                role={isMobile && showSidebar ? "dialog" : undefined}
               >
-                <span className="nav-label">{label}</span>
+                <div className="sidebar-logo">
+                  <img
+                    src="/bizuply logo.png"
+                    alt="BizUply Logo"
+                    className="sidebar-logo-img"
+                  />
+                  {isMobile && (
+                    <button
+                      className="sidebar-close-btn"
+                      aria-label="Close menu"
+                      onClick={() => setShowSidebar(false)}
+                    >
+                      <FaTimes size={18} />
+                    </button>
+                  )}
+                </div>
 
-                {path === "messages" && messagesCount > 0 && (
-                  <span className="nav-badge">{messagesCount}</span>
+                <h2>Business Management</h2>
+
+                <nav>
+                  {user?.role === "business" && (
+                    <NavLink
+                      to={`/business/${businessId}`}
+                      end
+                      className={({ isActive }) =>
+                        isActive ? "active" : undefined
+                      }
+                      onClick={() => isMobile && setShowSidebar(false)}
+                    >
+                      View Public Profile
+                    </NavLink>
+                  )}
+
+                  {tabs.map(({ path, label }) => (
+                    <NavLink
+                      key={path}
+                      to={`/business/${businessId}/dashboard/${path}`}
+                      end={
+                        location.pathname ===
+                        `/business/${businessId}/dashboard/${path}`
+                      }
+                      className={({ isActive }) =>
+                        isActive ? "active" : undefined
+                      }
+                      onClick={() => isMobile && setShowSidebar(false)}
+                    >
+                      {label}
+                      {path === "messages" && messagesCount > 0 && (
+                        <span className="badge">{messagesCount}</span>
+                      )}
+                    </NavLink>
+                  ))}
+                </nav>
+
+                {isMobile && (
+                  <div className="sidebar-footer">
+                    <span className="user-name">Hello, {user?.name}</span>
+                    <button className="logout-btn" onClick={handleLogout}>
+                      Logout
+                    </button>
+                  </div>
                 )}
-              </NavLink>
-            ))}
-        </div>
-      ))}
-    </nav>
-
-    {/* Mobile footer */}
-    {isMobile && (
-      <div className="sidebar-footer">
-        <span className="user-name">Hello, {user?.name}</span>
-        <button className="logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
-    )}
-  </aside>
-)}
+              </aside>
+            )}
 
             {!isMobile && (
               <header className="dashboard-header">
