@@ -250,10 +250,18 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         console.log("[handleNewMessage] no selected conversation, ignoring message");
         return;
       }
-      if (normalized.conversationId !== selectedConversation._id) {
-        console.log("[handleNewMessage] conversationId mismatch");
-        return;
-      }
+
+      const incomingConvId = normalized.conversationId?.toString();
+const selectedConvId = selectedConversation._id?.toString();
+
+if (!incomingConvId || incomingConvId !== selectedConvId) {
+  console.log(
+    "[handleNewMessage] conversationId mismatch",
+    incomingConvId,
+    selectedConvId
+  );
+  return;
+}
 
       dispatchMessages({
   type: "append",
@@ -261,22 +269,36 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
 });
 
       setSelectedConversation((prev) => {
-        if (prev && prev._id === normalized.conversationId) {
-          return {
-            ...prev,
-            messages: uniqueMessages([...(prev.messages || []), normalized]),
-          };
-        }
-        return prev;
-      });
+  if (
+    prev &&
+    prev._id?.toString() === normalized.conversationId?.toString()
+  ) {
+    return {
+      ...prev,
+      messages: uniqueMessages([...(prev.messages || []), normalized]),
+    };
+  }
+  return prev;
+});
 
       setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === normalized.conversationId
-            ? { ...conv, messages: uniqueMessages([...(conv.messages || []), normalized]) }
-            : conv
-        )
-      );
+  prev.map((conv) => {
+    if (
+      conv._id?.toString() ===
+      normalized.conversationId?.toString()
+    ) {
+      return {
+        ...conv,
+        messages: uniqueMessages([
+          ...(conv.messages || []),
+          normalized,
+        ]),
+      };
+    }
+    return conv;
+  })
+);
+
     },
     [selectedConversation, uniqueMessages]
   );
