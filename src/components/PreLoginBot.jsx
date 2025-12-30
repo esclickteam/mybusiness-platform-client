@@ -18,7 +18,7 @@ export default function PreLoginBot() {
       return;
     }
 
-    // ניווט עם redirect אחרי login / register
+    // ניווט עם redirect אחרי login / register (אם בעתיד תרצי)
     if (btn.routeWithRedirect) {
       navigate(btn.routeWithRedirect.path, {
         state: { redirect: btn.routeWithRedirect.redirect },
@@ -59,7 +59,6 @@ export default function PreLoginBot() {
               {current.buttons?.map((btn) => (
                 <button
                   key={btn.label}
-                  className={btn.variant === "secondary" ? "secondary" : ""}
                   onClick={() => handleAction(btn)}
                 >
                   {btn.label}
