@@ -1,53 +1,78 @@
-/* ===========================
-   🟣 Dashboard Layout Sidebar – PRO SaaS
-   =========================== */
+/* =====================================================
+   BizUply – Business Dashboard Layout (PRO SaaS)
+   LTR | Fixed Sidebar + Fixed Header | Scroll FIXED
+   ===================================================== */
+
+/* =========================
+   🌍 Global safety
+========================= */
+html,
+body {
+  height: auto !important;
+  min-height: 100%;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+}
+
+/* =========================
+   🧱 Root wrappers (CRITICAL)
+========================= */
+.ltr-wrapper {
+  min-height: 100vh;
+  overflow: visible;
+}
+
+.business-dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  overflow: visible;
+}
+
+/* =========================
+   🟣 Sidebar – PRO SaaS
+========================= */
 .dashboard-layout-sidebar {
   position: fixed;
   top: 0;
   left: 0;
   width: 250px;
   height: 100vh;
-  background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
-  color: #2a165f;
+  background: linear-gradient(180deg, #f5f3ff 0%, #ede9fe 100%);
+  color: #1e1b4b;
   display: flex;
   flex-direction: column;
-  box-shadow: 4px 0 24px rgba(88, 28, 135, 0.15);
+  box-shadow: 4px 0 20px rgba(30, 27, 75, 0.08);
   z-index: 9000;
   overflow-y: auto;
 }
 
-/* ===========================
-   🔹 Logo (X2)
-   =========================== */
+/* =========================
+   🔹 Logo
+========================= */
 .dashboard-layout-sidebar .sidebar-logo {
   height: 110px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 12px 16px;
-  border-bottom: 1px solid rgba(88, 28, 135, 0.15);
-  position: relative;
-  overflow: visible;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.15);
 }
 
 .dashboard-layout-sidebar .sidebar-logo-img {
-  max-height: 72px;
+  max-height: 70px;
   width: auto;
   object-fit: contain;
-  transform: scale(2);
-  transform-origin: center;
 }
 
-/* ===========================
+/* =========================
    🔹 Navigation
-   =========================== */
+========================= */
 .dashboard-layout-sidebar nav {
   display: flex;
   flex-direction: column;
 }
 
 .dashboard-layout-sidebar nav a {
-  position: relative;
   height: 48px;
   padding: 0 18px;
   display: flex;
@@ -55,20 +80,20 @@
   justify-content: space-between;
   font-size: 14px;
   font-weight: 500;
-  color: #2a165f;
+  color: #1e1b4b;
   text-decoration: none;
-  border-bottom: 1px solid rgba(88, 28, 135, 0.12);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
   transition: background 0.2s ease;
 }
 
 .dashboard-layout-sidebar nav a:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .dashboard-layout-sidebar nav a.active {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.85);
   font-weight: 600;
-  color: #4c1fd8;
+  color: #4338ca;
 }
 
 .dashboard-layout-sidebar nav a.active::before {
@@ -78,12 +103,12 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, #6a11cb, #8b5cf6);
+  background: #6366f1;
 }
 
-/* ===========================
+/* =========================
    🔴 Badge
-   =========================== */
+========================= */
 .dashboard-layout-sidebar .badge {
   min-width: 18px;
   height: 18px;
@@ -92,19 +117,19 @@
   font-weight: 700;
   color: #fff;
   background: #ef4444;
-  border-radius: 9999px;
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* ===========================
+/* =========================
    📱 Mobile Sidebar
-   =========================== */
+========================= */
 @media (max-width: 768px) {
   .dashboard-layout-sidebar {
     transform: translateX(-100%);
-    transition: transform 0.35s ease;
+    transition: transform 0.3s ease;
     width: 100vw;
   }
 
@@ -113,99 +138,84 @@
   }
 }
 
-/* ===========================
-   🧭 Dashboard Layout Header
-   =========================== */
+/* =========================
+   🧭 Header (Fixed)
+========================= */
 .dashboard-layout-header {
   position: fixed;
   top: 0;
   left: 250px;
   right: 0;
   height: 64px;
-  background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
-  border-bottom: 1px solid rgba(88, 28, 135, 0.15);
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
   z-index: 9050;
-  overflow: visible; /* 🔑 חשוב */
 }
 
-/* Left */
+/* Header Left */
 .dashboard-layout-header-left {
   font-size: 15px;
   font-weight: 600;
-  color: #2a165f;
+  color: #1e1b4b;
 }
 
-/* Right */
+/* Header Right */
 .dashboard-layout-header-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* ===========================
-   🔔 Notifications – FIX סופי
-   =========================== */
-
-/* העוטף */
-.header-icon-wrapper {
-  position: relative; /* 🔑 עיגון */
-  height: 36px;
-  width: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(88, 28, 135, 0.25);
-  border-radius: 10px;
+/* =========================
+   🔔 Notifications (NO CUT)
+========================= */
+.fb-notif-wrapper {
+  position: relative;
   overflow: visible;
 }
 
-/* הדרופדאון עצמו – נפתח שמאלה */
-.header-icon-wrapper .notifications-dropdown,
-.header-icon-wrapper [role="menu"],
-.header-icon-wrapper .dropdown,
-.header-icon-wrapper .popover {
-  position: absolute !important;
-  top: calc(100% + 8px) !important;
-  right: 0 !important;
-  left: auto !important;
-
-  /* ⬅️ זה הקסם – נפתח שמאלה */
-  transform: translateX(-100%) !important;
-
-  z-index: 9999;
-  max-width: 320px;
-}
-
-/* ===========================
+/* =========================
    🔘 Logout Button
-   =========================== */
+========================= */
 .header-action-btn {
   height: 36px;
   padding: 0 16px;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(88, 28, 135, 0.25);
+  background: #ffffff;
+  border: 1px solid #d1d5db;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
-  color: #2a165f;
+  color: #1e1b4b;
   cursor: pointer;
 }
 
 .header-action-btn:hover {
-  background: #ffffff;
+  background: #f9fafb;
 }
 
-/* ===========================
-   🧱 Content Offset
-   =========================== */
-@media (min-width: 769px) {
+/* =========================
+   🧱 MAIN CONTENT – SCROLL FIX
+========================= */
+.dashboard-content {
+  flex: 1;
+  margin-left: 250px;
+  margin-top: 64px;
+  padding: 32px 24px 96px;
+  min-height: auto;
+  overflow: visible;
+}
+
+/* =========================
+   📱 Mobile content
+========================= */
+@media (max-width: 768px) {
   .dashboard-content {
-    margin-left: 250px;
+    margin-left: 0;
     margin-top: 64px;
+    padding: 24px 16px 96px;
   }
 }
