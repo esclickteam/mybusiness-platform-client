@@ -22,7 +22,13 @@ export default function CRMCustomerFile({
   /* =========================
      DATA STATE
   ========================= */
-  const [customerData, setCustomerData] = useState(null);
+  const [customerData, setCustomerData] = useState({
+    appointments: [],
+    events: [],
+    invoices: [],
+    files: [],
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -77,17 +83,19 @@ export default function CRMCustomerFile({
           params: { businessId },
         });
 
-        // ✅ תמיד להחזיר מבנה תקין
         setCustomerData({
-          appointments: res.data?.appointments || [],
-          events: res.data?.events || [],
-          invoices: res.data?.invoices || [],
-          files: res.data?.files || [],
+          appointments: Array.isArray(res.data?.appointments)
+            ? res.data.appointments
+            : [],
+          events: Array.isArray(res.data?.events) ? res.data.events : [],
+          invoices: Array.isArray(res.data?.invoices)
+            ? res.data.invoices
+            : [],
+          files: Array.isArray(res.data?.files) ? res.data.files : [],
         });
       } catch (err) {
         console.error("❌ Error loading customer file:", err);
 
-        // ✅ גם בשגיאה – לא להשאיר Loading
         setCustomerData({
           appointments: [],
           events: [],
@@ -111,7 +119,7 @@ export default function CRMCustomerFile({
   ========================= */
   return (
     <div className="crm-customer-profile">
-      <h2>Customer File – {client?.fullName}</h2>
+      <h2>Customer File – {client?.fullName || "New Client"}</h2>
       <p>
         📞 {client?.phone || "-"} | ✉️ {client?.email || "-"} | 📍{" "}
         {client?.address || "-"}
@@ -267,7 +275,7 @@ export default function CRMCustomerFile({
             {/* ===== Notes & Tasks ===== */}
             {activeTab === "extras" && (
               <ClientTasksAndNotes
-                clientId={client._id}
+                clientId={client?._id}
                 businessId={businessId}
               />
             )}
