@@ -4,14 +4,13 @@ import {
   Outlet,
   useNavigate,
   useParams,
-  useLocation,
 } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
+import { AiProvider } from "../../context/AiContext";
 import { useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
-import { AiProvider } from "../../context/AiContext";
 import { io } from "socket.io-client";
 import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
@@ -40,7 +39,6 @@ export default function BusinessDashboardLayout() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
   const { businessId } = useParams();
-  const location = useLocation();
   const queryClient = useQueryClient();
 
   /* ============================
@@ -51,7 +49,7 @@ export default function BusinessDashboardLayout() {
   useEffect(() => {
     if (!user?.businessId) return;
 
-    API.get(`/chat/unread-count`)
+    API.get("/chat/unread-count")
       .then((res) => setMessagesCount(res.data?.count || 0))
       .catch(() => setMessagesCount(0));
 
@@ -106,28 +104,32 @@ export default function BusinessDashboardLayout() {
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
 
-            {/* Sidebar */}
+            {/* ================= Sidebar ================= */}
             {(!isMobile || showSidebar) && (
               <aside
                 className={`dashboard-layout-sidebar ${isMobile ? "open" : ""}`}
                 ref={sidebarRef}
               >
+                {/* Logo */}
                 <div className="sidebar-logo">
                   <img
                     src="/bizuply logo.png"
                     alt="BizUply Logo"
                     className="sidebar-logo-img"
                   />
+
                   {isMobile && (
                     <button
                       className="sidebar-close-btn"
                       onClick={() => setShowSidebar(false)}
+                      aria-label="Close menu"
                     >
                       <FaTimes />
                     </button>
                   )}
                 </div>
 
+                {/* Navigation */}
                 <nav>
                   <NavLink to={`/business/${businessId}`} end>
                     View Public Profile
@@ -150,9 +152,12 @@ export default function BusinessDashboardLayout() {
                   ))}
                 </nav>
 
+                {/* Mobile Footer */}
                 {isMobile && (
                   <div className="sidebar-footer">
-                    <span className="user-name">Hello, {user?.name}</span>
+                    <span className="user-name">
+                      {user?.businessName || user?.name}
+                    </span>
                     <button className="logout-btn" onClick={handleLogout}>
                       Logout
                     </button>
@@ -161,12 +166,19 @@ export default function BusinessDashboardLayout() {
               </aside>
             )}
 
-            {/* Header desktop */}
+            {/* ================= Header (Desktop Only) ================= */}
             {!isMobile && (
-              <header className="dashboard-header">
-                <FacebookStyleNotifications />
-                <div>
-                  <span className="user-name">Hello, {user?.name}</span>
+              <header className="dashboard-layout-header">
+                {/* שמאל – שם העסק */}
+                <div className="dashboard-layout-header-left">
+                  <span className="business-name">
+                    {user?.businessName || user?.name}
+                  </span>
+                </div>
+
+                {/* ימין – התראות + Logout */}
+                <div className="dashboard-layout-header-right">
+                  <FacebookStyleNotifications />
                   <button className="logout-btn" onClick={handleLogout}>
                     Logout
                   </button>
@@ -174,17 +186,18 @@ export default function BusinessDashboardLayout() {
               </header>
             )}
 
-            {/* Mobile buttons */}
+            {/* ================= Mobile Open Button ================= */}
             {isMobile && !showSidebar && (
               <button
                 className="sidebar-open-btn"
+                aria-label="Open menu"
                 onClick={() => setShowSidebar(true)}
               >
                 <FaBars />
               </button>
             )}
 
-            {/* Content */}
+            {/* ================= Content ================= */}
             <main className="dashboard-content">
               <Outlet />
             </main>

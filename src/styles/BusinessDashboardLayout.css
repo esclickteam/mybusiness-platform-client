@@ -20,24 +20,24 @@
    🔹 Logo (גדול ומכובד – X2)
    =========================== */
 .dashboard-layout-sidebar .sidebar-logo {
-  height: 110px; /* ❌ לא משתנה */
+  height: 110px; /* ❗ לא משתנה */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 12px 16px;
   border-bottom: 1px solid rgba(88, 28, 135, 0.15);
-  overflow: visible; /* ⬅️ חשוב כדי לא לחתוך את הלוגו */
+  position: relative;
+  overflow: visible;
 }
 
 .dashboard-layout-sidebar .sidebar-logo-img {
-  max-height: 72px;      /* נשאר */
+  max-height: 72px;
   width: auto;
   object-fit: contain;
 
-  transform: scale(2);  /* ✅ הכפלה אמיתית של הלוגו */
+  transform: scale(2);           /* ✅ הגדלה אמיתית */
   transform-origin: center;
 }
-
 
 /* ===========================
    🔹 Navigation
@@ -64,7 +64,6 @@
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-/* Hover עדין */
 .dashboard-layout-sidebar nav a:hover {
   background: rgba(255, 255, 255, 0.4);
 }
@@ -78,7 +77,6 @@
   color: #4c1fd8;
 }
 
-/* פס צד */
 .dashboard-layout-sidebar nav a.active::before {
   content: "";
   position: absolute;
@@ -173,16 +171,15 @@
    =========================== */
 @media (min-width: 769px) {
   .sidebar-open-btn,
-  .sidebar-close-btn,
-  .sidebar-overlay {
+  .sidebar-close-btn {
     display: none !important;
   }
 }
 
 /* ===========================
-   🧭 Dashboard Header (Desktop)
+   🧭 Dashboard Layout Header (סופי!)
    =========================== */
-.dashboard-header {
+.dashboard-layout-header {
   position: fixed;
   top: 0;
   left: 250px;
@@ -196,6 +193,36 @@
   padding: 0 24px;
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
   z-index: 9050;
+}
+
+/* שמאל – שם העסק */
+.dashboard-layout-header-left {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2a165f;
+}
+
+/* ימין – התראות + Logout */
+.dashboard-layout-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dashboard-layout-header-right .logout-btn {
+  background: #6a11cb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(106, 17, 203, 0.25);
+}
+
+.dashboard-layout-header-right .logout-btn:hover {
+  background: #5b0fc4;
 }
 
 /* ===========================
