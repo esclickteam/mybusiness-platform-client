@@ -9,6 +9,8 @@ import {
 } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
+import PreLoginBot from "./components/PreLoginBot";
+
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -418,6 +420,9 @@ export default function App() {
           </AnimatePresence>
         </AiProvider>
       </div>
+      {/* 🤖 Pre-login sales bot – ONLY for non-authenticated users */}
+      {!user && <PreLoginBot />}
+      
     </NotificationsProvider>
   );
 }
