@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import "../styles/dashboard.css";
 
 const DashboardCards = React.memo(({ stats = {} }) => {
   // Optional console log for development

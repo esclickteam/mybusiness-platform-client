@@ -26,7 +26,7 @@
       })();
     </script>
 
-    <!-- 🎨 Theme Variables -->
+    <!-- 🎨 Theme Variables (CRITICAL CSS ONLY) -->
     <style>
       :root {
         --bg: #f6f7fb;
@@ -50,14 +50,12 @@
 
       html,
       body {
-        background-color: var(--bg);
+        margin: 0;
+        min-height: 100%;
         background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
         color: var(--text);
-        margin: 0;
         font-family: "Poppins", Arial, sans-serif;
-        min-height: 100%;
         overflow-x: hidden;
-        transition: none !important;
       }
 
       #initial-bg {
@@ -69,12 +67,12 @@
       }
 
       #root {
-        background: var(--bg);
         min-height: 100vh;
+        background: var(--bg);
       }
     </style>
 
-    <!-- ✅ Favicons (Optimized + Cache-busting) -->
+    <!-- ✅ Favicons -->
     <link rel="icon" href="/favicon-v2.png?v=2" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-v3.png?v=2" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -111,7 +109,7 @@
       }
     </script>
 
-    <!-- ⚙️ Preload Fonts + Styles -->
+    <!-- ⚙️ Preload Fonts -->
     <link
       rel="preload"
       href="/fonts/myfont.woff2"
@@ -119,17 +117,12 @@
       type="font/woff2"
       crossorigin="anonymous"
     />
-    <link rel="preload" href="/index.css" as="style" />
-    <link
-      rel="preload"
-      href="/src/styles/dashboard.css"
-      as="style"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript><link rel="stylesheet" href="/src/styles/dashboard.css" /></noscript>
 
-    <!-- 🧩 Global CSS -->
+    <!-- 🎨 Global CSS ONLY -->
     <link rel="stylesheet" href="/index.css" />
+
+    <!-- ❌ REMOVED: dashboard.css preload -->
+    <!-- dashboard.css MUST be imported ONLY inside DashboardPage.jsx -->
 
     <!-- 💳 CardCom SDK -->
     <script
@@ -144,7 +137,7 @@
     <div id="root"></div>
     <div id="popup-root"></div>
 
-    <!-- 🚀 Main React Entry -->
-    <script type="module" src="/src/index.jsx" defer></script>
+    <!-- 🚀 React Entry -->
+    <script type="module" src="/src/index.jsx"></script>
   </body>
 </html>
