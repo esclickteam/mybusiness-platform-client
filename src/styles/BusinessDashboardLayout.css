@@ -129,7 +129,7 @@
   justify-content: space-between;
   padding: 0 24px;
   z-index: 9050;
-  overflow: visible;
+  overflow: visible; /* 🔑 חשוב */
 }
 
 /* Left */
@@ -149,8 +149,10 @@
 /* ===========================
    🔔 Notifications – FIX סופי
    =========================== */
+
+/* העוטף */
 .header-icon-wrapper {
-  position: relative;
+  position: relative; /* 🔑 עיגון */
   height: 36px;
   width: 36px;
   display: flex;
@@ -162,6 +164,7 @@
   overflow: visible;
 }
 
+/* הדרופדאון עצמו – נפתח שמאלה */
 .header-icon-wrapper .notifications-dropdown,
 .header-icon-wrapper [role="menu"],
 .header-icon-wrapper .dropdown,
@@ -170,7 +173,10 @@
   top: calc(100% + 8px) !important;
   right: 0 !important;
   left: auto !important;
+
+  /* ⬅️ זה הקסם – נפתח שמאלה */
   transform: translateX(-100%) !important;
+
   z-index: 9999;
   max-width: 320px;
 }
@@ -195,22 +201,11 @@
 }
 
 /* ===========================
-   🧱 Content Offset + SCROLL 🔧
+   🧱 Content Offset
    =========================== */
-.dashboard-content {
-  overflow-y: auto;                     /* 🔧 גלילה */
-  min-height: calc(100vh - 64px);       /* 🔧 לא נחתך */
-}
-
 @media (min-width: 769px) {
   .dashboard-content {
     margin-left: 250px;
     margin-top: 64px;
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-content {
-    margin-left: 0;
   }
 }
