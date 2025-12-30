@@ -333,11 +333,12 @@ if (!incomingConvId || incomingConvId !== selectedConvId) {
     const tempId = "pending-" + Math.random().toString(36).substr(2, 9);
 
     const payload = {
-      conversationId: selectedConversation._id.toString(),
-      from: myBusinessId.toString(),
-      to: otherId,
-      text: input.trim(),
-    };
+  conversationId: selectedConversation._id.toString(),
+  conversationType: "business-business", // ✅ חובה
+  from: myBusinessId.toString(),
+  to: otherId,
+  text: input.trim(),
+};
 
     console.log("[sendMessage] sending message payload:", payload);
 
