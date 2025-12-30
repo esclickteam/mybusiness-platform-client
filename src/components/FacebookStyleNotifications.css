@@ -1,92 +1,111 @@
-/* ✅ מעטפת הפעמון ליד הלוגו */
+/* ======================================================
+   🔔 Facebook-style Notifications – FINAL
+   ====================================================== */
+
+/* ✅ מעטפת הפעמון (יושבת בתוך ההידר) */
 .fb-notif-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  margin-left: 1rem; /* רווח קטן מהלוגו */
 }
 
-/* 🔔 כפתור הפעמון */
+/* 🔔 כפתור פעמון – תואם Logout */
 .fb-bell {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 22px;
-  position: relative;
-  color: #6a11cb;
+  height: 36px;
+  min-width: 36px;
+  padding: 0 10px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, color 0.2s ease;
+
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(88, 28, 135, 0.25);
+  border-radius: 10px;
+
+  font-size: 18px;
+  cursor: pointer;
+  position: relative;
+  color: #6a11cb;
+
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .fb-bell:hover {
-  transform: scale(1.1);
-  color: #8a2be2;
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(88, 28, 135, 0.25);
 }
 
-/* 🔢 מונה ההתראות */
+/* 🔢 מונה */
 .fb-count {
   position: absolute;
   top: -6px;
   right: -6px;
+
   background: #1877f2;
   color: #fff;
+
   font-size: 11px;
-  font-weight: 600;
-  border-radius: 50%;
-  padding: 2px 5px;
-  min-width: 16px;
-  text-align: center;
-  box-shadow: 0 0 6px rgba(24, 119, 242, 0.5);
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9999px;
+  box-shadow: 0 0 6px rgba(24, 119, 242, 0.6);
 }
 
-/* 📬 פאנל ההתראות */
+/* ======================================================
+   📬 הדרופדאון – כמו פייסבוק (לא נחתך!)
+   ====================================================== */
+
 .fb-panel {
-  position: absolute;
-  top: 115%;
-  left: 0; /* ✅ במקום right — כדי שייפתח לצד שמאל */
-  width: 340px;
-  background: #fff;
+  position: fixed; /* 🔑 קריטי – לא נחתך לעולם */
+  top: 64px;       /* גובה ההידר */
+  right: 24px;    /* נפתח פנימה למסך */
+  
+  width: 360px;
+  max-height: 480px;
+
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+
   overflow: hidden;
-  z-index: 999;
-  direction: rtl;
+  z-index: 10000;
+
   font-family: "Segoe UI", Arial, sans-serif;
-  animation: slideDown 0.2s ease;
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* ======================================================
+   🧭 Tabs
+   ====================================================== */
 
-/* 🧭 טאבים עליונים */
 .fb-tabs {
   display: flex;
-  justify-content: space-between;
-  padding: 10px 12px;
+  gap: 6px;
+  padding: 10px;
   border-bottom: 1px solid #eee;
   background: #f9fafb;
 }
 
 .fb-tabs button {
   flex: 1;
-  background: none;
+  height: 32px;
+
   border: none;
+  border-radius: 8px;
+  background: transparent;
+
+  font-size: 13px;
   font-weight: 500;
   color: #555;
-  padding: 8px 0;
   cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.2s, color 0.2s;
+
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .fb-tabs button.active {
@@ -95,7 +114,10 @@
   font-weight: 600;
 }
 
-/* 🔹 כותרת מקטע */
+/* ======================================================
+   🔹 Section title
+   ====================================================== */
+
 .fb-section-title {
   padding: 10px 14px;
   font-size: 13px;
@@ -104,21 +126,29 @@
   border-bottom: 1px solid #f2f2f2;
 }
 
-/* 📜 רשימת התראות */
+/* ======================================================
+   📜 List
+   ====================================================== */
+
 .fb-list {
-  max-height: 400px;
+  max-height: 380px;
   overflow-y: auto;
 }
 
-/* 📨 פריט התראה */
+/* ======================================================
+   📨 Notification item
+   ====================================================== */
+
 .fb-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+
   padding: 12px 14px;
   border-bottom: 1px solid #f3f3f3;
-  transition: background 0.15s;
+
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .fb-item.unread {
@@ -129,47 +159,47 @@
   background: #f6f6f6;
 }
 
-/* 📄 טקסט ההתראה */
+/* Text */
 .fb-text-content p {
   margin: 0;
-  color: #111;
   font-size: 14px;
+  color: #111;
   line-height: 1.4;
 }
 
 .fb-text-content small {
   display: block;
+  margin-top: 2px;
   font-size: 12px;
   color: #888;
-  margin-top: 2px;
 }
 
-/* 🔵 נקודת unread */
+/* 🔵 Unread dot */
 .fb-dot {
   width: 10px;
   height: 10px;
-  background: #1877f2;
   border-radius: 50%;
+  background: #1877f2;
   flex-shrink: 0;
-  margin-right: 10px;
+  margin-left: 10px;
 }
 
-/* 😴 הודעה שאין התראות */
+/* 😴 Empty */
 .fb-empty {
   text-align: center;
   color: #888;
-  padding: 20px 0;
+  padding: 24px 0;
+  font-size: 14px;
 }
 
-/* 📱 רספונסיביות */
+/* ======================================================
+   📱 Mobile
+   ====================================================== */
+
 @media (max-width: 768px) {
   .fb-panel {
-    left: auto;
-    right: 0;
-    width: 90vw;
-  }
-
-  .fb-notif-wrapper {
-    margin-left: 0.5rem;
+    right: 12px;
+    left: 12px;
+    width: auto;
   }
 }

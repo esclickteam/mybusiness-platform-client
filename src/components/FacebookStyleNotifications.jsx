@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import API from "@api";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
@@ -9,6 +9,9 @@ export default function FacebookStyleNotifications() {
   const [tab, setTab] = useState("all");
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
+
+  const bellRef = useRef(null);
+  const [panelStyle, setPanelStyle] = useState({});
 
   useEffect(() => {
     if (user?.businessId) fetchNotifications();
@@ -47,13 +50,32 @@ export default function FacebookStyleNotifications() {
     return new Date(timestamp).toLocaleDateString("en-US");
   };
 
-  // ❌ אם המשתמש אינו עסק — לא מציגים את הפעמון
+  const toggleOpen = () => {
+    if (!bellRef.current) return;
+
+    const rect = bellRef.current.getBoundingClientRect();
+
+    setPanelStyle({
+      position: "fixed",
+      top: rect.bottom + 8,
+      right: window.innerWidth - rect.right,
+      zIndex: 9999,
+    });
+
+    setOpen((v) => !v);
+  };
+
   if (!user?.businessId) return null;
 
   return (
-    <div className="notif-left-wrapper">
-      {/* ✅ פעמון ליד הלוגו */}
-      <button className="fb-bell" onClick={() => setOpen(!open)}>
+    <>
+      {/* 🔔 Bell – same style as Logout */}
+      <button
+        ref={bellRef}
+        className="header-action-btn notif-bell-btn"
+        onClick={toggleOpen}
+        aria-label="Notifications"
+      >
         🔔
         {notifications.some((n) => !n.read) && (
           <span className="fb-count">
@@ -66,9 +88,10 @@ export default function FacebookStyleNotifications() {
         {open && (
           <motion.div
             className="fb-panel"
-            initial={{ opacity: 0, y: -10 }}
+            style={panelStyle}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
           >
             <div className="fb-tabs">
@@ -90,7 +113,7 @@ export default function FacebookStyleNotifications() {
 
             <div className="fb-list">
               {filtered.length === 0 ? (
-                <p className="fb-empty">No new notifications </p>
+                <p className="fb-empty">No new notifications</p>
               ) : (
                 filtered.map((n) => (
                   <div
@@ -110,6 +133,6 @@ export default function FacebookStyleNotifications() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }
