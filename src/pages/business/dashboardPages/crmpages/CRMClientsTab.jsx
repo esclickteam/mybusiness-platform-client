@@ -7,14 +7,18 @@ import "./CRMClientsTab.css";
 // ✅ Fetch clients from the CRMClients API
 const fetchClients = async (businessId) => {
   if (!businessId) return [];
+
   const res = await API.get(`/crm-clients/${businessId}`);
+
   return res.data.map((c) => ({
-    _id: c._id, // ✅ Keep the original ID
+    _id: c._id,
     fullName: c.fullName || "Unknown",
     phone: (c.phone || "").toString().replace(/\s/g, "") || "No phone",
     email: (c.email || "").replace(/\s/g, "") || "-",
     address: c.address || "-",
-    appointments: c.appointments || [],
+
+    // ✅ קריטי – תמיד מערך
+    appointments: Array.isArray(c.appointments) ? c.appointments : [],
   }));
 };
 
