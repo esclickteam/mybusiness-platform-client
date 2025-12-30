@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "@api";
-import CRMCustomerFile from "./CRMCustomerFile"; // Full customer file
+import CRMCustomerFile from "./CRMCustomerFile";
 import "./CRMClientsTab.css";
 
-// ✅ Fetch clients from the CRMClients API
+/* =====================================================
+   Fetch clients
+===================================================== */
 const fetchClients = async (businessId) => {
   if (!businessId) return [];
 
@@ -13,21 +15,37 @@ const fetchClients = async (businessId) => {
   return res.data.map((c) => ({
     _id: c._id,
     fullName: c.fullName || "Unknown",
-    phone: (c.phone || "").toString().replace(/\s/g, "") || "No phone",
+    phone: (c.phone || "").toString().replace(/\s/g, ""),
     email: (c.email || "").replace(/\s/g, "") || "-",
     address: c.address || "-",
-
-    // ✅ קריטי – תמיד מערך
-    appointments: Array.isArray(c.appointments) ? c.appointments : [],
   }));
 };
 
-const CRMClientsTab = ({ businessId }) => {
+export default function CRMClientsTab({ businessId }) {
   const queryClient = useQueryClient();
+
+  /* =====================================================
+     UI STATE
+  ===================================================== */
+  const [mode, setMode] = useState("list"); 
+  // "list" | "create" | "view"
+
   const [search, setSearch] = useState("");
   const [selectedClient, setSelectedClient] = useState(null);
-  const [creatingNew, setCreatingNew] = useState(false);
 
+  /* =====================================================
+     CREATE CLIENT FORM STATE
+  ===================================================== */
+  const [newClient, setNewClient] = useState({
+    fullName: "",
+    phone: "",
+    email: "",
+    address: "",
+  });
+
+  /* =====================================================
+     QUERY
+  ===================================================== */
   const {
     data: clients = [],
     isLoading,
@@ -38,56 +56,94 @@ const CRMClientsTab = ({ businessId }) => {
     enabled: !!businessId,
   });
 
+  /* =====================================================
+     FILTER
+  ===================================================== */
   const filteredClients = clients.filter((client) => {
-    const matchesSearch =
+    return (
       client.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      client.phone.includes(search);
-    return matchesSearch;
+      client.phone.includes(search)
+    );
   });
 
+  /* =====================================================
+     ACTIONS
+  ===================================================== */
   const handleDelete = async (client) => {
-    if (window.confirm(`Delete client "${client.fullName}"?`)) {
-      try {
-        await API.delete(`/crm-clients/${client._id}`);
-        queryClient.invalidateQueries(["clients", businessId]);
-        alert("✅ Client deleted successfully");
-      } catch (err) {
-        console.error("❌ Error deleting client:", err);
-        alert("❌ Deletion failed");
-      }
+    if (!window.confirm(`Delete client "${client.fullName}"?`)) return;
+
+    try {
+      await API.delete(`/crm-clients/${client._id}`);
+      queryClient.invalidateQueries(["clients", businessId]);
+      alert("Client deleted");
+    } catch (err) {
+      alert("Delete failed");
     }
   };
 
+  const handleCreateClient = async () => {
+    if (!newClient.fullName || !newClient.phone) {
+      alert("Full name and phone are required");
+      return;
+    }
+
+    try {
+      const res = await API.post("/crm-clients", {
+        ...newClient,
+        businessId,
+      });
+
+      queryClient.invalidateQueries(["clients", businessId]);
+
+      setSelectedClient(res.data);
+      setMode("view");
+
+      setNewClient({
+        fullName: "",
+        phone: "",
+        email: "",
+        address: "",
+      });
+    } catch (err) {
+      alert("Failed to create client");
+    }
+  };
+
+  /* =====================================================
+     RENDER
+  ===================================================== */
   return (
     <div className="crm-tab-content">
       <h2>👥 Clients</h2>
 
-      <div className="clients-header">
-        <input
-          type="text"
-          placeholder="Search by name or phone..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
-        />
-        <button
-          className="add-client-btn"
-          onClick={() => {
-            setSelectedClient(null);
-            setCreatingNew(true);
-          }}
-        >
-          ➕ Create New Client
-        </button>
-      </div>
+      {/* ================= HEADER ================= */}
+      {mode === "list" && (
+        <div className="clients-header">
+          <input
+            type="text"
+            placeholder="Search by name or phone..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="search-input"
+          />
 
-      {isLoading ? (
-        <p>Loading clients...</p>
-      ) : error ? (
-        <p>Error loading clients</p>
-      ) : (
+          <button
+            className="add-client-btn"
+            onClick={() => setMode("create")}
+          >
+            ➕ Create New Client
+          </button>
+        </div>
+      )}
+
+      {/* ================= LIST ================= */}
+      {mode === "list" && (
         <>
-          {!creatingNew && !selectedClient && (
+          {isLoading ? (
+            <p>Loading clients...</p>
+          ) : error ? (
+            <p>Error loading clients</p>
+          ) : (
             <table className="clients-table">
               <thead>
                 <tr>
@@ -106,37 +162,21 @@ const CRMClientsTab = ({ businessId }) => {
                 ) : (
                   filteredClients.map((client) => (
                     <tr key={client._id}>
-                      <td data-label="Name">{client.fullName}</td>
-                      <td data-label="Phone" className="phone-cell">
-                        {client.phone}
-                      </td>
-                      <td data-label="Address" className="address-cell">
-                        {client.address}
-                      </td>
-                      <td data-label="Email" className="email-cell">
-                        {client.email}
-                      </td>
-                      <td data-label="Actions">
+                      <td>{client.fullName}</td>
+                      <td>{client.phone}</td>
+                      <td>{client.address}</td>
+                      <td>{client.email}</td>
+                      <td>
                         <button
-                          className="show-history-btn"
                           onClick={() => {
                             setSelectedClient(client);
-                            setCreatingNew(false);
+                            setMode("view");
                           }}
                         >
-                          📂 Open Customer File
+                          📂 Open
                         </button>
+
                         <button
-                          className="edit-client-btn"
-                          onClick={() => {
-                            setSelectedClient(client);
-                            setCreatingNew(true);
-                          }}
-                        >
-                          ✏ Edit
-                        </button>
-                        <button
-                          className="delete-client-btn"
                           onClick={() => handleDelete(client)}
                         >
                           🗑 Delete
@@ -148,27 +188,67 @@ const CRMClientsTab = ({ businessId }) => {
               </tbody>
             </table>
           )}
-
-          {(creatingNew || selectedClient) && (
-            <CRMCustomerFile
-              client={
-                creatingNew && !selectedClient
-                  ? { fullName: "", phone: "", email: "", address: "" }
-                  : selectedClient
-              }
-              isNew={creatingNew && !selectedClient}
-              onClose={() => {
-                setCreatingNew(false);
-                setSelectedClient(null);
-                queryClient.invalidateQueries(["clients", businessId]);
-              }}
-              businessId={businessId}
-            />
-          )}
         </>
+      )}
+
+      {/* ================= CREATE ================= */}
+      {mode === "create" && (
+        <div className="crm-card">
+          <h3>Create New Client</h3>
+
+          <input
+            placeholder="Full name"
+            value={newClient.fullName}
+            onChange={(e) =>
+              setNewClient({ ...newClient, fullName: e.target.value })
+            }
+          />
+
+          <input
+            placeholder="Phone"
+            value={newClient.phone}
+            onChange={(e) =>
+              setNewClient({ ...newClient, phone: e.target.value })
+            }
+          />
+
+          <input
+            placeholder="Email"
+            value={newClient.email}
+            onChange={(e) =>
+              setNewClient({ ...newClient, email: e.target.value })
+            }
+          />
+
+          <input
+            placeholder="Address"
+            value={newClient.address}
+            onChange={(e) =>
+              setNewClient({ ...newClient, address: e.target.value })
+            }
+          />
+
+          <div className="actions">
+            <button onClick={() => setMode("list")}>Cancel</button>
+            <button className="primary" onClick={handleCreateClient}>
+              Save Client
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ================= VIEW ================= */}
+      {mode === "view" && selectedClient && (
+        <CRMCustomerFile
+          client={selectedClient}
+          businessId={businessId}
+          onClose={() => {
+            setSelectedClient(null);
+            setMode("list");
+            queryClient.invalidateQueries(["clients", businessId]);
+          }}
+        />
       )}
     </div>
   );
-};
-
-export default CRMClientsTab;
+}
