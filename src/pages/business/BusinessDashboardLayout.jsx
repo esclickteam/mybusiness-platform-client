@@ -165,33 +165,30 @@ export default function BusinessDashboardLayout() {
             )}
 
             {/* ================= Dashboard Layout Header (Desktop) ================= */}
-           {/* ================= Dashboard Layout Header (Desktop Only) ================= */}
-{/* ================= Dashboard Layout Header ================= */}
-{!isMobile && (
-  <header className="dashboard-layout-header">
-    {/* Left */}
-    <div className="dashboard-layout-header-left">
-      Hello, {user?.businessName || user?.name}
-    </div>
+            {!isMobile && (
+              <header className="dashboard-layout-header">
+                {/* Left */}
+                <div className="dashboard-layout-header-left">
+                  Hello, {user?.businessName || user?.name}
+                </div>
 
-    {/* Right */}
-    <div className="dashboard-layout-header-right">
-      {/* Notifications – בלי button מסביב */}
-      <div className="header-icon-wrapper">
-        <FacebookStyleNotifications />
-      </div>
+                {/* Right */}
+                <div className="dashboard-layout-header-right">
+                  {/* Notifications – NO button inside button */}
+                  <div className="header-icon-wrapper">
+                    <FacebookStyleNotifications />
+                  </div>
 
-      {/* Logout */}
-      <button
-        className="header-action-btn"
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
-    </div>
-  </header>
-)}
-
+                  {/* Logout */}
+                  <button
+                    className="header-action-btn"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </div>
+              </header>
+            )}
 
             {/* ================= Mobile Open Button ================= */}
             {isMobile && !showSidebar && (

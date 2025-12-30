@@ -17,10 +17,10 @@
 }
 
 /* ===========================
-   🔹 Logo (גדול ומכובד – X2)
+   🔹 Logo (X2)
    =========================== */
 .dashboard-layout-sidebar .sidebar-logo {
-  height: 110px; /* ❗ לא משתנה */
+  height: 110px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,7 +34,7 @@
   max-height: 72px;
   width: auto;
   object-fit: contain;
-  transform: scale(2); /* ✅ הגדלה אמיתית */
+  transform: scale(2);
   transform-origin: center;
 }
 
@@ -56,19 +56,14 @@
   font-weight: 500;
   color: #2a165f;
   text-decoration: none;
-  background: transparent;
   border-bottom: 1px solid rgba(88, 28, 135, 0.12);
-  position: relative;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 .dashboard-layout-sidebar nav a:hover {
   background: rgba(255, 255, 255, 0.4);
 }
 
-/* ===========================
-   🔹 Active – סימון מקצועי
-   =========================== */
 .dashboard-layout-sidebar nav a.active {
   background: rgba(255, 255, 255, 0.65);
   font-weight: 600;
@@ -103,7 +98,7 @@
 }
 
 /* ===========================
-   📱 Mobile – Slide Sidebar
+   📱 Mobile Sidebar
    =========================== */
 @media (max-width: 768px) {
   .dashboard-layout-sidebar {
@@ -111,147 +106,90 @@
     transition: transform 0.35s ease;
     width: 100vw;
   }
-
   .dashboard-layout-sidebar.open {
     transform: translateX(0);
   }
 }
 
 /* ===========================
-   🔹 Sidebar Open Button
-   =========================== */
-.sidebar-open-btn {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: none;
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  color: #6a11cb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9200;
-  cursor: pointer;
-}
-
-/* ===========================
-   ❌ Close Button (Mobile)
-   =========================== */
-.sidebar-close-btn {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: #ffffff;
-  color: #6a11cb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.sidebar-close-btn:hover {
-  background: #f5f3ff;
-  transform: rotate(90deg);
-}
-
-/* ===========================
-   🖥️ Desktop only
-   =========================== */
-@media (min-width: 769px) {
-  .sidebar-open-btn,
-  .sidebar-close-btn {
-    display: none !important;
-  }
-}
-
-/* ===========================
-   🧭 Dashboard Layout Header – FINAL (EN)
+   🧭 Dashboard Layout Header
    =========================== */
 .dashboard-layout-header {
   position: fixed;
   top: 0;
-  left: 250px; /* aligned with sidebar */
+  left: 250px;
   right: 0;
   height: 64px;
-
-  /* SAME COLOR AS SIDEBAR */
   background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
   border-bottom: 1px solid rgba(88, 28, 135, 0.15);
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-
   z-index: 9050;
 }
 
-/* Left side */
+/* Left */
 .dashboard-layout-header-left {
   font-size: 15px;
   font-weight: 600;
   color: #2a165f;
 }
 
-/* Right side container */
+/* Right */
 .dashboard-layout-header-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* Wrapper להתראות */
-.header-icon-wrapper {
-  height: 36px;
-  min-width: 36px;
+/* ===========================
+   🔔 Notifications FIX
+   =========================== */
 
+/* העוטף – זה מה שקובע מיקום */
+.header-icon-wrapper {
+  position: relative; /* 🔑 קריטי */
+  height: 36px;
+  width: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(88, 28, 135, 0.25);
   border-radius: 10px;
-
-  box-shadow: 0 2px 8px rgba(88, 28, 135, 0.15);
 }
 
-/* Logout button */
+/* כל dropdown שיוצא מהקומפוננטה */
+.header-icon-wrapper .notifications-dropdown,
+.header-icon-wrapper [role="menu"],
+.header-icon-wrapper .dropdown,
+.header-icon-wrapper .popover {
+  position: absolute !important;
+  top: calc(100% + 8px) !important; /* ⬇️ מתחת לפעמון */
+  right: 0 !important;
+  left: auto !important;
+  z-index: 9999;
+}
+
+/* ===========================
+   🔘 Logout Button
+   =========================== */
 .header-action-btn {
   height: 36px;
   padding: 0 16px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(88, 28, 135, 0.25);
   border-radius: 10px;
-
   font-size: 13px;
   font-weight: 600;
   color: #2a165f;
-
   cursor: pointer;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .header-action-btn:hover {
   background: #ffffff;
-  box-shadow: 0 3px 10px rgba(88, 28, 135, 0.25);
 }
-
 
 /* ===========================
    🧱 Content Offset
