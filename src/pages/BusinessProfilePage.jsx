@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import API from "../api";
+
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 import CreateAgreementForm from "../components/CreateAgreementForm";
 
 export default function BusinessProfilePage({ resetSearchFilters }) {
   const { businessId } = useParams();
-  const navigate = useNavigate();
 
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,93 +24,90 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [sending, setSending] = useState(false);
-  const [createAgreementModalOpen, setCreateAgreementModalOpen] = useState(false);
+  const [createAgreementModalOpen, setCreateAgreementModalOpen] =
+    useState(false);
 
-  /* =========================================================
-     🔽 Always scroll to top when profile changes
-  ========================================================= */
+  /* =========================
+     🔹 Load public business
+     ========================= */
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [businessId]);
+    let isMounted = true;
 
-  /* =========================================================
-     📌 Load viewed business
-  ========================================================= */
-  useEffect(() => {
     async function fetchBusiness() {
       try {
         const res = await API.get(`/business/${businessId}`);
-        setBusiness(res.data.business);
+        if (isMounted) setBusiness(res.data.business);
       } catch {
-        setError("Error loading business details");
+        if (isMounted) setError("Error loading business details");
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
+
     fetchBusiness();
+    return () => {
+      isMounted = false;
+    };
   }, [businessId]);
 
-  /* =========================================================
-     📌 Load current user business
-  ========================================================= */
+  /* =========================
+     🔹 Load my business (optional)
+     ========================= */
   useEffect(() => {
     async function fetchMyBusiness() {
       try {
         const res = await API.get("/business/my");
-        setCurrentUserBusinessId(res.data.business._id);
-        setCurrentUserBusinessName(res.data.business.businessName || "");
+        setCurrentUserBusinessId(res.data.business?._id || null);
+        setCurrentUserBusinessName(
+          res.data.business?.businessName || ""
+        );
       } catch {
+        // ⬅️ public user – totally OK
         setCurrentUserBusinessId(null);
         setCurrentUserBusinessName("");
       }
     }
+
     fetchMyBusiness();
   }, []);
 
-  if (loading) {
-    return <p style={{ textAlign: "center", marginTop: 50 }}>Loading profile…</p>;
-  }
+  /* =========================
+     UI states
+     ========================= */
+  if (loading)
+    return (
+      <p style={{ textAlign: "center", marginTop: 50 }}>
+        Loading profile…
+      </p>
+    );
 
-  if (error) {
+  if (error)
     return (
       <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>
         {error}
       </p>
     );
-  }
 
-  if (!business) {
+  if (!business)
     return (
       <p style={{ textAlign: "center", marginTop: 50 }}>
         Business was not found.
       </p>
     );
-  }
 
+  const isLoggedIn = !!currentUserBusinessId;
   const isOwnerViewingOther =
-    currentUserBusinessId && currentUserBusinessId !== businessId;
+    isLoggedIn && currentUserBusinessId !== business._id;
 
-  /* =========================================================
-     🧠 Actions
-  ========================================================= */
+  /* =========================
+     Actions
+     ========================= */
   const openProposalModal = () => {
     if (!currentUserBusinessName) {
-      alert("The sender business name hasn’t loaded yet. Please wait and try again.");
+      alert("Please wait until your business loads.");
       return;
     }
     setIsProposalModalOpen(true);
-  };
-
-  const closeProposalModal = () => setIsProposalModalOpen(false);
-
-  const openChatModal = () => {
-    setChatModalOpen(true);
-    setChatMessage("");
-  };
-
-  const closeChatModal = () => {
-    setChatModalOpen(false);
-    setChatMessage("");
   };
 
   const handleSendBusinessMessage = async () => {
@@ -122,7 +119,8 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
         text: chatMessage.trim(),
       });
       alert("Message sent successfully!");
-      closeChatModal();
+      setChatModalOpen(false);
+      setChatMessage("");
     } catch {
       alert("Error sending the message");
     } finally {
@@ -130,17 +128,9 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     }
   };
 
-  const handleCreateAgreement = () => {
-    setCreateAgreementModalOpen(true);
-  };
-
-  const closeCreateAgreementModal = () => {
-    setCreateAgreementModalOpen(false);
-  };
-
-  /* =========================================================
-     🎨 RENDER
-  ========================================================= */
+  /* =========================
+     Render
+     ========================= */
   return (
     <div
       style={{
@@ -156,21 +146,21 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
         boxShadow: "0 4px 40px rgba(131, 90, 184, 0.2)",
       }}
     >
+      {/* Back (only internal users) */}
       {isOwnerViewingOther && (
         <button
           onClick={() => {
             resetSearchFilters?.();
-            navigate("/business/collaborations");
+            window.location.href = "/business/collaborations";
           }}
           style={{
-            backgroundColor: "transparent",
+            background: "none",
             border: "none",
             color: "#6c3483",
             cursor: "pointer",
             fontSize: 16,
             marginBottom: 24,
-            fontWeight: "600",
-            padding: 0,
+            fontWeight: 600,
             textDecoration: "underline",
           }}
         >
@@ -178,70 +168,68 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
         </button>
       )}
 
-      {/* ================= HEADER ================= */}
+      {/* Header */}
       <div
         style={{
           display: "flex",
-          alignItems: "center",
           justifyContent: "space-between",
           backgroundColor: "#fff",
           padding: 20,
           borderRadius: 16,
-          boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
           marginBottom: 24,
         }}
       >
         <div>
-          <h1 style={{ fontSize: 28, margin: 0, fontWeight: 700 }}>
-            {business.businessName}
-          </h1>
-          <p style={{ fontSize: 16, margin: 0, color: "#9b59b6" }}>
-            {business.category}
-          </p>
+          <h1 style={{ margin: 0 }}>{business.businessName}</h1>
+          <p style={{ margin: 0 }}>{business.category}</p>
         </div>
-
         <img
           src={business.logo || "/default-logo.png"}
-          alt={business.businessName}
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: "50%",
-            objectFit: "cover",
-          }}
+          alt="logo"
+          style={{ width: 80, height: 80, borderRadius: "50%" }}
         />
       </div>
 
-      {/* ================= ACTIONS ================= */}
-      <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-        <button onClick={openProposalModal}>Send Proposal</button>
-        <button onClick={openChatModal}>Chat</button>
-        <button
-          onClick={handleCreateAgreement}
-          disabled={!currentProposalId}
-        >
-          Create Agreement
-        </button>
-      </div>
+      {/* Info blocks */}
+      <Block title="📍 אזור פעילות" content={business.area} />
+      <Block title="📝 על העסק" content={business.description} />
+      <Block
+        title="📞 יצירת קשר"
+        content={
+          <>
+            {business.contact && <p>{business.contact}</p>}
+            {business.phone && <p>{business.phone}</p>}
+            {business.email && <p>{business.email}</p>}
+          </>
+        }
+      />
 
-      {/* ================= MODALS ================= */}
-      <Modal open={isProposalModalOpen} onClose={closeProposalModal}>
-        <Box sx={{ backgroundColor: "#fff", p: 4, maxWidth: 600, margin: "10% auto" }}>
+      {/* Actions – only logged in */}
+      {isLoggedIn && (
+        <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+          <button onClick={openProposalModal}>Send Proposal</button>
+          <button onClick={() => setChatModalOpen(true)}>Chat</button>
+        </div>
+      )}
+
+      {/* Proposal Modal */}
+      <Modal open={isProposalModalOpen} onClose={() => setIsProposalModalOpen(false)}>
+        <Box sx={{ p: 4, maxWidth: 600, margin: "10% auto", bgcolor: "#fff" }}>
           <ProposalForm
             fromBusinessId={currentUserBusinessId}
             fromBusinessName={currentUserBusinessName}
             toBusiness={business}
-            onClose={closeProposalModal}
-            onSent={(proposalId) => {
-              setCurrentProposalId(proposalId);
-              closeProposalModal();
+            onSent={(id) => {
+              setCurrentProposalId(id);
+              setIsProposalModalOpen(false);
             }}
           />
         </Box>
       </Modal>
 
-      <Modal open={chatModalOpen} onClose={closeChatModal}>
-        <Box sx={{ backgroundColor: "#fff", p: 4, maxWidth: 420, margin: "10% auto" }}>
+      {/* Chat Modal */}
+      <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
+        <Box sx={{ p: 4, maxWidth: 420, margin: "10% auto", bgcolor: "#fff" }}>
           <TextField
             multiline
             minRows={3}
@@ -250,26 +238,33 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
             onChange={(e) => setChatMessage(e.target.value)}
           />
           <Button
-            variant="contained"
             onClick={handleSendBusinessMessage}
-            disabled={sending}
+            disabled={!chatMessage.trim() || sending}
           >
             Send
           </Button>
         </Box>
       </Modal>
+    </div>
+  );
+}
 
-      <Modal open={createAgreementModalOpen} onClose={closeCreateAgreementModal}>
-        <Box sx={{ backgroundColor: "#fff", p: 4, maxWidth: 600, margin: "10% auto" }}>
-          <CreateAgreementForm
-            fromBusinessId={currentUserBusinessId}
-            fromBusinessName={currentUserBusinessName}
-            partnerBusiness={business}
-            proposalId={currentProposalId}
-            onClose={closeCreateAgreementModal}
-          />
-        </Box>
-      </Modal>
+/* =========================
+   Small helper component
+   ========================= */
+function Block({ title, content }) {
+  if (!content) return null;
+  return (
+    <div
+      style={{
+        background: "#f3eafd",
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 16,
+      }}
+    >
+      <h3>{title}</h3>
+      <div>{content}</div>
     </div>
   );
 }
