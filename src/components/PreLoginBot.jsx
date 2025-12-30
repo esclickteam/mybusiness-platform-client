@@ -1,17 +1,40 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import botFlow from "../data/preLoginBot.flow.json";
 import "./PreLoginBot.css";
 
 export default function PreLoginBot() {
   const [open, setOpen] = useState(false);
   const [node, setNode] = useState("entry");
+  const navigate = useNavigate();
 
   const current = botFlow[node];
-
   if (!current) return null;
 
+  const handleAction = (btn) => {
+    // ניווט פנימי
+    if (btn.route) {
+      navigate(btn.route);
+      return;
+    }
+
+    // ניווט עם redirect אחרי login / register
+    if (btn.routeWithRedirect) {
+      navigate(btn.routeWithRedirect.path, {
+        state: { redirect: btn.routeWithRedirect.redirect },
+      });
+      return;
+    }
+
+    // מעבר לעץ שיחה פנימי
+    if (btn.next) {
+      setNode(btn.next);
+      return;
+    }
+  };
+
   return (
-    <div className={`plb ${open ? "open" : ""}`}>
+    <div className="plb">
       {!open && (
         <button
           className="plb-launch"
@@ -36,13 +59,8 @@ export default function PreLoginBot() {
               {current.buttons?.map((btn) => (
                 <button
                   key={btn.label}
-                  onClick={() => {
-                    if (btn.action) {
-                      window.location.href = btn.action;
-                    } else {
-                      setNode(btn.next);
-                    }
-                  }}
+                  className={btn.variant === "secondary" ? "secondary" : ""}
+                  onClick={() => handleAction(btn)}
                 >
                   {btn.label}
                 </button>
