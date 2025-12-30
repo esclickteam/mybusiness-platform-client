@@ -8,7 +8,6 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { AiProvider } from "../../context/AiContext";
-import { useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import "../../styles/BusinessDashboardLayout.css";
 import { io } from "socket.io-client";
@@ -39,7 +38,6 @@ export default function BusinessDashboardLayout() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
   const { businessId } = useParams();
-  const queryClient = useQueryClient();
 
   /* ============================
      📩 Unread Messages
@@ -166,19 +164,20 @@ export default function BusinessDashboardLayout() {
               </aside>
             )}
 
-            {/* ================= Header (Desktop Only) ================= */}
+            {/* ================= Dashboard Layout Header (Desktop) ================= */}
             {!isMobile && (
               <header className="dashboard-layout-header">
                 {/* שמאל – שם העסק */}
                 <div className="dashboard-layout-header-left">
-                  <span className="business-name">
-                    {user?.businessName || user?.name}
-                  </span>
+                  שלום, {user?.businessName || user?.name}
                 </div>
 
                 {/* ימין – התראות + Logout */}
                 <div className="dashboard-layout-header-right">
-                  <FacebookStyleNotifications />
+                  <div className="header-icon">
+                    <FacebookStyleNotifications />
+                  </div>
+
                   <button className="logout-btn" onClick={handleLogout}>
                     Logout
                   </button>
