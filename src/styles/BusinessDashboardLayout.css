@@ -1,295 +1,188 @@
 /* ===========================
-   🟣 Dashboard Layout Sidebar – UX Premium
+   🟣 Dashboard Layout Sidebar – PRO SaaS
    =========================== */
 .dashboard-layout-sidebar {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 250px !important;
-  height: 100%;
-  background: linear-gradient(180deg, #ead7ff 0%, #d1b3ff 100%) !important;
-  color: #0f172a !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
+  color: #2a165f;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  box-shadow: 4px 0 30px rgba(124, 77, 255, 0.25);
-  border-radius: 0 20px 20px 0 !important;
-  z-index: 9002 !important;
-  overflow-y: auto !important;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-  padding-bottom: 1.5rem;
+  box-shadow: 4px 0 24px rgba(88, 28, 135, 0.15);
+  z-index: 9000;
+  overflow-y: auto;
 }
 
 /* ===========================
-   🔹 לוגו
+   🔹 Logo
    =========================== */
 .dashboard-layout-sidebar .sidebar-logo {
+  height: 72px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 140px;
-  background: none !important;
-  box-shadow: none !important;
-  padding: 1rem 0;
-  margin: 0;
+  justify-content: center;
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(88, 28, 135, 0.15);
 }
 
 .dashboard-layout-sidebar .sidebar-logo-img {
-  width: 100%;
-  max-width: 260px;
-  height: auto;
-  object-fit: contain;
-  transition: transform 0.25s ease-in-out;
-}
-
-.dashboard-layout-sidebar .sidebar-logo-img:hover {
-  transform: scale(1.05);
+  max-height: 36px;
+  width: auto;
 }
 
 /* ===========================
-   🔹 כותרת
-   =========================== */
-.dashboard-layout-sidebar h2 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 1rem 0 0.8rem;
-  text-align: center;
-  color: #3a2b5a;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  opacity: 0.85;
-}
-
-/* ===========================
-   🔹 Divider
-   =========================== */
-.dashboard-layout-sidebar .sidebar-divider {
-  height: 1px;
-  margin: 1rem 1.2rem;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(58, 43, 90, 0.25),
-    transparent
-  );
-}
-
-/* ===========================
-   🔹 ניווט
+   🔹 Navigation
    =========================== */
 .dashboard-layout-sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding: 0 1.2rem;
-  flex-grow: 1;
 }
 
-.dashboard-layout-sidebar a {
-  position: relative;
+/* כל שורה = אזור לחיץ מלא */
+.dashboard-layout-sidebar nav a {
+  height: 48px;
+  padding: 0 18px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.9rem 1.1rem;
-  border-radius: 14px;
-  color: #1e1b2e;
+  justify-content: space-between;
+  font-size: 14px;
   font-weight: 500;
+  color: #2a165f;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.22);
-  transition: all 0.25s ease;
+  background: transparent;
+  border-bottom: 1px solid rgba(88, 28, 135, 0.12);
+  position: relative;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.dashboard-layout-sidebar a:hover {
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.12);
-  transform: translateX(6px);
+/* Hover עדין – לא CTA */
+.dashboard-layout-sidebar nav a:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
-.dashboard-layout-sidebar a.active {
-  background: linear-gradient(
-    90deg,
-    rgba(215, 192, 255, 0.95),
-    rgba(196, 168, 255, 0.65)
-  );
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(106, 17, 203, 0.25);
-  transform: translateX(6px);
+/* ===========================
+   🔹 Active – סימון מקצועי
+   =========================== */
+.dashboard-layout-sidebar nav a.active {
+  background: rgba(255, 255, 255, 0.65);
+  font-weight: 600;
+  color: #4c1fd8;
 }
 
-.dashboard-layout-sidebar a.active::before {
+/* פס צד */
+.dashboard-layout-sidebar nav a.active::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 8px;
-  bottom: 8px;
+  top: 0;
+  bottom: 0;
   width: 4px;
   background: linear-gradient(180deg, #6a11cb, #8b5cf6);
-  border-radius: 0 4px 4px 0;
 }
 
 /* ===========================
    🔴 Badge
    =========================== */
 .dashboard-layout-sidebar .badge {
-  min-width: 22px;
-  height: 22px;
-  font-size: 12px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  font-size: 11px;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(145deg, #ff3366, #ff1744);
+  background: #ef4444;
   border-radius: 9999px;
-  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 /* ===========================
-   📱 מובייל – Sidebar Open / Overlay / Header
+   📱 Mobile – Slide Sidebar
    =========================== */
 @media (max-width: 768px) {
+  .dashboard-layout-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.35s ease;
+    width: 100vw;
+  }
 
-  /* ✅ פתוח */
-  .sidebar.open {
+  .dashboard-layout-sidebar.open {
     transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  /* 🔲 Overlay */
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(3px);
-    z-index: 8999;
-
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-
-  /* overlay פעיל רק כשהסיידבר פתוח */
-  .sidebar.open + .sidebar-overlay {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .dashboard-content {
-    margin-left: 0 !important;
-    padding-top: 70px !important;
-  }
-
-  body {
-    overflow-x: hidden !important;
-  }
-
-  .sidebar a .badge {
-    min-width: 18px;
-    height: 18px;
-    font-size: 11px;
-    padding: 0 5px;
-  }
-
-  /* ===========================
-     📱 Footer בסיידבר
-     =========================== */
-  .sidebar {
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-bottom: 1rem;
-  }
-
-  .sidebar-footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.4);
-    margin-top: 1rem;
-    padding: 1rem;
-    text-align: center;
-  }
-
-  .sidebar-footer .user-name {
-    display: block;
-    font-weight: 600;
-    color: #2a165f;
-    margin-bottom: 0.6rem;
-  }
-
-  .sidebar-footer .logout-btn {
-    background: linear-gradient(90deg, #6a11cb, #5e17eb);
-    color: #fff;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    width: 80%;
-    margin: 0 auto;
-    display: inline-block;
-    box-shadow: 0 4px 10px rgba(106, 17, 203, 0.25);
-  }
-
-  .sidebar-footer .logout-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(106, 17, 203, 0.3);
   }
 }
 
 /* ===========================
-   🔹 כפתור פתיחה ☰
+   🔹 Sidebar Open Button
    =========================== */
 .sidebar-open-btn {
   position: fixed;
   top: 16px;
   right: 16px;
-  background: rgba(255, 255, 255, 0.85);
-  border: none;
-  border-radius: 50%;
   width: 42px;
   height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: #6a11cb;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6a11cb;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   z-index: 9200;
   cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: all 0.25s ease;
-}
-
-.sidebar-open-btn:hover {
-  background: #fff;
-  transform: scale(1.08);
 }
 
 /* ===========================
-   ❌ כפתור סגירה
+   ❌ Close Button (mobile)
    =========================== */
 .sidebar-close-btn {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(255, 255, 255, 0.7);
-  border: none;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  width: 34px;
-  height: 34px;
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: #6a11cb;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #5e17eb;
+}
+
+/* ===========================
+   ❌ Close Button (Mobile only)
+   =========================== */
+.sidebar-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  color: #6a11cb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(106, 17, 203, 0.25);
-  transition: all 0.25s ease;
-  z-index: 9100;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .sidebar-close-btn:hover {
-  background: #fff;
+  background: #f5f3ff;
   transform: rotate(90deg);
 }
 
 /* ===========================
-   🖥️ דסקטופ
+   🖥️ Desktop only
    =========================== */
 @media (min-width: 769px) {
   .sidebar-open-btn,
@@ -300,62 +193,70 @@
 }
 
 /* ===========================
-   🧭 Header עליון לדסקטופ
+   🧭 Dashboard Header (Desktop)
    =========================== */
 .dashboard-header {
   position: fixed;
   top: 0;
-  left: 250px;
+  left: 250px; /* תואם לרוחב הדשבורד־סיידבר */
   right: 0;
   height: 64px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  padding: 0 24px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
   z-index: 9050;
 }
 
+/* צד שמאל */
 .dashboard-header-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 14px;
 }
 
+/* צד ימין */
 .dashboard-header-right {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: 14px;
 }
 
-.user-name {
-  font-weight: 600;
-  color: #1e1b2e;
-  font-size: 15px;
+/* שם משתמש */
+.dashboard-header .user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2a165f;
 }
 
-.logout-btn {
-  background: linear-gradient(90deg, #6a11cb, #5e17eb);
+/* Logout – לא CTA צעקני */
+.dashboard-header .logout-btn {
+  background: #6a11cb;
+  color: #ffffff;
   border: none;
-  color: #fff;
-  font-weight: 600;
-  padding: 8px 18px;
-  border-radius: 10px;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 3px 12px rgba(106, 17, 203, 0.2);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(106, 17, 203, 0.25);
 }
 
-.logout-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(106, 17, 203, 0.3);
+.dashboard-header .logout-btn:hover {
+  background: #5b0fc4;
+  box-shadow: 0 4px 12px rgba(106, 17, 203, 0.35);
 }
 
-/* מרווח לתוכן בדסקטופ */
+/* ===========================
+   🧱 Content Offset (Desktop)
+   =========================== */
 @media (min-width: 769px) {
   .dashboard-content {
-    margin-top: 64px !important;
+    margin-left: 250px;   /* תואם sidebar */
+    margin-top: 64px;     /* תואם header */
   }
 }
