@@ -20,7 +20,7 @@
    🔹 Logo (גדול ומכובד)
    =========================== */
 .dashboard-layout-sidebar .sidebar-logo {
-  height: 110px; /* ⬅️ הוגדל */
+  height: 200px; /* ⬅️ הוגדל */
   display: flex;
   align-items: center;
   justify-content: center;
