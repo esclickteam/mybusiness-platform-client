@@ -17,22 +17,27 @@
 }
 
 /* ===========================
-   🔹 Logo (גדול ומכובד)
+   🔹 Logo (גדול ומכובד – X2)
    =========================== */
 .dashboard-layout-sidebar .sidebar-logo {
-  height: 200px; /* ⬅️ הוגדל */
+  height: 110px; /* ❌ לא משתנה */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 12px 16px;
   border-bottom: 1px solid rgba(88, 28, 135, 0.15);
+  overflow: visible; /* ⬅️ חשוב כדי לא לחתוך את הלוגו */
 }
 
 .dashboard-layout-sidebar .sidebar-logo-img {
-  max-height: 72px; /* ⬅️ לוגו גדול וברור */
+  max-height: 72px;      /* נשאר */
   width: auto;
   object-fit: contain;
+
+  transform: scale(2);  /* ✅ הכפלה אמיתית של הלוגו */
+  transform-origin: center;
 }
+
 
 /* ===========================
    🔹 Navigation
