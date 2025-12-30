@@ -175,16 +175,16 @@
 }
 
 /* ===========================
-   🧭 Dashboard Layout Header – אותו צבע של הסיידבר ✅
+   🧭 Dashboard Layout Header – FINAL (EN)
    =========================== */
 .dashboard-layout-header {
   position: fixed;
   top: 0;
-  left: 250px;
+  left: 250px; /* aligned with sidebar */
   right: 0;
   height: 64px;
 
-  /* ⬅️ אותו גרדיאנט של הסיידבר */
+  /* SAME COLOR AS SIDEBAR */
   background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
   border-bottom: 1px solid rgba(88, 28, 135, 0.15);
 
@@ -196,35 +196,52 @@
   z-index: 9050;
 }
 
-/* שמאל – שם העסק */
+/* Left side */
 .dashboard-layout-header-left {
   font-size: 15px;
   font-weight: 600;
   color: #2a165f;
 }
 
-/* ימין – התראות + Logout */
+/* Right side */
 .dashboard-layout-header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
-.dashboard-layout-header-right .logout-btn {
-  background: #6a11cb;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 14px;
+/* Shared button style (Notifications + Logout) */
+.header-action-btn {
+  height: 36px;
+  min-width: 36px;
+  padding: 0 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(88, 28, 135, 0.25);
+  border-radius: 10px;
+
   font-size: 13px;
   font-weight: 500;
+  color: #2a165f;
+
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(106, 17, 203, 0.25);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.dashboard-layout-header-right .logout-btn:hover {
-  background: #5b0fc4;
+.header-action-btn:hover {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(88, 28, 135, 0.2);
 }
+
+/* Logout – same size, slightly bolder */
+.header-action-btn.logout {
+  font-weight: 600;
+}
+
 
 /* ===========================
    🧱 Content Offset
