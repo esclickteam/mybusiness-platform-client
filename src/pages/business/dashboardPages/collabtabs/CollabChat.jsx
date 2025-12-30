@@ -255,11 +255,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
         return;
       }
 
-      dispatchMessages((prevMessages) => {
-        const exists = prevMessages.some((m) => m._id === normalized._id);
-        if (exists) return prevMessages;
-        return [...prevMessages, normalized];
-      });
+      dispatchMessages({
+  type: "append",
+  payload: normalized,
+});
 
       setSelectedConversation((prev) => {
         if (prev && prev._id === normalized.conversationId) {
