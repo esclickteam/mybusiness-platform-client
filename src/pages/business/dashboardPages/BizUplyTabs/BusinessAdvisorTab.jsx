@@ -5,14 +5,19 @@ import Markdown from "markdown-to-jsx";
 import API from "@api";
 import "./AdvisorChat.css";
 
-const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetails }) => {
+const BusinessAdvisorTab = ({
+  businessId,
+  conversationId,
+  userId,
+  businessDetails
+}) => {
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [startedChat, setStartedChat] = useState(false);
   const [remainingQuestions, setRemainingQuestions] = useState(null);
 
-  const bottomRef = useRef(null);
+  const chatContainerRef = useRef(null);
   const abortControllerRef = useRef(null);
 
   const presetQuestions = [
@@ -23,6 +28,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     "How to build a simple business plan?"
   ];
 
+  /* =========================
+     REFRESH QUESTION BALANCE
+  ========================= */
   const refreshRemainingQuestions = useCallback(async () => {
     if (!businessId) return;
 
@@ -45,6 +53,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     refreshRemainingQuestions();
   }, [refreshRemainingQuestions]);
 
+  /* =========================
+     SEND MESSAGE
+  ========================= */
   const sendMessage = useCallback(
     async (promptText, conversationMessages) => {
       if (!businessId || !promptText.trim() || loading) return;
@@ -62,22 +73,28 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
 
       setLoading(true);
 
-      if (abortControllerRef.current) abortControllerRef.current.abort();
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
-      const payload = {
-        businessId,
-        prompt: promptText,
-        businessDetails,
-        profile: { conversationId: conversationId || null, userId: userId || null },
-        messages: conversationMessages || messages
-      };
-
       try {
-        const response = await API.post("/chat/business-advisor", payload, {
-          signal: controller.signal
-        });
+        const response = await API.post(
+          "/chat/business-advisor",
+          {
+            businessId,
+            prompt: promptText,
+            businessDetails,
+            profile: {
+              conversationId: conversationId || null,
+              userId: userId || null
+            },
+            messages: conversationMessages
+          },
+          { signal: controller.signal }
+        );
 
         setMessages(prev => [
           ...prev,
@@ -95,29 +112,31 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       } catch (error) {
         if (error.name === "AbortError") return;
 
-        if (error.response?.status === 403) {
-          setRemainingQuestions(0);
-          setMessages(prev => [
-            ...prev,
-            {
-              role: "assistant",
-              content: error.response.data.error || "❗ Limit reached."
-            }
-          ]);
-          return;
-        }
-
         setMessages(prev => [
           ...prev,
-          { role: "assistant", content: "⚠️ Server error." }
+          {
+            role: "assistant",
+            content: "⚠️ Server error."
+          }
         ]);
       } finally {
         setLoading(false);
       }
     },
-    [businessId, businessDetails, conversationId, userId, messages, loading, remainingQuestions, refreshRemainingQuestions]
+    [
+      businessId,
+      businessDetails,
+      conversationId,
+      userId,
+      loading,
+      remainingQuestions,
+      refreshRemainingQuestions
+    ]
   );
 
+  /* =========================
+     HANDLERS
+  ========================= */
   const handleSubmit = () => {
     if (!userInput.trim() || loading) return;
 
@@ -125,9 +144,9 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     const newMessages = [...messages, userMessage];
 
     setMessages(newMessages);
+    setStartedChat(true);
     sendMessage(userInput, newMessages);
     setUserInput("");
-    setStartedChat(true);
   };
 
   const handlePresetQuestion = (question) => {
@@ -137,14 +156,24 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
     const newMessages = [...messages, userMessage];
 
     setMessages(newMessages);
-    sendMessage(question, newMessages);
     setStartedChat(true);
+    sendMessage(question, newMessages);
   };
 
+  /* =========================
+     AUTO SCROLL (INTERNAL ONLY)
+  ========================= */
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (!startedChat) return;
+    if (!chatContainerRef.current) return;
 
+    chatContainerRef.current.scrollTop =
+      chatContainerRef.current.scrollHeight;
+  }, [messages, startedChat]);
+
+  /* =========================
+     RENDER
+  ========================= */
   return (
     <div className="advisor-chat-container">
       <h2>Business Advisor 🤝</h2>
@@ -175,7 +204,7 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
       )}
 
       <div className="chat-box-wrapper">
-        <div className="chat-box">
+        <div className="chat-box" ref={chatContainerRef}>
           {messages.map((msg, idx) => (
             <div key={idx} className={`bubble ${msg.role}`}>
               {msg.role === "assistant" ? (
@@ -185,8 +214,10 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
               )}
             </div>
           ))}
-          {loading && <div className="bubble assistant">⌛ Thinking...</div>}
-          <div ref={bottomRef} style={{ height: 1 }} />
+
+          {loading && (
+            <div className="bubble assistant">⌛ Thinking...</div>
+          )}
         </div>
       </div>
 
@@ -197,9 +228,12 @@ const BusinessAdvisorTab = ({ businessId, conversationId, userId, businessDetail
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          disabled={loading || (remainingQuestions !== null && remainingQuestions <= 0)}
-          dir="rtl"
+          disabled={
+            loading ||
+            (remainingQuestions !== null && remainingQuestions <= 0)
+          }
         />
+
         <button
           onClick={handleSubmit}
           disabled={loading || !userInput.trim()}
