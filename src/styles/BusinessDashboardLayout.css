@@ -47,6 +47,7 @@
 }
 
 .dashboard-layout-sidebar nav a {
+  position: relative;
   height: 48px;
   padding: 0 18px;
   display: flex;
@@ -106,6 +107,7 @@
     transition: transform 0.35s ease;
     width: 100vw;
   }
+
   .dashboard-layout-sidebar.open {
     transform: translateX(0);
   }
@@ -127,6 +129,7 @@
   justify-content: space-between;
   padding: 0 24px;
   z-index: 9050;
+  overflow: visible; /* 🔑 חשוב */
 }
 
 /* Left */
@@ -144,12 +147,12 @@
 }
 
 /* ===========================
-   🔔 Notifications FIX
+   🔔 Notifications – FIX סופי
    =========================== */
 
-/* העוטף – זה מה שקובע מיקום */
+/* העוטף */
 .header-icon-wrapper {
-  position: relative; /* 🔑 קריטי */
+  position: relative; /* 🔑 עיגון */
   height: 36px;
   width: 36px;
   display: flex;
@@ -158,18 +161,24 @@
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(88, 28, 135, 0.25);
   border-radius: 10px;
+  overflow: visible;
 }
 
-/* כל dropdown שיוצא מהקומפוננטה */
+/* הדרופדאון עצמו – נפתח שמאלה */
 .header-icon-wrapper .notifications-dropdown,
 .header-icon-wrapper [role="menu"],
 .header-icon-wrapper .dropdown,
 .header-icon-wrapper .popover {
   position: absolute !important;
-  top: calc(100% + 8px) !important; /* ⬇️ מתחת לפעמון */
+  top: calc(100% + 8px) !important;
   right: 0 !important;
   left: auto !important;
+
+  /* ⬅️ זה הקסם – נפתח שמאלה */
+  transform: translateX(-100%) !important;
+
   z-index: 9999;
+  max-width: 320px;
 }
 
 /* ===========================

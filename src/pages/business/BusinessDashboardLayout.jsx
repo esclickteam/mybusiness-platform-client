@@ -108,7 +108,6 @@ export default function BusinessDashboardLayout() {
                 className={`dashboard-layout-sidebar ${isMobile ? "open" : ""}`}
                 ref={sidebarRef}
               >
-                {/* Logo */}
                 <div className="sidebar-logo">
                   <img
                     src="/bizuply logo.png"
@@ -127,7 +126,6 @@ export default function BusinessDashboardLayout() {
                   )}
                 </div>
 
-                {/* Navigation */}
                 <nav>
                   <NavLink to={`/business/${businessId}`} end>
                     View Public Profile
@@ -150,7 +148,6 @@ export default function BusinessDashboardLayout() {
                   ))}
                 </nav>
 
-                {/* Mobile Footer */}
                 {isMobile && (
                   <div className="sidebar-footer">
                     <span className="user-name">
@@ -164,22 +161,19 @@ export default function BusinessDashboardLayout() {
               </aside>
             )}
 
-            {/* ================= Dashboard Layout Header (Desktop) ================= */}
+            {/* ================= Header (Desktop) ================= */}
             {!isMobile && (
               <header className="dashboard-layout-header">
-                {/* Left */}
                 <div className="dashboard-layout-header-left">
                   Hello, {user?.businessName || user?.name}
                 </div>
 
-                {/* Right */}
                 <div className="dashboard-layout-header-right">
-                  {/* Notifications – NO button inside button */}
-                  <div className="header-icon-wrapper">
+                  {/* ✅ עטיפה לוגית – זה כל התיקון */}
+                  <div className="notifications-wrapper">
                     <FacebookStyleNotifications />
                   </div>
 
-                  {/* Logout */}
                   <button
                     className="header-action-btn"
                     onClick={handleLogout}
