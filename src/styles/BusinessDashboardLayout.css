@@ -203,18 +203,33 @@
   color: #2a165f;
 }
 
-/* Right side */
+/* Right side container */
 .dashboard-layout-header-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* Shared button style (Notifications + Logout) */
-.header-action-btn {
+/* Wrapper להתראות */
+.header-icon-wrapper {
   height: 36px;
   min-width: 36px;
-  padding: 0 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(88, 28, 135, 0.25);
+  border-radius: 10px;
+
+  box-shadow: 0 2px 8px rgba(88, 28, 135, 0.15);
+}
+
+/* Logout button */
+.header-action-btn {
+  height: 36px;
+  padding: 0 16px;
 
   display: flex;
   align-items: center;
@@ -225,7 +240,7 @@
   border-radius: 10px;
 
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: #2a165f;
 
   cursor: pointer;
@@ -234,12 +249,7 @@
 
 .header-action-btn:hover {
   background: #ffffff;
-  box-shadow: 0 2px 8px rgba(88, 28, 135, 0.2);
-}
-
-/* Logout – same size, slightly bolder */
-.header-action-btn.logout {
-  font-weight: 600;
+  box-shadow: 0 3px 10px rgba(88, 28, 135, 0.25);
 }
 
 
