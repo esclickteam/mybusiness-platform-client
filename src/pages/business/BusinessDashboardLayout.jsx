@@ -127,9 +127,14 @@ export default function BusinessDashboardLayout() {
                 </div>
 
                 <nav>
-                  <NavLink to={`/business/${businessId}`} end>
+                  {/* ✅ נפתח בטאב חדש – לא שובר את ההידר */}
+                  <a
+                    href={`/business/${businessId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     View Public Profile
-                  </NavLink>
+                  </a>
 
                   {tabs.map(({ path, label }) => (
                     <NavLink
@@ -169,8 +174,8 @@ export default function BusinessDashboardLayout() {
                 </div>
 
                 <div className="dashboard-layout-header-right">
-                  {/* ✅ עטיפה לוגית – זה כל התיקון */}
-                  <div className="notifications-wrapper">
+                  {/* 🔔 notifications – עטיפה נכונה */}
+                  <div className="fb-notif-wrapper">
                     <FacebookStyleNotifications />
                   </div>
 
