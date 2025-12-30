@@ -1,13 +1,15 @@
 /* =====================================================
    BizUply – Business Dashboard Layout (PRO SaaS)
-   LTR | Fixed Sidebar + Fixed Header | Scroll FIXED
+   LTR | Fixed Sidebar + Fixed Header | SCROLL FIXED
    ===================================================== */
 
 /* =========================
-   🌍 Global safety
+   🌍 Global safety – BODY SCROLL ONLY
 ========================= */
 html,
 body {
+  margin: 0;
+  padding: 0;
   height: auto !important;
   min-height: 100%;
   overflow-y: auto !important;
@@ -15,17 +17,15 @@ body {
 }
 
 /* =========================
-   🧱 Root wrappers (CRITICAL)
+   🧱 Root wrappers
 ========================= */
 .ltr-wrapper {
   min-height: 100vh;
-  overflow: visible;
 }
 
 .business-dashboard-layout {
   display: flex;
   min-height: 100vh;
-  overflow: visible;
 }
 
 /* =========================
@@ -33,10 +33,8 @@ body {
 ========================= */
 .dashboard-layout-sidebar {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0 auto 0 0;
   width: 250px;
-  height: 100vh;
   background: linear-gradient(180deg, #f5f3ff 0%, #ede9fe 100%);
   color: #1e1b4b;
   display: flex;
@@ -73,6 +71,7 @@ body {
 }
 
 .dashboard-layout-sidebar nav a {
+  position: relative;
   height: 48px;
   padding: 0 18px;
   display: flex;
@@ -83,7 +82,6 @@ body {
   color: #1e1b4b;
   text-decoration: none;
   border-bottom: 1px solid rgba(99, 102, 241, 0.1);
-  transition: background 0.2s ease;
 }
 
 .dashboard-layout-sidebar nav a:hover {
@@ -100,8 +98,7 @@ body {
   content: "";
   position: absolute;
   left: 0;
-  top: 0;
-  bottom: 0;
+  inset-block: 0;
   width: 4px;
   background: #6366f1;
 }
@@ -124,22 +121,7 @@ body {
 }
 
 /* =========================
-   📱 Mobile Sidebar
-========================= */
-@media (max-width: 768px) {
-  .dashboard-layout-sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    width: 100vw;
-  }
-
-  .dashboard-layout-sidebar.open {
-    transform: translateX(0);
-  }
-}
-
-/* =========================
-   🧭 Header (Fixed)
+   🧭 Header – FIXED, CLEAN
 ========================= */
 .dashboard-layout-header {
   position: fixed;
@@ -147,7 +129,7 @@ body {
   left: 250px;
   right: 0;
   height: 64px;
-  background: #ffffff;
+  background: #ffffff; /* נשאר לבן כמו שבחרת */
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
@@ -156,14 +138,12 @@ body {
   z-index: 9050;
 }
 
-/* Header Left */
 .dashboard-layout-header-left {
   font-size: 15px;
   font-weight: 600;
   color: #1e1b4b;
 }
 
-/* Header Right */
 .dashboard-layout-header-right {
   display: flex;
   align-items: center;
@@ -171,7 +151,7 @@ body {
 }
 
 /* =========================
-   🔔 Notifications (NO CUT)
+   🔔 Notifications – no cut
 ========================= */
 .fb-notif-wrapper {
   position: relative;
@@ -198,24 +178,36 @@ body {
 }
 
 /* =========================
-   🧱 MAIN CONTENT – SCROLL FIX
+   🧱 MAIN CONTENT – THE FIX
 ========================= */
 .dashboard-content {
-  flex: 1;
   margin-left: 250px;
   margin-top: 64px;
-  padding: 32px 24px 96px;
-  min-height: auto;
-  overflow: visible;
+  padding: 32px 24px 120px;
+  min-height: calc(100vh - 64px);
 }
 
 /* =========================
-   📱 Mobile content
+   📱 Mobile
 ========================= */
 @media (max-width: 768px) {
+  .dashboard-layout-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 100vw;
+  }
+
+  .dashboard-layout-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .dashboard-layout-header {
+    left: 0;
+  }
+
   .dashboard-content {
     margin-left: 0;
     margin-top: 64px;
-    padding: 24px 16px 96px;
+    padding: 24px 16px 120px;
   }
 }
