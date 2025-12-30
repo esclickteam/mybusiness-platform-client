@@ -199,77 +199,108 @@ export default function BusinessDashboardLayout({ children }) {
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
             {/* 🔹 Sidebar */}
-            {(!isMobile || showSidebar) && (
-              <aside
-                className={`sidebar ${isMobile ? "mobile open" : ""}`}
-                ref={sidebarRef}
-                aria-modal={isMobile && showSidebar ? "true" : undefined}
-                role={isMobile && showSidebar ? "dialog" : undefined}
-              >
-                <div className="sidebar-logo">
-                  <img
-                    src="/bizuply logo.png"
-                    alt="BizUply Logo"
-                    className="sidebar-logo-img"
-                  />
-                  {isMobile && (
-                    <button
-                      className="sidebar-close-btn"
-                      aria-label="Close menu"
-                      onClick={() => setShowSidebar(false)}
-                    >
-                      <FaTimes size={18} />
-                    </button>
-                  )}
-                </div>
+{(!isMobile || showSidebar) && (
+  <aside
+    className={`dashboard-layout-sidebar ${isMobile ? "mobile open" : ""}`}
+    ref={sidebarRef}
+    aria-modal={isMobile && showSidebar ? "true" : undefined}
+    role={isMobile && showSidebar ? "dialog" : undefined}
+  >
+    {/* Logo */}
+    <div className="sidebar-logo">
+      <img
+        src="/bizuply logo.png"
+        alt="BizUply Logo"
+        className="sidebar-logo-img"
+      />
+      {isMobile && (
+        <button
+          className="sidebar-close-btn"
+          aria-label="Close menu"
+          onClick={() => setShowSidebar(false)}
+        >
+          <FaTimes size={18} />
+        </button>
+      )}
+    </div>
 
-                <h2>Business Management</h2>
+    {/* Section title */}
+    <div className="sidebar-section-title">
+      Business Management
+    </div>
 
-                <nav>
-                  {user?.role === "business" && (
-                    <NavLink
-                      to={`/business/${businessId}`}
-                      end
-                      className={({ isActive }) =>
-                        isActive ? "active" : undefined
-                      }
-                      onClick={() => isMobile && setShowSidebar(false)}
-                    >
-                      View Public Profile
-                    </NavLink>
-                  )}
+    {/* Divider */}
+    <div className="sidebar-divider" />
 
-                  {tabs.map(({ path, label }) => (
-                    <NavLink
-                      key={path}
-                      to={`/business/${businessId}/dashboard/${path}`}
-                      end={
-                        location.pathname ===
-                        `/business/${businessId}/dashboard/${path}`
-                      }
-                      className={({ isActive }) =>
-                        isActive ? "active" : undefined
-                      }
-                      onClick={() => isMobile && setShowSidebar(false)}
-                    >
-                      {label}
-                      {path === "messages" && messagesCount > 0 && (
-                        <span className="badge">{messagesCount}</span>
-                      )}
-                    </NavLink>
-                  ))}
-                </nav>
+    {/* Navigation */}
+    <nav className="sidebar-nav">
+      {user?.role === "business" && (
+        <>
+          <NavLink
+            to={`/business/${businessId}`}
+            end
+            className={({ isActive }) =>
+              isActive ? "active" : undefined
+            }
+            onClick={() => isMobile && setShowSidebar(false)}
+          >
+            View Public Profile
+          </NavLink>
 
-                {isMobile && (
-                  <div className="sidebar-footer">
-                    <span className="user-name">Hello, {user?.name}</span>
-                    <button className="logout-btn" onClick={handleLogout}>
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </aside>
+          {/* Divider between profile and dashboard tabs */}
+          <div className="sidebar-divider subtle" />
+        </>
+      )}
+
+      {tabs.map(({ path, label }, index) => (
+        <React.Fragment key={path}>
+          <NavLink
+            to={`/business/${businessId}/dashboard/${path}`}
+            end={
+              location.pathname ===
+              `/business/${businessId}/dashboard/${path}`
+            }
+            className={({ isActive }) =>
+              isActive ? "active" : undefined
+            }
+            onClick={() => isMobile && setShowSidebar(false)}
+          >
+            <span>{label}</span>
+
+            {path === "messages" && messagesCount > 0 && (
+              <span className="badge">{messagesCount}</span>
             )}
+          </NavLink>
+
+          {/* Divider between items (not after last) */}
+          {index < tabs.length - 1 && (
+            <div className="sidebar-divider subtle" />
+          )}
+        </React.Fragment>
+      ))}
+    </nav>
+
+    {/* Mobile footer */}
+    {isMobile && (
+      <>
+        <div className="sidebar-divider" />
+
+        <div className="sidebar-footer">
+          <span className="user-name">
+            Hello, {user?.name}
+          </span>
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+      </>
+    )}
+  </aside>
+)}
+
 
             {!isMobile && (
               <header className="dashboard-header">
