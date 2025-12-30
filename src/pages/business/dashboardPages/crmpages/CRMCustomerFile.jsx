@@ -3,7 +3,7 @@ import API from "@api";
 import { useQueryClient } from "@tanstack/react-query";
 import "./CRMCustomerProfile.css";
 
-// Import the additional component
+// Components
 import ClientTasksAndNotes from "../../../../components/CRM/ClientTasksAndNotes";
 
 export default function CRMCustomerFile({
@@ -13,9 +13,22 @@ export default function CRMCustomerFile({
   businessId,
 }) {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("appointments");
-  const [customerData, setCustomerData] = useState(null);
 
+  /* =========================
+     UI STATE
+  ========================= */
+  const [activeTab, setActiveTab] = useState("appointments");
+
+  /* =========================
+     DATA STATE
+  ========================= */
+  const [customerData, setCustomerData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  /* =========================
+     FORM STATE (NEW / EDIT)
+  ========================= */
   const [newClient, setNewClient] = useState(
     isNew
       ? { fullName: "", phone: "", email: "", address: "" }
@@ -27,16 +40,23 @@ export default function CRMCustomerFile({
         }
   );
 
-  // === Save client to server ===
+  /* =========================
+     SAVE CLIENT
+  ========================= */
   const handleSave = async () => {
     if (!newClient.fullName.trim() || !newClient.phone.trim()) {
       alert("❌ Full name and phone number are required");
       return;
     }
+
     try {
-      await API.post(`/crm-clients`, { ...newClient, businessId });
+      await API.post(`/crm-clients`, {
+        ...newClient,
+        businessId,
+      });
+
       queryClient.invalidateQueries(["clients", businessId]);
-      alert("✅ Client saved successfully!");
+      alert("✅ Client saved successfully");
       onClose();
     } catch (err) {
       console.error("❌ Error saving client:", err);
@@ -44,31 +64,62 @@ export default function CRMCustomerFile({
     }
   };
 
-  // === Fetch full customer file ===
+  /* =========================
+     FETCH FULL CUSTOMER FILE
+  ========================= */
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCustomerFile = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
         const res = await API.get(`/crm-customer/${client._id}`, {
           params: { businessId },
         });
-        setCustomerData(res.data);
+
+        // ✅ תמיד להחזיר מבנה תקין
+        setCustomerData({
+          appointments: res.data?.appointments || [],
+          events: res.data?.events || [],
+          invoices: res.data?.invoices || [],
+          files: res.data?.files || [],
+        });
       } catch (err) {
         console.error("❌ Error loading customer file:", err);
+
+        // ✅ גם בשגיאה – לא להשאיר Loading
+        setCustomerData({
+          appointments: [],
+          events: [],
+          invoices: [],
+          files: [],
+        });
+
+        setError("Failed to load customer data");
+      } finally {
+        setLoading(false);
       }
     };
-    if (client?._id && businessId && !isNew) fetchData();
+
+    if (client?._id && businessId && !isNew) {
+      fetchCustomerFile();
+    }
   }, [client?._id, businessId, isNew]);
 
-  // ✨ Existing customer file with tabs
+  /* =========================
+     RENDER
+  ========================= */
   return (
     <div className="crm-customer-profile">
       <h2>Customer File – {client?.fullName}</h2>
       <p>
-        📞 {client?.phone} | ✉️ {client?.email || "-"} | 📍{" "}
+        📞 {client?.phone || "-"} | ✉️ {client?.email || "-"} | 📍{" "}
         {client?.address || "-"}
       </p>
 
-      {/* Tabs header */}
+      {/* =========================
+          TABS HEADER
+      ========================= */}
       <div className="tabs-header">
         <button
           className={activeTab === "appointments" ? "active" : ""}
@@ -76,24 +127,28 @@ export default function CRMCustomerFile({
         >
           📅 Appointments
         </button>
+
         <button
           className={activeTab === "events" ? "active" : ""}
           onClick={() => setActiveTab("events")}
         >
           📝 Events
         </button>
+
         <button
           className={activeTab === "invoices" ? "active" : ""}
           onClick={() => setActiveTab("invoices")}
         >
           💰 Invoices
         </button>
+
         <button
           className={activeTab === "files" ? "active" : ""}
           onClick={() => setActiveTab("files")}
         >
           📄 Files
         </button>
+
         <button
           className={activeTab === "extras" ? "active" : ""}
           onClick={() => setActiveTab("extras")}
@@ -102,15 +157,20 @@ export default function CRMCustomerFile({
         </button>
       </div>
 
-      {/* Tab content */}
+      {/* =========================
+          TAB CONTENT
+      ========================= */}
       <div className="tab-content">
-        {!customerData ? (
+        {loading ? (
           <p>⏳ Loading data...</p>
+        ) : error ? (
+          <p className="error-text">❌ {error}</p>
         ) : (
           <>
+            {/* ===== Appointments ===== */}
             {activeTab === "appointments" && (
-              <div>
-                {customerData.appointments?.length === 0 ? (
+              <>
+                {customerData.appointments.length === 0 ? (
                   <p>No appointments for this client</p>
                 ) : (
                   <table className="appointments-table">
@@ -134,34 +194,31 @@ export default function CRMCustomerFile({
                     </tbody>
                   </table>
                 )}
-              </div>
+              </>
             )}
 
+            {/* ===== Events ===== */}
             {activeTab === "events" && (
-              <div className="timeline">
-                {customerData.events?.length === 0 ? (
+              <>
+                {customerData.events.length === 0 ? (
                   <p>No events for this client</p>
                 ) : (
-                  customerData.events.map((e) => (
-                    <div key={e._id} className="timeline-item">
-                      <span>
-                        {e.type === "call" && "📞"}
-                        {e.type === "message" && "💬"}
-                        {e.type === "meeting" && "📅"}
-                        {e.type === "task" && "✅"}
-                        {e.type === "file" && "📄"}
-                      </span>{" "}
-                      <strong>{e.title}</strong> – {e.date || "No date"}
-                      {e.notes && <p>{e.notes}</p>}
-                    </div>
-                  ))
+                  <div className="timeline">
+                    {customerData.events.map((e) => (
+                      <div key={e._id} className="timeline-item">
+                        <strong>{e.title}</strong> – {e.date || "No date"}
+                        {e.notes && <p>{e.notes}</p>}
+                      </div>
+                    ))}
+                  </div>
                 )}
-              </div>
+              </>
             )}
 
+            {/* ===== Invoices ===== */}
             {activeTab === "invoices" && (
-              <div>
-                {customerData.invoices?.length === 0 ? (
+              <>
+                {customerData.invoices.length === 0 ? (
                   <p>No invoices for this client</p>
                 ) : (
                   <table className="data-table">
@@ -185,31 +242,29 @@ export default function CRMCustomerFile({
                     </tbody>
                   </table>
                 )}
-              </div>
+              </>
             )}
 
+            {/* ===== Files ===== */}
             {activeTab === "files" && (
-              <div>
-                {customerData.files?.length === 0 ? (
+              <>
+                {customerData.files.length === 0 ? (
                   <p>No files for this client</p>
                 ) : (
                   <ul className="file-list">
                     {customerData.files.map((f) => (
                       <li key={f._id}>
-                        <a
-                          href={f.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a href={f.url} target="_blank" rel="noreferrer">
                           📄 {f.name}
                         </a>
                       </li>
                     ))}
                   </ul>
                 )}
-              </div>
+              </>
             )}
 
+            {/* ===== Notes & Tasks ===== */}
             {activeTab === "extras" && (
               <ClientTasksAndNotes
                 clientId={client._id}
@@ -220,6 +275,9 @@ export default function CRMCustomerFile({
         )}
       </div>
 
+      {/* =========================
+          ACTIONS
+      ========================= */}
       <div className="form-actions">
         <button className="cancel-btn" onClick={onClose}>
           ↩ Back
