@@ -12,9 +12,12 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   ========================= */
   const [notes, setNotes] = useState([]);
   const [tasks, setTasks] = useState([]);
+  
 
   const [newNote, setNewNote] = useState("");
   const [editNoteId, setEditNoteId] = useState(null);
+  const [tabAlertShown, setTabAlertShown] = useState(false);
+
 
   const [newTask, setNewTask] = useState({
     title: "",
@@ -57,26 +60,26 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
    ON TAB ENTER (ON MOUNT)
 ========================= */
 useEffect(() => {
-  if (!clientId) return;
+  if (tabAlertShown) return;
+  if (!tasks || tasks.length === 0) return;
 
-  // דוגמה חכמה – לפי מצב המשימות
-  setTimeout(() => {
-    const openTasks = tasks.filter(
-      (t) => t.status !== "completed" && t.status !== "cancelled"
+  const openTasks = tasks.filter(
+    (t) => t.status !== "completed" && t.status !== "cancelled"
+  );
+
+  if (openTasks.length > 0) {
+    showToast(
+      `⚠️ This client has ${openTasks.length} open task${
+        openTasks.length > 1 ? "s" : ""
+      }`,
+      "warning"
     );
+  } else {
+    showToast("📝 Notes & Tasks loaded", "info");
+  }
 
-    if (openTasks.length > 0) {
-      showToast(
-        `⚠️ This client has ${openTasks.length} open task${
-          openTasks.length > 1 ? "s" : ""
-        }`,
-        "warning"
-      );
-    } else {
-      showToast("📝 Notes & Tasks loaded", "info");
-    }
-  }, 300);
-}, []); // ⬅️ חשוב: array ריק
+  setTabAlertShown(true); // ✅ חשוב
+}, [tasks, tabAlertShown]);
 
   /* =========================
      FETCH NOTES
