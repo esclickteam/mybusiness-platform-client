@@ -299,12 +299,30 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                   )}
 
                   {/* DATE & TIME */}
-                  {task.dueDate && dateObj.isValid() && (
-                    <div className="task-meta">
-                      <span>📅 {dateObj.format("DD/MM/YYYY")}</span>
-                      <span>🕒 {dateObj.format("HH:mm")}</span>
-                    </div>
-                  )}
+                  {task.dueDate && (
+  <div className="task-meta">
+    <span>
+      📅{" "}
+      {dayjs(
+        typeof task.dueDate === "string"
+          ? task.dueDate
+          : String(task.dueDate)
+      )
+        .tz(dayjs.tz.guess())
+        .format("DD/MM/YYYY")}
+    </span>
+    <span>
+      🕒{" "}
+      {dayjs(
+        typeof task.dueDate === "string"
+          ? task.dueDate
+          : String(task.dueDate)
+      )
+        .tz(dayjs.tz.guess())
+        .format("HH:mm")}
+    </span>
+  </div>
+)}
 
                   {/* REMINDER */}
                   {task.reminderMinutes > 0 && (
