@@ -389,6 +389,30 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             }
           />
 
+          {/* STATUS + PRIORITY (ROW) */}
+<div className="task-row">
+  <select
+    value={newTask.status}
+    onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
+  >
+    <option value="todo">To Do</option>
+    <option value="in_progress">In Progress</option>
+    <option value="waiting">Waiting</option>
+    <option value="completed">Completed</option>
+    <option value="cancelled">Cancelled</option>
+  </select>
+
+  <select
+    value={newTask.priority}
+    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
+  >
+    <option value="low">Low</option>
+    <option value="normal">Normal</option>
+    <option value="high">High</option>
+    <option value="critical">Critical</option>
+  </select>
+</div>
+
           <select
             value={newTask.reminderMinutes}
             onChange={(e) =>
