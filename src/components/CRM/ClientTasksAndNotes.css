@@ -236,3 +236,21 @@ button:active {
     transform: translateY(0);
   }
 }
+
+/* ====== STATUS + PRIORITY בשתי שורות ====== */
+.task-meta-row {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.task-meta-label {
+  font-weight: 700;
+  color: #555;
+  margin-right: 6px;
+}
+
+.task-meta-value {
+  font-weight: 600;
+  color: #333;
+}

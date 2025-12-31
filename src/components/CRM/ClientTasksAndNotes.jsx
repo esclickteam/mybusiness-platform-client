@@ -335,14 +335,20 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
 
                   {/* STATUS + PRIORITY */}
                   <div className="task-meta-row">
-                    <span className={`task-status ${task.status}`}>
-                      📌 {statusLabels[task.status]?.text || task.status}
-                    </span>
+  <div className={`task-status ${task.status}`}>
+    <span className="task-meta-label">Status:</span>{" "}
+    <span className="task-meta-value">
+      📌 {statusLabels[task.status]?.text || task.status}
+    </span>
+  </div>
 
-                    <span className={`task-priority ${task.priority}`}>
-                      ⚡ {priorityLabels[task.priority]?.text || task.priority}
-                    </span>
-                  </div>
+  <div className={`task-priority ${task.priority}`}>
+    <span className="task-meta-label">Priority:</span>{" "}
+    <span className="task-meta-value">
+      ⚡ {priorityLabels[task.priority]?.text || task.priority}
+    </span>
+  </div>
+</div>
 
                   {/* ACTIONS */}
                   <div className="task-actions">
