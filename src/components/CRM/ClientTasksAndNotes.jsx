@@ -54,6 +54,31 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   };
 
   /* =========================
+   ON TAB ENTER (ON MOUNT)
+========================= */
+useEffect(() => {
+  if (!clientId) return;
+
+  // דוגמה חכמה – לפי מצב המשימות
+  setTimeout(() => {
+    const openTasks = tasks.filter(
+      (t) => t.status !== "completed" && t.status !== "cancelled"
+    );
+
+    if (openTasks.length > 0) {
+      showToast(
+        `⚠️ This client has ${openTasks.length} open task${
+          openTasks.length > 1 ? "s" : ""
+        }`,
+        "warning"
+      );
+    } else {
+      showToast("📝 Notes & Tasks loaded", "info");
+    }
+  }, 300);
+}, []); // ⬅️ חשוב: array ריק
+
+  /* =========================
      FETCH NOTES
   ========================= */
   useEffect(() => {
