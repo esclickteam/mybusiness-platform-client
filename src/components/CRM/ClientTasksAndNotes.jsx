@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import API from "@api";
 import "./ClientTasksAndNotes.css";
 
+/* ✅ IMPORT קומפוננטות */
+import Toast from "../UI/Toast";
+import TaskAlertsBanner from "./TaskAlertsBanner";
+
 export default function ClientTasksAndNotes({ clientId, businessId }) {
   /* =========================
      STATE
@@ -45,9 +49,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   /* =========================
      TOAST HELPER
   ========================= */
-  const showToast = (text) => {
-    setToast(text);
-    setTimeout(() => setToast(null), 2500);
+  const showToast = (text, type = "success") => {
+    setToast({ text, type });
   };
 
   /* =========================
@@ -93,7 +96,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           prev.map((n) => (n._id === editNoteId ? res.data : n))
         );
         setEditNoteId(null);
-        showToast("✅ Note updated");
+        showToast("Note updated");
       } else {
         const res = await API.post("/crm-extras/notes", {
           clientId,
@@ -101,13 +104,13 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           text: newNote,
         });
         setNotes((prev) => [...prev, res.data]);
-        showToast("✅ Note added");
+        showToast("Note added");
       }
       setNewNote("");
       document.activeElement?.blur();
     } catch (err) {
       console.error("Error saving note", err);
-      showToast("❌ Error saving note");
+      showToast("Error saving note", "error");
     }
   };
 
@@ -122,10 +125,10 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     try {
       await API.delete(`/crm-extras/notes/${noteId}`);
       setNotes((prev) => prev.filter((n) => n._id !== noteId));
-      showToast("🗑 Note deleted");
+      showToast("Note deleted");
     } catch (err) {
       console.error("Error deleting note", err);
-      showToast("❌ Error deleting note");
+      showToast("Error deleting note", "error");
     }
   };
 
@@ -134,7 +137,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   ========================= */
   const handleSaveTask = async () => {
     if (!newTask.title || !newTask.dueDate || !newTask.dueTime) {
-      showToast("⚠️ Please fill title, date and time");
+      showToast("Please fill title, date and time", "warning");
       return;
     }
 
@@ -152,7 +155,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           prev.map((t) => (t._id === editTaskId ? res.data : t))
         );
         setEditTaskId(null);
-        showToast("✅ Task updated");
+        showToast("Task updated");
       } else {
         const res = await API.post("/crm-extras/tasks", {
           clientId,
@@ -165,7 +168,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           priority: newTask.priority,
         });
         setTasks((prev) => [...prev, res.data]);
-        showToast("✅ Task added");
+        showToast("Task added");
       }
 
       setNewTask({
@@ -179,7 +182,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       document.activeElement?.blur();
     } catch (err) {
       console.error("Error saving task", err);
-      showToast("❌ Error saving task");
+      showToast("Error saving task", "error");
     }
   };
 
@@ -201,10 +204,10 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     try {
       await API.delete(`/crm-extras/tasks/${taskId}`);
       setTasks((prev) => prev.filter((t) => t._id !== taskId));
-      showToast("🗑 Task deleted");
+      showToast("Task deleted");
     } catch (err) {
       console.error("Error deleting task", err);
-      showToast("❌ Error deleting task");
+      showToast("Error deleting task", "error");
     }
   };
 
@@ -213,7 +216,17 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   ========================= */
   return (
     <div className="client-extras">
-      {toast && <div className="toast-message">{toast}</div>}
+      {/* ✅ TOAST */}
+      {toast && (
+        <Toast
+          text={toast.text}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      {/* ✅ ALERT BANNER – בכניסה לטאב */}
+      <TaskAlertsBanner tasks={tasks} />
 
       {/* ================= NOTES ================= */}
       <div className="notes-section">
@@ -233,13 +246,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                   {new Date(note.createdAt).toLocaleString("en-GB")}
                 </small>
                 <div className="note-actions">
-                  <button type="button" onClick={() => handleEditNote(note)}>
-                    ✏️ Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteNote(note._id)}
-                  >
+                  <button onClick={() => handleEditNote(note)}>✏️ Edit</button>
+                  <button onClick={() => handleDeleteNote(note._id)}>
                     🗑 Delete
                   </button>
                 </div>
@@ -254,7 +262,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           onChange={(e) => setNewNote(e.target.value)}
         />
 
-        <button type="button" className="btn-primary" onClick={handleSaveNote}>
+        <button className="btn-primary" onClick={handleSaveNote}>
           {editNoteId ? "💾 Update Note" : "➕ Save Note"}
         </button>
       </div>
@@ -291,13 +299,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                 )}
 
                 <div className="task-actions">
-                  <button type="button" onClick={() => handleEditTask(task)}>
-                    ✏️ Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteTask(task._id)}
-                  >
+                  <button onClick={() => handleEditTask(task)}>✏️ Edit</button>
+                  <button onClick={() => handleDeleteTask(task._id)}>
                     🗑 Delete
                   </button>
                 </div>
@@ -336,7 +339,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             }
           />
 
-          <button type="button" className="btn-primary" onClick={handleSaveTask}>
+          <button className="btn-primary" onClick={handleSaveTask}>
             {editTaskId ? "💾 Update Task" : "➕ Add Task"}
           </button>
         </div>
