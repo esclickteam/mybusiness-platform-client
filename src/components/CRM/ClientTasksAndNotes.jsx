@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
-import KanbanBoard from "./KanbanBoard"; // ⬅️ Import the Kanban component
 import "./ClientTasksAndNotes.css";
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
@@ -202,7 +201,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             className={viewMode === "kanban" ? "active" : ""}
             onClick={() => setViewMode("kanban")}
           >
-            🗂️ Kanban
+            
           </button>
         </div>
 
