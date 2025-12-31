@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import API from "@api";
 import dayjs from "dayjs";
 import "./ClientTasksAndNotes.css";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
   /* =========================
@@ -197,18 +199,17 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
      EDIT TASK
   ========================= */
   const handleEditTask = (task) => {
-    const d = dayjs(task.dueDate);
+    const d = dayjs.utc(task.dueDate).local();
 
-
-    setEditTaskId(task._id);
-    setNewTask({
-      title: task.title || "",
-      description: task.description || "",
-      dueDate: d.isValid() ? d.local().format("YYYY-MM-DD") : "",
-      dueTime: d.isValid() ? d.local().format("HH:mm") : "",
-      status: task.status || "todo",
-      priority: task.priority || "normal",
-      reminderMinutes: task.reminderMinutes ?? 30,
+setEditTaskId(task._id);
+setNewTask({
+  title: task.title || "",
+  description: task.description || "",
+  dueDate: d.isValid() ? d.format("YYYY-MM-DD") : "",
+  dueTime: d.isValid() ? d.format("HH:mm") : "",
+  status: task.status || "todo",
+  priority: task.priority || "normal",
+  reminderMinutes: task.reminderMinutes ?? 30,
     });
   };
 
@@ -285,7 +286,6 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
 
           <ul className="tasks-list">
   {tasks.map((task) => {
-    const d = task.dueDate ? dayjs(task.dueDate) : null;
 
     return (
       <li key={task._id} className={`task-item ${task.status}`}>
@@ -302,10 +302,14 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         )}
 
         {/* DATE & TIME */}
-        {task.dueDate && dayjs(task.dueDate).isValid() && (
+        {task.dueDate && (
   <div className="task-meta">
-    <span>📅 {dayjs(task.dueDate).local().format("DD/MM/YYYY")}</span>
-    <span>🕒 {dayjs(task.dueDate).local().format("HH:mm")}</span>
+    <span>
+      📅 {dayjs.utc(task.dueDate).local().format("DD/MM/YYYY")}
+    </span>
+    <span>
+      🕒 {dayjs.utc(task.dueDate).local().format("HH:mm")}
+    </span>
   </div>
 )}
 
