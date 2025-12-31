@@ -302,10 +302,10 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         )}
 
         {/* DATE & TIME */}
-        {task.dueDate && (
+        {task.dueDate && dayjs(task.dueDate).isValid() && (
   <div className="task-meta">
-    <span>📅 {dayjs(task.dueDate).format("DD/MM/YYYY")}</span>
-    <span>🕒 {dayjs(task.dueDate).format("HH:mm")}</span>
+    <span>📅 {dayjs(task.dueDate).local().format("DD/MM/YYYY")}</span>
+    <span>🕒 {dayjs(task.dueDate).local().format("HH:mm")}</span>
   </div>
 )}
 
