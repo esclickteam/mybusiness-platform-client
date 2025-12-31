@@ -243,19 +243,20 @@ useEffect(() => {
      RENDER
   ========================= */
   return (
+  <div className="client-extras-wrapper">
+    {/* ✅ TOAST */}
+    {toast && (
+  <Toast
+    message={toast.text}
+    onClose={() => setToast(null)}
+  />
+)}
+
+    {/* ✅ ALERT BANNER – מעל הגריד */}
+    <TaskAlertsBanner tasks={tasks} />
+
+    {/* ✅ GRID של Notes + Tasks */}
     <div className="client-extras">
-      {/* ✅ TOAST */}
-      {toast && (
-        <Toast
-          text={toast.text}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
-
-      {/* ✅ ALERT BANNER – בכניסה לטאב */}
-      <TaskAlertsBanner tasks={tasks} />
-
       {/* ================= NOTES ================= */}
       <div className="notes-section">
         <h3>📝 Notes</h3>
@@ -273,6 +274,7 @@ useEffect(() => {
                 <small>
                   {new Date(note.createdAt).toLocaleString("en-GB")}
                 </small>
+
                 <div className="note-actions">
                   <button onClick={() => handleEditNote(note)}>✏️ Edit</button>
                   <button onClick={() => handleDeleteNote(note._id)}>
@@ -323,7 +325,9 @@ useEffect(() => {
                 </div>
 
                 {task.description && (
-                  <div className="task-description">{task.description}</div>
+                  <div className="task-description">
+                    {task.description}
+                  </div>
                 )}
 
                 <div className="task-actions">
@@ -373,5 +377,7 @@ useEffect(() => {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+
 }
