@@ -19,6 +19,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     dueTime: "",
     status: "todo",
     priority: "normal",
+    reminderMinutes: 30, // ✅ חדש – ברירת מחדל
   });
   const [editTaskId, setEditTaskId] = useState(null);
 
@@ -147,6 +148,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           dueTime: newTask.dueTime,
           status: newTask.status,
           priority: newTask.priority,
+          reminderMinutes: newTask.reminderMinutes, // ✅
         });
         setTasks((prev) =>
           prev.map((t) => (t._id === editTaskId ? res.data : t))
@@ -163,6 +165,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           dueTime: newTask.dueTime,
           status: newTask.status,
           priority: newTask.priority,
+          reminderMinutes: newTask.reminderMinutes, // ✅
         });
         setTasks((prev) => [...prev, res.data]);
         showToast("✅ Task added");
@@ -175,6 +178,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         dueTime: "",
         status: "todo",
         priority: "normal",
+        reminderMinutes: 30,
       });
       document.activeElement?.blur();
     } catch (err) {
@@ -192,6 +196,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       dueTime: task.dueTime || "",
       status: task.status || "todo",
       priority: task.priority || "normal",
+      reminderMinutes: task.reminderMinutes ?? 30,
     });
   };
 
@@ -218,9 +223,6 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       {/* ================= NOTES ================= */}
       <div className="notes-section">
         <h3>📝 Notes</h3>
-        <small className="section-hint">
-          Notes are for summaries and context. Tasks are for actions.
-        </small>
 
         {notes.length === 0 ? (
           <p className="empty-text">No notes yet</p>
@@ -229,17 +231,10 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             {notes.map((note) => (
               <li key={note._id} className="note-item">
                 <div className="note-text">{note.text}</div>
-                <small>
-                  {new Date(note.createdAt).toLocaleString("en-GB")}
-                </small>
+                <small>{new Date(note.createdAt).toLocaleString("en-GB")}</small>
                 <div className="note-actions">
-                  <button type="button" onClick={() => handleEditNote(note)}>
-                    ✏️ Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteNote(note._id)}
-                  >
+                  <button onClick={() => handleEditNote(note)}>✏️ Edit</button>
+                  <button onClick={() => handleDeleteNote(note._id)}>
                     🗑 Delete
                   </button>
                 </div>
@@ -254,7 +249,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           onChange={(e) => setNewNote(e.target.value)}
         />
 
-        <button type="button" className="btn-primary" onClick={handleSaveNote}>
+        <button className="btn-primary" onClick={handleSaveNote}>
           {editNoteId ? "💾 Update Note" : "➕ Save Note"}
         </button>
       </div>
@@ -269,37 +264,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           <ul className="tasks-list">
             {tasks.map((task) => (
               <li key={task._id} className={`task-item ${task.status}`}>
-                <div className="task-header">
-                  <strong>{task.title}</strong>
-                  <span className={`badge ${statusLabels[task.status].color}`}>
-                    {statusLabels[task.status].text}
-                  </span>
-                  <span
-                    className={`badge ${priorityLabels[task.priority].color}`}
-                  >
-                    {priorityLabels[task.priority].text}
-                  </span>
-                </div>
-
+                <strong>{task.title}</strong>
                 <div className="task-meta">
-                  {task.dueDate}
-                  {task.dueTime && ` · ${task.dueTime}`}
-                </div>
-
-                {task.description && (
-                  <div className="task-description">{task.description}</div>
-                )}
-
-                <div className="task-actions">
-                  <button type="button" onClick={() => handleEditTask(task)}>
-                    ✏️ Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteTask(task._id)}
-                  >
-                    🗑 Delete
-                  </button>
+                  {task.dueDate} · {task.dueTime}
                 </div>
               </li>
             ))}
@@ -314,6 +281,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               setNewTask({ ...newTask, title: e.target.value })
             }
           />
+
           <textarea
             placeholder="Task description"
             value={newTask.description}
@@ -321,6 +289,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               setNewTask({ ...newTask, description: e.target.value })
             }
           />
+
           <input
             type="date"
             value={newTask.dueDate}
@@ -328,6 +297,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               setNewTask({ ...newTask, dueDate: e.target.value })
             }
           />
+
           <input
             type="time"
             value={newTask.dueTime}
@@ -336,7 +306,25 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             }
           />
 
-          <button type="button" className="btn-primary" onClick={handleSaveTask}>
+          {/* ⏰ REMINDER */}
+          <select
+            value={newTask.reminderMinutes}
+            onChange={(e) =>
+              setNewTask({
+                ...newTask,
+                reminderMinutes: Number(e.target.value),
+              })
+            }
+          >
+            <option value={0}>No reminder</option>
+            <option value={5}>5 minutes before</option>
+            <option value={15}>15 minutes before</option>
+            <option value={30}>30 minutes before</option>
+            <option value={60}>1 hour before</option>
+            <option value={1440}>1 day before</option>
+          </select>
+
+          <button className="btn-primary" onClick={handleSaveTask}>
             {editTaskId ? "💾 Update Task" : "➕ Add Task"}
           </button>
         </div>
