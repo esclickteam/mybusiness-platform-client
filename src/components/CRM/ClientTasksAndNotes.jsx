@@ -303,23 +303,32 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   <div className="task-meta">
     <span>
       📅{" "}
-      {dayjs(
-        typeof task.dueDate === "string"
-          ? task.dueDate
-          : String(task.dueDate)
-      )
-        .tz(dayjs.tz.guess())
-        .format("DD/MM/YYYY")}
+      {(() => {
+        const raw = task.dueDate;
+        const iso =
+          typeof raw === "string"
+            ? raw
+            : raw instanceof Date
+            ? raw.toISOString()
+            : String(raw);
+        const d = dayjs(iso).tz(dayjs.tz.guess());
+        return d.isValid() ? d.format("DD/MM/YYYY") : "Invalid Date";
+      })()}
     </span>
+
     <span>
       🕒{" "}
-      {dayjs(
-        typeof task.dueDate === "string"
-          ? task.dueDate
-          : String(task.dueDate)
-      )
-        .tz(dayjs.tz.guess())
-        .format("HH:mm")}
+      {(() => {
+        const raw = task.dueDate;
+        const iso =
+          typeof raw === "string"
+            ? raw
+            : raw instanceof Date
+            ? raw.toISOString()
+            : String(raw);
+        const d = dayjs(iso).tz(dayjs.tz.guess());
+        return d.isValid() ? d.format("HH:mm") : "Invalid Date";
+      })()}
     </span>
   </div>
 )}
