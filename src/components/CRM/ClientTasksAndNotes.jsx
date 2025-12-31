@@ -3,14 +3,15 @@ import API from "@api";
 import "./ClientTasksAndNotes.css";
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
+  /* =========================
+     STATE
+  ========================= */
   const [notes, setNotes] = useState([]);
   const [tasks, setTasks] = useState([]);
 
-  /* ===== NOTES STATE ===== */
   const [newNote, setNewNote] = useState("");
   const [editNoteId, setEditNoteId] = useState(null);
 
-  /* ===== TASKS STATE ===== */
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
@@ -46,9 +47,13 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   ========================= */
   useEffect(() => {
     if (!clientId) return;
+
     API.get(`/crm-extras/notes/${clientId}`, { params: { businessId } })
-      .then((res) => setNotes(res.data))
-      .catch(console.error);
+      .then((res) => setNotes(Array.isArray(res.data) ? res.data : []))
+      .catch((err) => {
+        console.error("Error fetching notes", err);
+        setNotes([]);
+      });
   }, [clientId, businessId]);
 
   /* =========================
@@ -56,9 +61,13 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   ========================= */
   useEffect(() => {
     if (!clientId) return;
+
     API.get(`/crm-extras/tasks/${clientId}`, { params: { businessId } })
-      .then((res) => setTasks(res.data))
-      .catch(console.error);
+      .then((res) => setTasks(Array.isArray(res.data) ? res.data : []))
+      .catch((err) => {
+        console.error("Error fetching tasks", err);
+        setTasks([]);
+      });
   }, [clientId, businessId]);
 
   /* =========================
@@ -72,78 +81,87 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         const res = await API.patch(`/crm-extras/notes/${editNoteId}`, {
           text: newNote,
         });
+
         setNotes((prev) =>
           prev.map((n) => (n._id === editNoteId ? res.data : n))
         );
-        setMessage("✅ Note updated");
         setEditNoteId(null);
+        setMessage("✅ Note updated");
       } else {
         const res = await API.post("/crm-extras/notes", {
           clientId,
           businessId,
           text: newNote,
         });
+
         setNotes((prev) => [...prev, res.data]);
         setMessage("✅ Note added");
       }
+
       setNewNote("");
     } catch (err) {
-      console.error(err);
+      console.error("Error saving note", err);
       setMessage("❌ Error saving note");
     }
   };
 
-  /* =========================
-     EDIT NOTE
-  ========================= */
   const handleEditNote = (note) => {
     setEditNoteId(note._id);
     setNewNote(note.text);
   };
 
-  /* =========================
-     DELETE NOTE
-  ========================= */
   const handleDeleteNote = async (noteId) => {
     if (!window.confirm("Delete this note?")) return;
+
     try {
       await API.delete(`/crm-extras/notes/${noteId}`);
       setNotes((prev) => prev.filter((n) => n._id !== noteId));
       setMessage("🗑 Note deleted");
     } catch (err) {
-      console.error(err);
+      console.error("Error deleting note", err);
       setMessage("❌ Error deleting note");
     }
   };
 
   /* =========================
-     TASK HANDLERS (unchanged)
+     ADD / UPDATE TASK
   ========================= */
   const handleSaveTask = async () => {
-    if (!newTask.title || !newTask.dueDate || !newTask.dueTime) return;
-
-    const iso = new Date(
-      `${newTask.dueDate}T${newTask.dueTime}:00`
-    ).toISOString();
+    if (!newTask.title || !newTask.dueDate || !newTask.dueTime) {
+      setMessage("⚠️ Please fill title, date and time");
+      return;
+    }
 
     try {
       if (editTaskId) {
         const res = await API.patch(`/crm-extras/tasks/${editTaskId}`, {
-          ...newTask,
-          dueDate: iso,
+          title: newTask.title,
+          description: newTask.description,
+          dueDate: newTask.dueDate,
+          dueTime: newTask.dueTime,
+          status: newTask.status,
+          priority: newTask.priority,
         });
+
         setTasks((prev) =>
           prev.map((t) => (t._id === editTaskId ? res.data : t))
         );
         setEditTaskId(null);
+        setMessage("✅ Task updated");
       } else {
         const res = await API.post("/crm-extras/tasks", {
           clientId,
           businessId,
-          ...newTask,
-          dueDate: iso,
+          title: newTask.title,
+          description: newTask.description,
+          dueDate: newTask.dueDate,
+          dueTime: newTask.dueTime,
+          status: newTask.status,
+          priority: newTask.priority,
         });
+
         setTasks((prev) => [...prev, res.data]);
+        setMessage("✅ Task added");
       }
 
       setNewTask({
@@ -155,10 +173,39 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         priority: "normal",
       });
     } catch (err) {
-      console.error(err);
+      console.error("Error saving task", err);
+      setMessage("❌ Error saving task");
     }
   };
 
+  const handleEditTask = (task) => {
+    setEditTaskId(task._id);
+    setNewTask({
+      title: task.title || "",
+      description: task.description || "",
+      dueDate: task.dueDate || "",
+      dueTime: task.dueTime || "",
+      status: task.status || "todo",
+      priority: task.priority || "normal",
+    });
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    if (!window.confirm("Delete this task?")) return;
+
+    try {
+      await API.delete(`/crm-extras/tasks/${taskId}`);
+      setTasks((prev) => prev.filter((t) => t._id !== taskId));
+      setMessage("🗑 Task deleted");
+    } catch (err) {
+      console.error("Error deleting task", err);
+      setMessage("❌ Error deleting task");
+    }
+  };
+
+  /* =========================
+     RENDER
+  ========================= */
   return (
     <div className="client-extras">
       {message && <div className="feedback-msg">{message}</div>}
@@ -167,11 +214,11 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       <div className="notes-section">
         <h3>📝 Notes</h3>
         <small className="section-hint">
-          Notes are for summaries and context. Create tasks for actions.
+          Notes are for summaries and context. Tasks are for actions.
         </small>
 
         {notes.length === 0 ? (
-          <p className="empty-text">No notes</p>
+          <p className="empty-text">No notes yet</p>
         ) : (
           <ul className="notes-list">
             {notes.map((note) => (
@@ -208,12 +255,38 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         <h3>✅ Tasks</h3>
 
         {tasks.length === 0 ? (
-          <p className="empty-text">No tasks</p>
+          <p className="empty-text">No tasks yet</p>
         ) : (
           <ul className="tasks-list">
             {tasks.map((task) => (
               <li key={task._id} className={`task-item ${task.status}`}>
-                <strong>{task.title}</strong>
+                <div className="task-header">
+                  <strong>{task.title}</strong>
+                  <span className={`badge ${statusLabels[task.status].color}`}>
+                    {statusLabels[task.status].text}
+                  </span>
+                  <span
+                    className={`badge ${priorityLabels[task.priority].color}`}
+                  >
+                    {priorityLabels[task.priority].text}
+                  </span>
+                </div>
+
+                <div className="task-meta">
+                  {task.dueDate}
+                  {task.dueTime && ` · ${task.dueTime}`}
+                </div>
+
+                {task.description && (
+                  <div className="task-description">{task.description}</div>
+                )}
+
+                <div className="task-actions">
+                  <button onClick={() => handleEditTask(task)}>✏️ Edit</button>
+                  <button onClick={() => handleDeleteTask(task._id)}>
+                    🗑 Delete
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -248,6 +321,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               setNewTask({ ...newTask, dueTime: e.target.value })
             }
           />
+
           <button className="btn-primary" onClick={handleSaveTask}>
             {editTaskId ? "💾 Update Task" : "➕ Add Task"}
           </button>
