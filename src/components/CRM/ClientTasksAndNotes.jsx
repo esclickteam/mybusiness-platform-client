@@ -4,9 +4,13 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "./ClientTasksAndNotes.css";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(customParseFormat);
+
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
   /* =========================
@@ -302,30 +306,16 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                   {(() => {
   if (!task.dueDate) return null;
 
-  console.log("🔍 DEBUG TASK DATE", {
-    title: task.title,
-    raw: task.dueDate,
-    typeofRaw: typeof task.dueDate,
-    instanceOfDate: task.dueDate instanceof Date,
-    toString: String(task.dueDate),
-    iso: task.dueDate?.toISOString?.(),
-  });
-
   const raw = task.dueDate;
-  const iso =
-    typeof raw === "string"
-      ? raw
-      : raw instanceof Date
-      ? raw.toISOString()
-      : String(raw);
 
-  const dateObj = dayjs(iso).tz(dayjs.tz.guess());
+  // נסיון לפרסר בפורמט שמגיע מהשרת
+  const dateObj = dayjs(raw, "MMMM D, YYYY • h:mm A").tz(dayjs.tz.guess());
 
-  console.log("📅 Parsed:", {
-    iso,
-    valid: dateObj.isValid(),
-    formatted: dateObj.format("DD/MM/YYYY HH:mm"),
-  });
+  if (!dateObj.isValid()) {
+    console.log("❌ Still invalid", raw);
+  } else {
+    console.log("✅ Parsed OK", dateObj.format());
+  }
 
   return (
     <div className="task-meta">
@@ -334,6 +324,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     </div>
   );
 })()}
+
 
                   {/* REMINDER */}
                   {task.reminderMinutes > 0 && (
