@@ -186,7 +186,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   };
 
   const handleEditTask = (task) => {
-    const d = dayjs(task.dueDate);
+    const d = dayjs(new Date(task.dueDate));
+
 
     setEditTaskId(task._id);
     setNewTask({
