@@ -281,28 +281,66 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         {tasks.length === 0 ? (
           <p className="empty-text">No tasks yet</p>
         ) : (
+
           <ul className="tasks-list">
-            {tasks.map((task) => {
-              const d = dayjs(new Date(task.dueDate));
+  {tasks.map((task) => {
+    const d = dayjs(new Date(task.dueDate));
 
-              return (
-                <li key={task._id} className={`task-item ${task.status}`}>
-                  <strong>{task.title}</strong>
+    return (
+      <li key={task._id} className={`task-item ${task.status}`}>
+        {/* TITLE */}
+        <div className="task-header">
+          <strong className="task-title">{task.title}</strong>
+        </div>
 
-                  <div className="task-meta">
-                    {d.isValid()
-                      ? d.local().format("DD/MM/YYYY · HH:mm")
-                      : "—"}
-                  </div>
+        {/* DESCRIPTION */}
+        {task.description && (
+          <div className="task-description">
+            {task.description}
+          </div>
+        )}
 
-                  <div className="task-actions">
-                    <button onClick={() => handleEditTask(task)}>✏️</button>
-                    <button onClick={() => handleDeleteTask(task._id)}>🗑</button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+        {/* DATE & TIME */}
+        <div className="task-meta">
+          {d.isValid() ? (
+            <>
+              <span>📅 {d.local().format("DD/MM/YYYY")}</span>
+              <span>🕒 {d.local().format("HH:mm")}</span>
+            </>
+          ) : (
+            "—"
+          )}
+        </div>
+
+        {/* REMINDER */}
+        {task.reminderMinutes > 0 && (
+          <div className="task-reminder">
+            ⏰ Reminder: {task.reminderMinutes} minutes before
+          </div>
+        )}
+
+        {/* STATUS + PRIORITY */}
+        <div className="task-meta-row">
+          <span className={`task-status ${task.status}`}>
+            📌 {statusLabels[task.status]?.text || task.status}
+          </span>
+
+          <span className={`task-priority ${task.priority}`}>
+            ⚡ {priorityLabels[task.priority]?.text || task.priority}
+          </span>
+        </div>
+
+        {/* ACTIONS */}
+        <div className="task-actions">
+          <button onClick={() => handleEditTask(task)}>✏️</button>
+          <button onClick={() => handleDeleteTask(task._id)}>🗑</button>
+        </div>
+      </li>
+    );
+  })}
+</ul>
+
+
         )}
 
         {/* FORM */}
