@@ -281,18 +281,25 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                 <strong>{task.title}</strong>
 
                 <div className="task-meta">
-                  {task.reminderAt
-                    ? dayjs(task.reminderAt)
-                        .tz(
-                          Intl.DateTimeFormat().resolvedOptions().timeZone
-                        )
-                        .format("MMM D, YYYY · HH:mm")
-                    : `${task.dueDate} · ${task.dueTime}`}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+  {task.reminderAt ? (
+    dayjs(task.reminderAt)
+      .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+      .format("MMM D, YYYY · HH:mm")
+  ) : task.dueDate ? (
+    <>
+      {dayjs(task.dueDate)
+        .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+        .format("MMM D, YYYY")}
+      {task.dueTime ? ` · ${task.dueTime}` : ""}
+    </>
+  ) : (
+    "—"
+  )}
+</div>
+</li>
+))}
+</ul>
+)}
 
         <div className="task-form">
           <input
