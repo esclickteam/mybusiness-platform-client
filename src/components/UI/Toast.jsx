@@ -1,14 +1,26 @@
 // components/UI/Toast.jsx
 import React, { useEffect } from "react";
 
-export default function Toast({ message, onClose, duration = 2500 }) {
+export default function Toast({
+  text,
+  type = "success",
+  onClose,
+  duration = 2500,
+}) {
   useEffect(() => {
-    if (!message) return;
-    const t = setTimeout(onClose, duration);
-    return () => clearTimeout(t);
-  }, [message, onClose, duration]);
+    if (!text) return;
+    const timer = setTimeout(() => {
+      onClose?.();
+    }, duration);
 
-  if (!message) return null;
+    return () => clearTimeout(timer);
+  }, [text, onClose, duration]);
 
-  return <div className="toast-message">{message}</div>;
+  if (!text) return null;
+
+  return (
+    <div className={`toast-message toast-${type}`}>
+      {text}
+    </div>
+  );
 }
