@@ -17,9 +17,10 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   });
   const [editTaskId, setEditTaskId] = useState(null);
   const [message, setMessage] = useState(null);
-  const [viewMode, setViewMode] = useState("list"); // "list" | "kanban"
 
-  // Mapping of statuses and priorities to readable text + colors
+  /* =========================
+     LABELS
+  ========================= */
   const statusLabels = {
     todo: { text: "To Do", color: "gray" },
     in_progress: { text: "In Progress", color: "orange" },
@@ -35,7 +36,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     critical: { text: "Critical", color: "red" },
   };
 
-  // === Fetch Notes ===
+  /* =========================
+     FETCH NOTES
+  ========================= */
   useEffect(() => {
     if (!clientId) return;
     API.get(`/crm-extras/notes/${clientId}`, { params: { businessId } })
@@ -43,7 +46,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       .catch((err) => console.error("Error fetching notes", err));
   }, [clientId, businessId]);
 
-  // === Fetch Tasks ===
+  /* =========================
+     FETCH TASKS
+  ========================= */
   useEffect(() => {
     if (!clientId) return;
     API.get(`/crm-extras/tasks/${clientId}`, { params: { businessId } })
@@ -51,7 +56,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       .catch((err) => console.error("Error fetching tasks", err));
   }, [clientId, businessId]);
 
-  // === Add a new note ===
+  /* =========================
+     ADD NOTE
+  ========================= */
   const handleAddNote = async () => {
     if (!newNote.trim()) return;
     try {
@@ -69,10 +76,12 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     }
   };
 
-  // === Add/Update Task ===
+  /* =========================
+     ADD / UPDATE TASK
+  ========================= */
   const handleSaveTask = async () => {
     if (!newTask.title.trim() || !newTask.dueDate || !newTask.dueTime) {
-      setMessage("⚠️ Please fill in a title, date, and time");
+      setMessage("⚠️ Please fill in title, date and time");
       return;
     }
 
@@ -90,7 +99,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           prev.map((t) => (t._id === editTaskId ? res.data : t))
         );
         setEditTaskId(null);
-        setMessage("✅ Task updated successfully");
+        setMessage("✅ Task updated");
       } else {
         const res = await API.post("/crm-extras/tasks", {
           clientId,
@@ -99,10 +108,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           dueDate: isoDateTime,
         });
         setTasks((prev) => [...prev, res.data]);
-        setMessage("✅ Task added successfully");
+        setMessage("✅ Task added");
       }
 
-      // Reset form
       setNewTask({
         title: "",
         description: "",
@@ -118,7 +126,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     }
   };
 
-  // === Edit existing task ===
+  /* =========================
+     EDIT TASK
+  ========================= */
   const handleEditTask = (task) => {
     setEditTaskId(task._id);
     setNewTask({
@@ -134,13 +144,13 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         : "",
       status: task.status,
       priority: task.priority,
-      reminder: task.reminder
-        ? new Date(task.reminder).toISOString().slice(0, 16)
-        : "",
+      reminder: "",
     });
   };
 
-  // === Delete Task ===
+  /* =========================
+     DELETE TASK
+  ========================= */
   const handleDeleteTask = async (taskId) => {
     if (!window.confirm("Delete this task?")) return;
     try {
@@ -157,11 +167,12 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     <div className="client-extras">
       {message && <div className="feedback-msg">{message}</div>}
 
-      {/* === Notes === */}
+      {/* ===== NOTES ===== */}
       <div className="notes-section">
         <h3>📝 Notes</h3>
+
         {notes.length === 0 ? (
-          <p className="empty-text">No notes for this client</p>
+          <p className="empty-text">No notes</p>
         ) : (
           <ul className="notes-list">
             {notes.map((note) => (
@@ -185,154 +196,114 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         </button>
       </div>
 
-      {/* === Tasks === */}
+      {/* ===== TASKS ===== */}
       <div className="tasks-section">
         <h3>✅ Tasks</h3>
 
-        {/* Toggle between List and Kanban view */}
-        <div className="view-toggle">
-          <button
-            className={viewMode === "list" ? "active" : ""}
-            onClick={() => setViewMode("list")}
+        {tasks.length === 0 ? (
+          <p className="empty-text">No tasks</p>
+        ) : (
+          <ul className="tasks-list">
+            {tasks.map((task) => (
+              <li key={task._id} className={`task-item ${task.status}`}>
+                <div className="task-header">
+                  <strong>{task.title}</strong>
+                  <span className={`badge ${statusLabels[task.status].color}`}>
+                    {statusLabels[task.status].text}
+                  </span>
+                  <span
+                    className={`badge ${priorityLabels[task.priority].color}`}
+                  >
+                    {priorityLabels[task.priority].text}
+                  </span>
+                </div>
+
+                <div className="task-meta">
+                  {task.dueDate &&
+                    new Date(task.dueDate).toLocaleString("en-GB")}
+                </div>
+
+                {task.description && (
+                  <div className="task-description">{task.description}</div>
+                )}
+
+                <div className="task-actions">
+                  <button onClick={() => handleEditTask(task)}>✏️ Edit</button>
+                  <button onClick={() => handleDeleteTask(task._id)}>
+                    🗑 Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* ===== TASK FORM ===== */}
+        <div className="task-form">
+          <input
+            type="text"
+            placeholder="Task title"
+            value={newTask.title}
+            onChange={(e) =>
+              setNewTask({ ...newTask, title: e.target.value })
+            }
+          />
+
+          <textarea
+            placeholder="Task description"
+            value={newTask.description}
+            onChange={(e) =>
+              setNewTask({ ...newTask, description: e.target.value })
+            }
+          />
+
+          <div className="task-datetime">
+            <input
+              type="date"
+              value={newTask.dueDate}
+              onChange={(e) =>
+                setNewTask({ ...newTask, dueDate: e.target.value })
+              }
+            />
+            <input
+              type="time"
+              value={newTask.dueTime}
+              onChange={(e) =>
+                setNewTask({ ...newTask, dueTime: e.target.value })
+              }
+            />
+          </div>
+
+          <select
+            value={newTask.status}
+            onChange={(e) =>
+              setNewTask({ ...newTask, status: e.target.value })
+            }
           >
-            📋 List
-          </button>
-          <button
-            className={viewMode === "kanban" ? "active" : ""}
-            onClick={() => setViewMode("kanban")}
+            {Object.entries(statusLabels).map(([key, { text }]) => (
+              <option key={key} value={key}>
+                {text}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={newTask.priority}
+            onChange={(e) =>
+              setNewTask({ ...newTask, priority: e.target.value })
+            }
           >
-            
+            {Object.entries(priorityLabels).map(([key, { text }]) => (
+              <option key={key} value={key}>
+                {text}
+              </option>
+            ))}
+          </select>
+
+          <button className="btn-primary" onClick={handleSaveTask}>
+            {editTaskId ? "💾 Update Task" : "➕ Add Task"}
           </button>
         </div>
-
-        {viewMode === "list" ? (
-          <>
-            {tasks.length === 0 ? (
-              <p className="empty-text">No tasks</p>
-            ) : (
-              <ul className="tasks-list">
-                {tasks.map((task) => (
-                  <li key={task._id} className={`task-item ${task.status}`}>
-                    <div className="task-header">
-                      <strong>{task.title}</strong>
-                      <span
-                        className={`badge ${statusLabels[task.status].color}`}
-                      >
-                        {statusLabels[task.status].text}
-                      </span>
-                      <span
-                        className={`badge ${priorityLabels[task.priority].color}`}
-                      >
-                        {priorityLabels[task.priority].text}
-                      </span>
-                    </div>
-
-                    <div className="task-meta">
-                      {task.dueDate &&
-                        new Date(task.dueDate).toLocaleString("en-GB", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                    </div>
-
-                    {task.description && (
-                      <div className="task-description">{task.description}</div>
-                    )}
-
-                    <div className="task-actions">
-                      <button
-                        className="btn-edit"
-                        onClick={() => handleEditTask(task)}
-                      >
-                        ✏️ Edit
-                      </button>
-                      <button
-                        className="btn-delete"
-                        onClick={() => handleDeleteTask(task._id)}
-                      >
-                        🗑 Delete
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {/* === Create/Edit Task Form === */}
-            <div className="task-form">
-              <input
-                type="text"
-                placeholder="Task Title"
-                value={newTask.title}
-                onChange={(e) =>
-                  setNewTask({ ...newTask, title: e.target.value })
-                }
-              />
-              <textarea
-                placeholder="Task Description"
-                value={newTask.description}
-                onChange={(e) =>
-                  setNewTask({ ...newTask, description: e.target.value })
-                }
-              />
-
-              <div className="task-datetime">
-                <label>🗓 Due Date:</label>
-                <input
-                  type="date"
-                  value={newTask.dueDate}
-                  onChange={(e) =>
-                    setNewTask({ ...newTask, dueDate: e.target.value })
-                  }
-                />
-                <input
-                  type="time"
-                  value={newTask.dueTime}
-                  onChange={(e) =>
-                    setNewTask({ ...newTask, dueTime: e.target.value })
-                  }
-                />
-              </div>
-
-              <label>⚡ Status:</label>
-              <select
-                value={newTask.status}
-                onChange={(e) =>
-                  setNewTask({ ...newTask, status: e.target.value })
-                }
-              >
-                {Object.entries(statusLabels).map(([key, { text }]) => (
-                  <option key={key} value={key}>
-                    {text}
-                  </option>
-                ))}
-              </select>
-
-              <label>🏷 Priority:</label>
-              <select
-                value={newTask.priority}
-                onChange={(e) =>
-                  setNewTask({ ...newTask, priority: e.target.value })
-                }
-              >
-                {Object.entries(priorityLabels).map(([key, { text }]) => (
-                  <option key={key} value={key}>
-                    {text}
-                  </option>
-                ))}
-              </select>
-
-              <button className="btn-primary" onClick={handleSaveTask}>
-                {editTaskId ? "💾 Update Task" : "➕ Add Task"}
-              </button>
-            </div>
-          </>
-        ) : (
-          <KanbanBoard clientId={clientId} businessId={businessId} />
-        )}
       </div>
     </div>
   );
