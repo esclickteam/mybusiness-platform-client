@@ -84,7 +84,7 @@
 }
 
 /* =================================================
-   PROFILE CARD
+   PROFILE CARD  ⭐ CRITICAL FIX ⭐
 ================================================= */
 
 .profile-card {
@@ -95,6 +95,13 @@
   flex-direction: column;
   gap: 1.2rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  direction: ltr; /* 🔥 זה השינוי שעושה את כל ההבדל */
+}
+
+/* כל התוכן בפנים – שמאל */
+.profile-card * {
+  text-align: left;
 }
 
 /* =================================================
@@ -183,7 +190,6 @@
   background: #f6f5fb;
   border-radius: 14px;
   padding: 0.9rem 1.1rem;
-  text-align: left;
 }
 
 .profile-section h3 {
@@ -191,31 +197,24 @@
   font-weight: 600;
   margin-bottom: 0.35rem;
   color: #2f2a44;
-  text-align: left;
 }
 
 .profile-section p {
   font-size: 0.82rem;
   line-height: 1.5;
   margin: 0;
-  text-align: left;
 }
 
 /* Preferred Collaborations */
 
 .profile-collab-list {
   list-style: disc;
-  padding-inline-start: 1.2rem;
-  font-size: 0.82rem;
+  padding-left: 1.2rem;
   margin: 0;
-  text-align: left;
+  font-size: 0.82rem;
 }
 
 /* Contact */
-
-.profile-contact {
-  text-align: left;
-}
 
 .profile-contact p {
   font-size: 0.82rem;
