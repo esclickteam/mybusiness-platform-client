@@ -13,21 +13,22 @@
   --my-biz-border: #f6c90e;
 }
 
-/* =================================
-   GRID
-================================= */
+/* =========================
+   GRID – LTR
+========================= */
 
 .partners-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 28px;
   padding: 1.4rem;
-  direction: rtl;
+
+  direction: ltr; /* ✅ אתר אמריקאי */
 }
 
-/* =================================
+/* =========================
    CARD
-================================= */
+========================= */
 
 .collab-card {
   background: linear-gradient(180deg, #fcf9ff, #ffffff);
@@ -47,9 +48,9 @@
   box-shadow: var(--shadow-hover);
 }
 
-/* =================================
+/* =========================
    INNER STRUCTURE
-================================= */
+========================= */
 
 .collab-card-inner {
   flex: 1;
@@ -59,9 +60,9 @@
   text-align: center;
 }
 
-/* =================================
+/* =========================
    LOGO
-================================= */
+========================= */
 
 .business-card__media {
   width: 112px;
@@ -84,9 +85,9 @@
   object-fit: cover;
 }
 
-/* =================================
+/* =========================
    TEXT
-================================= */
+========================= */
 
 .collab-card-content {
   flex: 1;
@@ -95,28 +96,28 @@
   align-items: center;
 }
 
-/* שם העסק */
+/* Business name */
 .business-name {
   font-size: 1.55rem;
   font-weight: 900;
   color: var(--accent);
   margin: 0.4rem 0 0.3rem;
-  font-family: "Heebo", sans-serif;
+  font-family: "Heebo", system-ui, sans-serif;
   letter-spacing: 0.4px;
 }
 
-/* תגית "העסק שלי" */
+/* My business badge */
 .my-business-badge {
   background: var(--my-biz-border);
   color: #5b4305;
   font-size: 0.82rem;
   padding: 0.25em 0.7em;
   border-radius: 999px;
-  margin-inline-start: 0.4rem;
+  margin-left: 0.4rem;
   box-shadow: 0 2px 6px rgba(246, 201, 14, 0.4);
 }
 
-/* קטגוריה */
+/* Category */
 .business-category {
   font-size: 0.95rem;
   font-weight: 600;
@@ -124,16 +125,16 @@
   margin-bottom: 0.25rem;
 }
 
-/* תיאור */
+/* Description */
 .business-desc {
   font-size: 0.88rem;
   color: #6b6b6b;
   line-height: 1.45;
 }
 
-/* =================================
-   BUTTON (ANCHOR)
-================================= */
+/* =========================
+   BUTTON
+========================= */
 
 .collab-card-buttons {
   margin-top: auto;
@@ -181,9 +182,9 @@
   box-shadow: none;
 }
 
-/* =================================
+/* =========================
    MY BUSINESS CARD
-================================= */
+========================= */
 
 .collab-card.my-business {
   background: linear-gradient(135deg, var(--my-biz), #fffde8);
@@ -193,9 +194,9 @@
     0 18px 36px rgba(0, 0, 0, 0.18);
 }
 
-/* =================================
+/* =========================
    RESPONSIVE
-================================= */
+========================= */
 
 @media (max-width: 480px) {
   .partners-grid {
