@@ -2,8 +2,9 @@
   --card-bg: #ffffff;
   --border-color: #d8c8f3;
   --radius: 18px;
-  --shadow-soft: 0 8px 20px rgba(111, 94, 203, 0.12);
-  --shadow-hover: 0 16px 40px rgba(111, 94, 203, 0.22);
+
+  --shadow-soft: 0 10px 28px rgba(111, 94, 203, 0.14);
+  --shadow-hover: 0 22px 48px rgba(111, 94, 203, 0.28);
 
   --primary: #8e5ad7;
   --accent: #8e5ad7;
@@ -12,69 +13,69 @@
   --my-biz-border: #f6c90e;
 }
 
-/* =========================
+/* =================================
    GRID
-========================= */
+================================= */
 
 .partners-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 26px;
-  padding: 1.2rem;
+  gap: 28px;
+  padding: 1.4rem;
   direction: rtl;
 }
 
-/* =========================
+/* =================================
    CARD
-========================= */
+================================= */
 
 .collab-card {
   background: linear-gradient(180deg, #fcf9ff, #ffffff);
   border-radius: var(--radius);
-  padding: 1.7rem 1.5rem 1.6rem;
+  padding: 1.8rem 1.6rem 1.6rem;
   border: 2px solid var(--border-color);
   box-shadow: var(--shadow-soft);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
-  min-height: 240px;
+  min-height: 260px;
 
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .collab-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-10px);
   box-shadow: var(--shadow-hover);
 }
 
-/* =========================
-   CARD INNER
-========================= */
+/* =================================
+   INNER STRUCTURE
+================================= */
 
 .collab-card-inner {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  text-align: center;
 }
 
-/* =========================
+/* =================================
    LOGO
-========================= */
+================================= */
 
 .business-card__media {
   width: 112px;
   height: 112px;
-  margin: 0 auto 0.8rem;
   border-radius: 50%;
   overflow: hidden;
   background: #fff;
   border: 3px solid var(--accent);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  margin-bottom: 0.8rem;
 
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
 .business-card__media img {
@@ -83,52 +84,60 @@
   object-fit: cover;
 }
 
-/* =========================
+/* =================================
    TEXT
-========================= */
+================================= */
 
 .collab-card-content {
   flex: 1;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* שם העסק */
 .business-name {
   font-size: 1.55rem;
   font-weight: 900;
   color: var(--accent);
-  margin-bottom: 0.4rem;
+  margin: 0.4rem 0 0.3rem;
   font-family: "Heebo", sans-serif;
   letter-spacing: 0.4px;
 }
 
+/* תגית "העסק שלי" */
 .my-business-badge {
   background: var(--my-biz-border);
   color: #5b4305;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   padding: 0.25em 0.7em;
   border-radius: 999px;
   margin-inline-start: 0.4rem;
   box-shadow: 0 2px 6px rgba(246, 201, 14, 0.4);
 }
 
+/* קטגוריה */
 .business-category {
   font-size: 0.95rem;
   font-weight: 600;
   color: #4a4a4a;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.25rem;
 }
 
+/* תיאור */
 .business-desc {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #6b6b6b;
+  line-height: 1.45;
 }
 
-/* =========================
-   BUTTON
-========================= */
+/* =================================
+   BUTTON (ANCHOR)
+================================= */
 
 .collab-card-buttons {
-  margin-top: 1.2rem;
+  margin-top: auto;
+  padding-top: 1.2rem;
   display: flex;
   justify-content: center;
 }
@@ -143,12 +152,12 @@
   font-size: 0.95rem;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 6px 16px rgba(142, 90, 215, 0.35);
+  box-shadow: 0 8px 20px rgba(142, 90, 215, 0.38);
 }
 
 .message-box-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(142, 90, 215, 0.45);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(142, 90, 215, 0.5);
 }
 
 .message-box-button.secondary {
@@ -162,7 +171,6 @@
 }
 
 /* Disabled */
-
 .message-box-button:disabled,
 .disabled-action {
   background: #f1f1f1;
@@ -173,21 +181,21 @@
   box-shadow: none;
 }
 
-/* =========================
+/* =================================
    MY BUSINESS CARD
-========================= */
+================================= */
 
 .collab-card.my-business {
   background: linear-gradient(135deg, var(--my-biz), #fffde8);
   border: 2px solid var(--my-biz-border);
   box-shadow:
     0 0 0 4px #fff7c2,
-    0 14px 30px rgba(0, 0, 0, 0.15);
+    0 18px 36px rgba(0, 0, 0, 0.18);
 }
 
-/* =========================
+/* =================================
    RESPONSIVE
-========================= */
+================================= */
 
 @media (max-width: 480px) {
   .partners-grid {
@@ -219,7 +227,7 @@
 @media (min-width: 481px) and (max-width: 768px) {
   .partners-grid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
+    gap: 22px;
   }
 
   .business-name {
