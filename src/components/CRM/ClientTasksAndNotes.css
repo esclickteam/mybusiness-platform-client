@@ -225,3 +225,30 @@ button:active {
 .feedback-msg:empty {
   display: none;
 }
+
+.toast-message {
+  position: fixed;
+  top: 90px;
+  right: 24px;
+  background: #eef7ff;
+  border: 1px solid #b6d7ff;
+  color: #0b4f9c;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  animation: toastFade 0.25s ease-out;
+}
+
+@keyframes toastFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
