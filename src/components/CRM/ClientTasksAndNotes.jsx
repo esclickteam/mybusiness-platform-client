@@ -197,7 +197,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
      EDIT TASK
   ========================= */
   const handleEditTask = (task) => {
-    const d = dayjs(new Date(task.dueDate));
+    const d = dayjs(task.dueDate);
+
 
     setEditTaskId(task._id);
     setNewTask({
@@ -284,7 +285,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
 
           <ul className="tasks-list">
   {tasks.map((task) => {
-    const d = dayjs(new Date(task.dueDate));
+    const d = task.dueDate ? dayjs(task.dueDate) : null;
 
     return (
       <li key={task._id} className={`task-item ${task.status}`}>
@@ -301,16 +302,12 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         )}
 
         {/* DATE & TIME */}
-        <div className="task-meta">
-          {d.isValid() ? (
-            <>
-              <span>📅 {d.local().format("DD/MM/YYYY")}</span>
-              <span>🕒 {d.local().format("HH:mm")}</span>
-            </>
-          ) : (
-            "—"
-          )}
-        </div>
+        {d && d.isValid() && (
+  <div className="task-meta">
+    <span>📅 {d.local().format("DD/MM/YYYY")}</span>
+    <span>🕒 {d.local().format("HH:mm")}</span>
+  </div>
+)}
 
         {/* REMINDER */}
         {task.reminderMinutes > 0 && (
