@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
 import "./ClientTasksAndNotes.css";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
   /* =========================
@@ -65,10 +60,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
 
     API.get(`/crm-extras/notes/${clientId}`, { params: { businessId } })
       .then((res) => setNotes(Array.isArray(res.data) ? res.data : []))
-      .catch((err) => {
-        console.error("Error fetching notes", err);
-        setNotes([]);
-      });
+      .catch(() => setNotes([]));
   }, [clientId, businessId]);
 
   /* =========================
@@ -79,10 +71,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
 
     API.get(`/crm-extras/tasks/${clientId}`, { params: { businessId } })
       .then((res) => setTasks(Array.isArray(res.data) ? res.data : []))
-      .catch((err) => {
-        console.error("Error fetching tasks", err);
-        setTasks([]);
-      });
+      .catch(() => setTasks([]));
   }, [clientId, businessId]);
 
   /* =========================
@@ -114,9 +103,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       }
 
       setNewNote("");
-      document.activeElement?.blur();
-    } catch (err) {
-      console.error("Error saving note", err);
+    } catch {
       showToast("❌ Error saving note");
     }
   };
@@ -133,8 +120,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       await API.delete(`/crm-extras/notes/${noteId}`);
       setNotes((prev) => prev.filter((n) => n._id !== noteId));
       showToast("🗑 Note deleted");
-    } catch (err) {
-      console.error("Error deleting note", err);
+    } catch {
       showToast("❌ Error deleting note");
     }
   };
@@ -148,13 +134,17 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       return;
     }
 
+    const dueAt = dayjs(
+      `${newTask.dueDate} ${newTask.dueTime}`,
+      "YYYY-MM-DD HH:mm"
+    ).toDate();
+
     try {
       if (editTaskId) {
         const res = await API.patch(`/crm-extras/tasks/${editTaskId}`, {
           title: newTask.title,
           description: newTask.description,
-          dueDate: newTask.dueDate,
-          dueTime: newTask.dueTime,
+          dueDate: dueAt,
           status: newTask.status,
           priority: newTask.priority,
           reminderMinutes: newTask.reminderMinutes,
@@ -171,8 +161,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           businessId,
           title: newTask.title,
           description: newTask.description,
-          dueDate: newTask.dueDate,
-          dueTime: newTask.dueTime,
+          dueDate: dueAt,
           status: newTask.status,
           priority: newTask.priority,
           reminderMinutes: newTask.reminderMinutes,
@@ -191,21 +180,20 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         priority: "normal",
         reminderMinutes: 30,
       });
-
-      document.activeElement?.blur();
-    } catch (err) {
-      console.error("Error saving task", err);
+    } catch {
       showToast("❌ Error saving task");
     }
   };
 
   const handleEditTask = (task) => {
+    const d = dayjs(task.dueDate);
+
     setEditTaskId(task._id);
     setNewTask({
       title: task.title || "",
       description: task.description || "",
-      dueDate: task.dueDate || "",
-      dueTime: task.dueTime || "",
+      dueDate: d.isValid() ? d.local().format("YYYY-MM-DD") : "",
+      dueTime: d.isValid() ? d.local().format("HH:mm") : "",
       status: task.status || "todo",
       priority: task.priority || "normal",
       reminderMinutes: task.reminderMinutes ?? 30,
@@ -219,8 +207,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       await API.delete(`/crm-extras/tasks/${taskId}`);
       setTasks((prev) => prev.filter((t) => t._id !== taskId));
       showToast("🗑 Task deleted");
-    } catch (err) {
-      console.error("Error deleting task", err);
+    } catch {
       showToast("❌ Error deleting task");
     }
   };
@@ -232,7 +219,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     <div className="client-extras">
       {toast && <div className="toast-message">{toast}</div>}
 
-      {/* ================= NOTES ================= */}
+      {/* NOTES */}
       <div className="notes-section">
         <h3>📝 Notes</h3>
 
@@ -244,13 +231,11 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               <li key={note._id} className="note-item">
                 <div className="note-text">{note.text}</div>
                 <small>
-                  {new Date(note.createdAt).toLocaleString("en-GB")}
+                  {dayjs(note.createdAt).local().format("DD/MM/YYYY HH:mm")}
                 </small>
                 <div className="note-actions">
-                  <button onClick={() => handleEditNote(note)}>✏️ Edit</button>
-                  <button onClick={() => handleDeleteNote(note._id)}>
-                    🗑 Delete
-                  </button>
+                  <button onClick={() => handleEditNote(note)}>✏️</button>
+                  <button onClick={() => handleDeleteNote(note._id)}>🗑</button>
                 </div>
               </li>
             ))}
@@ -268,7 +253,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         </button>
       </div>
 
-      {/* ================= TASKS ================= */}
+      {/* TASKS */}
       <div className="tasks-section">
         <h3>✅ Tasks</h3>
 
@@ -276,30 +261,28 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           <p className="empty-text">No tasks yet</p>
         ) : (
           <ul className="tasks-list">
-            {tasks.map((task) => (
-              <li key={task._id} className={`task-item ${task.status}`}>
-                <strong>{task.title}</strong>
+            {tasks.map((task) => {
+              const d = dayjs(task.dueDate);
 
-                <div className="task-meta">
-  {task.reminderAt ? (
-    dayjs(task.reminderAt)
-      .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
-      .format("MMM D, YYYY · HH:mm")
-  ) : task.dueDate ? (
-    <>
-      {dayjs(task.dueDate)
-        .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
-        .format("MMM D, YYYY")}
-      {task.dueTime ? ` · ${task.dueTime}` : ""}
-    </>
-  ) : (
-    "—"
-  )}
-</div>
-</li>
-))}
-</ul>
-)}
+              return (
+                <li key={task._id} className={`task-item ${task.status}`}>
+                  <strong>{task.title}</strong>
+
+                  <div className="task-meta">
+                    {d.isValid()
+                      ? d.local().format("DD/MM/YYYY · HH:mm")
+                      : "—"}
+                  </div>
+
+                  <div className="task-actions">
+                    <button onClick={() => handleEditTask(task)}>✏️</button>
+                    <button onClick={() => handleDeleteTask(task._id)}>🗑</button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
 
         <div className="task-form">
           <input
