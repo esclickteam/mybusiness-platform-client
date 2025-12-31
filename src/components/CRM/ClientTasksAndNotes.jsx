@@ -2,22 +2,15 @@ import React, { useState, useEffect } from "react";
 import API from "@api";
 import "./ClientTasksAndNotes.css";
 
-/* ✅ IMPORT קומפוננטות */
-import Toast from "../UI/Toast";
-import TaskAlertsBanner from "./TaskAlertsBanner";
-
 export default function ClientTasksAndNotes({ clientId, businessId }) {
   /* =========================
      STATE
   ========================= */
   const [notes, setNotes] = useState([]);
   const [tasks, setTasks] = useState([]);
-  
 
   const [newNote, setNewNote] = useState("");
   const [editNoteId, setEditNoteId] = useState(null);
-  const [tabAlertShown, setTabAlertShown] = useState(false);
-
 
   const [newTask, setNewTask] = useState({
     title: "",
@@ -52,34 +45,10 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   /* =========================
      TOAST HELPER
   ========================= */
-  const showToast = (text, type = "success") => {
-    setToast({ text, type });
+  const showToast = (text) => {
+    setToast(text);
+    setTimeout(() => setToast(null), 2500);
   };
-
-  /* =========================
-   ON TAB ENTER (ON MOUNT)
-========================= */
-useEffect(() => {
-  if (tabAlertShown) return;
-  if (!tasks || tasks.length === 0) return;
-
-  const openTasks = tasks.filter(
-    (t) => t.status !== "completed" && t.status !== "cancelled"
-  );
-
-  if (openTasks.length > 0) {
-    showToast(
-      `⚠️ This client has ${openTasks.length} open task${
-        openTasks.length > 1 ? "s" : ""
-      }`,
-      "warning"
-    );
-  } else {
-    showToast("📝 Notes & Tasks loaded", "info");
-  }
-
-  setTabAlertShown(true); // ✅ חשוב
-}, [tasks, tabAlertShown]);
 
   /* =========================
      FETCH NOTES
@@ -124,7 +93,7 @@ useEffect(() => {
           prev.map((n) => (n._id === editNoteId ? res.data : n))
         );
         setEditNoteId(null);
-        showToast("Note updated");
+        showToast("✅ Note updated");
       } else {
         const res = await API.post("/crm-extras/notes", {
           clientId,
@@ -132,13 +101,13 @@ useEffect(() => {
           text: newNote,
         });
         setNotes((prev) => [...prev, res.data]);
-        showToast("Note added");
+        showToast("✅ Note added");
       }
       setNewNote("");
       document.activeElement?.blur();
     } catch (err) {
       console.error("Error saving note", err);
-      showToast("Error saving note", "error");
+      showToast("❌ Error saving note");
     }
   };
 
@@ -153,10 +122,10 @@ useEffect(() => {
     try {
       await API.delete(`/crm-extras/notes/${noteId}`);
       setNotes((prev) => prev.filter((n) => n._id !== noteId));
-      showToast("Note deleted");
+      showToast("🗑 Note deleted");
     } catch (err) {
       console.error("Error deleting note", err);
-      showToast("Error deleting note", "error");
+      showToast("❌ Error deleting note");
     }
   };
 
@@ -165,7 +134,7 @@ useEffect(() => {
   ========================= */
   const handleSaveTask = async () => {
     if (!newTask.title || !newTask.dueDate || !newTask.dueTime) {
-      showToast("Please fill title, date and time", "warning");
+      showToast("⚠️ Please fill title, date and time");
       return;
     }
 
@@ -183,7 +152,7 @@ useEffect(() => {
           prev.map((t) => (t._id === editTaskId ? res.data : t))
         );
         setEditTaskId(null);
-        showToast("Task updated");
+        showToast("✅ Task updated");
       } else {
         const res = await API.post("/crm-extras/tasks", {
           clientId,
@@ -196,7 +165,7 @@ useEffect(() => {
           priority: newTask.priority,
         });
         setTasks((prev) => [...prev, res.data]);
-        showToast("Task added");
+        showToast("✅ Task added");
       }
 
       setNewTask({
@@ -210,7 +179,7 @@ useEffect(() => {
       document.activeElement?.blur();
     } catch (err) {
       console.error("Error saving task", err);
-      showToast("Error saving task", "error");
+      showToast("❌ Error saving task");
     }
   };
 
@@ -232,10 +201,10 @@ useEffect(() => {
     try {
       await API.delete(`/crm-extras/tasks/${taskId}`);
       setTasks((prev) => prev.filter((t) => t._id !== taskId));
-      showToast("Task deleted");
+      showToast("🗑 Task deleted");
     } catch (err) {
       console.error("Error deleting task", err);
-      showToast("Error deleting task", "error");
+      showToast("❌ Error deleting task");
     }
   };
 
@@ -243,20 +212,9 @@ useEffect(() => {
      RENDER
   ========================= */
   return (
-  <div className="client-extras-wrapper">
-    {/* ✅ TOAST */}
-    {toast && (
-  <Toast
-    message={toast.text}
-    onClose={() => setToast(null)}
-  />
-)}
-
-    {/* ✅ ALERT BANNER – מעל הגריד */}
-    <TaskAlertsBanner tasks={tasks} />
-
-    {/* ✅ GRID של Notes + Tasks */}
     <div className="client-extras">
+      {toast && <div className="toast-message">{toast}</div>}
+
       {/* ================= NOTES ================= */}
       <div className="notes-section">
         <h3>📝 Notes</h3>
@@ -274,10 +232,14 @@ useEffect(() => {
                 <small>
                   {new Date(note.createdAt).toLocaleString("en-GB")}
                 </small>
-
                 <div className="note-actions">
-                  <button onClick={() => handleEditNote(note)}>✏️ Edit</button>
-                  <button onClick={() => handleDeleteNote(note._id)}>
+                  <button type="button" onClick={() => handleEditNote(note)}>
+                    ✏️ Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteNote(note._id)}
+                  >
                     🗑 Delete
                   </button>
                 </div>
@@ -292,7 +254,7 @@ useEffect(() => {
           onChange={(e) => setNewNote(e.target.value)}
         />
 
-        <button className="btn-primary" onClick={handleSaveNote}>
+        <button type="button" className="btn-primary" onClick={handleSaveNote}>
           {editNoteId ? "💾 Update Note" : "➕ Save Note"}
         </button>
       </div>
@@ -325,14 +287,17 @@ useEffect(() => {
                 </div>
 
                 {task.description && (
-                  <div className="task-description">
-                    {task.description}
-                  </div>
+                  <div className="task-description">{task.description}</div>
                 )}
 
                 <div className="task-actions">
-                  <button onClick={() => handleEditTask(task)}>✏️ Edit</button>
-                  <button onClick={() => handleDeleteTask(task._id)}>
+                  <button type="button" onClick={() => handleEditTask(task)}>
+                    ✏️ Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteTask(task._id)}
+                  >
                     🗑 Delete
                   </button>
                 </div>
@@ -371,13 +336,11 @@ useEffect(() => {
             }
           />
 
-          <button className="btn-primary" onClick={handleSaveTask}>
+          <button type="button" className="btn-primary" onClick={handleSaveTask}>
             {editTaskId ? "💾 Update Task" : "➕ Add Task"}
           </button>
         </div>
       </div>
     </div>
-  </div>
-);
-
+  );
 }
