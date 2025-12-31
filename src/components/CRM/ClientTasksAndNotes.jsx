@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
 import dayjs from "dayjs";
-import "./ClientTasksAndNotes.css";
 import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import "./ClientTasksAndNotes.css";
+
 dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
   /* =========================
@@ -18,8 +21,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    dueDate: "",     // YYYY-MM-DD בלבד
-    dueTime: "",     // HH:mm בלבד
+    dueDate: "", // YYYY-MM-DD בלבד
+    dueTime: "", // HH:mm בלבד
     status: "todo",
     priority: "normal",
     reminderMinutes: 30,
@@ -139,7 +142,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     const parsed = dayjs(
       `${newTask.dueDate} ${newTask.dueTime}`,
       "YYYY-MM-DD HH:mm",
-      true // STRICT
+      true // STRICT MODE
     );
 
     if (!parsed.isValid()) {
@@ -199,17 +202,17 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
      EDIT TASK
   ========================= */
   const handleEditTask = (task) => {
-    const d = dayjs.utc(task.dueDate).local();
+    const d = dayjs(task.dueDate).tz(dayjs.tz.guess());
 
-setEditTaskId(task._id);
-setNewTask({
-  title: task.title || "",
-  description: task.description || "",
-  dueDate: d.isValid() ? d.format("YYYY-MM-DD") : "",
-  dueTime: d.isValid() ? d.format("HH:mm") : "",
-  status: task.status || "todo",
-  priority: task.priority || "normal",
-  reminderMinutes: task.reminderMinutes ?? 30,
+    setEditTaskId(task._id);
+    setNewTask({
+      title: task.title || "",
+      description: task.description || "",
+      dueDate: d.isValid() ? d.format("YYYY-MM-DD") : "",
+      dueTime: d.isValid() ? d.format("HH:mm") : "",
+      status: task.status || "todo",
+      priority: task.priority || "normal",
+      reminderMinutes: task.reminderMinutes ?? 30,
     });
   };
 
@@ -228,10 +231,7 @@ setNewTask({
   /* =========================
      UX VALIDATION
   ========================= */
-  const isTaskValid =
-    newTask.title &&
-    newTask.dueDate &&
-    newTask.dueTime;
+  const isTaskValid = newTask.title && newTask.dueDate && newTask.dueTime;
 
   /* =========================
      RENDER
@@ -252,8 +252,8 @@ setNewTask({
               <li key={note._id} className="note-item">
                 <div className="note-text">{note.text}</div>
                 <small>
-                  {dayjs(new Date(note.createdAt))
-                    .local()
+                  {dayjs(note.createdAt)
+                    .tz(dayjs.tz.guess())
                     .format("DD/MM/YYYY HH:mm")}
                 </small>
                 <div className="note-actions">
@@ -283,65 +283,58 @@ setNewTask({
         {tasks.length === 0 ? (
           <p className="empty-text">No tasks yet</p>
         ) : (
-
           <ul className="tasks-list">
-  {tasks.map((task) => {
+            {tasks.map((task) => {
+              const dateObj = dayjs(task.dueDate).tz(dayjs.tz.guess());
+              return (
+                <li key={task._id} className={`task-item ${task.status}`}>
+                  {/* TITLE */}
+                  <div className="task-header">
+                    <strong className="task-title">{task.title}</strong>
+                  </div>
 
-    return (
-      <li key={task._id} className={`task-item ${task.status}`}>
-        {/* TITLE */}
-        <div className="task-header">
-          <strong className="task-title">{task.title}</strong>
-        </div>
+                  {/* DESCRIPTION */}
+                  {task.description && (
+                    <div className="task-description">{task.description}</div>
+                  )}
 
-        {/* DESCRIPTION */}
-        {task.description && (
-          <div className="task-description">
-            {task.description}
-          </div>
-        )}
+                  {/* DATE & TIME */}
+                  {task.dueDate && dateObj.isValid() && (
+                    <div className="task-meta">
+                      <span>📅 {dateObj.format("DD/MM/YYYY")}</span>
+                      <span>🕒 {dateObj.format("HH:mm")}</span>
+                    </div>
+                  )}
 
-        {/* DATE & TIME */}
-        {task.dueDate && (
-  <div className="task-meta">
-    <span>
-      📅 {dayjs.utc(task.dueDate).local().format("DD/MM/YYYY")}
-    </span>
-    <span>
-      🕒 {dayjs.utc(task.dueDate).local().format("HH:mm")}
-    </span>
-  </div>
-)}
+                  {/* REMINDER */}
+                  {task.reminderMinutes > 0 && (
+                    <div className="task-reminder">
+                      ⏰ Reminder: {task.reminderMinutes} minutes before
+                    </div>
+                  )}
 
-        {/* REMINDER */}
-        {task.reminderMinutes > 0 && (
-          <div className="task-reminder">
-            ⏰ Reminder: {task.reminderMinutes} minutes before
-          </div>
-        )}
+                  {/* STATUS + PRIORITY */}
+                  <div className="task-meta-row">
+                    <span className={`task-status ${task.status}`}>
+                      📌 {statusLabels[task.status]?.text || task.status}
+                    </span>
 
-        {/* STATUS + PRIORITY */}
-        <div className="task-meta-row">
-          <span className={`task-status ${task.status}`}>
-            📌 {statusLabels[task.status]?.text || task.status}
-          </span>
+                    <span className={`task-priority ${task.priority}`}>
+                      ⚡ {priorityLabels[task.priority]?.text || task.priority}
+                    </span>
+                  </div>
 
-          <span className={`task-priority ${task.priority}`}>
-            ⚡ {priorityLabels[task.priority]?.text || task.priority}
-          </span>
-        </div>
-
-        {/* ACTIONS */}
-        <div className="task-actions">
-          <button onClick={() => handleEditTask(task)}>✏️</button>
-          <button onClick={() => handleDeleteTask(task._id)}>🗑</button>
-        </div>
-      </li>
-    );
-  })}
-</ul>
-
-
+                  {/* ACTIONS */}
+                  <div className="task-actions">
+                    <button onClick={() => handleEditTask(task)}>✏️</button>
+                    <button onClick={() => handleDeleteTask(task._id)}>
+                      🗑
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         )}
 
         {/* FORM */}
@@ -349,9 +342,7 @@ setNewTask({
           <input
             placeholder="Task title"
             value={newTask.title}
-            onChange={(e) =>
-              setNewTask({ ...newTask, title: e.target.value })
-            }
+            onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
           />
 
           <textarea
