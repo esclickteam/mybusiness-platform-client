@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import "./ClientTasksAndNotes.css";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
   /* =========================
@@ -19,10 +25,10 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     dueTime: "",
     status: "todo",
     priority: "normal",
-    reminderMinutes: 30, // ✅ חדש – ברירת מחדל
+    reminderMinutes: 30,
   });
-  const [editTaskId, setEditTaskId] = useState(null);
 
+  const [editTaskId, setEditTaskId] = useState(null);
   const [toast, setToast] = useState(null);
 
   /* =========================
@@ -44,7 +50,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   };
 
   /* =========================
-     TOAST HELPER
+     TOAST
   ========================= */
   const showToast = (text) => {
     setToast(text);
@@ -80,7 +86,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   }, [clientId, businessId]);
 
   /* =========================
-     ADD / UPDATE NOTE
+     SAVE NOTE
   ========================= */
   const handleSaveNote = async () => {
     if (!newNote.trim()) return;
@@ -90,6 +96,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         const res = await API.patch(`/crm-extras/notes/${editNoteId}`, {
           text: newNote,
         });
+
         setNotes((prev) =>
           prev.map((n) => (n._id === editNoteId ? res.data : n))
         );
@@ -101,9 +108,11 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           businessId,
           text: newNote,
         });
+
         setNotes((prev) => [...prev, res.data]);
         showToast("✅ Note added");
       }
+
       setNewNote("");
       document.activeElement?.blur();
     } catch (err) {
@@ -131,7 +140,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   };
 
   /* =========================
-     ADD / UPDATE TASK
+     SAVE TASK
   ========================= */
   const handleSaveTask = async () => {
     if (!newTask.title || !newTask.dueDate || !newTask.dueTime) {
@@ -148,8 +157,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           dueTime: newTask.dueTime,
           status: newTask.status,
           priority: newTask.priority,
-          reminderMinutes: newTask.reminderMinutes, // ✅
+          reminderMinutes: newTask.reminderMinutes,
         });
+
         setTasks((prev) =>
           prev.map((t) => (t._id === editTaskId ? res.data : t))
         );
@@ -165,8 +175,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           dueTime: newTask.dueTime,
           status: newTask.status,
           priority: newTask.priority,
-          reminderMinutes: newTask.reminderMinutes, // ✅
+          reminderMinutes: newTask.reminderMinutes,
         });
+
         setTasks((prev) => [...prev, res.data]);
         showToast("✅ Task added");
       }
@@ -180,6 +191,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         priority: "normal",
         reminderMinutes: 30,
       });
+
       document.activeElement?.blur();
     } catch (err) {
       console.error("Error saving task", err);
@@ -231,7 +243,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             {notes.map((note) => (
               <li key={note._id} className="note-item">
                 <div className="note-text">{note.text}</div>
-                <small>{new Date(note.createdAt).toLocaleString("en-GB")}</small>
+                <small>
+                  {new Date(note.createdAt).toLocaleString("en-GB")}
+                </small>
                 <div className="note-actions">
                   <button onClick={() => handleEditNote(note)}>✏️ Edit</button>
                   <button onClick={() => handleDeleteNote(note._id)}>
@@ -265,8 +279,15 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             {tasks.map((task) => (
               <li key={task._id} className={`task-item ${task.status}`}>
                 <strong>{task.title}</strong>
+
                 <div className="task-meta">
-                  {task.dueDate} · {task.dueTime}
+                  {task.reminderAt
+                    ? dayjs(task.reminderAt)
+                        .tz(
+                          Intl.DateTimeFormat().resolvedOptions().timeZone
+                        )
+                        .format("MMM D, YYYY · HH:mm")
+                    : `${task.dueDate} · ${task.dueTime}`}
                 </div>
               </li>
             ))}
@@ -306,7 +327,6 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             }
           />
 
-          {/* ⏰ REMINDER */}
           <select
             value={newTask.reminderMinutes}
             onChange={(e) =>

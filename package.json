@@ -33,6 +33,7 @@
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.1",
+    "dayjs": "^1.11.19",
     "dotenv": "^16.6.1",
     "emailjs-com": "^3.2.0",
     "express": "^5.1.0",
