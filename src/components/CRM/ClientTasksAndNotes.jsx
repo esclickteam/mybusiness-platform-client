@@ -299,39 +299,41 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
                   )}
 
                   {/* DATE & TIME */}
-                  {task.dueDate && (
-  <div className="task-meta">
-    <span>
-      📅{" "}
-      {(() => {
-        const raw = task.dueDate;
-        const iso =
-          typeof raw === "string"
-            ? raw
-            : raw instanceof Date
-            ? raw.toISOString()
-            : String(raw);
-        const d = dayjs(iso).tz(dayjs.tz.guess());
-        return d.isValid() ? d.format("DD/MM/YYYY") : "Invalid Date";
-      })()}
-    </span>
+                  {(() => {
+  if (!task.dueDate) return null;
 
-    <span>
-      🕒{" "}
-      {(() => {
-        const raw = task.dueDate;
-        const iso =
-          typeof raw === "string"
-            ? raw
-            : raw instanceof Date
-            ? raw.toISOString()
-            : String(raw);
-        const d = dayjs(iso).tz(dayjs.tz.guess());
-        return d.isValid() ? d.format("HH:mm") : "Invalid Date";
-      })()}
-    </span>
-  </div>
-)}
+  console.log("🔍 DEBUG TASK DATE", {
+    title: task.title,
+    raw: task.dueDate,
+    typeofRaw: typeof task.dueDate,
+    instanceOfDate: task.dueDate instanceof Date,
+    toString: String(task.dueDate),
+    iso: task.dueDate?.toISOString?.(),
+  });
+
+  const raw = task.dueDate;
+  const iso =
+    typeof raw === "string"
+      ? raw
+      : raw instanceof Date
+      ? raw.toISOString()
+      : String(raw);
+
+  const dateObj = dayjs(iso).tz(dayjs.tz.guess());
+
+  console.log("📅 Parsed:", {
+    iso,
+    valid: dateObj.isValid(),
+    formatted: dateObj.format("DD/MM/YYYY HH:mm"),
+  });
+
+  return (
+    <div className="task-meta">
+      <span>📅 {dateObj.isValid() ? dateObj.format("DD/MM/YYYY") : "Invalid Date"}</span>
+      <span>🕒 {dateObj.isValid() ? dateObj.format("HH:mm") : "Invalid Time"}</span>
+    </div>
+  );
+})()}
 
                   {/* REMINDER */}
                   {task.reminderMinutes > 0 && (
