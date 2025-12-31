@@ -16,8 +16,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    dueDate: "",
-    dueTime: "",
+    dueDate: "",     // YYYY-MM-DD בלבד
+    dueTime: "",     // HH:mm בלבד
     status: "todo",
     priority: "normal",
     reminderMinutes: 30,
@@ -27,7 +27,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   const [toast, setToast] = useState(null);
 
   /* =========================
-     LABELS
+     LABELS (נשארים – לא נוגעים)
   ========================= */
   const statusLabels = {
     todo: { text: "To Do", color: "gray" },
@@ -126,7 +126,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   };
 
   /* =========================
-     SAVE TASK
+     SAVE TASK (UX + VALIDATION)
   ========================= */
   const handleSaveTask = async () => {
     if (!newTask.title || !newTask.dueDate || !newTask.dueTime) {
@@ -134,10 +134,18 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       return;
     }
 
-    const dueAt = dayjs(
+    const parsed = dayjs(
       `${newTask.dueDate} ${newTask.dueTime}`,
-      "YYYY-MM-DD HH:mm"
-    ).toDate();
+      "YYYY-MM-DD HH:mm",
+      true // STRICT
+    );
+
+    if (!parsed.isValid()) {
+      showToast("❌ Invalid date or time");
+      return;
+    }
+
+    const dueAt = parsed.toDate();
 
     try {
       if (editTaskId) {
@@ -185,9 +193,11 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     }
   };
 
+  /* =========================
+     EDIT TASK
+  ========================= */
   const handleEditTask = (task) => {
     const d = dayjs(new Date(task.dueDate));
-
 
     setEditTaskId(task._id);
     setNewTask({
@@ -214,6 +224,14 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   };
 
   /* =========================
+     UX VALIDATION
+  ========================= */
+  const isTaskValid =
+    newTask.title &&
+    newTask.dueDate &&
+    newTask.dueTime;
+
+  /* =========================
      RENDER
   ========================= */
   return (
@@ -232,7 +250,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
               <li key={note._id} className="note-item">
                 <div className="note-text">{note.text}</div>
                 <small>
-                  {dayjs(note.createdAt).local().format("DD/MM/YYYY HH:mm")}
+                  {dayjs(new Date(note.createdAt))
+                    .local()
+                    .format("DD/MM/YYYY HH:mm")}
                 </small>
                 <div className="note-actions">
                   <button onClick={() => handleEditNote(note)}>✏️</button>
@@ -263,7 +283,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         ) : (
           <ul className="tasks-list">
             {tasks.map((task) => {
-              const d = dayjs(task.dueDate);
+              const d = dayjs(new Date(task.dueDate));
 
               return (
                 <li key={task._id} className={`task-item ${task.status}`}>
@@ -285,6 +305,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           </ul>
         )}
 
+        {/* FORM */}
         <div className="task-form">
           <input
             placeholder="Task title"
@@ -335,7 +356,11 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             <option value={1440}>1 day before</option>
           </select>
 
-          <button className="btn-primary" onClick={handleSaveTask}>
+          <button
+            className="btn-primary"
+            onClick={handleSaveTask}
+            disabled={!isTaskValid}
+          >
             {editTaskId ? "💾 Update Task" : "➕ Add Task"}
           </button>
         </div>
