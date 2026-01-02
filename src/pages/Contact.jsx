@@ -31,7 +31,7 @@ function Contact() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/support", {
+       const res = await fetch("/api/support", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
