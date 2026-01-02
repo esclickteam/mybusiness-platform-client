@@ -1,217 +1,183 @@
-/* עיצוב כללי */
+/* ===============================
+   Page background
+================================ */
 .support-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fdefff, #f7e9ff);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px;
   font-family: Arial, sans-serif;
-  background: #f9f9fb;
-  padding: 20px;
-  max-width: 1200px;
-  margin: auto;
-  text-align: center;
+  direction: ltr;
 }
 
-h1 {
-  font-size: 2rem;
-  color: #4a4a4a;
-  margin-bottom: 30px;
-}
-
-h2 {
-  font-size: 1.5rem;
-  color: #4a4a4a;
-  margin-bottom: 15px;
-}
-
-section {
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 30px;
+/* ===============================
+   Outer card (light pink)
+================================ */
+.support-page section {
+  background: #faf5fb;
+  border-radius: 26px;
+  padding: 28px;
+  max-width: 620px;
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
 }
 
-label {
+/* ===============================
+   Title
+================================ */
+.support-page h1 {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 800;
+  color: #7b1fa2;
+  margin-bottom: 14px;
+  text-shadow: 0 2px 6px rgba(123, 31, 162, 0.25);
+}
+
+/* ===============================
+   Subtitle
+================================ */
+.support-page p {
+  text-align: center;
+  color: #444;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 26px;
+}
+
+/* ===============================
+   Inner white form card
+================================ */
+.support-page form {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 30px 28px 34px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* ===============================
+   Labels
+================================ */
+.support-page label {
   display: block;
-  font-size: 1rem;
-  margin-bottom: 5px;
-  color: #4a4a4a;
-  text-align: left;
+  font-weight: 700;
+  font-size: 15px;
+  color: #6a1b9a;
+  margin-bottom: 6px;
 }
 
-input,
-textarea {
+/* ===============================
+   Inputs & textarea
+================================ */
+.support-page input,
+.support-page textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  font-size: 1rem;
-  margin-bottom: 15px;
+  padding: 14px 16px;
+  font-size: 15px;
+  border-radius: 14px;
+  border: 2px solid #a020f0;
+  margin-bottom: 18px;
   box-sizing: border-box;
-  direction: rtl;
-  background-color: #fff;
-  transition: border-color 0.3s ease;
-}
-
-input:focus,
-textarea:focus {
-  border-color: #7c4dff;
   outline: none;
-  background-color: #fefefe;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-textarea {
-  resize: vertical;
+.support-page input:focus,
+.support-page textarea:focus {
+  border-color: #7c4dff;
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.15);
+}
+
+.support-page textarea {
   min-height: 120px;
+  resize: vertical;
 }
 
-button {
-  background-color: #7c4dff;
-  color: white;
-  padding: 12px 20px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 5px;
+/* ===============================
+   Phone row
+================================ */
+.phone-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.phone-row select {
+  width: 90px;
+  border-radius: 12px;
+  border: 2px solid #a020f0;
+  font-size: 15px;
+  padding: 10px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 10px;
+  background: #fff;
 }
 
-button:hover {
-  background-color: #5e35b1;
+/* ===============================
+   Button
+================================ */
+.support-page button {
+  width: 100%;
+  padding: 16px;
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  background: #6a1b9a;
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(106, 27, 154, 0.45);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-  text-align: left;
+.support-page button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(106, 27, 154, 0.55);
 }
 
-ul li {
-  font-size: 1rem;
-  margin-bottom: 8px;
+.support-page button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
-ul li a {
-  color: #7c4dff;
-  text-decoration: none;
-}
-
-ul li a:hover {
-  text-decoration: underline;
-}
-
+/* ===============================
+   Status messages
+================================ */
 .status-msg {
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 6px;
-  font-weight: bold;
+  margin-top: 18px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-weight: 600;
   text-align: center;
-  font-size: 1rem;
-  max-width: 800px;
-  margin-left: auto;
-  margin-left: auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  direction: rtl;
+  font-size: 15px;
 }
 
 .status-msg.success {
-  background-color: #e6f9e6;
+  background: #e8f7ea;
   color: #2e7d32;
   border: 1px solid #c8e6c9;
 }
 
 .status-msg.error {
-  background-color: #ffecec;
+  background: #ffecec;
   color: #d32f2f;
-  border: 1px solid #f8bbbb;
+  border: 1px solid #f5b5b5;
 }
 
-.status-msg::before {
-  content: attr(data-icon);
-  margin-left: 0.5rem;
-  font-size: 1.2rem;
-  vertical-align: middle;
-}
-
-@media (max-width: 768px) {
-  .support-page {
-    padding: 15px;
-  }
-
-  h1 {
-    font-size: 1.8rem;
-  }
-
-  button {
-    width: 100%;
-  }
-}
-@media (max-width: 768px) {
-  .support-page {
-    padding: 15px;
-  }
-
-  h1 {
-    font-size: 1.8rem;
-  }
-
-  h2 {
-    font-size: 1.4rem;
-  }
-
-  input,
-  textarea {
-    font-size: 0.95rem;
-    padding: 10px;
-  }
-
-  button {
-    width: 100%;
-    font-size: 1rem;
-    padding: 12px 0;
-  }
-
-  ul li {
-    font-size: 0.95rem;
-  }
-}
-
+/* ===============================
+   Responsive
+================================ */
 @media (max-width: 480px) {
-  .support-page {
-    padding: 10px;
-    margin: 0 10px;
+  .support-page h1 {
+    font-size: 28px;
   }
 
-  h1 {
-    font-size: 1.5rem;
+  .support-page section {
+    padding: 20px;
   }
 
-  h2 {
-    font-size: 1.2rem;
-  }
-
-  label {
-    font-size: 0.9rem;
-  }
-
-  input,
-  textarea {
-    font-size: 0.9rem;
-    padding: 8px;
-  }
-
-  button {
-    font-size: 0.95rem;
-    padding: 10px 0;
-  }
-
-  ul li {
-    font-size: 0.9rem;
-  }
-
-  .status-msg {
-    font-size: 0.95rem;
-    padding: 0.75rem 1rem;
+  .support-page form {
+    padding: 22px;
   }
 }

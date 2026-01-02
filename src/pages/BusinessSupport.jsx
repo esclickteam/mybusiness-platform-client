@@ -1,33 +1,36 @@
 import React, { useState } from "react";
 import "../styles/business-support.css";
 
+const COUNTRIES = [
+  { code: "US", dial: "+1", flag: "🇺🇸" },
+  { code: "IL", dial: "+972", flag: "🇮🇱" },
+  { code: "GB", dial: "+44", flag: "🇬🇧" },
+  { code: "CA", dial: "+1", flag: "🇨🇦" },
+];
+
 export default function BusinessSupport() {
+  const [country, setCountry] = useState(COUNTRIES[0]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    issueDescription: "",
+    message: "",
   });
 
   const [loading, setLoading] = useState(false);
-   const [status, setStatus] = useState(null); // { type: "success" | "error", message }
+  const [status, setStatus] = useState(null);
 
-  const handleInputChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((p) => ({ ...p, [name]: value }));
   };
 
-  const handleFormSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus(null);
 
-    const { name, email, phone, issueDescription } = formData;
-
-    if (!name || !email || !phone || !issueDescription) {
-      setStatus({
-        type: "error",
-        message: "Please fill out all fields, including phone",
-      });
+    if (!formData.name || !formData.email || !formData.phone || !formData.message) {
+      setStatus({ type: "error", message: "Please fill in all fields" });
       return;
     }
 
@@ -36,106 +39,99 @@ export default function BusinessSupport() {
     try {
       const res = await fetch("/api/support", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
-          email,
-          phone,
-          issueDescription,
+          ...formData,
+          phone: `${country.dial}${formData.phone}`,
         }),
       });
 
-      const data = await res.json();
+      if (!res.ok) throw new Error();
 
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to send request");
-      }
-
-      setStatus({
-        type: "success",
-        message: "Your request was sent successfully!",
-      });
-
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        issueDescription: "",
-      });
-    } catch (err) {
-      console.error("Support form error:", err);
-      setStatus({
-        type: "error",
-        message: "Error sending the request. Please try again.",
-      });
+      setStatus({ type: "success", message: "Message sent successfully!" });
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    } catch {
+      setStatus({ type: "error", message: "Failed to send message" });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="support-page" dir="ltr" lang="en">
-      <h1>Business Support</h1>
+    <div className="support-wrapper" dir="ltr">
+      <div className="support-card">
+        <h1 className="support-title">Contact Us</h1>
+        <p className="support-subtitle">
+          Have a question or want us to get back to you?  
+          Fill out the form and we’ll be in touch shortly!
+        </p>
 
-      <form onSubmit={handleFormSubmit}>
-        <label>Your Name:</label>
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleInputChange}
-          disabled={loading}
-          placeholder="Enter your name"
-          required
-        />
+        <form onSubmit={handleSubmit}>
+          <label>Full Name:</label>
+          <input
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Your full name"
+          />
 
-        <label>Contact Email:</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          disabled={loading}
-          placeholder="Enter your email"
-          required
-        />
+          <label>Phone:</label>
+          <div className="phone-row">
+            <select
+              value={country.code}
+              onChange={(e) =>
+                setCountry(COUNTRIES.find(c => c.code === e.target.value))
+              }
+            >
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.flag} {c.dial}
+                </option>
+              ))}
+            </select>
 
-        <label>Contact Phone:</label>
-        <input
-          type="tel"
-          name="phone"
-          value={formData.phone}
-          onChange={handleInputChange}
-          disabled={loading}
-          placeholder="Enter your phone number"
-          required
-        />
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Phone number"
+            />
+          </div>
 
-        <label>Issue Description:</label>
-        <textarea
-          name="issueDescription"
-          value={formData.issueDescription}
-          onChange={handleInputChange}
-          disabled={loading}
-          placeholder="Describe the issue"
-          required
-        />
+          <label>Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="you@email.com"
+          />
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Submit Request"}
-        </button>
-      </form>
+          <label>Message:</label>
+          <textarea
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            placeholder="Write your message here..."
+          />
 
-      {status && (
-        <div
-          className={`status-msg ${status.type}`}
-          data-icon={status.type === "success" ? "✅" : "❌"}
-        >
-          {status.message}
+          <button type="submit" disabled={loading}>
+            {loading ? "Sending..." : "SEND MESSAGE"}
+          </button>
+        </form>
+
+        {status && (
+          <div className={`form-status ${status.type}`}>
+            {status.message}
+          </div>
+        )}
+
+        <div className="support-footer">
+          📧 You can also email us directly at{" "}
+          <strong>support@bizuply.com</strong>
         </div>
-      )}
+      </div>
     </div>
   );
 }
