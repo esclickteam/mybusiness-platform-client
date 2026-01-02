@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import "../styles/Contact.css";
 
 function Contact() {
   const [formData, setFormData] = useState({
     name: "",
-    phoneCode: "+1", // 🇺🇸 Default United States
     phone: "",
     email: "",
     message: "",
@@ -26,7 +27,7 @@ function Contact() {
     e.preventDefault();
     setStatus(null);
 
-    const { name, phoneCode, phone, email, message } = formData;
+    const { name, phone, email, message } = formData;
 
     if (!name || !phone || !email || !message) {
       setStatus({ type: "error", message: "Please fill in all fields" });
@@ -36,8 +37,6 @@ function Contact() {
     setLoading(true);
 
     try {
-      const fullPhone = `${phoneCode}${phone}`;
-
       const res = await fetch("/api/support", {
         method: "POST",
         headers: {
@@ -45,7 +44,7 @@ function Contact() {
         },
         body: JSON.stringify({
           name,
-          phone: fullPhone,
+          phone, // כבר כולל +1 / +972 וכו'
           email,
           issueDescription: message,
         }),
@@ -64,7 +63,6 @@ function Contact() {
 
       setFormData({
         name: "",
-        phoneCode: "+1",
         phone: "",
         email: "",
         message: "",
@@ -113,37 +111,27 @@ function Contact() {
           name="name"
           value={formData.name}
           onChange={handleChange}
-          required
           disabled={loading}
+          required
         />
 
         <label>Phone:</label>
-        <div className="phone-row">
-          <select
-            name="phoneCode"
-            value={formData.phoneCode}
-            onChange={handleChange}
-            disabled={loading}
-            className="phone-code"
-          >
-            <option value="+1">🇺🇸 +1</option>
-            <option value="+44">🇬🇧 +44</option>
-            <option value="+972">🇮🇱 +972</option>
-            <option value="+49">🇩🇪 +49</option>
-            <option value="+33">🇫🇷 +33</option>
-            <option value="+61">🇦🇺 +61</option>
-          </select>
-
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-            disabled={loading}
-            placeholder="Phone number"
-          />
-        </div>
+        <PhoneInput
+          country="us"                 // 🇺🇸 ברירת מחדל ארה״ב
+          enableSearch
+          value={formData.phone}
+          onChange={(phone) =>
+            setFormData((prev) => ({ ...prev, phone }))
+          }
+          inputProps={{
+            name: "phone",
+            required: true,
+            disabled: loading,
+          }}
+          containerClass="phone-container"
+          inputClass="phone-input"
+          buttonClass="phone-flag"
+        />
 
         <label>Email:</label>
         <input
@@ -151,8 +139,8 @@ function Contact() {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          required
           disabled={loading}
+          required
         />
 
         <label>Message:</label>
@@ -160,8 +148,8 @@ function Contact() {
           name="message"
           value={formData.message}
           onChange={handleChange}
-          required
           disabled={loading}
+          required
         />
 
         <button type="submit" className="submit-button" disabled={loading}>
