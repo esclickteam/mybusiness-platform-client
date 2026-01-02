@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useForm } from "@formspree/react";
-import { Helmet } from "react-helmet-async"; // ✅ עודכן לגרסה הנכונה
+import { Helmet } from "react-helmet-async";
 import "../styles/Contact.css";
 
 function Contact() {
@@ -11,7 +10,6 @@ function Contact() {
     message: "",
   });
 
-  const [state, handleSubmit] = useForm("mwpoojlv"); // ✅ החלף ל-ID שלך אם נדרש
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -33,34 +31,40 @@ function Contact() {
     setLoading(true);
 
     try {
-      await handleSubmit({
-        data: { name, phone, email, message },
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, phone, email, message }),
       });
 
-      setStatus({ type: "success", message: "Form submitted successfully!" });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error("Failed to send");
+      }
+
+      setStatus({
+        type: "success",
+        message: "Form submitted successfully! We’ll get back to you shortly.",
+      });
+
       setFormData({ name: "", phone: "", email: "", message: "" });
     } catch (error) {
       setStatus({
         type: "error",
-        message: "An error occurred. Please try again.",
+        message: "An error occurred. Please try again later.",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  if (state.succeeded) {
-    return (
-      <div className="contact-container">
-        <h2>Form submitted successfully!</h2>
-      </div>
-    );
-  }
-
   return (
     <div className="contact-container">
       <Helmet>
-        {/* ✅ Title & Description */}
+        {/* SEO */}
         <title>Contact Us - Bizuply | We're Here to Help</title>
         <meta
           name="description"
@@ -71,34 +75,33 @@ function Contact() {
           content="contact, support, Bizuply, questions, help, business, customer service"
         />
         <link rel="canonical" href="https://bizuply.com/contact" />
-
-        {/* ✅ Robots */}
         <meta name="robots" content="index, follow" />
 
-        {/* ✅ Open Graph (Facebook, LinkedIn, WhatsApp) */}
+        {/* Open Graph */}
         <meta property="og:title" content="Contact Bizuply – We're Here to Help" />
         <meta
           property="og:description"
-          content="Reach out to the Bizuply team for support, questions, or business inquiries. We're always happy to help."
+          content="Reach out to the Bizuply team for support, questions, or business inquiries."
         />
         <meta property="og:url" content="https://bizuply.com/contact" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Bizuply" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
 
-        {/* ✅ Twitter Cards */}
+        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Contact Bizuply – We're Here to Help" />
         <meta
           name="twitter:description"
-          content="Get in touch with Bizuply for support and business inquiries. Quick response guaranteed."
+          content="Get in touch with Bizuply for support and business inquiries."
         />
         <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
       <h1 className="contact-title">Contact Us</h1>
       <p className="contact-subtitle">
-        Have a question or want us to get back to you? Fill out the form and we’ll be in touch shortly!
+        Have a question or want us to get back to you? Fill out the form and we’ll
+        be in touch shortly!
       </p>
 
       <form className="contact-form" onSubmit={onSubmit}>
@@ -139,7 +142,7 @@ function Contact() {
           onChange={handleChange}
           required
           disabled={loading}
-        ></textarea>
+        />
 
         <button type="submit" className="submit-button" disabled={loading}>
           {loading ? "Sending..." : "Send Message"}
@@ -147,13 +150,17 @@ function Contact() {
       </form>
 
       {status && (
-        <div className={`status-msg ${status.type}`} style={{ marginTop: "1rem" }}>
+        <div
+          className={`status-msg ${status.type}`}
+          style={{ marginTop: "1rem" }}
+        >
           {status.message}
         </div>
       )}
 
       <p className="contact-email">
-        You can also email us directly at: <strong>support@bizuply.com</strong>
+        You can also email us directly at:{" "}
+        <strong>support@bizuply.com</strong>
       </p>
     </div>
   );
