@@ -10,7 +10,7 @@ export default function BusinessSupport() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); // { type: "success" | "error", message }
+   const [status, setStatus] = useState(null); // { type: "success" | "error", message }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
