@@ -1,23 +1,16 @@
 import React, { useState } from "react";
-import { useForm } from "@formspree/react";
-
 import "../styles/business-support.css";
 
 export default function BusinessSupport() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",              // add phone field here
+    phone: "",
     issueDescription: "",
   });
+
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null);
-
-  const [state, handleSubmit] = useForm("mwpoojlv");
-
-  if (state.succeeded) {
-    return <p className="status-msg success">Your request was sent successfully!</p>;
-  }
+  const [status, setStatus] = useState(null); // { type: "success" | "error", message }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -31,19 +24,52 @@ export default function BusinessSupport() {
     const { name, email, phone, issueDescription } = formData;
 
     if (!name || !email || !phone || !issueDescription) {
-      setStatus({ type: "error", message: "Please fill out all fields, including phone" });
+      setStatus({
+        type: "error",
+        message: "Please fill out all fields, including phone",
+      });
       return;
     }
 
     setLoading(true);
 
     try {
-      await handleSubmit(e);
-      setStatus({ type: "success", message: "Request sent successfully" });
-      setFormData({ name: "", email: "", phone: "", issueDescription: "" });
+      const res = await fetch("/api/support", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          issueDescription,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to send request");
+      }
+
+      setStatus({
+        type: "success",
+        message: "Your request was sent successfully!",
+      });
+
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        issueDescription: "",
+      });
     } catch (err) {
-      console.error("Error:", err);
-      setStatus({ type: "error", message: "Error sending the request" });
+      console.error("Support form error:", err);
+      setStatus({
+        type: "error",
+        message: "Error sending the request. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -62,6 +88,7 @@ export default function BusinessSupport() {
           onChange={handleInputChange}
           disabled={loading}
           placeholder="Enter your name"
+          required
         />
 
         <label>Contact Email:</label>
@@ -72,9 +99,10 @@ export default function BusinessSupport() {
           onChange={handleInputChange}
           disabled={loading}
           placeholder="Enter your email"
+          required
         />
 
-        <label>Contact Phone:</label>  {/* phone field */}
+        <label>Contact Phone:</label>
         <input
           type="tel"
           name="phone"
@@ -82,6 +110,7 @@ export default function BusinessSupport() {
           onChange={handleInputChange}
           disabled={loading}
           placeholder="Enter your phone number"
+          required
         />
 
         <label>Issue Description:</label>
@@ -91,6 +120,7 @@ export default function BusinessSupport() {
           onChange={handleInputChange}
           disabled={loading}
           placeholder="Describe the issue"
+          required
         />
 
         <button type="submit" disabled={loading}>
