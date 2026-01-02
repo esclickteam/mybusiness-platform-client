@@ -1,30 +1,36 @@
 // ContactForm.jsx
 import React, { useState } from "react";
+import PhoneInput from "react-phone-input-2";
+import "./ContactForm.css";
+
+
 
 function ContactForm() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "", // full international phone
     message: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); // success | error
+  const [status, setStatus] = useState(null); // { type: "success" | "error", message }
 
   function handleChange(e) {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setStatus(null);
 
-    const { name, email, message } = formData;
+    const { name, email, phone, message } = formData;
 
-    if (!name || !email || !message) {
+    if (!name || !email || !phone || !message) {
       setStatus({
         type: "error",
         message: "Please fill in all fields",
@@ -43,6 +49,7 @@ function ContactForm() {
         body: JSON.stringify({
           name,
           email,
+          phone,
           issueDescription: message,
         }),
       });
@@ -55,18 +62,19 @@ function ContactForm() {
 
       setStatus({
         type: "success",
-        message: "Form submitted successfully!",
+        message: "Form submitted successfully! We’ll get back to you shortly.",
       });
 
       setFormData({
         name: "",
         email: "",
+        phone: "",
         message: "",
       });
     } catch (err) {
       setStatus({
         type: "error",
-        message: "An error occurred. Please try again.",
+        message: "An error occurred. Please try again later.",
       });
     } finally {
       setLoading(false);
@@ -74,7 +82,8 @@ function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="contact-form">
+      {/* Full Name */}
       <label htmlFor="name">Full Name</label>
       <input
         id="name"
@@ -86,6 +95,25 @@ function ContactForm() {
         required
       />
 
+      {/* Phone with real flags */}
+      <label>Phone</label>
+      <PhoneInput
+        country="us"                 // 🇺🇸 default
+        value={formData.phone}
+        onChange={(value) =>
+          setFormData((prev) => ({ ...prev, phone: value }))
+        }
+        inputClass="phone-input"
+        containerClass="phone-container"
+        buttonClass="phone-flag"
+        inputProps={{
+          required: true,
+          disabled: loading,
+        }}
+        enableSearch
+      />
+
+      {/* Email */}
       <label htmlFor="email">Email Address</label>
       <input
         id="email"
@@ -97,6 +125,7 @@ function ContactForm() {
         required
       />
 
+      {/* Message */}
       <label htmlFor="message">Message</label>
       <textarea
         id="message"
@@ -116,6 +145,7 @@ function ContactForm() {
           style={{
             marginTop: "1rem",
             color: status.type === "success" ? "green" : "red",
+            fontWeight: 600,
           }}
         >
           {status.message}
