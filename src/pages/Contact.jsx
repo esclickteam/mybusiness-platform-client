@@ -31,13 +31,19 @@ function Contact() {
     setLoading(true);
 
     try {
-       const res = await fetch("/api/support", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, phone, email, message }),
-      });
+  const res = await fetch("/api/support", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name,
+      phone,
+      email,
+      issueDescription: message,
+    }),
+  });
+
 
       const data = await res.json();
 
