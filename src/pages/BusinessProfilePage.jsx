@@ -5,10 +5,9 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import API from "../api";
+
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 import CreateAgreementForm from "../components/CreateAgreementForm";
-// ✅ Added the layout
-import BusinessDashboardLayout from "./business/BusinessDashboardLayout";
 
 export default function BusinessProfilePage({ resetSearchFilters }) {
   const { businessId } = useParams();
@@ -28,44 +27,67 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   const [createAgreementModalOpen, setCreateAgreementModalOpen] =
     useState(false);
 
+  /* =========================
+     🔹 Load public business
+     ========================= */
   useEffect(() => {
+    let isMounted = true;
+
     async function fetchBusiness() {
       try {
         const res = await API.get(`/business/${businessId}`);
-        setBusiness(res.data.business);
+        if (isMounted) setBusiness(res.data.business);
       } catch {
-        setError("Error loading business details");
+        if (isMounted) setError("Error loading business details");
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
+
     fetchBusiness();
+    return () => {
+      isMounted = false;
+    };
   }, [businessId]);
 
+  /* =========================
+     🔹 Load my business (optional)
+     ========================= */
   useEffect(() => {
     async function fetchMyBusiness() {
       try {
         const res = await API.get("/business/my");
-        setCurrentUserBusinessId(res.data.business._id);
-        setCurrentUserBusinessName(res.data.business.businessName || "");
+        setCurrentUserBusinessId(res.data.business?._id || null);
+        setCurrentUserBusinessName(
+          res.data.business?.businessName || ""
+        );
       } catch {
+        // ⬅️ public user – totally OK
         setCurrentUserBusinessId(null);
         setCurrentUserBusinessName("");
       }
     }
+
     fetchMyBusiness();
   }, []);
 
+  /* =========================
+     UI states
+     ========================= */
   if (loading)
     return (
-      <p style={{ textAlign: "center", marginTop: 50 }}>Loading profile…</p>
+      <p style={{ textAlign: "center", marginTop: 50 }}>
+        Loading profile…
+      </p>
     );
+
   if (error)
     return (
       <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>
         {error}
       </p>
     );
+
   if (!business)
     return (
       <p style={{ textAlign: "center", marginTop: 50 }}>
@@ -73,25 +95,19 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
       </p>
     );
 
+  const isLoggedIn = !!currentUserBusinessId;
   const isOwnerViewingOther =
-    currentUserBusinessId && currentUserBusinessId !== businessId;
+    isLoggedIn && currentUserBusinessId !== business._id;
 
+  /* =========================
+     Actions
+     ========================= */
   const openProposalModal = () => {
     if (!currentUserBusinessName) {
-      alert("The sender business name hasn’t loaded yet. Please wait and try again.");
+      alert("Please wait until your business loads.");
       return;
     }
     setIsProposalModalOpen(true);
-  };
-  const closeProposalModal = () => setIsProposalModalOpen(false);
-
-  const openChatModal = () => {
-    setChatModalOpen(true);
-    setChatMessage("");
-  };
-  const closeChatModal = () => {
-    setChatModalOpen(false);
-    setChatMessage("");
   };
 
   const handleSendBusinessMessage = async () => {
@@ -103,7 +119,8 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
         text: chatMessage.trim(),
       });
       alert("Message sent successfully!");
-      closeChatModal();
+      setChatModalOpen(false);
+      setChatMessage("");
     } catch {
       alert("Error sending the message");
     } finally {
@@ -111,373 +128,143 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     }
   };
 
-  const handleCreateAgreement = () => setCreateAgreementModalOpen(true);
-  const closeCreateAgreementModal = () => setCreateAgreementModalOpen(false);
-
+  /* =========================
+     Render
+     ========================= */
   return (
-    // ✅ Wrapped content with the business management layout
-    <BusinessDashboardLayout>
+    <div
+      style={{
+        maxWidth: 700,
+        margin: "40px auto",
+        padding: 30,
+        direction: "rtl",
+        textAlign: "right",
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        color: "#4b367c",
+        background: "linear-gradient(180deg, #ede8fb 0%, #d9d1ff 100%)",
+        borderRadius: 20,
+        boxShadow: "0 4px 40px rgba(131, 90, 184, 0.2)",
+      }}
+    >
+      {/* Back (only internal users) */}
+      {isOwnerViewingOther && (
+        <button
+          onClick={() => {
+            resetSearchFilters?.();
+            window.location.href = "/business/collaborations";
+          }}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#6c3483",
+            cursor: "pointer",
+            fontSize: 16,
+            marginBottom: 24,
+            fontWeight: 600,
+            textDecoration: "underline",
+          }}
+        >
+          ← Back to Collaborations
+        </button>
+      )}
+
+      {/* Header */}
       <div
         style={{
-          maxWidth: 700,
-          margin: "40px auto",
-          padding: 30,
-          direction: "rtl",
-          textAlign: "right",
-          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-          color: "#4b367c",
-          background: "linear-gradient(180deg, #ede8fb 0%, #d9d1ff 100%)",
-          borderRadius: 20,
-          boxShadow: "0 4px 40px rgba(131, 90, 184, 0.2)",
+          display: "flex",
+          justifyContent: "space-between",
+          backgroundColor: "#fff",
+          padding: 20,
+          borderRadius: 16,
+          marginBottom: 24,
         }}
       >
-        {isOwnerViewingOther && (
-          <button
-            onClick={() => {
-              resetSearchFilters?.();
-              window.location.href = "/business/collaborations";
-            }}
-            style={{
-              backgroundColor: "transparent",
-              border: "none",
-              color: "#6c3483",
-              cursor: "pointer",
-              fontSize: 16,
-              marginBottom: 24,
-              fontWeight: "600",
-              padding: 0,
-              textDecoration: "underline",
-            }}
-            aria-label="Back to collaborations"
-          >
-            ← Back to Collaborations
-          </button>
-        )}
+        <div>
+          <h1 style={{ margin: 0 }}>{business.businessName}</h1>
+          <p style={{ margin: 0 }}>{business.category}</p>
+        </div>
+        <img
+          src={business.logo || "/default-logo.png"}
+          alt="logo"
+          style={{ width: 80, height: 80, borderRadius: "50%" }}
+        />
+      </div>
 
-        {/* Header & Logo */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            backgroundColor: "#fff",
-            padding: 20,
-            borderRadius: 16,
-            boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
-            marginBottom: 24,
-          }}
-        >
-          <div>
-            <h1
-              style={{
-                fontSize: 28,
-                margin: 0,
-                color: "#6c3483",
-                fontWeight: "700",
-                textShadow: "1px 1px 5px rgba(108, 52, 131, 0.5)",
-              }}
-              title={business.businessName}
-            >
-              {business.businessName}
-            </h1>
-            <p
-              style={{
-                fontSize: 16,
-                margin: 0,
-                color: "#9b59b6",
-                fontWeight: "500",
-              }}
-            >
-              {business.category}
-            </p>
-          </div>
+      {/* Info blocks */}
+      <Block title="📍 אזור פעילות" content={business.area} />
+      <Block title="📝 על העסק" content={business.description} />
+      <Block
+        title="📞 יצירת קשר"
+        content={
+          <>
+            {business.contact && <p>{business.contact}</p>}
+            {business.phone && <p>{business.phone}</p>}
+            {business.email && <p>{business.email}</p>}
+          </>
+        }
+      />
 
-          <img
-            src={business.logo || "/default-logo.png"}
-            alt={`${business.businessName} logo`}
-            style={{
-              width: 80,
-              height: 80,
-              objectFit: "cover",
-              borderRadius: "50%",
-              boxShadow: "0 4px 12px rgba(155,89,182,0.4)",
+      {/* Actions – only logged in */}
+      {isLoggedIn && (
+        <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+          <button onClick={openProposalModal}>Send Proposal</button>
+          <button onClick={() => setChatModalOpen(true)}>Chat</button>
+        </div>
+      )}
+
+      {/* Proposal Modal */}
+      <Modal open={isProposalModalOpen} onClose={() => setIsProposalModalOpen(false)}>
+        <Box sx={{ p: 4, maxWidth: 600, margin: "10% auto", bgcolor: "#fff" }}>
+          <ProposalForm
+            fromBusinessId={currentUserBusinessId}
+            fromBusinessName={currentUserBusinessName}
+            toBusiness={business}
+            onSent={(id) => {
+              setCurrentProposalId(id);
+              setIsProposalModalOpen(false);
             }}
           />
-        </div>
+        </Box>
+      </Modal>
 
-        {/* Content blocks */}
-        {[
-          {
-            title: "📍 Service Area",
-            content: business.area || "Not specified",
-          },
-          {
-            title: "📝 About the Business",
-            content: business.description || "No description available",
-          },
-          {
-            title: "🤝 Desired Collaborations",
-            content: (
-              <>
-                {business.collabPref && (
-                  <p>
-                    <b>General Preference:</b> {business.collabPref}
-                  </p>
-                )}
-                {business.lookingFor?.length > 0 && (
-                  <>
-                    <p>
-                      <b>Looking to collaborate in fields:</b>
-                    </p>
-                    <ul style={{ paddingInlineStart: 20 }}>
-                      {business.lookingFor.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-                {business.complementaryCategories?.length > 0 && (
-                  <>
-                    <p>
-                      <b>Complementary Categories:</b>
-                    </p>
-                    <ul style={{ paddingInlineStart: 20 }}>
-                      {business.complementaryCategories.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </>
-            ),
-          },
-          {
-            title: "📞 Contact Details",
-            content: (
-              <>
-                <p>
-                  <b>Contact Person:</b> {business.contact}
-                </p>
-                {business.phone && (
-                  <p>
-                    <b>Phone:</b> {business.phone}
-                  </p>
-                )}
-                {business.email && (
-                  <p>
-                    <b>Email:</b> {business.email}
-                  </p>
-                )}
-              </>
-            ),
-          },
-        ].map(({ title, content }, i) => (
-          <div
-            key={i}
-            style={{
-              backgroundColor: "#f3eafd",
-              borderRadius: 16,
-              padding: 20,
-              marginBottom: 16,
-              boxShadow: "0 4px 10px rgba(107, 72, 163, 0.1)",
-            }}
+      {/* Chat Modal */}
+      <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
+        <Box sx={{ p: 4, maxWidth: 420, margin: "10% auto", bgcolor: "#fff" }}>
+          <TextField
+            multiline
+            minRows={3}
+            fullWidth
+            value={chatMessage}
+            onChange={(e) => setChatMessage(e.target.value)}
+          />
+          <Button
+            onClick={handleSendBusinessMessage}
+            disabled={!chatMessage.trim() || sending}
           >
-            <h3
-              style={{
-                margin: "0 0 8px 0",
-                color: "#6c3483",
-                fontWeight: "700",
-              }}
-            >
-              {title}
-            </h3>
-            <div style={{ color: "#4b367c" }}>{content}</div>
-          </div>
-        ))}
+            Send
+          </Button>
+        </Box>
+      </Modal>
+    </div>
+  );
+}
 
-        {/* Action buttons */}
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            justifyContent: "center",
-            marginTop: 24,
-          }}
-        >
-          <button
-            onClick={handleCreateAgreement}
-            disabled={!currentProposalId}
-            title={!currentProposalId ? "Please send a proposal first" : ""}
-            style={{
-              backgroundColor: !currentProposalId ? "#ccc" : "transparent",
-              border: "1.5px solid #8e44ad",
-              borderRadius: 20,
-              padding: "8px 20px",
-              fontWeight: "600",
-              color: !currentProposalId ? "#666" : "#8e44ad",
-              cursor: !currentProposalId ? "not-allowed" : "pointer",
-              boxShadow: !currentProposalId
-                ? "none"
-                : "0 2px 6px rgba(142,68,173,0.25)",
-              transition: "background-color 0.3s ease, color 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              if (currentProposalId) {
-                e.currentTarget.style.backgroundColor = "#8e44ad";
-                e.currentTarget.style.color = "white";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (currentProposalId) {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "#8e44ad";
-              }
-            }}
-          >
-            Create New Agreement
-          </button>
-
-          <button
-            onClick={openProposalModal}
-            style={{
-              backgroundColor: "#8e44ad",
-              color: "white",
-              border: "none",
-              padding: "8px 20px",
-              borderRadius: 20,
-              cursor: "pointer",
-              fontWeight: "600",
-              boxShadow: "0 2px 8px rgba(142,68,173,0.4)",
-              transition: "background-color 0.3s ease",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#732d91")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#8e44ad")
-            }
-          >
-            Send Proposal
-          </button>
-
-          <button
-            onClick={openChatModal}
-            style={{
-              backgroundColor: "transparent",
-              border: "1.5px solid #8e44ad",
-              color: "#8e44ad",
-              padding: "8px 20px",
-              borderRadius: 20,
-              cursor: "pointer",
-              fontWeight: "600",
-              boxShadow: "0 2px 6px rgba(142,68,173,0.25)",
-              transition: "background-color 0.3s ease, color 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#8e44ad";
-              e.currentTarget.style.color = "white";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#8e44ad";
-            }}
-          >
-            Chat
-          </button>
-        </div>
-
-        {/* Proposal Modal */}
-        <Modal open={isProposalModalOpen} onClose={closeProposalModal}>
-          <Box
-            sx={{
-              backgroundColor: "#fff",
-              p: 4,
-              borderRadius: 2,
-              maxWidth: 600,
-              margin: "10% auto",
-              maxHeight: "80vh",
-              overflowY: "auto",
-            }}
-          >
-            <ProposalForm
-              fromBusinessId={currentUserBusinessId}
-              fromBusinessName={currentUserBusinessName}
-              toBusiness={business}
-              onClose={closeProposalModal}
-              onSent={(proposalId) => {
-                setCurrentProposalId(proposalId);
-                closeProposalModal();
-              }}
-            />
-          </Box>
-        </Modal>
-
-        {/* Chat Modal */}
-        <Modal open={chatModalOpen} onClose={closeChatModal}>
-          <Box
-            sx={{
-              backgroundColor: "#fff",
-              p: 4,
-              borderRadius: 2,
-              maxWidth: 420,
-              margin: "10% auto",
-              maxHeight: "80vh",
-              overflowY: "auto",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <h3>Send a message to {business.businessName}</h3>
-            <TextField
-              autoFocus
-              multiline
-              minRows={3}
-              fullWidth
-              value={chatMessage}
-              onChange={(e) => setChatMessage(e.target.value)}
-              placeholder="Type your first message to the business…"
-              sx={{ mb: 2 }}
-            />
-            <Button
-              variant="contained"
-              onClick={handleSendBusinessMessage}
-              disabled={!chatMessage.trim() || sending}
-            >
-              Send
-            </Button>
-          </Box>
-        </Modal>
-
-        {/* Create Agreement Modal */}
-        <Modal
-          open={createAgreementModalOpen}
-          onClose={closeCreateAgreementModal}
-        >
-          <Box
-            sx={{
-              backgroundColor: "#fff",
-              p: 4,
-              borderRadius: 2,
-              maxWidth: 600,
-              margin: "10% auto",
-              maxHeight: "80vh",
-              overflowY: "auto",
-            }}
-          >
-            <CreateAgreementForm
-              fromBusinessId={currentUserBusinessId}
-              fromBusinessName={currentUserBusinessName}
-              partnerBusiness={business}
-              proposalId={currentProposalId}
-              onCreated={() => {
-                alert("Agreement created successfully!");
-                closeCreateAgreementModal();
-              }}
-              onClose={closeCreateAgreementModal}
-            />
-          </Box>
-        </Modal>
-      </div>
-    </BusinessDashboardLayout>
+/* =========================
+   Small helper component
+   ========================= */
+function Block({ title, content }) {
+  if (!content) return null;
+  return (
+    <div
+      style={{
+        background: "#f3eafd",
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 16,
+      }}
+    >
+      <h3>{title}</h3>
+      <div>{content}</div>
+    </div>
   );
 }

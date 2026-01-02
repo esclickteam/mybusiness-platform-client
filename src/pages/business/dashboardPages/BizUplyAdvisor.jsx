@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import { io } from "socket.io-client";
 
 import BusinessAdvisorTab from "./BizUplyTabs/BusinessAdvisorTab";
 import MarketingAdvisorTab from "./BizUplyTabs/MarketingAdvisorTab";
 import AiPartnerTab from "./BizUplyTabs/AiPartnerTab";
-import AiRecommendations from "./BizUplyTabs/AiRecommendations"; 
-import "./BizUplyAdvisor.css";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
+import "./BizUplyAdvisor.css";
 
 const BizUplyAdvisor = () => {
   const [activeTab, setActiveTab] = useState("business");
-  const [hasBusinessNotification, setHasBusinessNotification] = useState(false);
   const [businessDetails, setBusinessDetails] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+
   const { user, loading } = useAuth();
   const token = localStorage.getItem("token");
 
+  /* =========================
+     FETCH BUSINESS + APPOINTMENTS
+  ========================= */
   useEffect(() => {
     if (!user?.businessId || !token) {
       setBusinessDetails(null);
@@ -27,75 +27,46 @@ const BizUplyAdvisor = () => {
       return;
     }
 
-    const socket = io(SOCKET_URL, {
-      auth: { token, businessId: user.businessId },
-      transports: ["websocket"],
-    });
-
-    socket.on("newRecommendation", () => {
-      setHasBusinessNotification(true);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [user?.businessId, token]);
-
-  useEffect(() => {
-    if (!user?.businessId || !token) {
-      setBusinessDetails(null);
-      setAppointments([]);
-      setSelectedAppointmentId(null);
-      return;
-    }
-
+    // Fetch business details
     fetch(`/api/business/${user.businessId}`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch business details");
         return res.json();
       })
-      .then(data => {
+      .then((data) => {
         setBusinessDetails(data);
       })
-      .catch(err => {
-        console.error(err);
+      .catch(() => {
         setBusinessDetails(null);
       });
 
+    // Fetch appointments
     fetch(`/api/appointments?businessId=${user.businessId}`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch appointments");
         return res.json();
       })
-      .then(data => {
+      .then((data) => {
         setAppointments(data);
-        if (data.length > 0) setSelectedAppointmentId(data[0]._id);
+        if (data.length > 0) {
+          setSelectedAppointmentId(data[0]._id);
+        } else {
+          setSelectedAppointmentId(null);
+        }
       })
-      .catch(err => {
-        console.error(err);
+      .catch(() => {
         setAppointments([]);
         setSelectedAppointmentId(null);
       });
   }, [user?.businessId, token]);
 
-  useEffect(() => {
-    if (activeTab === "business") {
-      setHasBusinessNotification(false);
-    }
-  }, [activeTab]);
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
-  const handleAppointmentChange = (e) => {
-    setSelectedAppointmentId(e.target.value);
-  };
-
+  /* =========================
+     RENDER TAB CONTENT
+  ========================= */
   const renderTab = () => {
     switch (activeTab) {
       case "business":
@@ -106,9 +77,12 @@ const BizUplyAdvisor = () => {
             businessDetails={businessDetails}
             appointments={appointments}
             selectedAppointmentId={selectedAppointmentId}
-            onAppointmentChange={handleAppointmentChange}
+            onAppointmentChange={(e) =>
+              setSelectedAppointmentId(e.target.value)
+            }
           />
         );
+
       case "marketing":
         return (
           <MarketingAdvisorTab
@@ -117,9 +91,12 @@ const BizUplyAdvisor = () => {
             businessDetails={businessDetails}
             appointments={appointments}
             selectedAppointmentId={selectedAppointmentId}
-            onAppointmentChange={handleAppointmentChange}
+            onAppointmentChange={(e) =>
+              setSelectedAppointmentId(e.target.value)
+            }
           />
         );
+
       case "partner":
         return (
           <AiPartnerTab
@@ -127,8 +104,7 @@ const BizUplyAdvisor = () => {
             token={token}
           />
         );
-      case "recommendations":
-        return <AiRecommendations businessId={user?.businessId} token={token} />;
+
       default:
         return null;
     }
@@ -138,6 +114,9 @@ const BizUplyAdvisor = () => {
     return <div>Loading...</div>;
   }
 
+  /* =========================
+     UI
+  ========================= */
   return (
     <div className="BizUply-container">
       <h1 className="BizUply-header">🧠 BizUply Advisor</h1>
@@ -145,28 +124,23 @@ const BizUplyAdvisor = () => {
       <div className="tab-buttons">
         <button
           className={activeTab === "business" ? "active" : ""}
-          onClick={() => handleTabChange("business")}
+          onClick={() => setActiveTab("business")}
         >
           Business Advisor
-          {hasBusinessNotification && <span className="notification-dot" />}
         </button>
+
         <button
           className={activeTab === "marketing" ? "active" : ""}
-          onClick={() => handleTabChange("marketing")}
+          onClick={() => setActiveTab("marketing")}
         >
           Marketing Advisor
         </button>
+
         <button
           className={activeTab === "partner" ? "active" : ""}
-          onClick={() => handleTabChange("partner")}
+          onClick={() => setActiveTab("partner")}
         >
           Personal AI Partner
-        </button>
-        <button
-          className={activeTab === "recommendations" ? "active" : ""}
-          onClick={() => handleTabChange("recommendations")}
-        >
-          AI Recommendations
         </button>
       </div>
 

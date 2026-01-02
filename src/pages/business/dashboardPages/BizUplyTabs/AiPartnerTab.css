@@ -489,3 +489,9 @@
     min-width: 100%;
   }
 }
+
+.ai-partner-scroll {
+  max-height: calc(100vh - 220px); /* מותאם לדשבורד */
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}

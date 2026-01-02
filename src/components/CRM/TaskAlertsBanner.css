@@ -1,0 +1,42 @@
+/* components/CRM/TaskAlertsBanner.css */
+
+.task-alerts-banner {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alert-block {
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.alert-overdue {
+  background: #fff1f1;
+  border: 1px solid #f5b5b5;
+  color: #8a1c1c;
+}
+
+.alert-today {
+  background: #fff8e1;
+  border: 1px solid #ffd54f;
+  color: #7a5200;
+}
+
+.alert-sub {
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.alert-block ul {
+  margin-top: 8px;
+  padding-left: 18px;
+}
+
+.alert-block li {
+  margin-bottom: 4px;
+  font-size: 13.5px;
+}

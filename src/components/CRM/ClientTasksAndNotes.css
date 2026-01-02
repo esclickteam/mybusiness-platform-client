@@ -6,7 +6,7 @@
   margin-top: 30px;
 }
 
-/* כרטיס כללי */
+/* ====== כרטיס כללי ====== */
 .notes-section,
 .tasks-section {
   background: #ffffff;
@@ -22,7 +22,7 @@
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
 }
 
-/* כותרות */
+/* ====== כותרות ====== */
 .notes-section h3,
 .tasks-section h3 {
   margin-bottom: 16px;
@@ -34,7 +34,7 @@
   gap: 8px;
 }
 
-/* רשימות */
+/* ====== רשימות ====== */
 ul {
   list-style: none;
   padding: 0;
@@ -54,7 +54,7 @@ li:last-child {
   border-bottom: none;
 }
 
-/* כותרת המשימה ושורה ראשית */
+/* ====== כותרת משימה ====== */
 li .task-header {
   display: flex;
   flex-wrap: wrap;
@@ -64,7 +64,7 @@ li .task-header {
   color: #333;
 }
 
-/* באדג'ים צבעוניים */
+/* ====== באדג'ים ====== */
 .badge {
   display: inline-block;
   padding: 4px 10px;
@@ -93,7 +93,7 @@ li .task-header {
   background: #2196f3;
 }
 
-/* תיאור המשימה */
+/* ====== תיאור משימה ====== */
 li .task-description {
   color: #555;
   font-size: 0.9rem;
@@ -101,36 +101,21 @@ li .task-description {
   padding-top: 4px;
 }
 
-/* מטא דאטה (תאריך/שעה) */
+/* ====== מטא ====== */
 .task-meta {
   font-size: 0.85rem;
   color: #777;
 }
 
-/* פעולות משימה (עריכה/מחיקה) */
-.task-actions {
+/* ====== פעולות ====== */
+.task-actions,
+.note-actions {
   display: flex;
   gap: 8px;
   margin-top: 6px;
 }
 
-.task-actions .btn-edit {
-  background: #4caf50;
-  color: #fff;
-}
-.task-actions .btn-edit:hover {
-  background: #3e8e41;
-}
-
-.task-actions .btn-delete {
-  background: #f44336;
-  color: #fff;
-}
-.task-actions .btn-delete:hover {
-  background: #d32f2f;
-}
-
-/* טפסים */
+/* ====== טפסים ====== */
 textarea,
 input,
 select {
@@ -154,16 +139,7 @@ select:focus {
   background: #fff;
 }
 
-/* תוויות */
-label {
-  display: block;
-  margin-top: 14px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #444;
-}
-
-/* בלוק תאריך ושעה */
+/* ====== בלוק תאריך ושעה ====== */
 .task-datetime {
   background: #f9f9ff;
   border: 1px solid #e6e6fa;
@@ -172,16 +148,17 @@ label {
   margin-top: 12px;
 }
 
-/* כפתורים כלליים */
+/* ====== כפתור ראשי ====== */
 .btn-primary {
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: #fff;
 }
+
 .btn-primary:hover {
   background: linear-gradient(135deg, #5a0fb3, #1f5edb);
 }
 
-/* כל הכפתורים */
+/* ====== כל הכפתורים ====== */
 button {
   display: inline-flex;
   align-items: center;
@@ -196,14 +173,16 @@ button {
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
 }
+
 button:hover {
   transform: translateY(-1px);
 }
+
 button:active {
   transform: scale(0.97);
 }
 
-/* טקסט ריק */
+/* ====== טקסט ריק ====== */
 .empty-text {
   color: #888;
   font-size: 0.9rem;
@@ -211,17 +190,67 @@ button:active {
   margin-bottom: 12px;
 }
 
-/* הודעות מערכת (פידבק) */
-.feedback-msg {
-  padding: 12px;
-  margin-bottom: 18px;
-  border-radius: 8px;
-  font-size: 0.9rem;
+/* =================================================
+   🔔 TOAST – קומפוננטה חיצונית
+================================================= */
+.toast {
+  position: fixed;
+  top: 90px;
+  right: 24px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  animation: toastFade 0.25s ease-out;
+}
+
+/* סוגי טוסט */
+.toast.success {
+  background: #e6f7ec;
+  border: 1px solid #9ddbb3;
+  color: #17663a;
+}
+
+.toast.error {
+  background: #fdecea;
+  border: 1px solid #f5b5b0;
+  color: #9b1c1c;
+}
+
+.toast.warning {
+  background: #fff7e6;
+  border: 1px solid #ffd591;
+  color: #8a5200;
+}
+
+/* אנימציה */
+@keyframes toastFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ====== STATUS + PRIORITY בשתי שורות ====== */
+.task-meta-row {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.task-meta-label {
+  font-weight: 700;
+  color: #555;
+  margin-right: 6px;
+}
+
+.task-meta-value {
   font-weight: 600;
   color: #333;
-  background: #e8f0fe;
-  border: 1px solid #c6dafc;
-}
-.feedback-msg:empty {
-  display: none;
 }

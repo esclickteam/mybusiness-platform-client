@@ -1,0 +1,100 @@
+{
+  "entry": {
+    "text": "Hi! BizUply is an all-in-one business management system combining CRM, calendar, communication, and business collaborations — all in one place.\n\nHow can I help you today?",
+    "buttons": [
+      { "label": "How BizUply helps my business", "next": "how_it_helps" },
+      { "label": "What’s included", "next": "features" },
+      { "label": "Calendar & CRM", "next": "calendar_crm" },
+      { "label": "Pricing & payments", "route": "/plans" },
+      { "label": "View demo", "route": "/register" },
+      { "label": "Start free trial", "route": "/register" }
+    ]
+  },
+
+  "how_it_helps": {
+    "text": "BizUply helps business owners replace scattered tools with one clear system.\n\nManage clients, time, communication, and collaborations from a single dashboard.",
+    "buttons": [
+      { "label": "Time & calendar management", "next": "time_calendar" },
+      { "label": "Business collaborations", "next": "collaborations" },
+      { "label": "See pricing", "route": "/plans" },
+      { "label": "Start free trial", "route": "/register" }
+    ]
+  },
+
+  "time_calendar": {
+    "text": "In BizUply, the calendar is part of the CRM.\n\nIt’s used to manage work time, tasks, internal meetings, collaborations, and follow-ups — not just client appointments.",
+    "buttons": [
+      { "label": "Real-life use cases", "next": "calendar_examples" },
+      { "label": "View demo", "route": "/register" },
+      { "label": "Start free trial", "route": "/register" }
+    ]
+  },
+
+  "calendar_examples": {
+    "text": "Business owners use the CRM calendar to:\n• Plan daily work\n• Track client activity\n• Schedule internal meetings\n• Manage collaborations\n• Avoid missed tasks",
+    "buttons": [
+      { "label": "See how it works", "route": "/register" },
+      { "label": "Start free trial", "route": "/register" }
+    ]
+  },
+
+  "collaborations": {
+    "text": "BizUply includes a built-in business collaboration network.\n\nConnect with complementary businesses, manage referrals, and create structured partnerships that generate real revenue.",
+    "buttons": [
+      { "label": "Who is this for?", "next": "collaborations_for" },
+      { "label": "View demo", "route": "/register" },
+      { "label": "Start free trial", "route": "/register" }
+    ]
+  },
+
+  "collaborations_for": {
+    "text": "Business collaborations are ideal for service providers, freelancers, consultants, and local businesses that want to grow through partnerships — not ads.",
+    "buttons": [
+      { "label": "View pricing", "route": "/plans" },
+      { "label": "Start free trial", "route": "/register" }
+    ]
+  },
+
+  "features": {
+    "text": "BizUply includes everything your business needs:\n\n• Professional business page\n• Full CRM for clients\n• Smart calendar inside the CRM\n• Messaging & chat\n• Ratings & reviews\n• Business collaborations\n• Insights & analytics\n\nAll included in one plan.",
+    "buttons": [
+      { "label": "View demo", "route": "/register" },
+      { "label": "See pricing", "route": "/plans" },
+      { "label": "Start free trial", "route": "/register" }
+    ]
+  },
+
+  "calendar_crm": {
+    "text": "The calendar in BizUply is not a separate tool.\n\nIt’s fully integrated into the CRM and used to manage time, tasks, meetings, collaborations, and client follow-ups — all in one place.",
+    "buttons": [
+      { "label": "Real-life examples", "next": "calendar_examples" },
+      { "label": "View demo", "route": "/register" },
+      { "label": "Start free trial", "route": "/register" }
+    ]
+  },
+
+  "pricing": {
+    "text": "BizUply offers one professional plan for all businesses.\n\nSame features. Same tools. Fair pricing.\n\nYou can choose how to pay:\n• Monthly subscription\n• Yearly subscription (discounted)",
+    "buttons": [
+      { "label": "Payment details", "next": "payment_details" },
+      { "label": "Start free trial", "route": "/register" },
+      { "label": "Contact us", "route": "/contact" }
+    ]
+  },
+
+  "payment_details": {
+    "text": "Free Trial:\n• 14 days\n• No credit card required\n\nMonthly Plan:\n• Can be canceled anytime\n• Cancellation must be done before the next billing date\n\nYearly Plan:\n• Discounted annual subscription\n• Runs for a full year\n• Cannot be canceled or shortened",
+    "buttons": [
+      { "label": "Start free trial", "route": "/register" },
+      { "label": "View pricing", "route": "/plans" }
+    ]
+  },
+
+  "demo": {
+    "text": "The demo lets you explore the dashboard, CRM, calendar, and messaging system.\n\nStart a 14-day free trial with full access — no credit card required.",
+    "buttons": [
+      { "label": "Start 14-day free trial", "route": "/register" },
+      { "label": "View pricing", "route": "/plans" }
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+/* =========================
+   PreLoginBot – Base
+========================= */
+.plb {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 9999;
+
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+
+  color: #0f172a;
+}
+
+/* נטרול ירושה בעייתית */
+.plb,
+.plb * {
+  opacity: 1 !important;
+  filter: none !important;
+  pointer-events: auto !important;
+}
+
+/* =========================
+   Launcher Button
+========================= */
+.plb-launch {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #6c4eff;
+  color: #ffffff;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.plb-launch:hover {
+  background: #5a3ee6;
+}
+
+/* =========================
+   Bot Window
+========================= */
+.plb-window {
+  width: 320px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+/* =========================
+   Header
+========================= */
+.plb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #6c4eff;
+  color: #ffffff;
+}
+
+.plb-header strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.plb-header button {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.plb-header button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* =========================
+   Body
+========================= */
+.plb-body {
+  padding: 16px;
+}
+
+.plb-body p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* =========================
+   Actions / Buttons
+========================= */
+.plb-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+.plb-actions button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: none;
+  background: #6c4eff;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.05s ease;
+}
+
+.plb-actions button:hover {
+  background: #5a3ee6;
+}
+
+.plb-actions button:active {
+  transform: translateY(1px);
+}
+
+/* =========================
+   Mobile Adjustments
+========================= */
+@media (max-width: 480px) {
+  .plb {
+    left: 12px;
+    bottom: 12px;
+  }
+
+  .plb-window {
+    width: calc(100vw - 24px);
+  }
+}

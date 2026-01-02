@@ -46,6 +46,8 @@ const AiPartnerTab = ({
   const [historyError, setHistoryError] = useState(null);
   const [commandText, setCommandText] = useState("");
   const [commandResponse, setCommandResponse] = useState(null);
+  const chatScrollRef = useRef(null);
+
 
   // Credits and purchase management
   const [remainingQuestions, setRemainingQuestions] = useState(null);
@@ -60,7 +62,6 @@ const AiPartnerTab = ({
     { id: "ai_500", label: "AI package with 500 questions", price: 1, type: "ai-package" },
   ];
 
-  const bottomRef = useRef(null);
   const notificationSound = useRef(null);
 
   const filterText = useCallback(
@@ -375,9 +376,12 @@ const AiPartnerTab = ({
     [token]
   );
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat, suggestions]);
+ useEffect(() => {
+  if (!chatScrollRef.current) return;
+
+  chatScrollRef.current.scrollTop =
+    chatScrollRef.current.scrollHeight;
+}, [chat, suggestions]);
 
   useEffect(() => {
     if (activeSuggestion) {
@@ -429,8 +433,11 @@ const AiPartnerTab = ({
   };
 
   return (
-    <div className="ai-partner-container">
-      <h2>🤖 AI Business Partner</h2>
+  <div
+    className="ai-partner-container"
+    ref={chatScrollRef}
+  >
+    <h2>🤖 AI Business Partner</h2>
 
       <div style={{ margin: "1rem 0" }}>
         <button className="toggle-suggestions-btn" onClick={() => setShowHistory((prev) => !prev)}>
@@ -640,7 +647,7 @@ const AiPartnerTab = ({
       )}
 
       <audio ref={notificationSound} src="/notification.mp3" preload="auto" />
-      <div ref={bottomRef} />
+  
     </div>
   );
 };

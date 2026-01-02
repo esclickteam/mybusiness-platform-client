@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Bar } from "react-chartjs-2";
 import API from '../api';
 import DashboardCards from "./DashboardCards";
-import "./dashboard.css";
 
 function ChartComponent({ businessId }) {
   const [stats, setStats] = useState(null);

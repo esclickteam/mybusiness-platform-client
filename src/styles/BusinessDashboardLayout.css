@@ -1,457 +1,211 @@
 /* ===========================
-   Bizuply – SaaS PRO Dashboard (LTR)
+   🟣 Dashboard Layout Sidebar – PRO SaaS
    =========================== */
-
-.ltr-wrapper {
-  direction: ltr;
-  min-height: 100vh;
+.dashboard-layout-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
+  color: #2a165f;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  box-shadow: 4px 0 24px rgba(88, 28, 135, 0.15);
+  z-index: 9000;
+  overflow-y: auto;
 }
 
 /* ===========================
-   🔹 פריסה ראשית
+   🔹 Logo (X2)
    =========================== */
-.business-dashboard-layout {
+.dashboard-layout-sidebar .sidebar-logo {
+  height: 110px;
   display: flex;
-  align-items: stretch;
-  flex: 1;
-  width: 100%;
-  background: #f6f7fb;
-  margin: 0;
-  position: relative;
-  transition: filter 0.3s ease;
-}
-
-.sidebar-open .business-dashboard-layout {
-  filter: none;
-  pointer-events: auto;
-  user-select: auto;
-}
-
-/* ===========================
-   🟣 Sidebar – UX Premium
-   =========================== */
-.sidebar {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 250px !important;
-  height: 100%;
-  background: linear-gradient(180deg, #ead7ff 0%, #d1b3ff 100%) !important;
-  color: #0f172a !important;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  box-shadow: 4px 0 30px rgba(124, 77, 255, 0.25);
-  border-radius: 0 20px 20px 0 !important;
-  z-index: 9002 !important;
-  overflow-y: auto !important;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-}
-
-/* ===========================
-   🔹 לוגו חלק מהרקע
-   =========================== */
-.sidebar-logo {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  height: 140px;
-  background: none !important;          /* ✅ ביטול רקע נפרד */
-  box-shadow: none !important;          /* ✅ אין גבול תחתון או הבדל צבע */
-  padding: 1rem 0;
-  margin: 0;
+  justify-content: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(88, 28, 135, 0.15);
+  position: relative;
+  overflow: visible;
 }
 
-.sidebar-logo-img {
-  width: 100%;
-  max-width: 260px;
-  height: auto;
+.dashboard-layout-sidebar .sidebar-logo-img {
+  max-height: 72px;
+  width: auto;
   object-fit: contain;
-  transition: transform 0.25s ease-in-out;
-}
-.sidebar-logo-img:hover {
-  transform: scale(1.05);
+  transform: scale(2);
+  transform-origin: center;
 }
 
 /* ===========================
-   🔹 כותרת
+   🔹 Navigation
    =========================== */
-.sidebar h2 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 1rem 0 0.8rem;
-  text-align: center;
-  color: #3a2b5a;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  opacity: 0.85;
-}
-
-/* ===========================
-   🔹 ניווט + באדג'
-   =========================== */
-.sidebar nav {
+.dashboard-layout-sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  padding: 0 1.2rem;
-  flex-grow: 1;
 }
 
-.sidebar a {
+.dashboard-layout-sidebar nav a {
   position: relative;
+  height: 48px;
+  padding: 0 18px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.9rem 1.1rem;
-  border-radius: 14px;
-  color: #1e1b2e;
+  justify-content: space-between;
+  font-size: 14px;
   font-weight: 500;
+  color: #2a165f;
   text-decoration: none;
-  transition: all 0.25s ease;
+  border-bottom: 1px solid rgba(88, 28, 135, 0.12);
+  transition: background 0.2s ease;
 }
 
-.sidebar a:hover {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.65), rgba(250, 240, 255, 0.7));
-  box-shadow: 0 4px 10px rgba(106, 17, 203, 0.1);
-  transform: translateX(6px);
+.dashboard-layout-sidebar nav a:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
-.sidebar a.active {
-  background: linear-gradient(90deg, #d7c0ff 0%, #c4a8ff 100%);
-  color: #0f172a !important;
+.dashboard-layout-sidebar nav a.active {
+  background: rgba(255, 255, 255, 0.65);
+  font-weight: 600;
+  color: #4c1fd8;
+}
+
+.dashboard-layout-sidebar nav a.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #6a11cb, #8b5cf6);
+}
+
+/* ===========================
+   🔴 Badge
+   =========================== */
+.dashboard-layout-sidebar .badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  font-size: 11px;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(106, 17, 203, 0.25);
-  transform: translateX(6px);
-}
-
-/* 🔴 Badge Notification */
-.sidebar a .badge {
-  display: inline-flex;
+  color: #fff;
+  background: #ef4444;
+  border-radius: 9999px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-  background: linear-gradient(145deg, #ff3366, #ff1744);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 9999px;
-  margin-left: 8px;
-  padding: 0 6px;
-  box-shadow: 0 0 12px rgba(255, 23, 68, 0.6);
-  animation: pulse 1.8s infinite ease-in-out;
-  position: relative;
-  top: -1px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-}
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.15); opacity: 0.9; }
 }
 
 /* ===========================
-   💡 תוכן הדשבורד
-   =========================== */
-.dashboard-content {
-  flex: 1;
-  margin-left: 250px;
-  background: #f6f7fb;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 3rem 3rem 5rem;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-}
-
-/* ===========================
-   🦶 פוטר
-   =========================== */
-footer {
-  margin-left: 250px;
-  width: calc(100% - 250px);
-  box-sizing: border-box;
-  background: linear-gradient(90deg, #411f8f, #6a11cb);
-  color: #fff;
-  padding: 2rem;
-  text-align: center;
-}
-
-/* ===========================
-   📱 מובייל – Slide + Blur
+   📱 Mobile Sidebar
    =========================== */
 @media (max-width: 768px) {
-  .sidebar {
-    position: fixed !important;
-    top: 0 !important;
-    right: 0 !important;
-    left: 0 !important;
-    bottom: 0 !important;
-    width: 100vw !important;        /* 🟣 על כל המסך */
-    height: 100vh !important;       /* 🟣 על כל הגובה */
-    background: linear-gradient(180deg, #f3e2ff 0%, #debfff 100%) !important;
-    transform: translateY(-100%) !important; /* סגור בהתחלה */
-    transition: transform 0.45s cubic-bezier(0.25, 1, 0.3, 1),
-                backdrop-filter 0.4s ease !important;
-    border-radius: 0 !important;
-    box-shadow: 0 0 40px rgba(106, 17, 203, 0.25);
-    z-index: 9999 !important;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-bottom: 1rem;
-    backdrop-filter: blur(12px);
+  .dashboard-layout-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.35s ease;
+    width: 100vw;
   }
 
-    .sidebar.open {
-    transform: translateY(0) !important; /* 🟣 פתוח על כל המסך */
-  }
-
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    z-index: 8999;
-    backdrop-filter: blur(3px);
-    animation: fadeInOverlay 0.35s ease forwards;
-  }
-
-  @keyframes fadeInOverlay {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .dashboard-content {
-    margin-left: 0 !important;
-    padding-top: 70px !important;
-  }
-
-  body {
-    overflow-x: hidden !important;
-  }
-
-  .sidebar a .badge {
-    min-width: 18px;
-    height: 18px;
-    font-size: 11px;
-    padding: 0 5px;
+  .dashboard-layout-sidebar.open {
+    transform: translateX(0);
   }
 }
 
 /* ===========================
-   🔹 כפתור פתיחה ☰
+   🧭 Dashboard Layout Header
    =========================== */
-.sidebar-open-btn {
-  position: fixed;
-  top: 16px;
-  right: 16px; /* ✅ במקום left */
-  left: auto;  /* ✅ מבטל את הצד השמאלי */
-  background: rgba(255, 255, 255, 0.85);
-  border: none;
-  border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6a11cb;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  z-index: 9200;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: all 0.25s ease;
-}
-
-.sidebar-open-btn:hover {
-  background: #fff;
-  transform: scale(1.08);
-}
-
-/* ===========================
-   ❌ כפתור סגירה
-   =========================== */
-.sidebar-close-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(255, 255, 255, 0.7);
-  border: none;
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #5e17eb;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(106, 17, 203, 0.25);
-  transition: all 0.25s ease;
-  z-index: 9100;
-}
-
-.sidebar-close-btn:hover {
-  background: #fff;
-  transform: rotate(90deg);
-}
-
-/* ===========================
-   🖥️ דסקטופ
-   =========================== */
-@media (min-width: 769px) {
-  .sidebar-open-btn,
-  .sidebar-close-btn,
-  .sidebar-overlay {
-    display: none !important;
-  }
-}
-
-/* ===========================
-   🎨 צבעים אחידים
-   =========================== */
-.sidebar,
-.sidebar h2,
-.sidebar a {
-  color: #0f172a !important;
-}
-
-.dashboard-bell.desktop {
-  position: fixed;
-  top: 20px;
-  left: 270px; /* יושב ממש ליד הסיידבר */
-  z-index: 9003;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dashboard-bell {
-  position: fixed;
-  top: 16px;
-  left: 16px; /* ✅ צד שמאל */
-  z-index: 9200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* לא להציג בדסקטופ */
-@media (min-width: 769px) {
-  .dashboard-bell {
-    display: none;
-  }
-}
-
-/* ===========================
-   🧭 Header עליון לדסקטופ
-   =========================== */
-.dashboard-header {
+.dashboard-layout-header {
   position: fixed;
   top: 0;
   left: 250px;
   right: 0;
   height: 64px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
+  background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
+  border-bottom: 1px solid rgba(88, 28, 135, 0.15);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  padding: 0 24px;
   z-index: 9050;
+  overflow: visible; /* 🔑 חשוב */
 }
 
-.dashboard-header-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.dashboard-header-right {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-}
-
-.user-name {
-  font-weight: 600;
-  color: #1e1b2e;
+/* Left */
+.dashboard-layout-header-left {
   font-size: 15px;
-}
-
-.logout-btn {
-  background: linear-gradient(90deg, #6a11cb, #5e17eb);
-  border: none;
-  color: #fff;
   font-weight: 600;
-  padding: 8px 18px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 3px 12px rgba(106, 17, 203, 0.2);
+  color: #2a165f;
 }
 
-.logout-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(106, 17, 203, 0.3);
-}
-
-/* מרווח לתוכן בדסקטופ – שלא יעלה מתחת ל-header */
-@media (min-width: 769px) {
-  .dashboard-content {
-    margin-top: 64px !important;
-  }
+/* Right */
+.dashboard-layout-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 /* ===========================
-   📱 מובייל – Hello + Logout בתחתית ההמבורגר
+   🔔 Notifications – FIX סופי
    =========================== */
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* ✅ מפריד את הניווט מה-footer */
-    padding-bottom: 1rem;
-  }
 
-  .sidebar-footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.4);
-    margin-top: 1rem;
-    padding: 1rem;
-    text-align: center;
-  }
+/* העוטף */
+.header-icon-wrapper {
+  position: relative; /* 🔑 עיגון */
+  height: 36px;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(88, 28, 135, 0.25);
+  border-radius: 10px;
+  overflow: visible;
+}
 
-  .sidebar-footer .user-name {
-    display: block;
-    font-weight: 600;
-    color: #2a165f;
-    margin-bottom: 0.6rem;
-  }
+/* הדרופדאון עצמו – נפתח שמאלה */
+.header-icon-wrapper .notifications-dropdown,
+.header-icon-wrapper [role="menu"],
+.header-icon-wrapper .dropdown,
+.header-icon-wrapper .popover {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  left: auto !important;
 
-  .sidebar-footer .logout-btn {
-    background: linear-gradient(90deg, #6a11cb, #5e17eb);
-    color: #fff;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    width: 80%;
-    margin: 0 auto;
-    display: inline-block;
-    box-shadow: 0 4px 10px rgba(106, 17, 203, 0.25);
-  }
+  /* ⬅️ זה הקסם – נפתח שמאלה */
+  transform: translateX(-100%) !important;
 
-  .sidebar-footer .logout-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(106, 17, 203, 0.3);
+  z-index: 9999;
+  max-width: 320px;
+}
+
+/* ===========================
+   🔘 Logout Button
+   =========================== */
+.header-action-btn {
+  height: 36px;
+  padding: 0 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(88, 28, 135, 0.25);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2a165f;
+  cursor: pointer;
+}
+
+.header-action-btn:hover {
+  background: #ffffff;
+}
+
+/* ===========================
+   🧱 Content Offset
+   =========================== */
+@media (min-width: 769px) {
+  .dashboard-content {
+    margin-left: 250px;
+    margin-top: 64px;
   }
 }
