@@ -5,6 +5,7 @@ import "../styles/Contact.css";
 function Contact() {
   const [formData, setFormData] = useState({
     name: "",
+    phoneCode: "+1", // 🇺🇸 Default United States
     phone: "",
     email: "",
     message: "",
@@ -14,14 +15,18 @@ function Contact() {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setStatus(null);
 
-    const { name, phone, email, message } = formData;
+    const { name, phoneCode, phone, email, message } = formData;
 
     if (!name || !phone || !email || !message) {
       setStatus({ type: "error", message: "Please fill in all fields" });
@@ -31,23 +36,24 @@ function Contact() {
     setLoading(true);
 
     try {
-  const res = await fetch("/api/support", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name,
-      phone,
-      email,
-      issueDescription: message,
-    }),
-  });
+      const fullPhone = `${phoneCode}${phone}`;
 
+      const res = await fetch("/api/support", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          phone: fullPhone,
+          email,
+          issueDescription: message,
+        }),
+      });
 
       const data = await res.json();
 
-      if (!res.ok || !data.success) {
+      if (!res.ok) {
         throw new Error("Failed to send");
       }
 
@@ -56,7 +62,13 @@ function Contact() {
         message: "Form submitted successfully! We’ll get back to you shortly.",
       });
 
-      setFormData({ name: "", phone: "", email: "", message: "" });
+      setFormData({
+        name: "",
+        phoneCode: "+1",
+        phone: "",
+        email: "",
+        message: "",
+      });
     } catch (error) {
       setStatus({
         type: "error",
@@ -70,38 +82,22 @@ function Contact() {
   return (
     <div className="contact-container">
       <Helmet>
-        {/* SEO */}
         <title>Contact Us - Bizuply | We're Here to Help</title>
         <meta
           name="description"
-          content="Contact the Bizuply team for questions, support, and business inquiries. Fill out a simple form and we'll get back to you quickly."
+          content="Contact the Bizuply team for questions, support, and business inquiries."
         />
-        <meta
-          name="keywords"
-          content="contact, support, Bizuply, questions, help, business, customer service"
-        />
-        <link rel="canonical" href="https://bizuply.com/contact" />
         <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://bizuply.com/contact" />
 
-        {/* Open Graph */}
         <meta property="og:title" content="Contact Bizuply – We're Here to Help" />
         <meta
           property="og:description"
-          content="Reach out to the Bizuply team for support, questions, or business inquiries."
+          content="Reach out to the Bizuply team for support or questions."
         />
         <meta property="og:url" content="https://bizuply.com/contact" />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Bizuply" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Contact Bizuply – We're Here to Help" />
-        <meta
-          name="twitter:description"
-          content="Get in touch with Bizuply for support and business inquiries."
-        />
-        <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
       <h1 className="contact-title">Contact Us</h1>
@@ -122,14 +118,32 @@ function Contact() {
         />
 
         <label>Phone:</label>
-        <input
-          type="tel"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-          disabled={loading}
-        />
+        <div className="phone-row">
+          <select
+            name="phoneCode"
+            value={formData.phoneCode}
+            onChange={handleChange}
+            disabled={loading}
+            className="phone-code"
+          >
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+972">🇮🇱 +972</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+61">🇦🇺 +61</option>
+          </select>
+
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+            disabled={loading}
+            placeholder="Phone number"
+          />
+        </div>
 
         <label>Email:</label>
         <input
@@ -156,17 +170,13 @@ function Contact() {
       </form>
 
       {status && (
-        <div
-          className={`status-msg ${status.type}`}
-          style={{ marginTop: "1rem" }}
-        >
+        <div className={`status-msg ${status.type}`} style={{ marginTop: "1rem" }}>
           {status.message}
         </div>
       )}
 
       <p className="contact-email">
-        You can also email us directly at:{" "}
-        <strong>support@bizuply.com</strong>
+        You can also email us directly at <strong>support@bizuply.com</strong>
       </p>
     </div>
   );
