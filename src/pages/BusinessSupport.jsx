@@ -1,137 +1,142 @@
 import React, { useState } from "react";
+import { useForm } from "@formspree/react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import "../styles/business-support.css";
 
-const COUNTRIES = [
-  { code: "US", dial: "+1", flag: "🇺🇸" },
-  { code: "IL", dial: "+972", flag: "🇮🇱" },
-  { code: "GB", dial: "+44", flag: "🇬🇧" },
-  { code: "CA", dial: "+1", flag: "🇨🇦" },
-];
-
 export default function BusinessSupport() {
-  const [country, setCountry] = useState(COUNTRIES[0]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    message: "",
+    issueDescription: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
 
-  const handleChange = (e) => {
+  const [state, handleSubmit] = useForm("mwpoojlv");
+
+  if (state.succeeded) {
+    return (
+      <div className="support-page">
+        <p className="status-msg success">
+          ✅ Your request was sent successfully! We’ll be in touch soon.
+        </p>
+      </div>
+    );
+  }
+
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((p) => ({ ...p, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     setStatus(null);
 
-    if (!formData.name || !formData.email || !formData.phone || !formData.message) {
-      setStatus({ type: "error", message: "Please fill in all fields" });
+    const { name, email, phone, issueDescription } = formData;
+
+    if (!name || !email || !phone || !issueDescription) {
+      setStatus({
+        type: "error",
+        message: "Please fill out all fields, including phone.",
+      });
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await fetch("/api/support", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          phone: `${country.dial}${formData.phone}`,
-        }),
+      await handleSubmit(e);
+      setStatus({
+        type: "success",
+        message: "Request sent successfully! We’ll contact you soon.",
       });
-
-      if (!res.ok) throw new Error();
-
-      setStatus({ type: "success", message: "Message sent successfully!" });
-      setFormData({ name: "", email: "", phone: "", message: "" });
-    } catch {
-      setStatus({ type: "error", message: "Failed to send message" });
+      setFormData({ name: "", email: "", phone: "", issueDescription: "" });
+    } catch (err) {
+      console.error("Error:", err);
+      setStatus({ type: "error", message: "Error sending the request." });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="support-wrapper" dir="ltr">
-      <div className="support-card">
-        <h1 className="support-title">Contact Us</h1>
-        <p className="support-subtitle">
-          Have a question or want us to get back to you?  
-          Fill out the form and we’ll be in touch shortly!
-        </p>
+    <div className="support-page" dir="ltr" lang="en">
+      <h1 className="contact-title">Contact Us</h1>
+      <p className="contact-subtitle">
+        Have a question or want us to get back to you? Fill out the form and
+        we’ll be in touch shortly!
+      </p>
 
-        <form onSubmit={handleSubmit}>
-          <label>Full Name:</label>
-          <input
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Your full name"
-          />
+      <form className="contact-form" onSubmit={handleFormSubmit}>
+        <label>Full Name:</label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleInputChange}
+          disabled={loading}
+          placeholder="Enter your name"
+          required
+        />
 
-          <label>Phone:</label>
-          <div className="phone-row">
-            <select
-              value={country.code}
-              onChange={(e) =>
-                setCountry(COUNTRIES.find(c => c.code === e.target.value))
-              }
-            >
-              {COUNTRIES.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.flag} {c.dial}
-                </option>
-              ))}
-            </select>
+        <label>Phone:</label>
+        <PhoneInput
+          country={"us"} // 🇺🇸 ארה״ב כברירת מחדל
+          preferredCountries={["us", "il", "gb", "ca"]}
+          enableSearch
+          value={formData.phone}
+          onChange={(phone) => setFormData((prev) => ({ ...prev, phone }))}
+          inputProps={{
+            name: "phone",
+            required: true,
+            disabled: loading,
+          }}
+          containerClass="phone-container"
+          inputClass="phone-input"
+          buttonClass="phone-flag"
+        />
 
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Phone number"
-            />
-          </div>
+        <label>Email:</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          disabled={loading}
+          placeholder="Enter your email"
+          required
+        />
 
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="you@email.com"
-          />
+        <label>Message:</label>
+        <textarea
+          name="issueDescription"
+          value={formData.issueDescription}
+          onChange={handleInputChange}
+          disabled={loading}
+          placeholder="Describe the issue"
+          required
+        />
 
-          <label>Message:</label>
-          <textarea
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            placeholder="Write your message here..."
-          />
+        <button type="submit" disabled={loading} className="submit-button">
+          {loading ? "Sending..." : "Send Message"}
+        </button>
+      </form>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Sending..." : "SEND MESSAGE"}
-          </button>
-        </form>
-
-        {status && (
-          <div className={`form-status ${status.type}`}>
-            {status.message}
-          </div>
-        )}
-
-        <div className="support-footer">
-          📧 You can also email us directly at{" "}
-          <strong>support@bizuply.com</strong>
+      {status && (
+        <div
+          className={`status-msg ${status.type}`}
+          data-icon={status.type === "success" ? "✅" : "❌"}
+        >
+          {status.message}
         </div>
-      </div>
+      )}
+
+      <p className="contact-email">
+        You can also email us directly at <strong>support@bizuply.com</strong>
+      </p>
     </div>
   );
 }
