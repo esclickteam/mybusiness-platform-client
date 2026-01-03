@@ -15,6 +15,8 @@ import {
 import API from "../../../../api";
 import { useAuth } from "../../../../context/AuthContext";
 import "./ProposalForm.css";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/material.css";
 
 export default function ProposalForm({
   fromBusinessName,
@@ -283,21 +285,53 @@ export default function ProposalForm({
       <Typography variant="h6">Contact Details</Typography>
 
       <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
-        <TextField
-          label="Contact Person *"
-          name="contactName"
-          value={formData.contactName}
-          onChange={handleChange}
-          required
-        />
-        <TextField
-          label="Phone Number *"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-        />
-      </Box>
+  {/* Contact Person */}
+  <TextField
+    label="Contact Person *"
+    name="contactName"
+    value={formData.contactName}
+    onChange={handleChange}
+    required
+    fullWidth
+  />
+
+  {/* Phone Number with Country Dropdown */}
+  <Box>
+    <Typography
+      sx={{
+        fontSize: "0.75rem",
+        fontWeight: 600,
+        color: "#555",
+        mb: 0.5,
+      }}
+    >
+      Phone Number *
+    </Typography>
+
+    <PhoneInput
+      country="us" // או "il" אם תרצי ברירת מחדל ישראל
+      value={formData.phone}
+      onChange={(value) =>
+        setFormData((prev) => ({ ...prev, phone: value }))
+      }
+      inputStyle={{
+        width: "100%",
+        height: "56px",
+        fontSize: "1rem",
+        borderRadius: "12px",
+      }}
+      buttonStyle={{
+        borderRadius: "12px 0 0 12px",
+      }}
+      containerStyle={{
+        width: "100%",
+      }}
+      enableSearch
+      disableSearchIcon
+    />
+  </Box>
+</Box>
+
 
       {error && <Alert severity="error">{error}</Alert>}
       {successMessage && <Alert severity="success">{successMessage}</Alert>}
