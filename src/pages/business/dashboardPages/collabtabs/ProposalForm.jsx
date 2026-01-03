@@ -6,9 +6,12 @@ import {
   Typography,
   Alert,
   CircularProgress,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import API from "../../../../api";
-import { useAuth } from "../../../../context/AuthContext"; // Ensure correct import
+import { useAuth } from "../../../../context/AuthContext";
 import "./ProposalForm.css";
 
 export default function ProposalForm({
@@ -17,17 +20,26 @@ export default function ProposalForm({
   onClose,
   onSent,
 }) {
-  const { user } = useAuth(); // Sender business identity
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     toBusinessId: toBusiness?._id || "",
     title: "",
     description: "",
+    giving: "",
+    receiving: "",
+    type: "Two-sided",
+    payment: "",
+    startDate: "",
+    endDate: "",
+    cancelAnytime: false,
+    confidentiality: false,
     amount: "",
     validUntil: "",
     contactName: "",
     phone: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
@@ -39,8 +51,11 @@ export default function ProposalForm({
   }, [toBusiness]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
     setError(null);
     setSuccessMessage("");
   };
@@ -51,7 +66,6 @@ export default function ProposalForm({
     setError(null);
     setSuccessMessage("");
 
-    // Validate required fields
     if (
       !formData.title.trim() ||
       !formData.description.trim() ||
@@ -59,21 +73,28 @@ export default function ProposalForm({
       !formData.contactName.trim() ||
       !formData.phone.trim()
     ) {
-      setError("Please fill in all required fields");
+      setError("Please fill in all required fields.");
       setLoading(false);
       return;
     }
 
     try {
-      // Sending the proposal — now includes fromBusinessId
       const res = await API.post("/business/my/proposals", {
-        fromBusinessId: user?.businessId, // ← sender business ID
-        toBusinessId: formData.toBusinessId, // ← recipient business ID
+        fromBusinessId: user?.businessId,
+        toBusinessId: formData.toBusinessId,
         message: {
           title: formData.title,
           description: formData.description,
           budget: formData.amount ? Number(formData.amount) : null,
           expiryDate: formData.validUntil,
+          giving: formData.giving,
+          receiving: formData.receiving,
+          type: formData.type,
+          payment: formData.payment,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          cancelAnytime: formData.cancelAnytime,
+          confidentiality: formData.confidentiality,
         },
         contactName: formData.contactName,
         phone: formData.phone,
@@ -86,7 +107,10 @@ export default function ProposalForm({
         proposalIdToSend = res.data.proposal._id;
       } else if (res.data._id) {
         proposalIdToSend = res.data._id;
-      } else if (Array.isArray(res.data.proposalsSent) && res.data.proposalsSent.length > 0) {
+      } else if (
+        Array.isArray(res.data.proposalsSent) &&
+        res.data.proposalsSent.length > 0
+      ) {
         proposalIdToSend = res.data.proposalsSent[0]._id;
       }
 
@@ -96,20 +120,30 @@ export default function ProposalForm({
           toBusinessId: toBusiness?._id || "",
           title: "",
           description: "",
+          giving: "",
+          receiving: "",
+          type: "Two-sided",
+          payment: "",
+          startDate: "",
+          endDate: "",
+          cancelAnytime: false,
+          confidentiality: false,
           amount: "",
           validUntil: "",
           contactName: "",
           phone: "",
         });
-        if (onSent) {
-          onSent(proposalIdToSend);
-        }
+        if (onSent) onSent(proposalIdToSend);
         onClose();
       } else {
         setError("Sending failed. Please try again.");
       }
     } catch (err) {
-      setError("Error sending proposal: " + (err.response?.data?.message || err.message));
+      console.error("Error sending proposal:", err);
+      setError(
+        "Error sending proposal: " +
+          (err.response?.data?.message || err.message)
+      );
     } finally {
       setLoading(false);
     }
@@ -127,9 +161,18 @@ export default function ProposalForm({
         flexDirection: "column",
         gap: 2,
         direction: "ltr",
+        maxHeight: "80vh",
+        overflowY: "auto",
+        scrollbarWidth: "thin",
       }}
     >
-      <Typography variant="h5" component="h2" textAlign="center" gutterBottom>
+      <Typography
+        variant="h5"
+        component="h2"
+        textAlign="center"
+        gutterBottom
+        sx={{ fontWeight: "bold" }}
+      >
         Business-to-Business Proposal Form
       </Typography>
 
@@ -165,6 +208,86 @@ export default function ProposalForm({
         minRows={4}
         required
         fullWidth
+      />
+
+      <TextField
+        label="What You Will Provide"
+        name="giving"
+        value={formData.giving}
+        onChange={handleChange}
+        fullWidth
+      />
+
+      <TextField
+        label="What You Will Receive"
+        name="receiving"
+        value={formData.receiving}
+        onChange={handleChange}
+        fullWidth
+      />
+
+      <TextField
+        select
+        label="Collaboration Type"
+        name="type"
+        value={formData.type}
+        onChange={handleChange}
+        fullWidth
+      >
+        <MenuItem value="One-sided">One-sided</MenuItem>
+        <MenuItem value="Two-sided">Two-sided</MenuItem>
+        <MenuItem value="With commissions">With commissions</MenuItem>
+      </TextField>
+
+      <TextField
+        label="Commissions / Payment"
+        name="payment"
+        value={formData.payment}
+        onChange={handleChange}
+        fullWidth
+      />
+
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <TextField
+          label="Start Date"
+          name="startDate"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          value={formData.startDate}
+          onChange={handleChange}
+          fullWidth
+        />
+        <TextField
+          label="End Date"
+          name="endDate"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          value={formData.endDate}
+          onChange={handleChange}
+          fullWidth
+        />
+      </Box>
+
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={formData.cancelAnytime}
+            onChange={handleChange}
+            name="cancelAnytime"
+          />
+        }
+        label="Cancelable Anytime"
+      />
+
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={formData.confidentiality}
+            onChange={handleChange}
+            name="confidentiality"
+          />
+        }
+        label="Include Confidentiality Clause"
       />
 
       <TextField
@@ -213,9 +336,18 @@ export default function ProposalForm({
         type="submit"
         variant="contained"
         disabled={loading}
-        sx={{ mt: 2 }}
+        sx={{
+          mt: 2,
+          background: "#6b46c1",
+          fontWeight: "bold",
+          ":hover": { background: "#553c9a" },
+        }}
       >
-        {loading ? <CircularProgress size={24} color="inherit" /> : "Send Proposal"}
+        {loading ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : (
+          "Send Proposal"
+        )}
       </Button>
     </Box>
   );

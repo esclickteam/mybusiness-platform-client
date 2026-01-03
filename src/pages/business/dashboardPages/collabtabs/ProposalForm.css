@@ -1,28 +1,65 @@
 /* ProposalForm.css */
 
-/* סגנון כללי לטופס */
+/* =========================================================
+   Global Form Container
+   - Works inside a modal
+   - Ensures full form is visible on desktop (scroll inside)
+========================================================= */
 form {
-  max-width: 700px;      /* הגדלנו ל-700 פיקסלים */
-  width: 100%;           /* רוחב מלא, מותאם למיכל האב */
-  margin: 20px auto;
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
   padding: 20px;
+
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
   font-family: Arial, sans-serif;
-  direction: rtl; /* לטקסט בעברית */
   box-sizing: border-box;
+
+  /* ✅ English UI */
+  direction: ltr;
+
+  /* ✅ Fix: form not fully visible in desktop modal */
+  max-height: 80vh;
+  overflow-y: auto;
+
+  /* Better scrolling in modals */
+  -webkit-overflow-scrolling: touch;
 }
 
-/* כותרת הטופס */
-form h2 {
+/* Smooth, clean scroll bar (optional but nice) */
+form::-webkit-scrollbar {
+  width: 10px;
+}
+form::-webkit-scrollbar-track {
+  background: #f2f2f6;
+  border-radius: 999px;
+}
+form::-webkit-scrollbar-thumb {
+  background: #c7c7d1;
+  border-radius: 999px;
+}
+form::-webkit-scrollbar-thumb:hover {
+  background: #b2b2bd;
+}
+
+/* =========================================================
+   Title
+========================================================= */
+form h2,
+form .MuiTypography-root {
   text-align: center;
   margin-bottom: 24px;
   font-size: 1.5rem;
-  color: #333;
+  color: #222;
+  font-weight: 700;
 }
 
-/* סגנון תוויות (labels) */
+/* =========================================================
+   Labels (if you ever use plain labels)
+========================================================= */
 form label {
   display: block;
   margin-bottom: 8px;
@@ -30,7 +67,9 @@ form label {
   color: #555;
 }
 
-/* שדות קלט (input, textarea) */
+/* =========================================================
+   Plain HTML inputs (fallback)
+========================================================= */
 form input[type="text"],
 form input[type="number"],
 form input[type="date"],
@@ -39,181 +78,234 @@ form textarea {
   padding: 10px 12px;
   margin-bottom: 20px;
   border: 1.5px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
   box-sizing: border-box;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
   font-family: Arial, sans-serif;
-  direction: rtl; /* לטקסט בעברית */
+  direction: ltr;
 }
 
-/* שינוי גבול בשדה פעיל */
 form input[type="text"]:focus,
 form input[type="number"]:focus,
 form input[type="date"]:focus,
 form textarea:focus {
-  border-color: #3f51b5; /* כחול MUI */
+  border-color: #3f51b5;
   outline: none;
+  box-shadow: 0 0 0 4px rgba(63, 81, 181, 0.12);
 }
 
-/* גודל textarea */
 form textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: 110px;
 }
 
-/* סגנון כפתור */
-form button[type="submit"] {
+/* =========================================================
+   ✅ MUI Fields (THIS is the key fix)
+   Your component uses TextField, Checkbox, etc.
+   So style MUI classes to match the agreement UI.
+========================================================= */
+
+/* Space between MUI fields (in case Box gap isn't enough in some layouts) */
+form .MuiFormControl-root {
+  width: 100%;
+}
+
+/* TextField */
+form .MuiTextField-root {
+  width: 100%;
+}
+
+/* Input base */
+form .MuiInputBase-root {
+  border-radius: 10px;
+  background: #fff;
+}
+
+/* Outlined border */
+form .MuiOutlinedInput-notchedOutline {
+  border-color: #cfcfd6;
+  border-width: 1.5px;
+}
+
+/* Hover state */
+form .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #8b8bb0;
+}
+
+/* Focus state */
+form .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #3f51b5;
+  border-width: 2px;
+}
+
+/* Focus ring (subtle) */
+form .MuiOutlinedInput-root.Mui-focused {
+  box-shadow: 0 0 0 4px rgba(63, 81, 181, 0.10);
+}
+
+/* Label styling */
+form .MuiInputLabel-root {
+  color: #444;
+  font-weight: 600;
+}
+
+/* Label when focused */
+form .MuiInputLabel-root.Mui-focused {
+  color: #3f51b5;
+}
+
+/* Helper text */
+form .MuiFormHelperText-root {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Checkbox area */
+form .MuiFormControlLabel-root {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* =========================================================
+   Button
+========================================================= */
+form button[type="submit"],
+form .MuiButton-root[type="submit"] {
   display: block;
   width: 100%;
   padding: 12px;
+
   background-color: #3f51b5;
   color: white;
-  font-size: 1.1rem;
+
+  font-size: 1.05rem;
+  font-weight: 700;
+
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
+
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.25s ease, transform 0.05s ease;
   font-family: Arial, sans-serif;
 }
 
-form button[type="submit"]:hover:not(:disabled) {
+form button[type="submit"]:hover:not(:disabled),
+form .MuiButton-root[type="submit"]:hover:not(:disabled) {
   background-color: #303f9f;
 }
 
-form button[type="submit"]:disabled {
+form button[type="submit"]:active:not(:disabled),
+form .MuiButton-root[type="submit"]:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+form button[type="submit"]:disabled,
+form .MuiButton-root[type="submit"]:disabled {
   background-color: #9fa8da;
   cursor: not-allowed;
 }
 
-/* סגנון טקסטי לשגיאות והודעות הצלחה */
-form p {
-  margin-top: -15px;
-  margin-bottom: 20px;
-  font-weight: bold;
-  font-size: 0.9rem;
+/* =========================================================
+   Alerts (MUI)
+========================================================= */
+form .MuiAlert-root {
+  border-radius: 10px;
 }
 
-form p[style*="color: red"] {
-  color: #d32f2f;
-}
-
-form p[style*="color: green"] {
-  color: #388e3c;
-}
-
-/* שדה טקסט קריא בלבד */
+/* =========================================================
+   Readonly / disabled fields
+========================================================= */
 input[readonly] {
   background-color: #f5f5f5;
   cursor: default;
 }
 
-/* רספונסיביות למובייל */
-@media (max-width: 600px) {
-  form {
-    padding: 15px;
-    margin: 10px;
-  }
-
-  form button[type="submit"] {
-    font-size: 1rem;
-    padding: 10px;
-  }
+form .MuiInputBase-root.Mui-disabled {
+  background: #f6f6fa;
 }
-/* רספונסיביות ProposalForm לכל הרמות */
 
-/* Extra Small (עד 480px) */
+/* =========================================================
+   Responsive
+========================================================= */
+
+/* Extra Small (<= 480px) */
 @media (max-width: 480px) {
   form {
     max-width: 100%;
     padding: 12px;
-    margin: 8px;
+    margin: 0 auto;
+    max-height: 82vh;
   }
-  form h2 {
+
+  form h2,
+  form .MuiTypography-root {
     font-size: 1.2rem;
     margin-bottom: 16px;
   }
-  form input[type="text"],
-  form input[type="number"],
-  form input[type="date"],
-  form textarea {
-    font-size: 0.9rem;
-    padding: 8px 10px;
-    margin-bottom: 16px;
-  }
-  form textarea {
-    min-height: 80px;
-  }
-  form button[type="submit"] {
-    font-size: 0.95rem;
-    padding: 10px;
-  }
-  form p {
-    font-size: 0.85rem;
-    margin-bottom: 16px;
-  }
-}
 
-/* Small (481px עד 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  form {
-    max-width: 90%;
-    padding: 16px 18px;
-    margin: 12px auto;
+  form .MuiOutlinedInput-input {
+    padding: 12px 12px;
+    font-size: 0.92rem;
   }
-  form h2 {
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-  }
-  form input[type="text"],
-  form input[type="number"],
-  form input[type="date"],
-  form textarea {
-    font-size: 0.95rem;
-    padding: 9px 11px;
-    margin-bottom: 18px;
-  }
+
   form textarea {
     min-height: 90px;
   }
-  form button[type="submit"] {
-    font-size: 1rem;
+
+  form button[type="submit"],
+  form .MuiButton-root[type="submit"] {
+    font-size: 0.98rem;
     padding: 11px;
-  }
-  form p {
-    font-size: 0.9rem;
-    margin-bottom: 18px;
   }
 }
 
-/* Medium ומעלה (769px ומעלה) */
+/* Small (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  form {
+    max-width: 92%;
+    padding: 16px 18px;
+    max-height: 82vh;
+  }
+
+  form h2,
+  form .MuiTypography-root {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+
+  form .MuiOutlinedInput-input {
+    font-size: 0.95rem;
+  }
+
+  form button[type="submit"],
+  form .MuiButton-root[type="submit"] {
+    font-size: 1rem;
+    padding: 11px;
+  }
+}
+
+/* Medium+ (>= 769px) */
 @media (min-width: 769px) {
   form {
     max-width: 700px;
     padding: 20px;
-    margin: 20px auto;
+    max-height: 80vh;
   }
-  form h2 {
+
+  form h2,
+  form .MuiTypography-root {
     font-size: 1.5rem;
     margin-bottom: 24px;
   }
-  form input[type="text"],
-  form input[type="number"],
-  form input[type="date"],
-  form textarea {
+
+  form .MuiOutlinedInput-input {
     font-size: 1rem;
-    padding: 10px 12px;
-    margin-bottom: 20px;
   }
-  form textarea {
-    min-height: 100px;
-  }
-  form button[type="submit"] {
-    font-size: 1.1rem;
+
+  form button[type="submit"],
+  form .MuiButton-root[type="submit"] {
+    font-size: 1.05rem;
     padding: 12px;
-  }
-  form p {
-    font-size: 0.9rem;
-    margin-bottom: 20px;
   }
 }
