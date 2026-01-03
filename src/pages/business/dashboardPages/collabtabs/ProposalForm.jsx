@@ -284,7 +284,12 @@ export default function ProposalForm({
       {/* ===== Contact ===== */}
       <Typography variant="h6">Contact Details</Typography>
 
-      <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+      <Box
+  display="grid"
+  gridTemplateColumns="1fr 1fr"
+  gap={2}
+  alignItems="flex-start"
+>
   {/* Contact Person */}
   <TextField
     label="Contact Person *"
@@ -295,32 +300,35 @@ export default function ProposalForm({
     fullWidth
   />
 
-  {/* Phone Number with Country Dropdown */}
+  {/* Phone Number */}
   <Box>
+    {/* Label בגובה זהה ל־MUI */}
     <Typography
       sx={{
         fontSize: "0.75rem",
         fontWeight: 600,
-        color: "#555",
-        mb: 0.5,
+        color: "rgba(0,0,0,0.6)",
+        mb: "4px",
       }}
     >
       Phone Number *
     </Typography>
 
     <PhoneInput
-      country="us" // או "il" אם תרצי ברירת מחדל ישראל
+      country="us" // או "il"
       value={formData.phone}
       onChange={(value) =>
         setFormData((prev) => ({ ...prev, phone: value }))
       }
       inputStyle={{
         width: "100%",
-        height: "56px",
+        height: "56px",          // 🔑 אותו גובה של TextField
         fontSize: "1rem",
         borderRadius: "12px",
+        paddingLeft: "58px",     // מקום לדגל
       }}
       buttonStyle={{
+        height: "56px",          // 🔑 חובה
         borderRadius: "12px 0 0 12px",
       }}
       containerStyle={{
