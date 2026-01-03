@@ -1,27 +1,38 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../api";
 
-export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onStatusChange }) {
+export default function CollabReceivedRequestsTab({
+  isDevUser,
+  refreshFlag,
+  onStatusChange,
+}) {
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Function to parse the message into separate fields
+  // Parse message into separate fields (optional legacy support)
   const parseMessage = (message) => {
     if (!message) return {};
-    const lines = message.split('\n').map(line => line.trim());
+    const lines = message.split("\n").map((line) => line.trim());
     const parsed = {};
-    lines.forEach(line => {
-      if (line.startsWith('Title:')) parsed.title = line.replace('Title:', '').trim();
-      else if (line.startsWith('Description:')) parsed.description = line.replace('Description:', '').trim();
-      else if (line.startsWith('Amount:')) parsed.amount = line.replace('Amount:', '').trim();
-      else if (line.startsWith('Valid Until:')) parsed.validUntil = line.replace('Valid Until:', '').trim();
+
+    lines.forEach((line) => {
+      if (line.startsWith("Title:"))
+        parsed.title = line.replace("Title:", "").trim();
+      else if (line.startsWith("Description:"))
+        parsed.description = line.replace("Description:", "").trim();
+      else if (line.startsWith("Amount:"))
+        parsed.amount = line.replace("Amount:", "").trim();
+      else if (line.startsWith("Valid Until:"))
+        parsed.validUntil = line.replace("Valid Until:", "").trim();
     });
+
     return parsed;
   };
 
   useEffect(() => {
     setLoading(true);
+
     async function fetchReceivedRequests() {
       try {
         const res = await API.get("/business/my/proposals/received");
@@ -34,10 +45,11 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
         setLoading(false);
       }
     }
+
     if (!isDevUser) {
       fetchReceivedRequests();
     } else {
-      // Optional: Add demo data for dev users if needed
+      // Dev/demo mode (optional)
       setReceivedRequests([]);
       setLoading(false);
     }
@@ -45,37 +57,47 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
 
   const handleAccept = async (proposalId) => {
     try {
-      await API.put(`/business/my/proposals/${proposalId}/status`, { status: "accepted" });
-      setReceivedRequests(prev =>
-        prev.map(p =>
-          (p.proposalId === proposalId || p._id === proposalId)
-            ? { ...p, status: "accepted" }
+      const res = await API.put(`/business/my/proposals/${proposalId}/status`, {
+        status: "accepted",
+      });
+
+      const { agreementId } = res.data || {};
+
+      setReceivedRequests((prev) =>
+        prev.map((p) =>
+          p.proposalId === proposalId || p._id === proposalId
+            ? { ...p, status: "accepted", agreementId: agreementId || p.agreementId }
             : p
         )
       );
-      alert("Proposal accepted successfully");
+
+      alert("✅ Proposal approved successfully. An agreement was created.");
       onStatusChange?.();
     } catch (err) {
       console.error(err);
-      alert("Error approving the proposal");
+      alert("❌ Error approving the proposal");
     }
   };
 
   const handleReject = async (proposalId) => {
     try {
-      await API.put(`/business/my/proposals/${proposalId}/status`, { status: "rejected" });
-      setReceivedRequests(prev =>
-        prev.map(p =>
-          (p.proposalId === proposalId || p._id === proposalId)
+      await API.put(`/business/my/proposals/${proposalId}/status`, {
+        status: "rejected",
+      });
+
+      setReceivedRequests((prev) =>
+        prev.map((p) =>
+          p.proposalId === proposalId || p._id === proposalId
             ? { ...p, status: "rejected" }
             : p
         )
       );
-      alert("Proposal rejected successfully");
+
+      alert("❌ Proposal rejected successfully.");
       onStatusChange?.();
     } catch (err) {
       console.error(err);
-      alert("Error rejecting the proposal");
+      alert("❌ Error rejecting the proposal");
     }
   };
 
@@ -98,15 +120,53 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
       >
         📥 Received Proposals
       </h3>
+
       {receivedRequests.length === 0 ? (
         <p style={{ textAlign: "center" }}>No proposals have been received yet.</p>
       ) : (
         receivedRequests.map((req) => {
-          const parsedMsg = parseMessage(req.message);
-          const title = req.title || parsedMsg.title;
-          const description = req.description || parsedMsg.description;
-          const amount = req.amount != null ? req.amount : parsedMsg.amount;
-          const validUntil = req.validUntil || parsedMsg.validUntil;
+          // Support both the new structure (message object) and legacy string parsing
+          const parsedFromLegacyString =
+            typeof req.message === "string" ? parseMessage(req.message) : {};
+
+          const title =
+            req?.message?.title ||
+            req.title ||
+            parsedFromLegacyString.title ||
+            "-";
+
+          const description =
+            req?.message?.description ||
+            req.description ||
+            parsedFromLegacyString.description ||
+            "-";
+
+          const amountRaw =
+            req?.message?.budget ??
+            req.amount ??
+            parsedFromLegacyString.amount ??
+            null;
+
+          const amount =
+            amountRaw !== null && amountRaw !== undefined && amountRaw !== ""
+              ? Number(amountRaw)
+              : null;
+
+          const validUntilRaw =
+            req?.message?.expiryDate ||
+            req.validUntil ||
+            parsedFromLegacyString.validUntil ||
+            null;
+
+          const validUntil =
+            validUntilRaw ? new Date(validUntilRaw) : null;
+
+          const createdAt = req.createdAt ? new Date(req.createdAt) : null;
+
+          const agreementId =
+            req.agreementId ||
+            (req.agreement && (req.agreement._id || req.agreement)) ||
+            null;
 
           return (
             <div
@@ -128,44 +188,67 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
                   {req.fromBusinessId?.businessName || "Unknown"}
                 </span>
               </p>
+
               <p>
                 <strong>To Business:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>
                   {req.toBusinessId?.businessName || "Unknown"}
                 </span>
               </p>
+
               <p>
                 <strong>Proposal Title:</strong>{" "}
-                <span style={{ marginLeft: 6 }}>{title || "-"}</span>
+                <span style={{ marginLeft: 6 }}>{title}</span>
               </p>
+
               <p>
                 <strong>Proposal Description:</strong>{" "}
-                <span style={{ marginLeft: 6 }}>{description || "-"}</span>
+                <span style={{ marginLeft: 6 }}>{description}</span>
               </p>
+
               <p>
-                <strong>Amount:</strong>{" "}
+                <strong>Budget:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>
-                  {amount != null ? `$${amount}` : "-"}
+                  {amount !== null && !Number.isNaN(amount) ? `$${amount}` : "-"}
                 </span>
               </p>
+
               <p>
                 <strong>Valid Until:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>
-                  {validUntil
-                    ? new Date(validUntil).toLocaleDateString("en-US")
-                    : "-"}
+                  {validUntil ? validUntil.toLocaleDateString("en-US") : "-"}
                 </span>
               </p>
+
               <p>
                 <strong>Status:</strong>{" "}
                 <span style={{ marginLeft: 6 }}>{req.status}</span>
               </p>
+
+              {/* Agreement display (if created on acceptance) */}
+              {req.status === "accepted" && agreementId && (
+                <p style={{ marginTop: 8 }}>
+                  <strong>📄 Agreement ID:</strong>{" "}
+                  <span
+                    style={{
+                      marginLeft: 6,
+                      color: "#2b6cb0",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {String(agreementId)}
+                  </span>
+                </p>
+              )}
+
               <p
                 className="collab-tag"
                 style={{ color: "#666", fontSize: "0.9rem", marginTop: 12 }}
               >
-                Received on {new Date(req.createdAt).toLocaleDateString("en-US")}
+                Received on{" "}
+                {createdAt ? createdAt.toLocaleDateString("en-US") : "-"}
               </p>
+
               <div
                 style={{
                   marginTop: 12,
@@ -190,6 +273,7 @@ export default function CollabReceivedRequestsTab({ isDevUser, refreshFlag, onSt
                     >
                       ✅ Accept
                     </button>
+
                     <button
                       style={{
                         backgroundColor: "#d53f8c",
