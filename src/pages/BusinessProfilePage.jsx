@@ -213,19 +213,41 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
       )}
 
       {/* Proposal Modal */}
-      <Modal open={isProposalModalOpen} onClose={() => setIsProposalModalOpen(false)}>
-        <Box sx={{ p: 4, maxWidth: 600, margin: "10% auto", bgcolor: "#fff" }}>
-          <ProposalForm
-            fromBusinessId={currentUserBusinessId}
-            fromBusinessName={currentUserBusinessName}
-            toBusiness={business}
-            onSent={(id) => {
-              setCurrentProposalId(id);
-              setIsProposalModalOpen(false);
-            }}
-          />
-        </Box>
-      </Modal>
+      <Modal
+  open={isProposalModalOpen}
+  onClose={() => setIsProposalModalOpen(false)}
+>
+  <Box
+    sx={{
+      position: "absolute",
+      top: 24,
+      left: "50%",
+      transform: "translateX(-50%)",
+
+      width: "100%",
+      maxWidth: 760,
+
+      maxHeight: "calc(100vh - 48px)",
+      overflow: "auto",
+
+      bgcolor: "#fff",
+      borderRadius: 16,
+      boxShadow: "0 10px 40px rgba(0,0,0,0.25)",
+      display: "flex",
+      flexDirection: "column",
+    }}
+  >
+    <ProposalForm
+      fromBusinessId={currentUserBusinessId}
+      fromBusinessName={currentUserBusinessName}
+      toBusiness={business}
+      onSent={(id) => {
+        setCurrentProposalId(id);
+        setIsProposalModalOpen(false);
+      }}
+    />
+  </Box>
+</Modal>
 
       {/* Chat Modal */}
       <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
