@@ -9,6 +9,7 @@ import {
   MenuItem,
   FormControlLabel,
   Checkbox,
+  InputAdornment,
 } from "@mui/material";
 import API from "../../../../api";
 import { useAuth } from "../../../../context/AuthContext";
@@ -291,14 +292,17 @@ export default function ProposalForm({
       />
 
       <TextField
-        label="Amount (if applicable)"
-        name="amount"
-        type="number"
-        inputProps={{ min: 0, step: 0.01 }}
-        value={formData.amount}
-        onChange={handleChange}
-        fullWidth
-      />
+  label="Amount (if applicable)"
+  name="amount"
+  type="number"
+  inputProps={{ min: 0, step: 0.01 }}
+  value={formData.amount}
+  onChange={handleChange}
+  fullWidth
+  InputProps={{
+    startAdornment: <InputAdornment position="start">$</InputAdornment>,
+  }}
+/>
 
       <TextField
         label="Valid Until"
