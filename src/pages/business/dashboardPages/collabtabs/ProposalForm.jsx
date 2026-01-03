@@ -10,6 +10,7 @@ import {
   FormControlLabel,
   Checkbox,
   InputAdornment,
+  Divider,
 } from "@mui/material";
 import API from "../../../../api";
 import { useAuth } from "../../../../context/AuthContext";
@@ -68,11 +69,11 @@ export default function ProposalForm({
     setSuccessMessage("");
 
     if (
-      !formData.title.trim() ||
-      !formData.description.trim() ||
+      !formData.title ||
+      !formData.description ||
       !formData.validUntil ||
-      !formData.contactName.trim() ||
-      !formData.phone.trim()
+      !formData.contactName ||
+      !formData.phone
     ) {
       setError("Please fill in all required fields.");
       setLoading(false);
@@ -101,49 +102,21 @@ export default function ProposalForm({
         phone: formData.phone,
       });
 
-      console.log("Proposal POST response full data:", res.data);
-
-      let proposalIdToSend = null;
-      if (res.data.proposal && res.data.proposal._id) {
-        proposalIdToSend = res.data.proposal._id;
-      } else if (res.data._id) {
-        proposalIdToSend = res.data._id;
-      } else if (
-        Array.isArray(res.data.proposalsSent) &&
-        res.data.proposalsSent.length > 0
-      ) {
-        proposalIdToSend = res.data.proposalsSent[0]._id;
-      }
+      const proposalId =
+        res.data?.proposal?._id ||
+        res.data?._id ||
+        res.data?.proposalsSent?.[0]?._id;
 
       if (res.status === 200 || res.status === 201) {
         setSuccessMessage("Proposal sent successfully!");
-        setFormData({
-          toBusinessId: toBusiness?._id || "",
-          title: "",
-          description: "",
-          giving: "",
-          receiving: "",
-          type: "Two-sided",
-          payment: "",
-          startDate: "",
-          endDate: "",
-          cancelAnytime: false,
-          confidentiality: false,
-          amount: "",
-          validUntil: "",
-          contactName: "",
-          phone: "",
-        });
-        if (onSent) onSent(proposalIdToSend);
+        if (onSent) onSent(proposalId);
         onClose();
       } else {
         setError("Sending failed. Please try again.");
       }
     } catch (err) {
-      console.error("Error sending proposal:", err);
       setError(
-        "Error sending proposal: " +
-          (err.response?.data?.message || err.message)
+        err.response?.data?.message || "Error sending proposal. Try again."
       );
     } finally {
       setLoading(false);
@@ -155,68 +128,62 @@ export default function ProposalForm({
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        maxWidth: 600,
+        width: "100%",
+        maxWidth: 720,
         mx: "auto",
-        p: 3,
+        p: 4,
         display: "flex",
         flexDirection: "column",
-        gap: 2,
+        gap: 3,
         direction: "ltr",
-        maxHeight: "80vh",
+        maxHeight: "calc(100vh - 48px)",
         overflowY: "auto",
-        scrollbarWidth: "thin",
       }}
     >
-      <Typography
-        variant="h5"
-        component="h2"
-        textAlign="center"
-        gutterBottom
-        sx={{ fontWeight: "bold" }}
-      >
-        Business-to-Business Proposal Form
+      {/* ===== Header ===== */}
+      <Typography variant="h5" fontWeight="bold" textAlign="center">
+        Business-to-Business Proposal
       </Typography>
 
-      <TextField
-        label="From (Your Business)"
-        value={fromBusinessName || ""}
-        disabled
-        fullWidth
-      />
+      <Divider />
 
+      {/* ===== Businesses ===== */}
+      <TextField label="From" value={fromBusinessName || ""} disabled />
       <TextField
-        label="To (Receiving Business)"
+        label="To"
         value={toBusiness?.businessName || ""}
         disabled
-        fullWidth
       />
 
+      {/* ===== Proposal Details ===== */}
+      <Typography variant="h6">Proposal Details</Typography>
+
       <TextField
-        label="Proposal Title"
+        label="Proposal Title *"
         name="title"
         value={formData.title}
         onChange={handleChange}
         required
-        fullWidth
       />
 
       <TextField
-        label="Proposal Description"
+        label="Description *"
         name="description"
         value={formData.description}
         onChange={handleChange}
         multiline
         minRows={4}
         required
-        fullWidth
       />
+
+      {/* ===== Collaboration ===== */}
+      <Typography variant="h6">Collaboration</Typography>
 
       <TextField
         label="What You Will Provide"
         name="giving"
         value={formData.giving}
         onChange={handleChange}
-        fullWidth
       />
 
       <TextField
@@ -224,7 +191,6 @@ export default function ProposalForm({
         name="receiving"
         value={formData.receiving}
         onChange={handleChange}
-        fullWidth
       />
 
       <TextField
@@ -233,22 +199,23 @@ export default function ProposalForm({
         name="type"
         value={formData.type}
         onChange={handleChange}
-        fullWidth
       >
         <MenuItem value="One-sided">One-sided</MenuItem>
         <MenuItem value="Two-sided">Two-sided</MenuItem>
         <MenuItem value="With commissions">With commissions</MenuItem>
       </TextField>
 
+      {/* ===== Payment & Dates ===== */}
+      <Typography variant="h6">Terms & Payment</Typography>
+
       <TextField
-        label="Commissions / Payment"
+        label="Payment / Commission Details"
         name="payment"
         value={formData.payment}
         onChange={handleChange}
-        fullWidth
       />
 
-      <Box sx={{ display: "flex", gap: 2 }}>
+      <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
         <TextField
           label="Start Date"
           name="startDate"
@@ -256,7 +223,6 @@ export default function ProposalForm({
           InputLabelProps={{ shrink: true }}
           value={formData.startDate}
           onChange={handleChange}
-          fullWidth
         />
         <TextField
           label="End Date"
@@ -265,7 +231,6 @@ export default function ProposalForm({
           InputLabelProps={{ shrink: true }}
           value={formData.endDate}
           onChange={handleChange}
-          fullWidth
         />
       </Box>
 
@@ -292,58 +257,60 @@ export default function ProposalForm({
       />
 
       <TextField
-  label="Amount (if applicable)"
-  name="amount"
-  type="number"
-  inputProps={{ min: 0, step: 0.01 }}
-  value={formData.amount}
-  onChange={handleChange}
-  fullWidth
-  InputProps={{
-    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-  }}
-/>
+        label="Amount (optional)"
+        name="amount"
+        type="number"
+        value={formData.amount}
+        onChange={handleChange}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        }}
+      />
 
       <TextField
-        label="Valid Until"
+        label="Valid Until *"
         name="validUntil"
         type="date"
         InputLabelProps={{ shrink: true }}
         value={formData.validUntil}
         onChange={handleChange}
         required
-        fullWidth
       />
 
-      <TextField
-        label="Contact Person"
-        name="contactName"
-        value={formData.contactName}
-        onChange={handleChange}
-        required
-        fullWidth
-      />
+      {/* ===== Contact ===== */}
+      <Typography variant="h6">Contact Details</Typography>
 
-      <TextField
-        label="Phone Number"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-        required
-        fullWidth
-      />
+      <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+        <TextField
+          label="Contact Person *"
+          name="contactName"
+          value={formData.contactName}
+          onChange={handleChange}
+          required
+        />
+        <TextField
+          label="Phone Number *"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          required
+        />
+      </Box>
 
       {error && <Alert severity="error">{error}</Alert>}
       {successMessage && <Alert severity="success">{successMessage}</Alert>}
 
+      {/* ===== Submit ===== */}
       <Button
         type="submit"
         variant="contained"
         disabled={loading}
         sx={{
           mt: 2,
-          background: "#6b46c1",
+          py: 1.4,
           fontWeight: "bold",
+          borderRadius: "12px",
+          background: "#6b46c1",
           ":hover": { background: "#553c9a" },
         }}
       >
