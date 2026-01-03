@@ -128,17 +128,19 @@ export default function ProposalForm({
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        width: "100%",
-        maxWidth: 720,
-        mx: "auto",
-        p: 4,
-        display: "flex",
-        flexDirection: "column",
-        gap: 3,
-        direction: "ltr",
-        maxHeight: "calc(100vh - 48px)",
-        overflowY: "auto",
-      }}
+  width: "100%",
+  maxWidth: 720,
+  mx: "auto",
+  p: 4,
+  display: "flex",
+  flexDirection: "column",
+  gap: 3,
+  direction: "ltr",
+
+  /* 👇 קריטי */
+  flex: 1,
+  overflow: "visible",
+}}
     >
       {/* ===== Header ===== */}
       <Typography variant="h5" fontWeight="bold" textAlign="center">
