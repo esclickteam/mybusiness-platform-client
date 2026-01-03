@@ -16,7 +16,8 @@ import API from "../../../../api";
 import { useAuth } from "../../../../context/AuthContext";
 import "./ProposalForm.css";
 import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/material.css";
+import "react-phone-input-2/lib/style.css";
+
 
 export default function ProposalForm({
   fromBusinessName,
@@ -302,33 +303,22 @@ export default function ProposalForm({
 
   {/* Phone Number */}
   <Box>
-    {/* Label בגובה זהה ל־MUI */}
-    <Typography
-      sx={{
-        fontSize: "0.75rem",
-        fontWeight: 600,
-        color: "rgba(0,0,0,0.6)",
-        mb: "4px",
-      }}
-    >
-      Phone Number *
-    </Typography>
-
     <PhoneInput
       country="us" // או "il"
       value={formData.phone}
       onChange={(value) =>
         setFormData((prev) => ({ ...prev, phone: value }))
       }
+      placeholder="Phone Number *"
       inputStyle={{
         width: "100%",
-        height: "56px",          // 🔑 אותו גובה של TextField
+        height: "56px",
         fontSize: "1rem",
         borderRadius: "12px",
-        paddingLeft: "58px",     // מקום לדגל
+        paddingLeft: "58px",
       }}
       buttonStyle={{
-        height: "56px",          // 🔑 חובה
+        height: "56px",
         borderRadius: "12px 0 0 12px",
       }}
       containerStyle={{

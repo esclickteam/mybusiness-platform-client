@@ -203,3 +203,21 @@
     font-size: 1.35rem;
   }
 }
+
+/* Hide internal label from react-phone-input */
+.react-tel-input .special-label {
+  display: none !important;
+}
+
+/* Match MUI TextField look */
+.react-tel-input .form-control {
+  height: 56px !important;
+  border-radius: 12px !important;
+  font-size: 1rem !important;
+  border: 1px solid rgba(0, 0, 0, 0.23) !important;
+}
+
+.react-tel-input .form-control:focus {
+  border-color: #6b46c1 !important;
+  box-shadow: 0 0 0 4px rgba(107, 70, 193, 0.1);
+}
