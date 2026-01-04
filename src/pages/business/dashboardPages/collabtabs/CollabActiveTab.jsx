@@ -2,20 +2,25 @@ import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./CollabActiveTab.css";
 
-export default function CollabActiveTab({ userBusinessId, token }) {
-  const [view, setView] = useState("active"); // "active" | "sent" | "received"
+export default function CollabActiveTab({ userBusinessId }) {
+  const [view, setView] = useState("active"); // active | sent | received
   const [activeProposals, setActiveProposals] = useState([]);
   const [sentProposals, setSentProposals] = useState([]);
   const [receivedProposals, setReceivedProposals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  /* =========================
+     Fetch proposals
+  ========================= */
+
   useEffect(() => {
-    if (!userBusinessId || !token) return;
+    if (!userBusinessId) return;
 
     async function fetchProposals() {
       setLoading(true);
       setError(null);
+
       try {
         const [activeRes, sentRes, receivedRes] = await Promise.all([
           API.get("/business/my/proposals/active"),
@@ -27,40 +32,66 @@ export default function CollabActiveTab({ userBusinessId, token }) {
         setSentProposals(sentRes.data.proposalsSent || []);
         setReceivedProposals(receivedRes.data.proposalsReceived || []);
       } catch (err) {
-        setError(err.message || "Error loading proposals");
+        console.error(err);
+        setError("Error loading proposals");
       } finally {
         setLoading(false);
       }
     }
 
     fetchProposals();
-  }, [userBusinessId, token]);
+  }, [userBusinessId]);
 
-  let proposalsToShow = [];
-  if (view === "active") proposalsToShow = activeProposals;
-  else if (view === "sent") proposalsToShow = sentProposals;
-  else if (view === "received") proposalsToShow = receivedProposals;
+  /* =========================
+     Helpers
+  ========================= */
+
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    return Number.isNaN(d.getTime())
+      ? "-"
+      : d.toLocaleDateString("en-GB");
+  };
+
+  const formatMoney = (value) => {
+    if (value === null || value === undefined) return "-";
+    return `$${value}`;
+  };
+
+  const getId = (p) => p.proposalId || p._id;
+
+  /* =========================
+     Actions
+  ========================= */
 
   async function handleAccept(id) {
     try {
-      await API.put(`/business/my/proposals/${id}/status`, { status: "accepted" });
-      updateProposalStatus(id, "accepted");
+      await API.put(`/business/my/proposals/${id}/status`, {
+        status: "accepted",
+      });
+      updateStatus(id, "accepted");
       alert("Proposal approved successfully");
     } catch {
       alert("Error approving proposal");
     }
   }
+
   async function handleReject(id) {
     try {
-      await API.put(`/business/my/proposals/${id}/status`, { status: "rejected" });
-      updateProposalStatus(id, "rejected");
+      await API.put(`/business/my/proposals/${id}/status`, {
+        status: "rejected",
+      });
+      updateStatus(id, "rejected");
       alert("Proposal rejected successfully");
     } catch {
       alert("Error rejecting proposal");
     }
   }
+
   async function handleCancel(id) {
-    if (!window.confirm("Are you sure you want to delete this proposal?")) return;
+    if (!window.confirm("Are you sure you want to cancel this proposal?")) return;
+
     try {
       await API.delete(`/business/my/proposals/${id}`);
       removeProposal(id);
@@ -70,112 +101,125 @@ export default function CollabActiveTab({ userBusinessId, token }) {
     }
   }
 
-  function updateProposalStatus(id, status) {
-    setActiveProposals((prev) =>
-      prev.map((p) => (p._id === id ? { ...p, status } : p))
-    );
-    setSentProposals((prev) =>
-      prev.map((p) => (p._id === id ? { ...p, status } : p))
-    );
-    setReceivedProposals((prev) =>
-      prev.map((p) => (p._id === id ? { ...p, status } : p))
-    );
+  function updateStatus(id, status) {
+    const updater = (list) =>
+      list.map((p) =>
+        getId(p) === id ? { ...p, status } : p
+      );
+
+    setActiveProposals(updater);
+    setSentProposals(updater);
+    setReceivedProposals(updater);
   }
+
   function removeProposal(id) {
-    setActiveProposals((prev) => prev.filter((p) => p._id !== id));
-    setSentProposals((prev) => prev.filter((p) => p._id !== id));
-    setReceivedProposals((prev) => prev.filter((p) => p._id !== id));
+    const filter = (list) =>
+      list.filter((p) => getId(p) !== id);
+
+    setActiveProposals(filter);
+    setSentProposals(filter);
+    setReceivedProposals(filter);
   }
+
+  /* =========================
+     Select view
+  ========================= */
+
+  const proposalsToShow =
+    view === "active"
+      ? activeProposals
+      : view === "sent"
+      ? sentProposals
+      : receivedProposals;
+
+  /* =========================
+     Render
+  ========================= */
 
   return (
     <div>
-      <div
-        style={{
-          marginBottom: 20,
-          display: "flex",
-          justifyContent: "center",
-          gap: 12,
-        }}
-      >
-        <button onClick={() => setView("active")} style={buttonStyle(view === "active")}>
+      {/* Tabs */}
+      <div style={{ marginBottom: 20, display: "flex", justifyContent: "center", gap: 12 }}>
+        <button style={buttonStyle(view === "active")} onClick={() => setView("active")}>
           Active Collaborations
         </button>
-        <button onClick={() => setView("sent")} style={buttonStyle(view === "sent")}>
+        <button style={buttonStyle(view === "sent")} onClick={() => setView("sent")}>
           Sent Proposals
         </button>
-        <button onClick={() => setView("received")} style={buttonStyle(view === "received")}>
+        <button style={buttonStyle(view === "received")} onClick={() => setView("received")}>
           Received Proposals
         </button>
       </div>
 
       {loading && <p style={{ textAlign: "center" }}>Loading proposals...</p>}
-      {error && <p style={{ color: "red", textAlign: "center" }}>Error: {error}</p>}
+      {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
 
       {!loading && proposalsToShow.length === 0 && (
         <p style={{ textAlign: "center" }}>No proposals to display.</p>
       )}
 
       {!loading &&
-        proposalsToShow.map((proposal) => (
-          <div key={proposal._id} className="collab-card">
+        proposalsToShow.map((p) => (
+          <div key={getId(p)} className="collab-card">
             <p>
-              <strong>From Business:</strong>{" "}
-              {proposal.fromBusinessId?.businessName || proposal.partnerName || "-"}
-            </p>
-            <p>
-              <strong>To Business:</strong> {proposal.toBusinessId?.businessName || "-"}
-            </p>
-            <p>
-              <strong>Proposal Title:</strong> {proposal.title || "-"}
-            </p>
-            <p>
-              <strong>Proposal Description:</strong> {proposal.message || "-"}
-            </p>
-            <p>
-              <strong>Amount:</strong> {proposal.amount ? `${proposal.amount} $` : "-"}
-            </p>
-            <p>
-              <strong>Expiration Date:</strong>{" "}
-              {proposal.expiryDate
-                ? new Date(proposal.expiryDate).toLocaleDateString("en-GB")
-                : "-"}
-            </p>
-            <p>
-              <strong>Status:</strong> {proposal.status || "-"}
-            </p>
-            <p>
-              <strong>Created At:</strong>{" "}
-              {proposal.createdAt
-                ? new Date(proposal.createdAt).toLocaleDateString("en-GB")
-                : "-"}
+              <strong>From:</strong>{" "}
+              {p.fromBusinessName ||
+                p.fromBusinessId?.businessName ||
+                "-"}
             </p>
 
-            <div
-              style={{
-                marginTop: 12,
-                display: "flex",
-                gap: 12,
-                justifyContent: "flex-end",
-              }}
-            >
+            <p>
+              <strong>To:</strong>{" "}
+              {p.toBusinessName ||
+                p.toBusinessId?.businessName ||
+                "Public Market"}
+            </p>
+
+            <p>
+              <strong>Title:</strong> {p.title || "-"}
+            </p>
+
+            <p>
+              <strong>Description:</strong> {p.description || "-"}
+            </p>
+
+            <p>
+              <strong>Amount:</strong> {formatMoney(p.amount)}
+            </p>
+
+            <p>
+              <strong>Valid Until:</strong> {formatDate(p.validUntil)}
+            </p>
+
+            <p>
+              <strong>Status:</strong> {p.status}
+            </p>
+
+            <p>
+              <strong>Created:</strong> {formatDate(p.createdAt)}
+            </p>
+
+            {/* Actions */}
+            <div style={{ marginTop: 12, display: "flex", gap: 12, justifyContent: "flex-end" }}>
               {view === "sent" && (
                 <button
-                  onClick={() => handleCancel(proposal._id)}
+                  onClick={() => handleCancel(getId(p))}
                   className="collab-form-button collab-form-button-danger"
                 >
                   Cancel
                 </button>
               )}
-              {view === "received" && proposal.status === "pending" && (
+
+              {view === "received" && p.status === "pending" && (
                 <>
                   <button
-                    onClick={() => handleAccept(proposal._id)}
+                    onClick={() => handleAccept(getId(p))}
                     className="collab-form-button collab-form-button-accept"
                   >
                     Accept
                   </button>
                   <button
-                    onClick={() => handleReject(proposal._id)}
+                    onClick={() => handleReject(getId(p))}
                     className="collab-form-button collab-form-button-reject"
                   >
                     Reject
@@ -189,8 +233,8 @@ export default function CollabActiveTab({ userBusinessId, token }) {
   );
 }
 
-const buttonStyle = (isActive) => ({
-  backgroundColor: isActive ? "#6b46c1" : "#ccc",
+const buttonStyle = (active) => ({
+  backgroundColor: active ? "#6b46c1" : "#ccc",
   color: "white",
   padding: "8px 16px",
   border: "none",

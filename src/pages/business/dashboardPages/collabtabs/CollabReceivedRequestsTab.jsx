@@ -10,32 +10,30 @@ export default function CollabReceivedRequestsTab({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  /* =========================================================
-     Legacy message parser (for old proposals)
-  ========================================================= */
-  const parseMessage = (message) => {
-    if (!message || typeof message !== "string") return {};
-    const lines = message.split("\n").map((line) => line.trim());
-    const parsed = {};
+  /* =========================
+     Helpers
+  ========================= */
 
-    lines.forEach((line) => {
-      if (line.startsWith("Title:")) {
-        parsed.title = line.replace("Title:", "").trim();
-      } else if (line.startsWith("Description:")) {
-        parsed.description = line.replace("Description:", "").trim();
-      } else if (line.startsWith("Amount:")) {
-        parsed.amount = line.replace("Amount:", "").trim();
-      } else if (line.startsWith("Valid Until:")) {
-        parsed.validUntil = line.replace("Valid Until:", "").trim();
-      }
-    });
+  const cleanString = (str) =>
+    str ? String(str).replace(/^"+|"+$/g, "").trim() : "";
 
-    return parsed;
+  const formatMoney = (value) => {
+    if (value === null || value === undefined || value === "") return "-";
+    const num = Number(value);
+    if (Number.isNaN(num)) return "-";
+    return `$${num}`;
   };
 
-  /* =========================================================
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? "-" : d.toLocaleDateString("en-US");
+  };
+
+  /* =========================
      Fetch received proposals
-  ========================================================= */
+  ========================= */
+
   useEffect(() => {
     setLoading(true);
 
@@ -45,7 +43,7 @@ export default function CollabReceivedRequestsTab({
         setReceivedRequests(res.data.proposalsReceived || []);
         setError(null);
       } catch (err) {
-        console.error(err);
+        console.error("Error loading received proposals:", err);
         setError("Error loading received proposals");
       } finally {
         setLoading(false);
@@ -60,9 +58,10 @@ export default function CollabReceivedRequestsTab({
     }
   }, [isDevUser, refreshFlag]);
 
-  /* =========================================================
-     Accept proposal
-  ========================================================= */
+  /* =========================
+     Actions
+  ========================= */
+
   const handleAccept = async (proposalId) => {
     try {
       const res = await API.put(
@@ -70,11 +69,11 @@ export default function CollabReceivedRequestsTab({
         { status: "accepted" }
       );
 
-      const agreementId = res.data?.agreementId || null;
+      const agreementId = res.data?.proposal?.agreementId || null;
 
       setReceivedRequests((prev) =>
         prev.map((p) =>
-          p._id === proposalId || p.proposalId === proposalId
+          p.proposalId === proposalId || p._id === proposalId
             ? {
                 ...p,
                 status: "accepted",
@@ -84,17 +83,14 @@ export default function CollabReceivedRequestsTab({
         )
       );
 
-      alert("✅ Proposal approved successfully. An agreement was created.");
+      alert("✅ Proposal approved successfully. Agreement created.");
       onStatusChange?.();
     } catch (err) {
-      console.error(err);
+      console.error("Error approving proposal:", err);
       alert("❌ Error approving the proposal");
     }
   };
 
-  /* =========================================================
-     Reject proposal
-  ========================================================= */
   const handleReject = async (proposalId) => {
     try {
       await API.put(`/business/my/proposals/${proposalId}/status`, {
@@ -103,7 +99,7 @@ export default function CollabReceivedRequestsTab({
 
       setReceivedRequests((prev) =>
         prev.map((p) =>
-          p._id === proposalId || p.proposalId === proposalId
+          p.proposalId === proposalId || p._id === proposalId
             ? { ...p, status: "rejected" }
             : p
         )
@@ -112,36 +108,32 @@ export default function CollabReceivedRequestsTab({
       alert("❌ Proposal rejected successfully.");
       onStatusChange?.();
     } catch (err) {
-      console.error(err);
+      console.error("Error rejecting proposal:", err);
       alert("❌ Error rejecting the proposal");
     }
   };
 
-  /* =========================================================
+  /* =========================
      UI states
-  ========================================================= */
+  ========================= */
+
   if (loading) return <p>Loading received proposals...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
-  /* =========================================================
+  /* =========================
      Render
-  ========================================================= */
+  ========================= */
+
   return (
     <div
       style={{
         direction: "ltr",
         fontFamily: "Arial, sans-serif",
-        maxWidth: 700,
+        maxWidth: 720,
         margin: "auto",
       }}
     >
-      <h3
-        style={{
-          color: "#6b46c1",
-          marginBottom: 20,
-          textAlign: "center",
-        }}
-      >
+      <h3 style={{ color: "#6b46c1", textAlign: "center", marginBottom: 20 }}>
         📥 Received Proposals
       </h3>
 
@@ -151,115 +143,96 @@ export default function CollabReceivedRequestsTab({
         </p>
       ) : (
         receivedRequests.map((req) => {
-          /* =========================
-             Normalize proposal data
-          ========================= */
+          const key = req.proposalId || req._id;
 
-          const legacy =
-            typeof req.message === "string"
-              ? parseMessage(req.message)
-              : {};
-
-          const title =
-            req?.message?.title ||
-            req.title ||
-            legacy.title ||
-            "-";
-
-          const description =
-            req?.message?.description ||
-            req.description ||
-            legacy.description ||
-            "-";
-
-          const amountRaw =
-            req?.message?.budget ??
-            req.amount ??
-            legacy.amount ??
-            null;
-
-          const amount =
-            amountRaw !== null && amountRaw !== undefined && amountRaw !== ""
-              ? Number(amountRaw)
-              : null;
-
-          const validUntilRaw =
-            req?.message?.expiryDate ||
-            req.validUntil ||
-            legacy.validUntil ||
-            null;
-
-          const validUntil = validUntilRaw
-            ? new Date(validUntilRaw)
-            : null;
-
-          const createdAt = req.createdAt
-            ? new Date(req.createdAt)
-            : null;
-
-          const agreementId =
-            req.agreementId?._id ||
-            req.agreementId ||
-            req.agreement?._id ||
-            req.agreement ||
-            null;
-
-          /* =========================
-             Card
-          ========================= */
           return (
             <div
-              key={req._id || req.proposalId}
+              key={key}
               style={{
                 background: "#fff",
-                padding: 16,
-                borderRadius: 12,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                marginBottom: 16,
+                padding: 18,
+                borderRadius: 14,
+                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                marginBottom: 18,
                 lineHeight: 1.6,
               }}
             >
               <p>
-                <strong>From Business:</strong>{" "}
-                {req.fromBusinessId?.businessName || "Unknown"}
+                <strong>From:</strong>{" "}
+                {req.fromBusinessName ||
+                  req.fromBusinessId?.businessName ||
+                  "-"}
               </p>
 
               <p>
-                <strong>To Business:</strong>{" "}
-                {req.toBusinessId?.businessName || "Unknown"}
+                <strong>To:</strong>{" "}
+                {req.toBusinessName ||
+                  req.toBusinessId?.businessName ||
+                  "-"}
+              </p>
+
+              <hr style={{ margin: "12px 0" }} />
+
+              <p>
+                <strong>Title:</strong>
+              </p>
+              <p>{cleanString(req.title) || "-"}</p>
+
+              <p>
+                <strong>Description:</strong>
+              </p>
+              <p>{cleanString(req.description) || "-"}</p>
+
+              {Array.isArray(req.giving) && req.giving.length > 0 && (
+                <>
+                  <p>
+                    <strong>What they provide:</strong>
+                  </p>
+                  <ul>
+                    {req.giving.map((g, i) => (
+                      <li key={`${key}-give-${i}`}>{cleanString(g)}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              {Array.isArray(req.receiving) && req.receiving.length > 0 && (
+                <>
+                  <p>
+                    <strong>What they expect:</strong>
+                  </p>
+                  <ul>
+                    {req.receiving.map((r, i) => (
+                      <li key={`${key}-receive-${i}`}>{cleanString(r)}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              <p>
+                <strong>Payment:</strong>{" "}
+                {cleanString(req.payment) || "-"}
               </p>
 
               <p>
-                <strong>Proposal Title:</strong> {title}
-              </p>
-
-              <p>
-                <strong>Description:</strong> {description}
-              </p>
-
-              <p>
-                <strong>Budget:</strong>{" "}
-                {amount !== null && !Number.isNaN(amount)
-                  ? `$${amount}`
-                  : "-"}
+                <strong>Amount:</strong>{" "}
+                {formatMoney(req.amount)}
               </p>
 
               <p>
                 <strong>Valid Until:</strong>{" "}
-                {validUntil
-                  ? validUntil.toLocaleDateString("en-US")
-                  : "-"}
+                {formatDate(req.validUntil)}
               </p>
 
               <p>
-                <strong>Status:</strong> {req.status}
+                <strong>Status:</strong>{" "}
+                <strong>{req.status}</strong>
               </p>
 
-              {/* Agreement */}
-              {req.status === "accepted" && agreementId && (
+              {req.status === "accepted" && req.agreementId && (
                 <button
                   style={{
-                    marginTop: 10,
+                    marginTop: 12,
                     padding: "8px 14px",
                     backgroundColor: "#2b6cb0",
                     color: "white",
@@ -269,66 +242,52 @@ export default function CollabReceivedRequestsTab({
                     fontWeight: "bold",
                   }}
                   onClick={() =>
-                    window.open(`/agreements/${agreementId}`, "_blank")
+                    window.open(`/agreements/${req.agreementId}`, "_blank")
                   }
                 >
                   📄 View Agreement
                 </button>
               )}
 
-              <p
-                style={{
-                  color: "#666",
-                  fontSize: "0.9rem",
-                  marginTop: 12,
-                }}
-              >
-                Received on{" "}
-                {createdAt
-                  ? createdAt.toLocaleDateString("en-US")
-                  : "-"}
+              <p style={{ fontSize: "0.85rem", color: "#666", marginTop: 12 }}>
+                Received on {formatDate(req.createdAt)}
               </p>
 
-              {/* Actions */}
               {req.status === "pending" && (
                 <div
                   style={{
-                    marginTop: 12,
+                    marginTop: 14,
                     display: "flex",
                     gap: 12,
                     justifyContent: "flex-end",
                   }}
                 >
                   <button
+                    onClick={() => handleAccept(req.proposalId)}
                     style={{
-                      backgroundColor: "#6b46c1",
-                      color: "white",
+                      background: "#6b46c1",
+                      color: "#fff",
                       border: "none",
                       padding: "8px 16px",
                       borderRadius: 8,
                       cursor: "pointer",
                       fontWeight: "bold",
                     }}
-                    onClick={() =>
-                      handleAccept(req._id || req.proposalId)
-                    }
                   >
                     ✅ Accept
                   </button>
 
                   <button
+                    onClick={() => handleReject(req.proposalId)}
                     style={{
-                      backgroundColor: "#d53f8c",
-                      color: "white",
+                      background: "#e53e3e",
+                      color: "#fff",
                       border: "none",
                       padding: "8px 16px",
                       borderRadius: 8,
                       cursor: "pointer",
                       fontWeight: "bold",
                     }}
-                    onClick={() =>
-                      handleReject(req._id || req.proposalId)
-                    }
                   >
                     ❌ Reject
                   </button>
