@@ -18,7 +18,6 @@ import "./ProposalForm.css";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
-
 export default function ProposalForm({
   fromBusinessName,
   toBusiness,
@@ -28,26 +27,25 @@ export default function ProposalForm({
   const { user } = useAuth();
 
   const [formData, setFormData] = useState({
-    toBusinessId: toBusiness?._id || "",
+    toBusinessId: toBusiness?._id || null,
     title: "",
     description: "",
     giving: "",
     receiving: "",
     type: "Two-sided",
     payment: "",
+    amount: "",
     startDate: "",
     endDate: "",
+    validUntil: "",
     cancelAnytime: false,
     confidentiality: false,
-    amount: "",
-    validUntil: "",
     contactName: "",
     phone: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (toBusiness?._id) {
@@ -62,14 +60,15 @@ export default function ProposalForm({
       [name]: type === "checkbox" ? checked : value,
     }));
     setError(null);
-    setSuccessMessage("");
   };
 
+  /* =========================
+     Submit
+  ========================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setSuccessMessage("");
 
     if (
       !formData.title ||
@@ -84,42 +83,52 @@ export default function ProposalForm({
     }
 
     try {
-      const res = await API.post("/business/my/proposals", {
-        fromBusinessId: user?.businessId,
+      const payload = {
         toBusinessId: formData.toBusinessId,
-        message: {
-          title: formData.title,
-          description: formData.description,
-          budget: formData.amount ? Number(formData.amount) : null,
-          expiryDate: formData.validUntil,
-          giving: formData.giving,
-          receiving: formData.receiving,
-          type: formData.type,
-          payment: formData.payment,
-          startDate: formData.startDate,
-          endDate: formData.endDate,
-          cancelAnytime: formData.cancelAnytime,
-          confidentiality: formData.confidentiality,
-        },
-        contactName: formData.contactName,
-        phone: formData.phone,
-      });
+        title: formData.title.trim(),
+        description: formData.description.trim(),
 
-      const proposalId =
-        res.data?.proposal?._id ||
-        res.data?._id ||
-        res.data?.proposalsSent?.[0]?._id;
+        giving: formData.giving
+          ? [formData.giving.trim()]
+          : [],
+
+        receiving: formData.receiving
+          ? [formData.receiving.trim()]
+          : [],
+
+        type: formData.type,
+        payment: formData.payment || "",
+        amount:
+          formData.amount !== ""
+            ? Number(formData.amount)
+            : null,
+
+        startDate: formData.startDate || null,
+        endDate: formData.endDate || null,
+        validUntil: formData.validUntil,
+
+        cancelAnytime: Boolean(formData.cancelAnytime),
+        confidentiality: Boolean(formData.confidentiality),
+
+        contactName: formData.contactName.trim(),
+        phone: formData.phone,
+      };
+
+      const res = await API.post(
+        "/business/my/proposals",
+        payload
+      );
 
       if (res.status === 200 || res.status === 201) {
-        setSuccessMessage("Proposal sent successfully!");
-        if (onSent) onSent(proposalId);
-        onClose();
+        onSent?.(res.data?.proposal?.proposalId);
+        onClose?.();
       } else {
         setError("Sending failed. Please try again.");
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || "Error sending proposal. Try again."
+        err.response?.data?.error ||
+          "Error sending proposal. Try again."
       );
     } finally {
       setLoading(false);
@@ -131,36 +140,29 @@ export default function ProposalForm({
       component="form"
       onSubmit={handleSubmit}
       sx={{
-  width: "100%",
-  maxWidth: 720,
-  mx: "auto",
-  p: 4,
-  display: "flex",
-  flexDirection: "column",
-  gap: 3,
-  direction: "ltr",
-
-  /* 👇 קריטי */
-  flex: 1,
-  overflow: "visible",
-}}
+        width: "100%",
+        maxWidth: 720,
+        mx: "auto",
+        p: 4,
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
+        direction: "ltr",
+      }}
     >
-      {/* ===== Header ===== */}
       <Typography variant="h5" fontWeight="bold" textAlign="center">
         Business-to-Business Proposal
       </Typography>
 
       <Divider />
 
-      {/* ===== Businesses ===== */}
       <TextField label="From" value={fromBusinessName || ""} disabled />
       <TextField
         label="To"
-        value={toBusiness?.businessName || ""}
+        value={toBusiness?.businessName || "Public Market"}
         disabled
       />
 
-      {/* ===== Proposal Details ===== */}
       <Typography variant="h6">Proposal Details</Typography>
 
       <TextField
@@ -181,7 +183,6 @@ export default function ProposalForm({
         required
       />
 
-      {/* ===== Collaboration ===== */}
       <Typography variant="h6">Collaboration</Typography>
 
       <TextField
@@ -210,7 +211,6 @@ export default function ProposalForm({
         <MenuItem value="With commissions">With commissions</MenuItem>
       </TextField>
 
-      {/* ===== Payment & Dates ===== */}
       <Typography variant="h6">Terms & Payment</Typography>
 
       <TextField
@@ -218,6 +218,19 @@ export default function ProposalForm({
         name="payment"
         value={formData.payment}
         onChange={handleChange}
+      />
+
+      <TextField
+        label="Amount (optional)"
+        name="amount"
+        type="number"
+        value={formData.amount}
+        onChange={handleChange}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">$</InputAdornment>
+          ),
+        }}
       />
 
       <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
@@ -238,6 +251,16 @@ export default function ProposalForm({
           onChange={handleChange}
         />
       </Box>
+
+      <TextField
+        label="Valid Until *"
+        name="validUntil"
+        type="date"
+        InputLabelProps={{ shrink: true }}
+        value={formData.validUntil}
+        onChange={handleChange}
+        required
+      />
 
       <FormControlLabel
         control={
@@ -261,80 +284,33 @@ export default function ProposalForm({
         label="Include Confidentiality Clause"
       />
 
-      <TextField
-        label="Amount (optional)"
-        name="amount"
-        type="number"
-        value={formData.amount}
-        onChange={handleChange}
-        InputProps={{
-          startAdornment: <InputAdornment position="start">$</InputAdornment>,
-        }}
-      />
-
-      <TextField
-        label="Valid Until *"
-        name="validUntil"
-        type="date"
-        InputLabelProps={{ shrink: true }}
-        value={formData.validUntil}
-        onChange={handleChange}
-        required
-      />
-
-      {/* ===== Contact ===== */}
       <Typography variant="h6">Contact Details</Typography>
 
-      <Box
-  display="grid"
-  gridTemplateColumns="1fr 1fr"
-  gap={2}
-  alignItems="flex-start"
->
-  {/* Contact Person */}
-  <TextField
-    label="Contact Person *"
-    name="contactName"
-    value={formData.contactName}
-    onChange={handleChange}
-    required
-    fullWidth
-  />
+      <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+        <TextField
+          label="Contact Person *"
+          name="contactName"
+          value={formData.contactName}
+          onChange={handleChange}
+          required
+        />
 
-  {/* Phone Number */}
-  <Box>
-    <PhoneInput
-      country="us" // או "il"
-      value={formData.phone}
-      onChange={(value) =>
-        setFormData((prev) => ({ ...prev, phone: value }))
-      }
-      placeholder="Phone Number *"
-      inputStyle={{
-        width: "100%",
-        height: "56px",
-        fontSize: "1rem",
-        borderRadius: "12px",
-        paddingLeft: "58px",
-      }}
-      buttonStyle={{
-        height: "56px",
-        borderRadius: "12px 0 0 12px",
-      }}
-      containerStyle={{
-        width: "100%",
-      }}
-      enableSearch
-      disableSearchIcon
-    />
-  </Box>
-</Box>
-
+        <PhoneInput
+          country="us"
+          value={formData.phone}
+          onChange={(value) =>
+            setFormData((prev) => ({ ...prev, phone: value }))
+          }
+          inputStyle={{
+            width: "100%",
+            height: "56px",
+            borderRadius: "12px",
+          }}
+        />
+      </Box>
 
       {error && <Alert severity="error">{error}</Alert>}
-      {successMessage && <Alert severity="success">{successMessage}</Alert>}
 
-      {/* ===== Submit ===== */}
       <Button
         type="submit"
         variant="contained"
