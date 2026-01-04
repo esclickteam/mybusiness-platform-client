@@ -11,6 +11,7 @@ import CreateAgreementForm from "../components/CreateAgreementForm";
 import { useNavigate } from "react-router-dom";
 
 
+
 export default function BusinessProfilePage({ resetSearchFilters }) {
   const { businessId } = useParams();
 
@@ -152,25 +153,34 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     >
       {/* Back (internal users only) */}
       {isOwnerViewingOther && (
-        <button
-          onClick={() => {
-            resetSearchFilters?.();
-            window.location.href = "/business/collaborations";
-          }}
-          style={{
-            background: "none",
-            border: "none",
-            color: "#6c3483",
-            cursor: "pointer",
-            fontSize: 16,
-            marginBottom: 24,
-            fontWeight: 600,
-            textDecoration: "underline",
-          }}
-        >
-          ← Back to Collaborations
-        </button>
-      )}
+  <button
+    onClick={() => {
+      resetSearchFilters?.();
+
+      if (!userBusinessId) {
+        alert("Business not found");
+        return;
+      }
+
+      navigate(
+        `/business/${userBusinessId}/dashboard/collab/find-partner`
+      );
+    }}
+    style={{
+      background: "none",
+      border: "none",
+      color: "#6c3483",
+      cursor: "pointer",
+      fontSize: 16,
+      marginBottom: 24,
+      fontWeight: 600,
+      textDecoration: "underline",
+    }}
+  >
+    ← Back
+  </button>
+)}
+
 
       {/* Header */}
       <div
