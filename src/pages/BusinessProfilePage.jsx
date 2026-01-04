@@ -8,6 +8,8 @@ import API from "../api";
 
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 import CreateAgreementForm from "../components/CreateAgreementForm";
+import { useNavigate } from "react-router-dom";
+
 
 export default function BusinessProfilePage({ resetSearchFilters }) {
   const { businessId } = useParams();
@@ -15,6 +17,8 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
 
   const [currentUserBusinessId, setCurrentUserBusinessId] = useState(null);
   const [currentUserBusinessName, setCurrentUserBusinessName] = useState("");
@@ -241,6 +245,8 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
             onSent={(id) => {
               setCurrentProposalId(id);
               setIsProposalModalOpen(false);
+
+              navigate(`/business/${businessId}/dashboard/collab/messages?tab=sent`, { replace: true });
             }}
           />
         </Box>
