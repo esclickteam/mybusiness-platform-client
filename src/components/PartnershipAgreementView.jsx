@@ -140,6 +140,18 @@ export default function PartnershipAgreementView({
         <hr />
 
         <p>
+  <strong>Contact Person:</strong>{" "}
+  {proposal.contactName || "—"}
+</p>
+<p>
+  <strong>Phone:</strong>{" "}
+  {proposal.phone || "—"}
+</p>
+
+<hr />
+
+
+        <p>
           <strong>Description:</strong> {proposal.description}
         </p>
         <p>
