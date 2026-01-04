@@ -3,91 +3,39 @@ import API from "../../../../api";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
 import { useLocation } from "react-router-dom";
 
+
 /* =======================
    Button Styles
 ======================= */
 
 const buttonStyleBase = {
   border: "none",
-  padding: "10px 18px",
-  borderRadius: 10,
+  padding: "8px 16px",
+  borderRadius: 8,
   cursor: "pointer",
-  fontWeight: 600,
-  fontSize: 14,
+  fontWeight: "bold",
 };
 
 const buttonStylePurple = {
   ...buttonStyleBase,
-  background: "linear-gradient(135deg, #6b46c1, #805ad5)",
+  backgroundColor: "#6b46c1",
   color: "white",
 };
 
 const buttonStylePink = {
   ...buttonStyleBase,
-  background: "linear-gradient(135deg, #d53f8c, #ed64a6)",
+  backgroundColor: "#d53f8c",
   color: "white",
 };
 
 const filterButtonStyle = (active) => ({
-  padding: "10px 22px",
-  borderRadius: 999,
+  padding: "8px 20px",
+  borderRadius: 8,
   border: "none",
   cursor: "pointer",
-  fontWeight: 600,
-  background: active
-    ? "linear-gradient(135deg, #6b46c1, #805ad5)"
-    : "#e5e7eb",
-  color: active ? "white" : "#374151",
-});
-
-/* =======================
-   Card / Badge Styles
-======================= */
-
-const cardStyle = {
-  background: "#ffffff",
-  borderRadius: 16,
-  padding: 20,
-  boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-  marginBottom: 20,
-};
-
-const sectionStyle = {
-  background: "#f9fafb",
-  borderRadius: 12,
-  padding: 14,
-  marginBottom: 14,
-};
-
-const labelStyle = {
-  fontSize: 12,
-  color: "#6b7280",
-  marginBottom: 4,
-};
-
-const valueStyle = {
-  fontSize: 14,
-  fontWeight: 600,
-  color: "#111827",
-};
-
-const badgeStyle = (status) => ({
-  padding: "6px 14px",
-  borderRadius: 999,
-  fontSize: 12,
-  fontWeight: 700,
-  background:
-    status === "accepted"
-      ? "#dcfce7"
-      : status === "pending"
-      ? "#fef9c3"
-      : "#fee2e2",
-  color:
-    status === "accepted"
-      ? "#166534"
-      : status === "pending"
-      ? "#854d0e"
-      : "#991b1b",
+  fontWeight: "bold",
+  backgroundColor: active ? "#6b46c1" : "#ccc",
+  color: active ? "white" : "black",
 });
 
 /* =======================
@@ -107,6 +55,7 @@ export default function CollabMessagesTab({
   const [selectedAgreement, setSelectedAgreement] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const location = useLocation();
+
 
   /* =======================
      Fetch Proposals
@@ -139,15 +88,17 @@ export default function CollabMessagesTab({
   }, [refreshFlag]);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tab = params.get("tab");
-    if (tab && ["sent", "received", "accepted"].includes(tab)) {
-      setFilter(tab);
-    }
-  }, [location.search]);
+  const params = new URLSearchParams(location.search);
+  const tab = params.get("tab");
+
+  if (tab && ["sent", "received", "accepted"].includes(tab)) {
+    setFilter(tab);
+  }
+}, [location.search]);
 
   useEffect(() => {
     if (!socket) return;
+
     let timeoutId = null;
 
     const fetchWithDebounce = () => {
@@ -166,23 +117,93 @@ export default function CollabMessagesTab({
   }, [socket]);
 
   /* =======================
+     Status Updates
+  ======================= */
+
+  const updateMessageStatus = (proposalId, status) => {
+    setMessages((prev) => ({
+      sent: prev.sent.map((p) =>
+        p._id === proposalId ? { ...p, status } : p
+      ),
+      received: prev.received.map((p) =>
+        p._id === proposalId ? { ...p, status } : p
+      ),
+    }));
+  };
+
+  const handleCancelProposal = async (proposalId) => {
+    if (!window.confirm("Are you sure you want to cancel this proposal?")) return;
+
+    try {
+      await API.delete(`/business/my/proposals/${proposalId}`);
+
+      setMessages((prev) => ({
+        sent: prev.sent.filter((p) => p._id !== proposalId),
+        received: prev.received.filter((p) => p._id !== proposalId),
+      }));
+
+      alert("Proposal cancelled successfully");
+      onStatusChange?.();
+    } catch (err) {
+      console.error(err);
+      alert("Error cancelling proposal");
+    }
+  };
+
+  const handleAccept = async (proposalId) => {
+    try {
+      await API.put(`/business/my/proposals/${proposalId}/status`, {
+        status: "accepted",
+      });
+
+      updateMessageStatus(proposalId, "accepted");
+      alert("Proposal accepted successfully");
+      onStatusChange?.();
+    } catch (err) {
+      console.error(err);
+      alert("Error accepting proposal");
+    }
+  };
+
+  const handleReject = async (proposalId) => {
+    try {
+      await API.put(`/business/my/proposals/${proposalId}/status`, {
+        status: "rejected",
+      });
+
+      updateMessageStatus(proposalId, "rejected");
+      alert("Proposal rejected");
+      onStatusChange?.();
+    } catch (err) {
+      console.error(err);
+      alert("Error rejecting proposal");
+    }
+  };
+
+  /* =======================
      Agreement Modal
   ======================= */
 
   const openAgreement = async (agreement) => {
-    const agreementId =
-      typeof agreement === "string" ? agreement : agreement?._id;
+  const agreementId =
+    typeof agreement === "string"
+      ? agreement
+      : agreement?._id;
 
-    if (!agreementId) return alert("Invalid agreement reference");
+  if (!agreementId) {
+    alert("Invalid agreement reference");
+    return;
+  }
 
-    try {
-      const res = await API.get(`/partnershipAgreements/${agreementId}`);
-      setSelectedAgreement(res.data);
-      setModalOpen(true);
-    } catch {
-      alert("Agreement not found or access denied");
-    }
-  };
+  try {
+    const res = await API.get(`/partnershipAgreements/${agreementId}`);
+    setSelectedAgreement(res.data);
+    setModalOpen(true);
+  } catch (err) {
+    console.error("Failed to open agreement:", err);
+    alert("Agreement not found or access denied");
+  }
+};
 
   const closeModal = () => {
     setModalOpen(false);
@@ -208,94 +229,128 @@ export default function CollabMessagesTab({
      Render
   ======================= */
 
-  if (loading) return <div style={{ textAlign: "center" }}>Loading...</div>;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
+  if (loading) {
+    return <div style={{ textAlign: "center", padding: 20 }}>🔄 Loading proposals...</div>;
+  }
+
+  if (error) {
+    return <div style={{ textAlign: "center", padding: 20, color: "red" }}>{error}</div>;
+  }
 
   return (
-    <div style={{ maxWidth: 760, margin: "auto", fontFamily: "Inter, Arial" }}>
+    <div style={{ direction: "ltr", fontFamily: "Arial, sans-serif", maxWidth: 720, margin: "auto" }}>
       {/* Filters */}
-      <div style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 24 }}>
-        <button style={filterButtonStyle(filter === "sent")} onClick={() => setFilter("sent")}>Sent</button>
-        <button style={filterButtonStyle(filter === "received")} onClick={() => setFilter("received")}>Received</button>
-        <button style={filterButtonStyle(filter === "accepted")} onClick={() => setFilter("accepted")}>Accepted</button>
+      <div style={{ marginBottom: 20, display: "flex", gap: 12, justifyContent: "center" }}>
+        <button onClick={() => setFilter("sent")} style={filterButtonStyle(filter === "sent")}>
+          Sent
+        </button>
+        <button onClick={() => setFilter("received")} style={filterButtonStyle(filter === "received")}>
+          Received
+        </button>
+        <button onClick={() => setFilter("accepted")} style={filterButtonStyle(filter === "accepted")}>
+          Accepted
+        </button>
       </div>
 
-      {/* Cards */}
+      {/* Proposals */}
       {messagesToShow.map((msg) => (
-        <div key={msg._id} style={cardStyle}>
-          {/* Header */}
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-            <h3 style={{ margin: 0 }}>🤝 Partnership Proposal</h3>
-            <span style={badgeStyle(msg.status)}>{msg.status}</span>
-          </div>
+        <div
+          key={msg._id}
+          style={{
+            background: "#fff",
+            padding: 16,
+            borderRadius: 12,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            marginBottom: 16,
+          }}
+        >
+          <p><strong>From Business:</strong> {msg.fromBusinessName || "—"}</p>
+          <p><strong>To Business:</strong> {msg.toBusinessName || "—"}</p>
 
-          {/* Parties */}
-          <div style={sectionStyle}>
-            <div style={labelStyle}>From</div>
-            <div style={valueStyle}>{msg.fromBusinessName}</div>
-            <div style={labelStyle}>To</div>
-            <div style={valueStyle}>{msg.toBusinessName}</div>
-          </div>
+          <p><strong>Contact Person:</strong> {msg.contactName || "—"}</p>
+          <p><strong>Phone:</strong> {msg.phone || "—"}</p>
 
-          {/* Contact */}
-          <div style={sectionStyle}>
-            <div style={labelStyle}>Contact Person</div>
-            <div style={valueStyle}>{msg.contactName}</div>
-            <div style={labelStyle}>Phone</div>
-            <div style={valueStyle}>{msg.phone}</div>
-          </div>
+          <hr style={{ margin: "12px 0" }} />
 
-          {/* Details */}
-          <div style={sectionStyle}>
-            <div style={labelStyle}>Description</div>
-            <div style={valueStyle}>{msg.description}</div>
-          </div>
+          <p><strong>Description:</strong> {msg.description || "—"}</p>
+          <p><strong>What You Will Provide:</strong> {msg.giving?.join(", ") || "—"}</p>
+          <p><strong>What You Will Receive:</strong> {msg.receiving?.join(", ") || "—"}</p>
+          <p><strong>Collaboration Type:</strong> {msg.type || "Two-sided"}</p>
+          <p><strong>Payment / Commission:</strong> {msg.payment || "—"}</p>
 
-          {/* Payment */}
-          <div style={{ ...sectionStyle, textAlign: "center" }}>
-            <div style={{ fontSize: 28, fontWeight: 800 }}>
-              {msg.payment || "—"}
-            </div>
-            <div style={{ fontSize: 12, color: "#6b7280" }}>
-              Payment / Commission
-            </div>
-          </div>
+          <p>
+            <strong>Agreement Period:</strong>{" "}
+            {msg.startDate
+              ? `${new Date(msg.startDate).toLocaleDateString()} – ${new Date(msg.endDate).toLocaleDateString()}`
+              : "—"}
+          </p>
 
-          {/* Actions */}
+          <p><strong>Cancelable Anytime:</strong> {msg.cancelAnytime ? "Yes" : "No"}</p>
+          <p><strong>Confidentiality Clause:</strong> {msg.confidentiality ? "Yes" : "No"}</p>
+          <p><strong>Status:</strong> {msg.status}</p>
+
           {msg.status === "accepted" && msg.agreementId && (
             <button
-              style={{ ...buttonStylePurple, width: "100%", marginTop: 12 }}
+              style={{ ...buttonStylePurple, marginTop: 10 }}
               onClick={() => openAgreement(msg.agreementId)}
             >
               📄 View Agreement
             </button>
           )}
+
+          <div style={{ marginTop: 12, display: "flex", gap: 12, justifyContent: "flex-end" }}>
+            {filter === "sent" && (
+              <button
+                style={buttonStylePink}
+                onClick={() => handleCancelProposal(msg._id)}
+              >
+                🗑️ Cancel
+              </button>
+            )}
+
+            {filter === "received" && msg.status === "pending" && (
+              <>
+                <button
+                  style={buttonStylePurple}
+                  onClick={() => handleAccept(msg._id)}
+                >
+                  ✅ Accept
+                </button>
+                <button
+                  style={buttonStylePink}
+                  onClick={() => handleReject(msg._id)}
+                >
+                  ❌ Reject
+                </button>
+              </>
+            )}
+          </div>
         </div>
       ))}
 
-      {/* Modal */}
+      {/* Agreement Modal */}
       {modalOpen && selectedAgreement && (
         <div
           onClick={closeModal}
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0,0,0,0.6)",
+            backgroundColor: "rgba(0,0,0,0.6)",
             display: "flex",
-            alignItems: "center",
             justifyContent: "center",
+            alignItems: "center",
             zIndex: 9999,
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              background: "#fff",
-              borderRadius: 16,
+              background: "white",
+              borderRadius: 12,
               padding: 24,
-              maxWidth: 640,
+              maxWidth: 600,
               width: "90%",
-              maxHeight: "85vh",
+              maxHeight: "80vh",
               overflowY: "auto",
             }}
           >
@@ -303,7 +358,7 @@ export default function CollabMessagesTab({
               agreementId={selectedAgreement._id}
               currentBusinessId={userBusinessId}
             />
-            <button style={{ ...buttonStylePurple, marginTop: 16 }} onClick={closeModal}>
+            <button style={{ ...buttonStylePurple, marginTop: 12 }} onClick={closeModal}>
               Close
             </button>
           </div>
