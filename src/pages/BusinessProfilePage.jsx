@@ -157,13 +157,13 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     onClick={() => {
       resetSearchFilters?.();
 
-      if (!userBusinessId) {
+      if (!currentUserBusinessId) {
         alert("Business not found");
         return;
       }
 
       navigate(
-        `/business/${userBusinessId}/dashboard/collab/find-partner`
+        `/business/${currentUserBusinessId}/dashboard/collab/find-partner`
       );
     }}
     style={{
@@ -180,6 +180,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     ← Back
   </button>
 )}
+
 
 
       {/* Header */}
