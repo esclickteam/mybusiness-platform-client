@@ -151,11 +151,7 @@ export default function ProposalForm({
 
         onSent?.(res.data?.proposal?.proposalId);
 
-        /* ===== Redirect UX ===== */
-        setTimeout(() => {
-          onClose?.();
-          navigate("/collaborations?tab=sent");
-        }, 900);
+        
       } else {
         setToast({
           open: true,
