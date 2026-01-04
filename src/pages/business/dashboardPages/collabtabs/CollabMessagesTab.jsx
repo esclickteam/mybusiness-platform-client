@@ -184,15 +184,26 @@ export default function CollabMessagesTab({
      Agreement Modal
   ======================= */
 
-  const openAgreement = async (agreementId) => {
-    try {
-      const res = await API.get(`/partnershipAgreements/${agreementId}`);
-      setSelectedAgreement(res.data);
-      setModalOpen(true);
-    } catch {
-      alert("Agreement not found or access denied");
-    }
-  };
+  const openAgreement = async (agreement) => {
+  const agreementId =
+    typeof agreement === "string"
+      ? agreement
+      : agreement?._id;
+
+  if (!agreementId) {
+    alert("Invalid agreement reference");
+    return;
+  }
+
+  try {
+    const res = await API.get(`/partnershipAgreements/${agreementId}`);
+    setSelectedAgreement(res.data);
+    setModalOpen(true);
+  } catch (err) {
+    console.error("Failed to open agreement:", err);
+    alert("Agreement not found or access denied");
+  }
+};
 
   const closeModal = () => {
     setModalOpen(false);
