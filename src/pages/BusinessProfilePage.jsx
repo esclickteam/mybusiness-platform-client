@@ -246,7 +246,10 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
               setCurrentProposalId(id);
               setIsProposalModalOpen(false);
 
-              navigate(`/business/${businessId}/dashboard/collab/messages?tab=sent`, { replace: true });
+              navigate(
+  `/business/${businessId}/dashboard/collab/messages?tab=sent`,
+  { replace: true, state: { force: Date.now() } }
+);
             }}
           />
         </Box>

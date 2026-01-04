@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
 import API from "../../../../api";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
+import { useLocation } from "react-router-dom";
+
 
 /* =======================
    Button Styles
@@ -52,6 +54,8 @@ export default function CollabMessagesTab({
   const [filter, setFilter] = useState("sent");
   const [selectedAgreement, setSelectedAgreement] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const location = useLocation();
+
 
   /* =======================
      Fetch Proposals
@@ -82,6 +86,15 @@ export default function CollabMessagesTab({
   useEffect(() => {
     fetchMessages();
   }, [refreshFlag]);
+
+  useEffect(() => {
+  const params = new URLSearchParams(location.search);
+  const tab = params.get("tab");
+
+  if (tab && ["sent", "received", "accepted"].includes(tab)) {
+    setFilter(tab);
+  }
+}, [location.search]);
 
   useEffect(() => {
     if (!socket) return;
