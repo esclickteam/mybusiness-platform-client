@@ -1,15 +1,15 @@
 /* ===========================
-   🎨 משתני צבעים גלובליים
+   🎨 GLOBAL COLOR VARIABLES
    =========================== */
 
-/* ברירת מחדל (light / ציבורי) */
+/* Default (light / public) */
 :root {
   --bg-start: #fdfcff;
   --bg-end: #e4e8ff;
   --text-color: #0f172a;
 }
 
-/* מצב לעסקים / דשבורד */
+/* Business / dashboard theme */
 [data-theme="business"],
 [data-theme="dark"] {
   --bg-start: #f6f7fb;
@@ -18,9 +18,16 @@
 }
 
 /* ===========================
-   🧩 עיצוב כללי
+   🧩 GLOBAL LAYOUT (LTR ONLY)
    =========================== */
-html,
+
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  scrollbar-gutter: stable; /* 🔒 prevents width jump */
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -29,16 +36,17 @@ body {
   direction: ltr;
   text-align: left;
 
-  /* ✅ צבע בסיס מיידי למניעת פלאש לבן */
-  background-color: #f6f7fb; /* נטען מיד */
+  /* Base background to prevent white flash */
+  background-color: #f6f7fb;
   background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
   color: var(--text-color);
 
-  /* ⚡ מניעת הבהוב במעבר נושא */
+  /* Prevent theme flicker */
   transition: none !important;
 
-  /* ✅ מניעת סקרול כפול */
-  overflow: hidden; /* אין גלילה כלל ב-body */
+  /* ✅ IMPORTANT: allow vertical scroll */
+  overflow-x: hidden;
+  overflow-y: auto;
 
   position: relative;
   box-sizing: border-box;
@@ -46,29 +54,37 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ✅ כשנטען נושא (theme) — החזרת מעבר רך */
+/* Smooth transitions after theme is ready */
 body.theme-ready {
-  transition: background-color 0.3s ease, background 0.4s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    background 0.4s ease,
+    color 0.3s ease;
 }
 
 /* ===========================
-   עיצוב כללי לכל האלמנטים
+   GLOBAL BOX MODEL
    =========================== */
-*, *::before, *::after {
+
+*,
+*::before,
+*::after {
   box-sizing: inherit;
 }
 
 /* ===========================
-   קישורים
+   LINKS
    =========================== */
+
 a {
   text-decoration: none;
   color: inherit;
 }
 
 /* ===========================
-   כפתורים
+   BUTTONS
    =========================== */
+
 button {
   cursor: pointer;
   font: inherit;
@@ -79,8 +95,9 @@ button {
 }
 
 /* ===========================
-   נגישות
+   ACCESSIBILITY
    =========================== */
+
 #accessibility-button {
   visibility: hidden;
   position: absolute;
@@ -94,8 +111,9 @@ button {
 }
 
 /* ===========================
-   אנימציית Spinner
+   SPINNER
    =========================== */
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -117,8 +135,9 @@ button {
 }
 
 /* ===========================
-   טיפוגרפיה רספונסיבית
+   RESPONSIVE TYPOGRAPHY
    =========================== */
+
 @media (min-width: 1200px) {
   body {
     font-size: 18px;
@@ -144,8 +163,9 @@ button {
 }
 
 /* ================================
-   🧩 שכבת רקע קבועה למניעת פלאש לבן
+   🧩 FIXED BACKGROUND LAYER
    ================================ */
+
 html::before {
   content: "";
   position: fixed;
@@ -156,8 +176,18 @@ html::before {
 }
 
 /* ================================
-   🌈 פס גלילה מותאם (בתוך app-scroll-area בלבד)
+   🌈 SCROLLBAR (APP ONLY)
    ================================ */
+
+.app-scroll-area {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: thin;
+  scrollbar-color: #8b5cf6 #e6e6ef;
+}
+
 .app-scroll-area::-webkit-scrollbar {
   width: 10px;
 }
@@ -172,15 +202,11 @@ html::before {
   border-radius: 10px;
 }
 
-.app-scroll-area {
-  scrollbar-width: thin;
-  scrollbar-color: #8b5cf6 #e6e6ef; /* Firefox */
-}
-
 /* ===========================
-   🚫 הסתרת פס גלילה זמנית בזמן מעבר עמודים
+   🚫 LOADING STATE (SAFE)
    =========================== */
-body.loading,
+
+/* ❗ Never lock body scroll */
 body.loading .app-scroll-area {
-  overflow: hidden !important;
+  overflow: hidden;
 }
