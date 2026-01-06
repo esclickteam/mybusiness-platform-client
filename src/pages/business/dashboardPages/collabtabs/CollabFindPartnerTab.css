@@ -36,6 +36,13 @@
   direction: ltr;         /* חשוב */
 }
 
+.partners-grid-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+
 /* =========================
    CARD
 ========================= */

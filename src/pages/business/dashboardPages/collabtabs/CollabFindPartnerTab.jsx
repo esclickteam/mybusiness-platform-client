@@ -165,11 +165,14 @@ export default function CollabFindPartnerTab({
   ========================= */
 
   return (
-    <div className="collab-tab-inner">
-      {/* חיפוש עתידי */}
-      <div className="search-container">{/* future search fields */}</div>
+  <div className="collab-tab-inner">
+    {/* חיפוש עתידי */}
+    <div className="search-container">
+      {/* future search fields */}
+    </div>
 
-      {/* Grid קבוע וממורכז */}
+    {/* Grid – ממורכז */}
+    <div className="partners-grid-wrapper">
       <div className="partners-grid">
         {filteredPartners.map((business) => (
           <PartnerCard
@@ -181,5 +184,6 @@ export default function CollabFindPartnerTab({
         ))}
       </div>
     </div>
-  );
+  </div>
+);
 }
