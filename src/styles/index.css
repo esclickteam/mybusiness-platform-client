@@ -1,6 +1,6 @@
 /* ===========================
    🎨 GLOBAL COLOR VARIABLES
-   =========================== */
+=========================== */
 
 /* Default (light / public) */
 :root {
@@ -18,58 +18,35 @@
 }
 
 /* ===========================
-   🧩 GLOBAL LAYOUT (LTR ONLY)
-   =========================== */
+   🧩 ROOT LAYOUT (NO SCROLL)
+=========================== */
 
-html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-
-  /* 🔒 Prevent layout width jumps when scrollbars appear/disappear */
-  scrollbar-gutter: stable;
-}
-
+html,
 body {
-  margin: 0;
-  padding: 0;
   height: 100%;
   width: 100%;
+  margin: 0;
+  padding: 0;
+
+  /* 🔒 CRITICAL: no scrolling here */
+  overflow: hidden !important;
 
   font-family: "Poppins", "Arial", sans-serif;
   direction: ltr;
   text-align: left;
 
-  /* Base background to prevent white flash */
   background-color: #f6f7fb;
-  background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
+  background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
   color: var(--text-color);
 
-  /* Prevent theme flicker */
-  transition: none !important;
-
-  /* ✅ CRITICAL: keep scrollbar ALWAYS reserved */
-  overflow-x: hidden;
-  overflow-y: scroll; /* 🔥 was auto */
-
-  position: relative;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Smooth transitions after theme is ready */
-body.theme-ready {
-  transition:
-    background-color 0.3s ease,
-    background 0.4s ease,
-    color 0.3s ease;
-}
-
 /* ===========================
    GLOBAL BOX MODEL
-   =========================== */
+=========================== */
 
 *,
 *::before,
@@ -78,8 +55,56 @@ body.theme-ready {
 }
 
 /* ===========================
+   FIXED BACKGROUND LAYER
+=========================== */
+
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ===========================
+   APP SCROLL CONTAINER
+   🔥 THE ONLY SCROLL AREA
+=========================== */
+
+.app-scroll-area {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+  min-height: 100%;
+
+  overflow-y: scroll; /* ✅ ONLY HERE */
+  overflow-x: hidden;
+
+  scrollbar-gutter: stable;
+
+  scrollbar-width: thin;
+  scrollbar-color: #8b5cf6 #e6e6ef;
+}
+
+.app-scroll-area::-webkit-scrollbar {
+  width: 10px;
+}
+
+.app-scroll-area::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #a855f7, #6366f1);
+  border-radius: 10px;
+}
+
+.app-scroll-area::-webkit-scrollbar-track {
+  background: #e6e6ef;
+  border-radius: 10px;
+}
+
+/* ===========================
    LINKS
-   =========================== */
+=========================== */
 
 a {
   text-decoration: none;
@@ -88,7 +113,7 @@ a {
 
 /* ===========================
    BUTTONS
-   =========================== */
+=========================== */
 
 button {
   cursor: pointer;
@@ -101,7 +126,7 @@ button {
 
 /* ===========================
    ACCESSIBILITY
-   =========================== */
+=========================== */
 
 #accessibility-button {
   visibility: hidden;
@@ -109,21 +134,20 @@ button {
   left: -9999px;
 }
 
-#accessibility-widget,
-.some-other-fixed-element {
+#accessibility-widget {
   position: fixed;
   z-index: 1000;
 }
 
 /* ===========================
    SPINNER
-   =========================== */
+=========================== */
 
 @keyframes spin {
-  0% {
+  from {
     transform: rotate(0deg);
   }
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
@@ -141,7 +165,7 @@ button {
 
 /* ===========================
    RESPONSIVE TYPOGRAPHY
-   =========================== */
+=========================== */
 
 @media (min-width: 1200px) {
   body {
@@ -167,61 +191,11 @@ button {
   }
 }
 
-/* ================================
-   🧩 FIXED BACKGROUND LAYER
-   ================================ */
-
-html::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* ================================
-   🌈 SCROLLBAR (APP ONLY)
-   ================================ */
-
-/*
-  IMPORTANT:
-  - Do NOT use height: 100vh here (causes issues on some layouts)
-  - Let the container fill the page instead
-*/
-
-.app-scroll-area {
-  flex: 1 1 auto;
-  height: 100%;
-  min-height: 100%;
-  
-  /* 🔒 קריטי: תמיד scrollbar */
-  overflow-y: scroll;   /* ❗ לא auto */
-  overflow-x: hidden;
-
-  scrollbar-width: thin;
-  scrollbar-color: #8b5cf6 #e6e6ef;
-}
-
-.app-scroll-area::-webkit-scrollbar {
-  width: 10px;
-}
-
-.app-scroll-area::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #a855f7, #6366f1);
-  border-radius: 10px;
-}
-
-.app-scroll-area::-webkit-scrollbar-track {
-  background: #e6e6ef;
-  border-radius: 10px;
-}
-
 /* ===========================
-   🚫 LOADING STATE (SAFE)
-   =========================== */
+   SAFE LOADING STATE
+=========================== */
 
-/* ✅ Never lock body scroll */
+/* ❌ Never lock body scroll */
 body.loading .app-scroll-area {
-  overflow: hidden;
+  overflow-y: scroll;
 }
