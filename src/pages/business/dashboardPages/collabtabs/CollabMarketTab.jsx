@@ -343,15 +343,19 @@ export default function CollabMarketTab({ isDevUser }) {
 
             <div className="collab-card-content">
   {/* איש קשר */}
-  <h3 className="business-name">{item.contactName}</h3>
+<h3 className="business-name">{item.contactName}</h3>
 
-  {/* כותרת ההצעה */}
-  <p className="business-category">{item.title}</p>
+{/* Title */}
+<p className="business-field">
+  <strong>*Title:</strong> {item.title}
+</p>
 
-  {/* תיאור */}
-  <p className="business-desc">{item.description}</p>
+{/* Description */}
+<p className="business-field">
+  <strong>*Description:</strong> {item.description}
+</p>
 
-  <hr />
+<hr />
 
   {/* צרכים */}
   <p>
