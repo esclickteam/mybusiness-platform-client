@@ -70,6 +70,8 @@ export default function CollabFindPartnerTab({
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [gridStabilized, setGridStabilized] = useState(false);
+
 
   /* 🔥 key to force grid remount */
   const [gridKey, setGridKey] = useState(0);
@@ -123,14 +125,6 @@ export default function CollabFindPartnerTab({
     fetchData();
   }, [fetchData]);
 
-  /* =========================
-     🔥 FORCE GRID REMOUNT
-  ========================= */
-
-  useEffect(() => {
-    console.log("🔁 pathname changed → remount grid");
-    setGridKey((k) => k + 1);
-  }, [location.pathname]);
 
   /* =========================
      DEBUG: measure grid
@@ -154,18 +148,27 @@ export default function CollabFindPartnerTab({
   ========================= */
 
   useEffect(() => {
-    if (!gridRef.current) return;
+  if (!gridRef.current) return;
 
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        console.log("📏 GRID RESIZED", entry.contentRect.width);
+  const observer = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      const width = Math.round(entry.contentRect.width);
+
+      console.log("📏 GRID RESIZED (final)", width);
+
+      // 🔥 run ONLY ONCE when width is ready
+      if (width > 600 && !gridStabilized) {
+        setGridStabilized(true);
+        setGridKey((k) => k + 1);
       }
-    });
+    }
+  });
 
-    observer.observe(gridRef.current);
+  observer.observe(gridRef.current);
 
-    return () => observer.disconnect();
-  }, []);
+  return () => observer.disconnect();
+}, [gridStabilized]);
+
 
   /* =========================
      Filtering Logic
