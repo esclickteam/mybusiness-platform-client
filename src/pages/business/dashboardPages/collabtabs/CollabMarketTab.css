@@ -406,12 +406,14 @@
   }
 }
 
-/* 📞 Phone input with country code dropdown */
-
+/* 📞 Phone row – force LTR so prefix stays on the LEFT */
 .phone-row {
   display: flex;
   gap: 8px;
   align-items: center;
+
+  direction: ltr;      /* ⬅️ זה הפתרון */
+  justify-content: flex-start;
 }
 
 .country-select {
@@ -423,6 +425,7 @@
   background: #fff;
   font-family: "Heebo", sans-serif;
   cursor: pointer;
+
   direction: ltr;
   text-align: left;
 }
@@ -434,22 +437,7 @@
   border-radius: 8px;
   font-size: 1rem;
   font-family: "Heebo", sans-serif;
+
   direction: ltr;
   text-align: left;
-}
-
-@media (max-width: 480px) {
-  .phone-row {
-    flex-direction: row;
-    gap: 6px;
-  }
-
-  .country-select {
-    min-width: 80px;
-    font-size: 0.9rem;
-  }
-
-  .phone-input {
-    font-size: 0.9rem;
-  }
 }
