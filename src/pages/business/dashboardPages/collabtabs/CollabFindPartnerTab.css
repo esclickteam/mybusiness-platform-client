@@ -14,16 +14,26 @@
 }
 
 /* =========================
-   GRID – LTR
+   WRAPPER – מייצב את כל הטאב
+========================= */
+
+.collab-tab-inner {
+  max-width: 1280px;      /* רוחב קבוע */
+  margin: 0 auto;         /* מרכז */
+  padding: 0 1rem;        /* מרווח צדדים */
+}
+
+/* =========================
+   GRID – LTR (אמריקאי)
 ========================= */
 
 .partners-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 28px;
-  padding: 1.4rem;
+  padding: 1.4rem 0;
 
-  direction: ltr; /* ✅ אתר אמריקאי */
+  direction: ltr;         /* חשוב */
 }
 
 /* =========================
@@ -133,7 +143,7 @@
 }
 
 /* =========================
-   BUTTON
+   BUTTONS
 ========================= */
 
 .collab-card-buttons {
@@ -202,7 +212,6 @@
   .partners-grid {
     grid-template-columns: 1fr;
     gap: 16px;
-    padding: 0.6rem;
   }
 
   .business-card__media {
