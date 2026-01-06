@@ -1,4 +1,9 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../../api";
 import "./CollabFindPartnerTab.css";
@@ -61,12 +66,15 @@ export default function CollabFindPartnerTab({
   freeText,
 }) {
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ חשוב
+  const location = useLocation();
 
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  /* 🔥 KEY STATE FOR GRID REMOUNT */
+  const [gridKey, setGridKey] = useState(0);
 
   /* =========================
      Fetch Data
@@ -95,6 +103,15 @@ export default function CollabFindPartnerTab({
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  /* =========================
+     🔥 FORCE GRID REMEASURE
+     (runs every tab return)
+  ========================= */
+
+  useEffect(() => {
+    setGridKey((k) => k + 1);
+  }, [location.pathname]);
 
   /* =========================
      Filtering Logic
@@ -163,18 +180,15 @@ export default function CollabFindPartnerTab({
   ========================= */
 
   return (
-    <div
-      key={location.key}   /* ✅ FIX: forces remount on tab return */
-      className="collab-tab-inner"
-    >
+    <div className="collab-tab-inner">
       {/* Future search */}
       <div className="search-container">
         {/* future search fields */}
       </div>
 
-      {/* Grid */}
+      {/* 🔥 GRID – forced remount */}
       <div className="partners-grid-wrapper">
-        <div className="partners-grid">
+        <div key={gridKey} className="partners-grid">
           {filteredPartners.map((business) => (
             <PartnerCard
               key={business._id}
