@@ -223,7 +223,7 @@ export default function CollabBusinessProfileTab({ socket }) {
     <>
       <section className="profile-wrapper">
         <header className="profile-header">
-          <h1>📇 Business Profile</h1>
+          <h1> Business Profile</h1>
         </header>
 
         <article className="profile-card">
