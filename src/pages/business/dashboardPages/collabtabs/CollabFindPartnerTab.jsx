@@ -3,6 +3,7 @@ import React, {
   useState,
   useMemo,
   useCallback,
+  useRef,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../../api";
@@ -18,12 +19,10 @@ function PartnerCard({ business, isMine, onOpenProfile }) {
   return (
     <div className={`collab-card${isMine ? " my-business" : ""}`}>
       <div className="collab-card-inner">
-        {/* Logo */}
         <div className="business-card__media">
           <img src={logoUrl} alt={`${business.businessName} logo`} />
         </div>
 
-        {/* Content */}
         <div className="collab-card-content">
           <h3 className="business-name">
             {business.businessName}
@@ -33,7 +32,6 @@ function PartnerCard({ business, isMine, onOpenProfile }) {
           </h3>
 
           <p className="business-category">{business.category}</p>
-
           <p className="business-desc">{business.description}</p>
 
           <div className="collab-card-buttons">
@@ -73,8 +71,29 @@ export default function CollabFindPartnerTab({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  /* 🔥 KEY STATE FOR GRID REMOUNT */
+  /* 🔥 key to force grid remount */
   const [gridKey, setGridKey] = useState(0);
+
+  /* 🔍 ref for measuring grid */
+  const gridRef = useRef(null);
+
+  /* =========================
+     DEBUG: mount / unmount
+  ========================= */
+
+  useEffect(() => {
+    console.log("🟢 FindPartner MOUNT", {
+      pathname: location.pathname,
+      key: location.key,
+    });
+
+    return () => {
+      console.log("🔴 FindPartner UNMOUNT", {
+        pathname: location.pathname,
+        key: location.key,
+      });
+    };
+  }, [location.pathname]);
 
   /* =========================
      Fetch Data
@@ -105,13 +124,48 @@ export default function CollabFindPartnerTab({
   }, [fetchData]);
 
   /* =========================
-     🔥 FORCE GRID REMEASURE
-     (runs every tab return)
+     🔥 FORCE GRID REMOUNT
   ========================= */
 
   useEffect(() => {
+    console.log("🔁 pathname changed → remount grid");
     setGridKey((k) => k + 1);
   }, [location.pathname]);
+
+  /* =========================
+     DEBUG: measure grid
+  ========================= */
+
+  useEffect(() => {
+    if (!gridRef.current) return;
+
+    const rect = gridRef.current.getBoundingClientRect();
+    const styles = getComputedStyle(gridRef.current);
+
+    console.log("📐 GRID MEASURE", {
+      width: rect.width,
+      columns: styles.gridTemplateColumns,
+      gap: styles.gap,
+    });
+  }, [gridKey]);
+
+  /* =========================
+     DEBUG: ResizeObserver
+  ========================= */
+
+  useEffect(() => {
+    if (!gridRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        console.log("📏 GRID RESIZED", entry.contentRect.width);
+      }
+    });
+
+    observer.observe(gridRef.current);
+
+    return () => observer.disconnect();
+  }, []);
 
   /* =========================
      Filtering Logic
@@ -163,17 +217,9 @@ export default function CollabFindPartnerTab({
      States
   ========================= */
 
-  if (loading) {
-    return <p>Loading partners...</p>;
-  }
-
-  if (error) {
-    return <p className="error-text">{error}</p>;
-  }
-
-  if (filteredPartners.length === 0) {
-    return <p>No partners found.</p>;
-  }
+  if (loading) return <p>Loading partners...</p>;
+  if (error) return <p className="error-text">{error}</p>;
+  if (filteredPartners.length === 0) return <p>No partners found.</p>;
 
   /* =========================
      Render
@@ -181,14 +227,16 @@ export default function CollabFindPartnerTab({
 
   return (
     <div className="collab-tab-inner">
-      {/* Future search */}
       <div className="search-container">
         {/* future search fields */}
       </div>
 
-      {/* 🔥 GRID – forced remount */}
       <div className="partners-grid-wrapper">
-        <div key={gridKey} className="partners-grid">
+        <div
+          key={gridKey}
+          ref={gridRef}
+          className="partners-grid"
+        >
           {filteredPartners.map((business) => (
             <PartnerCard
               key={business._id}
