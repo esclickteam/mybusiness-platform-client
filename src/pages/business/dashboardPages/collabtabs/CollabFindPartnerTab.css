@@ -31,11 +31,11 @@
 }
 
 .partners-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;                /* עובר ל־flex */
+  flex-wrap: wrap;              /* ירד לשורה שנייה אם חסר מקום */
+  justify-content: center;      /* ממורכז תמיד */
   gap: 28px;
   padding: 1.4rem 0;
-
   direction: ltr;
   width: 100%;
 }
