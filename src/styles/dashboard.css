@@ -288,9 +288,11 @@ html, body {
   color: #0f172a !important;
 }
 
-html, body {
-  height: auto !important;
-  overflow-y: auto !important;
+html,
+body {
+  height: 100%;
+  overflow-y: scroll !important; /* 🔒 תמיד scrollbar */
+  overflow-x: hidden !important;
 }
 
 /* ביטול גלילה פנימית של מבנה הדשבורד */
