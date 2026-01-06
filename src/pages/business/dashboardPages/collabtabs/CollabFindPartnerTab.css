@@ -14,26 +14,24 @@
 }
 
 /* =========================
-   WRAPPER – מייצב את כל הטאב
+   WRAPPER – stabilizes the tab
 ========================= */
-
-.collab-tab-inner {
-  max-width: 1280px;      /* רוחב קבוע */
-  margin: 0 auto;         /* מרכז */
-  padding: 0 1rem;        /* מרווח צדדים */
-}
-
-/* =========================
-   GRID – LTR (אמריקאי)
-========================= */
-.partners-grid-wrapper {
-  width: 100%;
-}
 
 .collab-tab-inner {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 1rem;
+  width: 100%;
+
+  /* 🔒 critical for SPA remounts */
+  position: relative;
+}
+
+/* =========================
+   GRID – LTR / stable
+========================= */
+
+.partners-grid-wrapper {
   width: 100%;
 }
 
@@ -46,9 +44,18 @@
   margin: 0 auto;
 
   direction: ltr;
+
+  /* 🔒 prevents collapse on tab switch */
+  min-width: 0;
+  contain: layout paint;
 }
 
-
+/* More stable behavior on large screens */
+@media (min-width: 1024px) {
+  .partners-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
 
 /* =========================
    CARD
