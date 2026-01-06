@@ -49,7 +49,7 @@ import CustomerMessagesFAQ from "../CustomerMessagesFAQ";
 import CollaborationsFAQ from "../CollaborationsFAQ";
 import CrmFAQ from "../CrmFAQ";
 import BizUplyAdvisorFAQ from "../BizUplyAdvisorFAQ";
-import AffiliateProgramFAQ from "../System Settings";
+import SystemSettings from "../SystemSettings";
 import TechnicalSupport from "../technicalSupportFAQs";
 import TroubleshootingFAQ from "../troubleshootingFAQs";
 
