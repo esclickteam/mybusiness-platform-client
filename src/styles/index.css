@@ -80,8 +80,8 @@ html::before {
 =========================== */
 
 .app-scroll-area {
-  height: 100vh;              /* 🔒 גובה קבוע */
-  overflow-y: scroll;         /* 🔒 תמיד סקרול */
+  height: 100vh;              
+  overflow-y: auto;         
   overflow-x: hidden;
 
   scrollbar-width: thin;
