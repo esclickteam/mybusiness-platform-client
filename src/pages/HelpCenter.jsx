@@ -108,12 +108,12 @@ export default function HelpCenter() {
         : "/",
     },
     {
-      id: 7,
-      title: "System Settings",
-      path: businessId
-        ? `/business/${businessId}/dashboard/faq/title: "System Settings",`
-        : "/",
-    },
+  id: 7,
+  title: "System Settings",
+  path: businessId
+    ? `/business/${businessId}/dashboard/faq/system-settings`
+    : "/",
+},
     {
       id: 8,
       title: "Troubleshooting & Errors",
