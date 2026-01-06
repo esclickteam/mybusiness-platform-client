@@ -138,7 +138,10 @@ const BusinessDashboardRoutes = () => {
           <Route path="faq/collaborations" element={<CollaborationsFAQ />} />
           <Route path="faq/crm" element={<CrmFAQ />} />
           <Route path="faq/BizUply-advisor" element={<BizUplyAdvisorFAQ />} />
-          <Route path="faq/affiliate-program" element={<AffiliateProgramFAQ />} />
+          <Route
+  path="faq/system-settings"
+  element={<SystemSettings />}
+/>
           <Route path="faq/technical-support" element={<TechnicalSupport />} />
           <Route path="faq/troubleshooting" element={<TroubleshootingFAQ />} />
 
