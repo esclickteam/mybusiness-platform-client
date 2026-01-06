@@ -207,3 +207,12 @@ body[class] {
   overflow-y: hidden !important;
   overflow-x: hidden !important;
 }
+
+/* 🔒 FINAL: single scroll owner */
+.app-scroll-area {
+  overflow-y: scroll !important; /* לא auto */
+  overflow-x: hidden !important;
+
+  height: 100%;
+  min-height: 100%;
+}
