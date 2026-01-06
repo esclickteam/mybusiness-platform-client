@@ -301,11 +301,13 @@ export default function CollabMarketTab({ isDevUser }) {
   <h3 className="collab-title"> Collaboration Market</h3>
 
   <button
-    className="add-collab-button"
-    onClick={() => setShowCreateModal(true)}
-  >
-     Publish Collaboration ➕
-  </button>
+  className="add-collab-button"
+  onClick={() => setShowCreateModal(true)}
+>
+  Publish Collaboration
+  <span className="plus-icon">+</span>
+</button>
+
 </div>
 
     {/* מודאל יצירת שיתוף – לפני המרקט */}
