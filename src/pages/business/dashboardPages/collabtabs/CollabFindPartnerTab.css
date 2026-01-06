@@ -30,18 +30,23 @@
   width: 100%;
 }
 
-.collab-tab-inner .partners-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
-  justify-content: center !important;
-  align-items: start !important;
-  gap: 28px !important;
-  padding: 1.4rem 0 !important;
-  direction: ltr !important;
-  width: 100% !important;
+.collab-tab-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  width: 100%;
 }
 
+.partners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 28px;
 
+  width: 100%;
+  margin: 0 auto;
+
+  direction: ltr;
+}
 
 
 

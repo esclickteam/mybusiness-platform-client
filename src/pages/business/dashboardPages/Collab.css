@@ -14,15 +14,22 @@
   --tab-border: #e0e0e0;
 }
 
+/* =====================================================
+   GLOBAL – LTR ONLY (English UI)
+===================================================== */
+
 body {
   background: var(--main-bg);
-  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-family: "Segoe UI", Tahoma, sans-serif;
   color: var(--text-dark);
-  direction: rtl;
+  direction: ltr;
   text-align: left;
 }
 
-/* טאבים עליונים */
+/* =====================================================
+   TOP TABS
+===================================================== */
+
 .tab-header {
   display: flex;
   flex-direction: row;
@@ -33,7 +40,7 @@ body {
   padding: 1rem 0;
   background-color: #fbfaff;
   margin-bottom: 1rem;
-  direction: rtl;
+  direction: ltr;
 }
 
 .tab {
@@ -50,8 +57,6 @@ body {
   background-color: #f0f3f5;
   transition: all 0.2s ease;
   cursor: pointer;
-  min-width: auto;
-  width: auto;
 }
 
 .tab:hover {
@@ -61,18 +66,21 @@ body {
 
 .tab.active {
   background-color: #6a1b9a;
-  color: #fff;
+  color: #ffffff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* כפתורי קטגוריה */
+/* =====================================================
+   CATEGORY BUTTONS
+===================================================== */
+
 .category-tab-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
   margin: 1.5rem 0;
-  direction: rtl;
+  direction: ltr;
 }
 
 .category-tab {
@@ -83,7 +91,7 @@ body {
   border-radius: 999px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .category-tab:hover {
@@ -92,15 +100,18 @@ body {
 
 .category-tab.active {
   background-color: var(--primary-dark);
-  color: #fff;
+  color: #ffffff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* כרטיס פרופיל עסקי */
+/* =====================================================
+   COLLAB CONTAINER
+===================================================== */
+
 .collab-container {
   background: linear-gradient(to bottom right, #f5f2fc, #fdfbff);
   padding: 2rem;
-  direction: rtl;
+  direction: ltr;
   text-align: left;
 }
 
@@ -111,6 +122,10 @@ body {
   margin-bottom: 1.5rem;
   text-align: center;
 }
+
+/* =====================================================
+   BUSINESS PROFILE CARD
+===================================================== */
 
 .business-profile-card {
   background: var(--card-bg);
@@ -123,8 +138,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  transition: all 0.3s ease-in-out;
-  direction: rtl;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  direction: ltr;
 }
 
 .business-profile-card:hover {
@@ -138,7 +153,7 @@ body {
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
-  direction: rtl;
+  direction: ltr;
 }
 
 .business-header-text {
@@ -152,7 +167,7 @@ body {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--primary);
-  margin-left: 1rem; /* לדחוף את התמונה מעט לשמאל כששאר התוכן לימין */
+  margin-right: 1rem;
 }
 
 .business-name {
@@ -167,6 +182,10 @@ body {
   color: var(--accent);
   font-weight: 500;
 }
+
+/* =====================================================
+   BUSINESS CONTENT
+===================================================== */
 
 .business-section h4 {
   font-size: 1.1rem;
@@ -188,7 +207,10 @@ body {
   list-style: disc;
 }
 
-/* עיצוב תיבת הודעה */
+/* =====================================================
+   MESSAGE BOX
+===================================================== */
+
 .message-box textarea {
   width: 100%;
   padding: 0.8rem;
@@ -202,13 +224,13 @@ body {
 .message-box button {
   margin-top: 0.8rem;
   background-color: var(--primary);
-  color: #fff;
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   padding: 0.6rem 1.4rem;
   cursor: pointer;
   font-weight: bold;
-  transition: 0.2s ease-in-out;
+  transition: background-color 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -218,14 +240,17 @@ body {
   background-color: var(--accent);
 }
 
-/* תג סטטוס */
+/* =====================================================
+   STATUS BADGES
+===================================================== */
+
 .status-badge {
   padding: 4px 10px;
   border-radius: 10px;
   font-size: 0.85rem;
   font-weight: 600;
   display: inline-block;
-  color: white;
+  color: #ffffff;
 }
 
 .status-approved {
@@ -239,76 +264,70 @@ body {
 .status-denied {
   background-color: #d63031;
 }
-/* רספונסיביות כללית */
 
-/* טלפונים קטנים עד 480px */
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
 @media (max-width: 480px) {
   .business-profile-card {
     padding: 1.5rem;
     max-width: 100%;
   }
+
   .business-header {
     flex-direction: column;
     align-items: flex-start;
   }
+
   .business-logo {
     width: 70px;
     height: 70px;
-    margin-left: 0;
+    margin-right: 0;
     margin-bottom: 1rem;
   }
+
   .business-name {
     font-size: 1.4rem;
   }
+
   .business-category {
     font-size: 0.9rem;
   }
+
   .message-box textarea {
     font-size: 0.9rem;
   }
+
   .message-box button {
     width: 100%;
     justify-content: center;
   }
 }
 
-/* טלפונים סטנדרטיים עד 768px */
 @media (max-width: 768px) {
   .business-profile-card {
     padding: 2rem;
     max-width: 100%;
   }
-  .business-header {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
+
   .business-logo {
     width: 80px;
     height: 80px;
-    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
+
   .business-name {
     font-size: 1.6rem;
   }
+
   .business-category {
     font-size: 1rem;
   }
 }
 
-/* טאבלטים עד 1024px */
 @media (max-width: 1024px) {
   .business-profile-card {
     max-width: 700px;
   }
-}
-
-/* מחשבים סטנדרטיים ומעלה */
-/* לא צריך שינוי, נשאר כפי שהוא */
-
-
-/* טאבים – משמאל לימין בלבד */
-.tab-header-ltr {
-  direction: ltr;
-  justify-content: center;
 }
