@@ -304,7 +304,7 @@ export default function CollabMarketTab({ isDevUser }) {
     className="add-collab-button"
     onClick={() => setShowCreateModal(true)}
   >
-    ➕ Publish Collaboration
+     Publish Collaboration ➕
   </button>
 </div>
 
