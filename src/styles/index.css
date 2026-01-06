@@ -199,3 +199,11 @@ button {
 body.loading .app-scroll-area {
   overflow-y: scroll;
 }
+
+/* 🔒 FINAL OVERRIDE – body NEVER scrolls */
+body,
+body.scroll,
+body[class] {
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+}
