@@ -109,9 +109,9 @@ export default function HelpCenter() {
     },
     {
       id: 7,
-      title: "Affiliate Program",
+      title: "System Settings",
       path: businessId
-        ? `/business/${businessId}/dashboard/faq/affiliate-program`
+        ? `/business/${businessId}/dashboard/faq/title: "System Settings",`
         : "/",
     },
     {
