@@ -11,7 +11,10 @@
   align-items: center;
 }
 
-/* עיצוב טופס פרסום שיתוף פעולה */
+/* =========================
+   טופס פרסום שיתוף פעולה
+========================= */
+
 .proposal-form {
   direction: rtl;
   text-align: left;
@@ -67,7 +70,6 @@
   font-weight: 600;
   cursor: pointer;
   margin-top: 15px;
-  text-align: center;
   transition: background-color 0.3s ease;
 }
 
@@ -75,113 +77,121 @@
   background-color: #563fb0;
 }
 
-/* 🖼️ תמונת קמפיין */
-.collab-market-image {
-  width: 100%;
-  max-height: 200px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 1rem;
-}
+/* =========================
+   גריד כרטיסים
+========================= */
 
-/* 🧾 כרטיס - עיצוב חדש תואם כרטיס פרופיל, אך קומפקטי */
 .partners-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.8rem;
   width: 100%;
-  max-width: 600px;
-  justify-content: center;
+  max-width: 1100px;
+  justify-items: center;
 }
+
+/* =========================
+   כרטיס שיתוף (FINAL)
+========================= */
 
 .collab-card {
-  background-color: #faf5ff;             /* רקע סגול בהיר */
-  border: 2px solid #af90d9;             /* מסגרת סגולה */
-  border-radius: 16px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 12px rgba(175,144,217,0.3);
-  text-align: center;                    /* מרכז את הטקסט */
-  font-family: "Heebo", sans-serif;
-  color: #4a3f6b;
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  justify-content: center;               /* מרכז את התוכן אופקית */
-  max-width: 480px;                      /* רוחב מוגבל */
-}
-
-
-/* תמונת פרופיל עגולה עם מסגרת סגולה */
-.collab-card img.profile-image {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  background-color: #faf5ff;
   border: 2px solid #af90d9;
-  object-fit: cover;
-}
+  border-radius: 24px;
+  padding: 1.6rem 1.4rem;
 
-/* אזור תוכן הכרטיס */
-.collab-card .content {
-  flex: 1;
-  font-size: 0.9rem;
+  box-shadow: 0 14px 32px rgba(142, 90, 215, 0.18);
+
   display: flex;
   flex-direction: column;
-  justify-content: center; /* מרכז אנכית */
-  align-items: center;    /* מרכז אופקי */
-  text-align: center;     /* טקסט מיושר למרכז */
+  align-items: center;
+  text-align: center;
+
+  width: 360px;
+  max-width: 100%;
+  min-height: 420px;
 }
 
-/* כותרת שם */
+/* תמונת פרופיל */
+.collab-card img.profile-image {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid #8e5ad7;
+  object-fit: cover;
+  margin-bottom: 0.8rem;
+}
+
+/* אזור תוכן */
+.collab-card .content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* שם */
 .collab-card .content h4 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #6b4fc4;
-  margin-bottom: 0.2rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #8e5ad7;
+  margin: 0.4rem 0 0.2rem;
 }
 
 /* תפקיד */
 .collab-card .content p.role {
+  font-size: 1rem;
   font-weight: 600;
-  color: #3a2e73;
-  margin: 0 0 0.2rem 0;
+  color: #222;
+  margin: 0;
 }
 
-/* תיאור */
+/* תיאור – מוגבל לגובה */
 .collab-card .content p.description {
-  color: #6c5ce7;
-  margin: 0 0 0.4rem 0;
+  font-size: 0.95rem;
+  color: #6b6b6b;
+  margin: 0.4rem 0;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;                /* ✅ זה פותר את האזהרה */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* שדות נוספים */
-.collab-card .content p {
-  margin: 0.1rem 0;
-}
+/* =========================
+   כפתור צפייה בפרופיל
+========================= */
 
-/* כפתור צפייה בפרופיל - זהה לעיצוב שביקשת */
 .collab-card .contact-button,
 .message-box-button.secondary {
+  margin-top: auto;
+  align-self: center;
+
   background-color: #fff;
-  border: 2px solid #9b59b6; /* סגול */
-  color: #9b59b6;
-  padding: 0.6rem 1.4rem;
-  border-radius: 16px;
+  border: 2px solid #8e5ad7;
+  color: #8e5ad7;
+
+  padding: 0.6rem 1.8rem;
+  border-radius: 999px;
   font-weight: 700;
-  cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  align-self: flex-start;
-  text-align: center;
-  display: inline-block;
+
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .collab-card .contact-button:hover,
 .message-box-button.secondary:hover {
-  background-color: #f3e8ff;
-  color: #7a3f9b;
+  background-color: #8e5ad7;
+  color: #fff;
 }
 
-/* 🔘 כפתור הוספת שיתוף */
+/* =========================
+   כפתור הוספת שיתוף
+========================= */
+
 .add-collab-button {
   background-color: #6b4fc4;
   color: white;
@@ -191,253 +201,42 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
   margin: 1rem 0;
+  transition: background 0.3s ease;
 }
 
 .add-collab-button:hover {
   background-color: #563fb0;
 }
 
-/* 🌟 מודל הוספת שיתוף */
-.collab-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+/* =========================
+   רספונסיביות
+========================= */
 
-.collab-modal {
-  background: white;
-  padding: 2rem;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.collab-modal input,
-.collab-modal textarea {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  width: 100%;
-  resize: vertical;
-  direction: rtl;
-  text-align: left;
-  font-family: "Heebo", sans-serif;
-}
-
-/* כפתורי המודל */
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.cancel-button {
-  background-color: #eee;
-  color: #333;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.cancel-button:hover {
-  background-color: #ddd;
-}
-
-/* כותרת מרכזית */
-.collab-title {
-  text-align: center;
-  font-size: 1.6rem;
-  color: #6c5ce7;
-  font-weight: 900;
-  margin: 2rem 0 1.5rem 0;
-}
-/* רספונסיביות עבור טאב 5 - מרקט שיתופים */
-
-/* Extra Small (עד 480px) */
 @media (max-width: 480px) {
-  .collab-market-container {
-    padding: 1rem;
-  }
-  .proposal-form {
-    max-width: 100%;
-    margin-bottom: 1rem;
-  }
   .partners-grid {
     grid-template-columns: 1fr;
-    max-width: 100%;
-    gap: 1rem;
   }
+
   .collab-card {
-    max-width: 100%;
-    flex-direction: column;
-    padding: 0.8rem;
-    gap: 0.6rem;
-    text-align: center;
-  }
-  .collab-card .content {
-    font-size: 0.85rem;
-  }
-  .collab-card .content h4 {
-    font-size: 1rem;
-  }
-  .collab-card img.profile-image {
-    width: 48px;
-    height: 48px;
-    border-width: 1.5px;
-  }
-  .message-box-button.secondary,
-  .collab-card .contact-button {
-    font-size: 0.85rem;
-    padding: 0.4rem 1rem;
-    border-radius: 12px;
-  }
-  .add-collab-button {
-    font-size: 14px;
-    padding: 10px 16px;
-  }
-  .collab-market-image {
-    max-height: 140px;
+    width: 100%;
+    min-height: auto;
   }
 }
 
-/* Small (481px עד 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  .collab-market-container {
-    padding: 1.5rem 2rem;
-  }
-  .proposal-form {
-    max-width: 90%;
-    margin-bottom: 1.5rem;
-  }
-  .partners-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    max-width: 600px;
-    gap: 1.2rem;
-  }
-  .collab-card {
-    max-width: 100%;
-    padding: 1rem;
-    gap: 0.8rem;
-  }
-  .collab-card .content {
-    font-size: 0.9rem;
-  }
-  .collab-card .content h4 {
-    font-size: 1.05rem;
-  }
-  .collab-card img.profile-image {
-    width: 54px;
-    height: 54px;
-    border-width: 2px;
-  }
-  .message-box-button.secondary,
-  .collab-card .contact-button {
-    font-size: 0.95rem;
-    padding: 0.5rem 1.2rem;
-    border-radius: 14px;
-  }
-  .add-collab-button {
-    font-size: 15px;
-    padding: 11px 18px;
-  }
-  .collab-market-image {
-    max-height: 170px;
-  }
-}
+/* =========================
+   Phone row – force LTR
+========================= */
 
-/* Medium ומעלה (769px ומעלה) */
-@media (min-width: 769px) {
-  .collab-market-container {
-    padding: 2rem;
-  }
-  .proposal-form {
-    max-width: 600px;
-    margin-bottom: 2rem;
-  }
-  .partners-grid {
-    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
-    max-width: 600px;
-    gap: 1.5rem;
-  }
-  .collab-card {
-    max-width: 480px;
-    padding: 1rem;
-    gap: 1rem;
-  }
-  .collab-card .content {
-    font-size: 0.9rem;
-  }
-  .collab-card .content h4 {
-    font-size: 1.1rem;
-  }
-  .collab-card img.profile-image {
-    width: 60px;
-    height: 60px;
-    border-width: 2px;
-  }
-  .message-box-button.secondary,
-  .collab-card .contact-button {
-    font-size: 1rem;
-    padding: 0.6rem 1.4rem;
-    border-radius: 16px;
-  }
-  .add-collab-button {
-    font-size: 16px;
-    padding: 12px 20px;
-  }
-  .collab-market-image {
-    max-height: 200px;
-  }
-}
-
-/* 📞 Phone row – force LTR so prefix stays on the LEFT */
 .phone-row {
   display: flex;
   gap: 8px;
   align-items: center;
-
-  direction: ltr;      /* ⬅️ זה הפתרון */
-  justify-content: flex-start;
-}
-
-.country-select {
-  min-width: 90px;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  background: #fff;
-  font-family: "Heebo", sans-serif;
-  cursor: pointer;
-
   direction: ltr;
-  text-align: left;
 }
 
+.country-select,
 .phone-input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-family: "Heebo", sans-serif;
-
   direction: ltr;
   text-align: left;
 }
