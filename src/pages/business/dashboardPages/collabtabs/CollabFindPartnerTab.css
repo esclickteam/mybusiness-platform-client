@@ -31,14 +31,20 @@
 }
 
 .collab-tab-inner .partners-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
-  justify-content: center !important;
-  align-items: start !important;
-  gap: 28px !important;
-  padding: 1.4rem 0 !important;
-  direction: ltr !important;
-  width: 100% !important;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  justify-content: center;
+  align-items: start;
+  gap: 28px;
+  padding: 1.4rem 0;
+  direction: ltr;
+  width: 100%;
+  transition: opacity 0.2s ease;
+  opacity: 0; /* בהתחלה מוסתר */
+}
+
+.collab-tab-inner.active .partners-grid {
+  opacity: 1;
 }
 
 
