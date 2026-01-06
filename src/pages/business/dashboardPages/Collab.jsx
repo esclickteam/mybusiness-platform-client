@@ -1,6 +1,11 @@
 // Collab.js
 import React, { useEffect, useState } from "react";
-import { NavLink, Outlet, useParams } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  useParams,
+  useLocation,
+} from "react-router-dom";
 import { io } from "socket.io-client";
 import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
@@ -11,6 +16,7 @@ import "./Collab.css";
 export default function Collab() {
   const { user, loading } = useAuth();
   const { tab } = useParams();
+  const location = useLocation(); // ✅ חשוב
 
   const [profileData, setProfileData] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
@@ -45,6 +51,7 @@ export default function Collab() {
         setLoadingProfile(false);
       }
     }
+
     fetchProfile();
   }, []);
 
@@ -60,9 +67,15 @@ export default function Collab() {
     });
 
     setSocket(newSocket);
-    return () => newSocket.disconnect();
+
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
 
+  /* =========================
+     Guards
+  ========================= */
   if (loading) {
     return <div className="p-6 text-center">🔄 Loading data...</div>;
   }
@@ -84,10 +97,13 @@ export default function Collab() {
     );
   }
 
+  /* =========================
+     Render
+  ========================= */
   return (
     <AiProvider>
       <div className="p-6 collab-container">
-        {/* טאבים – משמאל לימין */}
+        {/* Tabs – LTR */}
         <nav
           className="tab-header tab-header-ltr"
           role="tablist"
@@ -122,7 +138,9 @@ export default function Collab() {
           </NavLink>
         </nav>
 
+        {/* ✅ KEY FIX – מכריח unmount/mount לכל טאב */}
         <Outlet
+          key={location.pathname}
           context={{
             profileData,
             profileImage,

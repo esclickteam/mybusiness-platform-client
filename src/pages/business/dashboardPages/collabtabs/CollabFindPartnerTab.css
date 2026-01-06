@@ -26,6 +26,9 @@
 /* =========================
    GRID – LTR (אמריקאי)
 ========================= */
+.partners-grid-wrapper {
+  width: 100%;
+}
 
 .partners-grid {
   display: grid;
@@ -37,9 +40,7 @@
   width: 100%;
 }
 
-.partners-grid-wrapper {
-  width: 100%;
-}
+
 
 
 /* =========================
