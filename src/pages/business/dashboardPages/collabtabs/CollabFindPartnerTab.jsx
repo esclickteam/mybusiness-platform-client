@@ -98,15 +98,7 @@ export default function CollabFindPartnerTab({
     fetchData();
   }, [fetchData]);
 
-  useEffect(() => {
-  const timer = setTimeout(() => {
-    const container = document.querySelector(".collab-tab-inner");
-    if (container) container.classList.add("active");
-  }, 50);
-
-  return () => clearTimeout(timer);
-}, []);
-
+  
 
   /* =========================
      Filtering Logic
