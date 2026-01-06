@@ -52,38 +52,38 @@ function CreateCollabForm({ onSuccess }) {
 
       try {
         await API.post("/business/my/proposals", {
-          toBusinessId: null,
+  toBusinessId: null,
 
-          // Required by server
-          title: formData.title.trim(),
-          description: formData.description.trim(),
+  // required by server
+  title: formData.title.trim(),
+  description: formData.description.trim(),
 
-          // Extended data
-          message: {
-            needs: formData.needs
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean),
+  // 🔥 זה החסר
+  validUntil:
+    formData.expiryDate &&
+    !isNaN(new Date(formData.expiryDate).getTime())
+      ? new Date(formData.expiryDate).toISOString()
+      : null,
 
-            offers: formData.offers
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean),
+  // extended data (כמו קודם)
+  message: {
+    needs: formData.needs
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
 
-            budget: formData.budget ? Number(formData.budget) : undefined,
+    offers: formData.offers
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
 
-            expiryDate:
-              formData.expiryDate &&
-              !isNaN(new Date(formData.expiryDate).getTime())
-                ? new Date(formData.expiryDate).toISOString()
-                : undefined,
-          },
+    budget: formData.budget ? Number(formData.budget) : undefined,
+  },
 
-          contactName: formData.contactName.trim(),
+  contactName: formData.contactName.trim(),
+  phone: `${formData.countryCode}${formData.phone.trim()}`,
+});
 
-          // ✅ Full phone number
-          phone: `${formData.countryCode}${formData.phone.trim()}`,
-        });
 
         setFormData({
           countryCode: "+1",
