@@ -347,12 +347,12 @@ export default function CollabMarketTab({ isDevUser }) {
 
 {/* Title */}
 <p className="business-field">
-  <strong>*Title:</strong> {item.title}
+  <strong>Title:</strong> {item.title}
 </p>
 
 {/* Description */}
 <p className="business-field">
-  <strong>*Description:</strong> {item.description}
+  <strong>Description:</strong> {item.description}
 </p>
 
 <hr />
