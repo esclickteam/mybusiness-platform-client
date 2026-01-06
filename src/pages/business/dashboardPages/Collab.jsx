@@ -22,7 +22,9 @@ export default function Collab() {
   const hasCollabAccess =
     isDevUser || user?.subscriptionPlan?.includes("collaboration");
 
-  // Load business profile
+  /* =========================
+     Load business profile
+  ========================= */
   useEffect(() => {
     async function fetchProfile() {
       try {
@@ -46,53 +48,72 @@ export default function Collab() {
     fetchProfile();
   }, []);
 
-  // Connect to Socket.IO
+  /* =========================
+     Socket.IO
+  ========================= */
   useEffect(() => {
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
+    const SOCKET_URL =
+      import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
     const newSocket = io(SOCKET_URL, {
       auth: { token: localStorage.getItem("token") },
     });
-    setSocket(newSocket);
 
-    return () => {
-      newSocket.disconnect();
-    };
+    setSocket(newSocket);
+    return () => newSocket.disconnect();
   }, []);
 
-  if (loading) return <div className="p-6 text-center">🔄 Loading data...</div>;
-  if (!user && !devMode)
-    return <div className="p-6 text-center">⚠️ Please sign in to access this page.</div>;
-  if (!hasCollabAccess && !devMode)
+  if (loading) {
+    return <div className="p-6 text-center">🔄 Loading data...</div>;
+  }
+
+  if (!user && !devMode) {
+    return (
+      <div className="p-6 text-center">
+        ⚠️ Please sign in to access this page.
+      </div>
+    );
+  }
+
+  if (!hasCollabAccess && !devMode) {
     return (
       <div className="p-6 text-center">
         <h2>Collaborations are available only in the advanced plan</h2>
         <UpgradeBanner />
       </div>
     );
+  }
 
   return (
     <AiProvider>
       <div className="p-6 collab-container">
-        <nav className="tab-header" role="tablist" aria-label="Collaborations">
+        {/* טאבים – משמאל לימין */}
+        <nav
+          className="tab-header tab-header-ltr"
+          role="tablist"
+          aria-label="Collaborations"
+        >
           <NavLink
             to="profile"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
             Business Profile
           </NavLink>
+
           <NavLink
             to="find-partner"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
             Find Business Partner
           </NavLink>
+
           <NavLink
             to="messages"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
             Proposals
           </NavLink>
+
           <NavLink
             to="market"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
@@ -107,7 +128,9 @@ export default function Collab() {
             profileImage,
             loadingProfile,
             socket,
-            userBusinessId: user?.businessId ? String(user.businessId) : null,
+            userBusinessId: user?.businessId
+              ? String(user.businessId)
+              : null,
           }}
         />
       </div>

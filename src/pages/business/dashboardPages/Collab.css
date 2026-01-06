@@ -305,3 +305,10 @@ body {
 
 /* מחשבים סטנדרטיים ומעלה */
 /* לא צריך שינוי, נשאר כפי שהוא */
+
+
+/* טאבים – משמאל לימין בלבד */
+.tab-header-ltr {
+  direction: ltr;
+  justify-content: flex-start;
+}
