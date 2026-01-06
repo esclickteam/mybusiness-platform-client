@@ -51,38 +51,32 @@ function CreateCollabForm({ onSuccess }) {
       setLoading(true);
 
       try {
-        await API.post("/business/my/proposals", {
-  toBusinessId: null,
-
-  // required by server
+        await API.post("/collaboration-market", {
   title: formData.title.trim(),
   description: formData.description.trim(),
 
-  // 🔥 זה החסר
+  needs: formData.needs
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
+
+  offers: formData.offers
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
+
+  budget: formData.budget ? Number(formData.budget) : undefined,
+
   validUntil:
     formData.expiryDate &&
     !isNaN(new Date(formData.expiryDate).getTime())
       ? new Date(formData.expiryDate).toISOString()
       : null,
 
-  // extended data (כמו קודם)
-  message: {
-    needs: formData.needs
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean),
-
-    offers: formData.offers
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean),
-
-    budget: formData.budget ? Number(formData.budget) : undefined,
-  },
-
   contactName: formData.contactName.trim(),
   phone: `${formData.countryCode}${formData.phone.trim()}`,
 });
+
 
 
         setFormData({
@@ -248,29 +242,30 @@ export default function CollabMarketTab({ isDevUser }) {
     setError(null);
 
     try {
-      const res = await API.get("/business/proposals/market");
+      const res = await API.get("/collaboration-market");
 
-      if (Array.isArray(res.data.proposals)) {
-        const collabs = res.data.proposals.map((item) => {
-          const msg = item.message || {};
-          return {
-            _id: item._id,
-            businessId: item.fromBusinessId,
-            title: msg.title,
-            description: msg.description,
-            needs: msg.needs || [],
-            offers: msg.offers || [],
-            budget: msg.budget,
-            expiryDate: item.expiryDate || msg.expiryDate,
-            contactName: item.contactName,
-            phone: item.phone,
-          };
-        });
 
-        setCollabMarket(collabs);
-      } else {
-        setError("Error loading collaborations");
-      }
+      if (Array.isArray(res.data.collabs)) {
+  const collabs = res.data.collabs.map((item) => {
+    return {
+      _id: item._id,
+      businessId: item.fromBusinessId,
+      title: item.title,
+      description: item.description,
+      needs: item.needs || [],
+      offers: item.offers || [],
+      budget: item.budget,
+      expiryDate: item.validUntil,
+      contactName: item.contactName,
+      phone: item.phone,
+    };
+  });
+
+  setCollabMarket(collabs);
+} else {
+  setError("Error loading collaborations");
+}
+
     } catch (err) {
       console.error(err);
       setError("Error loading collaborations");
