@@ -247,19 +247,26 @@ export default function CollabMarketTab({ isDevUser }) {
 
       if (Array.isArray(res.data.collabs)) {
   const collabs = res.data.collabs.map((item) => {
-    return {
-      _id: item._id,
-      businessId: item.fromBusinessId,
-      title: item.title,
-      description: item.description,
-      needs: item.needs || [],
-      offers: item.offers || [],
-      budget: item.budget,
-      expiryDate: item.validUntil,
-      contactName: item.contactName,
-      phone: item.phone,
-    };
-  });
+  return {
+    _id: item._id,
+    businessId: item.fromBusinessId,
+
+    title: item.title,
+    description: item.description,
+
+    needs: item.needs || [],
+    offers: item.offers || [],
+
+    budget: item.budget,
+    expiryDate: item.validUntil,
+
+    contactName: item.contactName,
+    phone: item.phone,
+
+    // ✅ זה החסר
+    createdAt: item.createdAt,
+  };
+});
 
   setCollabMarket(collabs);
 } else {
@@ -333,41 +340,70 @@ export default function CollabMarketTab({ isDevUser }) {
       {collabMarket.map((item) => (
         <div key={item._id} className="collab-card">
           <div className="collab-card-inner">
+
             <div className="collab-card-content">
-              <h3 className="business-name">{item.contactName}</h3>
-              <p className="business-category">{item.title}</p>
-              <p className="business-desc">{item.description}</p>
+  {/* איש קשר */}
+  <h3 className="business-name">{item.contactName}</h3>
 
-              <p>
-                <strong>What the business needs:</strong>{" "}
-                {item.needs.join(", ")}
-              </p>
+  {/* כותרת ההצעה */}
+  <p className="business-category">{item.title}</p>
 
-              <p>
-                <strong>What the business offers:</strong>{" "}
-                {item.offers.join(", ")}
-              </p>
+  {/* תיאור */}
+  <p className="business-desc">{item.description}</p>
 
-              <p>
-                <strong>Budget:</strong> ${item.budget}
-              </p>
+  <hr />
 
-              <p>
-                <strong>Valid Until:</strong>{" "}
-                {item.expiryDate
-                  ? new Date(item.expiryDate).toLocaleDateString()
-                  : "-"}
-              </p>
+  {/* צרכים */}
+  <p>
+    <strong>What the business needs:</strong>{" "}
+    {item.needs.length ? item.needs.join(", ") : "—"}
+  </p>
 
-              <div className="collab-card-buttons">
-                <button
-                  className="message-box-button secondary"
-                  onClick={() => handleViewProfile(item.businessId)}
-                >
-                  View Profile
-                </button>
-              </div>
-            </div>
+  {/* הצעות */}
+  <p>
+    <strong>What the business offers:</strong>{" "}
+    {item.offers.length ? item.offers.join(", ") : "—"}
+  </p>
+
+  {/* תקציב */}
+  <p>
+    <strong>Budget:</strong>{" "}
+    {item.budget ? `$${item.budget}` : "—"}
+  </p>
+
+  {/* תוקף */}
+  <p>
+    <strong>Valid Until:</strong>{" "}
+    {item.expiryDate
+      ? new Date(item.expiryDate).toLocaleDateString()
+      : "—"}
+  </p>
+
+  {/* טלפון */}
+  <p>
+    <strong>Contact Phone:</strong>{" "}
+    <a href={`tel:${item.phone}`}>{item.phone}</a>
+  </p>
+
+  {/* תאריך פרסום */}
+  <p className="muted">
+    Published:{" "}
+    {item.createdAt
+      ? new Date(item.createdAt).toLocaleDateString()
+      : "—"}
+  </p>
+
+  <div className="collab-card-buttons">
+    <button
+      className="message-box-button secondary"
+      onClick={() => handleViewProfile(item.businessId)}
+    >
+      View Profile
+    </button>
+  </div>
+</div>
+
+
           </div>
         </div>
       ))}
