@@ -128,46 +128,38 @@ export default function App() {
       <ScrollToTop />
 
       {/* ✅ אזור גלילה יחיד למניעת סקרול כפול */}
-      <div
-        className="app-scroll-area"
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          overflowX: "hidden",
-          minHeight: "100vh",
-          backgroundColor: "#fff",
-        }}
+      <div className="app-scroll-area">
+  <AiProvider>
+    <AnimatePresence mode="wait">
+      <Suspense
+        fallback={
+          <motion.div
+            key="page-loader"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 9999,
+              background: "linear-gradient(180deg, #f6f7fb, #e8ebf8)",
+              pointerEvents: "none",
+              height: "100vh",
+              overflow: "hidden",
+            }}
+          />
+        }
       >
-        <AiProvider>
-          <AnimatePresence mode="wait">
-            <Suspense
-              fallback={
-                <motion.div
-                  key="page-loader"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25, ease: "easeInOut" }}
-                  style={{
-                    position: "fixed",
-                    inset: 0,
-                    zIndex: 9999,
-                    background: "linear-gradient(180deg, #f6f7fb, #e8ebf8)",
-                    pointerEvents: "none",
-                    height: "100vh", // ✅ מבטיח גובה מלא בזמן טעינה
-                    overflow: "hidden",
-                  }}
-                />
-              }
-            >
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.35, ease: "easeInOut" }}
-                style={{ minHeight: "100vh", overflow: "hidden" }}
-              >
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.35, ease: "easeInOut" }}
+          style={{ minHeight: "100vh" }}
+        >
+
                 <Routes location={location} key={location.pathname}>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/about" element={<About />} />
