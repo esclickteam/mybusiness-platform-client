@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../../api";
 import "./CollabFindPartnerTab.css";
 
@@ -11,10 +11,7 @@ function PartnerCard({ business, isMine, onOpenProfile }) {
   const logoUrl = business.logo || "/default-logo.png";
 
   return (
-    <div
-      key={business._id}
-      className={`collab-card${isMine ? " my-business" : ""}`}
-    >
+    <div className={`collab-card${isMine ? " my-business" : ""}`}>
       <div className="collab-card-inner">
         {/* Logo */}
         <div className="business-card__media">
@@ -64,6 +61,7 @@ export default function CollabFindPartnerTab({
   freeText,
 }) {
   const navigate = useNavigate();
+  const location = useLocation(); // ✅ חשוב
 
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [partners, setPartners] = useState([]);
@@ -97,8 +95,6 @@ export default function CollabFindPartnerTab({
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  
 
   /* =========================
      Filtering Logic
@@ -167,25 +163,28 @@ export default function CollabFindPartnerTab({
   ========================= */
 
   return (
-  <div className="collab-tab-inner">
-    {/* חיפוש עתידי */}
-    <div className="search-container">
-      {/* future search fields */}
-    </div>
+    <div
+      key={location.key}   /* ✅ FIX: forces remount on tab return */
+      className="collab-tab-inner"
+    >
+      {/* Future search */}
+      <div className="search-container">
+        {/* future search fields */}
+      </div>
 
-    {/* Grid – ממורכז */}
-    <div className="partners-grid-wrapper">
-      <div className="partners-grid">
-        {filteredPartners.map((business) => (
-          <PartnerCard
-            key={business._id}
-            business={business}
-            isMine={business._id === myBusinessId}
-            onOpenProfile={handleOpenProfile}
-          />
-        ))}
+      {/* Grid */}
+      <div className="partners-grid-wrapper">
+        <div className="partners-grid">
+          {filteredPartners.map((business) => (
+            <PartnerCard
+              key={business._id}
+              business={business}
+              isMine={business._id === myBusinessId}
+              onOpenProfile={handleOpenProfile}
+            />
+          ))}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 }
