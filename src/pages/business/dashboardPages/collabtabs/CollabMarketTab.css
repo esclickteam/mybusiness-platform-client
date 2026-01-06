@@ -4,11 +4,8 @@
   padding: 2rem;
   background: #fdfbff;
   font-family: "Heebo", sans-serif;
-  direction: rtl;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  direction: ltr;          /* ✅ שינוי קריטי */
 }
 
 /* =========================
@@ -112,7 +109,10 @@
   width: 360px;
   max-width: 100%;
   min-height: 420px;
+
+  direction: rtl;   /* 👈 זה */
 }
+
 
 /* תמונת פרופיל */
 .collab-card img.profile-image {
