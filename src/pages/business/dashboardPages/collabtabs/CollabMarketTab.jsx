@@ -23,6 +23,7 @@ function CreateCollabForm({ onSuccess }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -237,6 +238,9 @@ export default function CollabMarketTab({ isDevUser }) {
   const [error, setError] = useState(null);
   const [refreshFlag, setRefreshFlag] = useState(false);
 
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+
   const navigate = useNavigate();
 
   const fetchCollabs = useCallback(async () => {
@@ -289,62 +293,92 @@ export default function CollabMarketTab({ isDevUser }) {
   );
 
   return (
-    <div className="collab-market-container">
-      <CreateCollabForm onSuccess={() => setRefreshFlag((f) => !f)} />
+  <div className="collab-market-container">
+    {/* כותרת */}
+    <h3 className="collab-title">📣 Collaboration Market</h3>
 
-      <h3 className="collab-title">📣 Collaboration Market</h3>
+    {/* כפתור פתיחת מודאל */}
+    <button
+      className="add-collab-button"
+      onClick={() => setShowCreateModal(true)}
+    >
+      ➕ Publish Collaboration
+    </button>
 
-      {loading && <p>Loading collaborations...</p>}
-      {error && <p className="error-text">{error}</p>}
+    {/* מודאל יצירת שיתוף – לפני המרקט */}
+    {showCreateModal && (
+      <div className="collab-modal-overlay">
+        <div className="collab-modal">
+          <CreateCollabForm
+            onSuccess={() => {
+              setShowCreateModal(false);
+              setRefreshFlag((f) => !f);
+            }}
+          />
 
-      {!loading && collabMarket.length === 0 && (
-        <div>No collaborations to display</div>
-      )}
+          <button
+            className="cancel-button"
+            onClick={() => setShowCreateModal(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    )}
 
-      <div className="partners-grid">
-        {collabMarket.map((item) => (
-          <div key={item._id} className="collab-card">
-            <div className="collab-card-inner">
-              <div className="collab-card-content">
-                <h3 className="business-name">{item.contactName}</h3>
-                <p className="business-category">{item.title}</p>
-                <p className="business-desc">{item.description}</p>
+    {/* המרקט */}
+    {loading && <p>Loading collaborations...</p>}
+    {error && <p className="error-text">{error}</p>}
 
-                <p>
-                  <strong>What the business needs:</strong>{" "}
-                  {item.needs.join(", ")}
-                </p>
+    {!loading && collabMarket.length === 0 && (
+      <div>No collaborations to display</div>
+    )}
 
-                <p>
-                  <strong>What the business offers:</strong>{" "}
-                  {item.offers.join(", ")}
-                </p>
+    <div className="partners-grid">
+      {collabMarket.map((item) => (
+        <div key={item._id} className="collab-card">
+          <div className="collab-card-inner">
+            <div className="collab-card-content">
+              <h3 className="business-name">{item.contactName}</h3>
+              <p className="business-category">{item.title}</p>
+              <p className="business-desc">{item.description}</p>
 
-                <p>
-                  <strong>Budget:</strong> ${item.budget}
-                </p>
+              <p>
+                <strong>What the business needs:</strong>{" "}
+                {item.needs.join(", ")}
+              </p>
 
-                <p>
-                  <strong>Valid Until:</strong>{" "}
-                  {item.expiryDate
-                    ? new Date(item.expiryDate).toLocaleDateString()
-                    : "-"}
-                </p>
+              <p>
+                <strong>What the business offers:</strong>{" "}
+                {item.offers.join(", ")}
+              </p>
 
-                <div className="collab-card-buttons">
-                  <button
-                    className="message-box-button secondary"
-                    onClick={() => handleViewProfile(item.businessId)}
-                  >
-                    View Profile
-                  </button>
-                </div>
+              <p>
+                <strong>Budget:</strong> ${item.budget}
+              </p>
+
+              <p>
+                <strong>Valid Until:</strong>{" "}
+                {item.expiryDate
+                  ? new Date(item.expiryDate).toLocaleDateString()
+                  : "-"}
+              </p>
+
+              <div className="collab-card-buttons">
+                <button
+                  className="message-box-button secondary"
+                  onClick={() => handleViewProfile(item.businessId)}
+                >
+                  View Profile
+                </button>
               </div>
-              {/* Logo removed per request */}
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
-  );
+  </div>
+);
+
+
 }
