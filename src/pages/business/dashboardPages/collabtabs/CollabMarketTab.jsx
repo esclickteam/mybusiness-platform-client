@@ -3,8 +3,13 @@ import API from "../../../../api";
 import "./CollabMarketTab.css";
 import { useNavigate } from "react-router-dom";
 
+/* =========================
+   Create Collaboration Form
+========================= */
+
 function CreateCollabForm({ onSuccess }) {
   const [formData, setFormData] = useState({
+    countryCode: "+1", // 🇺🇸 default
     title: "",
     description: "",
     needs: "",
@@ -14,6 +19,7 @@ function CreateCollabForm({ onSuccess }) {
     budget: "",
     expiryDate: "",
   });
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -26,40 +32,60 @@ function CreateCollabForm({ onSuccess }) {
     async (e) => {
       e.preventDefault();
       setError(null);
+
       const { title, description, contactName, phone } = formData;
-      if (!title.trim() || !description.trim() || !contactName.trim() || !phone.trim()) {
-        setError("Please fill in the proposal title, description, contact name, and phone number");
+
+      if (
+        !title.trim() ||
+        !description.trim() ||
+        !contactName.trim() ||
+        !phone.trim()
+      ) {
+        setError(
+          "Please fill in the proposal title, description, contact name, and phone number"
+        );
         return;
       }
 
       setLoading(true);
-      try {
-        const message = {
-          title: formData.title.trim(),
-          description: formData.description.trim(),
-          needs: formData.needs
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-          offers: formData.offers
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-          budget: formData.budget ? Number(formData.budget) : undefined,
-          expiryDate:
-            formData.expiryDate && !isNaN(new Date(formData.expiryDate).getTime())
-              ? new Date(formData.expiryDate).toISOString()
-              : undefined,
-        };
 
+      try {
         await API.post("/business/my/proposals", {
           toBusinessId: null,
-          message,
+
+          // Required by server
+          title: formData.title.trim(),
+          description: formData.description.trim(),
+
+          // Extended data
+          message: {
+            needs: formData.needs
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean),
+
+            offers: formData.offers
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean),
+
+            budget: formData.budget ? Number(formData.budget) : undefined,
+
+            expiryDate:
+              formData.expiryDate &&
+              !isNaN(new Date(formData.expiryDate).getTime())
+                ? new Date(formData.expiryDate).toISOString()
+                : undefined,
+          },
+
           contactName: formData.contactName.trim(),
-          phone: formData.phone.trim(),
+
+          // ✅ Full phone number
+          phone: `${formData.countryCode}${formData.phone.trim()}`,
         });
 
         setFormData({
+          countryCode: "+1",
           title: "",
           description: "",
           needs: "",
@@ -144,14 +170,30 @@ function CreateCollabForm({ onSuccess }) {
 
       <label>
         Phone*:
-        <input
-          type="tel"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-          placeholder="Phone number"
-        />
+        <div className="phone-row">
+          <select
+            name="countryCode"
+            value={formData.countryCode}
+            onChange={handleChange}
+            className="country-select"
+          >
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+972">🇮🇱 +972</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+49">🇩🇪 +49</option>
+          </select>
+
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+            placeholder="Phone number"
+            className="phone-input"
+          />
+        </div>
       </label>
 
       <label>
@@ -185,6 +227,10 @@ function CreateCollabForm({ onSuccess }) {
   );
 }
 
+/* =========================
+   Market View
+========================= */
+
 export default function CollabMarketTab({ isDevUser }) {
   const [collabMarket, setCollabMarket] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -196,9 +242,9 @@ export default function CollabMarketTab({ isDevUser }) {
   const fetchCollabs = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
       const res = await API.get("/business/proposals/market");
-      console.log("Response from /api/business/proposals/market:", res.data);
 
       if (Array.isArray(res.data.proposals)) {
         const collabs = res.data.proposals.map((item) => {
@@ -216,6 +262,7 @@ export default function CollabMarketTab({ isDevUser }) {
             phone: item.phone,
           };
         });
+
         setCollabMarket(collabs);
       } else {
         setError("Error loading collaborations");
@@ -250,7 +297,9 @@ export default function CollabMarketTab({ isDevUser }) {
       {loading && <p>Loading collaborations...</p>}
       {error && <p className="error-text">{error}</p>}
 
-      {!loading && collabMarket.length === 0 && <div>No collaborations to display</div>}
+      {!loading && collabMarket.length === 0 && (
+        <div>No collaborations to display</div>
+      )}
 
       <div className="partners-grid">
         {collabMarket.map((item) => (
@@ -260,19 +309,28 @@ export default function CollabMarketTab({ isDevUser }) {
                 <h3 className="business-name">{item.contactName}</h3>
                 <p className="business-category">{item.title}</p>
                 <p className="business-desc">{item.description}</p>
+
                 <p>
-                  <strong>What the business needs:</strong> {item.needs.join(", ")}
+                  <strong>What the business needs:</strong>{" "}
+                  {item.needs.join(", ")}
                 </p>
+
                 <p>
-                  <strong>What the business offers:</strong> {item.offers.join(", ")}
+                  <strong>What the business offers:</strong>{" "}
+                  {item.offers.join(", ")}
                 </p>
+
                 <p>
                   <strong>Budget:</strong> ${item.budget}
                 </p>
+
                 <p>
                   <strong>Valid Until:</strong>{" "}
-                  {item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : "-"}
+                  {item.expiryDate
+                    ? new Date(item.expiryDate).toLocaleDateString()
+                    : "-"}
                 </p>
+
                 <div className="collab-card-buttons">
                   <button
                     className="message-box-button secondary"
