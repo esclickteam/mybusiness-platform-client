@@ -28,17 +28,16 @@
 ========================= */
 
 .partners-grid {
-  display: flex;
-  flex-direction: column; /* ⬅️ אנכי */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 28px;
-  align-items: center;
+  padding: 1.4rem 0;
+
+  direction: ltr;
   width: 100%;
-  max-width: 520px; /* שומר על כרטיסים יפים באמצע */
 }
 
 .partners-grid-wrapper {
-  display: flex;
-  justify-content: center;
   width: 100%;
 }
 
@@ -217,7 +216,8 @@
 
 @media (max-width: 480px) {
   .partners-grid {
-    gap: 16px; /* ⬅️ רק רווחים, בלי Grid */
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .business-card__media {
@@ -242,7 +242,8 @@
 
 @media (min-width: 481px) and (max-width: 768px) {
   .partners-grid {
-    gap: 22px; /* ⬅️ גם כאן – בלי grid-template-columns */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 22px;
   }
 
   .business-name {
