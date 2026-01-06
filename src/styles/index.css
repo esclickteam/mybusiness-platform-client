@@ -28,15 +28,18 @@ body {
   margin: 0;
   padding: 0;
 
-  /* 🔒 CRITICAL: no scrolling here */
+  /* 🔒 BODY NEVER SCROLLS */
   overflow: hidden !important;
 
   font-family: "Poppins", "Arial", sans-serif;
   direction: ltr;
   text-align: left;
 
-  background-color: #f6f7fb;
-  background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
+  background: linear-gradient(
+    to bottom,
+    var(--bg-start),
+    var(--bg-end)
+  );
   color: var(--text-color);
 
   box-sizing: border-box;
@@ -62,32 +65,30 @@ html::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
+  background: linear-gradient(
+    to bottom,
+    var(--bg-start),
+    var(--bg-end)
+  );
   z-index: -1;
   pointer-events: none;
 }
 
 /* ===========================
-   APP SCROLL CONTAINER
+   🧩 SINGLE SCROLL OWNER
    🔥 THE ONLY SCROLL AREA
 =========================== */
 
 .app-scroll-area {
-  display: flex;
-  flex-direction: column;
-
-  height: 100%;
-  min-height: 100%;
-
-  overflow-y: scroll; /* ✅ ONLY HERE */
+  height: 100vh;              /* 🔒 גובה קבוע */
+  overflow-y: scroll;         /* 🔒 תמיד סקרול */
   overflow-x: hidden;
-
-  scrollbar-gutter: stable;
 
   scrollbar-width: thin;
   scrollbar-color: #8b5cf6 #e6e6ef;
 }
 
+/* Webkit scrollbar */
 .app-scroll-area::-webkit-scrollbar {
   width: 10px;
 }
@@ -189,30 +190,4 @@ button {
   body {
     font-size: 13px;
   }
-}
-
-/* ===========================
-   SAFE LOADING STATE
-=========================== */
-
-/* ❌ Never lock body scroll */
-body.loading .app-scroll-area {
-  overflow-y: scroll;
-}
-
-/* 🔒 FINAL OVERRIDE – body NEVER scrolls */
-body,
-body.scroll,
-body[class] {
-  overflow-y: hidden !important;
-  overflow-x: hidden !important;
-}
-
-/* 🔒 FINAL: single scroll owner */
-.app-scroll-area {
-  overflow-y: scroll !important; /* לא auto */
-  overflow-x: hidden !important;
-
-  height: 100%;
-  min-height: 100%;
 }

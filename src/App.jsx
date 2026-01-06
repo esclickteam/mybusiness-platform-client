@@ -95,7 +95,14 @@ const TrialEnded = lazy(() => import("./pages/TrialEnded"));
 // Smooth scroll to top
 function ScrollToTop() {
   const { pathname } = useLocation();
-  React.useEffect(() => window.scrollTo(0, 0), [pathname]);
+
+  useEffect(() => {
+    const scroller = document.querySelector(".app-scroll-area");
+    if (scroller) {
+      scroller.scrollTop = 0;
+    }
+  }, [pathname]);
+
   return null;
 }
 
@@ -111,14 +118,6 @@ export default function App() {
     preloadDashboardComponents();
   }, []);
 
-  // ✅ הסתרת פס גלילה בזמן טעינת מעבר עמודים
-  useEffect(() => {
-    document.body.classList.add("loading"); // מוסיף class שמסתיר את הסקרול
-    const timeout = setTimeout(() => {
-      document.body.classList.remove("loading"); // מסיר אחרי סיום המעבר
-    }, 700); // משך המעבר (0.35s כפול 2 לביטחון)
-    return () => clearTimeout(timeout);
-  }, [location.pathname]);
 
   if (loading) return <LoginSkeleton />;
 
