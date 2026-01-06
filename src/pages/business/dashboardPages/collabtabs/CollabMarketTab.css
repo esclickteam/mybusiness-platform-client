@@ -113,6 +113,14 @@
   direction: rtl;   /* 👈 זה */
 }
 
+.collab-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* 🔥 מרכז אופקית */
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
 
 /* תמונת פרופיל */
 .collab-card img.profile-image {

@@ -297,15 +297,16 @@ export default function CollabMarketTab({ isDevUser }) {
   return (
   <div className="collab-market-container">
     {/* כותרת */}
-    <h3 className="collab-title">📣 Collaboration Market</h3>
+    <div className="collab-header">
+  <h3 className="collab-title"> Collaboration Market</h3>
 
-    {/* כפתור פתיחת מודאל */}
-    <button
-      className="add-collab-button"
-      onClick={() => setShowCreateModal(true)}
-    >
-      ➕ Publish Collaboration
-    </button>
+  <button
+    className="add-collab-button"
+    onClick={() => setShowCreateModal(true)}
+  >
+    ➕ Publish Collaboration
+  </button>
+</div>
 
     {/* מודאל יצירת שיתוף – לפני המרקט */}
     {showCreateModal && (
