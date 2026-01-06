@@ -25,13 +25,18 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
-  scrollbar-gutter: stable; /* 🔒 prevents width jump */
+  width: 100%;
+
+  /* 🔒 Prevent layout width jumps when scrollbars appear/disappear */
+  scrollbar-gutter: stable;
 }
 
 body {
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%;
+
   font-family: "Poppins", "Arial", sans-serif;
   direction: ltr;
   text-align: left;
@@ -44,9 +49,9 @@ body {
   /* Prevent theme flicker */
   transition: none !important;
 
-  /* ✅ IMPORTANT: allow vertical scroll */
+  /* ✅ CRITICAL: keep scrollbar ALWAYS reserved */
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: scroll; /* 🔥 was auto */
 
   position: relative;
   box-sizing: border-box;
@@ -179,8 +184,15 @@ html::before {
    🌈 SCROLLBAR (APP ONLY)
    ================================ */
 
+/*
+  IMPORTANT:
+  - Do NOT use height: 100vh here (causes issues on some layouts)
+  - Let the container fill the page instead
+*/
+
 .app-scroll-area {
-  height: 100vh;
+  height: 100%;
+  min-height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -206,7 +218,7 @@ html::before {
    🚫 LOADING STATE (SAFE)
    =========================== */
 
-/* ❗ Never lock body scroll */
+/* ✅ Never lock body scroll */
 body.loading .app-scroll-area {
   overflow: hidden;
 }
