@@ -31,20 +31,16 @@
 }
 
 .collab-tab-inner .partners-grid {
-  display: flex !important;
-  flex-wrap: wrap !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
   justify-content: center !important;
-  align-items: stretch !important;
+  align-items: start !important;
   gap: 28px !important;
   padding: 1.4rem 0 !important;
   direction: ltr !important;
   width: 100% !important;
 }
 
-.collab-tab-inner .collab-card {
-  flex: 0 1 calc(33.333% - 28px) !important;
-  max-width: 360px !important;
-}
 
 
 
