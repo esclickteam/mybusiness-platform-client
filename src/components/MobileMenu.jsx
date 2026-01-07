@@ -50,16 +50,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
         </button>
       </div>
 
-      {/* ================= Search ================= */}
-      <div className="menu-search-wrapper">
-        <FaSearch className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search BizUply"
-          aria-label="Search"
-        />
-      </div>
-
+     
       {/* ================= Navigation ================= */}
       <nav className="menu-nav">
         {navLinks.map((item) => (
