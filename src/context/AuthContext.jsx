@@ -395,10 +395,15 @@ if (normalizedUser.role === "admin" && !isImpersonating) {
         const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 const storedUser = localStorage.getItem("businessDetails");
 
-const freshUser =
-  isImpersonating && storedUser
-    ? normalizeUser(JSON.parse(storedUser))
-    : await refreshUser(true);
+let freshUser = null;
+
+if (isImpersonating) {
+  const stored = localStorage.getItem("businessDetails");
+  if (!stored) throw new Error("Missing impersonated user");
+  freshUser = normalizeUser(JSON.parse(stored));
+} else {
+  freshUser = await refreshUser(true);
+}
 
 if (!freshUser) throw new Error("Missing user");
 
