@@ -19,26 +19,49 @@ function normalizeUser(user) {
   const isTrialing = user.subscriptionPlan === "trial" && computedIsValid;
   const isPendingActivation = user.status === "pending_activation";
 
+  // ✅ זיהוי אדמין שמתחזה לעסק
+  const isAdminImpersonating =
+    user.role === "admin" && Boolean(user.businessId);
+
+  const isSubscriptionValid =
+    typeof user?.isSubscriptionValid === "boolean"
+      ? user.isSubscriptionValid
+      : computedIsValid;
+
   return {
     ...user,
-    hasPaid: Boolean(user?.hasPaid),
+
+     isImpersonating: isAdminImpersonating, 
+
+    // 🔐 תשלומים / גישה
+    hasPaid: isAdminImpersonating ? true : Boolean(user?.hasPaid),
+    hasAccess: isAdminImpersonating
+      ? true
+      : isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
+
     subscriptionCancelled: Boolean(user?.subscriptionCancelled),
 
-    isSubscriptionValid:
-      typeof user?.isSubscriptionValid === "boolean"
-        ? user.isSubscriptionValid
-        : computedIsValid,
+    // 📦 סטטוס מנוי
+    isSubscriptionValid: isAdminImpersonating
+      ? true
+      : isSubscriptionValid,
 
-    subscriptionStatus: user.status || user.subscriptionPlan || "free",
+    subscriptionStatus: isAdminImpersonating
+      ? user.subscriptionPlan
+      : user.status || user.subscriptionPlan || "free",
 
+    // 📅 ימים שנותרו
     daysLeft:
-      user.subscriptionEnd && computedIsValid
-        ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
+      user.subscriptionEnd &&
+      (isAdminImpersonating || isSubscriptionValid)
+        ? Math.ceil(
+            (new Date(user.subscriptionEnd) - now) /
+              (1000 * 60 * 60 * 24)
+          )
         : 0,
-
-    hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
 }
+
 
 /* ===========================
    🔁 Token refresh (single flight)
