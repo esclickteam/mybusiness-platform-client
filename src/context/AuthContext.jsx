@@ -148,25 +148,27 @@ export function AuthProvider({ children }) {
 
       // Existing redirect flow
       if (!skipRedirect) {
-        if (normalizedUser.hasAccess) {
-          sessionStorage.setItem("justRegistered", "true");
 
-          if (normalizedUser.role === "business" && normalizedUser.businessId) {
-            navigate(`/business/${normalizedUser.businessId}/dashboard`, {
-              replace: true,
-            });
-          } else {
-            navigate("/dashboard", { replace: true });
-          }
-        } else if (redirectUrl) {
-          const isPlans = redirectUrl === "/plans";
-          const shouldSkip = isPlans && normalizedUser.hasAccess;
+  // 👑 ADMIN — תמיד לדשבורד אדמין
+  if (normalizedUser.role === "admin") {
+    navigate("/admin/dashboard", { replace: true });
+    setLoading(false);
+    return { user: normalizedUser };
+  }
 
-          if (!shouldSkip) {
-            navigate(redirectUrl, { replace: true });
-          }
-        }
-      }
+  if (normalizedUser.role !== "admin" && normalizedUser.hasAccess) {
+  sessionStorage.setItem("justRegistered", "true");
+
+  if (normalizedUser.role === "business" && normalizedUser.businessId) {
+    navigate(`/business/${normalizedUser.businessId}/dashboard`, {
+      replace: true,
+    });
+  } else {
+    navigate("/dashboard", { replace: true });
+  }
+}
+}
+
 
       setLoading(false);
       return { user: normalizedUser, redirectUrl };
@@ -300,17 +302,24 @@ export function AuthProvider({ children }) {
 
         const justRegistered = sessionStorage.getItem("justRegistered");
         if (justRegistered) {
-          sessionStorage.removeItem("justRegistered");
+  sessionStorage.removeItem("justRegistered");
 
-          if (freshUser.role === "business" && freshUser.businessId) {
-            navigate(`/business/${freshUser.businessId}/dashboard`, {
-              replace: true,
-            });
-          } else {
-            navigate("/dashboard", { replace: true });
-          }
-          return;
-        }
+  // 👑 ADMIN
+  if (freshUser.role === "admin") {
+    navigate("/admin/dashboard", { replace: true });
+    return;
+  }
+
+  if (freshUser.role === "business" && freshUser.businessId) {
+    navigate(`/business/${freshUser.businessId}/dashboard`, {
+      replace: true,
+    });
+  } else {
+    navigate("/dashboard", { replace: true });
+  }
+  return;
+}
+
 
         const savedRedirect = sessionStorage.getItem("postLoginRedirect");
         if (savedRedirect) {
