@@ -15,11 +15,13 @@ import "./Collab.css";
 
 export default function Collab() {
   const { user, loading } = useAuth();
-  const { tab } = useParams();
-  const location = useLocation(); // ✅ חשוב
+  const { businessId } = useParams(); // ✅ מקור האמת
+  const location = useLocation();
+
+  const role = (user?.role || "").toLowerCase();
+  const isAdmin = role === "admin";
 
   const [profileData, setProfileData] = useState(null);
-  const [profileImage, setProfileImage] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [socket, setSocket] = useState(null);
 
@@ -30,11 +32,20 @@ export default function Collab() {
 
   /* =========================
      Load business profile
+     ✅ admin → by businessId
+     ✅ business → /business/my
   ========================= */
   useEffect(() => {
+    if (!user) return;
+
     async function fetchProfile() {
       try {
-        const { data } = await API.get("/business/my");
+        const url = isAdmin
+          ? `/business/${businessId}`
+          : `/business/my`;
+
+        const { data } = await API.get(url);
+
         setProfileData({
           businessName: data.businessName || data.name || "",
           category: data.category || "",
@@ -52,8 +63,14 @@ export default function Collab() {
       }
     }
 
+    // ⛔ admin חייב businessId מה־URL
+    if (isAdmin && !businessId) {
+      setLoadingProfile(false);
+      return;
+    }
+
     fetchProfile();
-  }, []);
+  }, [user, isAdmin, businessId]);
 
   /* =========================
      Socket.IO
@@ -67,10 +84,7 @@ export default function Collab() {
     });
 
     setSocket(newSocket);
-
-    return () => {
-      newSocket.disconnect();
-    };
+    return () => newSocket.disconnect();
   }, []);
 
   /* =========================
@@ -81,14 +95,10 @@ export default function Collab() {
   }
 
   if (!user && !devMode) {
-    return (
-      <div className="p-6 text-center">
-        ⚠️ Please sign in to access this page.
-      </div>
-    );
+    return <div className="p-6 text-center">⚠️ Please sign in.</div>;
   }
 
-  if (!hasCollabAccess && !devMode) {
+  if (!hasCollabAccess && !isAdmin && !devMode) {
     return (
       <div className="p-6 text-center">
         <h2>Collaborations are available only in the advanced plan</h2>
@@ -103,52 +113,30 @@ export default function Collab() {
   return (
     <AiProvider>
       <div className="p-6 collab-container">
-        {/* Tabs – LTR */}
-        <nav
-          className="tab-header tab-header-ltr"
-          role="tablist"
-          aria-label="Collaborations"
-        >
-          <NavLink
-            to="profile"
-            className={({ isActive }) => (isActive ? "tab active" : "tab")}
-          >
+        <nav className="tab-header tab-header-ltr">
+          <NavLink to="profile" className={({ isActive }) => isActive ? "tab active" : "tab"}>
             Business Profile
           </NavLink>
-
-          <NavLink
-            to="find-partner"
-            className={({ isActive }) => (isActive ? "tab active" : "tab")}
-          >
+          <NavLink to="find-partner" className={({ isActive }) => isActive ? "tab active" : "tab"}>
             Find Business Partner
           </NavLink>
-
-          <NavLink
-            to="messages"
-            className={({ isActive }) => (isActive ? "tab active" : "tab")}
-          >
+          <NavLink to="messages" className={({ isActive }) => isActive ? "tab active" : "tab"}>
             Proposals
           </NavLink>
-
-          <NavLink
-            to="market"
-            className={({ isActive }) => (isActive ? "tab active" : "tab")}
-          >
+          <NavLink to="market" className={({ isActive }) => isActive ? "tab active" : "tab"}>
             Collaboration Market
           </NavLink>
         </nav>
 
-        {/* ✅ KEY FIX – מכריח unmount/mount לכל טאב */}
+        {/* ✅ businessId תמיד מה־URL */}
         <Outlet
           key={location.pathname}
           context={{
             profileData,
-            profileImage,
             loadingProfile,
             socket,
-            userBusinessId: user?.businessId
-              ? String(user.businessId)
-              : null,
+            businessId, // 🔥 FIX קריטי
+            isAdmin,
           }}
         />
       </div>
