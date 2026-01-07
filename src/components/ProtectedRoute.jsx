@@ -9,6 +9,8 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   const location = useLocation();
   const [showTrialModal, setShowTrialModal] = useState(false);
   const [checkedTrial, setCheckedTrial] = useState(false);
+  const isAdmin = (user?.role || "").toLowerCase() === "admin";
+
 
   /* ===========================
      🟣 סוג משתמש
@@ -75,6 +77,14 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
+
+  /* ===========================
+   👑 Admin – bypass מלא
+=========================== */
+if (isAdmin) {
+  return <>{children}</>;
+}
+
 
   /* ===========================
      🔐 הרשאות לפי תפקיד
