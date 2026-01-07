@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap");
+
 /* ===========================
    🎨 GLOBAL COLOR VARIABLES
 =========================== */
@@ -18,7 +20,7 @@
 }
 
 /* ===========================
-   🧩 ROOT LAYOUT (NO SCROLL)
+   🧩 ROOT LAYOUT (NORMAL SCROLL)
 =========================== */
 
 html,
@@ -28,7 +30,7 @@ body {
   margin: 0;
   padding: 0;
 
-  /* ✅ גלילה רגילה */
+  /* ✅ גלילה טבעית */
   overflow-x: hidden;
   overflow-y: auto;
 
@@ -48,7 +50,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 /* ===========================
    GLOBAL BOX MODEL
 =========================== */
@@ -60,9 +61,10 @@ body {
 }
 
 /* ===========================
-   FIXED BACKGROUND LAYER
+   ❌ REMOVED: FIXED BACKGROUND LAYER
+   (שבר Header + Mobile במובייל)
 =========================== */
-
+/*
 html::before {
   content: "";
   position: fixed;
@@ -75,35 +77,19 @@ html::before {
   z-index: -1;
   pointer-events: none;
 }
+*/
 
 /* ===========================
-   🧩 SINGLE SCROLL OWNER
-   🔥 THE ONLY SCROLL AREA
+   ❌ REMOVED: SINGLE SCROLL OWNER
+   (לא מתאים ל־Landing Pages)
 =========================== */
-
+/*
 .app-scroll-area {
-  height: 100vh;              
-  overflow-y: auto;         
+  height: 100vh;
+  overflow-y: auto;
   overflow-x: hidden;
-
-  scrollbar-width: thin;
-  scrollbar-color: #8b5cf6 #e6e6ef;
 }
-
-/* Webkit scrollbar */
-.app-scroll-area::-webkit-scrollbar {
-  width: 10px;
-}
-
-.app-scroll-area::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #a855f7, #6366f1);
-  border-radius: 10px;
-}
-
-.app-scroll-area::-webkit-scrollbar-track {
-  background: #e6e6ef;
-  border-radius: 10px;
-}
+*/
 
 /* ===========================
    LINKS
