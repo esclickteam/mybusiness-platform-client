@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // ⚠️ עדכני נתיב לפי הפרויקט
+import { useAuth } from "../../context/AuthContext";
+import "./AdminHeader.css"; // ❗ חובה
 
 const AdminHeader = () => {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ const AdminHeader = () => {
 
   const handleLogout = async () => {
     try {
-      await logout(); // 🔐 logout מרכזי
+      await logout();
       navigate("/admin-login");
     } catch (err) {
       console.error("Logout failed", err);
@@ -18,7 +19,7 @@ const AdminHeader = () => {
   return (
     <header className="admin-header">
       <div className="admin-header-left">
-        <span className="admin-logo">👑 Admin Panel</span>
+        👑 Admin Panel
       </div>
 
       <div className="admin-header-right">
@@ -26,7 +27,11 @@ const AdminHeader = () => {
           Hello, {user?.name || "Admin"}
         </span>
 
-        <button className="logout-btn" onClick={handleLogout}>
+        <button
+          type="button"
+          className="logout-btn"
+          onClick={handleLogout}
+        >
           Logout
         </button>
       </div>
