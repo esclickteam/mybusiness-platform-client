@@ -472,9 +472,6 @@ sock.on("newReview", (reviewData) => {
     }
   }, [location.pathname, location.state]);
 
- console.log("role:", user?.role);
-console.log("user.businessId:", user?.businessId);
-console.log("url businessId:", businessId);
 
 
 /* guards */

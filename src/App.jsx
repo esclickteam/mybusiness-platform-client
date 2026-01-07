@@ -199,7 +199,8 @@ export default function App() {
                   <Route
                     path="/business/collaborations/:tab?"
                     element={
-                      <ProtectedRoute roles={["business"]}>
+                      <ProtectedRoute roles={["business", "admin"]}>
+
                         <Collab />
                       </ProtectedRoute>
                     }
@@ -233,7 +234,8 @@ export default function App() {
                   <Route
                     path="/business/:businessId/dashboard/*"
                     element={
-                      <ProtectedRoute roles={["business"]}>
+                      <ProtectedRoute roles={["business", "admin"]}>
+
                         <BusinessDashboardRoutes />
                       </ProtectedRoute>
                     }
@@ -243,7 +245,8 @@ export default function App() {
                   <Route
                     path="/business/:businessId/chat/*"
                     element={
-                      <ProtectedRoute roles={["business"]}>
+                      <ProtectedRoute roles={["business", "admin"]}>
+
                         <BusinessChatPage />
                       </ProtectedRoute>
                     }
@@ -457,7 +460,7 @@ export function BusinessChatWrapper() {
   const { user, loading } = useAuth();
 
   if (loading) return <div>Loading...</div>;
-  if (!user || user.role !== "business") return <Navigate to="/login" replace />;
+  if (!user || !["business", "admin"].includes(user.role)) return <Navigate to="/login" replace />;
   if (!state?.conversationId) return <div>Error: Missing conversationId</div>;
 
   return (
