@@ -369,14 +369,7 @@ if (!freshUser) throw new Error("Missing user");
 setUser(freshUser);
 
 const isInAdminArea = location.pathname.startsWith("/admin");
-if (
-  freshUser.role === "admin" &&
-  !isImpersonating &&
-  !location.pathname.startsWith("/admin")
-) {
-  navigate("/admin/dashboard", { replace: true });
-  return;
-}
+
 
 
         const newSocket = await createSocket(
