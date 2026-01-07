@@ -132,6 +132,17 @@
   }
 }
 
+.summary-card.clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.summary-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+
 @media (min-width: 481px) and (max-width: 767px) {
   .admin-summary,
   .admin-actions {

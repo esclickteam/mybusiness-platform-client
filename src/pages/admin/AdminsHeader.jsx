@@ -14,12 +14,12 @@ const AdminHeader = () => {
 
   return (
     <header className="admin-header">
-      {/* צד שמאל – לוגו */}
+      {/* צד שמאל – כותרת */}
       <div className="admin-header-left">
         👑 Admin Panel
       </div>
 
-      {/* אמצע – ניווט */}
+      {/* אמצע – ניווט (Dashboard בלבד) */}
       <nav className="admin-nav">
         <NavLink
           to="/admin/dashboard"
@@ -28,15 +28,6 @@ const AdminHeader = () => {
           }
         >
           Dashboard
-        </NavLink>
-
-        <NavLink
-          to="/admin/users"
-          className={({ isActive }) =>
-            `admin-link ${isActive ? "active" : ""}`
-          }
-        >
-          Users
         </NavLink>
       </nav>
 

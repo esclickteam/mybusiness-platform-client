@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import "./AdminDashboard.css";
 import AdminHeader from "./AdminsHeader";
 
+
 function AdminDashboard() {
   const { user, refreshAccessToken, logout } = useAuth();
   const navigate = useNavigate();
@@ -108,6 +109,8 @@ function AdminDashboard() {
           Hello, {user?.name || user?.email || "Admin"}
         </p>
 
+
+
         <div className="admin-summary">
           <div className="summary-card">
             👥 Users in System: <strong>{stats.totalUsers}</strong>
@@ -132,6 +135,13 @@ function AdminDashboard() {
           <div className="summary-card">
             🚫 Blocked Users: <strong>{stats.blockedUsers}</strong>
           </div>
+
+          <div
+           className="summary-card clickable"
+           onClick={() => navigate("/admin/users")}
+          >
+          👥 Manage Users
+         </div>
         </div>
       </div>
     </>
