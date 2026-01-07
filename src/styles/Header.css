@@ -408,7 +408,7 @@
   .menu-button.mobile-only {
     position: absolute;     /* מוציא אותו מה־flex */
     right: 16px;            /* מצמיד לימין */
-    top: 12px;              /* ✅ כמו HubSpot (קבוע למעלה) */
+    top: 6px;               /* ✅ כמו HubSpot (קבוע למעלה) */
     transform: none;        /* ✅ לא מרכז אנכית */
     z-index: 20;
 
