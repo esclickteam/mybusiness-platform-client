@@ -1,5 +1,5 @@
 /* ===================================================================
-   Header.css – Clean & Mobile-First
+   Header.css – Clean, Stable & Mobile-First
 =================================================================== */
 
 /* ================= Header Base ================= */
@@ -9,24 +9,25 @@
   display: flex;
   align-items: center;
   height: 72px;
-  background: #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  z-index: 1500;
   padding: 0 24px;
+  background: #ffffff;
+  z-index: 1500;
 }
 
 /* ================= Logo ================= */
 
 .logo-wrapper {
-  pointer-events: none;
+  display: flex;
+  align-items: center;
 }
 
 .logo-link {
-  pointer-events: auto;
+  display: flex;
+  align-items: center;
 }
 
 .logo {
-  height: 42px;
+  height: 48px;
   width: auto;
   object-fit: contain;
 }
@@ -101,74 +102,79 @@
   background: #4315c7;
 }
 
-/* ================= Hamburger (Mobile) ================= */
+/* ================= Hamburger ================= */
 
-.menu-button.mobile-only {
+.menu-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #5e17eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ================= Visibility Helpers ================= */
+
+.mobile-only {
   display: none;
+}
+
+.desktop-only {
+  display: flex;
 }
 
 /* ================= Responsive – Mobile ================= */
 
 @media (max-width: 768px) {
   .app-header {
-    position: relative;
     height: 64px;
     padding: 0 16px;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    background: #fff;
   }
 
-  /* לוגו במרכז – בלי להיחתך */
+  /* לוגו ממורכז באמת */
   .logo-wrapper {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none; /* לא חוסם את ההמבורגר */
+    pointer-events: none;
   }
 
   .logo {
-    height: 36px;        /* 🔥 זה הפיקס ללוגו שנעלם */
+    height: 36px;
     max-height: 36px;
-    width: auto;
-    display: block;
   }
 
   /* המבורגר בצד ימין */
   .menu-button.mobile-only {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-
-    background: none;
-    border: none;
-    cursor: pointer;
-
-    color: #5e17eb;
-    font-size: 24px;
     z-index: 20;
+    display: flex;
+    font-size: 22px;
   }
 
-  /* מסתירים דברים של דסקטופ */
+  /* הסתרת אלמנטים של דסקטופ */
   .nav-links,
   .auth-controls {
     display: none !important;
   }
-}
 
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex;
+  }
+}
 
 /* ================= Responsive – Desktop ================= */
 
-@media (min-width: 1024px) {
+@media (min-width: 769px) {
   .mobile-only {
     display: none;
   }
@@ -176,18 +182,4 @@
   .desktop-only {
     display: flex;
   }
-
-  .app-header {
-    padding: 0 32px;
-  }
-
-  .logo {
-    height: 48px;
-  }
-}
-
-.app-header {
-  border-radius: 0 !important;
-  background: #fff !important;
-  box-shadow: none !important;
 }
