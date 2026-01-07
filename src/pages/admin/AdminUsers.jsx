@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaTrashAlt, FaBan, FaCheck, FaUserSecret } from "react-icons/fa";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import "./AdminUsers.css";
 
 function AdminUsers() {
-  const { login } = useAuth();
+  const { loginWithToken } = useAuth();
+  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -33,6 +34,7 @@ function AdminUsers() {
   =============================== */
   const filtered = users.filter((u) => {
     const term = search.toLowerCase();
+
     const matchSearch =
       u.phone?.includes(search) ||
       u.username?.toLowerCase().includes(term) ||
@@ -48,6 +50,7 @@ function AdminUsers() {
   =============================== */
   const handleDelete = async (id) => {
     if (!window.confirm("❗ פעולה בלתי הפיכה\nלמחוק משתמש?")) return;
+
     try {
       await API.delete(`/admin/users/${id}`);
       setUsers((prev) => prev.filter((u) => u._id !== id));
@@ -62,6 +65,7 @@ function AdminUsers() {
   =============================== */
   const handleStatusToggle = async (id, currentStatus) => {
     const newStatus = currentStatus === "active" ? "blocked" : "active";
+
     try {
       await API.put(`/admin/users/${id}`, { status: newStatus });
       setUsers((prev) =>
@@ -85,14 +89,22 @@ function AdminUsers() {
         userId: user._id,
       });
 
-      login(res.data.user, res.data.token);
+      // ⚠️ התחברות עם token בלבד — בלי login רגיל
+      loginWithToken(res.data.user, res.data.token, {
+        skipRedirect: true,
+      });
 
-
-      // Redirect לפי role
-      if (res.data.user.role === "business") {
-        window.location.href = "/business";
+      // ניווט ידני, בטוח
+      if (
+        res.data.user.role === "business" &&
+        res.data.user.businessId
+      ) {
+        navigate(
+          `/business/${res.data.user.businessId}/dashboard`,
+          { replace: true }
+        );
       } else {
-        window.location.href = "/client";
+        navigate("/dashboard", { replace: true });
       }
     } catch (err) {
       console.error("Impersonation error:", err);
@@ -120,7 +132,10 @@ function AdminUsers() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
           <option value="all">All</option>
           <option value="customer">Customers</option>
           <option value="business">Businesses</option>
@@ -174,10 +189,17 @@ function AdminUsers() {
                       : "Activate user"
                   }
                   onClick={() =>
-                    handleStatusToggle(user._id, user.status || "active")
+                    handleStatusToggle(
+                      user._id,
+                      user.status || "active"
+                    )
                   }
                 >
-                  {user.status === "active" ? <FaBan /> : <FaCheck />}
+                  {user.status === "active" ? (
+                    <FaBan />
+                  ) : (
+                    <FaCheck />
+                  )}
                 </button>
 
                 {/* 🗑 Delete */}
