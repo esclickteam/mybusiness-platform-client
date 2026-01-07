@@ -1,108 +1,140 @@
+/* =====================================================
+   CONTAINER
+===================================================== */
+
 .chat-guide-container {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 20px;
-  direction: rtl;
-  font-family: Arial, sans-serif;
-  color: #222;
-  line-height: 1.6;
-  background-color: #fff;
+  max-width: 920px;
+  margin: 48px auto;
+  padding: 32px 24px;
+
+  direction: ltr;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Arial, sans-serif;
+
+  color: #1f2937;
+  line-height: 1.7;
+  background-color: #ffffff;
+
   box-sizing: border-box;
-  word-break: break-word; /* למניעת שבירת מילים לא טובה */
+  word-break: break-word;
 }
 
+/* =====================================================
+   HEADINGS
+===================================================== */
+
 .chat-guide-container h1 {
-  font-size: 2.4rem;
-  margin-bottom: 20px;
+  font-size: 2.6rem;
+  margin-bottom: 24px;
   font-weight: 700;
-  color: #004085; /* מעט כהה יותר לכותרת */
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .chat-guide-container h2 {
-  font-size: 1.8rem;
-  margin-top: 30px;
-  margin-bottom: 15px;
-  border-bottom: 3px solid #007bff;
-  padding-bottom: 5px;
-  width: fit-content;
-  color: #0056b3; /* גוון כחול נעים לכותרות משנה */
+  font-size: 1.9rem;
+  margin-top: 48px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #111827;
+  letter-spacing: -0.01em;
 }
 
 .chat-guide-container h3 {
   font-size: 1.4rem;
-  margin-top: 25px;
+  margin-top: 32px;
   margin-bottom: 10px;
-  color: #007bff;
+  color: #374151;
   font-weight: 600;
 }
 
+/* =====================================================
+   TEXT
+===================================================== */
+
 .chat-guide-container p {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   margin-bottom: 20px;
-  line-height: 1.7;
-}
-
-.chat-guide-container ol,
-.chat-guide-container ul {
-  margin: 0 0 20px 20px;
-  padding: 0;
-  list-style-type: disc;
-}
-
-.chat-guide-container li {
-  font-size: 1.1rem;
-  margin-bottom: 12px;
+  line-height: 1.75;
+  color: #374151;
 }
 
 .chat-guide-container strong {
-  font-weight: 700;
+  font-weight: 600;
+  color: #111827;
 }
 
-/* טבלה */
+/* =====================================================
+   LISTS
+===================================================== */
+
+.chat-guide-container ul,
+.chat-guide-container ol {
+  margin: 0 0 24px 20px;
+  padding: 0;
+}
+
+.chat-guide-container li {
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* =====================================================
+   TABLE
+===================================================== */
+
 .chat-guide-container table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  margin: 24px 0;
   table-layout: fixed;
-  word-wrap: break-word;
-  font-size: 1.1rem;
 }
 
 .chat-guide-container th,
 .chat-guide-container td {
-  border: 1px solid #ddd;
-  padding: 10px 12px;
-  text-align: left; /* RTL alignment */
+  border: 1px solid #e5e7eb;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 0.95rem;
   vertical-align: top;
+  color: #374151;
 }
 
 .chat-guide-container th {
-  background-color: #f0f4ff;
-  color: #004085;
-  font-weight: 700;
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #111827;
 }
 
-/* הוספת אפקט קל בהטבעת כותרות ואלמנטים */
+/* =====================================================
+   INTERACTION (SUBTLE)
+===================================================== */
+
 .chat-guide-container h2:hover,
 .chat-guide-container h3:hover {
-  color: #003366;
+  color: #1d4ed8;
   cursor: default;
-  transition: color 0.3s ease;
+  transition: color 0.25s ease;
 }
 
-/* רספונסיביות */
+/* =====================================================
+   RESPONSIVE – MOBILE
+===================================================== */
+
 @media (max-width: 600px) {
   .chat-guide-container {
-    padding: 15px;
-    margin: 20px;
+    padding: 20px 16px;
+    margin: 24px 16px;
   }
 
   .chat-guide-container h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 
   .chat-guide-container h2 {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
   }
 
   .chat-guide-container h3 {
@@ -114,63 +146,70 @@
     font-size: 1rem;
   }
 
-  /* גלילה אופקית לטבלה במובייל */
   .chat-guide-container table {
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 }
-@media (max-width: 900px) {
+
+/* =====================================================
+   RESPONSIVE – TABLET
+===================================================== */
+
+@media (min-width: 601px) and (max-width: 900px) {
   .chat-guide-container {
-    max-width: 100%;
-    margin: 30px 15px;
-    padding: 15px;
+    max-width: 92vw;
+    padding: 28px 20px;
+    margin: 36px auto;
   }
-  
+
   .chat-guide-container h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 
   .chat-guide-container h2 {
     font-size: 1.6rem;
   }
-  
+
   .chat-guide-container h3 {
     font-size: 1.3rem;
   }
-  
+
   .chat-guide-container p,
   .chat-guide-container li {
-    font-size: 1rem;
+    font-size: 1.03rem;
   }
 }
 
-@media (max-width: 480px) {
+/* =====================================================
+   VERY SMALL MOBILE
+===================================================== */
+
+@media (max-width: 400px) {
   .chat-guide-container {
-    padding: 10px;
-    margin: 15px 10px;
+    padding: 16px 12px;
+    margin: 16px 10px;
   }
-  
+
   .chat-guide-container h1 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   .chat-guide-container h2 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
-  
+
   .chat-guide-container h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
-  
+
   .chat-guide-container p,
   .chat-guide-container li {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
-  
-  /* טבלה – גלילה אופקית טובה יותר למובייל קטן */
+
   .chat-guide-container table {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 }

@@ -1,132 +1,132 @@
+/* =====================================================
+   CONTAINER
+===================================================== */
+
 .business-collab-container {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 20px;
-  direction: rtl;
-  font-family: Arial, sans-serif;
-  color: #222;
-  line-height: 1.6;
-  background-color: #fff;
+  max-width: 920px;
+  margin: 48px auto;
+  padding: 32px 24px;
+
+  direction: ltr;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Arial, sans-serif;
+
+  color: #1f2937;
+  line-height: 1.7;
+  background-color: #ffffff;
+
   box-sizing: border-box;
-  word-break: break-word; /* למניעת שבירת מילים לא טובה */
+  word-break: break-word;
 }
 
+/* =====================================================
+   HEADINGS
+===================================================== */
+
 .business-collab-container h1 {
-  font-size: 2.4rem;
-  margin-bottom: 20px;
+  font-size: 2.6rem;
+  margin-bottom: 24px;
   font-weight: 700;
-  color: #004085; /* מעט כהה יותר לכותרת */
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .business-collab-container h2 {
-  font-size: 1.8rem;
-  margin-top: 30px;
-  margin-bottom: 15px;
-  border-bottom: 3px solid #007bff;
-  padding-bottom: 5px;
-  width: fit-content;
-  color: #0056b3; /* גוון כחול נעים לכותרות משנה */
+  font-size: 1.9rem;
+  margin-top: 48px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #111827;
+  letter-spacing: -0.01em;
 }
 
 .business-collab-container h3 {
   font-size: 1.4rem;
-  margin-top: 25px;
+  margin-top: 32px;
   margin-bottom: 10px;
-  color: #007bff;
+  color: #374151;
   font-weight: 600;
 }
 
+/* =====================================================
+   TEXT
+===================================================== */
+
 .business-collab-container p {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   margin-bottom: 20px;
-  line-height: 1.7;
-}
-
-.business-collab-container ol,
-.business-collab-container ul {
-  margin: 0 0 20px 20px;
-  padding: 0;
-  list-style-type: disc;
-}
-
-.business-collab-container li {
-  font-size: 1.1rem;
-  margin-bottom: 12px;
+  line-height: 1.75;
+  color: #374151;
 }
 
 .business-collab-container strong {
-  font-weight: 700;
+  font-weight: 600;
+  color: #111827;
 }
 
-/* טבלה */
+/* =====================================================
+   LISTS
+===================================================== */
+
+.business-collab-container ul,
+.business-collab-container ol {
+  margin: 0 0 24px 20px;
+  padding: 0;
+}
+
+.business-collab-container li {
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* =====================================================
+   TABLE
+===================================================== */
+
 .business-collab-container table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  margin: 24px 0;
   table-layout: fixed;
-  word-wrap: break-word;
-  font-size: 1.1rem;
 }
 
 .business-collab-container th,
 .business-collab-container td {
-  border: 1px solid #ddd;
-  padding: 10px 12px;
-  text-align: left; /* יישור לימין עבור RTL */
+  border: 1px solid #e5e7eb;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 0.95rem;
   vertical-align: top;
+  color: #374151;
 }
 
 .business-collab-container th {
-  background-color: #f0f4ff;
-  color: #004085;
-  font-weight: 700;
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #111827;
 }
 
-/* אפקט מעבר צבע קל לכותרות */
+/* =====================================================
+   INTERACTION (SUBTLE)
+===================================================== */
+
 .business-collab-container h2:hover,
 .business-collab-container h3:hover {
-  color: #003366;
+  color: #1d4ed8;
   cursor: default;
-  transition: color 0.3s ease;
+  transition: color 0.25s ease;
 }
 
-/* רספונסיביות */
+/* =====================================================
+   RESPONSIVE – MOBILE
+===================================================== */
+
 @media (max-width: 600px) {
   .business-collab-container {
-    padding: 15px;
-    margin: 20px;
-  }
-
-  .business-collab-container h1 {
-    font-size: 1.8rem;
-  }
-
-  .business-collab-container h2 {
-    font-size: 1.4rem;
-  }
-
-  .business-collab-container h3 {
-    font-size: 1.2rem;
-  }
-
-  .business-collab-container p,
-  .business-collab-container li {
-    font-size: 1rem;
-  }
-
-  /* גלילה אופקית לטבלה במובייל */
-  .business-collab-container table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-/* טאבלטים - בין 601px ל-900px */
-@media (min-width: 601px) and (max-width: 900px) {
-  .business-collab-container {
-    max-width: 90vw;
-    padding: 18px 16px;
-    margin: 30px auto;
+    padding: 20px 16px;
+    margin: 24px 16px;
   }
 
   .business-collab-container h1 {
@@ -138,37 +138,75 @@
   }
 
   .business-collab-container h3 {
+    font-size: 1.2rem;
+  }
+
+  .business-collab-container p,
+  .business-collab-container li {
+    font-size: 1rem;
+  }
+
+  .business-collab-container table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE – TABLET
+===================================================== */
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .business-collab-container {
+    max-width: 92vw;
+    padding: 28px 20px;
+    margin: 36px auto;
+  }
+
+  .business-collab-container h1 {
+    font-size: 2.2rem;
+  }
+
+  .business-collab-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .business-collab-container h3 {
     font-size: 1.3rem;
   }
 
   .business-collab-container p,
   .business-collab-container li {
-    font-size: 1.05rem;
+    font-size: 1.03rem;
   }
 }
 
-/* מובייל קטן מאוד - עד 400px */
+/* =====================================================
+   VERY SMALL MOBILE
+===================================================== */
+
 @media (max-width: 400px) {
   .business-collab-container {
-    padding: 12px 10px;
-    margin: 15px 10px;
+    padding: 16px 12px;
+    margin: 16px 10px;
   }
 
   .business-collab-container h1 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   .business-collab-container h2 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
   .business-collab-container h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 
   .business-collab-container p,
   .business-collab-container li {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 
   .business-collab-container table {

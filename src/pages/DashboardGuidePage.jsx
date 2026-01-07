@@ -4,134 +4,200 @@ import "./DashboardGuidePage.css";
 export default function DashboardGuidePage() {
   return (
     <div className="dashboard-guide-container" dir="ltr" lang="en">
-      {/* Title line removed */}
-      <h1>🧷 The BizUply Dashboard – Full Control at a Glance</h1>
+      <h1>The BizUply Dashboard: Full Control at a Glance</h1>
 
-      <h2>What is the BizUply dashboard and why is it important?</h2>
+      <h2>What is the BizUply dashboard and why it matters</h2>
       <p>
-        The dashboard is your central control panel in BizUply—the place where all the
-        important business data is collected and displayed clearly, simply, and accessibly.
-        It lets you track business activity in real time, gain performance insights,
-        spot trends, and detect opportunities or issues as early as possible.
+        The dashboard is your central control panel in BizUply. It brings together
+        all essential business data in one clear, accessible view, allowing you
+        to monitor activity in real time, understand performance, and identify
+        trends or issues early.
+      </p>
+      <p>
+        Instead of relying on intuition, the dashboard enables data-driven
+        decisions that help you manage and grow your business more effectively.
       </p>
 
-      <h2>Why treat the dashboard as a core tool for running your business?</h2>
+      <h2>Why the dashboard should be a core business tool</h2>
       <ul>
-        <li>Instead of jumping between systems (calendar, CRM, analytics), everything is in one place.</li>
-        <li>You can make fast, informed decisions based on current, real data.</li>
-        <li>Learn your strong and weak seasons and plan accordingly.</li>
-        <li>The AI Partner (if enabled) gives smart real-time recommendations for immediate performance improvement.</li>
+        <li>
+          All key systems—calendar, CRM, and analytics—are consolidated in one
+          place.
+        </li>
+        <li>
+          You can make faster, more accurate decisions based on real, current
+          data.
+        </li>
+        <li>
+          Seasonal patterns become clear, allowing better planning.
+        </li>
+        <li>
+          When enabled, the AI Partner provides real-time, actionable
+          recommendations.
+        </li>
       </ul>
 
-      <h2>🧩 What does the dashboard include?</h2>
+      <h2>What the dashboard includes</h2>
 
-      <h3>⭐ Positive Reviews</h3>
-      <p>All the reviews left by satisfied customers appear here.</p>
-      <p><strong>How to use it?</strong></p>
+      <h3>Customer Reviews</h3>
+      <p>
+        This section displays reviews submitted by your customers, offering a
+        clear picture of overall satisfaction.
+      </p>
+      <p><strong>How to use this data:</strong></p>
       <ul>
-        <li>Track your customers’ satisfaction.</li>
-        <li>Look for repeated strengths or weaknesses—know what to improve or highlight.</li>
-        <li>Reply to reviews when relevant to signal responsiveness and personal attention.</li>
+        <li>Track customer sentiment over time.</li>
+        <li>Identify recurring strengths and improvement areas.</li>
+        <li>
+          Respond to reviews when appropriate to demonstrate engagement and
+          professionalism.
+        </li>
       </ul>
-      <p><strong>Optimization example:</strong> If many customers mention friendly service—highlight it in the business description or profile.</p>
+      <p>
+        <strong>Example:</strong> If customers frequently mention friendly
+        service, emphasize it in your business description or marketing
+        messaging.
+      </p>
 
-      <h3>📅 Appointments (Business Calendar)</h3>
-      <p>A central view of your upcoming and past appointments. These are synced with your CRM and calendar.</p>
-      <p><strong>Why is this useful?</strong></p>
+      <h3>Appointments and Business Calendar</h3>
+      <p>
+        A centralized view of upcoming and past appointments, synchronized with
+        your calendar and CRM.
+      </p>
+      <p><strong>Why this matters:</strong></p>
       <ul>
-        <li>Plan your day and month efficiently without missing appointments.</li>
-        <li>Easily see workload in real time.</li>
-        <li>Conveniently manage quick changes, postponements, or cancellations.</li>
+        <li>Plan daily and monthly schedules efficiently.</li>
+        <li>Monitor workload in real time.</li>
+        <li>
+          Easily manage rescheduling, cancellations, and availability changes.
+        </li>
       </ul>
-      <p><strong>Example:</strong> If a month is packed, consider opening more slots or setting extra service hours on free days.</p>
+      <p>
+        <strong>Example:</strong> If a specific month is fully booked, consider
+        adding additional time slots or extended service hours.
+      </p>
 
-      <h3>📈 Appointments by Month Chart</h3>
-      <p>A visual chart showing the number of appointments over different months.</p>
-      <p><strong>How does it help?</strong></p>
+      <h3>Appointments by Month</h3>
+      <p>
+        A visual chart showing how appointment volume changes across months.
+      </p>
+      <p><strong>How this helps:</strong></p>
       <ul>
-        <li>Identify peak and slow periods.</li>
-        <li>Spot positive trends (growth) or declines that require action.</li>
-        <li>Plan campaigns or marketing activities in advance based on the data.</li>
+        <li>Identify peak and low-demand periods.</li>
+        <li>Detect growth trends or declines early.</li>
+        <li>
+          Plan marketing campaigns and promotions based on actual demand.
+        </li>
       </ul>
-      <p><strong>Practical example:</strong> If winter shows a dip, plan promotions or new services to fill the gap.</p>
+      <p>
+        <strong>Practical insight:</strong> If winter months show lower activity,
+        consider targeted promotions or introducing seasonal services.
+      </p>
 
-      <h3>🧠 Insights & Actionable Recommendations</h3>
-      <p>A summary of key data from the last week, including smart insights from the AI Partner (if enabled).</p>
-      <p>The system flags anomalies—like a drop in inquiries or cancellations—and suggests actions to improve.</p>
-      <p><strong>Why is this critical?</strong></p>
+      <h3>Insights and Actionable Recommendations</h3>
+      <p>
+        A summary of key performance indicators from the recent period, including
+        AI-driven insights when available.
+      </p>
+      <p>
+        The system highlights unusual patterns such as drops in inquiries or
+        increased cancellations and suggests corrective actions.
+      </p>
       <ul>
-        <li>Helps uncover issues or opportunities early.</li>
-        <li>Focuses you on what needs immediate attention.</li>
-        <li>Points you to marketing or service actions that can boost results.</li>
+        <li>Surface issues before they become critical.</li>
+        <li>Focus attention on areas that need immediate action.</li>
+        <li>Receive guidance on marketing and operational improvements.</li>
       </ul>
-      <p><strong>Example:</strong> The AI Partner may suggest messaging subscribers who haven’t booked yet or offering a promotion for next month.</p>
+      <p>
+        <strong>Example:</strong> The AI Partner may suggest reaching out to
+        customers who have not booked recently or promoting availability for
+        the upcoming month.
+      </p>
 
-      <h3>📆 Schedule Summary – Central Calendar</h3>
-      <p>A clear, consolidated calendar showing all your appointments by day and time—even if they were booked through different systems.</p>
-      <p><strong>Advantages:</strong></p>
+      <h3>Central Schedule Overview</h3>
+      <p>
+        A consolidated calendar view that displays all appointments by day and
+        time, even if they originate from different sources.
+      </p>
       <ul>
-        <li>No need to switch tools—everything’s in one place.</li>
-        <li>Prevents double bookings or mistakes.</li>
-        <li>It’s easy to track availability and quickly create new appointments.</li>
+        <li>Eliminates the need to switch between tools.</li>
+        <li>Prevents double bookings and scheduling conflicts.</li>
+        <li>Supports fast creation of new appointments.</li>
       </ul>
 
-      <h3>📒 Weekly Summary</h3>
-      <p>A detailed report of last week’s data:</p>
+      <h3>Weekly Summary</h3>
+      <p>
+        A detailed snapshot of recent business activity, including:
+      </p>
       <ul>
-        <li>Number of appointments booked and held.</li>
-        <li>Number of cancellations.</li>
+        <li>Total appointments booked and completed.</li>
+        <li>Cancellations and no-shows.</li>
         <li>Customer inquiries.</li>
       </ul>
-      <p><strong>How to learn from it?</strong></p>
+      <p><strong>How to use it:</strong></p>
       <ul>
-        <li>Check attendance vs. bookings—are cancellations too high?</li>
-        <li>Did inquiries go up or down? Does it match the monthly trend?</li>
-        <li>Link marketing activity to changes in the numbers.</li>
+        <li>Compare bookings to attendance levels.</li>
+        <li>Evaluate inquiry volume against longer-term trends.</li>
+        <li>
+          Connect marketing actions to changes in performance metrics.
+        </li>
       </ul>
 
-      <h2>✅ Why is tracking and analyzing the dashboard important?</h2>
+      <h2>Why monitoring the dashboard is essential</h2>
       <table>
         <thead>
           <tr>
             <th>Reason</th>
-            <th>Direct Benefit</th>
+            <th>Business Impact</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Continuous tracking of business activity</td>
-            <td>Fast, accurate decision-making</td>
+            <td>Continuous performance tracking</td>
+            <td>Faster, more informed decision-making</td>
           </tr>
           <tr>
-            <td>CRM + Calendar in one place</td>
-            <td>Efficient management without switching systems</td>
+            <td>CRM and calendar integration</td>
+            <td>Streamlined management with fewer tools</td>
           </tr>
           <tr>
-            <td>Early issue detection</td>
-            <td>Quick response to unusual trends</td>
+            <td>Early trend detection</td>
+            <td>Timely response to potential issues</td>
           </tr>
           <tr>
-            <td>AI Partner alerts</td>
-            <td>Capitalize on opportunities for ongoing improvement</td>
+            <td>AI Partner insights</td>
+            <td>Ongoing optimization and growth opportunities</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>How to optimize business management using the dashboard?</h2>
+      <h2>Best practices for using the dashboard</h2>
       <ul>
-        <li>Set aside time daily—or at least weekly—to review the dashboard so you’re always up to date.</li>
-        <li>Compare different periods to identify positive or negative trends.</li>
-        <li>Set monthly goals based on data (e.g., increase appointments by 10%).</li>
-        <li>Leverage AI Partner recommendations to improve service, marketing, and customer acquisition.</li>
-        <li>Use insights to plan promotions, innovations, or service adjustments.</li>
+        <li>
+          Review the dashboard daily or at least weekly to stay informed.
+        </li>
+        <li>
+          Compare different time periods to identify meaningful trends.
+        </li>
+        <li>
+          Set measurable goals based on data, such as increasing bookings by a
+          specific percentage.
+        </li>
+        <li>
+          Act on AI recommendations to improve service quality and marketing
+          performance.
+        </li>
+        <li>
+          Use insights to plan promotions, service adjustments, or new offerings.
+        </li>
       </ul>
 
       <h2>Summary</h2>
       <p>
-        The dashboard is a core management tool that gives you full control of your business
-        at a glance, shortens processes, streamlines work, and enables constant improvement.
-        Learn to read the data, understand what it means, and take data-driven actions—this
-        is how you’ll ensure your business grows and thrives.
+        The dashboard is a core management tool that provides immediate visibility
+        into your business performance. By understanding the data and acting on
+        insights, you can streamline operations, improve customer experience,
+        and support long-term growth.
       </p>
     </div>
   );

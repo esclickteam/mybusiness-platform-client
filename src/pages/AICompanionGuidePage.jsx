@@ -4,91 +4,143 @@ import "./AICompanionGuidePage.css";
 export default function AICompanionGuidePage() {
   return (
     <div className="ai-guide-container" dir="ltr" lang="en">
-      {/* Title sentence removed */}
-      <h1>🧠 Artificial Intelligence in BizUply – Your Smart Partner for Modern Business Growth</h1>
+      <h1>Artificial Intelligence in BizUply</h1>
 
-      <h2>Why does every modern business need AI?</h2>
+      <h2>Why modern businesses need AI</h2>
       <p>
-        In a world where competition is intensifying and customers expect fast, accurate, and personalized responses, your business must operate based on real, up-to-date data. Relying solely on intuition or manual management is becoming riskier and less effective.
+        In an increasingly competitive environment, customers expect fast,
+        accurate, and personalized responses. Managing a business based solely
+        on intuition or manual processes is no longer sufficient.
       </p>
       <p>
-        Artificial intelligence is no longer optional—it’s essential for any business that wants to stay relevant, competitive, and profitable. It gives you an always-available personal advisor that analyzes all your business data and provides focused insights and recommendations, without guesswork.
+        Artificial intelligence enables data-driven decision-making by analyzing
+        real-time business activity. It helps businesses operate more efficiently,
+        respond faster to changes, and remain competitive in dynamic markets.
       </p>
 
-      <h2>What is BizUply’s AI Partner and how does it help you?</h2>
+      <h2>What is BizUply’s AI Partner</h2>
       <p>
-        The AI Partner is a smart system integrated into your BizUply environment, providing you with real-time, data-driven tools and guidance.
+        The AI Partner is an intelligent system embedded within the BizUply
+        platform. It continuously analyzes your business data and provides
+        actionable insights, alerts, and recommendations tailored specifically
+        to your operations.
       </p>
 
-      <h2>What does the smart partner include?</h2>
+      <h2>What the AI Partner includes</h2>
       <ul>
-        <li>Personalized insights based on your business activity.</li>
-        <li>Automatic alerts about marketing opportunities, potential customers, and early warnings about issues or negative trends.</li>
-        <li>Marketing and business recommendations—when to run promotions, which services to highlight, how to improve internal operations, and more.</li>
-        <li>Continuous real-time updates aligned with your ongoing activity.</li>
+        <li>
+          Personalized insights based on customer activity, bookings, and
+          engagement.
+        </li>
+        <li>
+          Automated alerts for marketing opportunities, high-intent customers,
+          and early signs of potential issues.
+        </li>
+        <li>
+          Data-driven recommendations covering marketing, pricing, scheduling,
+          and internal operations.
+        </li>
+        <li>
+          Continuous updates aligned with your real-time business performance.
+        </li>
       </ul>
       <p>
-        All AI alerts also appear on your main dashboard, so you can act quickly and capitalize on every opportunity.
+        All AI-generated insights are also visible on your main dashboard,
+        ensuring that critical information is always accessible.
       </p>
 
-      <h2>Why is the AI partner your best advisor?</h2>
+      <h2>Why the AI Partner is a strategic advisor</h2>
       <ol>
         <li>
-          <strong>Smart, accurate insights based on real data</strong><br />
-          The AI analyzes all business activity—inquiries, bookings, reviews, working hours, and more—and uses this information to produce insights you couldn’t easily obtain yourself, if at all.
+          <strong>Insights grounded in real business data</strong>
+          <br />
+          The AI analyzes inquiries, bookings, cancellations, reviews, and
+          operational patterns to surface insights that would otherwise be
+          difficult to identify.
         </li>
         <li>
-          <strong>Targeted actions, not generic tips</strong><br />
-          The AI’s recommendations are precise and tailored specifically to your business—not generic advice. Instead of guessing, you get clear, actionable guidance.
+          <strong>Actionable recommendations, not generic advice</strong>
+          <br />
+          Suggestions are specific to your business context and designed to
+          support concrete actions rather than abstract guidance.
         </li>
         <li>
-          <strong>Fast response to changes in the market and in your business</strong><br />
-          The system detects early anomalies—like a sudden drop in inquiries or a rise in cancellations—and alerts you immediately. You can respond in time, adjust strategy, and prevent damage.
+          <strong>Early detection of changes and risks</strong>
+          <br />
+          The system identifies anomalies such as declining inquiries or rising
+          cancellations and notifies you promptly, allowing timely intervention.
         </li>
         <li>
-          <strong>Business independence and continuous improvement</strong><br />
-          With a 24/7 business advisor, you don’t have to rely solely on gut feelings or external consultants. The AI is with you constantly, helping you learn, adapt, and improve.
+          <strong>Continuous improvement without external dependency</strong>
+          <br />
+          With an always-available advisor, businesses can iterate, learn, and
+          improve without relying exclusively on external consultants.
         </li>
       </ol>
 
-      <h2>How to make the most of BizUply’s AI partner?</h2>
+      <h2>How to get the most value from the AI Partner</h2>
       <ol>
         <li>
-          <strong>Start by defining your goals</strong><br />
-          Clarify what you want to improve: marketing? scheduling? customer retention? pricing? The AI can help in every area, but you should know what you’re aiming for.
+          <strong>Define clear business goals</strong>
+          <br />
+          Identify areas you want to improve, such as marketing performance,
+          customer retention, pricing, or operational efficiency.
         </li>
         <li>
-          <strong>Review insights and alerts regularly</strong><br />
-          Visit the dedicated AI tab at least once a day, review alerts, read recommendations, and try to implement what fits your strategy.
+          <strong>Review insights consistently</strong>
+          <br />
+          Check the AI section regularly to stay informed about alerts,
+          recommendations, and emerging trends.
         </li>
         <li>
-          <strong>Use marketing guidance to plan initiatives</strong><br />
-          For example: the best time to launch a promotion, which services to highlight on your page, and which channels to advertise on.
+          <strong>Apply marketing guidance strategically</strong>
+          <br />
+          Use AI insights to determine optimal timing for promotions, which
+          services to highlight, and how to refine your messaging.
         </li>
         <li>
-          <strong>Leverage business advice to optimize operations</strong><br />
-          The AI will help you assess whether your time investment aligns with revenue, whether to adjust pricing, how to improve lead-to-sale conversion, and more.
+          <strong>Optimize operations using data</strong>
+          <br />
+          Evaluate whether your time investment aligns with revenue, identify
+          pricing adjustments, and improve lead-to-conversion rates.
         </li>
         <li>
-          <strong>Don’t ignore the data—learn from it over time</strong><br />
-          Using AI is an ongoing learning process. The more you follow the data, the better you’ll recognize patterns and fine-tune your business.
+          <strong>Learn from long-term patterns</strong>
+          <br />
+          AI insights become more powerful over time as patterns emerge,
+          enabling continuous refinement of business strategy.
         </li>
       </ol>
 
-      <h2>What primary goals should you consult the AI about?</h2>
+      <h2>Key areas to consult the AI Partner</h2>
       <ul>
-        <li>Improve marketing and sales: increase exposure, convert inquiries to sales, and acquire new customers.</li>
-        <li>Time management and work balance: ensure your working hours are profitable and prevent unnecessary overload.</li>
-        <li>Customer retention and relationship management: offer personalized services, identify “at-risk” customers, and boost loyalty.</li>
-        <li>Service and operations improvement: reduce cancellations, streamline internal processes, and enhance professionalism.</li>
+        <li>
+          Marketing and sales optimization, including lead conversion and
+          customer acquisition.
+        </li>
+        <li>
+          Time management and workload balance to ensure profitability and
+          sustainability.
+        </li>
+        <li>
+          Customer retention and relationship management through personalized
+          engagement.
+        </li>
+        <li>
+          Service quality and operational improvements to reduce friction and
+          cancellations.
+        </li>
       </ul>
 
       <h2>Summary</h2>
       <p>
-        AI in BizUply is much more than technology—it’s a smart business partner by your side at all times. It helps you make informed decisions, improve performance, increase revenue, and keep customers happy—all within one integrated system.
+        The AI Partner in BizUply functions as a strategic business advisor,
+        embedded directly into your daily workflow. It transforms raw data into
+        clear insights, enabling informed decisions and measurable improvements.
       </p>
       <p>
-        The modern era demands data-driven management and rapid response. AI is the perfect tool to ensure you’re always one step ahead of the competition.
+        In a data-driven business environment, AI is not a luxury. It is a core
+        capability that helps businesses adapt, grow, and remain competitive.
       </p>
     </div>
   );

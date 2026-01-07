@@ -1,134 +1,132 @@
+/* =====================================================
+   CONTAINER
+===================================================== */
+
 .ai-guide-container {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 20px;
-  direction: rtl;
-  font-family: Arial, sans-serif;
-  color: #222;
-  line-height: 1.6;
-  background-color: #fff;
+  max-width: 920px;
+  margin: 48px auto;
+  padding: 32px 24px;
+
+  direction: ltr;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Arial, sans-serif;
+
+  color: #1f2937;
+  line-height: 1.7;
+  background-color: #ffffff;
+
   box-sizing: border-box;
-  word-break: break-word; /* למניעת שבירת מילים לא טובה */
+  word-break: break-word;
 }
 
+/* =====================================================
+   HEADINGS
+===================================================== */
+
 .ai-guide-container h1 {
-  font-size: 2.4rem;
-  margin-bottom: 20px;
+  font-size: 2.6rem;
+  margin-bottom: 24px;
   font-weight: 700;
-  color: #004085; /* מעט כהה יותר לכותרת */
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .ai-guide-container h2 {
-  font-size: 1.8rem;
-  margin-top: 30px;
-  margin-bottom: 15px;
-  border-bottom: 3px solid #007bff;
-  padding-bottom: 5px;
-  width: fit-content;
-  color: #0056b3; /* גוון כחול נעים לכותרות משנה */
+  font-size: 1.9rem;
+  margin-top: 48px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #111827;
+  letter-spacing: -0.01em;
 }
 
 .ai-guide-container h3 {
   font-size: 1.4rem;
-  margin-top: 25px;
+  margin-top: 32px;
   margin-bottom: 10px;
-  color: #007bff;
+  color: #374151;
   font-weight: 600;
 }
 
+/* =====================================================
+   TEXT
+===================================================== */
+
 .ai-guide-container p {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   margin-bottom: 20px;
-  line-height: 1.7;
-}
-
-.ai-guide-container ol,
-.ai-guide-container ul {
-  margin: 0 0 20px 20px;
-  padding: 0;
-  list-style-type: disc;
-}
-
-.ai-guide-container li {
-  font-size: 1.1rem;
-  margin-bottom: 12px;
+  line-height: 1.75;
+  color: #374151;
 }
 
 .ai-guide-container strong {
-  font-weight: 700;
+  font-weight: 600;
+  color: #111827;
 }
 
-/* טבלה */
+/* =====================================================
+   LISTS
+===================================================== */
+
+.ai-guide-container ul,
+.ai-guide-container ol {
+  margin: 0 0 24px 20px;
+  padding: 0;
+}
+
+.ai-guide-container li {
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* =====================================================
+   TABLE (if needed in future)
+===================================================== */
+
 .ai-guide-container table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  margin: 24px 0;
   table-layout: fixed;
-  word-wrap: break-word;
-  font-size: 1.1rem;
 }
 
 .ai-guide-container th,
 .ai-guide-container td {
-  border: 1px solid #ddd;
-  padding: 10px 12px;
-  text-align: left; /* RTL alignment */
+  border: 1px solid #e5e7eb;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 0.95rem;
   vertical-align: top;
+  color: #374151;
 }
 
 .ai-guide-container th {
-  background-color: #f0f4ff;
-  color: #004085;
-  font-weight: 700;
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #111827;
 }
 
-/* אפקט מעבר צבע לכותרות */
+/* =====================================================
+   INTERACTION (SUBTLE)
+===================================================== */
+
 .ai-guide-container h2:hover,
 .ai-guide-container h3:hover {
-  color: #003366;
+  color: #1d4ed8;
   cursor: default;
-  transition: color 0.3s ease;
+  transition: color 0.25s ease;
 }
 
-/* רספונסיביות */
+/* =====================================================
+   RESPONSIVE – MOBILE
+===================================================== */
+
 @media (max-width: 600px) {
   .ai-guide-container {
-    padding: 15px;
-    margin: 20px;
-  }
-
-  .ai-guide-container h1 {
-    font-size: 1.8rem;
-  }
-
-  .ai-guide-container h2 {
-    font-size: 1.4rem;
-  }
-
-  .ai-guide-container h3 {
-    font-size: 1.2rem;
-  }
-
-  .ai-guide-container p,
-  .ai-guide-container li {
-    font-size: 1rem;
-  }
-
-  /* גלילה אופקית לטבלה במובייל */
-  .ai-guide-container table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-/* רספונסיביות כללית כבר קיימת ב-600px, נוסיף הרחבות: */
-
-/* לטאבלטים (601px עד 900px) */
-@media (min-width: 601px) and (max-width: 900px) {
-  .ai-guide-container {
-    max-width: 90vw;
-    padding: 18px 16px;
-    margin: 30px auto;
+    padding: 20px 16px;
+    margin: 24px 16px;
   }
 
   .ai-guide-container h1 {
@@ -140,37 +138,75 @@
   }
 
   .ai-guide-container h3 {
+    font-size: 1.2rem;
+  }
+
+  .ai-guide-container p,
+  .ai-guide-container li {
+    font-size: 1rem;
+  }
+
+  .ai-guide-container table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE – TABLET
+===================================================== */
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .ai-guide-container {
+    max-width: 92vw;
+    padding: 28px 20px;
+    margin: 36px auto;
+  }
+
+  .ai-guide-container h1 {
+    font-size: 2.2rem;
+  }
+
+  .ai-guide-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .ai-guide-container h3 {
     font-size: 1.3rem;
   }
 
   .ai-guide-container p,
   .ai-guide-container li {
-    font-size: 1.05rem;
+    font-size: 1.03rem;
   }
 }
 
-/* למובייל קטן מאוד (עד 400px) */
+/* =====================================================
+   VERY SMALL MOBILE
+===================================================== */
+
 @media (max-width: 400px) {
   .ai-guide-container {
-    padding: 12px 10px;
-    margin: 15px 10px;
+    padding: 16px 12px;
+    margin: 16px 10px;
   }
 
   .ai-guide-container h1 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   .ai-guide-container h2 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
   .ai-guide-container h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 
   .ai-guide-container p,
   .ai-guide-container li {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 
   .ai-guide-container table {
