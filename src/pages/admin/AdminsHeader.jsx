@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./AdminsHeader.css";
 
@@ -14,27 +14,33 @@ const AdminHeader = () => {
 
   return (
     <header className="admin-header">
+      {/* צד שמאל – לוגו */}
       <div className="admin-header-left">
         👑 Admin Panel
       </div>
 
-      {/* 🔗 ניווט אדמין */}
+      {/* אמצע – ניווט */}
       <nav className="admin-nav">
         <NavLink
           to="/admin/dashboard"
-          className={({ isActive }) => isActive ? "admin-link active" : "admin-link"}
+          className={({ isActive }) =>
+            `admin-link ${isActive ? "active" : ""}`
+          }
         >
           Dashboard
         </NavLink>
 
         <NavLink
           to="/admin/users"
-          className={({ isActive }) => isActive ? "admin-link active" : "admin-link"}
+          className={({ isActive }) =>
+            `admin-link ${isActive ? "active" : ""}`
+          }
         >
           Users
         </NavLink>
       </nav>
 
+      {/* צד ימין – משתמש + Logout */}
       <div className="admin-header-right">
         <span className="admin-name">
           Hello, {user?.name || "Admin"}
