@@ -338,14 +338,20 @@ if (normalizedUser.role === "admin" && !isImpersonating) {
 
     (async () => {
       try {
-        const freshUser = await refreshUser(true);
-        if (!freshUser) throw new Error("Missing user");
-
-        setUser(freshUser);
 
         const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
-const isInAdminArea = location.pathname.startsWith("/admin");
+const storedUser = localStorage.getItem("businessDetails");
 
+const freshUser =
+  isImpersonating && storedUser
+    ? normalizeUser(JSON.parse(storedUser))
+    : await refreshUser(true);
+
+if (!freshUser) throw new Error("Missing user");
+
+setUser(freshUser);
+
+const isInAdminArea = location.pathname.startsWith("/admin");
 if (
   freshUser.role === "admin" &&
   !isImpersonating &&
