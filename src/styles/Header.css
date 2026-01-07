@@ -106,14 +106,14 @@
 }
 
 /* ===== Hamburger (mobile only) ===== */
-.menu-toggle {
-  position: absolute; /* ✅ הופך אותו לעצמאי */
-  right: 16px;        /* ✅ מצמיד לצד ימין */
-  top: 50%;           /* ✅ ממקם אנכית */
-  transform: translateY(-50%);
-  z-index: 10;
-  margin: 0;
-}
+  .menu-toggle {
+    position: absolute;
+    right: 16px;  /* ✅ ימין */
+    top: 50%;     /* ✅ ממורכז אנכית */
+    transform: translateY(-50%);
+    margin: 0;
+    z-index: 10;
+  }
 
 .menu-button {
   background: none;
