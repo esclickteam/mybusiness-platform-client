@@ -408,29 +408,23 @@
   .menu-button.mobile-only {
     position: absolute;
     right: 16px;
-
-    top: 12px;              /* ✅ כמו HubSpot (תשחקי 10–14) */
-    transform: none;        /* ✅ מבטל מרכז אנכי */
-
+    top: 12px;
+    transform: none;
     z-index: 20;
 
-    background: #fff;
+    background: none; /* ✅ מבטל את הרקע הלבן */
     border: none;
-    border-radius: 14px;
-    width: 46px;
-    height: 46px;
     color: #5e17eb;
-    box-shadow: 0 4px 12px rgba(94, 23, 235, 0.25);
+    font-size: 26px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    box-shadow: none; /* ✅ מבטל גם את הצל */
   }
 
   .menu-button.mobile-only:hover {
-    transform: scale(1.05); /* כי ביטלנו translateY */
-    box-shadow: 0 6px 16px rgba(94, 23, 235, 0.35);
+    transform: scale(1.05);
   }
 }
 
