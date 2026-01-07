@@ -50,7 +50,8 @@ export default function Header() {
 
   return (
     <>
-      <nav className="app-header">
+      <nav className={`app-header ${menuOpen ? "menu-open" : ""}`}>
+
         {/* 🔹 לוגו */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">

@@ -279,6 +279,10 @@
   background-color: #ff3b30;
 }
 
+.app-header.menu-open {
+  pointer-events: none;
+}
+
 /* Dropdown */
 .notifications-dropdown {
   position: absolute;
