@@ -406,10 +406,12 @@
 
 @media (max-width: 768px) {
   .menu-button.mobile-only {
-    position: absolute;     /* מוציא אותו מה־flex */
-    right: 16px;            /* מצמיד לימין */
-    top: 50%;               /* ממורכז אנכית */
-    transform: translateY(-50%);
+    position: absolute;
+    right: 16px;
+
+    top: 12px;              /* ✅ כמו HubSpot (תשחקי 10–14) */
+    transform: none;        /* ✅ מבטל מרכז אנכי */
+
     z-index: 20;
 
     background: #fff;
@@ -427,7 +429,8 @@
   }
 
   .menu-button.mobile-only:hover {
-    transform: translateY(-50%) scale(1.05);
+    transform: scale(1.05); /* כי ביטלנו translateY */
     box-shadow: 0 6px 16px rgba(94, 23, 235, 0.35);
   }
 }
+
