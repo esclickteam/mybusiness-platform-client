@@ -10,7 +10,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
-import { getBusinessId } from "../../../utils/authHelpers";
+import { useParams } from "react-router-dom";
 import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
@@ -123,8 +123,8 @@ const DashboardPage = () => {
     refreshUser,
     setUser,
   } = useAuth();
-  const businessId =
-  user?.businessId || location.pathname.split("/")[2];
+  const { businessId } = useParams();
+
 
   /* 🎨 הפעלה מיידית של ה־theme לעסקים */
   useEffect(() => {
@@ -472,13 +472,19 @@ sock.on("newReview", (reviewData) => {
     }
   }, [location.pathname, location.state]);
 
-  /* guards */
+ console.log("role:", user?.role);
+console.log("user.businessId:", user?.businessId);
+console.log("url businessId:", businessId);
+
+
+/* guards */
 if (!initialized) {
   return <p className="dp-loading">⏳ Loading data...</p>;
 }
 
 const isAdmin = user?.role === "admin";
-const isBusinessOwner = user?.role === "business" && Boolean(businessId);
+const isBusinessOwner =
+  user?.role === "business" && user?.businessId === businessId;
 
 if (!isAdmin && !isBusinessOwner) {
   return (
@@ -499,6 +505,7 @@ if (error) {
 if (isRefreshingUser) {
   return <p className="dp-loading">⏳ Refreshing user info...</p>;
 }
+
 
 
   /* derived */
