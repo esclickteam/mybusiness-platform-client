@@ -131,16 +131,25 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("impersonatedBy");
   }
 
-  if (skipRedirect) return;
+  // בדיקה אם זה impersonation
+const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 
-  // מעבר לדשבורד של המשתמש
-  if (normalizedUser.role === "business" && normalizedUser.businessId) {
-    navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
-    return;
-  }
+// ⛔ בזמן impersonation או skipRedirect – לא מנווטים אוטומטית
+if (skipRedirect || isImpersonating) return;
 
-  navigate("/dashboard", { replace: true });
+// מעבר לדשבורד של המשתמש
+if (normalizedUser.role === "business" && normalizedUser.businessId) {
+  navigate(
+    `/business/${normalizedUser.businessId}/dashboard`,
+    { replace: true }
+  );
+  return;
+}
+
+// משתמש רגיל
+navigate("/dashboard", { replace: true });
 };
+
 
 
   /* ===========================
@@ -188,11 +197,13 @@ export function AuthProvider({ children }) {
       if (!skipRedirect) {
 
   // 👑 ADMIN — תמיד לדשבורד אדמין
-  if (normalizedUser.role === "admin") {
-    navigate("/admin/dashboard", { replace: true });
-    setLoading(false);
-    return { user: normalizedUser };
-  }
+  const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
+
+if (normalizedUser.role === "admin" && !isImpersonating) {
+  navigate("/admin/dashboard", { replace: true });
+  setLoading(false);
+  return;
+}
 
   if (normalizedUser.role !== "admin" && normalizedUser.hasAccess) {
   sessionStorage.setItem("justRegistered", "true");
@@ -333,13 +344,17 @@ export function AuthProvider({ children }) {
         setUser(freshUser);
 
         const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
-
 const isInAdminArea = location.pathname.startsWith("/admin");
 
-if (freshUser.role === "admin" && !isImpersonating && !isInAdminArea) {
+if (
+  freshUser.role === "admin" &&
+  !isImpersonating &&
+  !location.pathname.startsWith("/admin")
+) {
   navigate("/admin/dashboard", { replace: true });
   return;
 }
+
 
         const newSocket = await createSocket(
           singleFlightRefresh,
@@ -356,7 +371,7 @@ if (freshUser.role === "admin" && !isImpersonating && !isInAdminArea) {
   if (
   freshUser.role === "admin" &&
   !isImpersonating &&
-  !location.pathname.startsWith("/admin")
+  location.pathname.startsWith("/admin")
 ) {
   navigate("/admin/dashboard", { replace: true });
   return;
