@@ -3,11 +3,11 @@
 =================================================================== */
 
 /* ================= Header Base ================= */
-
 .app-header {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center; /* מרכז לוגו כברירת מחדל */
   height: 72px;
   padding: 0 24px;
   background: #ffffff;
@@ -15,10 +15,13 @@
 }
 
 /* ================= Logo ================= */
-
 .logo-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .logo-link {
@@ -33,7 +36,6 @@
 }
 
 /* ================= Desktop Navigation ================= */
-
 .nav-links {
   display: flex;
   align-items: center;
@@ -56,7 +58,6 @@
 }
 
 /* ================= Desktop Auth ================= */
-
 .auth-controls {
   display: flex;
   align-items: center;
@@ -103,7 +104,6 @@
 }
 
 /* ================= Hamburger ================= */
-
 .menu-button {
   background: none;
   border: none;
@@ -115,7 +115,6 @@
 }
 
 /* ================= Visibility Helpers ================= */
-
 .mobile-only {
   display: none;
 }
@@ -125,12 +124,11 @@
 }
 
 /* ================= Responsive – Mobile ================= */
-
 @media (max-width: 768px) {
   .app-header {
     height: 64px;
     padding: 0 16px;
-    justify-content: flex-end; /* ❗️זה הפיקס */
+    justify-content: center; /* הלוגו במרכז */
   }
 
   /* לוגו באמצע */
@@ -154,7 +152,10 @@
     align-items: center;
     justify-content: center;
 
-    position: relative; /* ❗️לא absolute */
+    position: absolute; /* ✅ ממקם קבוע */
+    right: 16px;        /* ✅ בצד ימין */
+    top: 50%;
+    transform: translateY(-50%);
     z-index: 20;
 
     background: none;
@@ -179,9 +180,7 @@
   }
 }
 
-
 /* ================= Responsive – Desktop ================= */
-
 @media (min-width: 769px) {
   .mobile-only {
     display: none;
