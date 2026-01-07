@@ -263,19 +263,21 @@ export default function HelpCenter() {
 
       {/* 💬 CONTACT SUPPORT */}
       <section className="contact-us">
-        <h2> Need Extra Help?</h2>
-        <p>Our support team is always here to assist you with anything you need.</p>
-        <div>
-          <button
-            type="button"
-            onClick={() => navigate("/business-support")}
-            className="support-button"
-            aria-label="Go to Business Support page"
-          >
-            Contact Support
-          </button>
-        </div>
-      </section>
+  <h2>Need Extra Help?</h2>
+  <p>Our support team is always here to assist you with anything you need.</p>
+
+  <div className="contact-us-actions">
+    <button
+      type="button"
+      onClick={() => navigate("/business-support")}
+      className="support-button"
+      aria-label="Go to Business Support page"
+    >
+      Contact Support
+    </button>
+  </div>
+</section>
+
 
       <ChatBot chatOpen={chatOpen} setChatOpen={setChatOpen} />
     </div>

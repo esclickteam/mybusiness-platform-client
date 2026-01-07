@@ -253,6 +253,13 @@ p {
   box-shadow: 0 6px 14px rgba(90, 15, 176, 0.25);
 }
 
+.contact-us-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+
 /* 🤖 CHAT BOT */
 .chatbot-section {
   position: fixed !important;
