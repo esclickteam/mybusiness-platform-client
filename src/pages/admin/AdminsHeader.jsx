@@ -1,59 +1,46 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import "./AdminsHeader.css"; // ❗ חובה
+import "./AdminsHeader.css";
 
 const AdminHeader = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/admin-login", { replace: true });
-    } catch (err) {
-      console.error("Logout failed", err);
-    }
+    await logout();
+    navigate("/admin-login");
   };
 
   return (
     <header className="admin-header">
-      {/* ⬅️ צד שמאל – ניווט */}
       <div className="admin-header-left">
-        <span className="admin-logo">👑 Admin Panel</span>
-
-        <nav className="admin-nav">
-          <NavLink
-            to="/admin/dashboard"
-            className={({ isActive }) =>
-              `admin-nav-link ${isActive ? "active" : ""}`
-            }
-          >
-            📊 Dashboard
-          </NavLink>
-
-          <NavLink
-            to="/admin/users"
-            className={({ isActive }) =>
-              `admin-nav-link ${isActive ? "active" : ""}`
-            }
-          >
-            👥 Users
-          </NavLink>
-        </nav>
+        👑 Admin Panel
       </div>
 
-      {/* ➡️ צד ימין – משתמש */}
+      {/* 🔗 ניווט אדמין */}
+      <nav className="admin-nav">
+        <NavLink
+          to="/admin/dashboard"
+          className={({ isActive }) => isActive ? "admin-link active" : "admin-link"}
+        >
+          Dashboard
+        </NavLink>
+
+        <NavLink
+          to="/admin/users"
+          className={({ isActive }) => isActive ? "admin-link active" : "admin-link"}
+        >
+          Users
+        </NavLink>
+      </nav>
+
       <div className="admin-header-right">
         <span className="admin-name">
-          Hello, {user?.name || user?.email || "Admin"}
+          Hello, {user?.name || "Admin"}
         </span>
 
-        <button
-          type="button"
-          className="logout-btn"
-          onClick={handleLogout}
-        >
+        <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>
       </div>
