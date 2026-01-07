@@ -108,12 +108,50 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const loginWithToken = (userFromServer, accessToken, { skipRedirect = false } = {}) => {
+  // שמירת token
+  localStorage.setItem("token", accessToken);
+  setAuthToken(accessToken);
+  setToken(accessToken);
+
+  // שמירת user
+  const normalizedUser = normalizeUser(userFromServer);
+  setUser(normalizedUser);
+  localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+
+  // סימון impersonation
+  try {
+    const payload = JSON.parse(atob(accessToken.split(".")[1]));
+    if (payload.impersonatedBy) {
+      localStorage.setItem("impersonatedBy", payload.impersonatedBy);
+    } else {
+      localStorage.removeItem("impersonatedBy");
+    }
+  } catch {
+    localStorage.removeItem("impersonatedBy");
+  }
+
+  if (skipRedirect) return;
+
+  // מעבר לדשבורד של המשתמש
+  if (normalizedUser.role === "business" && normalizedUser.businessId) {
+    navigate(`/business/${normalizedUser.businessId}/dashboard`, { replace: true });
+    return;
+  }
+
+  navigate("/dashboard", { replace: true });
+};
+
+
   /* ===========================
      🔐 Login
   =========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
     setError(null);
+
+    
+
 
     try {
       const { data } = await API.post(
@@ -259,6 +297,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("token");
     localStorage.removeItem("businessDetails");
     localStorage.removeItem("dashboardStats");
+    localStorage.removeItem("impersonatedBy");
 
     setToken(null);
     setUser(null);
@@ -293,7 +332,9 @@ export function AuthProvider({ children }) {
 
         setUser(freshUser);
 
-        if (freshUser.role === "admin") {
+        const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
+
+if (freshUser.role === "admin" && !isImpersonating) {
   navigate("/admin/dashboard", { replace: true });
   setLoading(false);
   setInitialized(true);
@@ -312,10 +353,10 @@ export function AuthProvider({ children }) {
   sessionStorage.removeItem("justRegistered");
 
   // 👑 ADMIN
-  if (freshUser.role === "admin") {
-    navigate("/admin/dashboard", { replace: true });
-    return;
-  }
+  if (freshUser.role === "admin" && !isImpersonating) {
+  navigate("/admin/dashboard", { replace: true });
+  return;
+}
 
   if (freshUser.role === "business" && freshUser.businessId) {
     navigate(`/business/${freshUser.businessId}/dashboard`, {
@@ -379,9 +420,13 @@ export function AuthProvider({ children }) {
     error,
 
     login,
+    loginWithToken,
     logout,
     staffLogin,
     affiliateLogin,
+
+    isImpersonating: Boolean(localStorage.getItem("impersonatedBy")),
+
 
     fetchWithAuth: async (fn) => {
       try {
