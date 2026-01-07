@@ -130,34 +130,41 @@
   .app-header {
     height: 64px;
     padding: 0 16px;
-    justify-content: center;
+    justify-content: flex-end; /* ❗️זה הפיקס */
   }
 
-  /* לוגו ממורכז באמת */
+  /* לוגו באמצע */
   .logo-wrapper {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     pointer-events: none;
+    z-index: 10;
   }
 
   .logo {
     height: 36px;
-    max-height: 36px;
+    width: auto;
+    display: block;
   }
 
   /* המבורגר בצד ימין */
   .menu-button.mobile-only {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 20;
     display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative; /* ❗️לא absolute */
+    z-index: 20;
+
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #5e17eb;
     font-size: 22px;
   }
 
-  /* הסתרת אלמנטים של דסקטופ */
+  /* מסתירים דסקטופ */
   .nav-links,
   .auth-controls {
     display: none !important;
@@ -171,6 +178,7 @@
     display: flex;
   }
 }
+
 
 /* ================= Responsive – Desktop ================= */
 
