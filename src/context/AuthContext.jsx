@@ -293,6 +293,13 @@ export function AuthProvider({ children }) {
 
         setUser(freshUser);
 
+        if (freshUser.role === "admin") {
+  navigate("/admin/dashboard", { replace: true });
+  setLoading(false);
+  setInitialized(true);
+  return;
+}
+
         const newSocket = await createSocket(
           singleFlightRefresh,
           logout,
