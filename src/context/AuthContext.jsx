@@ -334,10 +334,10 @@ export function AuthProvider({ children }) {
 
         const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 
-if (freshUser.role === "admin" && !isImpersonating) {
+const isInAdminArea = location.pathname.startsWith("/admin");
+
+if (freshUser.role === "admin" && !isImpersonating && !isInAdminArea) {
   navigate("/admin/dashboard", { replace: true });
-  setLoading(false);
-  setInitialized(true);
   return;
 }
 
@@ -353,10 +353,15 @@ if (freshUser.role === "admin" && !isImpersonating) {
   sessionStorage.removeItem("justRegistered");
 
   // 👑 ADMIN
-  if (freshUser.role === "admin" && !isImpersonating) {
+  if (
+  freshUser.role === "admin" &&
+  !isImpersonating &&
+  !location.pathname.startsWith("/admin")
+) {
   navigate("/admin/dashboard", { replace: true });
   return;
 }
+
 
   if (freshUser.role === "business" && freshUser.businessId) {
     navigate(`/business/${freshUser.businessId}/dashboard`, {
@@ -398,7 +403,9 @@ if (freshUser.role === "admin" && !isImpersonating) {
         setInitialized(true);
       }
     })();
-  }, [token, navigate, location.pathname]);
+  }, [token, navigate, location.pathname, location]);
+
+
 
   /* ===========================
      Toast timeout
