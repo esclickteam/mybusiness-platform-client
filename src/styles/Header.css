@@ -408,8 +408,8 @@
   .menu-button.mobile-only {
     position: absolute;     /* מוציא אותו מה־flex */
     right: 16px;            /* מצמיד לימין */
-    top: 2px;               /* ✅ כמו HubSpot (קבוע למעלה) */
-    transform: none;        /* ✅ לא מרכז אנכית */
+    top: 50%;            /* ✅ כמו HubSpot (קבוע למעלה) */
+    transform: translateY(-60%);       /* ✅ לא מרכז אנכית */
     z-index: 20;
 
     background: transparent !important; /* ✅ שקוף */
