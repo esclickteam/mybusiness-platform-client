@@ -1,0 +1,171 @@
+/* =========================================================
+   📱 Mobile Menu – Full Screen (HubSpot Style)
+========================================================= */
+
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 3000;
+
+  display: flex;
+  flex-direction: column;
+
+  animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overscroll-behavior: contain;
+}
+
+/* =========================================================
+   Header
+========================================================= */
+
+.mobile-menu-header {
+  height: 64px;
+  padding: 0 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid #eee;
+}
+
+.mobile-menu-header img {
+  height: 40px;
+  width: auto;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+  padding: 6px;
+}
+
+.close-btn:active {
+  transform: scale(0.95);
+}
+
+/* =========================================================
+   Search
+========================================================= */
+
+.menu-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 16px;
+  padding: 12px 14px;
+
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+}
+
+.menu-search-wrapper input {
+  border: none;
+  outline: none;
+  font-size: 15px;
+  width: 100%;
+  background: transparent;
+}
+
+/* =========================================================
+   Navigation
+========================================================= */
+
+.menu-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 18px 20px;
+  font-size: 16px;
+  font-weight: 500;
+
+  color: #2b2b2b;
+  text-decoration: none;
+
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.menu-nav a:active {
+  background: #f2edff;
+}
+
+.menu-nav a.active {
+  color: #5e17eb;
+  font-weight: 600;
+  background: #f6f2ff;
+}
+
+/* =========================================================
+   CTA Area
+========================================================= */
+
+.menu-ctas {
+  margin-top: auto;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cta-primary {
+  background: #5e17eb;
+  color: #ffffff;
+
+  padding: 14px;
+  border-radius: 12px;
+
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.cta-primary:active {
+  background: #4a12c9;
+}
+
+.cta-secondary {
+  background: #f2edff;
+  color: #5e17eb;
+
+  padding: 14px;
+  border-radius: 12px;
+
+  text-align: center;
+  font-weight: 600;
+  font-size: 15px;
+
+  border: none;
+  cursor: pointer;
+}
+
+.cta-secondary.logout {
+  color: #c62828;
+  background: #fff1f1;
+}
+
+/* =========================================================
+   Animation
+========================================================= */
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

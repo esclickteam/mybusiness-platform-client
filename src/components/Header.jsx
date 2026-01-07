@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaBars } from "react-icons/fa";
 import logo from "../images/logo_final.svg";
-import { FaBars, FaChevronLeft } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+
+import MobileMenu from "./MobileMenu";
 import "../styles/Header.css";
 
 const navLinks = [
@@ -14,17 +16,16 @@ const navLinks = [
 ];
 
 export default function Header() {
-  const { user, logout, loading } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // ✅ נזהה אם אנחנו בדשבורד
+  // ❌ לא מציגים Header בדשבורד
   const isDashboard =
     location.pathname.includes("/dashboard") ||
     location.pathname.includes("/business/");
 
-  // ✅ בדשבורד לא מציגים כלום
   if (isDashboard) return null;
 
   const handleLogout = async () => {
@@ -32,39 +33,38 @@ export default function Header() {
       await logout();
       navigate("/");
     } catch (err) {
-      console.error("❌ Logout failed:", err);
+      console.error("Logout failed:", err);
     }
     setMenuOpen(false);
   };
 
-  const link = (to, label) => (
-    <Link
-      key={to}
-      to={to}
-      onClick={() => setMenuOpen(false)}
-      className={location.pathname === to ? "active-link" : ""}
-    >
-      {label}
-    </Link>
-  );
-
   return (
     <>
-      <nav className={`app-header ${menuOpen ? "menu-open" : ""}`}>
-
-        {/* 🔹 לוגו */}
+      {/* ================= HEADER ================= */}
+      <nav className="app-header">
+        {/* Logo */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
-            <img src={logo} alt="Bizuply Logo" className="logo" />
+            <img src={logo} alt="BizUply Logo" className="logo" />
           </Link>
         </div>
 
-        {/* 🔹 ניווט בדסקטופ */}
+        {/* Desktop Navigation */}
         <div className="nav-links desktop-only">
-          {navLinks.map((item) => link(item.to, item.label))}
+          {navLinks.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={
+                location.pathname === item.to ? "active-link" : ""
+              }
+            >
+              {item.label}
+            </Link>
+          ))}
         </div>
 
-        {/* 🔹 פעולות משתמש */}
+        {/* Desktop Auth */}
         <div className="auth-controls desktop-only">
           {!user ? (
             <>
@@ -88,78 +88,23 @@ export default function Header() {
           )}
         </div>
 
-        {/* 🔹 ✅ המבורגר רק במובייל הציבורי */}
-        <div className="menu-toggle mobile-only">
-          <button
-            className="menu-button"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
-          </button>
-        </div>
+        {/* Mobile Hamburger */}
+        <button
+          className="menu-button mobile-only"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Open menu"
+        >
+          <FaBars size={22} />
+        </button>
       </nav>
 
-      {/* 🔹 תפריט צד למובייל */}
-      {menuOpen && (
-        <>
-          <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
-          <div className="side-menu open">
-            <div className="drawer-header">
-              <button
-                className="back-button"
-                onClick={() => setMenuOpen(false)}
-              >
-                <FaChevronLeft size={18} />
-                <span>Back</span>
-              </button>
-            </div>
-
-            <div className="menu-scroll">
-              <div className="mobile-auth">
-                {!user ? (
-                  <>
-                    <Link
-                      to="/login"
-                      className="auth-link full-width"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      to="/register"
-                      className="cta-button full-width"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Try it Free
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <span className="hello-user">Hello, {user.name}</span>
-                    <Link
-                      to="/dashboard"
-                      className="auth-link full-width"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      My Account
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="auth-link logout full-width"
-                    >
-                      Logout
-                    </button>
-                  </>
-                )}
-              </div>
-
-              <div className="menu-section">
-                {navLinks.map((item) => link(item.to, item.label))}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      {/* ================= MOBILE MENU ================= */}
+      <MobileMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        user={user}
+        onLogout={handleLogout}
+      />
     </>
   );
 }
