@@ -136,7 +136,7 @@ export function AuthProvider({ children }) {
   const refreshUser = async (force = false) => {
   const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 
-  // ⛔ לא מרעננים user בזמן impersonation
+  // 🔒 נעילה מוחלטת – גם אם מישהו קרא עם force=true
   if (isImpersonating) {
     const stored = localStorage.getItem("businessDetails");
     return stored ? normalizeUser(JSON.parse(stored)) : null;
@@ -147,6 +147,7 @@ export function AuthProvider({ children }) {
       `/auth/me${force ? "?forceRefresh=1" : ""}`,
       { withCredentials: true }
     );
+
 
     const normalized = normalizeUser(data);
     setUser(normalized);
@@ -309,7 +310,11 @@ if (normalizedUser.role === "admin" && !isImpersonating) {
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
 
-      refreshUser(true).catch(() => {});
+      if (!localStorage.getItem("impersonatedBy")) {
+  refreshUser(true).catch(() => {});
+}
+
+
       setLoading(false);
 
       return normalized;
@@ -337,7 +342,10 @@ if (normalizedUser.role === "admin" && !isImpersonating) {
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
 
       setToken(null);
-      refreshUser(true).catch(() => {});
+
+      if (!localStorage.getItem("impersonatedBy")) {
+  refreshUser(true).catch(() => {});
+}
 
       setLoading(false);
       return normalized;
