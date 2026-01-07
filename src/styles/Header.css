@@ -409,7 +409,7 @@
     position: absolute;     /* מוציא אותו מה־flex */
     right: 16px;            /* מצמיד לימין */
     top: 50%;            /* ✅ כמו HubSpot (קבוע למעלה) */
-    transform: translateY(-70%);       /* ✅ לא מרכז אנכית */
+    transform: translateY(-75%);       /* ✅ לא מרכז אנכית */
     z-index: 20;
 
     background: transparent !important; /* ✅ שקוף */
