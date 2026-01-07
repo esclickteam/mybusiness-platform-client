@@ -4,19 +4,20 @@ import { useAuth } from "../context/AuthContext";
 import Unauthorized from "./Unauthorized";
 import TrialExpiredModal from "./TrialExpiredModal";
 
-export default function ProtectedRoute({ children, roles = [], requiredPackage = null }) {
+export default function ProtectedRoute({
+  children,
+  roles = [],
+  requiredPackage = null,
+}) {
   const { user, loading, initialized } = useAuth();
   const location = useLocation();
   const [showTrialModal, setShowTrialModal] = useState(false);
   const [checkedTrial, setCheckedTrial] = useState(false);
-  const isAdmin = (user?.role || "").toLowerCase() === "admin";
 
-
-  /* ===========================
-     🟣 סוג משתמש
-  =========================== */
-  const isBusiness = (user?.role || "").toLowerCase() === "business";
-  const isAffiliate = (user?.role || "").toLowerCase() === "affiliate";
+  const role = (user?.role || "").toLowerCase();
+  const isAdmin = role === "admin";
+  const isBusiness = role === "business";
+  const isAffiliate = role === "affiliate";
 
   /* ===========================
      💳 תוקף מנוי
@@ -46,12 +47,11 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   useEffect(() => {
     if (!initialized || !user) return;
 
-    const path = location.pathname;
-    const isDashboardArea = /^\/business\/[A-Za-z0-9]+\/dashboard/.test(path);
+    const isDashboardArea = /^\/business\/[^/]+\/dashboard/.test(
+      location.pathname
+    );
 
-    // ✅ מציגים מודאל רק אם זה עסק, הניסיון נגמר, והוא בתוך הדשבורד
     if (isBusiness && isTrialExpired && isDashboardArea) {
-      console.log("🎯 ניסיון נגמר – מציג מודאל בלבד (ללא הפניה)");
       setShowTrialModal(true);
     } else {
       setShowTrialModal(false);
@@ -79,38 +79,28 @@ export default function ProtectedRoute({ children, roles = [], requiredPackage =
   }
 
   /* ===========================
-   👑 Admin – bypass מלא
-=========================== */
-if (isAdmin) {
-  return <>{children}</>;
-}
-
-
-  /* ===========================
-     🔐 הרשאות לפי תפקיד
+     🔐 הרשאות לפי roles
+     ❗ גם אדמין חייב להיות כלול ב־roles
   =========================== */
   const normalizedRoles = roles.map((r) => r.toLowerCase());
+
   if (
     normalizedRoles.length &&
-    !normalizedRoles.includes((user.role || "").toLowerCase()) &&
-    !(isAffiliate && normalizedRoles.includes("affiliate"))
+    !normalizedRoles.includes(role)
   ) {
     return <Unauthorized />;
   }
 
   /* ===========================
-     ⚠️ ניסיון חינם הסתיים – הצגת מודאל בלבד
+     ⚠️ ניסיון חינם הסתיים – מודאל בלבד
   =========================== */
   if (showTrialModal) {
-    console.log("💜 TrialExpiredModal מוצג לפני טעינת הדשבורד!");
     return (
       <div style={{ position: "relative", zIndex: 9999 }}>
         <TrialExpiredModal />
       </div>
     );
   }
-
-
 
   /* ===========================
      🏗️ עסק ללא businessId
