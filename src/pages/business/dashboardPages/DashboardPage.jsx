@@ -472,13 +472,33 @@ sock.on("newReview", (reviewData) => {
   }, [location.pathname, location.state]);
 
   /* guards */
-  if (!initialized) return <p className="dp-loading">⏳ Loading data...</p>;
-  if (user?.role !== "business" || !businessId)
-    return <p className="dp-error">You don't have permission to access this business dashboard.</p>;
-  if (loading && !stats) return <DashboardSkeleton />;
-  if (error) return <p className="dp-error">{alert || error}</p>;
-  if (isRefreshingUser)
-    return <p className="dp-loading">⏳ Refreshing user info...</p>;
+if (!initialized) {
+  return <p className="dp-loading">⏳ Loading data...</p>;
+}
+
+const isAdmin = user?.role === "admin";
+const isBusinessOwner = user?.role === "business" && Boolean(businessId);
+
+if (!isAdmin && !isBusinessOwner) {
+  return (
+    <p className="dp-error">
+      You don't have permission to access this business dashboard.
+    </p>
+  );
+}
+
+if (loading && !stats) {
+  return <DashboardSkeleton />;
+}
+
+if (error) {
+  return <p className="dp-error">{alert || error}</p>;
+}
+
+if (isRefreshingUser) {
+  return <p className="dp-loading">⏳ Refreshing user info...</p>;
+}
+
 
   /* derived */
   const effectiveStats = stats || {};
