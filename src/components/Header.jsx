@@ -23,8 +23,8 @@ export default function Header() {
 
   // ❌ לא מציגים Header בדשבורד
   const isDashboard =
-    location.pathname.includes("/dashboard") ||
-    location.pathname.includes("/business/");
+    location.pathname.startsWith("/dashboard") ||
+    location.pathname.startsWith("/business");
 
   if (isDashboard) return null;
 
@@ -34,22 +34,23 @@ export default function Header() {
       navigate("/");
     } catch (err) {
       console.error("Logout failed:", err);
+    } finally {
+      setMenuOpen(false);
     }
-    setMenuOpen(false);
   };
 
   return (
     <>
       {/* ================= HEADER ================= */}
       <nav className="app-header">
-        {/* Logo */}
+        {/* 🔹 Logo (Centered on Mobile) */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="BizUply Logo" className="logo" />
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
+        {/* 🔹 Desktop Navigation */}
         <div className="nav-links desktop-only">
           {navLinks.map((item) => (
             <Link
@@ -64,7 +65,7 @@ export default function Header() {
           ))}
         </div>
 
-        {/* Desktop Auth */}
+        {/* 🔹 Desktop Auth */}
         <div className="auth-controls desktop-only">
           {!user ? (
             <>
@@ -88,7 +89,7 @@ export default function Header() {
           )}
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* 🔹 Mobile Hamburger (Right Side) */}
         <button
           className="menu-button mobile-only"
           onClick={() => setMenuOpen(true)}

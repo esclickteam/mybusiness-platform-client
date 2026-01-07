@@ -185,3 +185,9 @@
     height: 48px;
   }
 }
+
+.app-header {
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
