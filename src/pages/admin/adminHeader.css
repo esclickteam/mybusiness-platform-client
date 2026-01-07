@@ -1,54 +1,52 @@
 .admin-header {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 2000;
 
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 
-  height: 64px;
-  padding: 0 32px;
+  min-height: 56px;          /* 🔥 חשוב */
+  width: 100%;
 
-  background: linear-gradient(90deg, #6a5cff, #8e7bff);
-  color: #fff;
+  padding: 0 24px;
+  box-sizing: border-box;
 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: #efe6ff;       /* 🔥 רקע אמיתי */
 }
 
-.admin-logo {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
+/* צד שמאל */
+.admin-header-left {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2b2b2b;
 }
 
+/* צד ימין */
 .admin-header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
-.admin-name {
-  font-size: 14px;
-  opacity: 0.9;
-}
-
+/* כפתור Logout – ניתוק מ-CSS גלובלי */
 .logout-btn {
-  background: #ffffff;
-  color: #6a5cff;
+  all: unset;                /* 🔥 זה המפתח */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  border: none;
-  border-radius: 20px;
-  padding: 6px 16px;
+  background: #5a2dd8;
+  color: #fff;
 
-  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 12px;
+
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-
-  transition: all 0.2s ease;
 }
 
 .logout-btn:hover {
-  background: #f1f0ff;
-  transform: translateY(-1px);
+  opacity: 0.9;
 }
