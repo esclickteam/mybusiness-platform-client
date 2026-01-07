@@ -123,7 +123,8 @@ const DashboardPage = () => {
     refreshUser,
     setUser,
   } = useAuth();
-  const businessId = getBusinessId();
+  const businessId =
+  user?.businessId || location.pathname.split("/")[2];
 
   /* 🎨 הפעלה מיידית של ה־theme לעסקים */
   useEffect(() => {
