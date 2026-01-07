@@ -1,126 +1,140 @@
 import React, { useState } from "react";
+import "./faq.css";
 
 const faqData = [
   {
-    question: "❓ What is a business collaboration and how can it grow my business?",
+    question: "What is a business collaboration and how can it grow my business",
     answer: `
-A business collaboration is an agreement between two or more businesses to work together toward shared objectives—such as marketing, sales, service development, or improving customer experience. Collaborations expand reach, share advertising costs, provide access to new markets, and strengthen customer trust. It’s important to choose partners with aligned values and goals to avoid conflicts and ensure effective, long-term results. Integrated businesses can share information, create joint promotions, and strategically amplify one another.
+A business collaboration is a partnership between two or more businesses working together toward shared goals such as marketing, sales, or service development.
+
+Benefits include:
+• Expanded market reach
+• Shared marketing costs
+• Access to new audiences
+• Increased trust and credibility
+• Stronger customer experience
+
+Choosing partners with aligned values and goals ensures long-term success.
     `,
   },
   {
-    question: "❓ How do I publish a new collaboration offer in BizUply?",
+    question: "How do I publish a new collaboration offer in BizUply",
     answer: `
-To publish a collaboration, fill out a detailed form including: a clear title, a thorough description of the offer, what your business provides and what you’re seeking in return, contact details, budget, and expiration date. Be precise about needs and deliverables to focus inquiries and attract suitable partners. After posting, your offer is distributed to relevant businesses based on activity area, location, and collaboration type. Track incoming inquiries, approve or decline quickly, and maintain clear communication with potential partners.
+To publish a collaboration offer:
+• Fill out the collaboration form with a clear title and description
+• Define what your business offers and what you expect in return
+• Add contact details, budget, and expiration date
+
+Once published, offers are distributed to relevant businesses based on category, location, and collaboration type.
     `,
   },
   {
-    question: "❓ How do I identify and choose a suitable collaboration partner for my business?",
+    question: "How do I identify and choose a suitable collaboration partner",
     answer: `
-Choosing the right partner is key to collaboration success. First, ensure strong alignment between your company’s values and those of the potential partner so both sides operate with a shared mindset and goals. Also verify their target market fits yours to maximize impact.
+Key steps for choosing the right partner:
+• Ensure alignment in values and goals
+• Confirm target audiences complement each other
+• Review business reputation and references
+• Evaluate added value such as expertise or reach
+• Hold discovery meetings to define roles and expectations
 
-Review the partner’s business track record, including shared clients and references, to confirm reliability and reputation. Assess whether they bring added value—such as complementary expertise, innovative technology, or access to new customers that you don’t currently reach.
-
-Hold initial discovery meetings to define expectations, roles, timelines, and communication methods. This helps prevent future misunderstandings.
-
-It’s also recommended to use digital partnership-management tools, including tracking KPIs (Key Performance Indicators).
+Tracking KPIs helps ensure collaboration success.
     `,
   },
   {
-    question: "❓ What are the best ways to manage collaborations effectively?",
+    question: "What are the best ways to manage collaborations effectively",
     answer: `
-Successful collaboration management requires deliberate planning and attention to key areas:
+Successful collaboration management includes:
+• Defining clear goals and KPIs
+• Assigning roles and responsibilities
+• Setting timelines and expectations
+• Maintaining organized records
+• Communicating regularly and transparently
+• Monitoring performance and outcomes
+• Addressing conflicts early
 
-- Define clear, measurable goals.
-- Assign roles and responsibilities.
-- Align expectations.
-- Plan realistic timelines.
-- Use technology tools to manage partnerships.
-- Keep organized records of decisions, costs, and outcomes.
-- Address conflicts quickly and transparently.
-- Measure and monitor continuously.
-- Assess risks and create contingency plans.
-- Maintain regular, open communication.
-
-The BizUply platform supports these processes with tools for smart collaboration management.
+BizUply provides tools to support structured collaboration management.
     `,
   },
   {
-    question:
-      "❓ How can I view collaboration offers I’ve received and manage them effectively?",
+    question: "How can I view and manage collaboration offers I’ve received",
     answer: `
-In the “Received Offers” tab you’ll see all offers submitted by other businesses. Use the built-in filters and search, assess offer fit, partner credibility, budget, and validity period.
+In the Received Offers section you can:
+• View all incoming collaboration proposals
+• Filter and search offers
+• Evaluate partner fit, budget, and timeline
+• Approve or decline offers efficiently
 
-Timely responses and professional, open communication are crucial for success.
-
-If an offer isn’t a fit, decline politely and professionally.
+Professional and timely responses increase success rates.
     `,
   },
   {
-    question:
-      "❓ What does “Sent Offers” mean and how do I manage them effectively?",
+    question: "What does Sent Offers mean and how do I manage them",
     answer: `
-The “Sent Offers” category lists all collaboration offers you’ve submitted to other businesses. Track progress regularly, document outreach and responses, set follow-up timelines, be proactive in negotiations, and prepare a negotiation script.
+Sent Offers include all collaboration proposals you’ve sent to other businesses.
 
-Effective management of these offers increases your business potential and reduces uncertainty.
+Best practices:
+• Track responses and follow-ups
+• Document communications
+• Set reminders for follow-up
+• Be proactive in negotiations
+
+Effective management increases conversion and reduces uncertainty.
     `,
   },
   {
-    question: "❓ Is there an expiration period for a collaboration?",
+    question: "Is there an expiration period for a collaboration offer",
     answer: `
-Yes. You can set an expiration date for an offer, limiting how long it remains active. You can also define exact start and end times.
+Yes. You can define an expiration date and optional start/end dates.
 
-Benefits: smarter offer management, stronger brand image, and operational flexibility.
+Benefits:
+• Better offer control
+• Clear timelines
+• Improved brand professionalism
+• Operational flexibility
 
-BizUply supports creating digital agreements with electronic signatures directly in the platform.
+BizUply also supports digital agreements and electronic signatures.
     `,
   },
   {
-    question:
-      "❓ What should I do if I can’t submit or publish a collaboration?",
+    question: "What should I do if I can’t submit or publish a collaboration",
     answer: `
-To troubleshoot submission issues:
+If submission fails, try:
+• Completing all required fields
+• Checking internet connectivity
+• Refreshing the page (Ctrl + F5 / Cmd + Shift + R)
+• Trying another browser or device
+• Verifying user permissions
+• Checking system maintenance notices
 
-- Make sure all required form fields are completed.
-- Check for a stable internet connection.
-- Check if there’s planned system maintenance.
-- Refresh the page (Ctrl+F5).
-- Try a different browser or device.
-- Confirm you have the proper permissions.
-- If the issue persists, contact technical support with full details.
+Contact support if the issue persists.
     `,
   },
   {
-    question: "❓ How do I communicate with a potential partner?",
+    question: "How do I communicate with a potential collaboration partner",
     answer: `
-Communication with a potential partner includes:
+Communication options include:
+• Using contact details in the offer
+• BizUply’s internal messaging system
+• Real-time chat for quick coordination
+• Scheduling meetings when needed
+• Documenting agreements and discussions
 
-- Using the contact details provided in the offer form.
-- BizUply’s internal messaging and business chat.
-- Real-time communication for coordination and clarifications.
-- Maintaining professional, transparent, and clear exchanges.
-- Documenting conversations and agreements.
-- Scheduling meetings and, if needed, communicating outside the platform.
-- Providing ongoing updates to partners.
+Clear, professional communication is essential.
     `,
   },
   {
-    question:
-      "❓ How do we handle conflicts or issues in a business collaboration?",
+    question: "How should conflicts or issues in collaborations be handled",
     answer: `
-Collaboration conflicts:
+Best practices for handling conflicts:
+• Maintain transparent, open communication
+• Keep written records of agreements
+• Define ground rules in advance
+• Monitor performance and expectations
+• Use mediation if necessary
+• Conduct periodic review meetings
 
-- Keep communication open, consistent, and transparent.
-- Keep organized records of decisions and agreements.
-- Set ground rules and procedures in advance.
-- Use monitoring and reporting tools within the platform.
-- Seek mediation if necessary.
-- Contact technical support for technical issues.
-- Set periodic review checkpoints.
-- Stay flexible and open-minded.
-- Provide training on partnership management.
-- Maintain a positive, proactive approach.
-
-BizUply provides tools and support for professional, effective collaboration management.
+BizUply provides tools to support conflict resolution and collaboration tracking.
     `,
   },
 ];
@@ -128,77 +142,52 @@ BizUply provides tools and support for professional, effective collaboration man
 export default function CollaborationsFAQ() {
   const [openIndex, setOpenIndex] = useState(null);
 
-  const toggle = (index) => {
+  const toggleIndex = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 900,
-        margin: "auto",
-        fontFamily: "Arial, sans-serif",
-        padding: 20,
-        direction: "ltr",
-        textAlign: "left",
-      }}
-    >
-      <h1 style={{ textAlign: "center", marginBottom: 25 }}>
-        Business Collaborations – FAQ
-      </h1>
-      {faqData.map((item, index) => (
-        <div
-          key={index}
-          style={{
-            marginBottom: 15,
-            borderBottom: "1px solid #ddd",
-            paddingBottom: 10,
-          }}
-        >
-          <button
-            onClick={() => toggle(index)}
-            style={{
-              width: "100%",
-              textAlign: "left",
-              background: "rgba(85, 107, 47, 0.5)",
-              border: "none",
-              padding: "12px 20px",
-              fontSize: 18,
-              fontWeight: "bold",
-              cursor: "pointer",
-              outline: "none",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              borderRadius: 6,
-            }}
-            aria-expanded={openIndex === index}
-            aria-controls={`faq-answer-${index}`}
-          >
-            <span>{item.question}</span>
-            <span style={{ fontSize: 24, lineHeight: 1 }}>
-              {openIndex === index ? "−" : "+"}
-            </span>
-          </button>
-          {openIndex === index && (
-            <div
-              id={`faq-answer-${index}`}
-              style={{
-                padding: "12px 20px",
-                background: "#fafafa",
-                whiteSpace: "pre-line",
-                fontSize: 16,
-                marginTop: 6,
-                borderRadius: 6,
-                color: "#222",
-                lineHeight: 1.5,
-              }}
-            >
-              {item.answer}
+    <div className="faq-container">
+      <h1 className="faq-title">Business Collaborations – FAQ</h1>
+
+      <div className="faq-list">
+        {faqData.map((faq, idx) => {
+          const isOpen = openIndex === idx;
+
+          return (
+            <div key={idx} className="faq-item">
+              <button
+                className="faq-question"
+                onClick={() => toggleIndex(idx)}
+                aria-expanded={isOpen}
+                aria-controls={`faq-answer-${idx}`}
+                id={`faq-question-${idx}`}
+              >
+                <span>{faq.question}</span>
+
+                <span
+                  className={`faq-plus ${isOpen ? "open" : ""}`}
+                  aria-hidden
+                >
+                  +
+                </span>
+              </button>
+
+              {isOpen && (
+                <div
+                  id={`faq-answer-${idx}`}
+                  role="region"
+                  aria-labelledby={`faq-question-${idx}`}
+                  className="faq-answer"
+                  style={{ whiteSpace: "pre-wrap" }}
+                >
+                  {faq.answer}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ))}
+          );
+        })}
+      </div>
     </div>
   );
 }

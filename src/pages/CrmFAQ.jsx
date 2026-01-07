@@ -1,158 +1,152 @@
 import React, { useState } from "react";
+import "./faq.css";
 
 const faqData = [
   {
-    question: "❓ What is a CRM system and how does it help manage my business?",
+    question: "What is a CRM system and how does it help manage my business",
     answer: `
-A CRM (Customer Relationship Management) system is a core technology tool for managing your business’s customer relationships. It lets you organize, store, and track all relevant customer information in one accessible, structured place. The system improves communication with customers, appointment coordination, order management, and customer retention. With CRM you can analyze customer behavior, offer personalized service, and increase loyalty. Using a CRM streamlines sales and service processes, saves time and resources, and enables data-driven decisions. On the BizUply platform, the CRM is tailored to your business needs and integrates with additional tools for efficient management.
+A CRM (Customer Relationship Management) system is a core tool for managing customer relationships in one centralized place.
+
+It allows you to:
+• Store and organize customer information
+• Track appointments, services, and interactions
+• Improve communication and customer retention
+• Analyze customer behavior and performance
+• Make data-driven business decisions
+
+On BizUply, the CRM is fully integrated with scheduling, messaging, and analytics tools for efficient management.
     `,
   },
   {
     question:
-      "❓ What data can I see in a customer's profile in the CRM, and how do I use it for the business?",
+      "What data can I see in a customer profile and how can I use it",
     answer: `
-In the CRM customer profile you’ll find comprehensive details including: contact info (phone, email, physical address), purchase history, previously ordered services, and upcoming appointments.
+A customer profile includes:
+• Contact details (phone, email, address)
+• Service and purchase history
+• Upcoming and past appointments
+• Notes and interaction logs
 
-How to use this data to benefit the business:
-- Deliver personalized service to boost satisfaction and increase conversion.
-- Retain customers and maintain ongoing, high-quality communication.
-- Use reminders and schedule management to reduce cancellations.
-- Identify sales and marketing opportunities.
-- Improve internal processes and sync across service teams.
-- Spot problematic customers or those with growth potential.
+Using this data helps you:
+• Deliver personalized service
+• Improve retention and loyalty
+• Identify sales and marketing opportunities
+• Reduce cancellations with reminders
+• Improve internal coordination
     `,
   },
   {
-    question: "❓ How are scheduling and bookings managed in the CRM?",
+    question: "How are scheduling and bookings managed in the CRM",
     answer: `
-Scheduling is handled via a dedicated tab that presents all appointments, time slots, and bookings clearly and neatly. You can add, edit, and cancel bookings, and the system automatically notifies both the customer and the business owner.
+Scheduling is managed through a dedicated interface showing all bookings and availability.
 
-How to encourage customers to book:
-- Make it simple via the website, app, or direct links.
-- Automatic reminders via SMS or email.
-- Option to pay in advance at booking.
-- Available customer support.
-- Sync with customer calendars to prevent duplicates and errors.
+Features include:
+• Adding, editing, and canceling appointments
+• Automatic notifications to customers
+• Calendar synchronization
+• Optional advance payments
+• Reminder messages
 
-What to watch for when scheduling:
-- Confirm resource availability.
-- Accurate customer details.
-- Record the appointment purpose.
-- Send alerts and updates.
-- Manage workload and set a clear cancellation policy.
+Accurate scheduling improves efficiency and customer satisfaction.
     `,
   },
   {
-    question:
-      "❓ Can I edit or cancel existing bookings, and how does that process work?",
+    question: "Can I edit or cancel existing bookings and how does it work",
     answer: `
-Yes. You can edit or cancel bookings from the scheduling interface using “Edit” and “Cancel” actions. The system automatically updates the customer and maintains a full history log.
+Yes. Bookings can be edited or canceled directly from the scheduling interface.
 
-How to reduce cancellations:
-- Send automatic reminders.
-- Offer flexible scheduling within set limits.
-- Communicate a clear cancellation policy.
-- Optimize availability.
+The system:
+• Automatically notifies customers
+• Keeps a full history log
+• Updates availability in real time
 
-How to retain customers:
-- Maintain consistent, personal communication.
-- Track and improve satisfaction.
-- Offer perks and benefits for returning customers.
-- Provide professional and attentive service.
+To reduce cancellations:
+• Use reminders
+• Define a clear cancellation policy
+• Offer flexible rescheduling options
     `,
   },
   {
-    question:
-      "❓ How can I add or update services and products in the CRM?",
+    question: "How can I add or update services and products in the CRM",
     answer: `
-In the “Services” tab you can add or update services, including description, price, duration, and special service terms. It’s important to define accurate service duration to prevent calendar overlaps and manage workload efficiently.
+Services can be managed in the Services tab.
 
-After saving, the service is automatically added to the booking interface.
+You can define:
+• Service description
+• Price
+• Duration
+• Special terms
 
-It’s recommended to update services regularly to prevent issues and improve the customer experience.
+Accurate service setup prevents scheduling conflicts and improves customer experience.
     `,
   },
   {
-    question:
-      "❓ How do I manage the customer list and perform efficient searches?",
+    question: "How do I manage the customer list and perform searches",
     answer: `
-The “Customers” tab shows a detailed list with key information. The system includes an advanced search engine for quick filtering by name, phone, or partial info.
+The Customers tab provides:
+• A full customer list
+• Advanced search and filtering
+• Appointment and communication history
+• Notes and status indicators
 
-Good management includes tracking appointment history, bookings, communications, and notes.
-
-How to handle frequent cancellations:
-- A clear cancellation policy.
-- Personal outreach to customers with problematic history.
-- Flexible options and reminders.
-- Limit bookings or require a deposit when needed.
+Good customer management improves service quality and operational control.
     `,
   },
   {
-    question:
-      "❓ What should I do if the system has issues or data isn’t updating?",
+    question: "What should I do if data is not updating or the system has issues",
     answer: `
-Troubleshooting steps:
-1. Hard refresh the browser (Ctrl+F5 or Cmd+Shift+R).
-2. Ensure a stable, fast internet connection.
-3. Log out and log back in.
-4. Try a different browser or device.
-5. Clear cache and cookies.
-6. Check system messages and planned maintenance.
-7. Contact technical support with detailed documentation.
+Try the following steps:
+• Perform a hard refresh (Ctrl + F5 / Cmd + Shift + R)
+• Check your internet connection
+• Log out and log back in
+• Clear cache and cookies
+• Try another browser or device
+• Check system maintenance messages
 
-Issues may stem from server load, network problems, outdated browsers, cache conflicts, or system maintenance.
-
-Tips for stability:
-- Keep your browser updated.
-- Restart the system periodically.
-- Back up important data.
-- Follow BizUply’s notification center.
+If issues persist, contact technical support with screenshots and details.
     `,
   },
   {
-    question:
-      "❓ How can I analyze and improve customer performance using the CRM?",
+    question: "How can I analyze and improve customer performance using the CRM",
     answer: `
-The system provides tools to analyze customer data for better service and increased sales:
+CRM analytics help you:
+• Identify active and high-value customers
+• Track responses to campaigns
+• Improve service response times
+• Detect churn risks early
+• Create personalized offers
+• Define KPIs and success metrics
 
-1. Analyze purchase/service history to identify active customers and opportunities.
-2. Track responses to promotions/campaigns to improve marketing budgets.
-3. Reports on response times and inquiry handling to improve service.
-4. Keep a full log of all customer interactions.
-5. Tailor personal offers for customers.
-6. Identify churn-risk customers and intervene early.
-7. Share info across staff to improve service consistency.
-
-Use the data to define KPIs, run targeted campaigns, and improve processes and loyalty.
+Using CRM insights improves sales, retention, and customer satisfaction.
     `,
   },
   {
-    question:
-      "❓ What’s the difference between a CRM and an appointments-only system?",
+    question: "What is the difference between a CRM and an appointments-only system",
     answer: `
-An appointments system focuses on time management and scheduling between the business and customers, including setting dates, approvals, cancellations, and timetables.
+An appointments system focuses only on scheduling and time management.
 
-A CRM is a holistic solution that also includes comprehensive customer information management, interaction logs, data analysis, quotes and reminders, and automated marketing.
+A CRM provides:
+• Full customer profiles
+• Interaction history
+• Analytics and reports
+• Automated reminders
+• Marketing and retention tools
 
-Both systems complement each other and are fully synchronized, enabling centralized management via the business dashboard.
-
-The combination streamlines operations, improves satisfaction, and provides a competitive advantage.
+Together, they provide a complete business management solution.
     `,
   },
   {
-    question:
-      "❓ What should I do if I encounter errors or issues in the CRM and scheduling system?",
+    question: "What should I do if I encounter errors in the CRM or scheduling system",
     answer: `
-To handle errors:
-- Check internet connection and hard-refresh (Ctrl+F5 or Cmd+Shift+R).
-- Check system messages for maintenance or updates.
-- Identify when and how the error occurs.
-- Ensure inputs are correct and complete.
-- Contact support with a detailed description and screenshots.
-- Ensure backups are available.
-- Use monitoring tools for early alerts.
+If errors occur:
+• Check internet stability
+• Refresh the system
+• Review maintenance notifications
+• Verify input accuracy
+• Document the issue with screenshots
+• Contact support with full details
 
-Quick handling prevents data loss, disruptions, and supports continuous operational improvement.
+Quick resolution helps prevent disruptions and data issues.
     `,
   },
 ];
@@ -160,77 +154,52 @@ Quick handling prevents data loss, disruptions, and supports continuous operatio
 export default function CrmFAQ() {
   const [openIndex, setOpenIndex] = useState(null);
 
-  const toggle = (index) => {
+  const toggleIndex = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 900,
-        margin: "auto",
-        fontFamily: "Arial, sans-serif",
-        padding: 20,
-        direction: "ltr",
-        textAlign: "left",
-      }}
-    >
-      <h1 style={{ textAlign: "center", marginBottom: 25 }}>
-        CRM & Scheduling – FAQ
-      </h1>
-      {faqData.map((item, index) => (
-        <div
-          key={index}
-          style={{
-            marginBottom: 15,
-            borderBottom: "1px solid #ddd",
-            paddingBottom: 10,
-          }}
-        >
-          <button
-            onClick={() => toggle(index)}
-            style={{
-              width: "100%",
-              textAlign: "left",
-              background: "rgba(85, 107, 47, 0.5)",
-              border: "none",
-              padding: "12px 20px",
-              fontSize: 18,
-              fontWeight: "bold",
-              cursor: "pointer",
-              outline: "none",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              borderRadius: 6,
-            }}
-            aria-expanded={openIndex === index}
-            aria-controls={`faq-answer-${index}`}
-          >
-            <span>{item.question}</span>
-            <span style={{ fontSize: 24, lineHeight: 1 }}>
-              {openIndex === index ? "−" : "+"}
-            </span>
-          </button>
-          {openIndex === index && (
-            <div
-              id={`faq-answer-${index}`}
-              style={{
-                padding: "12px 20px",
-                background: "#fafafa",
-                whiteSpace: "pre-line",
-                fontSize: 16,
-                marginTop: 6,
-                borderRadius: 6,
-                color: "#222",
-                lineHeight: 1.5,
-              }}
-            >
-              {item.answer}
+    <div className="faq-container">
+      <h1 className="faq-title">CRM & Scheduling – FAQ</h1>
+
+      <div className="faq-list">
+        {faqData.map((faq, idx) => {
+          const isOpen = openIndex === idx;
+
+          return (
+            <div key={idx} className="faq-item">
+              <button
+                className="faq-question"
+                onClick={() => toggleIndex(idx)}
+                aria-expanded={isOpen}
+                aria-controls={`faq-answer-${idx}`}
+                id={`faq-question-${idx}`}
+              >
+                <span>{faq.question}</span>
+
+                <span
+                  className={`faq-plus ${isOpen ? "open" : ""}`}
+                  aria-hidden
+                >
+                  +
+                </span>
+              </button>
+
+              {isOpen && (
+                <div
+                  id={`faq-answer-${idx}`}
+                  role="region"
+                  aria-labelledby={`faq-question-${idx}`}
+                  className="faq-answer"
+                  style={{ whiteSpace: "pre-wrap" }}
+                >
+                  {faq.answer}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ))}
+          );
+        })}
+      </div>
     </div>
   );
 }
