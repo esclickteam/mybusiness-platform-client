@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import "./AdminHeader.css"; // ❗ חובה
+import "./AdminsHeader.css"; // ❗ חובה
 
  const AdminHeader = () => {
   const navigate = useNavigate();
