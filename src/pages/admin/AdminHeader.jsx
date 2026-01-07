@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./AdminHeader.css"; // ❗ חובה
 
-const AdminHeader = () => {
+ const AdminHeader = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
