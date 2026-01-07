@@ -283,6 +283,10 @@
   pointer-events: none;
 }
 
+.menu-toggle {
+  pointer-events: auto;
+}
+
 /* Dropdown */
 .notifications-dropdown {
   position: absolute;
