@@ -94,7 +94,7 @@
   width: 100%;
   background: transparent;
   border: none;
-  padding: 20px 22px 14px;
+  padding: 20px 22px 10px; /* רווח מדויק כמו בדוגמה */
   cursor: pointer;
 
   display: flex;
@@ -146,7 +146,7 @@
 ===================================================== */
 
 .faq-answer-wrapper {
-  padding-top: 4px;  
+  padding-top: 6px; /* המרווח הקטן והנכון */
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.35s ease, opacity 0.25s ease;
@@ -154,7 +154,7 @@
 }
 
 .faq-item.open .faq-answer-wrapper {
-  max-height: 1000px; /* מספיק גם לטקסט ארוך */
+  max-height: 1000px;
   opacity: 1;
 }
 
@@ -169,6 +169,12 @@
   color: #4b5563;
   font-size: 0.96rem;
   line-height: 1.7;
+}
+
+/* איפוס רווחים שגורמים ל"קפיצה" */
+.faq-answer p:first-child,
+.faq-answer ul:first-child {
+  margin-top: 0;
 }
 
 .faq-answer p {
