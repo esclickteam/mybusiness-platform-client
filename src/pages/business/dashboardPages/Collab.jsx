@@ -15,7 +15,7 @@ import "./Collab.css";
 
 export default function Collab() {
   const { user, loading } = useAuth();
-  const { businessId } = useParams(); // ✅ מקור האמת
+  const { businessId } = useParams(); // ✅ מקור האמת היחיד
   const location = useLocation();
 
   const role = (user?.role || "").toLowerCase();
@@ -32,19 +32,14 @@ export default function Collab() {
 
   /* =========================
      Load business profile
-     ✅ admin → by businessId
-     ✅ business → /business/my
+     ✅ תמיד לפי businessId מה־URL
   ========================= */
   useEffect(() => {
-    if (!user) return;
+    if (!user || !businessId) return;
 
     async function fetchProfile() {
       try {
-        const url = isAdmin
-          ? `/business/${businessId}`
-          : `/business/my`;
-
-        const { data } = await API.get(url);
+        const { data } = await API.get(`/business/${businessId}`);
 
         setProfileData({
           businessName: data.businessName || data.name || "",
@@ -57,40 +52,43 @@ export default function Collab() {
           email: data.email || "",
         });
       } catch (err) {
-        console.error("Error loading profile:", err);
+        console.error("❌ Error loading business profile:", err);
       } finally {
         setLoadingProfile(false);
       }
     }
 
-    // ⛔ admin חייב businessId מה־URL
-    if (isAdmin && !businessId) {
-      setLoadingProfile(false);
-      return;
-    }
-
     fetchProfile();
-  }, [user, isAdmin, businessId]);
+  }, [user, businessId]);
 
   /* =========================
      Socket.IO
+     ✅ businessId מה־URL
   ========================= */
   useEffect(() => {
+    if (!businessId) return;
+
     const SOCKET_URL =
       import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
     const newSocket = io(SOCKET_URL, {
-      auth: { token: localStorage.getItem("token") },
+      auth: {
+        token: localStorage.getItem("token"),
+        businessId,
+      },
     });
 
     setSocket(newSocket);
-    return () => newSocket.disconnect();
-  }, []);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [businessId]);
 
   /* =========================
      Guards
   ========================= */
-  if (loading) {
+  if (loading || loadingProfile) {
     return <div className="p-6 text-center">🔄 Loading data...</div>;
   }
 
@@ -113,29 +111,45 @@ export default function Collab() {
   return (
     <AiProvider>
       <div className="p-6 collab-container">
+        {/* Tabs */}
         <nav className="tab-header tab-header-ltr">
-          <NavLink to="profile" className={({ isActive }) => isActive ? "tab active" : "tab"}>
+          <NavLink
+            to="profile"
+            className={({ isActive }) => (isActive ? "tab active" : "tab")}
+          >
             Business Profile
           </NavLink>
-          <NavLink to="find-partner" className={({ isActive }) => isActive ? "tab active" : "tab"}>
+
+          <NavLink
+            to="find-partner"
+            className={({ isActive }) => (isActive ? "tab active" : "tab")}
+          >
             Find Business Partner
           </NavLink>
-          <NavLink to="messages" className={({ isActive }) => isActive ? "tab active" : "tab"}>
+
+          <NavLink
+            to="messages"
+            className={({ isActive }) => (isActive ? "tab active" : "tab")}
+          >
             Proposals
           </NavLink>
-          <NavLink to="market" className={({ isActive }) => isActive ? "tab active" : "tab"}>
+
+          <NavLink
+            to="market"
+            className={({ isActive }) => (isActive ? "tab active" : "tab")}
+          >
             Collaboration Market
           </NavLink>
         </nav>
 
-        {/* ✅ businessId תמיד מה־URL */}
+        {/* Tabs content */}
         <Outlet
           key={location.pathname}
           context={{
             profileData,
             loadingProfile,
             socket,
-            businessId, // 🔥 FIX קריטי
+            businessId, // ✅ תמיד מה־URL
             isAdmin,
           }}
         />
