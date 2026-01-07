@@ -16,7 +16,7 @@ import "./AdminHeader.css"; // ❗ חובה
     }
   };
 
-  return (
+   return (
     <header className="admin-header">
       <div className="admin-header-left">
         👑 Admin Panel
