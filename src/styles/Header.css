@@ -408,26 +408,27 @@
   .menu-button.mobile-only {
     position: absolute;     /* מוציא אותו מה־flex */
     right: 16px;            /* מצמיד לימין */
-    top: 50%;               /* ממורכז אנכית */
-    transform: translateY(-50%);
+    top: 12px;              /* ✅ כמו HubSpot (קבוע למעלה) */
+    transform: none;        /* ✅ לא מרכז אנכית */
     z-index: 20;
 
-    background: #fff;
+    background: transparent !important; /* ✅ שקוף */
     border: none;
     border-radius: 14px;
     width: 46px;
     height: 46px;
     color: #5e17eb;
-    box-shadow: 0 4px 12px rgba(94, 23, 235, 0.25);
+
+    box-shadow: none !important; /* ✅ בלי לבן/הילה */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out;
   }
 
   .menu-button.mobile-only:hover {
-    transform: translateY(-50%) scale(1.05);
-    box-shadow: 0 6px 16px rgba(94, 23, 235, 0.35);
+    transform: scale(1.05); /* ✅ בלי translateY */
   }
 }
+
