@@ -19,50 +19,26 @@ function normalizeUser(user) {
   const isTrialing = user.subscriptionPlan === "trial" && computedIsValid;
   const isPendingActivation = user.status === "pending_activation";
 
-  // ✅ זיהוי אדמין שמתחזה לעסק
-  const isAdminImpersonating =
-  user.isImpersonating === true ||
-  (user.role === "admin" && Boolean(user.businessId));
-
-  const isSubscriptionValid =
-    typeof user?.isSubscriptionValid === "boolean"
-      ? user.isSubscriptionValid
-      : computedIsValid;
-
   return {
     ...user,
-
-     isImpersonating: isAdminImpersonating, 
-
-    // 🔐 תשלומים / גישה
-    hasPaid: isAdminImpersonating ? true : Boolean(user?.hasPaid),
-    hasAccess: isAdminImpersonating
-      ? true
-      : isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
-
+    hasPaid: Boolean(user?.hasPaid),
     subscriptionCancelled: Boolean(user?.subscriptionCancelled),
 
-    // 📦 סטטוס מנוי
-    isSubscriptionValid: isAdminImpersonating
-      ? true
-      : isSubscriptionValid,
+    isSubscriptionValid:
+      typeof user?.isSubscriptionValid === "boolean"
+        ? user.isSubscriptionValid
+        : computedIsValid,
 
-    subscriptionStatus: isAdminImpersonating
-      ? user.subscriptionPlan
-      : user.status || user.subscriptionPlan || "free",
+    subscriptionStatus: user.status || user.subscriptionPlan || "free",
 
-    // 📅 ימים שנותרו
     daysLeft:
-      user.subscriptionEnd &&
-      (isAdminImpersonating || isSubscriptionValid)
-        ? Math.ceil(
-            (new Date(user.subscriptionEnd) - now) /
-              (1000 * 60 * 60 * 24)
-          )
+      user.subscriptionEnd && computedIsValid
+        ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
         : 0,
+
+    hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
 }
-
 
 /* ===========================
    🔁 Token refresh (single flight)
@@ -134,31 +110,20 @@ export function AuthProvider({ children }) {
      👤 Refresh user
   =========================== */
   const refreshUser = async (force = false) => {
-  const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
+    try {
+      const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
+        withCredentials: true,
+      });
 
-  // 🔒 נעילה מוחלטת – גם אם מישהו קרא עם force=true
-  if (isImpersonating) {
-    const stored = localStorage.getItem("businessDetails");
-    return stored ? normalizeUser(JSON.parse(stored)) : null;
-  }
-
-  try {
-    const { data } = await API.get(
-      `/auth/me${force ? "?forceRefresh=1" : ""}`,
-      { withCredentials: true }
-    );
-
-
-    const normalized = normalizeUser(data);
-    setUser(normalized);
-    localStorage.setItem("businessDetails", JSON.stringify(normalized));
-    return normalized;
-  } catch (err) {
-    console.error("Failed to refresh user", err);
-    return null;
-  }
-};
-
+      const normalized = normalizeUser(data);
+      setUser(normalized);
+      localStorage.setItem("businessDetails", JSON.stringify(normalized));
+      return normalized;
+    } catch (err) {
+      console.error("Failed to refresh user", err);
+      return null;
+    }
+  };
 
   const loginWithToken = (userFromServer, accessToken, { skipRedirect = false } = {}) => {
   // שמירת token
@@ -234,9 +199,7 @@ navigate("/dashboard", { replace: true });
       document.body.style.background =
         "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
 
-      if (!localStorage.getItem("impersonatedBy")) {
-  refreshUser(true).catch(() => {});
-}
+      refreshUser(true).catch(() => {});
 
       /* ⭐️⭐️⭐️ NEW — PRIORITY REDIRECT FROM URL ⭐️⭐️⭐️ */
       const urlRedirect = new URLSearchParams(window.location.search).get("redirect");
@@ -310,11 +273,7 @@ if (normalizedUser.role === "admin" && !isImpersonating) {
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
 
-      if (!localStorage.getItem("impersonatedBy")) {
-  refreshUser(true).catch(() => {});
-}
-
-
+      refreshUser(true).catch(() => {});
       setLoading(false);
 
       return normalized;
@@ -342,10 +301,7 @@ if (normalizedUser.role === "admin" && !isImpersonating) {
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
 
       setToken(null);
-
-      if (!localStorage.getItem("impersonatedBy")) {
-  refreshUser(true).catch(() => {});
-}
+      refreshUser(true).catch(() => {});
 
       setLoading(false);
       return normalized;
@@ -403,22 +359,24 @@ if (normalizedUser.role === "admin" && !isImpersonating) {
         const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 const storedUser = localStorage.getItem("businessDetails");
 
-let freshUser = null;
-
-if (isImpersonating) {
-  const stored = localStorage.getItem("businessDetails");
-  if (!stored) throw new Error("Missing impersonated user");
-  freshUser = normalizeUser(JSON.parse(stored));
-} else {
-  freshUser = await refreshUser(true);
-}
+const freshUser =
+  isImpersonating && storedUser
+    ? normalizeUser(JSON.parse(storedUser))
+    : await refreshUser(true);
 
 if (!freshUser) throw new Error("Missing user");
 
 setUser(freshUser);
 
 const isInAdminArea = location.pathname.startsWith("/admin");
-
+if (
+  freshUser.role === "admin" &&
+  !isImpersonating &&
+  !location.pathname.startsWith("/admin")
+) {
+  navigate("/admin/dashboard", { replace: true });
+  return;
+}
 
 
         const newSocket = await createSocket(
@@ -512,8 +470,7 @@ const isInAdminArea = location.pathname.startsWith("/admin");
     staffLogin,
     affiliateLogin,
 
-    isImpersonating: user?.isImpersonating === true,
-
+    isImpersonating: Boolean(localStorage.getItem("impersonatedBy")),
 
 
     fetchWithAuth: async (fn) => {
