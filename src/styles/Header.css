@@ -191,44 +191,53 @@
   .app-header {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    padding: 0 16px 0 0;
-    height: 70px !important;
+    justify-content: space-between;   /* ✅ לוגו + המבורגר באותה שורה */
+    padding: 0 16px;
+    height: 56px !important;          /* ✅ גובה נמוך ונקי */
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     position: relative;
-    overflow: visible;
   }
 
+  /* ✅ לוגו כחלק מה־flex (לא absolute) */
   .logo-wrapper {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    position: static;
+    transform: none;
     margin: 0 !important;
     padding: 0 !important;
     display: flex;
     align-items: center;
-    justify-content: center;
   }
 
   .logo-link .logo {
-    height: auto !important;
-    max-height: 160px !important;  /* ימלא כמעט את כל ההידר */
+    max-height: 28px !important;      /* ✅ גודל לוגו תקין למובייל */
     width: auto !important;
     display: block;
   }
 
-  .menu-toggle {
-    position: relative;
-    margin-left: auto;
-    z-index: 10;
+  /* ✅ המבורגר באותה שורה */
+  .menu-button.mobile-only {
+    position: static;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: #5e17eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
   }
 
+  /* ❌ מסתיר תפריטי דסקטופ */
   .nav-links,
   .auth-controls.desktop-only {
     display: none !important;
   }
 }
+
 
 /* ===== Header Desktop ===== */
 @media (min-width: 1025px) {
