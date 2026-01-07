@@ -44,9 +44,21 @@ function normalizeUser(user) {
    🔁 Token refresh (single flight)
 =========================== */
 let ongoingRefresh = null;
+
 export async function singleFlightRefresh() {
+  const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
+
+  // ⛔ אין refresh בזמן impersonation
+  if (isImpersonating) {
+    throw new Error("Refresh disabled during impersonation");
+  }
+
   if (!ongoingRefresh) {
-    ongoingRefresh = API.post("/auth/refresh-token", null, { withCredentials: true })
+    ongoingRefresh = API.post(
+      "/auth/refresh-token",
+      null,
+      { withCredentials: true }
+    )
       .then((res) => {
         const { accessToken, user: refreshedUser } = res.data;
         if (!accessToken) throw new Error("No new token");
@@ -56,7 +68,10 @@ export async function singleFlightRefresh() {
 
         if (refreshedUser) {
           const normalized = normalizeUser(refreshedUser);
-          localStorage.setItem("businessDetails", JSON.stringify(normalized));
+          localStorage.setItem(
+            "businessDetails",
+            JSON.stringify(normalized)
+          );
         }
 
         return accessToken;
@@ -65,8 +80,10 @@ export async function singleFlightRefresh() {
         ongoingRefresh = null;
       });
   }
+
   return ongoingRefresh;
 }
+
 
 /* ===========================
    ⚙ Context
