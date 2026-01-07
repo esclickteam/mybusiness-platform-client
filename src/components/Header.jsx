@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo_final.svg";
-import { FaBars, FaChevronLeft } from "react-icons/fa";
+import { FaBars } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
+import MobileMenu from "./MobileMenu";
 
 const navLinks = [
   { to: "/features", label: "Features" },
@@ -14,7 +15,7 @@ const navLinks = [
 ];
 
 export default function Header() {
-  const { user, logout, loading } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -33,20 +34,10 @@ export default function Header() {
       navigate("/");
     } catch (err) {
       console.error("❌ Logout failed:", err);
+    } finally {
+      setMenuOpen(false);
     }
-    setMenuOpen(false);
   };
-
-  const link = (to, label) => (
-    <Link
-      key={to}
-      to={to}
-      onClick={() => setMenuOpen(false)}
-      className={location.pathname === to ? "active-link" : ""}
-    >
-      {label}
-    </Link>
-  );
 
   return (
     <>
@@ -60,10 +51,18 @@ export default function Header() {
 
         {/* 🔹 ניווט בדסקטופ */}
         <div className="nav-links desktop-only">
-          {navLinks.map((item) => link(item.to, item.label))}
+          {navLinks.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={location.pathname === item.to ? "active-link" : ""}
+            >
+              {item.label}
+            </Link>
+          ))}
         </div>
 
-        {/* 🔹 פעולות משתמש */}
+        {/* 🔹 פעולות משתמש בדסקטופ */}
         <div className="auth-controls desktop-only">
           {!user ? (
             <>
@@ -87,78 +86,23 @@ export default function Header() {
           )}
         </div>
 
-        {/* 🔹 ✅ המבורגר רק במובייל הציבורי */}
-        <div className="menu-toggle mobile-only">
-          <button
-            className="menu-button"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <FaChevronLeft size={22} /> : <FaBars size={22} />}
-          </button>
-        </div>
+        {/* 🔹 ✅ המבורגר במובייל — פותח את MobileMenu החדש */}
+        <button
+          className="menu-button mobile-only"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Open menu"
+        >
+          <FaBars size={22} />
+        </button>
       </nav>
 
-      {/* 🔹 תפריט צד למובייל */}
-      {menuOpen && (
-        <>
-          <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />
-          <div className="side-menu open">
-            <div className="drawer-header">
-              <button
-                className="back-button"
-                onClick={() => setMenuOpen(false)}
-              >
-                <FaChevronLeft size={18} />
-                <span>Back</span>
-              </button>
-            </div>
-
-            <div className="menu-scroll">
-              <div className="mobile-auth">
-                {!user ? (
-                  <>
-                    <Link
-                      to="/login"
-                      className="auth-link full-width"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      to="/register"
-                      className="cta-button full-width"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Try it Free
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <span className="hello-user">Hello, {user.name}</span>
-                    <Link
-                      to="/dashboard"
-                      className="auth-link full-width"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      My Account
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="auth-link logout full-width"
-                    >
-                      Logout
-                    </button>
-                  </>
-                )}
-              </div>
-
-              <div className="menu-section">
-                {navLinks.map((item) => link(item.to, item.label))}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      {/* ✅ MobileMenu החדש (במקום side-menu הישן) */}
+      <MobileMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        user={user}
+        onLogout={handleLogout}
+      />
     </>
   );
 }
