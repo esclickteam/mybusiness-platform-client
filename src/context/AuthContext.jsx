@@ -21,7 +21,8 @@ function normalizeUser(user) {
 
   // ✅ זיהוי אדמין שמתחזה לעסק
   const isAdminImpersonating =
-    user.role === "admin" && Boolean(user.businessId);
+  user.isImpersonating === true ||
+  (user.role === "admin" && Boolean(user.businessId));
 
   const isSubscriptionValid =
     typeof user?.isSubscriptionValid === "boolean"
@@ -133,20 +134,30 @@ export function AuthProvider({ children }) {
      👤 Refresh user
   =========================== */
   const refreshUser = async (force = false) => {
-    try {
-      const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
-        withCredentials: true,
-      });
+  const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 
-      const normalized = normalizeUser(data);
-      setUser(normalized);
-      localStorage.setItem("businessDetails", JSON.stringify(normalized));
-      return normalized;
-    } catch (err) {
-      console.error("Failed to refresh user", err);
-      return null;
-    }
-  };
+  // ⛔ לא מרעננים user בזמן impersonation
+  if (isImpersonating) {
+    const stored = localStorage.getItem("businessDetails");
+    return stored ? normalizeUser(JSON.parse(stored)) : null;
+  }
+
+  try {
+    const { data } = await API.get(
+      `/auth/me${force ? "?forceRefresh=1" : ""}`,
+      { withCredentials: true }
+    );
+
+    const normalized = normalizeUser(data);
+    setUser(normalized);
+    localStorage.setItem("businessDetails", JSON.stringify(normalized));
+    return normalized;
+  } catch (err) {
+    console.error("Failed to refresh user", err);
+    return null;
+  }
+};
+
 
   const loginWithToken = (userFromServer, accessToken, { skipRedirect = false } = {}) => {
   // שמירת token
@@ -486,7 +497,8 @@ const isInAdminArea = location.pathname.startsWith("/admin");
     staffLogin,
     affiliateLogin,
 
-    isImpersonating: Boolean(localStorage.getItem("impersonatedBy")),
+    isImpersonating: user?.isImpersonating === true,
+
 
 
     fetchWithAuth: async (fn) => {
