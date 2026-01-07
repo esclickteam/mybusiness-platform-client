@@ -4,155 +4,216 @@ import "./BuildBusinessPage.css";
 export default function BuildBusinessPage() {
   return (
     <div className="build-business-page-container" dir="ltr" lang="en">
-      <h2>🧷 Editing Your Business Page – Why It Matters</h2>
+      {/* =====================================================
+          INTRO
+      ===================================================== */}
+      <h2>Editing Your Business Page: Why It Matters</h2>
+
       <p>
-        Your business page on BizUply isn’t just a “digital business card.” It’s your storefront.
-        It’s where customers first discover you, get impressed by your services, consume information,
-        ask questions, and sometimes even book an appointment—without ever speaking to you.
-        A well-built page is the difference between a curious visitor and a customer who takes action.
-        Every part of it should be crafted with care and intention.
+        Your business page on BizUply is more than a digital profile. It is your
+        public storefront. This is where potential customers form their first
+        impression, understand your services, and decide whether to contact or
+        book with you.
       </p>
 
-      <h2>🧾 The Main Tab – The Heart of the Page</h2>
+      <p>
+        A well-structured page builds trust, reduces friction, and increases
+        conversions. Each section plays a role in guiding customers toward
+        action.
+      </p>
 
-      <h3>✍ Business Name</h3>
+      {/* =====================================================
+          MAIN TAB
+      ===================================================== */}
+      <h2>The Main Tab: Core Business Information</h2>
+
+      <h3>Business Name</h3>
       <p>
-        Your name is the first thing users see. It appears in search results, at the top of your page,
-        and in conversations. Make sure it’s clear, professional, and includes your field.
+        Your business name appears in search results, at the top of your page,
+        and in customer conversations. It should be clear, professional, and
+        descriptive.
       </p>
-      <p>
-        <strong>How to write it:</strong><br />
-        Use your full name or brand name, then add your specialty.
-      </p>
+
+      <p><strong>Best practices:</strong></p>
+      <ul>
+        <li>Use your official business or personal brand name.</li>
+        <li>Include your primary specialty to improve clarity and search visibility.</li>
+      </ul>
+
       <p><strong>Examples:</strong></p>
       <ul>
-        <li>Hagit Amsalem — Natural Cosmetics</li>
-        <li>Yossi Cohen — Plumbing & 24/7 Emergency Service</li>
+        <li>Emily Carter — Natural Skincare</li>
+        <li>Michael Johnson — Plumbing & Emergency Services</li>
       </ul>
+
+      <h3>Business Description</h3>
       <p>
-        Adding the specialty helps search understand what you do and improves your visibility.
+        This section explains who you are, what you offer, and why customers
+        should choose you. It is one of the most influential parts of your page.
       </p>
 
-      <h3>🧾 Business Description</h3>
-      <p>
-        One of the most important sections—this is where you tell your story, what you do, and what makes you unique.
-      </p>
-      <p><strong>How to write a great description?</strong></p>
+      <p><strong>What to include:</strong></p>
       <ul>
-        <li>Use a warm, approachable tone.</li>
-        <li>State your main service and what differentiates you from others.</li>
-        <li>Mention experience, certifications, specialties, and even your treatment/service approach.</li>
+        <li>Your primary service or area of expertise</li>
+        <li>Years of experience, licenses, or certifications</li>
+        <li>Your professional approach or methodology</li>
+        <li>What differentiates you from competitors</li>
       </ul>
-      <p><strong>Sample professional paragraph — Hagit Amsalem:</strong></p>
+
+      <p><strong>Example — Skincare Professional:</strong></p>
       <p>
-        I’m Hagit Amsalem, a certified cosmetician specializing in natural facials with only organic ingredients.
-        I combine 12+ years of experience with personal attention for every client—so the treatment calms both skin and mind.
-        My studio is in Ramat Gan. You’re invited to a unique and relaxing experience.
-      </p>
-      <p><strong>Sample professional paragraph — Yossi Cohen:</strong></p>
-      <p>
-        I’m Yossi Cohen, a licensed plumber with 15+ years of experience, providing repairs, leak detection,
-        and 24/7 emergency service in the central region. I’m committed to fast, reliable, professional work,
-        using advanced equipment to diagnose issues with minimal disruption.
+        I’m Emily Carter, a licensed esthetician specializing in natural facial
+        treatments using organic ingredients. With over 12 years of experience,
+        I provide personalized care focused on long-term skin health. My studio
+        is located in New York and offers a calm, professional environment
+        tailored to each client.
       </p>
 
-      <h3>☎ Contact Details — Phone & Email</h3>
+      <p><strong>Example — Plumbing Professional:</strong></p>
       <p>
-        These let customers reach you directly—so accuracy is a must. A small typo can cost you leads.
-        If you use WhatsApp Business, mention it in the description or add a relevant icon in your visuals.
+        I’m Michael Johnson, a licensed plumber with more than 15 years of
+        experience providing residential and emergency plumbing services. I
+        focus on fast response, accurate diagnostics, and long-term solutions
+        using modern equipment.
       </p>
 
-      <h3>🏷 Category</h3>
+      {/* =====================================================
+          CONTACT & LOCATION
+      ===================================================== */}
+      <h3>Contact Details</h3>
       <p>
-        The category helps place your page correctly in the system. Choose the one that best represents your
-        primary service. Even if you offer several services, focus on the main keyword—e.g., “Permanent Makeup,”
-        “Medical Massage,” “Nails,” “Natural Cosmetics,” etc.
+        Accurate contact information allows customers to reach you without
+        friction. Double-check phone numbers and email addresses to avoid missed
+        opportunities.
       </p>
 
-      <h3>📍 City</h3>
+      <h3>Business Category</h3>
       <p>
-        Choose the main city where you provide service. Even if you’re mobile or work across multiple cities,
-        list the place where most work happens—or where your studio is located.
+        Select the category that best represents your primary service. Even if
+        you offer multiple services, focus on the main keyword customers are
+        most likely to search for.
       </p>
 
-      <h2>🖼 Gallery Tab — Visual Impression</h2>
+      <h3>Service Area or City</h3>
       <p>
-        The gallery lets you show, not just tell. One picture is worth a thousand words—and on mobile,
-        it can be the difference between browsing and booking.
+        Choose the main city or service area where you operate. If you serve
+        multiple locations, select the area where most of your work takes
+        place.
       </p>
-      <p><strong>What to include?</strong></p>
+
+      {/* =====================================================
+          GALLERY TAB
+      ===================================================== */}
+      <h2>Gallery Tab: Visual First Impression</h2>
+      <p>
+        The gallery allows customers to visually evaluate your work before
+        contacting you. High-quality visuals significantly increase trust and
+        engagement.
+      </p>
+
+      <p><strong>Recommended content:</strong></p>
       <ul>
-        <li>Real work: before/after, process, and results.</li>
-        <li>Your workspace: studio, station, clean and organized equipment.</li>
-        <li>Short videos that convey professionalism and confidence.</li>
-      </ul>
-      <p><strong>Remember:</strong></p>
-      <ul>
-        <li>Avoid low-quality or compressed images.</li>
-        <li>Five excellent photos beat fifteen mediocre ones.</li>
-        <li>Avoid heavy filters—customers want authenticity.</li>
+        <li>Before-and-after results or completed projects</li>
+        <li>Your workspace, tools, or studio environment</li>
+        <li>Short videos demonstrating your process or professionalism</li>
       </ul>
 
-      <h2>⭐ Reviews Tab — Building Trust</h2>
+      <p><strong>Best practices:</strong></p>
+      <ul>
+        <li>Use high-resolution, well-lit images.</li>
+        <li>Quality matters more than quantity.</li>
+        <li>Avoid heavy filters to maintain authenticity.</li>
+      </ul>
+
+      {/* =====================================================
+          REVIEWS TAB
+      ===================================================== */}
+      <h2>Reviews Tab: Building Trust</h2>
       <p>
-        Only real customers can leave reviews—this creates high credibility. Each review includes a rating
-        and affects your overall score.
+        Reviews are submitted only by real customers, ensuring credibility.
+        Ratings influence visibility and help new customers make informed
+        decisions.
       </p>
+
       <p><strong>Why reviews matter:</strong></p>
       <ul>
-        <li>They add legitimacy and trust.</li>
-        <li>They boost your rating and visibility.</li>
-        <li>They help new customers decide.</li>
+        <li>They build social proof and trust.</li>
+        <li>They improve visibility and ranking.</li>
+        <li>They reduce hesitation for new customers.</li>
       </ul>
-      <p><strong>How to encourage reviews smartly?</strong></p>
+
+      <p><strong>How to request reviews:</strong></p>
       <p>
-        Ask a customer:<br />
-        “If you were happy, it would really help me if you could leave a short review on my BizUply profile 😊
-        It helps new customers find me.”
+        “If you were satisfied with the service, I’d really appreciate it if
+        you could leave a short review on my BizUply profile. It helps new
+        customers find and trust my work.”
       </p>
 
-      <h2>📅 Calendar Tab — Booking</h2>
+      {/* =====================================================
+          CALENDAR TAB
+      ===================================================== */}
+      <h2>Calendar Tab: Online Booking</h2>
       <p>
-        The calendar lets customers book appointments digitally—no phone calls or long message threads.
+        The calendar allows customers to book appointments without phone calls
+        or back-and-forth messages.
       </p>
-      <p><strong>How to set it up:</strong></p>
+
+      <p><strong>Service setup guidelines:</strong></p>
       <ul>
-        <li>Each service needs a clear name, estimated duration (in minutes), price, and description.</li>
-        <li>If there’s a difference between simple/short and complex/long services—create separate services.</li>
+        <li>Clear service name</li>
+        <li>Estimated duration (in minutes)</li>
+        <li>Price</li>
+        <li>Concise description of what is included</li>
       </ul>
-      <p><strong>Good service example — Hagit Amsalem:</strong></p>
+
+      <p><strong>Example — Skincare Service:</strong></p>
       <ul>
         <li>Service name: Deep Natural Facial</li>
         <li>Duration: 75 minutes</li>
         <li>Price: $290</li>
-        <li>Description: Deep cleanse with green clay mask and soothing care, tailored for sensitive skin.</li>
+        <li>
+          Description: Deep cleansing treatment using natural products, tailored
+          to sensitive skin.
+        </li>
       </ul>
-      <p><strong>Good service example — Yossi Cohen:</strong></p>
+
+      <p><strong>Example — Plumbing Service:</strong></p>
       <ul>
         <li>Service name: Sink Clog Removal</li>
         <li>Duration: 30 minutes</li>
         <li>Price: $250</li>
-        <li>Description: Light clog removal using professional powered tools, includes functionality check.</li>
+        <li>
+          Description: Professional clog removal using powered tools, including
+          a functionality check.
+        </li>
       </ul>
 
-      <h2>💬 Messages Tab — Direct Chat with Customers</h2>
+      {/* =====================================================
+          MESSAGES TAB
+      ===================================================== */}
+      <h2>Messages Tab: Customer Communication</h2>
       <p>
-        Customers can contact you easily from your page. All messages appear in the “Customer Messages” tab,
-        and you’ll get a notification.
+        Customers can contact you directly from your page. All messages appear
+        in the Customer Messages section, and notifications help ensure timely
+        responses.
       </p>
-      <p><strong>Tips for handling messages:</strong></p>
+
+      <p><strong>Communication tips:</strong></p>
       <ul>
-        <li>Reply as quickly as possible—service speed matters.</li>
-        <li>Write clearly and politely.</li>
-        <li>If questions repeat, add them to your FAQ tab.</li>
+        <li>Respond promptly to inquiries.</li>
+        <li>Use clear, professional language.</li>
+        <li>Add recurring questions to your FAQ tab.</li>
       </ul>
 
-      <h2>❓ FAQ Tab</h2>
+      {/* =====================================================
+          FAQ TAB
+      ===================================================== */}
+      <h2>FAQ Tab</h2>
       <p>
-        Use this space to answer repeat questions in advance. It saves time, improves service,
-        and signals organization and professionalism.
+        The FAQ section allows you to proactively answer common questions. This
+        saves time, reduces repetitive inquiries, and reinforces professionalism.
       </p>
-      <p><strong>Good examples:</strong></p>
+
       <table>
         <thead>
           <tr>
@@ -162,38 +223,42 @@ export default function BuildBusinessPage() {
         </thead>
         <tbody>
           <tr>
-            <td>Can I pay by credit card?</td>
-            <td>Yes—credit card, Bit, and PayBox are accepted.</td>
+            <td>Do you accept credit cards?</td>
+            <td>Yes. Credit cards and popular payment apps are accepted.</td>
           </tr>
           <tr>
-            <td>Does the service include a repair?</td>
-            <td>Yes—one repair is included, up to 60 days.</td>
+            <td>Is there a warranty on the service?</td>
+            <td>Yes. One repair is included, valid for up to 60 days.</td>
           </tr>
           <tr>
-            <td>Can I book on Fridays?</td>
-            <td>Yes—by prior arrangement only.</td>
+            <td>Are weekend appointments available?</td>
+            <td>Yes. Weekend bookings are available by prior arrangement.</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>✅ Save & Finish</h2>
+      {/* =====================================================
+          FINAL CHECK
+      ===================================================== */}
+      <h2>Save and Review</h2>
       <p>
-        After filling out all details across the tabs, click “Save All” at the bottom.
-        We recommend switching to “View Profile” from the right sidebar to see how your page looks to customers.
-      </p>
-      <p>
-        Check that all images load properly, there are no typos, services are clear, and the information flows well.
+        After completing all sections, click “Save All.” Use the “View Profile”
+        option to review how your page appears to customers.
       </p>
 
-      <h2>💡 In Summary — Your Professional Checklist</h2>
+      <p>
+        Confirm that images load correctly, services are clearly defined, and
+        all information is accurate and easy to understand.
+      </p>
+
+      <h2>Final Checklist</h2>
       <ul>
-        <li>A clear headline with your specialty.</li>
-        <li>A personal, precise description with experience and a clear value promise.</li>
-        <li>High-quality, authentic images.</li>
-        <li>Services with professional details, pricing, and explanations.</li>
-        <li>Proactive answers to repeat questions in your FAQ tab.</li>
-        <li>Encourage reviews from happy customers.</li>
-        <li>Final check in “View Profile.”</li>
+        <li>Clear business name with a defined specialty</li>
+        <li>Professional description with a clear value proposition</li>
+        <li>High-quality, authentic visuals</li>
+        <li>Well-defined services with pricing and durations</li>
+        <li>Proactive answers to common questions</li>
+        <li>Encouragement of customer reviews</li>
       </ul>
     </div>
   );
