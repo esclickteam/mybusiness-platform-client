@@ -22,9 +22,7 @@ import { useAuth } from "./context/AuthContext";
 import API from "./api";
 import { useOnceLogger } from "./utils/useOnceLogger";
 import { LoginSkeleton } from "./components/LoginSkeleton";
-import AdminLayout from "./pages/admin/AdminLayout";
-
-
+import AdminWithdrawalsPage from "./pages/admin/AdminWithdrawalsPage";
 
 import { AiProvider } from "./context/AiContext";
 import AiModal from "./components/AiModal";
@@ -94,7 +92,6 @@ const TrialEnded = lazy(() => import("./pages/TrialEnded"));
 
 
 
-
 // Smooth scroll to top
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -114,9 +111,6 @@ export default function App() {
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const isAdminRoute = location.pathname.startsWith("/admin");
-
-
   useOnceLogger("App render - user", user);
   useOnceLogger("App render - loading", loading);
 
@@ -128,11 +122,9 @@ export default function App() {
   if (loading) return <LoginSkeleton />;
 
   return (
-  <NotificationsProvider>
-    {!isAdminRoute && (
+    <NotificationsProvider>
       <Header onToggleNotifications={() => setShowNotifications((v) => !v)} />
-    )}
-    <ScrollToTop />
+      <ScrollToTop />
 
       {/* ✅ אזור גלילה יחיד למניעת סקרול כפול */}
       <div className="app-scroll-area">
@@ -191,6 +183,7 @@ export default function App() {
                   <Route path="/staff-login" element={<StaffLogin />} />
                   <Route path="/business/:businessId" element={<BusinessProfileView />} />
                   <Route path="/book/:businessId" element={<BookingPage />} />
+                  <Route path="/admin/withdrawals" element={<AdminWithdrawalsPage />} />
                   <Route path="/affiliate/:publicToken" element={<AffiliateAutoLogin />} />
                   <Route path="/support" element={<Support />} />
                   <Route path="/features" element={<Features />} />
@@ -320,28 +313,89 @@ export default function App() {
                       </ProtectedRoute>
                     }
                   />
-                  
-                  {/* ===== ADMIN ===== */}
-<Route
-  path="/admin"
-  element={
-    <ProtectedRoute roles={["admin"]}>
-      <AdminLayout />
-    </ProtectedRoute>
-  }
->
-  <Route path="dashboard" element={<AdminDashboard />} />
-  <Route path="logs" element={<AdminLogs />} />
-  <Route path="plans" element={<AdminPlans />} />
-  <Route path="settings" element={<AdminSettings />} />
-  <Route path="users" element={<AdminUsers />} />
-  <Route path="site-edit" element={<EditSiteContent />} />
-  <Route path="roles" element={<ManageRoles />} />
-  <Route path="affiliates" element={<AdminAffiliates />} />
-  <Route path="affiliate-payouts" element={<AdminPayoutPage />} />
-  <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
-</Route>
+                  <Route
+                    path="/admin/dashboard"
+                    element={
+                      <ProtectedRoute roles={["admin"]}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/logs"
+                    element={
+                      <ProtectedRoute roles={["admin"]}>
+                        <AdminLogs />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/plans"
+                    element={
+                      <ProtectedRoute roles={["admin"]}>
+                        <AdminPlans />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/settings"
+                    element={
+                      <ProtectedRoute roles={["admin"]}>
+                        <AdminSettings />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/users"
+                    element={
+                      <ProtectedRoute roles={["admin"]}>
+                        <AdminUsers />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/site-edit"
+                    element={
+                      <ProtectedRoute roles={["admin"]}>
+                        <EditSiteContent />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/roles"
+                    element={
+                      <ProtectedRoute roles={["admin"]}>
+                        <ManageRoles />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/affiliates"
+                    element={
+                      <ProtectedRoute roles={["admin"]}>
+                        <AdminAffiliates />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/affiliate-payouts"
+                    element={
+                      <ProtectedRoute roles={["admin"]}>
+                        <AdminPayoutPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
+                  {/* Affiliate pages */}
+                  <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
+                  <Route
+                    path="/affiliate/dashboard/*"
+                    element={
+                      <ProtectedRoute roles={["affiliate"]}>
+                        <AffiliateDashboardPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
@@ -351,8 +405,7 @@ export default function App() {
                 {showNotifications && (
                   <Notifications onClose={() => setShowNotifications(false)} />
                 )}
-                {!isAdminRoute && <Footer />}
-
+                <Footer />
               </motion.div>
             </Suspense>
           </AnimatePresence>
