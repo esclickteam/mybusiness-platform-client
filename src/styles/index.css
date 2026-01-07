@@ -23,13 +23,14 @@
 
 html,
 body {
-  height: 100%;
   width: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
 
-  /* 🔒 BODY NEVER SCROLLS */
-  overflow: hidden !important;
+  /* ✅ גלילה רגילה */
+  overflow-x: hidden;
+  overflow-y: auto;
 
   font-family: "Poppins", "Arial", sans-serif;
   direction: ltr;
@@ -46,6 +47,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 
 /* ===========================
    GLOBAL BOX MODEL

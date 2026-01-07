@@ -15,40 +15,59 @@ const navLinks = [
 export default function MobileMenu({ open, onClose, user, onLogout }) {
   const location = useLocation();
 
-  // 🔒 נועל גלילה כשפתוח
+  /* 🔒 נועל גלילה + ESC לסגירה */
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => (document.body.style.overflow = "");
-  }, [open]);
+    if (!open) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = prevOverflow || "";
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, onClose]);
 
   if (!open) return null;
 
   return (
-    <div className="mobile-menu">
-      {/* Header */}
+    <div className="mobile-menu" role="dialog" aria-modal="true">
+      {/* ================= Header ================= */}
       <div className="mobile-menu-header">
         <img src={logo} alt="BizUply" />
-        <button className="close-btn" onClick={onClose}>
+        <button
+          className="close-btn"
+          onClick={onClose}
+          aria-label="Close menu"
+        >
           <FaTimes />
         </button>
       </div>
 
-      {/* Search */}
+      {/* ================= Search ================= */}
       <div className="menu-search-wrapper">
         <FaSearch className="search-icon" />
-        <input placeholder="Search BizUply" />
+        <input
+          type="text"
+          placeholder="Search BizUply"
+          aria-label="Search"
+        />
       </div>
 
-      {/* Navigation */}
+      {/* ================= Navigation ================= */}
       <nav className="menu-nav">
         {navLinks.map((item) => (
           <Link
             key={item.to}
             to={item.to}
             onClick={onClose}
-            className={
-              location.pathname === item.to ? "active" : ""
-            }
+            className={location.pathname === item.to ? "active" : ""}
           >
             <span>{item.label}</span>
             <FaChevronRight />
@@ -56,23 +75,41 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
         ))}
       </nav>
 
-      {/* CTAs */}
+      {/* ================= CTAs ================= */}
       <div className="menu-ctas">
         {!user ? (
           <>
-            <Link to="/register" className="cta-primary" onClick={onClose}>
+            <Link
+              to="/register"
+              className="cta-primary"
+              onClick={onClose}
+            >
               Try it Free
             </Link>
-            <Link to="/login" className="cta-secondary" onClick={onClose}>
+            <Link
+              to="/login"
+              className="cta-secondary"
+              onClick={onClose}
+            >
               Log in
             </Link>
           </>
         ) : (
           <>
-            <Link to="/dashboard" className="cta-primary" onClick={onClose}>
+            <Link
+              to="/dashboard"
+              className="cta-primary"
+              onClick={onClose}
+            >
               My Account
             </Link>
-            <button className="cta-secondary logout" onClick={onLogout}>
+            <button
+              className="cta-secondary logout"
+              onClick={() => {
+                onLogout?.();
+                onClose();
+              }}
+            >
               Logout
             </button>
           </>
