@@ -154,3 +154,22 @@
     transform: translateY(0);
   }
 }
+
+/* =====================================================
+   HARD OVERRIDE – REMOVE GLOBAL BUTTON STYLES
+===================================================== */
+
+.faq-question,
+.faq-question:hover,
+.faq-question:focus,
+.faq-question:active,
+.faq-question[aria-expanded="true"] {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #1f2937;
+}
+
+/* Keep open state text slightly stronger */
+.faq-item.open .faq-question {
+  color: #2c1250;
+}
