@@ -1,0 +1,38 @@
+.client-header {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  height: 64px;
+  padding: 0 32px;
+
+  background: #f1eaff; /* סגול בהיר כמו בצילום */
+  box-sizing: border-box;
+}
+
+.client-header-left {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3a1c91;
+}
+
+.client-logout-btn {
+  all: unset;
+  background: #6a3df0;
+  color: #fff;
+
+  padding: 8px 20px;
+  border-radius: 14px;
+
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.client-logout-btn:hover {
+  opacity: 0.9;
+}
