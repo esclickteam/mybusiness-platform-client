@@ -1,0 +1,137 @@
+/* =====================================================
+   FAQ CONTAINER
+===================================================== */
+
+.faq-container {
+  max-width: 860px;
+  margin: 3rem auto;
+  padding: 0 20px;
+  font-family: Poppins, Inter, Arial, sans-serif;
+  color: #1f2937;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.faq-title {
+  text-align: center;
+  margin-bottom: 8px;
+
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+
+  /* ✅ standard */
+  background-clip: text;
+
+  /* ✅ webkit */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* fallback */
+  color: #6a11cb;
+}
+
+.faq-subtitle {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+/* =====================================================
+   FAQ LIST
+===================================================== */
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* =====================================================
+   FAQ ITEM (CARD)
+===================================================== */
+
+.faq-item {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.faq-item:hover {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* =====================================================
+   FAQ QUESTION (BUTTON)
+===================================================== */
+
+.faq-question {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 18px 20px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: left;
+}
+
+.faq-question:focus {
+  outline: none;
+}
+
+/* =====================================================
+   PLUS ICON
+===================================================== */
+
+.faq-plus {
+  font-size: 20px;
+  color: #6366f1;
+  transition: transform 0.2s ease;
+}
+
+.faq-plus.open {
+  transform: rotate(45deg);
+}
+
+/* =====================================================
+   FAQ ANSWER
+===================================================== */
+
+.faq-answer {
+  padding: 0 20px 18px;
+  color: #4b5563;
+  line-height: 1.7;
+  font-size: 0.95rem;
+  animation: fadeIn 0.2s ease;
+}
+
+/* =====================================================
+   ANIMATIONS
+===================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./faq.css";
 
 const faqs = [
   {
@@ -51,87 +52,34 @@ export default function SystemSettings() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 860,
-        margin: "3rem auto",
-        padding: "0 20px",
-        fontFamily: "Poppins, Inter, Arial, sans-serif",
-        color: "#1f2937",
-      }}
-    >
+    <div className="faq-container">
       {/* Header */}
-      <h1
-        style={{
-          textAlign: "center",
-          marginBottom: 8,
-          fontSize: "2.2rem",
-          fontWeight: 800,
-          background: "linear-gradient(90deg, #6a11cb, #2575fc)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-        }}
-      >
-        BizUply System Settings
-      </h1>
+      <h1 className="faq-title">BizUply System Settings</h1>
 
-      <p
-        style={{
-          textAlign: "center",
-          marginBottom: "2.5rem",
-          color: "#6b7280",
-          fontSize: "1rem",
-        }}
-      >
+      <p className="faq-subtitle">
         Learn how the BizUply system works and how to manage your platform
         settings effectively.
       </p>
 
       {/* FAQ List */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div className="faq-list">
         {faqs.map((faq, idx) => {
           const isOpen = openIndex === idx;
 
           return (
-            <div
-              key={idx}
-              style={{
-                background: "#ffffff",
-                borderRadius: 14,
-                border: "1px solid #e5e7eb",
-                boxShadow: "0 6px 20px rgba(0,0,0,0.05)",
-                overflow: "hidden",
-                transition: "box-shadow 0.2s ease",
-              }}
-            >
+            <div key={idx} className="faq-item">
               <button
+                className="faq-question"
                 onClick={() => toggleIndex(idx)}
                 aria-expanded={isOpen}
                 aria-controls={`faq-answer-${idx}`}
                 id={`faq-question-${idx}`}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  padding: "18px 20px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  fontSize: "1.05rem",
-                  fontWeight: 600,
-                  color: "#1f2937",
-                }}
               >
-                <span style={{ textAlign: "left" }}>{faq.question}</span>
+                <span>{faq.question}</span>
 
                 <span
-                  style={{
-                    fontSize: 20,
-                    color: "#6366f1",
-                    transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
-                    transition: "transform 0.2s ease",
-                  }}
+                  className={`faq-plus ${isOpen ? "open" : ""}`}
+                  aria-hidden
                 >
                   +
                 </span>
@@ -142,13 +90,7 @@ export default function SystemSettings() {
                   id={`faq-answer-${idx}`}
                   role="region"
                   aria-labelledby={`faq-question-${idx}`}
-                  style={{
-                    padding: "0 20px 18px",
-                    color: "#4b5563",
-                    lineHeight: 1.7,
-                    fontSize: "0.95rem",
-                    animation: "fadeIn 0.2s ease",
-                  }}
+                  className="faq-answer"
                 >
                   {faq.answer}
                 </div>
