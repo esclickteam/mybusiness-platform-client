@@ -11,59 +11,18 @@ export default function ProtectedRoute({
 }) {
   const { user, loading, initialized } = useAuth();
   const location = useLocation();
+
   const [showTrialModal, setShowTrialModal] = useState(false);
   const [checkedTrial, setCheckedTrial] = useState(false);
 
   const role = (user?.role || "").toLowerCase();
   const isAdmin = role === "admin";
   const isBusiness = role === "business";
-  const isAffiliate = role === "affiliate";
 
   /* ===========================
-     💳 תוקף מנוי
+     ⏳ טעינה ראשונית
   =========================== */
-  const isSubscriptionValid = useMemo(() => {
-    if (!isBusiness) return true;
-    if (user?.subscriptionEnd) {
-      return new Date(user.subscriptionEnd) > new Date();
-    }
-    return false;
-  }, [isBusiness, user?.subscriptionEnd]);
-
-  /* ===========================
-     🕓 ניסיון חינם שפג
-  =========================== */
-  const isTrialExpired = useMemo(() => {
-    return (
-      user?.subscriptionPlan === "trial" &&
-      user?.subscriptionEnd &&
-      new Date(user.subscriptionEnd) < new Date()
-    );
-  }, [user?.subscriptionPlan, user?.subscriptionEnd]);
-
-  /* ===========================
-     🧠 בדיקה לאחר טעינה
-  =========================== */
-  useEffect(() => {
-    if (!initialized || !user) return;
-
-    const isDashboardArea = /^\/business\/[^/]+\/dashboard/.test(
-      location.pathname
-    );
-
-    if (isBusiness && isTrialExpired && isDashboardArea) {
-      setShowTrialModal(true);
-    } else {
-      setShowTrialModal(false);
-    }
-
-    setCheckedTrial(true);
-  }, [initialized, user, isBusiness, isTrialExpired, location.pathname]);
-
-  /* ===========================
-     ⏳ טעינה
-  =========================== */
-  if (loading || !initialized || !checkedTrial) {
+  if (loading || !initialized) {
     return (
       <div style={{ textAlign: "center", padding: "2rem" }}>
         🔄 Loading data...
@@ -79,20 +38,72 @@ export default function ProtectedRoute({
   }
 
   /* ===========================
-     🔐 הרשאות לפי roles
-     ❗ גם אדמין חייב להיות כלול ב־roles
+     👑 Admin – BYPASS מוחלט
+     ❗ שום בדיקה אחרת לא רצה
+  =========================== */
+  if (isAdmin) {
+    return <>{children}</>;
+  }
+
+  /* ===========================
+     💳 תוקף מנוי (רק לעסק)
+  =========================== */
+  const isSubscriptionValid = useMemo(() => {
+    if (!isBusiness) return true;
+    if (user?.subscriptionEnd) {
+      return new Date(user.subscriptionEnd) > new Date();
+    }
+    return false;
+  }, [isBusiness, user?.subscriptionEnd]);
+
+  /* ===========================
+     🕓 ניסיון חינם שפג
+  =========================== */
+  const isTrialExpired = useMemo(() => {
+    return (
+      isBusiness &&
+      user?.subscriptionPlan === "trial" &&
+      user?.subscriptionEnd &&
+      new Date(user.subscriptionEnd) < new Date()
+    );
+  }, [isBusiness, user?.subscriptionPlan, user?.subscriptionEnd]);
+
+  /* ===========================
+     🧠 בדיקת Trial רק בדשבורד
+  =========================== */
+  useEffect(() => {
+    const isDashboardArea = /^\/business\/[^/]+\/dashboard/.test(
+      location.pathname
+    );
+
+    if (isBusiness && isTrialExpired && isDashboardArea) {
+      setShowTrialModal(true);
+    } else {
+      setShowTrialModal(false);
+    }
+
+    setCheckedTrial(true);
+  }, [isBusiness, isTrialExpired, location.pathname]);
+
+  if (!checkedTrial) {
+    return (
+      <div style={{ textAlign: "center", padding: "2rem" }}>
+        🔄 Loading data...
+      </div>
+    );
+  }
+
+  /* ===========================
+     🔐 בדיקת roles (לא אדמין)
   =========================== */
   const normalizedRoles = roles.map((r) => r.toLowerCase());
 
-  if (
-    normalizedRoles.length &&
-    !normalizedRoles.includes(role)
-  ) {
+  if (normalizedRoles.length && !normalizedRoles.includes(role)) {
     return <Unauthorized />;
   }
 
   /* ===========================
-     ⚠️ ניסיון חינם הסתיים – מודאל בלבד
+     ⚠️ Trial הסתיים – מודאל בלבד
   =========================== */
   if (showTrialModal) {
     return (
