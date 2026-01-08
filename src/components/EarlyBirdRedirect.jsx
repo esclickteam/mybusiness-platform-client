@@ -44,7 +44,7 @@ export default function EarlyBirdRedirect() {
         <div style={{ ...styles.skeleton, ...styles.button }} />
 
         <p style={styles.note}>
-          מכינים עבורך את מסך התשלום המאובטח
+         Your exclusive offer is ready — taking you to payment…
         </p>
       </div>
     </div>
