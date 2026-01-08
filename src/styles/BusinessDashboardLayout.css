@@ -147,20 +147,15 @@
 
 /* Left */
 .dashboard-layout-header-left {
-  height: 64px;              /* ⬅️ במקום 100% */
+  height: 64px;                /* ⬅️ קריטי */
   display: flex;
   flex-direction: column;
-  justify-content: center;   /* מרכז אנכית */
+  justify-content: center;      /* מרכז אנכית בתוך ההדר */
   gap: 6px;
 
   font-size: 15px;
   font-weight: 600;
   color: #2a165f;
-}
-
-.dashboard-layout-header-left > div {
-  line-height: 1;
-  margin-top: 6px;
 }
 
 /* Right */
