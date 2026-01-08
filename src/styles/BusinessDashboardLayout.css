@@ -158,6 +158,11 @@
   color: #2a165f;
 }
 
+.dashboard-layout-header-left > div {
+  line-height: 1;
+  margin-top: 2px;
+}
+
 /* Right */
 .dashboard-layout-header-right {
   display: flex;
