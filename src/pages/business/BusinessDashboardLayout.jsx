@@ -233,13 +233,7 @@ const handleEarlyBirdUpgrade = async () => {
   Upgrade
 </button>
 
-                      <button
-                        className="earlybird-close"
-                        onClick={() => setHideEarlyBirdBanner(true)}
-                        aria-label="Close banner"
-                      >
-                        ×
-                      </button>
+                     
                     </div>
                   </div>
                 )}

@@ -224,3 +224,63 @@
     margin-top: 64px;
   }
 }
+
+
+/* ===========================
+   🎁 Early Bird – Header Banner
+   =========================== */
+
+.earlybird-header-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 16px;
+
+  background: linear-gradient(135deg, #ede9fe, #f5f3ff);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 500;
+  color: #2a165f;
+
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.18);
+}
+
+/* מחיר */
+.earlybird-header-banner .price {
+  font-weight: 700;
+  color: #6d28d9;
+}
+
+.earlybird-header-banner .old-price {
+  text-decoration: line-through;
+  opacity: 0.5;
+  margin-left: 4px;
+}
+
+/* ===========================
+   🚀 Upgrade CTA
+   =========================== */
+
+.earlybird-upgrade-btn {
+  background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: none;
+
+  cursor: pointer;
+
+  box-shadow: 0 6px 14px rgba(124, 58, 237, 0.45);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.earlybird-upgrade-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(124, 58, 237, 0.6);
+}
