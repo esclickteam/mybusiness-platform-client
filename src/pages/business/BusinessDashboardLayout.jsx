@@ -82,6 +82,32 @@ export default function BusinessDashboardLayout() {
     user?.earlyBirdExpiresAt &&
     new Date(user.earlyBirdExpiresAt) > new Date();
 
+    // 🎁 Early Bird → Stripe Checkout (HEADER)
+const handleEarlyBirdUpgrade = async () => {
+  if (!user?.userId) return;
+
+  // לא להציג שוב
+  localStorage.setItem("seen_upgrade_offer", "true");
+  setHideEarlyBirdBanner(true);
+
+  try {
+    const res = await API.post("/stripe/create-checkout-session", {
+      userId: user.userId,
+      plan: "monthly",
+    });
+
+    if (res.data?.url) {
+      window.location.href = res.data.url; // ⬅️ מעבר ישיר ל־Stripe
+    } else {
+      alert("Checkout unavailable");
+    }
+  } catch (err) {
+    console.error("Early Bird checkout error:", err);
+    alert("Something went wrong");
+  }
+};
+
+
   /* ============================
      🔓 Logout
   ============================ */
@@ -201,15 +227,11 @@ export default function BusinessDashboardLayout() {
                       </span>
 
                       <button
-                        className="earlybird-upgrade-btn"
-                        onClick={() =>
-                          navigate(
-                            `/business/${businessId}/dashboard/billing`
-                          )
-                        }
-                      >
-                        Upgrade
-                      </button>
+  className="earlybird-upgrade-btn"
+  onClick={handleEarlyBirdUpgrade}
+>
+  Upgrade
+</button>
 
                       <button
                         className="earlybird-close"
