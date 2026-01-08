@@ -83,6 +83,31 @@ export default function BusinessDashboardLayout() {
     user?.earlyBirdExpiresAt &&
     new Date(user.earlyBirdExpiresAt) > new Date();
 
+    /* ============================
+   ⏳ Trial Days Left
+============================ */
+const [trialDaysLeft, setTrialDaysLeft] = useState(null);
+
+useEffect(() => {
+  if (
+    user?.subscriptionPlan !== "trial" ||
+    user?.hasPaid ||
+    !user?.subscriptionEnd
+  )
+    return;
+
+  const now = new Date();
+  const end = new Date(user.subscriptionEnd);
+
+  const diff = Math.ceil(
+    (end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  setTrialDaysLeft(diff > 0 ? diff : 0);
+}, [user?.subscriptionPlan, user?.hasPaid, user?.subscriptionEnd]);
+
+
+
   /* ⏰ Countdown */
   useEffect(() => {
     if (!user?.earlyBirdExpiresAt) return;
@@ -236,9 +261,23 @@ export default function BusinessDashboardLayout() {
             {/* ================= Header ================= */}
             {!isMobile && (
               <header className="dashboard-layout-header">
+
                 <div className="dashboard-layout-header-left">
-                  Hello, {user?.businessName || user?.name}
-                </div>
+  <div>Hello, {user?.businessName || user?.name}</div>
+
+  {trialDaysLeft !== null && trialDaysLeft > 0 && (
+    <div className="trial-status">
+      ⏳ Trial ends in <strong>{trialDaysLeft} days</strong>{" "}
+
+      <button
+        className="trial-upgrade-link"
+        onClick={handleEarlyBirdUpgrade}
+      >
+        Upgrade
+      </button>
+    </div>
+  )}
+</div>
 
                 {showEarlyBird && !hideEarlyBirdBanner && (
                   <div className="dashboard-layout-header-center">
