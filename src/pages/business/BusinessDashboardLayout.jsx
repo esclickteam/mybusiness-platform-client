@@ -239,12 +239,14 @@ export default function BusinessDashboardLayout() {
 
                       {!user.hasPaid &&
                         !user.isEarlyBirdActive && (
+
                           <button
-                            className="trial-upgrade-link"
-                            onClick={handleUpgrade}
-                          >
-                            Upgrade
-                          </button>
+  className="trial-upgrade-pill"
+  onClick={handleEarlyBirdUpgrade}
+>
+  Upgrade
+</button>
+
                         )}
                     </div>
                   )}

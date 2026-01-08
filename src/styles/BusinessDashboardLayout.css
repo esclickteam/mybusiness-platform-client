@@ -356,3 +356,40 @@
   outline: none;
 }
 
+/* ============================
+   💜 Trial Upgrade Pill Button
+============================ */
+
+.trial-upgrade-pill {
+  margin-left: 12px;
+  padding: 6px 16px;
+
+  background: linear-gradient(
+    135deg,
+    #6d5dfc 0%,
+    #8b7cff 100%
+  );
+
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+
+  border: none;
+  border-radius: 999px;
+
+  cursor: pointer;
+  white-space: nowrap;
+
+  box-shadow: 0 4px 12px rgba(109, 93, 252, 0.35);
+
+  transition: all 0.25s ease;
+}
+
+.trial-upgrade-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(109, 93, 252, 0.45);
+}
+
+.trial-upgrade-pill:active {
+  transform: scale(0.97);
+}
