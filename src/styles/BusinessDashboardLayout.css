@@ -157,7 +157,7 @@
   font-weight: 600;
   color: #2a165f;
 
-  transform: translateY(6px);  /* ⬅️ זה מה שמוריד את Hello */
+  transform: translateY(16px);  /* ⬅️ זה מה שמוריד את Hello */
 }
 
 /* Right */
