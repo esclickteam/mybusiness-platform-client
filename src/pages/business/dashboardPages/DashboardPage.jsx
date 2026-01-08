@@ -164,8 +164,7 @@ const DashboardPage = () => {
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
   const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(() => {
-  if (localStorage.getItem("seen_upgrade_offer") === "true") return false;
-  return true;
+  return localStorage.getItem("seen_upgrade_offer") !== "true";
 });
 
 
@@ -482,20 +481,11 @@ sock.on("newReview", (reviewData) => {
     }
   }, [location.pathname, location.state]);
 
-  const shouldShowEarlyBirdModal =
-  user?.subscriptionPlan === "trial" &&
-  !user?.hasPaid &&
-  user?.earlyBirdExpiresAt &&
-  new Date(user.earlyBirdExpiresAt) > new Date() &&
-  showEarlyBirdModal;
-
-
-
-
   // 🎁 Early Bird → Stripe Checkout
 const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
 
+  localStorage.setItem("seen_upgrade_offer", "true");
   setShowEarlyBirdModal(false);
 
   try {
@@ -517,16 +507,10 @@ const handleEarlyBirdUpgrade = async () => {
 
 
   /* guards */
-  /* =========================
-   Guards — MUST be after hooks
-========================= */
+  if (!initialized) {
+    return <p className="dp-loading">⏳ Loading data...</p>;
+  }
 
-// עדיין טוען auth / user
-if (!initialized) {
-  return <p className="dp-loading">⏳ Loading data...</p>;
-}
-
-// בדיקת הרשאות
 const isAdmin = user?.role === "admin";
 const isBusinessOwner =
   user?.role === "business" && user?.businessId === businessId;
@@ -539,22 +523,25 @@ if (!isAdmin && !isBusinessOwner) {
   );
 }
 
-// טוען נתונים ראשוניים
 if (loading && !stats) {
   return <DashboardSkeleton />;
 }
 
-// שגיאה
 if (error) {
   return <p className="dp-error">{alert || error}</p>;
 }
 
-// ריענון משתמש אחרי תשלום
 if (isRefreshingUser) {
   return <p className="dp-loading">⏳ Refreshing user info...</p>;
 }
 
 
+const shouldShowEarlyBirdModal =
+  user?.subscriptionPlan === "trial" &&
+  !user?.hasPaid &&
+  user?.earlyBirdExpiresAt &&
+  new Date(user.earlyBirdExpiresAt) > new Date() &&
+  showEarlyBirdModal;
 
 
 
