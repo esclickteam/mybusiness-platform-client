@@ -481,7 +481,8 @@ sock.on("newReview", (reviewData) => {
   // 🎁 Early Bird → Stripe Checkout (NO /plans)
   const handleEarlyBirdUpgrade = async () => {
     try {
-      const res = await API.post("/stripe/payments/create-checkout-session", {
+      const res = await API.post("/stripe/create-checkout-session", {
+
 
         userId: user.userId,
         plan: "monthly", // Early Bird תמיד חודשי
