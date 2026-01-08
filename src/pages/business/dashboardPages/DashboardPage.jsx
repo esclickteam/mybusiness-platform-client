@@ -163,9 +163,31 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
-  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(() => {
-  return localStorage.getItem("seen_upgrade_offer") !== "true";
-});
+  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(false);
+
+  useEffect(() => {
+  if (!initialized || !user) return;
+
+  // כבר ראה → לא להציג שוב
+  if (localStorage.getItem("seen_upgrade_offer") === "true") return;
+
+  // רק לעסק בטריאל
+  if (user.subscriptionPlan !== "trial" || user.hasPaid) return;
+
+  const createdAt =
+    user.businessCreatedAt || user.createdAt;
+
+  if (!createdAt) return;
+
+  const daysPassed =
+    (Date.now() - new Date(createdAt).getTime()) /
+    (1000 * 60 * 60 * 24);
+
+  if (daysPassed >= 4) {
+    setShowEarlyBirdModal(true);
+  }
+}, [initialized, user]);
+
 
 
   /* scroll + hash cleanup */
@@ -535,13 +557,7 @@ if (isRefreshingUser) {
   return <p className="dp-loading">⏳ Refreshing user info...</p>;
 }
 
-
-const shouldShowEarlyBirdModal =
-  user?.subscriptionPlan === "trial" &&
-  !user?.hasPaid &&
-  user?.earlyBirdExpiresAt &&
-  new Date(user.earlyBirdExpiresAt) > new Date() &&
-  showEarlyBirdModal;
+const shouldShowEarlyBirdModal = showEarlyBirdModal;
 
 
 
