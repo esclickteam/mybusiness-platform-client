@@ -342,4 +342,6 @@
   text-decoration: underline;
 }
 
-
+.trial-upgrade-link:hover {
+  color: #4c1fd8;
+}
