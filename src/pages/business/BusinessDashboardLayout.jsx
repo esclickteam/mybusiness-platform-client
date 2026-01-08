@@ -71,6 +71,20 @@ export default function BusinessDashboardLayout() {
   const [showSidebar, setShowSidebar] = useState(!isMobile);
   const sidebarRef = useRef(null);
 
+  /* ============================
+     🎁 Early Bird Logic (HEADER ONLY)
+  ============================ */
+  const [hideEarlyBirdBanner, setHideEarlyBirdBanner] = useState(false);
+
+  const showEarlyBird =
+    user?.subscriptionPlan === "trial" &&
+    !user?.hasPaid &&
+    user?.earlyBirdExpiresAt &&
+    new Date(user.earlyBirdExpiresAt) > new Date();
+
+  /* ============================
+     🔓 Logout
+  ============================ */
   const handleLogout = async () => {
     try {
       socket.disconnect();
@@ -81,6 +95,9 @@ export default function BusinessDashboardLayout() {
     }
   };
 
+  /* ============================
+     📐 Resize Handler
+  ============================ */
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -127,7 +144,6 @@ export default function BusinessDashboardLayout() {
                 </div>
 
                 <nav>
-                  {/* ✅ נפתח בטאב חדש – לא שובר את ההידר */}
                   <a
                     href={`/business/${businessId}`}
                     target="_blank"
@@ -169,45 +185,57 @@ export default function BusinessDashboardLayout() {
             {/* ================= Header (Desktop) ================= */}
             {!isMobile && (
               <header className="dashboard-layout-header">
-  {/* שמאל */}
-  <div className="dashboard-layout-header-left">
-    Hello, {user?.businessName || user?.name}
-  </div>
+                {/* שמאל */}
+                <div className="dashboard-layout-header-left">
+                  Hello, {user?.businessName || user?.name}
+                </div>
 
-  {/* 🎁 אמצע – Early Bird */}
-  {user?.subscriptionPlan === "trial" && !user?.hasPaid && (
-    <div className="dashboard-layout-header-center">
-      <div className="earlybird-header-banner">
-        <span>
-          🎁 <strong>Early Bird:</strong> First month{" "}
-          <span className="price">$99</span>{" "}
-          <span className="old-price">$119</span>
-        </span>
+                {/* 🎁 אמצע – Early Bird */}
+                {showEarlyBird && !hideEarlyBirdBanner && (
+                  <div className="dashboard-layout-header-center">
+                    <div className="earlybird-header-banner">
+                      <span>
+                        🎁 <strong>Early Bird:</strong> First month{" "}
+                        <span className="price">$99</span>{" "}
+                        <span className="old-price">$119</span>
+                      </span>
 
-        <button
-          className="earlybird-upgrade-btn"
-          onClick={() => navigate(`/business/${businessId}/dashboard/billing`)}
-        >
-          Upgrade
-        </button>
-      </div>
-    </div>
-  )}
+                      <button
+                        className="earlybird-upgrade-btn"
+                        onClick={() =>
+                          navigate(
+                            `/business/${businessId}/dashboard/billing`
+                          )
+                        }
+                      >
+                        Upgrade
+                      </button>
 
-  {/* ימין */}
-  <div className="dashboard-layout-header-right">
-    <div className="fb-notif-wrapper">
-      <FacebookStyleNotifications />
-    </div>
+                      <button
+                        className="earlybird-close"
+                        onClick={() => setHideEarlyBirdBanner(true)}
+                        aria-label="Close banner"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                )}
 
-    <button
-      className="header-action-btn"
-      onClick={handleLogout}
-    >
-      Logout
-    </button>
-  </div>
-</header>
+                {/* ימין */}
+                <div className="dashboard-layout-header-right">
+                  <div className="fb-notif-wrapper">
+                    <FacebookStyleNotifications />
+                  </div>
+
+                  <button
+                    className="header-action-btn"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </div>
+              </header>
             )}
 
             {/* ================= Mobile Open Button ================= */}
