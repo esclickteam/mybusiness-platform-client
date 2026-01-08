@@ -177,11 +177,11 @@ const DashboardPage = () => {
   const startDate =
   user.trialStartedAt || user.businessCreatedAt || user.createdAt;
 
-  if (!createdAt) return;
+  if (!startDate) return;
 
-  const daysPassed =
-    (Date.now() - new Date(createdAt).getTime()) /
-    (1000 * 60 * 60 * 24);
+const daysPassed =
+  (Date.now() - new Date(startDate).getTime()) /
+  (1000 * 60 * 60 * 24);
 
   if (daysPassed >= 4) {
     setShowEarlyBirdModal(true);
