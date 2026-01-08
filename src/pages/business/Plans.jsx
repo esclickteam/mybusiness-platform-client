@@ -133,12 +133,14 @@ export default function Plans() {
           ) : loading ? (
             <button className="plan-btn loading">Processing…</button>
           ) : (
+
             <button
-              className="plan-btn primary"
-              onClick={handleStripeCheckout}
-            >
-              {trialExpired ? "Subscribe Now" : "Try Free for 14 Days"}
-            </button>
+  className="plan-btn primary"
+  onClick={() => navigate("/register")}
+>
+  Try Free for 14 Days
+</button>
+
           )}
 
           <div className="summary-box">
