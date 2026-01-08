@@ -340,8 +340,19 @@
   color: #5b4fd6;
   cursor: pointer;
   text-decoration: underline;
+
+  /* ⛔ ביטול אפקטים */
+  box-shadow: none;
+  outline: none;
 }
 
-.trial-upgrade-link:hover {
-  color: #4c1fd8;
+/* ❌ ללא שינוי בהובר */
+.trial-upgrade-link:hover,
+.trial-upgrade-link:focus,
+.trial-upgrade-link:active {
+  color: #5b4fd6;        /* אותו צבע */
+  background: none;
+  box-shadow: none;
+  outline: none;
 }
+
