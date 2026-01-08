@@ -91,11 +91,10 @@ const [trialDaysLeft, setTrialDaysLeft] = useState(null);
 
 useEffect(() => {
   if (
-    user?.subscriptionPlan !== "trial" ||
-    user?.hasPaid ||
-    !user?.trialEndsAt
-  )
-    return;
+  user?.subscriptionPlan !== "trial" ||
+  !user?.trialEndsAt
+)
+  return;
 
   const now = new Date();
   const end = new Date(user.trialEndsAt);
