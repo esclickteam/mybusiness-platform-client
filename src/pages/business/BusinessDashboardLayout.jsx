@@ -269,14 +269,15 @@ useEffect(() => {
   <div className="trial-status">
     ⏳ Trial ends in <strong>{trialDaysLeft} days</strong>
 
-    {!user?.hasPaid && (
-      <button
-        className="trial-upgrade-link"
-        onClick={handleEarlyBirdUpgrade}
-      >
-        Upgrade
-      </button>
-    )}
+    {!user?.hasPaid && !showEarlyBird && (
+  <button
+    className="trial-upgrade-link"
+    onClick={handleEarlyBirdUpgrade}
+  >
+    Upgrade
+  </button>
+)}
+
   </div>
 )}
 
