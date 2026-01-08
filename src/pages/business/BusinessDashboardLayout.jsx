@@ -138,8 +138,8 @@ useEffect(() => {
   const handleEarlyBirdUpgrade = async () => {
     if (!user?.userId) return;
 
-    localStorage.setItem("seen_upgrade_offer", "true");
     setHideEarlyBirdBanner(true);
+
 
     try {
       const res = await API.post("/stripe/create-checkout-session", {

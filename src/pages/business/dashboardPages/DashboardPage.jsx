@@ -163,9 +163,9 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
-  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(() => {
-  return localStorage.getItem("seen_upgrade_offer") !== "true";
-});
+  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(() =>
+  localStorage.getItem("seen_upgrade_offer") !== "true"
+);
 
 
   /* scroll + hash cleanup */
@@ -485,7 +485,6 @@ sock.on("newReview", (reviewData) => {
 const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
 
-  localStorage.setItem("seen_upgrade_offer", "true");
   setShowEarlyBirdModal(false);
 
   try {
@@ -542,6 +541,15 @@ const shouldShowEarlyBirdModal =
   user?.earlyBirdExpiresAt &&
   new Date(user.earlyBirdExpiresAt) > new Date() &&
   showEarlyBirdModal;
+
+  useEffect(() => {
+  if (!shouldShowEarlyBirdModal) return;
+
+  const alreadySeen = localStorage.getItem("seen_upgrade_offer");
+  if (!alreadySeen) {
+    localStorage.setItem("seen_upgrade_offer", "true");
+  }
+}, [shouldShowEarlyBirdModal]);
 
 
 
@@ -623,7 +631,6 @@ const shouldShowEarlyBirdModal =
     expiresAt={user.earlyBirdExpiresAt}
     onUpgrade={handleEarlyBirdUpgrade}
     onClose={() => {
-      localStorage.setItem("seen_upgrade_offer", "true");
       setShowEarlyBirdModal(false);
     }}
   />
