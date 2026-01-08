@@ -21,17 +21,35 @@
 
 .offer-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: -14px;
+  right: -14px;
+
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
   border: none;
-  background: none;
-  font-size: 18px;
+
+  background: #4f46e5; /* סגול ברור */
+  color: #ffffff;
+
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
-  opacity: 0.6;
+
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.45);
+  z-index: 9999;
 }
 
 .offer-close:hover {
-  opacity: 1;
+  background: #4338ca;
+  transform: scale(1.05);
 }
 
 .offer-badge {
