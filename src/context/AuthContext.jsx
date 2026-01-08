@@ -11,6 +11,7 @@ function normalizeUser(user) {
 
   const now = new Date();
 
+ 
   /* ============================
      🔐 Subscription (paid)
   ============================ */
@@ -50,47 +51,76 @@ if (
       )
     : null;
 
-  const isTrialing =
-    user.subscriptionPlan === "trial" && trialDaysLeft > 0;
+    const isTrialActive =
+  trialEndsAt && trialEndsAt > now;
 
-    const isEarlyBird =
-  user?.paymentStatus === "early_bird";
+/* ============================
+   🎁 Early Bird (48h)
+============================ */
+const earlyBirdExpiresAt = user.earlyBirdExpiresAt
+  ? new Date(user.earlyBirdExpiresAt)
+  : null;
+
+const isEarlyBirdActive =
+  earlyBirdExpiresAt &&
+  earlyBirdExpiresAt > now &&
+  !user.earlyBirdUsed;
+
+
+
 
   const hasPaid =
   user?.hasPaid === true ||
-  user?.paymentStatus === "early_bird" ||
   user?.paymentStatus === "paid";
 
 
 
   return {
-    ...user,
+  ...user,
 
-    /* Trial */
-    trialEndsAt,
-    trialDaysLeft,
+  /* =====================
+     ⏳ Trial / Early Bird
+  ===================== */
+  trialEndsAt,
+  trialDaysLeft,
 
-    /* Payment */
-    hasPaid,
+  isTrialActive,
+  isEarlyBirdActive,
 
+  earlyBirdHoursLeft: isEarlyBirdActive
+    ? Math.ceil(
+        (earlyBirdExpiresAt.getTime() - now.getTime()) /
+          (1000 * 60 * 60)
+      )
+    : 0,
 
-    subscriptionCancelled: Boolean(user?.subscriptionCancelled),
+  /* =====================
+     💳 Payment
+  ===================== */
+  hasPaid,
 
-    /* Subscription validity */
-    isSubscriptionValid:
-      typeof user?.isSubscriptionValid === "boolean"
-        ? user.isSubscriptionValid
-        : computedIsValid,
+  subscriptionCancelled: Boolean(user?.subscriptionCancelled),
 
-    subscriptionStatus: user.status || user.subscriptionPlan || "free",
+  /* =====================
+     🔐 Subscription validity
+  ===================== */
+  isSubscriptionValid:
+    typeof user?.isSubscriptionValid === "boolean"
+      ? user.isSubscriptionValid
+      : computedIsValid,
 
-    /* Access */
-     hasAccess:
-    isTrialing ||
-    isEarlyBird ||           // ✅ זה היה חסר
-    hasPaid ||   
+  subscriptionStatus:
+    user.status || user.subscriptionPlan || "free",
+
+  /* =====================
+     🚪 Access
+  ===================== */
+  hasAccess:
+    isTrialActive ||
+    hasPaid ||
     isPendingActivation,
-  };
+};
+
 }
 
 /* ===========================
