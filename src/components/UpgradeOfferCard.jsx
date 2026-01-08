@@ -51,13 +51,25 @@ export default function UpgradeOfferCard({
   return (
     <div className="offer-overlay">
       <div className="offer-card">
-        <button className="offer-close" onClick={onClose}>✕</button>
+        <button
+          className="offer-close"
+          onClick={onClose}
+          aria-label="Close offer"
+          title="Close"
+        >
+          ×
+        </button>
 
         <span className="offer-badge">🎁 Limited-time</span>
 
+        {/* ⭐ הדגשת מחיר */}
         <h2 className="offer-title">
-          First Month Only <span>$99</span>
+          First Month Only{" "}
+          <span className="price-highlight">$99</span>
+          <span className="price-original">$119</span>
         </h2>
+
+        <p className="offer-save">Save $20 on your first month</p>
 
         {!isExpired && (
           <p className="offer-timer">

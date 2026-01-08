@@ -114,3 +114,24 @@
   color: #64748b;
   margin-top: 18px;
 }
+
+.price-highlight {
+  color: #4f46e5;
+  font-weight: 800;
+  font-size: 36px;
+  margin: 0 6px;
+}
+
+.price-original {
+  color: #94a3b8;
+  font-size: 18px;
+  text-decoration: line-through;
+  vertical-align: middle;
+}
+
+.offer-save {
+  color: #16a34a;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 6px;
+}
