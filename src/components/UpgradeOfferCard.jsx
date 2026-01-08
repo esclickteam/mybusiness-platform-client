@@ -51,14 +51,18 @@ export default function UpgradeOfferCard({
   return (
     <div className="offer-overlay">
       <div className="offer-card">
+
         <button
-          className="offer-close"
-          onClick={onClose}
-          aria-label="Close offer"
-          title="Close"
-        >
-          ×
-        </button>
+  className="offer-close"
+  onClick={() => {
+    localStorage.setItem("seen_upgrade_offer", "true");
+    setVisible(false);
+    onClose?.();
+  }}
+  aria-label="Close offer"
+>
+  ×
+</button>
 
         <span className="offer-badge">🎁 Limited-time</span>
 
