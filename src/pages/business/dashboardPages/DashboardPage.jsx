@@ -162,7 +162,18 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
-  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(true);
+
+  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(() => {
+  return localStorage.getItem("seen_upgrade_offer") !== "true";
+});
+
+useEffect(() => {
+  if (!user) return;
+
+  if (localStorage.getItem("seen_upgrade_offer") === "true") {
+    setShowEarlyBirdModal(false);
+  }
+}, [user]);
 
 
   /* scroll + hash cleanup */
@@ -481,25 +492,27 @@ sock.on("newReview", (reviewData) => {
 
 
   // 🎁 Early Bird → Stripe Checkout (NO /plans)
-  const handleEarlyBirdUpgrade = async () => {
-    try {
-      const res = await API.post("/stripe/create-checkout-session", {
+ const handleEarlyBirdUpgrade = async () => {
+  localStorage.setItem("seen_upgrade_offer", "true");
+  setShowEarlyBirdModal(false);
 
+  try {
+    const res = await API.post("/stripe/create-checkout-session", {
+      userId: user.userId,
+      plan: "monthly",
+    });
 
-        userId: user.userId,
-        plan: "monthly", // Early Bird תמיד חודשי
-      });
-
-      if (res.data?.url) {
-        window.location.href = res.data.url; // ⬅️ Stripe Checkout
-      } else {
-        alert("Checkout link not available.");
-      }
-    } catch (err) {
-      console.error("Early Bird checkout error:", err);
-      alert("Something went wrong. Please try again.");
+    if (res.data?.url) {
+      window.location.href = res.data.url;
+    } else {
+      alert("Checkout link not available.");
     }
-  };
+  } catch (err) {
+    console.error("Early Bird checkout error:", err);
+    alert("Something went wrong. Please try again.");
+  }
+};
+
 
   /* guards */
   if (!initialized) {
@@ -618,8 +631,8 @@ const showEarlyBird =
     expiresAt={user.earlyBirdExpiresAt}
     onUpgrade={handleEarlyBirdUpgrade}
     onClose={() => {
-      setShowEarlyBirdModal(false);
       localStorage.setItem("seen_upgrade_offer", "true");
+      setShowEarlyBirdModal(false);
     }}
   />
 )}

@@ -13,8 +13,6 @@ export default function UpgradeOfferCard({
   onClose,
   expiresAt,
 }) {
-  const STORAGE_KEY = "seen_upgrade_offer";
-
   const fallbackExpiresAt = useMemo(
     () => Date.now() + 48 * 60 * 60 * 1000,
     []
@@ -27,23 +25,11 @@ export default function UpgradeOfferCard({
   }, [expiresAt, fallbackExpiresAt]);
 
   const [now, setNow] = useState(Date.now());
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const alreadySeen = localStorage.getItem(STORAGE_KEY);
-    if (!alreadySeen) {
-      setVisible(true);
-      localStorage.setItem(STORAGE_KEY, "true");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!visible) return;
     const id = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(id);
-  }, [visible]);
-
-  if (!visible) return null;
+  }, []);
 
   const msLeft = Math.max(0, targetTs - now);
   const isExpired = msLeft <= 0;
@@ -51,22 +37,18 @@ export default function UpgradeOfferCard({
   return (
     <div className="offer-overlay">
       <div className="offer-card">
-
+        {/* ❌ Close */}
         <button
-  className="offer-close"
-  onClick={() => {
-    localStorage.setItem("seen_upgrade_offer", "true");
-    setVisible(false);
-    onClose?.();
-  }}
-  aria-label="Close offer"
->
-  ×
-</button>
+          className="offer-close"
+          onClick={onClose}
+          aria-label="Close offer"
+        >
+          ×
+        </button>
 
         <span className="offer-badge">🎁 Limited-time</span>
 
-        {/* ⭐ הדגשת מחיר */}
+        {/* ⭐ Price highlight */}
         <h2 className="offer-title">
           First Month Only{" "}
           <span className="price-highlight">$99</span>
