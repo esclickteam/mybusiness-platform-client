@@ -109,6 +109,12 @@ const Register = () => {
         skipRedirect: true,
       });
 
+      // 🟣 Facebook Pixel Event - CompleteRegistration
+if (window.fbq) {
+  window.fbq("track", "CompleteRegistration");
+  console.log("✅ Facebook Pixel: CompleteRegistration sent");
+}
+
       if (!user) {
         setError("❌ Failed to log in after registration, please try again");
         return;
