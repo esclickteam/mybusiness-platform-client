@@ -266,19 +266,18 @@ useEffect(() => {
                 <div className="dashboard-layout-header-left">
   <div>Hello, {user?.businessName || user?.name}</div>
 
-  {trialDaysLeft !== null && trialDaysLeft > 0 && (
+  {!showEarlyBird && trialDaysLeft !== null && trialDaysLeft > 0 && (
   <div className="trial-status">
     ⏳ Trial ends in <strong>{trialDaysLeft} days</strong>
-    {!showEarlyBird && (
-      <button
-        className="trial-upgrade-link"
-        onClick={handleEarlyBirdUpgrade}
-      >
-        Upgrade
-      </button>
-    )}
+    <button
+      className="trial-upgrade-link"
+      onClick={handleEarlyBirdUpgrade}
+    >
+      Upgrade
+    </button>
   </div>
 )}
+
 </div>
 
                 {showEarlyBird && !hideEarlyBirdBanner && (
