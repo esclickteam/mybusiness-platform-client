@@ -174,8 +174,8 @@ const DashboardPage = () => {
   // רק לעסק בטריאל
   if (user.subscriptionPlan !== "trial" || user.hasPaid) return;
 
-  const createdAt =
-    user.businessCreatedAt || user.createdAt;
+  const startDate =
+  user.trialStartedAt || user.businessCreatedAt || user.createdAt;
 
   if (!createdAt) return;
 
