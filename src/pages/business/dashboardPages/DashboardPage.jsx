@@ -167,6 +167,9 @@ const DashboardPage = () => {
   return localStorage.getItem("seen_upgrade_offer") !== "true";
 });
 
+// 🟦 שליטה על הבאנר (רק לסשן הנוכחי)
+const [hideEarlyBirdBanner, setHideEarlyBirdBanner] = useState(false);
+
 useEffect(() => {
   if (!user) return;
 
@@ -495,6 +498,7 @@ sock.on("newReview", (reviewData) => {
  const handleEarlyBirdUpgrade = async () => {
   localStorage.setItem("seen_upgrade_offer", "true");
   setShowEarlyBirdModal(false);
+  setHideEarlyBirdBanner(true); // ⬅️ חשוב
 
   try {
     const res = await API.post("/stripe/create-checkout-session", {
@@ -596,7 +600,8 @@ const showEarlyBird =
 
         
         {/* 🎁 Early Bird Header Banner */}
-  {showEarlyBird && showEarlyBirdModal && (
+  {showEarlyBird && !hideEarlyBirdBanner && (
+
     <div className="earlybird-header-banner">
       <span>
         🎁 <strong>Early Bird:</strong> First month{" "}
@@ -612,15 +617,12 @@ const showEarlyBird =
       </button>
 
       <button
-        className="earlybird-close"
-        onClick={() => {
-          localStorage.setItem("seen_upgrade_offer", "true");
-          setShowEarlyBirdModal(false);
-        }}
-        aria-label="Close banner"
-      >
-        ×
-      </button>
+  className="earlybird-close"
+  onClick={() => setHideEarlyBirdBanner(true)}
+  aria-label="Close banner"
+>
+  ×
+</button>
     </div>
   )}
 </header>
@@ -661,6 +663,7 @@ const showEarlyBird =
     expiresAt={user.earlyBirdExpiresAt}
     onUpgrade={handleEarlyBirdUpgrade}
     onClose={() => {
+      // סוגר רק את המודאל
       localStorage.setItem("seen_upgrade_offer", "true");
       setShowEarlyBirdModal(false);
     }}
