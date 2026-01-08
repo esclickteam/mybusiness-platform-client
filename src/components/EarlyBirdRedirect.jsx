@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import API from "../../api";
+import API from "../api";
 
 export default function EarlyBirdRedirect() {
   const { user } = useAuth();
