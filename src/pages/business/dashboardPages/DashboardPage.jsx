@@ -478,10 +478,29 @@ sock.on("newReview", (reviewData) => {
 
 
 
-/* guards */
-if (!initialized) {
-  return <p className="dp-loading">⏳ Loading data...</p>;
-}
+  // 🎁 Early Bird → Stripe Checkout (NO /plans)
+  const handleEarlyBirdUpgrade = async () => {
+    try {
+      const res = await API.post("/payments/create-checkout-session", {
+        userId: user.userId,
+        plan: "monthly", // Early Bird תמיד חודשי
+      });
+
+      if (res.data?.url) {
+        window.location.href = res.data.url; // ⬅️ Stripe Checkout
+      } else {
+        alert("Checkout link not available.");
+      }
+    } catch (err) {
+      console.error("Early Bird checkout error:", err);
+      alert("Something went wrong. Please try again.");
+    }
+  };
+
+  /* guards */
+  if (!initialized) {
+    return <p className="dp-loading">⏳ Loading data...</p>;
+  }
 
 const isAdmin = user?.role === "admin";
 const isBusinessOwner =
@@ -594,7 +613,8 @@ const showEarlyBird =
     <div style={{ marginBottom: "16px" }}>
       <UpgradeOfferCard
         expiresAt={user.earlyBirdExpiresAt}
-        onUpgrade={() => navigate("/plans")}
+        onUpgrade={handleEarlyBirdUpgrade}
+
       />
     </div>
   )}
