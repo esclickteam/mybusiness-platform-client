@@ -1,0 +1,138 @@
+.offer-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  padding: 40px 32px;
+  max-width: 420px;
+  margin: 80px auto;
+  text-align: center;
+  color: #1e1e2f;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
+.offer-header-line {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(to right, #ff6b81, #f86d8c);
+  border-radius: 2px;
+  margin-bottom: 24px;
+}
+
+.offer-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2c1364;
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+
+.offer-desc {
+  color: #555;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.offer-note {
+  color: #6a4bff;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 32px;
+}
+
+.offer-upgrade-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: #6a4bff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(106, 75, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.offer-upgrade-btn:hover {
+  background: #5b3bff;
+  transform: translateY(-2px);
+}
+
+.offer-home-btn {
+  margin-top: 16px;
+  display: block;
+  width: 100%;
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 500;
+  background: transparent;
+  color: #6a4bff;
+  border: 2px solid #dcd3ff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.offer-home-btn:hover {
+  background: #f8f6ff;
+}
+
+.offer-subtext {
+  margin-top: 24px;
+  font-size: 14px;
+  color: #555;
+}
+
+.offer-link {
+  color: #6a4bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.offer-link:hover {
+  text-decoration: underline;
+}
+
+.offer-footer {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #777;
+  line-height: 1.5;
+}
+
+.offer-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.offer-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(106, 75, 255, 0.12);
+  color: #6a4bff;
+  border: 1px solid rgba(106, 75, 255, 0.22);
+}
+
+.offer-timer {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 107, 129, 0.12);
+  color: #ff4f73;
+  border: 1px solid rgba(255, 107, 129, 0.22);
+  font-variant-numeric: tabular-nums;
+}
+
+.offer-timer.is-expired {
+  background: rgba(120, 120, 120, 0.12);
+  color: #666;
+  border: 1px solid rgba(120, 120, 120, 0.22);
+}

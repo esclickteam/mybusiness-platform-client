@@ -15,6 +15,9 @@ import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
+import UpgradeOfferCard from "../../../components/UpgradeOfferCard/UpgradeOfferCard"; 
+
+
 
 /*************************
  * Lazy-loaded components
@@ -523,6 +526,32 @@ if (isRefreshingUser) {
     ...effectiveStats,
     messages_count: effectiveStats.messages_count || 0,
   };
+
+  // 🕒 Show Early-Bird upgrade offer after 3 trial days
+if (user?.trialStartedAt && !user?.hasPaid) {
+  const trialStart = new Date(user.trialStartedAt);
+  const fourDaysLater = new Date(trialStart.getTime() + 4 * 24 * 60 * 60 * 1000);
+
+  const expiresAtMs = user?.earlyBirdExpiresAt
+    ? new Date(user.earlyBirdExpiresAt).getTime()
+    : null;
+
+  const offerNotExpired = !expiresAtMs || Date.now() <= expiresAtMs;
+
+  if (Date.now() >= fourDaysLater.getTime() && offerNotExpired) {
+    return (
+      <div className="trial-ended-wrapper">
+        <UpgradeOfferCard
+          expiresAt={user?.earlyBirdExpiresAt}
+          onUpgrade={() => (window.location.href = "/plans")}
+          onHome={() => (window.location.href = "/")}
+        />
+      </div>
+    );
+  }
+}
+
+
 
   /*******************
    * Render — English UI
