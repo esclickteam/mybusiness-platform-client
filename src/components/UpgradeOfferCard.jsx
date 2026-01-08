@@ -13,6 +13,7 @@ export default function UpgradeOfferCard({
   onClose,
   expiresAt,
 }) {
+  /* ⏳ fallback של 48 שעות */
   const fallbackExpiresAt = useMemo(
     () => Date.now() + 48 * 60 * 60 * 1000,
     []
@@ -27,7 +28,7 @@ export default function UpgradeOfferCard({
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 60000);
+    const id = setInterval(() => setNow(Date.now()), 60_000);
     return () => clearInterval(id);
   }, []);
 
@@ -35,10 +36,11 @@ export default function UpgradeOfferCard({
   const isExpired = msLeft <= 0;
 
   return (
-    <div className="offer-overlay">
+    <div className="offer-overlay" role="dialog" aria-modal="true">
       <div className="offer-card">
         {/* ❌ Close */}
         <button
+          type="button"
           className="offer-close"
           onClick={onClose}
           aria-label="Close offer"
@@ -73,7 +75,9 @@ export default function UpgradeOfferCard({
           Then <strong>$119/month</strong>. Cancel anytime.
         </p>
 
+        {/* ✅ הכפתור הקריטי — מוגדר כ־button */}
         <button
+          type="button"
           className="offer-upgrade-btn"
           onClick={onUpgrade}
           disabled={isExpired}
