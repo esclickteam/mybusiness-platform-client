@@ -163,9 +163,10 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
-  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(() =>
-  localStorage.getItem("seen_upgrade_offer") !== "true"
-);
+  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(() => {
+  if (localStorage.getItem("seen_upgrade_offer") === "true") return false;
+  return true;
+});
 
 
   /* scroll + hash cleanup */
@@ -481,6 +482,16 @@ sock.on("newReview", (reviewData) => {
     }
   }, [location.pathname, location.state]);
 
+  const shouldShowEarlyBirdModal =
+  user?.subscriptionPlan === "trial" &&
+  !user?.hasPaid &&
+  user?.earlyBirdExpiresAt &&
+  new Date(user.earlyBirdExpiresAt) > new Date() &&
+  showEarlyBirdModal;
+
+
+
+
   // 🎁 Early Bird → Stripe Checkout
 const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
@@ -506,10 +517,16 @@ const handleEarlyBirdUpgrade = async () => {
 
 
   /* guards */
-  if (!initialized) {
-    return <p className="dp-loading">⏳ Loading data...</p>;
-  }
+  /* =========================
+   Guards — MUST be after hooks
+========================= */
 
+// עדיין טוען auth / user
+if (!initialized) {
+  return <p className="dp-loading">⏳ Loading data...</p>;
+}
+
+// בדיקת הרשאות
 const isAdmin = user?.role === "admin";
 const isBusinessOwner =
   user?.role === "business" && user?.businessId === businessId;
@@ -522,34 +539,22 @@ if (!isAdmin && !isBusinessOwner) {
   );
 }
 
+// טוען נתונים ראשוניים
 if (loading && !stats) {
   return <DashboardSkeleton />;
 }
 
+// שגיאה
 if (error) {
   return <p className="dp-error">{alert || error}</p>;
 }
 
+// ריענון משתמש אחרי תשלום
 if (isRefreshingUser) {
   return <p className="dp-loading">⏳ Refreshing user info...</p>;
 }
 
 
-const shouldShowEarlyBirdModal =
-  user?.subscriptionPlan === "trial" &&
-  !user?.hasPaid &&
-  user?.earlyBirdExpiresAt &&
-  new Date(user.earlyBirdExpiresAt) > new Date() &&
-  showEarlyBirdModal;
-
-  useEffect(() => {
-  if (!shouldShowEarlyBirdModal) return;
-
-  const alreadySeen = localStorage.getItem("seen_upgrade_offer");
-  if (!alreadySeen) {
-    localStorage.setItem("seen_upgrade_offer", "true");
-  }
-}, [shouldShowEarlyBirdModal]);
 
 
 
@@ -631,6 +636,7 @@ const shouldShowEarlyBirdModal =
     expiresAt={user.earlyBirdExpiresAt}
     onUpgrade={handleEarlyBirdUpgrade}
     onClose={() => {
+      localStorage.setItem("seen_upgrade_offer", "true");
       setShowEarlyBirdModal(false);
     }}
   />
