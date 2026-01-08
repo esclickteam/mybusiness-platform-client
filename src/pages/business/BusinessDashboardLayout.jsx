@@ -265,7 +265,7 @@ export default function BusinessDashboardLayout() {
     className="earlybird-upgrade-btn"
     onClick={handleEarlyBirdUpgrade}
   >
-    Upgrade & Save
+    Upgrade 
   </button>
 
 </div>
