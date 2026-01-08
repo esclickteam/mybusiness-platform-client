@@ -242,28 +242,34 @@ export default function BusinessDashboardLayout() {
 
                 {showEarlyBird && !hideEarlyBirdBanner && (
                   <div className="dashboard-layout-header-center">
+
                     <div className="earlybird-header-banner">
 
-                      {timeLeft && (
-                        <div className="earlybird-timer">
-                          Offer ends in <strong>{timeLeft}</strong>
-                        </div>
-                      )}
+  {timeLeft && (
+    <div className="earlybird-timer">
+      ⏳ Ending in <strong>{timeLeft}</strong>
 
-                      <span>
-                        🎁 <strong>Early Bird:</strong> First month{" "}
-                        <span className="price">$99</span>{" "}
-                        <span className="old-price">$119</span>
-                      </span>
+    </div>
+  )}
 
-                      <button
-                        className="earlybird-upgrade-btn"
-                        onClick={handleEarlyBirdUpgrade}
-                      >
-                        Upgrade
-                      </button>
+  <div className="earlybird-text">
+    <span className="earlybird-badge">🎁 Early Bird</span>
+    <span className="earlybird-main">
+      Save <strong>$20</strong> today — first month only
+      <span className="price"> $99</span>
+      <span className="old-price"> $119</span>
+    </span>
+  </div>
 
-                    </div>
+  <button
+    className="earlybird-upgrade-btn"
+    onClick={handleEarlyBirdUpgrade}
+  >
+    Upgrade & Save
+  </button>
+
+</div>
+
                   </div>
                 )}
 
