@@ -242,7 +242,8 @@ export default function BusinessDashboardLayout() {
 
                           <button
   className="trial-upgrade-pill"
-  onClick={handleEarlyBirdUpgrade}
+  onClick={handleUpgrade}
+
 >
   Upgrade
 </button>
