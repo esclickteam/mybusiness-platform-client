@@ -308,3 +308,74 @@ html, body {
 html {
   scroll-behavior: smooth !important;
 }
+
+/* =========================
+   🎁 Early Bird Header Banner
+========================= */
+
+.earlybird-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  background: linear-gradient(90deg, #eef2ff, #f5f3ff);
+  border-radius: 14px;
+
+  padding: 10px 16px;
+  margin-left: 24px;
+
+  font-size: 14px;
+}
+
+.earlybird-text {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.earlybird-price {
+  color: #4f46e5;
+  font-weight: 800;
+  margin: 0 4px;
+}
+
+.earlybird-old {
+  color: #94a3b8;
+  text-decoration: line-through;
+  margin-right: 6px;
+}
+
+.earlybird-save {
+  color: #16a34a;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.earlybird-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.earlybird-btn {
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.earlybird-btn:hover {
+  background: #4338ca;
+}
+
+.earlybird-close {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: #475569;
+  cursor: pointer;
+}

@@ -584,6 +584,39 @@ const showEarlyBird =
       {/* Topbar */}
       <header className="dp-topbar">
         <div className="dp-topbar__brand">
+
+          {/* 🎁 Early Bird Header Banner */}
+{showEarlyBird && showEarlyBirdModal && (
+  <div className="earlybird-banner">
+    <div className="earlybird-text">
+      🎁 <strong>Early Bird:</strong> First month{" "}
+      <span className="earlybird-price">$99</span>{" "}
+      <span className="earlybird-old">$119</span>
+      <span className="earlybird-save">Save $20</span>
+    </div>
+
+    <div className="earlybird-actions">
+      <button
+        className="earlybird-btn"
+        onClick={handleEarlyBirdUpgrade}
+      >
+        Upgrade
+      </button>
+
+      <button
+        className="earlybird-close"
+        onClick={() => {
+          localStorage.setItem("seen_upgrade_offer", "true");
+          setShowEarlyBirdModal(false);
+        }}
+        aria-label="Close banner"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+)}
+
           
           <div className="dp-brand-titles">
             <h1>Business Dashboard</h1>
