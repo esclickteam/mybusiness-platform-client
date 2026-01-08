@@ -231,7 +231,7 @@
    =========================== */
 
 .earlybird-header-banner {
-  height: 44px;                 /* ⬅️ גובה פנימי אלגנטי */
+  height: 60px;     /* ⬅️ גובה פנימי אלגנטי */
   display: flex;
   align-items: center;
   gap: 16px;
@@ -245,6 +245,7 @@
   font-size: 14px;
   white-space: nowrap;
 }
+
 
 
 .earlybird-text {
