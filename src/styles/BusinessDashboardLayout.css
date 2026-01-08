@@ -147,9 +147,10 @@
 
 /* Left */
 .dashboard-layout-header-left {
+  height: 100%;                 /* ⬅️ קריטי */
   display: flex;
   flex-direction: column;
-  justify-content: center;   /* ממרכז אנכית */
+  justify-content: center;      /* מרכז אנכית בתוך ההדר */
   gap: 6px;
 
   font-size: 15px;
