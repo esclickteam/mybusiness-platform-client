@@ -585,23 +585,12 @@ const showEarlyBird =
    *******************/
   return (
     <div className="dp-root" dir="ltr">
+
       {/* Topbar */}
       <header className="dp-topbar">
-        <div className="dp-topbar__brand">
-          
-          <div className="dp-brand-titles">
-            <h1>Business Dashboard</h1>
-            {user?.businessName && (
-              <span className="dp-subtitle">Welcome, {user.businessName}</span>
-            )}
-          </div>
-        </div>
 
-
-        
-        {/* 🎁 Early Bird Header Banner */}
+  {/* 🎁 Early Bird – שורה עליונה בהידר */}
   {showEarlyBird && !hideEarlyBirdBanner && (
-
     <div className="earlybird-header-banner">
       <span>
         🎁 <strong>Early Bird:</strong> First month{" "}
@@ -609,23 +598,43 @@ const showEarlyBird =
         <span className="old-price">$119</span> · Save $20
       </span>
 
-      <button
-        className="earlybird-upgrade-btn"
-        onClick={handleEarlyBirdUpgrade}
-      >
-        Upgrade
-      </button>
+      <div className="earlybird-actions">
+        <button
+          className="earlybird-upgrade-btn"
+          onClick={handleEarlyBirdUpgrade}
+        >
+          Upgrade
+        </button>
 
-      <button
-  className="earlybird-close"
-  onClick={() => setHideEarlyBirdBanner(true)}
-  aria-label="Close banner"
->
-  ×
-</button>
+        <button
+          className="earlybird-close"
+          onClick={() => setHideEarlyBirdBanner(true)}
+          aria-label="Close banner"
+        >
+          ×
+        </button>
+      </div>
     </div>
   )}
+
+  {/* 🧭 שורת ההידר הרגילה */}
+  <div className="dp-topbar-main">
+    <div className="dp-topbar__brand">
+      <div className="dp-brand-titles">
+        <h1>Business Dashboard</h1>
+        {user?.businessName && (
+          <span className="dp-subtitle">
+            Welcome, {user.businessName}
+          </span>
+        )}
+      </div>
+    </div>
+
+    {/* כאן יושבים bell / logout וכו' */}
+  </div>
+
 </header>
+
 
       <div className="dp-layout">
         {/* Sidebar */}

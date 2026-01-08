@@ -357,3 +357,17 @@ html {
   cursor: pointer;
   color: #475569;
 }
+
+.dp-topbar {
+  display: flex;
+  flex-direction: column;
+  background: #efe7ff;
+  border-bottom: 1px solid #e5d8ff;
+}
+
+.dp-topbar-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+}
