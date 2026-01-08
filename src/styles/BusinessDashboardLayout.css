@@ -338,20 +338,8 @@
   font-size: 15px;
   font-weight: 600;
   color: #5b4fd6;
-
-  /* ⬇️ חשוב */
-  cursor: default;
-  text-decoration: none;
-  box-shadow: none;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
-/* ❌ ביטול מוחלט של hover / focus */
-.trial-upgrade-link:hover,
-.trial-upgrade-link:focus,
-.trial-upgrade-link:active {
-  color: #5b4fd6;
-  background: none;
-  box-shadow: none;
-  transform: none;
-}
 
