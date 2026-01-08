@@ -266,52 +266,53 @@ useEffect(() => {
                 <div className="dashboard-layout-header-left">
   <div>Hello, {user?.businessName || user?.name}</div>
 
-  {!showEarlyBird && trialDaysLeft !== null && trialDaysLeft > 0 && (
+ {trialDaysLeft !== null && trialDaysLeft > 0 && (
   <div className="trial-status">
     ⏳ Trial ends in <strong>{trialDaysLeft} days</strong>
-    <button
-      className="trial-upgrade-link"
-      onClick={handleEarlyBirdUpgrade}
-    >
-      Upgrade
-    </button>
+
+    {!showEarlyBird && (
+      <button
+        className="trial-upgrade-link"
+        onClick={handleEarlyBirdUpgrade}
+      >
+        Upgrade
+      </button>
+    )}
   </div>
 )}
 
 </div>
 
                 {showEarlyBird && !hideEarlyBirdBanner && (
-                  <div className="dashboard-layout-header-center">
+  <div className="dashboard-layout-header-center">
+    <div className="earlybird-header-banner">
 
-                    <div className="earlybird-header-banner">
+      {timeLeft && (
+        <div className="earlybird-timer">
+          ⏳ Ending in <strong>{timeLeft}</strong>
+        </div>
+      )}
 
-  {timeLeft && (
-    <div className="earlybird-timer">
-      ⏳ Ending in <strong>{timeLeft}</strong>
+      <div className="earlybird-text">
+        <span className="earlybird-badge">🎁 Early Bird</span>
+        <span className="earlybird-main">
+          Save <strong>$20</strong> today — first month only
+          <span className="price"> $99</span>
+          <span className="old-price"> $119</span>
+        </span>
+      </div>
+
+      <button
+        className="earlybird-upgrade-btn"
+        onClick={handleEarlyBirdUpgrade}
+      >
+        Upgrade
+      </button>
 
     </div>
-  )}
-
-  <div className="earlybird-text">
-    <span className="earlybird-badge">🎁 Early Bird</span>
-    <span className="earlybird-main">
-      Save <strong>$20</strong> today — first month only
-      <span className="price"> $99</span>
-      <span className="old-price"> $119</span>
-    </span>
   </div>
+)}
 
-  <button
-    className="earlybird-upgrade-btn"
-    onClick={handleEarlyBirdUpgrade}
-  >
-    Upgrade 
-  </button>
-
-</div>
-
-                  </div>
-                )}
 
                 <div className="dashboard-layout-header-right">
                   <div className="fb-notif-wrapper">
