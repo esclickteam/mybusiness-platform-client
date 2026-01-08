@@ -279,9 +279,7 @@ useEffect(() => {
     🚀 Want more features?
     <button
       className="trial-upgrade-link"
-      onClick={() =>
-        navigate(`/business/${businessId}/dashboard/billing`)
-      }
+      onClick={handleEarlyBirdUpgrade}
     >
       Upgrade
     </button>
