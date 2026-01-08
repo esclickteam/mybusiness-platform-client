@@ -127,15 +127,13 @@
   border-bottom: 1px solid rgba(88, 28, 135, 0.15);
 
   display: flex;
-  align-items: center;
+  align-items: center;              /* מרכז אנכית */
   justify-content: space-between;
 
   padding: 0 24px;
   z-index: 9050;
-  overflow: visible;
 
-  /* ⬅️ זה הסופר־קריטי */
-  position: fixed;
+  box-sizing: border-box;
 }
 
 .dashboard-layout-header-center {
