@@ -92,19 +92,19 @@ useEffect(() => {
   if (
     user?.subscriptionPlan !== "trial" ||
     user?.hasPaid ||
-    !user?.subscriptionEnd
+    !user?.trialEndsAt
   )
     return;
 
   const now = new Date();
-  const end = new Date(user.subscriptionEnd);
+  const end = new Date(user.trialEndsAt);
 
   const diff = Math.ceil(
     (end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
   );
 
   setTrialDaysLeft(diff > 0 ? diff : 0);
-}, [user?.subscriptionPlan, user?.hasPaid, user?.subscriptionEnd]);
+}, [user?.subscriptionPlan, user?.hasPaid, user?.trialEndsAt]);
 
 
 
