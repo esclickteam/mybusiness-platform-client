@@ -147,17 +147,19 @@
 
 /* Left */
 .dashboard-layout-header-left {
-  height: 64px;                /* ⬅️ קריטי */
+  height: 64px;                /* קריטי */
   display: flex;
   flex-direction: column;
-  justify-content: center;     /* מרכז אנכית בתוך ההדר */
+  justify-content: center;
   gap: 6px;
 
   font-size: 15px;
   font-weight: 600;
   color: #2a165f;
+}
 
-  transform: translateY(16px);  /* ⬅️ זה מה שמוריד את Hello */
+.dashboard-layout-header-left > div:first-child {
+  transform: translateY(16px);
 }
 
 /* Right */
