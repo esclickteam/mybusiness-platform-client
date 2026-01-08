@@ -29,9 +29,12 @@ function normalizeUser(user) {
     : null;
 
   const trialDaysLeft =
-    user.subscriptionPlan === "trial" && trialEndsAt
-      ? Math.ceil((trialEndsAt - now) / (1000 * 60 * 60 * 24))
-      : null;
+  user.subscriptionPlan === "trial" && trialEndsAt
+    ? Math.max(
+        0,
+        Math.ceil((trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+      )
+    : null;
 
   const isTrialing =
     user.subscriptionPlan === "trial" && trialDaysLeft > 0;
