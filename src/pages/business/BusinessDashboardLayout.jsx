@@ -72,48 +72,17 @@ export default function BusinessDashboardLayout() {
   const sidebarRef = useRef(null);
 
   /* ============================
-     🎁 Early Bird Logic
+     🎁 Early Bird UI State
   ============================ */
   const [hideEarlyBirdBanner, setHideEarlyBirdBanner] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
 
-  const showEarlyBird =
-  user?.subscriptionPlan === "trial" &&
-  !user?.hasPaid &&
-  !user?.earlyBirdUsed &&            // ⬅️ זה הקריטי
-  user?.earlyBirdExpiresAt &&
-  new Date(user.earlyBirdExpiresAt) > new Date();
-
-    /* ============================
-   ⏳ Trial Days Left
-============================ */
-const [trialDaysLeft, setTrialDaysLeft] = useState(null);
-
-useEffect(() => {
-  if (
-  user?.subscriptionPlan !== "trial" ||
-  !user?.trialEndsAt
-)
-  return;
-
-  const now = new Date();
-  const end = new Date(user.trialEndsAt);
-
-  const diff = Math.ceil(
-    (end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  setTrialDaysLeft(diff > 0 ? diff : 0);
-}, [user?.subscriptionPlan, user?.hasPaid, user?.trialEndsAt]);
-
-
-
-  /* ⏰ Countdown */
+  /* ⏰ Early Bird Countdown */
   useEffect(() => {
-    if (!user?.earlyBirdExpiresAt) return;
+    if (!user?.isEarlyBirdActive || !user?.earlyBirdExpiresAt) return;
 
     const updateTimer = () => {
-      const now = new Date().getTime();
+      const now = Date.now();
       const end = new Date(user.earlyBirdExpiresAt).getTime();
       const diff = end - now;
 
@@ -130,16 +99,14 @@ useEffect(() => {
 
     updateTimer();
     const interval = setInterval(updateTimer, 60000);
-
     return () => clearInterval(interval);
-  }, [user?.earlyBirdExpiresAt]);
+  }, [user?.isEarlyBirdActive, user?.earlyBirdExpiresAt]);
 
-  /* 🎁 Early Bird → Stripe Checkout */
-  const handleEarlyBirdUpgrade = async () => {
+  /* 🎁 Upgrade → Stripe */
+  const handleUpgrade = async () => {
     if (!user?.userId) return;
 
     setHideEarlyBirdBanner(true);
-
 
     try {
       const res = await API.post("/stripe/create-checkout-session", {
@@ -153,7 +120,7 @@ useEffect(() => {
         alert("Checkout unavailable");
       }
     } catch (err) {
-      console.error("Early Bird checkout error:", err);
+      console.error("Checkout error:", err);
       alert("Something went wrong");
     }
   };
@@ -263,57 +230,55 @@ useEffect(() => {
               <header className="dashboard-layout-header">
 
                 <div className="dashboard-layout-header-left">
-  <div>Hello, {user?.businessName || user?.name}</div>
-  
+                  <div>Hello, {user?.businessName || user?.name}</div>
 
- {trialDaysLeft !== null && trialDaysLeft > 0 && (
-  <div className="trial-status">
-    ⏳ Trial ends in <strong>{trialDaysLeft} days</strong>
+                  {user?.isTrialActive && (
+                    <div className="trial-status">
+                      ⏳ Trial ends in{" "}
+                      <strong>{user.trialDaysLeft} days</strong>
 
-    {!user?.hasPaid && !showEarlyBird && (
-  <button
-    className="trial-upgrade-link"
-    onClick={handleEarlyBirdUpgrade}
-  >
-    Upgrade
-  </button>
-)}
-  </div>
-)}
+                      {!user.hasPaid &&
+                        !user.isEarlyBirdActive && (
+                          <button
+                            className="trial-upgrade-link"
+                            onClick={handleUpgrade}
+                          >
+                            Upgrade
+                          </button>
+                        )}
+                    </div>
+                  )}
+                </div>
 
+                {user?.isEarlyBirdActive && !hideEarlyBirdBanner && (
+                  <div className="dashboard-layout-header-center">
+                    <div className="earlybird-header-banner">
 
-</div>
+                      {timeLeft && (
+                        <div className="earlybird-timer">
+                          ⏳ Ending in <strong>{timeLeft}</strong>
+                        </div>
+                      )}
 
-                {showEarlyBird && !hideEarlyBirdBanner && (
-  <div className="dashboard-layout-header-center">
-    <div className="earlybird-header-banner">
+                      <div className="earlybird-text">
+                        <span className="earlybird-badge">🎁 Early Bird</span>
+                        <span className="earlybird-main">
+                          Save <strong>$20</strong> today — first month only
+                          <span className="price"> $99</span>
+                          <span className="old-price"> $119</span>
+                        </span>
+                      </div>
 
-      {timeLeft && (
-        <div className="earlybird-timer">
-          ⏳ Ending in <strong>{timeLeft}</strong>
-        </div>
-      )}
+                      <button
+                        className="earlybird-upgrade-btn"
+                        onClick={handleUpgrade}
+                      >
+                        Upgrade
+                      </button>
 
-      <div className="earlybird-text">
-        <span className="earlybird-badge">🎁 Early Bird</span>
-        <span className="earlybird-main">
-          Save <strong>$20</strong> today — first month only
-          <span className="price"> $99</span>
-          <span className="old-price"> $119</span>
-        </span>
-      </div>
-
-      <button
-        className="earlybird-upgrade-btn"
-        onClick={handleEarlyBirdUpgrade}
-      >
-        Upgrade
-      </button>
-
-    </div>
-  </div>
-)}
-
+                    </div>
+                  </div>
+                )}
 
                 <div className="dashboard-layout-header-right">
                   <div className="fb-notif-wrapper">
