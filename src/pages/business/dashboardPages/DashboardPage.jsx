@@ -15,7 +15,8 @@ import "../../../styles/dashboard.css";
 
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
-import UpgradeOfferCard from "../../../components/UpgradeOfferCard/UpgradeOfferCard"; 
+import UpgradeOfferCard from "../../../components/UpgradeOfferCard";
+
 
 
 
