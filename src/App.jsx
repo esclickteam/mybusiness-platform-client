@@ -32,6 +32,7 @@ import { preloadDashboardComponents } from "./pages/business/dashboardPages/Dash
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
 import Unsubscribe from "./pages/Unsubscribe";
+import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
 
 
 // Public Pages
@@ -229,6 +230,15 @@ export default function App() {
                       </ProtectedRoute>
                     }
                   />
+
+                  <Route
+  path="/business/:businessId/dashboard/upgrade-offer"
+  element={
+    <ProtectedRoute roles={["business", "admin"]}>
+      <EarlyBirdRedirect />
+    </ProtectedRoute>
+  }
+/>
 
                   {/* Business dashboard */}
                   <Route
