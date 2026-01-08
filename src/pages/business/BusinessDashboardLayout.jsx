@@ -264,25 +264,20 @@ useEffect(() => {
 
                 <div className="dashboard-layout-header-left">
   <div>Hello, {user?.businessName || user?.name}</div>
+  
 
-
- {/* 🧪 Trial */}
-{!user?.hasPaid && trialDaysLeft !== null && trialDaysLeft > 0 && (
+ {trialDaysLeft !== null && trialDaysLeft > 0 && (
   <div className="trial-status">
     ⏳ Trial ends in <strong>{trialDaysLeft} days</strong>
-  </div>
-)}
 
-{/* 💳 Paid → Upgrade */}
-{user?.hasPaid && (
-  <div className="trial-status">
-    🚀 Want more features?
-    <button
-      className="trial-upgrade-link"
-      onClick={handleEarlyBirdUpgrade}
-    >
-      Upgrade
-    </button>
+    {!user?.hasPaid && !showEarlyBird && (
+  <button
+    className="trial-upgrade-link"
+    onClick={handleEarlyBirdUpgrade}
+  >
+    Upgrade
+  </button>
+)}
   </div>
 )}
 
