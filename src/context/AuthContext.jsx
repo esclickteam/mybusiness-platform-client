@@ -10,20 +10,44 @@ function normalizeUser(user) {
   if (!user) return null;
 
   const now = new Date();
-  let computedIsValid = false;
 
+  /* ============================
+     🔐 Subscription (paid)
+  ============================ */
+  let computedIsValid = false;
   if (user.subscriptionStart && user.subscriptionEnd) {
     computedIsValid = new Date(user.subscriptionEnd) > now;
   }
 
-  const isTrialing = user.subscriptionPlan === "trial" && computedIsValid;
   const isPendingActivation = user.status === "pending_activation";
+
+  /* ============================
+     ⏳ Trial
+  ============================ */
+  const trialEndsAt = user.trialEndsAt
+    ? new Date(user.trialEndsAt)
+    : null;
+
+  const trialDaysLeft =
+    user.subscriptionPlan === "trial" && trialEndsAt
+      ? Math.ceil((trialEndsAt - now) / (1000 * 60 * 60 * 24))
+      : null;
+
+  const isTrialing =
+    user.subscriptionPlan === "trial" && trialDaysLeft > 0;
 
   return {
     ...user,
+
+    /* Trial */
+    trialEndsAt,
+    trialDaysLeft,
+
+    /* Payment */
     hasPaid: Boolean(user?.hasPaid),
     subscriptionCancelled: Boolean(user?.subscriptionCancelled),
 
+    /* Subscription validity */
     isSubscriptionValid:
       typeof user?.isSubscriptionValid === "boolean"
         ? user.isSubscriptionValid
@@ -31,11 +55,7 @@ function normalizeUser(user) {
 
     subscriptionStatus: user.status || user.subscriptionPlan || "free",
 
-    daysLeft:
-      user.subscriptionEnd && computedIsValid
-        ? Math.ceil((new Date(user.subscriptionEnd) - now) / (1000 * 60 * 60 * 24))
-        : 0,
-
+    /* Access */
     hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
   };
 }
