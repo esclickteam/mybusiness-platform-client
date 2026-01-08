@@ -78,10 +78,11 @@ export default function BusinessDashboardLayout() {
   const [timeLeft, setTimeLeft] = useState("");
 
   const showEarlyBird =
-    user?.subscriptionPlan === "trial" &&
-    !user?.hasPaid &&
-    user?.earlyBirdExpiresAt &&
-    new Date(user.earlyBirdExpiresAt) > new Date();
+  user?.subscriptionPlan === "trial" &&
+  !user?.hasPaid &&
+  !user?.earlyBirdUsed &&            // ⬅️ זה הקריטי
+  user?.earlyBirdExpiresAt &&
+  new Date(user.earlyBirdExpiresAt) > new Date();
 
     /* ============================
    ⏳ Trial Days Left
@@ -266,17 +267,18 @@ useEffect(() => {
   <div>Hello, {user?.businessName || user?.name}</div>
 
   {trialDaysLeft !== null && trialDaysLeft > 0 && (
-    <div className="trial-status">
-      ⏳ Trial ends in <strong>{trialDaysLeft} days</strong>{" "}
-
+  <div className="trial-status">
+    ⏳ Trial ends in <strong>{trialDaysLeft} days</strong>
+    {!showEarlyBird && (
       <button
         className="trial-upgrade-link"
         onClick={handleEarlyBirdUpgrade}
       >
         Upgrade
       </button>
-    </div>
-  )}
+    )}
+  </div>
+)}
 </div>
 
                 {showEarlyBird && !hideEarlyBirdBanner && (
