@@ -507,6 +507,16 @@ if (isRefreshingUser) {
   return <p className="dp-loading">⏳ Refreshing user info...</p>;
 }
 
+// 🎁 Early Bird upgrade banner condition
+const showEarlyBird =
+  user?.subscriptionPlan === "trial" &&
+  !user?.hasPaid &&
+  user?.earlyBirdShownAt &&
+  user?.earlyBirdExpiresAt &&
+  new Date(user.earlyBirdExpiresAt) > new Date() &&
+  !user?.earlyBirdUsed;
+
+
 
 
   /* derived */
@@ -527,30 +537,6 @@ if (isRefreshingUser) {
     ...effectiveStats,
     messages_count: effectiveStats.messages_count || 0,
   };
-
-  // 🕒 Show Early-Bird upgrade offer after 3 trial days
-if (user?.trialStartedAt && !user?.hasPaid) {
-  const trialStart = new Date(user.trialStartedAt);
-  const fourDaysLater = new Date(trialStart.getTime() + 4 * 24 * 60 * 60 * 1000);
-
-  const expiresAtMs = user?.earlyBirdExpiresAt
-    ? new Date(user.earlyBirdExpiresAt).getTime()
-    : null;
-
-  const offerNotExpired = !expiresAtMs || Date.now() <= expiresAtMs;
-
-  if (Date.now() >= fourDaysLater.getTime() && offerNotExpired) {
-    return (
-      <div className="trial-ended-wrapper">
-        <UpgradeOfferCard
-          expiresAt={user?.earlyBirdExpiresAt}
-          onUpgrade={() => (window.location.href = "/plans")}
-          onHome={() => (window.location.href = "/")}
-        />
-      </div>
-    );
-  }
-}
 
 
 
@@ -601,7 +587,20 @@ if (user?.trialStartedAt && !user?.hasPaid) {
 
         {/* Main */}
         <main className="dp-main">
-          {alert && <p className="dp-error">{alert}</p>}
+  {alert && <p className="dp-error">{alert}</p>}
+
+  {/* 🎁 Early Bird Upgrade Offer */}
+  {showEarlyBird && (
+    <div style={{ marginBottom: "16px" }}>
+      <UpgradeOfferCard
+        expiresAt={user.earlyBirdExpiresAt}
+        onUpgrade={() => navigate("/plans")}
+      />
+    </div>
+  )}
+
+
+
 
           {/* AI recommendations banner */}
           {recommendations.length > 0 && (
