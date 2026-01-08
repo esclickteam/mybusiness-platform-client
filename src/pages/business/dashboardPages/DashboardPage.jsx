@@ -584,20 +584,28 @@ const showEarlyBird =
       {/* Topbar */}
       <header className="dp-topbar">
         <div className="dp-topbar__brand">
+          
+          <div className="dp-brand-titles">
+            <h1>Business Dashboard</h1>
+            {user?.businessName && (
+              <span className="dp-subtitle">Welcome, {user.businessName}</span>
+            )}
+          </div>
+        </div>
 
-          {/* 🎁 Early Bird Header Banner */}
-{showEarlyBird && showEarlyBirdModal && (
-  <div className="earlybird-banner">
-    <div className="earlybird-text">
-      🎁 <strong>Early Bird:</strong> First month{" "}
-      <span className="earlybird-price">$99</span>{" "}
-      <span className="earlybird-old">$119</span>
-      <span className="earlybird-save">Save $20</span>
-    </div>
 
-    <div className="earlybird-actions">
+        
+        {/* 🎁 Early Bird Header Banner */}
+  {showEarlyBird && showEarlyBirdModal && (
+    <div className="earlybird-header-banner">
+      <span>
+        🎁 <strong>Early Bird:</strong> First month{" "}
+        <span className="price">$99</span>{" "}
+        <span className="old-price">$119</span> · Save $20
+      </span>
+
       <button
-        className="earlybird-btn"
+        className="earlybird-upgrade-btn"
         onClick={handleEarlyBirdUpgrade}
       >
         Upgrade
@@ -611,22 +619,11 @@ const showEarlyBird =
         }}
         aria-label="Close banner"
       >
-        ✕
+        ×
       </button>
     </div>
-  </div>
-)}
-
-          
-          <div className="dp-brand-titles">
-            <h1>Business Dashboard</h1>
-            {user?.businessName && (
-              <span className="dp-subtitle">Welcome, {user.businessName}</span>
-            )}
-          </div>
-        </div>
-        
-      </header>
+  )}
+</header>
 
       <div className="dp-layout">
         {/* Sidebar */}
