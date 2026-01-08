@@ -72,9 +72,10 @@ export default function BusinessDashboardLayout() {
   const sidebarRef = useRef(null);
 
   /* ============================
-     🎁 Early Bird Logic (HEADER ONLY)
+     🎁 Early Bird Logic
   ============================ */
   const [hideEarlyBirdBanner, setHideEarlyBirdBanner] = useState(false);
+  const [timeLeft, setTimeLeft] = useState("");
 
   const showEarlyBird =
     user?.subscriptionPlan === "trial" &&
@@ -82,31 +83,55 @@ export default function BusinessDashboardLayout() {
     user?.earlyBirdExpiresAt &&
     new Date(user.earlyBirdExpiresAt) > new Date();
 
-    // 🎁 Early Bird → Stripe Checkout (HEADER)
-const handleEarlyBirdUpgrade = async () => {
-  if (!user?.userId) return;
+  /* ⏰ Countdown */
+  useEffect(() => {
+    if (!user?.earlyBirdExpiresAt) return;
 
-  // לא להציג שוב
-  localStorage.setItem("seen_upgrade_offer", "true");
-  setHideEarlyBirdBanner(true);
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const end = new Date(user.earlyBirdExpiresAt).getTime();
+      const diff = end - now;
 
-  try {
-    const res = await API.post("/stripe/create-checkout-session", {
-      userId: user.userId,
-      plan: "monthly",
-    });
+      if (diff <= 0) {
+        setTimeLeft("");
+        return;
+      }
 
-    if (res.data?.url) {
-      window.location.href = res.data.url; // ⬅️ מעבר ישיר ל־Stripe
-    } else {
-      alert("Checkout unavailable");
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+      setTimeLeft(`${hours}h ${minutes}m`);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 60000);
+
+    return () => clearInterval(interval);
+  }, [user?.earlyBirdExpiresAt]);
+
+  /* 🎁 Early Bird → Stripe Checkout */
+  const handleEarlyBirdUpgrade = async () => {
+    if (!user?.userId) return;
+
+    localStorage.setItem("seen_upgrade_offer", "true");
+    setHideEarlyBirdBanner(true);
+
+    try {
+      const res = await API.post("/stripe/create-checkout-session", {
+        userId: user.userId,
+        plan: "monthly",
+      });
+
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      } else {
+        alert("Checkout unavailable");
+      }
+    } catch (err) {
+      console.error("Early Bird checkout error:", err);
+      alert("Something went wrong");
     }
-  } catch (err) {
-    console.error("Early Bird checkout error:", err);
-    alert("Something went wrong");
-  }
-};
-
+  };
 
   /* ============================
      🔓 Logout
@@ -208,18 +233,23 @@ const handleEarlyBirdUpgrade = async () => {
               </aside>
             )}
 
-            {/* ================= Header (Desktop) ================= */}
+            {/* ================= Header ================= */}
             {!isMobile && (
               <header className="dashboard-layout-header">
-                {/* שמאל */}
                 <div className="dashboard-layout-header-left">
                   Hello, {user?.businessName || user?.name}
                 </div>
 
-                {/* 🎁 אמצע – Early Bird */}
                 {showEarlyBird && !hideEarlyBirdBanner && (
                   <div className="dashboard-layout-header-center">
                     <div className="earlybird-header-banner">
+
+                      {timeLeft && (
+                        <div className="earlybird-timer">
+                          Offer ends in <strong>{timeLeft}</strong>
+                        </div>
+                      )}
+
                       <span>
                         🎁 <strong>Early Bird:</strong> First month{" "}
                         <span className="price">$99</span>{" "}
@@ -227,18 +257,16 @@ const handleEarlyBirdUpgrade = async () => {
                       </span>
 
                       <button
-  className="earlybird-upgrade-btn"
-  onClick={handleEarlyBirdUpgrade}
->
-  Upgrade
-</button>
+                        className="earlybird-upgrade-btn"
+                        onClick={handleEarlyBirdUpgrade}
+                      >
+                        Upgrade
+                      </button>
 
-                     
                     </div>
                   </div>
                 )}
 
-                {/* ימין */}
                 <div className="dashboard-layout-header-right">
                   <div className="fb-notif-wrapper">
                     <FacebookStyleNotifications />
@@ -254,7 +282,7 @@ const handleEarlyBirdUpgrade = async () => {
               </header>
             )}
 
-            {/* ================= Mobile Open Button ================= */}
+            {/* ================= Mobile Button ================= */}
             {isMobile && !showSidebar && (
               <button
                 className="sidebar-open-btn"

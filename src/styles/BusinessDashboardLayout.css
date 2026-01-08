@@ -284,3 +284,23 @@
   transform: translateY(-1px);
   box-shadow: 0 10px 22px rgba(124, 58, 237, 0.6);
 }
+
+/* ===========================
+   ⏰ Early Bird Countdown
+   =========================== */
+
+.earlybird-timer {
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;            /* אפור-סגול רגוע */
+  white-space: nowrap;
+  margin-right: 6px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.earlybird-timer strong {
+  font-weight: 600;
+  color: #4c1fd8;            /* סגול ברור – יוצר דחיפות עדינה */
+}
