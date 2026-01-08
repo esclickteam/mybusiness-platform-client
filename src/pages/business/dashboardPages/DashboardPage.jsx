@@ -163,7 +163,10 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
-  
+  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(() => {
+  return localStorage.getItem("seen_upgrade_offer") !== "true";
+});
+
 
   /* scroll + hash cleanup */
   useEffect(() => {
@@ -478,6 +481,29 @@ sock.on("newReview", (reviewData) => {
     }
   }, [location.pathname, location.state]);
 
+  // 🎁 Early Bird → Stripe Checkout
+const handleEarlyBirdUpgrade = async () => {
+  if (!user?.userId) return;
+
+  localStorage.setItem("seen_upgrade_offer", "true");
+  setShowEarlyBirdModal(false);
+
+  try {
+    const res = await API.post("/stripe/create-checkout-session", {
+      userId: user.userId,
+      plan: "monthly",
+    });
+
+    if (res.data?.url) {
+      window.location.href = res.data.url;
+    }
+  } catch (err) {
+    console.error("Early Bird checkout error:", err);
+    alert("Something went wrong");
+  }
+};
+
+
 
 
   /* guards */
@@ -510,6 +536,12 @@ if (isRefreshingUser) {
 }
 
 
+const shouldShowEarlyBirdModal =
+  user?.subscriptionPlan === "trial" &&
+  !user?.hasPaid &&
+  user?.earlyBirdExpiresAt &&
+  new Date(user.earlyBirdExpiresAt) > new Date() &&
+  showEarlyBirdModal;
 
 
 
@@ -585,13 +617,12 @@ if (isRefreshingUser) {
         <main className="dp-main">
   {alert && <p className="dp-error">{alert}</p>}
 
-  {/* 🎁 Early Bird Upgrade Offer */}
-  {showEarlyBird && showEarlyBirdModal && (
+ 
+{shouldShowEarlyBirdModal && (
   <UpgradeOfferCard
     expiresAt={user.earlyBirdExpiresAt}
     onUpgrade={handleEarlyBirdUpgrade}
     onClose={() => {
-      // סוגר רק את המודאל
       localStorage.setItem("seen_upgrade_offer", "true");
       setShowEarlyBirdModal(false);
     }}
