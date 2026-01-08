@@ -24,9 +24,23 @@ function normalizeUser(user) {
   /* ============================
      ⏳ Trial
   ============================ */
-  const trialEndsAt = user.trialEndsAt
-    ? new Date(user.trialEndsAt)
-    : null;
+  const TRIAL_DAYS = 14; // אותו מספר כמו ב־backend
+
+let trialEndsAt = user.trialEndsAt
+  ? new Date(user.trialEndsAt)
+  : null;
+
+// 🛟 Fallback למשתמשים ישנים / cache
+if (
+  !trialEndsAt &&
+  user.subscriptionPlan === "trial" &&
+  user.trialStartedAt
+) {
+  const start = new Date(user.trialStartedAt);
+  trialEndsAt = new Date(start);
+  trialEndsAt.setDate(start.getDate() + TRIAL_DAYS);
+}
+
 
   const trialDaysLeft =
   user.subscriptionPlan === "trial" && trialEndsAt
@@ -39,6 +53,16 @@ function normalizeUser(user) {
   const isTrialing =
     user.subscriptionPlan === "trial" && trialDaysLeft > 0;
 
+    const isEarlyBird =
+  user?.paymentStatus === "early_bird";
+
+  const hasPaid =
+  user?.hasPaid === true ||
+  user?.paymentStatus === "early_bird" ||
+  user?.paymentStatus === "paid";
+
+
+
   return {
     ...user,
 
@@ -47,7 +71,9 @@ function normalizeUser(user) {
     trialDaysLeft,
 
     /* Payment */
-    hasPaid: Boolean(user?.hasPaid),
+    hasPaid,
+
+
     subscriptionCancelled: Boolean(user?.subscriptionCancelled),
 
     /* Subscription validity */
@@ -59,7 +85,11 @@ function normalizeUser(user) {
     subscriptionStatus: user.status || user.subscriptionPlan || "free",
 
     /* Access */
-    hasAccess: isTrialing || Boolean(user?.hasPaid) || isPendingActivation,
+     hasAccess:
+    isTrialing ||
+    isEarlyBird ||           // ✅ זה היה חסר
+    hasPaid ||   
+    isPendingActivation,
   };
 }
 
