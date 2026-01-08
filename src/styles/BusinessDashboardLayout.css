@@ -149,6 +149,11 @@
 
 /* Left */
 .dashboard-layout-header-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* ממרכז אנכית */
+  gap: 6px;
+
   font-size: 15px;
   font-weight: 600;
   color: #2a165f;
