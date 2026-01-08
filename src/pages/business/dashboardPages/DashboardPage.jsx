@@ -162,6 +162,8 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
+  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(true);
+
 
   /* scroll + hash cleanup */
   useEffect(() => {
@@ -611,15 +613,16 @@ const showEarlyBird =
   {alert && <p className="dp-error">{alert}</p>}
 
   {/* 🎁 Early Bird Upgrade Offer */}
-  {showEarlyBird && (
-    <div style={{ marginBottom: "16px" }}>
-      <UpgradeOfferCard
-        expiresAt={user.earlyBirdExpiresAt}
-        onUpgrade={handleEarlyBirdUpgrade}
-
-      />
-    </div>
-  )}
+  {showEarlyBird && showEarlyBirdModal && (
+  <UpgradeOfferCard
+    expiresAt={user.earlyBirdExpiresAt}
+    onUpgrade={handleEarlyBirdUpgrade}
+    onClose={() => {
+      setShowEarlyBirdModal(false);
+      localStorage.setItem("seen_upgrade_offer", "true");
+    }}
+  />
+)}
 
 
 
