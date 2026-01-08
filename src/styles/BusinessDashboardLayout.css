@@ -122,15 +122,30 @@
   left: 250px;
   right: 0;
   height: 64px;
+
   background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
   border-bottom: 1px solid rgba(88, 28, 135, 0.15);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   padding: 0 24px;
   z-index: 9050;
-  overflow: visible; /* 🔑 חשוב */
+  overflow: visible;
+
+  /* ⬅️ זה הסופר־קריטי */
+  position: fixed;
 }
+
+.dashboard-layout-header-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+
 
 /* Left */
 .dashboard-layout-header-left {

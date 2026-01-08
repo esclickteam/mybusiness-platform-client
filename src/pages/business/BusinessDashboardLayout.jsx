@@ -169,24 +169,45 @@ export default function BusinessDashboardLayout() {
             {/* ================= Header (Desktop) ================= */}
             {!isMobile && (
               <header className="dashboard-layout-header">
-                <div className="dashboard-layout-header-left">
-                  Hello, {user?.businessName || user?.name}
-                </div>
+  {/* שמאל */}
+  <div className="dashboard-layout-header-left">
+    Hello, {user?.businessName || user?.name}
+  </div>
 
-                <div className="dashboard-layout-header-right">
-                  {/* 🔔 notifications – עטיפה נכונה */}
-                  <div className="fb-notif-wrapper">
-                    <FacebookStyleNotifications />
-                  </div>
+  {/* 🎁 אמצע – Early Bird */}
+  {user?.subscriptionPlan === "trial" && !user?.hasPaid && (
+    <div className="dashboard-layout-header-center">
+      <div className="earlybird-header-banner">
+        <span>
+          🎁 <strong>Early Bird:</strong> First month{" "}
+          <span className="price">$99</span>{" "}
+          <span className="old-price">$119</span>
+        </span>
 
-                  <button
-                    className="header-action-btn"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </div>
-              </header>
+        <button
+          className="earlybird-upgrade-btn"
+          onClick={() => navigate(`/business/${businessId}/dashboard/billing`)}
+        >
+          Upgrade
+        </button>
+      </div>
+    </div>
+  )}
+
+  {/* ימין */}
+  <div className="dashboard-layout-header-right">
+    <div className="fb-notif-wrapper">
+      <FacebookStyleNotifications />
+    </div>
+
+    <button
+      className="header-action-btn"
+      onClick={handleLogout}
+    >
+      Logout
+    </button>
+  </div>
+</header>
             )}
 
             {/* ================= Mobile Open Button ================= */}

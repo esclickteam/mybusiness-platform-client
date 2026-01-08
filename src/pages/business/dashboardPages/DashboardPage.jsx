@@ -163,21 +163,7 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
-  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(() => {
-  return localStorage.getItem("seen_upgrade_offer") !== "true";
-});
-
-// 🟦 שליטה על הבאנר (רק לסשן הנוכחי)
-const [hideEarlyBirdBanner, setHideEarlyBirdBanner] = useState(false);
-
-useEffect(() => {
-  if (!user) return;
-
-  if (localStorage.getItem("seen_upgrade_offer") === "true") {
-    setShowEarlyBirdModal(false);
-  }
-}, [user]);
-
+  
 
   /* scroll + hash cleanup */
   useEffect(() => {
@@ -494,30 +480,6 @@ sock.on("newReview", (reviewData) => {
 
 
 
-  // 🎁 Early Bird → Stripe Checkout (NO /plans)
- const handleEarlyBirdUpgrade = async () => {
-  localStorage.setItem("seen_upgrade_offer", "true");
-  setShowEarlyBirdModal(false);
-  setHideEarlyBirdBanner(true); // ⬅️ חשוב
-
-  try {
-    const res = await API.post("/stripe/create-checkout-session", {
-      userId: user.userId,
-      plan: "monthly",
-    });
-
-    if (res.data?.url) {
-      window.location.href = res.data.url;
-    } else {
-      alert("Checkout link not available.");
-    }
-  } catch (err) {
-    console.error("Early Bird checkout error:", err);
-    alert("Something went wrong. Please try again.");
-  }
-};
-
-
   /* guards */
   if (!initialized) {
     return <p className="dp-loading">⏳ Loading data...</p>;
@@ -547,14 +509,6 @@ if (isRefreshingUser) {
   return <p className="dp-loading">⏳ Refreshing user info...</p>;
 }
 
-// 🎁 Early Bird upgrade banner condition
-const showEarlyBird =
-  user?.subscriptionPlan === "trial" &&
-  !user?.hasPaid &&
-  user?.earlyBirdShownAt &&
-  user?.earlyBirdExpiresAt &&
-  new Date(user.earlyBirdExpiresAt) > new Date() &&
-  !user?.earlyBirdUsed;
 
 
 
@@ -585,56 +539,21 @@ const showEarlyBird =
    *******************/
   return (
     <div className="dp-root" dir="ltr">
-
       {/* Topbar */}
       <header className="dp-topbar">
+        <div className="dp-topbar__brand">
+          
+          <div className="dp-brand-titles">
+            <h1>Business Dashboard</h1>
+            {user?.businessName && (
+              <span className="dp-subtitle">Welcome, {user.businessName}</span>
+            )}
+          </div>
+        </div>
 
-  {/* 🎁 Early Bird – שורה עליונה בהידר */}
-  {showEarlyBird && !hideEarlyBirdBanner && (
-    <div className="earlybird-header-banner">
-      <span>
-        🎁 <strong>Early Bird:</strong> First month{" "}
-        <span className="price">$99</span>{" "}
-        <span className="old-price">$119</span> · Save $20
-      </span>
 
-      <div className="earlybird-actions">
-        <button
-          className="earlybird-upgrade-btn"
-          onClick={handleEarlyBirdUpgrade}
-        >
-          Upgrade
-        </button>
-
-        <button
-          className="earlybird-close"
-          onClick={() => setHideEarlyBirdBanner(true)}
-          aria-label="Close banner"
-        >
-          ×
-        </button>
-      </div>
-    </div>
-  )}
-
-  {/* 🧭 שורת ההידר הרגילה */}
-  <div className="dp-topbar-main">
-    <div className="dp-topbar__brand">
-      <div className="dp-brand-titles">
-        <h1>Business Dashboard</h1>
-        {user?.businessName && (
-          <span className="dp-subtitle">
-            Welcome, {user.businessName}
-          </span>
-        )}
-      </div>
-    </div>
-
-    {/* כאן יושבים bell / logout וכו' */}
-  </div>
-
+  
 </header>
-
 
       <div className="dp-layout">
         {/* Sidebar */}
