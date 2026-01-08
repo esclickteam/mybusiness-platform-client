@@ -67,11 +67,9 @@
   font-size: 26px;
   font-weight: 700;
   margin-bottom: 8px;
+  color: #0f172a; /* ⬅️ זה העיקר */
 }
 
-.offer-title span {
-  color: #4f46e5;
-}
 
 .offer-timer {
   font-size: 14px;
