@@ -36,7 +36,7 @@ html, body, #root {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   gap: 1rem;
   overflow: visible;
 }
@@ -78,51 +78,56 @@ html, body, #root {
   display: block;
 }
 .business-name {
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: #1f2937;
-  text-align: right;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #5c2d91;
 }
 
 /* === תיאור וטלפון === */
 .about-phone {
-  text-align: right;
-  font-size: 0.85rem;
-  color: #6b7280;
+  text-align: center;
+  font-size: 1rem;
+  color: #555;
+  margin: 0.5rem 0;
+  max-width: 700px;
+  word-break: break-word;
 }
 .about-phone p {
-  display: inline;
-  margin-left: 8px;
+  margin: 0.3rem 0;
 }
 
-/* === Overall Rating – metadata style === */
+/* === Overall Rating Banner === */
 .overall-rating {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center; /* מרכוז רגוע */
+  gap: 12px;
 
-  padding: 0;
-  margin: 0.5rem 0;
+  padding: 0.9rem 1.2rem;
+  margin: 1.8rem auto;
 
-  background: none;
-  border: none;
+  background: #f6f4ff;            /* קצת יותר רך */
+  border: 1px solid #e6ddff;
+  border-radius: 16px;
+
+  box-shadow: none;
+  user-select: none;
 }
 
 .overall-rating .big-score {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #374151;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #5c2d91;
 }
 
 .overall-rating .stars-inline {
-  font-size: 0.85rem;
+  font-size: 1.2rem;
 }
 
 .overall-rating .count {
-  font-size: 0.8rem;
-  color: #6b7280;
+  font-size: 0.9rem;
+  color: #7a6fb3;
 }
-
 
 /* === מחיצת טאבים === */
 .profile-divider {
@@ -133,56 +138,39 @@ html, body, #root {
 }
 
 /* === טאבים === */
-/* === Tabs – UX מערכת (Monday-style) === */
 .profile-tabs {
-  display: flex;
-  gap: 12px;
-
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
   width: 100%;
   max-width: 720px;
   margin: 0 auto 1.2rem;
-
-  justify-content: flex-start;
-  align-items: center;
-
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 6px;
 }
-
 .profile-tabs .tab {
-  height: 36px;
-  padding: 0 14px;
+  width: 100%;
+  height: 52px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: transparent;
-  border-radius: 8px;
+  text-align: center;
+  padding: 0 12px;
 
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #374151;
-
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-/* Hover */
-.profile-tabs .tab:hover:not(.active) {
-  background: #f3f4f6;
-}
-
-/* Active tab */
-.profile-tabs .tab.active {
-  background: #eef2ff;
-  color: #4338ca;
+  border-radius: 14px;
   font-weight: 600;
-}
+  font-size: 0.95rem;
+  line-height: 1.2;
 
+  white-space: normal; /* מאפשר שבירת שורה */
+}
+.profile-tabs .tab:hover:not(.active) {
+  background: #e3d5ff;
+}
+.profile-tabs .tab.active {
+  background: #5c2d91;
+  box-shadow: none;
+}
 
 /* === Tab Content Wrapper === */
 .tab-content {
@@ -209,7 +197,7 @@ html, body, #root {
   object-fit: cover;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  border: 1px solid #e5e7eb;
+  border: 3px solid #b46af1;
   padding: 5px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
@@ -364,29 +352,17 @@ html, body, #root {
   .public-main-images {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  /* Tabs – horizontal scroll (Monday-style) */
   .profile-tabs {
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none;
+    grid-template-columns: repeat(2, 1fr);
   }
-
-  .profile-tabs::-webkit-scrollbar {
-    display: none;
-  }
-
   .review-card.improved {
     max-width: 100%;
   }
-
-  .faqs-public,
-  .faq-card {
+  .faqs-public, .faq-card {
     max-width: 100%;
     padding: 1rem 0.7rem 0.7rem;
   }
 }
-
 
 /* === כפתור חזור === */
 .back-btn {
@@ -424,8 +400,8 @@ html, body, #root {
 
 .product-card-public {
   background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(110,60,200,0.10);
   padding: 1.2rem 1rem 1rem 1rem;
   display: flex;
   flex-direction: column;
@@ -647,9 +623,19 @@ html, body, #root {
 
 
 
-.reviews-average,
+.reviews-average {
+  font-weight: 900;
+  font-size: 2.4rem;
+  color: #5c2d91;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .star {
-  font-size: 1rem;
+  color: gold;
+  font-size: 2.4rem;
+  filter: drop-shadow(0 0 3px #c9b61b);
 }
 
 .reviews-count {
@@ -661,6 +647,10 @@ html, body, #root {
 
 /* רספונסיביות נוספת למסכים קטנים מאוד */
 @media (max-width: 360px) {
+  .profile-tabs {
+    grid-template-columns: 1fr;
+  }
+
   .public-main-images {
     grid-template-columns: 1fr;
   }
@@ -716,7 +706,10 @@ html, body, #root {
 }
 /* טאבלטים בגודל בינוני (769px–1024px) */
 @media (max-width: 1024px) {
- 
+  .profile-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .public-main-images {
     grid-template-columns: repeat(2, 1fr);
   }
