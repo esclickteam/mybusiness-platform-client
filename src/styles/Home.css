@@ -137,18 +137,24 @@
 
 /* ===== Scroll Story ===== */
 .scroll-story {
-  display: grid;
-  gap: 120px;
-  background: var(--bg-soft);
-}
-
-.scroll-story .step {
-  max-width: 640px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  gap: 120px;
+  background: var(--bg-soft);
+
+  /* מרכז את כל הקבוצה בעמוד */
+  align-items: center;
 }
 
+/* כל step זהה לחלוטין */
+.scroll-story .step {
+  width: 100%;
+  max-width: 640px;
+
+  text-align: left;        /* ⬅️ זה הפתרון */
+}
+
+/* כותרות */
 .scroll-story h3 {
   font-size: 28px;
   font-weight: 600;
@@ -157,12 +163,14 @@
   color: var(--text-main);
 }
 
+/* טקסט */
 .scroll-story p {
   font-size: 17px;
   line-height: 1.6;
   margin: 0;
   color: var(--text-muted);
 }
+
 
 /* ===== Why ===== */
 .why {
