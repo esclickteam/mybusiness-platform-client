@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, Link, Outlet } from "react-router-dom";
 import "./ClientDashboard.css";
-import ClientHeader from "./ClientHeader"; // ✅ הוספת Header ללקוח
+import ClientHeader from "./ClientHeader"; // ✅ Header ללקוח
 
 export default function ClientDashboard() {
   return (
@@ -16,10 +16,16 @@ export default function ClientDashboard() {
         </p>
 
         <div className="client-tabs">
-          {/* חיפוש עסקים – קישור חיצוני */}
-          <Link to="/search" className="client-tab-button">
+          {/* ✅ חיפוש עסקים – בתוך הדשבורד (לא חיצוני) */}
+          <NavLink
+            to="search"
+            end
+            className={({ isActive }) =>
+              `client-tab-button ${isActive ? "active" : ""}`
+            }
+          >
             🔎 Search Businesses
-          </Link>
+          </NavLink>
 
           <NavLink
             to="orders"

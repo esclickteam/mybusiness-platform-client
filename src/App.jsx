@@ -275,6 +275,8 @@ export default function App() {
                     <Route path="messages" element={<MessagesPage />} />
                     <Route path="orders" element={<OrdersPage />} />
                     <Route path="favorites" element={<FavoritesPage />} />
+                    <Route path="search" element={<SearchBusinesses />} />
+
                   </Route>
 
                   {/* Staff & Admin */}
