@@ -113,11 +113,21 @@
 }
 
 .btn-ghost {
-  color: var(--text-on-dark-muted);
+  color: var(--text-on-dark-main);
   text-decoration: none;
   font-weight: 500;
-  padding: 14px 24px;
+  padding: 14px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  transition: all 0.2s ease;
 }
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+
 
 /* ===== Scroll Story ===== */
 .scroll-story {
