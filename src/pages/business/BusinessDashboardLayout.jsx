@@ -251,15 +251,13 @@ export default function BusinessDashboardLayout() {
                       <strong>{user.trialDaysLeft} days</strong>
 
                       {!user.hasPaid &&
-                        !user.isEarlyBirdActive && (
-
-                          <button
-  className="trial-upgrade-pill"
-  onClick={handleUpgrade}
-
->
-  Upgrade
-</button>
+  (!user.isEarlyBirdActive || !isAfterDay4) && (
+    <button
+      className="trial-upgrade-pill"
+      onClick={handleUpgrade}
+    >
+      Upgrade
+    </button>
 
                         )}
                     </div>
