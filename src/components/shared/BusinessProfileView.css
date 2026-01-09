@@ -61,19 +61,11 @@ html, body, #root {
 
 /* === לוגו ושם העסק === */
 .profile-logo-wrapper {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  position: relative;
-  z-index: 10;
-  box-shadow: 0 0 12px rgba(180, 106, 241, 0.25);
+  width: 96px;
+  height: 96px;
+  box-shadow: 0 4px 14px rgba(180, 106, 241, 0.18);
 }
+
 .profile-logo {
   width: 100%;
   height: 100%;
@@ -81,14 +73,9 @@ html, body, #root {
   display: block;
 }
 .business-name {
-  margin: 0;
-  margin-top: 0.5rem;
-  font-size: 2rem;
-  color: #b46af1;  
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  user-select: none;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #5c2d91;
 }
 
 /* === תיאור וטלפון === */
@@ -106,17 +93,10 @@ html, body, #root {
 
 /* === Overall Rating Banner === */
 .overall-rating {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin: 1.5rem 0;
-  width: 100%;
-  max-width: 700px;
-  user-select: none;
+  background: #f4f3ff;
+  box-shadow: none;
+  border: 1px solid #e6ddff;
+  border-radius: 14px;
 }
 .overall-rating .big-score {
   font-size: 1.5rem;
@@ -151,26 +131,16 @@ html, body, #root {
   margin-bottom: 1rem;
 }
 .profile-tabs .tab {
-  padding: 0.6rem 1rem;
-  border-radius: 20px;
-  background: #f0eaff;
-  color: #333;
-  border: none;
-  width: 100%;
-  max-width: 200px;
-  cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s;
-  user-select: none;
-  font-weight: 600;
-  font-size: 1rem;
+  border-radius: 12px;
+  background: #f5f2ff;
+  box-shadow: none;
 }
 .profile-tabs .tab:hover:not(.active) {
   background: #e3d5ff;
 }
 .profile-tabs .tab.active {
-  background: #b46af1;
-  color: #fff;
-  box-shadow: 0 0 10px rgba(180,106,241,0.6);
+  background: #5c2d91;
+  box-shadow: none;
 }
 
 /* === Tab Content Wrapper === */
@@ -204,8 +174,7 @@ html, body, #root {
   cursor: pointer;
 }
 .public-main-images img:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(180, 106, 241, 0.6);
+  transform: translateY(-2px);
 }
 
 /* === ביקורות – מיכל הביקורות === */
@@ -253,9 +222,8 @@ html, body, #root {
   direction: rtl;
 }
 .review-card.improved:hover {
-  transform: translateX(4px);
-  background: #fafafa;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transform: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 /* === סגנונות כותרת כרטיס ביקורת === */
@@ -614,12 +582,8 @@ html, body, #root {
 
 .public-main-images img,
 .gallery img {
-  border: 3px solid #5c2d91;        /* מסגרת בצבע סגול תואם */
-  border-radius: 12px;               /* פינות מעוגלות */
-  box-shadow: 0 4px 12px rgba(92, 45, 145, 0.4); /* צל עדין בגוון הסגול */
-  padding: 5px;                     /* רווח בין התמונה למסגרת */
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
 .public-main-images img:hover,
@@ -629,16 +593,6 @@ html, body, #root {
 }
 
 
-.reviews-summary {
-  display: flex;
-  justify-content: center;
-  padding: 16px 20px;
-  background: #f4f3ff;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(121, 90, 192, 0.3);
-  font-family: 'Arial', sans-serif;
-  margin: 1rem auto;
-}
 
 .reviews-average {
   font-weight: 900;
