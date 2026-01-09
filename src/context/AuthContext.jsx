@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import API, { setAuthToken } from "../api";
 import createSocket from "../socket";
@@ -184,6 +184,7 @@ export function AuthProvider({ children }) {
     return saved ? normalizeUser(JSON.parse(saved)) : null;
   });
 
+  const didInitialRedirect = useRef(false);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
@@ -494,15 +495,18 @@ useEffect(() => {
       }
 
       // 🏠 ניתוב ברירת מחדל
-      if (
-        freshUser.role === "business" &&
-        freshUser.businessId &&
-        location.pathname === "/"
-      ) {
-        navigate(`/business/${freshUser.businessId}/dashboard`, {
-          replace: true,
-        });
-      }
+     if (
+  !didInitialRedirect.current &&
+  freshUser.role === "business" &&
+  freshUser.businessId &&
+  location.pathname === "/"
+) {
+  didInitialRedirect.current = true;
+  navigate(`/business/${freshUser.businessId}/dashboard`, {
+    replace: true,
+  });
+}
+
     } catch (err) {
   console.error("❌ Auth init failed:", err);
   await logout();
