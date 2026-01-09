@@ -98,6 +98,8 @@
 .why ul {
   list-style: none;
   padding: 0;
+  margin: 0 auto;
+  max-width: 520px;   /* ⬅️ זה הקריטי */
 }
 
 .why li {
