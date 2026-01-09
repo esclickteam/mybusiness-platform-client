@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import jwtDecode from "jwt-decode"; 
+import jwtDecode from "jwt-decode";
 import "./ReviewForm.css";
 
 const ratingFields = [
@@ -12,7 +12,7 @@ const ratingFields = [
   { key: "experience", label: "🎉 Overall experience" },
 ];
 
-const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
+const ReviewForm = ({ businessId, socket, onSuccess }) => {
   const [ratings, setRatings] = useState({});
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,10 +22,14 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
     setRatings((prev) => ({ ...prev, [key]: value }));
   };
 
+  // ✅ חישוב ממוצע רק משדות שנבחרו
   const calculateAverage = () => {
-    const values = ratingFields.map(({ key }) => parseFloat(ratings[key] || 0));
-    const sum = values.reduce((acc, val) => acc + val, 0);
-    return (sum / ratingFields.length).toFixed(1);
+    const values = Object.values(ratings).filter(
+      (v) => typeof v === "number" && !isNaN(v)
+    );
+    if (!values.length) return "0.0";
+    const sum = values.reduce((a, b) => a + b, 0);
+    return (sum / values.length).toFixed(1);
   };
 
   const handleSubmit = async (e) => {
@@ -40,60 +44,61 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
       const decoded = jwtDecode(token);
       const clientId = decoded.userId;
 
+      // ✅ מבנה תואם 1:1 ל־ReviewSchema
       const reviewData = {
         business: businessId,
         client: clientId,
-        comment: text,
-        averageScore: parseFloat(calculateAverage()),
+        comment: text.trim(),
 
-        // 🔥 Flatten fields (this is what server expects)
-        service: ratings.service,
-        professional: ratings.professional,
-        timing: ratings.timing,
-        availability: ratings.availability,
-        value: ratings.value,
-        goal: ratings.goal,
-        experience: ratings.experience,
+        ratings: {
+          service: ratings.service,
+          professional: ratings.professional,
+          timing: ratings.timing,
+          availability: ratings.availability,
+          value: ratings.value,
+          goal: ratings.goal,
+          experience: ratings.experience,
+        },
+
+        averageScore: Number(calculateAverage()),
       };
 
+      // 🔌 Socket path
       if (socket && socket.connected) {
         socket.emit("createReview", reviewData, (res) => {
-          if (!res.ok) {
-            setError(res.error || "Error submitting review");
+          if (!res?.ok) {
+            setError(res?.error || "Error submitting review");
             setIsSubmitting(false);
             return;
           }
 
-          // 📌 Pass the new review upward
-          onSuccess && onSuccess(res.review);
-
-          // Reset form
+          onSuccess?.(res.review);
           setRatings({});
           setText("");
           setIsSubmitting(false);
         });
-      } else {
-        const response = await fetch(`/api/business/${businessId}/reviews`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(reviewData),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Error submitting review");
-        }
-
-        onSuccess && onSuccess(data.review);
-
-        setRatings({});
-        setText("");
-        setIsSubmitting(false);
+        return;
       }
+
+      // 🌐 REST fallback
+      const response = await fetch(`/api/business/${businessId}/reviews`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(reviewData),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Error submitting review");
+      }
+
+      onSuccess?.(data.review);
+      setRatings({});
+      setText("");
+      setIsSubmitting(false);
     } catch (err) {
       setError(err.message);
       setIsSubmitting(false);
@@ -108,7 +113,7 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
         <div key={key} className="rating-row">
           <label>{label}</label>
           <select
-            value={ratings[key] || ""}
+            value={ratings[key] ?? ""}
             onChange={(e) => handleRatingChange(key, Number(e.target.value))}
             required
           >
@@ -133,7 +138,9 @@ const ReviewForm = ({ businessId, socket, conversationId, onSuccess }) => {
         required
       />
 
-      <div className="average-score">⭐ Average score: {calculateAverage()} / 5</div>
+      <div className="average-score">
+        ⭐ Average score: {calculateAverage()} / 5
+      </div>
 
       {error && <div className="error-message">{error}</div>}
 
