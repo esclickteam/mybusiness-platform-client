@@ -6,6 +6,8 @@
   --brand-purple: #5B4CF5;
   --brand-purple-hover: #4B3DE0;
   --brand-cyan: #22D3EE; /* Salesforce-like accent */
+   --brand-cyan-strong: #0891B2; /* cyan-600 */
+
 
   /* =========================
      Text – Light backgrounds
@@ -135,26 +137,49 @@
   border-color: rgba(255, 255, 255, 0.6);
 }
 
-/* ===== Scroll Story ===== */
+/* ===== Scroll Story – Alternating Layout ===== */
 .scroll-story {
   display: flex;
   flex-direction: column;
-  gap: 120px;
+  gap: 140px;
   background: var(--bg-soft);
-
-  /* מרכז את כל הקבוצה בעמוד */
-  align-items: center;
+  padding-top: 120px;
+  padding-bottom: 120px;
 }
 
-/* כל step זהה לחלוטין */
-.scroll-story .step {
+/* כל שלב */
+.step {
+  display: flex;
   width: 100%;
-  max-width: 640px;
-
-  text-align: left;        /* ⬅️ זה הפתרון */
 }
 
-/* כותרות */
+/* שמאל */
+.step-left {
+  justify-content: flex-start;
+}
+
+/* ימין */
+.step-right {
+  justify-content: flex-end;
+}
+
+/* התוכן עצמו */
+.step-inner {
+  max-width: 640px;
+  text-align: left;
+}
+
+/* Label קטן (Enterprise style) */
+.step-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--brand-cyan-strong);
+  margin-bottom: 12px;
+}
+
+/* כותרת */
 .scroll-story h3 {
   font-size: 28px;
   font-weight: 600;
@@ -171,14 +196,6 @@
   color: var(--text-muted);
 }
 
-.step-label {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--brand-cyan);
-  margin-bottom: 12px;
-}
 
 
 /* ===== Why ===== */
