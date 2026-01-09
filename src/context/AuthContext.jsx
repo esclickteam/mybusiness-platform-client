@@ -283,7 +283,6 @@ navigate("/dashboard", { replace: true });
       document.body.style.background =
         "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
 
-      refreshUser(true).catch(() => {});
 
       /* ⭐️⭐️⭐️ NEW — PRIORITY REDIRECT FROM URL ⭐️⭐️⭐️ */
       const urlRedirect = new URLSearchParams(window.location.search).get("redirect");
