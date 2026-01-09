@@ -171,8 +171,8 @@
 
 .step-with-visual {
   display: grid;
-  grid-template-columns: 0.9fr 1.6fr; /* ⬅️ נותן יותר מקום לתמונה */
-  align-items: center;
+  grid-template-columns: 0.9fr 1.6fr;
+  align-items: stretch; /* במקום center */
   gap: 72px;
 }
 
@@ -186,7 +186,8 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  overflow: visible; /* כדי שלא ייחתך */
+  overflow: visible !important; /* חשוב */
+  height: auto !important; /* חשוב */
 }
 
 .step-visual::after {
@@ -204,15 +205,13 @@
 
 .step-visual img {
   width: 100%;
-  max-width: 820px; /* ⬅️ במקום 700px */
+  max-width: 820px;
   height: auto;
   border-radius: 22px;
   box-shadow:
     0 30px 80px rgba(15, 23, 42, 0.18),
     0 10px 24px rgba(15, 23, 42, 0.1);
   object-fit: contain;
-  background: none;
-  padding: 0;
 }
 
 
