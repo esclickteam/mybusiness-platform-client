@@ -1,20 +1,41 @@
 /* ===== Design Tokens ===== */
 :root {
-  /* Brand */
+  /* =========================
+     Brand
+     ========================= */
   --brand-purple: #5B4CF5;
   --brand-purple-hover: #4B3DE0;
 
-  /* Text */
-  --text-main: #0F172A;   /* כותרות */
-  --text-muted: #475569; /* פסקאות */
+  /* =========================
+     Text – Light backgrounds
+     ========================= */
+  --text-main: #0F172A;    /* כותרות */
+  --text-muted: #475569;  /* פסקאות */
 
-  /* Backgrounds */
+  /* =========================
+     Text – Dark / Hero
+     ========================= */
+  --text-on-dark-main: #FFFFFF;   /* כותרת על רקע כהה */
+  --text-on-dark-muted: #C7D2FE;  /* טקסט משני על רקע כהה */
+
+  /* =========================
+     Backgrounds – Light
+     ========================= */
   --bg-main: #FFFFFF;
   --bg-soft: #F8FAFC;
 
-  /* Borders */
+  /* =========================
+     Backgrounds – Hero / Dark
+     ========================= */
+  --hero-bg-start: #1E1B4B; /* indigo-950 */
+  --hero-bg-end: #0F172A;   /* slate-900 */
+
+  /* =========================
+     Borders / Dividers
+     ========================= */
   --border-soft: #E2E8F0;
 }
+
 
 /* ===== Base ===== */
 .home-page {
@@ -37,10 +58,14 @@
 
 /* ===== Hero ===== */
 .hero {
-  padding-top: 120px;
-  padding-bottom: 120px;
+  padding-top: 140px;
+  padding-bottom: 140px;
   text-align: center;
-  background: var(--bg-main);
+  background: linear-gradient(
+    180deg,
+    var(--hero-bg-start),
+    var(--hero-bg-end)
+  );
 }
 
 .hero h1 {
@@ -49,12 +74,16 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 24px;
-  color: var(--text-main);
+  color: var(--text-on-dark-main);
+}
+
+.hero-accent {
+  color: var(--brand-purple);
 }
 
 .hero p {
   font-size: 18px;
-  color: var(--text-muted);
+  color: var(--text-on-dark-muted);
   max-width: 680px;
   margin: 0 auto 40px;
 }
@@ -64,6 +93,7 @@
   justify-content: center;
   gap: 16px;
 }
+
 
 /* ===== Buttons ===== */
 .btn-primary {
@@ -83,7 +113,7 @@
 }
 
 .btn-ghost {
-  color: var(--text-main);
+  color: var(--text-on-dark-muted);
   text-decoration: none;
   font-weight: 500;
   padding: 14px 24px;

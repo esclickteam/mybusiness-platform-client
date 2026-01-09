@@ -6,7 +6,7 @@ export default function HeroSection() {
       <h1>
         Run your business.
         <br />
-        All in one place.
+        <span className="hero-accent">All in one place.</span>
       </h1>
 
       <p>
