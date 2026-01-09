@@ -173,9 +173,8 @@
 .step-with-visual {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
-  align-items: start;
+  align-items: stretch; /* ⬅️ היה start או center */
   gap: 72px;
-  min-height: 720px; /* ⬅️ נותן מספיק גובה לכל התמונה */
 }
 
 
@@ -186,11 +185,11 @@
 .step-visual {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
   overflow: visible !important;
   height: auto !important;
-  min-height: 720px; /* ⬅️ חשוב */
+  min-height: unset !important; /* ⬅️ חשוב */
 }
 
 .step-visual::after {
