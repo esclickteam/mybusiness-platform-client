@@ -340,18 +340,45 @@
   }
 }
 
+/* ✅ Don't constrain ScrollStory children */
+.scroll-story > * {
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* ✅ Center only the inner container */
+.scroll-story .step-inner {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 
 /* ✅ Mobile: cancel huge min-height so it won't feel broken */
 @media (max-width: 768px) {
   .step-with-visual {
-    min-height: auto; /* ⬅️ חשוב */
+    grid-template-columns: 1fr;
+    gap: 40px;
+
+    /* ✅ מבטל את הגובה הכפוי במובייל */
+    min-height: auto !important;
   }
 
   .step-visual {
-    min-height: auto; /* ⬅️ חשוב */
+    order: -1; /* תמונה מעל הטקסט */
+    min-height: auto !important; /* ✅ מבטל את הגובה הכפוי */
+    height: auto !important;
   }
 
   .step-visual img {
+    width: 100%;
     max-width: 100%;
+    height: auto;
+    object-fit: contain !important;
+  }
+
+  .step-content {
+    text-align: center;
   }
 }
