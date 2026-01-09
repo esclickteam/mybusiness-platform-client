@@ -1,3 +1,4 @@
+// ScrollStory.jsx
 export default function ScrollStory() {
   return (
     <section className="scroll-story">
@@ -9,14 +10,15 @@ export default function ScrollStory() {
             <span className="step-label">PLATFORM</span>
             <h3>Your business page</h3>
             <p>
-              A clean, professional page that represents your business
-              and centralizes everything in one place.
+              A clean, professional page that represents your business and
+              centralizes everything in one place.
             </p>
           </div>
 
           {/* VISUAL */}
           <div className="step-visual">
             <img
+              className="step-visual-img"
               src="/images/hero-business-page.png"
               alt="Business page preview"
               loading="lazy"
@@ -31,8 +33,8 @@ export default function ScrollStory() {
           <span className="step-label">WORK TOGETHER</span>
           <h3>Collaborations</h3>
           <p>
-            Work with partners and other businesses —
-            messages, proposals and shared activity.
+            Work with partners and other businesses — messages, proposals and
+            shared activity.
           </p>
         </div>
       </div>
@@ -43,8 +45,7 @@ export default function ScrollStory() {
           <span className="step-label">GROW SMART</span>
           <h3>CRM &amp; AI</h3>
           <p>
-            Track clients, automate follow-ups
-            and let AI guide your next move.
+            Track clients, automate follow-ups and let AI guide your next move.
           </p>
         </div>
       </div>
