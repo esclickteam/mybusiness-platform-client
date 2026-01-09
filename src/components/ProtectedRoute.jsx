@@ -13,16 +13,16 @@ export default function ProtectedRoute({
   const location = useLocation();
 
   const [showTrialModal, setShowTrialModal] = useState(false);
-  const [checkedTrial, setCheckedTrial] = useState(false);
 
   const role = (user?.role || "").toLowerCase();
   const isAdmin = role === "admin";
   const isBusiness = role === "business";
 
   /* ===========================
-     ⏳ טעינה ראשונית
+     ⏳ Wait for auth to fully settle
+     (CRITICAL – no redirects before this)
   =========================== */
-  if (loading || !initialized) {
+  if (!initialized || loading) {
     return (
       <div style={{ textAlign: "center", padding: "2rem" }}>
         🔄 Loading data...
@@ -31,26 +31,42 @@ export default function ProtectedRoute({
   }
 
   /* ===========================
-     🚫 לא מחובר
+     🚫 Not authenticated
   =========================== */
-  if (!initialized) {
-  return null; // או loader
-}
-
-if (!user) {
-  return <Navigate to="/login" replace state={{ from: location }} />;
-}
+  if (!user) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: location.pathname }}
+      />
+    );
+  }
 
   /* ===========================
-     👑 Admin – BYPASS מוחלט
-     ❗ שום בדיקה אחרת לא רצה
+     👑 Admin – full bypass
   =========================== */
   if (isAdmin) {
     return <>{children}</>;
   }
 
   /* ===========================
-     💳 תוקף מנוי (רק לעסק)
+     🔐 Role validation
+  =========================== */
+  const normalizedRoles = roles.map((r) => r.toLowerCase());
+  if (normalizedRoles.length && !normalizedRoles.includes(role)) {
+    return <Unauthorized />;
+  }
+
+  /* ===========================
+     🏗️ Business without businessId
+  =========================== */
+  if (isBusiness && !user.businessId) {
+    return <Navigate to="/create-business" replace />;
+  }
+
+  /* ===========================
+     💳 Subscription validity (business only)
   =========================== */
   const isSubscriptionValid = useMemo(() => {
     if (!isBusiness) return true;
@@ -61,7 +77,7 @@ if (!user) {
   }, [isBusiness, user?.subscriptionEnd]);
 
   /* ===========================
-     🕓 ניסיון חינם שפג
+     🕓 Trial expired
   =========================== */
   const isTrialExpired = useMemo(() => {
     return (
@@ -73,7 +89,7 @@ if (!user) {
   }, [isBusiness, user?.subscriptionPlan, user?.subscriptionEnd]);
 
   /* ===========================
-     🧠 בדיקת Trial רק בדשבורד
+     🧠 Show trial modal ONLY inside dashboard
   =========================== */
   useEffect(() => {
     const isDashboardArea = /^\/business\/[^/]+\/dashboard/.test(
@@ -85,47 +101,22 @@ if (!user) {
     } else {
       setShowTrialModal(false);
     }
-
-    setCheckedTrial(true);
   }, [isBusiness, isTrialExpired, location.pathname]);
 
-  if (!checkedTrial) {
-    return (
-      <div style={{ textAlign: "center", padding: "2rem" }}>
-        🔄 Loading data...
-      </div>
-    );
-  }
-
   /* ===========================
-     🔐 בדיקת roles (לא אדמין)
-  =========================== */
-  const normalizedRoles = roles.map((r) => r.toLowerCase());
-
-  if (normalizedRoles.length && !normalizedRoles.includes(role)) {
-    return <Unauthorized />;
-  }
-
-  /* ===========================
-     ⚠️ Trial הסתיים – מודאל בלבד
+     ⚠️ Trial expired – modal only (no redirect)
   =========================== */
   if (showTrialModal) {
     return (
       <div style={{ position: "relative", zIndex: 9999 }}>
         <TrialExpiredModal />
+        {children}
       </div>
     );
   }
 
   /* ===========================
-     🏗️ עסק ללא businessId
-  =========================== */
-  if (isBusiness && !user.businessId) {
-    return <Navigate to="/create-business" replace />;
-  }
-
-  /* ===========================
-     ✅ גישה מאושרת
+     ✅ Access granted
   =========================== */
   return <>{children}</>;
 }
