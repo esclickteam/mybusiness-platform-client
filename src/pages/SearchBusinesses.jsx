@@ -61,7 +61,13 @@ export default function SearchBusinesses() {
     API.get("/business")
       .then((res) => {
         if (!mounted) return;
-        setAll(res.data?.businesses || []);
+
+        // ✅ תומך גם במבנה { businesses: [] } וגם במערך ישיר []
+        const businesses = Array.isArray(res.data)
+          ? res.data
+          : res.data?.businesses || [];
+
+        setAll(businesses);
         setLoading(false);
       })
       .catch((err) => {
@@ -114,7 +120,14 @@ export default function SearchBusinesses() {
   /* ================= Search Logic ================= */
 
   const handleSearch = useCallback(() => {
-    if (!all.length) return;
+    // ✅ אם אין עסקים נטענו (ריק/שגיאה) – לא להיתקע
+    if (!Array.isArray(all) || all.length === 0) {
+      setFiltered([]);
+      setSearched(true);
+      setSearching(false);
+      setPage(1);
+      return;
+    }
 
     setSearching(true);
 
@@ -123,11 +136,10 @@ export default function SearchBusinesses() {
 
     const result = all.filter((b) => {
       if (normCat && !normalize(b.category).includes(normCat)) return false;
-      if (
-        normCity &&
-        !normalize(b.address?.city || "").startsWith(normCity)
-      )
+
+      if (normCity && !normalize(b.address?.city || "").startsWith(normCity))
         return false;
+
       return true;
     });
 
@@ -138,15 +150,8 @@ export default function SearchBusinesses() {
     setTimeout(() => setSearching(false), 300);
   }, [all, cat, city]);
 
-  /* ================= Initial Search (CRITICAL FIX) ================= */
-  // 🔧 מונע מצב "נתקע" בלי תוצאות
-  useEffect(() => {
-    if (!loading && all.length) {
-      handleSearch();
-    }
-  }, [loading, all, handleSearch]);
-
-  /* ================= Debounced Search ================= */
+  /* ================= Debounced Search (Single source of truth) ================= */
+  // ✅ ביטלנו את Initial Search הנפרד כדי לא להפעיל handleSearch פעמיים
   useEffect(() => {
     if (loading) return;
 
@@ -259,9 +264,7 @@ export default function SearchBusinesses() {
               {page} of {totalPages}
             </span>
             <button
-              onClick={() =>
-                setPage((p) => Math.min(p + 1, totalPages))
-              }
+              onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
               disabled={page === totalPages}
             >
               Next
