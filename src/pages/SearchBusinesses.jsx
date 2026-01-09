@@ -11,7 +11,9 @@ import { Helmet } from "react-helmet-async";
 import "./BusinessList.css";
 
 const ITEMS_PER_PAGE = 9;
-const DEBOUNCE_DELAY = 600; // 0.6 שניות
+const DEBOUNCE_DELAY = 600;
+
+/* ================= Helpers ================= */
 
 function normalize(str) {
   return str
@@ -22,92 +24,153 @@ function normalize(str) {
     ?.toLowerCase();
 }
 
+/* ================= Component ================= */
+
 export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  /* ===== Data ===== */
   const [all, setAll] = useState([]);
   const [filtered, setFiltered] = useState([]);
+
+  /* ===== UI States ===== */
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
 
+  /* ===== Filters ===== */
   const [cat, setCat] = useState(searchParams.get("category") || "");
   const [city, setCity] = useState(searchParams.get("city") || "");
-  const [cities, setCities] = useState([]);
-  const [loadingCities, setLoadingCities] = useState(true);
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
 
-  const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
+  /* ===== Cities ===== */
+  const [cities, setCities] = useState([]);
+  const [loadingCities, setLoadingCities] = useState(true);
 
-  /* Load all businesses */
+  const categoryOptions = ALL_CATEGORIES.map((c) => ({
+    value: c,
+    label: c,
+  }));
+
+  /* ================= Load Businesses (ONCE) ================= */
+
   useEffect(() => {
+    let mounted = true;
+
     API.get("/business")
-      .then((r) => {
-        setAll(r.data.businesses || []);
+      .then((res) => {
+        if (!mounted) return;
+        setAll(res.data?.businesses || []);
         setLoading(false);
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error("❌ Failed loading businesses:", err);
+        setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  /* Load cities (with cache) */
+  /* ================= Load Cities (cached) ================= */
+
   useEffect(() => {
     const loadCities = async () => {
-      const cache = localStorage.getItem("allCities");
-      if (cache) {
-        setCities(JSON.parse(cache));
+      try {
+        const cache = localStorage.getItem("allCities");
+        if (cache) {
+          setCities(JSON.parse(cache));
+          setLoadingCities(false);
+          return;
+        }
+
+        const fetched = await fetchCities();
+        setCities(fetched);
+        localStorage.setItem("allCities", JSON.stringify(fetched));
+      } catch (e) {
+        console.error("❌ Failed loading cities:", e);
+      } finally {
         setLoadingCities(false);
-        return;
       }
-      const fetched = await fetchCities();
-      setCities(fetched);
-      setLoadingCities(false);
-      localStorage.setItem("allCities", JSON.stringify(fetched));
     };
+
     loadCities();
   }, []);
 
-  /* Update URL when filters change */
+  /* ================= Sync URL with Filters ================= */
+
   useEffect(() => {
     const params = new URLSearchParams();
+
     if (cat) params.set("category", cat);
     if (city) params.set("city", city);
     if (page > 1) params.set("page", page);
+
     setSearchParams(params, { replace: true });
   }, [cat, city, page, setSearchParams]);
 
-  /* Debounced Auto-Search */
+  /* ================= Search Logic ================= */
+
   const handleSearch = useCallback(() => {
     if (!all.length) return;
+
     setSearching(true);
+
     const normCat = normalize(cat);
     const normCity = normalize(city);
+
     const result = all.filter((b) => {
       if (normCat && !normalize(b.category).includes(normCat)) return false;
-      if (normCity && !normalize(b.address?.city || "").startsWith(normCity))
+      if (
+        normCity &&
+        !normalize(b.address?.city || "").startsWith(normCity)
+      )
         return false;
       return true;
     });
+
     setFiltered(result);
     setSearched(true);
+    setPage(1); // 🔧 תמיד לחזור לעמוד 1 אחרי חיפוש
+
     setTimeout(() => setSearching(false), 300);
   }, [all, cat, city]);
 
+  /* ================= Initial Search (CRITICAL FIX) ================= */
+  // 🔧 מונע מצב "נתקע" בלי תוצאות
   useEffect(() => {
-    const timeout = setTimeout(() => handleSearch(), DEBOUNCE_DELAY);
-    return () => clearTimeout(timeout);
-  }, [cat, city, handleSearch]);
+    if (!loading && all.length) {
+      handleSearch();
+    }
+  }, [loading, all, handleSearch]);
 
-  /* Pagination */
+  /* ================= Debounced Search ================= */
+  useEffect(() => {
+    if (loading) return;
+
+    const timeout = setTimeout(() => {
+      handleSearch();
+    }, DEBOUNCE_DELAY);
+
+    return () => clearTimeout(timeout);
+  }, [cat, city, handleSearch, loading]);
+
+  /* ================= Pagination ================= */
+
   const start = (page - 1) * ITEMS_PER_PAGE;
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  /* SEO meta */
+  /* ================= SEO ================= */
+
   const seoTitle =
     cat || city
       ? `${cat || ""}${cat && city ? " – " : ""}${city || ""} | Search | Bizuply`
       : "Business Search | Bizuply";
+
+  /* ================= Render ================= */
 
   return (
     <div className="list-page">
@@ -118,7 +181,7 @@ export default function SearchBusinesses() {
       <div className="business-list-container">
         <h1>Find Businesses</h1>
 
-        {/* 🔍 Filters */}
+        {/* ===== Filters ===== */}
         <div
           style={{
             display: "flex",
@@ -129,7 +192,7 @@ export default function SearchBusinesses() {
             marginBottom: "1.5rem",
           }}
         >
-          {/* 🏙 City */}
+          {/* City */}
           <div style={{ width: "250px" }}>
             <CityAutocomplete
               value={city}
@@ -139,7 +202,7 @@ export default function SearchBusinesses() {
             />
           </div>
 
-          {/* 💼 Category */}
+          {/* Category */}
           <div style={{ width: "250px" }}>
             <Select
               options={categoryOptions}
@@ -160,14 +223,12 @@ export default function SearchBusinesses() {
           </div>
         </div>
 
-        {/* 🧩 Results */}
+        {/* ===== Results ===== */}
         <div className="business-list">
           {loading || searching ? (
-            Array(ITEMS_PER_PAGE)
-              .fill()
-              .map((_, i) => <BusinessCardSkeleton key={i} />)
-          ) : !searched ? (
-            <p className="no-search">Start typing to see results 👇</p>
+            Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+              <BusinessCardSkeleton key={i} />
+            ))
           ) : pageItems.length > 0 ? (
             pageItems.map((b) => (
               <BusinessCard
@@ -178,13 +239,14 @@ export default function SearchBusinesses() {
             ))
           ) : (
             <p className="no-results">
-              No businesses found {city && `in ${city}`}{" "}
-              {cat && `for ${cat.toLowerCase()}`} yet.
+              No businesses found
+              {city && ` in ${city}`}
+              {cat && ` for ${cat.toLowerCase()}`}.
             </p>
           )}
         </div>
 
-        {/* ⏩ Pagination */}
+        {/* ===== Pagination ===== */}
         {searched && totalPages > 1 && (
           <div className="pagination">
             <button
@@ -197,7 +259,9 @@ export default function SearchBusinesses() {
               {page} of {totalPages}
             </span>
             <button
-              onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+              onClick={() =>
+                setPage((p) => Math.min(p + 1, totalPages))
+              }
               disabled={page === totalPages}
             >
               Next
