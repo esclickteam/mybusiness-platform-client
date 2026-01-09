@@ -1,7 +1,10 @@
 export default function ScrollStory() {
   return (
     <section className="scroll-story">
-      {/* Step 1 */}
+
+      {/* =====================
+          Step 1 – Left
+         ===================== */}
       <div className="step step-left">
         <div className="step-inner">
           <span className="step-label">PLATFORM</span>
@@ -13,7 +16,9 @@ export default function ScrollStory() {
         </div>
       </div>
 
-      {/* Step 2 */}
+      {/* =====================
+          Step 2 – Right
+         ===================== */}
       <div className="step step-right">
         <div className="step-inner">
           <span className="step-label">WORK TOGETHER</span>
@@ -25,7 +30,9 @@ export default function ScrollStory() {
         </div>
       </div>
 
-      {/* Step 3 */}
+      {/* =====================
+          Step 3 – Left
+         ===================== */}
       <div className="step step-left">
         <div className="step-inner">
           <span className="step-label">GROW SMART</span>
@@ -36,6 +43,7 @@ export default function ScrollStory() {
           </p>
         </div>
       </div>
+
     </section>
   );
 }
