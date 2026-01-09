@@ -1,10 +1,10 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import HeroSection from "../components/home/HeroSection";
-import ScrollStory from "../components/home/ScrollStory";
-import WhyBizUply from "../components/home/WhyBizUply";
-import FAQMini from "../components/home/FAQMini";
-import FinalCTA from "../components/home/FinalCTA";
+import HeroSection from "../components/HeroSection";
+import ScrollStory from "../components/ScrollStory";
+import WhyBizUply from "../components/WhyBizUply";
+import FAQMini from "../components/FAQMini";
+import FinalCTA from "../components/FinalCTA";
 import "../styles/Home.css";
 
 
