@@ -215,7 +215,7 @@
 
 .step-visual img {
   width: 100%;
-  max-width: 520px;
+  max-width: 620px;
   height: auto;
   object-fit: contain !important; /* מבטיח שהתמונה לא תחתך */
   border-radius: 22px;
