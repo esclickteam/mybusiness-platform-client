@@ -412,8 +412,7 @@ export default function App() {
                     }
                   />
 
-                  <Route path="*" element={<div>Page not found</div>} />
-
+                  <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
 
                 {/* Global AI modal & notifications */}
