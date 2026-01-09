@@ -6,7 +6,8 @@
   --brand-purple: #5B4CF5;
   --brand-purple-hover: #4B3DE0;
   --brand-cyan: #22D3EE; /* Salesforce-like accent */
-  --brand-cyan-strong: #0891B2; /* cyan-600 */
+   --brand-cyan-strong: #0891B2; /* cyan-600 */
+
 
   /* =========================
      Text – Light backgrounds
@@ -62,32 +63,13 @@
 .hero {
   padding-top: 140px;
   padding-bottom: 140px;
+  text-align: center;
   background: linear-gradient(
     180deg,
     var(--hero-bg-start) 0%,
     var(--hero-bg-mid) 45%,
     var(--hero-bg-end) 100%
   );
-}
-
-.hero-inner {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  align-items: center;
-  gap: 64px;
-}
-
-.hero-content {
-  text-align: left;
-}
-
-.hero-eyebrow {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--brand-cyan);
-  margin-bottom: 16px;
 }
 
 .hero h1 {
@@ -103,16 +85,17 @@
   color: var(--brand-cyan);
 }
 
-.hero-description {
+.hero p {
   font-size: 18px;
   line-height: 1.6;
   color: var(--text-on-dark-muted);
-  max-width: 560px;
-  margin-bottom: 40px;
+  max-width: 680px;
+  margin: 0 auto 40px;
 }
 
 .hero-actions {
   display: flex;
+  justify-content: center;
   gap: 16px;
 }
 
@@ -120,25 +103,6 @@
   margin-top: 16px;
   font-size: 14px;
   color: var(--text-on-dark-muted);
-}
-
-/* ===== Hero Visual ===== */
-.hero-visual {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.hero-mockup img {
-  width: 100%;
-  max-width: 560px;
-  height: auto;
-  border-radius: 28px;
-  background: #ffffff;
-  padding: 28px;
-  box-shadow:
-    0 24px 64px rgba(15, 23, 42, 0.25),
-    0 8px 24px rgba(15, 23, 42, 0.15);
 }
 
 /* ===== Buttons ===== */
@@ -173,61 +137,39 @@
   border-color: rgba(255, 255, 255, 0.6);
 }
 
-/* ===== Scroll Story ===== */
+/* ===== Scroll Story – Alternating Layout ===== */
 .scroll-story {
   display: flex;
   flex-direction: column;
-  gap: 160px;
+  gap: 140px;
   background: var(--bg-soft);
-  padding-top: 140px;
-  padding-bottom: 140px;
+  padding-top: 120px;
+  padding-bottom: 120px;
 }
 
-/* שלב */
+/* כל שלב */
 .step {
-  width: 100%;
-}
-
-/* שלב עם ויזואל */
-.step-with-visual {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  gap: 64px;
-}
-
-/* שמאל / ימין */
-.step-left .step-with-visual {
-  grid-template-columns: 1fr 1fr;
-}
-
-.step-right .step-with-visual {
-  grid-template-columns: 1fr 1fr;
-}
-
-.step-content {
-  max-width: 520px;
-}
-
-.step-visual {
   display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.step-visual img {
   width: 100%;
-  max-width: 520px;
-  height: auto;
-  border-radius: 24px;
-  background: #ffffff;
-  padding: 24px;
-  box-shadow:
-    0 20px 60px rgba(15, 23, 42, 0.12),
-    0 8px 24px rgba(15, 23, 42, 0.08);
 }
 
-/* Label */
+/* שמאל */
+.step-left {
+  justify-content: flex-start;
+}
+
+/* ימין */
+.step-right {
+  justify-content: flex-end;
+}
+
+/* התוכן עצמו */
+.step-inner {
+  max-width: 640px;
+  text-align: left;
+}
+
+/* Label קטן (Enterprise style) */
 .step-label {
   display: inline-block;
   font-size: 12px;
@@ -253,6 +195,8 @@
   margin: 0;
   color: var(--text-muted);
 }
+
+
 
 /* ===== Why ===== */
 .why {
@@ -328,30 +272,4 @@
 .btn-lg {
   padding: 16px 36px;
   font-size: 16px;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 900px) {
-  .hero-inner {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .hero-content {
-    text-align: center;
-  }
-
-  .hero-actions {
-    justify-content: center;
-  }
-
-  .step-with-visual {
-    grid-template-columns: 1fr;
-    gap: 48px;
-    text-align: center;
-  }
-
-  .step-content {
-    margin: 0 auto;
-  }
 }
