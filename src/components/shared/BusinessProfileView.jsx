@@ -8,38 +8,15 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import "react-calendar/dist/Calendar.css";
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
 import "./BusinessProfileView.css";
+import ReviewCard from "../../components/ReviewCard";
+
 
 const ReviewForm = lazy(() => import("../../pages/business/dashboardPages/buildTabs/ReviewForm"));
 const ServicesSelector = lazy(() => import("../ServicesSelector"));
 const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar"));
 
-const ratingLabels = {
-  cleanliness: "Cleanliness",
-  punctuality: "Punctuality",
-  professionalism: "Professionalism",
-  professional: "Professionalism",
-  communication: "Communication",
-  value: "Value for money",
-  service: "Service",
-  goal: "Goal",
-  experience: "Experience",
-  timing: "Timing",
-  availability: "Availability",
-};
 
-function StarDisplay({ rating }) {
-  const fullStars = Math.floor(rating);
-  const halfStar = rating - fullStars >= 0.5;
-  const stars = [];
 
-  for (let i = 0; i < fullStars; i++) {
-    stars.push(<span key={i}>⭐</span>);
-  }
-  if (halfStar) {
-    stars.push(<span key="half">⭐</span>);
-  }
-  return <>{stars}</>;
-}
 
 function useOnScreen(ref) {
   const [isVisible, setIsVisible] = useState(false);
@@ -84,7 +61,6 @@ export default function BusinessProfileView() {
   const [selectedService, setSelectedService] = useState(null);
   const [profileViewsCount, setProfileViewsCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [expandedReviews, setExpandedReviews] = useState({});
 
   // Queries
   const { data, isLoading, error, refetch } = useQuery({
@@ -237,12 +213,7 @@ useEffect(() => {
     }
   };
 
-  const toggleReviewDetails = (id) => {
-    setExpandedReviews((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+
 
   // Refs and onScreen hooks for lazy loading tab content
   const galleryRef = useRef(null);
@@ -433,64 +404,14 @@ const isOwner =
 
                 <div className="latest-reviews" style={{ marginTop: "2rem" }}>
                   {sortedReviews.length ? (
-                    sortedReviews.slice(0, 2).map((r, i) => {
-                      const avg = r.rating || r.averageScore || 0;
-                      const dateStr = new Date(r.createdAt || r.date).toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "numeric",
-                        year: "numeric",
-                      });
-                      const isExpanded = expandedReviews[r._id || i] || false;
+                    sortedReviews.slice(0, 2).map((r, i) => (
+  <ReviewCard
+    key={r._id || i}
+    review={r}
+  />
+))
 
-                      return (
-                        <div key={r._id || i} className="review-card improved">
-                          <p><strong>⭐ Average Rating:</strong> {avg.toFixed(1)}</p>
-                          {r.comment && <p><strong>💬 Review:</strong> {r.comment}</p>}
-                          <p><strong>🗓️ Date:</strong> {dateStr}</p>
-                          {r.client && <p><strong>👤 By:</strong> {r.client.name}</p>}
 
-                          <button
-                            style={{
-                              marginTop: "8px",
-                              backgroundColor: "#c5a3ff",
-                              border: "none",
-                              borderRadius: "6px",
-                              padding: "6px 12px",
-                              cursor: "pointer",
-                              fontWeight: "bold",
-                              color: "#4a148c",
-                            }}
-                            onClick={() => toggleReviewDetails(r._id || i)}
-                            aria-expanded={isExpanded}
-                            aria-controls={`review-details-${r._id || i}`}
-                          >
-                            {isExpanded ? "Hide Rating Details 📋" : "View Rating Details 📋"}
-                          </button>
-
-                          {isExpanded && r.ratings && (
-                            <div
-                              id={`review-details-${r._id || i}`}
-                              className="rating-details"
-                              style={{ marginTop: "8px" }}
-                            >
-                              {Object.entries(r.ratings).map(([key, val]) => (
-                                <div
-                                  key={key}
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    fontSize: "0.9rem",
-                                  }}
-                                >
-                                  <span>{ratingLabels[key] || key}</span>
-                                  <span>{val.toFixed(1)} <StarDisplay rating={val} /></span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })
                   ) : (
                     <p className="no-data">No reviews yet</p>
                   )}
@@ -543,64 +464,15 @@ const isOwner =
                     )}
 
                     {sortedReviews.length ? (
-                      sortedReviews.map((r, i) => {
-                        const avg = r.rating || r.averageScore || 0;
-                        const dateStr = new Date(r.createdAt || r.date).toLocaleDateString("en-US", {
-                          day: "numeric",
-                          month: "numeric",
-                          year: "numeric",
-                        });
-                        const isExpanded = expandedReviews[r._id || i] || false;
+                      sortedReviews.map((r, i) => (
+  <ReviewCard
+    key={r._id || i}
+    review={r}
+  />
+))
 
-                        return (
-                          <div key={r._id || i} className="review-card improved">
-                            <p><strong>⭐ Average Rating:</strong> {avg.toFixed(1)}</p>
-                            {r.comment && <p><strong>💬 Review:</strong> {r.comment}</p>}
-                            <p><strong>🗓️ Date:</strong> {dateStr}</p>
-                            {r.client && <p><strong>👤 By:</strong> {r.client.name}</p>}
 
-                            <button
-                              style={{
-                                marginTop: "8px",
-                                backgroundColor: "#c5a3ff",
-                                border: "none",
-                                borderRadius: "6px",
-                                padding: "6px 12px",
-                                cursor: "pointer",
-                                fontWeight: "bold",
-                                color: "#4a148c",
-                              }}
-                              onClick={() => toggleReviewDetails(r._id || i)}
-                              aria-expanded={isExpanded}
-                              aria-controls={`review-details-full-${r._id || i}`}
-                            >
-                              {isExpanded ? "Hide Rating Details 📋" : "View Rating Details 📋"}
-                            </button>
 
-                            {isExpanded && r.ratings && (
-                              <div
-                                id={`review-details-full-${r._id || i}`}
-                                className="rating-details"
-                                style={{ marginTop: "8px" }}
-                              >
-                                {Object.entries(r.ratings).map(([key, val]) => (
-                                  <div
-                                    key={key}
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      fontSize: "0.9rem",
-                                    }}
-                                  >
-                                    <span>{ratingLabels[key] || key}</span>
-                                    <span>{val.toFixed(1)} <StarDisplay rating={val} /></span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })
                     ) : (
                       <p className="no-data">No reviews available</p>
                     )}
