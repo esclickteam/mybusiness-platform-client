@@ -174,7 +174,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: stretch; /* ⬅️ היה start או center */
-  gap: 72px;
+  gap: 64px;
 }
 
 
@@ -185,7 +185,7 @@
 .step-visual {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
 
   position: relative;
   overflow: visible !important;
