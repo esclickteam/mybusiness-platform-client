@@ -27,8 +27,8 @@
   /* =========================
      Backgrounds – Hero / Dark
      ========================= */
-  --hero-bg-start: #1E1B4B; /* indigo-950 */
-  --hero-bg-end: #0F172A;   /* slate-900 */
+ --hero-bg-start: #1E40AF; /* blue-800 */
+--hero-bg-end:   #1E3A8A; /* blue-900 */
 
   /* =========================
      Borders / Dividers
@@ -94,6 +94,12 @@
   gap: 16px;
 }
 
+.hero-note {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--text-on-dark-muted);
+}
+
 
 /* ===== Buttons ===== */
 .btn-primary {
@@ -138,19 +144,28 @@
 
 .scroll-story .step {
   max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* ⬅️ מיישר את כולם */
 }
 
+/* כותרות – אותו baseline */
 .scroll-story h3 {
   font-size: 28px;
   font-weight: 600;
-  margin-bottom: 12px;
+  line-height: 1.2;      /* ⬅️ קריטי */
+  margin: 0 0 12px;      /* ⬅️ מבטל סטיות */
   color: var(--text-main);
 }
 
+/* טקסט – אותו גובה שורה */
 .scroll-story p {
-  color: var(--text-muted);
   font-size: 17px;
+  line-height: 1.6;      /* ⬅️ אחידות */
+  margin: 0;             /* ⬅️ חשוב */
+  color: var(--text-muted);
 }
+
 
 /* ===== Why ===== */
 .why {

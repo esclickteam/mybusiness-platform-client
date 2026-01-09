@@ -22,6 +22,10 @@ export default function HeroSection() {
           How it works
         </Link>
       </div>
+
+      <p className="hero-note">
+        14-day free trial · No credit card · No commitment
+      </p>
     </section>
   );
 }
