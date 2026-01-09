@@ -495,14 +495,15 @@ useEffect(() => {
 
       // 🏠 ניתוב ברירת מחדל
       if (
-        freshUser.role === "business" &&
-        freshUser.businessId &&
-        location.pathname === "/"
-      ) {
-        navigate(`/business/${freshUser.businessId}/dashboard`, {
-          replace: true,
-        });
-      }
+  freshUser.role === "business" &&
+  freshUser.businessId &&
+  !location.pathname.startsWith("/business/")
+) {
+  navigate(`/business/${freshUser.businessId}/dashboard`, {
+    replace: true,
+  });
+}
+
     } catch (err) {
   console.error("❌ Auth init failed:", err);
   await logout();
