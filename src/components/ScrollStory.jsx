@@ -19,7 +19,7 @@ export default function ScrollStory() {
           <div className="step-visual">
             <img
               className="step-visual-img"
-              src="/images/hero-business-page.png"
+              src="/images/business-page.png"
               alt="Business page preview"
               loading="lazy"
             />
