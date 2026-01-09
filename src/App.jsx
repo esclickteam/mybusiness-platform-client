@@ -161,7 +161,26 @@ export default function App() {
         >
 
                 <Routes location={location} key={location.pathname}>
-                  <Route path="/" element={<HomePage />} />
+                  <Route
+  path="/"
+  element={
+    user ? (
+      user.role === "business" && user.businessId ? (
+        <Navigate
+          to={`/business/${user.businessId}/dashboard`}
+          replace
+        />
+      ) : user.role === "admin" ? (
+        <Navigate to="/admin/dashboard" replace />
+      ) : (
+        <HomePage />
+      )
+    ) : (
+      <HomePage />
+    )
+  }
+/>
+
                   <Route path="/about" element={<About />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/search" element={<SearchBusinesses />} />
