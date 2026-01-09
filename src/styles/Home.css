@@ -172,7 +172,7 @@
 
 .step-with-visual {
   display: grid;
-  grid-template-columns: 1fr 1.4fr;
+  grid-template-columns: 1fr 1fr;
   align-items: stretch; /* ⬅️ היה start או center */
   gap: 72px;
 }
@@ -186,34 +186,45 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
+
   position: relative;
   overflow: visible !important;
+
   height: auto !important;
-  min-height: unset !important; /* ⬅️ חשוב */
+  min-height: unset !important;
+
+  /* UX depth – image steps back */
+  transform: translateY(6px) scale(0.96);
+  opacity: 0.96;
 }
 
 .step-visual::after {
   content: "";
   position: absolute;
-  inset: -20px;
-  border-radius: 28px;
+
+  /* softer halo */
+  inset: -12px;
+  border-radius: 24px;
+
   background: radial-gradient(
     circle at center,
-    rgba(91, 76, 245, 0.08),
+    rgba(91, 76, 245, 0.06),
     transparent 70%
   );
+
   z-index: -1;
+  pointer-events: none;
 }
+
 
 .step-visual img {
   width: 100%;
-  max-width: 900px;
+  max-width: 460px;
   height: auto;
   object-fit: contain !important; /* מבטיח שהתמונה לא תחתך */
   border-radius: 22px;
   box-shadow:
-    0 30px 80px rgba(15, 23, 42, 0.18),
-    0 10px 24px rgba(15, 23, 42, 0.1);
+  0 18px 40px rgba(15, 23, 42, 0.14);
   background: none;
   padding: 0;
 }

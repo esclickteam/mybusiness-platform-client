@@ -2,7 +2,9 @@
 export default function ScrollStory() {
   return (
     <section className="scroll-story">
-      {/* Step 1 – Business Page + Visual */}
+      {/* =============================
+          Step 1 – Business Page
+      ============================== */}
       <div className="step step-left">
         <div className="step-inner step-with-visual">
           {/* TEXT */}
@@ -15,38 +17,47 @@ export default function ScrollStory() {
             </p>
           </div>
 
-          {/* VISUAL */}
+          {/* VISUAL (UX Preview, not Hero) */}
           <div className="step-visual">
             <img
               className="step-visual-img"
               src="/images/business-page.png"
               alt="Business page preview"
               loading="lazy"
+              decoding="async"
             />
           </div>
         </div>
       </div>
 
-      {/* Step 2 – Collaborations */}
+      {/* =============================
+          Step 2 – Collaborations
+      ============================== */}
       <div className="step step-right">
         <div className="step-inner">
-          <span className="step-label">WORK TOGETHER</span>
-          <h3>Collaborations</h3>
-          <p>
-            Work with partners and other businesses — messages, proposals and
-            shared activity.
-          </p>
+          <div className="step-content">
+            <span className="step-label">WORK TOGETHER</span>
+            <h3>Collaborations</h3>
+            <p>
+              Work with partners and other businesses — messages, proposals and
+              shared activity.
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Step 3 – CRM & AI */}
+      {/* =============================
+          Step 3 – CRM & AI
+      ============================== */}
       <div className="step step-left">
         <div className="step-inner">
-          <span className="step-label">GROW SMART</span>
-          <h3>CRM &amp; AI</h3>
-          <p>
-            Track clients, automate follow-ups and let AI guide your next move.
-          </p>
+          <div className="step-content">
+            <span className="step-label">GROW SMART</span>
+            <h3>CRM &amp; AI</h3>
+            <p>
+              Track clients, automate follow-ups and let AI guide your next move.
+            </p>
+          </div>
         </div>
       </div>
     </section>
