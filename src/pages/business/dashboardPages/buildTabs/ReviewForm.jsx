@@ -2,19 +2,50 @@ import React, { useState } from "react";
 import jwtDecode from "jwt-decode";
 import "./ReviewForm.css";
 
-const ratingFields = [
-  { key: "service", label: "🤝 Service" },
-  { key: "professional", label: "💼 Professionalism" },
+/* =========================
+   Rating configuration
+========================= */
+const PRIMARY_FIELDS = [
+  { key: "experience", label: "🎉 Overall experience", required: true },
+  { key: "service", label: "🤝 Service", required: true },
+  { key: "professional", label: "💼 Professionalism", required: true },
+];
+
+const OPTIONAL_FIELDS = [
   { key: "timing", label: "⏰ Timeliness" },
   { key: "availability", label: "📞 Availability" },
   { key: "value", label: "💰 Value for money" },
   { key: "goal", label: "🎯 Goal achievement" },
-  { key: "experience", label: "🎉 Overall experience" },
 ];
+
+/* =========================
+   Star Rating Component
+========================= */
+const StarRating = ({ value = 0, onChange }) => {
+  const [hover, setHover] = useState(0);
+
+  return (
+    <div className="star-rating">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <span
+          key={n}
+          className={`star ${n <= (hover || value) ? "filled" : ""}`}
+          onMouseEnter={() => setHover(n)}
+          onMouseLeave={() => setHover(0)}
+          onClick={() => onChange(n)}
+        >
+          ★
+        </span>
+      ))}
+      {value > 0 && <span className="star-value">{value.toFixed(1)}</span>}
+    </div>
+  );
+};
 
 const ReviewForm = ({ businessId, socket, onSuccess }) => {
   const [ratings, setRatings] = useState({});
   const [text, setText] = useState("");
+  const [showMore, setShowMore] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -22,66 +53,51 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
     setRatings((prev) => ({ ...prev, [key]: value }));
   };
 
-  // ✅ חישוב ממוצע רק משדות שנבחרו
-  const calculateAverage = () => {
-    const values = Object.values(ratings).filter(
-      (v) => typeof v === "number" && !isNaN(v)
-    );
-    if (!values.length) return "0.0";
-    const sum = values.reduce((a, b) => a + b, 0);
-    return (sum / values.length).toFixed(1);
-  };
+  /* =========================
+     Average (LIVE)
+  ========================= */
+  const average =
+    Object.values(ratings).length > 0
+      ? (
+          Object.values(ratings).reduce((a, b) => a + b, 0) /
+          Object.values(ratings).length
+        ).toFixed(1)
+      : "0.0";
 
+  const canSubmit = PRIMARY_FIELDS.every(
+    (f) => typeof ratings[f.key] === "number"
+  );
+
+  /* =========================
+     Submit
+  ========================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
+
     setIsSubmitting(true);
     setError(null);
 
     try {
       const token = localStorage.getItem("token");
-      if (!token) throw new Error("No auth token");
+      if (!token) throw new Error("Not authenticated");
 
       const decoded = jwtDecode(token);
-      const clientId = decoded.userId;
 
-      // ✅ מבנה תואם 1:1 ל־ReviewSchema
       const reviewData = {
-        business: businessId,
-        client: clientId,
         comment: text.trim(),
-
         ratings: {
-  service: ratings.service,
-  professionalism: ratings.professional,
-  timeliness: ratings.timing,
-  availability: ratings.availability,
-  valueForMoney: ratings.value,
-  goalAchievement: ratings.goal,
-  overall: ratings.experience,
-},
-
-        averageScore: Number(calculateAverage()),
+          service: ratings.service,
+          professionalism: ratings.professional,
+          timeliness: ratings.timing,
+          availability: ratings.availability,
+          valueForMoney: ratings.value,
+          goalAchievement: ratings.goal,
+          overall: ratings.experience,
+        },
       };
 
-      // 🔌 Socket path
-      if (socket && socket.connected) {
-        socket.emit("createReview", reviewData, (res) => {
-          if (!res?.ok) {
-            setError(res?.error || "Error submitting review");
-            setIsSubmitting(false);
-            return;
-          }
-
-          onSuccess?.(res.review);
-          setRatings({});
-          setText("");
-          setIsSubmitting(false);
-        });
-        return;
-      }
-
-      // 🌐 REST fallback
-      const response = await fetch(`/api/business/${businessId}/reviews`, {
+      const res = await fetch(`/api/business/${businessId}/reviews`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,62 +106,80 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
         body: JSON.stringify(reviewData),
       });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Error submitting review");
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Submit failed");
 
       onSuccess?.(data.review);
       setRatings({});
       setText("");
-      setIsSubmitting(false);
     } catch (err) {
       setError(err.message);
+    } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form className="review-form" onSubmit={handleSubmit}>
-      <h3>📝 Leave a review for the service</h3>
+    <form className="review-form improved" onSubmit={handleSubmit}>
+      <h3>📝 Leave a review</h3>
 
-      {ratingFields.map(({ key, label }) => (
+      {/* PRIMARY */}
+      {PRIMARY_FIELDS.map(({ key, label }) => (
         <div key={key} className="rating-row">
           <label>{label}</label>
-          <select
-            value={ratings[key] ?? ""}
-            onChange={(e) => handleRatingChange(key, Number(e.target.value))}
-            required
-          >
-            <option value="">Select rating</option>
-            {[5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1].map((n) => (
-              <option key={n} value={n}>
-                {"★".repeat(Math.round(n)) +
-                  "☆".repeat(5 - Math.round(n))}{" "}
-                ({n})
-              </option>
-            ))}
-          </select>
+          <StarRating
+            value={ratings[key] || 0}
+            onChange={(v) => handleRatingChange(key, v)}
+          />
         </div>
       ))}
 
-      <label>✍️ Review</label>
+      {/* OPTIONAL */}
+      <button
+        type="button"
+        className="toggle-more"
+        onClick={() => setShowMore((v) => !v)}
+      >
+        {showMore ? "Hide extra details" : "Add more details (optional)"}
+      </button>
+
+      {showMore &&
+        OPTIONAL_FIELDS.map(({ key, label }) => (
+          <div key={key} className="rating-row optional">
+            <label>{label}</label>
+            <StarRating
+              value={ratings[key] || 0}
+              onChange={(v) => handleRatingChange(key, v)}
+            />
+          </div>
+        ))}
+
+      {/* COMMENT */}
+      <label className="review-label">
+        ✍️ What stood out the most? <span>(optional)</span>
+      </label>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        rows="4"
-        placeholder="Write your experience with the service here..."
-        required
+        placeholder="Service, attitude, results…"
+        maxLength={300}
       />
+      <div className="char-count">{text.length} / 300</div>
 
-      <div className="average-score">
-        ⭐ Average score: {calculateAverage()} / 5
+      {/* AVERAGE */}
+      <div className="average-box">
+        ⭐ <strong>{average}</strong>
+        <span>Based on your ratings</span>
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Loading…" : "Submit Review"}
+      <button
+        type="submit"
+        className="submit-btn"
+        disabled={!canSubmit || isSubmitting}
+      >
+        {isSubmitting ? "Submitting…" : "Submit Review"}
       </button>
     </form>
   );
