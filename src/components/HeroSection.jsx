@@ -15,11 +15,11 @@ export default function HeroSection() {
       </p>
 
       <div className="hero-actions">
-        <Link to="/get-started" className="btn-primary">
+        <Link to="/register" className="btn-primary">
           Get started free
         </Link>
-        <Link to="/product" className="btn-ghost">
-          Watch demo
+        <Link to="/how-it-works" className="btn-ghost">
+          How it works
         </Link>
       </div>
     </section>
