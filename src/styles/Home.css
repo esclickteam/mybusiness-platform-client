@@ -171,10 +171,11 @@
 
 .step-with-visual {
   display: grid;
-  grid-template-columns: 1fr 1.4fr; /* ⬅️ יותר מקום לתמונה */
+  grid-template-columns: 0.9fr 1.6fr; /* ⬅️ נותן יותר מקום לתמונה */
   align-items: center;
   gap: 72px;
 }
+
 
 .step-content {
   text-align: left;
@@ -183,9 +184,9 @@
 .step-visual {
   display: flex;
   justify-content: center;
-  align-items: center; /* במקום flex-start */
+  align-items: center;
   position: relative;
-  overflow: visible; /* חשוב שלא ייחתך */
+  overflow: visible; /* כדי שלא ייחתך */
 }
 
 .step-visual::after {
@@ -203,13 +204,15 @@
 
 .step-visual img {
   width: 100%;
+  max-width: 820px; /* ⬅️ במקום 700px */
   height: auto;
-  max-width: 700px; /* או כמה שרוצים */
   border-radius: 22px;
   box-shadow:
     0 30px 80px rgba(15, 23, 42, 0.18),
     0 10px 24px rgba(15, 23, 42, 0.1);
-  object-fit: contain; /* ✅ תמונה תישמר בשלמות */
+  object-fit: contain;
+  background: none;
+  padding: 0;
 }
 
 
