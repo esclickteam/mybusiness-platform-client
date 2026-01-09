@@ -33,9 +33,13 @@ export default function ProtectedRoute({
   /* ===========================
      🚫 לא מחובר
   =========================== */
-  if (!user) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
+  if (!initialized) {
+  return null; // או loader
+}
+
+if (!user) {
+  return <Navigate to="/login" replace state={{ from: location }} />;
+}
 
   /* ===========================
      👑 Admin – BYPASS מוחלט
