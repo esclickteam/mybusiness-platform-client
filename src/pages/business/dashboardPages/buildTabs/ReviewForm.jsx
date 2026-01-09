@@ -51,14 +51,14 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
         comment: text.trim(),
 
         ratings: {
-          service: ratings.service,
-          professional: ratings.professional,
-          timing: ratings.timing,
-          availability: ratings.availability,
-          value: ratings.value,
-          goal: ratings.goal,
-          experience: ratings.experience,
-        },
+  service: ratings.service,
+  professionalism: ratings.professional,
+  timeliness: ratings.timing,
+  availability: ratings.availability,
+  valueForMoney: ratings.value,
+  goalAchievement: ratings.goal,
+  overall: ratings.experience,
+},
 
         averageScore: Number(calculateAverage()),
       };
