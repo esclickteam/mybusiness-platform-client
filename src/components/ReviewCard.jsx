@@ -1,110 +1,115 @@
 import React, { useState } from "react";
+import "./ReviewCard.css";
 
-const StarDisplay = ({ rating }) => {
+
+/* ===========================
+   ⭐ Star display (compact)
+=========================== */
+const StarDisplay = ({ rating, size = 14 }) => {
   const full = Math.floor(rating);
   const half = rating % 1 >= 0.5;
   const stars = [];
+
   for (let i = 0; i < full; i++) stars.push("★");
-  if (half) stars.push("✩");
+  if (half) stars.push("☆");
   while (stars.length < 5) stars.push("☆");
+
   return (
-    <span style={{ color: "#f5a623", fontSize: "1.2rem" }}>{stars.join("")}</span>
+    <span style={{ color: "#f59e0b", fontSize: size }}>
+      {stars.join("")}
+    </span>
   );
 };
 
-// Rating field labels in English with icons
+/* ===========================
+   Labels
+=========================== */
 const ratingLabels = {
   service: "Service 🤝",
-  professional: "Professionalism 💼",
-  timing: "Punctuality ⏰",
+  professionalism: "Professionalism 💼",
+  timeliness: "Timeliness ⏰",
   availability: "Availability 📞",
-  value: "Value for Money 💰",
-  goal: "Goal Achievement 🎯",
-  experience: "Overall Experience 🎉",
+  valueForMoney: "Value for money 💰",
+  goalAchievement: "Goal achievement 🎯",
+  overall: "Overall experience 🎉",
 };
 
+/* ===========================
+   Review Card
+=========================== */
 export default function ReviewCard({ review }) {
   const [showDetails, setShowDetails] = useState(false);
-
   if (!review) return null;
+
+  const ratings = review.ratings || {};
 
   const average =
     typeof review.averageScore === "number"
       ? review.averageScore
-      : review.ratings
-      ? Object.values(review.ratings).reduce((a, b) => a + b, 0) /
-        Object.values(review.ratings).length
+      : Object.values(ratings).length
+      ? Object.values(ratings).reduce((a, b) => a + b, 0) /
+        Object.values(ratings).length
       : 0;
 
   const date = review.createdAt
-    ? new Date(review.createdAt).toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "numeric",
-        year: "numeric",
-      })
+    ? new Date(review.createdAt).toLocaleDateString("en-US")
     : "Unknown";
 
   return (
-    <div
-      style={{
-        borderLeft: "5px solid #9b59b6",
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
-        background: "#fff",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        fontFamily: "'Arial', sans-serif",
-        lineHeight: 1.5,
-      }}
-    >
-      <div style={{ marginBottom: 8, fontWeight: "bold", fontSize: "1.1rem" }}>
-        Average Rating: {average.toFixed(1)} <StarDisplay rating={average} />
+    <div className="review-card">
+      {/* ===== Header ===== */}
+      <div className="review-header">
+        <div className="review-average">
+          ⭐ {average.toFixed(1)}
+        </div>
+
+        <div className="review-meta">
+          <StarDisplay rating={average} size={16} />
+          <div className="review-date">{date}</div>
+        </div>
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        <strong>Review:</strong> {review.comment || review.text || "—"}
+      {/* ===== Comment ===== */}
+      {review.comment && (
+        <div className="review-comment">
+          “{review.comment}”
+        </div>
+      )}
+
+      {/* ===== Author ===== */}
+      <div className="review-author">
+        — {review.client?.name || review.client || "Anonymous"}
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        <strong>Date:</strong> {date}
-      </div>
+      {/* ===== Toggle ===== */}
+      {Object.keys(ratings).length > 0 && (
+        <button
+          className="review-toggle"
+          onClick={() => setShowDetails(!showDetails)}
+        >
+          {showDetails ? "Hide rating details" : "Show rating details"}
+        </button>
+      )}
 
-      <div style={{ marginBottom: 12 }}>
-        <strong>By:</strong> {review.client?.name || review.client || "Anonymous"}
-      </div>
+      {/* ===== Details ===== */}
+      {showDetails && (
+        <div className="rating-details">
+          {Object.entries(ratings).map(([key, val]) => (
+            <div key={key} className="rating-row">
+              <div className="rating-label">
+                {ratingLabels[key] || key}
+              </div>
 
-      <button
-        onClick={() => setShowDetails(!showDetails)}
-        style={{
-          background: "#9b59b6",
-          color: "white",
-          border: "none",
-          borderRadius: 5,
-          padding: "6px 12px",
-          cursor: "pointer",
-          marginBottom: 10,
-        }}
-      >
-        {showDetails ? "Hide Rating Details" : "📋 Show Rating Details"}
-      </button>
+              <div className="rating-bar">
+                <div
+                  className="rating-bar-fill"
+                  style={{ width: `${(val / 5) * 100}%` }}
+                />
+              </div>
 
-      {showDetails && review.ratings && (
-        <div style={{ borderTop: "1px solid #eee", paddingTop: 8 }}>
-          {Object.entries(review.ratings).map(([key, val]) => (
-            <div
-              key={key}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: 4,
-                fontSize: "0.95rem",
-                direction: "ltr",
-              }}
-            >
-              <span>{ratingLabels[key] || key}</span>
-              <span>
-                {val} <StarDisplay rating={val} />
-              </span>
+              <div className="rating-value">
+                {val.toFixed(1)}
+              </div>
             </div>
           ))}
         </div>

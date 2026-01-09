@@ -1,0 +1,98 @@
+.review-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.review-average {
+  font-size: 32px;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.review-meta {
+  text-align: right;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.review-date {
+  margin-top: 4px;
+}
+
+.review-comment {
+  font-size: 15px;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.review-author {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.review-toggle {
+  background: transparent;
+  border: none;
+  color: #7c3aed;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 8px;
+}
+
+.review-toggle:hover {
+  text-decoration: underline;
+}
+
+/* ===== Rating details ===== */
+
+.rating-details {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rating-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+}
+
+.rating-label {
+  font-size: 14px;
+  color: #374151;
+}
+
+.rating-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.rating-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.rating-value {
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+}
