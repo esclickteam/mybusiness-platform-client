@@ -183,8 +183,9 @@
 .step-visual {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* ⬅️ חשוב */
+  align-items: center; /* במקום flex-start */
   position: relative;
+  overflow: visible; /* חשוב שלא ייחתך */
 }
 
 .step-visual::after {
@@ -203,13 +204,12 @@
 .step-visual img {
   width: 100%;
   height: auto;
+  max-width: 700px; /* או כמה שרוצים */
   border-radius: 22px;
   box-shadow:
     0 30px 80px rgba(15, 23, 42, 0.18),
     0 10px 24px rgba(15, 23, 42, 0.1);
-
-  background: none;   /* ⬅️ חשוב */
-  padding: 0;         /* ⬅️ חשוב */
+  object-fit: contain; /* ✅ תמונה תישמר בשלמות */
 }
 
 
