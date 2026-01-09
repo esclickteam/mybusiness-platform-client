@@ -147,17 +147,9 @@
   padding: 140px 0;
 }
 
-/* הקו האנכי שמחבר את השלבים */
-.scroll-story::before {
+.step::after {
   content: "";
-  position: absolute;
-  top: 8%;
-  bottom: 8%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  background: var(--border-soft);
-  opacity: 0.5;
+  flex: 1;
 }
 
 /* כל שלב */
@@ -170,19 +162,30 @@
 /* שמאל */
 .step-left {
   justify-content: flex-start;
-  padding-left: 24px;
+  padding-left: 0;
 }
 
-/* ימין */
 .step-right {
   justify-content: flex-end;
-  padding-right: 24px;
+  padding-right: 0;
 }
 
 /* תוכן של שלב */
 .step-inner {
   max-width: 640px;
   text-align: left;
+  position: relative;
+  padding-left: 24px;
+}
+
+.step-inner::before {
+  width: 3px;
+  height: 40px;
+  background: linear-gradient(
+    180deg,
+    var(--brand-cyan-strong),
+    rgba(8, 145, 178, 0.25)
+  );
 }
 
 /* Label קטן (Enterprise style) */
@@ -211,24 +214,6 @@
   margin: 0;
   color: var(--text-muted);
 }
-
-/* מובייל – הכל באמצע */
-@media (max-width: 768px) {
-  .scroll-story::before {
-    display: none;
-  }
-
-  .step {
-    justify-content: center;
-    padding: 0;
-  }
-
-  .step-inner {
-    max-width: 100%;
-    text-align: left;
-  }
-}
-
 
 
 
