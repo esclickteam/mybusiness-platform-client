@@ -151,6 +151,19 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+    /* ============================
+     ⏳ Trial Day Calculation
+  ============================ */
+  const DAY = 1000 * 60 * 60 * 24;
+
+  const daysSinceTrialStart = user?.trialStartedAt
+    ? Math.floor(
+        (Date.now() - new Date(user.trialStartedAt).getTime()) / DAY
+      )
+    : 0;
+
+  const isAfterDay4 = daysSinceTrialStart >= 4;
+
   if (loading) return null;
 
   /* ============================
@@ -253,7 +266,10 @@ export default function BusinessDashboardLayout() {
                   )}
                 </div>
 
-                {user?.isEarlyBirdActive && !hideEarlyBirdBanner && (
+                {user?.isEarlyBirdActive &&
+  isAfterDay4 &&
+  !hideEarlyBirdBanner && (
+
                   <div className="dashboard-layout-header-center">
                     <div className="earlybird-header-banner">
 
