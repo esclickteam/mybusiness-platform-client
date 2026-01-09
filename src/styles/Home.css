@@ -194,20 +194,26 @@
   min-height: unset !important;
 
   /* UX depth – image steps back */
-    transform: translateY(4px) scale(0.97);
-
-  opacity: 1;
-
+  transform: translateY(6px) scale(0.96);
+  opacity: 0.96;
 }
 
 .step-visual::after {
   content: "";
   position: absolute;
-  inset: -10px;
+
+  /* softer halo */
+  inset: -12px;
   border-radius: 24px;
-  background: #ffffff;
-  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.04);
+
+  background: radial-gradient(
+    circle at center,
+    rgba(91, 76, 245, 0.06),
+    transparent 70%
+  );
+
   z-index: -1;
+  pointer-events: none;
 }
 
 
@@ -217,7 +223,8 @@
   height: auto;
   object-fit: contain !important; /* מבטיח שהתמונה לא תחתך */
   border-radius: 22px;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  box-shadow:
+  0 18px 40px rgba(15, 23, 42, 0.14);
   background: none;
   padding: 0;
 }
