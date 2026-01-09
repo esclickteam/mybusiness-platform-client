@@ -183,7 +183,8 @@
 .step-visual {
   display: flex;
   justify-content: center;
-  position: relative; /* ⬅️ זה כל העדכון */
+  align-items: flex-start; /* ⬅️ חשוב */
+  position: relative;
 }
 
 .step-visual::after {
