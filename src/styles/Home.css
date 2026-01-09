@@ -137,25 +137,41 @@
   color: var(--text-muted);
 }
 
-/* ===== FAQ Mini ===== */
+/* ===== FAQ Mini (Center aligned) ===== */
 .faq-mini {
-  background: var(--bg-main);
+  text-align: center;
 }
 
 .faq-mini details {
   max-width: 720px;
-  margin: 0 auto 16px;
+  margin: 0 auto 20px;
 }
 
 .faq-mini summary {
+  list-style: none;            /* מסיר marker דיפולטי */
   font-weight: 600;
   cursor: pointer;
   color: var(--text-main);
+  text-align: center;
+}
+
+/* Marker מותאם אישית */
+.faq-mini summary::before {
+  content: "▶";
+  display: inline-block;
+  margin-right: 8px;
+  transition: transform 0.2s ease;
+}
+
+.faq-mini details[open] summary::before {
+  transform: rotate(90deg);
 }
 
 .faq-mini p {
   color: var(--text-muted);
+  margin-top: 12px;
 }
+
 
 /* ===== Final CTA ===== */
 .final-cta {
