@@ -129,6 +129,11 @@ const DashboardPage = () => {
   } = useAuth();
   const { businessId } = useParams();
 
+  const EARLY_BIRD_KEY = user?.userId
+  ? `earlyBirdSeen_${user.userId}`
+  : null;
+
+
 
   /* 🎨 הפעלה מיידית של ה־theme לעסקים */
   useEffect(() => {
@@ -166,27 +171,29 @@ const DashboardPage = () => {
   const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(false);
 
   useEffect(() => {
-  if (!initialized || !user) return;
+  if (!initialized || !user || !EARLY_BIRD_KEY) return;
 
   // כבר ראה → לא להציג שוב
-  if (localStorage.getItem("seen_upgrade_offer") === "true") return;
+  if (localStorage.getItem(EARLY_BIRD_KEY) === "true") return;
 
-  // רק לעסק בטריאל
+  // רק לטריאל
   if (user.subscriptionPlan !== "trial" || user.hasPaid) return;
 
   const startDate =
-  user.trialStartedAt || user.businessCreatedAt || user.createdAt;
+    user.trialStartedAt || user.businessCreatedAt || user.createdAt;
 
   if (!startDate) return;
 
-const daysPassed =
-  (Date.now() - new Date(startDate).getTime()) /
-  (1000 * 60 * 60 * 24);
+  const daysPassed =
+    (Date.now() - new Date(startDate).getTime()) /
+    (1000 * 60 * 60 * 24);
 
-  if (daysPassed >= 4) {
-    setShowEarlyBirdModal(true);
-  }
-}, [initialized, user]);
+  if (daysPassed >= 4 && !showEarlyBirdModal) {
+  setShowEarlyBirdModal(true);
+}
+}, [initialized, user?.userId, EARLY_BIRD_KEY, showEarlyBirdModal]);
+
+
 
 
 
@@ -212,7 +219,7 @@ const daysPassed =
     ) {
       navigate(`/business/${user.businessId}/dashboard`, { replace: true });
     }
-  }, [initialized, user, location.pathname, navigate]);
+}, [initialized, user?.role, user?.businessId, location.pathname, navigate]);
 
   /* ?paid=1 polling */
   useEffect(() => {
@@ -507,7 +514,9 @@ sock.on("newReview", (reviewData) => {
 const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
 
-  localStorage.setItem("seen_upgrade_offer", "true");
+  if (EARLY_BIRD_KEY) {
+    localStorage.setItem(EARLY_BIRD_KEY, "true");
+  }
   setShowEarlyBirdModal(false);
 
   try {
@@ -638,9 +647,12 @@ const shouldShowEarlyBirdModal = showEarlyBirdModal;
   <UpgradeOfferCard
     expiresAt={user.earlyBirdExpiresAt}
     onUpgrade={handleEarlyBirdUpgrade}
+
     onClose={() => {
-      localStorage.setItem("seen_upgrade_offer", "true");
-      setShowEarlyBirdModal(false);
+  if (EARLY_BIRD_KEY) {
+    localStorage.setItem(EARLY_BIRD_KEY, "true");
+  }
+  setShowEarlyBirdModal(false);
     }}
   />
 )}
