@@ -171,10 +171,10 @@
 }
 
 .step-with-visual {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: stretch; /* ⬅️ היה start או center */
-  gap: 64px;
+  display: grid;              /* ⬅️ קריטי */
+  grid-template-columns: 0.95fr 1.05fr;
+  align-items: center;
+  gap: 72px;
 }
 
 
@@ -200,30 +200,38 @@
 
 .step-visual::after {
   content: "";
-  position: absolute;
-  inset: -8px;
-  border-radius: 24px;
+  position: absolute;         /* ⬅️ קריטי */
+  inset: -24px;
+  border-radius: 32px;
   background: radial-gradient(
     circle at center,
-    rgba(15, 23, 42, 0.04),
-    transparent 75%
+    rgba(15, 23, 42, 0.06),
+    transparent 70%
   );
   z-index: -1;
-  pointer-events: none;
 }
 
 
 .step-visual img {
   width: 100%;
-  max-width: 620px;
+  max-width: 760px; /* ⬅️ הגדלה אמיתית */
   height: auto;
-  object-fit: contain !important; /* מבטיח שהתמונה לא תחתך */
+  object-fit: contain !important;
   border-radius: 22px;
+
   box-shadow:
-  0 12px 24px rgba(15, 23, 42, 0.12),
-  0 2px 6px rgba(15, 23, 42, 0.06);
+    0 24px 60px rgba(15, 23, 42, 0.18),
+    0 6px 16px rgba(15, 23, 42, 0.08);
+
   background: #ffffff;
-  padding: 0;
+}
+
+.step-right .step-visual {
+  margin-right: -80px;
+}
+
+.step-left .step-visual {
+  margin-left: -80px;
 }
 
 
