@@ -1,15 +1,12 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./ClientHeader.css";
 
 const ClientHeader = () => {
-  const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/login");
+    await logout(); // ✅ logout כבר עושה navigate ל-login ומנקה הכל
   };
 
   return (
