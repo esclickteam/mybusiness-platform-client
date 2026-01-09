@@ -137,24 +137,18 @@
   border-color: rgba(255, 255, 255, 0.6);
 }
 
-/* ===== Scroll Story – Salesforce-style Alternating ===== */
+/* ===== Scroll Story – Alternating Layout ===== */
 .scroll-story {
-  position: relative;
   display: flex;
   flex-direction: column;
   gap: 140px;
   background: var(--bg-soft);
-  padding: 140px 0;
-}
-
-.step::after {
-  content: "";
-  flex: 1;
+  padding-top: 120px;
+  padding-bottom: 120px;
 }
 
 /* כל שלב */
 .step {
-  position: relative;
   display: flex;
   width: 100%;
 }
@@ -162,30 +156,17 @@
 /* שמאל */
 .step-left {
   justify-content: flex-start;
-  padding-left: 0;
 }
 
+/* ימין */
 .step-right {
   justify-content: flex-end;
-  padding-right: 0;
 }
 
-/* תוכן של שלב */
+/* התוכן עצמו */
 .step-inner {
   max-width: 640px;
   text-align: left;
-  position: relative;
-  padding-left: 24px;
-}
-
-.step-inner::before {
-  width: 3px;
-  height: 40px;
-  background: linear-gradient(
-    180deg,
-    var(--brand-cyan-strong),
-    rgba(8, 145, 178, 0.25)
-  );
 }
 
 /* Label קטן (Enterprise style) */
