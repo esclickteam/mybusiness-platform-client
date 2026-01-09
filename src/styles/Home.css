@@ -171,6 +171,15 @@
   color: var(--text-muted);
 }
 
+.step-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--brand-cyan);
+  margin-bottom: 12px;
+}
+
 
 /* ===== Why ===== */
 .why {
