@@ -508,10 +508,15 @@ window.dispatchEvent(new Event("business-profile-updated"));
 
   // ===== TOP BAR =====
   const renderTopBar = () => {
-  const avg = businessDetails.reviews.length
-    ? businessDetails.reviews.reduce((sum, r) => sum + r.rating, 0) /
-      businessDetails.reviews.length
-    : 0;
+  const avg =
+    businessDetails?.rating != null
+      ? Math.round(Number(businessDetails.rating) * 10) / 10
+      : 0;
+
+  const reviewsCount =
+    businessDetails?.reviewsCount != null
+      ? Number(businessDetails.reviewsCount)
+      : businessDetails.reviews.length;
 
   return (
     <div className="topbar-preview">
@@ -527,12 +532,18 @@ window.dispatchEvent(new Event("business-profile-updated"));
              </div>
 
       <div className="name-rating">
-        <h2>{businessDetails.businessName || "Business Name"}</h2>
-        <div className="rating-badge">
-          <span className="star">★</span>
-          <span>{avg.toFixed(1)} / 5</span>
-        </div>
-      </div>
+  <h2>{businessDetails.businessName || "Business Name"}</h2>
+
+  {reviewsCount > 0 && (
+    <div className="rating-badge">
+      <span className="star">★</span>
+      <span>
+        {avg.toFixed(1)} / 5
+        <span className="reviews-count"> ({reviewsCount} reviews)</span>
+      </span>
+    </div>
+  )}
+</div>
 
       {businessDetails.category && (
         <p className="preview-category">

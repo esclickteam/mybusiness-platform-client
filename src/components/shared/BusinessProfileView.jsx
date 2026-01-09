@@ -291,10 +291,20 @@ useEffect(() => {
     address: { city = "" } = {},
   } = data;
 
-  const totalRating = reviews.reduce((sum, r) => sum + Number(r.rating || r.averageScore || 0), 0);
-  const avgRating = reviews.length ? totalRating / reviews.length : 0;
-  const roundedAvg = Math.round(avgRating * 10) / 10;
-  const isOwner = user?.role === "business" && user.businessId === bizId;
+  const roundedAvg =
+  data?.rating != null
+    ? Math.round(Number(data.rating) * 10) / 10
+    : 0;
+
+const reviewsCount =
+  data?.reviewsCount != null
+    ? Number(data.reviewsCount)
+    : reviews.length;
+
+const hasRating = reviewsCount > 0;
+
+const isOwner =
+  user?.role === "business" && user.businessId === bizId;
 
   const handleTabChange = (tab) => {
     setCurrentTab(tab);
@@ -354,16 +364,18 @@ useEffect(() => {
             {city && <p><strong>🏙️ City:</strong> {city}</p>}
           </div>
 
-          <div
-            className="reviews-summary"
-            aria-label={`Average rating: ${roundedAvg.toFixed(1)} out of 5, based on ${reviews.length} reviews`}
-          >
-            <span className="reviews-average">
-              {roundedAvg.toFixed(1)}
-              <span className="star">⭐</span>
-              <span className="reviews-count">({reviews.length} reviews)</span>
-            </span>
-          </div>
+          {hasRating && (
+  <div
+    className="reviews-summary"
+    aria-label={`Average rating: ${roundedAvg.toFixed(1)} out of 5, based on ${reviewsCount} reviews`}
+  >
+    <span className="reviews-average">
+      {roundedAvg.toFixed(1)}
+      <span className="star">⭐</span>
+      <span className="reviews-count">({reviewsCount} reviews)</span>
+    </span>
+  </div>
+)}
 
           <hr className="profile-divider" style={{ marginTop: "1rem", borderColor: "#4A148C" }} />
 
