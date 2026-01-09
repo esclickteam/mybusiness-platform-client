@@ -5,18 +5,19 @@
      ========================= */
   --brand-purple: #5B4CF5;
   --brand-purple-hover: #4B3DE0;
+  --brand-cyan: #22D3EE; /* Salesforce-like accent */
 
   /* =========================
      Text – Light backgrounds
      ========================= */
-  --text-main: #0F172A;    /* כותרות */
-  --text-muted: #475569;  /* פסקאות */
+  --text-main: #0F172A;    /* headings */
+  --text-muted: #475569;  /* body text */
 
   /* =========================
      Text – Dark / Hero
      ========================= */
-  --text-on-dark-main: #FFFFFF;   /* כותרת על רקע כהה */
-  --text-on-dark-muted: #C7D2FE;  /* טקסט משני על רקע כהה */
+  --text-on-dark-main: #FFFFFF;
+  --text-on-dark-muted: #E0F2FE; /* light blue */
 
   /* =========================
      Backgrounds – Light
@@ -25,17 +26,17 @@
   --bg-soft: #F8FAFC;
 
   /* =========================
-     Backgrounds – Hero / Dark
+     Backgrounds – Hero / Blue
      ========================= */
- --hero-bg-start: #1E40AF; /* blue-800 */
---hero-bg-end:   #1E3A8A; /* blue-900 */
+  --hero-bg-start: #2563EB; /* blue-600 */
+  --hero-bg-mid:   #1E40AF; /* blue-800 */
+  --hero-bg-end:   #1E3A8A; /* blue-900 */
 
   /* =========================
-     Borders / Dividers
+     Borders
      ========================= */
   --border-soft: #E2E8F0;
 }
-
 
 /* ===== Base ===== */
 .home-page {
@@ -63,8 +64,9 @@
   text-align: center;
   background: linear-gradient(
     180deg,
-    var(--hero-bg-start),
-    var(--hero-bg-end)
+    var(--hero-bg-start) 0%,
+    var(--hero-bg-mid) 45%,
+    var(--hero-bg-end) 100%
   );
 }
 
@@ -78,11 +80,12 @@
 }
 
 .hero-accent {
-  color: var(--brand-purple);
+  color: var(--brand-cyan);
 }
 
 .hero p {
   font-size: 18px;
+  line-height: 1.6;
   color: var(--text-on-dark-muted);
   max-width: 680px;
   margin: 0 auto 40px;
@@ -99,7 +102,6 @@
   font-size: 14px;
   color: var(--text-on-dark-muted);
 }
-
 
 /* ===== Buttons ===== */
 .btn-primary {
@@ -133,8 +135,6 @@
   border-color: rgba(255, 255, 255, 0.6);
 }
 
-
-
 /* ===== Scroll Story ===== */
 .scroll-story {
   display: grid;
@@ -146,26 +146,23 @@
   max-width: 640px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* ⬅️ מיישר את כולם */
+  align-items: flex-start;
 }
 
-/* כותרות – אותו baseline */
 .scroll-story h3 {
   font-size: 28px;
   font-weight: 600;
-  line-height: 1.2;      /* ⬅️ קריטי */
-  margin: 0 0 12px;      /* ⬅️ מבטל סטיות */
+  line-height: 1.2;
+  margin: 0 0 12px;
   color: var(--text-main);
 }
 
-/* טקסט – אותו גובה שורה */
 .scroll-story p {
   font-size: 17px;
-  line-height: 1.6;      /* ⬅️ אחידות */
-  margin: 0;             /* ⬅️ חשוב */
+  line-height: 1.6;
+  margin: 0;
   color: var(--text-muted);
 }
-
 
 /* ===== Why ===== */
 .why {
@@ -192,7 +189,7 @@
   color: var(--text-muted);
 }
 
-/* ===== FAQ Mini (Center aligned) ===== */
+/* ===== FAQ Mini ===== */
 .faq-mini {
   text-align: center;
 }
@@ -203,14 +200,12 @@
 }
 
 .faq-mini summary {
-  list-style: none;            /* מסיר marker דיפולטי */
+  list-style: none;
   font-weight: 600;
   cursor: pointer;
   color: var(--text-main);
-  text-align: center;
 }
 
-/* Marker מותאם אישית */
 .faq-mini summary::before {
   content: "▶";
   display: inline-block;
@@ -226,7 +221,6 @@
   color: var(--text-muted);
   margin-top: 12px;
 }
-
 
 /* ===== Final CTA ===== */
 .final-cta {
