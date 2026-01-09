@@ -421,108 +421,101 @@ if (normalizedUser.role === "admin" && !isImpersonating) {
   };
 
   /* ===========================
-     🔥 Initialize
-  =========================== */
-  useEffect(() => {
-    if (!token) {
-      socket?.disconnect();
-      setSocket(null);
-      setUser(null);
-      localStorage.removeItem("businessDetails");
-      setInitialized(true);
-      return;
-    }
-
-    setLoading(true);
-    setAuthToken(token);
-
-    (async () => {
-      try {
-
-        const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
-const storedUser = localStorage.getItem("businessDetails");
-
-const freshUser = await refreshUser(true);
-
-
-if (!freshUser) throw new Error("Missing user");
-
-setUser(freshUser);
-
-const isInAdminArea = location.pathname.startsWith("/admin");
-if (
-  freshUser.role === "admin" &&
-  !isImpersonating &&
-  !location.pathname.startsWith("/admin")
-) {
-  navigate("/admin/dashboard", { replace: true });
-  return;
-}
-
-
-        const newSocket = await createSocket(
-          singleFlightRefresh,
-          logout,
-          freshUser.businessId
-        );
-        setSocket(newSocket);
-
-        const justRegistered = sessionStorage.getItem("justRegistered");
-        if (justRegistered) {
-  sessionStorage.removeItem("justRegistered");
-
-  // 👑 ADMIN
-  if (
-  freshUser.role === "admin" &&
-  !isImpersonating &&
-  location.pathname.startsWith("/admin")
-) {
-  navigate("/admin/dashboard", { replace: true });
-  return;
-}
-
-
-  if (freshUser.role === "business" && freshUser.businessId) {
-    navigate(`/business/${freshUser.businessId}/dashboard`, {
-      replace: true,
-    });
-  } else {
-    navigate("/dashboard", { replace: true });
+   🔥 Initialize (Fixed – no infinite refresh)
+=========================== */
+useEffect(() => {
+  // ✅ אם אין token — ננקה הכל ונצא
+  if (!token) {
+    socket?.disconnect();
+    setSocket(null);
+    setUser(null);
+    localStorage.removeItem("businessDetails");
+    setInitialized(true);
+    return;
   }
-  return;
-}
+
+  // ✅ אם כבר אותחל — לא לרוץ שוב
+  if (initialized) return;
+
+  setLoading(true);
+  setAuthToken(token);
+
+  (async () => {
+    try {
+      const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
+
+      // ⬇️ חשוב: בלי forceRefresh כדי לא לשבור cache
+      const freshUser = await refreshUser();
+
+      if (!freshUser) throw new Error("Missing user");
 
 
-        const savedRedirect = sessionStorage.getItem("postLoginRedirect");
-        if (savedRedirect) {
-          const isPlans = savedRedirect === "/plans";
-          const shouldSkip = isPlans && freshUser.hasAccess;
+      // 👑 ניתוב אדמין אם צריך
+      if (
+        freshUser.role === "admin" &&
+        !isImpersonating &&
+        !location.pathname.startsWith("/admin")
+      ) {
+        navigate("/admin/dashboard", { replace: true });
+        return;
+      }
 
-          if (!shouldSkip) {
-            navigate(savedRedirect, { replace: true });
-          }
+      // 🎧 יצירת socket
+      const newSocket = await createSocket(
+        singleFlightRefresh,
+        logout,
+        freshUser.businessId
+      );
+      setSocket(newSocket);
 
-          sessionStorage.removeItem("postLoginRedirect");
-          return;
-        }
-
-        if (
-          freshUser.role === "business" &&
-          freshUser.businessId &&
-          location.pathname === "/"
-        ) {
+      // 📦 ניתוב משתמש חדש שנרשם
+      const justRegistered = sessionStorage.getItem("justRegistered");
+      if (justRegistered) {
+        sessionStorage.removeItem("justRegistered");
+        if (freshUser.role === "business" && freshUser.businessId) {
           navigate(`/business/${freshUser.businessId}/dashboard`, {
             replace: true,
           });
+        } else {
+          navigate("/dashboard", { replace: true });
         }
-      } catch {
-        await logout();
-      } finally {
-        setLoading(false);
-        setInitialized(true);
+        return;
       }
-    })();
-  }, [token, navigate, location.pathname, location]);
+
+      // 🔁 ניתוב מ־postLoginRedirect אם יש
+      const savedRedirect = sessionStorage.getItem("postLoginRedirect");
+      if (savedRedirect) {
+        const isPlans = savedRedirect === "/plans";
+        const shouldSkip = isPlans && freshUser.hasAccess;
+
+        if (!shouldSkip) navigate(savedRedirect, { replace: true });
+        sessionStorage.removeItem("postLoginRedirect");
+        return;
+      }
+
+      // 🏠 ניתוב ברירת מחדל
+      if (
+        freshUser.role === "business" &&
+        freshUser.businessId &&
+        location.pathname === "/"
+      ) {
+        navigate(`/business/${freshUser.businessId}/dashboard`, {
+          replace: true,
+        });
+      }
+    } catch (err) {
+  console.error("❌ Auth init failed:", err);
+  await logout();
+  return;
+} finally {
+      setLoading(false);
+      setInitialized(true);
+    }
+  })();
+}, [token, initialized]);
+
+
+
 
 
 
@@ -557,6 +550,7 @@ if (
     fetchWithAuth: async (fn) => {
       try {
         return await fn();
+
       } catch (err) {
         if ([401, 403].includes(err.response?.status)) {
           await logout();
