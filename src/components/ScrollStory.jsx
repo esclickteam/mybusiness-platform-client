@@ -1,19 +1,31 @@
 export default function ScrollStory() {
   return (
     <section className="scroll-story">
-      {/* Step 1 */}
+      {/* Step 1 – Business Page + Visual */}
       <div className="step step-left">
-        <div className="step-inner">
-          <span className="step-label">PLATFORM</span>
-          <h3>Your business page</h3>
-          <p>
-            A clean, professional page that represents your business
-            and centralizes everything in one place.
-          </p>
+        <div className="step-inner step-with-visual">
+          {/* TEXT */}
+          <div className="step-content">
+            <span className="step-label">PLATFORM</span>
+            <h3>Your business page</h3>
+            <p>
+              A clean, professional page that represents your business
+              and centralizes everything in one place.
+            </p>
+          </div>
+
+          {/* VISUAL */}
+          <div className="step-visual">
+            <img
+              src="/images/hero-business-page.png"
+              alt="Business page preview"
+              loading="lazy"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Step 2 */}
+      {/* Step 2 – Collaborations */}
       <div className="step step-right">
         <div className="step-inner">
           <span className="step-label">WORK TOGETHER</span>
@@ -25,7 +37,7 @@ export default function ScrollStory() {
         </div>
       </div>
 
-      {/* Step 3 */}
+      {/* Step 3 – CRM & AI */}
       <div className="step step-left">
         <div className="step-inner">
           <span className="step-label">GROW SMART</span>

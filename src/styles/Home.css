@@ -11,14 +11,14 @@
   /* =========================
      Text – Light backgrounds
      ========================= */
-  --text-main: #0F172A;
-  --text-muted: #475569;
+  --text-main: #0F172A;    /* headings */
+  --text-muted: #475569;  /* body text */
 
   /* =========================
      Text – Dark / Hero
      ========================= */
   --text-on-dark-main: #FFFFFF;
-  --text-on-dark-muted: #E0F2FE;
+  --text-on-dark-muted: #E0F2FE; /* light blue */
 
   /* =========================
      Backgrounds – Light
@@ -29,9 +29,9 @@
   /* =========================
      Backgrounds – Hero / Blue
      ========================= */
-  --hero-bg-start: #2563EB;
-  --hero-bg-mid:   #1E40AF;
-  --hero-bg-end:   #1E3A8A;
+  --hero-bg-start: #2563EB; /* blue-600 */
+  --hero-bg-mid:   #1E40AF; /* blue-800 */
+  --hero-bg-end:   #1E3A8A; /* blue-900 */
 
   /* =========================
      Borders
@@ -70,19 +70,13 @@
   );
 }
 
-/* ⬅️ Layout חדש */
 .hero-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   align-items: center;
   gap: 64px;
 }
 
-/* תוכן */
 .hero-content {
   text-align: left;
 }
@@ -90,10 +84,10 @@
 .hero-eyebrow {
   display: inline-block;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   color: var(--brand-cyan);
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .hero h1 {
@@ -109,12 +103,12 @@
   color: var(--brand-cyan);
 }
 
-.hero p {
+.hero-description {
   font-size: 18px;
   line-height: 1.6;
   color: var(--text-on-dark-muted);
-  max-width: 520px;
-  margin: 0 0 40px;
+  max-width: 560px;
+  margin-bottom: 40px;
 }
 
 .hero-actions {
@@ -132,22 +126,19 @@
 .hero-visual {
   display: flex;
   justify-content: center;
-}
-
-.hero-mockup {
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow:
-    0 40px 80px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.3);
+  align-items: center;
 }
 
 .hero-mockup img {
-  display: block;
-  max-width: 100%;
+  width: 100%;
+  max-width: 560px;
   height: auto;
-  border-radius: 12px;
+  border-radius: 28px;
+  background: #ffffff;
+  padding: 28px;
+  box-shadow:
+    0 24px 64px rgba(15, 23, 42, 0.25),
+    0 8px 24px rgba(15, 23, 42, 0.15);
 }
 
 /* ===== Buttons ===== */
@@ -186,30 +177,57 @@
 .scroll-story {
   display: flex;
   flex-direction: column;
-  gap: 140px;
+  gap: 160px;
   background: var(--bg-soft);
-  padding-top: 120px;
-  padding-bottom: 120px;
+  padding-top: 140px;
+  padding-bottom: 140px;
 }
 
+/* שלב */
 .step {
-  display: flex;
   width: 100%;
 }
 
-.step-left {
-  justify-content: flex-start;
+/* שלב עם ויזואל */
+.step-with-visual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 64px;
 }
 
-.step-right {
-  justify-content: flex-end;
+/* שמאל / ימין */
+.step-left .step-with-visual {
+  grid-template-columns: 1fr 1fr;
 }
 
-.step-inner {
-  max-width: 640px;
-  text-align: left;
+.step-right .step-with-visual {
+  grid-template-columns: 1fr 1fr;
 }
 
+.step-content {
+  max-width: 520px;
+}
+
+.step-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.step-visual img {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  border-radius: 24px;
+  background: #ffffff;
+  padding: 24px;
+  box-shadow:
+    0 20px 60px rgba(15, 23, 42, 0.12),
+    0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* Label */
 .step-label {
   display: inline-block;
   font-size: 12px;
@@ -219,6 +237,7 @@
   margin-bottom: 12px;
 }
 
+/* כותרת */
 .scroll-story h3 {
   font-size: 28px;
   font-weight: 600;
@@ -227,6 +246,7 @@
   color: var(--text-main);
 }
 
+/* טקסט */
 .scroll-story p {
   font-size: 17px;
   line-height: 1.6;
@@ -243,6 +263,7 @@
 .why h2 {
   font-size: 32px;
   margin-bottom: 32px;
+  color: var(--text-main);
 }
 
 .why ul {
@@ -272,6 +293,7 @@
   list-style: none;
   font-weight: 600;
   cursor: pointer;
+  color: var(--text-main);
 }
 
 .faq-mini summary::before {
@@ -300,6 +322,7 @@
 .final-cta h2 {
   font-size: 36px;
   margin-bottom: 32px;
+  color: var(--text-main);
 }
 
 .btn-lg {
@@ -318,16 +341,17 @@
     text-align: center;
   }
 
-  .hero p {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
   .hero-actions {
     justify-content: center;
   }
 
-  .hero-visual {
-    margin-top: 48px;
+  .step-with-visual {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    text-align: center;
+  }
+
+  .step-content {
+    margin: 0 auto;
   }
 }
