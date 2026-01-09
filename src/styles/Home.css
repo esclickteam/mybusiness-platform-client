@@ -169,6 +169,43 @@
   text-align: left;
 }
 
+.step-with-visual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 64px;
+}
+
+.step-content {
+  text-align: left;
+}
+
+.step-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.step-visual img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+
+  border-radius: 18px;
+
+  /* עומק רך, לא כבד */
+  box-shadow:
+    0 12px 24px rgba(15, 23, 42, 0.12),
+    0 4px 8px rgba(15, 23, 42, 0.06);
+
+  /* תחושת מוצר ולא תמונה */
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  padding: 10px;
+
+  /* רינדור חד */
+  image-rendering: -webkit-optimize-contrast;
+}
+
+
 /* Label קטן (Enterprise style) */
 .step-label {
   display: inline-block;
@@ -272,4 +309,19 @@
 .btn-lg {
   padding: 16px 36px;
   font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .step-with-visual {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .step-visual {
+    order: -1; /* תמונה מעל הטקסט */
+  }
+
+  .step-content {
+    text-align: center;
+  }
 }
