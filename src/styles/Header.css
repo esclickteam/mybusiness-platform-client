@@ -451,14 +451,15 @@
   }
 
   /* ✅ הלוגו ממש צמוד לצד שמאל (או ימין ב־RTL) */
-  .logo-wrapper {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;     /* ל־LTR */
-    margin-left: 0 !important;
-    margin-right: auto !important;   /* דוחף את כל היתר ימינה */
-  }
+ .logo-wrapper {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  margin-left: -8px !important;   /* ⬅️ הזזה שמאלה במובייל */
+  margin-right: auto !important;  /* דוחף את כל היתר ימינה */
+}
 
   /* אם האתר בעברית (dir="rtl") – נתקן כך: */
   html[dir="rtl"] .logo-wrapper {
