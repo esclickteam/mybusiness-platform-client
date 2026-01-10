@@ -183,11 +183,11 @@
 }
 
 .step-right .step-with-visual > :first-child {
-  order: 2;
+  order: 1;
 }
 
 .step-right .step-with-visual > :last-child {
-  order: 1;
+  order: 2;
 }
 
 
