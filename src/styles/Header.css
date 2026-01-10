@@ -396,28 +396,26 @@
 
 @media (max-width: 768px) {
   .menu-button.mobile-only {
-    position: absolute;     /* מוציא אותו מה־flex */
-    right: 16px;            /* מצמיד לימין */
-    top: 50%;            /* ✅ כמו HubSpot (קבוע למעלה) */
-    transform: translateY(calc(-50% - 10px));
+  position: absolute;
+  right: 12px;
+  top: 40%; /* ✅ במקום 50% */
+  transform: translateY(-50%); /* לא צריך calc */
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none !important;
 
-      /* ✅ לא מרכז אנכית */
-    z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  z-index: 25;
+}
 
-    background: transparent !important; /* ✅ שקוף */
-    border: none;
-    border-radius: 14px;
-    width: 46px;
-    height: 46px;
-    color: #5e17eb;
-
-    box-shadow: none !important; /* ✅ בלי לבן/הילה */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-  }
 
   .menu-button.mobile-only:hover {
     transform: scale(1.05); /* ✅ בלי translateY */
