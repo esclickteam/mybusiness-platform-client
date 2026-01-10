@@ -49,7 +49,7 @@ export default function ScrollStory() {
           {/* IMAGE */}
           <div className="step-visual">
             <img
-              src="/images/collaborations.png"
+              src="/images/collaborations-v2.png"
               alt="Collaborations preview"
               loading="lazy"
               decoding="async"
