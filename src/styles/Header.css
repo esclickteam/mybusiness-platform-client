@@ -399,7 +399,8 @@
     position: absolute;     /* מוציא אותו מה־flex */
     right: 16px;            /* מצמיד לימין */
     top: 50%;            /* ✅ כמו HubSpot (קבוע למעלה) */
-    transform: translateY(-75%);       /* ✅ לא מרכז אנכית */
+    transform: translateY(-50%);
+      /* ✅ לא מרכז אנכית */
     z-index: 20;
 
     background: transparent !important; /* ✅ שקוף */
@@ -502,7 +503,7 @@
   .logo-link .logo {
     width: auto !important;
     height: auto !important;
-    max-height: 120px !important;
+    max-height: 130px !important;
     object-fit: contain;
     display: block;
   }
