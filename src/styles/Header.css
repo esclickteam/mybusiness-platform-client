@@ -200,16 +200,6 @@
     overflow: visible;
   }
 
-  .logo-wrapper {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0 !important;
-    padding: 0 !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 
   .logo-link .logo {
     height: auto !important;
@@ -457,5 +447,24 @@
 
   .mobile-try-free:hover {
     background: #4315c7;
+  }
+}
+
+/* ===============================
+   📱 Mobile – Logo Left Aligned
+   =============================== */
+@media (max-width: 768px) {
+  .logo-wrapper {
+    position: relative;      /* חוזר ל־flow רגיל */
+    left: auto;
+    transform: none;
+
+    margin-left: 16px;       /* ריווח מהקצה */
+    margin-right: auto;     /* דוחף את השאר ימינה */
+    justify-content: flex-start;
+  }
+
+  .logo-link .logo {
+    max-height: 36px !important; /* גודל UX נכון למובייל */
   }
 }
