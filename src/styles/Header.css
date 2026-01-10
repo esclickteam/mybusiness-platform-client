@@ -189,16 +189,16 @@
 /* ================= Responsive ================= */
 @media (max-width: 768px) {
   .app-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 16px 0 0;
-    height: 50px !important;
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    position: relative;
-    overflow: visible;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;   /* ⬅️ קריטי */
+  padding: 0 12px 0 8px;            /* שמאל קצת יותר צמוד */
+  height: 50px !important;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  position: relative;
+  overflow: visible;
+}
 
 
   .logo-link .logo {
