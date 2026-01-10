@@ -173,9 +173,10 @@
   .app-header {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* ⬅️ קריטי */
-    padding: 0 16px;
-    height: 56px;                   /* ⬅️ גובה סטנדרטי SaaS */
+    justify-content: flex-start; /* ⬅️ קריטי */
+    padding-left: 8px;           /* ⬅️ צמוד שמאל (או 4px אם את רוצה ממש flush) */
+    padding-right: 16px;         /* משאיר מרווח נוח לימין */
+    height: 56px;                /* גובה סטנדרטי SaaS */
     background: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     position: relative;
