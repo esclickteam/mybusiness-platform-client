@@ -486,3 +486,13 @@
     padding-left: 0 !important;
   }
 }
+
+/* ===============================
+   📱 Mobile – Fix Logo Width
+   =============================== */
+@media (max-width: 768px) {
+  .logo-link .logo {
+    width: auto !important;   /* ❗ מבטל 300px */
+    max-width: none !important;
+  }
+}
