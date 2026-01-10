@@ -132,7 +132,8 @@
   transform-origin: top center;
 
   width: min(900px, 90%);
-  z-index: 20;
+  z-index: auto;
+
 
   max-width: none;
   margin-left: 0;
