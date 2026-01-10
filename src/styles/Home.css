@@ -132,6 +132,13 @@
   z-index: 5;
 }
 
+.hero-content,
+.hero-dashboard {
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
 /* ===== Buttons ===== */
 .btn-primary {
   background: var(--brand-purple);
