@@ -96,12 +96,15 @@ export default function Header() {
         )}
 
         <button
-          className="menu-button mobile-only"
-          onClick={() => setMenuOpen(true)}
-          aria-label="Open menu"
-        >
-          <FaBars size={22} />
-        </button>
+  className="menu-button mobile-only"
+  onClick={() => setMenuOpen(true)}
+  aria-label="Open menu"
+>
+  <span className="hamb-line" />
+  <span className="hamb-line" />
+  <span className="hamb-line" />
+</button>
+
       </nav>
 
       {/* 🔹 תפריט מובייל */}
