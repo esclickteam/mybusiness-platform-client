@@ -193,6 +193,8 @@
 }
 
 /* ===== Scroll Story – Alternating Layout ===== */
+
+/* כל שלב */
 .scroll-story {
   display: flex;
   flex-direction: column;
@@ -200,23 +202,16 @@
   background: var(--bg-soft);
   padding-top: 120px;
   padding-bottom: 120px;
-}
 
-/* כל שלב */
-.step {.scroll-story {
-  display: flex;
-  flex-direction: column;
-  gap: 140px;
-  background: var(--bg-soft);
-  padding-top: 120px;
-  padding-bottom: 120px;
-
-  /* ⬇️ זה מה שגורם לדשבורד לרחף כמו בדוגמה */
+  /* ⬇️ יוצר רווח מה-Hero כדי שהדשבורד "ירחף" */
   margin-top: 140px;
 }
+
+.step {
   display: flex;
   width: 100%;
 }
+
 
 /* שמאל */
 .step-left {
