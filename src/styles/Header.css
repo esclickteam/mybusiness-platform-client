@@ -470,25 +470,67 @@
 }
 
 /* ===============================
-   📱 Mobile – Logo FULL Left
+   📱 Mobile – Logo FULL Left (Final)
    =============================== */
 @media (max-width: 768px) {
   .app-header {
+    display: flex;
+    align-items: center;
     justify-content: space-between !important;
-    padding-left: 8px !important;
-    padding-right: 12px !important;
+    padding: 0 12px;
+    height: 56px !important;
+    background: #fff;
   }
 
+  /* ✅ הלוגו ממש צמוד לצד שמאל (או ימין ב־RTL) */
   .logo-wrapper {
-    margin: 0 !important;
-    padding: 0 !important;
-    flex-shrink: 0;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;     /* ל־LTR */
+    margin-left: 0 !important;
+    margin-right: auto !important;   /* דוחף את כל היתר ימינה */
+  }
+
+  /* אם האתר בעברית (dir="rtl") – נתקן כך: */
+  html[dir="rtl"] .logo-wrapper {
+    justify-content: flex-end;
+    margin-right: 0 !important;
+    margin-left: auto !important;
   }
 
   .logo-link .logo {
     width: auto !important;
-    max-width: none !important;
-    max-height: 36px !important;
+    height: auto !important;
+    max-height: 34px !important;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* הכפתור Try it free נשאר צמוד לימין (או שמאל ב־RTL) */
+  .mobile-try-free {
+    position: absolute;
+    right: 60px; /* לפני ההמבורגר */
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  html[dir="rtl"] .mobile-try-free {
+    left: 60px;
+    right: auto;
+  }
+
+  /* ההמבורגר */
+  .menu-button.mobile-only {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  html[dir="rtl"] .menu-button.mobile-only {
+    left: 12px;
+    right: auto;
   }
 }
 
