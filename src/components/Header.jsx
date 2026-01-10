@@ -25,7 +25,7 @@ export default function Header() {
     location.pathname.includes("/dashboard") ||
     location.pathname.includes("/business/");
 
-  // ✅ בדשבורד לא מציגים כלום
+  // ✅ בדשבורד לא מציגים Header
   if (isDashboard) return null;
 
   const handleLogout = async () => {
@@ -86,17 +86,25 @@ export default function Header() {
           )}
         </div>
 
-        {/* 🔹 ✅ המבורגר במובייל — פותח את MobileMenu החדש */}
-        <button
-          className="menu-button mobile-only"
-          onClick={() => setMenuOpen(true)}
-          aria-label="Open menu"
-        >
-          <FaBars size={22} />
-        </button>
+        {/* 🔹 פעולות מובייל: CTA + המבורגר */}
+        <div className="mobile-actions mobile-only">
+          {!user && (
+            <Link to="/register" className="mobile-cta">
+              Try it free
+            </Link>
+          )}
+
+          <button
+            className="menu-button"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+          >
+            <FaBars size={22} />
+          </button>
+        </div>
       </nav>
 
-      {/* ✅ MobileMenu החדש (במקום side-menu הישן) */}
+      {/* ✅ MobileMenu */}
       <MobileMenu
         open={menuOpen}
         onClose={() => setMenuOpen(false)}

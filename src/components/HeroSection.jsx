@@ -19,7 +19,7 @@ export default function HeroSection() {
         <div className="hero-actions">
           {/* ✅ Single, clear CTA */}
           <Link to="/register" className="btn-primary">
-            Get started free
+            Try it Free
           </Link>
         </div>
 
