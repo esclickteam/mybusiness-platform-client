@@ -468,12 +468,12 @@
   }
 
   .logo-link .logo {
-    width: auto !important;
-    height: auto !important;
-    max-height: 130px !important;
-    object-fit: contain;
-    display: block;
-  }
+  width: auto !important;
+  height: 32px !important;        /* ✅ גובה אמיתי להדר מובייל */
+  max-height: 32px !important;    /* ✅ לא חורג מההדר */
+  object-fit: contain;
+  display: block;
+}
 
   /* הכפתור Try it free נשאר צמוד לימין (או שמאל ב־RTL) */
   .mobile-try-free {
