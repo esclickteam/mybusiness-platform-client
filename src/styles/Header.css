@@ -522,16 +522,18 @@
 
   /* ההמבורגר */
   .menu-button.mobile-only {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
+  position: absolute;
+  right: 12px;
+  top: 42%;                 /* ✅ מרים למעלה (אפשר לכוון 40%-46%) */
+  transform: translateY(-50%);
+}
 
-  html[dir="rtl"] .menu-button.mobile-only {
-    left: 12px;
-    right: auto;
-  }
+html[dir="rtl"] .menu-button.mobile-only {
+  left: 12px;
+  right: auto;
+  top: 42%;                 /* ✅ גם ב-RTL */
+  transform: translateY(-50%);
+}
 }
 
 @media (max-width: 768px) {
