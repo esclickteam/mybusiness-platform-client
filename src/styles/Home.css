@@ -177,6 +177,20 @@
   gap: 72px;
 }
 
+/* 🔁 Reverse layout only for step-right */
+.step-right .step-with-visual {
+  grid-template-columns: 1.05fr 0.95fr;
+}
+
+.step-right .step-with-visual > :first-child {
+  order: 2;
+}
+
+.step-right .step-with-visual > :last-child {
+  order: 1;
+}
+
+
 
 .step-content {
   text-align: left;
