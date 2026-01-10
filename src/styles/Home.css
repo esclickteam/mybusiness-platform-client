@@ -122,7 +122,7 @@
 }
 
 .hero-dashboard {
-  margin-top: 80px;          /* מרווח מהטקסט */
+  margin-top: 64px;          /* מרווח מהטקסט */
   display: flex;
   justify-content: center;
 
@@ -137,14 +137,19 @@
 /* ===== Dashboard Preview (Hero) ===== */
 .dashboard-preview {
   width: 100%;
+  max-width: 820px;          /* ⬅️ מקטין רוחב */
   background: #ffffff;
   border-radius: 18px;
   overflow: hidden;
 
-  /* 👇 זה מה שנותן מראה SaaS */
+  /* תחושת SaaS יוקרתית */
   box-shadow:
-  0 40px 120px rgba(15, 23, 42, 0.25),
-  0 10px 30px rgba(15, 23, 42, 0.12);
+    0 40px 120px rgba(15, 23, 42, 0.22),
+    0 10px 30px rgba(15, 23, 42, 0.10);
+
+  /* הקטנה עדינה בלי לפגוע בפרופורציות */
+  transform: scale(0.92);
+  transform-origin: top center;
 }
 
 .dashboard-preview img {
