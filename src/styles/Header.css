@@ -502,7 +502,7 @@
   .logo-link .logo {
     width: auto !important;
     height: auto !important;
-    max-height: 34px !important;
+    max-height: 60px !important;
     object-fit: contain;
     display: block;
   }
