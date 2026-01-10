@@ -474,25 +474,21 @@
    =============================== */
 @media (max-width: 768px) {
   .app-header {
-    padding-left: 0 !important;   /* ⬅️ מבטל padding שמאלי */
+    justify-content: space-between !important;
+    padding-left: 8px !important;
+    padding-right: 12px !important;
   }
 
   .logo-wrapper {
-    margin-left: 0 !important;    /* ⬅️ מבטל רווח */
-    padding-left: 8px;            /* ⬅️ ריווח מינימלי UX */
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0;
   }
 
-  .logo-link {
-    padding-left: 0 !important;
-  }
-}
-
-/* ===============================
-   📱 Mobile – Fix Logo Width
-   =============================== */
-@media (max-width: 768px) {
   .logo-link .logo {
-    width: auto !important;   /* ❗ מבטל 300px */
+    width: auto !important;
     max-width: none !important;
+    max-height: 36px !important;
   }
 }
+
