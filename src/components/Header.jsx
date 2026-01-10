@@ -20,12 +20,11 @@ export default function Header() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // ✅ נזהה אם אנחנו בדשבורד
+  // ✅ בדשבורד לא מציגים Header
   const isDashboard =
     location.pathname.includes("/dashboard") ||
     location.pathname.includes("/business/");
 
-  // ✅ בדשבורד לא מציגים כלום
   if (isDashboard) return null;
 
   const handleLogout = async () => {
@@ -42,7 +41,7 @@ export default function Header() {
   return (
     <>
       <nav className="app-header">
-        {/* 🔹 לוגו */}
+        {/* 🔹 לוגו (מרכז במובייל) */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Bizuply Logo" className="logo" />
@@ -62,7 +61,7 @@ export default function Header() {
           ))}
         </div>
 
-        {/* 🔹 פעולות משתמש בדסקטופ */}
+        {/* 🔹 פעולות בדסקטופ */}
         <div className="auth-controls desktop-only">
           {!user ? (
             <>
@@ -86,7 +85,16 @@ export default function Header() {
           )}
         </div>
 
-        {/* 🔹 ✅ המבורגר במובייל — פותח את MobileMenu החדש */}
+        {/* 🔹 🔥 מובייל: Try it free + המבורגר */}
+        {!user && (
+          <Link
+            to="/register"
+            className="mobile-try-free mobile-only"
+          >
+            Try it free
+          </Link>
+        )}
+
         <button
           className="menu-button mobile-only"
           onClick={() => setMenuOpen(true)}
@@ -96,7 +104,7 @@ export default function Header() {
         </button>
       </nav>
 
-      {/* ✅ MobileMenu החדש (במקום side-menu הישן) */}
+      {/* 🔹 תפריט מובייל */}
       <MobileMenu
         open={menuOpen}
         onClose={() => setMenuOpen(false)}

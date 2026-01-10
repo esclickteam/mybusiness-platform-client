@@ -432,3 +432,30 @@
   }
 }
 
+/* ===============================
+   📱 Mobile Try it free Button
+   =============================== */
+@media (max-width: 768px) {
+  .mobile-try-free {
+    position: absolute;
+    right: 64px;              /* ⬅️ לפני ההמבורגר */
+    top: 50%;
+    transform: translateY(-50%);
+
+    background: #5e17eb;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 999px;     /* pill */
+    text-decoration: none;
+    white-space: nowrap;
+
+    box-shadow: 0 4px 12px rgba(94, 23, 235, 0.35);
+    z-index: 25;
+  }
+
+  .mobile-try-free:hover {
+    background: #4315c7;
+  }
+}
