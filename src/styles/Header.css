@@ -468,3 +468,21 @@
     max-height: 36px !important; /* גודל UX נכון למובייל */
   }
 }
+
+/* ===============================
+   📱 Mobile – Logo FULL Left
+   =============================== */
+@media (max-width: 768px) {
+  .app-header {
+    padding-left: 0 !important;   /* ⬅️ מבטל padding שמאלי */
+  }
+
+  .logo-wrapper {
+    margin-left: 0 !important;    /* ⬅️ מבטל רווח */
+    padding-left: 8px;            /* ⬅️ ריווח מינימלי UX */
+  }
+
+  .logo-link {
+    padding-left: 0 !important;
+  }
+}
