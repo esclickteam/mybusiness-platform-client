@@ -1,12 +1,14 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+
 import HeroSection from "../components/HeroSection";
+import DashboardPreview from "../components/DashboardPreview";
 import ScrollStory from "../components/ScrollStory";
 import WhyBizUply from "../components/WhyBizUply";
 import FAQMini from "../components/FAQMini";
 import FinalCTA from "../components/FinalCTA";
-import "../styles/Home.css";
 
+import "../styles/Home.css";
 
 export default function Home() {
   return (
@@ -19,8 +21,15 @@ export default function Home() {
         />
       </Helmet>
 
+      {/* HERO – Promise */}
       <HeroSection />
+
+      {/* DASHBOARD PREVIEW – Proof */}
+      <DashboardPreview />
+
+      {/* STORY / FEATURES */}
       <ScrollStory />
+
       <WhyBizUply />
       <FAQMini />
       <FinalCTA />
