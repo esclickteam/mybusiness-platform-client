@@ -398,7 +398,7 @@
   .menu-button.mobile-only {
   position: absolute;
   right: 12px;
-  top: 40%; /* ✅ במקום 50% */
+  top: 70%; /* ✅ במקום 50% */
   transform: translateY(-50%); /* לא צריך calc */
   width: 42px;
   height: 42px;
