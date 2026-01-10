@@ -125,17 +125,20 @@
 
 .hero-dashboard {
   position: absolute;
-  bottom: -220px;           /* חצי בפנים חצי בחוץ */
   left: 50%;
-  transform: translateX(-50%);
-  width: min(920px, 90%);
-  z-index: 5;
+  bottom: -180px; /* ⬅️ פחות אגרסיבי, נראה יוקרתי יותר */
 
-  /* משחרר מה־section constraint */
+  transform: translateX(-50%) scale(0.95);
+  transform-origin: top center;
+
+  width: min(900px, 90%);
+  z-index: 20;
+
   max-width: none;
   margin-left: 0;
   margin-right: 0;
 }
+
 
 /* ===== Dashboard Preview (Hero) ===== */
 .dashboard-preview {
@@ -145,7 +148,9 @@
   overflow: hidden;
 
   /* 👇 זה מה שנותן מראה SaaS */
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+  box-shadow:
+  0 40px 120px rgba(15, 23, 42, 0.25),
+  0 10px 30px rgba(15, 23, 42, 0.12);
 }
 
 .dashboard-preview img {
@@ -198,7 +203,17 @@
 }
 
 /* כל שלב */
-.step {
+.step {.scroll-story {
+  display: flex;
+  flex-direction: column;
+  gap: 140px;
+  background: var(--bg-soft);
+  padding-top: 120px;
+  padding-bottom: 120px;
+
+  /* ⬇️ זה מה שגורם לדשבורד לרחף כמו בדוגמה */
+  margin-top: 140px;
+}
   display: flex;
   width: 100%;
 }
