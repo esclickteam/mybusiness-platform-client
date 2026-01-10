@@ -20,6 +20,8 @@
 .logo-wrapper {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  margin: 0;
 }
 .logo-link .logo {
   height: auto;
@@ -103,7 +105,23 @@
   transform: translateY(-1px);
 }
 
+/* ===== Hamburger (mobile only) ===== */
+  .menu-toggle {
+    position: absolute;
+    right: 16px;  /* ✅ ימין */
+    top: 50%;     /* ✅ ממורכז אנכית */
+    transform: translateY(-50%);
+    margin: 0;
+    z-index: 10;
+  }
 
+.menu-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #5e17eb;
+  font-size: 24px;
+}
 
 /* ===== Drawer (Hamburger menu) ===== */
 .side-menu {
@@ -173,32 +191,38 @@
   .app-header {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* ⬅️ קריטי */
-    padding-left: 8px;           /* ⬅️ צמוד שמאל (או 4px אם את רוצה ממש flush) */
-    padding-right: 16px;         /* משאיר מרווח נוח לימין */
-    height: 56px;                /* גובה סטנדרטי SaaS */
+    justify-content: flex-end;
+    padding: 0 16px 0 0;
+    height: 50px !important;
     background: #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     position: relative;
     overflow: visible;
   }
 
-    .logo-wrapper {
-    position: static;      /* ⬅️ חשוב */
-    transform: none;       /* ⬅️ חשוב */
-    margin: 0;
-    padding: 0;
+  .logo-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 !important;
+    padding: 0 !important;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .logo-link .logo {
-    max-height: 36px;      /* גובה SaaS סטנדרטי */
-    width: auto;
+    height: auto !important;
+    max-height: 160px !important;  /* ימלא כמעט את כל ההידר */
+    width: auto !important;
+    display: block;
   }
 
-
+  .menu-toggle {
+    position: relative;
+    margin-left: auto;
+    z-index: 10;
+  }
 
   .nav-links,
   .auth-controls.desktop-only {
@@ -340,40 +364,71 @@
 /*                        📱 Sidebar Hamburger (Dashboard)              */
 /* =================================================================== */
 
-
+.menu-btn.mobile-only {
+  display: none;
+}
 
 @media (max-width: 768px) {
-  
+  .menu-btn.mobile-only {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: none;
+    color: #5e17eb;
+    font-size: 22px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(94, 23, 235, 0.2);
+    cursor: pointer;
+    margin-left: auto;        /* ✅ מצמיד לימין */
+    margin-right: 6px;
+    transition: all 0.2s ease-in-out;
+  }
 
+  .menu-btn.mobile-only:hover {
+    background: #f5edff;
+    transform: scale(1.05);
+  }
+
+  /* יישור מדויק לגובה הפעמון */
+  .logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
   .notification-bell {
     margin-right: 4px;
   }
 }
 
+@media (max-width: 768px) {
+  .menu-button.mobile-only {
+    position: absolute;     /* מוציא אותו מה־flex */
+    right: 16px;            /* מצמיד לימין */
+    top: 50%;            /* ✅ כמו HubSpot (קבוע למעלה) */
+    transform: translateY(-75%);       /* ✅ לא מרכז אנכית */
+    z-index: 20;
 
-.menu-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #5e17eb;
-  font-size: 22px;
+    background: transparent !important; /* ✅ שקוף */
+    border: none;
+    border-radius: 14px;
+    width: 46px;
+    height: 46px;
+    color: #5e17eb;
+
+    box-shadow: none !important; /* ✅ בלי לבן/הילה */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .menu-button.mobile-only:hover {
+    transform: scale(1.05); /* ✅ בלי translateY */
+  }
 }
 
-.mobile-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-left: auto; /* ⬅️ דוחף לימין */
-}
-
-.mobile-cta {
-  background: #5b4cf5;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 7px 12px;
-  border-radius: 999px; /* ⬅️ pill – SaaS US */
-  text-decoration: none;
-  white-space: nowrap;
-}
