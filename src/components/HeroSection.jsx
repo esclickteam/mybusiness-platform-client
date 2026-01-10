@@ -12,29 +12,37 @@ export default function HeroSection({ children }) {
         </h1>
 
         <p className="hero-subtitle">
-          A professional business page, collaborations,
-          CRM and AI — built to grow with you.
+          One smart platform to manage your business page,
+          clients, collaborations, CRM and AI — all connected.
         </p>
 
         <div className="hero-actions">
+          {/* ✅ Primary CTA */}
           <Link to="/register" className="btn-primary">
             Get started free
           </Link>
 
-          <Link to="/how-it-works" className="btn-ghost">
-            How it works
+          {/* 🔗 Secondary action as text link */}
+          <Link to="/how-it-works" className="hero-link">
+            See how it works →
           </Link>
         </div>
 
         <p className="hero-note">
-          14-day free trial · No credit card · No commitment
+          14-day free trial · No credit card required · Cancel anytime
         </p>
       </div>
 
-      {/* 🔹 DASHBOARD PREVIEW – PART OF HERO */}
+      {/* 🔹 DASHBOARD PREVIEW */}
       {children && (
         <div className="hero-dashboard">
-          {children}
+          <span className="hero-dashboard-label">
+            Dashboard preview
+          </span>
+
+          <div className="hero-dashboard-inner">
+            {children}
+          </div>
         </div>
       )}
     </section>

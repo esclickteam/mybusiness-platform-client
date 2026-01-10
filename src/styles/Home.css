@@ -8,6 +8,14 @@
   --brand-cyan: #22D3EE; /* Salesforce-like accent */
    --brand-cyan-strong: #0891B2; /* cyan-600 */
 
+    /* 🔹 Hero Accent Gradient */
+  --hero-accent-gradient: linear-gradient(
+    90deg,
+    #22D3EE 0%,
+    #5B4CF5 100%
+  );
+
+
 
   /* =========================
      Text – Light backgrounds
@@ -93,16 +101,25 @@
 }
 
 .hero-accent {
-  color: var(--brand-cyan);
+  background: var(--hero-accent-gradient);
+
+  background-clip: text;              /* ✅ standard */
+  -webkit-background-clip: text;      /* ✅ Safari / Chrome */
+
+  color: transparent;                 /* fallback */
+  -webkit-text-fill-color: transparent;
 }
 
-.hero p {
-  font-size: 18px;
-  line-height: 1.6;
+
+.hero-subtitle {
+  font-size: 17px;              /* קצת פחות דומיננטי מה-H1 */
+  line-height: 1.55;
   color: var(--text-on-dark-muted);
-  max-width: 680px;
-  margin: 0 auto 40px;
+  max-width: 640px;
+  margin: 0 auto 36px;
+  opacity: 0.92;                /* מרגיע את הטקסט */
 }
+
 
 .hero-actions {
   display: flex;
@@ -191,6 +208,21 @@
   border-color: rgba(255, 255, 255, 0.6);
 }
 
+/* 🔗 Hero secondary link */
+.hero-link {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  text-decoration: none;
+  align-self: center;
+  padding: 14px 0;
+  transition: opacity 0.2s ease;
+}
+
+.hero-link:hover {
+  opacity: 0.7;
+}
+
+
 /* ===== Scroll Story – Alternating Layout ===== */
 
 /* כל שלב */
@@ -203,7 +235,7 @@
   padding-bottom: 120px;
 
   /* ⬇️ יוצר רווח מה-Hero כדי שהדשבורד "ירחף" */
-  margin-top: 140px;
+  margin-top: 80px;
 }
 
 .step {
@@ -479,3 +511,20 @@
     margin-top: 48px;
   }
 }
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 34px;
+    line-height: 1.15;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
