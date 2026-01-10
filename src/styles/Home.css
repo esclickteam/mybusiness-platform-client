@@ -277,17 +277,17 @@
 }
 
 .dashboard-preview {
-  margin-top: -40px; /* מחבר ויזואלית להירו */
-  padding-bottom: 100px;
+  margin-top: -20px;   /* פחות אגרסיבי */
+  padding-bottom: 80px;
   display: flex;
   justify-content: center;
 }
 
 .dashboard-preview img {
   width: 100%;
-  max-width: 1200px;
-  border-radius: 20px;
-  box-shadow: 0 40px 80px rgba(80, 60, 200, 0.18);
+  max-width: 900px;   /* ⬅️ זה השינוי הכי חשוב */
+  border-radius: 18px;
+  box-shadow: 0 30px 60px rgba(80, 60, 200, 0.15);
 }
 
 
