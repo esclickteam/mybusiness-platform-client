@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function HeroSection({ children }) {
+export default function HeroSection() {
   return (
     <section className="hero">
       {/* 🔹 HERO CONTENT */}
@@ -17,14 +17,9 @@ export default function HeroSection({ children }) {
         </p>
 
         <div className="hero-actions">
-          {/* ✅ Primary CTA */}
+          {/* ✅ Single, clear CTA */}
           <Link to="/register" className="btn-primary">
             Get started free
-          </Link>
-
-          {/* 🔗 Secondary action as text link */}
-          <Link to="/how-it-works" className="hero-link">
-            See how it works →
           </Link>
         </div>
 
@@ -32,19 +27,6 @@ export default function HeroSection({ children }) {
           14-day free trial · No credit card required · Cancel anytime
         </p>
       </div>
-
-      {/* 🔹 DASHBOARD PREVIEW */}
-      {children && (
-        <div className="hero-dashboard">
-          <span className="hero-dashboard-label">
-            Dashboard preview
-          </span>
-
-          <div className="hero-dashboard-inner">
-            {children}
-          </div>
-        </div>
-      )}
     </section>
   );
 }

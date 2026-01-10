@@ -138,42 +138,7 @@
   margin: 0 auto;
 }
 
-.hero-dashboard {
-  margin-top: 64px;          /* מרווח מהטקסט */
-  display: flex;
-  justify-content: center;
 
-  /* ❌ להסיר */
-  /* position: absolute; */
-  /* bottom: -180px; */
-  /* left: 50%; */
-  /* transform: translateX(-50%); */
-}
-
-
-/* ===== Dashboard Preview (Hero) ===== */
-.dashboard-preview {
-  width: 100%;
-  max-width: 820px;          /* ⬅️ מקטין רוחב */
-  background: #ffffff;
-  border-radius: 14px;
-  overflow: hidden;
-
-  /* תחושת SaaS יוקרתית */
-  box-shadow:
-    0 32px 80px rgba(15, 23, 42, 0.18),
-    0 8px 20px rgba(15, 23, 42, 0.08);
-
-  /* הקטנה עדינה בלי לפגוע בפרופורציות */
-  transform: scale(0.92);
-  transform-origin: top center;
-}
-
-.dashboard-preview img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
 
 
 /* ===== Buttons ===== */
@@ -368,6 +333,15 @@
 }
 
 
+/* ===== Scroll Story – Intro Dashboard ===== */
+.step-center {
+  text-align: center;
+}
+
+.step-content-center {
+  max-width: 720px;
+  margin: 0 auto 48px;
+}
 
 
 
@@ -505,12 +479,6 @@
   }
 }
 
-@media (max-width: 768px) {
-  .hero-dashboard {
-    width: 95%;
-    margin-top: 48px;
-  }
-}
 
 @media (max-width: 768px) {
   .hero h1 {

@@ -3,6 +3,31 @@ export default function ScrollStory() {
   return (
     <section className="scroll-story">
       {/* =============================
+          INTRO – DASHBOARD OVERVIEW
+      ============================== */}
+      <div className="step step-center">
+        <div className="step-inner">
+          <div className="step-content step-content-center">
+            <span className="step-label">OVERVIEW</span>
+            <h3>Everything you need. In one dashboard.</h3>
+            <p>
+              See your business performance at a glance — activity, reviews,
+              appointments and insights, all connected in one place.
+            </p>
+          </div>
+
+          <div className="step-visual">
+            <img
+              src="/images/dashboard-preview-v3.png"
+              alt="Business dashboard preview"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* =============================
           Step 1 – Business Page
           IMAGE LEFT | TEXT RIGHT
       ============================== */}
