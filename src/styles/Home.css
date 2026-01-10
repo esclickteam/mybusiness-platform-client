@@ -119,25 +119,18 @@
 .hero-content {
   max-width: 960px;
   margin: 0 auto;
-  position: relative;
-  z-index: 2; /* תמיד מעל הדשבורד */
 }
 
 .hero-dashboard {
-  position: absolute;
-  left: 50%;
-  bottom: -180px; /* ⬅️ פחות אגרסיבי, נראה יוקרתי יותר */
+  margin-top: 80px;          /* מרווח מהטקסט */
+  display: flex;
+  justify-content: center;
 
-  transform: translateX(-50%) scale(0.95);
-  transform-origin: top center;
-
-  width: min(900px, 90%);
-  z-index: auto;
-
-
-  max-width: none;
-  margin-left: 0;
-  margin-right: 0;
+  /* ❌ להסיר */
+  /* position: absolute; */
+  /* bottom: -180px; */
+  /* left: 50%; */
+  /* transform: translateX(-50%); */
 }
 
 
@@ -476,12 +469,8 @@
 }
 
 @media (max-width: 768px) {
-  .hero {
-    padding-bottom: 200px;
-  }
-
   .hero-dashboard {
-    bottom: -160px;
     width: 95%;
+    margin-top: 48px;
   }
 }
