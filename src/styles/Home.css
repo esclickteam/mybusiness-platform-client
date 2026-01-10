@@ -112,12 +112,12 @@
 
 
 .hero-subtitle {
-  font-size: 17px;              /* קצת פחות דומיננטי מה-H1 */
-  line-height: 1.55;
+  font-size: 19px;        /* ⬅️ הגדלה ברורה */
+  line-height: 1.6;       /* קריא ונושם */
   color: var(--text-on-dark-muted);
-  max-width: 640px;
-  margin: 0 auto 36px;
-  opacity: 0.92;                /* מרגיע את הטקסט */
+  max-width: 760px;       /* יותר רחב – כמו בדוגמה */
+  margin: 0 auto 40px;
+  opacity: 0.95;
 }
 
 
@@ -496,3 +496,17 @@
   }
 }
 
+@media (max-width: 768px) {
+  .hero-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    width: 100%;              /* ⬅️ רספונסיבי אמיתי */
+    max-width: 360px;         /* ⬅️ לא ענק מדי */
+    justify-content: center;
+    padding: 16px 24px;       /* ⬅️ tap target נוח */
+    font-size: 16px;
+  }
+}
