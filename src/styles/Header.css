@@ -399,7 +399,8 @@
     position: absolute;     /* מוציא אותו מה־flex */
     right: 16px;            /* מצמיד לימין */
     top: 50%;            /* ✅ כמו HubSpot (קבוע למעלה) */
-    transform: translateY(-50%);
+    transform: translateY(calc(-50% - 10px));
+
       /* ✅ לא מרכז אנכית */
     z-index: 20;
 
@@ -558,11 +559,16 @@
     z-index: 25;
   }
 
-  .menu-button.mobile-only .hamb-line {
-    width: 18px;           /* אורך הפס */
-    height: 2.5px;         /* עובי הפס */
-    background: #0f172a;   /* כהה כמו בתמונה */
-    border-radius: 999px;  /* קצוות עגולים */
-    display: block;
-  }
+ .menu-button.mobile-only .hamb-line {
+  height: 2.5px;
+  background: #0f172a;
+  border-radius: 999px;
+  display: block;
+}
+
+/* ✅ לא אחיד כמו בתמונה */
+.menu-button.mobile-only .hamb-line:nth-child(1) { width: 20px; } /* עליון ארוך */
+.menu-button.mobile-only .hamb-line:nth-child(2) { width: 14px; } /* אמצעי קצר */
+.menu-button.mobile-only .hamb-line:nth-child(3) { width: 18px; } /* תחתון בינוני */
+
 }
