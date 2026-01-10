@@ -21,11 +21,10 @@ export default function Home() {
         />
       </Helmet>
 
-      {/* HERO – Promise */}
-      <HeroSection />
-
-      {/* DASHBOARD PREVIEW – Proof */}
-      <DashboardPreview />
+      {/* HERO + DASHBOARD (מחובר UXית) */}
+      <HeroSection>
+        <DashboardPreview />
+      </HeroSection>
 
       {/* STORY / FEATURES */}
       <ScrollStory />

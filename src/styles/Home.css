@@ -48,6 +48,8 @@
   background: var(--bg-main);
 }
 
+
+
 /* ===== Sections ===== */
 .home-page section {
   padding: 96px 24px;
@@ -61,15 +63,24 @@
 
 /* ===== Hero ===== */
 .hero {
+  position: relative;
   padding-top: 140px;
-  padding-bottom: 140px;
+  padding-bottom: 260px;
+
+  /* ⬇️ זה החלק החדש */
+  padding-left: 24px;
+  padding-right: 24px;
+
   text-align: center;
+
   background: linear-gradient(
     180deg,
     var(--hero-bg-start) 0%,
     var(--hero-bg-mid) 45%,
     var(--hero-bg-end) 100%
   );
+
+  overflow: visible;
 }
 
 .hero h1 {
@@ -103,6 +114,22 @@
   margin-top: 16px;
   font-size: 14px;
   color: var(--text-on-dark-muted);
+}
+
+.hero-content {
+  max-width: 960px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2; /* תמיד מעל הדשבורד */
+}
+
+.hero-dashboard {
+  position: absolute;
+  bottom: -220px;           /* חצי בפנים חצי בחוץ */
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1100px, 95%);
+  z-index: 5;
 }
 
 /* ===== Buttons ===== */
@@ -276,19 +303,6 @@
   color: var(--text-muted);
 }
 
-.dashboard-preview {
-  margin-top: -20px;   /* פחות אגרסיבי */
-  padding-bottom: 80px;
-  display: flex;
-  justify-content: center;
-}
-
-.dashboard-preview img {
-  width: 100%;
-  max-width: 900px;   /* ⬅️ זה השינוי הכי חשוב */
-  border-radius: 18px;
-  box-shadow: 0 30px 60px rgba(80, 60, 200, 0.15);
-}
 
 
 
@@ -424,5 +438,16 @@
 
   .step-content {
     text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding-bottom: 200px;
+  }
+
+  .hero-dashboard {
+    bottom: -160px;
+    width: 95%;
   }
 }

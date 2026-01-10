@@ -1,12 +1,13 @@
 export default function DashboardPreview() {
   return (
-    <section className="dashboard-preview">
+    <div className="dashboard-preview">
       <img
         src="/images/dashboard-preview.png"
         alt="Business dashboard preview"
         loading="lazy"
         decoding="async"
+        draggable={false}
       />
-    </section>
+    </div>
   );
 }
