@@ -182,25 +182,22 @@
     overflow: visible;
   }
 
-  .logo-wrapper {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0 !important;
-    padding: 0 !important;
+    .logo-wrapper {
+    position: static;      /* ⬅️ חשוב */
+    transform: none;       /* ⬅️ חשוב */
+    margin: 0;
+    padding: 0;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .logo-link .logo {
-    height: auto !important;
-    max-height: 160px !important;  /* ימלא כמעט את כל ההידר */
-    width: auto !important;
-    display: block;
+    max-height: 36px;      /* גובה SaaS סטנדרטי */
+    width: auto;
   }
 
- 
+
 
   .nav-links,
   .auth-controls.desktop-only {
@@ -347,12 +344,6 @@
 @media (max-width: 768px) {
   
 
-  /* יישור מדויק לגובה הפעמון */
-  .logo-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
 
   .notification-bell {
     margin-right: 4px;
