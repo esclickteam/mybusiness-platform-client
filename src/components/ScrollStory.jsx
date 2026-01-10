@@ -10,12 +10,14 @@ export default function ScrollStory() {
         <div className="step-inner step-with-visual">
           {/* IMAGE */}
           <div className="step-visual">
-            <img
-              src="/images/business-page.png"
-              alt="Business page preview"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="mockup-frame">
+              <img
+                src="/images/business-page.png"
+                alt="Business page preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
 
           {/* TEXT */}
@@ -48,12 +50,14 @@ export default function ScrollStory() {
 
           {/* IMAGE */}
           <div className="step-visual">
-            <img
-              src="/images/collaborations.png"
-              alt="Collaborations preview"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="mockup-frame">
+              <img
+                src="/images/collaborations.png"
+                alt="Collaborations preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -66,12 +70,14 @@ export default function ScrollStory() {
         <div className="step-inner step-with-visual">
           {/* IMAGE */}
           <div className="step-visual">
-            <img
-              src="/images/crm-ai.png"
-              alt="CRM and AI preview"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="mockup-frame">
+              <img
+                src="/images/crm-ai.png"
+                alt="CRM and AI preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
 
           {/* TEXT */}
