@@ -268,32 +268,20 @@
   opacity: 1;
 }
 
-.step-visual::after {
-  content: "";
-  position: absolute;         /* ⬅️ קריטי */
-  inset: -24px;
-  border-radius: 32px;
-  background: radial-gradient(
-    circle at center,
-    rgba(15, 23, 42, 0.06),
-    transparent 70%
-  );
-  z-index: -1;
-}
 
 
 .step-visual img {
   width: 100%;
-  max-width: 760px; /* ⬅️ הגדלה אמיתית */
+  max-width: 760px;
   height: auto;
   object-fit: contain !important;
   border-radius: 22px;
 
-  box-shadow:
-    0 24px 60px rgba(15, 23, 42, 0.18),
-    0 6px 16px rgba(15, 23, 42, 0.08);
-
   background: #ffffff;
+
+  box-shadow:
+    0 30px 70px rgba(15, 23, 42, 0.18),
+    0 8px 24px rgba(15, 23, 42, 0.1);
 }
 
 .step-right .step-visual {
