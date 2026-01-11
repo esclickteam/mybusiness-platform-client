@@ -281,16 +281,7 @@
 }
 
 .step-visual::after {
-  content: "";
-  position: absolute;         /* ⬅️ קריטי */
-  inset: -24px;
-  border-radius: 32px;
-  background: radial-gradient(
-    circle at center,
-    rgba(15, 23, 42, 0.06),
-    transparent 70%
-  );
-  z-index: -1;
+  display: none !important;
 }
 
 
