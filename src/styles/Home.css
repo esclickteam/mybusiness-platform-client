@@ -253,8 +253,8 @@
 }
 
 .step-visual {
-  width: 820px;        /* 🔒 אותו רוחב לכולם */
-  height: 460px;       /* 🔒 אותו גובה לכולם */
+  width: 740px;        /* 🔒 אותו רוחב לכולם */
+  height: 420px;       /* 🔒 אותו גובה לכולם */
 
   display: flex;
   justify-content: center;
