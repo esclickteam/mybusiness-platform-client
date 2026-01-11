@@ -265,8 +265,8 @@
 ============================= */
 
 .step-ai {
-  margin-top: 100px;   /* היה 180 */
-  margin-bottom: 180px;
+  margin-top: 0;          /* ⬅️ זה התיקון הקריטי */
+  margin-bottom: 180px;   /* נשאר – לסיום חזק */
 }
 
 .step-ai h3 {
