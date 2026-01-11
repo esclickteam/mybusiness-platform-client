@@ -119,7 +119,7 @@ const BizUplyAdvisor = () => {
   ========================= */
   return (
     <div className="BizUply-container">
-      <h1 className="BizUply-header">🧠 BizUply Advisor</h1>
+      <h1 className="BizUply-header"> BizUply Advisor</h1>
 
       <div className="tab-buttons">
         <button

@@ -173,7 +173,7 @@ const MarketingAdvisorTab = ({
   ========================= */
   return (
     <div className="advisor-chat-container">
-      <h2>Marketing Advisor 📈</h2>
+      <h2>Marketing Advisor </h2>
       <p>Select a preset question or start chatting:</p>
 
       {remainingQuestions !== null && (

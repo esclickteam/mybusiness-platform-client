@@ -437,7 +437,7 @@ const AiPartnerTab = ({
     className="ai-partner-container"
     ref={chatScrollRef}
   >
-    <h2>🤖 AI Business Partner</h2>
+    <h2> AI Business Partner</h2>
 
       <div style={{ margin: "1rem 0" }}>
         <button className="toggle-suggestions-btn" onClick={() => setShowHistory((prev) => !prev)}>
