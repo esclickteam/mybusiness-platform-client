@@ -362,6 +362,15 @@
   color: var(--text-main);
 }
 
+.step-left h3 {
+  font-size: 30px; /* היה 28 */
+}
+
+.step-left p {
+  font-size: 18px; /* היה 17 */
+}
+
+
 /* טקסט */
 .scroll-story p {
   font-size: 17px;
@@ -574,5 +583,5 @@
 
   object-fit: cover;      /* 🔥 ממלא את הקונטיינר */
   object-position: center;
-  transform: scale(1.50); /* ✨ מילוי עדין, בלי לפגוע */
+  transform: scale(1.40); /* ✨ מילוי עדין, בלי לפגוע */
 }
