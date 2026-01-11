@@ -43,10 +43,16 @@
   --hero-bg-end:   #1E3A8A; /* blue-900 */
 
   /* =========================
-     Borders
+        Borders
      ========================= */
   --border-soft: #E2E8F0;
+
+  /* =========================
+     ⭐ Unified Card Width
+     ========================= */
+  --card-max-width: 900px;
 }
+
 
 /* ===== Base ===== */
 .home-page {
@@ -350,10 +356,14 @@
 
 .visual-card {
   position: relative;
-  padding: 0;              /* ❌ בלי מסגרת פנימית */
-  border-radius: 0;        /* ❌ לא כרטיס */
-  background: transparent; /* ✅ אין לבן */
-  box-shadow: none;        /* ❌ אין כרטיס */
+  width: 100%;
+  max-width: var(--card-max-width);
+  margin: 0 auto;
+
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 
@@ -363,19 +373,7 @@
   padding: 80px 0;
 }
 
-/* 📦 הכרטיס עצמו */
-.step-fullwidth .visual-card {
-  max-width: 900px;   /* ⭐ הגודל הנכון כמו בדוגמאות */
-  width: 100%;
-  margin: 0 auto;
-}
 
-/* 🖼️ התמונה */
-.step-fullwidth .visual-card img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
 
 
 
