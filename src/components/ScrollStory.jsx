@@ -36,7 +36,7 @@ export default function ScrollStory() {
       <div className="step step-left">
         
         <div className="step-inner step-with-visual">
-          <div className="step-visual">
+          <div className="step-visual step-business-page">
             <div className="visual-card">
               <img
                 src="/images/business-page-v3.png"

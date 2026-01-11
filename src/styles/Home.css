@@ -520,3 +520,8 @@
 .step-right .step-visual img {
   max-width: 500px;
 }
+
+/* Business Page – גדול ומרשים */
+.step-business-page {
+  max-width: 500px;
+}
