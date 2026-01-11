@@ -34,6 +34,7 @@ export default function ScrollStory() {
           IMAGE LEFT | TEXT RIGHT
       ============================== */}
       <div className="step step-left">
+        
         <div className="step-inner step-with-visual">
           <div className="step-visual">
             <div className="visual-card">
@@ -61,29 +62,29 @@ export default function ScrollStory() {
           Step 2 – Collaborations
           TEXT LEFT | IMAGE RIGHT
       ============================== */}
-      <div className="step step-right">
-        <div className="step-inner step-with-visual">
-          <div className="step-content">
-            <span className="step-label">WORK TOGETHER</span>
-            <h3>Collaborations</h3>
-            <p>
-              Work with partners and other businesses — messages, proposals and
-              shared activity.
-            </p>
-          </div>
+     <div className="step step-right step-fullwidth">
+  <div className="step-inner step-with-visual">
+    <div className="step-content">
+      <span className="step-label">WORK TOGETHER</span>
+      <h3>Collaborations</h3>
+      <p>
+        Work with partners and other businesses — messages, proposals and
+        shared activity.
+      </p>
+    </div>
 
-          <div className="step-visual">
-            <div className="visual-card">
-              <img
-                src="/images/collaborations-v8.png"
-                alt="Collaborations preview"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
-        </div>
+    <div className="step-visual">
+      <div className="visual-card">
+        <img
+          src="/images/collaborations-v8.png"
+          alt="Collaborations preview"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
+    </div>
+  </div>
+</div>
 
       {/* =============================
           Step 3 – CRM
