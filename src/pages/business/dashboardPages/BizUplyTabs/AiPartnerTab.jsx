@@ -519,7 +519,7 @@ const AiPartnerTab = ({
               rows={3}
               value={commandText}
               onChange={(e) => setCommandText(e.target.value)}
-              placeholder="Write a command to AI (e.g., schedule a meeting or summarize this week’s meetings)"
+              placeholder="Tell your AI partner what you need — or pick a suggestion below"
               disabled={loading || (remainingQuestions !== null && remainingQuestions <= 0)}
             />
             <button
