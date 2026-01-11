@@ -76,7 +76,7 @@ export default function ScrollStory() {
     <div className="step-visual">
       <div className="visual-card">
         <img
-          src="/images/collaborations-v10.png"
+          src="/images/collaborations-v11.png"
           alt="Collaborations preview"
           loading="lazy"
           decoding="async"
