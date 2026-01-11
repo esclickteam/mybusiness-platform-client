@@ -284,6 +284,7 @@
 
 .step-visual img {
   width: 100%;
+  max-width: 760px;   /* 🔥 כאן הגדלה אמיתית */
   height: auto;
   object-fit: contain !important;
 
