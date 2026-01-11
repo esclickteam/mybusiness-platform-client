@@ -536,3 +536,7 @@
   }
 }
 
+/* ❌ Remove grey glow behind visual cards (CRM / Business / Collaboration) */
+.step-fullwidth .step-visual::after {
+  display: none !important;
+}
