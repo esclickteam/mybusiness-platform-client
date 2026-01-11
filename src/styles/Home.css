@@ -516,15 +516,19 @@
   }
 }
 
-/* 🎯 Collaborations – image smaller */
-.step-right .step-visual img {
-  max-width: 500px;
+/* 🎯 Global visual size – ALL ScrollStory images */
+.scroll-story .step-visual img {
+  width: 100% !important;
+  max-width: 820px !important;   /* ← הגודל האחיד */
+  height: auto !important;
+  object-fit: contain !important;
+  border-radius: 18px !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
-/* Business Page – גדול ומרשים */
-.step-business-page img {
-  max-width: 750px;
-}
+
+
 
 /* ✅ Business Page – make image column bigger */
 .step-with-visual.step-business-page {
@@ -534,7 +538,7 @@
 
 /* ✅ Business Page – bigger image */
 .step-with-visual.step-business-page .step-visual img {
-  max-width: 1400px;  /* תעלי ל-950 אם צריך */
+  max-width: 1000px !important; /* תעלי ל-950 אם צריך */
   width: 100%;
   height: auto;
 }
