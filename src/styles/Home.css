@@ -284,17 +284,14 @@
 
 .step-visual img {
   width: 100%;
-  max-width: 760px; /* ⬅️ הגדלה אמיתית */
   height: auto;
   object-fit: contain !important;
-  border-radius: 22px;
 
-  box-shadow:
-    0 24px 60px rgba(15, 23, 42, 0.18),
-    0 6px 16px rgba(15, 23, 42, 0.08);
-
-  background: #ffffff;
+  border-radius: 18px;
+  background: transparent;
+  box-shadow: none;
 }
+
 
 .step-right .step-visual {
   margin-right: -80px;
@@ -341,6 +338,24 @@
 .step-content-center {
   max-width: 720px;
   margin: 0 auto 48px;
+}
+
+.visual-card {
+  position: relative;
+  padding: 18px;
+  border-radius: 26px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.85),
+    rgba(248,250,252,0.95)
+  );
+
+  box-shadow:
+    0 32px 64px rgba(15, 23, 42, 0.16),
+    0 8px 20px rgba(15, 23, 42, 0.08);
+
+  backdrop-filter: blur(6px);
 }
 
 
