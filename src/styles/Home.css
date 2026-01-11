@@ -43,16 +43,10 @@
   --hero-bg-end:   #1E3A8A; /* blue-900 */
 
   /* =========================
-        Borders
+     Borders
      ========================= */
   --border-soft: #E2E8F0;
-
-  /* =========================
-     ⭐ Unified Card Width
-     ========================= */
-  --card-max-width: 900px;
 }
-
 
 /* ===== Base ===== */
 .home-page {
@@ -74,14 +68,6 @@
   margin-left: auto;
   margin-right: auto;
 }
-
-/* 🔓 Allow full-width steps inside ScrollStory */
-.scroll-story > .step-fullwidth {
-  max-width: none !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-
 
 /* ===== Hero ===== */
 .hero {
@@ -209,9 +195,11 @@
   display: flex;
   flex-direction: column;
   gap: 140px;
-  background: transparent; /* ✅ אין אפור */
+  background: var(--bg-soft);
   padding-top: 120px;
   padding-bottom: 120px;
+
+  /* ⬇️ יוצר רווח מה-Hero כדי שהדשבורד "ירחף" */
   margin-top: 80px;
 }
 
@@ -281,7 +269,16 @@
 }
 
 .step-visual::after {
-  display: none !important;
+  content: "";
+  position: absolute;         /* ⬅️ קריטי */
+  inset: -24px;
+  border-radius: 32px;
+  background: radial-gradient(
+    circle at center,
+    rgba(15, 23, 42, 0.06),
+    transparent 70%
+  );
+  z-index: -1;
 }
 
 
@@ -345,25 +342,11 @@
 
 .visual-card {
   position: relative;
-  width: 100%;
-  max-width: var(--card-max-width);
-  margin: 0 auto;
-
-  background: transparent;
-  padding: 0;
-  border-radius: 0;
-  box-shadow: none;
+  padding: 0;              /* ❌ בלי מסגרת פנימית */
+  border-radius: 0;        /* ❌ לא כרטיס */
+  background: transparent; /* ✅ אין לבן */
+  box-shadow: none;        /* ❌ אין כרטיס */
 }
-
-
-/* 🧱 רקע אפור על כל הרוחב (כמו CRM) */
-.step-fullwidth {
-   background: transparent;
-  padding: 80px 0;
-}
-
-
-
 
 
 
@@ -465,6 +448,12 @@
   margin-right: 0 !important;
 }
 
+/* ✅ Center only the inner container */
+.scroll-story .step-inner {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 
 /* ✅ Mobile: cancel huge min-height so it won't feel broken */
@@ -527,7 +516,3 @@
   }
 }
 
-/* ❌ Remove grey glow behind visual cards (CRM / Business / Collaboration) */
-.step-fullwidth .step-visual::after {
-  display: none !important;
-}
