@@ -511,22 +511,29 @@
   }
 }
 
-/* === Fix for "collaborations-v4.png" style === */
+/* === Collaboration frame – same glass style as CRM === */
 .scroll-story .visual-card {
-  background: transparent !important; /* אין רקע מאחור */
-  box-shadow: 0 16px 48px rgba(91, 76, 245, 0.18); /* צל רך סגול */
+  background: rgba(255, 255, 255, 0.4);    /* שקיפות עדינה */
+  backdrop-filter: blur(30px);             /* אפקט זכוכית */
   border-radius: 26px;
+  box-shadow:
+    0 12px 40px rgba(91, 76, 245, 0.18),   /* צל סגלגל רך */
+    0 4px 12px rgba(91, 76, 245, 0.08);
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0;
+  padding: 32px;                           /* רווח פנימי */
+  border: 1px solid rgba(255, 255, 255, 0.4); /* קו עדין לבן */
 }
 
+/* התמונה עצמה */
 .scroll-story .visual-card img {
-  background: transparent !important; /* ביטול לבן מאחורי התמונה */
-  border-radius: 26px;
   width: 100%;
+  max-width: 900px;
   height: auto;
+  border-radius: 22px;
+  background: transparent !important;      /* בלי לבן מאחורה */
   object-fit: contain;
+  box-shadow: none;                        /* מבטל צל כפול */
 }
