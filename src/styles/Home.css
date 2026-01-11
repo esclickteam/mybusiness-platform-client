@@ -268,21 +268,35 @@
   opacity: 1;
 }
 
-
-
-.step-visual img {
-  width: 100%;
-  max-width: 760px;
-  height: auto;
-  object-fit: contain !important;
-  border-radius: 22px;
-
+.visual-card {
   background: #ffffff;
+  border-radius: 24px;
+  padding: 0;
+  overflow: hidden;
+
+  max-width: 760px; /* ⬅️ כאן */
+  width: 100%;
 
   box-shadow:
     0 30px 70px rgba(15, 23, 42, 0.18),
     0 8px 24px rgba(15, 23, 42, 0.1);
 }
+
+
+
+
+.step-visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain !important;
+
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+
 
 .step-right .step-visual {
   margin-right: -80px;
