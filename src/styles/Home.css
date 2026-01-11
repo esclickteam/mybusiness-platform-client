@@ -295,11 +295,11 @@
 
 
 .step-right .step-visual {
-  margin-right: -140px;
+  margin-right: -80px;
 }
 
 .step-left .step-visual {
-  margin-left: -140px;
+  margin-left: -80px;
 }
 
 
@@ -516,3 +516,7 @@
   }
 }
 
+/* 🎯 Collaborations – image smaller */
+.step-right .step-visual img {
+  max-width: 640px;
+}

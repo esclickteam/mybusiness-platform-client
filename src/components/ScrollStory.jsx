@@ -62,7 +62,7 @@ export default function ScrollStory() {
           Step 2 – Collaborations
           TEXT LEFT | IMAGE RIGHT
       ============================== */}
-     <div className="step step-right step-fullwidth">
+     <div className="step step-right">
   <div className="step-inner step-with-visual">
     <div className="step-content">
       <span className="step-label">WORK TOGETHER</span>
