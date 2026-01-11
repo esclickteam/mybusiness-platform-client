@@ -253,20 +253,16 @@
 }
 
 .step-visual {
+  width: 820px;        /* 🔒 אותו רוחב לכולם */
+  height: 460px;       /* 🔒 אותו גובה לכולם */
+
   display: flex;
   justify-content: center;
   align-items: center;
 
   position: relative;
-  overflow: visible !important;
-
-  height: auto !important;
-  min-height: unset !important;
-
-  /* UX depth – image steps back */
-  transform: none;
-  opacity: 1;
 }
+
 
 .step-visual::after {
   content: "";
@@ -284,9 +280,10 @@
 
 .step-visual img {
   width: 100%;
-  max-width: 850px; /* 🔥 כאן הגדלה אמיתית */
-  height: auto;
-  object-fit: contain !important;
+  height: 100%;
+
+  object-fit: contain;   /* ✅ לא נחתך, נשמר יחס */
+  display: block;
 
   border-radius: 18px;
   background: transparent;
@@ -427,20 +424,6 @@
   font-size: 16px;
 }
 
-@media (max-width: 768px) {
-  .step-with-visual {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .step-visual {
-    order: -1; /* תמונה מעל הטקסט */
-  }
-
-  .step-content {
-    text-align: center;
-  }
-}
 
 /* ✅ Don't constrain ScrollStory children */
 .scroll-story > * {
@@ -462,27 +445,25 @@
   .step-with-visual {
     grid-template-columns: 1fr;
     gap: 40px;
-
-    /* ✅ מבטל את הגובה הכפוי במובייל */
-    min-height: auto !important;
   }
 
   .step-visual {
-    order: -1; /* תמונה מעל הטקסט */
-    min-height: auto !important; /* ✅ מבטל את הגובה הכפוי */
-    height: auto !important;
+    order: -1;           /* תמונה מעל הטקסט */
+    width: 100%;         /* רוחב מלא */
+    height: auto;        /* שחרור הגובה הקבוע */
   }
 
- .step-visual img {
-  width: 100%;
-  max-width: 8500px;   /* 🔥 זה המספר */
-  height: auto;
-}
+  .step-visual img {
+    width: 100%;
+    height: auto;        /* במובייל כן */
+    object-fit: contain;
+  }
 
   .step-content {
     text-align: center;
   }
 }
+
 
 
 @media (max-width: 768px) {
@@ -516,17 +497,6 @@
   }
 }
 
-/* 🎯 Global visual size – ALL ScrollStory images */
-.scroll-story .step-visual img {
-  width: 100% !important;
-  max-width: 820px !important;   /* ← הגודל האחיד */
-  height: auto !important;
-  object-fit: contain !important;
-  border-radius: 18px !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
 
 
 
@@ -538,7 +508,6 @@
 
 /* ✅ Business Page – bigger image */
 .step-with-visual.step-business-page .step-visual img {
-  max-width: 1000px !important; /* תעלי ל-950 אם צריך */
   width: 100%;
-  height: auto;
+  height: 100%;
 }
