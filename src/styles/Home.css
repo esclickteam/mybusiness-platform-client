@@ -247,6 +247,20 @@
 }
 
 
+/* 🎯 Center Step (Dashboard overview) */
+.step-center .step-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.step-center .step-visual {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+
 
 .step-content {
   text-align: left;
