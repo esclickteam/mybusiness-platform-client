@@ -34,18 +34,18 @@ export default function ScrollStory() {
           IMAGE LEFT | TEXT RIGHT
       ============================== */}
       <div className="step step-left">
-        
-        <div className="step-inner step-with-visual">
-          <div className="step-visual step-business-page">
-            <div className="visual-card">
-              <img
-                src="/images/business-page-v4.png"
-                alt="Business page preview"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
+  <div className="step-inner step-with-visual step-business-page">
+    <div className="step-visual">
+      <div className="visual-card">
+        <img
+          src="/images/business-page-v4.png"
+          alt="Business page preview"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+
 
           <div className="step-content">
             <span className="step-label">PLATFORM</span>

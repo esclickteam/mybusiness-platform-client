@@ -298,8 +298,8 @@
   margin-right: -80px;
 }
 
-.step-left .step-visual {
-  margin-left: -80px;
+.step-business-page .step-visual {
+  margin-left: 0; /* ❌ בלי הזזה שמאלה */
 }
 
 
@@ -524,4 +524,17 @@
 /* Business Page – גדול ומרשים */
 .step-business-page img {
   max-width: 750px;
+}
+
+/* ✅ Business Page – make image column bigger */
+.step-with-visual.step-business-page {
+  grid-template-columns: 1.35fr 0.65fr; /* תמונה גדולה, טקסט קטן יותר */
+  gap: 88px;
+}
+
+/* ✅ Business Page – bigger image */
+.step-with-visual.step-business-page .step-visual img {
+  max-width: 960px;  /* תעלי ל-950 אם צריך */
+  width: 100%;
+  height: auto;
 }
