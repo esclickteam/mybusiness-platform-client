@@ -33,7 +33,6 @@ export default function ScrollStory() {
       ============================== */}
       <div className="step step-left">
         <div className="step-inner step-with-visual">
-          {/* IMAGE */}
           <div className="step-visual">
             <img
               src="/images/business-page-v2.png"
@@ -43,7 +42,6 @@ export default function ScrollStory() {
             />
           </div>
 
-          {/* TEXT */}
           <div className="step-content">
             <span className="step-label">PLATFORM</span>
             <h3>Your business page</h3>
@@ -61,7 +59,6 @@ export default function ScrollStory() {
       ============================== */}
       <div className="step step-right">
         <div className="step-inner step-with-visual">
-          {/* TEXT */}
           <div className="step-content">
             <span className="step-label">WORK TOGETHER</span>
             <h3>Collaborations</h3>
@@ -71,7 +68,6 @@ export default function ScrollStory() {
             </p>
           </div>
 
-          {/* IMAGE */}
           <div className="step-visual">
             <img
               src="/images/collaborations-v2.png"
@@ -84,28 +80,53 @@ export default function ScrollStory() {
       </div>
 
       {/* =============================
-          Step 3 – CRM & AI
+          Step 3 – CRM
           IMAGE LEFT | TEXT RIGHT
       ============================== */}
       <div className="step step-left">
         <div className="step-inner step-with-visual">
-          {/* IMAGE */}
           <div className="step-visual">
             <img
-              src="/images/crm-ai.png"
-              alt="CRM and AI preview"
+              src="/images/crm-preview.png"
+              alt="CRM preview"
               loading="lazy"
               decoding="async"
             />
           </div>
 
-          {/* TEXT */}
+          <div className="step-content">
+            <span className="step-label">ORGANIZE</span>
+            <h3>Smart CRM</h3>
+            <p>
+              Manage clients, track conversations, appointments and history —
+              everything stays organized automatically.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* =============================
+          Step 4 – AI
+          TEXT LEFT | IMAGE RIGHT
+      ============================== */}
+      <div className="step step-right">
+        <div className="step-inner step-with-visual">
           <div className="step-content">
             <span className="step-label">GROW SMART</span>
-            <h3>CRM &amp; AI</h3>
+            <h3>AI that works for you</h3>
             <p>
-              Track clients, automate follow-ups and let AI guide your next move.
+              Get smart recommendations, automated follow-ups and insights that
+              help you decide what to do next — faster and better.
             </p>
+          </div>
+
+          <div className="step-visual">
+            <img
+              src="/images/ai-preview.png"
+              alt="AI assistant preview"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         </div>
       </div>
