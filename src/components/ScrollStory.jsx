@@ -17,12 +17,14 @@ export default function ScrollStory() {
           </div>
 
           <div className="step-visual">
-            <img
-              src="/images/dashboard-preview-v3.png"
-              alt="Business dashboard preview"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="visual-card">
+              <img
+                src="/images/dashboard-preview-v3.png"
+                alt="Business dashboard preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -34,12 +36,14 @@ export default function ScrollStory() {
       <div className="step step-left">
         <div className="step-inner step-with-visual">
           <div className="step-visual">
-            <img
-              src="/images/business-page-v2.png"
-              alt="Business page preview"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="visual-card">
+              <img
+                src="/images/business-page-v2.png"
+                alt="Business page preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
 
           <div className="step-content">
@@ -69,12 +73,14 @@ export default function ScrollStory() {
           </div>
 
           <div className="step-visual">
-            <img
-              src="/images/collaborations-v3.png"
-              alt="Collaborations preview"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="visual-card">
+              <img
+                src="/images/collaborations-v4.png"
+                alt="Collaborations preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -86,12 +92,14 @@ export default function ScrollStory() {
       <div className="step step-left">
         <div className="step-inner step-with-visual">
           <div className="step-visual">
-            <img
-              src="/images/crm-preview-v2.png"
-              alt="CRM preview"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="visual-card">
+              <img
+                src="/images/crm-preview-v2.png"
+                alt="CRM preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
 
           <div className="step-content">
@@ -121,12 +129,14 @@ export default function ScrollStory() {
           </div>
 
           <div className="step-visual">
-            <img
-              src="/images/ai-preview.png"
-              alt="AI assistant preview"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="visual-card">
+              <img
+                src="/images/ai-preview.png"
+                alt="AI assistant preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
         </div>
       </div>
