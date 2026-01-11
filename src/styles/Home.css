@@ -209,11 +209,9 @@
   display: flex;
   flex-direction: column;
   gap: 140px;
-  background: var(--bg-soft);
+  background: transparent; /* ✅ אין אפור */
   padding-top: 120px;
   padding-bottom: 120px;
-
-  /* ⬇️ יוצר רווח מה-Hero כדי שהדשבורד "ירחף" */
   margin-top: 80px;
 }
 
