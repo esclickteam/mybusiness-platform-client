@@ -534,7 +534,7 @@
 
 /* ✅ Business Page – bigger image */
 .step-with-visual.step-business-page .step-visual img {
-  max-width: 12000px;  /* תעלי ל-950 אם צריך */
+  max-width: 1400px;  /* תעלי ל-950 אם צריך */
   width: 100%;
   height: auto;
 }
