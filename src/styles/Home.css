@@ -277,9 +277,17 @@
   padding: 80px 0;
 }
 
-.step-ai .visual-card {
-  transform: scale(1.08);
+/* איזון טקסט מול התמונה */
+.step-ai .step-content {
+  max-width: 420px;
 }
+
+/* תמונת AI – נוכחות בלי אגרסיביות */
+.step-ai .visual-card {
+  transform: scale(1.06);
+  box-shadow: 0 20px 60px rgba(91, 76, 245, 0.12);
+}
+
 
 
 
