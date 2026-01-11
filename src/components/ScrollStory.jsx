@@ -118,29 +118,31 @@ export default function ScrollStory() {
           Step 4 – AI
           TEXT LEFT | IMAGE RIGHT
       ============================== */}
-      <div className="step step-right">
-        <div className="step-inner step-with-visual">
-          <div className="step-content">
-            <span className="step-label">GROW SMART</span>
-            <h3>AI that works for you</h3>
-            <p>
-              Get smart recommendations, automated follow-ups and insights that
-              help you decide what to do next — faster and better.
-            </p>
-          </div>
+      <div className="step step-right step-ai">
+  <div className="step-inner step-with-visual">
+    <div className="step-content">
+      <span className="step-label">GROW SMART</span>
+      <h3>AI that works for you</h3>
+      <p>
+        Get smart recommendations, automated follow-ups and insights that
+        help you decide what to do next — faster and better.
+      </p>
+    </div>
 
-          <div className="step-visual">
-            <div className="visual-card">
-              <img
-                src="/images/ai-preview.png"
-                alt="AI assistant preview"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
-        </div>
+    <div className="step-visual">
+      <div className="visual-card">
+        <img
+          src="/images/ai-preview.png"
+          alt="AI assistant preview"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
+    </div>
+  </div>
+</div>
+
+
     </section>
   );
 }

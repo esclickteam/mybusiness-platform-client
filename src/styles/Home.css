@@ -260,6 +260,27 @@
   justify-content: center;
 }
 
+/* =============================
+   AI STEP – FEATURED
+============================= */
+
+.step-ai {
+  margin-top: 180px;
+  margin-bottom: 180px;
+}
+
+.step-ai h3 {
+  font-size: 2.1rem;
+}
+
+.step-ai .step-inner {
+  padding: 80px 0;
+}
+
+.step-ai .visual-card {
+  transform: scale(1.08);
+}
+
 
 
 .step-content {
