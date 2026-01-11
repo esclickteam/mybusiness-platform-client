@@ -87,7 +87,7 @@ export default function ScrollStory() {
         <div className="step-inner step-with-visual">
           <div className="step-visual">
             <img
-              src="/images/crm-preview.png"
+              src="/images/crm-preview-v2.png"
               alt="CRM preview"
               loading="lazy"
               decoding="async"
