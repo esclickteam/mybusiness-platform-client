@@ -513,5 +513,5 @@
 
   object-fit: cover;      /* 🔥 ממלא את הקונטיינר */
   object-position: center;
-  transform: scale(1.05); /* ✨ מילוי עדין, בלי לפגוע */
+  transform: scale(1.50); /* ✨ מילוי עדין, בלי לפגוע */
 }
