@@ -585,3 +585,71 @@
   object-position: center;
   transform: scale(1.40); /* ✨ מילוי עדין, בלי לפגוע */
 }
+
+.why-bizuply {
+  padding: 96px 16px;
+  background: #ffffff;
+}
+
+.why-bizuply .container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.why-bizuply .header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.why-bizuply h2 {
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.why-bizuply .header p {
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.feature {
+  padding: 32px;
+  border-radius: 16px;
+  background: #f9fafb;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.feature .icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.feature h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.feature p {
+  font-size: 15px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .features {
+    grid-template-columns: 1fr;
+  }
+}
