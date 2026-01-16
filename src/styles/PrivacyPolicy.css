@@ -20,10 +20,13 @@
 
   color: #0f172a;
   line-height: 1.75;
+
+  /* ✅ text rendering helpers */
+  hyphens: auto;
 }
 
 /* ======================================================
-   Inner readable column (החלק הקריטי!)
+   Inner readable column
 ====================================================== */
 
 .privacy-policy-page > h1,
@@ -42,7 +45,7 @@
 .terms-title {
   font-size: 2.6rem;
   font-weight: 800;
-  text-align: center; /* רק הכותרת ממורכזת */
+  text-align: center;
   margin-bottom: 12px;
 
   background: linear-gradient(90deg, #6a11cb, #2575fc);
@@ -88,6 +91,14 @@
   font-size: 1.02rem;
   color: #334155;
   margin-bottom: 16px;
+
+  /* ✅ align */
+  text-align: justify;
+  text-justify: inter-word;
+
+  /* ✅ safer wrapping for long words/urls */
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 /* Strong emphasis */
@@ -95,19 +106,6 @@
   color: #4c1d95;
   font-weight: 600;
 }
-
-/* Paragraphs + Lists alignment */
-.terms-section p,
-.terms-section li {
-  text-align: justify;
-  text-justify: inter-word;
-}
-
-.privacy-policy-page {
-  hyphens: auto;
-}
-
-
 
 /* ======================================================
    Lists
@@ -123,6 +121,14 @@
   color: #334155;
   margin-bottom: 10px;
   line-height: 1.6;
+
+  /* ✅ align */
+  text-align: justify;
+  text-justify: inter-word;
+
+  /* ✅ safer wrapping */
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 /* ======================================================
