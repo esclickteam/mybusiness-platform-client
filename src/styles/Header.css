@@ -6,20 +6,20 @@
 .app-header {
   position: sticky;
   top: 0;
+  z-index: 1000;
 
   display: flex;
   align-items: center;
+  justify-content: space-between;
 
   height: 72px;
-  padding: 0 32px;
+  padding: 0 28px;
 
-  /* ✅ Salesforce-style header background */
-  background: #F4F6F9;
+  background: #ffffff; /* לבן אמיתי */
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 
-  /* הפרדה עדינה */
-  border-bottom: 1px solid #D8DDE6;
-
-  z-index: 1502;
+  /* טיפה עומק – לא חובה אבל מומלץ */
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
 }
 
 
@@ -126,6 +126,7 @@
 }
 
 /* ===== CTA Button ===== */
+
 .cta-button {
   display: inline-flex;
   align-items: center;
