@@ -188,12 +188,26 @@
     bottom: 12px;
   }
 
+  /* 🔹 Launcher חוזר לעיגול */
   .plb-launch-pill {
-    height: 44px;
-    padding: 0 18px;
-    font-size: 13.5px;
+    width: 56px;
+    height: 56px;
+    padding: 0;
+
+    border-radius: 50%;
+    justify-content: center;
   }
 
+  /* מסתירים טקסט במובייל */
+  .plb-launch-text {
+    display: none;
+  }
+
+  .plb-launch-icon {
+    font-size: 22px;
+  }
+
+  /* חלון הבוט */
   .plb-window {
     width: calc(100vw - 24px);
   }
