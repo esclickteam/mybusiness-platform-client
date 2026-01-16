@@ -52,22 +52,51 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 40px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #222;
+  gap: 44px;
+
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0f172a;
 }
+
 .nav-links a {
+  position: relative;
   text-decoration: none;
-  color: #222;
-  transition: color 0.2s;
-  padding: 8px 0;
+  color: #0f172a;
+
+  padding: 10px 0;
+  transition: color 0.2s ease;
 }
+
+/* underline SaaS-style */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+
+  background: #5e17eb;          /* אותו צבע של CTA */
+  opacity: 0;
+
+  transform: scaleX(0.6);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
 .nav-links a:hover,
 .nav-links a.active-link {
   color: #5e17eb;
-  font-weight: 600;
 }
+
+.nav-links a:hover::after,
+.nav-links a.active-link::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
 
 /* ===== Auth Controls (Desktop) ===== */
 .auth-controls.desktop-only {
