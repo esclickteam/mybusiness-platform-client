@@ -128,9 +128,9 @@
 }
 
 .hero-note {
-  margin-top: 16px;
-  font-size: 14px;
-  color: var(--text-on-dark-muted);
+  margin-top: 20px;
+  font-size: 13px;
+  color: rgba(224, 242, 254, 0.8);
 }
 
 .hero-content {
@@ -143,19 +143,38 @@
 
 /* ===== Buttons ===== */
 .btn-primary {
-  background: var(--brand-purple);
+  background: linear-gradient(
+    135deg,
+    #6D5CF6 0%,
+    #5B4CF5 55%,
+    #4B3DE0 100%
+  );
   color: #ffffff;
-  padding: 14px 28px;
-  border-radius: 12px;
-  font-weight: 600;
+
+  padding: 18px 40px;          /* ⬅️ גדול ובטוח */
+  border-radius: 18px;         /* ⬅️ יותר פרימיום */
+  font-weight: 700;
+  font-size: 17px;
+
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  transition: background 0.2s ease;
+  justify-content: center;
+
+  box-shadow:
+    0 10px 30px rgba(91, 76, 245, 0.45),
+    0 0 0 0 rgba(91, 76, 245, 0.35);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .btn-primary:hover {
-  background: var(--brand-purple-hover);
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 40px rgba(91, 76, 245, 0.55),
+    0 0 0 6px rgba(91, 76, 245, 0.18);
 }
 
 .btn-ghost {
