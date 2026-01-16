@@ -1,112 +1,140 @@
 /* ===========================
-   💜 BizUply – Login Page
+   BizUply – Login Page (SaaS / Premium UX)
    =========================== */
 
+/* Page */
 .login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #a855f7, #6c63ff);
-  background-size: 300% 300%;
-  animation: bgMove 12s ease-in-out infinite;
-  padding: 20px;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px 18px;
+
+  /* ✅ clean background (no heavy purple gradient) */
+  background:
+    radial-gradient(900px 420px at 20% 20%, rgba(91, 76, 245, 0.14), transparent 60%),
+    radial-gradient(900px 420px at 80% 70%, rgba(34, 211, 238, 0.12), transparent 60%),
+    #f6f7fb;
 }
 
-@keyframes bgMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* תיבת התחברות */
+/* Card */
 .login-box {
-  background: #fafafa;
-  border-radius: 18px;
-  padding: 40px 35px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
-  max-width: 420px;
   width: 100%;
+  max-width: 460px;
+
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 22px;
+  padding: 44px 40px;
+
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+
   text-align: center;
-  animation: fadeIn 0.7s ease-in-out;
+  animation: fadeIn 0.55s ease both;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* כותרת */
+/* Title */
 .login-box h2 {
-  font-family: "Poppins", sans-serif;
-  font-size: 1.9rem;
-  font-weight: 700;
-  margin-bottom: 24px;
-  color: #3b0ca3;
+  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  font-size: 40px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+
+  margin: 0 0 22px;
+  color: #0f172a;
 }
 
-/* קבוצת שדות */
+/* Field group */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   text-align: left;
 }
 
 label {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #333;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.80);
+  margin-bottom: 8px;
 }
 
 .required {
-  color: #d21f1f;
-  margin-left: 2px;
+  color: #b42318;
 }
 
-/* שדות קלט */
+/* Inputs */
 .login-input,
 .password-input {
   width: 100%;
-  padding: 12px 44px 12px 14px; /* מקום לעין */
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  background: #f2f6ff;
-  font-size: 15px;
-  transition: 0.3s;
+  height: 56px;
+  padding: 0 16px;
+
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #ffffff;
+
+  font-size: 16px;
   color: #0f172a;
-  font-family: "Poppins", sans-serif;
+  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  text-align: left !important;
+  direction: ltr;
+}
+
+.login-input::placeholder,
+.password-input::placeholder {
+  color: rgba(71, 85, 105, 0.75);
 }
 
 .login-input:focus,
 .password-input:focus {
-  border-color: #7c3aed;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
   outline: none;
+  border-color: rgba(91, 76, 245, 0.80);
+  box-shadow: 0 0 0 4px rgba(91, 76, 245, 0.15);
 }
 
-/* עין בפנים השדה */
+/* Password wrapper */
 .password-input-wrapper {
   position: relative;
-  display: flex;
-  align-items: center; /* ✅ ממרכז את העין אנכית */
   width: 100%;
 }
 
+.password-input {
+  padding-right: 52px; /* space for icon */
+}
+
+/* Toggle icon (proper centering, no weird transforms) */
 .password-toggle-btn {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
-  transform: translateY(-105%);
+  transform: translateY(-50%);
+
   border: none;
-  background: none;
+  background: transparent;
   cursor: pointer;
-  display: flex;
+
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #777;
-  font-size: 18px;
-  padding: 0;
-  line-height: 1;
-  transition: color 0.25s ease;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+
+  color: rgba(15, 23, 42, 0.55);
+  transition: background 0.18s ease, color 0.18s ease;
 }
 
 .password-toggle-btn svg {
@@ -115,132 +143,143 @@ label {
 }
 
 .password-toggle-btn:hover {
-  color: #7c3aed;
+  background: rgba(15, 23, 42, 0.06);
+  color: rgba(91, 76, 245, 0.95);
 }
 
 .password-toggle-btn:focus {
   outline: none;
 }
 
-/* כפתור התחברות */
+.password-toggle-btn:focus-visible {
+  box-shadow: 0 0 0 4px rgba(91, 76, 245, 0.18);
+}
+
+/* Primary button */
 .login-button {
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(90deg, #7c3aed, #9333ea);
-  color: #fff;
-  font-size: 1.05rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  height: 58px;
   margin-top: 10px;
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.25);
+
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+
+  background: #5b4cf5;
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: 0 16px 40px rgba(91, 76, 245, 0.25);
 }
 
 .login-button:hover {
-  background: linear-gradient(90deg, #9333ea, #7c3aed);
-  transform: translateY(-2px);
+  background: #4b3de0;
+  transform: translateY(-1px);
+  box-shadow: 0 18px 46px rgba(75, 61, 224, 0.28);
 }
 
-/* שכחת סיסמה */
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: 0 14px 36px rgba(75, 61, 224, 0.22);
+}
+
+/* Forgot password */
 .forgot-inside-btn {
-  display: inline-block;
-  margin-top: 12px;
-  color: #7c3aed;
-  font-size: 0.95rem;
-  background: none;
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 14px;
+  padding: 10px 14px;
+
+  color: #5b4cf5;
+  font-size: 14px;
+  font-weight: 800;
+
+  background: rgba(91, 76, 245, 0.06);
+  border: 1px solid rgba(91, 76, 245, 0.18);
+  border-radius: 14px;
+
   cursor: pointer;
-  text-decoration: underline;
-  font-weight: 500;
-  transition: color 0.25s ease;
+  text-decoration: none;
+
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
 
 .forgot-inside-btn:hover {
-  color: #5e17eb;
+  background: rgba(91, 76, 245, 0.10);
+  border-color: rgba(91, 76, 245, 0.26);
+  transform: translateY(-1px);
 }
 
-/* הודעת שגיאה */
+/* Error message */
 .error-message {
-  color: #d21f1f;
-  margin-top: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+
+  color: #b42318;
+  background: rgba(180, 35, 24, 0.06);
+  border: 1px solid rgba(180, 35, 24, 0.18);
+  border-radius: 14px;
+  padding: 10px 12px;
+
+  text-align: left;
 }
 
-/* קישורים נוספים */
+/* Extra options text */
 .login-extra-options {
-  margin-top: 25px;
-  color: #444;
-  font-size: 0.9rem;
+  margin-top: 22px;
+  font-size: 14px;
+  color: #475569;
+  text-align: center;
 }
 
 .signup-link-text {
-  color: #7c3aed;
-  font-weight: 600;
-  transition: color 0.25s ease;
+  color: #5b4cf5;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .signup-link-text:hover {
-  color: #5e17eb;
+  text-decoration: underline;
 }
 
-/* כפתור צוות */
+/* Staff button (secondary) */
 .staff-login-btn {
-  margin-top: 15px;
-  background: #eee;
-  color: #333;
-  border: 1px solid #ddd;
-  padding: 10px;
+  margin-top: 14px;
   width: 100%;
-  border-radius: 10px;
+  height: 50px;
+
+  border-radius: 14px;
   cursor: pointer;
-  font-weight: 600;
-  transition: background 0.25s ease;
+
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  color: rgba(15, 23, 42, 0.80);
+
+  font-weight: 800;
+  transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
 }
 
 .staff-login-btn:hover {
-  background: #e0e0e0;
+  background: rgba(15, 23, 42, 0.05);
+  border-color: rgba(15, 23, 42, 0.14);
+  transform: translateY(-1px);
 }
 
-/* יישור תוכן בתוך שדות הקלט לשמאל */
-.login-input,
-.password-input {
-  text-align: left !important;
-  direction: ltr; /* מוודא שהמייל והסיסמה יוצגו נכון באנגלית */
-}
-
-
-/* רספונסיביות */
-@media (max-width: 480px) {
+/* Responsive */
+@media (max-width: 520px) {
   .login-box {
-    padding: 30px 25px;
+    padding: 34px 18px;
+    border-radius: 18px;
   }
+
   .login-box h2 {
-    font-size: 1.6rem;
-  }
-  .login-input,
-  .password-input {
-    font-size: 14px;
+    font-size: 34px;
   }
 }
-
-@media (max-width: 480px) {
-  .password-input {
-    font-size: 14px;
-    padding: 11px 42px 11px 12px;
-    background: #fff; /* ✅ נשאר לבן מלא גם במובייל */
-  }
-
-   .password-toggle-btn {
-    right: -150px; /* זהה לדסקטופ */
-    top: 50%; /* ממורכז אנכית בדיוק */
-    transform: translateY(-105%); /* ✅ אותו גובה כמו בדסקטופ */
-    background: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-    outline: none !important;
-  }
-}
-
