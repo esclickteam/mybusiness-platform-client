@@ -7,6 +7,10 @@
   width: 100%;
   padding: 80px 0 120px;
 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
@@ -19,10 +23,14 @@
   line-height: 1.75;
 }
 
-.privacy-policy-page > * {
+
+
+/* Inner readable column */
+.privacy-policy-page > h1,
+.privacy-policy-page > .terms-date,
+.privacy-policy-page > section {
+  width: 100%;
   max-width: 880px;
-  margin-left: auto;
-  margin-right: auto;
   padding: 0 24px;
 }
 
@@ -124,7 +132,14 @@
 
 @media (max-width: 768px) {
   .privacy-policy-page {
-    padding: 60px 18px 100px;
+    padding: 60px 0 100px; /* ❗ בלי padding צדדי */
+  }
+
+  /* Inner readable column */
+  .privacy-policy-page > h1,
+  .privacy-policy-page > .terms-date,
+  .privacy-policy-page > section {
+    padding: 0 18px;
   }
 
   .terms-title {
@@ -143,7 +158,14 @@
 
 @media (max-width: 480px) {
   .privacy-policy-page {
-    padding: 48px 16px 90px;
+    padding: 48px 0 90px; /* ❗ בלי padding צדדי */
+  }
+
+  /* Inner readable column */
+  .privacy-policy-page > h1,
+  .privacy-policy-page > .terms-date,
+  .privacy-policy-page > section {
+    padding: 0 16px;
   }
 
   .terms-title {
@@ -155,3 +177,4 @@
     margin-bottom: 44px;
   }
 }
+
