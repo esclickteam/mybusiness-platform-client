@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import API from "../../api"; // ⬅️ ודאי שהנתיב נכון אצלך
 import "./UpgradeOfferCard.css";
 
 function formatTimeLeft(ms) {
@@ -35,6 +36,15 @@ export default function UpgradeOfferCard({
   const msLeft = Math.max(0, targetTs - now);
   const isExpired = msLeft <= 0;
 
+  /* ✅ סימון חד־פעמי בשרת */
+  const markSeen = async () => {
+    try {
+      await API.post("/users/mark-upgrade-banner-seen");
+    } catch {
+      // שקט — זה לא קריטי ל-UX
+    }
+  };
+
   return (
     <div className="offer-overlay" role="dialog" aria-modal="true">
       <div className="offer-card">
@@ -42,15 +52,17 @@ export default function UpgradeOfferCard({
         <button
           type="button"
           className="offer-close"
-          onClick={onClose}
           aria-label="Close offer"
+          onClick={async () => {
+            await markSeen();   // ⬅️ קריטי
+            onClose?.();
+          }}
         >
           ×
         </button>
 
         <span className="offer-badge">🎁 Limited-time</span>
 
-        {/* ⭐ Price highlight */}
         <h2 className="offer-title">
           First Month Only{" "}
           <span className="price-highlight">$99</span>
@@ -75,12 +87,14 @@ export default function UpgradeOfferCard({
           Then <strong>$119/month</strong>. Cancel anytime.
         </p>
 
-        {/* ✅ הכפתור הקריטי — מוגדר כ־button */}
         <button
           type="button"
           className="offer-upgrade-btn"
-          onClick={onUpgrade}
           disabled={isExpired}
+          onClick={async () => {
+            await markSeen();   // ⬅️ גם כאן
+            onUpgrade?.();
+          }}
         >
           Upgrade for $99
         </button>
