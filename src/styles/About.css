@@ -1,118 +1,101 @@
-/* ===========================================
-   BizUply – About Page Styles
-   =========================================== */
+/* ===========================
+   About – Unified SaaS UX
+   Same style as Solutions / Features / Pricing
+=========================== */
 
 .about-container {
-  max-width: 1100px;
+  width: 100%;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 80px 24px;
-  font-family: "Poppins", "Inter", sans-serif;
+  padding: 80px 25px;
   color: #0f172a;
-  line-height: 1.7;
+  line-height: 1.8;
+  font-family: "Poppins", sans-serif;
+
+  /* ❌ אין רקע כאן */
+  background: transparent;
 }
 
-/* ---------- Title ---------- */
+/* ===========================
+   Page Title
+=========================== */
+
 .about-title {
-  font-size: 2.4rem;
+  font-size: 2.6rem;
   font-weight: 700;
-  color: #4b0082; /* deep violet tone */
   text-align: center;
-  margin-bottom: 40px;
+  line-height: 1.25;
+  margin-bottom: 2.2rem;
+
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* ---------- Section Headings ---------- */
+/* ===========================
+   Paragraphs
+=========================== */
+
+.about-paragraph {
+  font-size: 1.05rem;
+  color: #334155;
+  margin-bottom: 2.2rem;
+}
+
+/* ===========================
+   Section Titles
+=========================== */
+
 .about-section-title {
   font-size: 1.6rem;
   font-weight: 600;
-  margin-top: 60px;
-  margin-bottom: 18px;
-  color: #6a11cb;
-  text-transform: capitalize;
+  margin-top: 3.2rem;
+  margin-bottom: 1rem;
+  color: #5a0fb0;
 }
 
-/* ---------- Paragraphs ---------- */
-.about-paragraph {
-  font-size: 1.05rem;
-  color: #1e293b;
-  margin-bottom: 24px;
-}
+/* ===========================
+   Lists
+=========================== */
 
-/* ---------- Lists ---------- */
 .about-list {
-  margin: 20px 0 40px;
-  padding-left: 22px;
+  list-style: none;
+  padding-left: 0;
+  margin: 1.2rem 0 2.2rem;
 }
 
 .about-list li {
-  font-size: 1rem;
-  margin-bottom: 14px;
-  color: #374151;
   position: relative;
-  padding-left: 6px;
+  padding-left: 26px;
+  margin-bottom: 14px;
+  font-size: 1.02rem;
+  color: #334155;
 }
 
-.about-list li strong {
-  color: #4b0082;
-  font-weight: 600;
-}
-
-/* ---------- Emphasis ---------- */
-.about-paragraph em {
-  font-style: italic;
+.about-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: 0;
   color: #6a11cb;
+  font-size: 1.4rem;
+  line-height: 1;
 }
 
-/* ---------- Links (if used in text) ---------- */
-.about-container a {
-  color: #6a11cb;
-  font-weight: 500;
-  text-decoration: none;
-  transition: color 0.25s ease;
-}
+/* ===========================
+   Responsive
+=========================== */
 
-.about-container a:hover {
-  color: #4b0082;
-  text-decoration: underline;
-}
+@media (max-width: 768px) {
+  .about-title {
+    font-size: 2.2rem;
+  }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 992px) {
+  .about-section-title {
+    font-size: 1.4rem;
+  }
+
   .about-container {
     padding: 60px 20px;
-  }
-
-  .about-title {
-    font-size: 2.1rem;
-  }
-
-  .about-section-title {
-    font-size: 1.5rem;
-    margin-top: 50px;
-  }
-
-  .about-paragraph {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 600px) {
-  .about-container {
-    padding: 50px 16px;
-  }
-
-  .about-title {
-    font-size: 1.9rem;
-  }
-
-  .about-section-title {
-    font-size: 1.35rem;
-  }
-
-  .about-paragraph {
-    font-size: 0.95rem;
-  }
-
-  .about-list li {
-    font-size: 0.95rem;
   }
 }
