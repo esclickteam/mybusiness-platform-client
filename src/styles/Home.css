@@ -524,94 +524,108 @@
 }
 
 
-/* ===== FAQ Mini – Salesforce style (tight) ===== */
 
 /* ===== FAQ Mini – Salesforce style (embedded) ===== */
 
+
+/* ===== FAQ SECTION ===== */
 .faq-mini {
-  padding: 96px 24px;
-  background: transparent; /* ⬅️ קריטי – נטמע ברקע הכללי */
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 20px;
 }
 
-/* Title */
+/* כותרת – שחורה, נקייה */
 .faq-title {
   text-align: center;
-  font-size: 36px;
+  font-size: 42px;
   font-weight: 700;
-  margin-bottom: 56px;
-  color: var(--text-main); /* ⬅️ שחור */
+  color: #0f172a; /* שחור רך */
+  margin-bottom: 48px;
+  letter-spacing: -0.02em;
 }
 
-/* List wrapper */
+/* ===== LIST ===== */
 .faq-list {
-  max-width: 1100px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-/* Item */
+/* כל שאלה – בלי קופסה לבנה */
 .faq-item {
-  border-bottom: 1px solid var(--border-soft);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-/* Question row */
+/* ===== QUESTION BUTTON ===== */
 .faq-question {
   width: 100%;
-  background: none;
+  background: transparent;
   border: none;
-  padding: 22px 32px;            /* מרווח Salesforce מדויק */
+  padding: 28px 0;
   display: flex;
-  align-items: center;           /* ⬅️ מונע גובה מיותר */
+  align-items: center;
   justify-content: space-between;
   cursor: pointer;
   text-align: left;
 }
 
-/* Question text */
-.faq-question span:first-child {
-  font-size: 22px;
+/* טקסט השאלה */
+.faq-q {
+  font-size: 20px;
   font-weight: 600;
-  line-height: 1.2;              /* ⬅️ מונע “ניפוח” */
-  color: var(--text-main);
-  display: block;
+  color: #0f172a;
+  transition: color 0.2s ease;
 }
 
-/* Plus / Minus icon */
+/* hover עדין */
+.faq-question:hover .faq-q {
+  color: #1e40af; /* כחול Salesforce עדין */
+}
+
+/* ===== ICON ===== */
 .faq-icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: #eef4ff;
-  color: #0b3a82;
-  font-size: 20px;
+  background: rgba(30, 64, 175, 0.06);
+  color: #1e40af;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  font-size: 22px;
+  font-weight: 500;
+  transition: all 0.25s ease;
 }
 
-/* Answer container */
+.faq-item.open .faq-icon {
+  background: rgba(30, 64, 175, 0.12);
+  transform: rotate(180deg);
+}
+
+/* ===== ANSWER ===== */
 .faq-answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
+  padding: 0 0 24px 0;
 }
 
-/* Open state */
-.faq-item.open .faq-answer {
-  max-height: 200px;
-}
-
-/* Answer text */
 .faq-answer p {
-  margin: 0 0 20px;
-  padding-left: 32px;            /* ⬅️ אותו קו כמו השאלה */
-  padding-right: 32px;
-  font-size: 17px;
-  line-height: 1.6;
-  color: var(--text-muted);
+  margin: 0;
+  max-width: 760px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #475569; /* אפור קריא */
 }
 
+/* ===== MOBILE ===== */
+@media (max-width: 640px) {
+  .faq-title {
+    font-size: 32px;
+  }
 
+  .faq-q {
+    font-size: 18px;
+  }
+}
 
 
 /* ===== Final CTA ===== */
