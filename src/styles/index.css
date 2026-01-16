@@ -50,6 +50,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.app-layout {
+  direction: ltr;
+}
+
+
 /* ===========================
    GLOBAL BOX MODEL
 =========================== */

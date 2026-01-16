@@ -124,7 +124,7 @@ export default function App() {
 
   return (
     <NotificationsProvider>
-  <div className="app-layout">
+  <div className="app-layout" dir="ltr">
     <Header onToggleNotifications={() => setShowNotifications(v => !v)} />
     <ScrollToTop />
 
