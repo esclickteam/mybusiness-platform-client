@@ -450,6 +450,12 @@
   display: inline-flex;
 }
 
+.why-bizuply .icon svg {
+  width: 52px;
+  height: 52px;
+}
+
+
 .why-bizuply .feature {
   background: var(--bg-main);
   border-radius: 20px;
@@ -478,6 +484,22 @@
   line-height: 1.6;
   color: var(--text-muted);
 }
+
+/* ===== Why Bizuply Layout ===== */
+.why-bizuply .features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-top: 64px;
+}
+
+@media (max-width: 900px) {
+  .why-bizuply .features {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
 
 
 
