@@ -187,7 +187,8 @@ useEffect(() => {
     setShowEarlyBirdModal(true);
     bannerMarkedRef.current = true;
 
-    API.post("/user/mark-upgrade-banner-seen").catch(() => {});
+     API.post("/users/mark-upgrade-banner-seen").catch(() => {});
+
   }
 }, [
   initialized,
