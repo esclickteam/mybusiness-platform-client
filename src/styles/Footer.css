@@ -6,6 +6,9 @@
     #2a3442 100%
   );
 
+  /* 🔒 מונע דריסות */
+  background-color: #2a3442;
+
   color: #ffffff;
   padding: 64px 20px 28px;
   margin-top: 40px;
