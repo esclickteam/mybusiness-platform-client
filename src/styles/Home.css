@@ -499,6 +499,15 @@
   color: var(--text-muted);
 }
 
+.why-bizuply .header {
+  text-align: center;
+}
+
+.why-bizuply .header p {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
 /* ===== Why Bizuply Layout ===== */
 .why-bizuply .features {
   display: grid;
