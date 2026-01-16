@@ -531,112 +531,79 @@
    FAQ – QUESTIONS ONLY
    ========================= */
 
-section.faq-mini .faq-item {
-  background: transparent !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+.faq-sf {
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-section.faq-mini .faq-question {
+.faq-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+.faq-list {
+  border-top: 1px solid #e5e7eb;
+}
+
+.faq-item {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* QUESTION ROW */
+.faq-question {
   width: 100%;
-  background: transparent !important;
+  background: none;
   border: none;
-  padding: 28px 28px;
+  padding: 24px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  text-align: left;
 }
 
-section.faq-mini .faq-q {
-  font-size: 20px;
+.faq-q {
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #0f172a;
+  color: #0b1f44;
 }
 
-section.faq-mini .faq-question:hover .faq-q {
-  color: #1e40af;
-}
-
-section.faq-mini .faq-title {
-  margin-bottom: 32px; /* היה בפועל ~48–56 */
-}
-
-
-/* ===== PLUS ICON ===== */
-
-section.faq-mini .faq-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(30, 64, 175, 0.06);
-  color: #1e40af;
+/* ICON (עיגול כמו Salesforce) */
+.faq-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: #0b5cff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
-  transition: background 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
 }
 
-section.faq-mini .faq-item.open .faq-icon {
-  background: rgba(30, 64, 175, 0.12);
-  transform: rotate(180deg);
+/* ANSWER */
+.faq-answer {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.2s ease;
 }
 
-/* לצמצם רוחב FAQ כמו Salesforce */
-section.faq-mini .faq-list {
-  max-width: 820px;   /* זה הקסם */
-  margin: 0 auto;     /* מרכז */
+.faq-item.open .faq-answer {
+  max-height: 300px;
+  opacity: 1;
 }
 
-section.faq-mini .faq-question {
-  padding: 24px 28px;
-}
-
-
-
-/* ===== ANSWER ===== */
-
-section.faq-mini .faq-answer {
-  padding-left: 28px;
-  padding-right: 28px;
-  padding-bottom: 24px;
-}
-
-section.faq-mini .faq-item,
-section.faq-mini .faq-question,
-section.faq-mini .faq-answer {
-  overflow: hidden !important;
-}
-
-section.faq-mini .faq-question:focus,
-section.faq-mini .faq-question:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-
-
-section.faq-mini .faq-answer p {
-  margin: 0;
-  max-width: 760px;
-  font-size: 16px;
+.faq-answer p {
+  margin: 0 0 24px;
+  max-width: 720px;
+  font-size: 1.05rem;
   line-height: 1.7;
-  color: #475569;
+  color: #334155;
 }
-
-/* ===== MOBILE ===== */
-
-@media (max-width: 640px) {
-  section.faq-mini .faq-q {
-    font-size: 18px;
-  }
-}
-
-
 
 
 /* ===== Final CTA ===== */
@@ -749,22 +716,3 @@ section.faq-mini .faq-answer p {
   transform: scale(1.40); /* ✨ מילוי עדין, בלי לפגוע */
 }
 
-/* FORCE FAQ TITLE TO BLACK – FINAL */
-section.faq-mini h2,
-section.faq-mini h2.faq-title {
-  background: none !important;
-  background-image: none !important;
-
-  /* חשוב: לבטל text clip */
-  background-clip: border-box !important;
-  -webkit-background-clip: border-box !important;
-
-  /* להחזיר צבע טקסט רגיל */
-  color: #0f172a !important;
-  -webkit-text-fill-color: #0f172a !important;
-}
-
-section.faq-mini .faq-item.open {
-  border-left: 4px solid #5B4CF5;
-  overflow: hidden;          /* ⬅️ קריטי */
-}
