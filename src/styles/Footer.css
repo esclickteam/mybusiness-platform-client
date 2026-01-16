@@ -8,12 +8,12 @@
 
   /* 🎯 רקע רגוע, לא Hero */
   background: linear-gradient(
-  180deg,
-  #3b4758 0%,
-  #2a3442 100%
-);
+    180deg,
+    #3b4758 0%,
+    #2a3442 100%
+  );
 
-  color: #e5e7eb;
+  color: #ffffff; /* לבן אחיד לכל הפוטר */
   padding: 64px 20px 28px;
   margin-top: 40px;
   font-family: "Poppins", sans-serif;
@@ -32,7 +32,7 @@
 }
 
 /* ─────────────────────────
-   כותרות טורים – רגועות
+   כותרות טורים
 ───────────────────────── */
 .footer-col h4 {
   color: #ffffff;
@@ -55,13 +55,14 @@
 }
 
 .footer-link {
-  color: rgba(255, 255, 255, 0.82);
+  color: #ffffff;
   font-weight: 500;
+  text-decoration: none;
 }
 
 .footer-link:hover {
   color: #ffffff;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 /* ─────────────────────────
@@ -75,22 +76,31 @@
 
 .footer-desc {
   font-size: 0.95rem;
-  color: rgba(226, 232, 240, 0.75);
+  color: #ffffff;
   margin-top: 12px;
   line-height: 1.7;
   max-width: 280px;
 }
 
 /* ─────────────────────────
-   קו הפרדה תחתון – עדין מאוד
+   כתובת
+───────────────────────── */
+.footer-address-text {
+  color: #ffffff;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ─────────────────────────
+   תחתית
 ───────────────────────── */
 .footer-bottom {
   text-align: center;
   margin-top: 48px;
   font-size: 0.85rem;
-  color: rgba(226, 232, 240, 0.6);
+  color: #ffffff;
 
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   padding-top: 18px;
 }
 

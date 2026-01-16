@@ -21,7 +21,7 @@ function Footer() {
           <ul>
             <li><Link to="/how-it-works" className="footer-link">How It Works</Link></li>
             <li><Link to="/features" className="footer-link">Features</Link></li>
-            <li><Link to="/Pricing" className="footer-link">Pricing</Link></li>
+            <li><Link to="/pricing" className="footer-link">Pricing</Link></li>
             <li><Link to="/solutions" className="footer-link">Solutions</Link></li>
           </ul>
         </div>
@@ -45,6 +45,17 @@ function Footer() {
             <li><Link to="/privacy-policy" className="footer-link">Privacy Policy</Link></li>
             <li><Link to="/accessibility" className="footer-link">Accessibility</Link></li>
           </ul>
+        </div>
+
+        {/* Column 5: Billing Address */}
+        <div className="footer-col footer-address">
+          <h4>Billing address</h4>
+          <p className="footer-address-text">
+            1007 N Orange Street, 4th Floor<br />
+            Ste 1382<br />
+            Wilmington, DE 19801<br />
+            United States
+          </p>
         </div>
       </div>
 
