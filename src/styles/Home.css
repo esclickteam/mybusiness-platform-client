@@ -528,63 +528,42 @@
 /* ===== FAQ Mini – Salesforce style (embedded) ===== */
 
 
-/* ===== FAQ SECTION ===== */
-.faq-mini {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 80px 20px;
-}
+/* =========================
+   FAQ – QUESTIONS ONLY
+   ========================= */
 
-/* כותרת – שחורה, נקייה */
-.faq-title {
-  text-align: center;
-  font-size: 42px;
-  font-weight: 700;
-  color: #0f172a; /* שחור רך */
-  margin-bottom: 48px;
-  letter-spacing: -0.02em;
-}
-
-/* ===== LIST ===== */
-.faq-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-/* כל שאלה – בלי קופסה לבנה */
-.faq-item {
+section.faq-mini .faq-item {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-/* ===== QUESTION BUTTON ===== */
-.faq-question {
+section.faq-mini .faq-question {
   width: 100%;
-  background: transparent;
+  background: transparent !important;
   border: none;
   padding: 28px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  text-align: left;
 }
 
-/* טקסט השאלה */
-.faq-q {
+section.faq-mini .faq-q {
   font-size: 20px;
   font-weight: 600;
   color: #0f172a;
-  transition: color 0.2s ease;
 }
 
-/* hover עדין */
-.faq-question:hover .faq-q {
-  color: #1e40af; /* כחול Salesforce עדין */
+section.faq-mini .faq-question:hover .faq-q {
+  color: #1e40af;
 }
 
-/* ===== ICON ===== */
-.faq-icon {
+/* ===== PLUS ICON ===== */
+
+section.faq-mini .faq-icon {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -595,37 +574,37 @@
   justify-content: center;
   font-size: 22px;
   font-weight: 500;
-  transition: all 0.25s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.faq-item.open .faq-icon {
+section.faq-mini .faq-item.open .faq-icon {
   background: rgba(30, 64, 175, 0.12);
   transform: rotate(180deg);
 }
 
 /* ===== ANSWER ===== */
-.faq-answer {
+
+section.faq-mini .faq-answer {
   padding: 0 0 24px 0;
 }
 
-.faq-answer p {
+section.faq-mini .faq-answer p {
   margin: 0;
   max-width: 760px;
   font-size: 16px;
   line-height: 1.7;
-  color: #475569; /* אפור קריא */
+  color: #475569;
 }
 
 /* ===== MOBILE ===== */
-@media (max-width: 640px) {
-  .faq-title {
-    font-size: 32px;
-  }
 
-  .faq-q {
+@media (max-width: 640px) {
+  section.faq-mini .faq-q {
     font-size: 18px;
   }
 }
+
+
 
 
 /* ===== Final CTA ===== */
