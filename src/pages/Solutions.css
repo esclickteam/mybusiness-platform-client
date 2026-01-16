@@ -1,100 +1,142 @@
+/* ===========================
+   Solutions – SAME STYLE AS FEATURES
+=========================== */
+
 .solutions-page {
-  background: linear-gradient(180deg, #f5f6ff 0%, #ede9ff 100%);
-  min-height: 100vh;
   width: 100%;
   padding: 80px 25px;
   color: #0f172a;
   line-height: 1.8;
 }
 
+/* Container */
 .solutions-container {
   max-width: 950px;
   margin: 0 auto;
 }
 
+/* ===========================
+   Titles
+=========================== */
+
 .solutions-title {
   font-size: 2.6rem;
   font-weight: 700;
   text-align: center;
+  margin-bottom: 2.4rem;
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+
+  /* 🎨 same gradient headline style */
   background: linear-gradient(90deg, #6a11cb, #2575fc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
-  margin-bottom: 2.4rem;
-  line-height: 1.3;
-  letter-spacing: -0.3px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
 }
+
+/* ===========================
+   Paragraphs
+=========================== */
 
 .solutions-paragraph {
   font-size: 1.1rem;
   color: #334155;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2.8rem;
   text-align: center;
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/* ===========================
+   Solution Blocks
+=========================== */
+
 .solution-block {
-  margin-bottom: 3rem;
+  margin-bottom: 3.2rem;
 }
 
 .solution-title {
   font-size: 1.4rem;
   font-weight: 600;
   color: #5a0fb0;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
 }
 
 .solution-subtitle {
   color: #64748b;
-  font-size: 1rem;
-  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.9rem;
 }
 
 .solution-text {
   color: #334155;
   font-size: 1.05rem;
-  line-height: 1.8;
+  line-height: 1.85;
 }
+
+/* ===========================
+   Section Summary
+=========================== */
 
 .solutions-section-title {
   font-size: 1.6rem;
   font-weight: 600;
   color: #5a0fb0;
   text-align: center;
-  margin-top: 3rem;
-  margin-bottom: 1rem;
+  margin-top: 3.6rem;
+  margin-bottom: 1.2rem;
 }
+
+/* ===========================
+   CTA
+=========================== */
 
 .solutions-cta {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-top: 2rem;
+  gap: 16px;
+  margin-top: 2.4rem;
+  flex-wrap: wrap;
 }
 
 .cta-button {
   background: linear-gradient(90deg, #6a11cb, #2575fc);
-  color: white;
-  padding: 0.8rem 1.6rem;
-  border-radius: 50px;
+  color: #ffffff;
+  padding: 0.85rem 1.7rem;
+  border-radius: 999px;
   font-weight: 600;
   text-decoration: none;
-  transition: 0.3s ease;
+  transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
 .cta-button-outline {
   border: 2px solid #6a11cb;
   color: #6a11cb;
-  padding: 0.8rem 1.6rem;
-  border-radius: 50px;
+  padding: 0.85rem 1.7rem;
+  border-radius: 999px;
   font-weight: 600;
   text-decoration: none;
-  transition: 0.3s ease;
+  transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
 .cta-button:hover,
 .cta-button-outline:hover {
   opacity: 0.9;
   transform: translateY(-2px);
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media (max-width: 768px) {
+  .solutions-title {
+    font-size: 2.1rem;
+  }
+
+  .solutions-paragraph {
+    font-size: 1rem;
+  }
 }
