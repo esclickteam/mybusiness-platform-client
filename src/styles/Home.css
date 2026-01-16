@@ -544,7 +544,7 @@ section.faq-mini .faq-question {
   width: 100%;
   background: transparent !important;
   border: none;
-  padding: 28px 0;
+  padding: 28px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -717,3 +717,17 @@ section.faq-mini .faq-answer p {
   transform: scale(1.40); /* ✨ מילוי עדין, בלי לפגוע */
 }
 
+/* FORCE FAQ TITLE TO BLACK – FINAL */
+section.faq-mini h2,
+section.faq-mini h2.faq-title {
+  background: none !important;
+  background-image: none !important;
+
+  /* חשוב: לבטל text clip */
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+
+  /* להחזיר צבע טקסט רגיל */
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
