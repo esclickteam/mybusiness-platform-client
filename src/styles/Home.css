@@ -755,3 +755,8 @@ section.faq-mini h2.faq-title {
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
 }
+
+section.faq-mini .faq-item.open {
+  box-shadow: none !important;
+  border-left: 4px solid #4f46e5; /* אם את רוצה accent */
+}
