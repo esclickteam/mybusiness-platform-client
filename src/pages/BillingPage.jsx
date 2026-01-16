@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Billing.css";
 
 export default function SubscriptionPlanCard() {
   const { user, refreshUser, setUser } = useAuth();
+  const navigate = useNavigate();
 
   const [loadingCancel, setLoadingCancel] = useState(false);
   const [loadingResume, setLoadingResume] = useState(false);
@@ -200,10 +202,7 @@ export default function SubscriptionPlanCard() {
 
           {/* EXPIRED */}
           {!isActive && (
-            <button
-              className="renew-btn"
-              onClick={() => (window.location.href = "/pricing")}
-            >
+            <button className="renew-btn" onClick={() => navigate("/pricing")}>
               Renew / Upgrade Plan
             </button>
           )}
