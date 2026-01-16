@@ -1,151 +1,144 @@
-/* ============================
-   💜 BizUply – Terms of Service Style
-   ============================ */
-
-/* 🌈 Background */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #e9dcff 0%, #ffffff 100%);
-  color: #2e2e2e;
-  line-height: 1.8;
-  font-weight: 400;
-  direction: ltr;
-  overflow-x: hidden;
-}
-
-/* 🌟 Main Container */
+/* =========================
+   🌐 Page Layout
+========================= */
 .terms-container {
-  max-width: 960px;
-  margin: 70px auto 100px auto;
-  padding: 60px 70px;
-  background: #ffffff;
-  border-radius: 25px;
-  box-shadow: 0 20px 60px rgba(111, 45, 168, 0.25);
-  transition: all 0.3s ease;
-  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f6f7fb 0%, #ecebff 100%);
+  padding: 80px 20px 100px;
+  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #0f172a;
 }
 
-.terms-container:hover {
-  box-shadow: 0 25px 80px rgba(111, 45, 168, 0.35);
-  transform: translateY(-4px);
-}
-
-/* 🌟 Header Title */
+/* =========================
+   Header
+========================= */
 .terms-title {
   text-align: center;
-  font-size: 44px;
-  font-weight: 900;
-  color: #5e35b1;
-  letter-spacing: 1px;
-  margin-bottom: 20px;
-  text-shadow: 0 2px 6px rgba(93, 33, 153, 0.25);
+  font-size: 2.6rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
 }
 
-/* 🌟 Last Updated */
 .terms-date {
   text-align: center;
-  color: #7a7a7a;
-  font-size: 16px;
-  margin-bottom: 50px;
-  font-style: italic;
+  font-size: 0.95rem;
+  color: #64748b;
+  margin-bottom: 60px;
 }
 
-/* 🌟 Sections */
+/* =========================
+   Section Card
+========================= */
 .terms-section {
-  margin-bottom: 45px;
+  max-width: 920px;
+  margin: 0 auto 32px;
+  background: #ffffff;
+  padding: 34px 36px;
+  border-radius: 20px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.1);
 }
 
+/* =========================
+   Section Headings
+========================= */
 .terms-section h2 {
-  font-size: 28px;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #6a1b9a;
-  background: linear-gradient(90deg, #f6e9ff 0%, #efe3ff 100%);
-  padding: 10px 14px;
-  border-left: 6px solid #9c27b0;
-  border-radius: 10px;
-  margin-bottom: 18px;
-  box-shadow: 0 3px 10px rgba(156, 39, 176, 0.15);
-}
-
-.terms-section p,
-.terms-section li {
-  font-size: 17.5px;
-  color: #3a3a3a;
+  color: #5a0fb0;
   margin-bottom: 16px;
-  text-align: justify;
 }
 
-/* 🌿 Bullet Lists */
+.terms-section h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #6d28d9;
+  margin-top: 26px;
+  margin-bottom: 12px;
+}
+
+/* =========================
+   Paragraphs
+========================= */
+.terms-section p {
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: #334155;
+  margin-bottom: 14px;
+}
+
+/* =========================
+   Lists
+========================= */
 .terms-section ul {
-  padding-left: 30px;
-  margin-bottom: 20px;
+  margin: 12px 0 18px 18px;
+  padding-left: 10px;
 }
 
-.terms-section li::marker {
-  color: #9c27b0;
+.terms-section li {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #334155;
 }
 
-/* ⚖️ Legal Note (highlighted cross-reference) */
-.legal-note {
-  background: linear-gradient(90deg, #f8f3ff, #f3e9ff);
-  border-left: 5px solid #b06ef8;
-  color: #4a148c;
-  padding: 12px 18px;
-  border-radius: 10px;
-  margin-bottom: 25px;
-  font-size: 16px;
+/* =========================
+   Emphasis
+========================= */
+.terms-section strong {
+  color: #0f172a;
   font-weight: 600;
 }
 
-/* 🌟 Back to Top Button */
-.back-to-top {
-  position: fixed;
-  bottom: 35px;
-  right: 35px;
-  background: linear-gradient(135deg, #7e57c2, #9c27b0);
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 50px;
-  font-size: 15px;
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(156, 39, 176, 0.45);
-  transition: all 0.3s ease;
-  z-index: 1000;
+/* =========================
+   Legal Highlight Box
+========================= */
+.legal-note {
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #92400e;
+  margin: 20px 0;
 }
 
-.back-to-top:hover {
-  background: linear-gradient(135deg, #9c27b0, #b16cff);
-  transform: scale(1.08);
+/* =========================
+   Contact Section
+========================= */
+.terms-section a {
+  color: #6d28d9;
+  font-weight: 500;
+  text-decoration: none;
 }
 
-/* 🖥️ Responsive Design */
+.terms-section a:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   Footer spacing
+========================= */
+.terms-section:last-of-type {
+  margin-bottom: 0;
+}
+
+/* =========================
+   Responsive
+========================= */
 @media (max-width: 768px) {
-  .terms-container {
-    padding: 35px 25px;
-    margin: 40px auto 70px auto;
-    width: 92%;
+  .terms-title {
+    font-size: 2.2rem;
   }
 
-  .terms-title {
-    font-size: 34px;
+  .terms-section {
+    padding: 26px 22px;
   }
 
   .terms-section h2 {
-    font-size: 22px;
-    padding: 8px 12px;
-  }
-
-  .terms-section p,
-  .terms-section li {
-    font-size: 15.5px;
-  }
-
-  .back-to-top {
-    bottom: 25px;
-    right: 25px;
-    padding: 10px 14px;
-    font-size: 14px;
+    font-size: 1.35rem;
   }
 }
