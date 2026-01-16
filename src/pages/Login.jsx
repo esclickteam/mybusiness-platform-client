@@ -166,7 +166,7 @@ export default function Login() {
           <p className="signup-link">
             Don’t have an account?{" "}
             <Link to="/register" className="signup-link-text">
-              Create one free
+              Start 14-day free trial
             </Link>
           </p>
         </div>
