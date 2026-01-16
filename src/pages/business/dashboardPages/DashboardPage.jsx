@@ -171,10 +171,9 @@ const DashboardPage = () => {
 useEffect(() => {
   if (!initialized || !user) return;
 
-  // כבר נצפה → לא להציג ולא לסמן שוב
-  if (user.hasSeenUpgradeBanner) return;
+  // 🔒 חסימה מוחלטת
+  if (user.hasSeenUpgradeBanner === true) return;
 
-  // רק משתמשי טריאל
   if (user.subscriptionPlan !== "trial" || user.hasPaid) return;
 
   const startDate = user.trialStartedAt || user.createdAt;
@@ -184,39 +183,33 @@ useEffect(() => {
     (Date.now() - new Date(startDate).getTime()) /
     (1000 * 60 * 60 * 24);
 
-  if (daysPassed >= 4 && !showEarlyBirdModal && !bannerMarkedRef.current) {
-    setShowEarlyBirdModal(true);
-    bannerMarkedRef.current = true;
+  if (daysPassed < 4) return;
 
-    API.post("/users/mark-upgrade-banner-seen")
-  .then(() => {
-    setUser((prev) => {
-      if (!prev) return prev;
+  // 🔒 מונע ריצה כפולה גם אם user מתחלף
+  if (bannerMarkedRef.current) return;
+  bannerMarkedRef.current = true;
 
-      const updated = {
-        ...prev,
-        hasSeenUpgradeBanner: true,
-      };
+  // ✅ קודם סימון שרת + קליינט
+  API.post("/users/mark-upgrade-banner-seen").catch(() => {});
 
-      // ⬅️ חשוב: גם localStorage
-      localStorage.setItem(
-        "businessDetails",
-        JSON.stringify(updated)
-      );
+  setUser((prev) =>
+    prev ? { ...prev, hasSeenUpgradeBanner: true } : prev
+  );
 
-      return updated;
-    });
-  })
-  .catch(() => {});
+  localStorage.setItem(
+    "businessDetails",
+    JSON.stringify({
+      ...user,
+      hasSeenUpgradeBanner: true,
+    })
+  );
 
-  }
+  // ✅ רק עכשיו UI
+  setShowEarlyBirdModal(true);
+
 }, [
   initialized,
   user?.hasSeenUpgradeBanner,
-  user?.subscriptionPlan,
-  user?.hasPaid,
-  user?.trialStartedAt,
-  showEarlyBirdModal,
 ]);
 
 
@@ -588,8 +581,11 @@ if (isRefreshingUser) {
   return <p className="dp-loading">⏳ Refreshing user info...</p>;
 }
 
-const shouldShowEarlyBirdModal = showEarlyBirdModal;
-
+const shouldShowEarlyBirdModal =
+  showEarlyBirdModal &&
+  user?.hasSeenUpgradeBanner !== true &&
+  user?.subscriptionPlan === "trial" &&
+  !user?.hasPaid;
 
 
   /* derived */
