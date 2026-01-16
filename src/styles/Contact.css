@@ -192,3 +192,29 @@
     padding: 30px 22px 34px;
   }
 }
+
+/* =========================
+   FIX react-phone-input width
+========================= */
+
+/* הקונטיינר עצמו */
+.phone-container,
+.react-tel-input {
+  width: 100% !important;
+}
+
+/* האינפוט הפנימי של הספרייה */
+.react-tel-input .form-control {
+  width: 100% !important;
+  height: 54px !important;
+  padding-left: 58px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+}
+
+/* דגל */
+.react-tel-input .flag-dropdown {
+  border-radius: 14px 0 0 14px !important;
+}
