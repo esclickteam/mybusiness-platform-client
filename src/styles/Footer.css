@@ -5,34 +5,48 @@
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
-  background: linear-gradient(135deg, #1e1bcb, #6a11cb);
-  color: #fff;
-  padding: 60px 20px 25px;
+
+  /* 🎯 רקע רגוע, לא Hero */
+  background: linear-gradient(
+    180deg,
+    #1e293b 0%,   /* slate-800 */
+    #0f172a 100%  /* slate-900 */
+  );
+
+  color: #e5e7eb;
+  padding: 64px 20px 28px;
   margin-top: 40px;
   font-family: "Poppins", sans-serif;
 }
 
-/* תוכן מרכזי */
+/* ─────────────────────────
+   תוכן מרכזי
+───────────────────────── */
 .footer-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 50px;
+  gap: 48px;
   max-width: 1200px;
   margin: 0 auto;
   text-align: left;
 }
 
-/* כותרות טורים */
+/* ─────────────────────────
+   כותרות טורים – רגועות
+───────────────────────── */
 .footer-col h4 {
   margin-bottom: 18px;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #ffd700;
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  color: rgba(255, 255, 255, 0.9);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.08em;
 }
 
-/* רשימות וקישורים */
+/* ─────────────────────────
+   רשימות וקישורים
+───────────────────────── */
 .footer-col ul {
   list-style: none;
   padding: 0;
@@ -45,54 +59,58 @@
 
 .footer-link {
   text-decoration: none;
-  color: #d1d5db;
+  color: rgba(226, 232, 240, 0.7);
   font-size: 0.95rem;
   line-height: 1.7;
-  transition: all 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .footer-link:hover {
   color: #ffffff;
-  text-decoration: underline;
 }
 
-/* עמודת לוגו ותקציר */
+/* ─────────────────────────
+   לוגו ותקציר
+───────────────────────── */
 .footer-logo {
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   font-weight: 800;
   color: #ffffff;
 }
 
 .footer-desc {
   font-size: 0.95rem;
-  color: #ccc;
+  color: rgba(226, 232, 240, 0.75);
   margin-top: 12px;
   line-height: 1.7;
   max-width: 280px;
-  opacity: 0.9;
 }
 
-/* תחתית הפוטר */
+/* ─────────────────────────
+   קו הפרדה תחתון – עדין מאוד
+───────────────────────── */
 .footer-bottom {
   text-align: center;
-  margin-top: 45px;
+  margin-top: 48px;
   font-size: 0.85rem;
-  color: #d1d5db;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(226, 232, 240, 0.6);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding-top: 18px;
-  opacity: 0.8;
 }
 
-/* רספונסיביות */
+/* ─────────────────────────
+   רספונסיביות
+───────────────────────── */
 @media (max-width: 768px) {
   .footer-container {
     grid-template-columns: 1fr 1fr;
     text-align: center;
-    gap: 30px;
+    gap: 32px;
   }
 
   .footer-col {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
   .footer-logo {
