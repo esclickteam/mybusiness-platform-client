@@ -149,6 +149,36 @@
   transform: translateY(-1px);
 }
 
+.login-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #032d60;
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.login-link:hover {
+  background: rgba(3, 45, 96, 0.06);
+  color: #0176d3;
+}
+
+.login-icon {
+  font-size: 16px;
+}
+
+
 /* ===== Hamburger (mobile only) ===== */
  
 

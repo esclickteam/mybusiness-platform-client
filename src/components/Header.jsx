@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo_final.svg";
-import { FaBars } from "react-icons/fa";
+import { FaUser, FaBars } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 import MobileMenu from "./MobileMenu";
@@ -20,7 +20,7 @@ export default function Header() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // ✅ בדשבורד לא מציגים Header
+  // 🚫 בדשבורד לא מציגים Header
   const isDashboard =
     location.pathname.includes("/dashboard") ||
     location.pathname.includes("/business/");
@@ -41,14 +41,14 @@ export default function Header() {
   return (
     <>
       <nav className="app-header">
-        {/* 🔹 לוגו (מרכז במובייל) */}
+        {/* 🔹 Logo */}
         <div className="logo-wrapper">
           <Link to="/" className="logo-link">
             <img src={logo} alt="Bizuply Logo" className="logo" />
           </Link>
         </div>
 
-        {/* 🔹 ניווט בדסקטופ */}
+        {/* 🔹 Navigation (Desktop) */}
         <div className="nav-links desktop-only">
           {navLinks.map((item) => (
             <Link
@@ -61,13 +61,17 @@ export default function Header() {
           ))}
         </div>
 
-        {/* 🔹 פעולות בדסקטופ */}
+        {/* 🔹 Auth controls (Desktop) */}
         <div className="auth-controls desktop-only">
           {!user ? (
             <>
-              <Link to="/login" className="auth-link">
+              {/* Login – icon + text (NOT a button) */}
+              <Link to="/login" className="login-link">
+                <FaUser className="login-icon" />
                 Login
               </Link>
+
+              {/* Try it Free – soft CTA */}
               <Link to="/register" className="cta-button">
                 Try it Free
               </Link>
@@ -75,39 +79,44 @@ export default function Header() {
           ) : (
             <>
               <span className="hello-user">Hello, {user.name}</span>
-              <Link to="/dashboard" className="auth-link">
+
+              <Link to="/dashboard" className="login-link">
                 My Account
               </Link>
-              <button onClick={handleLogout} className="auth-link logout">
+
+              <button
+                onClick={handleLogout}
+                className="login-link logout"
+              >
                 Logout
               </button>
             </>
           )}
         </div>
 
-        {/* 🔹 🔥 מובייל: Try it free + המבורגר */}
+        {/* 🔹 Mobile – Try it Free */}
         {!user && (
           <Link
             to="/register"
             className="mobile-try-free mobile-only"
           >
-            Try it free
+            Try it Free
           </Link>
         )}
 
+        {/* 🔹 Mobile – Hamburger */}
         <button
-  className="menu-button mobile-only"
-  onClick={() => setMenuOpen(true)}
-  aria-label="Open menu"
->
-  <span className="hamb-line" />
-  <span className="hamb-line" />
-  <span className="hamb-line" />
-</button>
-
+          className="menu-button mobile-only"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Open menu"
+        >
+          <span className="hamb-line" />
+          <span className="hamb-line" />
+          <span className="hamb-line" />
+        </button>
       </nav>
 
-      {/* 🔹 תפריט מובייל */}
+      {/* 🔹 Mobile Menu */}
       <MobileMenu
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
