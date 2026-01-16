@@ -25,7 +25,7 @@ export default function FAQMini() {
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
-    <section className="faq-sf">
+    <section className="faq-mini">
       <h2 className="faq-title">Frequently Asked Questions</h2>
 
       <div className="faq-list">
@@ -44,9 +44,11 @@ export default function FAQMini() {
                 <span className="faq-icon">{isOpen ? "−" : "+"}</span>
               </button>
 
-              <div className="faq-answer">
-                <p>{item.a}</p>
-              </div>
+              {isOpen && (
+                <div className="faq-answer">
+                  <p>{item.a}</p>
+                </div>
+              )}
             </div>
           );
         })}
