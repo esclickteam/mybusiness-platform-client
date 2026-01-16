@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
 import { lazyWithPreload } from "../utils/lazyWithPreload";
 import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import "../styles/Login.css";
 
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
@@ -109,6 +110,7 @@ export default function Login() {
             <label htmlFor="password">
               Password <span className="required">*</span>
             </label>
+
             <div className="password-input-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
@@ -123,42 +125,16 @@ export default function Login() {
               />
 
               <button
-  type="button"
-  onClick={() => setShowPassword((p) => !p)}
-  className={`password-toggle-btn ${showPassword ? "active" : ""}`}
-  aria-label={showPassword ? "Hide password" : "Show password"}
->
-  {showPassword ? (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  ) : (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.67 21.67 0 0 1 5.06-6.94" />
-      <path d="M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-5.12" />
-      <path d="M1 1l22 22" />
-    </svg>
-  )}
-</button>
-
-
+                type="button"
+                onClick={() => setShowPassword((p) => !p)}
+                className={`password-toggle-btn ${
+                  showPassword ? "active" : ""
+                }`}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
