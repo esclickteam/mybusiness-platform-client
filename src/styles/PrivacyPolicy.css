@@ -4,9 +4,12 @@
 .terms-container {
   min-height: 100vh;
   padding: 80px 20px 100px;
-  background: linear-gradient(180deg, #f6f7fb 0%, #ecebff 100%);
-  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: transparent;   /* ✅ חשוב */
+  max-width: 100%;
+  margin: 0 auto;
+
+  font-family: "Poppins", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: #0f172a;
 }
 
