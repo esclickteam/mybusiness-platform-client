@@ -1,20 +1,53 @@
+"use client";
+
+import { useState } from "react";
+
+const FAQS = [
+  {
+    q: "Is there a free trial?",
+    a: "Yes. You can start with a free trial. No credit card required.",
+  },
+  {
+    q: "Does it work on mobile?",
+    a: "Absolutely. Bizuply is fully responsive and works perfectly on mobile.",
+  },
+  {
+    q: "Can I grow into more features?",
+    a: "Yes. Start simple and unlock advanced tools as your business grows.",
+  },
+];
+
 export default function FAQMini() {
+  const [openIndex, setOpenIndex] = useState(null);
+
   return (
     <section className="faq-mini">
-      <details>
-        <summary>Is there a free trial?</summary>
-        <p>Yes. No credit card required.</p>
-      </details>
+      <h2 className="faq-title">Frequently Asked Questions</h2>
 
-      <details>
-        <summary>Does it work on mobile?</summary>
-        <p>Absolutely.</p>
-      </details>
+      <div className="faq-list">
+        {FAQS.map((item, i) => {
+          const isOpen = openIndex === i;
 
-      <details>
-        <summary>Can I grow into more features?</summary>
-        <p>Yes. Start simple and expand when ready.</p>
-      </details>
+          return (
+            <div
+              key={i}
+              className={`faq-item ${isOpen ? "open" : ""}`}
+            >
+              <button
+                className="faq-question"
+                onClick={() => setOpenIndex(isOpen ? null : i)}
+              >
+                <span>{item.q}</span>
+                <span className="faq-icon">{isOpen ? "–" : "+"}</span>
+              </button>
+
+              <div className="faq-answer">
+                <p>{item.a}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }
