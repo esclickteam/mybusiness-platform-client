@@ -23,6 +23,7 @@
 }
 
 
+
 /* Logo */
 .logo-wrapper {
   display: flex;
@@ -629,4 +630,8 @@
 .menu-button.mobile-only .hamb-line:nth-child(2) { width: 14px; } /* אמצעי קצר */
 .menu-button.mobile-only .hamb-line:nth-child(3) { width: 18px; } /* תחתון בינוני */
 
+}
+
+.nav-links a {
+  text-decoration: none !important;
 }
