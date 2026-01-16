@@ -756,8 +756,19 @@ section.faq-mini h2.faq-title {
   -webkit-text-fill-color: #0f172a !important;
 }
 
-/* ✅ ביטול הקו הסגול בצד של ה־FAQ */
+/* ✅ Remove purple "scroll" / highlight on open FAQ item */
 section.faq-mini .faq-item.open {
-  border-left: none !important;
+  border-color: rgba(15, 23, 42, 0.10) !important; /* או transparent אם את רוצה */
+  box-shadow: none !important;                      /* זה מבטל את הסגול */
+  border-left: none !important;                     /* ליתר בטחון */
+}
+
+/* אם הפס נוצר מ-::before */
+section.faq-mini .faq-item.open::before,
+section.faq-mini .faq-item::before {
+  content: none !important;
+  display: none !important;
+  background: none !important;
   box-shadow: none !important;
+  border: none !important;
 }
