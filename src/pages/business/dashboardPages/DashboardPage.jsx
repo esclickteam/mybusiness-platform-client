@@ -165,7 +165,6 @@ const DashboardPage = () => {
 
   const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(false);
 
-  const bannerMarkedRef = useRef(false);
 
 useEffect(() => {
   if (!initialized || !user) return;
@@ -183,12 +182,8 @@ useEffect(() => {
     (Date.now() - new Date(startDate).getTime()) /
     (1000 * 60 * 60 * 24);
 
-  if (daysPassed >= 4 && !showEarlyBirdModal && !bannerMarkedRef.current) {
+  if (daysPassed >= 4 && !showEarlyBirdModal) {
     setShowEarlyBirdModal(true);
-    bannerMarkedRef.current = true;
-
-     API.post("/users/mark-upgrade-banner-seen").catch(() => {});
-
   }
 }, [
   initialized,
@@ -198,6 +193,7 @@ useEffect(() => {
   user?.trialStartedAt,
   showEarlyBirdModal,
 ]);
+
 
 
   /* scroll + hash cleanup */
