@@ -633,120 +633,45 @@ section.faq-mini .faq-answer p {
 
 /* ===== Final CTA ===== */
 
-/* ===== Final CTA (clean / Salesforce-like) ===== */
-.final-cta {
+/* ===== Final CTA (compact like Pipedrive, no image) ===== */
+.final-cta-compact {
   background: var(--bg-soft);
   border-top: 1px solid var(--border-soft);
-  padding: 88px 24px;
+  padding: 76px 24px;
 }
 
-.final-cta-inner {
+.final-cta-compact-inner {
   max-width: 920px;
   margin: 0 auto;
   text-align: center;
 }
 
-.final-cta-title {
-  font-size: clamp(34px, 3.6vw, 48px);
+.final-cta-brand {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: rgba(15, 23, 42, 0.55);
+  margin-bottom: 10px;
+}
+
+.final-cta-headline {
+  font-size: clamp(32px, 3.4vw, 48px);
   line-height: 1.08;
   letter-spacing: -0.02em;
-  margin: 0 0 14px;
+  margin: 0 0 18px;
   color: var(--text-main);
-}
-
-.final-cta-subtitle {
-  margin: 0 auto 26px;
-  max-width: 720px;
-  font-size: 18px;
-  line-height: 1.7;
-  color: var(--text-muted);
-}
-
-/* ✅ clean list (no cards) */
-.final-cta-points {
-  list-style: none;
-  padding: 0;
-  margin: 0 auto 34px;
-  max-width: 720px;
-  display: grid;
-  gap: 12px;
-  text-align: left;
-}
-
-.final-cta-points li {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 0;                 /* ❌ no pill */
-  background: transparent;    /* ❌ no card */
-  border: none;               /* ❌ no border */
-  border-radius: 0;
-}
-
-.final-cta-points li::before {
-  content: "✓";
-  font-weight: 800;
-  line-height: 1;
-  margin-top: 4px;
-  color: var(--brand-cyan-strong);
-}
-
-.final-cta-points strong {
-  color: var(--text-main);
-  font-weight: 700;
-}
-
-/* ❌ remove the old dot completely */
-.final-cta-dot {
-  display: none !important;
-}
-
-.final-cta-actions {
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-top: 6px;
-}
-
-.btn-lg {
-  padding: 16px 34px;
-  font-size: 16px;
-  border-radius: 14px;
-}
-
-/* secondary button looks premium */
-.final-cta-secondary {
-  color: var(--text-main) !important;
-  border: 1px solid rgba(15, 23, 42, 0.14) !important;
-  background: rgba(255, 255, 255, 0.65) !important;
-}
-
-.final-cta-secondary:hover {
-  background: rgba(255, 255, 255, 0.9) !important;
 }
 
 .final-cta-note {
-  margin: 14px 0 0;
+  margin: 12px 0 0;
   font-size: 14px;
   color: var(--text-muted);
 }
 
 /* Mobile */
 @media (max-width: 640px) {
-  .final-cta { padding: 68px 18px; }
-
-  .final-cta-subtitle { font-size: 16px; }
-
-  .final-cta-actions {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .final-cta-actions .btn-lg {
-    width: 100%;
-    max-width: 360px;
-    justify-content: center;
+  .final-cta-compact {
+    padding: 60px 18px;
   }
 }
 
