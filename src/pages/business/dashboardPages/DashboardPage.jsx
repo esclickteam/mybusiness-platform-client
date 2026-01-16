@@ -188,7 +188,27 @@ useEffect(() => {
     setShowEarlyBirdModal(true);
     bannerMarkedRef.current = true;
 
-    API.post("/users/mark-upgrade-banner-seen").catch(() => {});
+    API.post("/users/mark-upgrade-banner-seen")
+  .then(() => {
+    setUser((prev) => {
+      if (!prev) return prev;
+
+      const updated = {
+        ...prev,
+        hasSeenUpgradeBanner: true,
+      };
+
+      // ⬅️ חשוב: גם localStorage
+      localStorage.setItem(
+        "businessDetails",
+        JSON.stringify(updated)
+      );
+
+      return updated;
+    });
+  })
+  .catch(() => {});
+
   }
 }, [
   initialized,
