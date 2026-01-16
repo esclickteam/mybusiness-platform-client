@@ -164,15 +164,17 @@ const DashboardPage = () => {
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
   const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(false);
+  const bannerMarkedRef = useRef(false);
+
 
 
 useEffect(() => {
   if (!initialized || !user) return;
 
-  // כבר ראה → לא להציג
+  // כבר נצפה → לא להציג ולא לסמן שוב
   if (user.hasSeenUpgradeBanner) return;
 
-  // רק טריאל
+  // רק משתמשי טריאל
   if (user.subscriptionPlan !== "trial" || user.hasPaid) return;
 
   const startDate = user.trialStartedAt || user.createdAt;
@@ -182,8 +184,11 @@ useEffect(() => {
     (Date.now() - new Date(startDate).getTime()) /
     (1000 * 60 * 60 * 24);
 
-  if (daysPassed >= 4 && !showEarlyBirdModal) {
+  if (daysPassed >= 4 && !showEarlyBirdModal && !bannerMarkedRef.current) {
     setShowEarlyBirdModal(true);
+    bannerMarkedRef.current = true;
+
+    API.post("/users/mark-upgrade-banner-seen").catch(() => {});
   }
 }, [
   initialized,
@@ -193,6 +198,7 @@ useEffect(() => {
   user?.trialStartedAt,
   showEarlyBirdModal,
 ]);
+
 
 
 
