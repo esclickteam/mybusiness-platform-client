@@ -607,9 +607,17 @@ section.faq-mini .faq-answer {
 }
 
 section.faq-mini .faq-item,
+section.faq-mini .faq-question,
 section.faq-mini .faq-answer {
-  overflow: visible !important;
+  overflow: hidden !important;
 }
+
+section.faq-mini .faq-question:focus,
+section.faq-mini .faq-question:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 
 
 section.faq-mini .faq-answer p {
@@ -757,6 +765,6 @@ section.faq-mini h2.faq-title {
 }
 
 section.faq-mini .faq-item.open {
-  box-shadow: none !important;
-  border-left: 4px solid #4f46e5; /* אם את רוצה accent */
+  border-left: 4px solid #5B4CF5;
+  overflow: hidden;          /* ⬅️ קריטי */
 }
