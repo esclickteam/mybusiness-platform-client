@@ -13,22 +13,15 @@
   height: 72px;
   padding: 0 32px;
 
-  /* ✅ רקע עדין – לא לבן, SaaS אמיתי */
-  background: linear-gradient(
-    180deg,
-    #F9FAFF 0%,
-    #F3F5FF 100%
-  );
+  /* ✅ Salesforce-style header background */
+  background: #F4F6F9;
 
-  /* ✨ glassy SaaS feel */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  /* קו הפרדה עדין */
-  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  /* הפרדה עדינה */
+  border-bottom: 1px solid #D8DDE6;
 
   z-index: 1502;
 }
+
 
 /* Logo */
 .logo-wrapper {
@@ -134,21 +127,20 @@
 
 /* ===== CTA Button ===== */
 .cta-button {
-  background: linear-gradient(
-    135deg,
-    #6D5CF6 0%,
-    #5B4CF5 55%,
-    #4B3DE0 100%
-  );
-  color: #fff;
-  font-weight: 700;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(91, 76, 245, 0.35);
+  background: #ffffff;
+  color: #0176D3;
+
+  border: 1px solid #0176D3;
+  font-weight: 600;
+
+  padding: 9px 16px;
+  border-radius: 6px;
+
+  box-shadow: none;
 }
 
 .cta-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(91, 76, 245, 0.45);
+  background: #EAF5FE;
 }
 
 /* ===== Hamburger (mobile only) ===== */
