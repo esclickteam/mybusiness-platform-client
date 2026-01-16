@@ -127,20 +127,26 @@
 
 /* ===== CTA Button ===== */
 .cta-button {
-  background: #ffffff;
+  background: rgba(1, 118, 211, 0.08); /* כחול עדין – לא לבן */
   color: #0176D3;
 
-  border: 1px solid #0176D3;
+  border: 1px solid rgba(1, 118, 211, 0.35);
   font-weight: 600;
 
-  padding: 9px 16px;
-  border-radius: 6px;
+  padding: 10px 18px; /* טיפונת יותר מרווח */
+  border-radius: 10px; /* פחות חד, יותר SaaS */
 
   box-shadow: none;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.15s ease;
 }
 
 .cta-button:hover {
-  background: #EAF5FE;
+  background: rgba(1, 118, 211, 0.14);
+  border-color: #0176D3;
+  transform: translateY(-1px);
 }
 
 /* ===== Hamburger (mobile only) ===== */
