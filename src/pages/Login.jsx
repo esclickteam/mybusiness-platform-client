@@ -80,9 +80,7 @@ export default function Login() {
     }
   };
 
-  if (!dashPreloadDone || loading) {
-    return <LoginSkeleton />;
-  }
+  if (!dashPreloadDone || loading) return <LoginSkeleton />;
 
   return (
     <div className="login-container">
@@ -185,18 +183,11 @@ export default function Login() {
 
         <div className="login-extra-options">
           <p className="signup-link">
-            Don’t have an account yet?{" "}
+            Don’t have an account?{" "}
             <Link to="/register" className="signup-link-text">
-              Start here with a 14-day free trial
+              Create one free
             </Link>
           </p>
-          <button
-            className="staff-login-btn"
-            onClick={() => navigate("/staff-login")}
-            disabled={loading}
-          >
-            Staff login
-          </button>
         </div>
       </div>
 
