@@ -539,7 +539,7 @@
   font-size: 36px;
   font-weight: 700;
   margin-bottom: 56px;
-  color: var(--text-main);
+  color: var(--text-main); /* ⬅️ שחור */
 }
 
 /* List wrapper */
