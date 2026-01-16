@@ -124,7 +124,7 @@ label {
 .password-toggle-btn {
   position: absolute;
   right: 10px;
-  top: 40%;
+  top: 36%;
    transform: translateY(-50%);
   z-index: 5;
 
@@ -148,19 +148,12 @@ label {
   -webkit-appearance: none;
 }
 
-.password-toggle-btn:hover {
-  background: rgba(91, 76, 245, 0.08);
-  border-radius: 12px;
-}
+
 
 .password-toggle-btn:focus {
   outline: none;
 }
 
-.password-toggle-btn:focus-visible {
-  background: rgba(91, 76, 245, 0.10);
-  border-radius: 12px;
-}
 
 /* Lucide icons */
 .password-toggle-btn .lucide {
