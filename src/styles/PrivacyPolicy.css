@@ -33,8 +33,6 @@
   max-width: 880px;
   margin: 0 auto;
   padding: 0 24px;
-
-  text-align: left; /* 🔥 מיישר טקסט באמת */
 }
 
 /* ======================================================
@@ -97,6 +95,19 @@
   color: #4c1d95;
   font-weight: 600;
 }
+
+/* Paragraphs + Lists alignment */
+.terms-section p,
+.terms-section li {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.privacy-policy-page {
+  hyphens: auto;
+}
+
+
 
 /* ======================================================
    Lists
