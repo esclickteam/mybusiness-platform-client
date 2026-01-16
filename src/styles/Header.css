@@ -127,27 +127,55 @@
 
 /* ===== CTA Button ===== */
 .cta-button {
-  background: rgba(1, 118, 211, 0.08); /* כחול עדין – לא לבן */
-  color: #0176D3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  border: 1px solid rgba(1, 118, 211, 0.35);
+  padding: 10px 22px;
+  min-height: 42px;
+
+  font-size: 0.95rem;
   font-weight: 600;
 
-  padding: 10px 18px; /* טיפונת יותר מרווח */
-  border-radius: 10px; /* פחות חד, יותר SaaS */
+  color: #ffffff;
+  text-decoration: none;
 
-  box-shadow: none;
+  border-radius: 999px; /* Pill אמיתי */
+  border: none;
+
+  background: linear-gradient(
+    135deg,
+    #6a5cff 0%,
+    #5b7cfa 100%
+  );
+
+  box-shadow:
+    0 8px 22px rgba(90, 100, 255, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+
   transition:
-    background 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.15s ease;
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
 }
 
 .cta-button:hover {
-  background: rgba(1, 118, 211, 0.14);
-  border-color: #0176D3;
   transform: translateY(-1px);
+  filter: brightness(1.05);
+
+  box-shadow:
+    0 12px 30px rgba(90, 100, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
+
+.cta-button:active {
+  transform: translateY(0);
+  box-shadow:
+    0 6px 16px rgba(90, 100, 255, 0.25),
+    inset 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+
 
 .login-link {
   display: inline-flex;
