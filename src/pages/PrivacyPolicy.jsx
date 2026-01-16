@@ -4,7 +4,7 @@ import "./PrivacyPolicy.css";
 
 function PrivacyPolicy() {
   return (
-    <div className="terms-container">
+    <div className="privacy-policy-page">
       <h1 className="terms-title">Privacy Policy – BizUply</h1>
       <p className="terms-date">Last Updated: October 14, 2025</p>
 
