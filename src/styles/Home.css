@@ -755,3 +755,9 @@ section.faq-mini h2.faq-title {
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
 }
+
+/* ✅ ביטול הקו הסגול בצד של ה־FAQ */
+section.faq-mini .faq-item.open {
+  border-left: none !important;
+  box-shadow: none !important;
+}
