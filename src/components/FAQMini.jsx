@@ -34,16 +34,20 @@ export default function FAQMini() {
               className={`faq-item ${isOpen ? "open" : ""}`}
             >
               <button
+                type="button"
                 className="faq-question"
                 onClick={() => setOpenIndex(isOpen ? null : i)}
+                aria-expanded={isOpen}
               >
-                <span>{item.q}</span>
-                <span className="faq-icon">{isOpen ? "–" : "+"}</span>
+                <span className="faq-q">{item.q}</span>
+                <span className="faq-icon">{isOpen ? "−" : "+"}</span>
               </button>
 
-              <div className="faq-answer">
-                <p>{item.a}</p>
-              </div>
+              {isOpen && (
+                <div className="faq-answer">
+                  <p>{item.a}</p>
+                </div>
+              )}
             </div>
           );
         })}
