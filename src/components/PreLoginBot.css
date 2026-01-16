@@ -22,27 +22,64 @@
 }
 
 /* =========================
-   Launcher Button
+   Launcher – Ask BizUply (Pill)
 ========================= */
-.plb-launch {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #6c4eff;
-  color: #ffffff;
+.plb-launch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  height: 48px;
+  padding: 0 22px;
+
+  border-radius: 999px;
   border: none;
-  font-size: 22px;
+
+  background: linear-gradient(
+    135deg,
+    #0b5cff 0%,
+    #6c4eff 100%
+  );
+
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+
   cursor: pointer;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  box-shadow:
+    0 10px 28px rgba(46, 91, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
 }
 
-.plb-launch:hover {
-  background: #5a3ee6;
+.plb-launch-pill:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+
+  box-shadow:
+    0 14px 36px rgba(46, 91, 255, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.plb-launch-pill:active {
+  transform: translateY(0);
+  box-shadow:
+    0 8px 20px rgba(46, 91, 255, 0.3),
+    inset 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.plb-launch-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.plb-launch-text {
+  white-space: nowrap;
 }
 
 /* =========================
@@ -50,6 +87,8 @@
 ========================= */
 .plb-window {
   width: 320px;
+  margin-top: 12px;
+
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
@@ -63,8 +102,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   padding: 14px 16px;
-  background: #6c4eff;
+  background: linear-gradient(
+    135deg,
+    #0b5cff 0%,
+    #6c4eff 100%
+  );
   color: #ffffff;
 }
 
@@ -73,7 +117,7 @@
   font-weight: 600;
 }
 
-.plb-header button {
+.plb-close {
   background: rgba(255, 255, 255, 0.15);
   color: #ffffff;
   border: none;
@@ -84,7 +128,7 @@
   font-size: 18px;
 }
 
-.plb-header button:hover {
+.plb-close:hover {
   background: rgba(255, 255, 255, 0.25);
 }
 
@@ -113,12 +157,16 @@
   width: 100%;
   margin-top: 8px;
   padding: 11px 12px;
+
   border-radius: 10px;
   border: none;
+
   background: #6c4eff;
   color: #ffffff;
+
   font-size: 14px;
   font-weight: 500;
+
   cursor: pointer;
   transition: background 0.2s ease, transform 0.05s ease;
 }
@@ -138,6 +186,12 @@
   .plb {
     left: 12px;
     bottom: 12px;
+  }
+
+  .plb-launch-pill {
+    height: 44px;
+    padding: 0 18px;
+    font-size: 13.5px;
   }
 
   .plb-window {
