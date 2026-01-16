@@ -1,23 +1,62 @@
 /* ============================================
    💼 BizUply — Legal Pages (Terms / Privacy)
-   ============================================ */
+   Full Width Background / No Card
+============================================ */
 
+/* =========================
+   Page Background (FULL WIDTH)
+========================= */
 .terms-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 80px 24px;
-  background-color: #ffffff;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 80px 0 100px;
+
+  background: linear-gradient(
+    180deg,
+    #f6f7fb 0%,
+    #ecebff 100%
+  );
+
+  font-family: "Inter", "Poppins", system-ui, sans-serif;
   color: #0f172a;
-  font-family: "Inter", "Poppins", sans-serif;
   line-height: 1.7;
 }
 
+/* =========================
+   Inner Readable Column
+========================= */
+.privacy-policy-page {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  background: transparent;
+}
+
+/* inner padding only */
+.privacy-policy-page > h1,
+.privacy-policy-page > .terms-date,
+.privacy-policy-page > .terms-section {
+  padding: 0 24px;
+}
+
+/* =========================
+   Title + Date
+========================= */
 .terms-title {
   font-size: 2.4rem;
   font-weight: 700;
   text-align: center;
   margin-bottom: 12px;
-  color: #4b0082; /* Deep violet for brand consistency */
+
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .terms-date {
@@ -27,16 +66,20 @@
   margin-bottom: 50px;
 }
 
+/* =========================
+   Sections
+========================= */
 .terms-section {
   margin-bottom: 60px;
-  border-bottom: 1px solid #e2e8f0;
   padding-bottom: 40px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.18);
 }
 
 .terms-section:last-child {
   border-bottom: none;
 }
 
+/* Headings */
 .terms-section h2 {
   font-size: 1.6rem;
   font-weight: 700;
@@ -53,10 +96,16 @@
   margin-bottom: 8px;
 }
 
+/* Text */
 .terms-section p {
   font-size: 1rem;
   margin-bottom: 14px;
   color: #1e293b;
+
+  text-align: justify;
+  text-justify: inter-word;
+
+  overflow-wrap: anywhere;
 }
 
 .terms-section ul {
@@ -69,12 +118,16 @@
   margin-bottom: 6px;
   font-size: 1rem;
   color: #334155;
-  list-style-type: disc;
+
+  text-align: justify;
+  text-justify: inter-word;
+
+  overflow-wrap: anywhere;
 }
 
-/* ============================
+/* =========================
    🟣 Links and Emphasis
-   ============================ */
+========================= */
 .terms-section strong {
   color: #4b0082;
   font-weight: 600;
@@ -91,12 +144,60 @@
   text-decoration: underline;
 }
 
-/* ============================
-   📱 Responsive Design
-   ============================ */
+/* =========================
+   🧾 Highlight Blocks
+========================= */
+.terms-highlight {
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+  border-left: 4px solid #9333ea;
+  padding: 16px 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  color: #3b0764;
+  font-weight: 500;
+}
+
+.terms-warning {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border-left: 4px solid #dc2626;
+  padding: 16px 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  color: #7f1d1d;
+  font-weight: 500;
+}
+
+/* =========================
+   ✨ Subtle Animations
+========================= */
+.terms-section h2,
+.terms-section h3 {
+  animation: fadeInSlide 0.4s ease both;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   📱 Responsive
+========================= */
 @media (max-width: 768px) {
   .terms-container {
-    padding: 60px 16px;
+    padding: 60px 0 90px;
+  }
+
+  .privacy-policy-page > h1,
+  .privacy-policy-page > .terms-date,
+  .privacy-policy-page > .terms-section {
+    padding: 0 18px;
   }
 
   .terms-title {
@@ -114,48 +215,5 @@
   .terms-section p,
   .terms-section li {
     font-size: 0.96rem;
-  }
-}
-
-/* ============================
-   🧾 Highlight Blocks
-   ============================ */
-.terms-highlight {
-  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
-  border-left: 4px solid #9333ea;
-  padding: 16px 20px;
-  border-radius: 8px;
-  margin: 20px 0;
-  color: #3b0764;
-  font-weight: 500;
-}
-
-.terms-warning {
-  background: linear-gradient(135deg, #fef2f2, #fee2e2);
-  border-left: 4px solid #dc2626;
-  padding: 16px 20px;
-  border-radius: 8px;
-  margin: 20px 0;
-  color: #7f1d1d;
-  font-weight: 500;
-}
-
-/* ============================
-   ✨ Subtle Animations
-   ============================ */
-.terms-section h2,
-.terms-section h3 {
-  position: relative;
-  animation: fadeInSlide 0.4s ease both;
-}
-
-@keyframes fadeInSlide {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
