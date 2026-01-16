@@ -1,13 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async"; // ✅ מעודכן לגרסה הנכונה
+import { Helmet } from "react-helmet-async";
 import "../../styles/Business.css";
 
 function BusinessJoin() {
   return (
     <div className="business-join-container">
       <Helmet>
-        {/* ✅ Title & Description */}
         <title>
           Join Businesses - Collaborations, Clients & Smart Management | Bizuply
         </title>
@@ -15,37 +14,13 @@ function BusinessJoin() {
           name="description"
           content="Join Bizuply and get real client inquiries, collaborations with other businesses, and smart CRM & scheduling. Everything your business needs to grow in one place."
         />
-        <meta
-          name="keywords"
-          content="join business, collaborations, client inquiries, CRM, smart management, Bizuply"
-        />
         <link rel="canonical" href="https://bizuply.com/join" />
-
-        {/* ✅ Robots */}
         <meta name="robots" content="index, follow" />
-
-        {/* ✅ Open Graph (Facebook / LinkedIn / WhatsApp) */}
-        <meta property="og:title" content="Join Bizuply – Collaborate & Grow Smarter" />
-        <meta
-          property="og:description"
-          content="Join the leading business platform to get client inquiries, AI tools, and collaboration opportunities that help your business grow faster."
-        />
-        <meta property="og:url" content="https://bizuply.com/join" />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Bizuply" />
-        <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
-
-        {/* ✅ Twitter Cards */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Join Bizuply – Collaborate & Grow Smarter" />
-        <meta
-          name="twitter:description"
-          content="Connect with businesses, get new clients, and manage everything in one platform with Bizuply."
-        />
-        <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
-      {/* Title Section */}
+      {/* =========================
+          Header
+      ========================= */}
       <div className="header-section">
         <h1 className="title">Join the Leading Business Platform</h1>
         <p className="subtitle">
@@ -54,8 +29,11 @@ function BusinessJoin() {
         </p>
       </div>
 
-      {/* Info Cards */}
-      <div className="info-section">
+      {/* =========================
+          Info Cards – 3 ONLY
+      ========================= */}
+      <div className="info-section three-cards">
+        {/* Card 1 */}
         <div className="info-box purple">
           <h2>Benefits You’ll Get</h2>
           <ul>
@@ -66,43 +44,37 @@ function BusinessJoin() {
           </ul>
         </div>
 
+        {/* Card 2 */}
         <div className="info-box white">
           <h2>More Collaborations = More Clients</h2>
           <ul>
-            <li>Connect with complementary businesses in your field</li>
-            <li>Receive direct referrals from other businesses</li>
-            <li>Collaborate on new projects and deals</li>
-            <li>Build a strong network that drives growth</li>
+            <li>Connect with complementary businesses</li>
+            <li>Receive direct referrals</li>
+            <li>Collaborate on projects & deals</li>
+            <li>Build a strong growth network</li>
           </ul>
         </div>
 
+        {/* Card 3 */}
         <div className="info-box purple">
-          <h2>Who is Bizuply For?</h2>
-          <ul>
-            <li>Businesses ready to grow and scale</li>
-            <li>Owners who want more client inquiries</li>
-            <li>Teams seeking stronger digital presence</li>
-            <li>Professionals looking for structure & efficiency</li>
-          </ul>
-        </div>
-
-        <div className="info-box white">
           <h2>3 Simple Steps</h2>
           <ul>
             <li>Sign up and choose your plan</li>
-            <li>Create your business page with chat & gallery</li>
-            <li>Start receiving inquiries and collaborations</li>
-            <li>Let the smart system work for you</li>
+            <li>Create your business page</li>
+            <li>Start receiving inquiries</li>
+            <li>Let the system work for you</li>
           </ul>
         </div>
       </div>
 
-      {/* Call To Action */}
+      {/* =========================
+          CTA
+      ========================= */}
       <div className="cta-section">
         <h2>Grow Smarter. Start Today.</h2>
         <p>
-          Join Bizuply and manage collaborations, clients and growth — all in
-          one platform.
+          Join Bizuply and manage collaborations, clients and growth — all in one
+          platform.
         </p>
         <Link to="/register">
           <button className="join-button">Start Free Trial</button>
