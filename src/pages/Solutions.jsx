@@ -142,7 +142,7 @@ function Solutions() {
           <Link to="/features" className="cta-button-outline">
             Explore Features
           </Link>
-          <Link to="/join" className="cta-button">
+          <Link to="/register" className="cta-button">
             Get Started
           </Link>
         </div>
