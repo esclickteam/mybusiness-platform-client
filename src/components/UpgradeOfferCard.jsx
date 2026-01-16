@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import API from "../../api"; // ⬅️ ודאי שהנתיב נכון אצלך
-import "./UpgradeOfferCard.css";
-
+import API from "@api";import "./UpgradeOfferCard.css";
 function formatTimeLeft(ms) {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
   const hours = Math.floor(totalSeconds / 3600);
