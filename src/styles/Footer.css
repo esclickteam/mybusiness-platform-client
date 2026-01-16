@@ -8,10 +8,10 @@
 
   /* 🎯 רקע רגוע, לא Hero */
   background: linear-gradient(
-    180deg,
-    #1e293b 0%,   /* slate-800 */
-    #0f172a 100%  /* slate-900 */
-  );
+  180deg,
+  #3b4758 0%,
+  #2a3442 100%
+);
 
   color: #e5e7eb;
   padding: 64px 20px 28px;
