@@ -16,6 +16,8 @@
   background-color: transparent;
 }
 
+
+
 /* PAGE WRAPPER (inner column only) */
 .privacy-policy-page {
   width: 100%;
@@ -209,4 +211,18 @@
     font-size: 0.9rem;
     margin-bottom: 44px;
   }
+}
+
+.terms-container {
+  background: linear-gradient(180deg, #f6f7fb 0%, #ecebff 100%) !important;
+  background-color: transparent !important;
+
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+}
+
+.app-scroll-area {
+  background: transparent !important;
+  min-height: 100vh;
 }
