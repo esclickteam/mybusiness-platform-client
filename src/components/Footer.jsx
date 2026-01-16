@@ -46,21 +46,15 @@ function Footer() {
             <li><Link to="/accessibility" className="footer-link">Accessibility</Link></li>
           </ul>
         </div>
-
-        {/* Column 5: Billing Address */}
-        <div className="footer-col footer-address">
-          <h4>Billing address</h4>
-          <p className="footer-address-text">
-            1007 N Orange Street, 4th Floor<br />
-            Ste 1382<br />
-            Wilmington, DE 19801<br />
-            United States
-          </p>
-        </div>
       </div>
 
+      {/* 🔹 Footer Bottom – Legal style */}
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} Bizuply. All rights reserved.</p>
+        <p className="footer-legal">
+          © {new Date().getFullYear()} Bizuply. All rights reserved.  
+          <br />
+          1007 N Orange Street, 4th Floor, Ste 1382, Wilmington, DE 19801, United States.
+        </p>
       </div>
     </footer>
   );

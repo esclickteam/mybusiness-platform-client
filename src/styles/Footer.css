@@ -82,14 +82,7 @@
   max-width: 280px;
 }
 
-/* ─────────────────────────
-   כתובת
-───────────────────────── */
-.footer-address-text {
-  color: #ffffff;
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
+
 
 /* ─────────────────────────
    תחתית
@@ -98,11 +91,18 @@
   text-align: center;
   margin-top: 48px;
   font-size: 0.85rem;
-  color: #ffffff;
 
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   padding-top: 18px;
 }
+
+.footer-legal {
+  max-width: 900px;
+  margin: 0 auto;
+  line-height: 1.6;
+  color: #ffffff;
+}
+
 
 /* ─────────────────────────
    רספונסיביות
