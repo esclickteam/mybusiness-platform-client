@@ -2,18 +2,11 @@
    Privacy Policy – BizUply (Full Width / No Card)
 ====================================================== */
 .terms-container {
-  width: 100%;
   min-height: 100vh;
   padding: 80px 20px 100px;
-
   background: linear-gradient(180deg, #f6f7fb 0%, #ecebff 100%);
   font-family: "Poppins", system-ui, sans-serif;
   color: #0f172a;
-
-  /* ✅ חשוב: לוודא שאין “דף” ממורכז */
-  max-width: none;
-  margin: 0;
-  background-color: transparent;
 }
 
 
