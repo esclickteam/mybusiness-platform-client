@@ -35,13 +35,10 @@
    כותרות טורים – רגועות
 ───────────────────────── */
 .footer-col h4 {
-  margin-bottom: 18px;
-  font-size: 0.9rem;
-  font-weight: 600;
-
-  color: rgba(255, 255, 255, 0.9);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin-bottom: 20px;
 }
 
 /* ─────────────────────────
@@ -58,15 +55,13 @@
 }
 
 .footer-link {
-  text-decoration: none;
-  color: rgba(226, 232, 240, 0.7);
-  font-size: 0.95rem;
-  line-height: 1.7;
-  transition: color 0.2s ease;
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 500;
 }
 
 .footer-link:hover {
   color: #ffffff;
+  text-decoration: none;
 }
 
 /* ─────────────────────────
