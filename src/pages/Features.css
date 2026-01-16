@@ -2,7 +2,7 @@
    Page Background
 ========================= */
 .features-page {
-  background: linear-gradient(180deg, #f6f7ff 0%, #ede9ff 100%);
+  background: #f8fafc; /* רקע אחיד, שקט, Enterprise */
   min-height: 100vh;
   width: 100%;
   padding: 96px 24px;
