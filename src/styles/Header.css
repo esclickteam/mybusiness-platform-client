@@ -12,10 +12,21 @@
 
   height: 72px;
   padding: 0 32px;
-  background: #F8FAFF;
-  backdrop-filter: blur(10px);          /* ✨ SaaS feel */
-  -webkit-backdrop-filter: blur(10px);
+
+  /* ✅ רקע עדין – לא לבן, SaaS אמיתי */
+  background: linear-gradient(
+    180deg,
+    #F9FAFF 0%,
+    #F3F5FF 100%
+  );
+
+  /* ✨ glassy SaaS feel */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  /* קו הפרדה עדין */
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+
   z-index: 1502;
 }
 
@@ -94,18 +105,21 @@
 
 /* ===== CTA Button ===== */
 .cta-button {
-  background: #5e17eb;
+  background: linear-gradient(
+    135deg,
+    #6D5CF6 0%,
+    #5B4CF5 55%,
+    #4B3DE0 100%
+  );
   color: #fff;
   font-weight: 700;
-  font-size: 0.95rem;
-  padding: 10px 22px;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: background 0.2s, transform 0.2s;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(91, 76, 245, 0.35);
 }
+
 .cta-button:hover {
-  background: #4315c7;
   transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(91, 76, 245, 0.45);
 }
 
 /* ===== Hamburger (mobile only) ===== */
