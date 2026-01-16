@@ -119,27 +119,25 @@ label {
 
 .password-toggle-btn {
   position: absolute;
-  right: 12px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 10;
+  z-index: 5;
 
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  /* ✅ אזור לחיצה נוח, אבל בלי "כפתור" */
+  width: 44px;
+  height: 44px;
 
-  background: #f6f4ff;
-  border: 1px solid rgba(91, 76, 245, 0.35);
-  box-shadow: 0 6px 16px rgba(91, 76, 245, 0.35);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 
-  color: #4338ca;
+  color: rgba(91, 76, 245, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
 
-  /* חשוב לכפתור (כדי שלא ייראה/יתנהג מוזר) */
   padding: 0;
   line-height: 0;
   appearance: none;
@@ -147,9 +145,8 @@ label {
 }
 
 .password-toggle-btn:hover {
-  background: #ffffff;
-  border-color: rgba(91, 76, 245, 0.45);
-  box-shadow: 0 8px 18px rgba(91, 76, 245, 0.35);
+  background: rgba(91, 76, 245, 0.08);
+  border-radius: 12px;
 }
 
 .password-toggle-btn:focus {
@@ -157,7 +154,8 @@ label {
 }
 
 .password-toggle-btn:focus-visible {
-  box-shadow: 0 0 0 4px rgba(91, 76, 245, 0.18);
+  background: rgba(91, 76, 245, 0.10);
+  border-radius: 12px;
 }
 
 /* Lucide icons */
