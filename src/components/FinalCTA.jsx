@@ -40,7 +40,8 @@ export default function FinalCTA() {
         </ul>
 
         <div className="final-cta-actions">
-          <Link to="/get-started" className="btn-primary btn-lg">
+          <Link to="/register" className="btn-primary btn-lg">
+
             Get started free
           </Link>
 
