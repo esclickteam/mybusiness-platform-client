@@ -560,6 +560,11 @@ section.faq-mini .faq-question:hover .faq-q {
   color: #1e40af;
 }
 
+section.faq-mini .faq-title {
+  margin-bottom: 32px; /* היה בפועל ~48–56 */
+}
+
+
 /* ===== PLUS ICON ===== */
 
 section.faq-mini .faq-icon {
