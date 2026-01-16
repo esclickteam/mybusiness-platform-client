@@ -124,8 +124,8 @@ label {
 .password-toggle-btn {
   position: absolute;
   right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 48%;
+   transform: translateY(-52%);
   z-index: 5;
 
   /* ✅ אזור לחיצה נוח, אבל בלי "כפתור" */
