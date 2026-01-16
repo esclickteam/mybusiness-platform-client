@@ -92,6 +92,10 @@ label {
   direction: ltr;
 }
 
+.password-input {
+  padding-right: 56px;
+}
+
 .login-input::placeholder,
 .password-input::placeholder {
   color: rgba(71, 85, 105, 0.75);
