@@ -64,20 +64,8 @@
 
 /* underline SaaS-style */
 .nav-links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -6px;
-
-  width: 100%;
-  height: 3px;
-  border-radius: 999px;
-
-  background: #5e17eb;          /* אותו צבע של CTA */
-  opacity: 0;
-
-  transform: scaleX(0.6);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  content: none;
+  display: none;
 }
 
 .nav-links a:hover,
