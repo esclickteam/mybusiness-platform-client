@@ -420,14 +420,25 @@
 
 /* ===== Why ===== */
 .why {
-  text-align: center;
   background: var(--bg-main);
+  padding-top: 120px;
+  padding-bottom: 120px;
 }
 
 .why h2 {
+  text-align: center;              /* ⬅️ מרכז כותרת */
   font-size: 32px;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
   color: var(--text-main);
+}
+
+.why p {
+  text-align: center;              /* ⬅️ מרכז סאב־טקסט */
+  max-width: 560px;                /* ⬅️ רוחב פרימיום */
+  margin: 0 auto 64px;             /* ⬅️ ריווח נכון לפני התוכן */
+  color: var(--text-muted);
+  font-size: 17px;
+  line-height: 1.6;
 }
 
 .why ul {
@@ -445,9 +456,11 @@
 
 /* ===== Why Bizuply ===== */
 .why-bizuply .icon {
-  color: var(--brand-purple); /* שימוש בטוקן קיים */
+  color: var(--brand-purple);
   margin-bottom: 20px;
   display: inline-flex;
+  justify-content: center;  /* ⬅️ מרכז SVG */
+  width: 100%;              /* ⬅️ מאפשר centering אמיתי */
 }
 
 .why-bizuply .icon svg {
@@ -459,6 +472,7 @@
 .why-bizuply .feature {
   background: var(--bg-main);
   border-radius: 20px;
+  text-align: center; 
   padding: 36px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
