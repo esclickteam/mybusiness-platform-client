@@ -210,7 +210,13 @@ label {
   text-decoration: none;
 
   transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+
+  /* ✅ אלו מה שמורידים אותו שורה */
+  width: 100%;
+  flex-basis: 100%;
 }
+
+
 
 .forgot-inside-btn:hover {
   background: rgba(91, 76, 245, 0.10);
