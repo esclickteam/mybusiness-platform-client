@@ -5,15 +5,19 @@ import { useState } from "react";
 const FAQS = [
   {
     q: "Is there a free trial?",
-    a: "Yes. You can start with a free trial. No credit card required.",
+    a: "Yes. You can start with a free trial and explore all core features. No credit card is required.",
   },
   {
-    q: "Does it work on mobile?",
-    a: "Absolutely. Bizuply is fully responsive and works perfectly on mobile.",
+    q: "Do I need a credit card to get started?",
+    a: "No. You can try Bizuply without adding any payment details. Choose a plan only if you decide to continue.",
   },
   {
-    q: "Can I grow into more features?",
-    a: "Yes. Start simple and unlock advanced tools as your business grows.",
+    q: "Can I cancel anytime?",
+    a: "Absolutely. There are no long-term commitments, and you can cancel or change your plan at any time.",
+  },
+  {
+    q: "Is this suitable for small businesses or solo founders?",
+    a: "Yes. Bizuply is designed for freelancers, solo founders, and small teams who want to manage everything in one place.",
   },
 ];
 
@@ -29,10 +33,7 @@ export default function FAQMini() {
           const isOpen = openIndex === i;
 
           return (
-            <div
-              key={i}
-              className={`faq-item ${isOpen ? "open" : ""}`}
-            >
+            <div key={i} className={`faq-item ${isOpen ? "open" : ""}`}>
               <button
                 type="button"
                 className="faq-question"

@@ -525,7 +525,6 @@
 
 
 
-/* ===== FAQ Mini – Salesforce style (embedded) ===== */
 
 
 /* =========================
@@ -581,6 +580,18 @@ section.faq-mini .faq-item.open .faq-icon {
   background: rgba(30, 64, 175, 0.12);
   transform: rotate(180deg);
 }
+
+/* לצמצם רוחב FAQ כמו Salesforce */
+section.faq-mini .faq-list {
+  max-width: 820px;   /* זה הקסם */
+  margin: 0 auto;     /* מרכז */
+}
+
+section.faq-mini .faq-question {
+  padding: 24px 28px;
+}
+
+
 
 /* ===== ANSWER ===== */
 
