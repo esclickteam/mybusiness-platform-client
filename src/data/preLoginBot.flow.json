@@ -5,7 +5,7 @@
       { "label": "How BizUply helps my business", "next": "how_it_helps" },
       { "label": "What’s included", "next": "features" },
       { "label": "Calendar & CRM", "next": "calendar_crm" },
-      { "label": "Pricing & payments", "route": "/plans" },
+      { "label": "Pricing & payments", "route": "/pricing" },
       { "label": "View demo", "route": "/register" },
       { "label": "Start free trial", "route": "/register" }
     ]
@@ -16,7 +16,7 @@
     "buttons": [
       { "label": "Time & calendar management", "next": "time_calendar" },
       { "label": "Business collaborations", "next": "collaborations" },
-      { "label": "See pricing", "route": "/plans" },
+      { "label": "See pricing", "route": "/pricing" },
       { "label": "Start free trial", "route": "/register" }
     ]
   },
@@ -50,7 +50,7 @@
   "collaborations_for": {
     "text": "Business collaborations are ideal for service providers, freelancers, consultants, and local businesses that want to grow through partnerships — not ads.",
     "buttons": [
-      { "label": "View pricing", "route": "/plans" },
+      { "label": "View pricing", "route": "/pricing" },
       { "label": "Start free trial", "route": "/register" }
     ]
   },
@@ -59,7 +59,7 @@
     "text": "BizUply includes everything your business needs:\n\n• Professional business page\n• Full CRM for clients\n• Smart calendar inside the CRM\n• Messaging & chat\n• Ratings & reviews\n• Business collaborations\n• Insights & analytics\n\nAll included in one plan.",
     "buttons": [
       { "label": "View demo", "route": "/register" },
-      { "label": "See pricing", "route": "/plans" },
+      { "label": "See pricing", "route": "/pricing" },
       { "label": "Start free trial", "route": "/register" }
     ]
   },
@@ -86,7 +86,7 @@
     "text": "Free Trial:\n• 14 days\n• No credit card required\n\nMonthly Plan:\n• Can be canceled anytime\n• Cancellation must be done before the next billing date\n\nYearly Plan:\n• Discounted annual subscription\n• Runs for a full year\n• Cannot be canceled or shortened",
     "buttons": [
       { "label": "Start free trial", "route": "/register" },
-      { "label": "View pricing", "route": "/plans" }
+      { "label": "View pricing", "route": "/pricing" }
     ]
   },
 
@@ -94,7 +94,7 @@
     "text": "The demo lets you explore the dashboard, CRM, calendar, and messaging system.\n\nStart a 14-day free trial with full access — no credit card required.",
     "buttons": [
       { "label": "Start 14-day free trial", "route": "/register" },
-      { "label": "View pricing", "route": "/plans" }
+      { "label": "View pricing", "route": "/pricing" }
     ]
   }
 }

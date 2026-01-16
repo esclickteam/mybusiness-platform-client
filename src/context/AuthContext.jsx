@@ -485,8 +485,8 @@ useEffect(() => {
       // 🔁 ניתוב מ־postLoginRedirect אם יש
       const savedRedirect = sessionStorage.getItem("postLoginRedirect");
       if (savedRedirect) {
-        const isPlans = savedRedirect === "/plans";
-        const shouldSkip = isPlans && freshUser.hasAccess;
+         const isPricing = savedRedirect === "/pricing";
+        const shouldSkip = isPricing && freshUser.hasAccess;
 
         if (!shouldSkip) navigate(savedRedirect, { replace: true });
         sessionStorage.removeItem("postLoginRedirect");

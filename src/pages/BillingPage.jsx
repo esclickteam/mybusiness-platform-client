@@ -202,7 +202,7 @@ export default function SubscriptionPlanCard() {
           {!isActive && (
             <button
               className="renew-btn"
-              onClick={() => (window.location.href = "/plans")}
+              onClick={() => (window.location.href = "/pricing")}
             >
               Renew / Upgrade Plan
             </button>

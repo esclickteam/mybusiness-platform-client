@@ -21,7 +21,7 @@ function Footer() {
           <ul>
             <li><Link to="/how-it-works" className="footer-link">How It Works</Link></li>
             <li><Link to="/features" className="footer-link">Features</Link></li>
-            <li><Link to="/plans" className="footer-link">Plans</Link></li>
+            <li><Link to="/Pricing" className="footer-link">Pricing</Link></li>
             <li><Link to="/solutions" className="footer-link">Solutions</Link></li>
           </ul>
         </div>

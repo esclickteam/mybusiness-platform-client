@@ -7,7 +7,7 @@ export default function TrialEndedPage() {
   return (
     <div className="trial-ended-wrapper">
       <UpgradeOfferCard
-        onUpgrade={() => (window.location.href = "/plans")}
+        onUpgrade={() => (window.location.href = "/pricing")}
         onHome={() => (window.location.href = "/")}
       />
     </div>

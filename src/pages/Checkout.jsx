@@ -43,8 +43,8 @@ export default function Checkout() {
     return (
       <div className="checkout-container error-container">
         <h2 className="error-message">❌ The selected plan is not available.</h2>
-        <button className="return-link" onClick={() => navigate("/plans")}>
-          🔙 Back to Plans
+        <button className="return-link" onClick={() => navigate("/pricing")}>
+          🔙 Back to Pricing
         </button>
       </div>
     );
@@ -155,10 +155,10 @@ export default function Checkout() {
 
         <button
           className="return-link"
-          onClick={() => navigate("/plans")}
+          onClick={() => navigate("/pricing")}
           disabled={processing}
         >
-          🔙 Back to Plans
+          🔙 Back to Pricing
         </button>
       </div>
     </div>
