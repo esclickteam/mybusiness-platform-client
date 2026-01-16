@@ -129,12 +129,7 @@ const DashboardPage = () => {
   } = useAuth();
   const { businessId } = useParams();
 
-  const EARLY_BIRD_KEY = user?.userId
-  ? `earlyBirdSeen_${user.userId}`
-  : null;
-
-
-
+ 
   /* 🎨 הפעלה מיידית של ה־theme לעסקים */
   useEffect(() => {
     document.body.setAttribute("data-theme", "business");
@@ -170,31 +165,38 @@ const DashboardPage = () => {
 
   const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(false);
 
-  useEffect(() => {
-  if (!initialized || !user || !EARLY_BIRD_KEY) return;
+  const bannerMarkedRef = useRef(false);
 
-  // כבר ראה → לא להציג שוב
-  if (localStorage.getItem(EARLY_BIRD_KEY) === "true") return;
+useEffect(() => {
+  if (!initialized || !user) return;
 
-  // רק לטריאל
+  // כבר ראה → לא להציג
+  if (user.hasSeenUpgradeBanner) return;
+
+  // רק טריאל
   if (user.subscriptionPlan !== "trial" || user.hasPaid) return;
 
-  const startDate =
-    user.trialStartedAt || user.businessCreatedAt || user.createdAt;
-
+  const startDate = user.trialStartedAt || user.createdAt;
   if (!startDate) return;
 
   const daysPassed =
     (Date.now() - new Date(startDate).getTime()) /
     (1000 * 60 * 60 * 24);
 
-  if (daysPassed >= 4 && !showEarlyBirdModal) {
-  setShowEarlyBirdModal(true);
-}
-}, [initialized, user?.userId, EARLY_BIRD_KEY, showEarlyBirdModal]);
+  if (daysPassed >= 4 && !showEarlyBirdModal && !bannerMarkedRef.current) {
+    setShowEarlyBirdModal(true);
+    bannerMarkedRef.current = true;
 
-
-
+    API.post("/user/mark-upgrade-banner-seen").catch(() => {});
+  }
+}, [
+  initialized,
+  user?.hasSeenUpgradeBanner,
+  user?.subscriptionPlan,
+  user?.hasPaid,
+  user?.trialStartedAt,
+  showEarlyBirdModal,
+]);
 
 
   /* scroll + hash cleanup */
@@ -513,10 +515,7 @@ sock.on("newReview", (reviewData) => {
   // 🎁 Early Bird → Stripe Checkout
 const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
-
-  if (EARLY_BIRD_KEY) {
-    localStorage.setItem(EARLY_BIRD_KEY, "true");
-  }
+ 
   setShowEarlyBirdModal(false);
 
   try {
@@ -649,10 +648,7 @@ const shouldShowEarlyBirdModal = showEarlyBirdModal;
     onUpgrade={handleEarlyBirdUpgrade}
 
     onClose={() => {
-  if (EARLY_BIRD_KEY) {
-    localStorage.setItem(EARLY_BIRD_KEY, "true");
-  }
-  setShowEarlyBirdModal(false);
+    setShowEarlyBirdModal(false);
     }}
   />
 )}
