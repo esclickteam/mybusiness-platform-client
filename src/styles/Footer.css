@@ -1,24 +1,16 @@
 .footer {
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-
-  /* 🎯 רקע רגוע, לא Hero */
+  width: 100%;
   background: linear-gradient(
     180deg,
     #3b4758 0%,
     #2a3442 100%
   );
 
-  color: #ffffff; /* לבן אחיד לכל הפוטר */
+  color: #ffffff;
   padding: 64px 20px 28px;
   margin-top: 40px;
   font-family: "Poppins", sans-serif;
 }
-
 /* ─────────────────────────
    תוכן מרכזי
 ───────────────────────── */
