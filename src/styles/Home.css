@@ -73,24 +73,37 @@
 .hero {
   position: relative;
   padding-top: 140px;
-  padding-bottom: 260px;
-
-  /* ⬇️ זה החלק החדש */
+  padding-bottom: 220px;
   padding-left: 24px;
   padding-right: 24px;
 
   text-align: center;
 
- background: linear-gradient(
-  180deg,
-  var(--hero-bg-start) 0%,
-  var(--hero-bg-mid) 45%,
-  var(--hero-bg-end) 78%,
-  var(--bg-soft) 100%
-);
+  background: linear-gradient(
+    180deg,
+    var(--hero-bg-start) 0%,
+    var(--hero-bg-mid) 48%,
+    var(--hero-bg-end) 82%,
+    var(--bg-soft) 92%
+  );
 
   overflow: hidden;
 }
+
+.hero::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 48px;
+  background: linear-gradient(
+    180deg,
+    rgba(248, 250, 252, 0) 0%,
+    rgba(248, 250, 252, 1) 100%
+  );
+}
+
 
 .hero h1 {
   font-size: clamp(36px, 5vw, 56px);
@@ -118,7 +131,7 @@
   color: var(--text-on-dark-muted);
   max-width: 760px;       /* יותר רחב – כמו בדוגמה */
   margin: 0 auto 40px;
-  opacity: 0.95;
+  opacity: 0.88;
 }
 
 
@@ -197,19 +210,12 @@
   flex-direction: column;
   gap: 140px;
 
-  /* ⬇️ blend עדין עם סוף ההירו */
-  background: linear-gradient(
-    180deg,
-    rgba(248, 250, 252, 0.96) 0%,
-    var(--bg-soft) 40%
-  );
+  background: var(--bg-soft);
 
-  /* המשך טבעי של ההירו */
-  padding-top: 160px;
+  padding-top: 140px;   /* ⬅️ גם להקטין טיפה */
   padding-bottom: 120px;
 
-  margin-top: 0;          /* ❌ אין ניתוק מה-Hero */
-
+  margin-top: 0;
   position: relative;
   z-index: 1;
 }
