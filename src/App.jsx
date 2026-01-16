@@ -124,11 +124,13 @@ export default function App() {
 
   return (
     <NotificationsProvider>
-      <Header onToggleNotifications={() => setShowNotifications((v) => !v)} />
-      <ScrollToTop />
+  <div className="app-layout">
+    <Header onToggleNotifications={() => setShowNotifications(v => !v)} />
+    <ScrollToTop />
 
-      {/* ✅ אזור גלילה יחיד למניעת סקרול כפול */}
+    <main className="app-main">
       <div className="app-scroll-area">
+
   <AiProvider>
     <AnimatePresence mode="wait">
       <Suspense
@@ -157,7 +159,6 @@ export default function App() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.35, ease: "easeInOut" }}
-          style={{ minHeight: "100vh" }}
         >
 
                 <Routes location={location} key={location.pathname}>
@@ -435,21 +436,28 @@ export default function App() {
                 </Routes>
 
                 {/* Global AI modal & notifications */}
-                <AiModal />
-                {showNotifications && (
-                  <Notifications onClose={() => setShowNotifications(false)} />
-                )}
-                <Footer />
-              </motion.div>
-            </Suspense>
-          </AnimatePresence>
-        </AiProvider>
-      </div>
-      {/* 🤖 Pre-login sales bot – ONLY for non-authenticated users */}
-      {!user && <PreLoginBot />}
-      
-    </NotificationsProvider>
-  );
+        <AiModal />
+{showNotifications && (
+  <Notifications onClose={() => setShowNotifications(false)} />
+)}
+
+</motion.div>
+</Suspense>
+</AnimatePresence>
+</AiProvider>
+</div>        
+</main>       
+
+{/* ✅ כאן הפוטר – זה המקום הנכון */}
+<Footer />
+
+</div>        {/* סוגר app-layout */}
+
+{/* 🤖 Pre-login sales bot – ONLY for non-authenticated users */}
+{!user && <PreLoginBot />}
+
+</NotificationsProvider>
+);
 }
 
 // Business chat list
