@@ -1,23 +1,49 @@
 /* =========================
-   Page Background
+   GLOBAL PAGE WRAPPER
+   (הרקע האחיד האמיתי)
+========================= */
+.app-scroll-area {
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    #f8fafc 0%,
+    #f1f5ff 100%
+  );
+}
+
+/* גיבוי למקרה שאין wrapper */
+html,
+body {
+  background: linear-gradient(
+    180deg,
+    #f8fafc 0%,
+    #f1f5ff 100%
+  );
+}
+
+
+/* =========================
+   Page Wrapper
+   (בלי רקע, בלי כרטיס)
 ========================= */
 .features-page {
-  background: #f8fafc !important;
-  min-height: 100vh;
   width: 100%;
-  padding: 96px 24px;
-  color: #0f172a;
-  line-height: 1.75;
 }
+
 
 /* =========================
    Container
+   (רוחב + padding של התוכן)
 ========================= */
 .features-container {
   max-width: 980px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 96px 24px;
+
+  color: #0f172a;
+  line-height: 1.75;
 }
+
 
 /* =========================
    Hero
@@ -46,6 +72,7 @@
   margin: 0 auto;
 }
 
+
 /* =========================
    Feature Blocks
 ========================= */
@@ -66,6 +93,7 @@
   max-width: 780px;
   margin-bottom: 1.2rem;
 }
+
 
 /* =========================
    Feature List
@@ -94,6 +122,7 @@
   background: linear-gradient(90deg, #6a11cb, #2575fc);
 }
 
+
 /* =========================
    Result Highlight
 ========================= */
@@ -102,6 +131,7 @@
   font-weight: 600;
   color: #4c1d95;
 }
+
 
 /* =========================
    Summary / CTA
@@ -118,6 +148,7 @@
   font-weight: 600;
   color: #312e81;
 }
+
 
 /* =========================
    CTA Buttons
@@ -165,10 +196,23 @@
   background: rgba(106, 17, 203, 0.08);
 }
 
+
+/* =========================
+   Footer (שלא ייצור בלוק)
+========================= */
+.footer {
+  background: transparent;
+}
+
+
 /* =========================
    Responsive
 ========================= */
 @media (max-width: 768px) {
+  .features-container {
+    padding: 72px 18px;
+  }
+
   .features-title {
     font-size: 2.1rem;
   }
