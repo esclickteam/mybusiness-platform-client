@@ -4,7 +4,7 @@
 .terms-container {
   min-height: 100vh;
   padding: 80px 20px 100px;
-  background: linear-gradient(180deg, #f6f7fb 0%, #ecebff 100%);
+  background: transparent; 
 }
 
 /* PAGE WRAPPER */
