@@ -526,11 +526,14 @@
 
 /* ===== FAQ Mini – Salesforce style (tight) ===== */
 
+/* ===== FAQ Mini – Salesforce style (embedded) ===== */
+
 .faq-mini {
   padding: 96px 24px;
-  background: var(--bg-main);
+  background: transparent; /* ⬅️ קריטי – נטמע ברקע הכללי */
 }
 
+/* Title */
 .faq-title {
   text-align: center;
   font-size: 36px;
@@ -555,58 +558,59 @@
   width: 100%;
   background: none;
   border: none;
-  padding: 22px 0;              /* ⬅️ זה התיקון המרכזי */
+  padding: 22px 32px;            /* מרווח Salesforce מדויק */
   display: flex;
-  align-items: center;          /* ⬅️ לא center של קופסה גבוהה */
+  align-items: center;           /* ⬅️ מונע גובה מיותר */
   justify-content: space-between;
   cursor: pointer;
   text-align: left;
 }
 
-/* Text */
+/* Question text */
 .faq-question span:first-child {
   font-size: 22px;
   font-weight: 600;
+  line-height: 1.2;              /* ⬅️ מונע “ניפוח” */
   color: var(--text-main);
-  line-height: 1.25;            /* ⬅️ קריטי */
+  display: block;
 }
 
-/* Plus icon */
+/* Plus / Minus icon */
 .faq-icon {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #eef4ff;
   color: #0b3a82;
-  font-size: 22px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-/* Answer */
+/* Answer container */
 .faq-answer {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease;
 }
 
+/* Open state */
 .faq-item.open .faq-answer {
   max-height: 200px;
 }
 
+/* Answer text */
 .faq-answer p {
   margin: 0 0 20px;
-  padding-right: 48px;          /* יישור יפה לטקסט */
+  padding-left: 32px;            /* ⬅️ אותו קו כמו השאלה */
+  padding-right: 32px;
   font-size: 17px;
   line-height: 1.6;
   color: var(--text-muted);
 }
 
-
-
-/* ===== FAQ Mini ===== */
 
 
 
