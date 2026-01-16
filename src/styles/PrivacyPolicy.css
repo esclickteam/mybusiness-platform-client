@@ -9,7 +9,7 @@
 
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* מרכז עמודה – לא טקסט */
 
   font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -19,19 +19,22 @@
   border-radius: 0;
 
   color: #0f172a;
-  text-align: left;
   line-height: 1.75;
 }
 
+/* ======================================================
+   Inner readable column (החלק הקריטי!)
+====================================================== */
 
-
-/* Inner readable column */
 .privacy-policy-page > h1,
 .privacy-policy-page > .terms-date,
-.privacy-policy-page > section {
+.privacy-policy-page > .terms-section {
   width: 100%;
   max-width: 880px;
+  margin: 0 auto;
   padding: 0 24px;
+
+  text-align: left; /* 🔥 מיישר טקסט באמת */
 }
 
 /* ======================================================
@@ -41,7 +44,7 @@
 .terms-title {
   font-size: 2.6rem;
   font-weight: 800;
-  text-align: center;
+  text-align: center; /* רק הכותרת ממורכזת */
   margin-bottom: 12px;
 
   background: linear-gradient(90deg, #6a11cb, #2575fc);
@@ -132,13 +135,12 @@
 
 @media (max-width: 768px) {
   .privacy-policy-page {
-    padding: 60px 0 100px; /* ❗ בלי padding צדדי */
+    padding: 60px 0 100px;
   }
 
-  /* Inner readable column */
   .privacy-policy-page > h1,
   .privacy-policy-page > .terms-date,
-  .privacy-policy-page > section {
+  .privacy-policy-page > .terms-section {
     padding: 0 18px;
   }
 
@@ -158,13 +160,12 @@
 
 @media (max-width: 480px) {
   .privacy-policy-page {
-    padding: 48px 0 90px; /* ❗ בלי padding צדדי */
+    padding: 48px 0 90px;
   }
 
-  /* Inner readable column */
   .privacy-policy-page > h1,
   .privacy-policy-page > .terms-date,
-  .privacy-policy-page > section {
+  .privacy-policy-page > .terms-section {
     padding: 0 16px;
   }
 
@@ -177,4 +178,3 @@
     margin-bottom: 44px;
   }
 }
-
