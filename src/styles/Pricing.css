@@ -1,142 +1,196 @@
+/* ===========================
+   Pricing – Unified SaaS UX
+   Same style as Solutions / Features / How It Works
+=========================== */
+
 .plans-page {
+  width: 100%;
+  padding: 80px 25px;
+  max-width: 1100px;
+  margin: 0 auto;
   text-align: center;
-  background: linear-gradient(180deg, #f6f7fb, #ecebff);
-  min-height: 100vh;
-  padding: 60px 20px;
+  color: #0f172a;
   font-family: "Poppins", sans-serif;
+  line-height: 1.8;
+
+  /* ❌ אין רקע כאן */
+  background: transparent;
 }
 
-/* Header */
+/* ===========================
+   Header
+=========================== */
+
 .plans-header h1 {
-  font-size: 2.5rem;
+  font-size: 2.6rem;
   font-weight: 700;
-  color: #2d2d2d;
+  line-height: 1.25;
+  margin-bottom: 1rem;
+
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .plans-header p {
-  color: #555;
-  max-width: 650px;
-  margin: 10px auto 40px;
+  max-width: 720px;
+  margin: 0 auto 3rem;
   font-size: 1.1rem;
-  line-height: 1.6;
+  color: #334155;
 }
 
-/* Toggle Buttons */
+/* ===========================
+   Billing Toggle
+=========================== */
+
 .plans-toggle {
   display: inline-flex;
-  background: #fff;
-  border-radius: 40px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 40px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 999px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  margin-bottom: 3rem;
+  backdrop-filter: blur(6px);
 }
 
 .toggle-btn {
   border: none;
   background: transparent;
-  padding: 10px 25px;
-  font-size: 1rem;
+  padding: 10px 26px;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 40px;
+  border-radius: 999px;
   transition: all 0.25s ease;
-  color: #666;
+  color: #64748b;
 }
 
 .toggle-btn.active {
-  background: linear-gradient(90deg, #8b5cf6, #6d28d9);
-  color: #fff;
-  box-shadow: 0 2px 10px rgba(109, 40, 217, 0.3);
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(106, 17, 203, 0.35);
 }
 
-/* Plan Card */
+/* ===========================
+   Plan Card
+=========================== */
+
 .plan-card-container {
   display: flex;
   justify-content: center;
 }
 
 .plan-card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 40px 30px;
-  max-width: 500px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 22px;
+  padding: 44px 38px;
+  max-width: 520px;
+  width: 100%;
+
+  box-shadow:
+    0 30px 80px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
   text-align: left;
+  backdrop-filter: blur(6px);
 }
 
 .plan-card h2 {
   font-size: 1.6rem;
-  font-weight: 600;
-  margin-bottom: 15px;
-  color: #2d2d2d;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: #0f172a;
 }
 
 .plan-desc {
-  color: #555;
-  margin-bottom: 25px;
+  color: #475569;
+  margin-bottom: 28px;
   font-size: 1rem;
-  line-height: 1.5;
 }
 
+/* ===========================
+   Price
+=========================== */
+
 .plan-price {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #7e22ce;
-  margin-bottom: 15px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+
+.plan-price .price {
+  font-size: 2.4rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .plan-price .duration {
   font-size: 1rem;
-  color: #666;
-  margin-left: 5px;
+  color: #64748b;
 }
+
+/* ===========================
+   Features
+=========================== */
 
 .plan-features {
   list-style: none;
   padding: 0;
-  margin: 25px 0;
+  margin: 28px 0;
 }
 
 .plan-features li {
-  margin: 8px 0;
-  font-size: 1rem;
-  color: #444;
+  margin: 10px 0;
+  font-size: 0.95rem;
+  color: #334155;
 }
+
+/* ===========================
+   CTA
+=========================== */
 
 .plan-btn.primary {
   width: 100%;
-  background: linear-gradient(90deg, #8b5cf6, #6d28d9);
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
   border: none;
-  border-radius: 10px;
-  color: white;
-  font-size: 1.1rem;
+  border-radius: 14px;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 600;
   padding: 14px 0;
   cursor: pointer;
-  transition: 0.3s;
-  margin-top: 10px;
+  transition: all 0.25s ease;
+  margin-top: 12px;
 }
 
 .plan-btn.primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(109, 40, 217, 0.4);
+  box-shadow: 0 14px 30px rgba(106, 17, 203, 0.4);
 }
 
-/* Summary Box */
+/* ===========================
+   Summary
+=========================== */
+
 .summary-box {
-  background: #f9f7ff;
-  border: 1px solid #e4d8ff;
-  border-radius: 12px;
-  padding: 15px;
-  margin-top: 25px;
+  background: rgba(248, 247, 255, 0.8);
+  border: 1px solid rgba(203, 213, 225, 0.6);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 28px;
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
-  font-size: 1rem;
-  color: #444;
+  font-size: 0.95rem;
+  color: #334155;
 }
 
 .summary-row.save {
   color: #059669;
-  font-weight: 600;
+  font-weight: 700;
 }
-
