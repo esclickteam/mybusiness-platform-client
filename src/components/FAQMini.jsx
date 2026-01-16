@@ -4,20 +4,58 @@ import { useState } from "react";
 
 const FAQS = [
   {
-    q: "Is there a free trial?",
-    a: "Yes. You can start with a free trial and explore all core features. No credit card is required.",
+    q: "What is Bizuply?",
+    a: {
+      lead:
+        "Bizuply is an all-in-one platform that centralizes your business — business page, CRM, collaborations, and AI — so you can manage everything in one place.",
+      bullets: [
+        { title: "Business Page", text: "Turn visitors into leads with a professional profile." },
+        { title: "CRM", text: "Track leads, clients, follow-ups, and pipeline stages." },
+        { title: "Collaborations", text: "Work with other businesses and manage proposals & deals." },
+        { title: "AI", text: "Get smart suggestions and next-step actions to move faster." },
+      ],
+      footer: "Everything stays connected — no more switching between scattered tools.",
+    },
   },
   {
-    q: "Do I need a credit card to get started?",
-    a: "No. You can try Bizuply without adding any payment details. Choose a plan only if you decide to continue.",
+    q: "How does Bizuply help me get more clients?",
+    a: {
+      lead:
+        "Bizuply helps you capture leads, respond faster, and stay consistent — which increases conversions over time.",
+      bullets: [
+        { title: "Capture leads", text: "Your business page turns traffic into inquiries." },
+        { title: "Follow up faster", text: "CRM reminders and tasks keep leads warm." },
+        { title: "Close more deals", text: "A clear pipeline view helps you move opportunities forward." },
+      ],
+      footer: "The result: fewer missed messages, faster follow-ups, and more closed clients.",
+    },
   },
   {
-    q: "Can I cancel anytime?",
-    a: "Absolutely. There are no long-term commitments, and you can cancel or change your plan at any time.",
+    q: "What can I manage inside the CRM?",
+    a: {
+      lead:
+        "Your CRM is where everything about a lead or client stays organized — so you always know what’s next.",
+      bullets: [
+        { title: "Leads & clients", text: "Keep every contact and inquiry in one place." },
+        { title: "Tasks & follow-ups", text: "Set reminders, next steps, and due dates." },
+        { title: "Notes & history", text: "Track conversations, status, and progress over time." },
+        { title: "Pipeline stages", text: "Move deals through steps so nothing gets stuck." },
+      ],
+      footer: "No more spreadsheets or forgotten follow-ups — it’s all structured and searchable.",
+    },
   },
   {
-    q: "Is this suitable for small businesses or solo founders?",
-    a: "Yes. Bizuply is designed for freelancers, solo founders, and small teams who want to manage everything in one place.",
+    q: "How does AI help in Bizuply?",
+    a: {
+      lead:
+        "Bizuply AI helps you act faster by highlighting priorities and recommending next steps based on your activity.",
+      bullets: [
+        { title: "Next-step suggestions", text: "Get recommended actions for leads and deals." },
+        { title: "Priority insights", text: "See what needs attention now — before it’s too late." },
+        { title: "Faster responses", text: "Draft better replies and follow-ups in less time." },
+      ],
+      footer: "It’s like having a smart assistant inside your CRM — focused on results.",
+    },
   },
 ];
 
@@ -46,7 +84,17 @@ export default function FAQMini() {
 
               {isOpen && (
                 <div className="faq-answer">
-                  <p>{item.a}</p>
+                  <p className="faq-lead">{item.a.lead}</p>
+
+                  <ul className="faq-bullets">
+                    {item.a.bullets.map((b, idx) => (
+                      <li key={idx} className="faq-bullet">
+                        <strong>{b.title}:</strong> {b.text}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {item.a.footer && <p className="faq-footer">{item.a.footer}</p>}
                 </div>
               )}
             </div>
