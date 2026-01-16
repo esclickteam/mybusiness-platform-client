@@ -108,14 +108,14 @@ label {
 .password-input-wrapper {
   position: relative;
   width: 100%;
-  overflow: visible; /* ⭐ חובה */
+  overflow: visible; /* חובה */
 }
 
 .password-input {
-  padding-right: 64px; /* space for icon */
+  padding-right: 64px; /* מקום לכפתור */
 }
 
-/* Toggle icon (proper centering, no weird transforms) */
+/* Toggle icon */
 .password-toggle-btn {
   position: absolute;
   right: 12px;
@@ -127,7 +127,7 @@ label {
   height: 40px;
   border-radius: 12px;
 
-  background: #f6f4ff; /* ⬅️ שינוי חשוב */
+  background: #f6f4ff;
   border: 1px solid rgba(91, 76, 245, 0.35);
   box-shadow: 0 6px 16px rgba(91, 76, 245, 0.35);
 
@@ -136,24 +136,22 @@ label {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-
-.password-toggle-btn {
   pointer-events: auto;
+
+  transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-
-
+/* ⬅️ זה היה חסר וגורם לבעיה */
 .password-toggle-btn svg {
   width: 20px;
   height: 20px;
+  stroke: currentColor;
 }
 
 .password-toggle-btn:hover {
   background: #ffffff;
-  border-color: rgba(91, 76, 245, 0.4);
-  box-shadow: 0 6px 14px rgba(91, 76, 245, 0.35);
-  color: #4338ca;
+  border-color: rgba(91, 76, 245, 0.45);
+  box-shadow: 0 8px 18px rgba(91, 76, 245, 0.35);
 }
 
 .password-toggle-btn:focus {
@@ -163,6 +161,7 @@ label {
 .password-toggle-btn:focus-visible {
   box-shadow: 0 0 0 4px rgba(91, 76, 245, 0.18);
 }
+
 
 /* Primary button */
 .login-button {
