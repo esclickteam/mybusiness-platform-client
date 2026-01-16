@@ -601,8 +601,16 @@ section.faq-mini .faq-question {
 /* ===== ANSWER ===== */
 
 section.faq-mini .faq-answer {
-  padding: 0 0 24px 0;
+  padding-left: 28px;
+  padding-right: 28px;
+  padding-bottom: 24px;
 }
+
+section.faq-mini .faq-item,
+section.faq-mini .faq-answer {
+  overflow: visible !important;
+}
+
 
 section.faq-mini .faq-answer p {
   margin: 0;
