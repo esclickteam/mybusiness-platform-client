@@ -1,7 +1,7 @@
 /* === מבנה עמוד כללי === */
 .build-wrapper {
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   justify-content: space-between;
   padding: 2.5rem;
   min-height: 100vh;
@@ -77,12 +77,12 @@
 /* --- טקסט בפרופיל --- */
 .preview-description,
 .preview-phone,
-.preview-category {
+.preview-category,
+.preview-city {
   text-align: center;
   margin: 0.35rem 0;
   font-size: 0.95rem;
   color: #4b5563;
-  overflow-wrap: anywhere;
 }
 
 /* --- מחיצה --- */
