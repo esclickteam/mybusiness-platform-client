@@ -10,7 +10,7 @@ export default function ServicesSelector({
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedId, setSelectedId] = useState(
-    localStorage.getItem("lastService") || null
+    () => localStorage.getItem("lastService") || null
   );
 
   /* ======================================================
@@ -23,7 +23,7 @@ export default function ServicesSelector({
   }, [selectedId]);
 
   /* ======================================================
-     ⏱️ עזר לפורמט משך
+     ⏱️ פורמט משך
   ====================================================== */
   const formatDuration = (minutes = 0) => {
     const h = Math.floor(minutes / 60);
@@ -56,8 +56,9 @@ export default function ServicesSelector({
   ====================================================== */
   const tabs = useMemo(() => {
     if (Array.isArray(categories)) return ["all", ...categories];
-    if (categories && typeof categories === "object")
+    if (categories && typeof categories === "object") {
       return ["all", ...Object.keys(categories)];
+    }
     return ["all"];
   }, [categories]);
 
@@ -135,7 +136,6 @@ export default function ServicesSelector({
                 formatDuration={formatDuration}
               />
 
-              {/* אינדיקציה ברורה */}
               {isSelected && (
                 <div className="service-selected-badge">✓ Selected</div>
               )}

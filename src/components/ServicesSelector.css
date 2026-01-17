@@ -91,36 +91,41 @@
 
 .service-card-wrapper {
   position: relative;
-  border-radius: 18px;
+  border-radius: 16px;
   cursor: pointer;
 
-  /* ⬅️ שליטה בגודל */
-  max-width: 300px;
+  max-width: 280px;          /* ⬅️ עוד קצת קטן */
   width: 100%;
   margin: 0 auto;
 
-  /* ⬅️ תחושה קלה וקומפקטית */
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-  outline: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.service-card-wrapper:hover {
-  transform: translateY(-4px);
-}
+
 
 .service-card-wrapper:focus-visible {
   box-shadow: 0 0 0 3px rgba(122, 61, 244, 0.35);
 }
 
+.service-card {
+  padding: 12px 12px 14px;  /* ⬅️ קטן ומדויק */
+  gap: 6px;
+  min-height: unset;
+}
+
+.service-card img {
+  width: 100%;
+  max-height: 130px;   /* ⬅️ אם עדיין גדול – תורידי ל־120 */
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 6px;
+}
+
+
 /* ======================================================
    ✅ מצב נבחר
 ====================================================== */
 
-.service-card-wrapper.selected {
-  box-shadow:
-    0 0 0 2px rgba(180, 106, 241, 0.45),
-    0 18px 44px rgba(92, 45, 145, 0.25);
-}
 
 .service-card-wrapper.selected::after {
   content: "";
