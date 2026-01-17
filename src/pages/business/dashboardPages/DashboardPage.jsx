@@ -32,9 +32,6 @@ const BarChartComponent = lazyWithPreload(() =>
 const Insights = lazyWithPreload(() =>
   import("../../../components/dashboard/Insights")
 );
-const NextActions = lazyWithPreload(() =>
-  import("../../../components/dashboard/NextActions")
-);
 const WeeklySummary = lazyWithPreload(() =>
   import("../../../components/dashboard/WeeklySummary")
 );
