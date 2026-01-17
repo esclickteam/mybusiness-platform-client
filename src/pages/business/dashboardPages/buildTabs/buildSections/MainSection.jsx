@@ -95,7 +95,7 @@ export default function MainSection({
     display: "grid",
     gridTemplateColumns: "minmax(520px, 1fr) 440px",
     gridTemplateAreas: '"form preview"',
-    gap: "2rem",
+    gap: "1.25rem",
     alignItems: "start",
 
     width: "100%",
@@ -112,6 +112,7 @@ export default function MainSection({
         className="preview-column"
         style={{
           gridArea: "preview",
+          justifySelf: "end",
           background: "#fff",
           borderRadius: "20px",
           padding: "2rem",
