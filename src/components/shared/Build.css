@@ -4,7 +4,12 @@
   flex-direction: row-reverse;
   justify-content: space-between;
   padding: 2rem;
-  background: linear-gradient(to bottom right, #f5eafe, #e0d4f7);
+    background: linear-gradient(
+    180deg,
+    #fafaff 0%,
+    #f4f1ff 50%,
+    #ede9ff 100%
+  );
   min-height: 100vh;
   flex-wrap: wrap;
   gap: 2rem;
@@ -14,17 +19,14 @@
 
 /* צד ימין - תצוגה */
 .preview-column {
-  width: 450px;
-  background-color: #f0dbff;
-  border: 8px solid black;
-  border-radius: 40px;
-  padding: 1.5rem;
-  position: relative;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-  margin: 0 auto;
-  flex-shrink: 0;
-  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid rgba(92, 45, 145, 0.15);
+  border-radius: 28px;
+  box-shadow:
+    0 20px 40px rgba(92, 45, 145, 0.18),
+    0 4px 10px rgba(0, 0, 0, 0.04);
 }
+
 
 /* צד שמאל - טופס / עיצוב */
 .form-column {
@@ -91,7 +93,7 @@
   border: none;
   padding: 0.5rem 0.8rem;
   border-radius: 20px;
-  background-color: #d6cadf;
+  background: #ede7f6;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
@@ -100,8 +102,8 @@
 }
 
 .tab.active {
-  background-color: #b46af1;
-  color: white;
+  background: linear-gradient(90deg, #7c3aed, #a78bfa);
+  color: #fff;
 }
 
 /* לוגו */
