@@ -305,27 +305,31 @@ const isOwner =
             >
               {businessName}
             </h1>
-            <button
-              onClick={toggleFavorite}
-              className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
-              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-              style={{
-                background: isFavorite ? "#FF4081" : "#EEE",
-                border: "1px solid #4A148C",
-                borderRadius: "24px",
-                cursor: "pointer",
-                fontSize: "1.2rem",
-                color: isFavorite ? "white" : "#4A148C",
-                padding: "6px 12px",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                transition: "all 0.3s ease",
-              }}
-            >
-              {isFavorite ? "❤️" : "🤍"}
-              <span>{isFavorite ? "Favorite" : "Add to Favorites"}</span>
-            </button>
+            
+            {["customer", "user", "client"].includes(user?.role) && (
+  <button
+    onClick={toggleFavorite}
+    className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
+    aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+    style={{
+      background: isFavorite ? "#FF4081" : "#EEE",
+      border: "1px solid #4A148C",
+      borderRadius: "24px",
+      cursor: "pointer",
+      fontSize: "1.2rem",
+      color: isFavorite ? "white" : "#4A148C",
+      padding: "6px 12px",
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      transition: "all 0.3s ease",
+    }}
+  >
+    {isFavorite ? "❤️" : "🤍"}
+    <span>{isFavorite ? "Favorite" : "Add to Favorites"}</span>
+  </button>
+)}
+
           </div>
 
           <div className="about-phone" style={{ marginBottom: "1rem" }}>
