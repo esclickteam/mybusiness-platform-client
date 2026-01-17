@@ -1,18 +1,32 @@
+/* WhatsApp background wrapper */
+.whatsappBg {
+  min-height: 100vh;
+  background: #f3edff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 /* Chat container (WhatsApp style) */
 .chatContainer {
+  max-width: 950px;
   width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
+  height: 82vh;
+  min-height: 380px;
+  max-height: 700px;
 
   display: flex;
-  flex-direction: row;
+  flex-direction: row; /* סידור רגיל */
 
-  border-radius: 0;          /* ❗ אין קופסה */
-  box-shadow: none;          /* ❗ אין צל */
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
+  overflow: hidden;
   background: #faf7ff;
+  border: 1px solid #c3a6fa;
   position: relative;
+
+  /* ✅ מרכז בתוך כל Layout (דשבורד/עמוד מלא) */
+  margin: 0 auto;
 }
 
 
@@ -50,11 +64,11 @@
 
 /* Chat area inside WhatsApp container */
 .chatArea {
-  flex: 1;
   display: flex;
-  flex-direction: column;
-  min-height: 0;   /* 🔥 חובה לגלילה */
+  justify-content: center; /* ✅ מרכז את הצ’אט */
+  width: 100%;
 }
+
 /* Message list */
 .messageList {
   flex: 1;
@@ -186,6 +200,13 @@
 
 /* === רספונסיביות למובייל וטאבלטים === */
 @media (max-width: 1024px) {
+  .chatContainer {
+    flex-direction: column;
+    height: 100vh;
+    max-height: none;
+    max-width: 100vw;
+    border-radius: 0;
+  }
   .sidebarInner {
     width: 100%;
     height: 160px;
@@ -273,6 +294,12 @@
 
 /* Extra Large - מעל 1024px */
 @media (min-width: 1025px) {
+  .chatContainer {
+    flex-direction: row;
+    max-width: 950px;
+    height: 82vh;
+    border-radius: 16px;
+  }
   .sidebarInner {
     width: 246px;
     height: auto;
