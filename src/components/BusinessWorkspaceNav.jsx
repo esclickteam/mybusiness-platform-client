@@ -82,52 +82,15 @@ export default function BusinessWorkspaceNav({
   const { pathname } = useLocation();
 
   const items = [
-    {
-      label: "View Public Profile",
-      to: `/business/${businessId}`,
-      icon: PublicProfileIcon,
-    },
-    {
-      label: "Dashboard",
-      to: `/business/${businessId}/dashboard/dashboard`,
-      icon: DashboardIcon,
-    },
-    {
-      label: "Edit Business Page",
-      to: `/business/${businessId}/dashboard/build`,
-      icon: EditBusinessIcon,
-    },
-    {
-      label: "Customer Messages",
-      to: `/business/${businessId}/dashboard/messages`,
-      icon: MessagesIcon,
-      badge: messagesCount,
-    },
-    {
-      label: "Collaborations",
-      to: `/business/${businessId}/dashboard/collab`,
-      icon: CollaborationsIcon,
-    },
-    {
-      label: "CRM System",
-      to: `/business/${businessId}/dashboard/crm`,
-      icon: CRMIcon,
-    },
-    {
-      label: "Billing & Subscription",
-      to: `/business/${businessId}/dashboard/billing`,
-      icon: BillingIcon,
-    },
-    {
-      label: "BizUply Advisor",
-      to: `/business/${businessId}/dashboard/BizUply`,
-      icon: AdvisorIcon,
-    },
-    {
-      label: "Help Center",
-      to: `/business/${businessId}/dashboard/help-center`,
-      icon: HelpIcon,
-    },
+    { label: "View Public Profile", to: `/business/${businessId}`, icon: PublicProfileIcon },
+    { label: "Dashboard", to: `/business/${businessId}/dashboard/dashboard`, icon: DashboardIcon },
+    { label: "Edit Business Page", to: `/business/${businessId}/dashboard/build`, icon: EditBusinessIcon },
+    { label: "Customer Messages", to: `/business/${businessId}/dashboard/messages`, icon: MessagesIcon, badge: messagesCount },
+    { label: "Collaborations", to: `/business/${businessId}/dashboard/collab`, icon: CollaborationsIcon },
+    { label: "CRM System", to: `/business/${businessId}/dashboard/crm`, icon: CRMIcon },
+    { label: "Billing & Subscription", to: `/business/${businessId}/dashboard/billing`, icon: BillingIcon },
+    { label: "BizUply Advisor", to: `/business/${businessId}/dashboard/BizUply`, icon: AdvisorIcon },
+    { label: "Help Center", to: `/business/${businessId}/dashboard/help-center`, icon: HelpIcon },
   ];
 
   return (
