@@ -98,11 +98,10 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const scroller = document.querySelector(".app-scroll-area");
-    if (scroller) {
-      scroller.scrollTop = 0;
-    }
-  }, [pathname]);
+  const scroller = document.querySelector(".app-scroll-area");
+  if (scroller) scroller.scrollTop = 0;
+  else window.scrollTo(0, 0);
+}, [pathname]);
 
   return null;
 }
@@ -118,6 +117,12 @@ export default function App() {
     location.pathname.startsWith("/staff") ||
     location.pathname.startsWith("/client");
 
+    const isChatRoute =
+  ((location.pathname.includes("/business/") &&
+    (location.pathname.includes("/chat") ||
+     location.pathname.includes("/messages"))) ||
+   location.pathname.includes("/client/dashboard/messages"));
+
   useOnceLogger("App render - user", user);
   useOnceLogger("App render - loading", loading);
 
@@ -131,11 +136,14 @@ export default function App() {
   return (
     <NotificationsProvider>
   <div className="app-layout" dir="ltr">
-    <Header onToggleNotifications={() => setShowNotifications(v => !v)} />
+    {!isChatRoute && (
+  <Header onToggleNotifications={() => setShowNotifications((v) => !v)} />
+)}
+
     <ScrollToTop />
 
     <main className="app-main">
-      <div className="app-scroll-area">
+  <div className={isChatRoute ? "chat-shell" : "app-scroll-area"}>
 
   <AiProvider>
     <AnimatePresence mode="wait">
@@ -455,7 +463,8 @@ export default function App() {
 </main>       
 
 {/* ✅ כאן הפוטר – זה המקום הנכון */}
-{!isDashboardRoute && <Footer />}
+{!isDashboardRoute && !isChatRoute && <Footer />}
+
 
 
 </div>        {/* סוגר app-layout */}

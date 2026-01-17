@@ -184,3 +184,29 @@ button {
     font-size: 13px;
   }
 }
+
+/* =========================
+   🟣 Chat – FULL SCREEN SHELL
+========================= */
+.chat-shell {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+
+  /* בזמן צ'אט – בלי רקע גרדיאנט מאחורה */
+  background: #ece5dd;
+}
+
+/* אם יש עטיפות שמוסיפות רווחים/גובה – ננטרל רק כשה-chat-shell קיים */
+.app-main:has(.chat-shell) {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100vh;
+}
+
+.app-layout:has(.chat-shell) {
+  height: 100vh;
+}

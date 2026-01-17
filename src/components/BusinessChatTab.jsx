@@ -224,13 +224,10 @@ export default function BusinessChatTab({
 --------------------------------------------------- */
   if (!businessId) {
     return (
-  <div className="chat-page">
-    <div className="chat-container business">
-
+      <div className="chat-container business">
         <div className="loading">Loading chat...</div>
-          </div>
-  </div>
-);
+      </div>
+    );
   }
 
   const sorted = [...messages].sort(

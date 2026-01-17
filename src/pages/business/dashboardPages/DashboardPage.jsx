@@ -6,7 +6,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import API from "../../../api";
 import { useAuth } from "../../../context/AuthContext";
 import { createSocket } from "../../../socket";
@@ -142,6 +142,8 @@ const DashboardPage = () => {
   /* navigation helpers */
   const navigate = useNavigate();
   const location = useLocation();
+  const isChatPage = location.pathname.includes("/messages");
+
 
   /* state */
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
@@ -570,6 +572,16 @@ if (error) {
 if (isRefreshingUser) {
   return <p className="dp-loading">⏳ Refreshing user info...</p>;
 }
+
+// 🔥 אם זה עמוד צ'אט – מחזירים רק את הצ'אט, בלי Dashboard
+if (isChatPage) {
+  return (
+    <div className="chat-page">
+      <Outlet />
+    </div>
+  );
+}
+
 
 const shouldShowEarlyBirdModal =
   showEarlyBirdModal &&
