@@ -6,8 +6,12 @@ import React, {
   useCallback,
 } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import "./DashboardNav.css";
 
-/* Section references (same order) */
+
+/* =========================
+   Section order
+========================= */
 const SECTION_IDS = [
   "cardsRef",
   "insightsRef",
@@ -17,7 +21,9 @@ const SECTION_IDS = [
   "weeklySummaryRef",
 ];
 
-/* Labels in English */
+/* =========================
+   Labels
+========================= */
 const LABELS = {
   cardsRef: "Overview",
   insightsRef: "Insights",
@@ -31,14 +37,19 @@ const DashboardNav = ({ refs = {} }) => {
   const { user } = useContext(AuthContext);
   const [activeSection, setActiveSection] = useState(null);
 
-  /* Get list of active refs */
+  /* =========================
+     Only refs that actually exist
+  ========================= */
   const entries = useMemo(() => {
     return SECTION_IDS
       .map((id) => [id, refs[id]])
-      .filter(([, r]) => r && r.current);
+      .filter(([, ref]) => ref?.current);
   }, [refs]);
 
-  /* Intersection observer for highlighting active section */
+  /* =========================
+     Intersection Observer
+     (stable + UX friendly)
+  ========================= */
   useEffect(() => {
     if (!entries.length) return;
 
@@ -47,62 +58,84 @@ const DashboardNav = ({ refs = {} }) => {
         const visible = ioEntries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
         if (visible?.target?.id) {
-          setActiveSection(visible.target.id);
+          setActiveSection((prev) =>
+            prev === visible.target.id ? prev : visible.target.id
+          );
         }
       },
       {
         root: null,
-        rootMargin: "-30% 0px -60% 0px",
-        threshold: [0, 0.15, 0.3, 0.6, 1],
+        rootMargin: "-35% 0px -55% 0px",
+        threshold: [0, 0.25, 0.5, 0.75],
       }
     );
 
-    entries.forEach(([id, r]) => {
-      if (r.current && !r.current.id) r.current.id = id;
-      if (r.current) observer.observe(r.current);
+    entries.forEach(([id, ref]) => {
+      if (!ref.current.id) ref.current.id = id;
+      observer.observe(ref.current);
     });
 
     return () => observer.disconnect();
   }, [entries]);
 
-  /* Scroll to section smoothly */
+  /* =========================
+     Scroll handler
+  ========================= */
   const scrollTo = useCallback(
-    (refName, e) => {
+    (id, e) => {
       if (e) e.preventDefault();
-      const el = refs[refName]?.current;
+      const el = refs[id]?.current;
       if (!el) return;
-      if (!el.id) el.id = refName;
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      if (!el.id) el.id = id;
+
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     },
     [refs]
   );
 
-  /* Filter out missing refs */
+  /* =========================
+     Buttons list
+  ========================= */
   const buttons = useMemo(() => {
     return SECTION_IDS
-      .filter((id) => refs[id])
-      .map((id) => ({ id, label: LABELS[id] || id }));
+      .filter((id) => refs[id]?.current)
+      .map((id) => ({
+        id,
+        label: LABELS[id] || id,
+      }));
   }, [refs]);
 
+  /* =========================
+     Render
+  ========================= */
   return (
     <nav
       className="dashboard-nav"
-      aria-label="Dashboard Section Navigation"
+      aria-label="Dashboard section navigation"
       dir="ltr"
     >
-      {buttons.map(({ id, label }) => (
-        <button
-          key={id}
-          onClick={(e) => scrollTo(id, e)}
-          className={`nav-chip${activeSection === id ? " active" : ""}`}
-          data-active={activeSection === id ? "true" : "false"}
-          aria-current={activeSection === id ? "true" : "false"}
-          type="button"
-        >
-          {label}
-        </button>
-      ))}
+      {buttons.map(({ id, label }) => {
+        const isActive = activeSection === id;
+
+        return (
+          <button
+            key={id}
+            type="button"
+            className={`nav-chip${isActive ? " active" : ""}`}
+            data-active={isActive}
+            aria-current={isActive ? "true" : "false"}
+            onClick={(e) => scrollTo(id, e)}
+          >
+            {label}
+          </button>
+        );
+      })}
     </nav>
   );
 };

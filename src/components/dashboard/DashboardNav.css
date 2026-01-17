@@ -1,0 +1,87 @@
+/* =========================
+   🧭 Dashboard Navigation
+========================= */
+
+.dashboard-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  margin-bottom: 12px;
+}
+
+/* =========================
+   🔘 Nav Chip – Default
+========================= */
+
+.nav-chip {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+
+  padding: 10px 18px;
+  border-radius: 999px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+/* Hover (לא active) */
+.nav-chip:hover:not(.active) {
+  background: #ece9ff;
+  color: var(--violet);
+}
+
+/* =========================
+   ⭐ Active State
+========================= */
+
+.nav-chip.active,
+.nav-chip[data-active="true"] {
+  background: linear-gradient(
+    135deg,
+    var(--violet),
+    var(--blue)
+  );
+  color: #ffffff;
+  border-color: transparent;
+
+  box-shadow: 0 6px 18px rgba(106, 17, 203, 0.28);
+}
+
+/* =========================
+   ♿ Focus / Accessibility
+========================= */
+
+.nav-chip:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px rgba(106, 17, 203, 0.4);
+}
+
+/* =========================
+   📱 Mobile
+========================= */
+
+@media (max-width: 768px) {
+  .dashboard-nav {
+    gap: 8px;
+  }
+
+  .nav-chip {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
