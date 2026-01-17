@@ -72,8 +72,20 @@
 =========================== */
 .graph-scroll {
   width: 100%;
-  overflow-x: auto;
   padding-top: 8px;
+
+  display: flex;                 /* ➜ חדש */
+  justify-content: center;       /* ➜ מרכז את הגרף */
+}
+
+.graph-scroll .recharts-responsive-container {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.graph-scroll .recharts-wrapper {
+  width: 100% !important;
+  max-width: none !important;   /* ❗ זה מה שפותח את הגרף */
 }
 
 /* Empty state */
