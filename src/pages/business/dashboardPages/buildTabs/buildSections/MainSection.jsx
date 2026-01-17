@@ -343,21 +343,14 @@ export default function MainSection({
         </button>
 
         {showViewProfile && (
-          <button
-            type="button"
-            style={{
-              marginTop: "0.5rem",
-              background: "#f3f4f6",
-              padding: "10px 16px",
-              borderRadius: "10px",
-              border: "1px solid #ccc",
-              cursor: "pointer",
-            }}
-            onClick={() => navigate(`/business/${businessDetails._id}`)}
-          >
-            👀 View Profile
-          </button>
-        )}
+  <button
+    type="button"
+    className="view-profile-btn"
+    onClick={() => navigate(`/business/${businessDetails._id}`)}
+  >
+    👀 View Profile
+  </button>
+)}
       </div>
     </div>
   );
