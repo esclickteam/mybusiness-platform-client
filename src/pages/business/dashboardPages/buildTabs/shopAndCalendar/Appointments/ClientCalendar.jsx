@@ -373,50 +373,69 @@ export default function ClientCalendar({
         <div className="summary-box">
           {!bookingSuccess ? (
             <>
-              <h4 className="success-message">📋 Booking Summary</h4>
-              <p>🧾 Service: {selectedSlot.name}</p>
-              <p>📅 Date: {selectedSlot.date}</p>
-              <p>🕓 Time: {selectedSlot.time}</p>
-              <p>
-                ⏱️ Duration: {Math.floor(selectedSlot.duration / 60)}:
-                {(selectedSlot.duration % 60).toString().padStart(2, "0")}
-              </p>
-              <p>💰 Price: {selectedSlot.price} $</p>
+
+              <div className="booking-summary-card">
+  <h4 className="summary-title">Booking Summary</h4>
+
+  <ul className="summary-list">
+    <li><span>Service</span><strong>{selectedSlot.name}</strong></li>
+    <li><span>Date</span><strong>{selectedSlot.date}</strong></li>
+    <li><span>Time</span><strong>{selectedSlot.time}</strong></li>
+    <li>
+      <span>Duration</span>
+      <strong>
+        {Math.floor(selectedSlot.duration / 60)}h{" "}
+        {selectedSlot.duration % 60}m
+      </strong>
+    </li>
+    <li className="price">
+      <span>Price</span>
+      <strong>${selectedSlot.price}</strong>
+    </li>
+  </ul>
+</div>
 
 
-              <div className="booking-form">
-                <label>Full Name:</label>
-                <input
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  placeholder="Enter full name"
-                />
-                <label>Phone:</label>
-                <input
-                  value={clientPhone}
-                  onChange={(e) => setClientPhone(e.target.value)}
-                  placeholder="Enter phone number"
-                />
-                <label>Address:</label>
-                <input
-                  value={clientAddress}
-                  onChange={(e) => setClientAddress(e.target.value)}
-                  placeholder="Enter address"
-                />
-                <label>Email (for confirmation):</label>
-                <input
-                  value={clientEmail}
-                  onChange={(e) => setClientEmail(e.target.value)}
-                  type="email"
-                  placeholder="Enter email"
-                />
-                <label>Note (optional):</label>
-                <textarea
-                  value={clientNote}
-                  onChange={(e) => setClientNote(e.target.value)}
-                  placeholder="Additional note"
-                />
-              </div>
+              <div className="booking-form-card">
+  <div className="booking-form">
+    <label>Full Name:</label>
+    <input
+      value={clientName}
+      onChange={(e) => setClientName(e.target.value)}
+      placeholder="Enter full name"
+    />
+
+    <label>Phone:</label>
+    <input
+      value={clientPhone}
+      onChange={(e) => setClientPhone(e.target.value)}
+      placeholder="Enter phone number"
+    />
+
+    <label>Address:</label>
+    <input
+      value={clientAddress}
+      onChange={(e) => setClientAddress(e.target.value)}
+      placeholder="Enter address"
+    />
+
+    <label>Email (for confirmation):</label>
+    <input
+      value={clientEmail}
+      onChange={(e) => setClientEmail(e.target.value)}
+      type="email"
+      placeholder="Enter email"
+    />
+
+    <label>Note (optional):</label>
+    <textarea
+      value={clientNote}
+      onChange={(e) => setClientNote(e.target.value)}
+      placeholder="Additional note"
+    />
+  </div>
+</div>
+
 
               <button className="confirm-slot-btn" onClick={handleSubmitBooking}>
                 📅 Confirm Booking
