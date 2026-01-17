@@ -419,14 +419,7 @@ export default function ClientCalendar({
       placeholder="Enter address"
     />
 
-    <label>Email (for confirmation):</label>
-    <input
-      value={clientEmail}
-      onChange={(e) => setClientEmail(e.target.value)}
-      type="email"
-      placeholder="Enter email"
-    />
-
+   
     <label>Note (optional):</label>
     <textarea
       value={clientNote}
@@ -447,7 +440,12 @@ export default function ClientCalendar({
           ) : (
             <div>
               <h4 className="success-message">🎉 Booking Submitted Successfully!</h4>
-              <p>{clientEmail ? "Confirmation email sent." : "No confirmation sent because no email was provided."}</p>
+              <p>
+  {clientEmail
+    ? "A confirmation email has been sent to your email address."
+    : "Your booking is confirmed."}
+</p>
+
               <button className="back-button" onClick={onBackToList}>
                 🔙 Back to List
               </button>
