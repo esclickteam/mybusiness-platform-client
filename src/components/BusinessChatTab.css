@@ -15,32 +15,27 @@
 
 /* קונטיינר ראשי */
 .chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   max-width: 950px;
   width: 100%;
-  height: 100vh;  /* תוודא שהגובה יכסה את כל המסך */
-  min-height: 380px;
-  max-height: none;  /* בטל את הגבלת הגובה המקסימלית */
-  display: flex;
-  flex-direction: column;  /* מציג את הצ'אט בעמודה */
-  border-radius: 16px;
-  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.2);  /* יש להוסיף שקיפות למריחה */
-  overflow-x: hidden;  /* הצג רק גלילה אנכית */
-  overflow-y: auto;  /* הוסף גלילה אנכית אם התוכן חורג */
   background: #fff;
   border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.2);
   position: relative;
 }
 
 /* אזור הצ'אט */
 .message-list {
-  flex: 1;
+  flex-grow: 1;  /* הצ'אט יתפשט וימלא את השטח הפנוי */
   padding: 20px 18px 10px 18px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
   background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
-  height: 100%; /* יש להבטיח שהחלק הזה יתפוס את כל הגובה */
 }
 
 /* הודעה */
@@ -141,34 +136,33 @@
 .inputBar {
   display: flex;
   align-items: center;
-  justify-content: flex-start !important;
+  justify-content: flex-start;
   gap: 10px;
-  padding: 13px 15px 13px 12px;
+  padding: 13px 15px;
   border-top: 1.5px solid #eee;
   background: #f7f7fa;
   min-height: 66px;
   z-index: 1;
   direction: ltr !important;
-  flex-shrink: 0; /* מונע מהשדה להיעלם */
+  flex-shrink: 0;  /* מונע מהשדה להיעלם */
 }
 
 /* כפתור שליחה משמאל */
 .sendButtonFlat {
-  order: -1 !important;
-  width: 40px !important;
-  height: 40px !important;
-  background: #f6f1fb !important;
-  color: #7c43bd !important;
-  border: none !important;
-  border-radius: 50% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  font-size: 28px !important;
-  transition: background 0.18s !important;
-  margin: 0 !important;
+  width: 40px;
+  height: 40px;
+  background: #f6f1fb;
+  color: #7c43bd;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 28px;
+  transition: background 0.18s;
 }
+
 .sendButtonFlat:disabled {
   background: #ede7f6 !important;
   color: #b8a2e3 !important;
@@ -188,9 +182,9 @@
   border: 1.5px solid #e0e0e0;
   border-radius: 26px;
   outline: none;
-  transition: border-color 0.2s;
   background: #fff;
 }
+
 .inputField:focus {
   border-color: #4a3aff;
   background: #fcf7ff;
