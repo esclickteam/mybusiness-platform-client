@@ -175,15 +175,27 @@ export default function MainSection({
         {/* PHONE */}
         <label style={{ marginTop: "0.75rem" }}>Phone (US)</label>
         <PhoneInput
-          country={"us"}
-          onlyCountries={["us"]}
-          value={phone?.replace("+", "")}
-          onChange={(val) =>
-            handleInputChange({ target: { name: "phone", value: "+" + val } })
-          }
-          inputStyle={{ ...inputStyle, paddingLeft: "60px" }}
-          disabled={isSaving}
-        />
+  country="us"
+  enableSearch
+  value={phone?.replace("+", "")}
+  onChange={(val) =>
+    handleInputChange({
+      target: { name: "phone", value: "+" + val },
+    })
+  }
+  inputStyle={{
+    ...inputStyle,
+    paddingLeft: "58px",
+  }}
+  buttonStyle={{
+    border: "none",
+    background: "transparent",
+  }}
+  dropdownStyle={{
+    borderRadius: "12px",
+  }}
+  disabled={isSaving}
+/>
 
         {/* EMAIL */}
         <label style={{ marginTop: "0.75rem" }}>Email</label>
