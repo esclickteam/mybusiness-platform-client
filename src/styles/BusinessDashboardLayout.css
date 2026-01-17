@@ -258,7 +258,7 @@
     display: flex;
     justify-content: center;
 
-    padding-top: 24px;   /* ⬅️ זה מה שמוריד למטה */
+    padding-top: 34px;   /* ⬅️ זה מה שמוריד למטה */
   }
 }
 
@@ -429,4 +429,12 @@
  
 .trial-upgrade-pill:active {
   transform: scale(0.97);
+}
+
+@media (min-width: 769px) {
+  .dashboard-content > div {
+    width: 100%;
+    max-width: 1400px; /* ⬅️ זה מגדיל את הצ'אט */
+    margin: 0 auto;    /* ⬅️ וזה שומר אותו באמצע */
+  }
 }
