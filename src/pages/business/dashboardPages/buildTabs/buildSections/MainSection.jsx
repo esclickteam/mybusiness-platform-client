@@ -94,16 +94,13 @@ export default function MainSection({
   style={{
     display: "grid",
     gridTemplateColumns: "minmax(520px, 1fr) 440px",
-    gridTemplateAreas: '"form preview"',
     gap: "1.25rem",
     alignItems: "start",
 
     width: "100%",
-    paddingLeft: "2rem",
-    paddingRight: "2rem",
-
-    margin: "0",          // ❗ לא auto
-    justifyContent: "start",
+    maxWidth: "1400px",
+    margin: "0 auto",        // ✅ זה הסוד
+    padding: "0 2rem",
   }}
 >
 
@@ -112,7 +109,6 @@ export default function MainSection({
         className="preview-column"
         style={{
           gridArea: "preview",
-          justifySelf: "end",
           background: "#fff",
           borderRadius: "20px",
           padding: "2rem",
