@@ -93,6 +93,7 @@ export default function MainSection({
       style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
+        gridTemplateAreas: '"form preview"',
         gap: "2rem",
         alignItems: "start",
       }}
@@ -101,6 +102,7 @@ export default function MainSection({
       <div
         className="preview-column"
         style={{
+          gridArea: "preview",
           background: "#fff",
           borderRadius: "20px",
           padding: "2rem",
@@ -140,6 +142,7 @@ export default function MainSection({
         className="form-column"
         ref={containerRef}
         style={{
+          gridArea: "form",
           background: "#fff",
           borderRadius: "20px",
           padding: "2rem",
