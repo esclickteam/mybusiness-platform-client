@@ -425,3 +425,36 @@
 .trial-upgrade-pill:active {
   transform: scale(0.97);
 }
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.chat-wrapper {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.chat-container.business {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: none;
+}
+
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px;
+}
