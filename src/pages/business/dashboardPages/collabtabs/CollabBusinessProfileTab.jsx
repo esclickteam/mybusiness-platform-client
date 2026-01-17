@@ -7,6 +7,9 @@ import "./CollabBusinessProfileTab.css";
 
 import { useAi } from "../../../../context/AiContext";
 import AiModal from "../../../../components/AiModal";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 
 export default function CollabBusinessProfileTab({ socket }) {
   const [profileData, setProfileData] = useState(null);
@@ -20,6 +23,8 @@ export default function CollabBusinessProfileTab({ socket }) {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isDeletingLogo, setIsDeletingLogo] = useState(false);
+  const [phone, setPhone] = useState("");
+
 
   const [myBusinessId, setMyBusinessId] = useState(null);
   const [myBusinessName, setMyBusinessName] = useState("");
@@ -35,39 +40,46 @@ export default function CollabBusinessProfileTab({ socket }) {
 
   // Load profile and myBusinessId in parallel
   const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [profileRes, businessIdRes] = await Promise.all([
-        API.get("/business/my"),
-        API.get("/business-chat/me"),
-      ]);
+  setLoading(true);
+  try {
+    const [profileRes, businessIdRes] = await Promise.all([
+      API.get("/business/my"),
+      API.get("/business-chat/me"),
+    ]);
 
-      const businessData = profileRes.data.business || profileRes.data || null;
+    const businessData =
+      profileRes.data.business || profileRes.data || null;
 
-      if (businessData) {
-        setProfileData(businessData);
+    if (businessData) {
+      setProfileData(businessData);
 
-        // Update logoPreview with a permanent server URL (not temporary)
-        if (typeof businessData.logo === "string") {
-          setLogoPreview(businessData.logo);
-        } else if (businessData.logo && businessData.logo.preview) {
-          setLogoPreview(businessData.logo.preview);
-        } else {
-          setLogoPreview(null);
-        }
-
-        setMyBusinessName(businessData.businessName || "My Business");
+      // ✅ כאן המקום הנכון
+      if (businessData.phone) {
+        setPhone(businessData.phone);
       }
-      if (businessIdRes.data.myBusinessId) {
-        setMyBusinessId(businessIdRes.data.myBusinessId);
+
+      if (typeof businessData.logo === "string") {
+        setLogoPreview(businessData.logo);
+      } else if (businessData.logo?.preview) {
+        setLogoPreview(businessData.logo.preview);
+      } else {
+        setLogoPreview(null);
       }
-    } catch (err) {
-      alert("Error loading business details");
-      console.error(err);
-    } finally {
-      setLoading(false);
+
+      setMyBusinessName(businessData.businessName || "My Business");
     }
-  }, []);
+
+    if (businessIdRes.data.myBusinessId) {
+      setMyBusinessId(businessIdRes.data.myBusinessId);
+    }
+  } catch (err) {
+    alert("Error loading business details");
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
 
   useEffect(() => {
     fetchData();
@@ -151,7 +163,7 @@ export default function CollabBusinessProfileTab({ socket }) {
         description: formData.get("about"),
         collabPref: formData.get("collabPref"),
         contact: formData.get("contact"),
-        phone: formData.get("phone"),
+        phone,
         email: formData.get("email"),
       };
       try {
@@ -249,9 +261,16 @@ export default function CollabBusinessProfileTab({ socket }) {
             </div>
 
             <div className="profile-actions">
-              <button className="btn-primary" onClick={() => setShowEditProfile(true)}>
-                ✏️ Edit Profile
-              </button>
+              <button
+  className="btn-primary"
+  onClick={() => {
+    setPhone(profileData?.phone || "");
+    setShowEditProfile(true);
+  }}
+>
+  ✏️ Edit Profile
+</button>
+
               <button className="btn-secondary" onClick={() => setShowBusinessChat(true)}>
                 💬 Business Messages
               </button>
@@ -330,7 +349,20 @@ export default function CollabBusinessProfileTab({ socket }) {
             <input name="contact" defaultValue={safeProfile.contact} required />
 
             <label>Phone</label>
-            <input name="phone" defaultValue={safeProfile.phone} required />
+<PhoneInput
+  country="us"              // או "il" אם אתה רוצה ישראל כברירת מחדל
+  enableSearch
+  value={phone}
+  onChange={(value) => setPhone(value)}
+  inputProps={{
+    name: "phone",
+    required: true,
+  }}
+  containerClass="phone-container"
+  inputClass="phone-input"
+  buttonClass="phone-flag"
+/>
+
 
             <label>Email</label>
             <input name="email" defaultValue={safeProfile.email} required />

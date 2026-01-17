@@ -296,6 +296,60 @@
   overflow: hidden;
 }
 
+/* ============================
+   📞 Phone Input – SaaS Style
+============================ */
+
+/* container */
+.phone-container {
+  width: 100%;
+  margin-top: 6px;
+}
+
+/* input עצמו */
+.phone-input {
+  width: 100% !important;
+  height: 48px;
+  padding-left: 52px !important; /* מקום לדגל */
+  border-radius: 14px !important;
+  border: 1px solid #d0d5dd !important;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* focus */
+.phone-input:focus {
+  border-color: #7a3df4 !important;
+  box-shadow: 0 0 0 3px rgba(122, 61, 244, 0.15);
+  outline: none;
+}
+
+/* כפתור הדגל */
+.phone-flag {
+  border: none !important;
+  background: transparent !important;
+  border-radius: 14px 0 0 14px;
+}
+
+/* dropdown */
+.react-tel-input .country-list {
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* התאמה ל־modal */
+.modal-box .react-tel-input {
+  width: 100%;
+}
+
+/* RTL safety */
+.react-tel-input input {
+  direction: ltr;
+  text-align: left;
+}
+
+
 /* =================================================
    RESPONSIVE
 ================================================= */
