@@ -96,6 +96,11 @@ export default function MainSection({
         gridTemplateAreas: '"form preview"',
         gap: "2rem",
         alignItems: "start",
+justifyContent: "start",
+width: "100%",
+maxWidth: "1400px",
+marginLeft: "0",
+marginRight: "auto",
       }}
     >
       {/* RIGHT COLUMN — PREVIEW */}
