@@ -5,28 +5,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
 }
 
 /* Chat container (WhatsApp style) */
 .chatContainer {
-  max-width: 950px;
-  width: 100%;
-  height: 82vh;
-  min-height: 380px;
-  max-height: 700px;
-
   display: flex;
-  flex-direction: row; /* סידור רגיל */
-
-  border-radius: 16px;
-  box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
-  overflow: hidden;
+  flex-direction: row;
+  width: 100%;
+  max-width: 950px;
+  height: 80vh;
+  min-height: 380px;
+  border-radius: 20px;
   background: #faf7ff;
-  border: 1px solid #c3a6fa;
-  position: relative;
-
-  /* ✅ מרכז בתוך כל Layout (דשבורד/עמוד מלא) */
-  margin: 0 auto;
+  border: 1.5px solid #c3a6fa;
+  box-shadow: 0 4px 32px rgba(163,137,235,0.17);
+  overflow: hidden;
 }
 
 
