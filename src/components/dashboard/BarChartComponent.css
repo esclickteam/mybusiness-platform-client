@@ -73,9 +73,6 @@
 .graph-scroll {
   width: 100%;
   padding-top: 8px;
-
-  display: flex;                 /* ➜ חדש */
-  justify-content: center;       /* ➜ מרכז את הגרף */
 }
 
 .graph-scroll .recharts-responsive-container {
@@ -86,6 +83,12 @@
 .graph-scroll .recharts-wrapper {
   width: 100% !important;
   max-width: none !important;   /* ❗ זה מה שפותח את הגרף */
+}
+
+.graph-scroll svg.recharts-surface {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block;
 }
 
 /* Empty state */
