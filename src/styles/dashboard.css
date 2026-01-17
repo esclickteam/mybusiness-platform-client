@@ -251,6 +251,9 @@ body {
   border-radius: 14px;
   background: linear-gradient(180deg, #f5f3ff, #ede9fe);
   font-size: 0.9rem;
+
+  /* ✅ מרכז */
+  text-align: center;
 }
 
 /* =========================
