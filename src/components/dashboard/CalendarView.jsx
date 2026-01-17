@@ -18,6 +18,8 @@ const MONTH_NAMES = [
   "December",
 ];
 
+const todayStr = new Date().toLocaleDateString("en-CA");
+
 const CalendarView = ({ appointments = [], onDateClick }) => {
   const today = new Date();
 
@@ -48,16 +50,22 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
   };
 
   /* =========================
-     Appointments by day
+     Appointments grouped by date
+     ✔️ ללא Date parsing
   ========================= */
   const appointmentsByDay = useMemo(() => {
     const map = {};
+
     appointments.forEach((a) => {
       if (!a.date) return;
-      const d = new Date(a.date).toISOString().split("T")[0];
-      if (!map[d]) map[d] = [];
-      map[d].push(a);
+
+      // date כבר בפורמט YYYY-MM-DD
+      const dateKey = a.date;
+
+      if (!map[dateKey]) map[dateKey] = [];
+      map[dateKey].push(a);
     });
+
     return map;
   }, [appointments]);
 
@@ -75,18 +83,16 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
       }
 
       const day = i - firstDayOfWeek + 1;
+
       const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
         2,
         "0"
       )}-${String(day).padStart(2, "0")}`;
 
-      const isToday =
-        dateStr === new Date().toISOString().split("T")[0];
-
       return {
         day,
         dateStr,
-        isToday,
+        isToday: dateStr === todayStr,
         count: appointmentsByDay[dateStr]?.length || 0,
       };
     }
@@ -134,13 +140,11 @@ const CalendarView = ({ appointments = [], onDateClick }) => {
 
           return (
             <div
-              key={idx}
+              key={cell.dateStr}
               className={`calendar-cell ${
                 cell.isToday ? "today" : ""
               } ${cell.count ? "has-events" : ""}`}
-              onClick={() =>
-                onDateClick && onDateClick(cell.dateStr)
-              }
+              onClick={() => onDateClick?.(cell.dateStr)}
             >
               <div className="cell-day">{cell.day}</div>
 

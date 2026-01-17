@@ -15,13 +15,15 @@ import "./DailyAgenda.css";
 
 /**
  * 🔒 Client Name
- * Order of truth:
- * 1. populated client.name
- * 2. stored snapshot clientName
- * 3. fallback "Client"
+ * Priority:
+ * 1. snapshot.name
+ * 2. populated client.name
+ * 3. legacy clientName
+ * 4. fallback
  */
 function getClientName(appointment) {
   return (
+    appointment?.clientSnapshot?.name ||
     appointment?.client?.name ||
     appointment?.clientName ||
     "Client"
@@ -30,13 +32,14 @@ function getClientName(appointment) {
 
 /**
  * 🔒 Client Email
- * Order of truth:
- * 1. populated client.email
- * 2. stored clientEmail
- * 3. stored email
+ * Priority:
+ * 1. snapshot.email
+ * 2. populated client.email
+ * 3. legacy fields
  */
 function getClientEmail(appointment) {
   return (
+    appointment?.clientSnapshot?.email ||
     appointment?.client?.email ||
     appointment?.clientEmail ||
     appointment?.email ||
@@ -49,7 +52,7 @@ function getClientEmail(appointment) {
 ===================================================== */
 
 const DailyAgenda = ({
-  date,
+  date, // expected YYYY-MM-DD
   appointments = [],
   businessName = "Your Business",
   businessId,
@@ -57,15 +60,14 @@ const DailyAgenda = ({
   const navigate = useNavigate();
 
   /* =========================
-     Date helpers
+     Date helpers (NO Date parsing)
   ========================= */
 
   const selectedDate = useMemo(() => {
-    try {
-      return new Date(date).toISOString().split("T")[0];
-    } catch {
-      return null;
+    if (typeof date === "string" && date.length === 10) {
+      return date; // YYYY-MM-DD
     }
+    return null;
   }, [date]);
 
   const displayDate = useMemo(() => {
@@ -83,19 +85,14 @@ const DailyAgenda = ({
 
   /* =========================
      Filter appointments by day
+     ✅ Snapshot-safe
   ========================= */
 
   const dayAppointments = useMemo(() => {
     if (!selectedDate) return [];
 
     return appointments
-      .filter((a) => {
-        if (!a?.date) return false;
-        const apptDate = new Date(a.date)
-          .toISOString()
-          .split("T")[0];
-        return apptDate === selectedDate;
-      })
+      .filter((a) => a?.date === selectedDate)
       .sort((a, b) =>
         (a?.time || "00:00").localeCompare(b?.time || "00:00")
       );
@@ -177,7 +174,7 @@ ${businessName}
       ) : (
         <ul className="agenda-list">
           {dayAppointments.map((a) => {
-            if (!a?._id) return null; // ⛔ Never render unstable items
+            if (!a?._id) return null;
 
             const time = a.time || "--:--";
             const clientName = getClientName(a);
@@ -186,7 +183,7 @@ ${businessName}
 
             return (
               <li key={a._id} className="agenda-item">
-                {/* Left side */}
+                {/* Left */}
                 <div className="agenda-main">
                   <div className="agenda-time">
                     <Clock size={16} />
