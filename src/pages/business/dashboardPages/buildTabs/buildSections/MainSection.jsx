@@ -4,6 +4,8 @@ import PhoneInput from "react-phone-input-2";
 import ImageLoader from "@components/ImageLoader";
 import CityAutocomplete from "@components/CityAutocomplete";
 import CategoryAutocomplete from "@components/CategoryAutocomplete";
+import "./MainSection.css";
+
 
 export default function MainSection({
   businessDetails = {},
@@ -337,22 +339,15 @@ export default function MainSection({
         </div>
 
         {/* SAVE */}
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          style={{
-            marginTop: "1rem",
-            padding: "10px 16px",
-            background: "linear-gradient(90deg,#6a11cb 0%, #2575fc 100%)",
-            color: "#fff",
-            borderRadius: "10px",
-            border: "none",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          {isSaving ? "Saving..." : "💾 Save Changes"}
-        </button>
+        <div className="form-save-sticky">
+  <button
+    onClick={handleSave}
+    disabled={isSaving}
+    className="save-btn"
+  >
+    {isSaving ? "Saving..." : "💾 Save Changes"}
+  </button>
+</div>
 
         {showViewProfile && (
   <button
