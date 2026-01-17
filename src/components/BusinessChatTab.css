@@ -17,14 +17,15 @@
 .chat-container {
   max-width: 950px;
   width: 100%;
-  height: 82vh;
+  height: 100vh;  /* תוודא שהגובה יכסה את כל המסך */
   min-height: 380px;
-  max-height: 700px;
+  max-height: none;  /* בטל את הגבלת הגובה המקסימלית */
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  box-shadow: 0 4px 32px #0002;
-  overflow-x: visible;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.2);  /* יש להוסיף שקיפות למריחה */
+  overflow-x: hidden;  /* הצג רק גלילה אנכית */
+  overflow-y: auto;  /* הוסף גלילה אנכית אם התוכן חורג */
   background: #fff;
   border: 1px solid #e0e0e0;
   position: relative;
