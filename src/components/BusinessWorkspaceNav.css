@@ -19,7 +19,7 @@
   text-decoration: none;
   color: #2e1a72;
 
-  font-size: 0.96rem;          /* ⬅️ טיפה קטן יותר */
+  font-size: 0.96rem;
   font-weight: 600;
 
   transition:
@@ -28,11 +28,11 @@
     transform 0.12s ease;
 }
 
-/* Hover effect — רק על הטאב שמתחת לעכבר */
+/* Hover effect רק על הטאב שמתחת לעכבר */
 .business-workspace-nav .nav-link:hover {
-  background: rgba(94, 23, 235, 0.07); /* צבע רקע קל */
-  color: #5e17eb;                       /* טקסט משנה צבע קל */
-  transform: translateX(2px);           /* Micro UX */
+  background: rgba(94, 23, 235, 0.07);
+  color: #5e17eb;
+  transform: translateX(2px);  /* Micro UX */
 }
 
 /* =========================
@@ -55,14 +55,14 @@
    Icon (UX focus)
 ========================= */
 .business-workspace-nav svg {
-  width: 16px;                 /* ⬅️ הקטנה אמיתית */
+  width: 16px;
   height: 16px;
 
   stroke: currentColor;
   fill: none;
   stroke-width: 1.7;
 
-  opacity: 0.75;               /* ⬅️ שקט */
+  opacity: 0.75;
   flex-shrink: 0;
 }
 
