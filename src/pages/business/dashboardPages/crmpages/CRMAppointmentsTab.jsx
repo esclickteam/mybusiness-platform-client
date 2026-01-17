@@ -238,70 +238,74 @@ const scheduleArray = useMemo(() => {
     }
   };
 
-  // === Send WhatsApp reminder ===
-  const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
-    if (!phone) {
-      alert("Client phone number is missing");
-      return;
-    }
-    let cleanPhone = phone.replace(/\D/g, "");
-    if (!cleanPhone.startsWith("972")) {
-      if (cleanPhone.startsWith("0")) {
-        cleanPhone = "972" + cleanPhone.substring(1);
-      } else {
-        cleanPhone = "972" + cleanPhone;
-      }
-    }
+  // === Send Email Reminder ===
+const sendEmailReminder = (email, clientName, date, time, service) => {
+  if (!email) {
+    alert("Client email is missing");
+    return;
+  }
 
-    const formattedDate = new Date(date).toLocaleDateString("en-US", {
-      weekday: "long",
-      day: "numeric",
-      month: "numeric",
-      year: "numeric",
-    });
+  const formattedDate = new Date(date).toLocaleDateString("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
-    const businessName = user?.businessName || "Your Business";
+  const businessName = user?.businessName || "Your Business";
 
-    const message = `Hello ${clientName},\nThis is a reminder for your appointment on ${formattedDate} at ${time}\nService: ${service}\n\nWe look forward to seeing you,\n${businessName}`;
-    const encodedMessage = encodeURIComponent(message);
+  const subject = `Appointment Reminder – ${businessName}`;
 
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const url = isMobile
-      ? `https://wa.me/${cleanPhone}?text=${encodedMessage}`
-      : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
+  const body = `
+Hello ${clientName},
 
-    window.open(url, "_blank");
-  };
+This is a reminder for your upcoming appointment.
 
+Service: ${service}
+Date: ${formattedDate}
+Time: ${time}
+
+Best regards,
+${businessName}
+  `.trim();
+
+  window.location.href = `mailto:${email}?subject=${encodeURIComponent(
+    subject
+  )}&body=${encodeURIComponent(body)}`;
+};
+
+
+
+ 
   // === Filter & search ===
   const filteredUniqueAppointments = useMemo(() => {
-    const seen = new Set();
-    const searchLower = search.toLowerCase().trim();
-    const searchDigitsOnly = search.replace(/\D/g, "");
+  const seen = new Set();
+  const searchLower = search.toLowerCase().trim();
+  const searchDigitsOnly = search.replace(/\D/g, "");
 
-    return appointments
-      .filter((appt) => {
-        const clientName = appt.clientName
-          ? appt.clientName.toLowerCase().trim()
-          : "";
-        const clientPhone = appt.clientPhone
-          ? appt.clientPhone.replace(/\D/g, "")
-          : "";
+  return appointments
+    .filter((appt) => {
+      const clientName =
+        appt.clientSnapshot?.name?.toLowerCase().trim() || "";
 
-        if (searchDigitsOnly.length > 0) {
-          return clientPhone.includes(searchDigitsOnly);
-        } else if (searchLower.length > 0) {
-          return clientName.includes(searchLower);
-        }
-        return true;
-      })
-      .filter((appt) => {
-        if (!appt._id) return true;
-        if (seen.has(appt._id)) return false;
-        seen.add(appt._id);
-        return true;
-      });
-  }, [appointments, search]);
+      const clientPhone =
+        appt.clientSnapshot?.phone?.replace(/\D/g, "") || "";
+
+      if (searchDigitsOnly.length > 0) {
+        return clientPhone.includes(searchDigitsOnly);
+      } else if (searchLower.length > 0) {
+        return clientName.includes(searchLower);
+      }
+      return true;
+    })
+    .filter((appt) => {
+      if (!appt._id) return true;
+      if (seen.has(appt._id)) return false;
+      seen.add(appt._id);
+      return true;
+    });
+}, [appointments, search]);
+
 
   if (isLoadingAppointments) return <p>Loading appointments...</p>;
   if (isErrorAppointments) return <p>Error loading appointments</p>;
@@ -468,51 +472,55 @@ const scheduleArray = useMemo(() => {
           ) : (
             filteredUniqueAppointments.map((appt) => (
               <tr key={appt._id}>
-                <td>{appt.clientName}</td>
-                <td>{appt.clientPhone}</td>
+                <td>{appt.clientSnapshot?.name || "Unknown"}</td>
+                <td>{appt.clientSnapshot?.phone || "-"}</td>
                 <td>{appt.serviceName}</td>
                 <td>{appt.date}</td>
                 <td>{appt.time}</td>
+
                 <td>
-                  {/* Reminder */}
-                  <button
-                    onClick={() =>
-                      sendWhatsAppReminder(
-                        appt.clientPhone,
-                        appt.clientName || "Client",
-                        appt.date,
-                        appt.time,
-                        appt.serviceName || appt.service
-                      )
-                    }
-                  >
-                    📩 Reminder
-                  </button>
+  {/* Email Reminder */}
+  <button
+    disabled={!appt.clientSnapshot?.email}
+    onClick={() =>
+      sendEmailReminder(
+        appt.clientSnapshot?.email,
+        appt.clientSnapshot?.name || "Client",
+        appt.date,
+        appt.time,
+        appt.serviceName
+      )
+    }
+  >
+    ✉️ Email Reminder
+  </button>
 
-                  {/* Edit */}
-                  <button onClick={() => setEditId(appt._id)}>✏️ Edit</button>
+  {/* Edit */}
+  <button onClick={() => setEditId(appt._id)}>✏️ Edit</button>
 
-                  {/* Delete */}
-                  <button
-                    onClick={async () => {
-                      if (window.confirm("Are you sure you want to delete this appointment?")) {
-                        try {
-                          await API.delete(`/appointments/${appt._id}`);
-                          queryClient.invalidateQueries([
-                            "appointments",
-                            "all-with-services",
-                            businessId,
-                          ]);
-                        } catch (err) {
-                          console.error("Error deleting appointment:", err);
-                          alert("❌ Deletion failed");
-                        }
-                      }
-                    }}
-                  >
-                    ❌ Delete
-                  </button>
-                </td>
+  {/* Delete */}
+  <button
+    onClick={async () => {
+      if (window.confirm("Are you sure you want to delete this appointment?")) {
+        try {
+          await API.delete(`/appointments/${appt._id}`);
+          queryClient.invalidateQueries([
+            "appointments",
+            "all-with-services",
+            businessId,
+          ]);
+        } catch (err) {
+          console.error("Error deleting appointment:", err);
+          alert("❌ Deletion failed");
+        }
+      }
+    }}
+  >
+    ❌ Delete
+  </button>
+</td>
+
+
               </tr>
             ))
           )}

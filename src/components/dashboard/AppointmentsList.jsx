@@ -5,7 +5,9 @@ const AppointmentsList = ({ appointments }) => {
     return (
       <div className="graph-box">
         <h4>📅 Appointments Calendar</h4>
-        <p style={{ textAlign: "center" }}>No scheduled appointments.</p>
+        <p style={{ textAlign: "center" }}>
+          No scheduled appointments.
+        </p>
       </div>
     );
   }
@@ -17,14 +19,21 @@ const AppointmentsList = ({ appointments }) => {
   return (
     <div className="graph-box">
       <h4>📅 Upcoming Appointments</h4>
+
       <ul style={{ listStyle: "none", padding: 0, fontSize: "14px" }}>
         {sorted.map((item, i) => {
-          const clientName = item.clientName || "Unknown";
+          // ✅ מקור אמת יחיד
+          const clientName =
+            item.clientSnapshot?.name || "Unknown client";
+
           const serviceName =
-            item.serviceName || item.service?.name || item.service || "Unknown";
+            item.serviceName ||
+            item.service?.name ||
+            item.service ||
+            "Unknown service";
 
           return (
-            <li key={i} style={{ marginBottom: "10px" }}>
+            <li key={item._id || i} style={{ marginBottom: "10px" }}>
               <strong>
                 {new Date(item.date).toLocaleString("he-IL", {
                   weekday: "long",
@@ -34,7 +43,9 @@ const AppointmentsList = ({ appointments }) => {
                   minute: "2-digit",
                 })}
               </strong>
+
               <br />
+
               Client: {clientName} | Service: {serviceName}
             </li>
           );

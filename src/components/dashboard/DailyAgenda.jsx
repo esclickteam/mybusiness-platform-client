@@ -9,9 +9,32 @@ import {
 } from "lucide-react";
 import "./DailyAgenda.css";
 
-/* =========================
-   Utils
-========================= */
+/* =====================================================
+   Utils – Single Source of Truth
+===================================================== */
+
+/**
+ * 🔒 Client Name
+ * Order of truth:
+ * 1. populated client.name
+ * 2. stored snapshot clientName
+ * 3. fallback "Client"
+ */
+function getClientName(appointment) {
+  return (
+    appointment?.client?.name ||
+    appointment?.clientName ||
+    "Client"
+  );
+}
+
+/**
+ * 🔒 Client Email
+ * Order of truth:
+ * 1. populated client.email
+ * 2. stored clientEmail
+ * 3. stored email
+ */
 function getClientEmail(appointment) {
   return (
     appointment?.client?.email ||
@@ -20,6 +43,10 @@ function getClientEmail(appointment) {
     ""
   );
 }
+
+/* =====================================================
+   Component
+===================================================== */
 
 const DailyAgenda = ({
   date,
@@ -32,6 +59,7 @@ const DailyAgenda = ({
   /* =========================
      Date helpers
   ========================= */
+
   const selectedDate = useMemo(() => {
     try {
       return new Date(date).toISOString().split("T")[0];
@@ -54,37 +82,50 @@ const DailyAgenda = ({
   }, [date]);
 
   /* =========================
-     Filter appointments
+     Filter appointments by day
   ========================= */
+
   const dayAppointments = useMemo(() => {
     if (!selectedDate) return [];
 
     return appointments
       .filter((a) => {
-        if (!a.date) return false;
-        const apptDate = new Date(a.date).toISOString().split("T")[0];
+        if (!a?.date) return false;
+        const apptDate = new Date(a.date)
+          .toISOString()
+          .split("T")[0];
         return apptDate === selectedDate;
       })
       .sort((a, b) =>
-        (a.time || "00:00").localeCompare(b.time || "00:00")
+        (a?.time || "00:00").localeCompare(b?.time || "00:00")
       );
   }, [appointments, selectedDate]);
 
   /* =========================
-     Email Reminder
+     Actions
   ========================= */
-  const sendEmailReminder = (email, clientName, date, time, service) => {
+
+  const sendEmailReminder = (
+    email,
+    clientName,
+    date,
+    time,
+    service
+  ) => {
     if (!email) {
       alert("Client email is not available");
       return;
     }
 
-    const formattedDate = new Date(date).toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
+    const formattedDate = new Date(date).toLocaleDateString(
+      "en-US",
+      {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }
+    );
 
     const subject = `Appointment Reminder – ${businessName}`;
 
@@ -114,6 +155,7 @@ ${businessName}
   /* =========================
      Render
   ========================= */
+
   return (
     <div
       className={`daily-agenda ${
@@ -127,7 +169,7 @@ ${businessName}
         <div className="agenda-date">{displayDate}</div>
       </div>
 
-      {/* Empty */}
+      {/* Empty State */}
       {dayAppointments.length === 0 ? (
         <div className="agenda-empty">
           No appointments on this date.
@@ -135,17 +177,16 @@ ${businessName}
       ) : (
         <ul className="agenda-list">
           {dayAppointments.map((a) => {
+            if (!a?._id) return null; // ⛔ Never render unstable items
+
             const time = a.time || "--:--";
-            const clientName = a.clientName || "Client";
+            const clientName = getClientName(a);
             const serviceName = a.serviceName || "Service";
             const email = getClientEmail(a);
 
             return (
-              <li
-                key={a._id || `${time}-${clientName}`}
-                className="agenda-item"
-              >
-                {/* Left */}
+              <li key={a._id} className="agenda-item">
+                {/* Left side */}
                 <div className="agenda-main">
                   <div className="agenda-time">
                     <Clock size={16} />
@@ -156,6 +197,7 @@ ${businessName}
                     <strong>
                       <User size={14} /> {clientName}
                     </strong>
+
                     <div className="agenda-service">
                       <Briefcase size={14} /> {serviceName}
                     </div>
