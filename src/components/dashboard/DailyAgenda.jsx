@@ -2,19 +2,21 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DailyAgenda.css";
 
+/* =========================
+   Utils
+========================= */
 function getClientEmail(appointment) {
   return (
-    appointment?.client?.email ||   // אם יש client אובייקט (מומלץ)
-    appointment?.clientEmail ||     // אם נשמר כשדה ישיר
-    appointment?.email ||           // fallback
+    appointment?.client?.email ||
+    appointment?.clientEmail ||
+    appointment?.email ||
     ""
   );
 }
 
-
 const DailyAgenda = ({
   date,
-  appointments,
+  appointments = [],
   businessName = "Your Business",
   businessId,
 }) => {
@@ -61,14 +63,6 @@ const DailyAgenda = ({
       );
   }, [appointments, selectedDate]);
 
-  if (!date) {
-    return (
-      <p className="agenda-empty">
-        Select a date to view your agenda.
-      </p>
-    );
-  }
-
   /* =========================
      Email Reminder
   ========================= */
@@ -96,27 +90,19 @@ This is a friendly reminder about your upcoming appointment.
 ⏰ Time: ${time}
 💼 Service: ${service}
 
-If you have any questions or need to reschedule, feel free to reply to this email.
+If you need to reschedule, just reply to this email.
 
 Best regards,
 ${businessName}
     `.trim();
 
-    const mailto = `mailto:${email}?subject=${encodeURIComponent(
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(body)}`;
-
-    window.location.href = mailto;
   };
 
-  /* =========================
-     Navigate to CRM
-  ========================= */
   const editAppointment = () => {
-    if (!businessId) {
-      alert("Business ID is not available");
-      return;
-    }
+    if (!businessId) return;
     navigate(`/business/${businessId}/dashboard/crm/appointments`);
   };
 
@@ -124,44 +110,55 @@ ${businessName}
      Render
   ========================= */
   return (
-    <div className="daily-agenda-container" dir="ltr">
-      <h4 className="agenda-title">
-        Schedule for {displayDate}
-      </h4>
+    <div
+      className={`daily-agenda ${
+        dayAppointments.length === 0 ? "empty" : ""
+      }`}
+      dir="ltr"
+    >
+      {/* ===== Header ===== */}
+      <div className="agenda-header">
+        <h3>Schedule</h3>
+        <div className="agenda-date">{displayDate}</div>
+      </div>
 
+      {/* ===== Empty ===== */}
       {dayAppointments.length === 0 ? (
-        <p className="agenda-empty">
+        <div className="agenda-empty">
           No appointments on this date.
-        </p>
+        </div>
       ) : (
-        <div className="agenda-list">
+        <ul className="agenda-list">
           {dayAppointments.map((a) => {
             const time = a.time || "--:--";
             const clientName = a.clientName || "Client";
             const serviceName = a.serviceName || "Service";
-            const clientEmail = getClientEmail(a);
-
+            const email = getClientEmail(a);
 
             return (
-              <div
+              <li
                 key={a._id || `${time}-${clientName}`}
                 className="agenda-item"
               >
-                <div className="agenda-row">
-                  <span>🕒 {time}</span>
-                  <span>💼 {serviceName}</span>
+                {/* Left */}
+                <div className="agenda-main">
+                  <div className="agenda-time">{time}</div>
+
+                  <div className="agenda-info">
+                    <strong>{clientName}</strong>
+                    <div className="agenda-service">
+                      {serviceName}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="agenda-client">
-                  👤 {clientName}
-                </div>
-
+                {/* Actions */}
                 <div className="agenda-actions">
                   <button
                     className="agenda-btn primary"
                     onClick={() =>
                       sendEmailReminder(
-                        clientEmail,
+                        email,
                         clientName,
                         a.date,
                         time,
@@ -169,20 +166,20 @@ ${businessName}
                       )
                     }
                   >
-                    Send Email Reminder
+                    Email Reminder
                   </button>
 
                   <button
-                    className="agenda-btn outline"
+                    className="agenda-btn ghost"
                     onClick={editAppointment}
                   >
-                    Manage Appointment
+                    Manage
                   </button>
                 </div>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
       )}
     </div>
   );
