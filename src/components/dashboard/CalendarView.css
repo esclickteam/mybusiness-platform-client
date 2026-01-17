@@ -158,10 +158,14 @@
 
 .cell-events {
   margin-top: auto;
-  font-size: 0.7rem;
-  font-weight: 700;
+
+  font-size: 0.78rem;   /* היה קטן מדי */
+  font-weight: 700;     /* חיזוק */
   color: var(--violet);
-  text-align: right;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* =========================
