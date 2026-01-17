@@ -542,42 +542,89 @@ html, body, #root {
   margin: 16px 0;
 }
 
-/* === ServiceCard === */
+/* =============================== */
+/* Service Card – Premium UX       */
+/* =============================== */
+
 .service-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px 14px 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px;
-  background: #f5f2ff;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
   text-align: center;
+
+  box-shadow: 0 10px 28px rgba(92, 45, 145, 0.12);
+  cursor: pointer;
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border 0.2s ease;
+  border: 2px solid transparent;
 }
+
 .service-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(92, 45, 145, 0.22);
 }
+
 .service-card.selected {
   border-color: #b46af1;
-  box-shadow: 0 0 8px rgba(180,106,241,0.3);
+  box-shadow: 0 0 0 2px rgba(180,106,241,0.35),
+              0 18px 44px rgba(92,45,145,0.25);
 }
+
+/* אייקון / תמונה */
 .service-icon {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 8px;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+  background: #f4eeff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
 }
+
+/* שם שירות */
 .service-card h5 {
-  margin: 4px 0;
-  font-size: 1rem;
-  color: #333;
+  margin: 6px 0 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #4a148c;
 }
+
+/* תיאור */
 .service-card__desc {
-  font-size: 0.85rem;
-  color: #555;
-  margin-top: 4px;
-  line-height: 1.3;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.35;
+  margin-bottom: 10px;
 }
+
+/* מחיר / משך */
+.service-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6a4cc3;
+  margin-bottom: 12px;
+}
+
+/* כפתור */
+.service-card::after {
+  content: "📅 Book Appointment";
+  margin-top: auto;
+  padding: 8px 18px;
+  background: linear-gradient(135deg, #7a3df4, #b46af1);
+  color: #fff;
+  border-radius: 22px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: 0 6px 18px rgba(122,61,244,0.35);
+}
+
 
 /* רספונסיביות לכרטיסים */
 @media (max-width: 600px) {
