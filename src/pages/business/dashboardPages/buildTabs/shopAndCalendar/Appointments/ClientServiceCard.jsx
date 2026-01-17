@@ -4,30 +4,59 @@ import "./ClientServiceCard.css";
 const ClientServiceCard = ({
   service,
   formatDuration,
-  onSelect // action prop when clicked
+  onSelect,
 }) => {
   return (
-    <div className="client-service-card">
+    <article
+      className="service-card client-service-card"
+      aria-label={`Service ${service.name}`}
+    >
+      {/* תמונה */}
       {service.imageUrl && (
-        <img
-          src={service.imageUrl}
-          alt={service.name}
-          className="client-service-card__img"
-        />
+        <div className="service-image-wrapper">
+          <img
+            src={service.imageUrl}
+            alt={service.name}
+            loading="lazy"
+            className="client-service-card__img"
+          />
+        </div>
       )}
-      <h4>{service.name}</h4>
+
+      {/* שם */}
+      <h4 className="service-title">{service.name}</h4>
+
+      {/* תיאור (מקוצר וקליל) */}
       {service.description && (
-        <p className="service-description">{service.description}</p>
+        <p className="service-description">
+          {service.description.length > 80
+            ? service.description.slice(0, 80) + "…"
+            : service.description}
+        </p>
       )}
-      {service.price && <p className="price">{service.price} $</p>}
-      <p>⏱️ {formatDuration(service.duration)}</p>
+
+      {/* מחיר + משך */}
+      <div className="service-meta">
+        {service.price != null && (
+          <span className="service-price">{service.price} $</span>
+        )}
+        {service.duration && (
+          <span className="service-duration">
+            ⏱ {formatDuration(service.duration)}
+          </span>
+        )}
+      </div>
+
+      {/* כפתור */}
       <button
+        type="button"
         className="go-to-calendar-btn"
-        onClick={() => onSelect && onSelect(service)}
+        onClick={() => onSelect?.(service)}
+        aria-label={`Book ${service.name}`}
       >
-       📅 Book Appointment
+        📅 Book
       </button>
-    </div>
+    </article>
   );
 };
 
