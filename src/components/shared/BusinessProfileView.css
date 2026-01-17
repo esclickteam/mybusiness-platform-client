@@ -532,9 +532,16 @@ html, body, #root {
 /* גריד של כרטיסי שירות */
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+
+  justify-content: center;
+  align-items: stretch;
+
+  max-width: 900px;
+  margin: 0 auto;
 }
+
 .no-results {
   grid-column: 1 / -1;
   text-align: center;
@@ -549,7 +556,7 @@ html, body, #root {
 .service-card {
   background: #ffffff;
   border-radius: 18px;
-  padding: 16px 14px 18px;
+  padding: 18px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -558,7 +565,10 @@ html, body, #root {
   box-shadow: 0 10px 28px rgba(92, 45, 145, 0.12);
   cursor: pointer;
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border 0.2s ease;
+  transition: transform 0.25s ease,
+              box-shadow 0.25s ease,
+              border-color 0.2s ease;
+
   border: 2px solid transparent;
 }
 
@@ -605,25 +615,15 @@ html, body, #root {
 /* מחיר / משך */
 .service-meta {
   display: flex;
-  gap: 10px;
-  font-size: 0.9rem;
+  gap: 12px;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #6a4cc3;
-  margin-bottom: 12px;
+  background: #f4eeff;
+  padding: 6px 14px;
+  border-radius: 14px;
 }
 
-/* כפתור */
-.service-card::after {
-  content: "📅 Book Appointment";
-  margin-top: auto;
-  padding: 8px 18px;
-  background: linear-gradient(135deg, #7a3df4, #b46af1);
-  color: #fff;
-  border-radius: 22px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  box-shadow: 0 6px 18px rgba(122,61,244,0.35);
-}
 
 
 /* רספונסיביות לכרטיסים */
