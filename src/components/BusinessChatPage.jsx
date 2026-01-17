@@ -22,7 +22,7 @@ export default function BusinessChatPage() {
   const { unreadCount, markAsRead } = useNotifications(); // ✅ שימוש במערכת ההתראות החדשה
 
   /* 🧩 עוזר לנרמל שיחות */
-  const normaliseConversation = (c) => ({
+   const normaliseConversation = (c) => ({
     ...c,
     conversationId: (c.conversationId ?? c._id ?? c.id)?.toString() ?? "",
     clientId:
