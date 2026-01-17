@@ -1,59 +1,186 @@
-/* src/components/ServicesSelector.css */
+/* ======================================================
+   Services Selector – Premium UX
+====================================================== */
+
 .services-selector {
-  max-width: 800px;
+  width: 100%;
+  max-width: 900px;
   margin: 0 auto;
+  padding: 0.5rem 0 1.2rem;
 }
+
+/* ======================================================
+   🧭 קטגוריות
+====================================================== */
+
 .cat-tabs {
   display: flex;
-  gap: .5rem;
-  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 14px;
 }
+
 .cat-tabs button {
-  padding: .5rem 1rem;
-  border: none;
-  background: #f0f0f5;
-  border-radius: .5rem;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1px solid #d6c7ff;
+  background: #f4efff;
+  color: #4a148c;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.18s ease;
 }
+
+.cat-tabs button:hover {
+  background: #e6dbff;
+  transform: translateY(-1px);
+}
+
 .cat-tabs button.active {
-  background: #a259ff;
+  background: linear-gradient(135deg, #7a3df4, #b46af1);
   color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(122, 61, 244, 0.35);
 }
+
+/* ======================================================
+   🔍 חיפוש
+====================================================== */
+
 .services-search {
   width: 100%;
-  padding: .5rem 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: .5rem;
+  max-width: 420px;
+  margin: 0 auto 18px;
+  display: block;
+
+  padding: 10px 16px;
+  border-radius: 24px;
+  border: 1px solid #d6c7ff;
+  font-size: 0.95rem;
+
+  background: #fff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
+
+.services-search:focus {
+  outline: none;
+  border-color: #7a3df4;
+  box-shadow: 0 0 0 3px rgba(122, 61, 244, 0.18);
+}
+
+/* ======================================================
+   🧩 גריד שירותים
+====================================================== */
+
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+
+  justify-content: center;
+  align-items: stretch;
+
+  width: 100%;
 }
+
+/* ======================================================
+   📦 Wrapper לכרטיס שירות
+====================================================== */
+
+.service-card-wrapper {
+  position: relative;
+  border-radius: 20px;
+  cursor: pointer;
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  outline: none;
+}
+
+.service-card-wrapper:hover {
+  transform: translateY(-4px);
+}
+
+.service-card-wrapper:focus-visible {
+  box-shadow: 0 0 0 3px rgba(122, 61, 244, 0.35);
+}
+
+/* ======================================================
+   ✅ מצב נבחר
+====================================================== */
+
+.service-card-wrapper.selected {
+  box-shadow:
+    0 0 0 2px rgba(180, 106, 241, 0.45),
+    0 18px 44px rgba(92, 45, 145, 0.25);
+}
+
+.service-card-wrapper.selected::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+/* תגית Selected */
+.service-selected-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+
+  background: linear-gradient(135deg, #7a3df4, #b46af1);
+  color: #fff;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  padding: 4px 10px;
+  border-radius: 14px;
+
+  box-shadow: 0 4px 12px rgba(122, 61, 244, 0.4);
+  user-select: none;
+}
+
+/* ======================================================
+   ❌ אין תוצאות
+====================================================== */
+
 .no-results {
   grid-column: 1 / -1;
   text-align: center;
   color: #888;
+  font-size: 1rem;
+  margin: 24px 0;
 }
-@media (max-width: 600px) {
-  .cat-tabs {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
 
-  .cat-tabs button {
-    flex: 1 1 40%;
-    min-width: 120px;
-    font-size: 0.95rem;
-  }
+/* ======================================================
+   📱 רספונסיביות
+====================================================== */
 
+@media (max-width: 768px) {
   .services-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 0.8rem;
+    gap: 16px;
   }
 
   .services-search {
-    font-size: 1rem;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .cat-tabs {
+    gap: 6px;
+  }
+
+  .cat-tabs button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .service-selected-badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
   }
 }
