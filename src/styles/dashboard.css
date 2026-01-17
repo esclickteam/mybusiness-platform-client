@@ -282,6 +282,35 @@ body {
   justify-self: end;
 }
 
+.view-profile-btn {
+  margin-top: 0.5rem;
+
+  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+  color: #fff;
+
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: none;
+
+  font-size: 1rem;
+  font-weight: 600;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(106, 17, 203, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.view-profile-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px rgba(106, 17, 203, 0.35);
+}
+
+
 
 /* =========================
    📱 Responsive
