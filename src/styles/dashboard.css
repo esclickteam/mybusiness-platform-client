@@ -68,6 +68,48 @@ body {
 }
 
 /* =========================
+   🧭 Dashboard Header Title
+========================= */
+
+.dp-brand-titles {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  gap: 6px;
+}
+
+/* Main title */
+.dp-brand-titles h1 {
+  margin: 0;
+
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+
+  background: linear-gradient(
+    90deg,
+    var(--violet),
+    var(--blue)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Subtitle */
+.dp-subtitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+
+/* =========================
    🔘 Tabs
 ========================= */
 .dashboard-nav {
