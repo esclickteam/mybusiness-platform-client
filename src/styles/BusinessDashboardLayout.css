@@ -434,17 +434,23 @@
 @media (min-width: 769px) {
   .dashboard-content > div {
     width: 100%;
-    max-width: 1200px;  /* מקסימום רוחב */
-    margin: 0 auto;     /* מרכז את הצ'אט */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 20px;  /* ⬅️ זה מוסיף רווח בתחתית */
   }
 
   .chat-container {
-    width: 100%;  /* עושה את הצ'אט לרוחב מלא */
+    width: 100%;
     display: flex;
-    flex-direction: column;  /* למנוע סידור לא נכון של אלמנטים */
+    flex-direction: column;
   }
 
   .message-list {
-    flex-grow: 1;  /* זה עושה שהצ'אט יתפוס את כל הגובה של הקונטיינר */
+    flex-grow: 1;  /* זה עושה שהצ'אט יתפוס את כל הגובה */
+    overflow-y: auto;  /* כדי שההודעות לא יתחפפו */
+  }
+
+  .inputBar {
+    margin-top: auto;  /* ⬅️ זה מוודא שהשדה של "שלח הודעה" יישאר בתחתית */
   }
 }
