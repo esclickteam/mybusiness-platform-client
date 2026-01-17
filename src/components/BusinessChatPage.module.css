@@ -1,41 +1,46 @@
 /* WhatsApp background wrapper */
 .whatsappBg {
   min-height: 100vh;
-  width: 100%;
   background: #f3edff;
-
   display: flex;
-  justify-content: center; /* מרכז אופקית */
-  align-items: stretch;    /* ❗ לא center */
+  align-items: center;
+  justify-content: center;
 }
 
 /* Chat container (WhatsApp style) */
 .chatContainer {
+  max-width: 950px;
   width: 100%;
-  max-width: 1400px;   /* יותר רחב – כמו WhatsApp Web */
-  height: 100vh;       /* ❗ כל גובה המסך */
-  max-height: none;    /* ❗ לבטל הגבלה */
+  height: 82vh;
+  min-height: 380px;
+  max-height: 700px;
 
   display: flex;
-  flex-direction: row;
+  flex-direction: row; /* סידור רגיל */
 
-  margin: 0 auto;
-  border-radius: 0;    /* וואטסאפ Web שטוח */
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
+  overflow: hidden;
   background: #faf7ff;
-  border: none;
-  box-shadow: none;
-
+  border: 1px solid #c3a6fa;
   position: relative;
+
+  /* ✅ מרכז בתוך כל Layout (דשבורד/עמוד מלא) */
+  margin: 0 auto;
 }
 
 
 /* Sidebar inside WhatsApp container */
 .sidebarInner {
-  width: 320px;        /* וואטסאפ ~310 */
-  flex-shrink: 0;
-  height: 100%;
+  width: 246px;
+  background: #f3edff;
+  border-left: 1.5px solid #c3a6fa;
+  border-right: 1.5px solid #c3a6fa;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
-  border-right: 1px solid #ddd;
+  box-shadow: 1px 0 6px rgba(163, 137, 235, 0.15);
+  z-index: 2;
 }
 
 /* Conversation item */
@@ -59,16 +64,20 @@
 
 /* Chat area inside WhatsApp container */
 .chatArea {
-  flex: 1;
   display: flex;
-  flex-direction: column;
-  background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
+  justify-content: center; /* ✅ מרכז את הצ’אט */
+  width: 100%;
 }
 
 /* Message list */
 .messageList {
   flex: 1;
+  padding: 20px 18px 10px 18px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #faf7ff;
 }
 
 /* Individual message bubble */
@@ -189,122 +198,206 @@
   padding: 12px 0;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
-
-/* Tablet + smaller (<=1024px): sidebar moves to top (horizontal) */
+/* === רספונסיביות למובייל וטאבלטים === */
 @media (max-width: 1024px) {
   .chatContainer {
-    width: 100%;
-    max-width: 100vw;
+    flex-direction: column;
     height: 100vh;
     max-height: none;
-    flex-direction: column;
+    max-width: 100vw;
+    border-radius: 0;
   }
-
   .sidebarInner {
     width: 100%;
     height: 160px;
-    flex-shrink: 0;
-
+    border-left: none;
     border-right: none;
-    border-bottom: 1px solid #ddd;
-
-    display: flex;
+    border-bottom: 1.5px solid #c3a6fa;
+    box-shadow: none;
     flex-direction: row;
     overflow-x: auto;
-    overflow-y: hidden;
   }
-
   .convItem {
     white-space: normal;
-    flex: 0 0 auto;
-    min-width: 220px;
+    flex: 1 0 auto;
+    padding: 12px 16px;
+    font-size: 14px;
   }
-
   .chatArea {
-    flex: 1;
+    height: calc(100% - 160px);
     min-height: 0;
-  }
-
-  .message {
-    max-width: 85%;
   }
 }
 
-/* Mobile (<=768px): hide sidebar, full chat */
-@media (max-width: 768px) {
+/* מובייל קטן יותר */
+@media (max-width: 480px) {
   .sidebarInner {
-    display: none;
+    height: 140px;
   }
-
-  .chatContainer {
-    max-width: 100vw;
-    height: 100vh;
-  }
-
-  .message {
-    max-width: 90%;
-  }
-
-  .inputBar {
+  .convItem {
+    font-size: 13px;
     padding: 10px 12px;
-    min-height: 58px;
   }
-
+  .inputBar {
+    padding: 10px 10px 10px 10px;
+    min-height: 56px;
+  }
   .inputField {
-    padding: 11px 12px;
     font-size: 14px;
+    padding: 10px 12px;
     border-radius: 22px;
   }
-
   .sendButton {
     width: 40px;
     height: 40px;
     font-size: 17px;
-  }
-}
-
-/* Small mobile (<=480px) */
-@media (max-width: 480px) {
-  .message {
-    max-width: 95%;
-    font-size: 14px;
-  }
-
-  .inputBar {
-    padding: 9px 10px;
-    min-height: 56px;
-  }
-
-  .sendButton {
-    width: 38px;
-    height: 38px;
-    font-size: 16px;
     margin-left: 6px;
   }
 }
 
-/* Very small (<=320px) */
+/* מובייל קטן מאוד */
 @media (max-width: 320px) {
-  .message {
-    max-width: 100%;
-    font-size: 13px;
+  .sidebarInner {
+    height: 120px;
   }
-
+  .convItem {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .inputField {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
   .sendButton {
     width: 36px;
     height: 36px;
-    font-size: 15px;
-  }
-
-  .inputField {
-    font-size: 13px;
-    padding: 9px 10px;
+    font-size: 16px;
+    margin-left: 5px;
   }
 }
 
+/* סיידבר מוסתר במובייל - רק הצ'אט יופיע */
+@media (max-width: 768px) {
+  .sidebarInner {
+    display: none !important;
+  }
+  .chatArea {
+    height: 100% !important;
+  }
+  .chatContainer {
+    max-width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+  }
+}
+/* רספונסיביות כללית - WhatsApp style chat */
 
+/* Extra Large - מעל 1024px */
+@media (min-width: 1025px) {
+  .chatContainer {
+    flex-direction: row;
+    max-width: 950px;
+    height: 82vh;
+    border-radius: 16px;
+  }
+  .sidebarInner {
+    width: 246px;
+    height: auto;
+    border-left: 1.5px solid #c3a6fa;
+    border-right: 1.5px solid #c3a6fa;
+    box-shadow: 1px 0 6px rgba(163, 137, 235, 0.15);
+    flex-direction: column;
+    overflow-y: auto;
+    display: flex !important;
+  }
+  .chatArea {
+    height: 100%;
+  }
+}
 
+/* Medium - 769px עד 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .chatContainer {
+    flex-direction: column;
+    height: 100vh;
+    max-width: 100vw;
+    border-radius: 0;
+  }
+  .sidebarInner {
+    width: 100%;
+    height: 160px;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1.5px solid #c3a6fa;
+    box-shadow: none;
+    flex-direction: row;
+    overflow-x: auto;
+    display: flex !important;
+  }
+  .chatArea {
+    height: calc(100% - 160px);
+    min-height: 0;
+  }
+}
 
+/* Small - 481px עד 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .sidebarInner {
+    display: none !important;
+  }
+  .chatArea {
+    height: 100% !important;
+  }
+  .chatContainer {
+    max-width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Extra Small - עד 480px */
+@media (max-width: 480px) {
+  .sidebarInner {
+    height: 140px;
+  }
+  .convItem {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+  .inputBar {
+    padding: 10px 10px 10px 10px;
+    min-height: 56px;
+  }
+  .inputField {
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 22px;
+  }
+  .sendButton {
+    width: 40px;
+    height: 40px;
+    font-size: 17px;
+    margin-left: 6px;
+  }
+}
+
+/* Very Small - עד 320px */
+@media (max-width: 320px) {
+  .sidebarInner {
+    height: 120px;
+  }
+  .convItem {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .inputField {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+  .sendButton {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    margin-left: 5px;
+  }
+}
