@@ -113,10 +113,11 @@ export default function App() {
   const [showNotifications, setShowNotifications] = useState(false);
 
    const isDashboardRoute =
-    location.pathname.includes("/dashboard") ||
-    location.pathname.startsWith("/admin") ||
-    location.pathname.startsWith("/staff") ||
-    location.pathname.startsWith("/client");
+  location.pathname.includes("/dashboard") ||
+  location.pathname.startsWith("/admin") ||
+  location.pathname.startsWith("/staff") ||
+  location.pathname.startsWith("/client") ||
+  location.pathname.includes("/messages");
 
   useOnceLogger("App render - user", user);
   useOnceLogger("App render - loading", loading);
