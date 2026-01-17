@@ -17,14 +17,9 @@
 
   direction: ltr;
   box-sizing: border-box;
+  background: #f6f7fb;
 
-  background: linear-gradient(
-    180deg,
-    #fafaff 0%,
-    #f4f1ff 50%,
-    #ede9ff 100%
-  );
-}
+  }
 
 .logo-circle img,
 .logo-img {
