@@ -3,9 +3,6 @@
 ========================= */
 .business-workspace-nav {
   padding: 16px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 /* =========================
@@ -15,52 +12,52 @@
   display: flex;
   align-items: center;
   gap: 12px;
+
   padding: 12px 14px;
   border-radius: 14px;
+
   text-decoration: none;
   color: #2e1a72;
-  font-size: 0.96rem;
+
+  font-size: 0.96rem;          /* ⬅️ טיפה קטן יותר */
   font-weight: 600;
-  background: #fff;
-  transition: background 0.18s ease, color 0.18s ease, transform 0.12s ease;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.12s ease;
 }
 
-/* Hover ❌ רק על הטאב הפעיל */
-.business-workspace-nav .nav-link.active:hover {
+.business-workspace-nav .nav-link:hover {
   background: rgba(94, 23, 235, 0.07);
-  color: #5e17eb;
-  transform: translateX(2px);
 }
 
-/* active תמיד מודגש */
+/* =========================
+   Active state
+========================= */
 .business-workspace-nav .nav-link.active {
   background: #ffffff;
   color: #5e17eb;
   box-shadow: 0 6px 16px rgba(94, 23, 235, 0.18);
 }
 
-/* הסרת hover מהטאבים הלא פעילים */
-.business-workspace-nav .nav-link:not(.active):hover {
-  background: #fff;
-  color: #2e1a72;
-  transform: none;
-}
-
 /* =========================
    Icon (UX focus)
 ========================= */
 .business-workspace-nav svg {
-  width: 16px;
+  width: 16px;                 /* ⬅️ הקטנה אמיתית */
   height: 16px;
+
   stroke: currentColor;
   fill: none;
   stroke-width: 1.7;
-  opacity: 0.75;
+
+  opacity: 0.75;               /* ⬅️ שקט */
   flex-shrink: 0;
 }
 
 .business-workspace-nav .nav-link.active svg {
-  opacity: 1;
+  opacity: 1;                  /* ⬅️ מודגש רק ב־active */
 }
 
 /* =========================
@@ -75,11 +72,21 @@
 ========================= */
 .business-workspace-nav .badge {
   margin-left: auto;
+
   background: #5e17eb;
-  color: #fff;
+  color: #ffffff;
+
   font-size: 0.7rem;
   font-weight: 700;
+
   padding: 3px 7px;
   border-radius: 999px;
   line-height: 1;
+}
+
+/* =========================
+   Micro UX (optional but 🔥)
+========================= */
+.business-workspace-nav .nav-link:hover {
+  transform: translateX(2px);
 }
