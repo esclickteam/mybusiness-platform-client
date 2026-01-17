@@ -12,7 +12,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  Legend,
 } from "recharts";
 
 /* =========================
@@ -41,12 +40,16 @@ function formatMonthlyData(appointments) {
   };
 
   appointments.forEach((appt) => {
-    if (!appt.date) return;
+    if (!appt?.date) return;
+
     const fullMonth = new Date(appt.date).toLocaleString("en-US", {
       month: "long",
     });
+
     const shortMonth = monthMap[fullMonth];
-    if (counts[shortMonth] !== undefined) counts[shortMonth]++;
+    if (shortMonth && counts[shortMonth] !== undefined) {
+      counts[shortMonth]++;
+    }
   });
 
   return Object.entries(counts).map(([name, customers]) => ({
@@ -65,29 +68,39 @@ const BarChartComponent = ({
   const [viewMode, setViewMode] = useState("bar");
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
+  /** כל החודשים */
   const data = useMemo(
     () => formatMonthlyData(appointments),
     [appointments]
   );
 
-  const total = useMemo(
-    () => data.reduce((sum, d) => sum + d.customers, 0),
+  /** רק חודשים עם נתונים */
+  const visibleData = useMemo(
+    () => data.filter((d) => d.customers > 0),
     [data]
   );
 
-  const average = useMemo(() => total / 12, [total]);
+  const total = useMemo(
+    () => visibleData.reduce((sum, d) => sum + d.customers, 0),
+    [visibleData]
+  );
+
+  const average = useMemo(
+    () => (visibleData.length ? total / visibleData.length : 0),
+    [total, visibleData]
+  );
 
   const maxMonth = useMemo(
     () =>
-      data.reduce(
+      visibleData.reduce(
         (max, curr) =>
           curr.customers > max.customers ? curr : max,
-        data[0] || { name: "-", customers: 0 }
+        visibleData[0] || { name: "-", customers: 0 }
       ),
-    [data]
+    [visibleData]
   );
 
-  const hasData = total > 0;
+  const hasData = visibleData.length > 0;
 
   return (
     <div className="graph-box" dir="ltr">
@@ -108,12 +121,6 @@ const BarChartComponent = ({
           >
             Line
           </button>
-          <button
-            className={viewMode === "table" ? "active" : ""}
-            onClick={() => setViewMode("table")}
-          >
-            Table
-          </button>
         </div>
       </div>
 
@@ -121,23 +128,19 @@ const BarChartComponent = ({
       <div className="graph-scroll">
         {hasData ? (
           <ResponsiveContainer width="100%" height={isMobile ? 260 : 360}>
-            {viewMode === "bar" && (
+            {viewMode === "bar" ? (
               <BarChart
-                data={data}
-                margin={{ top: 20, right: 20, left: 10, bottom: 50 }}
-                barCategoryGap="40%"
+                data={visibleData}
+                margin={{ top: 20, right: 20, left: 20, bottom: 40 }}
+                barCategoryGap="35%"
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 12, fontWeight: 600 }}
-                />
+                <XAxis dataKey="name" />
                 <YAxis allowDecimals={false} />
-                <Tooltip
-                  formatter={(v) => [`${v} appointments`, ""]}
-                />
+                <Tooltip formatter={(v) => [`${v} appointments`, ""]} />
+
                 <Bar dataKey="customers" radius={[6, 6, 0, 0]}>
-                  {data.map((entry, index) => (
+                  {visibleData.map((entry, index) => (
                     <Cell
                       key={index}
                       fill={
@@ -149,10 +152,8 @@ const BarChartComponent = ({
                   ))}
                 </Bar>
               </BarChart>
-            )}
-
-            {viewMode === "line" && (
-              <LineChart data={data}>
+            ) : (
+              <LineChart data={visibleData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis allowDecimals={false} />
@@ -174,14 +175,16 @@ const BarChartComponent = ({
         )}
       </div>
 
-      {/* ===== Insight / Summary ===== */}
-      <div className="chart-insight">
-        <strong>{maxMonth.name}</strong> was your busiest month with{" "}
-        <strong>{maxMonth.customers}</strong> appointments.
-        <div className="chart-subtext">
-          Total: {total} • Monthly Avg: {average.toFixed(1)}
+      {/* ===== Insight ===== */}
+      {hasData && (
+        <div className="chart-insight">
+          <strong>{maxMonth.name}</strong> was your busiest month with{" "}
+          <strong>{maxMonth.customers}</strong> appointments.
+          <div className="chart-subtext">
+            Total: {total} • Monthly Avg: {average.toFixed(1)}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
