@@ -59,8 +59,10 @@
 /* Chat area inside WhatsApp container */
 .chatArea {
   display: flex;
-  justify-content: center; /* ✅ מרכז את הצ’אט */
+  flex-direction: column; /* לסדר את התוכן בעמודה */
+  justify-content: flex-end; /* לוודא שהתוכן יהיה בתחתית */
   width: 100%;
+  height: 100%; /* לתפוס את כל הגובה */
 }
 
 /* Message list */
