@@ -28,8 +28,11 @@
     transform 0.12s ease;
 }
 
+/* Hover effect — רק על הטאב שמתחת לעכבר */
 .business-workspace-nav .nav-link:hover {
-  background: rgba(94, 23, 235, 0.07);
+  background: rgba(94, 23, 235, 0.07); /* צבע רקע קל */
+  color: #5e17eb;                       /* טקסט משנה צבע קל */
+  transform: translateX(2px);           /* Micro UX */
 }
 
 /* =========================
@@ -39,6 +42,13 @@
   background: #ffffff;
   color: #5e17eb;
   box-shadow: 0 6px 16px rgba(94, 23, 235, 0.18);
+}
+
+/* מונעים hover להשפיע על active */
+.business-workspace-nav .nav-link.active:hover {
+  background: #ffffff;
+  color: #5e17eb;
+  transform: none;
 }
 
 /* =========================
@@ -56,8 +66,9 @@
   flex-shrink: 0;
 }
 
+/* מודגש רק בטאב active */
 .business-workspace-nav .nav-link.active svg {
-  opacity: 1;                  /* ⬅️ מודגש רק ב־active */
+  opacity: 1;
 }
 
 /* =========================
@@ -82,11 +93,4 @@
   padding: 3px 7px;
   border-radius: 999px;
   line-height: 1;
-}
-
-/* =========================
-   Micro UX (optional but 🔥)
-========================= */
-.business-workspace-nav .nav-link:hover {
-  transform: translateX(2px);
 }
