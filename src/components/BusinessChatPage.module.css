@@ -14,15 +14,21 @@
   height: 82vh;
   min-height: 380px;
   max-height: 700px;
+
   display: flex;
   flex-direction: row; /* סידור רגיל */
+
   border-radius: 16px;
   box-shadow: 0 4px 32px rgba(163, 137, 235, 0.25);
   overflow: hidden;
   background: #faf7ff;
   border: 1px solid #c3a6fa;
   position: relative;
+
+  /* ✅ מרכז בתוך כל Layout (דשבורד/עמוד מלא) */
+  margin: 0 auto;
 }
+
 
 /* Sidebar inside WhatsApp container */
 .sidebarInner {
@@ -58,12 +64,9 @@
 
 /* Chat area inside WhatsApp container */
 .chatArea {
-  flex: 1;
   display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: #faf7ff;
-  min-width: 0;
+  justify-content: center; /* ✅ מרכז את הצ’אט */
+  width: 100%;
 }
 
 /* Message list */
