@@ -88,21 +88,25 @@ export default function MainSection({
   };
 
   return (
+
     <div
-      className="main-section-grid"
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gridTemplateAreas: '"form preview"',
-        gap: "2rem",
-        alignItems: "start",
-justifyContent: "start",
-width: "100%",
-maxWidth: "1400px",
-marginLeft: "0",
-marginRight: "auto",
-      }}
-    >
+  className="main-section-grid"
+  style={{
+    display: "grid",
+    gridTemplateColumns: "minmax(520px, 1fr) 440px",
+    gridTemplateAreas: '"form preview"',
+    gap: "2rem",
+    alignItems: "start",
+
+    width: "100%",
+    paddingLeft: "2rem",
+    paddingRight: "2rem",
+
+    margin: "0",          // ❗ לא auto
+    justifyContent: "start",
+  }}
+>
+
       {/* RIGHT COLUMN — PREVIEW */}
       <div
         className="preview-column"
