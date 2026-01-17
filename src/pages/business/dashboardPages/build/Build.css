@@ -1,13 +1,13 @@
 /* === מבנה עמוד כללי === */
 .build-wrapper {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   justify-content: space-between;
   padding: 2.5rem;
   min-height: 100vh;
   flex-wrap: wrap;
   gap: 2.5rem;
-  direction: rtl;
+  direction: ltr; 
   box-sizing: border-box;
 
   /* ✅ רקע רגוע */
@@ -18,6 +18,16 @@
     #ede9ff 100%
   );
 }
+
+.logo-circle img,
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;      /* 🔥 לא cover */
+  object-position: center;
+  background: #ffffff;      /* אם הלוגו עם שקיפות */
+}
+
 
 /* --- צד ימין: תצוגה מקדימה --- */
 .preview-column {
