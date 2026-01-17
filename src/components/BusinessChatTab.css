@@ -1,10 +1,15 @@
 /* רקע של וואטסאפ */
 .whatsappBg {
+  width: 100vw;
+  height: 100vh;
   min-height: 100vh;
-  background: #ece5dd;
+
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;   /* ❗ */
+  justify-content: stretch;
+
+  background: #ece5dd;
+  overflow: hidden;
 }
 
 /* מבטיח LTR לצ'אט בלבד */
@@ -15,29 +20,26 @@
 
 /* קונטיינר ראשי */
 .chat-container {
-  max-width: 950px;
   width: 100%;
-  height: 82vh;
-  min-height: 380px;
-  max-height: 700px;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  min-height: 100vh;
+
   display: flex;
-  flex-direction: column;
-  border-radius: 16px;
-  box-shadow: 0 4px 32px #0002;
-  overflow-x: visible;
+  flex-direction: row;
+
+  border-radius: 0;      /* ❗ */
+  box-shadow: none;      /* ❗ */
+  border: none;          /* ❗ */
+
   background: #fff;
-  border: 1px solid #e0e0e0;
-  position: relative;
 }
 
 /* אזור הצ'אט */
 .message-list {
   flex: 1;
-  padding: 20px 18px 10px 18px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
 }
 
