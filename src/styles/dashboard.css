@@ -24,7 +24,8 @@
 /* =========================
    🌍 Global
 ========================= */
-html, body {
+html,
+body {
   background: var(--bg);
   color: var(--text);
   font-family: Poppins, Inter, sans-serif;
@@ -112,7 +113,7 @@ html, body {
   align-items: center;
   gap: 6px;
 
-  box-shadow: 0 6px 16px rgba(0,0,0,.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
 }
 
 .card-icon svg {
@@ -132,22 +133,18 @@ html, body {
 }
 
 /* =========================
-   🧩 GRID SECTIONS
+   🧩 GRID SECTIONS (RESTORED)
+   ➜ הכל אחד מתחת לשני
 ========================= */
+.dp-grid-1,
 .dp-grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-}
-
-.dp-grid-1 {
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
 }
 
 /* =========================
-   📈 Chart Card (FINAL)
+   📈 Chart Card
 ========================= */
 .graph-box {
   background: var(--surface);
@@ -161,7 +158,6 @@ html, body {
   gap: 16px;
 
   width: 100%;
-  min-width: 0;     /* 🔥 קריטי */
 }
 
 /* Header */
@@ -220,10 +216,6 @@ html, body {
 ========================= */
 @media (max-width: 900px) {
   .dashboard-cards-container {
-    grid-template-columns: 1fr;
-  }
-
-  .dp-grid-2 {
     grid-template-columns: 1fr;
   }
 }

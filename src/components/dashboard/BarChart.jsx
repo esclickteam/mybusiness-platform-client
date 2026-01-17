@@ -47,9 +47,7 @@ function formatMonthlyData(appointments) {
     });
 
     const shortMonth = monthMap[fullMonth];
-    if (shortMonth && counts[shortMonth] !== undefined) {
-      counts[shortMonth]++;
-    }
+    if (shortMonth) counts[shortMonth]++;
   });
 
   return Object.entries(counts).map(([name, customers]) => ({
@@ -68,13 +66,13 @@ const BarChartComponent = ({
   const [viewMode, setViewMode] = useState("bar");
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  /** כל החודשים */
+  /* כל החודשים */
   const data = useMemo(
     () => formatMonthlyData(appointments),
     [appointments]
   );
 
-  /** רק חודשים עם נתונים */
+  /* רק חודשים עם נתונים */
   const visibleData = useMemo(
     () => data.filter((d) => d.customers > 0),
     [data]
@@ -131,15 +129,22 @@ const BarChartComponent = ({
             {viewMode === "bar" ? (
               <BarChart
                 data={visibleData}
-                margin={{ top: 20, right: 20, left: 20, bottom: 40 }}
-                barCategoryGap="35%"
+                margin={{ top: 20, right: 24, left: 24, bottom: 40 }}
+                barCategoryGap="65%"   // ⭐ חשוב ל־UX
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 12, fontWeight: 600 }}
+                />
                 <YAxis allowDecimals={false} />
                 <Tooltip formatter={(v) => [`${v} appointments`, ""]} />
 
-                <Bar dataKey="customers" radius={[6, 6, 0, 0]}>
+                <Bar
+                  dataKey="customers"
+                  barSize={32}          // ⭐ מונע “בלוק ירוק”
+                  radius={[6, 6, 0, 0]}
+                >
                   {visibleData.map((entry, index) => (
                     <Cell
                       key={index}
