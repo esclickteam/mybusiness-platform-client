@@ -1,0 +1,47 @@
+.business-workspace-nav {
+  padding: 18px 16px;
+}
+
+.business-workspace-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.business-workspace-nav li {
+  margin-bottom: 6px;
+}
+
+.business-workspace-nav a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 14px 16px;
+  border-radius: 18px;
+
+  text-decoration: none;
+  color: #2e1a72;
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.business-workspace-nav a:hover {
+  background: rgba(94, 23, 235, 0.08);
+}
+
+.business-workspace-nav li.active a {
+  background: #ffffff;
+  color: #5e17eb;
+  box-shadow: 0 8px 20px rgba(94, 23, 235, 0.18);
+}
+
+.nav-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+}

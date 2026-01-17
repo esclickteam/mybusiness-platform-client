@@ -13,20 +13,9 @@ import "../../styles/BusinessDashboardLayout.css";
 import { io } from "socket.io-client";
 import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
+import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
 
-/* ============================
-   🧭 Tabs
-============================ */
-const tabs = [
-  { path: "dashboard", label: "Dashboard" },
-  { path: "build", label: "Edit Business Page" },
-  { path: "messages", label: "Customer Messages" },
-  { path: "collab", label: "Collaborations" },
-  { path: "crm", label: "CRM System" },
-  { path: "billing", label: "Billing & Subscription" },
-  { path: "BizUply", label: "BizUply Advisor" },
-  { path: "help-center", label: "Help Center" },
-];
+
 
 /* ============================
    🔌 Socket
@@ -199,31 +188,11 @@ export default function BusinessDashboardLayout() {
                   )}
                 </div>
 
-                <nav>
-                  <a
-                    href={`/business/${businessId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View Public Profile
-                  </a>
+               <BusinessWorkspaceNav
+  messagesCount={messagesCount}
+  onNavigate={() => isMobile && setShowSidebar(false)}
+/>
 
-                  {tabs.map(({ path, label }) => (
-                    <NavLink
-                      key={path}
-                      to={`/business/${businessId}/dashboard/${path}`}
-                      className={({ isActive }) =>
-                        isActive ? "active" : undefined
-                      }
-                      onClick={() => isMobile && setShowSidebar(false)}
-                    >
-                      <span>{label}</span>
-                      {path === "messages" && messagesCount > 0 && (
-                        <span className="badge">{messagesCount}</span>
-                      )}
-                    </NavLink>
-                  ))}
-                </nav>
 
                 {isMobile && (
                   <div className="sidebar-footer">
