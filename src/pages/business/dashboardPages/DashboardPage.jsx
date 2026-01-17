@@ -766,22 +766,7 @@ const shouldShowEarlyBirdModal =
             </div>
           </section>
 
-          {/* Next actions */}
-          <section ref={nextActionsRef} className="dp-section">
-            <div className="dp-card dp-card--panel">
-              <Suspense fallback={<div className="dp-loading-sm">🔄 Loading actions...</div>}>
-                <NextActions
-                  stats={{
-                    weekly_views_count: countItemsInLastWeek(syncedStats.views, "date"),
-                    weekly_appointments_count: countItemsInLastWeek(enrichedAppointments),
-                    weekly_reviews_count: countItemsInLastWeek(syncedStats.reviews, "date"),
-                    weekly_messages_count: countItemsInLastWeek(syncedStats.messages, "date"),
-                  }}
-                />
-              </Suspense>
-            </div>
-          </section>
-
+        
           {/* Weekly summary + Recent activity */}
           <section ref={weeklySummaryRef} className="dp-grid-2">
             <div className="dp-card dp-card--panel">
