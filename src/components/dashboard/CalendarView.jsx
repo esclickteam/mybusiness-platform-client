@@ -1,146 +1,158 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import "./CalendarView.css";
 
-const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const getDateTime = (dateStr, timeStr) => {
-  if (!dateStr) return null;
-  if (!timeStr) timeStr = "00:00";
-  return new Date(`${dateStr}T${timeStr}:00`);
-};
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 const CalendarView = ({ appointments = [], onDateClick }) => {
   const today = new Date();
+
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
 
-  // Log for debugging
-  useEffect(() => {
-    console.log("CalendarView render - appointments:", appointments);
-  }, [appointments]);
-
-  const goToPreviousMonth = () => {
-    setCurrentMonth((prev) => {
-      if (prev === 0) {
+  /* =========================
+     Month navigation
+  ========================= */
+  const goPrev = () => {
+    setCurrentMonth((m) => {
+      if (m === 0) {
         setCurrentYear((y) => y - 1);
         return 11;
       }
-      return prev - 1;
+      return m - 1;
     });
   };
 
-  const goToNextMonth = () => {
-    setCurrentMonth((prev) => {
-      if (prev === 11) {
+  const goNext = () => {
+    setCurrentMonth((m) => {
+      if (m === 11) {
         setCurrentYear((y) => y + 1);
         return 0;
       }
-      return prev + 1;
+      return m + 1;
     });
   };
 
+  /* =========================
+     Appointments by day
+  ========================= */
+  const appointmentsByDay = useMemo(() => {
+    const map = {};
+    appointments.forEach((a) => {
+      if (!a.date) return;
+      const d = new Date(a.date).toISOString().split("T")[0];
+      if (!map[d]) map[d] = [];
+      map[d].push(a);
+    });
+    return map;
+  }, [appointments]);
+
+  /* =========================
+     Calendar grid
+  ========================= */
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
-  // Organize appointments by day
-  const byDay = {};
-  appointments.forEach((appt) => {
-    if (!appt.date) return;
-    const date = new Date(appt.date).toISOString().split("T")[0];
-    if (!byDay[date]) byDay[date] = [];
-    byDay[date].push(appt);
-  });
+  const cells = Array.from(
+    { length: daysInMonth + firstDayOfWeek },
+    (_, i) => {
+      if (i < firstDayOfWeek) {
+        return { day: null };
+      }
 
-  const totalCells = daysInMonth + firstDayOfWeek;
-  const calendarCells = Array.from({ length: totalCells }, (_, i) => {
-    if (i < firstDayOfWeek) {
-      return { day: null, dateStr: null, events: [] };
-    } else {
       const day = i - firstDayOfWeek + 1;
-      const dateStr = `${currentYear}-${(currentMonth + 1)
-        .toString()
-        .padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
-      return { day, dateStr, events: byDay[dateStr] || [] };
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
+        2,
+        "0"
+      )}-${String(day).padStart(2, "0")}`;
+
+      const isToday =
+        dateStr === new Date().toISOString().split("T")[0];
+
+      return {
+        day,
+        dateStr,
+        isToday,
+        count: appointmentsByDay[dateStr]?.length || 0,
+      };
     }
-  });
+  );
 
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
+  /* =========================
+     Render
+  ========================= */
   return (
-    <div className="calendar-container" style={{ direction: "ltr" }}>
+    <div className="calendar-container" dir="ltr">
+      {/* Header */}
       <div className="calendar-header">
-        <h3>
-          {monthNames[currentMonth]} <span>{currentYear}</span>
+        <button className="nav-btn" onClick={goPrev}>
+          ←
+        </button>
+
+        <h3 className="calendar-title">
+          {MONTH_NAMES[currentMonth]} {currentYear}
         </h3>
+
+        <button className="nav-btn" onClick={goNext}>
+          →
+        </button>
       </div>
 
-      <div className="month-navigation">
-        <button onClick={goToPreviousMonth}>← Previous Month</button>
-        <button onClick={goToNextMonth}>Next Month →</button>
+      <div className="calendar-hint">
+        Click a date to view your daily agenda
       </div>
 
-      <div className="date-picker-text">Select a date to view your agenda</div>
-
+      {/* Weekdays */}
       <div className="calendar-weekdays">
-        {weekDays.map((dayName) => (
-          <div key={dayName} className="weekday">
-            {dayName}
+        {WEEK_DAYS.map((d) => (
+          <div key={d} className="weekday">
+            {d}
           </div>
         ))}
       </div>
 
+      {/* Grid */}
       <div className="calendar-grid">
-        {calendarCells.map(({ day, dateStr, events }, idx) => (
-          <div
-            key={idx}
-            className="calendar-day"
-            onClick={() => day && onDateClick && onDateClick(dateStr)}
-            title={day ? "Click to view daily schedule" : ""}
-            style={{
-              cursor: day ? "pointer" : "default",
-              backgroundColor: day ? undefined : "#f0f0f0",
-            }}
-          >
-            {day ? (
-              <>
-                <div className="day-number">{day}</div>
-                {events.map((e, i) => {
-                  const clientName = e.clientName?.trim() || "Unknown";
-                  const fullDate = getDateTime(e.date, e.time);
+        {cells.map((cell, idx) => {
+          if (!cell.day) {
+            return <div key={idx} className="calendar-cell empty" />;
+          }
 
-                  return (
-                    <div key={i} className="event-item">
-                      🕒{" "}
-                      {fullDate
-                        ? fullDate.toLocaleTimeString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : "Unknown"}
-                      <br />
-                      👤 {clientName}
-                    </div>
-                  );
-                })}
-              </>
-            ) : (
-              <div className="empty-day" />
-            )}
-          </div>
-        ))}
+          return (
+            <div
+              key={idx}
+              className={`calendar-cell ${
+                cell.isToday ? "today" : ""
+              } ${cell.count ? "has-events" : ""}`}
+              onClick={() =>
+                onDateClick && onDateClick(cell.dateStr)
+              }
+            >
+              <div className="cell-day">{cell.day}</div>
+
+              {cell.count > 0 && (
+                <div className="cell-events">
+                  {cell.count} appointment
+                  {cell.count > 1 ? "s" : ""}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
