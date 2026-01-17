@@ -252,8 +252,11 @@
     margin-left: 250px;
     margin-top: 64px;
 
-    height: calc(100vh - 64px);   /* ⬅️ גובה נכון מתחת להידר */
-    overflow-y: auto;             /* ⬅️ זה מחזיר את הגלילה */
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+
+    display: flex;              /* ⬅️ חדש */
+    justify-content: center;    /* ⬅️ ממקם את התוכן (הצ’אט) באמצע */
   }
 }
 
