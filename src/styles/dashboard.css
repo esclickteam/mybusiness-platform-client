@@ -254,30 +254,27 @@ body {
 }
 
 /* =========================
-   📊 Chart Header – Centered Title
+   📊 Chart Header – FORCE CENTER TITLE
 ========================= */
 
-.graph-header {
-  display: grid;
+.graph-box .graph-header {
+  display: grid !important;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
 }
 
-/* הכותרת באמצע אמיתי */
-.graph-title {
+/* הכותרת */
+.graph-box .graph-header h3,
+.graph-box .graph-title {
   grid-column: 2;
   justify-self: center;
-
-  margin: 0;
   text-align: center;
-
-  font-size: 1.05rem;
+  margin: 0;
   font-weight: 800;
-  color: var(--text);
 }
 
-/* הכפתורים נשארים מימין */
-.chart-buttons {
+/* כפתורים */
+.graph-box .chart-buttons {
   grid-column: 3;
   justify-self: end;
 }
