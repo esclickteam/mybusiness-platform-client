@@ -86,7 +86,6 @@ export default function BusinessWorkspaceNav({
       label: "View Public Profile",
       to: `/business/${businessId}`,
       icon: PublicProfileIcon,
-      external: true,
     },
     {
       label: "Dashboard",
@@ -133,24 +132,8 @@ export default function BusinessWorkspaceNav({
 
   return (
     <nav className="business-workspace-nav">
-      {items.map(({ label, to, icon: Icon, badge, external }) => {
+      {items.map(({ label, to, icon: Icon, badge }) => {
         const isActive = pathname.startsWith(to);
-
-        if (external) {
-          return (
-            <a
-              key={label}
-              href={to}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={onNavigate}
-              className="nav-link"
-            >
-              <Icon />
-              <span>{label}</span>
-            </a>
-          );
-        }
 
         return (
           <NavLink
