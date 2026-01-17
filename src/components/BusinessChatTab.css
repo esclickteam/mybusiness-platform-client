@@ -37,6 +37,7 @@
   flex-direction: column;
   gap: 10px;
   background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
+  margin-bottom: 10px; /* הוספת רווח בתחתית */
 }
 /* הודעה */
 .message {
@@ -144,8 +145,8 @@
   display: flex;
   justify-content: flex-start;
   gap: 10px;
-  position: absolute;
-  bottom: 0; /* דוחף את שדה ההקלדה לתחתית */
+  position: relative;
+  margin-top: auto; /* דוחף את השדה למטה */
 }
 
 /* כפתור שליחה משמאל */
@@ -165,6 +166,7 @@
   transition: background 0.18s !important;
   margin: 0 !important;
 }
+
 .sendButtonFlat:disabled {
   background: #ede7f6 !important;
   color: #b8a2e3 !important;
