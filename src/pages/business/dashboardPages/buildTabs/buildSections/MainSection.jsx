@@ -94,13 +94,16 @@ export default function MainSection({
   style={{
     display: "grid",
     gridTemplateColumns: "minmax(520px, 1fr) 440px",
-    gap: "1.25rem",
+    gridTemplateAreas: '"form preview"',
+    gap: "1.5rem",
     alignItems: "start",
 
     width: "100%",
-    maxWidth: "1400px",
-    margin: "0 auto",        // ✅ זה הסוד
-    padding: "0 2rem",
+    paddingLeft: "2rem",
+    paddingRight: "2rem",
+
+    margin: "0",          // ❗ לא auto
+    justifyContent: "start",
   }}
 >
 
