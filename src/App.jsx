@@ -110,6 +110,11 @@ function ScrollToTop() {
 export default function App() {
   const { user, loading } = useAuth();
   const location = useLocation();
+const isBusinessChatRoute =
+  location.pathname.includes("/business/") &&
+  location.pathname.includes("/chat");
+
+
   const [showNotifications, setShowNotifications] = useState(false);
 
    const isDashboardRoute =
@@ -132,41 +137,60 @@ export default function App() {
   return (
     <NotificationsProvider>
   <div className="app-layout" dir="ltr">
-    <Header onToggleNotifications={() => setShowNotifications(v => !v)} />
+    {!isBusinessChatRoute && (
+  <Header onToggleNotifications={() => setShowNotifications(v => !v)} />
+)}
+
     <ScrollToTop />
 
     <main className="app-main">
-      <div className="app-scroll-area">
-
-  <AiProvider>
-    <AnimatePresence mode="wait">
-      <Suspense
-        fallback={
-          <motion.div
-            key="page-loader"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            style={{
-              position: "fixed",
-              inset: 0,
-              zIndex: 9999,
-              background: "linear-gradient(180deg, #f6f7fb, #e8ebf8)",
-              pointerEvents: "none",
-              height: "100vh",
-              overflow: "hidden",
-            }}
-          />
+      {isBusinessChatRoute ? (
+  <div style={{ height: "100vh", width: "100vw", overflow: "hidden" }}>
+    <Routes location={location} key={location.pathname}>
+      <Route
+        path="/business/:businessId/chat/*"
+        element={
+          <ProtectedRoute roles={["business", "admin"]}>
+            <BusinessChatPage />
+          </ProtectedRoute>
         }
-      >
-        <motion.div
-          key={location.pathname}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.35, ease: "easeInOut" }}
-        >
+      />
+    </Routes>
+  </div>
+          
+  ) : (
+    // ✅ כל שאר האתר – נשאר כמו שהיה
+    <div className="app-scroll-area">
+      <AiProvider>
+        <AnimatePresence mode="wait">
+          <Suspense
+            fallback={
+              <motion.div
+                key="page-loader"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  zIndex: 9999,
+                  background: "linear-gradient(180deg, #f6f7fb, #e8ebf8)",
+                  pointerEvents: "none",
+                  height: "100vh",
+                  overflow: "hidden",
+                }}
+              />
+            }
+          >
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+            >
+
 
                 <Routes location={location} key={location.pathname}>
                   <Route
@@ -278,17 +302,7 @@ export default function App() {
                     }
                   />
 
-                  {/* Business chat */}
-                  <Route
-                    path="/business/:businessId/chat/*"
-                    element={
-                      <ProtectedRoute roles={["business", "admin"]}>
-
-                        <BusinessChatPage />
-                      </ProtectedRoute>
-                    }
-                  />
-
+                
                   {/* Client dashboard */}
                   <Route
                     path="/client/dashboard/*"
@@ -451,15 +465,16 @@ export default function App() {
 </motion.div>
 </Suspense>
 </AnimatePresence>
-</AiProvider>
-</div>        
-</main>       
 
-{/* ✅ כאן הפוטר – זה המקום הנכון */}
+</AiProvider>
+</div>
+)}
+</main>
+
+{/* footer */}
 {!isDashboardRoute && <Footer />}
 
-
-</div>        {/* סוגר app-layout */}
+</div>       
 
 {/* 🤖 Pre-login sales bot – ONLY for non-authenticated users */}
 {!user && <PreLoginBot />}
@@ -511,7 +526,7 @@ export function BusinessChatWrapper() {
   if (!state?.conversationId) return <div>Error: Missing conversationId</div>;
 
   return (
-    <ChatPage
+     <BusinessChatPage
       isBusiness={true}
       userId={businessId}
       partnerId={clientId}
