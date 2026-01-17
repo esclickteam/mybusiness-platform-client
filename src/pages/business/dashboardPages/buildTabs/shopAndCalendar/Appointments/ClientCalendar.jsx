@@ -39,6 +39,8 @@ export default function ClientCalendar({
 
   const dayIdx = selectedDate.getDay();
   const config = workHours[dayIdx];
+  const isClosedDay = !config || !config.start || !config.end;
+
 
   const serviceDuration = selectedService?.duration || 30;
 
@@ -260,7 +262,7 @@ export default function ClientCalendar({
     <div className="client-calendar-wrapper">
       {mode === "slots" && (
         <>
-          <h3>📅 Select a Date</h3>
+          <h3>📅 Choose a date to see available times</h3>
           {selectedService && (
             <div className="month-overview">
               <div className="calendar-nav">
@@ -305,34 +307,65 @@ export default function ClientCalendar({
           )}
 
           <div className="selected-date-info">
-            <h4>📆 {selectedDate.toLocaleDateString("en-GB")}</h4>
-            {loadingSlots ? (
-              <p>Loading availability...</p>
-            ) : error ? (
-              <p className="error-text">{error}</p>
-            ) : config ? (
-              <>
-                <p>
-                  🕓 Working Hours: {config.start} - {config.end}
-                </p>
-                {config.breaks && <p>⏸️ Breaks: {config.breaks}</p>}
-                <h5>🕒 Available Slots:</h5>
-                {availableSlots.length ? (
-                  <div className="slot-list">
-                    {availableSlots.map((t) => (
-                      <div key={t} className="slot-item">
-                        <button onClick={() => handleSelectSlot(t)}>{t}</button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p>No available slots for this day</p>
-                )}
-              </>
-            ) : (
-              <p>⚠️ No working hours defined for this day</p>
-            )}
+  <h4>📆 {selectedDate.toLocaleDateString("en-GB")}</h4>
+
+  {loadingSlots && (
+    <div className="info-box muted">
+      ⏳ Checking availability…
+    </div>
+  )}
+
+  {!loadingSlots && error && (
+    <div className="info-box error">
+      ⚠️ Unable to load availability. Please try again.
+    </div>
+  )}
+
+  {!loadingSlots && !error && isClosedDay && (
+    <div className="info-box closed">
+      🔒 This business is closed on this day  
+      <br />
+      <span>Please choose another date</span>
+    </div>
+  )}
+
+  {!loadingSlots && !error && !isClosedDay && (
+    <>
+      <p className="hours">
+        🕓 Working Hours: {config.start} – {config.end}
+      </p>
+
+      {config.breaks && (
+        <p className="breaks">⏸️ Breaks: {config.breaks}</p>
+      )}
+
+      {availableSlots.length > 0 ? (
+        <>
+          <h5>🕒 Available Slots</h5>
+          <div className="slot-list">
+            {availableSlots.map((t) => (
+              <button
+                key={t}
+                className="slot-btn"
+                onClick={() => handleSelectSlot(t)}
+              >
+                {t}
+              </button>
+            ))}
           </div>
+        </>
+      ) : (
+        <div className="info-box full">
+          ⏳ All slots are booked for this day  
+          <br />
+          <span>Try another date</span>
+        </div>
+      )}
+    </>
+  )}
+</div>
+
+
         </>
       )}
 

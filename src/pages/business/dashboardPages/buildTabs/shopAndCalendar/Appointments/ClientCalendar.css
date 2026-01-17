@@ -1,15 +1,15 @@
 /* ClientCalendar.css */
 
 /* =================================================================== */
-/* 1. Wrapper כללי (נשאר RTL כי כל הממשק בעברית)                      */
+/* 1. Wrapper כללי (RTL – עברית)                                       */
 /* =================================================================== */
 .client-calendar-wrapper {
   direction: rtl !important;
   text-align: left;
   padding: 1rem;
-  background: #fff;
+  background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   margin-top: 20px;
   max-width: 600px;
   margin-left: auto;
@@ -25,20 +25,19 @@
   justify-content: center;
   align-items: center;
   gap: 14px;
-  margin-bottom: 12px;
-  margin-top: 8px;
+  margin-bottom: 14px;
 }
 
 .month-nav-btn {
   background: #f3eaff;
   border: none;
-  border-radius: 20px;
+  border-radius: 22px;
   color: #5838e9;
-  padding: 7px 18px;
-  font-size: 1.1em;
-  font-weight: 600;
+  padding: 8px 20px;
+  font-size: 1.05em;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.18s;
+  transition: all 0.18s ease;
   user-select: none;
 }
 .month-nav-btn:hover {
@@ -50,30 +49,34 @@
 /* 3. לוח חודש                                                         */
 /* =================================================================== */
 .month-overview {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .calendar-container {
   width: 100%;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   background: #fff;
 }
+
 .calendar-header {
   text-align: center;
   padding: 16px 0;
-  background: #f5f5f5;
+  background: #f6f6f6;
 }
+
 .calendar-header .month-hebrew {
   font-size: 1.8rem;
-  font-weight: bold;
+  font-weight: 800;
 }
+
 .calendar-header .year {
   font-size: 1rem;
   color: #666;
   margin-top: 4px;
 }
+
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -81,125 +84,187 @@
   border-bottom: 1px solid #ddd;
   direction: rtl;
 }
+
 .weekday {
   text-align: center;
   padding: 8px 0;
-  font-weight: 600;
+  font-weight: 700;
   color: #333;
   user-select: none;
 }
+
 .calendar-dates {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   direction: rtl;
 }
+
 .date-cell {
   border-bottom: 1px solid #eee;
   border-right: 1px solid #eee;
-  min-height: 80px;
+  min-height: 72px;
   position: relative;
   cursor: pointer;
   transition: background 0.18s;
   background: #fff;
 }
+
 .date-cell.clickable:hover {
-  background: #f5f1ff;
+  background: #f4f1ff;
 }
+
 .date-cell.selected {
-  background: #7a3df4;
-  color: #fff !important;
-  border-radius: 8px;
-  font-weight: 700;
+  background: linear-gradient(135deg, #7a3df4, #5e2fcf);
+  color: #ffffff !important;
+  border-radius: 10px;
+  font-weight: 800;
 }
+
 .date-cell:nth-child(7n) {
   border-right: none;
 }
 .date-cell:nth-last-child(-n+7) {
   border-bottom: none;
 }
+
 .date-number {
   position: absolute;
   top: 8px;
   left: 8px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: inherit;
-}
-
-/* =================================================================== */
-/* 4. תצוגת יום ושעות                                                 */
-/* =================================================================== */
-.selected-date-info {
-  margin-top: 20px;
-  background: #f9f5ff;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid #dcd3ff;
-  direction: rtl !important;
-}
-.selected-date-info h4 {
-  margin-bottom: 8px;
-  font-size: 18px;
-  color: #4a3aff;
+  font-size: 1.1rem;
   font-weight: 700;
 }
 
-/* רשימת שעות */
+/* =================================================================== */
+/* 4. תצוגת יום / הודעות UX                                           */
+/* =================================================================== */
+.selected-date-info {
+  margin-top: 22px;
+  background: #f9f6ff;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #dcd3ff;
+  direction: rtl !important;
+}
+
+.selected-date-info h4 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #4a3aff;
+  font-weight: 800;
+}
+
+/* === קופסאות מידע === */
+.info-box {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.info-box span {
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* טעינה */
+.info-box.muted {
+  background: #f2f2f7;
+  color: #555;
+}
+
+/* שגיאה */
+.info-box.error {
+  background: #fff2f2;
+  color: #a10000;
+  border: 1px solid #f0b4b4;
+}
+
+/* יום סגור */
+.info-box.closed {
+  background: #f1f1f5;
+  color: #555;
+  border: 1px dashed #c5c5d6;
+}
+
+/* יום מלא */
+.info-box.full {
+  background: #fff7e6;
+  color: #8a5a00;
+  border: 1px solid #f3d28a;
+}
+
+/* שעות */
+.hours {
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.breaks {
+  font-size: 0.95em;
+  color: #555;
+}
+
+/* =================================================================== */
+/* 5. סלוטים                                                           */
+/* =================================================================== */
 .slot-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 16px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 14px;
 }
-.slot-item button {
+
+.slot-btn {
   padding: 10px 18px;
-  border-radius: 30px;
+  border-radius: 26px;
   border: 1px solid #a07bff;
   background-color: #f0e8ff;
   color: #4a3aff;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
+  transition: all 0.16s ease;
 }
-.slot-item button:hover {
+
+.slot-btn:hover {
   background-color: #e0d4ff;
   border-color: #7b5df2;
 }
 
 /* =================================================================== */
-/* 5. סיכום הזמנה                                                      */
+/* 6. סיכום הזמנה                                                      */
 /* =================================================================== */
 .summary-box {
-  margin-top: 1.5rem;
+  margin-top: 1.6rem;
   background: #fefcff;
   border: 1px solid #e5dcff;
-  border-radius: 12px;
-  padding: 1rem;
+  border-radius: 14px;
+  padding: 1.1rem;
   direction: rtl !important;
-  box-shadow: 0 0 8px #d9ceff88;
+  box-shadow: 0 0 10px rgba(120, 90, 255, 0.15);
 }
 
 .success-message {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
   color: #5e2fcf;
   text-align: center;
 }
 
 /* =================================================================== */
-/* 6. טופס הזמנה — כולו LTR                                           */
+/* 7. טופס הזמנה — LTR בלבד                                           */
 /* =================================================================== */
 .booking-form {
   margin-top: 1.5rem;
   background: #f8f5ff;
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid #d9ceff;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  direction: ltr !important;   /* ←←← שינינו מכאן */
+  direction: ltr !important;
   text-align: left !important;
 }
 
@@ -207,7 +272,6 @@
   font-weight: 700;
   font-size: 14px;
   color: #555;
-  text-align: left !important;
 }
 
 .booking-form input,
@@ -221,7 +285,6 @@
   text-align: left !important;
 }
 
-/* placeholder גם LTR */
 .booking-form input::placeholder,
 .booking-form textarea::placeholder {
   direction: ltr !important;
@@ -229,43 +292,49 @@
 }
 
 /* =================================================================== */
-/* 7. כפתורים                                                          */
+/* 8. כפתורים                                                          */
 /* =================================================================== */
 .confirm-slot-btn {
-  margin-top: 12px;
-  padding: 10px 20px;
-  background-color: #7a3df4;
+  margin-top: 14px;
+  padding: 12px 22px;
+  background: linear-gradient(135deg, #7a3df4, #5e2fcf);
   color: white;
   border: none;
-  border-radius: 24px;
-  font-weight: 700;
+  border-radius: 26px;
+  font-weight: 800;
   cursor: pointer;
 }
+
 .confirm-slot-btn:hover {
-  background-color: #5e2fcf;
+  opacity: 0.92;
 }
 
 .back-button {
   margin-top: 10px;
-  padding: 8px 16px;
+  padding: 9px 18px;
   background-color: #eae6ff;
   color: #4a3aff;
   border: none;
-  border-radius: 20px;
+  border-radius: 22px;
   font-weight: 700;
   cursor: pointer;
 }
+
 .back-button:hover {
   background-color: #d7cdff;
 }
 
 /* =================================================================== */
-/* 8. רספונסיביות                                                     */
+/* 9. רספונסיביות                                                     */
 /* =================================================================== */
-@media (max-width: 480px) {
-  .date-cell { min-height: 60px; }
+@media (max-width: 768px) {
+  .date-cell {
+    min-height: 56px;
+  }
 }
 
-@media (max-width: 768px) {
-  .date-cell { min-height: 55px; }
+@media (max-width: 480px) {
+  .date-cell {
+    min-height: 52px;
+  }
 }
