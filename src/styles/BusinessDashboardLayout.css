@@ -255,8 +255,10 @@
     height: calc(100vh - 64px);
     overflow-y: auto;
 
-    display: flex;              /* ⬅️ חדש */
-    justify-content: center;    /* ⬅️ ממקם את התוכן (הצ’אט) באמצע */
+    display: flex;
+    justify-content: center;
+
+    padding-top: 24px;   /* ⬅️ זה מה שמוריד למטה */
   }
 }
 
