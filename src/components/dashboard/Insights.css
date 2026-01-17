@@ -1,50 +1,84 @@
-/* ========= Centered Insights Section ========= */
+/* ===========================
+   Insights – Smart UX
+=========================== */
+
 .insights-section {
+  display: grid;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Card */
+.insight-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+
+/* Header */
+.insight-header {
   display: flex;
-  flex-direction: column;
-  align-items: center;       /* ממורכז אנכית */
-  justify-content: center;   /* ממורכז אופקית */
-  text-align: center;
-  width: 100%;
-  margin: 0 auto;
-  gap: 12px;
-  font-family: "Poppins", sans-serif;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
-.insights-section > div {
-  text-align: center;
-  margin: 0 auto;
-  max-width: 90%;
+.insight-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.views-change {
-  font-weight: 600;
-  font-size: 1rem;
+/* Trend badge */
+.insight-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.appointments-info {
-  display: inline-block;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-weight: 600;
-  width: fit-content;
-  text-align: center;
+.insight-trend.positive {
+  color: #16a34a;
 }
 
-.appointments-info.success {
-  background-color: #d4edda;
-  color: #155724;
+.insight-trend.negative {
+  color: #dc2626;
 }
 
-.appointments-info.danger {
-  background-color: #f8d7da;
-  color: #721c24;
+.insight-trend.neutral {
+  color: #64748b;
 }
 
-/* רספונסיביות */
-@media (max-width: 480px) {
-  .insights-section {
-    font-size: 0.95rem;
-    gap: 10px;
+/* Text */
+.insight-text {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Card states */
+.insight-card.positive {
+  border-left: 4px solid #16a34a;
+}
+
+.insight-card.negative {
+  border-left: 4px solid #dc2626;
+}
+
+.insight-card.neutral {
+  border-left: 4px solid #cbd5f5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .insight-text {
+    font-size: 13.5px;
   }
 }
