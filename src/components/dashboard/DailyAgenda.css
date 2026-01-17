@@ -137,6 +137,16 @@
   color: var(--text);
 }
 
+.agenda-time,
+.agenda-info strong,
+.agenda-service,
+.agenda-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
 /* =========================
    Responsive
 ========================= */

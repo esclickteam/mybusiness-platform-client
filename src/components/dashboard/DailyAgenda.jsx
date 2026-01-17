@@ -1,5 +1,12 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Clock,
+  User,
+  Briefcase,
+  Mail,
+  Settings,
+} from "lucide-react";
 import "./DailyAgenda.css";
 
 /* =========================
@@ -86,11 +93,9 @@ Hi ${clientName},
 
 This is a friendly reminder about your upcoming appointment.
 
-📅 Date: ${formattedDate}
-⏰ Time: ${time}
-💼 Service: ${service}
-
-If you need to reschedule, just reply to this email.
+Date: ${formattedDate}
+Time: ${time}
+Service: ${service}
 
 Best regards,
 ${businessName}
@@ -116,13 +121,13 @@ ${businessName}
       }`}
       dir="ltr"
     >
-      {/* ===== Header ===== */}
+      {/* Header */}
       <div className="agenda-header">
         <h3>Schedule</h3>
         <div className="agenda-date">{displayDate}</div>
       </div>
 
-      {/* ===== Empty ===== */}
+      {/* Empty */}
       {dayAppointments.length === 0 ? (
         <div className="agenda-empty">
           No appointments on this date.
@@ -142,12 +147,17 @@ ${businessName}
               >
                 {/* Left */}
                 <div className="agenda-main">
-                  <div className="agenda-time">{time}</div>
+                  <div className="agenda-time">
+                    <Clock size={16} />
+                    {time}
+                  </div>
 
                   <div className="agenda-info">
-                    <strong>{clientName}</strong>
+                    <strong>
+                      <User size={14} /> {clientName}
+                    </strong>
                     <div className="agenda-service">
-                      {serviceName}
+                      <Briefcase size={14} /> {serviceName}
                     </div>
                   </div>
                 </div>
@@ -166,13 +176,15 @@ ${businessName}
                       )
                     }
                   >
-                    Email Reminder
+                    <Mail size={14} />
+                    Email
                   </button>
 
                   <button
                     className="agenda-btn ghost"
                     onClick={editAppointment}
                   >
+                    <Settings size={14} />
                     Manage
                   </button>
                 </div>
