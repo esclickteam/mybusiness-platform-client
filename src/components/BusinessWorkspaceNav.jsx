@@ -1,4 +1,4 @@
-import { NavLink, useParams, useLocation } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import "./BusinessWorkspaceNav.css";
 
 /* =========================
@@ -79,14 +79,13 @@ export default function BusinessWorkspaceNav({
   onNavigate,
 }) {
   const { businessId } = useParams();
-  const { pathname } = useLocation();
 
   const items = [
     {
       label: "View Public Profile",
       to: `/business/${businessId}`,
       icon: PublicProfileIcon,
-      // ✅ פנימי: לא external
+      exact: true, // ✅ כדי שלא יהיה active כשאת בתוך /dashboard
     },
     {
       label: "Dashboard",
@@ -133,22 +132,19 @@ export default function BusinessWorkspaceNav({
 
   return (
     <nav className="business-workspace-nav">
-      {items.map(({ label, to, icon: Icon, badge }) => {
-        const isActive = pathname.startsWith(to);
-
-        return (
-          <NavLink
-            key={label}
-            to={to}
-            onClick={onNavigate}
-            className={`nav-link ${isActive ? "active" : ""}`}
-          >
-            <Icon />
-            <span>{label}</span>
-            {badge > 0 && <span className="badge">{badge}</span>}
-          </NavLink>
-        );
-      })}
+      {items.map(({ label, to, icon: Icon, badge, exact }) => (
+        <NavLink
+          key={label}
+          to={to}
+          end={!!exact} // ✅ match מדויק רק לפרופיל הציבורי
+          onClick={onNavigate}
+          className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+        >
+          <Icon />
+          <span>{label}</span>
+          {badge > 0 && <span className="badge">{badge}</span>}
+        </NavLink>
+      ))}
     </nav>
   );
 }
