@@ -291,6 +291,13 @@ overflow: visible;
   color: #0f172a !important;
 }
 
+.dp-main {
+  height: auto;
+  min-height: unset;
+  overflow: visible;
+  padding-bottom: 48px; /* כדי שלא ייחתך בתחתית */
+}
+
 
 
 /* ביטול גלילה פנימית של מבנה הדשבורד */
