@@ -67,13 +67,14 @@
 
 /* Message list */
 .messageList {
-  flex: 1;
-  padding: 20px 18px 10px 18px;
+  flex-grow: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
   background: #faf7ff;
+  padding: 20px 18px 10px 18px;
+  margin: 0; /* הוסף שורת סגנון זו */
 }
 
 /* Individual message bubble */
@@ -132,6 +133,7 @@
   min-height: 66px;
   z-index: 1;
   flex-shrink: 0;
+  margin: 0; /* הוסף שורת סגנון זו */
 }
 
 /* Text input field */
