@@ -21,7 +21,7 @@
   min-height: 380px;
   max-height: none;  /* בטל את הגבלת הגובה המקסימלית */
   display: flex;
-  flex-direction: column;
+  flex-direction: column;  /* מציג את הצ'אט בעמודה */
   border-radius: 16px;
   box-shadow: 0 4px 32px rgba(0, 0, 0, 0.2);  /* יש להוסיף שקיפות למריחה */
   overflow-x: hidden;  /* הצג רק גלילה אנכית */
@@ -40,7 +40,7 @@
   flex-direction: column;
   gap: 10px;
   background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
-  height: 100vh; /* זה ישלים את הגובה */
+  height: 100%; /* יש להבטיח שהחלק הזה יתפוס את כל הגובה */
 }
 
 /* הודעה */
@@ -149,6 +149,7 @@
   min-height: 66px;
   z-index: 1;
   direction: ltr !important;
+  flex-shrink: 0; /* מונע מהשדה להיעלם */
 }
 
 /* כפתור שליחה משמאל */
