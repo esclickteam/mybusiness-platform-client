@@ -108,7 +108,6 @@ export function preloadDashboardComponents() {
   DashboardCards.preload();
   BarChartComponent.preload();
   Insights.preload();
-  NextActions.preload();
   WeeklySummary.preload();
   CalendarView.preload();
   DailyAgenda.preload();
@@ -138,7 +137,6 @@ const DashboardPage = () => {
   const insightsRef = useRef(null);
   const chartsRef = useRef(null);
   const appointmentsRef = useRef(null);
-  const nextActionsRef = useRef(null);
   const weeklySummaryRef = useRef(null);
 
   /* sockets */
@@ -638,7 +636,7 @@ const shouldShowEarlyBirdModal =
                   insightsRef,
                   chartsRef,
                   appointmentsRef,
-                  nextActionsRef,
+                  
                   weeklySummaryRef,
                 }}
               />
