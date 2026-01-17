@@ -13,8 +13,6 @@
   direction: ltr !important;
 }
 
-
-
 /* קונטיינר ראשי */
 .chat-container {
   max-width: 950px;
@@ -538,27 +536,4 @@
 .inputField::placeholder {
   color: #0f172a !important;
   opacity: 1 !important;
-}
-
-/* =========================
-   🟣 Chat Page – FULL SCREEN (override dashboard)
-========================= */
-
-.chat-page {
-  width: 100vw;
-  height: 100vh;
-}
-
-.dashboard-container.chat-page,
-.dashboard-container .chat-page {
-  max-width: none !important;
-  width: 100vw !important;
-  height: 100vh !important;
-
-  margin: 0 !important;
-  padding: 0 !important;
-
-  border-radius: 0 !important;
-  border: none !important;
-  box-shadow: none !important;
 }
