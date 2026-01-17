@@ -32,9 +32,6 @@ const BarChartComponent = lazyWithPreload(() =>
 const Insights = lazyWithPreload(() =>
   import("../../../components/dashboard/Insights")
 );
-const WeeklySummary = lazyWithPreload(() =>
-  import("../../../components/dashboard/WeeklySummary")
-);
 const CalendarView = lazyWithPreload(() =>
   import("../../../components/dashboard/CalendarView")
 );
@@ -108,7 +105,6 @@ export function preloadDashboardComponents() {
   DashboardCards.preload();
   BarChartComponent.preload();
   Insights.preload();
-  WeeklySummary.preload();
   CalendarView.preload();
   DailyAgenda.preload();
   DashboardNav.preload();
@@ -137,7 +133,6 @@ const DashboardPage = () => {
   const insightsRef = useRef(null);
   const chartsRef = useRef(null);
   const appointmentsRef = useRef(null);
-  const weeklySummaryRef = useRef(null);
 
   /* sockets */
   const socketRef = useRef(null);
@@ -637,7 +632,7 @@ const shouldShowEarlyBirdModal =
                   chartsRef,
                   appointmentsRef,
                   
-                  weeklySummaryRef,
+                  
                 }}
               />
             </Suspense>
@@ -767,19 +762,7 @@ const shouldShowEarlyBirdModal =
           </section>
 
         
-          {/* Weekly summary + Recent activity */}
-          <section ref={weeklySummaryRef} className="dp-grid-2">
-            <div className="dp-card dp-card--panel">
-              <Suspense fallback={<div className="dp-loading-sm">🔄 Loading weekly summary...</div>}>
-                <WeeklySummary stats={syncedStats} />
-              </Suspense>
-            </div>
-            <div className="dp-card dp-card--panel">
-              <Suspense fallback={<div className="dp-loading-sm">🔄 Loading recent activity...</div>}>
-              
-              </Suspense>
-            </div>
-          </section>
+         
         </main>
       </div>
     </div>
