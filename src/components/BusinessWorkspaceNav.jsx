@@ -2,8 +2,9 @@ import { NavLink, useParams, useLocation } from "react-router-dom";
 import "./BusinessWorkspaceNav.css";
 
 /* =========================
-   ICONS
+   ICONS (SVG)
 ========================= */
+
 const DashboardIcon = () => (
   <svg viewBox="0 0 24 24">
     <rect x="3" y="3" width="8" height="8" rx="2" />
@@ -32,11 +33,49 @@ const MessagesIcon = () => (
   </svg>
 );
 
+const CollaborationsIcon = () => (
+  <svg viewBox="0 0 24 24">
+    <circle cx="8" cy="8" r="3" />
+    <circle cx="16" cy="8" r="3" />
+    <path d="M2 21c1.5-4 9.5-4 11 0M11 21c1.5-4 9.5-4 11 0" />
+  </svg>
+);
+
+const CRMIcon = () => (
+  <svg viewBox="0 0 24 24">
+    <rect x="4" y="3" width="16" height="6" rx="2" />
+    <rect x="4" y="10" width="16" height="6" rx="2" />
+    <rect x="4" y="17" width="16" height="4" rx="2" />
+  </svg>
+);
+
+const BillingIcon = () => (
+  <svg viewBox="0 0 24 24">
+    <rect x="2" y="5" width="20" height="14" rx="3" />
+    <path d="M2 10h20" />
+  </svg>
+);
+
+const AdvisorIcon = () => (
+  <svg viewBox="0 0 24 24">
+    <path d="M12 2l2.5 5L20 9l-4 4 .8 5-4.8-2.5L7.2 18 8 13 4 9l5.5-2z" />
+  </svg>
+);
+
+const HelpIcon = () => (
+  <svg viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.3-1.5 1-1.5 1.7" />
+    <circle cx="12" cy="17" r="1" />
+  </svg>
+);
+
 /* =========================
-   CONFIG
+   COMPONENT
 ========================= */
+
 export default function BusinessWorkspaceNav({
-  messagesCount,
+  messagesCount = 0,
   onNavigate,
 }) {
   const { businessId } = useParams();
@@ -65,6 +104,31 @@ export default function BusinessWorkspaceNav({
       icon: MessagesIcon,
       badge: messagesCount,
     },
+    {
+      label: "Collaborations",
+      to: `/business/${businessId}/dashboard/collab`,
+      icon: CollaborationsIcon,
+    },
+    {
+      label: "CRM System",
+      to: `/business/${businessId}/dashboard/crm`,
+      icon: CRMIcon,
+    },
+    {
+      label: "Billing & Subscription",
+      to: `/business/${businessId}/dashboard/billing`,
+      icon: BillingIcon,
+    },
+    {
+      label: "BizUply Advisor",
+      to: `/business/${businessId}/dashboard/BizUply`,
+      icon: AdvisorIcon,
+    },
+    {
+      label: "Help Center",
+      to: `/business/${businessId}/dashboard/help-center`,
+      icon: HelpIcon,
+    },
   ];
 
   return (
@@ -72,19 +136,23 @@ export default function BusinessWorkspaceNav({
       {items.map(({ label, to, icon: Icon, badge, external }) => {
         const isActive = pathname.startsWith(to);
 
-        return external ? (
-          <a
-            key={label}
-            href={to}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={onNavigate}
-            className="nav-link"
-          >
-            <Icon />
-            <span>{label}</span>
-          </a>
-        ) : (
+        if (external) {
+          return (
+            <a
+              key={label}
+              href={to}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onNavigate}
+              className="nav-link"
+            >
+              <Icon />
+              <span>{label}</span>
+            </a>
+          );
+        }
+
+        return (
           <NavLink
             key={label}
             to={to}
