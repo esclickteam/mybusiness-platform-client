@@ -1,0 +1,107 @@
+/* ===========================
+   Dashboard – KPI Cards
+=========================== */
+
+.dashboard-cards-container {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 8px 0 20px;
+}
+
+/* Card */
+.dashboard-card {
+  flex: 0 1 260px;
+  min-width: 220px;
+
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+
+  padding: 24px 16px;
+  text-align: center;
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: fadeUp 0.45s ease both;
+}
+
+/* Hover */
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(106, 17, 203, 0.12);
+}
+
+/* Icon */
+.card-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.card-icon svg {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.25s ease;
+}
+
+.dashboard-card:hover .card-icon svg {
+  transform: scale(1.1);
+}
+
+/* Text */
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.card-value {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-cards-container {
+    gap: 16px;
+  }
+
+  .dashboard-card {
+    flex: 0 1 45%;
+    min-width: 180px;
+  }
+
+  .card-value {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-cards-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dashboard-card {
+    width: 90%;
+    max-width: 320px;
+  }
+}
+
+/* Animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
