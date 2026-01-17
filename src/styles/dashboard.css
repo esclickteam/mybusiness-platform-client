@@ -239,15 +239,17 @@ overflow: visible;
 .graph-box {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 18px;
   box-shadow: var(--shadow);
-  padding: 16px;
-  flex: 1 1 48%;
-  min-width: 300px;
-  max-width: 48%;
+  padding: 20px 22px 22px;
+
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+
+  width: 100%;        /* ✅ */
+  min-width: 0;       /* ✅ קריטי לגרפים */
+  max-width: none;    /* ✅ */
 }
 .graph-box.full-width {
   flex: 1 1 100%;
