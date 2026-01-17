@@ -11,16 +11,18 @@
 /* Chat container (WhatsApp style) */
 .chatContainer {
   display: flex;
-  flex-direction: row;
+  flex-direction: column; /* שנה מ-row ל-column כך שהתוכן יהיה בעמודה */
   width: 100%;
   max-width: 950px;
-  height: 80vh;
+  height: 100vh; /* תוודא שהגובה יתפוס את כל החלל */
   min-height: 380px;
   border-radius: 20px;
   background: #faf7ff;
   border: 1.5px solid #c3a6fa;
   box-shadow: 0 4px 32px rgba(163,137,235,0.17);
   overflow: hidden;
+  margin: 0; /* הוסף לשם הסרת רווחים נוספים */
+  padding: 0; /* הוסף לשם הסרת רווחים נוספים */
 }
 
 
