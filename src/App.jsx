@@ -112,6 +112,12 @@ export default function App() {
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
 
+   const isDashboardRoute =
+    location.pathname.includes("/dashboard") ||
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/staff") ||
+    location.pathname.startsWith("/client");
+
   useOnceLogger("App render - user", user);
   useOnceLogger("App render - loading", loading);
 
@@ -449,7 +455,8 @@ export default function App() {
 </main>       
 
 {/* ✅ כאן הפוטר – זה המקום הנכון */}
-<Footer />
+{!isDashboardRoute && <Footer />}
+
 
 </div>        {/* סוגר app-layout */}
 
