@@ -2,6 +2,16 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DailyAgenda.css";
 
+function getClientEmail(appointment) {
+  return (
+    appointment?.client?.email ||   // אם יש client אובייקט (מומלץ)
+    appointment?.clientEmail ||     // אם נשמר כשדה ישיר
+    appointment?.email ||           // fallback
+    ""
+  );
+}
+
+
 const DailyAgenda = ({
   date,
   appointments,
@@ -129,7 +139,8 @@ ${businessName}
             const time = a.time || "--:--";
             const clientName = a.clientName || "Client";
             const serviceName = a.serviceName || "Service";
-            const clientEmail = a.clientEmail || "";
+            const clientEmail = getClientEmail(a);
+
 
             return (
               <div
