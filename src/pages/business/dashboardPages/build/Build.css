@@ -2,15 +2,22 @@
 .build-wrapper {
   display: flex;
   flex-direction: row-reverse;
-  justify-content: space-between;
+
+  justify-content: center;   /* ✅ במקום space-between */
+  align-items: flex-start;
+
+  gap: 2.5rem;               /* ✅ שליטה אמיתית ברווח */
+
+  max-width: 1280px;         /* ✅ מונע פריסה אינסופית */
+  margin: 0 auto;            /* ✅ מרכז את הכל */
+
   padding: 2.5rem;
   min-height: 100vh;
   flex-wrap: wrap;
-  gap: 2.5rem;
-  direction: ltr; 
+
+  direction: ltr;
   box-sizing: border-box;
 
-  /* ✅ רקע רגוע */
   background: linear-gradient(
     180deg,
     #fafaff 0%,
