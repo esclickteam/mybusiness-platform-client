@@ -185,10 +185,17 @@
   transition: all 0.25s ease;
 }
 
-.tab.active {
+.tab.active,
+.tab.active:hover {
   background: linear-gradient(90deg, #7c3aed, #a78bfa);
-  color: #fff;
+  color: #ffffff;
 }
+
+.tab:hover {
+  background: #ddd6fe;   /* סגול בהיר */
+  color: #4a148c;        /* אותו צבע טקסט */
+}
+
 
 /* --- לוגו --- */
 .logo-circle {
