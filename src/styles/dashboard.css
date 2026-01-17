@@ -46,6 +46,9 @@ html, body {
 
 /* ========= Main Container ========= */
 .dashboard-container {
+    height: auto;
+min-height: unset;
+overflow: visible;
   max-width: 1240px;
   margin: 24px auto;
   padding: 22px;
@@ -292,16 +295,14 @@ html, body {
 
 /* ביטול גלילה פנימית של מבנה הדשבורד */
 .business-dashboard-layout {
-  height: auto !important;
-  min-height: 100vh !important;
-  overflow: visible !important;
+  min-height: 100vh;
+  height: auto;
+  overflow: visible;
 }
 
-/* ביטול overflow פנימי מיותר של תוכן הדשבורד */
 .dashboard-content {
-  height: auto !important;
-  min-height: 100vh !important;
-  overflow: visible !important;
+  height: auto;
+  overflow: visible;
 }
 
 /* שמירה על גלילה חלקה ואחידה בכל האתר */
