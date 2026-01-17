@@ -39,6 +39,7 @@
   flex-direction: column;
   gap: 10px;
   background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
+  height: 100vh; /* זה ישלים את הגובה */
 }
 
 /* הודעה */
