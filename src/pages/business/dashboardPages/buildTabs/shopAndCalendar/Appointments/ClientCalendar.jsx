@@ -3,6 +3,9 @@ import API from "../../../../../../api";
 import "./ClientCalendar.css";
 import MonthCalendar from "../../../../../../components/MonthCalendar";
 import { useAuth } from "../../../../../../context/AuthContext";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 
 export default function ClientCalendar({
   workHours = [],
@@ -406,11 +409,18 @@ export default function ClientCalendar({
     />
 
     <label>Phone:</label>
-    <input
-      value={clientPhone}
-      onChange={(e) => setClientPhone(e.target.value)}
-      placeholder="Enter phone number"
-    />
+<PhoneInput
+  country="us"           // או "il" אם ברירת מחדל ישראל
+  enableSearch
+  value={clientPhone}
+  onChange={(phone) => setClientPhone(phone)}
+  inputProps={{
+    required: true,
+  }}
+  containerClass="phone-container"
+  inputClass="phone-input"
+  buttonClass="phone-flag"
+/>
 
     <label>Address:</label>
     <input
