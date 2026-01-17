@@ -2,92 +2,107 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DailyAgenda.css";
 
-const DailyAgenda = ({ date, appointments, businessName = "Your Business", businessId }) => {
+const DailyAgenda = ({
+  date,
+  appointments,
+  businessName = "Your Business",
+  businessId,
+}) => {
   const navigate = useNavigate();
 
-  // Format selected date to "YYYY-MM-DD"
+  /* =========================
+     Date helpers
+  ========================= */
   const selectedDate = useMemo(() => {
     try {
-      const d = new Date(date);
-      return d.toISOString().split("T")[0];
+      return new Date(date).toISOString().split("T")[0];
     } catch {
       return null;
     }
   }, [date]);
 
-  // Format date for display
   const displayDate = useMemo(() => {
     try {
-      return new Date(date).toLocaleDateString("en-US");
+      return new Date(date).toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
     } catch {
       return "Unavailable";
     }
   }, [date]);
 
-  // Filter appointments for selected day
+  /* =========================
+     Filter appointments
+  ========================= */
   const dayAppointments = useMemo(() => {
     if (!selectedDate) return [];
 
-    const filtered = appointments.filter((a) => {
-      if (!a.date) return false;
-      const apptDate = new Date(a.date).toISOString().split("T")[0];
-      return apptDate === selectedDate;
-    });
-
-    const sorted = filtered.sort((a, b) => {
-      const timeA = a.time || "00:00";
-      const timeB = b.time || "00:00";
-      return timeA.localeCompare(timeB);
-    });
-
-    return sorted;
+    return appointments
+      .filter((a) => {
+        if (!a.date) return false;
+        const apptDate = new Date(a.date).toISOString().split("T")[0];
+        return apptDate === selectedDate;
+      })
+      .sort((a, b) =>
+        (a.time || "00:00").localeCompare(b.time || "00:00")
+      );
   }, [appointments, selectedDate]);
 
-  // No date selected
   if (!date) {
     return (
-      <p style={{ fontStyle: "italic", textAlign: "center" }}>
+      <p className="agenda-empty">
         Select a date to view your agenda.
       </p>
     );
   }
 
-  // WhatsApp reminder function
-  const sendWhatsAppReminder = (phone, clientName, date, time, service) => {
-    if (!phone) {
-      alert("Client phone number is not available");
+  /* =========================
+     Email Reminder
+  ========================= */
+  const sendEmailReminder = (email, clientName, date, time, service) => {
+    if (!email) {
+      alert("Client email is not available");
       return;
-    }
-
-    let cleanPhone = phone.replace(/\D/g, "");
-    if (!cleanPhone.startsWith("1") && !cleanPhone.startsWith("972")) {
-      if (cleanPhone.startsWith("0")) {
-        cleanPhone = "972" + cleanPhone.substring(1);
-      } else {
-        cleanPhone = "972" + cleanPhone;
-      }
     }
 
     const formattedDate = new Date(date).toLocaleDateString("en-US", {
       weekday: "long",
+      month: "long",
       day: "numeric",
-      month: "numeric",
       year: "numeric",
     });
 
-    const message = `Hi ${clientName},\nThis is a reminder for your appointment on ${formattedDate} at ${time}.\nService: ${service}\n\nLooking forward to seeing you,\n${businessName}`;
-    const encodedMessage = encodeURIComponent(message);
+    const subject = `Appointment Reminder – ${businessName}`;
 
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const url = isMobile
-      ? `https://wa.me/${cleanPhone}?text=${encodedMessage}`
-      : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
+    const body = `
+Hi ${clientName},
 
-    window.open(url, "_blank");
+This is a friendly reminder about your upcoming appointment.
+
+📅 Date: ${formattedDate}
+⏰ Time: ${time}
+💼 Service: ${service}
+
+If you have any questions or need to reschedule, feel free to reply to this email.
+
+Best regards,
+${businessName}
+    `.trim();
+
+    const mailto = `mailto:${email}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailto;
   };
 
-  // Navigate to appointment management
-  const editAppointment = (appt) => {
+  /* =========================
+     Navigate to CRM
+  ========================= */
+  const editAppointment = () => {
     if (!businessId) {
       alert("Business ID is not available");
       return;
@@ -95,41 +110,47 @@ const DailyAgenda = ({ date, appointments, businessName = "Your Business", busin
     navigate(`/business/${businessId}/dashboard/crm/appointments`);
   };
 
+  /* =========================
+     Render
+  ========================= */
   return (
     <div className="daily-agenda-container" dir="ltr">
-      <h4 style={{ textAlign: "center", marginBottom: "15px" }}>
+      <h4 className="agenda-title">
         Schedule for {displayDate}
       </h4>
 
       {dayAppointments.length === 0 ? (
-        <p style={{ textAlign: "center", color: "#888" }}>
+        <p className="agenda-empty">
           No appointments on this date.
         </p>
       ) : (
         <div className="agenda-list">
           {dayAppointments.map((a) => {
-            const time = a.time || "";
-            const clientName = a.clientName?.trim() || "Unknown";
-            const serviceName = a.serviceName || "Unknown";
-            const clientPhone = a.clientPhone || "";
-
-            console.log(`Displaying appointment for clientName: ${clientName}`);
+            const time = a.time || "--:--";
+            const clientName = a.clientName || "Client";
+            const serviceName = a.serviceName || "Service";
+            const clientEmail = a.clientEmail || "";
 
             return (
               <div
-                key={a._id || a.id || `${time}-${clientName}-${serviceName}`}
+                key={a._id || `${time}-${clientName}`}
                 className="agenda-item"
               >
-                <div className="agenda-time">🕒 {time}</div>
-                <div className="agenda-service">💼 Service: {serviceName}</div>
-                <div className="agenda-client">👤 Client: {clientName}</div>
+                <div className="agenda-row">
+                  <span>🕒 {time}</span>
+                  <span>💼 {serviceName}</span>
+                </div>
+
+                <div className="agenda-client">
+                  👤 {clientName}
+                </div>
+
                 <div className="agenda-actions">
                   <button
-                    className="agenda-btn"
-                    aria-label={`Send WhatsApp reminder to ${clientName} at ${time}`}
+                    className="agenda-btn primary"
                     onClick={() =>
-                      sendWhatsAppReminder(
-                        clientPhone,
+                      sendEmailReminder(
+                        clientEmail,
                         clientName,
                         a.date,
                         time,
@@ -137,14 +158,14 @@ const DailyAgenda = ({ date, appointments, businessName = "Your Business", busin
                       )
                     }
                   >
-                    Send Reminder
+                    Send Email Reminder
                   </button>
+
                   <button
                     className="agenda-btn outline"
-                    aria-label={`Edit appointment for ${clientName} at ${time}`}
-                    onClick={() => editAppointment(a)}
+                    onClick={editAppointment}
                   >
-                    Edit Appointment
+                    Manage Appointment
                   </button>
                 </div>
               </div>
