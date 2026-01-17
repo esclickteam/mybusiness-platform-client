@@ -89,23 +89,21 @@ export default function MainSection({
 
   return (
 
-    <div
+  <div
   className="main-section-grid"
   style={{
     display: "grid",
     gridTemplateColumns: "minmax(520px, 1fr) 440px",
-    gridTemplateAreas: '"form preview"',
-    gap: "1.5rem",
+    gap: "40px",
     alignItems: "start",
 
+    maxWidth: "1280px",   // ✅ מגביל רוחב – פותר את ה"ריק" באמצע
+    margin: "0 auto",     // ✅ ממרכז את כל ה־grid
+    padding: "0 24px",    // ✅ padding עדין ונכון
     width: "100%",
-    paddingLeft: "2rem",
-    paddingRight: "2rem",
-
-    margin: "0",          // ❗ לא auto
-    justifyContent: "start",
   }}
 >
+
 
       {/* RIGHT COLUMN — PREVIEW */}
       <div
