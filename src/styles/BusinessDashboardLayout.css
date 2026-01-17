@@ -434,7 +434,17 @@
 @media (min-width: 769px) {
   .dashboard-content > div {
     width: 100%;
-    max-width: 1400px; /* ⬅️ זה מגדיל את הצ'אט */
-    margin: 0 auto;    /* ⬅️ וזה שומר אותו באמצע */
+    max-width: 1200px;  /* מקסימום רוחב */
+    margin: 0 auto;     /* מרכז את הצ'אט */
+  }
+
+  .chat-container {
+    width: 100%;  /* עושה את הצ'אט לרוחב מלא */
+    display: flex;
+    flex-direction: column;  /* למנוע סידור לא נכון של אלמנטים */
+  }
+
+  .message-list {
+    flex-grow: 1;  /* זה עושה שהצ'אט יתפוס את כל הגובה של הקונטיינר */
   }
 }
