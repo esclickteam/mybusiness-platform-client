@@ -436,23 +436,26 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding-bottom: 20px;  /* מוסיף רווח בתחתית */
+    padding-bottom: 20px;
   }
 
   .chat-container {
     width: 100%;
     display: flex;
     flex-direction: column;
-    height: 100vh;  /* קובע שהקונטיינר יתפוס את כל גובה הדף */
+    height: 100vh;  /* קובע שהקונטיינר יתפוס את כל הגובה */
   }
 
   .message-list {
-    flex-grow: 1;  /* מבטיח שההודעות יתפוס את כל הגובה */
-    overflow-y: auto;  /* מאפשר גלילה בהודעות */
-    padding-bottom: 10px;  /* רווח בתחתית */
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;
   }
 
   .inputBar {
-    margin-top: auto;  /* שדה שליחה יהיה תמיד בתחתית */
+    margin-top: auto;
+    padding: 10px;  /* זה מבטיח שהשדה לא יצא החוצה */
   }
 }
