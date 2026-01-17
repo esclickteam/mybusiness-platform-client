@@ -18,7 +18,6 @@ const SECTION_IDS = [
   "nextActionsRef",
   "chartsRef",
   "appointmentsRef",
-  "weeklySummaryRef",
 ];
 
 /* =========================
@@ -30,7 +29,6 @@ const LABELS = {
   nextActionsRef: "Actions",
   chartsRef: "Charts",
   appointmentsRef: "Appointments",
-  weeklySummaryRef: "Weekly Summary",
 };
 
 const DashboardNav = ({ refs = {} }) => {
