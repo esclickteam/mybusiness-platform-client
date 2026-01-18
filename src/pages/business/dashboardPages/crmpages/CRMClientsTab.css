@@ -212,24 +212,47 @@ button {
 /* =====================================================
    Card Actions
 ===================================================== */
+/* =====================================================
+   Form Actions (Cancel / Save)
+===================================================== */
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 14px;
+  margin-top: 24px;
 }
 
+/* Cancel */
 .actions button {
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background: #f7f7f7;
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
+  border: 1px solid #d0c9f7;
+  background: #ffffff;
+  color: #4a3fa7;
+  transition: background 0.15s ease, box-shadow 0.15s ease,
+    transform 0.1s ease;
 }
 
 .actions button:hover {
-  background: #eee;
+  background: #f4f2ff;
 }
+
+/* Save (primary) */
+.actions button.primary {
+  background: linear-gradient(135deg, #7c4dff, #5e17eb);
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(94, 23, 235, 0.35);
+}
+
+.actions button.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(94, 23, 235, 0.45);
+}
+
 
 /* =====================================================
    View Header
