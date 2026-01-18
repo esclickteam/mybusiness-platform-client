@@ -438,16 +438,21 @@ const handleDeleteAppointment = async (id) => {
   {/* ✉️ EMAIL עם בחירה */}
   <div className="email-action-wrapper">
     <button
-      title="Send email"
-      disabled={!appt.clientSnapshot?.email}
-      onClick={() =>
-        setEmailMenuOpenId(
-          emailMenuOpenId === appt._id ? null : appt._id
-        )
-      }
-    >
-      ✉️
-    </button>
+  title="Send email"
+  disabled={!appt.clientSnapshot?.email}
+  onClick={() => {
+    console.log("📧 Email icon clicked", {
+      appointmentId: appt._id,
+      email: appt.clientSnapshot?.email,
+    });
+
+    setEmailMenuOpenId(
+      emailMenuOpenId === appt._id ? null : appt._id
+    );
+  }}
+>
+  ✉️
+</button>
 
     {emailMenuOpenId === appt._id && (
       <div className="email-menu">
