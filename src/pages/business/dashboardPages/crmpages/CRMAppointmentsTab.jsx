@@ -407,6 +407,9 @@ const handleDeleteAppointment = async (id) => {
           {/* 💰 PAYMENT */}
 <div className="payment-section">
 
+  <div className="price-input-wrapper">
+  <span className="price-prefix">$</span>
+
   <input
     type="number"
     placeholder="Price"
@@ -415,6 +418,7 @@ const handleDeleteAppointment = async (id) => {
       setNewAppointment({ ...newAppointment, price: e.target.value })
     }
   />
+</div>
 
   <label className="paid-checkbox">
     <input
@@ -481,7 +485,7 @@ const handleDeleteAppointment = async (id) => {
     {/* 💰 Payment info */}
     {appt.price > 0 && (
       <div className="payment-info">
-        <span>💰 {appt.price}</span>
+        <span>💰 ${appt.price}</span>
         <span className={appt.paid ? "paid" : "unpaid"}>
           {appt.paid ? "Paid" : "Unpaid"}
         </span>

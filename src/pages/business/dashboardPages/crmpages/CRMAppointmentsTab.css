@@ -288,6 +288,25 @@
   font-size: 0.9rem;
 }
 
+.price-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.price-prefix {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.price-input-wrapper input {
+  padding-left: 26px; /* מקום לדולר */
+}
+
 
 
 /* =========================
