@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./CRMServicesTab.css";
 import API from "@api";
+
+const DURATION_STEP = 15;
+const MAX_DURATION = 12 * 60;
 
 const CRMServicesTab = () => {
   const [services, setServices] = useState([]);
@@ -13,12 +16,14 @@ const CRMServicesTab = () => {
   const [form, setForm] = useState({
     name: "",
     description: "",
-    durationHours: "0",
-    durationMinutes: "30",
+    duration: 30,     // ⏱ בדקות
     price: "",
     imageFile: null,
   });
 
+  /* =========================
+     Fetch Services
+  ========================= */
   useEffect(() => {
     API.get("/business/my/services").then(res => {
       setServices(res.data.services || res.data.data || []);
@@ -35,8 +40,7 @@ const CRMServicesTab = () => {
     setForm({
       name: "",
       description: "",
-      durationHours: "0",
-      durationMinutes: "30",
+      duration: 30,
       price: "",
       imageFile: null,
     });
@@ -53,28 +57,30 @@ const CRMServicesTab = () => {
     setForm({
       name: service.name,
       description: service.description || "",
-      durationHours: Math.floor(service.duration / 60).toString(),
-      durationMinutes: (service.duration % 60).toString(),
+      duration: service.duration || 30,
       price: service.price,
       imageFile: null,
     });
     setShowForm(true);
   };
 
+  /* =========================
+     Save Service
+  ========================= */
   const saveService = async () => {
     if (!form.name || !form.price) return;
 
     setSaving(true);
-    const duration =
-      parseInt(form.durationHours) * 60 +
-      parseInt(form.durationMinutes);
 
     const data = new FormData();
     data.append("name", form.name);
     data.append("description", form.description);
-    data.append("duration", duration);
+    data.append("duration", form.duration);   // ✅ דקות
     data.append("price", form.price);
-    if (form.imageFile) data.append("image", form.imageFile);
+
+    if (form.imageFile) {
+      data.append("image", form.imageFile);
+    }
 
     try {
       const res = editingService
@@ -94,6 +100,9 @@ const CRMServicesTab = () => {
     setServices(prev => prev.filter(s => s._id !== id));
   };
 
+  /* =========================
+     Render
+  ========================= */
   return (
     <div className="crm-services-tab" dir="ltr">
       <div className="services-top">
@@ -125,34 +134,43 @@ const CRMServicesTab = () => {
           <input
             placeholder="Description"
             value={form.description}
-            onChange={e => setForm({ ...form, description: e.target.value })}
+            onChange={e =>
+              setForm({ ...form, description: e.target.value })
+            }
           />
 
-          <div className="duration-row">
-            <select
-              value={form.durationHours}
-              onChange={e =>
-                setForm({ ...form, durationHours: e.target.value })
-              }
-            >
-              {[...Array(24)].map((_, i) => (
-                <option key={i} value={i}>
-                  {i}h
-                </option>
-              ))}
-            </select>
+          {/* ⏱ Duration */}
+          <div className="duration-field">
+            <label>Duration</label>
 
             <select
-              value={form.durationMinutes}
+              value={form.duration}
               onChange={e =>
-                setForm({ ...form, durationMinutes: e.target.value })
+                setForm({
+                  ...form,
+                  duration: Number(e.target.value),
+                })
               }
             >
-              {[0, 15, 30, 45].map(m => (
-                <option key={m} value={m}>
-                  {m}m
-                </option>
-              ))}
+              {Array.from(
+                { length: MAX_DURATION / DURATION_STEP },
+                (_, i) => {
+                  const minutes = (i + 1) * DURATION_STEP;
+                  const h = Math.floor(minutes / 60);
+                  const m = minutes % 60;
+
+                  const label =
+                    h > 0
+                      ? `${h}h${m ? ` ${m}m` : ""}`
+                      : `${minutes}m`;
+
+                  return (
+                    <option key={minutes} value={minutes}>
+                      {label}
+                    </option>
+                  );
+                }
+              )}
             </select>
           </div>
 
@@ -172,7 +190,10 @@ const CRMServicesTab = () => {
           />
 
           <div className="form-actions">
-            <button onClick={() => setShowForm(false)} className="secondary-btn">
+            <button
+              onClick={() => setShowForm(false)}
+              className="secondary-btn"
+            >
               Cancel
             </button>
             <button
@@ -198,7 +219,15 @@ const CRMServicesTab = () => {
               <p>{service.description || "—"}</p>
 
               <div className="meta">
-                <span>{service.duration} min</span>
+                <span>
+                  ⏱️ {service.duration < 60
+                    ? `${service.duration}m`
+                    : `${Math.floor(service.duration / 60)}h${
+                        service.duration % 60
+                          ? ` ${service.duration % 60}m`
+                          : ""
+                      }`}
+                </span>
                 <span>${service.price}</span>
               </div>
             </div>

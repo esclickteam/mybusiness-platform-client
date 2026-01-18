@@ -1,29 +1,37 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./CRMAvailableSlots.css";
 
-const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
+const CRMAvailableSlots = ({
+  businessId,
+  serviceId,
+  duration = 30,     // ⏱️ משך פגישה בדקות (דינמי)
+  token,
+}) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Format date as YYYY-MM-DD
-  const formatDate = (date) => date.toISOString().slice(0, 10);
+  // YYYY-MM-DD
+  const dateStr = useMemo(
+    () => selectedDate.toISOString().slice(0, 10),
+    [selectedDate]
+  );
 
   useEffect(() => {
-    if (!businessId || !serviceId || !selectedDate) return;
+    if (!businessId || !serviceId || !selectedDate || !duration) return;
 
     setLoading(true);
     setError(null);
 
-    const dateStr = formatDate(selectedDate);
-
     fetch(
-      `/appointments/slots?businessId=${businessId}&serviceId=${serviceId}&date=${dateStr}`,
+      `/appointments/slots?businessId=${businessId}&serviceId=${serviceId}&date=${dateStr}&duration=${duration}`,
       {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     )
       .then((res) => {
@@ -38,28 +46,46 @@ const CRMAvailableSlots = ({ businessId, serviceId, token }) => {
         setError(err.message);
       })
       .finally(() => setLoading(false));
-  }, [businessId, serviceId, selectedDate, token]);
+  }, [businessId, serviceId, dateStr, duration, token]);
 
   return (
     <div className="crm-available-slots">
-      <h3>🗓️ Available Appointments by Calendar</h3>
-      <Calendar locale="en-US" value={selectedDate} onChange={setSelectedDate} />
+      <h3>🗓️ Available Appointments</h3>
 
-      <h4>Selected Date: {selectedDate.toLocaleDateString("en-US")}</h4>
+      <Calendar
+        locale="en-US"
+        value={selectedDate}
+        onChange={setSelectedDate}
+      />
 
-      {loading && <p>Loading data...</p>}
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      <div className="slots-meta">
+        <strong>Date:</strong>{" "}
+        {selectedDate.toLocaleDateString("en-US")}
+        <br />
+        <strong>Duration:</strong>{" "}
+        {duration < 60
+          ? `${duration} minutes`
+          : `${Math.floor(duration / 60)}h${
+              duration % 60 ? ` ${duration % 60}m` : ""
+            }`}
+      </div>
+
+      {loading && <p>Loading available slots…</p>}
+
+      {error && <p className="error">Error: {error}</p>}
 
       {!loading && !error && (
         <>
           {availableSlots.length > 0 ? (
             <ul className="slot-list">
               {availableSlots.map((slot) => (
-                <li key={slot}>🕒 {slot}</li>
+                <li key={slot} className="slot-item">
+                  🕒 {slot}
+                </li>
               ))}
             </ul>
           ) : (
-            <p>No available time slots on this day</p>
+            <p className="empty">No available slots for this date</p>
           )}
         </>
       )}
