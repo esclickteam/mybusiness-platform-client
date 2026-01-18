@@ -163,3 +163,169 @@
     justify-content: flex-end;
   }
 }
+
+/* =========================
+   📅 Daily Agenda
+========================= */
+
+.daily-agenda {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.daily-agenda.empty {
+  text-align: center;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* =========================
+   Header
+========================= */
+
+.agenda-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.agenda-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.agenda-date {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* =========================
+   Empty state
+========================= */
+
+.agenda-empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--muted);
+  background: var(--surface-2);
+  border-radius: 14px;
+}
+
+/* =========================
+   List
+========================= */
+
+.agenda-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* =========================
+   Item
+========================= */
+
+.agenda-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+/* Left */
+.agenda-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.agenda-time {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--violet);
+  min-width: 52px;
+}
+
+.agenda-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.agenda-service {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* =========================
+   Actions
+========================= */
+
+.agenda-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.agenda-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+.agenda-btn.primary {
+  background: linear-gradient(135deg, var(--violet), var(--blue));
+  color: #fff;
+}
+
+.agenda-btn.ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.agenda-time,
+.agenda-info strong,
+.agenda-service,
+.agenda-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 600px) {
+  .agenda-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .agenda-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

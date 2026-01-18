@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Clock,
@@ -59,13 +59,15 @@ const DailyAgenda = ({
 }) => {
   const navigate = useNavigate();
 
+  const [emailMenuOpenId, setEmailMenuOpenId] = useState(null);
+
   /* =========================
      Date helpers (NO Date parsing)
   ========================= */
 
   const selectedDate = useMemo(() => {
     if (typeof date === "string" && date.length === 10) {
-      return date; // YYYY-MM-DD
+      return date;
     }
     return null;
   }, [date]);
@@ -85,7 +87,6 @@ const DailyAgenda = ({
 
   /* =========================
      Filter appointments by day
-     ✅ Snapshot-safe
   ========================= */
 
   const dayAppointments = useMemo(() => {
@@ -99,35 +100,31 @@ const DailyAgenda = ({
   }, [appointments, selectedDate]);
 
   /* =========================
-     Actions
+     Email Action (Provider aware)
   ========================= */
 
-  const sendEmailReminder = (
+  const sendEmailReminder = ({
+    provider,
     email,
     clientName,
     date,
     time,
-    service
-  ) => {
+    service,
+  }) => {
     if (!email) {
       alert("Client email is not available");
       return;
     }
 
-    const formattedDate = new Date(date).toLocaleDateString(
-      "en-US",
-      {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }
-    );
+    const formattedDate = new Date(date).toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
 
     const subject = `Appointment Reminder – ${businessName}`;
-
-    const body = `
-Hi ${clientName},
+    const body = `Hi ${clientName},
 
 This is a friendly reminder about your upcoming appointment.
 
@@ -136,12 +133,30 @@ Time: ${time}
 Service: ${service}
 
 Best regards,
-${businessName}
-    `.trim();
+${businessName}`;
 
-    window.location.href = `mailto:${email}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
+    const encodedSubject = encodeURIComponent(subject);
+    const encodedBody = encodeURIComponent(body);
+
+    if (provider === "gmail") {
+      window.open(
+        `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodedSubject}&body=${encodedBody}`,
+        "_blank"
+      );
+    }
+
+    if (provider === "outlook") {
+      window.open(
+        `https://outlook.live.com/mail/0/deeplink/compose?to=${email}&subject=${encodedSubject}&body=${encodedBody}`,
+        "_blank"
+      );
+    }
+
+    if (provider === "default") {
+      window.location.href = `mailto:${email}?subject=${encodedSubject}&body=${encodedBody}`;
+    }
+
+    setEmailMenuOpenId(null);
   };
 
   const editAppointment = () => {
@@ -203,21 +218,68 @@ ${businessName}
 
                 {/* Actions */}
                 <div className="agenda-actions">
-                  <button
-                    className="agenda-btn primary"
-                    onClick={() =>
-                      sendEmailReminder(
-                        email,
-                        clientName,
-                        a.date,
-                        time,
-                        serviceName
-                      )
-                    }
-                  >
-                    <Mail size={14} />
-                    Email
-                  </button>
+                  <div className="email-action-wrapper">
+                    <button
+                      className="agenda-btn primary"
+                      onClick={() =>
+                        setEmailMenuOpenId(
+                          emailMenuOpenId === a._id ? null : a._id
+                        )
+                      }
+                    >
+                      <Mail size={14} />
+                      Email
+                    </button>
+
+                    {emailMenuOpenId === a._id && (
+                      <div className="email-menu">
+                        <button
+                          onClick={() =>
+                            sendEmailReminder({
+                              provider: "gmail",
+                              email,
+                              clientName,
+                              date: a.date,
+                              time,
+                              service: serviceName,
+                            })
+                          }
+                        >
+                          Gmail
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            sendEmailReminder({
+                              provider: "outlook",
+                              email,
+                              clientName,
+                              date: a.date,
+                              time,
+                              service: serviceName,
+                            })
+                          }
+                        >
+                          Outlook
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            sendEmailReminder({
+                              provider: "default",
+                              email,
+                              clientName,
+                              date: a.date,
+                              time,
+                              service: serviceName,
+                            })
+                          }
+                        >
+                          Default
+                        </button>
+                      </div>
+                    )}
+                  </div>
 
                   <button
                     className="agenda-btn ghost"
