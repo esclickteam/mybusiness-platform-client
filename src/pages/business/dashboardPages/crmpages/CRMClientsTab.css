@@ -300,3 +300,35 @@ button {
   transform: translateY(-1px);
   box-shadow: 0 14px 30px rgba(94, 23, 235, 0.45);
 }
+
+/* =====================================================
+   FIX – isolate CRM table from global table styles
+===================================================== */
+
+.clients-table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+}
+
+.clients-table th,
+.clients-table td {
+  text-align: left !important;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+.clients-table thead {
+  display: table-header-group;
+}
+
+.clients-table tbody {
+  display: table-row-group;
+}
+
+.clients-table tr {
+  display: table-row;
+}
+
+.clients-table td {
+  display: table-cell;
+}
