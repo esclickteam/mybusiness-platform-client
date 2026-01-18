@@ -13,6 +13,8 @@ const CRMAppointmentsTab = () => {
   const [search, setSearch] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [editId, setEditId] = useState(null);
+
 
   const [newAppointment, setNewAppointment] = useState({
     crmClientId: "",
@@ -30,6 +32,67 @@ const CRMAppointmentsTab = () => {
   const [services, setServices] = useState([]);
   const [clients, setClients] = useState([]);
   const [businessSchedule, setBusinessSchedule] = useState(null);
+
+  const sendEmailReminder = (email, clientName, date, time, service) => {
+  if (!email) return;
+
+  const formattedDate = new Date(date).toLocaleDateString("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const businessName = user?.businessName || "Your Business";
+
+  const subject = `Appointment Reminder – ${businessName}`;
+
+  const body = `
+Hello ${clientName},
+
+This is a reminder for your upcoming appointment.
+
+Service: ${service}
+Date: ${formattedDate}
+Time: ${time}
+
+Best regards,
+${businessName}
+  `.trim();
+
+  window.location.href = `mailto:${email}?subject=${encodeURIComponent(
+    subject
+  )}&body=${encodeURIComponent(body)}`;
+};
+
+const handleEditAppointment = (appt) => {
+  setEditId(appt._id); // ⭐ חשוב
+  setShowAddForm(true);
+  setNewAppointment({
+    crmClientId: appt.crmClientId || "",
+    clientName: appt.clientSnapshot?.name || "",
+    clientPhone: appt.clientSnapshot?.phone || "",
+    address: appt.clientSnapshot?.address || "",
+    email: appt.clientSnapshot?.email || "",
+    note: appt.note || "",
+    serviceId: appt.serviceId || "",
+    serviceName: appt.serviceName || "",
+    date: appt.date,
+    time: appt.time,
+  });
+};
+
+const handleDeleteAppointment = async (id) => {
+  if (!window.confirm("Delete this appointment?")) return;
+
+  try {
+    await API.delete(`/appointments/${id}`);
+    queryClient.invalidateQueries(["appointments", businessId]);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 
   /* =========================
      Schedule → Array
@@ -121,41 +184,54 @@ const CRMAppointmentsTab = () => {
      Create Appointment
   ========================= */
   const saveAppointment = async () => {
-    if (isSaving) return;
-    if (
-      !newAppointment.clientName ||
-      !newAppointment.clientPhone ||
-      !newAppointment.serviceId ||
-      !newAppointment.date ||
-      !newAppointment.time
-    )
-      return;
+  if (isSaving) return;
 
-    setIsSaving(true);
-    try {
+  if (
+    !newAppointment.clientName ||
+    !newAppointment.clientPhone ||
+    !newAppointment.serviceId ||
+    !newAppointment.date ||
+    !newAppointment.time
+  )
+    return;
+
+  setIsSaving(true);
+  try {
+    if (editId) {
+      // ✏️ UPDATE
+      await API.put(`/appointments/${editId}`, {
+        businessId,
+        ...newAppointment,
+        duration: 30,
+      });
+    } else {
+      // ➕ CREATE
       await API.post("/appointments", {
         businessId,
         ...newAppointment,
         duration: 30,
       });
-
-      setShowAddForm(false);
-      setNewAppointment({
-        crmClientId: "",
-        clientName: "",
-        clientPhone: "",
-        address: "",
-        email: "",
-        note: "",
-        serviceId: "",
-        serviceName: "",
-        date: "",
-        time: "",
-      });
-    } finally {
-      setIsSaving(false);
     }
-  };
+
+    setShowAddForm(false);
+    setEditId(null); // ⭐ איפוס
+    setNewAppointment({
+      crmClientId: "",
+      clientName: "",
+      clientPhone: "",
+      address: "",
+      email: "",
+      note: "",
+      serviceId: "",
+      serviceName: "",
+      date: "",
+      time: "",
+    });
+  } finally {
+    setIsSaving(false);
+  }
+};
+
 
   if (isLoading) return <p>Loading…</p>;
   if (isError) return <p>Error loading appointments</p>;
@@ -182,7 +258,8 @@ const CRMAppointmentsTab = () => {
 
       {showAddForm && (
         <div className="appointment-form">
-          <h3>New Appointment</h3>
+          <h3>{editId ? "Edit Appointment" : "New Appointment"}</h3>
+
 
           <select
             value={newAppointment.crmClientId}
@@ -295,10 +372,37 @@ const CRMAppointmentsTab = () => {
             </div>
 
             <div className="card-actions">
-              <button title="Email">✉️</button>
-              <button title="Edit">✏️</button>
-              <button title="Delete">🗑️</button>
-            </div>
+  <button
+    title="Email reminder"
+    disabled={!appt.clientSnapshot?.email}
+    onClick={() =>
+      sendEmailReminder(
+        appt.clientSnapshot?.email,
+        appt.clientSnapshot?.name || "Client",
+        appt.date,
+        appt.time,
+        appt.serviceName
+      )
+    }
+  >
+    ✉️
+  </button>
+
+  <button
+    title="Edit appointment"
+    onClick={() => handleEditAppointment(appt)}
+  >
+    ✏️
+  </button>
+
+  <button
+    title="Delete appointment"
+    onClick={() => handleDeleteAppointment(appt._id)}
+  >
+    🗑️
+  </button>
+</div>
+
           </div>
         ))}
 
