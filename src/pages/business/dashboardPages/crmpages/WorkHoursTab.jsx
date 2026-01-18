@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import API from "@api";
 import "./WorkHoursTab.css";
 
@@ -65,6 +65,33 @@ export default function WorkHoursTab() {
     }
   };
 
+  /* =====================================================
+     WEEKLY SUMMARY (NEW)
+  ===================================================== */
+  const summary = useMemo(() => {
+    let totalMinutes = 0;
+    let openDays = 0;
+
+    Object.values(weeklyHours).forEach(day => {
+      if (!day || !day.start || !day.end) return;
+
+      const [sh, sm] = day.start.split(":").map(Number);
+      const [eh, em] = day.end.split(":").map(Number);
+
+      const minutes = (eh * 60 + em) - (sh * 60 + sm);
+      if (minutes > 0) {
+        totalMinutes += minutes;
+        openDays += 1;
+      }
+    });
+
+    return {
+      openDays,
+      hours: Math.floor(totalMinutes / 60),
+      minutes: totalMinutes % 60,
+    };
+  }, [weeklyHours]);
+
   return (
     <div className="calendar-setup-container" style={{ direction: "ltr" }}>
       <h2 className="calendar-title">🗓️ Business Working Hours</h2>
@@ -109,6 +136,21 @@ export default function WorkHoursTab() {
             </div>
           );
         })}
+      </div>
+
+      {/* ================= SUMMARY ================= */}
+      <div className="hours-summary">
+        <div className="summary-item">
+          <span className="summary-label">Open days</span>
+          <strong>{summary.openDays} / 7</strong>
+        </div>
+
+        <div className="summary-item">
+          <span className="summary-label">Total weekly hours</span>
+          <strong>
+            {summary.hours}h {summary.minutes}m
+          </strong>
+        </div>
       </div>
 
       <div className="actions-row">

@@ -91,3 +91,30 @@
   color: #2e7d32;
   font-weight: 600;
 }
+
+.hours-summary {
+  margin: 30px auto 10px;
+  max-width: 520px;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f7f5ff, #efeaff);
+  display: flex;
+  justify-content: space-between;
+  box-shadow: inset 0 0 0 1px #e0d7ff;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-label {
+  font-size: 0.85rem;
+  color: #6b63b5;
+}
+
+.summary-item strong {
+  font-size: 1.1rem;
+  color: #2a165f;
+}
