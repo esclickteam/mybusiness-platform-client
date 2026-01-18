@@ -405,15 +405,20 @@ useEffect(() => {
   value={newAppointment.serviceId}
   onChange={e => {
     const s = services.find(x => x._id === e.target.value);
-    setNewAppointment({
-      ...newAppointment,
+
+    setNewAppointment(prev => ({
+      ...prev,
       serviceId: s?._id || "",
       serviceName: s?.name || "",
       time: "",
       duration: s?.duration || 30,
-    });
+
+      // 💰 סנכרון מחיר מהשירות
+      price: s?.price ?? "",
+    }));
   }}
 >
+
   <option value="">Select Service</option>
   {services.map(s => (
     <option key={s._id} value={s._id}>
