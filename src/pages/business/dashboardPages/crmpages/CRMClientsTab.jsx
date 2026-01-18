@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "@api";
 import CRMCustomerFile from "./CRMCustomerFile";
@@ -14,10 +14,10 @@ const fetchClients = async (businessId) => {
 
   return res.data.map((c) => ({
     _id: c._id,
-    fullName: c.fullName || "Unknown",
+    fullName: c.fullName || "",
     phone: (c.phone || "").toString().replace(/\s/g, ""),
-    email: (c.email || "").replace(/\s/g, "") || "-",
-    address: c.address || "-",
+    email: (c.email || "").replace(/\s/g, ""),
+    address: c.address || "",
   }));
 };
 
@@ -28,15 +28,15 @@ export default function CRMClientsTab({ businessId }) {
      UI STATE
   ===================================================== */
   const [mode, setMode] = useState("list"); 
-  // "list" | "create" | "view"
+  // list | create | view | edit
 
   const [search, setSearch] = useState("");
   const [selectedClient, setSelectedClient] = useState(null);
 
   /* =====================================================
-     CREATE CLIENT FORM STATE
+     FORM STATE (Create + Edit)
   ===================================================== */
-  const [newClient, setNewClient] = useState({
+  const [formClient, setFormClient] = useState({
     fullName: "",
     phone: "",
     email: "",
@@ -60,52 +60,75 @@ export default function CRMClientsTab({ businessId }) {
      FILTER
   ===================================================== */
   const filteredClients = clients.filter((client) => {
+    const q = search.toLowerCase();
     return (
-      client.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      client.phone.includes(search)
+      client.fullName.toLowerCase().includes(q) ||
+      client.phone.includes(q)
     );
   });
 
   /* =====================================================
+     EFFECT – preload edit form
+  ===================================================== */
+  useEffect(() => {
+    if (mode === "edit" && selectedClient) {
+      setFormClient({
+        fullName: selectedClient.fullName,
+        phone: selectedClient.phone,
+        email: selectedClient.email,
+        address: selectedClient.address,
+      });
+    }
+  }, [mode, selectedClient]);
+
+  /* =====================================================
      ACTIONS
   ===================================================== */
-  const handleDelete = async (client) => {
-    if (!window.confirm(`Delete client "${client.fullName}"?`)) return;
+  const handleDelete = async (client, e) => {
+    e.stopPropagation();
+
+    if (!window.confirm(`Delete "${client.fullName}"?`)) return;
 
     try {
       await API.delete(`/crm-clients/${client._id}`);
       queryClient.invalidateQueries(["clients", businessId]);
-      alert("Client deleted");
-    } catch (err) {
+    } catch {
       alert("Delete failed");
     }
   };
 
-  const handleCreateClient = async () => {
-    if (!newClient.fullName || !newClient.phone) {
-      alert("Full name and phone are required");
+  const handleCreate = async () => {
+    if (!formClient.fullName || !formClient.phone) {
+      alert("Name and phone are required");
       return;
     }
 
     try {
       const res = await API.post("/crm-clients", {
-        ...newClient,
+        ...formClient,
         businessId,
       });
 
       queryClient.invalidateQueries(["clients", businessId]);
-
       setSelectedClient(res.data);
       setMode("view");
+    } catch {
+      alert("Create failed");
+    }
+  };
 
-      setNewClient({
-        fullName: "",
-        phone: "",
-        email: "",
-        address: "",
-      });
-    } catch (err) {
-      alert("Failed to create client");
+  const handleUpdate = async () => {
+    if (!formClient.fullName || !formClient.phone) {
+      alert("Name and phone are required");
+      return;
+    }
+
+    try {
+      await API.put(`/crm-clients/${selectedClient._id}`, formClient);
+      queryClient.invalidateQueries(["clients", businessId]);
+      setMode("view");
+    } catch {
+      alert("Update failed");
     }
   };
 
@@ -116,122 +139,161 @@ export default function CRMClientsTab({ businessId }) {
     <div className="crm-tab-content">
       <h2>👥 Clients</h2>
 
-      {/* ================= HEADER ================= */}
-      {mode === "list" && (
-        <div className="clients-header">
-          <input
-            type="text"
-            placeholder="Search by name or phone..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="search-input"
-          />
-
-          <button
-            className="add-client-btn"
-            onClick={() => setMode("create")}
-          >
-            ➕ Create New Client
-          </button>
-        </div>
-      )}
-
       {/* ================= LIST ================= */}
       {mode === "list" && (
         <>
+          <div className="clients-header">
+            <input
+              className="search-input"
+              placeholder="Search by name or phone…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <button
+              className="add-client-btn"
+              onClick={() => {
+                setFormClient({
+                  fullName: "",
+                  phone: "",
+                  email: "",
+                  address: "",
+                });
+                setMode("create");
+              }}
+            >
+              ➕ New Client
+            </button>
+          </div>
+
           {isLoading ? (
-            <p>Loading clients...</p>
+            <p>Loading…</p>
           ) : error ? (
             <p>Error loading clients</p>
+          ) : filteredClients.length === 0 ? (
+            <div className="empty-state">
+              <h3>No clients yet</h3>
+              <p>Create your first client</p>
+              <button
+                className="primary"
+                onClick={() => setMode("create")}
+              >
+                ➕ Create client
+              </button>
+            </div>
           ) : (
             <table className="clients-table">
               <thead>
                 <tr>
                   <th>Name</th>
                   <th>Phone</th>
-                  <th>Address</th>
                   <th>Email</th>
-                  <th>Actions</th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
-                {filteredClients.length === 0 ? (
-                  <tr>
-                    <td colSpan="5">No clients found</td>
+                {filteredClients.map((client) => (
+                  <tr
+                    key={client._id}
+                    className="client-row"
+                    onClick={() => {
+                      setSelectedClient(client);
+                      setMode("view");
+                    }}
+                  >
+                    <td>{client.fullName}</td>
+                    <td>{client.phone}</td>
+                    <td>{client.email || "-"}</td>
+                    <td>
+                      <button
+                        className="icon-btn danger"
+                        onClick={(e) =>
+                          handleDelete(client, e)
+                        }
+                      >
+                        🗑
+                      </button>
+                    </td>
                   </tr>
-                ) : (
-                  filteredClients.map((client) => (
-                    <tr key={client._id}>
-                      <td>{client.fullName}</td>
-                      <td>{client.phone}</td>
-                      <td>{client.address}</td>
-                      <td>{client.email}</td>
-                      <td>
-                        <button
-                          onClick={() => {
-                            setSelectedClient(client);
-                            setMode("view");
-                          }}
-                        >
-                          📂 Open
-                        </button>
-
-                        <button
-                          onClick={() => handleDelete(client)}
-                        >
-                          🗑 Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
           )}
         </>
       )}
 
-      {/* ================= CREATE ================= */}
-      {mode === "create" && (
+      {/* ================= CREATE / EDIT ================= */}
+      {(mode === "create" || mode === "edit") && (
         <div className="crm-card">
-          <h3>Create New Client</h3>
+          <h3>
+            {mode === "create"
+              ? "New Client"
+              : "Edit Client"}
+          </h3>
 
           <input
-            placeholder="Full name"
-            value={newClient.fullName}
+            placeholder="Full name *"
+            value={formClient.fullName}
             onChange={(e) =>
-              setNewClient({ ...newClient, fullName: e.target.value })
+              setFormClient({
+                ...formClient,
+                fullName: e.target.value,
+              })
             }
           />
 
           <input
-            placeholder="Phone"
-            value={newClient.phone}
+            placeholder="Phone *"
+            value={formClient.phone}
             onChange={(e) =>
-              setNewClient({ ...newClient, phone: e.target.value })
+              setFormClient({
+                ...formClient,
+                phone: e.target.value,
+              })
             }
           />
 
           <input
             placeholder="Email"
-            value={newClient.email}
+            value={formClient.email}
             onChange={(e) =>
-              setNewClient({ ...newClient, email: e.target.value })
+              setFormClient({
+                ...formClient,
+                email: e.target.value,
+              })
             }
           />
 
           <input
             placeholder="Address"
-            value={newClient.address}
+            value={formClient.address}
             onChange={(e) =>
-              setNewClient({ ...newClient, address: e.target.value })
+              setFormClient({
+                ...formClient,
+                address: e.target.value,
+              })
             }
           />
 
           <div className="actions">
-            <button onClick={() => setMode("list")}>Cancel</button>
-            <button className="primary" onClick={handleCreateClient}>
-              Save Client
+            <button
+              onClick={() =>
+                setMode(
+                  mode === "edit" ? "view" : "list"
+                )
+              }
+            >
+              Cancel
+            </button>
+
+            <button
+              className="primary"
+              onClick={
+                mode === "create"
+                  ? handleCreate
+                  : handleUpdate
+              }
+            >
+              Save
             </button>
           </div>
         </div>
@@ -239,15 +301,35 @@ export default function CRMClientsTab({ businessId }) {
 
       {/* ================= VIEW ================= */}
       {mode === "view" && selectedClient && (
-        <CRMCustomerFile
-          client={selectedClient}
-          businessId={businessId}
-          onClose={() => {
-            setSelectedClient(null);
-            setMode("list");
-            queryClient.invalidateQueries(["clients", businessId]);
-          }}
-        />
+        <>
+          <div className="view-actions">
+            <button
+              onClick={() => setMode("list")}
+            >
+              ← Back
+            </button>
+
+            <button
+              className="primary"
+              onClick={() => setMode("edit")}
+            >
+              ✏️ Edit
+            </button>
+          </div>
+
+          <CRMCustomerFile
+            client={selectedClient}
+            businessId={businessId}
+            onClose={() => {
+              setSelectedClient(null);
+              setMode("list");
+              queryClient.invalidateQueries([
+                "clients",
+                businessId,
+              ]);
+            }}
+          />
+        </>
       )}
     </div>
   );
