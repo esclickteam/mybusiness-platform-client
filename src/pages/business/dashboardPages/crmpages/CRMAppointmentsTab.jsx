@@ -247,12 +247,29 @@ const handleDeleteAppointment = async (id) => {
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
+
           <button
-            className="primary-btn"
-            onClick={() => setShowAddForm(true)}
-          >
-            + Add Appointment
-          </button>
+  className="primary-btn"
+  onClick={() => {
+    setEditId(null);          // מאפס מצב עריכה
+    setShowAddForm(true);     // פותח את הטופס
+    setNewAppointment({       // מאפס את כל השדות
+      crmClientId: "",
+      clientName: "",
+      clientPhone: "",
+      address: "",
+      email: "",
+      note: "",
+      serviceId: "",
+      serviceName: "",
+      date: "",
+      time: "",
+    });
+  }}
+>
+  + Add Appointment
+</button>
+
         </div>
       </div>
 
