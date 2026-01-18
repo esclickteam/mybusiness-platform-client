@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API from "@api";
-import "../buildTabs/shopAndCalendar/Appointments/CalendarSetup.css";
+import "./WorkHoursTab.css";
+
 
 const weekdays = [
   "Sunday",
@@ -9,11 +10,13 @@ const weekdays = [
   "Wednesday",
   "Thursday",
   "Friday",
-  "Saturday"
+  "Saturday",
 ];
 
 export default function WorkHoursTab() {
   const [weeklyHours, setWeeklyHours] = useState({});
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     async function fetchWorkHours() {
@@ -33,111 +36,113 @@ export default function WorkHoursTab() {
       [dayIdx]: {
         ...(prev[dayIdx] ?? { start: "", end: "" }),
         [field]: value,
-      }
+      },
     }));
   };
 
-  const handleToggleClosed = dayIdx => {
+  const toggleDay = dayIdx => {
     setWeeklyHours(prev => ({
       ...prev,
-      [dayIdx]: prev[dayIdx] === null ? { start: "", end: "" } : null,
+      [dayIdx]:
+        prev[dayIdx] === null
+          ? { start: "", end: "" }
+          : null,
     }));
+  };
+
+  const applyToAllDays = () => {
+    const sourceDay = weeklyHours[0];
+    if (!sourceDay || sourceDay === null) return;
+
+    const updated = {};
+    weekdays.forEach((_, i) => {
+      updated[i] = { ...sourceDay };
+    });
+    setWeeklyHours(updated);
   };
 
   const handleSave = async () => {
     try {
-      await API.post("/appointments/update-work-hours", { workHours: weeklyHours });
-      alert("Work hours saved successfully!");
+      setSaving(true);
+      setSaved(false);
+      await API.post("/appointments/update-work-hours", {
+        workHours: weeklyHours,
+      });
+      setSaved(true);
     } catch (e) {
       console.error("Error saving work hours:", e);
-      alert("Error saving work hours");
+    } finally {
+      setSaving(false);
+      setTimeout(() => setSaved(false), 2500);
     }
   };
 
   return (
-    <div className="calendar-setup-container" style={{ direction: "ltr", textAlign: "left" }}>
-      <h2 className="calendar-title">🗓️ Set Weekly Business Hours</h2>
+    <div className="calendar-setup-container" style={{ direction: "ltr" }}>
+      <h2 className="calendar-title">🗓️ Business Working Hours</h2>
 
-      <div className="weekly-hours-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Day</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Closed</th>
-            </tr>
-          </thead>
+      <div className="week-grid">
+        {weekdays.map((day, i) => {
+          const isClosed = weeklyHours[i] === null;
 
-          <tbody>
-            {weekdays.map((name, i) => (
-              <tr key={i}>
-                {/* DAY */}
-                <td className="day-cell">{name}</td>
+          return (
+            <div key={i} className={`day-card ${isClosed ? "closed" : ""}`}>
+              <div className="day-header">
+                <span className="day-name">{day}</span>
 
-                {/* START */}
-                <td>
+                <button
+                  type="button"
+                  className={`day-toggle ${isClosed ? "off" : "on"}`}
+                  onClick={() => toggleDay(i)}
+                >
+                  {isClosed ? "Closed" : "Open"}
+                </button>
+              </div>
+
+              {!isClosed && (
+                <div className="time-row">
                   <input
                     type="time"
-                    className="time-input"
                     value={weeklyHours[i]?.start || ""}
-                    onChange={e => handleChange(i, "start", e.target.value)}
-                    disabled={weeklyHours[i] === null}
+                    onChange={e =>
+                      handleChange(i, "start", e.target.value)
+                    }
                   />
-                </td>
-
-                {/* END */}
-                <td>
+                  <span className="dash">–</span>
                   <input
                     type="time"
-                    className="time-input"
                     value={weeklyHours[i]?.end || ""}
-                    onChange={e => handleChange(i, "end", e.target.value)}
-                    disabled={weeklyHours[i] === null}
+                    onChange={e =>
+                      handleChange(i, "end", e.target.value)
+                    }
                   />
-                </td>
-
-                {/* CLOSED */}
-                <td>
-                  <input
-                    type="checkbox"
-                    className="close-checkbox"
-                    checked={weeklyHours[i] === null}
-                    onChange={() => handleToggleClosed(i)}
-                    aria-label={`Close ${name}`}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      <div className="actions">
-        <button className="save-all-btn styled" onClick={handleSave}>
-          💾 Save Weekly Hours
+      <div className="actions-row">
+        <button
+          type="button"
+          className="secondary-btn"
+          onClick={applyToAllDays}
+        >
+          📋 Apply Sunday to all days
+        </button>
+
+        <button
+          type="button"
+          className="primary-btn"
+          onClick={handleSave}
+          disabled={saving}
+        >
+          {saving ? "Saving..." : "💾 Save Changes"}
         </button>
       </div>
 
-      <div className="summary">
-        <strong>🗓️ Weekly Summary:</strong>
-        <ul>
-          {weekdays.map((name, i) => (
-            <li key={i} className="summary-item">
-              <span className="day-label">{name}:</span>
-              {weeklyHours[i] === null ? (
-                <span className="closed-label">Closed</span>
-              ) : weeklyHours[i]?.start && weeklyHours[i]?.end ? (
-                <span className="hours-label">
-                  {weeklyHours[i].start} – {weeklyHours[i].end}
-                </span>
-              ) : (
-                <span className="hours-label">Not set</span>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {saved && <div className="save-indicator">✅ Saved</div>}
     </div>
   );
 }
