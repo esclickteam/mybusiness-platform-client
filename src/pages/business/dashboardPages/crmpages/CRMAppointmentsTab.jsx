@@ -439,14 +439,15 @@ const handleDeleteAppointment = async (id) => {
             <div className="card-actions">
   {/* ✉️ EMAIL עם בחירה */}
   <div className="email-action-wrapper">
+
     <button
+  type="button"
   title="Send email"
-  disabled={!appt.clientSnapshot?.email}
   onClick={() => {
-    console.log("📧 Email icon clicked", {
-      appointmentId: appt._id,
-      email: appt.clientSnapshot?.email,
-    });
+    if (!appt.clientSnapshot?.email) {
+      alert("This client does not have an email address.");
+      return;
+    }
 
     setEmailMenuOpenId(
       emailMenuOpenId === appt._id ? null : appt._id
