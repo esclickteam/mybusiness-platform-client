@@ -202,6 +202,25 @@ const handleDeleteAppointment = async (id) => {
   }, [appointments, search]);
 
   /* =========================
+   Duration logic (sync with service)
+========================= */
+const minDuration = useMemo(() => {
+  const service = services.find(s => s._id === newAppointment.serviceId);
+  return service?.duration || 30;
+}, [services, newAppointment.serviceId]);
+
+useEffect(() => {
+  if (newAppointment.duration < minDuration) {
+    setNewAppointment(prev => ({
+      ...prev,
+      duration: minDuration,
+    }));
+  }
+}, [minDuration]);
+
+
+
+  /* =========================
      Create Appointment
   ========================= */
   const saveAppointment = async () => {
@@ -391,6 +410,7 @@ const handleDeleteAppointment = async (id) => {
       serviceId: s?._id || "",
       serviceName: s?.name || "",
       time: "",
+      duration: s?.duration || 30,
     });
   }}
 >
@@ -420,6 +440,7 @@ const handleDeleteAppointment = async (id) => {
             businessId={businessId}
             serviceId={newAppointment.serviceId}
             schedule={scheduleArray}
+            duration={newAppointment.duration} 
           />
 
           {/* ⏱ DURATION */}
@@ -437,24 +458,27 @@ const handleDeleteAppointment = async (id) => {
   }
 >
   {Array.from(
-    { length: MAX_DURATION / DURATION_STEP },
-    (_, i) => {
-      const minutes = (i + 1) * DURATION_STEP;
-      const hours = Math.floor(minutes / 60);
-      const mins = minutes % 60;
+  {
+    length: Math.floor((MAX_DURATION - minDuration) / DURATION_STEP) + 1,
+  },
+  (_, i) => {
+    const minutes = minDuration + i * DURATION_STEP;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
 
-      const label =
-        hours > 0
-          ? `${hours}h${mins ? ` ${mins}m` : ""}`
-          : `${minutes}m`;
+    const label =
+      hours > 0
+        ? `${hours}h${mins ? ` ${mins}m` : ""}`
+        : `${minutes}m`;
 
-      return (
-        <option key={minutes} value={minutes}>
-          {label}
-        </option>
-      );
-    }
-  )}
+    return (
+      <option key={minutes} value={minutes}>
+        {label}
+      </option>
+    );
+  }
+)}
+
 </select>
 
 </div>
