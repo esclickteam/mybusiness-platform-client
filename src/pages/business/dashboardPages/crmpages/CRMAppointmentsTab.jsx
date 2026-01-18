@@ -250,10 +250,8 @@ const handleDeleteAppointment = async (id) => {
   serviceName: "",
   date: "",
   time: "",
-
-  // 💰 Payment reset
-  price: "",
-  paid: false,
+  price: "",      // ✅
+  paid: false,    // ✅
 });
 
   } catch (err) {
@@ -288,7 +286,7 @@ const handleDeleteAppointment = async (id) => {
     setEditId(null);      // יציאה ממצב עריכה
     setShowAddForm(true);
 
-    setNewAppointment({
+        setNewAppointment({
       crmClientId: "",
       clientName: "",
       clientPhone: "",
@@ -299,6 +297,8 @@ const handleDeleteAppointment = async (id) => {
       serviceName: "",
       date: "",
       time: "",
+      price: "",      // ✅ להוסיף
+      paid: false,    // ✅ להוסיף
     });
   }}
 >
@@ -453,104 +453,126 @@ const handleDeleteAppointment = async (id) => {
 
       <div className="appointments-grid">
         {filteredAppointments.map(appt => (
-          <div key={appt._id} className="appointment-card">
-            <div>
-              <strong>{appt.clientSnapshot?.name}</strong>
-              <div className="muted">{appt.clientSnapshot?.phone}</div>
-            </div>
+  <div key={appt._id} className="appointment-card">
 
-            <div className="meta">
-              <span>{appt.serviceName}</span>
-              <span>
-                {appt.date} · {appt.time}
-              </span>
-            </div>
+    {/* 👤 Client info */}
+    <div>
+      <strong>{appt.clientSnapshot?.name}</strong>
 
-            <div className="card-actions">
-  {/* ✉️ EMAIL עם בחירה */}
-  <div className="email-action-wrapper">
+      <div className="muted">
+        {appt.clientSnapshot?.phone}
+      </div>
 
-    <button
-  type="button"
-  title="Send email"
-  onClick={() => {
-    if (!appt.clientSnapshot?.email) {
-      alert("This client does not have an email address.");
-      return;
-    }
+      {appt.clientSnapshot?.email && (
+        <div className="muted">
+          📧 {appt.clientSnapshot.email}
+        </div>
+      )}
+    </div>
 
-    setEmailMenuOpenId(
-      emailMenuOpenId === appt._id ? null : appt._id
-    );
-  }}
->
-  ✉️
-</button>
+    {/* 📅 Service + date */}
+    <div className="meta">
+      <span>{appt.serviceName}</span>
+      <span>
+        {appt.date} · {appt.time}
+      </span>
+    </div>
 
-    {emailMenuOpenId === appt._id && (
-      <div className="email-menu">
-        <button
-          onClick={() =>
-            openEmail({
-              provider: "gmail",
-              email: appt.clientSnapshot.email,
-              subject: "Appointment reminder",
-              body: `Hi ${appt.clientSnapshot.name},\n\nThis is a reminder for your appointment on ${appt.date} at ${appt.time}.`,
-            })
-          }
-        >
-          Gmail
-        </button>
-
-        <button
-          onClick={() =>
-            openEmail({
-              provider: "outlook",
-              email: appt.clientSnapshot.email,
-              subject: "Appointment reminder",
-              body: `Hi ${appt.clientSnapshot.name},\n\nThis is a reminder for your appointment on ${appt.date} at ${appt.time}.`,
-            })
-          }
-        >
-          Outlook
-        </button>
-
-        <button
-          onClick={() =>
-            openEmail({
-              provider: "default",
-              email: appt.clientSnapshot.email,
-              subject: "Appointment reminder",
-              body: `Hi ${appt.clientSnapshot.name},\n\nThis is a reminder for your appointment on ${appt.date} at ${appt.time}.`,
-            })
-          }
-        >
-          Default
-        </button>
+    {/* 💰 Payment info */}
+    {appt.price > 0 && (
+      <div className="payment-info">
+        <span>💰 {appt.price}</span>
+        <span className={appt.paid ? "paid" : "unpaid"}>
+          {appt.paid ? "Paid" : "Unpaid"}
+        </span>
       </div>
     )}
-  </div>
 
-  {/* ✏️ EDIT */}
-  <button
-    title="Edit appointment"
-    onClick={() => handleEditAppointment(appt)}
-  >
-    ✏️
-  </button>
+    {/* ⚙️ Actions */}
+    <div className="card-actions">
 
-  {/* 🗑️ DELETE */}
-  <button
-    title="Delete appointment"
-    onClick={() => handleDeleteAppointment(appt._id)}
-  >
-    🗑️
-  </button>
-</div>
+      {/* ✉️ EMAIL */}
+      <div className="email-action-wrapper">
+        <button
+          type="button"
+          title="Send email"
+          onClick={() => {
+            if (!appt.clientSnapshot?.email) {
+              alert("This client does not have an email address.");
+              return;
+            }
+            setEmailMenuOpenId(
+              emailMenuOpenId === appt._id ? null : appt._id
+            );
+          }}
+        >
+          ✉️
+        </button>
 
+        {emailMenuOpenId === appt._id && (
+          <div className="email-menu">
+            <button
+              onClick={() =>
+                openEmail({
+                  provider: "gmail",
+                  email: appt.clientSnapshot.email,
+                  subject: "Appointment reminder",
+                  body: `Hi ${appt.clientSnapshot.name},\n\nThis is a reminder for your appointment on ${appt.date} at ${appt.time}.`,
+                })
+              }
+            >
+              Gmail
+            </button>
 
+            <button
+              onClick={() =>
+                openEmail({
+                  provider: "outlook",
+                  email: appt.clientSnapshot.email,
+                  subject: "Appointment reminder",
+                  body: `Hi ${appt.clientSnapshot.name},\n\nThis is a reminder for your appointment on ${appt.date} at ${appt.time}.`,
+                })
+              }
+            >
+              Outlook
+            </button>
+
+            <button
+              onClick={() =>
+                openEmail({
+                  provider: "default",
+                  email: appt.clientSnapshot.email,
+                  subject: "Appointment reminder",
+                  body: `Hi ${appt.clientSnapshot.name},\n\nThis is a reminder for your appointment on ${appt.date} at ${appt.time}.`,
+                })
+              }
+            >
+              Default
+            </button>
           </div>
-        ))}
+        )}
+      </div>
+
+      {/* ✏️ EDIT */}
+      <button
+        title="Edit appointment"
+        onClick={() => handleEditAppointment(appt)}
+      >
+        ✏️
+      </button>
+
+      {/* 🗑️ DELETE */}
+      <button
+        title="Delete appointment"
+        onClick={() => handleDeleteAppointment(appt._id)}
+      >
+        🗑️
+      </button>
+
+    </div>
+  </div>
+))}
+
 
         {filteredAppointments.length === 0 && (
           <div className="empty-state">No appointments yet</div>
