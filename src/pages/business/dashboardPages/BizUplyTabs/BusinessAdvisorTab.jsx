@@ -4,6 +4,9 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Markdown from "markdown-to-jsx";
 import API from "@api";
 import "./AdvisorChat.css";
+import useAiInsights from "@/hooks/useAiInsights";
+import AiInsightsPanel from "@/components/AiInsightsPanel";
+
 
 const BusinessAdvisorTab = ({
   businessId,
@@ -16,10 +19,12 @@ const BusinessAdvisorTab = ({
   const [messages, setMessages] = useState([]);
   const [startedChat, setStartedChat] = useState(false);
   const [remainingQuestions, setRemainingQuestions] = useState(null);
+  const { insights, loading: insightsLoading } = useAiInsights(businessId);
 
   const chatContainerRef = useRef(null);
   const abortControllerRef = useRef(null);
 
+  
   const presetQuestions = [
     "How to raise prices without losing customers?",
     "How to deal with a drop in income?",
@@ -207,21 +212,31 @@ const BusinessAdvisorTab = ({
       )}
 
       {!startedChat && (
-        <>
-          <div className="preset-questions-container">
-            {presetQuestions.map((q, i) => (
-              <div
-                key={i}
-                className="preset-card"
-                onClick={() => handlePresetQuestion(q)}
-              >
-                {q}
-              </div>
-            ))}
-          </div>
-          <hr />
-        </>
-      )}
+  <>
+    {/* AI INSIGHTS */}
+    {insights?.length > 0 && (
+      <AiInsightsPanel
+        insights={insights}
+        loading={insightsLoading}
+      />
+    )}
+
+    {/* PRESET QUESTIONS */}
+    <div className="preset-questions-container">
+      {presetQuestions.map((q, i) => (
+        <div
+          key={i}
+          className="preset-card"
+          onClick={() => handlePresetQuestion(q)}
+        >
+          {q}
+        </div>
+      ))}
+    </div>
+
+    <hr />
+  </>
+)}
 
       <div className="chat-box-wrapper">
         <div className="chat-box" ref={chatContainerRef}>
