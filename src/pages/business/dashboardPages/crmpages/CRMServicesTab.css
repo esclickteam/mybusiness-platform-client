@@ -176,6 +176,10 @@
   transition: opacity 0.2s ease;  /* אנימציה עדינה */
 }
 
+.service-card:hover .card-actions {
+  opacity: 1;
+}
+
 .card-actions button {
   background: none;
   border: none;
