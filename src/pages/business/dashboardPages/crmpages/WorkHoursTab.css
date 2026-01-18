@@ -92,29 +92,75 @@
   font-weight: 600;
 }
 
-.hours-summary {
-  margin: 30px auto 10px;
-  max-width: 520px;
-  padding: 18px 22px;
+/* ================================
+   Weekly Overview (Summary)
+================================ */
+
+.weekly-overview {
+  margin-top: 36px;
+  padding: 22px 26px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #f7f5ff, #efeaff);
+  background: linear-gradient(180deg, #f9f7ff, #f3edff);
+  box-shadow: inset 0 0 0 1px #e6ddff;
+}
+
+.overview-title {
+  margin-bottom: 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #2a165f;
+}
+
+/* List */
+.overview-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px 22px;
+}
+
+/* Row */
+.overview-row {
   display: flex;
   justify-content: space-between;
-  box-shadow: inset 0 0 0 1px #e0d7ff;
+  align-items: center;
+
+  padding: 12px 14px;
+  border-radius: 14px;
+
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(94, 23, 235, 0.08);
+
+  font-size: 0.95rem;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
-.summary-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.overview-row:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(94, 23, 235, 0.14);
 }
 
-.summary-label {
-  font-size: 0.85rem;
-  color: #6b63b5;
-}
-
-.summary-item strong {
-  font-size: 1.1rem;
+/* Day name */
+.overview-day {
+  font-weight: 600;
   color: #2a165f;
+}
+
+/* Hours */
+.overview-hours {
+  font-weight: 600;
+  color: #5e17eb;
+}
+
+/* Closed */
+.overview-row.closed {
+  background: #fafafa;
+  box-shadow: inset 0 0 0 1px #e0e0e0;
+}
+
+.overview-closed {
+  font-weight: 600;
+  color: #999;
 }
