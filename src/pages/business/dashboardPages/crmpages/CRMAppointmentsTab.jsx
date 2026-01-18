@@ -7,6 +7,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
+const DURATION_STEP = 15;     
+const MAX_DURATION = 12 * 60;
+
 
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
@@ -18,6 +21,8 @@ const CRMAppointmentsTab = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [editId, setEditId] = useState(null);
   const [emailMenuOpenId, setEmailMenuOpenId] = useState(null);
+  
+
   
 
 
@@ -419,24 +424,39 @@ const handleDeleteAppointment = async (id) => {
 
           {/* ⏱ DURATION */}
 <div className="duration-field">
-  <label>Duration (minutes)</label>
+  <label>Duration</label>
+
 
   <select
-    value={newAppointment.duration}
-    onChange={e =>
-      setNewAppointment({
-        ...newAppointment,
-        duration: Number(e.target.value),
-      })
+  value={newAppointment.duration}
+  onChange={e =>
+    setNewAppointment({
+      ...newAppointment,
+      duration: Number(e.target.value),
+    })
+  }
+>
+  {Array.from(
+    { length: MAX_DURATION / DURATION_STEP },
+    (_, i) => {
+      const minutes = (i + 1) * DURATION_STEP;
+      const hours = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+
+      const label =
+        hours > 0
+          ? `${hours}h${mins ? ` ${mins}m` : ""}`
+          : `${minutes}m`;
+
+      return (
+        <option key={minutes} value={minutes}>
+          {label}
+        </option>
+      );
     }
-  >
-    <option value={15}>15 minutes</option>
-    <option value={30}>30 minutes</option>
-    <option value={45}>45 minutes</option>
-    <option value={60}>60 minutes</option>
-    <option value={90}>90 minutes</option>
-    <option value={120}>120 minutes</option>
-  </select>
+  )}
+</select>
+
 </div>
 
 
@@ -520,7 +540,10 @@ const handleDeleteAppointment = async (id) => {
 
     {appt.duration && (
   <div className="duration-badge">
-    ⏱ {appt.duration} min
+    ⏱️ {appt.duration < 60
+      ? `${appt.duration}m`
+      : `${Math.floor(appt.duration / 60)}h${appt.duration % 60 ? ` ${appt.duration % 60}m` : ""}`
+    }
   </div>
 )}
 
