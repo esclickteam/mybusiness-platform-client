@@ -234,20 +234,46 @@ button {
 /* =====================================================
    View Header
 ===================================================== */
+
 .view-actions {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 14px;
+  align-items: center;
+  margin-bottom: 18px;
 }
 
+/* בסיס לכל הכפתורים */
 .view-actions button {
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background: #f7f7f7;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #d0c9f7;
+  background: #ffffff;
+  color: #4a3fa7;
+  transition: background 0.15s ease, box-shadow 0.15s ease,
+    transform 0.1s ease;
 }
 
+/* Hover כללי */
 .view-actions button:hover {
-  background: #eee;
+  background: #f4f2ff;
+}
+
+/* כפתור Edit (primary) */
+.view-actions button.primary {
+  background: linear-gradient(135deg, #7c4dff, #5e17eb);
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(94, 23, 235, 0.35);
+}
+
+/* Hover ל־Edit */
+.view-actions button.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(94, 23, 235, 0.45);
 }
