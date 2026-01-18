@@ -252,7 +252,7 @@ export default function CRMClientsTab({ businessId }) {
          <label className="form-label">Phone *</label>
 
 <PhoneInput
-  country={"il"}                      // 🇮🇱 ברירת מחדל
+  country={"us"}    
   preferredCountries={["il", "us", "gb", "ca"]}
   enableSearch
   value={formClient.phone}
