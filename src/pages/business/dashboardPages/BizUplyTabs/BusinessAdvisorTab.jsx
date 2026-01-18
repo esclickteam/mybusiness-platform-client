@@ -1,4 +1,4 @@
-// --- CLEAN VERSION: NO PAYMENTS, NO PACKAGES ---
+// --- CLEAN VERSION: UX IMPROVED, LOGIC UNCHANGED ---
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Markdown from "markdown-to-jsx";
@@ -9,7 +9,7 @@ const BusinessAdvisorTab = ({
   businessId,
   conversationId,
   userId,
-  businessDetails
+  businessDetails,
 }) => {
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ const BusinessAdvisorTab = ({
     "How to deal with a drop in income?",
     "What is the best way to manage employees?",
     "How can customer service be improved?",
-    "How to build a simple business plan?"
+    "How to build a simple business plan?",
   ];
 
   /* =========================
@@ -54,6 +54,21 @@ const BusinessAdvisorTab = ({
   }, [refreshRemainingQuestions]);
 
   /* =========================
+     INITIAL AI GREETING (UX)
+  ========================= */
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMessages([
+        {
+          role: "assistant",
+          content:
+            "Hi 👋 I’m your **AI Business Advisor**.\n\nYou can ask me about pricing, growth, operations, team management, or any business challenge you’re facing.",
+        },
+      ]);
+    }
+  }, []);
+
+  /* =========================
      SEND MESSAGE
   ========================= */
   const sendMessage = useCallback(
@@ -61,12 +76,13 @@ const BusinessAdvisorTab = ({
       if (!businessId || !promptText.trim() || loading) return;
 
       if (remainingQuestions !== null && remainingQuestions <= 0) {
-        setMessages(prev => [
+        setMessages((prev) => [
           ...prev,
           {
             role: "assistant",
-            content: "❗ You have reached your monthly question limit."
-          }
+            content:
+              "❗ You’ve reached your monthly AI question limit.",
+          },
         ]);
         return;
       }
@@ -89,22 +105,24 @@ const BusinessAdvisorTab = ({
             businessDetails,
             profile: {
               conversationId: conversationId || null,
-              userId: userId || null
+              userId: userId || null,
             },
-            messages: conversationMessages
+            messages: conversationMessages,
           },
           { signal: controller.signal }
         );
 
-        setMessages(prev => [
+        setMessages((prev) => [
           ...prev,
           {
             role: "assistant",
-            content: response.data.answer || "❌ No response from server."
-          }
+            content:
+              response.data.answer ||
+              "❌ No response from server.",
+          },
         ]);
 
-        setRemainingQuestions(prev =>
+        setRemainingQuestions((prev) =>
           prev !== null ? Math.max(prev - 1, 0) : null
         );
 
@@ -112,12 +130,12 @@ const BusinessAdvisorTab = ({
       } catch (error) {
         if (error.name === "AbortError") return;
 
-        setMessages(prev => [
+        setMessages((prev) => [
           ...prev,
           {
             role: "assistant",
-            content: "⚠️ Server error."
-          }
+            content: "⚠️ Server error. Please try again.",
+          },
         ]);
       } finally {
         setLoading(false);
@@ -130,7 +148,7 @@ const BusinessAdvisorTab = ({
       userId,
       loading,
       remainingQuestions,
-      refreshRemainingQuestions
+      refreshRemainingQuestions,
     ]
   );
 
@@ -161,27 +179,29 @@ const BusinessAdvisorTab = ({
   };
 
   /* =========================
-     AUTO SCROLL (INTERNAL ONLY)
+     AUTO SCROLL
   ========================= */
   useEffect(() => {
-    if (!startedChat) return;
     if (!chatContainerRef.current) return;
-
     chatContainerRef.current.scrollTop =
       chatContainerRef.current.scrollHeight;
-  }, [messages, startedChat]);
+  }, [messages]);
 
   /* =========================
      RENDER
   ========================= */
   return (
     <div className="advisor-chat-container">
-      <h2>Business Advisor </h2>
-      <p>Select a preset question or start a conversation:</p>
+      <h2>AI Business Advisor</h2>
+      <p className="subtitle">
+        Get clear, practical advice for running and growing your
+        business.
+      </p>
 
       {remainingQuestions !== null && (
-        <p style={{ fontSize: 22, opacity: 0.7 }}>
-          Monthly balance: {remainingQuestions} questions remaining
+        <p className="question-balance">
+          You have <strong>{remainingQuestions}</strong> AI
+          questions remaining this month.
         </p>
       )}
 
@@ -189,17 +209,16 @@ const BusinessAdvisorTab = ({
         <>
           <div className="preset-questions-container">
             {presetQuestions.map((q, i) => (
-              <button
+              <div
                 key={i}
-                className="preset-question-btn"
+                className="preset-card"
                 onClick={() => handlePresetQuestion(q)}
-                disabled={loading}
               >
                 {q}
-              </button>
+              </div>
             ))}
           </div>
-          <hr style={{ margin: "1em 0" }} />
+          <hr />
         </>
       )}
 
@@ -216,7 +235,9 @@ const BusinessAdvisorTab = ({
           ))}
 
           {loading && (
-            <div className="bubble assistant">⌛ Thinking...</div>
+            <div className="bubble assistant typing">
+              AI is analyzing your question…
+            </div>
           )}
         </div>
       </div>
@@ -224,13 +245,16 @@ const BusinessAdvisorTab = ({
       <div className="chat-input">
         <input
           type="text"
-          placeholder="Write your question..."
+          placeholder="e.g. Should I raise prices or cut expenses first?"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+          onKeyDown={(e) =>
+            e.key === "Enter" && handleSubmit()
+          }
           disabled={
             loading ||
-            (remainingQuestions !== null && remainingQuestions <= 0)
+            (remainingQuestions !== null &&
+              remainingQuestions <= 0)
           }
         />
 

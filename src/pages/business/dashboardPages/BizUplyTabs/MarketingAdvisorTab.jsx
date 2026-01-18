@@ -1,3 +1,5 @@
+// --- CLEAN VERSION: UX IMPROVED, LOGIC UNCHANGED ---
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Markdown from "markdown-to-jsx";
 import API from "@api";
@@ -15,7 +17,6 @@ const MarketingAdvisorTab = ({
   const [startedChat, setStartedChat] = useState(false);
   const [remainingQuestions, setRemainingQuestions] = useState(null);
 
-  // 👉 גלילה פנימית בלבד
   const chatContainerRef = useRef(null);
   const abortControllerRef = useRef(null);
 
@@ -53,6 +54,21 @@ const MarketingAdvisorTab = ({
   }, [refreshRemainingQuestions]);
 
   /* =========================
+     INITIAL AI GREETING (UX)
+  ========================= */
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMessages([
+        {
+          role: "assistant",
+          content:
+            "Hi 👋 I’m your **AI Marketing Advisor**.\n\nAsk me about lead generation, campaigns, funnels, content, or marketing strategy.",
+        },
+      ]);
+    }
+  }, []);
+
+  /* =========================
      SEND MESSAGE
   ========================= */
   const sendMessage = useCallback(
@@ -64,7 +80,8 @@ const MarketingAdvisorTab = ({
           ...prev,
           {
             role: "assistant",
-            content: "❗ You’ve reached your monthly question limit.",
+            content:
+              "❗ You’ve reached your monthly AI question limit.",
           },
         ]);
         return;
@@ -100,7 +117,8 @@ const MarketingAdvisorTab = ({
           {
             role: "assistant",
             content:
-              response.data.answer || "❌ No response received from server.",
+              response.data.answer ||
+              "❌ No response received from server.",
           },
         ]);
 
@@ -114,7 +132,7 @@ const MarketingAdvisorTab = ({
 
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: "⚠️ Server error." },
+          { role: "assistant", content: "⚠️ Server error. Please try again." },
         ]);
       } finally {
         setLoading(false);
@@ -158,27 +176,28 @@ const MarketingAdvisorTab = ({
   };
 
   /* =========================
-     INTERNAL AUTO SCROLL ONLY
+     AUTO SCROLL (INTERNAL)
   ========================= */
   useEffect(() => {
-    if (!startedChat) return;
     if (!chatContainerRef.current) return;
 
     chatContainerRef.current.scrollTop =
       chatContainerRef.current.scrollHeight;
-  }, [messages, startedChat]);
+  }, [messages]);
 
   /* =========================
      RENDER
   ========================= */
   return (
     <div className="advisor-chat-container">
-      <h2>Marketing Advisor </h2>
-      <p>Select a preset question or start chatting:</p>
+      <h2>AI Marketing Advisor</h2>
+      <p className="subtitle">
+        Get clear, actionable advice to grow your audience and increase conversions.
+      </p>
 
       {remainingQuestions !== null && (
-        <p style={{ fontSize: 22, opacity: 0.7 }}>
-          Monthly balance: {remainingQuestions} questions left
+        <p className="question-balance">
+          You have <strong>{remainingQuestions}</strong> AI questions remaining this month.
         </p>
       )}
 
@@ -186,17 +205,16 @@ const MarketingAdvisorTab = ({
         <>
           <div className="preset-questions-container">
             {presetQuestions.map((q, i) => (
-              <button
+              <div
                 key={i}
-                className="preset-question-btn"
+                className="preset-card"
                 onClick={() => handlePresetQuestion(q)}
-                disabled={loading}
               >
                 {q}
-              </button>
+              </div>
             ))}
           </div>
-          <hr style={{ margin: "1em 0" }} />
+          <hr />
         </>
       )}
 
@@ -213,7 +231,9 @@ const MarketingAdvisorTab = ({
           ))}
 
           {loading && (
-            <div className="bubble assistant">⌛ Thinking...</div>
+            <div className="bubble assistant typing">
+              AI is analyzing your marketing question…
+            </div>
           )}
         </div>
       </div>
@@ -221,7 +241,7 @@ const MarketingAdvisorTab = ({
       <div className="chat-input">
         <input
           type="text"
-          placeholder="Type your question..."
+          placeholder="e.g. How can I get more leads with a small budget?"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
