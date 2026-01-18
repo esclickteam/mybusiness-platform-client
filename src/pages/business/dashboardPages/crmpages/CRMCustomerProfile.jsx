@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function CRMCustomerFile({ client, businessId }) {
   const [events, setEvents] = useState([]);
+  const [showAdd, setShowAdd] = useState(false);
+
   const [newEvent, setNewEvent] = useState({
     type: "call",
     title: "",
@@ -13,14 +15,22 @@ export default function CRMCustomerFile({ client, businessId }) {
     notes: "",
   });
 
-  // ✅ Load appointments and CRM events when customer file opens
+  const [editingId, setEditingId] = useState(null);
+  const [editDraft, setEditDraft] = useState({
+    title: "",
+    notes: "",
+  });
+
+  /* =====================================================
+     Load events (appointments + CRM events)
+  ===================================================== */
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // === Fetch appointments by crmClientId ===
-        const apptRes = await API.get(`/appointments/by-client/${client._id}`, {
-          params: { businessId },
-        });
+        const apptRes = await API.get(
+          `/appointments/by-client/${client._id}`,
+          { params: { businessId } }
+        );
 
         const appointments = apptRes.data.map((appt) => ({
           id: appt._id,
@@ -28,10 +38,9 @@ export default function CRMCustomerFile({ client, businessId }) {
           title: appt.serviceName || "Meeting",
           date: `${appt.date} ${appt.time}`,
           notes: appt.note || "",
-          readonly: true, // Meetings cannot be deleted/edited here
+          readonly: true,
         }));
 
-        // === Fetch additional CRM events ===
         const eventsRes = await API.get(`/crm-events/${client._id}`);
         const crmEvents = eventsRes.data.map((ev) => ({
           id: ev._id,
@@ -39,25 +48,29 @@ export default function CRMCustomerFile({ client, businessId }) {
           title: ev.title,
           date: ev.date,
           notes: ev.notes,
+          readonly: false,
         }));
 
-        // Merge all together and sort by date
-        setEvents([...appointments, ...crmEvents].sort((a, b) =>
-          (b.date || "").localeCompare(a.date || "")
-        ));
+        setEvents(
+          [...appointments, ...crmEvents].sort((a, b) =>
+            (b.date || "").localeCompare(a.date || "")
+          )
+        );
       } catch (err) {
-        console.error("❌ Error loading data:", err);
-        toast.error("❌ Error loading data");
+        console.error(err);
+        toast.error("❌ Failed to load customer data");
       }
     };
 
     if (client?._id) fetchData();
   }, [client?._id, businessId]);
 
-  // ✅ Add a new CRM event
+  /* =====================================================
+     Add Event
+  ===================================================== */
   const addEvent = async () => {
     if (!newEvent.title) {
-      toast.error("❌ Title is required");
+      toast.error("Title is required");
       return;
     }
 
@@ -75,42 +88,55 @@ export default function CRMCustomerFile({ client, businessId }) {
           title: res.data.title,
           date: res.data.date,
           notes: res.data.notes,
+          readonly: false,
         },
         ...events,
       ]);
 
       setNewEvent({ type: "call", title: "", date: "", notes: "" });
-
-      if (res.data.type === "task" && res.data.date) {
-        toast.info(`✅ Task added for ${res.data.date}: ${res.data.title}`);
-      }
-    } catch (err) {
-      console.error("❌ Error adding event:", err);
-      toast.error("❌ Error adding event");
+      setShowAdd(false);
+      toast.success("✅ Event added");
+    } catch {
+      toast.error("❌ Failed to add event");
     }
   };
 
-  // ✅ Delete event
+  /* =====================================================
+     Edit Event
+  ===================================================== */
+  const startEdit = (e) => {
+    setEditingId(e.id);
+    setEditDraft({ title: e.title, notes: e.notes });
+  };
+
+  const saveEdit = async (id) => {
+    try {
+      const res = await API.put(`/crm-events/${id}`, editDraft);
+      setEvents(events.map((e) => (e.id === id ? { ...e, ...res.data } : e)));
+      setEditingId(null);
+      toast.success("✏️ Event updated");
+    } catch {
+      toast.error("❌ Failed to update");
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditDraft({ title: "", notes: "" });
+  };
+
+  /* =====================================================
+     Delete Event
+  ===================================================== */
   const deleteEvent = async (id) => {
+    if (!window.confirm("Delete this event?")) return;
+
     try {
       await API.delete(`/crm-events/${id}`);
       setEvents(events.filter((e) => e.id !== id));
-      toast.success("🗑️ Event deleted successfully");
-    } catch (err) {
-      console.error("❌ Error deleting event:", err);
-      toast.error("❌ Error deleting event");
-    }
-  };
-
-  // ✅ Update event (title/notes)
-  const updateEvent = async (id, field, value) => {
-    try {
-      const res = await API.put(`/crm-events/${id}`, { [field]: value });
-      setEvents(events.map((e) => (e.id === id ? { ...e, ...res.data } : e)));
-      toast.success("✏️ Event updated successfully");
-    } catch (err) {
-      console.error("❌ Error updating event:", err);
-      toast.error("❌ Error updating event");
+      toast.success("🗑️ Event deleted");
+    } catch {
+      toast.error("❌ Failed to delete");
     }
   };
 
@@ -124,87 +150,141 @@ export default function CRMCustomerFile({ client, businessId }) {
 
   return (
     <div className="crm-customer-profile">
-      <h2>Customer File – {client?.fullName}</h2>
-      <p>
-        📞 {client?.phone} | ✉️ {client?.email}
-      </p>
+      {/* ================= HEADER ================= */}
+      <div className="customer-header">
+        <div>
+          <h2>{client?.fullName}</h2>
+          <p className="customer-meta">
+            📞 {client?.phone || "-"} &nbsp;|&nbsp; ✉️ {client?.email || "-"}
+          </p>
+        </div>
 
-      {/* Add Event Form */}
-      <div className="add-event-form">
-        <select
-          value={newEvent.type}
-          onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
+        <button
+          className="primary"
+          onClick={() => setShowAdd((s) => !s)}
         >
-          <option value="call">Call</option>
-          <option value="message">Message</option>
-          <option value="meeting">Meeting</option>
-          <option value="task">Task</option>
-          <option value="file">File</option>
-        </select>
-
-        <input
-          type="text"
-          placeholder="Title"
-          value={newEvent.title}
-          onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-        />
-
-        <input
-          type="date"
-          value={newEvent.date}
-          onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-        />
-
-        <textarea
-          placeholder="Notes"
-          value={newEvent.notes}
-          onChange={(e) => setNewEvent({ ...newEvent, notes: e.target.value })}
-        />
-
-        <button onClick={addEvent}>➕ Add</button>
+          ➕ Add Event
+        </button>
       </div>
 
-      {/* Timeline */}
+      {/* ================= ADD EVENT ================= */}
+      {showAdd && (
+        <div className="add-event-card">
+          <select
+            value={newEvent.type}
+            onChange={(e) =>
+              setNewEvent({ ...newEvent, type: e.target.value })
+            }
+          >
+            <option value="call">Call</option>
+            <option value="message">Message</option>
+            <option value="meeting">Meeting</option>
+            <option value="task">Task</option>
+            <option value="file">File</option>
+          </select>
+
+          <input
+            placeholder="Title *"
+            value={newEvent.title}
+            onChange={(e) =>
+              setNewEvent({ ...newEvent, title: e.target.value })
+            }
+          />
+
+          <input
+            type="date"
+            value={newEvent.date}
+            onChange={(e) =>
+              setNewEvent({ ...newEvent, date: e.target.value })
+            }
+          />
+
+          <textarea
+            placeholder="Notes"
+            value={newEvent.notes}
+            onChange={(e) =>
+              setNewEvent({ ...newEvent, notes: e.target.value })
+            }
+          />
+
+          <div className="actions">
+            <button onClick={() => setShowAdd(false)}>Cancel</button>
+            <button className="primary" onClick={addEvent}>
+              Save
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ================= TIMELINE ================= */}
       <ul className="event-timeline">
         {events.length === 0 ? (
-          <li>No events for this client</li>
+          <li className="empty">No activity yet</li>
         ) : (
           events.map((e) => (
-            <li key={e.id}>
-              <span>{typeLabels[e.type]}</span>
-              <strong
-                contentEditable={!e.readonly}
-                suppressContentEditableWarning
-                onBlur={(ev) =>
-                  !e.readonly && updateEvent(e.id, "title", ev.target.innerText)
-                }
-              >
-                {e.title}
-              </strong>{" "}
-              – {e.date || "No date"}
-              <p
-                contentEditable={!e.readonly}
-                suppressContentEditableWarning
-                onBlur={(ev) =>
-                  !e.readonly && updateEvent(e.id, "notes", ev.target.innerText)
-                }
-              >
-                {e.notes}
-              </p>
-              {!e.readonly && (
-                <button
-                  className="delete-btn"
-                  onClick={() => deleteEvent(e.id)}
-                >
-                  🗑️ Delete
-                </button>
+            <li key={e.id} className="event-item">
+              <div className="event-header">
+                <span>{typeLabels[e.type]}</span>
+                <span className="event-date">
+                  {e.date || "No date"}
+                </span>
+              </div>
+
+              {editingId === e.id ? (
+                <>
+                  <input
+                    value={editDraft.title}
+                    onChange={(ev) =>
+                      setEditDraft({
+                        ...editDraft,
+                        title: ev.target.value,
+                      })
+                    }
+                  />
+                  <textarea
+                    value={editDraft.notes}
+                    onChange={(ev) =>
+                      setEditDraft({
+                        ...editDraft,
+                        notes: ev.target.value,
+                      })
+                    }
+                  />
+
+                  <div className="actions">
+                    <button onClick={cancelEdit}>Cancel</button>
+                    <button
+                      className="primary"
+                      onClick={() => saveEdit(e.id)}
+                    >
+                      Save
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <strong>{e.title}</strong>
+                  {e.notes && <p>{e.notes}</p>}
+
+                  {!e.readonly && (
+                    <div className="event-actions">
+                      <button onClick={() => startEdit(e)}>✏️ Edit</button>
+                      <button
+                        className="danger"
+                        onClick={() => deleteEvent(e.id)}
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </li>
           ))
         )}
       </ul>
 
-      <ToastContainer position="top-center" autoClose={4000} />
+      <ToastContainer position="top-center" autoClose={3500} />
     </div>
   );
 }
