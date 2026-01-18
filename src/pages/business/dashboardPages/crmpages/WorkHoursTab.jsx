@@ -49,22 +49,6 @@ export default function WorkHoursTab() {
     }));
   };
 
-  // 🧠 Smart copy: first open day with hours
-  const copyToAllDays = () => {
-    const sourceDay = Object.values(weeklyHours).find(
-      d => d && d.start && d.end
-    );
-
-    if (!sourceDay) return;
-
-    const updated = {};
-    weekdays.forEach((_, i) => {
-      updated[i] = { ...sourceDay };
-    });
-
-    setWeeklyHours(updated);
-  };
-
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -128,14 +112,6 @@ export default function WorkHoursTab() {
       </div>
 
       <div className="actions-row">
-        <button
-          type="button"
-          className="secondary-btn"
-          onClick={copyToAllDays}
-        >
-          📋 Copy hours to all days
-        </button>
-
         <button
           type="button"
           className="primary-btn"

@@ -64,7 +64,7 @@
 .actions-row {
   margin-top: 24px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center; 
   gap: 12px;
 }
 
