@@ -422,6 +422,15 @@ export default function ClientCalendar({
   buttonClass="phone-flag"
 />
 
+<label>Email (optional):</label>
+<input
+  type="email"
+  value={clientEmail}
+  onChange={(e) => setClientEmail(e.target.value)}
+  placeholder="Enter email for confirmation"
+/>
+
+
     <label>Address:</label>
     <input
       value={clientAddress}
