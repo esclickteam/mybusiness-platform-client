@@ -190,32 +190,48 @@ export default function CRMClientsTab({ businessId }) {
                   <th />
                 </tr>
               </thead>
+
               <tbody>
-                {filteredClients.map((client) => (
-                  <tr
-                    key={client._id}
-                    className="client-row"
-                    onClick={() => {
-                      setSelectedClient(client);
-                      setMode("view");
-                    }}
-                  >
-                    <td>{client.fullName}</td>
-                    <td>{client.phone}</td>
-                    <td>{client.email || "-"}</td>
-                    <td>
-                      <button
-                        className="icon-btn danger"
-                        onClick={(e) =>
-                          handleDelete(client, e)
-                        }
-                      >
-                        🗑
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+  {filteredClients.map((client) => (
+    <tr
+      key={client._id}
+      className="client-row"
+      onClick={() => {
+        setSelectedClient(client);
+        setMode("view");
+      }}
+    >
+      <td>{client.fullName}</td>
+      <td>{client.phone}</td>
+      <td>{client.email || "-"}</td>
+
+      {/* פעולות */}
+      <td className="actions-cell">
+        {/* כפתור פתיחת תיק לקוח – ברור וגלוי */}
+        <button
+          className="open-client-btn"
+          onClick={(e) => {
+            e.stopPropagation(); // מונע קליק כפול על השורה
+            setSelectedClient(client);
+            setMode("view");
+          }}
+        >
+          📂 Open
+        </button>
+
+        {/* מחיקה */}
+        <button
+          className="icon-btn danger"
+          onClick={(e) => handleDelete(client, e)}
+        >
+          🗑
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+
             </table>
           )}
         </>

@@ -301,6 +301,41 @@ button {
   box-shadow: 0 14px 30px rgba(94, 23, 235, 0.45);
 }
 
+/* =========================
+   Open Client Button
+========================= */
+.open-client-btn {
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid #e0d7ff;
+  background: #ffffff;
+  color: #5e17eb;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease, box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+/* Hover */
+.open-client-btn:hover {
+  background: #f4f2ff;
+  box-shadow: 0 6px 16px rgba(94, 23, 235, 0.18);
+  transform: translateY(-1px);
+}
+
+/* פעולות בצד ימין */
+.actions-cell {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+
 /* =====================================================
    FIX – isolate CRM table from global table styles
 ===================================================== */
