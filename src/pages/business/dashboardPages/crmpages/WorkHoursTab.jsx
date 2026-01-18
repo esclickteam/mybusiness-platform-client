@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import API from "@api";
 import "./WorkHoursTab.css";
-
 
 const weekdays = [
   "Sunday",
@@ -50,14 +49,19 @@ export default function WorkHoursTab() {
     }));
   };
 
-  const applyToAllDays = () => {
-    const sourceDay = weeklyHours[0];
-    if (!sourceDay || sourceDay === null) return;
+  // 🧠 Smart copy: first open day with hours
+  const copyToAllDays = () => {
+    const sourceDay = Object.values(weeklyHours).find(
+      d => d && d.start && d.end
+    );
+
+    if (!sourceDay) return;
 
     const updated = {};
     weekdays.forEach((_, i) => {
       updated[i] = { ...sourceDay };
     });
+
     setWeeklyHours(updated);
   };
 
@@ -127,9 +131,9 @@ export default function WorkHoursTab() {
         <button
           type="button"
           className="secondary-btn"
-          onClick={applyToAllDays}
+          onClick={copyToAllDays}
         >
-          📋 Apply Sunday to all days
+          📋 Copy hours to all days
         </button>
 
         <button
