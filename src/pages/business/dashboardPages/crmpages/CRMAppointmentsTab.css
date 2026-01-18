@@ -195,6 +195,24 @@
   font-size: 0.95rem;
 }
 
+.phone-container {
+  width: 100%;
+}
+
+.phone-input {
+  width: 100% !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+  border: 1px solid #e0e0e0 !important;
+  font-size: 15px;
+}
+
+.phone-input:focus {
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
+}
+
+
 /* =========================
    Mobile
 ========================= */

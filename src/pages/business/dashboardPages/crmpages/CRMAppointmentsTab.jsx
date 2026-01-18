@@ -4,6 +4,9 @@ import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import API from "@api";
 import { useAuth } from "../../../../context/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
@@ -305,7 +308,7 @@ const handleDeleteAppointment = async (id) => {
                 ...newAppointment,
                 crmClientId: c?._id || "",
                 clientName: c?.fullName || "",
-                clientPhone: c?.phone || "",
+                clientPhone: c?.phone ? c.phone.replace(/\D/g, "") : "",
                 email: c?.email || "",
                 address: c?.address || "",
               });
@@ -327,13 +330,39 @@ const handleDeleteAppointment = async (id) => {
             }
           />
 
-          <input
-            placeholder="Phone"
-            value={newAppointment.clientPhone}
-            onChange={e =>
-              setNewAppointment({ ...newAppointment, clientPhone: e.target.value })
-            }
-          />
+          <label>Phone:</label>
+<PhoneInput
+  country="us" // 🇺🇸 ברירת מחדל
+  preferredCountries={["us", "il", "gb", "ca"]}
+  enableSearch
+  value={newAppointment.clientPhone}
+  onChange={(phone) => {
+    // מנקה טלפון להשוואה
+    const normalizedPhone = phone.replace(/\D/g, "");
+
+    // חיפוש לקוח קיים ב־CRM לפי טלפון
+    const existingClient = clients.find(
+      c => c.phone?.replace(/\D/g, "") === normalizedPhone
+    );
+
+    setNewAppointment(prev => ({
+      ...prev,
+      clientPhone: phone,                 // ✔ פורמט אחיד
+      crmClientId: existingClient?._id || prev.crmClientId,
+      email: existingClient?.email || prev.email,
+      address: existingClient?.address || prev.address,
+      clientName: existingClient?.fullName || prev.clientName,
+    }));
+  }}
+  inputProps={{
+    name: "phone",
+    required: true,
+  }}
+  containerClass="phone-container"
+  inputClass="phone-input"
+  buttonClass="phone-flag"
+/>
+
 
           <select
             value={newAppointment.serviceId}
@@ -381,13 +410,16 @@ const handleDeleteAppointment = async (id) => {
             >
               Cancel
             </button>
+
             <button
-              className="primary-btn"
-              onClick={saveAppointment}
-              disabled={isSaving}
-            >
-              {isSaving ? "Saving…" : "Schedule"}
-            </button>
+  type="button"          // ❗ חשוב – מונע submit אוטומטי
+  className="primary-btn"
+  onClick={saveAppointment}
+  disabled={isSaving}
+>
+  {isSaving ? "Saving…" : "Schedule"}
+</button>
+
           </div>
         </div>
       )}
