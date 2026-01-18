@@ -216,6 +216,7 @@ const BusinessAdvisorTab = ({
   <AiInsightsPanel
     insights={insights}
     loading={insightsLoading}
+    businessId={businessId}
   />
 )}
 

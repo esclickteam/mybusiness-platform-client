@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./AiInsights.css";
 
 const ICONS = {
@@ -9,7 +10,9 @@ const ICONS = {
   retention: "🔁",
 };
 
-export default function AiInsightsPanel({ insights, loading }) {
+export default function AiInsightsPanel({ insights, loading, businessId }) {
+  const navigate = useNavigate();
+
   if (loading) {
     return <div className="ai-insights-loading">Loading insights…</div>;
   }
@@ -22,6 +25,22 @@ export default function AiInsightsPanel({ insights, loading }) {
     );
   }
 
+  const handleActionClick = (insight) => {
+    // ▶️ FOLLOW UP → ניתוב לצ׳אט
+    if (
+      insight.id === "followup_needed" &&
+      insight.meta?.conversations?.length
+    ) {
+      const conversationId = insight.meta.conversations[0];
+
+      navigate(
+        `/businesses/${businessId}/dashboard/messages?conversationId=${conversationId}`
+      );
+    }
+
+    // אפשר להוסיף כאן פעולות נוספות בהמשך
+  };
+
   return (
     <div className="ai-insights-panel">
       <h3>AI Insights</h3>
@@ -32,14 +51,19 @@ export default function AiInsightsPanel({ insights, loading }) {
             key={insight.id}
             className={`ai-insight-card priority-${insight.priority}`}
           >
-            <div className="icon">{ICONS[insight.type] || "💡"}</div>
+            <div className="icon">
+              {ICONS[insight.type] || "💡"}
+            </div>
 
             <div className="content">
               <h4>{insight.title}</h4>
               <p>{insight.description}</p>
 
               {insight.actionLabel && (
-                <button className="action-btn">
+                <button
+                  className="action-btn"
+                  onClick={() => handleActionClick(insight)}
+                >
                   {insight.actionLabel}
                 </button>
               )}
