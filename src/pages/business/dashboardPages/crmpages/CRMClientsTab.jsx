@@ -161,7 +161,7 @@ export default function CRMClientsTab({ businessId }) {
                 setMode("create");
               }}
             >
-              ➕ New Client
+            
             </button>
           </div>
 
