@@ -7,11 +7,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const CRMAppointmentsTab = () => {
   const { user, socket } = useAuth();
-  const businessId = user?.businessId || user?.business?._id || null;
+  const businessId = user?.businessId || user?.business?._id;
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
   const [newAppointment, setNewAppointment] = useState({
     crmClientId: "",
     clientName: "",
@@ -25,190 +27,117 @@ const CRMAppointmentsTab = () => {
     time: "",
   });
 
-  const [editId, setEditId] = useState(null);
-  const [isSaving, setIsSaving] = useState(false);
-
   const [services, setServices] = useState([]);
   const [clients, setClients] = useState([]);
   const [businessSchedule, setBusinessSchedule] = useState(null);
 
-  // === Convert business schedule object into array ===
-  // === Convert business schedule object into array (SAFE VERSION) ===
-const scheduleArray = useMemo(() => {
-  if (!businessSchedule) return [];
-
-  return Object.entries(businessSchedule).map(([day, value]) => {
-    // יום סגור כללית
-    if (!value || value === null) {
+  /* =========================
+     Schedule → Array
+  ========================= */
+  const scheduleArray = useMemo(() => {
+    if (!businessSchedule) return [];
+    return Object.entries(businessSchedule).map(([day, value]) => {
+      if (!value || !value.start || !value.end) {
+        return { day: Number(day), closed: true };
+      }
       return {
         day: Number(day),
-        start: null,
-        end: null,
-        closed: true,
+        start: value.start,
+        end: value.end,
+        closed: false,
       };
-    }
+    });
+  }, [businessSchedule]);
 
-    // התחלה/סיום לא תקינים ⇒ גם יום סגור
-    const start = value.start || null;
-    const end = value.end || null;
-
-    if (!start || !end) {
-      return {
-        day: Number(day),
-        start: null,
-        end: null,
-        closed: true,
-      };
-    }
-
-    // יום תקין ופתוח
-    return {
-      day: Number(day),
-      start,
-      end,
-      closed: false,
-    };
-  });
-}, [businessSchedule]);
-
-
-  // === Fetch services ===
+  /* =========================
+     Data Fetching
+  ========================= */
   useEffect(() => {
-    async function fetchServices() {
-      if (!businessId) return;
-      try {
-        const res = await API.get("/business/my/services");
-        setServices(res.data.services || []);
-      } catch (e) {
-        console.error("Error fetching services:", e);
-      }
-    }
-    fetchServices();
+    if (!businessId) return;
+
+    API.get("/business/my/services").then(r =>
+      setServices(r.data.services || [])
+    );
+
+    API.get(`/crm-clients/${businessId}`).then(r =>
+      setClients(r.data || [])
+    );
+
+    API.get("/appointments/get-work-hours", {
+      params: { businessId },
+    }).then(r => setBusinessSchedule(r.data.workHours || {}));
   }, [businessId]);
 
-  // === Fetch CRM clients ===
-  useEffect(() => {
-    async function fetchClients() {
-      if (!businessId) return;
-      try {
-        const res = await API.get(`/crm-clients/${businessId}`);
-        setClients(res.data || []);
-      } catch (e) {
-        console.error("Error fetching clients:", e);
-      }
-    }
-    fetchClients();
-  }, [businessId]);
-
-  // === Fetch work hours ===
-  useEffect(() => {
-    async function fetchSchedule() {
-      if (!businessId) return;
-      try {
-        const res = await API.get("/appointments/get-work-hours", {
-          params: { businessId },
-        });
-        setBusinessSchedule(res.data.workHours || {});
-      } catch (e) {
-        console.error("Error fetching schedule:", e);
-      }
-    }
-    fetchSchedule();
-  }, [businessId]);
-
-  // === Fetch appointments ===
   const {
     data: appointments = [],
-    refetch: refetchAppointments,
-    isLoading: isLoadingAppointments,
-    isError: isErrorAppointments,
+    isLoading,
+    isError,
   } = useQuery({
-    queryKey: ["appointments", "all-with-services", businessId],
+    queryKey: ["appointments", businessId],
     queryFn: () =>
-      API.get("/appointments/all-with-services").then((res) => res.data),
+      API.get("/appointments/all-with-services").then(r => r.data),
     enabled: !!businessId,
   });
 
-  // === Sync appointments in real-time using socket.io ===
+  /* =========================
+     Socket Sync
+  ========================= */
   useEffect(() => {
     if (!socket) return;
 
-    const onCreated = (appt) => {
-      queryClient.setQueryData(
-        ["appointments", "all-with-services", businessId],
-        (old = []) => {
-          if (old.some((a) => a._id === appt._id)) return old;
-          return [...old, appt];
-        }
+    socket.on("appointmentCreated", appt => {
+      queryClient.setQueryData(["appointments", businessId], (old = []) =>
+        old.some(a => a._id === appt._id) ? old : [...old, appt]
       );
-    };
+    });
 
-    const onUpdated = (updatedAppt) => {
-      queryClient.setQueryData(
-        ["appointments", "all-with-services", businessId],
-        (old = []) =>
-          old.map((appt) => (appt._id === updatedAppt._id ? updatedAppt : appt))
+    socket.on("appointmentUpdated", updated => {
+      queryClient.setQueryData(["appointments", businessId], (old = []) =>
+        old.map(a => (a._id === updated._id ? updated : a))
       );
-    };
+    });
 
-    const onDeleted = ({ id }) => {
-      queryClient.setQueryData(
-        ["appointments", "all-with-services", businessId],
-        (old = []) => old.filter((appt) => appt._id !== id)
+    socket.on("appointmentDeleted", ({ id }) => {
+      queryClient.setQueryData(["appointments", businessId], (old = []) =>
+        old.filter(a => a._id !== id)
       );
-    };
+    });
 
-    socket.on("appointmentCreated", onCreated);
-    socket.on("appointmentUpdated", onUpdated);
-    socket.on("appointmentDeleted", onDeleted);
-
-    return () => {
-      socket.off("appointmentCreated", onCreated);
-      socket.off("appointmentUpdated", onUpdated);
-      socket.off("appointmentDeleted", onDeleted);
-    };
+    return () => socket.removeAllListeners();
   }, [socket, queryClient, businessId]);
 
-  // === Save new appointment (with crmClientId) ===
-  const handleConfirmAppointment = async () => {
-    if (isSaving) return;
+  /* =========================
+     Search
+  ========================= */
+  const filteredAppointments = useMemo(() => {
+    const q = search.toLowerCase();
+    return appointments.filter(a =>
+      a.clientSnapshot?.name?.toLowerCase().includes(q) ||
+      a.clientSnapshot?.phone?.includes(q)
+    );
+  }, [appointments, search]);
 
+  /* =========================
+     Create Appointment
+  ========================= */
+  const saveAppointment = async () => {
+    if (isSaving) return;
     if (
-      !newAppointment.clientName.trim() ||
-      !newAppointment.clientPhone.trim() ||
-      !newAppointment.date ||
-      !newAppointment.time ||
+      !newAppointment.clientName ||
+      !newAppointment.clientPhone ||
       !newAppointment.serviceId ||
-      !newAppointment.crmClientId
-    ) {
-      alert("Please fill in name, phone, service, date, time, and CRM client");
+      !newAppointment.date ||
+      !newAppointment.time
+    )
       return;
-    }
 
     setIsSaving(true);
     try {
       await API.post("/appointments", {
         businessId,
-        crmClientId: newAppointment.crmClientId,
-        name: newAppointment.clientName,
-        phone: newAppointment.clientPhone,
-        address: newAppointment.address,
-        email: newAppointment.email,
-        note: newAppointment.note,
-        serviceId: newAppointment.serviceId,
-        date: newAppointment.date,
-        time: newAppointment.time,
-        serviceName: newAppointment.serviceName,
+        ...newAppointment,
         duration: 30,
       });
-
-      // ✅ Refresh both appointments and client file
-      await refetchAppointments();
-      queryClient.invalidateQueries(["clients", businessId]);
-      queryClient.invalidateQueries([
-        "customerFile",
-        newAppointment.crmClientId,
-      ]);
 
       setShowAddForm(false);
       setNewAppointment({
@@ -223,309 +152,160 @@ const scheduleArray = useMemo(() => {
         date: "",
         time: "",
       });
-    } catch (error) {
-      if (
-        error.response &&
-        error.response.status === 400 &&
-        error.response.data.message.includes("Slot already booked")
-      ) {
-        alert("The selected time is already booked or overlaps with another appointment. Please choose another time.");
-      } else {
-        alert("Error saving appointment. Please try again.");
-      }
     } finally {
       setIsSaving(false);
     }
   };
 
-  // === Send Email Reminder ===
-const sendEmailReminder = (email, clientName, date, time, service) => {
-  if (!email) {
-    alert("Client email is missing");
-    return;
-  }
-
-  const formattedDate = new Date(date).toLocaleDateString("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
-  const businessName = user?.businessName || "Your Business";
-
-  const subject = `Appointment Reminder – ${businessName}`;
-
-  const body = `
-Hello ${clientName},
-
-This is a reminder for your upcoming appointment.
-
-Service: ${service}
-Date: ${formattedDate}
-Time: ${time}
-
-Best regards,
-${businessName}
-  `.trim();
-
-  window.location.href = `mailto:${email}?subject=${encodeURIComponent(
-    subject
-  )}&body=${encodeURIComponent(body)}`;
-};
-
-
-
- 
-  // === Filter & search ===
-  const filteredUniqueAppointments = useMemo(() => {
-  const seen = new Set();
-  const searchLower = search.toLowerCase().trim();
-  const searchDigitsOnly = search.replace(/\D/g, "");
-
-  return appointments
-    .filter((appt) => {
-      const clientName =
-        appt.clientSnapshot?.name?.toLowerCase().trim() || "";
-
-      const clientPhone =
-        appt.clientSnapshot?.phone?.replace(/\D/g, "") || "";
-
-      if (searchDigitsOnly.length > 0) {
-        return clientPhone.includes(searchDigitsOnly);
-      } else if (searchLower.length > 0) {
-        return clientName.includes(searchLower);
-      }
-      return true;
-    })
-    .filter((appt) => {
-      if (!appt._id) return true;
-      if (seen.has(appt._id)) return false;
-      seen.add(appt._id);
-      return true;
-    });
-}, [appointments, search]);
-
-
-  if (isLoadingAppointments) return <p>Loading appointments...</p>;
-  if (isErrorAppointments) return <p>Error loading appointments</p>;
+  if (isLoading) return <p>Loading…</p>;
+  if (isError) return <p>Error loading appointments</p>;
 
   return (
     <div className="crm-appointments-tab">
-      <h2>📆 Appointments / Bookings</h2>
+      <div className="appointments-top">
+        <h2>📆 Appointments</h2>
 
-      <div className="appointments-header">
-        <input
-          type="text"
-          placeholder="Search by name or phone..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
-        />
-        <button
-          className="add-btn"
-          onClick={() => {
-            setShowAddForm((show) => !show);
-            setNewAppointment({
-              crmClientId: "",
-              clientName: "",
-              clientPhone: "",
-              address: "",
-              email: "",
-              note: "",
-              serviceId: "",
-              serviceName: "",
-              date: "",
-              time: "",
-            });
-          }}
-        >
-          ➕ Add Appointment
-        </button>
+        <div className="appointments-actions">
+          <input
+            placeholder="Search by name or phone…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          <button
+            className="primary-btn"
+            onClick={() => setShowAddForm(true)}
+          >
+            + Add Appointment
+          </button>
+        </div>
       </div>
 
       {showAddForm && (
-        <div className="add-form">
-          {/* ✅ Select CRM client */}
+        <div className="appointment-form">
+          <h3>New Appointment</h3>
+
           <select
             value={newAppointment.crmClientId}
-            onChange={(e) => {
-              const clientId = e.target.value;
-              const client = clients.find((c) => c._id === clientId);
+            onChange={e => {
+              const c = clients.find(x => x._id === e.target.value);
               setNewAppointment({
                 ...newAppointment,
-                crmClientId: clientId,
-                clientName: client?.fullName || "",
-                clientPhone: client?.phone || "",
-                email: client?.email || "",
-                address: client?.address || "",
+                crmClientId: c?._id || "",
+                clientName: c?.fullName || "",
+                clientPhone: c?.phone || "",
+                email: c?.email || "",
+                address: c?.address || "",
               });
             }}
           >
             <option value="">Select CRM Client</option>
-            {clients.map((c) => (
+            {clients.map(c => (
               <option key={c._id} value={c._id}>
-                {c.fullName} ({c.phone})
+                {c.fullName}
               </option>
             ))}
           </select>
 
           <input
-            type="text"
             placeholder="Full name"
             value={newAppointment.clientName}
-            onChange={(e) =>
+            onChange={e =>
               setNewAppointment({ ...newAppointment, clientName: e.target.value })
             }
           />
+
           <input
-            type="tel"
             placeholder="Phone"
             value={newAppointment.clientPhone}
-            onChange={(e) =>
+            onChange={e =>
               setNewAppointment({ ...newAppointment, clientPhone: e.target.value })
             }
           />
-          <input
-            type="text"
-            placeholder="Address"
-            value={newAppointment.address}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, address: e.target.value })
-            }
-          />
-          <input
-            type="email"
-            placeholder="Email (for confirmation)"
-            value={newAppointment.email}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, email: e.target.value })
-            }
-          />
-          <textarea
-            className="full-width"
-            placeholder="Note (optional)"
-            value={newAppointment.note}
-            onChange={(e) =>
-              setNewAppointment({ ...newAppointment, note: e.target.value })
-            }
-          />
+
           <select
             value={newAppointment.serviceId}
-            onChange={(e) => {
-              const service = services.find((s) => s._id === e.target.value);
+            onChange={e => {
+              const s = services.find(x => x._id === e.target.value);
               setNewAppointment({
                 ...newAppointment,
-                serviceId: service?._id || "",
-                serviceName: service?.name || "",
+                serviceId: s?._id || "",
+                serviceName: s?.name || "",
                 time: "",
               });
             }}
           >
             <option value="">Select Service</option>
-            {services.map((s) => (
+            {services.map(s => (
               <option key={s._id} value={s._id}>
                 {s.name}
               </option>
             ))}
           </select>
+
           <input
             type="date"
             value={newAppointment.date}
-            onChange={(e) =>
+            onChange={e =>
               setNewAppointment({ ...newAppointment, date: e.target.value })
             }
           />
+
           <SelectTimeFromSlots
             date={newAppointment.date}
             selectedTime={newAppointment.time}
-            onChange={(time) =>
+            onChange={time =>
               setNewAppointment({ ...newAppointment, time })
             }
             businessId={businessId}
             serviceId={newAppointment.serviceId}
             schedule={scheduleArray}
           />
-          <button onClick={handleConfirmAppointment} disabled={isSaving}>
-            📅 Schedule Appointment
-          </button>
+
+          <div className="form-actions">
+            <button
+              className="secondary-btn"
+              onClick={() => setShowAddForm(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="primary-btn"
+              onClick={saveAppointment}
+              disabled={isSaving}
+            >
+              {isSaving ? "Saving…" : "Schedule"}
+            </button>
+          </div>
         </div>
       )}
 
-      {/* === Appointments table === */}
-      <table className="appointments-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Service</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUniqueAppointments.length === 0 ? (
-            <tr>
-              <td colSpan="6">No appointments found</td>
-            </tr>
-          ) : (
-            filteredUniqueAppointments.map((appt) => (
-              <tr key={appt._id}>
-                <td>{appt.clientSnapshot?.name || "Unknown"}</td>
-                <td>{appt.clientSnapshot?.phone || "-"}</td>
-                <td>{appt.serviceName}</td>
-                <td>{appt.date}</td>
-                <td>{appt.time}</td>
+      <div className="appointments-grid">
+        {filteredAppointments.map(appt => (
+          <div key={appt._id} className="appointment-card">
+            <div>
+              <strong>{appt.clientSnapshot?.name}</strong>
+              <div className="muted">{appt.clientSnapshot?.phone}</div>
+            </div>
 
-                <td>
-  {/* Email Reminder */}
-  <button
-    disabled={!appt.clientSnapshot?.email}
-    onClick={() =>
-      sendEmailReminder(
-        appt.clientSnapshot?.email,
-        appt.clientSnapshot?.name || "Client",
-        appt.date,
-        appt.time,
-        appt.serviceName
-      )
-    }
-  >
-    ✉️ Email Reminder
-  </button>
+            <div className="meta">
+              <span>{appt.serviceName}</span>
+              <span>
+                {appt.date} · {appt.time}
+              </span>
+            </div>
 
-  {/* Edit */}
-  <button onClick={() => setEditId(appt._id)}>✏️ Edit</button>
+            <div className="card-actions">
+              <button title="Email">✉️</button>
+              <button title="Edit">✏️</button>
+              <button title="Delete">🗑️</button>
+            </div>
+          </div>
+        ))}
 
-  {/* Delete */}
-  <button
-    onClick={async () => {
-      if (window.confirm("Are you sure you want to delete this appointment?")) {
-        try {
-          await API.delete(`/appointments/${appt._id}`);
-          queryClient.invalidateQueries([
-            "appointments",
-            "all-with-services",
-            businessId,
-          ]);
-        } catch (err) {
-          console.error("Error deleting appointment:", err);
-          alert("❌ Deletion failed");
-        }
-      }
-    }}
-  >
-    ❌ Delete
-  </button>
-</td>
-
-
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+        {filteredAppointments.length === 0 && (
+          <div className="empty-state">No appointments yet</div>
+        )}
+      </div>
     </div>
   );
 };
