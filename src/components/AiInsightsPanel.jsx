@@ -48,12 +48,14 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
     console.log("📨 Follow-up conversationId:", conversationId);
     console.log("➡️ Navigating to /dashboard/messages with state");
 
-    navigate("/dashboard/messages", {
-      state: {
-        threadId: conversationId,
-        from: "ai-insights", // 👈 עוזר לנו להבין מאיפה באנו
-      },
-    });
+    navigate(
+  `/business/${businessId}/dashboard/messages`,
+  {
+    state: {
+      threadId: conversationId,
+    },
+  }
+);
 
     console.log("✅ navigate() called");
   };
