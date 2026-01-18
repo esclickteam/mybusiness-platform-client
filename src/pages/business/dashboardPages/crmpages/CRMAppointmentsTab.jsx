@@ -40,6 +40,8 @@ const CRMAppointmentsTab = () => {
 
  
 const openEmail = ({ provider, email, subject, body }) => {
+    console.log("🔥 openEmail called", { provider, email });
+
   const encodedSubject = encodeURIComponent(subject);
   const encodedBody = encodeURIComponent(body);
 
