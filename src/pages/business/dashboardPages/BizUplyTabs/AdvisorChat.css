@@ -30,12 +30,14 @@
 }
 
 .question-balance {
-  direction: ltr;          /* 🔥 זה הפתרון */
-  unicode-bidi: isolate;   /* 🔥 מונע ערבוב */
+  direction: ltr;
+  unicode-bidi: isolate;
 
   display: inline-flex;
   justify-content: center;
   align-items: center;
+
+  gap: 4px;                /* 🔥 זה הפתרון */
 
   margin: 16px auto 28px;
   padding: 10px 20px;
