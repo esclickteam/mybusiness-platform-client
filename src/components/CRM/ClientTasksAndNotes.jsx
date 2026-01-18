@@ -3,14 +3,12 @@ import API from "@api";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import "./ClientTasksAndNotes.css";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-
+import "./ClientTasksAndNotes.css";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
-
 
 export default function ClientTasksAndNotes({ clientId, businessId }) {
   /* =========================
@@ -25,8 +23,8 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    dueDate: "", // YYYY-MM-DD בלבד
-    dueTime: "", // HH:mm בלבד
+    dueDate: "",
+    dueTime: "",
     status: "todo",
     priority: "normal",
     reminderMinutes: 30,
@@ -35,22 +33,24 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
   const [editTaskId, setEditTaskId] = useState(null);
   const [toast, setToast] = useState(null);
 
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
   /* =========================
-     LABELS (נשארים – לא נוגעים)
+     LABELS
   ========================= */
   const statusLabels = {
-    todo: { text: "To Do", color: "gray" },
-    in_progress: { text: "In Progress", color: "orange" },
-    waiting: { text: "Waiting", color: "purple" },
-    completed: { text: "Completed", color: "green" },
-    cancelled: { text: "Cancelled", color: "red" },
+    todo: { text: "To Do" },
+    in_progress: { text: "In Progress" },
+    waiting: { text: "Waiting" },
+    completed: { text: "Completed" },
+    cancelled: { text: "Cancelled" },
   };
 
   const priorityLabels = {
-    low: { text: "Low", color: "blue" },
-    normal: { text: "Normal", color: "gray" },
-    high: { text: "High", color: "orange" },
-    critical: { text: "Critical", color: "red" },
+    low: { text: "Low" },
+    normal: { text: "Normal" },
+    high: { text: "High" },
+    critical: { text: "Critical" },
   };
 
   /* =========================
@@ -99,7 +99,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           prev.map((n) => (n._id === editNoteId ? res.data : n))
         );
         setEditNoteId(null);
-        showToast("✅ Note updated");
+        showToast("Note updated");
       } else {
         const res = await API.post("/crm-extras/notes", {
           clientId,
@@ -108,12 +108,12 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         });
 
         setNotes((prev) => [...prev, res.data]);
-        showToast("✅ Note added");
+        showToast("Note added");
       }
 
       setNewNote("");
     } catch {
-      showToast("❌ Error saving note");
+      showToast("Error saving note");
     }
   };
 
@@ -128,29 +128,29 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     try {
       await API.delete(`/crm-extras/notes/${noteId}`);
       setNotes((prev) => prev.filter((n) => n._id !== noteId));
-      showToast("🗑 Note deleted");
+      showToast("Note deleted");
     } catch {
-      showToast("❌ Error deleting note");
+      showToast("Error deleting note");
     }
   };
 
   /* =========================
-     SAVE TASK (UX + VALIDATION)
+     SAVE TASK
   ========================= */
   const handleSaveTask = async () => {
     if (!newTask.title || !newTask.dueDate || !newTask.dueTime) {
-      showToast("⚠️ Please fill title, date and time");
+      showToast("Please fill title, date and time");
       return;
     }
 
     const parsed = dayjs(
       `${newTask.dueDate} ${newTask.dueTime}`,
       "YYYY-MM-DD HH:mm",
-      true // STRICT MODE
+      true
     );
 
     if (!parsed.isValid()) {
-      showToast("❌ Invalid date or time");
+      showToast("Invalid date or time");
       return;
     }
 
@@ -171,7 +171,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
           prev.map((t) => (t._id === editTaskId ? res.data : t))
         );
         setEditTaskId(null);
-        showToast("✅ Task updated");
+        showToast("Task updated");
       } else {
         const res = await API.post("/crm-extras/tasks", {
           clientId,
@@ -185,7 +185,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         });
 
         setTasks((prev) => [...prev, res.data]);
-        showToast("✅ Task added");
+        showToast("Task added");
       }
 
       setNewTask({
@@ -197,14 +197,12 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         priority: "normal",
         reminderMinutes: 30,
       });
+      setShowAdvanced(false);
     } catch {
-      showToast("❌ Error saving task");
+      showToast("Error saving task");
     }
   };
 
-  /* =========================
-     EDIT TASK
-  ========================= */
   const handleEditTask = (task) => {
     const d = dayjs(task.dueDate).tz(dayjs.tz.guess());
 
@@ -218,6 +216,7 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
       priority: task.priority || "normal",
       reminderMinutes: task.reminderMinutes ?? 30,
     });
+    setShowAdvanced(true);
   };
 
   const handleDeleteTask = async (taskId) => {
@@ -226,15 +225,12 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
     try {
       await API.delete(`/crm-extras/tasks/${taskId}`);
       setTasks((prev) => prev.filter((t) => t._id !== taskId));
-      showToast("🗑 Task deleted");
+      showToast("Task deleted");
     } catch {
-      showToast("❌ Error deleting task");
+      showToast("Error deleting task");
     }
   };
 
-  /* =========================
-     UX VALIDATION
-  ========================= */
   const isTaskValid = newTask.title && newTask.dueDate && newTask.dueTime;
 
   /* =========================
@@ -249,7 +245,9 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         <h3>📝 Notes</h3>
 
         {notes.length === 0 ? (
-          <p className="empty-text">No notes yet</p>
+          <p className="empty-text">
+            Keep important details about this client here
+          </p>
         ) : (
           <ul className="notes-list">
             {notes.map((note) => (
@@ -270,13 +268,19 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         )}
 
         <textarea
-          placeholder="Add a note..."
+          placeholder="Write a quick note and press Enter…"
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSaveNote();
+            }
+          }}
         />
 
-        <button className="btn-primary" onClick={handleSaveNote}>
-          {editNoteId ? "💾 Update Note" : "➕ Save Note"}
+        <button className="btn-primary ghost" onClick={handleSaveNote}>
+          {editNoteId ? "Update Note" : "Save Note"}
         </button>
       </div>
 
@@ -285,77 +289,41 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         <h3>✅ Tasks</h3>
 
         {tasks.length === 0 ? (
-          <p className="empty-text">No tasks yet</p>
+          <p className="empty-text">
+            Create tasks to follow up, call back or prepare meetings
+          </p>
         ) : (
           <ul className="tasks-list">
             {tasks.map((task) => {
-              const dateObj = dayjs(task.dueDate).tz(dayjs.tz.guess());
+              const d = dayjs(task.dueDate).tz(dayjs.tz.guess());
               return (
                 <li key={task._id} className={`task-item ${task.status}`}>
-                  {/* TITLE */}
-                  <div className="task-header">
-                    <strong className="task-title">{task.title}</strong>
-                  </div>
+                  <strong>{task.title}</strong>
 
-                  {/* DESCRIPTION */}
                   {task.description && (
-                    <div className="task-description">{task.description}</div>
-                  )}
-
-                  {/* DATE & TIME */}
-                  {(() => {
-  if (!task.dueDate) return null;
-
-  const raw = task.dueDate;
-
-  // נסיון לפרסר בפורמט שמגיע מהשרת
-  const dateObj = dayjs(raw, "MMMM D, YYYY • h:mm A").tz(dayjs.tz.guess());
-
-  if (!dateObj.isValid()) {
-    console.log("❌ Still invalid", raw);
-  } else {
-    console.log("✅ Parsed OK", dateObj.format());
-  }
-
-  return (
-    <div className="task-meta">
-      <span>📅 {dateObj.isValid() ? dateObj.format("DD/MM/YYYY") : "Invalid Date"}</span>
-      <span>🕒 {dateObj.isValid() ? dateObj.format("HH:mm") : "Invalid Time"}</span>
-    </div>
-  );
-})()}
-
-
-                  {/* REMINDER */}
-                  {task.reminderMinutes > 0 && (
-                    <div className="task-reminder">
-                      ⏰ Reminder: {task.reminderMinutes} minutes before
+                    <div className="task-description">
+                      {task.description}
                     </div>
                   )}
 
-                  {/* STATUS + PRIORITY */}
+                  {d.isValid() && (
+                    <div className="task-meta">
+                      📅 {d.format("DD/MM/YYYY")} &nbsp; 🕒 {d.format("HH:mm")}
+                    </div>
+                  )}
+
                   <div className="task-meta-row">
-  <div className={`task-status ${task.status}`}>
-    <span className="task-meta-label">Status:</span>{" "}
-    <span className="task-meta-value">
-      📌 {statusLabels[task.status]?.text || task.status}
-    </span>
-  </div>
+                    <span>
+                      Status: {statusLabels[task.status]?.text}
+                    </span>
+                    <span>
+                      Priority: {priorityLabels[task.priority]?.text}
+                    </span>
+                  </div>
 
-  <div className={`task-priority ${task.priority}`}>
-    <span className="task-meta-label">Priority:</span>{" "}
-    <span className="task-meta-value">
-      ⚡ {priorityLabels[task.priority]?.text || task.priority}
-    </span>
-  </div>
-</div>
-
-                  {/* ACTIONS */}
                   <div className="task-actions">
                     <button onClick={() => handleEditTask(task)}>✏️</button>
-                    <button onClick={() => handleDeleteTask(task._id)}>
-                      🗑
-                    </button>
+                    <button onClick={() => handleDeleteTask(task._id)}>🗑</button>
                   </div>
                 </li>
               );
@@ -366,16 +334,10 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
         {/* FORM */}
         <div className="task-form">
           <input
-            placeholder="Task title"
+            placeholder="What needs to be done?"
             value={newTask.title}
-            onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-          />
-
-          <textarea
-            placeholder="Task description"
-            value={newTask.description}
             onChange={(e) =>
-              setNewTask({ ...newTask, description: e.target.value })
+              setNewTask({ ...newTask, title: e.target.value })
             }
           />
 
@@ -395,53 +357,85 @@ export default function ClientTasksAndNotes({ clientId, businessId }) {
             }
           />
 
-          {/* STATUS + PRIORITY (ROW) */}
-<div className="task-row">
-  <select
-    value={newTask.status}
-    onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
-  >
-    <option value="todo">To Do</option>
-    <option value="in_progress">In Progress</option>
-    <option value="waiting">Waiting</option>
-    <option value="completed">Completed</option>
-    <option value="cancelled">Cancelled</option>
-  </select>
-
-  <select
-    value={newTask.priority}
-    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
-  >
-    <option value="low">Low</option>
-    <option value="normal">Normal</option>
-    <option value="high">High</option>
-    <option value="critical">Critical</option>
-  </select>
-</div>
-
-          <select
-            value={newTask.reminderMinutes}
-            onChange={(e) =>
-              setNewTask({
-                ...newTask,
-                reminderMinutes: Number(e.target.value),
-              })
-            }
+          <button
+            className="link-btn"
+            onClick={() => setShowAdvanced((s) => !s)}
           >
-            <option value={0}>No reminder</option>
-            <option value={5}>5 minutes before</option>
-            <option value={15}>15 minutes before</option>
-            <option value={30}>30 minutes before</option>
-            <option value={60}>1 hour before</option>
-            <option value={1440}>1 day before</option>
-          </select>
+            {showAdvanced ? "Hide advanced options" : "Advanced options"}
+          </button>
+
+          {showAdvanced && (
+            <>
+              <textarea
+                placeholder="Additional details (optional)"
+                value={newTask.description}
+                onChange={(e) =>
+                  setNewTask({
+                    ...newTask,
+                    description: e.target.value,
+                  })
+                }
+              />
+
+              <div className="task-row">
+                <select
+                  value={newTask.status}
+                  onChange={(e) =>
+                    setNewTask({
+                      ...newTask,
+                      status: e.target.value,
+                    })
+                  }
+                >
+                  {Object.keys(statusLabels).map((k) => (
+                    <option key={k} value={k}>
+                      {statusLabels[k].text}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={newTask.priority}
+                  onChange={(e) =>
+                    setNewTask({
+                      ...newTask,
+                      priority: e.target.value,
+                    })
+                  }
+                >
+                  {Object.keys(priorityLabels).map((k) => (
+                    <option key={k} value={k}>
+                      {priorityLabels[k].text}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <select
+                value={newTask.reminderMinutes}
+                onChange={(e) =>
+                  setNewTask({
+                    ...newTask,
+                    reminderMinutes: Number(e.target.value),
+                  })
+                }
+              >
+                <option value={0}>No reminder</option>
+                <option value={5}>5 minutes before</option>
+                <option value={15}>15 minutes before</option>
+                <option value={30}>30 minutes before</option>
+                <option value={60}>1 hour before</option>
+                <option value={1440}>1 day before</option>
+              </select>
+            </>
+          )}
 
           <button
             className="btn-primary"
             onClick={handleSaveTask}
             disabled={!isTaskValid}
           >
-            {editTaskId ? "💾 Update Task" : "➕ Add Task"}
+            {editTaskId ? "Update Task" : "Add Task"}
           </button>
         </div>
       </div>
