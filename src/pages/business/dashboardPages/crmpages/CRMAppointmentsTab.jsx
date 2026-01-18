@@ -518,6 +518,13 @@ const handleDeleteAppointment = async (id) => {
       </span>
     </div>
 
+    {appt.duration && (
+  <div className="duration-badge">
+    ⏱ {appt.duration} min
+  </div>
+)}
+
+
     {/* 💰 Payment info */}
     {appt.price > 0 && (
       <div className="payment-info">

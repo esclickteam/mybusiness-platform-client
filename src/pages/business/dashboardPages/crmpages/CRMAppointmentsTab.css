@@ -282,6 +282,13 @@
   flex: 1;
 }
 
+.payment-info {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 🔥 זה מה שחסר */
+}
+
+
 .paid-checkbox {
   display: flex;
   gap: 6px;
