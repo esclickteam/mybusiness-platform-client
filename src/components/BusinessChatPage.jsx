@@ -16,24 +16,30 @@ export default function BusinessChatPage() {
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
   const [unreadCounts, setUnreadCounts] = useState({});
+
   const socket = useSocket();
   const location = useLocation();
 
+  // ⚠️ notifications מחוברים רק חלקית – לא משתמשים ב-markAsRead כאן
   const { markAsRead } = useNotifications();
 
-  /* 🧩 נרמול שיחות */
+  /* =========================
+     🧩 Normalize conversation
+  ========================= */
   const normaliseConversation = (c) => ({
     ...c,
     conversationId: (c.conversationId ?? c._id ?? c.id)?.toString() ?? "",
     clientId:
       c.clientId?.toString() ||
       c.customer?._id?.toString() ||
-      "".toString(),
+      "",
     clientName: c.clientName || c.customer?.name || "Client",
     conversationType: c.conversationType || "user-business",
   });
 
-  /* 🔍 פתיחת שיחה מניווט (state / query) */
+  /* =========================
+     🔍 Open conversation from navigation (AI / deep link)
+  ========================= */
   useEffect(() => {
     if (!initialized || !businessId || convos.length === 0) return;
 
@@ -53,16 +59,20 @@ export default function BusinessChatPage() {
       conversationType: convo.conversationType,
     });
 
+    // מנקה badge מקומי בלבד
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[threadId];
       return next;
     });
 
-    markAsRead?.(threadId);
-  }, [location, convos, initialized, businessId, markAsRead]);
+    // ❌ לא מסמנים notification כנקרא – אין notificationId
+    // TODO: markAsRead(notificationId) when notifications system is finalized
+  }, [location, convos, initialized, businessId]);
 
-  /* 📦 טעינת שיחות */
+  /* =========================
+     📦 Fetch conversations
+  ========================= */
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -87,7 +97,7 @@ export default function BusinessChatPage() {
         });
         setUnreadCounts(counts);
 
-        // ✅ FIX: לא לבחור ברירת מחדל אם הגענו מניווט (AI Follow-up)
+        // ❗ אם הגענו מ-AI Follow-up – לא לבחור שיחה אוטומטית
         const navigatedThreadId =
           location.state?.threadId ||
           new URLSearchParams(location.search).get("threadId");
@@ -113,7 +123,9 @@ export default function BusinessChatPage() {
       });
   }, [initialized, businessId, selected, location]);
 
-  /* 💬 realtime */
+  /* =========================
+     💬 Realtime updates
+  ========================= */
   useEffect(() => {
     if (!socket || !businessId) return;
 
@@ -136,18 +148,28 @@ export default function BusinessChatPage() {
     };
   }, [socket, businessId]);
 
-  /* 🧭 בחירה ידנית */
+  /* =========================
+     🧭 Manual selection
+  ========================= */
   const handleSelect = (conversationId, partnerId, partnerName) => {
     const convo = convos.find((c) => c.conversationId === conversationId);
     const type = convo?.conversationType || "user-business";
 
-    setSelected({ conversationId, partnerId, partnerName, conversationType: type });
+    setSelected({
+      conversationId,
+      partnerId,
+      partnerName,
+      conversationType: type,
+    });
+
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[conversationId];
       return next;
     });
-    markAsRead?.(conversationId);
+
+    // ❌ לא markAsRead כאן – אין notificationId
+    // TODO: markAsRead(notificationId)
   };
 
   if (!initialized) {
