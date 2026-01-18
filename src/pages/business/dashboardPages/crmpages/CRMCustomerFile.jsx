@@ -180,14 +180,7 @@ export default function CRMCustomerFile({
         )}
       </div>
 
-      {/* =========================
-          ACTIONS
-      ========================= */}
-      <div className="form-actions">
-        <button className="cancel-btn" onClick={onClose}>
-          ↩ Back
-        </button>
-      </div>
+    
     </div>
   );
 }
