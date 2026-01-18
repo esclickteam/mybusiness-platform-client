@@ -243,3 +243,12 @@
   padding: 4px 0;
   margin-bottom: 8px;
 }
+
+/* הפיכת הסדר: Tasks משמאל, Notes מימין */
+.tasks-section {
+  order: 1;
+}
+
+.notes-section {
+  order: 2;
+}
