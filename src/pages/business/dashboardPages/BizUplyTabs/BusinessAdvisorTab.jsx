@@ -211,17 +211,17 @@ const BusinessAdvisorTab = ({
 </p>
       )}
 
-      {!startedChat && (
-  <>
-    {/* AI INSIGHTS */}
-    {insights?.length > 0 && (
-      <AiInsightsPanel
-        insights={insights}
-        loading={insightsLoading}
-      />
-    )}
+  {/* AI INSIGHTS – תמיד מוצג */}
+{insights?.length > 0 && (
+  <AiInsightsPanel
+    insights={insights}
+    loading={insightsLoading}
+  />
+)}
 
-    {/* PRESET QUESTIONS */}
+{/* PRESET QUESTIONS – רק לפני תחילת צ’אט */}
+{!startedChat && (
+  <>
     <div className="preset-questions-container">
       {presetQuestions.map((q, i) => (
         <div
@@ -237,6 +237,7 @@ const BusinessAdvisorTab = ({
     <hr />
   </>
 )}
+
 
       <div className="chat-box-wrapper">
         <div className="chat-box" ref={chatContainerRef}>
