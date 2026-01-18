@@ -3,6 +3,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "@api";
 import CRMCustomerFile from "./CRMCustomerFile";
 import "./CRMClientsTab.css";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 
 /* =====================================================
    Fetch clients
@@ -246,16 +249,27 @@ export default function CRMClientsTab({ businessId }) {
             }
           />
 
-          <input
-            placeholder="Phone *"
-            value={formClient.phone}
-            onChange={(e) =>
-              setFormClient({
-                ...formClient,
-                phone: e.target.value,
-              })
-            }
-          />
+         <label className="form-label">Phone *</label>
+
+<PhoneInput
+  country={"il"}                      // 🇮🇱 ברירת מחדל
+  preferredCountries={["il", "us", "gb", "ca"]}
+  enableSearch
+  value={formClient.phone}
+  onChange={(phone) =>
+    setFormClient((prev) => ({
+      ...prev,
+      phone,
+    }))
+  }
+  inputProps={{
+    required: true,
+  }}
+  containerClass="crm-phone-container"
+  inputClass="crm-phone-input"
+  buttonClass="crm-phone-flag"
+/>
+
 
           <input
             placeholder="Email"

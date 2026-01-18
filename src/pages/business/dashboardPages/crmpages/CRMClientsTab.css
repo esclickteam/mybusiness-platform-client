@@ -342,6 +342,39 @@ button {
   background: rgba(124, 77, 255, 0.04);
 }
 
+/* Phone dropdown */
+.crm-phone-container {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.crm-phone-input {
+  width: 100% !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+  border: 1px solid #ddd !important;
+  font-size: 0.95rem;
+  padding-left: 56px !important;
+}
+
+.crm-phone-input:focus {
+  border-color: #7c4dff !important;
+  box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.15);
+}
+
+.crm-phone-flag {
+  border-radius: 14px 0 0 14px !important;
+}
+
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 6px;
+  display: block;
+}
+
+
 
 /* =====================================================
    FIX – isolate CRM table from global table styles
