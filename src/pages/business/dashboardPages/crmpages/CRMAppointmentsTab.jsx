@@ -39,7 +39,7 @@ const CRMAppointmentsTab = () => {
   const [businessSchedule, setBusinessSchedule] = useState(null);
 
  
-const openEmail = ({ provider, email, subject, body }) => {
+ const openEmail = ({ provider, email, subject, body }) => {
     console.log("🔥 openEmail called", { provider, email });
 
   const encodedSubject = encodeURIComponent(subject);
