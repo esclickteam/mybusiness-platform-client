@@ -269,6 +269,26 @@
   background: #f3edff;
 }
 
+.payment-section {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.payment-section input[type="number"] {
+  flex: 1;
+}
+
+.paid-checkbox {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+
 
 /* =========================
    Mobile

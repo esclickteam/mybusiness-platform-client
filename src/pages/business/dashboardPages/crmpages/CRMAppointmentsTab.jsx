@@ -22,17 +22,21 @@ const CRMAppointmentsTab = () => {
 
 
   const [newAppointment, setNewAppointment] = useState({
-    crmClientId: "",
-    clientName: "",
-    clientPhone: "",
-    address: "",
-    email: "",
-    note: "",
-    serviceId: "",
-    serviceName: "",
-    date: "",
-    time: "",
-  });
+  crmClientId: "",
+  clientName: "",
+  clientPhone: "",
+  address: "",
+  email: "",
+  note: "",
+  serviceId: "",
+  serviceName: "",
+  date: "",
+  time: "",
+
+  // 💰 Payment
+  price: "",
+  paid: false,
+});
 
   const [services, setServices] = useState([]);
   const [clients, setClients] = useState([]);
@@ -66,8 +70,9 @@ const CRMAppointmentsTab = () => {
 
 
 const handleEditAppointment = (appt) => {
-  setEditId(appt._id); // ⭐ חשוב
+  setEditId(appt._id);
   setShowAddForm(true);
+
   setNewAppointment({
     crmClientId: appt.crmClientId || "",
     clientName: appt.clientSnapshot?.name || "",
@@ -79,6 +84,10 @@ const handleEditAppointment = (appt) => {
     serviceName: appt.serviceName || "",
     date: appt.date,
     time: appt.time,
+
+    // 💰 Payment – היה חסר
+    price: appt.price || "",
+    paid: appt.paid || false,
   });
 };
 
@@ -203,6 +212,8 @@ const handleDeleteAppointment = async (id) => {
     phone: newAppointment.clientPhone,      // ✅ חובה לשרת
     email: newAppointment.email,
     address: newAppointment.address,
+    price: Number(newAppointment.price) || 0,
+    paid: newAppointment.paid,
     note: newAppointment.note,
     serviceId: newAppointment.serviceId,
     serviceName:
@@ -229,17 +240,22 @@ const handleDeleteAppointment = async (id) => {
     setShowAddForm(false);
     setEditId(null);
     setNewAppointment({
-      crmClientId: "",
-      clientName: "",
-      clientPhone: "",
-      address: "",
-      email: "",
-      note: "",
-      serviceId: "",
-      serviceName: "",
-      date: "",
-      time: "",
-    });
+  crmClientId: "",
+  clientName: "",
+  clientPhone: "",
+  address: "",
+  email: "",
+  note: "",
+  serviceId: "",
+  serviceName: "",
+  date: "",
+  time: "",
+
+  // 💰 Payment reset
+  price: "",
+  paid: false,
+});
+
   } catch (err) {
     console.error("Save appointment error:", err);
     alert("Failed to save appointment");
@@ -329,57 +345,45 @@ const handleDeleteAppointment = async (id) => {
 
           <label>Phone:</label>
 <PhoneInput
-  country="us" // 🇺🇸 ברירת מחדל
-  preferredCountries={["us", "il", "gb", "ca"]}
-  enableSearch
+  country="us"
   value={newAppointment.clientPhone}
-  onChange={(phone) => {
-    // מנקה טלפון להשוואה
-    const normalizedPhone = phone.replace(/\D/g, "");
-
-    // חיפוש לקוח קיים ב־CRM לפי טלפון
-    const existingClient = clients.find(
-      c => c.phone?.replace(/\D/g, "") === normalizedPhone
-    );
-
-    setNewAppointment(prev => ({
-      ...prev,
-      clientPhone: phone,                 // ✔ פורמט אחיד
-      crmClientId: existingClient?._id || prev.crmClientId,
-      email: existingClient?.email || prev.email,
-      address: existingClient?.address || prev.address,
-      clientName: existingClient?.fullName || prev.clientName,
-    }));
-  }}
-  inputProps={{
-    name: "phone",
-    required: true,
-  }}
-  containerClass="phone-container"
-  inputClass="phone-input"
-  buttonClass="phone-flag"
+  onChange={phone =>
+    setNewAppointment({ ...newAppointment, clientPhone: phone })
+  }
 />
 
+{/* 📧 EMAIL – מוצג רק אם נבחר CRM Client */}
+{newAppointment.crmClientId && (
+  <input
+    type="email"
+    placeholder="Email"
+    value={newAppointment.email}
+    readOnly
+    style={{ background: "#f7f7f7" }}
+  />
+)}
 
-          <select
-            value={newAppointment.serviceId}
-            onChange={e => {
-              const s = services.find(x => x._id === e.target.value);
-              setNewAppointment({
-                ...newAppointment,
-                serviceId: s?._id || "",
-                serviceName: s?.name || "",
-                time: "",
-              });
-            }}
-          >
-            <option value="">Select Service</option>
-            {services.map(s => (
-              <option key={s._id} value={s._id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+{/* ⬇️ בחירת שירות מגיעה אחרי זה */}
+<select
+  value={newAppointment.serviceId}
+  onChange={e => {
+    const s = services.find(x => x._id === e.target.value);
+    setNewAppointment({
+      ...newAppointment,
+      serviceId: s?._id || "",
+      serviceName: s?.name || "",
+      time: "",
+    });
+  }}
+>
+  <option value="">Select Service</option>
+  {services.map(s => (
+    <option key={s._id} value={s._id}>
+      {s.name}
+    </option>
+  ))}
+</select>
+
 
           <input
             type="date"
@@ -399,6 +403,32 @@ const handleDeleteAppointment = async (id) => {
             serviceId={newAppointment.serviceId}
             schedule={scheduleArray}
           />
+
+          {/* 💰 PAYMENT */}
+<div className="payment-section">
+
+  <input
+    type="number"
+    placeholder="Price"
+    value={newAppointment.price}
+    onChange={e =>
+      setNewAppointment({ ...newAppointment, price: e.target.value })
+    }
+  />
+
+  <label className="paid-checkbox">
+    <input
+      type="checkbox"
+      checked={newAppointment.paid}
+      onChange={e =>
+        setNewAppointment({ ...newAppointment, paid: e.target.checked })
+      }
+    />
+    Paid
+  </label>
+
+</div>
+
 
           <div className="form-actions">
             <button
