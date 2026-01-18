@@ -165,15 +165,16 @@
   gap: 10px;
 
   opacity: 0;
-  pointer-events: none;          /* ❌ כרגע חוסם קליקים */
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform: translateY(6px);
+
   position: relative;
   z-index: 5;
 }
 
 .appointment-card:hover .card-actions {
   opacity: 1;
-  pointer-events: auto;          /* ✅ מאפשר קליקים */
+  transform: translateY(0);
 }
 
 .card-actions button {
