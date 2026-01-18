@@ -34,8 +34,8 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
       const conversationId = insight.meta.conversations[0];
 
       navigate(
-          `/dashboard/messages?conversationId=${conversationId}`
-      );
+  `/dashboard/messages?threadId=${conversationId}`
+);
     }
 
     // אפשר להוסיף כאן פעולות נוספות בהמשך
