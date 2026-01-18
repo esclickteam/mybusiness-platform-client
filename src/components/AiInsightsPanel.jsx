@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./AiInsights.css";
 
 const ICONS = {
@@ -12,12 +12,17 @@ const ICONS = {
 
 export default function AiInsightsPanel({ insights, loading, businessId }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  console.log("🧠 AiInsightsPanel render");
+  console.log("📍 current location:", location.pathname, location.state);
 
   if (loading) {
     return <div className="ai-insights-loading">Loading insights…</div>;
   }
 
   if (!insights.length) {
+    console.log("ℹ️ No insights");
     return (
       <div className="ai-insights-empty">
         ✅ Everything looks good. No actions needed right now.
@@ -26,21 +31,31 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
   }
 
   const handleActionClick = (insight) => {
-    // ▶️ FOLLOW UP → ניתוב לצ׳אט
-    if (
-      insight.id === "followup_needed" &&
-      insight.meta?.conversations?.length
-    ) {
-      const conversationId = insight.meta.conversations[0];
+    console.log("👉 CLICKED INSIGHT:", insight);
 
-      navigate("/dashboard/messages", {
-  state: {
-    threadId: conversationId,
-  },
-});
+    if (insight.id !== "followup_needed") {
+      console.log("⏭️ Not followup insight, ignoring");
+      return;
     }
 
-    // אפשר להוסיף כאן פעולות נוספות בהמשך
+    if (!insight.meta?.conversations?.length) {
+      console.warn("⚠️ No conversations in insight.meta", insight.meta);
+      return;
+    }
+
+    const conversationId = insight.meta.conversations[0];
+
+    console.log("📨 Follow-up conversationId:", conversationId);
+    console.log("➡️ Navigating to /dashboard/messages with state");
+
+    navigate("/dashboard/messages", {
+      state: {
+        threadId: conversationId,
+        from: "ai-insights", // 👈 עוזר לנו להבין מאיפה באנו
+      },
+    });
+
+    console.log("✅ navigate() called");
   };
 
   return (
