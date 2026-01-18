@@ -17,6 +17,8 @@ const CRMAppointmentsTab = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [emailMenuOpenId, setEmailMenuOpenId] = useState(null);
+
 
 
   const [newAppointment, setNewAppointment] = useState({
@@ -36,37 +38,30 @@ const CRMAppointmentsTab = () => {
   const [clients, setClients] = useState([]);
   const [businessSchedule, setBusinessSchedule] = useState(null);
 
-  const sendEmailReminder = (email, clientName, date, time, service) => {
-  if (!email) return;
+ 
+const openEmail = ({ provider, email, subject, body }) => {
+  const encodedSubject = encodeURIComponent(subject);
+  const encodedBody = encodeURIComponent(body);
 
-  const formattedDate = new Date(date).toLocaleDateString("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  if (provider === "gmail") {
+    window.open(
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodedSubject}&body=${encodedBody}`,
+      "_blank"
+    );
+  }
 
-  const businessName = user?.businessName || "Your Business";
+  if (provider === "outlook") {
+    window.open(
+      `https://outlook.live.com/mail/0/deeplink/compose?to=${email}&subject=${encodedSubject}&body=${encodedBody}`,
+      "_blank"
+    );
+  }
 
-  const subject = `Appointment Reminder – ${businessName}`;
-
-  const body = `
-Hello ${clientName},
-
-This is a reminder for your upcoming appointment.
-
-Service: ${service}
-Date: ${formattedDate}
-Time: ${time}
-
-Best regards,
-${businessName}
-  `.trim();
-
-  window.location.href = `mailto:${email}?subject=${encodeURIComponent(
-    subject
-  )}&body=${encodeURIComponent(body)}`;
+  if (provider === "default") {
+    window.location.href = `mailto:${email}?subject=${encodedSubject}&body=${encodedBody}`;
+  }
 };
+
 
 const handleEditAppointment = (appt) => {
   setEditId(appt._id); // ⭐ חשוב
@@ -440,22 +435,65 @@ const handleDeleteAppointment = async (id) => {
             </div>
 
             <div className="card-actions">
-  <button
-    title="Email reminder"
-    disabled={!appt.clientSnapshot?.email}
-    onClick={() =>
-      sendEmailReminder(
-        appt.clientSnapshot?.email,
-        appt.clientSnapshot?.name || "Client",
-        appt.date,
-        appt.time,
-        appt.serviceName
-      )
-    }
-  >
-    ✉️
-  </button>
+  {/* ✉️ EMAIL עם בחירה */}
+  <div className="email-action-wrapper">
+    <button
+      title="Send email"
+      disabled={!appt.clientSnapshot?.email}
+      onClick={() =>
+        setEmailMenuOpenId(
+          emailMenuOpenId === appt._id ? null : appt._id
+        )
+      }
+    >
+      ✉️
+    </button>
 
+    {emailMenuOpenId === appt._id && (
+      <div className="email-menu">
+        <button
+          onClick={() =>
+            openEmail({
+              provider: "gmail",
+              email: appt.clientSnapshot.email,
+              subject: "Appointment reminder",
+              body: `Hi ${appt.clientSnapshot.name},\n\nThis is a reminder for your appointment on ${appt.date} at ${appt.time}.`,
+            })
+          }
+        >
+          Gmail
+        </button>
+
+        <button
+          onClick={() =>
+            openEmail({
+              provider: "outlook",
+              email: appt.clientSnapshot.email,
+              subject: "Appointment reminder",
+              body: `Hi ${appt.clientSnapshot.name},\n\nThis is a reminder for your appointment on ${appt.date} at ${appt.time}.`,
+            })
+          }
+        >
+          Outlook
+        </button>
+
+        <button
+          onClick={() =>
+            openEmail({
+              provider: "default",
+              email: appt.clientSnapshot.email,
+              subject: "Appointment reminder",
+              body: `Hi ${appt.clientSnapshot.name},\n\nThis is a reminder for your appointment on ${appt.date} at ${appt.time}.`,
+            })
+          }
+        >
+          Default
+        </button>
+      </div>
+    )}
+  </div>
+
+  {/* ✏️ EDIT */}
   <button
     title="Edit appointment"
     onClick={() => handleEditAppointment(appt)}
@@ -463,6 +501,7 @@ const handleDeleteAppointment = async (id) => {
     ✏️
   </button>
 
+  {/* 🗑️ DELETE */}
   <button
     title="Delete appointment"
     onClick={() => handleDeleteAppointment(appt._id)}
@@ -470,6 +509,7 @@ const handleDeleteAppointment = async (id) => {
     🗑️
   </button>
 </div>
+
 
           </div>
         ))}
