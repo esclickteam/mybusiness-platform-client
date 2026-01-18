@@ -207,17 +207,18 @@ export default function CRMClientsTab({ businessId }) {
 
       {/* פעולות */}
       <td className="actions-cell">
-        {/* כפתור פתיחת תיק לקוח – ברור וגלוי */}
+        
         <button
-          className="open-client-btn"
-          onClick={(e) => {
-            e.stopPropagation(); // מונע קליק כפול על השורה
-            setSelectedClient(client);
-            setMode("view");
-          }}
-        >
-          📂 Open
-        </button>
+  className="open-client-btn"
+  title="Open client file"
+  onClick={(e) => {
+    e.stopPropagation();
+    setSelectedClient(client);
+    setMode("view");
+  }}
+>
+  📂 Open
+</button>
 
         {/* מחיקה */}
         <button

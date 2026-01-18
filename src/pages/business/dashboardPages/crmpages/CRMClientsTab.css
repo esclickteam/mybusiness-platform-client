@@ -305,13 +305,12 @@ button {
    Open Client Button
 ========================= */
 .open-client-btn {
-  padding: 8px 14px;
-  border-radius: 12px;
-  border: 1px solid #e0d7ff;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid #d6c9ff;
   background: #ffffff;
   color: #5e17eb;
   font-weight: 600;
-  font-size: 0.85rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -323,7 +322,7 @@ button {
 /* Hover */
 .open-client-btn:hover {
   background: #f4f2ff;
-  box-shadow: 0 6px 16px rgba(94, 23, 235, 0.18);
+  box-shadow: 0 8px 20px rgba(94, 23, 235, 0.2);
   transform: translateY(-1px);
 }
 
@@ -333,6 +332,14 @@ button {
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
+}
+
+.client-row {
+  transition: background 0.15s ease;
+}
+
+.client-row:hover {
+  background: rgba(124, 77, 255, 0.04);
 }
 
 
