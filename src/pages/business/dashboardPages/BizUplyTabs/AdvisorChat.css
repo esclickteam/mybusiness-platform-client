@@ -30,11 +30,20 @@
 }
 
 .question-balance {
-  font-size: 0.9rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 16px auto 28px;   /* 🔥 auto = center */
+  padding: 10px 20px;
+
+  background: #f5f7fa;
+  border-radius: 999px;
+
+  font-size: 15px;
   color: #444;
-  background: #f6f7f9;
-  padding: 10px 14px;
-  border-radius: 10px;
+  text-align: center;
+
   width: fit-content;
 }
 
