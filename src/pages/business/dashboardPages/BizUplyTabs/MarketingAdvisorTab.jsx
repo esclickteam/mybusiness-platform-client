@@ -197,8 +197,10 @@ const MarketingAdvisorTab = ({
 
       {remainingQuestions !== null && (
         <p className="question-balance">
-          You have <strong>{remainingQuestions}</strong> AI questions remaining this month.
-        </p>
+  <span>You have </span>
+  <strong>{remainingQuestions}</strong>
+  <span> AI questions remaining this month.</span>
+</p>
       )}
 
       {!startedChat && (
