@@ -18,6 +18,7 @@ const CRMAppointmentsTab = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [editId, setEditId] = useState(null);
   const [emailMenuOpenId, setEmailMenuOpenId] = useState(null);
+  
 
 
 
@@ -36,6 +37,10 @@ const CRMAppointmentsTab = () => {
   // 💰 Payment
   price: "",
   paid: false,
+
+  // ⏱ Duration (חדש)
+  duration: 30,
+
 });
 
   const [services, setServices] = useState([]);
@@ -85,7 +90,9 @@ const handleEditAppointment = (appt) => {
     date: appt.date,
     time: appt.time,
 
-    // 💰 Payment – היה חסר
+    // ⏱️ חובה!
+    duration: appt.duration || 30,
+
     price: appt.price || "",
     paid: appt.paid || false,
   });
@@ -223,7 +230,7 @@ const handleDeleteAppointment = async (id) => {
 
     date: newAppointment.date,
     time: newAppointment.time,
-    duration: 30,
+    duration: newAppointment.duration,
     crmClientId: newAppointment.crmClientId || null,
   };
 
@@ -250,8 +257,11 @@ const handleDeleteAppointment = async (id) => {
   serviceName: "",
   date: "",
   time: "",
-  price: "",      // ✅
-  paid: false,    // ✅
+
+  duration: 30,   // ⏱️ חובה
+
+  price: "",
+  paid: false,
 });
 
   } catch (err) {
@@ -287,19 +297,22 @@ const handleDeleteAppointment = async (id) => {
     setShowAddForm(true);
 
         setNewAppointment({
-      crmClientId: "",
-      clientName: "",
-      clientPhone: "",
-      address: "",
-      email: "",
-      note: "",
-      serviceId: "",
-      serviceName: "",
-      date: "",
-      time: "",
-      price: "",      // ✅ להוסיף
-      paid: false,    // ✅ להוסיף
-    });
+  crmClientId: "",
+  clientName: "",
+  clientPhone: "",
+  address: "",
+  email: "",
+  note: "",
+  serviceId: "",
+  serviceName: "",
+  date: "",
+  time: "",
+
+  duration: 30,   // ⏱️ חובה כאן
+
+  price: "",
+  paid: false,
+});
   }}
 >
   + Add Appointment
@@ -403,6 +416,29 @@ const handleDeleteAppointment = async (id) => {
             serviceId={newAppointment.serviceId}
             schedule={scheduleArray}
           />
+
+          {/* ⏱ DURATION */}
+<div className="duration-field">
+  <label>Duration (minutes)</label>
+
+  <select
+    value={newAppointment.duration}
+    onChange={e =>
+      setNewAppointment({
+        ...newAppointment,
+        duration: Number(e.target.value),
+      })
+    }
+  >
+    <option value={15}>15 minutes</option>
+    <option value={30}>30 minutes</option>
+    <option value={45}>45 minutes</option>
+    <option value={60}>60 minutes</option>
+    <option value={90}>90 minutes</option>
+    <option value={120}>120 minutes</option>
+  </select>
+</div>
+
 
           {/* 💰 PAYMENT */}
 <div className="payment-section">
