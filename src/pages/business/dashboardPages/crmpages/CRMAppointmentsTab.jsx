@@ -192,29 +192,42 @@ const handleDeleteAppointment = async (id) => {
     !newAppointment.serviceId ||
     !newAppointment.date ||
     !newAppointment.time
-  )
+  ) {
+    alert("Missing required fields");
     return;
+  }
+
+  const payload = {
+    businessId,
+    name: newAppointment.clientName,        // ✅ חובה לשרת
+    phone: newAppointment.clientPhone,      // ✅ חובה לשרת
+    email: newAppointment.email,
+    address: newAppointment.address,
+    note: newAppointment.note,
+    serviceId: newAppointment.serviceId,
+    serviceName:
+  newAppointment.serviceName ||
+  services.find(s => s._id === newAppointment.serviceId)?.name ||
+  "",
+
+    date: newAppointment.date,
+    time: newAppointment.time,
+    duration: 30,
+    crmClientId: newAppointment.crmClientId || null,
+  };
 
   setIsSaving(true);
   try {
     if (editId) {
-      // ✏️ UPDATE
-      await API.put(`/appointments/${editId}`, {
-        businessId,
-        ...newAppointment,
-        duration: 30,
-      });
+      // ✅ UPDATE
+      await API.patch(`/appointments/${editId}`, payload);
     } else {
-      // ➕ CREATE
-      await API.post("/appointments", {
-        businessId,
-        ...newAppointment,
-        duration: 30,
-      });
+      // ✅ CREATE
+      await API.post("/appointments", payload);
     }
 
     setShowAddForm(false);
-    setEditId(null); // ⭐ איפוס
+    setEditId(null);
     setNewAppointment({
       crmClientId: "",
       clientName: "",
@@ -227,10 +240,14 @@ const handleDeleteAppointment = async (id) => {
       date: "",
       time: "",
     });
+  } catch (err) {
+    console.error("Save appointment error:", err);
+    alert("Failed to save appointment");
   } finally {
     setIsSaving(false);
   }
 };
+
 
 
   if (isLoading) return <p>Loading…</p>;
@@ -249,11 +266,13 @@ const handleDeleteAppointment = async (id) => {
           />
 
           <button
+  type="button"
   className="primary-btn"
   onClick={() => {
-    setEditId(null);          // מאפס מצב עריכה
-    setShowAddForm(true);     // פותח את הטופס
-    setNewAppointment({       // מאפס את כל השדות
+    setEditId(null);      // יציאה ממצב עריכה
+    setShowAddForm(true);
+
+    setNewAppointment({
       crmClientId: "",
       clientName: "",
       clientPhone: "",
