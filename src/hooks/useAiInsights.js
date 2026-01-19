@@ -3,9 +3,9 @@ import API from "@api";
 
 /**
  * useAiInsights
- * Fetches AI insights for a given business
+ * Fetches AI insights for a given BUSINESS id (Business._id)
  *
- * @param {string} businessId
+ * @param {string} businessId  // חייב להיות Business._id
  */
 export default function useAiInsights(businessId) {
   const [insights, setInsights] = useState([]);
@@ -13,7 +13,22 @@ export default function useAiInsights(businessId) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!businessId) return;
+    // ❌ אין businessId → לא טוענים
+    if (!businessId) {
+      console.warn("⚠️ useAiInsights: missing businessId");
+      setInsights([]);
+      return;
+    }
+
+    // 🛑 הגנה מבאג נפוץ: userId במקום businessId
+    if (typeof businessId !== "string" || businessId.length !== 24) {
+      console.error(
+        "❌ useAiInsights: invalid businessId (not Business._id)",
+        businessId
+      );
+      setInsights([]);
+      return;
+    }
 
     let isMounted = true;
 
@@ -22,25 +37,25 @@ export default function useAiInsights(businessId) {
       setError(null);
 
       try {
-        const res = await API.post("/ai/insights", {
-          businessId,
-        });
+        console.log("🚀 Fetching AI insights for businessId:", businessId);
 
-        // 🔍 Debug – חובה לשלב זה
-        console.log("AI INSIGHTS RESPONSE:", res.data);
+        const res = await API.post("/ai/insights", {
+          businessId, // ✅ Business._id בלבד
+        });
 
         if (!isMounted) return;
 
-        // ודא שמוחזר מערך
+        console.log("🧠 AI INSIGHTS RESPONSE:", res.data);
+
         if (Array.isArray(res.data)) {
           setInsights(res.data);
-        } else if (Array.isArray(res.data.insights)) {
+        } else if (Array.isArray(res.data?.insights)) {
           setInsights(res.data.insights);
         } else {
           setInsights([]);
         }
       } catch (err) {
-        console.error("Failed to fetch AI insights:", err);
+        console.error("❌ Failed to fetch AI insights:", err);
         if (isMounted) {
           setError("Failed to load AI insights");
           setInsights([]);
