@@ -28,7 +28,6 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
   );
 
   if (!visibleInsights.length) {
-    console.log("ℹ️ No visible insights");
     return (
       <div className="ai-insights-empty">
         ✅ Everything looks good. No actions needed right now.
@@ -36,35 +35,49 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
     );
   }
 
-  const handleDismiss = (id) => {
-    console.log("❌ Dismiss insight:", id);
-    setDismissedInsights((prev) => [...prev, id]);
+  /* =========================
+     ❌ Dismiss Insight (UI + DB)
+  ========================= */
+  const handleDismiss = async (insight) => {
+    console.log("❌ Dismiss insight:", insight.id);
+
+    // 1️⃣ הסתרה מיידית ב-UI
+    setDismissedInsights((prev) => [...prev, insight.id]);
+
+    // 2️⃣ עדכון לשרת
+    try {
+      await fetch("/api/ai/insights/dismiss", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          businessId,
+          insightId: insight.id,
+          stateHash: insight.meta?.stateHash || null,
+        }),
+      });
+
+      console.log("✅ Insight dismissed in DB");
+    } catch (err) {
+      console.error("❌ Failed to dismiss insight:", err);
+    }
   };
 
+  /* =========================
+     CTA Action (unchanged)
+  ========================= */
   const handleActionClick = (insight) => {
     console.log("👉 CLICKED INSIGHT:", insight);
 
-    if (insight.id !== "followup_needed") {
-      console.log("⏭️ Not followup insight, ignoring");
-      return;
-    }
-
-    if (!insight.meta?.conversations?.length) {
-      console.warn("⚠️ No conversations in insight.meta", insight.meta);
-      return;
-    }
+    if (insight.id !== "followup_needed") return;
+    if (!insight.meta?.conversations?.length) return;
 
     const conversationId = insight.meta.conversations[0];
 
-    console.log("📨 Follow-up conversationId:", conversationId);
-
     navigate(`/business/${businessId}/dashboard/messages`, {
-      state: {
-        threadId: conversationId,
-      },
+      state: { threadId: conversationId },
     });
-
-    console.log("✅ navigate() called");
   };
 
   return (
@@ -77,10 +90,10 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
             key={insight.id}
             className={`ai-insight-card priority-${insight.priority}`}
           >
-            {/* ❌ Close button */}
+            {/* ❌ Close */}
             <button
               className="ai-insight-close"
-              onClick={() => handleDismiss(insight.id)}
+              onClick={() => handleDismiss(insight)}
               aria-label="Dismiss insight"
             >
               ✕
