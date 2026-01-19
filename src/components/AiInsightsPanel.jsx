@@ -59,29 +59,32 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
      CTA Handler (generic)
   ========================= */
   const handleAction = (insight) => {
-    if (insight.cta?.action === "navigate") {
-      navigate(insight.cta.target);
-      return;
-    }
-
-    // fallback – existing followup logic
-    if (
-      insight.id === "followup_needed" &&
-      insight.meta?.conversations?.length
-    ) {
-      navigate(`/business/${businessId}/dashboard/messages`, {
-        state: { threadId: insight.meta.conversations[0] },
-      });
-    }
-  };
-
-  if (!visibleInsights.length) {
-    return (
-      <div className="ai-insights-empty">
-        ✅ Everything looks good. No actions needed right now.
-      </div>
-    );
+  // CTA גנרי (אם בעתיד תוסיפי)
+  if (insight.cta?.action === "navigate") {
+    navigate(insight.cta.target);
+    return;
   }
+
+  // 🔴 Follow-up
+  if (
+    insight.id === "followup_needed" &&
+    insight.meta?.conversations?.length
+  ) {
+    navigate(`/business/${businessId}/dashboard/messages`, {
+      state: { threadId: insight.meta.conversations[0] },
+    });
+    return;
+  }
+
+  // 🟠 Clients without appointments
+  if (insight.id === "clients_without_appointments") {
+    navigate(
+      `/business/${businessId}/dashboard/crm/appointments`
+    );
+    return;
+  }
+};
+
 
   return (
     <section className="ai-insights-panel">
