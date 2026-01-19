@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./AiInsights.css";
 
@@ -14,6 +14,8 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [dismissedInsights, setDismissedInsights] = useState([]);
+
   console.log("🧠 AiInsightsPanel render");
   console.log("📍 current location:", location.pathname, location.state);
 
@@ -21,14 +23,23 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
     return <div className="ai-insights-loading">Loading insights…</div>;
   }
 
-  if (!insights.length) {
-    console.log("ℹ️ No insights");
+  const visibleInsights = insights.filter(
+    (insight) => !dismissedInsights.includes(insight.id)
+  );
+
+  if (!visibleInsights.length) {
+    console.log("ℹ️ No visible insights");
     return (
       <div className="ai-insights-empty">
         ✅ Everything looks good. No actions needed right now.
       </div>
     );
   }
+
+  const handleDismiss = (id) => {
+    console.log("❌ Dismiss insight:", id);
+    setDismissedInsights((prev) => [...prev, id]);
+  };
 
   const handleActionClick = (insight) => {
     console.log("👉 CLICKED INSIGHT:", insight);
@@ -46,16 +57,12 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
     const conversationId = insight.meta.conversations[0];
 
     console.log("📨 Follow-up conversationId:", conversationId);
-    console.log("➡️ Navigating to /dashboard/messages with state");
 
-    navigate(
-  `/business/${businessId}/dashboard/messages`,
-  {
-    state: {
-      threadId: conversationId,
-    },
-  }
-);
+    navigate(`/business/${businessId}/dashboard/messages`, {
+      state: {
+        threadId: conversationId,
+      },
+    });
 
     console.log("✅ navigate() called");
   };
@@ -65,11 +72,20 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
       <h3>AI Insights</h3>
 
       <div className="ai-insights-list">
-        {insights.map((insight) => (
+        {visibleInsights.map((insight) => (
           <div
             key={insight.id}
             className={`ai-insight-card priority-${insight.priority}`}
           >
+            {/* ❌ Close button */}
+            <button
+              className="ai-insight-close"
+              onClick={() => handleDismiss(insight.id)}
+              aria-label="Dismiss insight"
+            >
+              ✕
+            </button>
+
             <div className="icon">
               {ICONS[insight.type] || "💡"}
             </div>
