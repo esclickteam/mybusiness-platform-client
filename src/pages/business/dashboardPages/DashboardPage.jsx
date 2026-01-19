@@ -123,8 +123,6 @@ const DashboardPage = () => {
     setUser,
   } = useAuth();
   const { businessId } = useParams();
-  const realBusinessId = user?.businessId;
-  const activeBusinessId = realBusinessId;
 
  
   /* 🎨 הפעלה מיידית של ה־theme לעסקים */
@@ -160,9 +158,7 @@ const DashboardPage = () => {
 
   const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(false);
   const bannerMarkedRef = useRef(false);
-  const { insights, loading: insightsLoading } =
-  useAiInsights(activeBusinessId);
-
+  const { insights, loading: insightsLoading } = useAiInsights(businessId);
 
 
 
@@ -300,7 +296,7 @@ useEffect(() => {
 
   /* fetch stats */
   const loadStats = async () => {
-    if (!activeBusinessId) return;
+    if (!businessId) return;
     setLoading(true);
     setError(null);
 
@@ -558,8 +554,7 @@ const handleEarlyBirdUpgrade = async () => {
 
 const isAdmin = user?.role === "admin";
 const isBusinessOwner =
-  user?.role === "business" && user?.businessId === activeBusinessId;
-
+  user?.role === "business" && user?.businessId === businessId;
 
 if (!isAdmin && !isBusinessOwner) {
   return (
@@ -675,10 +670,10 @@ const shouldShowEarlyBirdModal =
 {/* 🔮 AI INSIGHTS — Action Center */}
 <section className="dp-section">
   <AiInsightsPanel
-  insights={insights}
-  loading={insightsLoading}
-  businessId={activeBusinessId}
-/>
+    insights={insights}
+    loading={insightsLoading}
+    businessId={businessId}
+  />
 </section>
 
 
