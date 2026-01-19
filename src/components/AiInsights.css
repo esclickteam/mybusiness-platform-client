@@ -67,12 +67,12 @@
 .ai-insight-close {
   position: absolute;
   top: 16px;
-  left: 16px;              /* 👈 צד שמאל */
+  right: 16px;  /* ✅ צד ימין */
   width: 42px;
   height: 42px;
   border-radius: 14px;
   border: none;
-  background: #f3f4f6;     /* רקע נראה גם בלי hover */
+  background: #f3f4f6;
   color: #6b7280;
   font-size: 18px;
   cursor: pointer;
