@@ -23,9 +23,8 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
   );
 
   if (!visibleInsights.length) {
-  return null; // בדשבורד – לא מציגים כלום כשאין Insights
-}
-
+    return null;
+  }
 
   const highPriority = visibleInsights.filter(
     (i) => i.priority === "high"
@@ -56,35 +55,37 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
   };
 
   /* =========================
-     CTA Handler (generic)
+     CTA Handler
   ========================= */
   const handleAction = (insight) => {
-  // CTA גנרי (אם בעתיד תוסיפי)
-  if (insight.cta?.action === "navigate") {
-    navigate(insight.cta.target);
-    return;
-  }
+    // ⭐️ כל CTA = dismiss (כמו ❌)
+    handleDismiss(insight);
 
-  // 🔴 Follow-up
-  if (
-    insight.id === "followup_needed" &&
-    insight.meta?.conversations?.length
-  ) {
-    navigate(`/business/${businessId}/dashboard/messages`, {
-      state: { threadId: insight.meta.conversations[0] },
-    });
-    return;
-  }
+    // CTA גנרי
+    if (insight.cta?.action === "navigate") {
+      navigate(insight.cta.target);
+      return;
+    }
 
-  // 🟠 Clients without appointments
-  if (insight.id === "clients_without_appointments") {
-    navigate(
-      `/business/${businessId}/dashboard/crm/appointments`
-    );
-    return;
-  }
-};
+    // 🔴 Follow-up
+    if (
+      insight.id === "followup_needed" &&
+      insight.meta?.conversations?.length
+    ) {
+      navigate(`/business/${businessId}/dashboard/messages`, {
+        state: { threadId: insight.meta.conversations[0] },
+      });
+      return;
+    }
 
+    // 🟠 Clients without appointments
+    if (insight.id === "clients_without_appointments") {
+      navigate(
+        `/business/${businessId}/dashboard/crm/appointments`
+      );
+      return;
+    }
+  };
 
   return (
     <section className="ai-insights-panel">
@@ -127,7 +128,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
 }
 
 /* =====================================================
-   Insight Card (Reusable)
+   Insight Card
 ===================================================== */
 function InsightCard({ insight, onDismiss, onAction, prominent = false }) {
   return (
