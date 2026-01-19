@@ -16,6 +16,9 @@ import "../../../styles/dashboard.css";
 import { lazyWithPreload } from "../../../utils/lazyWithPreload";
 import DashboardSkeleton from "../../../components/DashboardSkeleton";
 import UpgradeOfferCard from "../../../components/UpgradeOfferCard";
+import useAiInsights from "@/hooks/useAiInsights";
+import AiInsightsPanel from "@/components/AiInsightsPanel";
+
 
 
 
@@ -155,6 +158,8 @@ const DashboardPage = () => {
 
   const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(false);
   const bannerMarkedRef = useRef(false);
+  const { insights, loading: insightsLoading } = useAiInsights(businessId);
+
 
 
 
@@ -662,6 +667,14 @@ const shouldShowEarlyBirdModal =
   />
 )}
 
+{/* 🔮 AI INSIGHTS — Action Center */}
+<section className="dp-section">
+  <AiInsightsPanel
+    insights={insights}
+    loading={insightsLoading}
+    businessId={businessId}
+  />
+</section>
 
 
 

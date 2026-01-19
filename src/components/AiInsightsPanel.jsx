@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./AiInsights.css";
 
 const ICONS = {
@@ -10,14 +10,9 @@ const ICONS = {
   retention: "🔁",
 };
 
-export default function AiInsightsPanel({ insights, loading, businessId }) {
+export default function AiInsightsPanel({ insights = [], loading, businessId }) {
   const navigate = useNavigate();
-  const location = useLocation();
-
   const [dismissedInsights, setDismissedInsights] = useState([]);
-
-  console.log("🧠 AiInsightsPanel render");
-  console.log("📍 current location:", location.pathname, location.state);
 
   if (loading) {
     return <div className="ai-insights-loading">Loading insights…</div>;
@@ -28,6 +23,59 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
   );
 
   if (!visibleInsights.length) {
+  return null; // בדשבורד – לא מציגים כלום כשאין Insights
+}
+
+
+  const highPriority = visibleInsights.filter(
+    (i) => i.priority === "high"
+  );
+  const mediumPriority = visibleInsights.filter(
+    (i) => i.priority === "medium"
+  );
+
+  /* =========================
+     Dismiss Insight (UI + DB)
+  ========================= */
+  const handleDismiss = async (insight) => {
+    setDismissedInsights((prev) => [...prev, insight.id]);
+
+    try {
+      await fetch("/api/ai/insights/dismiss", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          businessId,
+          insightId: insight.id,
+          stateHash: insight.meta?.stateHash || null,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to dismiss insight", err);
+    }
+  };
+
+  /* =========================
+     CTA Handler (generic)
+  ========================= */
+  const handleAction = (insight) => {
+    if (insight.cta?.action === "navigate") {
+      navigate(insight.cta.target);
+      return;
+    }
+
+    // fallback – existing followup logic
+    if (
+      insight.id === "followup_needed" &&
+      insight.meta?.conversations?.length
+    ) {
+      navigate(`/business/${businessId}/dashboard/messages`, {
+        state: { threadId: insight.meta.conversations[0] },
+      });
+    }
+  };
+
+  if (!visibleInsights.length) {
     return (
       <div className="ai-insights-empty">
         ✅ Everything looks good. No actions needed right now.
@@ -35,89 +83,90 @@ export default function AiInsightsPanel({ insights, loading, businessId }) {
     );
   }
 
-  /* =========================
-     ❌ Dismiss Insight (UI + DB)
-  ========================= */
-  const handleDismiss = async (insight) => {
-    console.log("❌ Dismiss insight:", insight.id);
-
-    // 1️⃣ הסתרה מיידית ב-UI
-    setDismissedInsights((prev) => [...prev, insight.id]);
-
-    // 2️⃣ עדכון לשרת
-    try {
-      await fetch("/api/ai/insights/dismiss", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          businessId,
-          insightId: insight.id,
-          stateHash: insight.meta?.stateHash || null,
-        }),
-      });
-
-      console.log("✅ Insight dismissed in DB");
-    } catch (err) {
-      console.error("❌ Failed to dismiss insight:", err);
-    }
-  };
-
-  /* =========================
-     CTA Action (unchanged)
-  ========================= */
-  const handleActionClick = (insight) => {
-    console.log("👉 CLICKED INSIGHT:", insight);
-
-    if (insight.id !== "followup_needed") return;
-    if (!insight.meta?.conversations?.length) return;
-
-    const conversationId = insight.meta.conversations[0];
-
-    navigate(`/business/${businessId}/dashboard/messages`, {
-      state: { threadId: conversationId },
-    });
-  };
-
   return (
-    <div className="ai-insights-panel">
-      <h3>AI Insights</h3>
+    <section className="ai-insights-panel">
+      {/* Header */}
+      <div className="ai-insights-header">
+        <h3>AI Insights ✨</h3>
+        <p>Personalized suggestions to improve your business</p>
+      </div>
 
-      <div className="ai-insights-list">
-        {visibleInsights.map((insight) => (
-          <div
-            key={insight.id}
-            className={`ai-insight-card priority-${insight.priority}`}
+      {/* 🔴 High Priority */}
+      {highPriority.length > 0 && (
+        <div className="ai-insights-high">
+          {highPriority.map((insight) => (
+            <InsightCard
+              key={insight.id}
+              insight={insight}
+              onDismiss={handleDismiss}
+              onAction={handleAction}
+              prominent
+            />
+          ))}
+        </div>
+      )}
+
+      {/* 🟠 Medium Priority */}
+      {mediumPriority.length > 0 && (
+        <div className="ai-insights-medium">
+          {mediumPriority.map((insight) => (
+            <InsightCard
+              key={insight.id}
+              insight={insight}
+              onDismiss={handleDismiss}
+              onAction={handleAction}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* =====================================================
+   Insight Card (Reusable)
+===================================================== */
+function InsightCard({ insight, onDismiss, onAction, prominent = false }) {
+  return (
+    <div
+      className={`ai-insight-card priority-${insight.priority} ${
+        prominent ? "prominent" : ""
+      }`}
+    >
+      <button
+        className="ai-insight-close"
+        onClick={() => onDismiss(insight)}
+        aria-label="Dismiss insight"
+      >
+        ✕
+      </button>
+
+      <div className="icon">
+        {ICONS[insight.type] || "💡"}
+      </div>
+
+      <div className="content">
+        <h4>{insight.title}</h4>
+
+        <p>
+          {insight.metric ? (
+            <>
+              <strong>{insight.metric.value}</strong>{" "}
+              {insight.metric.label} — {insight.description}
+            </>
+          ) : (
+            insight.description
+          )}
+        </p>
+
+        {(insight.actionLabel || insight.cta) && (
+          <button
+            className="action-btn"
+            onClick={() => onAction(insight)}
           >
-            {/* ❌ Close */}
-            <button
-              className="ai-insight-close"
-              onClick={() => handleDismiss(insight)}
-              aria-label="Dismiss insight"
-            >
-              ✕
-            </button>
-
-            <div className="icon">
-              {ICONS[insight.type] || "💡"}
-            </div>
-
-            <div className="content">
-              <h4>{insight.title}</h4>
-              <p>{insight.description}</p>
-
-              {insight.actionLabel && (
-                <button
-                  className="action-btn"
-                  onClick={() => handleActionClick(insight)}
-                >
-                  {insight.actionLabel}
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
+            {insight.actionLabel || insight.cta?.label}
+          </button>
+        )}
       </div>
     </div>
   );

@@ -1,12 +1,14 @@
-// --- CLEAN VERSION: UX IMPROVED, LOGIC UNCHANGED ---
+// --- CLEAN VERSION: CHAT ONLY (NO INSIGHTS) ---
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import Markdown from "markdown-to-jsx";
 import API from "@api";
 import "./AdvisorChat.css";
-import useAiInsights from "@/hooks/useAiInsights";
-import AiInsightsPanel from "@/components/AiInsightsPanel";
-
 
 const BusinessAdvisorTab = ({
   businessId,
@@ -19,12 +21,10 @@ const BusinessAdvisorTab = ({
   const [messages, setMessages] = useState([]);
   const [startedChat, setStartedChat] = useState(false);
   const [remainingQuestions, setRemainingQuestions] = useState(null);
-  const { insights, loading: insightsLoading } = useAiInsights(businessId);
 
   const chatContainerRef = useRef(null);
   const abortControllerRef = useRef(null);
 
-  
   const presetQuestions = [
     "How to raise prices without losing customers?",
     "How to deal with a drop in income?",
@@ -59,7 +59,7 @@ const BusinessAdvisorTab = ({
   }, [refreshRemainingQuestions]);
 
   /* =========================
-     INITIAL AI GREETING (UX)
+     INITIAL AI GREETING
   ========================= */
   useEffect(() => {
     if (messages.length === 0) {
@@ -85,8 +85,7 @@ const BusinessAdvisorTab = ({
           ...prev,
           {
             role: "assistant",
-            content:
-              "❗ You’ve reached your monthly AI question limit.",
+            content: "❗ You’ve reached your monthly AI question limit.",
           },
         ]);
         return;
@@ -122,8 +121,7 @@ const BusinessAdvisorTab = ({
           {
             role: "assistant",
             content:
-              response.data.answer ||
-              "❌ No response from server.",
+              response.data.answer || "❌ No response from server.",
           },
         ]);
 
@@ -199,46 +197,34 @@ const BusinessAdvisorTab = ({
     <div className="advisor-chat-container">
       <h2>AI Business Advisor</h2>
       <p className="subtitle">
-        Get clear, practical advice for running and growing your
-        business.
+        Get clear, practical advice for running and growing your business.
       </p>
 
       {remainingQuestions !== null && (
         <p className="question-balance">
-  <span>You have </span>
-  <strong>{remainingQuestions}</strong>
-  <span> AI questions remaining this month.</span>
-</p>
+          <span>You have </span>
+          <strong>{remainingQuestions}</strong>
+          <span> AI questions remaining this month.</span>
+        </p>
       )}
 
-  {/* AI INSIGHTS – תמיד מוצג */}
-{insights?.length > 0 && (
-  <AiInsightsPanel
-    insights={insights}
-    loading={insightsLoading}
-    businessId={businessId}
-  />
-)}
-
-{/* PRESET QUESTIONS – רק לפני תחילת צ’אט */}
-{!startedChat && (
-  <>
-    <div className="preset-questions-container">
-      {presetQuestions.map((q, i) => (
-        <div
-          key={i}
-          className="preset-card"
-          onClick={() => handlePresetQuestion(q)}
-        >
-          {q}
-        </div>
-      ))}
-    </div>
-
-    <hr />
-  </>
-)}
-
+      {/* PRESET QUESTIONS – before chat starts */}
+      {!startedChat && (
+        <>
+          <div className="preset-questions-container">
+            {presetQuestions.map((q, i) => (
+              <div
+                key={i}
+                className="preset-card"
+                onClick={() => handlePresetQuestion(q)}
+              >
+                {q}
+              </div>
+            ))}
+          </div>
+          <hr />
+        </>
+      )}
 
       <div className="chat-box-wrapper">
         <div className="chat-box" ref={chatContainerRef}>
@@ -266,13 +252,10 @@ const BusinessAdvisorTab = ({
           placeholder="e.g. Should I raise prices or cut expenses first?"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) =>
-            e.key === "Enter" && handleSubmit()
-          }
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           disabled={
             loading ||
-            (remainingQuestions !== null &&
-              remainingQuestions <= 0)
+            (remainingQuestions !== null && remainingQuestions <= 0)
           }
         />
 
