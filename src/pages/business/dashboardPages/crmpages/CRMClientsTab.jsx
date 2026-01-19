@@ -146,15 +146,29 @@ export default function CRMClientsTab({ businessId }) {
       {mode === "list" && (
         <>
           <div className="clients-header">
-            <input
-              className="search-input"
-              placeholder="Search by name or phone…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+  <input
+    className="search-input"
+    placeholder="Search by name or phone…"
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+  />
 
-          
-          </div>
+  <button
+    className="primary add-client-btn"
+    onClick={() => {
+      setFormClient({
+        fullName: "",
+        phone: "",
+        email: "",
+        address: "",
+      });
+      setSelectedClient(null);
+      setMode("create");
+    }}
+  >
+    ➕ Add Client
+  </button>
+</div>
 
           {isLoading ? (
             <p>Loading…</p>
