@@ -63,7 +63,6 @@ export default function BusinessDashboardLayout() {
   /* ============================
      🎁 Early Bird UI State
   ============================ */
-  const [hideEarlyBirdBanner, setHideEarlyBirdBanner] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
 
   /* ⏰ Early Bird Countdown */
@@ -93,36 +92,40 @@ export default function BusinessDashboardLayout() {
 
   /* 🎁 Upgrade → Stripe */
   const handleUpgrade = async () => {
-    if (!user?.userId) return;
+  if (!user?.userId) return;
 
-    setHideEarlyBirdBanner(true);
+  try {
+    // ✅ מסמן שהבאנר נצפה
+    await API.post("/users/mark-upgrade-banner-seen");
 
-    try {
-      const res = await API.post("/stripe/create-checkout-session", {
-        userId: user.userId,
-        plan: "monthly",
-        forceRegularPrice: true,
-      });
+    const res = await API.post("/stripe/create-checkout-session", {
+      userId: user.userId,
+      plan: "monthly",
+      forceRegularPrice: true,
+    });
 
-      if (res.data?.url) {
-        window.location.href = res.data.url;
-      } else {
-        alert("Checkout unavailable");
-      }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      alert("Something went wrong");
+    if (res.data?.url) {
+      window.location.href = res.data.url;
+    } else {
+      alert("Checkout unavailable");
     }
-  };
+  } catch (err) {
+    console.error("Checkout error:", err);
+    alert("Something went wrong");
+  }
+};
+
 
   const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
 
   try {
+    // ✅ גם כאן
+    await API.post("/users/mark-upgrade-banner-seen");
+
     const res = await API.post("/stripe/create-checkout-session", {
       userId: user.userId,
       plan: "monthly",
-      // ❗ בלי forceRegularPrice
     });
 
     window.location.href = res.data.url;
@@ -130,6 +133,7 @@ export default function BusinessDashboardLayout() {
     console.error("Early Bird checkout error:", err);
   }
 };
+
 
   /* ============================
      🔓 Logout
@@ -257,8 +261,8 @@ export default function BusinessDashboardLayout() {
 
                 </div>
                 {user?.isEarlyBirdActive &&
-  isAfterDay4 &&
-  !hideEarlyBirdBanner && (
+ isAfterDay4 &&
+ !user?.hasSeenUpgradeBanner && (
 
                   <div className="dashboard-layout-header-center">
                     <div className="earlybird-header-banner">
