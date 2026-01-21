@@ -32,19 +32,24 @@ function PartnerCard({ business, isMine, onOpenProfile }) {
           </h3>
 
           <p className="business-category">{business.category}</p>
-          <p className="business-desc">{business.description}</p>
+
+          {business.description && (
+            <p className="business-desc">
+              {business.description}
+            </p>
+          )}
 
           <div className="collab-card-buttons">
             {isMine ? (
               <span className="disabled-action">
-                You can’t message yourself
+                This is your business
               </span>
             ) : (
               <button
-                className="message-box-button secondary"
+                className="message-box-button primary"
                 onClick={() => onOpenProfile(business)}
               >
-                View Profile
+                Send Proposal
               </button>
             )}
           </div>
@@ -70,32 +75,8 @@ export default function CollabFindPartnerTab({
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [gridStabilized, setGridStabilized] = useState(false);
 
-
-  /* 🔥 key to force grid remount */
-  const [gridKey, setGridKey] = useState(0);
-
-  /* 🔍 ref for measuring grid */
   const gridRef = useRef(null);
-
-  /* =========================
-     DEBUG: mount / unmount
-  ========================= */
-
-  useEffect(() => {
-    console.log("🟢 FindPartner MOUNT", {
-      pathname: location.pathname,
-      key: location.key,
-    });
-
-    return () => {
-      console.log("🔴 FindPartner UNMOUNT", {
-        pathname: location.pathname,
-        key: location.key,
-      });
-    };
-  }, [location.pathname]);
 
   /* =========================
      Fetch Data
@@ -115,7 +96,7 @@ export default function CollabFindPartnerTab({
       setPartners(partnersRes.data.relevant || []);
     } catch (err) {
       console.error(err);
-      setError("Error loading data");
+      setError("Failed to load partners");
     } finally {
       setLoading(false);
     }
@@ -125,51 +106,6 @@ export default function CollabFindPartnerTab({
     fetchData();
   }, [fetchData]);
 
-
-  /* =========================
-     DEBUG: measure grid
-  ========================= */
-
-  useEffect(() => {
-    if (!gridRef.current) return;
-
-    const rect = gridRef.current.getBoundingClientRect();
-    const styles = getComputedStyle(gridRef.current);
-
-    console.log("📐 GRID MEASURE", {
-      width: rect.width,
-      columns: styles.gridTemplateColumns,
-      gap: styles.gap,
-    });
-  }, [gridKey]);
-
-  /* =========================
-     DEBUG: ResizeObserver
-  ========================= */
-
-  useEffect(() => {
-  if (!gridRef.current) return;
-
-  const observer = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      const width = Math.round(entry.contentRect.width);
-
-      console.log("📏 GRID RESIZED (final)", width);
-
-      // 🔥 run ONLY ONCE when width is ready
-      if (width > 600 && !gridStabilized) {
-        setGridStabilized(true);
-        setGridKey((k) => k + 1);
-      }
-    }
-  });
-
-  observer.observe(gridRef.current);
-
-  return () => observer.disconnect();
-}, [gridStabilized]);
-
-
   /* =========================
      Filtering Logic
   ========================= */
@@ -178,13 +114,13 @@ export default function CollabFindPartnerTab({
     if (!partners.length) return [];
 
     if (searchMode === "category" && searchCategory) {
-      const catLower = searchCategory.toLowerCase();
+      const cat = searchCategory.toLowerCase();
 
       return partners.filter(
         (b) =>
-          b.category.toLowerCase().includes(catLower) ||
-          (b.complementaryCategories || []).some((cat) =>
-            cat.toLowerCase().includes(catLower)
+          b.category?.toLowerCase().includes(cat) ||
+          (b.complementaryCategories || []).some((c) =>
+            c.toLowerCase().includes(cat)
           )
       );
     }
@@ -194,9 +130,9 @@ export default function CollabFindPartnerTab({
 
       return partners.filter(
         (b) =>
-          b.businessName.toLowerCase().includes(text) ||
-          b.description.toLowerCase().includes(text) ||
-          b.category.toLowerCase().includes(text)
+          b.businessName?.toLowerCase().includes(text) ||
+          b.description?.toLowerCase().includes(text) ||
+          b.category?.toLowerCase().includes(text)
       );
     }
 
@@ -209,9 +145,7 @@ export default function CollabFindPartnerTab({
 
   const handleOpenProfile = useCallback(
     (business) => {
-      if (business._id) {
-        navigate(`/business-profile/${business._id}`);
-      }
+      navigate(`/business-profile/${business._id}`);
     },
     [navigate]
   );
@@ -220,9 +154,30 @@ export default function CollabFindPartnerTab({
      States
   ========================= */
 
-  if (loading) return <p>Loading partners...</p>;
-  if (error) return <p className="error-text">{error}</p>;
-  if (filteredPartners.length === 0) return <p>No partners found.</p>;
+  if (loading) {
+    return (
+      <div className="collab-state loading">
+        Finding relevant partners…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="collab-state error">
+        {error}
+      </div>
+    );
+  }
+
+  if (filteredPartners.length === 0) {
+    return (
+      <div className="collab-state empty">
+        No matching partners found.
+        <span>Try adjusting your search.</span>
+      </div>
+    );
+  }
 
   /* =========================
      Render
@@ -230,16 +185,17 @@ export default function CollabFindPartnerTab({
 
   return (
     <div className="collab-tab-inner">
-      <div className="search-container">
-        {/* future search fields */}
+      {/* Header */}
+      <div className="collab-header">
+        <h2>Find Business Partners</h2>
+        <p>
+          Discover relevant businesses and start a collaboration.
+        </p>
       </div>
 
+      {/* Grid */}
       <div className="partners-grid-wrapper">
-        <div
-          key={gridKey}
-          ref={gridRef}
-          className="partners-grid"
-        >
+        <div ref={gridRef} className="partners-grid">
           {filteredPartners.map((business) => (
             <PartnerCard
               key={business._id}
