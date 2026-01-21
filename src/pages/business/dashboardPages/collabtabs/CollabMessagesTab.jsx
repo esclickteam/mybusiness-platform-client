@@ -213,8 +213,12 @@ export default function CollabMessagesTab({
 
       {/* Proposals */}
  {messagesToShow.map((msg) => {
-  const isFromMe = msg.fromBusinessId === userBusinessId;
-  const partnerName = isFromMe ? msg.toBusinessName : msg.fromBusinessName;
+  const isFromMe = String(msg.fromBusinessId) === String(userBusinessId);
+
+const partnerName =
+  isFromMe
+    ? msg.toBusinessName
+    : msg.fromBusinessName;
 
   return (
     <div key={msg._id} className="collab-card">
