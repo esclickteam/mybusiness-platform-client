@@ -6,47 +6,50 @@ import "./TrialExpiredModal.css";
 
 /**
  * 💜 TrialExpiredModal
- * מוצג כאשר תקופת ניסיון הסתיימה
- * מפנה ישירות ל־Stripe ($119 monthly)
+ * מוצג כאשר תקופת הניסיון הסתיימה
+ * מפנה ישירות ל־Stripe Checkout ($119 monthly)
  */
 export default function TrialExpiredModal() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  console.log("🧪 TrialExpiredModal mounted");
-  console.log("👤 User:", user);
-
   /* ===========================
      🚀 Redirect to Stripe – $119 Monthly
   =========================== */
   const handleUpgrade = async () => {
-    console.log("👉 Upgrade button clicked");
+    console.log("🟣 [TrialExpiredModal] Upgrade clicked");
 
     if (!user?._id) {
-      console.warn("❌ No user._id – aborting checkout");
+      console.error("❌ No user ID – cannot start checkout");
       return;
     }
 
     try {
       setLoading(true);
-      console.log("⏳ Creating checkout session…");
 
-      const res = await API.post("/billing/create-checkout-session", {
+      console.log("➡️ Creating Stripe Checkout session", {
         userId: user._id,
-        plan: "monthly", // ⬅️ STRIPE_PRICE_MONTHLY = $119
+        plan: "monthly",
       });
 
-      console.log("✅ Checkout session response:", res.data);
+      const res = await API.post(
+        "/stripe/create-checkout-session", // ✅ הנתיב הנכון
+        {
+          userId: user._id,
+          plan: "monthly", // $119
+        }
+      );
+
+      console.log("✅ Stripe response:", res.data);
 
       if (res.data?.url) {
-        console.log("➡️ Redirecting to Stripe:", res.data.url);
+        console.log("🔗 Redirecting to Stripe:", res.data.url);
 
-        // ❗️ חשוב: redirect מלא, לא navigate
+        // ⚠️ חייב redirect מלא – לא navigate
         window.location.href = res.data.url;
       } else {
-        console.error("❌ Stripe URL missing in response", res.data);
-        throw new Error("Stripe URL missing");
+        throw new Error("Stripe checkout URL missing");
       }
     } catch (err) {
       console.error("❌ Stripe redirect failed:", err);
@@ -56,10 +59,10 @@ export default function TrialExpiredModal() {
   };
 
   /* ===========================
-     🔙 Back to Home
+     🔙 Back to Home (ללא logout)
   =========================== */
   const handleBackHome = () => {
-    console.log("⬅️ Back to home clicked");
+    console.log("↩️ Back to home clicked");
     navigate("/", { replace: true });
   };
 
@@ -115,7 +118,7 @@ export default function TrialExpiredModal() {
         <p
           className="contact-link"
           onClick={() => {
-            console.log("📩 Contact link clicked");
+            console.log("📩 Contact us clicked");
             navigate("/contact");
           }}
         >
