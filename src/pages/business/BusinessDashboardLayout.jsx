@@ -145,10 +145,11 @@ export default function BusinessDashboardLayout() {
   ============================ */
   const DAY = 1000 * 60 * 60 * 24;
 
-  const daysSinceTrialStart = user?.trialStartedAt
-    ? Math.floor(
-        (Date.now() - new Date(user.trialStartedAt).getTime()) / DAY
-      )
+const diffMs = trialEndsAt ? trialEndsAt.getTime() - now.getTime() : 0;
+
+const trialDaysLeft =
+  user.subscriptionPlan === "trial" && diffMs > 0
+    ? Math.floor(diffMs / DAY) + 1
     : 0;
 
   const isAfterDay4 = daysSinceTrialStart >= 4;
