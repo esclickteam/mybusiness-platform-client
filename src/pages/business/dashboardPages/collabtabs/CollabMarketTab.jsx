@@ -279,7 +279,11 @@ export default function CollabMarketTab() {
 </div>
 
 
-            <p className="description">{item.description}</p>
+            <div className="description-block">
+  <div className="description-label">Description</div>
+  <p className="description">{item.description}</p>
+</div>
+
 
             <div className="meta">
   <span>

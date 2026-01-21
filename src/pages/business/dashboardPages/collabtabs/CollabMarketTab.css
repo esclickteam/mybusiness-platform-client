@@ -304,3 +304,16 @@
 .tags-block {
   margin: 6px 0;
 }
+
+
+.description-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+.description {
+  color: #374151;
+}
