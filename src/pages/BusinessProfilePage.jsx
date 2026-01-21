@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -7,57 +7,49 @@ import Button from "@mui/material/Button";
 import API from "../api";
 
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
-import CreateAgreementForm from "../components/CreateAgreementForm";
-import { useNavigate } from "react-router-dom";
-
+import "./BusinessProfilePage.css";
 
 
 export default function BusinessProfilePage({ resetSearchFilters }) {
   const { businessId } = useParams();
+  const navigate = useNavigate();
 
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
-
 
   const [currentUserBusinessId, setCurrentUserBusinessId] = useState(null);
   const [currentUserBusinessName, setCurrentUserBusinessName] = useState("");
 
-  const [currentProposalId, setCurrentProposalId] = useState(null);
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [sending, setSending] = useState(false);
-  const [createAgreementModalOpen, setCreateAgreementModalOpen] =
-    useState(false);
 
   /* =========================
-     🔹 Load public business
-     ========================= */
+     Load business
+  ========================= */
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
 
     async function fetchBusiness() {
       try {
         const res = await API.get(`/business/${businessId}`);
-        if (isMounted) setBusiness(res.data.business);
+        if (mounted) setBusiness(res.data.business);
       } catch {
-        if (isMounted) setError("Failed to load business details.");
+        if (mounted) setError("Failed to load business details");
       } finally {
-        if (isMounted) setLoading(false);
+        if (mounted) setLoading(false);
       }
     }
 
     fetchBusiness();
-    return () => {
-      isMounted = false;
-    };
+    return () => (mounted = false);
   }, [businessId]);
 
   /* =========================
-     🔹 Load my business (optional)
-     ========================= */
+     Load my business
+  ========================= */
   useEffect(() => {
     async function fetchMyBusiness() {
       try {
@@ -67,7 +59,6 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
           res.data.business?.businessName || ""
         );
       } catch {
-        // Public user – allowed
         setCurrentUserBusinessId(null);
         setCurrentUserBusinessName("");
       }
@@ -76,29 +67,9 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     fetchMyBusiness();
   }, []);
 
-  /* =========================
-     UI states
-     ========================= */
-  if (loading)
-    return (
-      <p style={{ textAlign: "center", marginTop: 50 }}>
-        Loading business profile…
-      </p>
-    );
-
-  if (error)
-    return (
-      <p style={{ textAlign: "center", color: "red", marginTop: 50 }}>
-        {error}
-      </p>
-    );
-
-  if (!business)
-    return (
-      <p style={{ textAlign: "center", marginTop: 50 }}>
-        Business not found.
-      </p>
-    );
+  if (loading) return <div className="bp-state">Loading business…</div>;
+  if (error) return <div className="bp-state error">{error}</div>;
+  if (!business) return <div className="bp-state">Business not found</div>;
 
   const isLoggedIn = !!currentUserBusinessId;
   const isOwnerViewingOther =
@@ -106,12 +77,9 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
 
   /* =========================
      Actions
-     ========================= */
+  ========================= */
   const openProposalModal = () => {
-    if (!currentUserBusinessName) {
-      alert("Please wait while your business details load.");
-      return;
-    }
+    if (!currentUserBusinessName) return;
     setIsProposalModalOpen(true);
   };
 
@@ -123,11 +91,8 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
         otherBusinessId: business._id,
         text: chatMessage.trim(),
       });
-      alert("Message sent successfully.");
       setChatModalOpen(false);
       setChatMessage("");
-    } catch {
-      alert("Failed to send the message.");
     } finally {
       setSending(false);
     }
@@ -135,81 +100,42 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
 
   /* =========================
      Render
-     ========================= */
+  ========================= */
   return (
-    <div
-      style={{
-        maxWidth: 700,
-        margin: "40px auto",
-        padding: 30,
-        direction: "ltr",
-        textAlign: "left",
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-        color: "#4b367c",
-        background: "linear-gradient(180deg, #ede8fb 0%, #d9d1ff 100%)",
-        borderRadius: 20,
-        boxShadow: "0 4px 40px rgba(131, 90, 184, 0.2)",
-      }}
-    >
-      {/* Back (internal users only) */}
+    <div className="business-profile-page">
       {isOwnerViewingOther && (
-  <button
-    onClick={() => {
-      resetSearchFilters?.();
-
-      if (!currentUserBusinessId) {
-        alert("Business not found");
-        return;
-      }
-
-      navigate(
-        `/business/${currentUserBusinessId}/dashboard/collab/find-partner`
-      );
-    }}
-    style={{
-      background: "none",
-      border: "none",
-      color: "#6c3483",
-      cursor: "pointer",
-      fontSize: 16,
-      marginBottom: 24,
-      fontWeight: 600,
-      textDecoration: "underline",
-    }}
-  >
-    ← Back
-  </button>
-)}
-
-
+        <button
+          className="bp-back"
+          onClick={() => {
+            resetSearchFilters?.();
+            navigate(
+              `/business/${currentUserBusinessId}/dashboard/collab/find-partner`
+            );
+          }}
+        >
+          ← Back to partners
+        </button>
+      )}
 
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          backgroundColor: "#fff",
-          padding: 20,
-          borderRadius: 16,
-          marginBottom: 24,
-        }}
-      >
-        <div>
-          <h1 style={{ margin: 0 }}>{business.businessName}</h1>
-          <p style={{ margin: 0 }}>{business.category}</p>
+      <div className="bp-header">
+        <div className="bp-header-info">
+          <h1>{business.businessName}</h1>
+          <p className="bp-category">{business.category}</p>
         </div>
+
         <img
           src={business.logo || "/default-logo.png"}
           alt="Business logo"
-          style={{ width: 80, height: 80, borderRadius: "50%" }}
+          className="bp-logo"
         />
       </div>
 
-      {/* Info blocks */}
-      <Block title="📍 Service Area" content={business.area} />
-      <Block title="📝 About the Business" content={business.description} />
-      <Block
-        title="📞 Contact Information"
+      {/* Info sections */}
+      <InfoBlock title="Service Area" content={business.area} />
+      <InfoBlock title="About the Business" content={business.description} />
+      <InfoBlock
+        title="Contact Information"
         content={
           <>
             {business.contact && <p>{business.contact}</p>}
@@ -219,11 +145,18 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
         }
       />
 
-      {/* Actions – only logged in */}
+      {/* Actions */}
       {isLoggedIn && (
-        <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-          <button onClick={openProposalModal}>Send Proposal</button>
-          <button onClick={() => setChatModalOpen(true)}>Start Chat</button>
+        <div className="bp-actions">
+          <button className="bp-btn primary" onClick={openProposalModal}>
+            Send Proposal
+          </button>
+          <button
+            className="bp-btn secondary"
+            onClick={() => setChatModalOpen(true)}
+          >
+            Start Chat
+          </button>
         </div>
       )}
 
@@ -232,35 +165,17 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
         open={isProposalModalOpen}
         onClose={() => setIsProposalModalOpen(false)}
       >
-        <Box
-          sx={{
-            position: "absolute",
-            top: 24,
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "100%",
-            maxWidth: 760,
-            maxHeight: "calc(100vh - 48px)",
-            overflow: "auto",
-            bgcolor: "#fff",
-            borderRadius: 16,
-            boxShadow: "0 10px 40px rgba(0,0,0,0.25)",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        <Box className="bp-modal">
           <ProposalForm
             fromBusinessId={currentUserBusinessId}
             fromBusinessName={currentUserBusinessName}
             toBusiness={business}
-            onSent={(id) => {
-              setCurrentProposalId(id);
+            onSent={() => {
               setIsProposalModalOpen(false);
-
               navigate(
-  `/business/${businessId}/dashboard/collab/messages?tab=sent`,
-  { replace: true, state: { force: Date.now() } }
-);
+                `/business/${businessId}/dashboard/collab/messages?tab=sent`,
+                { replace: true }
+              );
             }}
           />
         </Box>
@@ -268,19 +183,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
 
       {/* Chat Modal */}
       <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: 80,
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "100%",
-            maxWidth: 420,
-            bgcolor: "#fff",
-            borderRadius: 16,
-            p: 4,
-          }}
-        >
+        <Box className="bp-chat-modal">
           <TextField
             multiline
             minRows={3}
@@ -303,21 +206,15 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
 }
 
 /* =========================
-   Helper component
-   ========================= */
-function Block({ title, content }) {
+   Info Block
+========================= */
+function InfoBlock({ title, content }) {
   if (!content) return null;
+
   return (
-    <div
-      style={{
-        background: "#f3eafd",
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 16,
-      }}
-    >
+    <section className="bp-block">
       <h3>{title}</h3>
-      <div>{content}</div>
-    </div>
+      <div className="bp-block-content">{content}</div>
+    </section>
   );
 }
