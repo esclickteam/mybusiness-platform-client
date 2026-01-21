@@ -65,28 +65,18 @@ export default function ProtectedRoute({
     return <Navigate to="/create-business" replace />;
   }
 
-  /* ===========================
-     💳 Subscription validity (business only)
-  =========================== */
-  const isSubscriptionValid = useMemo(() => {
-    if (!isBusiness) return true;
-    if (user?.subscriptionEnd) {
-      return new Date(user.subscriptionEnd) > new Date();
-    }
-    return false;
-  }, [isBusiness, user?.subscriptionEnd]);
 
   /* ===========================
      🕓 Trial expired
   =========================== */
   const isTrialExpired = useMemo(() => {
-    return (
-      isBusiness &&
-      user?.subscriptionPlan === "trial" &&
-      user?.subscriptionEnd &&
-      new Date(user.subscriptionEnd) < new Date()
-    );
-  }, [isBusiness, user?.subscriptionPlan, user?.subscriptionEnd]);
+  return (
+    isBusiness &&
+    user?.subscriptionPlan === "trial" &&
+    user?.trialEndsAt &&
+    new Date(user.trialEndsAt) < new Date()
+  );
+}, [isBusiness, user?.subscriptionPlan, user?.trialEndsAt]);
 
   /* ===========================
      🧠 Show trial modal ONLY inside dashboard
@@ -107,13 +97,8 @@ export default function ProtectedRoute({
      ⚠️ Trial expired – modal only (no redirect)
   =========================== */
   if (showTrialModal) {
-    return (
-      <div style={{ position: "relative", zIndex: 9999 }}>
-        <TrialExpiredModal />
-        {children}
-      </div>
-    );
-  }
+  return <TrialExpiredModal />;
+}
 
   /* ===========================
      ✅ Access granted
