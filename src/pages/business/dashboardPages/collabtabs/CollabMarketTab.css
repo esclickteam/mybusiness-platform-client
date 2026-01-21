@@ -235,15 +235,20 @@
 
 .message-box-button {
   margin-top: auto;
-  background: #f3f4f6;
+  background: #5e17eb;        /* סגול ראשי */
+  color: #ffffff;             /* טקסט לבן */
   border: none;
-  border-radius: 12px;
-  padding: 10px;
-  font-weight: 600;
+  border-radius: 14px;
+  padding: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: background 0.15s ease;
+  box-shadow: 0 10px 22px rgba(94, 23, 235, 0.35);
+  transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .message-box-button:hover {
-  background: #e5e7eb;
+  background: #4a12c7;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(94, 23, 235, 0.45);
 }
