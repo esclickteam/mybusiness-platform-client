@@ -202,6 +202,20 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
       return;
     }
 
+    // 🟣 Empty calendar → Work Hours
+if (insight?.id === "empty_calendar") {
+  if (DEBUG_AI_INSIGHTS) {
+    console.log(
+      "navigate empty_calendar → work hours",
+      businessId
+    );
+  }
+
+  navigate(`/business/${businessId}/dashboard/crm/work-hours`);
+  return;
+}
+
+
     if (DEBUG_AI_INSIGHTS) {
       console.warn("No action handler matched for insight:", insight?.id);
     }
