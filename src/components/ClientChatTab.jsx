@@ -22,16 +22,16 @@ function normalize(msg, userId) {
 ------------------------------------------------------------- */
 function messagesReducer(state, action) {
   switch (action.type) {
-    case "set":
-      console.log("📜 Setting messages:", action.payload);  // לוג של שליחת היסטוריית הודעות
-      // מיון ההודעות לפי timestamp לפני הצגתן
-      const sortedMessages = action.payload.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    case "set": {
+      const sorted = action.payload.sort(
+        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+      );
       return [
-        ...new Map(sortedMessages.map(m => [m._id || m.tempId, m])).values(),
+        ...new Map(sorted.map(m => [m._id || m.tempId, m])).values(),
       ];
+    }
 
-    case "append":
-      console.log("📩 Appending new message:", action.payload);  // לוג של הודעה חדשה
+    case "append": {
       if (
         state.some(
           m =>
@@ -39,15 +39,23 @@ function messagesReducer(state, action) {
             m.tempId === action.payload.tempId
         )
       ) {
-        console.log("⏩ Skipping duplicate message:", action.payload);  // לוג אם הודעה כפולה
         return state;
       }
       return [...state, action.payload];
+    }
+
+    // ⭐ חדש – החלפת הודעה זמנית
+    case "replaceTemp": {
+      return state.map(m =>
+        m.tempId === action.tempId ? action.message : m
+      );
+    }
 
     default:
       return state;
   }
 }
+
 
 /* -------------------------------------------------------------
    MAIN COMPONENT
@@ -114,40 +122,60 @@ export default function ClientChatTab({
   /* -------------------------------------------------------------
      SEND MESSAGE — NO OPTIMISM!
 ------------------------------------------------------------- */
-  const sendMessage = () => {
-    if (!input.trim() || sending) {
-      console.log("⏩ Message skipped: No text or already sending.");  // לוג אם לא נשלחה הודעה
-      return;
-    }
+ const sendMessage = () => {
+  if (!input.trim() || sending) return;
 
-    const text = input.trim();
-    const tempId = uuidv4();
+  const text = input.trim();
+  const tempId = uuidv4();
 
-    console.log("📤 Sending message:", text);  // לוג של הודעה שנשלחת
+  const optimisticMessage = normalize(
+    {
+      tempId,
+      fromId: userId,
+      toId: businessId,
+      text,
+      createdAt: new Date().toISOString(),
+    },
+    userId
+  );
 
-    setSending(true);  // מגדיר את שליחה כהמתנה
-    setInput("");  // מנקה את השדה אחרי שליחה
+  // ✅ 1. להכניס מיד למסך
+  dispatch({ type: "append", payload: optimisticMessage });
 
-    socket.emit(
-      "sendMessage",
-      {
-        conversationId,
-        from: userId,
-        to: businessId,
-        text,
-        tempId,
-      },
-      (ack) => {
-        setSending(false);  // עדכון סטטוס שליחת ההודעה
+  setSending(true);
+  setInput("");
 
-        if (!ack.ok) {
-          console.error("❌ Failed sending message:", ack.error);  // לוג אם שליחה נכשלה
-        } else {
-          console.log("✅ Message sent successfully:", ack.message);  // לוג של הודעה שנשלחה בהצלחה
-        }
+  // ✅ 2. לשלוח לשרת
+  socket.emit(
+    "sendMessage",
+    {
+      conversationId,
+      from: userId,
+      to: businessId,
+      text,
+      tempId,
+    },
+    (ack) => {
+      setSending(false);
+
+      if (!ack.ok) {
+        console.error("❌ Failed sending message:", ack.error);
+        return;
       }
-    );
-  };
+
+      // ✅ 3. להחליף הודעה זמנית באמיתית
+      const confirmed = normalize(ack.message, userId);
+
+      dispatch({
+  type: "replaceTemp",
+  tempId,
+  message: confirmed,
+});
+
+    }
+  );
+};
+
 
   /* -------------------------------------------------------------
      UI
