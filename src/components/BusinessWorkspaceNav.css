@@ -2,7 +2,28 @@
    Wrapper
 ========================= */
 .business-workspace-nav {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
   padding: 16px 14px;
+}
+
+/* =========================
+   Sections
+========================= */
+.nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+/* הצמדת Account לתחתית */
+.nav-section-bottom {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(94, 23, 235, 0.08);
 }
 
 /* =========================
@@ -19,17 +40,19 @@
   text-decoration: none;
   color: #2e1a72;
 
-  font-size: 0.96rem;          /* ⬅️ טיפה קטן יותר */
+  font-size: 0.96rem;
   font-weight: 600;
 
   transition:
     background 0.18s ease,
     color 0.18s ease,
-    transform 0.12s ease;
+    transform 0.12s ease,
+    box-shadow 0.18s ease;
 }
 
 .business-workspace-nav .nav-link:hover {
   background: rgba(94, 23, 235, 0.07);
+  transform: translateX(2px);
 }
 
 /* =========================
@@ -42,28 +65,28 @@
 }
 
 /* =========================
-   Icon (UX focus)
+   Icon
 ========================= */
 .business-workspace-nav svg {
-  width: 16px;                 /* ⬅️ הקטנה אמיתית */
+  width: 16px;
   height: 16px;
 
   stroke: currentColor;
   fill: none;
   stroke-width: 1.7;
 
-  opacity: 0.75;               /* ⬅️ שקט */
+  opacity: 0.75;
   flex-shrink: 0;
 }
 
 .business-workspace-nav .nav-link.active svg {
-  opacity: 1;                  /* ⬅️ מודגש רק ב־active */
+  opacity: 1;
 }
 
 /* =========================
    Label
 ========================= */
-.business-workspace-nav span {
+.business-workspace-nav .nav-link span {
   line-height: 1.2;
 }
 
@@ -82,11 +105,14 @@
   padding: 3px 7px;
   border-radius: 999px;
   line-height: 1;
+
+  box-shadow: 0 2px 6px rgba(94, 23, 235, 0.35);
 }
 
 /* =========================
-   Micro UX (optional but 🔥)
+   Accessibility (nice touch)
 ========================= */
-.business-workspace-nav .nav-link:hover {
-  transform: translateX(2px);
+.business-workspace-nav .nav-link:focus-visible {
+  outline: 2px solid rgba(94, 23, 235, 0.4);
+  outline-offset: 2px;
 }
