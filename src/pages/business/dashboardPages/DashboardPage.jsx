@@ -174,7 +174,7 @@ useEffect(() => {
   API.post("/users/mark-earlybird-modal-seen")
     .then(() => refreshUser())
     .catch(() => {});
-}, [shouldShowEarlyBirdModal]);
+}, [shouldShowEarlyBirdModal, refreshUser]);
 
 
 
