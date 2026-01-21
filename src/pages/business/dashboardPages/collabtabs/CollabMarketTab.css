@@ -252,3 +252,32 @@
   transform: translateY(-1px);
   box-shadow: 0 14px 28px rgba(94, 23, 235, 0.45);
 }
+
+/* react-phone-input-2 alignment */
+.react-tel-input {
+  font-family: inherit;
+}
+
+.react-tel-input .form-control {
+  width: 100%;
+  height: 42px;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  padding-left: 56px; /* מקום לדגל + קידומת */
+}
+
+.react-tel-input .form-control:focus {
+  border-color: #5e17eb;
+  box-shadow: 0 0 0 2px rgba(94, 23, 235, 0.15);
+}
+
+.react-tel-input .flag-dropdown {
+  border: none;
+  background: transparent;
+  border-radius: 12px 0 0 12px;
+}
+
+.react-tel-input .selected-flag {
+  padding-left: 14px;
+}

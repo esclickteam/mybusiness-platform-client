@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import API from "../../../../api";
 import "./CollabMarketTab.css";
 import { useNavigate } from "react-router-dom";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 
 /* =========================
    Create Collaboration Form
@@ -9,13 +12,11 @@ import { useNavigate } from "react-router-dom";
 
 function CreateCollabForm({ onSuccess }) {
   const [formData, setFormData] = useState({
-    countryCode: "+1",
     title: "",
     description: "",
     needs: "",
     offers: "",
     contactName: "",
-    phone: "",
     budget: "",
     expiryDate: "",
   });
@@ -23,6 +24,8 @@ function CreateCollabForm({ onSuccess }) {
   const [useExpiry, setUseExpiry] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [phone, setPhone] = useState("");
+
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -34,8 +37,9 @@ function CreateCollabForm({ onSuccess }) {
       e.preventDefault();
       setError(null);
 
-      const { title, description, contactName, phone } = formData;
-      if (!title || !description || !contactName || !phone) {
+      const { title, description, contactName } = formData;
+if (!title || !description || !contactName || !phone) {
+
         setError("Please fill all required fields");
         return;
       }
@@ -59,20 +63,20 @@ function CreateCollabForm({ onSuccess }) {
               ? new Date(formData.expiryDate).toISOString()
               : null,
           contactName: formData.contactName.trim(),
-          phone: `+1${formData.phone.trim()}`,
+          phone,
+
         });
 
         setFormData({
-          countryCode: "+1",
-          title: "",
-          description: "",
-          needs: "",
-          offers: "",
-          contactName: "",
-          phone: "",
-          budget: "",
-          expiryDate: "",
-        });
+  title: "",
+  description: "",
+  needs: "",
+  offers: "",
+  contactName: "",
+  budget: "",
+  expiryDate: "",
+});
+        setPhone("");  
         setUseExpiry(false);
 
         onSuccess?.();
@@ -82,7 +86,7 @@ function CreateCollabForm({ onSuccess }) {
         setLoading(false);
       }
     },
-    [formData, useExpiry, onSuccess]
+    [formData, useExpiry, phone, onSuccess]
   );
 
   return (
@@ -135,14 +139,19 @@ function CreateCollabForm({ onSuccess }) {
       </div>
 
       <div className="form-group">
-        <label>Phone *</label>
-        <input
-          name="phone"
-          placeholder="US number"
-          value={formData.phone}
-          onChange={handleChange}
-        />
-      </div>
+  <label>Phone *</label>
+
+  <PhoneInput
+    country="us"
+    value={phone}
+    onChange={(v) => setPhone(v)}
+    inputProps={{
+      required: true,
+      name: "phone",
+    }}
+  />
+</div>
+
 
       <div className="form-row">
         <input
