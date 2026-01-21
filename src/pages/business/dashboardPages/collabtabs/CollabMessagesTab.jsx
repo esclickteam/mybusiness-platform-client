@@ -212,18 +212,16 @@ export default function CollabMessagesTab({
       )}
 
       {/* Proposals */}
-    {messagesToShow.map((msg) => {
-  const isSent = messages.sent.some((m) => m._id === msg._id);
+ {messagesToShow.map((msg) => {
+  const isFromMe = msg.fromBusinessId === userBusinessId;
+  const partnerName = isFromMe ? msg.toBusinessName : msg.fromBusinessName;
 
   return (
     <div key={msg._id} className="collab-card">
       <div className="collab-card-header">
         <div className="collab-business">
           <div>
-            <strong>From:</strong> {isSent ? "You" : msg.fromBusinessName || "—"}
-          </div>
-          <div>
-            <strong>To:</strong> {isSent ? msg.toBusinessName || "—" : "You"}
+            <strong>Partner:</strong> {partnerName || "—"}
           </div>
         </div>
 
@@ -231,7 +229,6 @@ export default function CollabMessagesTab({
       </div>
 
       
-
 
 
           <div className="collab-card-body">
