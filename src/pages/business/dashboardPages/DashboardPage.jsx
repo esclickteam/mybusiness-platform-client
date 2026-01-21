@@ -168,15 +168,6 @@ const shouldShowEarlyBirdModal =
   !user?.hasPaid &&
   !user?.earlyBirdModalSeenAt;
 
-useEffect(() => {
-  if (!shouldShowEarlyBirdModal) return;
-
-  API.post("/users/mark-earlybird-modal-seen")
-    .then(() => refreshUser())
-    .catch(() => {});
-}, [shouldShowEarlyBirdModal, refreshUser]);
-
-
 
 
 
@@ -498,9 +489,11 @@ sock.on("newReview", (reviewData) => {
   // 🎁 Early Bird → Stripe Checkout
 const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
- 
 
   try {
+    // 🔑 מסמן שהמודאל נצפה גם במקרה של Upgrade
+    await API.post("/users/mark-earlybird-modal-seen");
+
     const res = await API.post("/stripe/create-checkout-session", {
       userId: user.userId,
       plan: "monthly",
@@ -623,9 +616,13 @@ if (isRefreshingUser) {
  
 {shouldShowEarlyBirdModal && (
   <UpgradeOfferCard
-  onUpgrade={handleEarlyBirdUpgrade}
-            onClose={() => {
-    
+    expiresAt={user?.earlyBirdExpiresAt}
+    onUpgrade={handleEarlyBirdUpgrade}
+    onClose={async () => {
+      try {
+        await API.post("/users/mark-earlybird-modal-seen");
+        await refreshUser(); // 🔑 מפיל את התנאי
+      } catch {}
     }}
   />
 )}
