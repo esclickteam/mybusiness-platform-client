@@ -281,3 +281,26 @@
 .react-tel-input .selected-flag {
   padding-left: 14px;
 }
+
+.tag-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 6px 0 2px;
+  text-transform: uppercase;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.meta strong {
+  color: #374151;
+}
+
+.tags-block {
+  margin: 6px 0;
+}

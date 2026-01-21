@@ -254,25 +254,47 @@ export default function CollabMarketTab() {
           <div key={item._id} className="collab-card">
             <h3 className="collab-title">{item.title}</h3>
 
-            <div className="tags-row">
-              {item.needs?.map((n) => (
-                <span key={n} className="tag need">{n}</span>
-              ))}
-              {item.offers?.map((o) => (
-                <span key={o} className="tag offer">{o}</span>
-              ))}
-            </div>
+            <div className="tags-block">
+  {item.needs?.length > 0 && (
+    <>
+      <div className="tag-label">Needs</div>
+      <div className="tags-row">
+        {item.needs.map((n) => (
+          <span key={n} className="tag need">{n}</span>
+        ))}
+      </div>
+    </>
+  )}
+
+  {item.offers?.length > 0 && (
+    <>
+      <div className="tag-label">Offers</div>
+      <div className="tags-row">
+        {item.offers.map((o) => (
+          <span key={o} className="tag offer">{o}</span>
+        ))}
+      </div>
+    </>
+  )}
+</div>
+
 
             <p className="description">{item.description}</p>
 
             <div className="meta">
-              <span>{item.budget ? `$${item.budget}` : "No budget"}</span>
-              <span>
-                {item.validUntil
-                  ? `Expires ${new Date(item.validUntil).toLocaleDateString()}`
-                  : "No expiration"}
-              </span>
-            </div>
+  <span>
+    <strong>Budget:</strong>{" "}
+    {item.budget ? `$${item.budget}` : "Not specified"}
+  </span>
+
+  <span>
+    <strong>Expires:</strong>{" "}
+    {item.validUntil
+      ? new Date(item.validUntil).toLocaleDateString()
+      : "No expiration"}
+  </span>
+</div>
+
 
             <button
               className="message-box-button"
