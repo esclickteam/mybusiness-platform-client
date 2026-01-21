@@ -4,54 +4,63 @@ import { useAuth } from "../context/AuthContext";
 import "./TrialExpiredModal.css";
 
 /**
- * 💜 TrialExpiredModal – גרסה פרימיום עם Progress Bar ו-UX חכם
- * מוצג כשהניסיון נגמר לגמרי (100%)
+ * 💜 TrialExpiredModal
+ * מוצג כאשר תקופת ניסיון הסתיימה
+ * ללא logout, ללא ניתוק, UX SaaS תקני
  */
 export default function TrialExpiredModal() {
   const navigate = useNavigate();
-  const { logout } = useAuth(); // 👈 נשתמש בזה כדי לוודא יציאה מהדשבורד
+  const { user } = useAuth();
 
   /* ===========================
-     🔙 חזרה לדף הבית
-     נבצע ניתוק כדי למנוע מהProtectedRoute
-     להחזיר שוב למודאל לאחר הניווט
+     🔁 ניווט לבילינג (בדשבורד)
   =========================== */
-  const handleBackHome = async () => {
-    try {
-      await logout(); // ניתוק המשתמש
-    } catch (err) {
-      console.error("Logout error:", err);
-    }
-    navigate("/", { replace: true }); // ניווט לדף הבית
+  const handleUpgrade = () => {
+    if (!user?.businessId) return;
+    navigate(
+      `/business/${user.businessId}/dashboard/billing`,
+      { replace: true }
+    );
+  };
+
+  /* ===========================
+     🔙 חזרה לדף הבית (ללא logout)
+  =========================== */
+  const handleBackHome = () => {
+    navigate("/", { replace: true });
   };
 
   return (
     <div className="trial-overlay">
-      <div className="trial-modal fade-in">
+      <div className="trial-modal fade-in" role="dialog" aria-modal="true">
+
         {/* 🔹 Progress Bar */}
         <div className="trial-progress">
-          <div className="trial-progress-fill"></div>
+          <div className="trial-progress-fill" />
         </div>
 
-        {/* 🕓 כותרת ברורה */}
-        <h2 className="trial-title">⏳ Your 14-Day Free Trial Has Ended</h2>
+        {/* 🕓 כותרת */}
+        <h2 className="trial-title">
+          ⏳ Your 14-Day Free Trial Has Ended
+        </h2>
 
-        {/* 💬 טקסט קצר וברור */}
+        {/* 💬 טקסט */}
         <p className="trial-text">
-          Upgrade now to keep using <strong>BizUply’s</strong> smart automations,
+          Upgrade now to keep using{" "}
+          <strong>BizUply’s</strong> smart automations,
           CRM, and AI tools.
         </p>
 
-        {/* ⚡ תחושת דחיפות */}
+        {/* ⚡ דחיפות */}
         <p className="trial-urgency">
-          Don’t lose access to your data and automations!
+          Don’t lose access to your data and automations.
         </p>
 
         {/* 🔘 כפתורים */}
         <div className="trial-buttons">
           <button
             className="upgrade-btn"
-            onClick={() => navigate("/pricing")}
+            onClick={handleUpgrade}
           >
             Upgrade & Keep My Access
           </button>
@@ -64,7 +73,7 @@ export default function TrialExpiredModal() {
           </button>
         </div>
 
-        {/* 💬 CTA נוסף / בריחת חירום */}
+        {/* 💬 CTA משני */}
         <p
           className="contact-link"
           onClick={() => navigate("/contact")}
@@ -72,7 +81,7 @@ export default function TrialExpiredModal() {
           Need more time? <span>Contact us for an extension</span>
         </p>
 
-        {/* 💜 הודעת תודה רכה */}
+        {/* 💜 Footer רך */}
         <p className="note">
           We’re glad you tried <strong>BizUply</strong>.  
           Let’s keep your business running smoothly 🚀

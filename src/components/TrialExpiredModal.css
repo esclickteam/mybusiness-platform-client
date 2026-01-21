@@ -1,158 +1,176 @@
-/* ===========================
-   💜 TrialExpired Modal – UX Premium
-   =========================== */
-
+/* =====================================================
+   Overlay
+===================================================== */
 .trial-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(15, 15, 30, 0.65);
-  backdrop-filter: blur(8px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  inset: 0;
+  background: rgba(20, 16, 40, 0.55);
+  backdrop-filter: blur(6px);
   z-index: 9999;
-  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* =====================================================
+   Modal
+===================================================== */
 .trial-modal {
-  background: linear-gradient(180deg, #ffffff 0%, #faf7ff 100%);
-  border-radius: 18px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-  padding: 40px 30px;
-  max-width: 420px;
   width: 100%;
+  max-width: 460px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+  padding: 28px 26px 32px;
   text-align: center;
-  animation: fadeIn 0.6s ease-in-out;
   position: relative;
 }
 
-/* 🔹 Progress Bar */
+/* =====================================================
+   Fade In Animation
+===================================================== */
+.fade-in {
+  animation: fadeInUp 0.35s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================================
+   Progress Bar
+===================================================== */
 .trial-progress {
-  width: 100%;
   height: 6px;
-  background: #eee;
-  border-radius: 4px;
+  width: 100%;
+  background: #f0f0f6;
+  border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 25px;
+  margin-bottom: 22px;
 }
 
 .trial-progress-fill {
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #ff8b8b, #ff4d4d);
-  animation: progressPulse 1.8s ease-in-out infinite alternate;
+  background: linear-gradient(90deg, #6c63ff, #8b80ff);
 }
 
-@keyframes progressPulse {
-  from { opacity: 0.6; transform: scaleX(0.98); }
-  to { opacity: 1; transform: scaleX(1); }
-}
-
+/* =====================================================
+   Title & Text
+===================================================== */
 .trial-title {
-  font-size: 1.6rem;
+  font-size: 1.45rem;
   font-weight: 700;
-  color: #3c0068;
+  color: #1f1f2e;
   margin-bottom: 12px;
 }
 
 .trial-text {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #444;
+  line-height: 1.7;
   margin-bottom: 10px;
 }
 
-.trial-urgency {
-  font-size: 0.9rem;
-  color: #7b3ef3;
-  font-weight: 600;
-  margin-bottom: 25px;
+.trial-text strong {
+  color: #6c63ff;
 }
 
+.trial-urgency {
+  font-size: 0.92rem;
+  color: #6c63ff;
+  font-weight: 600;
+  margin-bottom: 22px;
+}
+
+/* =====================================================
+   Buttons
+===================================================== */
 .trial-buttons {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .upgrade-btn {
-  background: linear-gradient(90deg, #7b61ff, #6c63ff);
-  color: #fff;
+  background: linear-gradient(135deg, #6c63ff, #8b80ff);
+  color: #ffffff;
   border: none;
-  border-radius: 10px;
-  padding: 12px 0;
-  font-weight: 600;
+  border-radius: 12px;
+  padding: 14px 18px;
   font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .upgrade-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+  box-shadow: 0 10px 24px rgba(108, 99, 255, 0.35);
 }
 
 .back-btn {
-  background: #fff;
-  border: 2px solid #7b61ff;
-  color: #7b61ff;
-  border-radius: 10px;
-  padding: 12px 0;
+  background: #f4f4f8;
+  border: 1px solid #e2e2ef;
+  color: #555;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 0.95rem;
   font-weight: 600;
-  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .back-btn:hover {
-  background: #f4f0ff;
+  background: #ededf7;
+  color: #333;
 }
 
+/* =====================================================
+   Contact / Footer Text
+===================================================== */
 .contact-link {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #666;
-  margin-top: 10px;
+  margin-top: 6px;
   cursor: pointer;
 }
 
 .contact-link span {
-  color: #7b61ff;
-  font-weight: 500;
-  transition: color 0.25s ease;
+  color: #6c63ff;
+  font-weight: 600;
 }
 
 .contact-link:hover span {
-  color: #5a41d4;
+  text-decoration: underline;
 }
 
 .note {
-  font-size: 0.9rem;
-  color: #555;
-  margin-top: 25px;
-  line-height: 1.4;
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 14px;
+  line-height: 1.5;
 }
 
-/* אנימציות */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* רספונסיביות */
+/* =====================================================
+   Mobile Adjustments
+===================================================== */
 @media (max-width: 480px) {
   .trial-modal {
-    padding: 30px 20px;
+    margin: 0 16px;
+    padding: 24px 20px 28px;
   }
 
   .trial-title {
-    font-size: 1.4rem;
-  }
-
-  .upgrade-btn,
-  .back-btn {
-    font-size: 0.95rem;
+    font-size: 1.3rem;
   }
 }
