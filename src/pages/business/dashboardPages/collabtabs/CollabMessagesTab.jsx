@@ -215,18 +215,10 @@ export default function CollabMessagesTab({
       {messagesToShow.map((msg) => (
         <div key={msg._id} className="collab-card">
           <div className="collab-card-header">
-
             <div className="collab-business">
-  <p>
-    <strong>From Business:</strong>{" "}
-    {msg.fromBusinessName}
-  </p>
-  <p>
-    <strong>To Business:</strong>{" "}
-    {msg.toBusinessName}
-  </p>
-</div>
-            
+              <div><strong>From:</strong> {msg.fromBusinessName || "—"}</div>
+              <div><strong>To:</strong> {msg.toBusinessName || "—"}</div>
+            </div>
             <span className={`collab-status ${msg.status}`}>
               {msg.status}
             </span>

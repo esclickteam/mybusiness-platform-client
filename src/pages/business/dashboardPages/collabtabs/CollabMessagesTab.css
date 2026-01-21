@@ -244,3 +244,9 @@
   margin-top: 14px;
   width: 100%;
 }
+
+/* Align From / To like the rest of the fields */
+.collab-business p {
+  margin: 0;
+  line-height: 1.65;
+}
