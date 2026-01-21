@@ -43,13 +43,21 @@ if (
 }
 
 
-  const trialDaysLeft =
+  const DAY = 1000 * 60 * 60 * 24;
+
+const diffMs =
   user.subscriptionPlan === "trial" && trialEndsAt
-    ? Math.max(
-        0,
-        Math.ceil((trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-      )
-    : null;
+    ? trialEndsAt.getTime() - now.getTime()
+    : 0;
+
+const trialDaysLeft =
+  diffMs > 0
+    ? Math.floor(diffMs / DAY) + 1
+    : 0;
+
+    const isTrialEndingToday =
+  diffMs > 0 && diffMs < DAY;
+
 
     const isTrialActive =
   trialEndsAt && trialEndsAt > now;
@@ -83,7 +91,8 @@ const isEarlyBirdActive =
   ===================== */
   trialEndsAt,
   trialDaysLeft,
-
+  isTrialEndingToday,
+  
   isTrialActive,
   isEarlyBirdActive,
 
