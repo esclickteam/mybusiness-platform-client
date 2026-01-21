@@ -16,7 +16,7 @@ import "./Collab.css";
 export default function Collab() {
   const { user, loading } = useAuth();
   const { tab } = useParams();
-  const location = useLocation(); // ✅ חשוב
+  const location = useLocation();
 
   const [profileData, setProfileData] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
@@ -103,12 +103,13 @@ export default function Collab() {
   return (
     <AiProvider>
       <div className="p-6 collab-container">
-        {/* Tabs – LTR */}
+        {/* Tabs – UX ordered */}
         <nav
           className="tab-header tab-header-ltr"
           role="tablist"
           aria-label="Collaborations"
         >
+          {/* 1️⃣ Profile */}
           <NavLink
             to="profile"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
@@ -116,6 +117,15 @@ export default function Collab() {
             Business Profile
           </NavLink>
 
+          {/* 2️⃣ Market */}
+          <NavLink
+            to="market"
+            className={({ isActive }) => (isActive ? "tab active" : "tab")}
+          >
+            Collaboration Market
+          </NavLink>
+
+          {/* 3️⃣ Search */}
           <NavLink
             to="find-partner"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
@@ -123,22 +133,16 @@ export default function Collab() {
             Find Business Partner
           </NavLink>
 
+          {/* 4️⃣ Inbox */}
           <NavLink
             to="messages"
             className={({ isActive }) => (isActive ? "tab active" : "tab")}
           >
             Proposals
           </NavLink>
-
-          <NavLink
-            to="market"
-            className={({ isActive }) => (isActive ? "tab active" : "tab")}
-          >
-            Collaboration Market
-          </NavLink>
         </nav>
 
-        {/* ✅ KEY FIX – מכריח unmount/mount לכל טאב */}
+        {/* Force remount per tab */}
         <Outlet
           key={location.pathname}
           context={{
