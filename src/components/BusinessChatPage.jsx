@@ -6,7 +6,6 @@ import BusinessChatTab from "./BusinessChatTab";
 import styles from "./BusinessChatPage.module.css";
 import API from "../api";
 import { useSocket } from "../context/socketContext";
-import { useNotifications } from "../context/NotificationsContext";
 
 export default function BusinessChatPage() {
   const { user, initialized } = useAuth();
@@ -19,9 +18,6 @@ export default function BusinessChatPage() {
 
   const socket = useSocket();
   const location = useLocation();
-
-  // ⚠️ notifications עדיין לא מחוברים עד הסוף
-  const { markAsRead } = useNotifications();
 
   /* =========================
      🧩 Normalize conversation
@@ -39,6 +35,7 @@ export default function BusinessChatPage() {
 
   /* =========================
      🔍 Open conversation from navigation (AI / deep link)
+     ❗ רק בוחר שיחה – לא מסמן כנקראה
   ========================= */
   useEffect(() => {
     if (!initialized || !businessId || convos.length === 0) return;
@@ -59,22 +56,13 @@ export default function BusinessChatPage() {
       conversationType: convo.conversationType,
     });
 
-    // ✅ איפוס badge מקומי
+    // איפוס badge מקומי בלבד
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[threadId];
       return next;
     });
-
-    // ✅ סימון כנקרא בשרת
-    if (socket) {
-      socket.emit("markConversationRead", {
-        conversationId: threadId,
-        role: "business",
-        readerId: businessId,
-      });
-    }
-  }, [location, convos, initialized, businessId, socket]);
+  }, [location, convos, initialized, businessId]);
 
   /* =========================
      📦 Fetch conversations
@@ -139,10 +127,8 @@ export default function BusinessChatPage() {
     const handleNewMessage = (msg) => {
       if (msg?.toId !== businessId) return;
 
-      // 🛑 אם זו השיחה הפעילה – לא מגדילים unread
-      if (msg.conversationId === selected?.conversationId) {
-        return;
-      }
+      // אם זו השיחה הפעילה – לא מגדילים unread
+      if (msg.conversationId === selected?.conversationId) return;
 
       setUnreadCounts((prev) => ({
         ...prev,
@@ -159,7 +145,21 @@ export default function BusinessChatPage() {
   }, [socket, businessId, selected]);
 
   /* =========================
-     🧭 Manual selection
+     ✅ מקור אמת יחיד: סימון שיחה כנקראה
+     מופעל רק כש-selected.conversationId משתנה
+  ========================= */
+  useEffect(() => {
+    if (!socket || !selected?.conversationId || !businessId) return;
+
+    socket.emit("markConversationRead", {
+      conversationId: selected.conversationId,
+      role: "business",
+      readerId: businessId,
+    });
+  }, [socket, selected?.conversationId, businessId]);
+
+  /* =========================
+     🧭 Manual selection (UI בלבד)
   ========================= */
   const handleSelect = (conversationId, partnerId, partnerName) => {
     const convo = convos.find((c) => c.conversationId === conversationId);
@@ -172,21 +172,12 @@ export default function BusinessChatPage() {
       conversationType: type,
     });
 
-    // ✅ איפוס badge מקומי
+    // איפוס badge מקומי בלבד
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[conversationId];
       return next;
     });
-
-    // ✅ סימון שיחה כנקראה בשרת
-    if (socket) {
-      socket.emit("markConversationRead", {
-        conversationId,
-        role: "business",
-        readerId: businessId, 
-      });
-    }
   };
 
   if (!initialized) {
