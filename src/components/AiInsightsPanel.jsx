@@ -203,10 +203,10 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
     }
 
     // 🟣 Empty calendar → Work Hours
-if (insight?.id === "empty_calendar") {
+if (insight?.id === "missing_work_hours") {
   if (DEBUG_AI_INSIGHTS) {
     console.log(
-      "navigate empty_calendar → work hours",
+      "navigate missing_work_hours → crm/work-hours",
       businessId
     );
   }
