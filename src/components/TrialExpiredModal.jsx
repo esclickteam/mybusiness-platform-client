@@ -104,13 +104,7 @@ export default function TrialExpiredModal() {
             {loading ? "Redirecting to payment…" : "Upgrade & Keep My Access"}
           </button>
 
-          <button
-            className="back-btn"
-            onClick={handleBackHome}
-            disabled={loading}
-          >
-            ← Back to Home
-          </button>
+          
         </div>
 
         {/* 💬 Secondary CTA */}
