@@ -15,8 +15,6 @@ import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
 
-
-
 /* ============================
    🔌 Socket
 ============================ */
@@ -140,20 +138,6 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-    /* ============================
-     ⏳ Trial Day Calculation
-  ============================ */
-  const DAY = 1000 * 60 * 60 * 24;
-
-const diffMs = trialEndsAt ? trialEndsAt.getTime() - now.getTime() : 0;
-
-const trialDaysLeft =
-  user.subscriptionPlan === "trial" && diffMs > 0
-    ? Math.floor(diffMs / DAY) + 1
-    : 0;
-
-  const isAfterDay4 = daysSinceTrialStart >= 4;
-
   if (loading) return null;
 
   /* ============================
@@ -189,11 +173,10 @@ const trialDaysLeft =
                   )}
                 </div>
 
-               <BusinessWorkspaceNav
-  messagesCount={messagesCount}
-  onNavigate={() => isMobile && setShowSidebar(false)}
-/>
-
+                <BusinessWorkspaceNav
+                  messagesCount={messagesCount}
+                  onNavigate={() => isMobile && setShowSidebar(false)}
+                />
 
                 {isMobile && (
                   <div className="sidebar-footer">
@@ -217,55 +200,58 @@ const trialDaysLeft =
 
                   {user?.isTrialActive && (
                     <div className="trial-status">
-                      ⏳ Trial ends in{" "}
-                      <strong>{user.trialDaysLeft} days</strong>
+                      ⏳{" "}
+                      {user.isTrialEndingToday ? (
+                        <strong>Trial ends today</strong>
+                      ) : (
+                        <>
+                          Trial ends in{" "}
+                          <strong>{user.trialDaysLeft} days</strong>
+                        </>
+                      )}
 
                       {!user.hasPaid &&
-  (!user.isEarlyBirdActive || !isAfterDay4) && (
-    <button
-      className="trial-upgrade-pill"
-      onClick={handleUpgrade}
-    >
-      Upgrade
-    </button>
-
+                        (!user.isEarlyBirdActive || !user.isAfterDay4) && (
+                          <button
+                            className="trial-upgrade-pill"
+                            onClick={handleUpgrade}
+                          >
+                            Upgrade
+                          </button>
                         )}
                     </div>
                   )}
                 </div>
 
                 {user?.isEarlyBirdActive &&
-  isAfterDay4 &&
-  !hideEarlyBirdBanner && (
+                  user.isAfterDay4 &&
+                  !hideEarlyBirdBanner && (
+                    <div className="dashboard-layout-header-center">
+                      <div className="earlybird-header-banner">
+                        {timeLeft && (
+                          <div className="earlybird-timer">
+                            ⏳ Ending in <strong>{timeLeft}</strong>
+                          </div>
+                        )}
 
-                  <div className="dashboard-layout-header-center">
-                    <div className="earlybird-header-banner">
-
-                      {timeLeft && (
-                        <div className="earlybird-timer">
-                          ⏳ Ending in <strong>{timeLeft}</strong>
+                        <div className="earlybird-text">
+                          <span className="earlybird-badge">🎁 Early Bird</span>
+                          <span className="earlybird-main">
+                            Save <strong>$20</strong> today — first month only
+                            <span className="price"> $99</span>
+                            <span className="old-price"> $119</span>
+                          </span>
                         </div>
-                      )}
 
-                      <div className="earlybird-text">
-                        <span className="earlybird-badge">🎁 Early Bird</span>
-                        <span className="earlybird-main">
-                          Save <strong>$20</strong> today — first month only
-                          <span className="price"> $99</span>
-                          <span className="old-price"> $119</span>
-                        </span>
+                        <button
+                          className="earlybird-upgrade-btn"
+                          onClick={handleUpgrade}
+                        >
+                          Upgrade
+                        </button>
                       </div>
-
-                      <button
-                        className="earlybird-upgrade-btn"
-                        onClick={handleUpgrade}
-                      >
-                        Upgrade
-                      </button>
-
                     </div>
-                  </div>
-                )}
+                  )}
 
                 <div className="dashboard-layout-header-right">
                   <div className="fb-notif-wrapper">
