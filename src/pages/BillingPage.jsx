@@ -13,6 +13,9 @@ export default function SubscriptionPlanCard() {
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
 
+  const [infoMessage, setInfoMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+
   const isCancelled = Boolean(user?.subscriptionCancelled);
   const isActive = Boolean(user?.isSubscriptionValid);
 
@@ -25,7 +28,8 @@ export default function SubscriptionPlanCard() {
       🚫 Cancel Auto Renew
   ========================================================= */
   const handleCancel = async () => {
-    if (!window.confirm("Are you sure you want to cancel auto-renewal?")) return;
+    setInfoMessage(null);
+    setErrorMessage(null);
     setLoadingCancel(true);
 
     try {
@@ -35,9 +39,8 @@ export default function SubscriptionPlanCard() {
         body: JSON.stringify({ userId }),
       });
 
-      if (!res.ok) throw new Error(`Failed to cancel subscription (${res.status})`);
+      if (!res.ok) throw new Error(`Failed to cancel subscription`);
 
-      // Update UI immediately
       setUser((prev) => ({
         ...prev,
         subscriptionCancelled: true,
@@ -45,10 +48,12 @@ export default function SubscriptionPlanCard() {
 
       await refreshUser(true);
 
-      alert("Auto-renewal cancelled. You’ll keep access until the end of your billing cycle.");
+      setInfoMessage(
+        "Auto-renewal was cancelled. You’ll keep access until the end of your billing cycle."
+      );
     } catch (err) {
-      console.error("❌ Cancel subscription error:", err);
-      alert("Failed to cancel renewal. Please contact support.");
+      console.error(err);
+      setErrorMessage("Failed to cancel renewal. Please contact support.");
     } finally {
       setLoadingCancel(false);
     }
@@ -58,7 +63,8 @@ export default function SubscriptionPlanCard() {
       🔄 Resume Auto Renew
   ========================================================= */
   const handleResume = async () => {
-    if (!window.confirm("Resume auto-renewal for your subscription?")) return;
+    setInfoMessage(null);
+    setErrorMessage(null);
     setLoadingResume(true);
 
     try {
@@ -68,9 +74,8 @@ export default function SubscriptionPlanCard() {
         body: JSON.stringify({ userId }),
       });
 
-      if (!res.ok) throw new Error(`Resume failed (${res.status})`);
+      if (!res.ok) throw new Error(`Resume failed`);
 
-      // Update UI immediately
       setUser((prev) => ({
         ...prev,
         subscriptionCancelled: false,
@@ -78,10 +83,10 @@ export default function SubscriptionPlanCard() {
 
       await refreshUser(true);
 
-      alert("Auto-renewal has been restored.");
+      setInfoMessage("Auto-renewal has been successfully restored.");
     } catch (err) {
-      console.error("❌ Resume subscription error:", err);
-      alert("Failed to resume subscription. Please contact support.");
+      console.error(err);
+      setErrorMessage("Failed to resume subscription. Please contact support.");
     } finally {
       setLoadingResume(false);
     }
@@ -96,12 +101,12 @@ export default function SubscriptionPlanCard() {
     const fetchPayments = async () => {
       try {
         const res = await fetch(`${API_BASE}/stripe/payments/user/${userId}`);
-        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        if (!res.ok) throw new Error();
 
         const data = await res.json();
         setPayments(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("❌ Failed to load payments:", err);
+        console.error(err);
       } finally {
         setLoadingPayments(false);
       }
@@ -148,59 +153,58 @@ export default function SubscriptionPlanCard() {
       <div className="billing-container fade-in">
         <div className="billing-header">
           <h1>Billing & Subscription</h1>
-          <p>Manage your current plan, payments, and renewals.</p>
+          <p>Manage your plan, renewals and payments.</p>
         </div>
 
         <div className="subscription-info card">
           <div className="info-row">
-            <span>Plan:</span>
+            <span>Plan</span>
             <strong>{planName}</strong>
           </div>
 
           <div className="info-row">
-            <span>Status:</span>
+            <span>Status</span>
             <strong className={statusClass}>{statusText}</strong>
           </div>
 
-          {isActive && isCancelled && (
-            <div className="note-canva">
-              Your subscription will end on <strong>{endDate}</strong>.
-            </div>
-          )}
-
           <div className="info-row">
-            <span>{plan === "monthly" ? "Next Billing:" : "Valid Until:"}</span>
+            <span>{plan === "monthly" ? "Next Billing" : "Valid Until"}</span>
             <strong>{endDate}</strong>
           </div>
 
           <div className="info-row">
-            <span>Billing Type:</span>
+            <span>Billing Type</span>
             <strong>{billingType}</strong>
           </div>
 
-          {/* CANCEL BUTTON */}
+          {infoMessage && (
+            <div className="info-message success">{infoMessage}</div>
+          )}
+
+          {errorMessage && (
+            <div className="info-message error">{errorMessage}</div>
+          )}
+
           {isActive && plan === "monthly" && !isCancelled && (
             <button
               className="cancel-btn"
               onClick={handleCancel}
               disabled={loadingCancel}
             >
-              {loadingCancel ? "Cancelling..." : "Cancel Auto-Renewal"}
+              {loadingCancel ? "Cancelling…" : "Turn off auto-renew"}
             </button>
           )}
 
-          {/* RESUME BUTTON */}
           {isActive && isCancelled && (
             <button
               className="renew-btn"
               onClick={handleResume}
               disabled={loadingResume}
             >
-              {loadingResume ? "Resuming..." : "Resume Subscription"}
+              {loadingResume ? "Resuming…" : "Resume subscription"}
             </button>
           )}
 
-          {/* EXPIRED */}
           {!isActive && (
             <button className="renew-btn" onClick={() => navigate("/pricing")}>
               Renew / Upgrade Plan
@@ -208,12 +212,11 @@ export default function SubscriptionPlanCard() {
           )}
         </div>
 
-        {/* PAYMENT HISTORY */}
         <div className="payment-history card">
           <h2>Payment History</h2>
 
           {loadingPayments ? (
-            <p className="loading">Loading payments...</p>
+            <p className="loading">Loading payments…</p>
           ) : payments.length === 0 ? (
             <p className="no-payments">No payments found.</p>
           ) : (
@@ -242,12 +245,7 @@ export default function SubscriptionPlanCard() {
                             : "pending"
                         }`}
                       >
-                        {p.status === "paid"
-                          ? "Completed"
-                          : p.status === "active"
-                          ? "Active"
-                          : p.status?.charAt(0).toUpperCase() +
-                            p.status?.slice(1)}
+                        {p.status}
                       </span>
                     </td>
                   </tr>

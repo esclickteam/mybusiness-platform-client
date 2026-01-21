@@ -1,88 +1,92 @@
-/* ===============================
-   💳 Billing & Subscription Page
-   =============================== */
-
+/* ===========================
+   Page Layout
+=========================== */
 .billing-page {
-  background: linear-gradient(180deg, #f9f9ff, #f3f0ff);
+  background: #f6f7fb;
   min-height: 100vh;
-  padding: 80px 20px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  font-family: "Poppins", sans-serif;
+  padding: 40px 16px;
 }
 
 .billing-container {
-  background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 8px 30px rgba(149, 117, 205, 0.15);
-  padding: 40px 50px;
-  width: 100%;
-  max-width: 540px;
-  animation: fadeIn 0.5s ease-in-out;
-  transition: all 0.3s ease;
+  max-width: 980px;
+  margin: 0 auto;
 }
 
-.billing-container:hover {
-  box-shadow: 0 10px 40px rgba(109, 40, 217, 0.15);
+.fade-in {
+  animation: fadeIn 0.35s ease-out;
 }
 
-/* ===============================
-   🧭 Header
-   =============================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+/* ===========================
+   Header
+=========================== */
 .billing-header {
-  text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 28px;
 }
 
 .billing-header h1 {
   font-size: 1.9rem;
   font-weight: 700;
-  color: #2e1065;
-  margin-bottom: 0.5rem;
+  color: #1f2937;
+  margin-bottom: 6px;
 }
 
 .billing-header p {
-  color: #555;
-  font-size: 1rem;
-  margin: 0;
+  color: #6b7280;
+  font-size: 0.95rem;
 }
 
-/* ===============================
-   📋 Info Section
-   =============================== */
-
-.subscription-info {
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
-  padding: 1.2rem 0;
-  margin-bottom: 1.4rem;
+/* ===========================
+   Cards
+=========================== */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
 }
 
-.info-row {
+/* ===========================
+   Subscription Info
+=========================== */
+.subscription-info .info-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0.8rem 0;
-  font-size: 1rem;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f1f4;
+  font-size: 0.95rem;
 }
 
-.info-row span {
-  color: #666;
+.subscription-info .info-row:last-child {
+  border-bottom: none;
 }
 
-.info-row strong {
-  color: #222;
+.subscription-info span {
+  color: #6b7280;
+}
+
+.subscription-info strong {
+  color: #111827;
   font-weight: 600;
 }
 
-/* ===============================
-   🔘 Status Styles
-   =============================== */
-
+/* ===========================
+   Status
+=========================== */
 .status-active {
-  color: #16a34a;
+  color: #10b981;
   font-weight: 600;
 }
 
@@ -91,216 +95,179 @@
   font-weight: 600;
 }
 
-/* כשהמנוי עדיין פעיל אבל מבוטל לחידוש */
-.status-cancelled-soon {
-  color: #eab308;
-  font-weight: 600;
+/* ===========================
+   Messages
+=========================== */
+.info-message {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.9rem;
 }
 
-.note-canva {
-  margin-top: 6px;
-  font-size: 14px;
-  color: #666;
-  background: #f8f8f8;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border-left: 3px solid #6a5acd;
+.info-message.success {
+  background: rgba(16, 185, 129, 0.12);
+  color: #065f46;
 }
 
-/* ===============================
-   🧭 Buttons
-   =============================== */
+.info-message.error {
+  background: rgba(239, 68, 68, 0.12);
+  color: #7f1d1d;
+}
 
+/* ===========================
+   Buttons
+=========================== */
 .cancel-btn,
 .renew-btn {
   width: 100%;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 14px 20px;
+  margin-top: 18px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.3s ease;
-  margin-top: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease;
+  border: none;
 }
 
 .cancel-btn {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white;
-  box-shadow: 0 5px 12px rgba(239, 68, 68, 0.3);
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .cancel-btn:hover:not(:disabled) {
-  background: #dc2626;
-  transform: translateY(-2px);
-}
-
-.cancel-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+  background: #fecaca;
+  transform: translateY(-1px);
 }
 
 .renew-btn {
-  background: linear-gradient(135deg, #6d28d9, #8b5cf6);
-  color: white;
-  box-shadow: 0 5px 12px rgba(109, 40, 217, 0.3);
+  background: #4f46e5;
+  color: #ffffff;
 }
 
-.renew-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(109, 40, 217, 0.35);
+.renew-btn:hover:not(:disabled) {
+  background: #4338ca;
+  transform: translateY(-1px);
 }
 
-/* ===============================
-   💰 Payment History
-   =============================== */
-
-.payment-history {
-  margin-top: 2.5rem;
+.cancel-btn:disabled,
+.renew-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
+/* ===========================
+   Payment History
+=========================== */
 .payment-history h2 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #2e1065;
-  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1f2937;
 }
 
 .payment-table {
   width: 100%;
   border-collapse: collapse;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #faf9ff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  font-size: 0.9rem;
+}
+
+.payment-table thead {
+  background: #f9fafb;
+}
+
+.payment-table th,
+.payment-table td {
+  padding: 12px 10px;
+  text-align: left;
 }
 
 .payment-table th {
-  background: linear-gradient(90deg, #ede9fe, #f5f3ff);
-  color: #4b0082;
   font-weight: 600;
-  text-align: left;
-  padding: 12px 16px;
-  font-size: 0.95rem;
-  border-bottom: 2px solid #e2d9ff;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .payment-table td {
-  padding: 12px 16px;
-  border-top: 1px solid #eee;
-  font-size: 0.95rem;
-  color: #333;
-  transition: background 0.2s;
+  color: #374151;
+  border-bottom: 1px solid #f1f1f4;
 }
 
-.payment-table tr:hover {
-  background: #f8f6ff;
-}
-
-.no-payments {
-  text-align: center;
-  color: #777;
-  font-style: italic;
-  padding: 12px;
-}
-
-.loading {
-  text-align: center;
-  color: #666;
-  font-style: italic;
-}
-
-/* ===============================
-   🏷️ Status Badges
-   =============================== */
-
+/* ===========================
+   Status Badge
+=========================== */
 .status-badge {
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-transform: capitalize;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
   display: inline-block;
-  min-width: 80px;
-  text-align: center;
 }
 
-.status-badge.paid {
-  background: #dcfce7;
-  color: #15803d;
+.status-badge.paid,
+.status-badge.active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #065f46;
 }
 
 .status-badge.cancelled {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.15);
+  color: #7f1d1d;
 }
 
 .status-badge.pending {
-  background: #fef9c3;
-  color: #a16207;
+  background: rgba(234, 179, 8, 0.18);
+  color: #78350f;
 }
 
-/* ===============================
-   📞 Support Link
-   =============================== */
+/* ===========================
+   Empty / Loading
+=========================== */
+.loading,
+.no-payments {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+  padding: 14px 0;
+}
 
+/* ===========================
+   Support
+=========================== */
 .billing-support {
   text-align: center;
-  margin-top: 1.6rem;
-  font-size: 0.95rem;
-  color: #555;
+  margin-top: 14px;
+  font-size: 0.9rem;
+  color: #6b7280;
 }
 
 .billing-support a {
-  color: #6d28d9;
+  color: #4f46e5;
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s;
+  font-weight: 600;
 }
 
 .billing-support a:hover {
   text-decoration: underline;
-  color: #4b0082;
 }
 
-/* ===============================
-   ✨ Animation
-   =============================== */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===============================
-   📱 Responsive
-   =============================== */
-
+/* ===========================
+   Mobile
+=========================== */
 @media (max-width: 640px) {
-  .billing-container {
-    padding: 30px 24px;
-    border-radius: 14px;
-  }
-
   .billing-header h1 {
     font-size: 1.6rem;
   }
 
-  .info-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+  .card {
+    padding: 18px 16px;
   }
 
   .payment-table th,
   .payment-table td {
-    font-size: 0.85rem;
-    padding: 10px 12px;
+    padding: 10px 6px;
   }
 }
