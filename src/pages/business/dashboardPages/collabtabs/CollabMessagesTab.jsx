@@ -212,28 +212,17 @@ export default function CollabMessagesTab({
       )}
 
       {/* Proposals */}
- {messagesToShow.map((msg) => {
-  const isFromMe = String(msg.fromBusinessId) === String(userBusinessId);
-
-const partnerName =
-  isFromMe
-    ? msg.toBusinessName
-    : msg.fromBusinessName;
-
-  return (
-    <div key={msg._id} className="collab-card">
-      <div className="collab-card-header">
-        <div className="collab-business">
-          <div>
-            <strong>Partner:</strong> {partnerName || "—"}
+      {messagesToShow.map((msg) => (
+        <div key={msg._id} className="collab-card">
+          <div className="collab-card-header">
+            <div className="collab-business">
+              <div><strong>From:</strong> {msg.fromBusinessName || "—"}</div>
+              <div><strong>To:</strong> {msg.toBusinessName || "—"}</div>
+            </div>
+            <span className={`collab-status ${msg.status}`}>
+              {msg.status}
+            </span>
           </div>
-        </div>
-
-        <span className={`collab-status ${msg.status}`}>{msg.status}</span>
-      </div>
-
-      
-
 
           <div className="collab-card-body">
             <p><strong>Contact:</strong> {msg.contactName || "—"}</p>
@@ -280,9 +269,8 @@ const partnerName =
               </>
             )}
           </div>
-               </div>
-      );
-    })}
+        </div>
+      ))}
 
       {/* Agreement Modal */}
       {modalOpen && selectedAgreement && (
