@@ -91,13 +91,12 @@ export default function BusinessDashboardLayout() {
   }, [user?.isEarlyBirdActive, user?.earlyBirdExpiresAt]);
 
   /* 🎁 Upgrade → Stripe */
-  const handleUpgrade = async () => {
+  
+
+const handleUpgrade = async () => {
   if (!user?.userId) return;
 
   try {
-    // ✅ מסמן שהבאנר נצפה
-    await API.post("/users/mark-upgrade-banner-seen");
-
     const res = await API.post("/stripe/create-checkout-session", {
       userId: user.userId,
       plan: "monthly",
@@ -106,34 +105,31 @@ export default function BusinessDashboardLayout() {
 
     if (res.data?.url) {
       window.location.href = res.data.url;
-    } else {
-      alert("Checkout unavailable");
     }
   } catch (err) {
     console.error("Checkout error:", err);
-    alert("Something went wrong");
   }
 };
 
-
-  const handleEarlyBirdUpgrade = async () => {
+const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
 
   try {
-    // ✅ גם כאן
-    await API.post("/users/mark-upgrade-banner-seen");
-
     const res = await API.post("/stripe/create-checkout-session", {
       userId: user.userId,
       plan: "monthly",
     });
 
-    window.location.href = res.data.url;
+    if (res.data?.url) {
+      window.location.href = res.data.url;
+    }
   } catch (err) {
     console.error("Early Bird checkout error:", err);
   }
 };
 
+
+ 
 
   /* ============================
      🔓 Logout
@@ -173,6 +169,21 @@ export default function BusinessDashboardLayout() {
     : 0;
 
   const isAfterDay4 = daysSinceTrialStart >= 4;
+
+    useEffect(() => {
+    if (
+      user?.isEarlyBirdActive &&
+      isAfterDay4 &&
+      user?.hasSeenUpgradeBanner === false
+    ) {
+      API.post("/users/mark-upgrade-banner-seen").catch(() => {});
+    }
+  }, [
+    user?.isEarlyBirdActive,
+    isAfterDay4,
+    user?.hasSeenUpgradeBanner,
+  ]);
+
 
   if (loading) return null;
 
