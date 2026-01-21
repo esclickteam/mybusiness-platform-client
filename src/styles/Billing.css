@@ -8,7 +8,7 @@
 }
 
 .billing-container {
-  max-width: 980px;
+  max-width: 760px; /* ⬅️ זה הקסם */
   margin: 0 auto;
 }
 
@@ -31,7 +31,8 @@
    Header
 =========================== */
 .billing-header {
-  margin-bottom: 28px;
+  text-align: center; /* ⬅️ מרכז */
+  margin-bottom: 32px;
 }
 
 .billing-header h1 {
@@ -55,6 +56,7 @@
   padding: 22px 24px;
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
   margin-bottom: 24px;
+  box-sizing: border-box; /* ⬅️ חובה */
 }
 
 /* ===========================
@@ -163,6 +165,7 @@
    Payment History
 =========================== */
 .payment-history h2 {
+  text-align: center; /* ⬅️ מרכז */
   font-size: 1.2rem;
   font-weight: 700;
   margin-bottom: 16px;
@@ -229,9 +232,9 @@
 .loading,
 .no-payments {
   text-align: center;
-  color: #6b7280;
+  color: #9ca3af;
   font-size: 0.9rem;
-  padding: 14px 0;
+  padding: 24px 0;
 }
 
 /* ===========================
