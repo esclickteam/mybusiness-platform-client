@@ -217,14 +217,16 @@ export default function CollabMessagesTab({
           <div className="collab-card-header">
 
             <div className="collab-business">
-  <div>
-    <strong>From Business:</strong> {msg.fromBusinessName}
-  </div>
-  <div>
-    <strong>To Business:</strong> {msg.toBusinessName}
-  </div>
+  <p>
+    <strong>From Business:</strong>{" "}
+    {msg.fromBusinessName}
+  </p>
+  <p>
+    <strong>To Business:</strong>{" "}
+    {msg.toBusinessName}
+  </p>
 </div>
-
+            
             <span className={`collab-status ${msg.status}`}>
               {msg.status}
             </span>
