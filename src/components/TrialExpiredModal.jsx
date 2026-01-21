@@ -18,45 +18,44 @@ export default function TrialExpiredModal() {
      🚀 Redirect to Stripe – $119 Monthly
   =========================== */
   const handleUpgrade = async () => {
-    console.log("🟣 [TrialExpiredModal] Upgrade clicked");
+  console.log("🟣 [TrialExpiredModal] Upgrade clicked");
 
-    if (!user?._id) {
-      console.error("❌ No user ID – cannot start checkout");
-      return;
-    }
+  if (!user?.userId) {
+    console.error("❌ No userId – cannot start checkout", user);
+    return;
+  }
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      console.log("➡️ Creating Stripe Checkout session", {
-        userId: user._id,
-        plan: "monthly",
-      });
+    console.log("➡️ Creating Stripe Checkout session", {
+      userId: user.userId,
+      plan: "monthly",
+    });
 
-      const res = await API.post(
-        "/stripe/create-checkout-session", // ✅ הנתיב הנכון
-        {
-          userId: user._id,
-          plan: "monthly", // $119
-        }
-      );
-
-      console.log("✅ Stripe response:", res.data);
-
-      if (res.data?.url) {
-        console.log("🔗 Redirecting to Stripe:", res.data.url);
-
-        // ⚠️ חייב redirect מלא – לא navigate
-        window.location.href = res.data.url;
-      } else {
-        throw new Error("Stripe checkout URL missing");
+    const res = await API.post(
+      "/stripe/create-checkout-session",
+      {
+        userId: user.userId, // ✅ זה השדה הנכון
+        plan: "monthly",     // $119
       }
-    } catch (err) {
-      console.error("❌ Stripe redirect failed:", err);
-      alert("Unable to start checkout. Please try again.");
-      setLoading(false);
+    );
+
+    console.log("✅ Stripe response:", res.data);
+
+    if (res.data?.url) {
+      console.log("🔗 Redirecting to Stripe:", res.data.url);
+      window.location.href = res.data.url; // 🔥 redirect אמיתי
+    } else {
+      throw new Error("Stripe checkout URL missing");
     }
-  };
+  } catch (err) {
+    console.error("❌ Stripe redirect failed:", err);
+    alert("Unable to start checkout. Please try again.");
+    setLoading(false);
+  }
+};
+
 
   /* ===========================
      🔙 Back to Home (ללא logout)
