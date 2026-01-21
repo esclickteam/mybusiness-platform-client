@@ -23,7 +23,7 @@ export default function ConversationsList({
   unreadCountsByConversation = {},
 }) {
   const socket = useSocket();
-  const [selectedId, setSelectedId] = useState(selectedConversationId); // מניעת פתיחה אוטומטית של שיחה
+  const [selectedId, setSelectedId] = useState(selectedConversationId);
 
   // -------- API ENDPOINT ----------
   const endpoint = isBusiness
@@ -39,7 +39,9 @@ export default function ConversationsList({
     queryKey: ["conversations", endpoint, businessId],
     queryFn: async () => {
       const res = await fetch(endpoint, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       if (!res.ok) throw new Error("Error loading conversations");
       const json = await res.json();
@@ -48,7 +50,7 @@ export default function ConversationsList({
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Prefer the conversations prop (useful for optimistic updates)
+  // Prefer prop conversations (for optimistic updates)
   const list = conversations.length ? conversations : fetchedConversations;
 
   // -------- SOCKET: join business room ----------
@@ -58,29 +60,40 @@ export default function ConversationsList({
     }
   }, [socket, businessId, isBusiness]);
 
+  // -------- SYNC SELECTED FROM PARENT ----------
+  useEffect(() => {
+    setSelectedId(selectedConversationId ?? null);
+  }, [selectedConversationId]);
+
   // -------- UI STATES ----------
-  if (isLoading) return <div className={styles.noSelection}>Loading conversations…</div>;
+  if (isLoading)
+    return (
+      <div className={styles.noSelection}>Loading conversations…</div>
+    );
+
   if (error)
     return (
       <div className={styles.noSelection}>
         Error loading conversations: {error.message}
       </div>
     );
+
   if (!list.length)
-    return <div className={styles.noSelection}>No conversations yet</div>;
+    return (
+      <div className={styles.noSelection}>No conversations yet</div>
+    );
 
   // -------- HELPERS ----------
-  /** Ensure a stable string ID in all cases */
   const getConversationId = (conv) =>
     (conv.conversationId ?? conv._id ?? conv.id)?.toString() ?? "";
 
-  /** Keep only one conversation per partner (first occurrence) */
+  /** Keep only one conversation per partner */
   const uniqueConvs = list.reduce((acc, conv) => {
     const partnerId = isBusiness ? conv.clientId : conv.businessId;
-    const alreadyExists = acc.some((c) =>
-      isBusiness ? c.clientId === partnerId : c.businessId === partnerId,
+    const exists = acc.some((c) =>
+      isBusiness ? c.clientId === partnerId : c.businessId === partnerId
     );
-    if (!alreadyExists) acc.push(conv);
+    if (!exists) acc.push(conv);
     return acc;
   }, []);
 
@@ -91,8 +104,20 @@ export default function ConversationsList({
       partnerId,
       displayName,
     });
+
+    // 1️⃣ עדכון Parent (בחירת שיחה + איפוס badge שם)
     onSelect(convoId, partnerId, displayName);
-    setSelectedId(convoId); // עדכון השיחה שנבחרה
+
+    // 2️⃣ עדכון מקומי
+    setSelectedId(convoId);
+
+    // 3️⃣ סימון שיחה כנקראה (רק בצד העסק)
+    if (isBusiness && socket) {
+      socket.emit("markConversationRead", {
+        conversationId: convoId,
+        role: "business",
+      });
+    }
   };
 
   // -------- RENDER ----------
@@ -109,20 +134,30 @@ export default function ConversationsList({
           const displayName = isBusiness
             ? conv.clientName
             : conv.businessName || partnerId;
+
           const unreadCount = unreadCountsByConversation[convoId] || 0;
-          const isActive = convoId === selectedId; // השתמש ב-selectedId במקום selectedConversationId
+          const isActive = convoId === selectedId;
 
           return (
             <div
               key={convoId}
-              className={`${styles.convItem} ${isActive ? styles.active : ""}`}
-              onClick={() => handleSelect(convoId, partnerId, displayName)}
+              className={`${styles.convItem} ${
+                isActive ? styles.active : ""
+              }`}
+              onClick={() =>
+                handleSelect(convoId, partnerId, displayName)
+              }
               style={{ position: "relative" }}
             >
               <span>{displayName}</span>
+
               <div className={styles.badgeWrapper}>
-                {/* Badge to display unread count */}
-                {unreadCount > 0 && <UnreadBadge conversationId={convoId} count={unreadCount} />}
+                {unreadCount > 0 && (
+                  <UnreadBadge
+                    conversationId={convoId}
+                    count={unreadCount}
+                  />
+                )}
               </div>
             </div>
           );

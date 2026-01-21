@@ -20,7 +20,7 @@ export default function BusinessChatPage() {
   const socket = useSocket();
   const location = useLocation();
 
-  // ⚠️ notifications מחוברים רק חלקית – לא משתמשים ב-markAsRead כאן
+  // ⚠️ notifications עדיין לא מחוברים עד הסוף
   const { markAsRead } = useNotifications();
 
   /* =========================
@@ -59,16 +59,21 @@ export default function BusinessChatPage() {
       conversationType: convo.conversationType,
     });
 
-    // מנקה badge מקומי בלבד
+    // ✅ איפוס badge מקומי
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[threadId];
       return next;
     });
 
-    // ❌ לא מסמנים notification כנקרא – אין notificationId
-    // TODO: markAsRead(notificationId) when notifications system is finalized
-  }, [location, convos, initialized, businessId]);
+    // ✅ סימון כנקרא בשרת
+    if (socket) {
+      socket.emit("markConversationRead", {
+        conversationId: threadId,
+        role: "business",
+      });
+    }
+  }, [location, convos, initialized, businessId, socket]);
 
   /* =========================
      📦 Fetch conversations
@@ -97,7 +102,6 @@ export default function BusinessChatPage() {
         });
         setUnreadCounts(counts);
 
-        // ❗ אם הגענו מ-AI Follow-up – לא לבחור שיחה אוטומטית
         const navigatedThreadId =
           location.state?.threadId ||
           new URLSearchParams(location.search).get("threadId");
@@ -132,12 +136,17 @@ export default function BusinessChatPage() {
     socket.emit("joinBusinessRoom", businessId);
 
     const handleNewMessage = (msg) => {
-      if (msg?.toId === businessId) {
-        setUnreadCounts((prev) => ({
-          ...prev,
-          [msg.conversationId]: (prev[msg.conversationId] || 0) + 1,
-        }));
+      if (msg?.toId !== businessId) return;
+
+      // 🛑 אם זו השיחה הפעילה – לא מגדילים unread
+      if (msg.conversationId === selected?.conversationId) {
+        return;
       }
+
+      setUnreadCounts((prev) => ({
+        ...prev,
+        [msg.conversationId]: (prev[msg.conversationId] || 0) + 1,
+      }));
     };
 
     socket.on("newMessage", handleNewMessage);
@@ -146,7 +155,7 @@ export default function BusinessChatPage() {
       socket.off("newMessage", handleNewMessage);
       socket.emit("leaveRoom", `business-${businessId}`);
     };
-  }, [socket, businessId]);
+  }, [socket, businessId, selected]);
 
   /* =========================
      🧭 Manual selection
@@ -162,14 +171,20 @@ export default function BusinessChatPage() {
       conversationType: type,
     });
 
+    // ✅ איפוס badge מקומי
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[conversationId];
       return next;
     });
 
-    // ❌ לא markAsRead כאן – אין notificationId
-    // TODO: markAsRead(notificationId)
+    // ✅ סימון שיחה כנקראה בשרת
+    if (socket) {
+      socket.emit("markConversationRead", {
+        conversationId,
+        role: "business",
+      });
+    }
   };
 
   if (!initialized) {
