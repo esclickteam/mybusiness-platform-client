@@ -215,3 +215,16 @@
   font-weight: 700;
   color: #9ca3af;
 }
+
+.message-box-button.link {
+  background: none;
+  color: #6b46c1;
+  font-weight: 700;
+  padding: 8px 4px;
+  box-shadow: none;
+}
+
+.message-box-button.link:hover {
+  text-decoration: underline;
+  transform: none;
+}

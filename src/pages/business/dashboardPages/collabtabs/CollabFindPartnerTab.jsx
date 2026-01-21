@@ -40,19 +40,29 @@ function PartnerCard({ business, isMine, onOpenProfile }) {
           )}
 
           <div className="collab-card-buttons">
-            {isMine ? (
-              <span className="disabled-action">
-                This is your business
-              </span>
-            ) : (
-              <button
-                className="message-box-button primary"
-                onClick={() => onOpenProfile(business)}
-              >
-                Send Proposal
-              </button>
-            )}
-          </div>
+  {isMine ? (
+    <span className="disabled-action">
+      This is your business
+    </span>
+  ) : (
+    <>
+      <button
+        className="message-box-button primary"
+        onClick={() => onOpenProfile(business)}
+      >
+        Send Proposal
+      </button>
+
+      <button
+        className="message-box-button link"
+        onClick={() => onOpenProfile(business)}
+      >
+        View Profile
+      </button>
+    </>
+  )}
+</div>
+
         </div>
       </div>
     </div>
