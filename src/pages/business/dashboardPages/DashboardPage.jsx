@@ -157,50 +157,36 @@ const DashboardPage = () => {
 
 
 
+const isEarlyBirdActive =
+  Boolean(user?.earlyBirdShownAt) &&
+  Boolean(user?.earlyBirdExpiresAt) &&
+  Date.now() < new Date(user.earlyBirdExpiresAt).getTime() &&
+  user?.earlyBirdUsed !== true;
+
+
 
 useEffect(() => {
   if (!initialized || !user) return;
 
-  // 🔒 חסימה מוחלטת
-  if (user.hasSeenUpgradeBanner === true) return;
+  // רק משתמשי ניסיון
+  if (user.subscriptionPlan !== "trial") return;
 
-  if (user.subscriptionPlan !== "trial" || user.hasPaid) return;
+  if (user.hasPaid) return;
 
-  const startDate = user.trialStartedAt || user.createdAt;
-  if (!startDate) return;
+  // רק אם Early Bird פעיל (שרת קובע!)
+  if (!isEarlyBirdActive) return;
 
-  const daysPassed =
-    (Date.now() - new Date(startDate).getTime()) /
-    (1000 * 60 * 60 * 24);
-
-  if (daysPassed < 4) return;
-
-  // 🔒 מונע ריצה כפולה גם אם user מתחלף
+  // פעם אחת בלבד
   if (bannerMarkedRef.current) return;
   bannerMarkedRef.current = true;
 
-  // ✅ קודם סימון שרת + קליינט
-  API.post("/users/mark-upgrade-banner-seen").catch(() => {});
-
-  setUser((prev) =>
-    prev ? { ...prev, hasSeenUpgradeBanner: true } : prev
-  );
-
-  localStorage.setItem(
-    "businessDetails",
-    JSON.stringify({
-      ...user,
-      hasSeenUpgradeBanner: true,
-    })
-  );
-
-  // ✅ רק עכשיו UI
   setShowEarlyBirdModal(true);
-
 }, [
   initialized,
-  user?.hasSeenUpgradeBanner,
+  user,
+  isEarlyBirdActive,
 ]);
+
 
 
 
@@ -573,9 +559,10 @@ if (isRefreshingUser) {
 
 const shouldShowEarlyBirdModal =
   showEarlyBirdModal &&
-  user?.hasSeenUpgradeBanner !== true &&
+  isEarlyBirdActive &&
   user?.subscriptionPlan === "trial" &&
   !user?.hasPaid;
+
 
 
   /* derived */
@@ -652,10 +639,8 @@ const shouldShowEarlyBirdModal =
  
 {shouldShowEarlyBirdModal && (
   <UpgradeOfferCard
-    expiresAt={user.earlyBirdExpiresAt}
-    onUpgrade={handleEarlyBirdUpgrade}
-
-    onClose={() => {
+  onUpgrade={handleEarlyBirdUpgrade}
+            onClose={() => {
     setShowEarlyBirdModal(false);
     }}
   />
