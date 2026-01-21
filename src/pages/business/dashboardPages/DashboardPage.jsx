@@ -151,8 +151,6 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
-  const [showEarlyBirdModal, setShowEarlyBirdModal] = useState(false);
-  const bannerMarkedRef = useRef(false);
   const { insights, loading: insightsLoading } = useAiInsights(businessId);
 
 
@@ -164,28 +162,21 @@ const isEarlyBirdActive =
   user?.earlyBirdUsed !== true;
 
 
+const shouldShowEarlyBirdModal =
+  isEarlyBirdActive &&
+  user?.subscriptionPlan === "trial" &&
+  !user?.hasPaid &&
+  !user?.earlyBirdModalSeenAt;
 
 useEffect(() => {
-  if (!initialized || !user) return;
+  if (!shouldShowEarlyBirdModal) return;
 
-  // רק משתמשי ניסיון
-  if (user.subscriptionPlan !== "trial") return;
+  API.post("/users/mark-earlybird-modal-seen")
+    .then(() => refreshUser())
+    .catch(() => {});
+}, [shouldShowEarlyBirdModal]);
 
-  if (user.hasPaid) return;
 
-  // רק אם Early Bird פעיל (שרת קובע!)
-  if (!isEarlyBirdActive) return;
-
-  // פעם אחת בלבד
-  if (bannerMarkedRef.current) return;
-  bannerMarkedRef.current = true;
-
-  setShowEarlyBirdModal(true);
-}, [
-  initialized,
-  user,
-  isEarlyBirdActive,
-]);
 
 
 
@@ -508,7 +499,6 @@ sock.on("newReview", (reviewData) => {
 const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
  
-  setShowEarlyBirdModal(false);
 
   try {
     const res = await API.post("/stripe/create-checkout-session", {
@@ -556,12 +546,6 @@ if (error) {
 if (isRefreshingUser) {
   return <p className="dp-loading">⏳ Refreshing user info...</p>;
 }
-
-const shouldShowEarlyBirdModal =
-  showEarlyBirdModal &&
-  isEarlyBirdActive &&
-  user?.subscriptionPlan === "trial" &&
-  !user?.hasPaid;
 
 
 
@@ -641,7 +625,7 @@ const shouldShowEarlyBirdModal =
   <UpgradeOfferCard
   onUpgrade={handleEarlyBirdUpgrade}
             onClose={() => {
-    setShowEarlyBirdModal(false);
+    
     }}
   />
 )}
