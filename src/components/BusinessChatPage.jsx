@@ -71,6 +71,7 @@ export default function BusinessChatPage() {
       socket.emit("markConversationRead", {
         conversationId: threadId,
         role: "business",
+        readerId: businessId,
       });
     }
   }, [location, convos, initialized, businessId, socket]);
@@ -183,6 +184,7 @@ export default function BusinessChatPage() {
       socket.emit("markConversationRead", {
         conversationId,
         role: "business",
+        readerId: businessId, 
       });
     }
   };

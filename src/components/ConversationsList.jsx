@@ -111,14 +111,7 @@ export default function ConversationsList({
     // 2️⃣ עדכון מקומי
     setSelectedId(convoId);
 
-    // 3️⃣ סימון שיחה כנקראה (רק בצד העסק)
-    if (isBusiness && socket) {
-      socket.emit("markConversationRead", {
-        conversationId: convoId,
-        role: "business",
-      });
-    }
-  };
+     };
 
   // -------- RENDER ----------
   return (
