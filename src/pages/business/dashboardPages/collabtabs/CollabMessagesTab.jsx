@@ -212,17 +212,27 @@ export default function CollabMessagesTab({
       )}
 
       {/* Proposals */}
-      {messagesToShow.map((msg) => (
-        <div key={msg._id} className="collab-card">
-          <div className="collab-card-header">
-            <div className="collab-business">
-              <div><strong>From:</strong> {msg.fromBusinessName || "—"}</div>
-              <div><strong>To:</strong> {msg.toBusinessName || "—"}</div>
-            </div>
-            <span className={`collab-status ${msg.status}`}>
-              {msg.status}
-            </span>
+    {messagesToShow.map((msg) => {
+  const isSent = messages.sent.some((m) => m._id === msg._id);
+
+  return (
+    <div key={msg._id} className="collab-card">
+      <div className="collab-card-header">
+        <div className="collab-business">
+          <div>
+            <strong>From:</strong> {isSent ? "You" : msg.fromBusinessName || "—"}
           </div>
+          <div>
+            <strong>To:</strong> {isSent ? msg.toBusinessName || "—" : "You"}
+          </div>
+        </div>
+
+        <span className={`collab-status ${msg.status}`}>{msg.status}</span>
+      </div>
+
+      
+
+
 
           <div className="collab-card-body">
             <p><strong>Contact:</strong> {msg.contactName || "—"}</p>
@@ -269,8 +279,9 @@ export default function CollabMessagesTab({
               </>
             )}
           </div>
-        </div>
-      ))}
+               </div>
+      );
+    })}
 
       {/* Agreement Modal */}
       {modalOpen && selectedAgreement && (
