@@ -114,6 +114,47 @@ export default function BusinessDashboardLayout() {
     }
   };
 
+  // ✅ Upgrade רגיל – $119
+const handleRegularUpgrade = async () => {
+  if (!user?.userId) return;
+
+  try {
+    const res = await API.post("/stripe/create-checkout-session", {
+      userId: user.userId,
+      plan: "monthly",
+      pricing: "regular",
+    });
+
+    if (res.data?.url) {
+      window.location.href = res.data.url;
+    }
+  } catch (err) {
+    alert("Something went wrong");
+  }
+};
+
+// ✅ Early Bird Upgrade – $99
+const handleEarlyBirdUpgrade = async () => {
+  if (!user?.userId) return;
+
+  setHideEarlyBirdBanner(true);
+
+  try {
+    const res = await API.post("/stripe/create-checkout-session", {
+      userId: user.userId,
+      plan: "monthly",
+      pricing: "earlybird",
+    });
+
+    if (res.data?.url) {
+      window.location.href = res.data.url;
+    }
+  } catch (err) {
+    alert("Something went wrong");
+  }
+};
+
+
   /* ============================
      🔓 Logout
   ============================ */
@@ -227,12 +268,14 @@ export default function BusinessDashboardLayout() {
 
     {!user.hasPaid &&
       (!user.isEarlyBirdActive || !isAfterDay4) && (
+        
         <button
-          className="trial-upgrade-pill"
-          onClick={handleUpgrade}
-        >
-          Upgrade
-        </button>
+  className="trial-upgrade-pill"
+  onClick={handleRegularUpgrade}
+>
+  Upgrade
+</button>
+
       )}
   </div>
 )}
@@ -262,11 +305,11 @@ export default function BusinessDashboardLayout() {
                       </div>
 
                       <button
-                        className="earlybird-upgrade-btn"
-                        onClick={handleUpgrade}
-                      >
-                        Upgrade
-                      </button>
+  className="earlybird-upgrade-btn"
+  onClick={handleEarlyBirdUpgrade}
+>
+  Upgrade
+</button>
 
                     </div>
                   </div>
