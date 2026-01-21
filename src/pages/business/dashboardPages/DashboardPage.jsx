@@ -151,30 +151,26 @@ const DashboardPage = () => {
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
-  const { insights, loading: insightsLoading } = useAiInsights(businessId);
-  const [isEarlyBirdModalOpen, setIsEarlyBirdModalOpen] = useState(true);
+const { insights, loading: insightsLoading } = useAiInsights(businessId);
 
+/* =========================
+   🎁 Early Bird Logic
+========================= */
 
-
-
+// 🔥 Early Bird active (business logic)
 const isEarlyBirdActive =
   Boolean(user?.earlyBirdShownAt) &&
   Boolean(user?.earlyBirdExpiresAt) &&
   Date.now() < new Date(user.earlyBirdExpiresAt).getTime() &&
   user?.earlyBirdUsed !== true;
 
-
-
-
+// 🎯 Should show modal (UI logic)
 const shouldShowEarlyBirdModal =
-  isEarlyBirdModalOpen &&
   isEarlyBirdActive &&
   user?.subscriptionPlan === "trial" &&
   !user?.hasPaid &&
   !user?.earlyBirdModalSeenAt;
-
-
-
+  
 
 
 
