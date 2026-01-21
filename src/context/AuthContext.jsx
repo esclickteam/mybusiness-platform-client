@@ -47,7 +47,10 @@ if (
   user.subscriptionPlan === "trial" && trialEndsAt
     ? Math.max(
         0,
-        Math.ceil((trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+        Math.floor(
+          (trialEndsAt.getTime() - now.getTime()) /
+            (1000 * 60 * 60 * 24)
+        )
       )
     : null;
 
