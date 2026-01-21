@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 function CreateCollabForm({ onSuccess }) {
   const [formData, setFormData] = useState({
-    countryCode: "+1", // 🇺🇸 default
+    countryCode: "+1",
     title: "",
     description: "",
     needs: "",
@@ -23,10 +23,9 @@ function CreateCollabForm({ onSuccess }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((p) => ({ ...p, [name]: value }));
   }, []);
 
   const handleSubmit = useCallback(
@@ -35,49 +34,31 @@ function CreateCollabForm({ onSuccess }) {
       setError(null);
 
       const { title, description, contactName, phone } = formData;
-
-      if (
-        !title.trim() ||
-        !description.trim() ||
-        !contactName.trim() ||
-        !phone.trim()
-      ) {
-        setError(
-          "Please fill in the proposal title, description, contact name, and phone number"
-        );
+      if (!title || !description || !contactName || !phone) {
+        setError("Please fill all required fields");
         return;
       }
 
       setLoading(true);
-
       try {
         await API.post("/collaboration-market", {
-  title: formData.title.trim(),
-  description: formData.description.trim(),
-
-  needs: formData.needs
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean),
-
-  offers: formData.offers
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean),
-
-  budget: formData.budget ? Number(formData.budget) : undefined,
-
-  validUntil:
-    formData.expiryDate &&
-    !isNaN(new Date(formData.expiryDate).getTime())
-      ? new Date(formData.expiryDate).toISOString()
-      : null,
-
-  contactName: formData.contactName.trim(),
-  phone: `${formData.countryCode}${formData.phone.trim()}`,
-});
-
-
+          title: formData.title.trim(),
+          description: formData.description.trim(),
+          needs: formData.needs
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          offers: formData.offers
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          budget: formData.budget ? Number(formData.budget) : undefined,
+          validUntil: formData.expiryDate
+            ? new Date(formData.expiryDate).toISOString()
+            : null,
+          contactName: formData.contactName.trim(),
+          phone: `${formData.countryCode}${formData.phone.trim()}`,
+        });
 
         setFormData({
           countryCode: "+1",
@@ -91,9 +72,8 @@ function CreateCollabForm({ onSuccess }) {
           expiryDate: "",
         });
 
-        if (onSuccess) onSuccess();
-      } catch (err) {
-        console.error(err);
+        onSuccess?.();
+      } catch {
         setError("❌ Error publishing proposal");
       } finally {
         setLoading(false);
@@ -103,120 +83,89 @@ function CreateCollabForm({ onSuccess }) {
   );
 
   return (
-    <form onSubmit={handleSubmit} className="proposal-form">
-      <h3>Post a New Collaboration</h3>
+    <form className="proposal-form" onSubmit={handleSubmit}>
+      <h3>Publish Collaboration</h3>
 
-      <label>
-        Title*:
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-          placeholder="Proposal title"
-        />
-      </label>
+      <div className="form-group">
+        <label>Title *</label>
+        <input name="title" value={formData.title} onChange={handleChange} />
+      </div>
 
-      <label>
-        Description*:
+      <div className="form-group">
+        <label>Description *</label>
         <textarea
           name="description"
           value={formData.description}
           onChange={handleChange}
-          required
-          placeholder="Detailed description"
         />
-      </label>
+      </div>
 
-      <label>
-        What the business needs (comma separated):
+      <div className="form-group">
+        <label>Needs</label>
         <input
-          type="text"
           name="needs"
+          placeholder="Marketing, Investor"
           value={formData.needs}
           onChange={handleChange}
-          placeholder="e.g., Marketing partner, investor"
         />
-      </label>
+      </div>
 
-      <label>
-        What the business offers (comma separated):
+      <div className="form-group">
+        <label>Offers</label>
         <input
-          type="text"
           name="offers"
+          placeholder="Equity, Partnership"
           value={formData.offers}
           onChange={handleChange}
-          placeholder="e.g., Profit sharing, joint advertising"
         />
-      </label>
+      </div>
 
-      <label>
-        Contact Name*:
+      <div className="form-group">
+        <label>Contact Name *</label>
         <input
-          type="text"
           name="contactName"
           value={formData.contactName}
           onChange={handleChange}
-          required
-          placeholder="Contact person name"
         />
-      </label>
+      </div>
 
-      <label>
-        Phone*:
-        <div className="phone-row">
-          <select
-            name="countryCode"
-            value={formData.countryCode}
-            onChange={handleChange}
-            className="country-select"
-          >
-            <option value="+1">🇺🇸 +1</option>
-            <option value="+972">🇮🇱 +972</option>
-            <option value="+44">🇬🇧 +44</option>
-            <option value="+33">🇫🇷 +33</option>
-            <option value="+49">🇩🇪 +49</option>
-          </select>
+      <div className="form-group phone-group">
+        <select
+          name="countryCode"
+          value={formData.countryCode}
+          onChange={handleChange}
+        >
+          <option value="+1">🇺🇸 +1</option>
+          <option value="+972">🇮🇱 +972</option>
+        </select>
+        <input
+          name="phone"
+          placeholder="Phone number"
+          value={formData.phone}
+          onChange={handleChange}
+        />
+      </div>
 
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-            placeholder="Phone number"
-            className="phone-input"
-          />
-        </div>
-      </label>
-
-      <label>
-        Budget ($):
+      <div className="form-row">
         <input
           type="number"
           name="budget"
+          placeholder="Budget ($)"
           value={formData.budget}
           onChange={handleChange}
-          min="0"
-          placeholder="Estimated budget"
         />
-      </label>
-
-      <label>
-        Expires On:
         <input
           type="date"
           name="expiryDate"
           value={formData.expiryDate}
           onChange={handleChange}
         />
-      </label>
+      </div>
 
-      {error && <p className="error-text">{error}</p>}
+      {error && <div className="error-text">{error}</div>}
 
-      <button type="submit" disabled={loading} className="save-button">
-        {loading ? "Sending..." : "Publish Collaboration"}
+      <button className="save-button" disabled={loading}>
+        {loading ? "Publishing..." : "Publish"}
       </button>
     </form>
   );
@@ -226,197 +175,92 @@ function CreateCollabForm({ onSuccess }) {
    Market View
 ========================= */
 
-export default function CollabMarketTab({ isDevUser }) {
+export default function CollabMarketTab() {
   const [collabMarket, setCollabMarket] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [refreshFlag, setRefreshFlag] = useState(false);
-
   const [showCreateModal, setShowCreateModal] = useState(false);
-
-
   const navigate = useNavigate();
 
   const fetchCollabs = useCallback(async () => {
     setLoading(true);
-    setError(null);
-
-    try {
-      const res = await API.get("/collaboration-market");
-
-
-      if (Array.isArray(res.data.collabs)) {
-  const collabs = res.data.collabs.map((item) => {
-  return {
-    _id: item._id,
-    businessId: item.fromBusinessId,
-
-    title: item.title,
-    description: item.description,
-
-    needs: item.needs || [],
-    offers: item.offers || [],
-
-    budget: item.budget,
-    expiryDate: item.validUntil,
-
-    contactName: item.contactName,
-    phone: item.phone,
-
-    // ✅ זה החסר
-    createdAt: item.createdAt,
-  };
-});
-
-  setCollabMarket(collabs);
-} else {
-  setError("Error loading collaborations");
-}
-
-    } catch (err) {
-      console.error(err);
-      setError("Error loading collaborations");
-    } finally {
-      setLoading(false);
-    }
+    const res = await API.get("/collaboration-market");
+    setCollabMarket(res.data.collabs || []);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
     fetchCollabs();
-  }, [fetchCollabs, refreshFlag]);
-
-  const handleViewProfile = useCallback(
-    (businessId) => {
-      if (businessId) {
-        navigate(`/business-profile/${businessId}`);
-      }
-    },
-    [navigate]
-  );
+  }, [fetchCollabs]);
 
   return (
-  <div className="collab-market-container">
-    {/* כותרת */}
-    <div className="collab-header">
-  <h3 className="collab-title"> Collaboration Market</h3>
-
-  <button
-  className="add-collab-button"
-  onClick={() => setShowCreateModal(true)}
->
-  Publish Collaboration
-  <span className="plus-icon">+</span>
-</button>
-
-</div>
-
-    {/* מודאל יצירת שיתוף – לפני המרקט */}
-    {showCreateModal && (
-      <div className="collab-modal-overlay">
-        <div className="collab-modal">
-          <CreateCollabForm
-            onSuccess={() => {
-              setShowCreateModal(false);
-              setRefreshFlag((f) => !f);
-            }}
-          />
-
-          <button
-            className="cancel-button"
-            onClick={() => setShowCreateModal(false)}
-          >
-            Cancel
-          </button>
-        </div>
+    <div className="collab-market-container">
+      <div className="collab-header">
+        <h2>Collaboration Market</h2>
+        <button
+          className="add-collab-button"
+          onClick={() => setShowCreateModal(true)}
+        >
+          + Publish
+        </button>
       </div>
-    )}
 
-    {/* המרקט */}
-    {loading && <p>Loading collaborations...</p>}
-    {error && <p className="error-text">{error}</p>}
-
-    {!loading && collabMarket.length === 0 && (
-      <div>No collaborations to display</div>
-    )}
-
-    <div className="partners-grid">
-      {collabMarket.map((item) => (
-        <div key={item._id} className="collab-card">
-          <div className="collab-card-inner">
-
-            <div className="collab-card-content">
-  {/* איש קשר */}
-<h3 className="business-name">{item.contactName}</h3>
-
-{/* Title */}
-<p className="business-field">
-  <strong>Title:</strong> {item.title}
-</p>
-
-{/* Description */}
-<p className="business-field">
-  <strong>Description:</strong> {item.description}
-</p>
-
-<hr />
-
-  {/* צרכים */}
-  <p>
-    <strong>What the business needs:</strong>{" "}
-    {item.needs.length ? item.needs.join(", ") : "—"}
-  </p>
-
-  {/* הצעות */}
-  <p>
-    <strong>What the business offers:</strong>{" "}
-    {item.offers.length ? item.offers.join(", ") : "—"}
-  </p>
-
-  {/* תקציב */}
-  <p>
-    <strong>Budget:</strong>{" "}
-    {item.budget ? `$${item.budget}` : "—"}
-  </p>
-
-  {/* תוקף */}
-  <p>
-    <strong>Valid Until:</strong>{" "}
-    {item.expiryDate
-      ? new Date(item.expiryDate).toLocaleDateString()
-      : "—"}
-  </p>
-
-  {/* טלפון */}
-  <p>
-    <strong>Contact Phone:</strong>{" "}
-    <a href={`tel:${item.phone}`}>{item.phone}</a>
-  </p>
-
-  {/* תאריך פרסום */}
-  <p className="muted">
-    Published:{" "}
-    {item.createdAt
-      ? new Date(item.createdAt).toLocaleDateString()
-      : "—"}
-  </p>
-
-  <div className="collab-card-buttons">
-    <button
-      className="message-box-button secondary"
-      onClick={() => handleViewProfile(item.businessId)}
-    >
-      View Profile
-    </button>
-  </div>
-</div>
-
-
+      {showCreateModal && (
+        <div className="collab-modal-overlay">
+          <div className="collab-modal">
+            <CreateCollabForm
+              onSuccess={() => {
+                setShowCreateModal(false);
+                fetchCollabs();
+              }}
+            />
+            <button
+              className="cancel-button"
+              onClick={() => setShowCreateModal(false)}
+            >
+              Cancel
+            </button>
           </div>
         </div>
-      ))}
+      )}
+
+      {loading && <p>Loading...</p>}
+
+      <div className="partners-grid">
+        {collabMarket.map((item) => (
+          <div key={item._id} className="collab-card">
+            <h3 className="collab-title">{item.title}</h3>
+
+            <div className="tags-row">
+              {item.needs?.map((n) => (
+                <span key={n} className="tag need">{n}</span>
+              ))}
+              {item.offers?.map((o) => (
+                <span key={o} className="tag offer">{o}</span>
+              ))}
+            </div>
+
+            <p className="description">{item.description}</p>
+
+            <div className="meta">
+              <span>{item.budget ? `$${item.budget}` : "No budget"}</span>
+              <span>
+                {item.validUntil
+                  ? new Date(item.validUntil).toLocaleDateString()
+                  : "No expiry"}
+              </span>
+            </div>
+
+            <button
+              className="message-box-button"
+              onClick={() =>
+                navigate(`/business-profile/${item.fromBusinessId}`)
+              }
+            >
+              View Profile
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
-);
-
-
+  );
 }
