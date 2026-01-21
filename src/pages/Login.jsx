@@ -5,6 +5,8 @@ import { lazyWithPreload } from "../utils/lazyWithPreload";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import "../styles/Login.css";
+import { useLocation } from "react-router-dom";
+
 
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
 const DashboardPage = lazyWithPreload(() =>
@@ -32,6 +34,8 @@ export default function Login() {
   const [loginError, setLoginError] = useState("");
   const [showForgot, setShowForgot] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const location = useLocation();
+
 
   useEffect(() => {
     DashboardPage.preload().finally(() => setDashPreloadDone(true));
@@ -57,19 +61,23 @@ export default function Login() {
         form.password
       );
 
-      if (redirectUrl) {
-        navigate(redirectUrl, { replace: true });
-      } else {
-        if (loggedInUser?.role === "affiliate") {
-          navigate("/affiliate/dashboard", { replace: true });
-        } else if (loggedInUser?.role === "business") {
-          navigate(`/business/${loggedInUser.businessId}/dashboard`, {
-            replace: true,
-          });
-        } else {
-          navigate("/client/dashboard", { replace: true });
-        }
-      }
+     const urlRedirect = new URLSearchParams(location.search).get("redirect");
+const finalRedirect = urlRedirect || redirectUrl;
+
+if (finalRedirect && finalRedirect.startsWith("/")) {
+  navigate(finalRedirect, { replace: true });
+} else {
+  if (loggedInUser?.role === "affiliate") {
+    navigate("/affiliate/dashboard", { replace: true });
+  } else if (loggedInUser?.role === "business") {
+    navigate(`/business/${loggedInUser.businessId}/dashboard`, {
+      replace: true,
+    });
+  } else {
+    navigate("/client/dashboard", { replace: true });
+  }
+}
+
 
       setTimeout(() => {
         if (typeof fetchNotifications === "function") fetchNotifications();
