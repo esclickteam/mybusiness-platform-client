@@ -152,6 +152,8 @@ const DashboardPage = () => {
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
   const { insights, loading: insightsLoading } = useAiInsights(businessId);
+  const [isEarlyBirdModalOpen, setIsEarlyBirdModalOpen] = useState(true);
+
 
 
 
@@ -162,7 +164,10 @@ const isEarlyBirdActive =
   user?.earlyBirdUsed !== true;
 
 
+
+
 const shouldShowEarlyBirdModal =
+  isEarlyBirdModalOpen &&
   isEarlyBirdActive &&
   user?.subscriptionPlan === "trial" &&
   !user?.hasPaid &&
@@ -490,6 +495,7 @@ sock.on("newReview", (reviewData) => {
 const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
 
+
   try {
     // 🔑 מסמן שהמודאל נצפה גם במקרה של Upgrade
     await API.post("/users/mark-earlybird-modal-seen");
@@ -619,6 +625,8 @@ if (isRefreshingUser) {
     expiresAt={user?.earlyBirdExpiresAt}
     onUpgrade={handleEarlyBirdUpgrade}
     onClose={async () => {
+      setIsEarlyBirdModalOpen(false);
+
       try {
         await API.post("/users/mark-earlybird-modal-seen");
         await refreshUser(); // 🔑 מפיל את התנאי
