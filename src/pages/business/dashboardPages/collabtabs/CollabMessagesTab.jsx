@@ -230,7 +230,15 @@ export default function CollabMessagesTab({
             <p><strong>Description:</strong> {msg.description || "—"}</p>
             <p><strong>Giving:</strong> {msg.giving?.join(", ") || "—"}</p>
             <p><strong>Receiving:</strong> {msg.receiving?.join(", ") || "—"}</p>
-            <p><strong>Payment:</strong> {msg.payment || "—"}</p>
+            <p>
+  <strong>Payment:</strong>{" "}
+  {msg.payment?.trim()
+    ? msg.payment
+    : msg.amount
+      ? `${msg.amount}$`
+      : "—"}
+</p>
+
           </div>
 
           <div className="collab-card-actions">
