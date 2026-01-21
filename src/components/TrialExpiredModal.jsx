@@ -14,37 +14,52 @@ export default function TrialExpiredModal() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
+  console.log("🧪 TrialExpiredModal mounted");
+  console.log("👤 User:", user);
+
   /* ===========================
      🚀 Redirect to Stripe – $119 Monthly
   =========================== */
   const handleUpgrade = async () => {
-    if (!user?._id) return;
+    console.log("👉 Upgrade button clicked");
+
+    if (!user?._id) {
+      console.warn("❌ No user._id – aborting checkout");
+      return;
+    }
 
     try {
       setLoading(true);
+      console.log("⏳ Creating checkout session…");
 
       const res = await API.post("/billing/create-checkout-session", {
         userId: user._id,
-        plan: "monthly", // ⬅️ זה מפעיל STRIPE_PRICE_MONTHLY = $119
+        plan: "monthly", // ⬅️ STRIPE_PRICE_MONTHLY = $119
       });
 
+      console.log("✅ Checkout session response:", res.data);
+
       if (res.data?.url) {
-        // ⬅️ חובה redirect מלא (לא navigate)
+        console.log("➡️ Redirecting to Stripe:", res.data.url);
+
+        // ❗️ חשוב: redirect מלא, לא navigate
         window.location.href = res.data.url;
       } else {
+        console.error("❌ Stripe URL missing in response", res.data);
         throw new Error("Stripe URL missing");
       }
     } catch (err) {
-      console.error("Stripe redirect failed:", err);
+      console.error("❌ Stripe redirect failed:", err);
       alert("Unable to start checkout. Please try again.");
       setLoading(false);
     }
   };
 
   /* ===========================
-     🔙 Back to Home (ללא logout)
+     🔙 Back to Home
   =========================== */
   const handleBackHome = () => {
+    console.log("⬅️ Back to home clicked");
     navigate("/", { replace: true });
   };
 
@@ -99,7 +114,10 @@ export default function TrialExpiredModal() {
         {/* 💬 Secondary CTA */}
         <p
           className="contact-link"
-          onClick={() => navigate("/contact")}
+          onClick={() => {
+            console.log("📩 Contact link clicked");
+            navigate("/contact");
+          }}
         >
           Need more time? <span>Contact us for an extension</span>
         </p>
