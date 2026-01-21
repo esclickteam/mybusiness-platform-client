@@ -32,7 +32,9 @@ const DashboardCards = lazyWithPreload(() =>
 const BarChartComponent = lazyWithPreload(() =>
   import("../../../components/dashboard/BarChart")
 );
-
+const Insights = lazyWithPreload(() =>
+  import("../../../components/dashboard/Insights")
+);
 const CalendarView = lazyWithPreload(() =>
   import("../../../components/dashboard/CalendarView")
 );
@@ -105,6 +107,7 @@ const fetchAppointments = async (businessId, refreshAccessToken) => {
 export function preloadDashboardComponents() {
   DashboardCards.preload();
   BarChartComponent.preload();
+  Insights.preload();
   CalendarView.preload();
   DailyAgenda.preload();
   DashboardNav.preload();
@@ -130,6 +133,7 @@ const DashboardPage = () => {
 
   /* refs */
   const cardsRef = useRef(null);
+  const insightsRef = useRef(null);
   const chartsRef = useRef(null);
   const appointmentsRef = useRef(null);
 
@@ -629,6 +633,7 @@ const shouldShowEarlyBirdModal =
               <DashboardNav
                 refs={{
                   cardsRef,
+                  insightsRef,
                   chartsRef,
                   appointmentsRef,
                   
