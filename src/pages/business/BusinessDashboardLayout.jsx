@@ -15,8 +15,6 @@ import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
 
-
-
 /* ============================
    🔌 Socket
 ============================ */
@@ -91,8 +89,32 @@ export default function BusinessDashboardLayout() {
     return () => clearInterval(interval);
   }, [user?.isEarlyBirdActive, user?.earlyBirdExpiresAt]);
 
-  /* 🎁 Upgrade → Stripe */
-  const handleUpgrade = async () => {
+  /* ============================
+     🎁 Upgrade → Stripe
+  ============================ */
+
+  // ✅ UPDATED — Regular Upgrade ($119)
+  const handleRegularUpgrade = async () => {
+    if (!user?.userId) return;
+
+    try {
+      const res = await API.post("/stripe/create-checkout-session", {
+        userId: user.userId,
+        plan: "monthly",
+        pricing: "regular",
+      });
+
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      alert("Something went wrong");
+    }
+  };
+
+  // ✅ UPDATED — Early Bird Upgrade ($99)
+  const handleEarlyBirdUpgrade = async () => {
     if (!user?.userId) return;
 
     setHideEarlyBirdBanner(true);
@@ -101,12 +123,11 @@ export default function BusinessDashboardLayout() {
       const res = await API.post("/stripe/create-checkout-session", {
         userId: user.userId,
         plan: "monthly",
+        pricing: "earlybird",
       });
 
       if (res.data?.url) {
         window.location.href = res.data.url;
-      } else {
-        alert("Checkout unavailable");
       }
     } catch (err) {
       console.error("Checkout error:", err);
@@ -140,7 +161,7 @@ export default function BusinessDashboardLayout() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-    /* ============================
+  /* ============================
      ⏳ Trial Day Calculation
   ============================ */
   const DAY = 1000 * 60 * 60 * 24;
@@ -164,119 +185,68 @@ export default function BusinessDashboardLayout() {
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
 
-            {/* ================= Sidebar ================= */}
-            {(!isMobile || showSidebar) && (
-              <aside
-                className={`dashboard-layout-sidebar ${isMobile ? "open" : ""}`}
-                ref={sidebarRef}
-              >
-                <div className="sidebar-logo">
-                  <img
-                    src="/bizuply logo.png"
-                    alt="BizUply Logo"
-                    className="sidebar-logo-img"
-                  />
-
-                  {isMobile && (
-                    <button
-                      className="sidebar-close-btn"
-                      onClick={() => setShowSidebar(false)}
-                      aria-label="Close menu"
-                    >
-                      <FaTimes />
-                    </button>
-                  )}
-                </div>
-
-               <BusinessWorkspaceNav
-  messagesCount={messagesCount}
-  onNavigate={() => isMobile && setShowSidebar(false)}
-/>
-
-
-                {isMobile && (
-                  <div className="sidebar-footer">
-                    <span className="user-name">
-                      {user?.businessName || user?.name}
-                    </span>
-                    <button className="logout-btn" onClick={handleLogout}>
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </aside>
-            )}
-
             {/* ================= Header ================= */}
             {!isMobile && (
               <header className="dashboard-layout-header">
-
                 <div className="dashboard-layout-header-left">
                   <div>Hello, {user?.businessName || user?.name}</div>
 
                   {user?.isTrialActive && (
-  <div className="trial-status">
-    ⏳{" "}
-    {user.isTrialEndingToday ? (
-      <strong>Trial ends today</strong>
-    ) : (
-      <>
-        Trial ends in <strong>{user.trialDaysLeft} days</strong>
-      </>
-    )}
-
-    {!user.hasPaid &&
-      (!user.isEarlyBirdActive || !isAfterDay4) && (
-        <button
-          className="trial-upgrade-pill"
-          onClick={handleUpgrade}
-        >
-          Upgrade
-        </button>
-      )}
-  </div>
-)}
-
-
-                </div>
-                {user?.isEarlyBirdActive &&
-  isAfterDay4 &&
-  !hideEarlyBirdBanner && (
-
-                  <div className="dashboard-layout-header-center">
-                    <div className="earlybird-header-banner">
-
-                      {timeLeft && (
-                        <div className="earlybird-timer">
-                          ⏳ Ending in <strong>{timeLeft}</strong>
-                        </div>
+                    <div className="trial-status">
+                      ⏳{" "}
+                      {user.isTrialEndingToday ? (
+                        <strong>Trial ends today</strong>
+                      ) : (
+                        <>
+                          Trial ends in <strong>{user.trialDaysLeft} days</strong>
+                        </>
                       )}
 
-                      <div className="earlybird-text">
-                        <span className="earlybird-badge">🎁 Early Bird</span>
-                        <span className="earlybird-main">
-                          Save <strong>$20</strong> today — first month only
-                          <span className="price"> $99</span>
-                          <span className="old-price"> $119</span>
-                        </span>
-                      </div>
-
-                      <button
-                        className="earlybird-upgrade-btn"
-                        onClick={handleUpgrade}
-                      >
-                        Upgrade
-                      </button>
-
+                      {!user.hasPaid &&
+                        (!user.isEarlyBirdActive || !isAfterDay4) && (
+                          <button
+                            className="trial-upgrade-pill"
+                            onClick={handleRegularUpgrade} // ✅ UPDATED
+                          >
+                            Upgrade
+                          </button>
+                        )}
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+
+                {user?.isEarlyBirdActive &&
+                  isAfterDay4 &&
+                  !hideEarlyBirdBanner && (
+                    <div className="dashboard-layout-header-center">
+                      <div className="earlybird-header-banner">
+                        {timeLeft && (
+                          <div className="earlybird-timer">
+                            ⏳ Ending in <strong>{timeLeft}</strong>
+                          </div>
+                        )}
+
+                        <div className="earlybird-text">
+                          <span className="earlybird-badge">🎁 Early Bird</span>
+                          <span className="earlybird-main">
+                            Save <strong>$20</strong> today — first month only
+                            <span className="price"> $99</span>
+                            <span className="old-price"> $119</span>
+                          </span>
+                        </div>
+
+                        <button
+                          className="earlybird-upgrade-btn"
+                          onClick={handleEarlyBirdUpgrade} // ✅ UPDATED
+                        >
+                          Upgrade
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                 <div className="dashboard-layout-header-right">
-                  <div className="fb-notif-wrapper">
-                    <FacebookStyleNotifications />
-                  </div>
-
+                  <FacebookStyleNotifications />
                   <button
                     className="header-action-btn"
                     onClick={handleLogout}
@@ -285,17 +255,6 @@ export default function BusinessDashboardLayout() {
                   </button>
                 </div>
               </header>
-            )}
-
-            {/* ================= Mobile Button ================= */}
-            {isMobile && !showSidebar && (
-              <button
-                className="sidebar-open-btn"
-                aria-label="Open menu"
-                onClick={() => setShowSidebar(true)}
-              >
-                <FaBars />
-              </button>
             )}
 
             {/* ================= Content ================= */}
