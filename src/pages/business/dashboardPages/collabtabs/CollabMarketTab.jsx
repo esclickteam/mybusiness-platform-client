@@ -20,6 +20,7 @@ function CreateCollabForm({ onSuccess }) {
     expiryDate: "",
   });
 
+  const [useExpiry, setUseExpiry] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -53,11 +54,12 @@ function CreateCollabForm({ onSuccess }) {
             .map((s) => s.trim())
             .filter(Boolean),
           budget: formData.budget ? Number(formData.budget) : undefined,
-          validUntil: formData.expiryDate
-            ? new Date(formData.expiryDate).toISOString()
-            : null,
+          validUntil:
+            useExpiry && formData.expiryDate
+              ? new Date(formData.expiryDate).toISOString()
+              : null,
           contactName: formData.contactName.trim(),
-          phone: `${formData.countryCode}${formData.phone.trim()}`,
+          phone: `+1${formData.phone.trim()}`,
         });
 
         setFormData({
@@ -71,6 +73,7 @@ function CreateCollabForm({ onSuccess }) {
           budget: "",
           expiryDate: "",
         });
+        setUseExpiry(false);
 
         onSuccess?.();
       } catch {
@@ -79,7 +82,7 @@ function CreateCollabForm({ onSuccess }) {
         setLoading(false);
       }
     },
-    [formData, onSuccess]
+    [formData, useExpiry, onSuccess]
   );
 
   return (
@@ -108,6 +111,7 @@ function CreateCollabForm({ onSuccess }) {
           value={formData.needs}
           onChange={handleChange}
         />
+        <small>Comma separated (optional)</small>
       </div>
 
       <div className="form-group">
@@ -118,6 +122,7 @@ function CreateCollabForm({ onSuccess }) {
           value={formData.offers}
           onChange={handleChange}
         />
+        <small>Comma separated (optional)</small>
       </div>
 
       <div className="form-group">
@@ -129,18 +134,11 @@ function CreateCollabForm({ onSuccess }) {
         />
       </div>
 
-      <div className="form-group phone-group">
-        <select
-          name="countryCode"
-          value={formData.countryCode}
-          onChange={handleChange}
-        >
-          <option value="+1">🇺🇸 +1</option>
-          <option value="+972">🇮🇱 +972</option>
-        </select>
+      <div className="form-group">
+        <label>Phone *</label>
         <input
           name="phone"
-          placeholder="Phone number"
+          placeholder="US number"
           value={formData.phone}
           onChange={handleChange}
         />
@@ -150,17 +148,34 @@ function CreateCollabForm({ onSuccess }) {
         <input
           type="number"
           name="budget"
-          placeholder="Budget ($)"
+          placeholder="Budget ($) – optional"
           value={formData.budget}
           onChange={handleChange}
         />
-        <input
-          type="date"
-          name="expiryDate"
-          value={formData.expiryDate}
-          onChange={handleChange}
-        />
       </div>
+
+      {/* Expiry toggle */}
+      <div className="form-group checkbox-group">
+        <label>
+          <input
+            type="checkbox"
+            checked={useExpiry}
+            onChange={(e) => setUseExpiry(e.target.checked)}
+          />
+          Set expiration date (optional)
+        </label>
+      </div>
+
+      {useExpiry && (
+        <div className="form-group">
+          <input
+            type="date"
+            name="expiryDate"
+            value={formData.expiryDate}
+            onChange={handleChange}
+          />
+        </div>
+      )}
 
       {error && <div className="error-text">{error}</div>}
 
@@ -245,8 +260,8 @@ export default function CollabMarketTab() {
               <span>{item.budget ? `$${item.budget}` : "No budget"}</span>
               <span>
                 {item.validUntil
-                  ? new Date(item.validUntil).toLocaleDateString()
-                  : "No expiry"}
+                  ? `Expires ${new Date(item.validUntil).toLocaleDateString()}`
+                  : "No expiration"}
               </span>
             </div>
 
