@@ -130,10 +130,10 @@
    Card Content
 ===================================================== */
 .collab-card-content {
-  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  align-items: center;   /* ✅ מרכז אופקי */
+  text-align: center;    /* ✅ מרכז טקסט */
 }
 
 /* =====================================================
@@ -185,8 +185,7 @@
   margin-top: auto;
   padding-top: 14px;
   display: flex;
-  align-items: center;
-  justify-content: center; /* ⬅️ במקום flex-end */
+  justify-content: center;
 }
 
 .message-box-button {
