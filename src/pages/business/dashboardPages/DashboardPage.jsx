@@ -162,7 +162,6 @@ const { insights, loading: insightsLoading } = useAiInsights(businessId);
 // 🎯 Should show modal (UI logic)
 const shouldShowEarlyBirdModal =
   user?.isEarlyBirdActive &&
-  user?.subscriptionPlan === "trial" &&
   user?.paymentStatus === "trial" &&
   !user?.earlyBirdModalSeenAt &&
   !isRefreshingUser;
