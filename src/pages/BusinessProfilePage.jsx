@@ -235,7 +235,7 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     if (!createdConversationId) return;
 
     navigate(
-  `/business/${currentUserBusinessId}/dashboard/collab/messages`,
+  `/business/${currentUserBusinessId}/dashboard/collab/messages?tab=chat`,
   {
     state: { conversationId: createdConversationId },
   }

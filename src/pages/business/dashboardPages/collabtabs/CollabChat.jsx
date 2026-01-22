@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useAuth } from "../../../../context/AuthContext";
+import { useLocation } from "react-router-dom";
+
 
 function getOtherBusinessId(conv, myBusinessId) {
   if (!conv || !myBusinessId) {
@@ -81,6 +83,10 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
 
+  const location = useLocation();
+  const conversationIdFromNav = location.state?.conversationId || null;
+
+
   const uniqueMessages = useCallback((msgs) => {
     const seen = new Set();
     return msgs.filter((m) => {
@@ -92,31 +98,44 @@ export default function CollabChat({ myBusinessId, myBusinessName, onClose }) {
   }, []);
 
   const fetchConversations = useCallback(async () => {
-    try {
-      const token = await refreshAccessToken();
-      if (!token) return;
-      console.log("[fetchConversations] fetching conversations...");
-      const res = await API.get("/business-chat/my-conversations", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const convsRaw = res.data.conversations || [];
-      console.log("[fetchConversations] received", convsRaw.length, "conversations");
-      const convs = convsRaw.map((c) => ({
-        ...c,
-        messages: Array.isArray(c.messages) ? c.messages : [],
-        conversationType: c.conversationType || "user-business",
-      }));
-      setConversations(convs);
-      if (!selectedConversation && convs.length > 0) {
-        setSelectedConversation(convs[0]);
-        console.log("[fetchConversations] selected first conversation", convs[0]._id);
+  try {
+    const token = await refreshAccessToken();
+    if (!token) return;
+
+    const res = await API.get("/business-chat/my-conversations", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const convsRaw = res.data.conversations || [];
+    const convs = convsRaw.map((c) => ({
+      ...c,
+      messages: Array.isArray(c.messages) ? c.messages : [],
+      conversationType: c.conversationType || "business-business",
+    }));
+
+    setConversations(convs);
+
+    // ✅ זה החלק החשוב
+    if (conversationIdFromNav) {
+      const target = convs.find(
+        (c) => c._id.toString() === conversationIdFromNav.toString()
+      );
+      if (target) {
+        setSelectedConversation(target);
+        return;
       }
-    } catch (err) {
-      setConversations([]);
-      setError("Failed to load conversations");
-      console.error("[fetchConversations] error:", err);
     }
-  }, [refreshAccessToken, selectedConversation]);
+
+    // fallback רגיל
+    if (!conversationIdFromNav && convs.length > 0) {
+  setSelectedConversation(convs[0]);
+}
+  } catch (err) {
+    setConversations([]);
+    setError("Failed to load conversations");
+  }
+}, [refreshAccessToken, selectedConversation, conversationIdFromNav]);
+
 
   useEffect(() => {
     if (!myBusinessId) return;
