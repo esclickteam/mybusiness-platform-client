@@ -113,6 +113,7 @@ const handleUpgrade = async () => {
 
 const handleEarlyBirdUpgrade = async () => {
   if (!user?.userId) return;
+  if (user?.earlyBirdUsed || user?.hasPaid) return;
 
   try {
     const res = await API.post("/stripe/create-checkout-session", {
@@ -169,6 +170,24 @@ const handleEarlyBirdUpgrade = async () => {
     : 0;
 
   const isAfterDay4 = daysSinceTrialStart >= 4;
+
+  /* ============================
+   🎯 Upgrade / Early Bird Guards
+============================ */
+const earlyBirdUsed = Boolean(user?.earlyBirdUsed);
+const hasPaid = Boolean(user?.hasPaid);
+
+const isTrialActive =
+  user?.subscriptionPlan === "trial" &&
+  user?.trialEndsAt &&
+  new Date(user.trialEndsAt) > new Date();
+
+const canUpgrade =
+  isTrialActive &&
+  !hasPaid &&
+  !earlyBirdUsed;
+
+
 
  
 
@@ -233,7 +252,8 @@ const handleEarlyBirdUpgrade = async () => {
                 <div className="dashboard-layout-header-left">
                   <div>Hello, {user?.businessName || user?.name}</div>
 
-                  {user?.isTrialActive && (
+                  {isTrialActive && (
+
   <div className="trial-status">
     ⏳{" "}
     {user.isTrialEndingToday ? (
@@ -244,21 +264,21 @@ const handleEarlyBirdUpgrade = async () => {
       </>
     )}
 
-    {!user.hasPaid &&
-      (!user.isEarlyBirdActive || !isAfterDay4) && (
-        <button
-          className="trial-upgrade-pill"
-          onClick={handleUpgrade}
-        >
-          Upgrade
-        </button>
-      )}
+    {canUpgrade && !canShowEarlyBird && (
+  <button
+    className="trial-upgrade-pill"
+    onClick={handleUpgrade}
+  >
+    Upgrade
+  </button>
+)}
   </div>
 )}
 
 
                 </div>
-{user?.isEarlyBirdActive && isAfterDay4 && (
+{canShowEarlyBird && (
+
 
                   <div className="dashboard-layout-header-center">
                     <div className="earlybird-header-banner">
