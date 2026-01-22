@@ -50,7 +50,7 @@ function PartnerCard({ business, isMine, onOpenProfile }) {
         className="message-box-button primary"
         onClick={() => onOpenProfile(business)}
       >
-        Send Proposal
+        View Profile
       </button>
 
       
