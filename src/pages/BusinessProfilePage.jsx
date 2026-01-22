@@ -17,9 +17,11 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
 
   const [currentUserBusinessId, setCurrentUserBusinessId] = useState(null);
   const [currentUserBusinessName, setCurrentUserBusinessName] = useState("");
+  const [createdConversationId, setCreatedConversationId] = useState(null);
 
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
   const [chatModalOpen, setChatModalOpen] = useState(false);
@@ -84,19 +86,23 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
   };
 
   const handleSendBusinessMessage = async () => {
-    if (!chatMessage.trim()) return;
-    setSending(true);
-    try {
-      await API.post("/business-chat/start", {
-        otherBusinessId: business._id,
-        text: chatMessage.trim(),
-      });
-      setChatModalOpen(false);
-      setChatMessage("");
-    } finally {
-      setSending(false);
-    }
-  };
+  if (!chatMessage.trim()) return;
+  setSending(true);
+
+  try {
+  const res = await API.post("/business-chat/start", {
+    otherBusinessId: business._id,
+    text: chatMessage.trim(),
+  });
+
+  setCreatedConversationId(res.data?.conversationId || null);
+  setChatMessage("");
+} catch (err) {
+  alert("Failed to send message. Please try again.");
+} finally {
+  setSending(false);
+}
+};
 
   /* =========================
      Render
@@ -151,56 +157,99 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
           <button className="bp-btn primary" onClick={openProposalModal}>
             Send Proposal
           </button>
+          
           <button
-            className="bp-btn secondary"
-            onClick={() => setChatModalOpen(true)}
-          >
-            Start Chat
-          </button>
+  className="bp-btn secondary"
+  onClick={() => {
+    setCreatedConversationId(null);
+    setChatMessage("");
+    setChatModalOpen(true);
+  }}
+>
+  Start Chat
+</button>
+
         </div>
       )}
 
       {/* Proposal Modal */}
       <Modal
-        open={isProposalModalOpen}
-        onClose={() => setIsProposalModalOpen(false)}
-      >
-        <Box className="bp-modal">
-          <ProposalForm
-            fromBusinessId={currentUserBusinessId}
-            fromBusinessName={currentUserBusinessName}
-            toBusiness={business}
-            onSent={() => {
-              setIsProposalModalOpen(false);
-              navigate(
-                `/business/${businessId}/dashboard/collab/messages?tab=sent`,
-                { replace: true }
-              );
-            }}
-          />
-        </Box>
-      </Modal>
+  open={isProposalModalOpen}
+  onClose={() => setIsProposalModalOpen(false)}
+>
+  <Box className="bp-modal">
+    <ProposalForm
+      fromBusinessId={currentUserBusinessId}
+      fromBusinessName={currentUserBusinessName}
+      toBusiness={business}
+      onSent={() => {
+        setIsProposalModalOpen(false);
+        navigate(
+          `/business/${businessId}/dashboard/collab/messages?tab=sent`,
+          { replace: true }
+        );
+      }}
+    />
+  </Box>
+</Modal>
 
       {/* Chat Modal */}
-      <Modal open={chatModalOpen} onClose={() => setChatModalOpen(false)}>
-        <Box className="bp-chat-modal">
-          <TextField
-            multiline
-            minRows={3}
-            fullWidth
-            placeholder="Type your message…"
-            value={chatMessage}
-            onChange={(e) => setChatMessage(e.target.value)}
-          />
-          <Button
-            sx={{ mt: 2 }}
-            onClick={handleSendBusinessMessage}
-            disabled={!chatMessage.trim() || sending}
-          >
-            Send Message
-          </Button>
-        </Box>
-      </Modal>
+      <Modal
+  open={chatModalOpen}
+  onClose={() => {
+    setChatModalOpen(false);
+    setCreatedConversationId(null);
+    setChatMessage("");
+  }}
+>
+
+  <Box className="bp-chat-modal">
+    {!createdConversationId ? (
+      <>
+        <TextField
+          multiline
+          minRows={3}
+          fullWidth
+          placeholder="Type your message…"
+          value={chatMessage}
+          onChange={(e) => setChatMessage(e.target.value)}
+        />
+
+        <Button
+          sx={{ mt: 2 }}
+          onClick={handleSendBusinessMessage}
+          disabled={!chatMessage.trim() || sending}
+        >
+          Send Message
+        </Button>
+      </>
+    ) : (
+      <>
+        <p style={{ marginBottom: 12 }}>
+          ✅ Message sent successfully
+        </p>
+
+        <Button
+  variant="contained"
+  onClick={() => {
+    if (!createdConversationId) return;
+
+    navigate(
+      `/business/${currentUserBusinessId}/chat/${business._id}`,
+      {
+        state: { conversationId: createdConversationId },
+      }
+    );
+  }}
+>
+  Continue in chat
+</Button>
+
+      </>
+    )}
+  </Box>
+</Modal>
+
     </div>
   );
 }
