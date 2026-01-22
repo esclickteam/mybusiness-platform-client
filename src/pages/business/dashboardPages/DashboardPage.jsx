@@ -163,7 +163,7 @@ const { insights, loading: insightsLoading } = useAiInsights(businessId);
 const shouldShowEarlyBirdModal =
   user?.isEarlyBirdActive &&
   user?.subscriptionPlan === "trial" &&
-  !user?.hasPaid &&
+  !user?.isSubscriptionValid &&
   !user?.earlyBirdModalSeenAt &&
   !isRefreshingUser;
 
