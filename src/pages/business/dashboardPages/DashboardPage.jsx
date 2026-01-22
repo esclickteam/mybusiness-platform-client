@@ -167,6 +167,25 @@ const shouldShowEarlyBirdModal =
   !user?.earlyBirdModalSeenAt &&
   !isRefreshingUser;
 
+  useEffect(() => {
+  console.group("🧪 EarlyBird Modal Debug");
+  console.log("user?.isEarlyBirdActive:", user?.isEarlyBirdActive);
+  console.log("user?.subscriptionPlan:", user?.subscriptionPlan);
+  console.log("user?.hasPaid:", user?.hasPaid);
+  console.log("user?.earlyBirdModalSeenAt:", user?.earlyBirdModalSeenAt);
+  console.log("isRefreshingUser:", isRefreshingUser);
+  console.log("👉 shouldShowEarlyBirdModal =", shouldShowEarlyBirdModal);
+  console.groupEnd();
+}, [
+  user?.isEarlyBirdActive,
+  user?.subscriptionPlan,
+  user?.hasPaid,
+  user?.earlyBirdModalSeenAt,
+  isRefreshingUser,
+  shouldShowEarlyBirdModal,
+]);
+
+
  
 
 
@@ -611,6 +630,9 @@ if (isRefreshingUser) {
         {/* Main */}
         <main className="dp-main">
   {alert && <p className="dp-error">{alert}</p>}
+
+  {console.log("🖼️ Rendering modal?", shouldShowEarlyBirdModal)}
+
 
  
 {shouldShowEarlyBirdModal && (

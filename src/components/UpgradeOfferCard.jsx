@@ -13,6 +13,11 @@ export default function UpgradeOfferCard({
   onClose,
   expiresAt,
 }) {
+
+  useEffect(() => {
+  console.log("🎉 UpgradeOfferCard MOUNTED", { expiresAt });
+}, []);
+
   /* ⏳ fallback של 48 שעות */
   const fallbackExpiresAt = useMemo(
     () => Date.now() + 48 * 60 * 60 * 1000,
