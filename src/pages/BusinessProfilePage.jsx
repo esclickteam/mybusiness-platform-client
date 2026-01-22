@@ -235,11 +235,12 @@ export default function BusinessProfilePage({ resetSearchFilters }) {
     if (!createdConversationId) return;
 
     navigate(
-      `/business/${currentUserBusinessId}/chat/${business._id}`,
-      {
-        state: { conversationId: createdConversationId },
-      }
-    );
+  `/business/${currentUserBusinessId}/dashboard/collab/messages`,
+  {
+    state: { conversationId: createdConversationId },
+  }
+);
+
   }}
 >
   Continue in chat
