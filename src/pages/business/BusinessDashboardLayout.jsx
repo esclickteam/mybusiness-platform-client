@@ -182,11 +182,15 @@ const isTrialActive =
   user?.trialEndsAt &&
   new Date(user.trialEndsAt) > new Date();
 
-const canUpgrade =
+ const canUpgrade =
   isTrialActive &&
   !hasPaid &&
   !earlyBirdUsed;
 
+  const canShowEarlyBird =
+  canUpgrade &&
+  user?.isEarlyBirdActive &&
+  isAfterDay4;
 
 
  
