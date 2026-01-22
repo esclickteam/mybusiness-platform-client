@@ -170,20 +170,7 @@ const handleEarlyBirdUpgrade = async () => {
 
   const isAfterDay4 = daysSinceTrialStart >= 4;
 
-    useEffect(() => {
-    if (
-      user?.isEarlyBirdActive &&
-      isAfterDay4 &&
-      user?.hasSeenUpgradeBanner === false
-    ) {
-      API.post("/users/mark-upgrade-banner-seen").catch(() => {});
-    }
-  }, [
-    user?.isEarlyBirdActive,
-    isAfterDay4,
-    user?.hasSeenUpgradeBanner,
-  ]);
-
+ 
 
   if (loading) return null;
 
@@ -271,9 +258,7 @@ const handleEarlyBirdUpgrade = async () => {
 
 
                 </div>
-                {user?.isEarlyBirdActive &&
- isAfterDay4 &&
- !user?.hasSeenUpgradeBanner && (
+{user?.isEarlyBirdActive && isAfterDay4 && (
 
                   <div className="dashboard-layout-header-center">
                     <div className="earlybird-header-banner">

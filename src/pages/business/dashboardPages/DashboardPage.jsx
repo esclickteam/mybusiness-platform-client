@@ -169,9 +169,8 @@ const shouldShowEarlyBirdModal =
   isEarlyBirdActive &&
   user?.subscriptionPlan === "trial" &&
   !user?.hasPaid &&
-  !user?.earlyBirdModalSeenAt;
-  
-
+  !user?.earlyBirdModalSeenAt &&  
+  !isRefreshingUser;
 
 
   /* scroll + hash cleanup */
@@ -621,7 +620,7 @@ if (isRefreshingUser) {
     expiresAt={user?.earlyBirdExpiresAt}
     onUpgrade={handleEarlyBirdUpgrade}
     onClose={async () => {
-      setIsEarlyBirdModalOpen(false);
+      
 
       try {
         await API.post("/users/mark-earlybird-modal-seen");
