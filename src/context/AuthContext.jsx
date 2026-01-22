@@ -69,10 +69,11 @@ const earlyBirdExpiresAt = user.earlyBirdExpiresAt
   ? new Date(user.earlyBirdExpiresAt)
   : null;
 
-const isEarlyBirdActive =
+const isEarlyBirdActive = Boolean(
   earlyBirdExpiresAt &&
-  earlyBirdExpiresAt > now &&
-  !user.earlyBirdUsed;
+    earlyBirdExpiresAt > now &&
+    user?.earlyBirdUsed !== true
+);
 
 
 
