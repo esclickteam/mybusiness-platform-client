@@ -3,6 +3,7 @@ import API from "../../../../api";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
 import { useLocation } from "react-router-dom";
 import "./CollabMessagesTab.css";
+import CollabChat from "./CollabChat";
 
 
 
@@ -23,6 +24,9 @@ export default function CollabMessagesTab({
   const [selectedAgreement, setSelectedAgreement] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const location = useLocation();
+  const conversationIdFromNav = location.state?.conversationId || null;
+  const [activeConversationId, setActiveConversationId] = useState(null);
+
 
   /* =======================
      Fetch Proposals
@@ -55,12 +59,20 @@ export default function CollabMessagesTab({
   }, [refreshFlag]);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tab = params.get("tab");
-    if (tab && ["sent", "received", "accepted"].includes(tab)) {
-      setFilter(tab);
-    }
-  }, [location.search]);
+  const params = new URLSearchParams(location.search);
+  const tab = params.get("tab");
+
+  if (tab === "chat" && conversationIdFromNav) {
+    setFilter("chat");
+    setActiveConversationId(conversationIdFromNav);
+    return;
+  }
+
+  if (tab && ["sent", "received", "accepted"].includes(tab)) {
+    setFilter(tab);
+  }
+}, [location.search, conversationIdFromNav]);
+
 
   useEffect(() => {
     if (!socket) return;
@@ -179,6 +191,20 @@ export default function CollabMessagesTab({
   if (error) {
     return <div className="collab-error">{error}</div>;
   }
+
+  // 🔥 CHAT ROUTE (via ?tab=chat)
+if (filter === "chat" && activeConversationId) {
+  return (
+    <div className="collab-chat-wrapper">
+      <CollabChat
+        myBusinessId={userBusinessId}
+        myBusinessName={null}
+        initialConversationId={activeConversationId}
+      />
+    </div>
+  );
+}
+
 
   return (
     <div className="collab-messages-wrapper">
