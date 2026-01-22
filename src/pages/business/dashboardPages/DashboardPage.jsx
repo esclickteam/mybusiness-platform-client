@@ -172,6 +172,14 @@ const shouldShowEarlyBirdModal =
   !user?.earlyBirdModalSeenAt &&  
   !isRefreshingUser;
 
+  useEffect(() => {
+  if (!user?.earlyBirdShownAt) return;
+  if (user?.earlyBirdModalSeenAt) return;
+
+  refreshUser();
+}, [user?.earlyBirdShownAt, user?.earlyBirdModalSeenAt, refreshUser]);
+
+
 
   /* scroll + hash cleanup */
   useEffect(() => {
