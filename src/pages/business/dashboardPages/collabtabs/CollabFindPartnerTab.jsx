@@ -53,12 +53,7 @@ function PartnerCard({ business, isMine, onOpenProfile }) {
         Send Proposal
       </button>
 
-      <button
-        className="message-box-button link"
-        onClick={() => onOpenProfile(business)}
-      >
-        View Profile
-      </button>
+      
     </>
   )}
 </div>

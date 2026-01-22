@@ -177,7 +177,7 @@ const handleEarlyBirdUpgrade = async () => {
 const earlyBirdUsed = Boolean(user?.earlyBirdUsed);
 const hasPaid = Boolean(user?.hasPaid);
 
-const isTrialActive =
+ const isTrialActive =
   user?.subscriptionPlan === "trial" &&
   user?.trialEndsAt &&
   new Date(user.trialEndsAt) > new Date();
