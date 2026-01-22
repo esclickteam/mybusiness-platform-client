@@ -77,9 +77,8 @@ const isEarlyBirdActive =
 
 
 
-  const hasPaid =
-  user?.hasPaid === true ||
-  user?.paymentStatus === "paid";
+  const hasPaid = user?.hasPaid === true;
+
 
 
 
