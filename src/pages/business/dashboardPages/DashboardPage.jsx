@@ -157,19 +157,14 @@ const { insights, loading: insightsLoading } = useAiInsights(businessId);
    🎁 Early Bird Logic
 ========================= */
 
-// 🔥 Early Bird active (business logic)
-const isEarlyBirdActive =
-  Boolean(user?.earlyBirdShownAt) &&
-  Boolean(user?.earlyBirdExpiresAt) &&
-  Date.now() < new Date(user.earlyBirdExpiresAt).getTime() &&
-  user?.earlyBirdUsed !== true;
+
 
 // 🎯 Should show modal (UI logic)
 const shouldShowEarlyBirdModal =
-  isEarlyBirdActive &&
+  user?.isEarlyBirdActive &&
   user?.subscriptionPlan === "trial" &&
   !user?.hasPaid &&
-  !user?.earlyBirdModalSeenAt &&  
+  !user?.earlyBirdModalSeenAt &&
   !isRefreshingUser;
 
   useEffect(() => {
