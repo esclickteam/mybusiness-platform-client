@@ -91,7 +91,7 @@ const hasPaid = user?.paymentStatus === "paid";
   trialEndsAt,
   trialDaysLeft,
   isTrialEndingToday,
-  
+  paymentStatus: user.paymentStatus,
   isTrialActive,
   isEarlyBirdActive,
 
