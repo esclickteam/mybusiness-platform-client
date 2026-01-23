@@ -362,11 +362,8 @@ const isOwner =
     <div className="hero-title">
       <h1 className="business-name">{businessName}</h1>
 
-      {hasRating && (
-        <div className="hero-rating">
-          ⭐ {roundedAvg.toFixed(1)} · {reviewsCount} reviews
-        </div>
-      )}
+     
+
     </div>
 
     {/* Favorite action – iOS style */}
