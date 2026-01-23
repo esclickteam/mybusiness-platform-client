@@ -11,6 +11,8 @@
   padding: 24px;
   background: #fafafa;
   border-left: 1px solid #eee;
+  position: sticky;
+  top: 24px;
 }
 
 .section-title {
@@ -204,4 +206,15 @@
   color: #888;
   padding: 16px;
   text-align: center;
+}
+
+/* =========================
+   TAB LAYOUT (NEW)
+========================= */
+
+.tab-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
 }
