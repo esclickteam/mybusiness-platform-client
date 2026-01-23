@@ -304,3 +304,46 @@
     padding: 10px 18px;
   }
 }
+
+/* =========================
+   LAYOUT – CARD RIGHT / EDIT LEFT
+========================= */
+
+.build-wrapper {
+  display: flex;
+  flex-direction: row;        /* חשוב – לא row-reverse */
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2.5rem;
+
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2.5rem;
+
+  background: #f6f7fb;
+  box-sizing: border-box;
+}
+
+/* צד שמאל – כפתורי עריכה בלבד */
+.form-column {
+  flex: 1 1 520px;
+  max-width: 760px;
+  min-width: 300px;
+
+  background: #ffffff;
+  padding: 2.25rem;
+  border-radius: 24px;
+
+  box-shadow:
+    0 26px 56px rgba(92, 45, 145, 0.14),
+    0 6px 16px rgba(0,0,0,0.06);
+}
+
+/* צד ימין – כרטיס העסק */
+.preview-column {
+  flex: 0 0 420px;
+  max-width: 420px;
+
+  position: sticky;
+  top: 32px;
+}
