@@ -12,7 +12,7 @@ export default function GallerySection({
   isSaving,
   renderTopBar,
 
-  /* 🆕 same pattern as MainSection */
+  /* 🆕 navigation */
   showViewProfile,
   navigate,
 }) {
@@ -22,6 +22,7 @@ export default function GallerySection({
      🖼 Local gallery state
   ========================= */
   const [images, setImages] = useState([]);
+  const [hasUploaded, setHasUploaded] = useState(false); // 🆕
 
   /* =========================
      Sync from parent
@@ -53,7 +54,7 @@ export default function GallerySection({
   };
 
   /* =========================
-     Delete with soft confirm
+     Delete image
   ========================= */
   const onDelete = (publicId) => {
     const ok = window.confirm("Remove this image from the gallery?");
@@ -78,8 +79,11 @@ export default function GallerySection({
           accept="image/*"
           ref={galleryInputRef}
           style={{ display: "none" }}
-          onChange={handleGalleryChange}
           disabled={isSaving}
+          onChange={(e) => {
+            handleGalleryChange(e);
+            setHasUploaded(true); // 🆕 mark upload
+          }}
         />
 
         {/* Dropzone */}
@@ -96,7 +100,7 @@ export default function GallerySection({
           </div>
         </div>
 
-        {/* Gallery grid */}
+        {/* Gallery grid (edit) */}
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="gallery">
             {(provided) => (
@@ -160,9 +164,9 @@ export default function GallerySection({
         )}
 
         {/* =========================
-           VIEW PROFILE CTA (like MainSection)
+           👀 View Public Profile CTA
         ========================= */}
-        {showViewProfile && images.length > 0 && (
+        {showViewProfile && hasUploaded && images.length > 0 && (
           <button
             type="button"
             className="view-profile-btn"
