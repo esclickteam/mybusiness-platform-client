@@ -124,6 +124,10 @@ const isBusinessChatRoute =
   location.pathname.startsWith("/client") ||
   location.pathname.includes("/messages");
 
+    const isPublicBusinessProfile =
+    /^\/business\/[^/]+$/.test(location.pathname);
+
+
   useOnceLogger("App render - user", user);
   useOnceLogger("App render - loading", loading);
 
@@ -472,7 +476,8 @@ const isBusinessChatRoute =
 </main>
 
 {/* footer */}
-{!isDashboardRoute && <Footer />}
+{!isDashboardRoute && !isPublicBusinessProfile && <Footer />}
+
 
 </div>       
 
