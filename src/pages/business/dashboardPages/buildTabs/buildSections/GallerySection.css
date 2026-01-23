@@ -1,5 +1,16 @@
 /* =========================
-   LAYOUT
+   TAB LAYOUT
+========================= */
+
+.tab-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* =========================
+   LEFT – FORM COLUMN
 ========================= */
 
 .form-column {
@@ -7,11 +18,33 @@
   padding: 24px;
 }
 
+/* =========================
+   RIGHT – PREVIEW COLUMN
+   (מיקום בלבד, לא כרטיס)
+========================= */
+
 .preview-column {
-  padding: 24px;
-  background: #fafafa;
-  border-left: 1px solid #eee;
+  position: sticky;
+  top: 24px;
 }
+
+/* =========================
+   PREVIEW CARD (כרטיס זהה ל-Main)
+========================= */
+
+.preview-card {
+  background: #fff;
+  border-radius: 28px;
+  padding: 32px 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* =========================
+   TITLES
+========================= */
 
 .section-title {
   font-size: 18px;
@@ -95,11 +128,6 @@
   overflow: hidden;
   background: #f1f1f1;
   aspect-ratio: 1 / 1;
-  cursor: grab;
-}
-
-.gallery-item-wrapper:active {
-  cursor: grabbing;
 }
 
 .gallery-img {
@@ -140,29 +168,6 @@
 }
 
 /* =========================
-   DRAG HINT
-========================= */
-
-.drag-hint {
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.55);
-  color: #fff;
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 10px;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  pointer-events: none;
-}
-
-.gallery-item-wrapper:hover .drag-hint {
-  opacity: 1;
-}
-
-/* =========================
    EMPTY STATE
 ========================= */
 
@@ -175,6 +180,13 @@
   border: 1px dashed #ddd;
   border-radius: 14px;
   background: #fafafa;
+}
+
+.no-data {
+  font-size: 14px;
+  color: #888;
+  padding: 16px;
+  text-align: center;
 }
 
 /* =========================
@@ -196,12 +208,15 @@
 }
 
 /* =========================
-   PREVIEW SIDE
+   MOBILE
 ========================= */
 
-.no-data {
-  font-size: 14px;
-  color: #888;
-  padding: 16px;
-  text-align: center;
+@media (max-width: 768px) {
+  .tab-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-column {
+    position: static;
+  }
 }
