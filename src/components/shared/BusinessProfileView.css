@@ -304,9 +304,12 @@ html, body, #root {
 
 .gallery-grid img {
   width: 100%;
+  max-width: 260px;        /* 👈 זה הקסם */
   aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
+  margin: 0 auto;          /* 👈 ממרכז תמונות קטנות */
+  border-radius: 14px;
 }
 
 .gallery-grid img:hover {
