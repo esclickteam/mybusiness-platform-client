@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, Suspense, lazy, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/socketContext";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useParams, Link, useSearchParams } from "react-router-dom";
+
 
 import "react-calendar/dist/Calendar.css";
 import "../../pages/business/dashboardPages/buildTabs/shopAndCalendar/Appointments/ClientCalendar.css";
@@ -35,9 +36,12 @@ function useOnScreen(ref) {
 export default function BusinessProfileView() {
   const { user } = useAuth();
   const { businessId: paramId } = useParams();
+  const [searchParams] = useSearchParams();
   const socket = useSocket();
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
+  
+
 
   // The messages tab name is adjusted based on user role
   const messagesTabName = user?.role === "customer" ? "Messages with the Business" : "Messages from Clients";
@@ -51,11 +55,24 @@ export default function BusinessProfileView() {
     "Calendar",
   ];
 
+    const TAB_MAP = {
+    main: "Main",
+    gallery: "Gallery",
+    reviews: "Reviews",
+    faqs: "FAQs",
+    calendar: "Calendar",
+  };
+
   // States
   const [faqs, setFaqs] = useState([]);
   const [services, setServices] = useState([]);
   const [schedule, setSchedule] = useState({});
-  const [currentTab, setCurrentTab] = useState("Main");
+  const initialTab =
+    TAB_MAP[searchParams.get("tab")?.toLowerCase()] || "Main";
+
+
+const [currentTab, setCurrentTab] = useState(initialTab);
+
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
@@ -278,9 +295,12 @@ const isOwner =
   user?.role === "business" && user.businessId === bizId;
 
   const handleTabChange = (tab) => {
-    setCurrentTab(tab);
-    setSelectedService(null);
-  };
+  setCurrentTab(tab);
+  setSelectedService(null);
+
+  const key = tab.toLowerCase();
+  window.history.replaceState(null, "", `?tab=${key}`);
+};
 
   return (
     <div className="profile-page">

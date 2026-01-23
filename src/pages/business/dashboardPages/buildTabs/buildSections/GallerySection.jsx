@@ -124,7 +124,8 @@ export default function GallerySection({
           <button
             type="button"
             className="view-profile-btn"
-            onClick={() => navigate(`/business/${businessDetails._id}`)}
+            onClick={() => navigate(`/business/${businessDetails._id}?tab=gallery`)}
+
           >
             👀 View Public Profile
           </button>
