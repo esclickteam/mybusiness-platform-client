@@ -297,9 +297,10 @@ html, body, #root {
 
 .gallery-grid {
   display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 220px));
   gap: 16px;
   padding: 16px;
+  justify-content: center; /* 👈 הכי חשוב */
 }
 
 .gallery-grid img {
