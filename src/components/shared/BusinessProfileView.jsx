@@ -4,7 +4,8 @@ import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/socketContext";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link, useSearchParams } from "react-router-dom";
-import Icon from "@/components/ui/Icon";
+import Icon from "@/components/UI/Icon";
+
 
 
 import "react-calendar/dist/Calendar.css";
