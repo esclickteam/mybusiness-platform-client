@@ -8,8 +8,9 @@
 }
 
 .preview-column {
-  position: sticky;
-  top: 24px;
+  padding: 24px;
+  background: #fafafa;
+  border-left: 1px solid #eee;
 }
 
 .section-title {
@@ -203,39 +204,4 @@
   color: #888;
   padding: 16px;
   text-align: center;
-}
-
-/* =========================
-   TAB LAYOUT (NEW)
-========================= */
-
-.tab-layout {
-  display: grid;
-  grid-template-columns: 1fr 380px; /* אותו רוחב כרטיס כמו Main */
-  gap: 24px;
-  align-items: start;
-}
-
-/* =========================
-   PREVIEW CARD (MUST)
-========================= */
-
-.preview-card {
-  background: #fff;
-  border-radius: 28px;
-  padding: 32px 28px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-@media (max-width: 768px) {
-  .tab-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .preview-column {
-    position: static;
-  }
 }
