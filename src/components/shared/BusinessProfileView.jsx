@@ -80,6 +80,7 @@ const [currentTab, setCurrentTab] = useState(initialTab);
   const [profileViewsCount, setProfileViewsCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  const [showFavConfirm, setShowFavConfirm] = useState(false);
 
 
   // Queries
@@ -321,10 +322,12 @@ const isOwner =
             </div>
           )}
 
+
           <div className="profile-hero">
   <div className="hero-content">
     <div className="hero-title">
       <h1 className="business-name">{businessName}</h1>
+
       {hasRating && (
         <div className="hero-rating">
           ⭐ {roundedAvg.toFixed(1)} · {reviewsCount} reviews
@@ -332,17 +335,22 @@ const isOwner =
       )}
     </div>
 
+    {/* Favorite action – iOS style */}
     <button
-  onClick={toggleFavorite}
-  className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
-  aria-label={isFavorite ? "Remove from favorites" : "Save to favorites"}
-  data-tooltip={isFavorite ? "Remove from favorites" : "Save to favorites"}
->
-  {isFavorite ? "❤️" : "🤍"}
-</button>
-    
+      onClick={toggleFavorite}
+      className={`favorite-action ${isFavorite ? "favorited" : ""}`}
+      aria-label={isFavorite ? "Remove from favorites" : "Save to favorites"}
+    >
+      <span className="favorite-icon">
+        {isFavorite ? "❤️" : "🤍"}
+      </span>
+      <span className="favorite-text">
+        {isFavorite ? "Saved to favorites" : "Save to favorites"}
+      </span>
+    </button>
   </div>
 </div>
+
 
 
           <div className="about-phone" style={{ marginBottom: "1rem" }}>
