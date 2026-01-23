@@ -1,31 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import API from "@api";
 import FaqTab from "../FaqTab";
 
-export default function FaqSection({ currentUser, renderTopBar }) {
-  const [faqs, setFaqs] = useState([]);
+export default function FaqSection({
+  faqs,
+  setFaqs,
+  currentUser,
+  renderTopBar,
+}) {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    API.get("/business/my/faqs")
-      .then((res) => {
-        const faqsArr = Array.isArray(res.data)
-          ? res.data
-          : Array.isArray(res.data?.faqs)
-          ? res.data.faqs
-          : [];
-        setFaqs(faqsArr);
-      })
-      .catch((err) =>
-        console.error("❌ Error loading FAQs:", err)
-      );
-  }, []);
-
   const businessId = currentUser?._id;
-  const hasFaqs = faqs.length > 0;
+  const hasFaqs = Array.isArray(faqs) && faqs.length > 0;
 
   return (
     <>
@@ -47,7 +34,7 @@ export default function FaqSection({ currentUser, renderTopBar }) {
           isPreview={false}
         />
 
-        {/* ✅ CTA מחוץ ל־FaqTab */}
+        {/* 👀 CTA – עכשיו זה יעבוד */}
         {hasFaqs && businessId && (
           <button
             type="button"
