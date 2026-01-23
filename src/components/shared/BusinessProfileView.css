@@ -100,11 +100,40 @@ html, body, #root {
 }
 
 .favorite-btn {
-  background: transparent;
-  border: none;
-  font-size: 1.6rem;
+  position: absolute;
+  right: 0;                 /* 🇺🇸 צד ימין */
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+
+  background: #fff;
+  border: 1px solid #eee;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.3rem;
   cursor: pointer;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+
+.favorite-btn:hover {
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.favorite-btn.favorited {
+  background: #fff0f3;
+  border-color: #ffccd5;
+}
+
+
 
 /* =========================
    About Section
