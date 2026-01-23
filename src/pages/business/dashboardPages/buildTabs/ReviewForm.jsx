@@ -1,21 +1,22 @@
 import React, { useState } from "react";
 import jwtDecode from "jwt-decode";
 import "./ReviewForm.css";
+import Icon from "@/components/UI/Icon";
 
 /* =========================
-   Rating configuration
+   Rating configuration (SVG)
 ========================= */
 const PRIMARY_FIELDS = [
-  { key: "experience", label: "🎉 Overall experience", required: true },
-  { key: "service", label: "🤝 Service", required: true },
-  { key: "professional", label: "💼 Professionalism", required: true },
+  { key: "experience", label: "Overall experience", icon: "overall", required: true },
+  { key: "service", label: "Service", icon: "service", required: true },
+  { key: "professional", label: "Professionalism", icon: "professionalism", required: true },
 ];
 
 const OPTIONAL_FIELDS = [
-  { key: "timing", label: "⏰ Timeliness" },
-  { key: "availability", label: "📞 Availability" },
-  { key: "value", label: "💰 Value for money" },
-  { key: "goal", label: "🎯 Goal achievement" },
+  { key: "timing", label: "Timeliness", icon: "timeliness" },
+  { key: "availability", label: "Availability", icon: "availability" },
+  { key: "value", label: "Value for money", icon: "valueForMoney" },
+  { key: "goal", label: "Goal achievement", icon: "goalAchievement" },
 ];
 
 /* =========================
@@ -82,7 +83,7 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Not authenticated");
 
-      const decoded = jwtDecode(token);
+      jwtDecode(token); // שמירה על הלוגיקה הקיימת
 
       const reviewData = {
         comment: text.trim(),
@@ -121,12 +122,16 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
 
   return (
     <form className="review-form improved" onSubmit={handleSubmit}>
-      <h3>📝 Leave a review</h3>
+      <h3>Leave a review</h3>
 
       {/* PRIMARY */}
-      {PRIMARY_FIELDS.map(({ key, label }) => (
+      {PRIMARY_FIELDS.map(({ key, label, icon }) => (
         <div key={key} className="rating-row">
-          <label>{label}</label>
+          <label className="rating-label">
+            <Icon name={icon} size={16} />
+            <span>{label}</span>
+          </label>
+
           <StarRating
             value={ratings[key] || 0}
             onChange={(v) => handleRatingChange(key, v)}
@@ -144,9 +149,13 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
       </button>
 
       {showMore &&
-        OPTIONAL_FIELDS.map(({ key, label }) => (
+        OPTIONAL_FIELDS.map(({ key, label, icon }) => (
           <div key={key} className="rating-row optional">
-            <label>{label}</label>
+            <label className="rating-label">
+              <Icon name={icon} size={16} />
+              <span>{label}</span>
+            </label>
+
             <StarRating
               value={ratings[key] || 0}
               onChange={(v) => handleRatingChange(key, v)}
@@ -156,7 +165,7 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
 
       {/* COMMENT */}
       <label className="review-label">
-        ✍️ What stood out the most? <span>(optional)</span>
+        What stood out the most? <span>(optional)</span>
       </label>
       <textarea
         value={text}
@@ -168,7 +177,8 @@ const ReviewForm = ({ businessId, socket, onSuccess }) => {
 
       {/* AVERAGE */}
       <div className="average-box">
-        ⭐ <strong>{average}</strong>
+        <Icon name="rating" size={18} />
+        <strong>{average}</strong>
         <span>Based on your ratings</span>
       </div>
 
