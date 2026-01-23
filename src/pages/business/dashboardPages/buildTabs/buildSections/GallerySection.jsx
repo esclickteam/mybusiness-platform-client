@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import ImageLoader from "@components/ImageLoader";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import "./GallerySection.css";
 
 export default function GallerySection({
@@ -8,7 +7,6 @@ export default function GallerySection({
   galleryInputRef,
   handleGalleryChange,
   handleDeleteImage,
-  setGalleryOrder,
   isSaving,
   renderTopBar,
 
@@ -49,20 +47,6 @@ export default function GallerySection({
   }, [images.length]);
 
   /* =========================
-     Drag reorder
-  ========================= */
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const items = Array.from(images);
-    const [moved] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, moved);
-
-    setImages(items);
-    setGalleryOrder(items);
-  };
-
-  /* =========================
      Delete image
   ========================= */
   const onDelete = (publicId) => {
@@ -92,7 +76,7 @@ export default function GallerySection({
           onChange={handleGalleryChange}
         />
 
-        {/* Dropzone */}
+        {/* Upload area */}
         <div
           className={`gallery-dropzone ${isSaving ? "disabled" : ""}`}
           onClick={() => !isSaving && galleryInputRef.current?.click()}
@@ -100,71 +84,42 @@ export default function GallerySection({
           <div className="dropzone-inner">
             <span className="icon">📸</span>
             <div className="text">
-              <strong>Drag & drop images here</strong>
-              <span>or click to upload</span>
+              <strong>Click to upload images</strong>
+              <span>You can upload multiple images</span>
             </div>
           </div>
         </div>
 
         {/* Gallery grid (edit) */}
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable
-            droppableId="gallery"
-            isDropDisabled={Boolean(isSaving)}
-          >
-            {(provided) => (
-              <div
-                className="gallery-grid-container edit"
-                ref={provided.innerRef}
-                {...provided.droppableProps}
+        <div className="gallery-grid-container edit">
+          {images.length === 0 && (
+            <div className="gallery-empty">
+              No images in the gallery yet
+            </div>
+          )}
+
+          {images.map(({ preview, publicId }) => (
+            <div
+              key={publicId}
+              className="gallery-item-wrapper image-wrapper"
+            >
+              <img
+                src={preview}
+                alt=""
+                className="gallery-img"
+              />
+
+              <button
+                className="delete-btn"
+                onClick={() => onDelete(publicId)}
+                disabled={isSaving}
+                title="Remove image"
               >
-                {images.length === 0 && (
-                  <div className="gallery-empty">
-                    No images in the gallery yet
-                  </div>
-                )}
-
-                {images.map(({ preview, publicId }, index) => (
-                  <Draggable
-                    key={publicId}
-                    draggableId={publicId}
-                    index={index}
-                    isDragDisabled={Boolean(isSaving)}
-                  >
-                    {(provided) => (
-                      <div
-                        className="gallery-item-wrapper image-wrapper"
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <img
-                          src={preview}
-                          alt=""
-                          className="gallery-img"
-                          draggable={false}
-                        />
-
-                        <button
-                          className="delete-btn"
-                          onClick={() => onDelete(publicId)}
-                          disabled={isSaving}
-                          title="Remove image"
-                        >
-                          🗑️
-                        </button>
-
-                        <div className="drag-hint">Drag to reorder</div>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+                🗑️
+              </button>
+            </div>
+          ))}
+        </div>
 
         {/* Saving overlay */}
         {isSaving && (
@@ -202,7 +157,10 @@ export default function GallerySection({
                 key={publicId}
                 className="gallery-item-wrapper image-wrapper"
               >
-                <ImageLoader src={preview} className="gallery-img" />
+                <ImageLoader
+                  src={preview}
+                  className="gallery-img"
+                />
               </div>
             ))
           ) : (
