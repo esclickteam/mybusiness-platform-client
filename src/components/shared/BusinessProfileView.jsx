@@ -105,14 +105,25 @@ const [currentTab, setCurrentTab] = useState(initialTab);
   enabled: !!bizId
 });
 
-  // Sync data to state
-  useEffect(() => {
-    if (!data) return;
-    setFaqs(data.faqs || []);
-    setServices(data.services || []);
-    setProfileViewsCount(data.views_count || 0);
-    setIsFavorite(user?.favorites?.includes(bizId) || false);
-  }, [data, user, bizId]);
+ // Sync data to state
+useEffect(() => {
+  if (!data || !user) return;
+
+  setFaqs(data.faqs || []);
+  setServices(data.services || []);
+  setProfileViewsCount(data.views_count || 0);
+
+  const favoriteIds = (user.favorites || []).map(f =>
+    typeof f === "string" ? f : f._id
+  );
+
+setIsFavorite(prev => {
+  const next = favoriteIds.includes(bizId);
+  return prev === next ? prev : next;
+});
+}, [data, user, bizId]);
+
+
 
   useEffect(() => {
     if (!workHoursData) return;
@@ -210,49 +221,36 @@ useEffect(() => {
 
   try {
     if (isFavorite) {
-      await API.delete(`/users/favorites/${bizId}`, {
-        withCredentials: true,
-      });
+      await API.delete(`/users/favorites/${bizId}`, { withCredentials: true });
 
-      setUser(prev => {
-        if (!prev) return prev;
-        const updated = {
-          ...prev,
-          favorites: (prev.favorites || []).filter(id => id !== bizId),
-        };
-        localStorage.setItem(
-          "businessDetails",
-          JSON.stringify(updated)
-        );
-        return updated;
-      });
+      setUser(prev => ({
+        ...prev,
+        favorites: (prev.favorites || []).filter(f =>
+          (typeof f === "string" ? f : f._id) !== bizId
+        ),
+      }));
 
       setIsFavorite(false);
     } else {
-      await API.post(`/users/favorites/${bizId}`, null, {
-        withCredentials: true,
-      });
+      await API.post(`/users/favorites/${bizId}`, null, { withCredentials: true });
 
-      setUser(prev => {
-        if (!prev) return prev;
-        const updated = {
-          ...prev,
-          favorites: [...(prev.favorites || []), bizId],
-        };
-        localStorage.setItem(
-          "businessDetails",
-          JSON.stringify(updated)
-        );
-        return updated;
-      });
+      setUser(prev => ({
+        ...prev,
+        favorites: [
+  ...(prev.favorites || []),
+  { _id: bizId }
+],
+
+      }));
 
       setIsFavorite(true);
     }
-  } catch (err) {
-    console.error("Error toggling favorite:", err);
-    alert("An error occurred");
+  } catch (error) {
+    console.error("Error toggling favorite:", error);
+    alert("An error occurred, please try again");
   }
 };
+
 
 
   
