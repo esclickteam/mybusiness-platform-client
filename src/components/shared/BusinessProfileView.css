@@ -73,6 +73,8 @@ html, body, #root {
 ========================= */
 .profile-hero {
   position: relative;
+  width: 100%;
+  max-width: 900px; /* אותו רוחב של הפרופיל */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -102,7 +104,7 @@ html, body, #root {
 .favorite-btn {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 12px;
 
   width: 44px;
   height: 44px;
