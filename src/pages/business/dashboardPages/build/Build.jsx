@@ -615,14 +615,19 @@ window.dispatchEvent(new Event("business-profile-updated"));
       case "Gallery":
         return (
           <GallerySection
-            businessDetails={businessDetails}
-            galleryInputRef={galleryInputRef}
-            handleGalleryChange={handleGalleryChange}
-            handleDeleteImage={handleDeleteGalleryImage}
-            setGalleryOrder={setGalleryOrder}
-            handleEditImage={handleEditImage}
-            renderTopBar={renderTopBar}
-          />
+  businessDetails={businessDetails}
+  galleryInputRef={galleryInputRef}
+  handleGalleryChange={handleGalleryChange}
+  handleDeleteImage={handleDeleteGalleryImage}
+  setGalleryOrder={setGalleryOrder}
+  handleEditImage={handleEditImage}
+  renderTopBar={renderTopBar}
+  isSaving={isSaving}
+
+  /* ⭐ החלק החסר */
+  showViewProfile={showViewProfile}
+  navigate={navigate}
+/>
         );
       case "Reviews":
         return (
