@@ -264,3 +264,31 @@ hr {
     font-size: 13.5px;
   }
 }
+
+/* =============================
+   VIEW PUBLIC PROFILE CTA
+============================= */
+
+.view-profile-btn {
+  margin-top: 32px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #7b5cff, #9a7cff);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+
+  box-shadow: 0 10px 24px rgba(123, 92, 255, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.view-profile-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(123, 92, 255, 0.35);
+}
+
+.view-profile-btn:active {
+  transform: scale(0.97);
+}
