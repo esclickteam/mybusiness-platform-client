@@ -1,45 +1,57 @@
 /* =========================
-   TAB LAYOUT
+   LAYOUT
 ========================= */
 
-.tab-layout {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 24px;
-  align-items: start;
+.build-wrapper {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2.5rem;
+
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2.5rem;
+
+  background: #f6f7fb;
+  box-sizing: border-box;
 }
 
 /* =========================
-   LEFT – FORM COLUMN
-========================= */
-
-.form-column {
-  position: relative;
-  padding: 24px;
-}
-
-/* =========================
-   RIGHT – PREVIEW COLUMN
-   (מיקום בלבד, לא כרטיס)
+   PREVIEW COLUMN (RIGHT)
 ========================= */
 
 .preview-column {
-  position: sticky;
-  top: 24px;
+  flex: 0 0 440px;
+  max-width: 440px;
+
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 1.5rem 1.5rem 3rem;
+
+  box-shadow:
+    0 22px 48px rgba(92, 45, 145, 0.18),
+    0 6px 14px rgba(0, 0, 0, 0.04);
+
+  border: 1px solid rgba(92, 45, 145, 0.12);
 }
 
 /* =========================
-   PREVIEW CARD (כרטיס זהה ל-Main)
+   FORM COLUMN (LEFT)
 ========================= */
 
-.preview-card {
-  background: #fff;
-  border-radius: 28px;
-  padding: 32px 28px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.form-column {
+  flex: 1 1 520px;
+  max-width: 760px;
+  min-width: 300px;
+
+  background: #ffffff;
+  padding: 2.25rem;
+  border-radius: 24px;
+
+  box-shadow:
+    0 26px 56px rgba(92, 45, 145, 0.14),
+    0 6px 16px rgba(0,0,0,0.06);
 }
 
 /* =========================
@@ -163,12 +175,8 @@
   transform: scale(1);
 }
 
-.delete-btn:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
-
 /* =========================
-   EMPTY STATE
+   EMPTY / STATES
 ========================= */
 
 .gallery-empty {
@@ -208,15 +216,17 @@
 }
 
 /* =========================
-   MOBILE
+   RESPONSIVE
 ========================= */
 
 @media (max-width: 768px) {
-  .tab-layout {
-    grid-template-columns: 1fr;
+  .build-wrapper {
+    flex-direction: column;
+    padding: 1.25rem;
   }
 
-  .preview-column {
-    position: static;
+  .preview-column,
+  .form-column {
+    max-width: 100%;
   }
 }
