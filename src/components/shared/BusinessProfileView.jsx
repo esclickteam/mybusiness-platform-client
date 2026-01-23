@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/socketContext";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link, useSearchParams } from "react-router-dom";
+import Icon from "@/components/ui/Icon";
 
 
 import "react-calendar/dist/Calendar.css";
@@ -385,12 +386,36 @@ const isOwner =
 
 
 
-          <div className="about-phone" style={{ marginBottom: "1rem" }}>
-            {category && <p><strong>🏷️ Category:</strong> {category}</p>}
-            {description && <p><strong>📝 Description:</strong> {description}</p>}
-            {phone && <p><strong>📞 Phone:</strong> {phone}</p>}
-            {city && <p><strong>🏙️ City:</strong> {city}</p>}
-          </div>
+          <div className="about-phone">
+  {category && (
+    <p>
+      <Icon name="category" />
+      <strong>Category:</strong> {category}
+    </p>
+  )}
+
+  {description && (
+    <p>
+      <Icon name="description" />
+      <strong>Description:</strong> {description}
+    </p>
+  )}
+
+  {phone && (
+    <p>
+      <Icon name="phone" />
+      <strong>Phone:</strong> {phone}
+    </p>
+  )}
+
+  {city && (
+    <p>
+      <Icon name="city" />
+      <strong>City:</strong> {city}
+    </p>
+  )}
+</div>
+
 
           {hasRating && (
   <div

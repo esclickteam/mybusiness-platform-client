@@ -168,7 +168,14 @@ html, body, #root {
 }
 
 .about-phone p {
-  margin: 0.35rem 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.about-phone svg {
+  flex-shrink: 0;
+  opacity: 0.85;
 }
 
 /* =========================
