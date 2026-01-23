@@ -15,8 +15,6 @@ export default function FaqSection({ currentUser, renderTopBar }) {
   useEffect(() => {
     API.get("/business/my/faqs")
       .then((res) => {
-        // Support both response types:
-        // { faqs: [...] } OR direct array
         const faqsArr = Array.isArray(res.data)
           ? res.data
           : Array.isArray(res.data?.faqs)
@@ -35,20 +33,7 @@ export default function FaqSection({ currentUser, renderTopBar }) {
   return (
     <>
       {/* =========================
-         LEFT – EDIT
-      ========================= */}
-      <div className="form-column">
-        <FaqTab
-          faqs={faqs}
-          setFaqs={setFaqs}
-          isPreview={false}
-          navigate={navigate}
-          businessId={businessId}
-        />
-      </div>
-
-      {/* =========================
-         RIGHT – PREVIEW
+         RIGHT – PREVIEW (כרטיס)
       ========================= */}
       <div className="preview-column">
         {renderTopBar && renderTopBar()}
@@ -57,6 +42,19 @@ export default function FaqSection({ currentUser, renderTopBar }) {
           faqs={faqs}
           setFaqs={() => {}}
           isPreview={true}
+          navigate={navigate}
+          businessId={businessId}
+        />
+      </div>
+
+      {/* =========================
+         LEFT – EDIT (טופס)
+      ========================= */}
+      <div className="form-column">
+        <FaqTab
+          faqs={faqs}
+          setFaqs={setFaqs}
+          isPreview={false}
           navigate={navigate}
           businessId={businessId}
         />
