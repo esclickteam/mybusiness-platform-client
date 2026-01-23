@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./ReviewCard.css";
 
-
 /* ===========================
    ⭐ Star display (compact)
 =========================== */
@@ -15,7 +14,7 @@ const StarDisplay = ({ rating, size = 14 }) => {
   while (stars.length < 5) stars.push("☆");
 
   return (
-    <span style={{ color: "#f59e0b", fontSize: size }}>
+    <span style={{ color: "#f5b301", fontSize: size }}>
       {stars.join("")}
     </span>
   );
@@ -59,13 +58,21 @@ export default function ReviewCard({ review }) {
     <div className="review-card">
       {/* ===== Header ===== */}
       <div className="review-header">
-        <div className="review-average">
-          ⭐ {average.toFixed(1)}
+        <div>
+          <div className="review-author-name">
+            {review.client?.name || review.client || "Anonymous"}
+          </div>
+
+          <div className="review-score-line">
+            <StarDisplay rating={average} size={16} />
+            <span className="review-score">
+              {average.toFixed(1)} / 5
+            </span>
+          </div>
         </div>
 
-        <div className="review-meta">
-          <StarDisplay rating={average} size={16} />
-          <div className="review-date">{date}</div>
+        <div className="review-date">
+          📅 {date}
         </div>
       </div>
 
@@ -76,43 +83,38 @@ export default function ReviewCard({ review }) {
         </div>
       )}
 
-      {/* ===== Author ===== */}
-      <div className="review-author">
-        — {review.client?.name || review.client || "Anonymous"}
-      </div>
-
       {/* ===== Toggle ===== */}
       {Object.keys(ratings).length > 0 && (
         <button
           className="review-toggle"
           onClick={() => setShowDetails(!showDetails)}
         >
-          {showDetails ? "Hide rating details" : "Show rating details"}
+          {showDetails ? "Hide details ▲" : "Show details ▼"}
         </button>
       )}
 
       {/* ===== Details ===== */}
       {showDetails && (
-        <div className="rating-details">
-          {Object.entries(ratings).map(([key, val]) => (
-            <div key={key} className="rating-row">
-              <div className="rating-label">
-                {ratingLabels[key] || key}
-              </div>
+        <>
+          <hr className="review-divider" />
 
-              <div className="rating-bar">
-                <div
-                  className="rating-bar-fill"
-                  style={{ width: `${(val / 5) * 100}%` }}
-                />
-              </div>
+          <div className="review-details">
+            {Object.entries(ratings).map(([key, val]) => (
+              <div key={key} className="review-detail-row">
+                <div className="review-detail-label">
+                  {ratingLabels[key] || key}
+                </div>
 
-              <div className="rating-value">
-                {val.toFixed(1)}
+                <div className="review-detail-stars">
+                  <StarDisplay rating={val} size={14} />
+                  <span className="review-detail-score">
+                    ({val.toFixed(1)})
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
