@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./ReviewCard.css";
+import Icon from "@/components/UI/Icon";
 
 /* ===========================
    ⭐ Star display (compact)
@@ -21,16 +22,16 @@ const StarDisplay = ({ rating, size = 14 }) => {
 };
 
 /* ===========================
-   Labels
+   Labels + Icons (SVG)
 =========================== */
 const ratingLabels = {
-  service: "Service 🤝",
-  professionalism: "Professionalism 💼",
-  timeliness: "Timeliness ⏰",
-  availability: "Availability 📞",
-  valueForMoney: "Value for money 💰",
-  goalAchievement: "Goal achievement 🎯",
-  overall: "Overall experience 🎉",
+  service: { label: "Service", icon: "rating" },
+  professionalism: { label: "Professionalism", icon: "rating" },
+  timeliness: { label: "Timeliness", icon: "rating" },
+  availability: { label: "Availability", icon: "phone" },
+  valueForMoney: { label: "Value for money", icon: "rating" },
+  goalAchievement: { label: "Goal achievement", icon: "rating" },
+  overall: { label: "Overall experience", icon: "rating" },
 };
 
 /* ===========================
@@ -72,7 +73,8 @@ export default function ReviewCard({ review }) {
         </div>
 
         <div className="review-date">
-          📅 {date}
+          <Icon name="rating" size={14} />
+          <span>{date}</span>
         </div>
       </div>
 
@@ -99,20 +101,28 @@ export default function ReviewCard({ review }) {
           <hr className="review-divider" />
 
           <div className="review-details">
-            {Object.entries(ratings).map(([key, val]) => (
-              <div key={key} className="review-detail-row">
-                <div className="review-detail-label">
-                  {ratingLabels[key] || key}
-                </div>
+            {Object.entries(ratings).map(([key, val]) => {
+              const meta = ratingLabels[key] || {
+                label: key,
+                icon: "rating",
+              };
 
-                <div className="review-detail-stars">
-                  <StarDisplay rating={val} size={14} />
-                  <span className="review-detail-score">
-                    ({val.toFixed(1)})
-                  </span>
+              return (
+                <div key={key} className="review-detail-row">
+                  <div className="review-detail-label">
+                    <Icon name={meta.icon} size={16} />
+                    <span>{meta.label}</span>
+                  </div>
+
+                  <div className="review-detail-stars">
+                    <StarDisplay rating={val} size={14} />
+                    <span className="review-detail-score">
+                      ({val.toFixed(1)})
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       )}
