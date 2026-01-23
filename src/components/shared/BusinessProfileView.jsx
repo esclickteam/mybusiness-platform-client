@@ -34,7 +34,7 @@ const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/bu
 }
 
 export default function BusinessProfileView() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const { businessId: paramId } = useParams();
   const [searchParams] = useSearchParams();
   const socket = useSocket();
