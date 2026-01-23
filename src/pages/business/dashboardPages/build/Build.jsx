@@ -608,6 +608,7 @@ window.dispatchEvent(new Event("business-profile-updated"));
     logoInputRef={logoInputRef}
     mainImagesInputRef={mainImagesInputRef}
     isSaving={isSaving}
+    showViewProfile={showViewProfile}
 />
 
         );
