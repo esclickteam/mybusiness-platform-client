@@ -28,34 +28,19 @@ export default function ShopAndCalendar({
   return (
     <div className="build-wrapper">
       {/* =========================
-         RIGHT – PREVIEW CARD
+         RIGHT – PROFILE PREVIEW
       ========================= */}
       <div className="preview-column">
         {renderTopBar?.()}
-
-        <h3 className="section-title">Services & Availability</h3>
-
-        <div className="shop-preview">
-          {safeServices.length > 0 ? (
-            safeServices.map((service) => (
-              <div key={service._id} className="service-preview-item">
-                <span className="service-name">{service.name}</span>
-                {service.price && (
-                  <span className="service-price">${service.price}</span>
-                )}
-              </div>
-            ))
-          ) : (
-            <p className="no-data">No services added yet</p>
-          )}
-        </div>
       </div>
 
       {/* =========================
-         LEFT – EDIT / SETTINGS
+         LEFT – ACTIONS ONLY
       ========================= */}
       <div className="form-column">
-        <h3 className="section-title">Manage Services & Calendar</h3>
+        <h2 className="section-title">
+          Manage Services & Calendar
+        </h2>
 
         {!isPreview && (
           <div className="edit-links-container">
