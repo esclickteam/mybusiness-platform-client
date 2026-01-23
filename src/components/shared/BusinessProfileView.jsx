@@ -333,11 +333,14 @@ const isOwner =
     </div>
 
     <button
-      onClick={toggleFavorite}
-      className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
-    >
-      {isFavorite ? "❤️" : "🤍"}
-    </button>
+  onClick={toggleFavorite}
+  className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
+  aria-label={isFavorite ? "Remove from favorites" : "Save to favorites"}
+  data-tooltip={isFavorite ? "Remove from favorites" : "Save to favorites"}
+>
+  {isFavorite ? "❤️" : "🤍"}
+</button>
+    
   </div>
 </div>
 

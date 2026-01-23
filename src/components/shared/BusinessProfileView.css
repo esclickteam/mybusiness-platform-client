@@ -125,6 +125,50 @@ html, body, #root {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* Tooltip */
+.favorite-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 8px);
+
+  transform: translateY(-50%);
+  white-space: nowrap;
+
+  background: rgba(40, 40, 40, 0.9);
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+/* חץ קטן */
+.favorite-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 2px);
+
+  transform: translateY(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent transparent rgba(40, 40, 40, 0.9);
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+/* Hover */
+.favorite-btn:hover::after,
+.favorite-btn:hover::before {
+  opacity: 1;
+}
+
 .favorite-btn:hover {
   transform: scale(1.08);
   box-shadow: 0 6px 18px rgba(0,0,0,0.16);
