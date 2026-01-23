@@ -46,6 +46,7 @@ export default function GallerySection({
 
   const hasImages = images.length > 0;
 
+
   return (
   <div className="tab-layout">
     {/* LEFT */}
@@ -113,20 +114,25 @@ export default function GallerySection({
 
     {/* RIGHT */}
     <div className="preview-column">
-      {renderTopBar?.()}
+      <div className="preview-card">
+        {renderTopBar?.()}
 
-      <h3 className="section-title">Our Gallery</h3>
+        <h3 className="section-title">Our Gallery</h3>
 
-      <div className="gallery-grid-container view">
-        {hasImages ? (
-          images.map(({ preview, publicId }) => (
-            <div key={publicId} className="gallery-item-wrapper image-wrapper">
-              <ImageLoader src={preview} className="gallery-img" />
-            </div>
-          ))
-        ) : (
-          <p className="no-data">No images in the gallery</p>
-        )}
+        <div className="gallery-grid-container view">
+          {hasImages ? (
+            images.map(({ preview, publicId }) => (
+              <div
+                key={publicId}
+                className="gallery-item-wrapper image-wrapper"
+              >
+                <ImageLoader src={preview} className="gallery-img" />
+              </div>
+            ))
+          ) : (
+            <p className="no-data">No images in the gallery</p>
+          )}
+        </div>
       </div>
     </div>
   </div>
