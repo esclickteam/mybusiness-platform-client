@@ -72,11 +72,11 @@ html, body, #root {
    HERO
 ========================= */
 .profile-hero {
-  display: flex;
-  justify-content: center;   /* 👈 מרכז */
-  align-items: center;
-  margin-bottom: 24px;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 32px;
 }
 
 .hero-title {
@@ -101,9 +101,8 @@ html, body, #root {
 
 .favorite-btn {
   position: absolute;
-  right: 0;                 /* 🇺🇸 צד ימין */
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  right: 0;
 
   width: 44px;
   height: 44px;
@@ -111,6 +110,7 @@ html, body, #root {
 
   background: #fff;
   border: 1px solid #eee;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 
   display: flex;
   align-items: center;
@@ -118,19 +118,17 @@ html, body, #root {
 
   font-size: 1.3rem;
   cursor: pointer;
-
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .favorite-btn:hover {
-  transform: translateY(-50%) scale(1.08);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.16);
 }
 
 .favorite-btn.favorited {
-  background: #fff0f3;
-  border-color: #ffccd5;
+  background: #f5edff;
+  border-color: #c9b6ff;
 }
 
 

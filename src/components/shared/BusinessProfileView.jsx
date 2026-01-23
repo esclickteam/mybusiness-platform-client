@@ -322,7 +322,7 @@ const isOwner =
           )}
 
           <div className="profile-hero">
-  <div className="hero-title">
+  <div className="hero-center">
     <h1 className="business-name">{businessName}</h1>
 
     {hasRating && (
