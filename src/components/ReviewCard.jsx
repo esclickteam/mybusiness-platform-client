@@ -25,13 +25,13 @@ const StarDisplay = ({ rating, size = 14 }) => {
    Labels + Icons (SVG)
 =========================== */
 const ratingLabels = {
-  service: { label: "Service", icon: "rating" },
-  professionalism: { label: "Professionalism", icon: "rating" },
-  timeliness: { label: "Timeliness", icon: "rating" },
-  availability: { label: "Availability", icon: "phone" },
-  valueForMoney: { label: "Value for money", icon: "rating" },
-  goalAchievement: { label: "Goal achievement", icon: "rating" },
-  overall: { label: "Overall experience", icon: "rating" },
+  service: { label: "Service", icon: "service" },
+  professionalism: { label: "Professionalism", icon: "professionalism" },
+  timeliness: { label: "Timeliness", icon: "timeliness" },
+  availability: { label: "Availability", icon: "availability" },
+  valueForMoney: { label: "Value for money", icon: "valueForMoney" },
+  goalAchievement: { label: "Goal achievement", icon: "goalAchievement" },
+  overall: { label: "Overall experience", icon: "overall" },
 };
 
 /* ===========================
