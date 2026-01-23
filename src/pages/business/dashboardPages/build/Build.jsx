@@ -248,11 +248,11 @@ export default function Build() {
   // עדכון מידי של תצוגה
   setBusinessDetails((prev) => ({
   ...prev,
-  logo: {
-    preview: previewUrl,           // מציג מיידית
-    publicId: prev.logoId || null, // שומר ID עד שיהיה חדש מהשרת
-  },
+  gallery: [...prev.gallery, ...tempPreviews],
+  galleryImageIds: [...prev.galleryImageIds, ...tempPreviews.map(() => null)],
 }));
+
+setShowViewProfile(true); // ⭐ הוספה
 
 // 🔥 שולח לכל האתר שהעסק עודכן — הפרופיל הציבורי מתרענן לבד
 window.dispatchEvent(new Event("business-profile-updated"));
