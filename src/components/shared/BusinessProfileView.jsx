@@ -322,7 +322,7 @@ const isOwner =
           )}
 
           <div className="profile-hero">
-  <div className="hero-center">
+  <div className="hero-title">
     <h1 className="business-name">{businessName}</h1>
 
     {hasRating && (
@@ -332,15 +332,12 @@ const isOwner =
     )}
   </div>
 
-  {["customer", "user", "client"].includes(user?.role) && (
-    <button
-      onClick={toggleFavorite}
-      className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
-      aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-    >
-      {isFavorite ? "❤️" : "🤍"}
-    </button>
-  )}
+  <button
+    onClick={toggleFavorite}
+    className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
+  >
+    {isFavorite ? "❤️" : "🤍"}
+  </button>
 </div>
 
 
