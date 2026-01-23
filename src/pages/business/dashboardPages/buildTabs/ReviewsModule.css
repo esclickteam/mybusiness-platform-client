@@ -1,314 +1,177 @@
-/* CSS מעוצב ומעודכן ל-ReviewsModule */
-
+/* =========================
+   WRAPPER
+========================= */
 .reviews-tab {
-  padding: 2rem;
-  background-color: #fdfbff;
-  border-radius: 16px;
-  animation: fadeIn 0.4s ease-in-out;
-  padding-bottom: 4rem;
-  max-width: 900px;
+  width: 100%;
+  max-width: 960px;
   margin: 0 auto;
+  padding: 1rem 0 3rem;
 }
 
 .section-title {
-  font-size: 2.2rem;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
-  color: #5e2ca5;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
   text-align: center;
 }
 
-.review-count {
-  margin-bottom: 1.5rem;
-  color: #555;
-  text-align: center;
-}
-
-.review-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.add-review-btn {
-  background-color: #a78bfa;
-  color: white;
-  padding: 0.6rem 1rem;
-  border-radius: 10px;
-  border: none;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+/* =========================
+   CTA
+========================= */
+.primary-cta {
   display: block;
-  margin: 0 auto 1.5rem auto;
-}
-
-.add-review-btn:hover {
-  background-color: #925ff0;
-}
-
-.breakdown {
-  margin: 1rem 0 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  max-width: 400px;
-  margin-inline: auto;
-}
-
-.breakdown-line {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-  color: #555;
-}
-
-.overall-average {
-  text-align: center;
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #5e2ca5;
-  margin-bottom: 0.8rem;
-}
-
-.bar-bg {
-  flex: 1;
-  height: 10px;
-  background: #ddd;
+  margin: 0.5rem auto 1.5rem;
+  padding: 10px 22px;
   border-radius: 999px;
-  overflow: hidden;
-  position: relative;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.bar-fill {
-  height: 100%;
-  background-color: #a78bfa;
-  transition: width 0.3s ease;
-  border-radius: 999px;
+.primary-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
-.review-card.enhanced {
-  background: #faf6ff;
-  padding: 1.5rem;
-  border-radius: 14px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* =========================
+   REVIEW LIST
+========================= */
+.review-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 1.5rem;
 }
 
-.review-card.enhanced:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+/* =========================
+   REVIEW CARD
+========================= */
+.review-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.review-rating-line {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #333;
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
 }
 
+/* Example */
+.review-card.example {
+  background: #faf7ff;
+  border: 1px dashed #c9b8ff;
+}
+
+/* =========================
+   HEADER
+========================= */
 .review-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
 }
 
-.review-meta {
+.review-date {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+/* =========================
+   RATING LINE
+========================= */
+.review-rating {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: #777;
+  gap: 10px;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .example-tag {
-  background-color: #f9d5ff;
-  color: #7a229b;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ede4ff;
+  color: #6a11cb;
 }
 
+/* =========================
+   COMMENT
+========================= */
 .review-comment {
-  line-height: 1.6;
-  margin-bottom: 1rem;
-  color: #222;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #444;
+  margin-bottom: 8px;
+  max-height: 4.5em;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
 }
 
-.read-more {
+.review-comment.open {
+  max-height: 500px;
+}
+
+/* =========================
+   TOGGLE
+========================= */
+.toggle-review-btn {
   background: none;
   border: none;
-  color: #6c2bd9;
-  font-weight: bold;
+  color: #6a11cb;
+  font-size: 0.85rem;
   cursor: pointer;
-  margin-left: 0.5rem;
+  padding: 0;
+  margin-bottom: 6px;
 }
 
-.review-details-box {
-  border-top: 1px solid #ddd;
-  padding-top: 1rem;
-  margin-top: 1rem;
+.toggle-review-btn:hover {
+  text-decoration: underline;
 }
 
-.review-detail-row {
+/* =========================
+   DETAILS
+========================= */
+.review-details {
+  margin-top: 10px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  animation: fadeSlide 0.25s ease;
+}
+
+.detail-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  color: #333;
 }
 
+/* =========================
+   STARS
+========================= */
 .stars {
-  color: #ffc107;
-  font-size: 1rem;
+  color: #f5b400;
+  letter-spacing: 1px;
 }
 
-.info-box {
-  background: linear-gradient(135deg, #f7ecff, #fff);
-  border: 1px solid #e1d9f3;
-  padding: 1.5rem;
-  border-radius: 16px;
-  margin: 0 auto 2rem auto;
-  line-height: 1.6;
-  color: #444;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
-  max-width: 800px;
-}
-
-.info-box h3 {
-  margin-bottom: 0.8rem;
-  color: #5e2ca5;
-  font-size: 1.4rem;
-}
-
-.review-info-list {
-  margin: 1.5rem 0;
-  padding-left: 1.2rem;
-  list-style-type: none;
-}
-
-.review-info-list li {
-  margin-bottom: 0.6rem;
-  position: relative;
-  padding-left: 2rem;
-  font-weight: 500;
-}
-
-.review-info-list li::before {
-  position: absolute;
-  right: 0;
-  font-size: 1.2rem;
-}
-
-.parameter-table-box {
-  margin-top: 2rem;
-}
-
-.rating-parameters-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.rating-parameters-table th,
-.rating-parameters-table td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: left;
-}
-
-.rating-parameters-table th {
-  background-color: #f0f0f0;
-}
-
-.section-subtitle {
-  color: #4a148c;
-  font-size: 1.2rem;
-  margin-bottom: 0.8rem;
-  text-align: center;
-}
-
-.styled-toggle {
-  background-color: #ece3ff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 1rem;
-  cursor: pointer;
-  font-weight: 600;
-  color: #5e2ca5;
-  margin: 0 auto 1rem auto;
-  display: block;
-  transition: background-color 0.2s ease;
-}
-
-.reviews-tab.fade-slide {
+/* =========================
+   ANIMATION
+========================= */
+@keyframes fadeSlide {
+  from {
     opacity: 0;
-    transform: translateY(10px);
-    animation: fadeInSlide 0.4s ease forwards;
+    transform: translateY(-6px);
   }
-  
-  @keyframes fadeInSlide {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-
-.styled-toggle:hover {
-  background-color: #d6c6fa;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 768px) {
-  .reviews-tab {
-    padding: 1.5rem;
-  }
-  .section-title {
-    font-size: 1.6rem;
-  }
-  .info-box {
-    padding: 1rem;
-    border-radius: 12px;
-  }
-  .review-card.enhanced {
-    padding: 1rem;
-  }
-}
-/* רספונסיביות מלאה לפי קטגוריות רוחב מסך */
-
-@media (max-width: 480px) { /* Extra Small - טלפונים קטנים */
-  .section-title { font-size: 1.4rem; }
-  .review-card.enhanced { padding: 1rem; }
-  .info-box { padding: 0.8rem; font-size: 0.9rem; }
-  .review-comment { font-size: 0.95rem; }
-}
-
-@media (min-width: 481px) and (max-width: 768px) { /* Small - טלפונים סטנדרטיים */
-  .section-title { font-size: 1.6rem; }
-  .review-card.enhanced { padding: 1.2rem; }
-  .info-box { padding: 1rem; }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) { /* Medium - טאבלטים */
-  .section-title { font-size: 1.8rem; }
-  .review-card.enhanced { padding: 1.5rem; }
-  .info-box { padding: 1.2rem; }
-}
-
-@media (min-width: 1025px) and (max-width: 1440px) { /* Large - מחשבים סטנדרטיים */
-  .section-title { font-size: 2rem; }
-  .review-card.enhanced { padding: 1.8rem; }
-  .info-box { padding: 1.4rem; }
-}
-
-@media (min-width: 1441px) { /* Extra Large - מסכים רחבים/4K */
-  .section-title { font-size: 2.4rem; }
-  .review-card.enhanced { padding: 2rem; }
-  .info-box { padding: 1.6rem; max-width: 1000px; }
 }

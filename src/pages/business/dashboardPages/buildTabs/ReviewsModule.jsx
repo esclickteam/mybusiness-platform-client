@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
-import "../build/Build.css";
 import "./ReviewsModule.css";
-
 import StarRatingChart from "./StarRatingChart";
 import ReviewForm from "./ReviewForm";
 
+/* =========================
+   PARAMETERS
+========================= */
 const PARAMETERS = {
   service: "🤝 Service",
   professional: "💼 Professionalism",
@@ -17,23 +18,13 @@ const PARAMETERS = {
   experience: "🎉 Overall Experience",
 };
 
-const PARAMETER_EXPLANATIONS = {
-  goal: "Did the customer get what they wanted?",
-  service: "Was the communication pleasant and respectful?",
-  professional: "How skilled, experienced, and precise was the service?",
-  timing: "Did they arrive and complete the work on time?",
-  availability: "Was the response quick and accessible?",
-  value: "Did the price match the value received?",
-  experience: "Overall satisfaction level",
-};
-
 const exampleReviews = [
   {
     id: "ex1",
     user: "Shira",
     date: "03/10/2025",
     comment:
-      "Excellent service experience! They responded quickly, the price was fair, and they met the deadlines. Definitely recommend to friends!",
+      "Excellent service experience! They responded quickly, the price was fair, and they met the deadlines.",
     service: "5",
     professional: "4.5",
     timing: "5",
@@ -43,82 +34,70 @@ const exampleReviews = [
     experience: "4.5",
     isExample: true,
   },
-  {
-    id: "ex2",
-    user: "Alon",
-    date: "03/06/2025",
-    comment:
-      "Very professional and patient service, with clear explanations. Highly recommended for anyone looking for truly quality service!",
-    service: "5",
-    professional: "5",
-    timing: "5",
-    availability: "4.5",
-    value: "5",
-    goal: "5",
-    experience: "5",
-    isExample: true,
-  },
 ];
 
+/* =========================
+   STAR DISPLAY
+========================= */
 const StarDisplay = ({ rating }) => {
   const full = Math.floor(rating);
   const half = rating % 1 >= 0.5;
-  const stars = [];
-  for (let i = 0; i < full; i++) stars.push("★");
-  if (half) stars.push("✩");
-  while (stars.length < 5) stars.push("☆");
-  return <span className="stars">{stars.join("")}</span>;
+  return (
+    <span className="stars">
+      {"★".repeat(full)}
+      {half && "✩"}
+      {"☆".repeat(5 - full - (half ? 1 : 0))}
+    </span>
+  );
 };
 
-const ReviewCard = ({ review = {} }) => {
-  const [showMore, setShowMore] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
-  const text = review.comment || review.text || "";
-  const isLong = text.length > 120;
+/* =========================
+   REVIEW CARD
+========================= */
+const ReviewCard = ({ review }) => {
+  const [open, setOpen] = useState(false);
 
-  const average = Object.keys(PARAMETERS)
+  const values = Object.keys(PARAMETERS)
     .map((k) => parseFloat(review[k]))
-    .filter((v) => !isNaN(v))
-    .reduce((a, b, _, arr) => (a + b) / arr.length, 0);
+    .filter((v) => !isNaN(v));
+
+  const avg = values.length
+    ? values.reduce((a, b) => a + b, 0) / values.length
+    : null;
 
   return (
-    <div className="review-card enhanced">
-      <div className="review-rating-line">
-        ⭐ {average ? average.toFixed(1) : "—"} / 5
-      </div>
+    <div className={`review-card ${review.isExample ? "example" : ""}`}>
       <div className="review-header">
         <strong>{review.user || "Anonymous"}</strong>
-        <div className="review-meta">
-          {review.date && <span className="review-date">🗓️ {review.date}</span>}
-          {review.isExample && (
-            <span className="example-tag">⭐ Example Review</span>
-          )}
-        </div>
+        <span className="review-date">🗓️ {review.date}</span>
       </div>
-      <p className={`review-comment ${showMore ? "expanded" : "truncated"}`}>
-        {showMore || !isLong ? text : text.slice(0, 120) + "..."}
-        {isLong && !showMore && (
-          <button className="read-more" onClick={() => setShowMore(true)}>
-            Read More
-          </button>
-        )}
+
+      <div className="review-rating">
+        ⭐ {avg?.toFixed(1) || "—"} / 5
+        {review.isExample && <span className="example-tag">Example</span>}
+      </div>
+
+      <p className={`review-comment ${open ? "open" : ""}`}>
+        {review.comment}
       </p>
+
       <button
-        className="styled-toggle"
-        onClick={() => setShowDetails(!showDetails)}
+        className="toggle-review-btn"
+        onClick={() => setOpen(!open)}
       >
-        {showDetails ? "Hide Rating Details 🔽" : "📋 Rating Details"}
+        {open ? "Hide details ▲" : "View full review ▼"}
       </button>
-      {showDetails && (
-        <div className="review-details-box">
+
+      {open && (
+        <div className="review-details">
           {Object.entries(PARAMETERS).map(
             ([key, label]) =>
-              review[key] !== undefined && (
-                <div key={key} className="review-detail-row">
+              review[key] && (
+                <div key={key} className="detail-row">
                   <span>{label}</span>
                   <span>
-                    <StarDisplay rating={parseFloat(review[key])} /> (
-                    {review[key]})
+                    <StarDisplay rating={parseFloat(review[key])} />{" "}
+                    ({review[key]})
                   </span>
                 </div>
               )
@@ -129,164 +108,79 @@ const ReviewCard = ({ review = {} }) => {
   );
 };
 
-const ParameterTable = () => (
-  <div className="parameter-table-box">
-    <h3 className="section-subtitle">📋 Recommended Rating Parameters</h3>
-    <table className="rating-parameters-table">
-      <thead>
-        <tr>
-          <th>Parameter</th>
-          <th>Short Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        {Object.entries(PARAMETERS).map(([key, label]) => (
-          <tr key={key}>
-            <td>{label}</td>
-            <td>{PARAMETER_EXPLANATIONS[key]}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
-
-const ReviewsModule = ({
+/* =========================
+   MAIN MODULE
+========================= */
+export default function ReviewsModule({
   reviews = [],
-  isPreview,
   currentUser,
   businessId,
   socket,
-}) => {
-  const [showReviewForm, setShowReviewForm] = useState(false);
+  isPreview,
+}) {
+  const [showForm, setShowForm] = useState(false);
   const [canReview, setCanReview] = useState(false);
   const [liveReviews, setLiveReviews] = useState(reviews);
-  const contentRef = useRef(null);
 
-  // 🔹 Permission check
+  /* Permission */
   useEffect(() => {
-    const checkReviewPermission = async () => {
-      try {
-        if (currentUser && businessId) {
-          const res = await axios.get(
-            `/reviews/can-review?businessId=${businessId}`
-          );
-          setCanReview(res.data.canReview);
-        }
-      } catch (err) {
-        console.error("Error checking review permission:", err);
-        setCanReview(false);
-      }
-    };
-
-    checkReviewPermission();
+    if (!currentUser || !businessId) return;
+    axios
+      .get(`/reviews/can-review?businessId=${businessId}`)
+      .then((r) => setCanReview(r.data.canReview))
+      .catch(() => setCanReview(false));
   }, [currentUser, businessId]);
 
-  // 🔥 LIVE REAL-TIME REVIEWS
+  /* Live socket */
   useEffect(() => {
     if (!socket || !businessId) return;
 
-    // ⬅️ תואם לשרת
     socket.emit("joinBusinessRoom", businessId);
+    socket.on("review:new", (review) =>
+      setLiveReviews((prev) => [review, ...prev])
+    );
 
-    const handleNewReview = (review) => {
-      console.log("🔥 LIVE REVIEW ARRIVED:", review);
-      setLiveReviews((prev) => [review, ...prev]);
-    };
-
-    // ⬅️ תואם לשרת
-    socket.on("review:new", handleNewReview);
-
-    return () => {
-      socket.off("review:new", handleNewReview);
-    };
+    return () => socket.off("review:new");
   }, [socket, businessId]);
 
-  const computedReviews =
+  const displayReviews =
     liveReviews.length > 0
-      ? liveReviews.map((r) => {
-          const values = Object.keys(PARAMETERS)
-            .map((k) => parseFloat(r[k]))
-            .filter((v) => typeof v === "number" && !isNaN(v));
-          const avg = values.length
-            ? values.reduce((a, b) => a + b, 0) / values.length
-            : typeof r.rating === "number"
-            ? r.rating
-            : undefined;
-          return { ...r, average: avg };
-        })
+      ? liveReviews
       : currentUser
       ? exampleReviews
       : [];
 
   return (
-    <div className="reviews-tab fade-slide" ref={contentRef}>
-      {isPreview ? (
-        <>
-          <h2 className="section-title">What People Think About Us</h2>
+    <div className="reviews-tab">
+      <h2 className="section-title">⭐ Customer Reviews</h2>
 
-          {currentUser && canReview && (
-            <>
-              <button
-                className="add-review-btn"
-                onClick={() => setShowReviewForm(true)}
-              >
-                💬 Add Review
-              </button>
-
-              {showReviewForm && (
-                <div className="review-form-wrapper">
-                  <ReviewForm
-                    businessId={businessId}
-                    socket={socket}
-                    onSuccess={(review) => {
-                      setLiveReviews((prev) => [review, ...prev]);
-                      setShowReviewForm(false);
-                    }}
-                  />
-                </div>
-              )}
-            </>
-          )}
-
-          {currentUser && !canReview && (
-            <p className="info-text">
-              🛑 To leave a review, you must place an order with this business.
-            </p>
-          )}
-
-          <p className="review-count">
-            {computedReviews.length} Reviews written for this business
-          </p>
-          <StarRatingChart reviews={computedReviews} />
-
-          <div className="review-list">
-            {computedReviews.map((r) => (
-              <ReviewCard key={r.id || r.user} review={r} />
-            ))}
-          </div>
-        </>
-      ) : (
-        <>
-          <h2 className="section-title">🎨 Reviews Page</h2>
-          <div className="info-box">
-            <h3>🧾 How Reviews Work</h3>
-            <p>
-              The reviews on this page are written by real customers who
-              experienced your service – they cannot be edited or deleted by you.
-            </p>
-            <ul className="review-info-list">
-              <li>✅ Each review includes an overall score from 1 to 5</li>
-              <li>✅ You can also display detailed parameter ratings</li>
-              <li>✅ Customers can add free text</li>
-              <li>🚩 Problematic reviews can be reported</li>
-            </ul>
-            <ParameterTable />
-          </div>
-        </>
+      {currentUser && canReview && (
+        <button
+          className="primary-cta"
+          onClick={() => setShowForm(true)}
+        >
+          💬 Write a review
+        </button>
       )}
+
+      {showForm && (
+        <ReviewForm
+          businessId={businessId}
+          socket={socket}
+          onSuccess={(review) => {
+            setLiveReviews((prev) => [review, ...prev]);
+            setShowForm(false);
+          }}
+        />
+      )}
+
+      <StarRatingChart reviews={displayReviews} />
+
+      <div className="review-list">
+        {displayReviews.map((r) => (
+          <ReviewCard key={r.id || r.user} review={r} />
+        ))}
+      </div>
     </div>
   );
-};
-
-export default ReviewsModule;
+}
