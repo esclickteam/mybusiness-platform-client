@@ -20,7 +20,7 @@ export default function GallerySection({
   const [images, setImages] = useState([]);
 
   /* =========================
-     Sync from parent (once / update)
+     Sync from parent
   ========================= */
   useEffect(() => {
     const gallery = businessDetails.gallery || [];
@@ -45,14 +45,14 @@ export default function GallerySection({
     items.splice(result.destination.index, 0, moved);
 
     setImages(items);
-    setGalleryOrder(items); // sync to parent
+    setGalleryOrder(items);
   };
 
   /* =========================
      Delete with soft confirm
   ========================= */
   const onDelete = (publicId) => {
-    const ok = window.confirm("למחוק את התמונה מהגלריה?");
+    const ok = window.confirm("Remove this image from the gallery?");
     if (!ok) return;
 
     setImages((prev) => prev.filter((img) => img.publicId !== publicId));
@@ -86,8 +86,8 @@ export default function GallerySection({
           <div className="dropzone-inner">
             <span className="icon">📸</span>
             <div className="text">
-              <strong>גררי תמונות לכאן</strong>
-              <span>או לחצי להוספה</span>
+              <strong>Drag & drop images here</strong>
+              <span>or click to upload</span>
             </div>
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function GallerySection({
               >
                 {images.length === 0 && (
                   <div className="gallery-empty">
-                    אין תמונות בגלריה עדיין
+                    No images in the gallery yet
                   </div>
                 )}
 
@@ -131,12 +131,12 @@ export default function GallerySection({
                           className="delete-btn"
                           onClick={() => onDelete(publicId)}
                           disabled={isSaving}
-                          title="מחק תמונה"
+                          title="Remove image"
                         >
                           🗑️
                         </button>
 
-                        <div className="drag-hint">גרירה לסידור</div>
+                        <div className="drag-hint">Drag to reorder</div>
                       </div>
                     )}
                   </Draggable>
@@ -151,7 +151,7 @@ export default function GallerySection({
         {/* Saving overlay */}
         {isSaving && (
           <div className="gallery-saving-overlay">
-            שומר שינויים…
+            Saving changes…
           </div>
         )}
       </div>
