@@ -296,22 +296,17 @@ html, body, #root {
 }
 
 .gallery-grid {
-  display: grid;
+  display: grid !important;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
-
   padding: 16px;
 }
 
 .gallery-grid img {
   width: 100%;
-  aspect-ratio: 4 / 3;     /* 👈 שומר פרופורציות */
+  aspect-ratio: 4 / 3;
   object-fit: cover;
-
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-
-  transition: transform .2s ease, box-shadow .2s ease;
+  display: block;
 }
 
 .gallery-grid img:hover {
