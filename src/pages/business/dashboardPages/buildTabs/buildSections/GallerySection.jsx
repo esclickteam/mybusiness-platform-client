@@ -12,7 +12,7 @@ export default function GallerySection({
   isSaving,
   renderTopBar,
 
-  /* 🆕 navigation */
+  /* navigation */
   showViewProfile,
   navigate,
 }) {
@@ -22,7 +22,7 @@ export default function GallerySection({
      🖼 Local gallery state
   ========================= */
   const [images, setImages] = useState([]);
-  const [hasUploaded, setHasUploaded] = useState(false); // 🆕
+  const [hasUploaded, setHasUploaded] = useState(false);
 
   /* =========================
      Sync from parent
@@ -38,6 +38,15 @@ export default function GallerySection({
 
     setImages(mapped);
   }, [businessDetails.gallery, businessDetails.galleryImageIds]);
+
+  /* =========================
+     Detect successful upload
+  ========================= */
+  useEffect(() => {
+    if (images.length > 0) {
+      setHasUploaded(true);
+    }
+  }, [images.length]);
 
   /* =========================
      Drag reorder
@@ -80,10 +89,7 @@ export default function GallerySection({
           ref={galleryInputRef}
           style={{ display: "none" }}
           disabled={isSaving}
-          onChange={(e) => {
-            handleGalleryChange(e);
-            setHasUploaded(true); // 🆕 mark upload
-          }}
+          onChange={handleGalleryChange}
         />
 
         {/* Dropzone */}
@@ -102,7 +108,10 @@ export default function GallerySection({
 
         {/* Gallery grid (edit) */}
         <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="gallery">
+          <Droppable
+            droppableId="gallery"
+            isDropDisabled={Boolean(isSaving)}
+          >
             {(provided) => (
               <div
                 className="gallery-grid-container edit"
@@ -120,6 +129,7 @@ export default function GallerySection({
                     key={publicId}
                     draggableId={publicId}
                     index={index}
+                    isDragDisabled={Boolean(isSaving)}
                   >
                     {(provided) => (
                       <div
