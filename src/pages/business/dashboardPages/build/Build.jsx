@@ -248,11 +248,11 @@ export default function Build() {
   // עדכון מידי של תצוגה
   setBusinessDetails((prev) => ({
   ...prev,
-  gallery: [...prev.gallery, ...tempPreviews],
-  galleryImageIds: [...prev.galleryImageIds, ...tempPreviews.map(() => null)],
+  logo: {
+    preview: previewUrl,           // מציג מיידית
+    publicId: prev.logoId || null, // שומר ID עד שיהיה חדש מהשרת
+  },
 }));
-
-setShowViewProfile(true); // ⭐ הוספה
 
 // 🔥 שולח לכל האתר שהעסק עודכן — הפרופיל הציבורי מתרענן לבד
 window.dispatchEvent(new Event("business-profile-updated"));
@@ -602,7 +602,6 @@ window.dispatchEvent(new Event("business-profile-updated"));
 
     handleEditImage={openMainImageEdit}
     handleSave={handleSave}
-    showViewProfile={showViewProfile}
     navigate={navigate}
     currentUser={currentUser}
     renderTopBar={renderTopBar}
@@ -619,13 +618,8 @@ window.dispatchEvent(new Event("business-profile-updated"));
   galleryInputRef={galleryInputRef}
   handleGalleryChange={handleGalleryChange}
   handleDeleteImage={handleDeleteGalleryImage}
-  setGalleryOrder={setGalleryOrder}
-  handleEditImage={handleEditImage}
   renderTopBar={renderTopBar}
   isSaving={isSaving}
-
-  /* ⭐ החלק החסר */
-  showViewProfile={showViewProfile}
   navigate={navigate}
 />
         );

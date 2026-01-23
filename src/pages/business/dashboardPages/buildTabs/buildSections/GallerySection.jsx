@@ -9,9 +9,6 @@ export default function GallerySection({
   handleDeleteImage,
   isSaving,
   renderTopBar,
-
-  /* navigation */
-  showViewProfile,
   navigate,
 }) {
   const containerRef = useRef(null);
@@ -20,7 +17,6 @@ export default function GallerySection({
      🖼 Local gallery state
   ========================= */
   const [images, setImages] = useState([]);
-  const [hasUploaded, setHasUploaded] = useState(false);
 
   /* =========================
      Sync from parent
@@ -38,15 +34,6 @@ export default function GallerySection({
   }, [businessDetails.gallery, businessDetails.galleryImageIds]);
 
   /* =========================
-     Detect successful upload
-  ========================= */
-  useEffect(() => {
-    if (images.length > 0) {
-      setHasUploaded(true);
-    }
-  }, [images.length]);
-
-  /* =========================
      Delete image
   ========================= */
   const onDelete = (publicId) => {
@@ -56,6 +43,8 @@ export default function GallerySection({
     setImages((prev) => prev.filter((img) => img.publicId !== publicId));
     handleDeleteImage(publicId);
   };
+
+  const hasImages = images.length > 0;
 
   return (
     <>
@@ -92,7 +81,7 @@ export default function GallerySection({
 
         {/* Gallery grid (edit) */}
         <div className="gallery-grid-container edit">
-          {images.length === 0 && (
+          {!hasImages && (
             <div className="gallery-empty">
               No images in the gallery yet
             </div>
@@ -131,7 +120,7 @@ export default function GallerySection({
         {/* =========================
            👀 View Public Profile CTA
         ========================= */}
-        {showViewProfile && hasUploaded && images.length > 0 && (
+        {hasImages && !isSaving && (
           <button
             type="button"
             className="view-profile-btn"
@@ -151,7 +140,7 @@ export default function GallerySection({
         <h3 className="section-title">Our Gallery</h3>
 
         <div className="gallery-grid-container view">
-          {images.length > 0 ? (
+          {hasImages ? (
             images.map(({ preview, publicId }) => (
               <div
                 key={publicId}
