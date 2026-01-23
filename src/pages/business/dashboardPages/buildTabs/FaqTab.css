@@ -1,257 +1,266 @@
+/* =============================
+   FAQ TAB – BASE
+============================= */
+
 .faq-tab {
-  padding: 40px;
-  direction: rtl;
-  font-family: 'Heebo', sans-serif;
-  background: linear-gradient(135deg, #f7eaff, #eceeff);
-  border-radius: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px 8px 40px;
+  font-family: inherit;
 }
+
+.faq-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.faq-subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 24px 0 12px;
+}
+
+.faq-empty {
+  color: #777;
+  font-size: 14px;
+  padding: 12px;
+}
+
+/* =============================
+   ADD FORM
+============================= */
 
 .faq-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  align-items: center;
+  gap: 10px;
 }
 
 .faq-form input,
 .faq-form textarea {
-  background: #f9f9ff;
-  border: 1px solid #d4c4ef;
-  color: #333;
-  width: 100%;
-  max-width: 500px;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.faq-form textarea {
+  min-height: 90px;
+  resize: vertical;
 }
 
 .faq-form input:focus,
 .faq-form textarea:focus {
-  box-shadow: 0 0 0 2px #b388ff;
   outline: none;
+  border-color: #bfa97f;
+  box-shadow: 0 0 0 2px rgba(191, 169, 127, 0.15);
 }
 
 .faq-form button {
-  width: 160px;
-  text-align: center;
-  padding: 12px;
-  font-size: 16px;
-  background: linear-gradient(to right, #9b59b6, #8e44ad);
+  align-self: flex-start;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: none;
+  background: #c9b48f;
   color: #fff;
   font-weight: 600;
-  border: none;
-  border-radius: 12px;
   cursor: pointer;
-  transition: 0.2s ease-in-out;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  margin-top: 10px;
+  transition: background 0.2s, transform 0.1s;
 }
 
 .faq-form button:hover {
-  background: linear-gradient(to right, #8e44ad, #6c3483);
+  background: #bfa97f;
 }
+
+.faq-form button:active {
+  transform: scale(0.97);
+}
+
+hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+/* =============================
+   FAQ LIST
+============================= */
 
 .faq-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
+
+/* =============================
+   FAQ CARD
+============================= */
 
 .faq-card {
   position: relative;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 14px 16px;
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 
 .faq-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #e6dcc5;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
 }
+
+/* =============================
+   ACTIONS (hover only)
+============================= */
+
+.faq-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.faq-card:hover .faq-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.icon-btn {
+  border: none;
+  background: #f5f5f5;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.icon-btn:hover {
+  background: #eaeaea;
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+}
+
+.icon-btn.danger:hover {
+  background: #ffe5e5;
+}
+
+/* =============================
+   HEADER (Accordion)
+============================= */
 
 .faq-header {
-  font-size: 16px;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.toggle-answer-btn {
-  background: transparent;
-  border: none;
-  color: #7c3aed;
-  cursor: pointer;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.faq-footer-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.edit-btn,
-.delete-btn,
-.save-edit-btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 10px;
+  align-items: center;
+  justify-content: space-between;
   cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s ease;
+  gap: 12px;
 }
 
-.edit-btn {
-  background: #d1c4e9;
-  color: #4b0082;
+.faq-question {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
 }
 
-.edit-btn:hover {
-  background: #b39ddb;
+.faq-arrow {
+  font-size: 12px;
+  color: #888;
+  transition: transform 0.2s;
 }
 
-.delete-btn {
-  background: #ffcdd2;
-  color: #c62828;
+.faq-card.open .faq-arrow {
+  transform: rotate(180deg);
 }
 
-.delete-btn:hover {
-  background: #ef9a9a;
-}
+/* =============================
+   ANSWER
+============================= */
 
-.save-edit-btn {
-  background: #a5d6a7;
-  color: #1b5e20;
-  margin-top: 8px;
-}
-
-.save-edit-btn:hover {
-  background: #81c784;
-}
-
-.faq-actions-inline {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+.faq-answer {
   margin-top: 12px;
-  direction: rtl;
-}
-
-.inline-btn {
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
   font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  line-height: 1.6;
+  color: #444;
 }
 
-.inline-btn.edit {
-  background-color: #fff3cd;
-  color: #856404;
+/* =============================
+   EDIT MODE
+============================= */
+
+.faq-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.inline-btn.edit:hover {
-  background-color: #ffe082;
+.faq-edit input,
+.faq-edit textarea {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
 }
 
-.inline-btn.delete {
-  background-color: #f8d7da;
-  color: #721c24;
+.faq-edit textarea {
+  min-height: 80px;
+  resize: vertical;
 }
 
-.inline-btn.delete:hover {
-  background-color: #f5c6cb;
+.edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
 }
 
-.faq-answer-wrapper {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
-}
-
-.faq-answer-wrapper.open {
-  max-height: 500px;
-}
-
-/* 💾 כפתור שמור הכל */
-.save-all-button {
-  background: linear-gradient(to right, #9b59b6, #8e44ad);
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: bold;
+.edit-actions button {
+  padding: 6px 16px;
+  border-radius: 999px;
   border: none;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s ease;
 }
 
-.save-all-button:hover {
-  background: linear-gradient(to right, #8e44ad, #6c3483);
+.edit-actions button:first-child {
+  background: #c9b48f;
+  color: #fff;
 }
-/* רספונסיביות מלאה לתצוגת FAQ */
 
-@media (max-width: 1024px) {
-  .faq-tab {
-    padding: 30px 20px;
-  }
-
-  .faq-form input,
-  .faq-form textarea {
-    max-width: 100%;
-  }
-
-  .faq-form button,
-  .save-all-button {
-    width: 100%;
-    max-width: 250px;
-  }
-
-  .faq-footer-actions,
-  .faq-actions-inline {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+.edit-actions button.secondary {
+  background: #f3f3f3;
+  color: #444;
 }
+
+.edit-actions button:hover {
+  opacity: 0.9;
+}
+
+/* =============================
+   RESPONSIVE
+============================= */
 
 @media (max-width: 600px) {
-  .faq-tab {
-    padding: 20px 15px;
+  .faq-card {
+    padding: 12px;
   }
 
-  .faq-header {
-    font-size: 15px;
-  }
-
-  .faq-form input,
-  .faq-form textarea {
+  .faq-question {
     font-size: 14px;
-    padding: 8px;
   }
 
-  .faq-form button,
-  .save-all-button {
-    font-size: 15px;
-    padding: 10px 16px;
-  }
-
-  .edit-btn,
-  .delete-btn,
-  .save-edit-btn,
-  .inline-btn {
-    font-size: 13px;
-    padding: 6px 10px;
-  }
-
-  .faq-footer-actions,
-  .faq-actions-inline {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+  .faq-answer {
+    font-size: 13.5px;
   }
 }

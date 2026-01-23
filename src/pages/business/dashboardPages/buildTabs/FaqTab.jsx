@@ -1,203 +1,213 @@
-// src/components/FaqTab.jsx
 "use client";
 
-import React, { useState } from 'react';
-import '../build/Build.css';
-import './FaqTab.css';
-import API from '@api';
+import React, { useEffect, useState } from "react";
+import "../build/Build.css";
+import "./FaqTab.css";
+import API from "@api";
 
-// Safe default value for setFaqs!
 const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
-  // DEBUG: log what you received on mount
-  React.useEffect(() => {
-    console.log("FaqTab mount! faqs:", faqs, "setFaqs typeof:", typeof setFaqs);
+  useEffect(() => {
     if (typeof setFaqs !== "function") {
-      console.error("❌ setFaqs passed to FaqTab is not a function!", setFaqs);
+      console.error("❌ setFaqs is not a function", setFaqs);
     }
-  }, [faqs, setFaqs]);
+  }, [setFaqs]);
 
   const [openAnswers, setOpenAnswers] = useState([]);
-  const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
+  const [newFaq, setNewFaq] = useState({ question: "", answer: "" });
   const [editFaqId, setEditFaqId] = useState(null);
-  const [editedFaq, setEditedFaq] = useState({ question: '', answer: '' });
+  const [editedFaq, setEditedFaq] = useState({ question: "", answer: "" });
 
-  // Ensure faqs is always an array
   const safeFaqs = Array.isArray(faqs) ? faqs : [];
 
+  /* =====================
+     Accordion toggle
+  ===================== */
   const toggleAnswer = (id) => {
-    setOpenAnswers(prev =>
-      prev.includes(id)
-        ? prev.filter(x => x !== id)
-        : [...prev, id]
+    setOpenAnswers((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewFaq(prev => ({ ...prev, [name]: value }));
-  };
-
+  /* =====================
+     Add FAQ
+  ===================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { question, answer } = newFaq;
-    if (!question.trim() || !answer.trim()) return;
+    if (!newFaq.question.trim() || !newFaq.answer.trim()) return;
 
     try {
-      const response = await API.post('/business/my/faqs', { question, answer });
-      const added = response.data.faq ?? response.data;
-      setFaqs(prev => [added, ...(prev || [])]); // safeguard: prev always array
-      setNewFaq({ question: '', answer: '' });
+      const res = await API.post("/business/my/faqs", newFaq);
+      const added = res.data.faq ?? res.data;
+
+      setFaqs((prev) => [added, ...(prev || [])]);
+      setNewFaq({ question: "", answer: "" });
     } catch (err) {
-      console.error('❌ Error adding FAQ:', err);
+      console.error("❌ Error adding FAQ:", err);
     }
   };
 
+  /* =====================
+     Delete FAQ
+  ===================== */
   const handleDelete = async (id) => {
+    if (!confirm("Delete this question?")) return;
+
     try {
       await API.delete(`/business/my/faqs/${id}`);
-      setFaqs(prev => (prev || []).filter(faq => (faq.faqId ?? faq._id) !== id));
+      setFaqs((prev) =>
+        (prev || []).filter((f) => (f.faqId ?? f._id) !== id)
+      );
     } catch (err) {
-      console.error('❌ Error deleting FAQ:', err);
+      console.error("❌ Error deleting FAQ:", err);
     }
   };
 
+  /* =====================
+     Save edit
+  ===================== */
   const handleSaveEdit = async (id) => {
-    const { question, answer } = editedFaq;
-    if (!question.trim() || !answer.trim()) return;
+    if (!editedFaq.question.trim() || !editedFaq.answer.trim()) return;
 
     try {
-      const response = await API.put(`/business/my/faqs/${id}`, { question, answer });
-      const updated = response.data.faq ?? response.data;
-      setFaqs(prev =>
-        (prev || []).map(faq =>
-          (faq.faqId ?? faq._id) === id ? updated : faq
+      const res = await API.put(`/business/my/faqs/${id}`, editedFaq);
+      const updated = res.data.faq ?? res.data;
+
+      setFaqs((prev) =>
+        (prev || []).map((f) =>
+          (f.faqId ?? f._id) === id ? updated : f
         )
       );
-      setEditFaqId(null);
-      setEditedFaq({ question: '', answer: '' });
-    } catch (err) {
-      console.error('❌ Error saving edit:', err);
-    }
-  };
 
-  const saveFaqsToServer = async () => {
-    try {
-      const payload = safeFaqs.map(f => ({
-        id: f.faqId ?? f._id,
-        question: f.question,
-        answer: f.answer
-      }));
-      await API.put('/business/my/faqs', { faqs: payload });
-      alert('✅ All FAQs saved!');
+      setEditFaqId(null);
+      setEditedFaq({ question: "", answer: "" });
     } catch (err) {
-      console.error('❌ Error saving:', err);
-      alert('❌ Error saving');
+      console.error("❌ Error saving edit:", err);
     }
   };
 
   return (
     <div className="faq-tab">
+      {/* ================= ADD ================= */}
       {!isPreview && (
         <>
-          <h2>Add Question and Answer</h2>
-          <form onSubmit={handleSubmit} className="faq-form">
+          <h2 className="faq-title">Add a new question</h2>
+
+          <form className="faq-form" onSubmit={handleSubmit}>
             <input
               type="text"
-              name="question"
               placeholder="Question"
               value={newFaq.question}
-              onChange={handleChange}
+              onChange={(e) =>
+                setNewFaq((p) => ({ ...p, question: e.target.value }))
+              }
             />
             <textarea
-              name="answer"
               placeholder="Answer"
               value={newFaq.answer}
-              onChange={handleChange}
+              onChange={(e) =>
+                setNewFaq((p) => ({ ...p, answer: e.target.value }))
+              }
             />
-            <button type="submit">Add</button>
+            <button type="submit">➕ Add FAQ</button>
           </form>
+
           <hr />
         </>
       )}
 
-      <h3>Questions & Answers</h3>
+      {/* ================= LIST ================= */}
+      <h3 className="faq-subtitle">Questions & Answers</h3>
+
       <div className="faq-list">
-        {safeFaqs.length === 0 ? (
-          <p>No questions yet</p>
-        ) : (
-          safeFaqs.map(faq => {
-            const id = faq.faqId ?? faq._id;
-            return (
-              <div key={id} className="faq-card">
-                {!isPreview && (
-                  <div className="faq-actions-inline">
-                    <button
-                      className="inline-btn edit"
-                      onClick={() => {
-                        setEditFaqId(id);
-                        setEditedFaq({ question: faq.question, answer: faq.answer });
-                      }}
-                    >
-                      ✏️ Edit
-                    </button>
-                    <button
-                      className="inline-btn delete"
-                      onClick={() => handleDelete(id)}
-                    >
-                      🗑️ Delete
-                    </button>
-                  </div>
-                )}
+        {safeFaqs.length === 0 && <p className="faq-empty">No questions yet</p>}
 
-                {editFaqId === id ? (
-                  <div className="faq-edit">
-                    <input
-                      type="text"
-                      value={editedFaq.question}
-                      onChange={e => setEditedFaq(prev => ({ ...prev, question: e.target.value }))}
-                      placeholder="Update question"
-                    />
-                    <textarea
-                      value={editedFaq.answer}
-                      onChange={e => setEditedFaq(prev => ({ ...prev, answer: e.target.value }))}
-                      placeholder="Update answer"
-                    />
+        {safeFaqs.map((faq) => {
+          const id = faq.faqId ?? faq._id;
+          const isOpen = openAnswers.includes(id);
+
+          return (
+            <div key={id} className={`faq-card ${isOpen ? "open" : ""}`}>
+              {/* Actions (hover only) */}
+              {!isPreview && editFaqId !== id && (
+                <div className="faq-actions">
+                  <button
+                    className="icon-btn"
+                    title="Edit"
+                    onClick={() => {
+                      setEditFaqId(id);
+                      setEditedFaq({
+                        question: faq.question,
+                        answer: faq.answer,
+                      });
+                    }}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="icon-btn danger"
+                    title="Delete"
+                    onClick={() => handleDelete(id)}
+                  >
+                    🗑️
+                  </button>
+                </div>
+              )}
+
+              {/* EDIT MODE */}
+              {editFaqId === id ? (
+                <div className="faq-edit">
+                  <input
+                    value={editedFaq.question}
+                    onChange={(e) =>
+                      setEditedFaq((p) => ({
+                        ...p,
+                        question: e.target.value,
+                      }))
+                    }
+                  />
+                  <textarea
+                    value={editedFaq.answer}
+                    onChange={(e) =>
+                      setEditedFaq((p) => ({
+                        ...p,
+                        answer: e.target.value,
+                      }))
+                    }
+                  />
+
+                  <div className="edit-actions">
+                    <button onClick={() => handleSaveEdit(id)}>💾 Save</button>
                     <button
-                      className="save-edit-btn"
-                      onClick={() => handleSaveEdit(id)}
+                      className="secondary"
+                      onClick={() => setEditFaqId(null)}
                     >
-                      💾 Save Edit
+                      Cancel
                     </button>
                   </div>
-                ) : (
-                  <>
-                    <div className="faq-header">
-                      <strong>Question:</strong> {faq.question}
-                    </div>
-                    <button
-                      onClick={() => toggleAnswer(id)}
-                      className="toggle-answer-btn"
-                    >
-                      {openAnswers.includes(id) ? 'Hide Answer' : 'Show Answer'}
-                    </button>
-                    {openAnswers.includes(id) && (
-                      <div className="faq-answer-wrapper open">
-                        <p><strong>Answer:</strong> {faq.answer}</p>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            );
-          })
-        )}
+                </div>
+              ) : (
+                <>
+                  {/* HEADER */}
+                  <div
+                    className="faq-header"
+                    onClick={() => toggleAnswer(id)}
+                  >
+                    <span className="faq-question">{faq.question}</span>
+                    <span className="faq-arrow">
+                      {isOpen ? "▲" : "▼"}
+                    </span>
+                  </div>
+
+                  {/* ANSWER */}
+                  {isOpen && (
+                    <div className="faq-answer">{faq.answer}</div>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
-
-      {!isPreview && safeFaqs.length > 0 && (
-        <button className="save-all-button" onClick={saveFaqsToServer}>
-          💾 Save All
-        </button>
-      )}
     </div>
   );
 };
