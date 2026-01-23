@@ -5,7 +5,13 @@ import "../build/Build.css";
 import "./FaqTab.css";
 import API from "@api";
 
-const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
+const FaqTab = ({
+  faqs = [],
+  setFaqs = () => {},
+  isPreview,
+  navigate,
+  businessId,
+}) => {
   useEffect(() => {
     if (typeof setFaqs !== "function") {
       console.error("❌ setFaqs is not a function", setFaqs);
@@ -119,7 +125,9 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
       <h3 className="faq-subtitle">Questions & Answers</h3>
 
       <div className="faq-list">
-        {safeFaqs.length === 0 && <p className="faq-empty">No questions yet</p>}
+        {safeFaqs.length === 0 && (
+          <p className="faq-empty">No questions yet</p>
+        )}
 
         {safeFaqs.map((faq) => {
           const id = faq.faqId ?? faq._id;
@@ -127,7 +135,7 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
 
           return (
             <div key={id} className={`faq-card ${isOpen ? "open" : ""}`}>
-              {/* Actions (hover only) */}
+              {/* Actions */}
               {!isPreview && editFaqId !== id && (
                 <div className="faq-actions">
                   <button
@@ -176,7 +184,9 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
                   />
 
                   <div className="edit-actions">
-                    <button onClick={() => handleSaveEdit(id)}>💾 Save</button>
+                    <button onClick={() => handleSaveEdit(id)}>
+                      💾 Save
+                    </button>
                     <button
                       className="secondary"
                       onClick={() => setEditFaqId(null)}
@@ -187,7 +197,6 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
                 </div>
               ) : (
                 <>
-                  {/* HEADER */}
                   <div
                     className="faq-header"
                     onClick={() => toggleAnswer(id)}
@@ -198,7 +207,6 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
                     </span>
                   </div>
 
-                  {/* ANSWER */}
                   {isOpen && (
                     <div className="faq-answer">{faq.answer}</div>
                   )}
@@ -208,6 +216,22 @@ const FaqTab = ({ faqs = [], setFaqs = () => {}, isPreview }) => {
           );
         })}
       </div>
+
+      {/* ================= VIEW PUBLIC PROFILE ================= */}
+      {!isPreview &&
+        safeFaqs.length > 0 &&
+        navigate &&
+        businessId && (
+          <button
+            type="button"
+            className="view-profile-btn"
+            onClick={() =>
+              navigate(`/business/${businessId}?tab=reviews`)
+            }
+          >
+            👀 View Public Profile
+          </button>
+        )}
     </div>
   );
 };
