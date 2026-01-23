@@ -337,17 +337,18 @@ const isOwner =
 
     {/* Favorite action – iOS style */}
     <button
-      onClick={toggleFavorite}
-      className={`favorite-action ${isFavorite ? "favorited" : ""}`}
-      aria-label={isFavorite ? "Remove from favorites" : "Save to favorites"}
-    >
-      <span className="favorite-icon">
-        {isFavorite ? "❤️" : "🤍"}
-      </span>
-      <span className="favorite-text">
-        {isFavorite ? "Saved to favorites" : "Save to favorites"}
-      </span>
-    </button>
+  onClick={toggleFavorite}
+  className={`favorite-action ${isFavorite ? "favorited" : ""}`}
+  aria-label={isFavorite ? "Remove from favorites" : "Save to favorites"}
+>
+  <span className="favorite-icon">
+    {isFavorite ? "❤️" : "🤍"}
+  </span>
+  <span className="favorite-text">
+    {isFavorite ? "Saved to favorites" : "Save to favorites"}
+  </span>
+</button>
+
   </div>
 </div>
 

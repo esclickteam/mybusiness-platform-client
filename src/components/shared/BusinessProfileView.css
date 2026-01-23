@@ -126,11 +126,11 @@ html, body, #root {
   transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
-button.favorite-action,
-button.favorite-action.favorited {
-  background: #fff !important;
+.favorite-action.favorited {
+  background: #f7f7f9;   /* אפור בהיר */
   border-color: #ddd;
 }
+
 
 .favorite-icon {
   font-size: 1.2rem;
