@@ -1,73 +1,64 @@
-/* === reset בסיסי ורקע כללי === */
+/* =========================
+   Base / Reset (LTR – US)
+========================= */
 html, body, #root {
-  background-color: #f5f5f5;
+  direction: ltr;
   margin: 0;
   padding: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  direction: rtl;
+  background-color: #f5f5f5;
 }
 
-/* === עמוד הפרופיל === */
+/* =========================
+   Page Layout
+========================= */
 .profile-page {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
   padding: 2rem 1rem;
+  min-height: 100vh;
   background: linear-gradient(135deg, #f0f4ff, #fefaff);
-  box-sizing: border-box;
 }
 
-/* === מיכל הראשי === */
 .business-profile-view.full-style {
   width: 100%;
-  max-width: 800px;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  box-shadow: none;
-  border: none;
+  max-width: 900px;
 }
-.business-profile-view.full-style .profile-inner {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-  padding: 0;
-  margin: 0 auto;
+
+.profile-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  overflow: visible;
 }
 
-/* === כפתור עריכה === */
+/* =========================
+   Edit Button
+========================= */
 .edit-profile-btn {
   align-self: flex-end;
-  padding: 0.4rem 1rem;
+  padding: 0.45rem 1rem;
   background-color: #b46af1;
   color: #fff;
-  border: none;
   border-radius: 8px;
   font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
   text-decoration: none;
-  user-select: none;
 }
 .edit-profile-btn:hover {
   background-color: #9a4ed0;
 }
 
-/* === לוגו ושם העסק === */
+/* =========================
+   Logo
+========================= */
 .profile-logo-wrapper {
   width: 96px;
   height: 96px;
   border-radius: 50%;
   background: #fff;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   overflow: hidden;
 }
 
@@ -75,61 +66,88 @@ html, body, #root {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
+
+/* =========================
+   HERO
+========================= */
+.profile-hero {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem auto;
+}
+
+.hero-title {
+  display: flex;
+  flex-direction: column;
+}
+
 .business-name {
-  font-size: 1.7rem;
+  margin: 0;
+  font-size: 1.8rem;
   font-weight: 700;
   color: #5c2d91;
 }
 
-/* === תיאור וטלפון === */
+.hero-rating {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.favorite-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+/* =========================
+   About Section
+========================= */
 .about-phone {
   text-align: center;
-  font-size: 1rem;
-  color: #555;
-  margin: 0.5rem 0;
   max-width: 700px;
-  word-break: break-word;
-}
-.about-phone p {
-  margin: 0.3rem 0;
+  color: #555;
 }
 
-/* === Overall Rating Banner === */
-.overall-rating {
+.about-phone p {
+  margin: 0.35rem 0;
+}
+
+/* =========================
+   Rating Summary
+========================= */
+.reviews-summary {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.reviews-average {
+  font-weight: 800;
+  font-size: 2rem;
+  color: #5c2d91;
   display: flex;
   align-items: center;
-  justify-content: center; /* מרכוז רגוע */
-  gap: 12px;
-
-  padding: 0.9rem 1.2rem;
-  margin: 1.8rem auto;
-
-  background: #f6f4ff;            /* קצת יותר רך */
-  border: 1px solid #e6ddff;
-  border-radius: 16px;
-
-  box-shadow: none;
-  user-select: none;
+  gap: 6px;
 }
 
-.overall-rating .big-score {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #5c2d91;
+.star {
+  color: gold;
 }
 
-.overall-rating .stars-inline {
-  font-size: 1.2rem;
+.reviews-count {
+  font-size: 0.95rem;
+  color: #777;
 }
 
-.overall-rating .count {
-  font-size: 0.9rem;
-  color: #7a6fb3;
-}
-
-/* === מחיצת טאבים === */
+/* =========================
+   Divider
+========================= */
 .profile-divider {
   width: 100%;
   border: none;
@@ -137,613 +155,175 @@ html, body, #root {
   margin: 1rem 0;
 }
 
-/* === טאבים === */
+/* =========================
+   Tabs (Navigation)
+========================= */
 .profile-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
   width: 100%;
   max-width: 720px;
-  margin: 0 auto 1.2rem;
-}
-.profile-tabs .tab {
-  width: 100%;
-  height: 52px;
-
   display: flex;
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-  padding: 0 12px;
-
-  border-radius: 14px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  line-height: 1.2;
-
-  white-space: normal; /* מאפשר שבירת שורה */
+  gap: 28px;
+  border-bottom: 1px solid #eee;
+  margin: 1.5rem auto 1rem;
 }
-.profile-tabs .tab:hover:not(.active) {
-  background: #e3d5ff;
+
+.profile-tabs .tab {
+  background: transparent;
+  border: none;
+  padding: 12px 0;
+  font-size: 15px;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
 }
+
+.profile-tabs .tab:hover {
+  color: #5c2d91;
+}
+
 .profile-tabs .tab.active {
-  background: #5c2d91;
-  box-shadow: none;
+  color: #5c2d91;
+  font-weight: 600;
+  border-bottom-color: #5c2d91;
 }
 
-/* === Tab Content Wrapper === */
+/* =========================
+   Tab Content
+========================= */
 .tab-content {
   width: 100%;
-  padding: 1rem;
-  background-color: transparent !important;
-  border-radius: 12px;
   max-width: 900px;
-  margin: 0 auto 1rem;
-  box-shadow: none !important;
+  margin: 0 auto;
 }
 
-/* === תמונות (ראשי וגלריה) === */
+/* =========================
+   Images (Main + Gallery)
+========================= */
 .public-main-images {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin: 1rem 0;
-  width: 100%;
 }
+
 .public-main-images img {
   width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  border: 3px solid #b46af1;
-  padding: 5px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   cursor: pointer;
 }
+
 .public-main-images img:hover {
-  transform: translateY(-2px);
+  transform: scale(1.04);
 }
 
-/* === ביקורות – מיכל הביקורות === */
+/* =========================
+   Reviews
+========================= */
 .reviews {
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
-  align-self: stretch;
 }
 
-/* === כותרת וכפתור בתוך טאב הביקורות === */
 .reviews-header {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto 1rem;
   display: flex;
-  justify-content: flex-end; /* מיושר לימין */
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
+
 .add-review-btn {
   padding: 0.6rem 1.2rem;
   background-color: #8c63ff;
   color: #fff;
-  border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
-  user-select: none;
 }
+
 .add-review-btn:hover {
   background-color: #6f3fcc;
-  transform: translateY(-1px);
 }
 
-/* === כרטיס ביקורת – רוחב מותאם === */
-.review-card.improved {
-  max-width: 600px;
-  margin: 0.5rem auto;
-  background: #fff;
-  border-left: 4px solid #b46af1;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
-  direction: rtl;
-}
-.review-card.improved:hover {
-  transform: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* === סגנונות כותרת כרטיס ביקורת === */
-.review-header.simple {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  flex-direction: row-reverse;
-}
-.author-info {
-  display: flex;
-  flex-direction: column;
-}
-.author-info .reviewer {
-  font-weight: bold;
-  font-size: 1.2rem;
-  color: #333;
-}
-.author-info .review-date {
-  font-size: 0.8rem;
-  color: #999;
-  margin-top: 0.2rem;
-}
-
-/* === סגנונות כוכבי דירוג בתוך כרטיס === */
-.score {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.score-number {
-  font-weight: bold;
-  color: #5e17eb;
-}
-.stars-inline {
-  font-size: 1rem;
-  color: #f5a623;
-}
-
-/* === תגובת תמצית === */
-.review-comment.simple {
-  margin: 0.75rem 0 0;
-  font-size: 0.95rem;
-  color: #444;
-  line-height: 1.4;
-}
-
-/* === שאלות ותשובות ציבורי (טאב FAQ) === */
+/* =========================
+   FAQ (Accordion)
+========================= */
 .faqs-public {
   width: 100%;
   max-width: 700px;
-  margin: 0 auto 1.5rem;
-  padding: 0;
-  direction: rtl;
+  margin: 0 auto;
 }
-.faq-card {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(150,90,220,0.08);
-  margin-bottom: 1rem;
-  padding: 1.1rem 1.5rem 0.7rem;
-  transition: box-shadow 0.2s, background 0.2s;
-  border-right: 4px solid #b46af1;
-  user-select: none;
+
+.faq-item {
+  border-bottom: 1px solid #eee;
+  padding: 14px 0;
 }
-.faq-card:hover {
-  box-shadow: 0 2px 10px rgba(90,40,180,0.08);
-  background: #faf6ff;
+
+.faq-question {
+  width: 100%;
+  background: none;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
 }
-.faq-q {
-  font-weight: bold;
-  color: #6d19d4;
-  font-size: 1.05rem;
-  margin-bottom: 0.4rem;
-}
-.faq-a {
-  color: #444;
-  font-size: 0.98rem;
-  margin-bottom: 0.1rem;
-  padding-left: 0.7rem;
+
+.faq-answer {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
   line-height: 1.5;
 }
 
-/* טקסט שאין נתונים */
-.no-data {
-  text-align: center;
-  color: #b8b8b8;
-  margin-top: 1.5rem;
-  font-size: 1.05rem;
-  user-select: none;
+/* =========================
+   Calendar
+========================= */
+.section-title {
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: #333;
 }
 
-/* רספונסיביות FAQ */
+.back-btn {
+  background: none;
+  border: none;
+  color: #7a23d0;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+/* =========================
+   States
+========================= */
+.no-data {
+  text-align: center;
+  color: #aaa;
+  margin-top: 1.5rem;
+}
+
+/* =========================
+   Responsive
+========================= */
 @media (max-width: 768px) {
   .public-main-images {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .profile-tabs {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .review-card.improved {
-    max-width: 100%;
-  }
-  .faqs-public, .faq-card {
-    max-width: 100%;
-    padding: 1rem 0.7rem 0.7rem;
+    gap: 18px;
   }
 }
 
-/* === כפתור חזור === */
-.back-btn {
-  align-self: flex-start;
-  margin-bottom: 1rem;
-  background-color: transparent;
-  border: none;
-  color: #7a23d0;
-  font-size: 1rem;
-  cursor: pointer;
-  font-weight: bold;
-  transition: color 0.2s, transform 0.2s;
-  user-select: none;
-}
-.back-btn:hover {
-  color: #5a15a5;
-  transform: translateX(-4px);
-}
-
-/* === חנות – תצוגת מוצרים בטאב חנות / יומן === */
-.public-shop {
-  width: 100%;
-  max-width: 950px;
-  margin: 0 auto;
-  padding-bottom: 2rem;
-}
-
-.products-list-public {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-top: 1.3rem;
-  margin-bottom: 1.2rem;
-}
-
-.product-card-public {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(110,60,200,0.10);
-  padding: 1.2rem 1rem 1rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: box-shadow 0.22s, transform 0.17s;
-  min-height: 290px;
-}
-
-.product-card-public:hover {
-  box-shadow: 0 4px 18px rgba(90, 23, 220, 0.16);
-  transform: translateY(-2px) scale(1.017);
-  background: #f8f3ff;
-}
-
-.product-image-public {
-  width: 110px;
-  height: 110px;
-  border-radius: 12px;
-  object-fit: cover;
-  margin-bottom: 0.65rem;
-  box-shadow: 0 1px 6px rgba(150,90,220,0.09);
-}
-
-.product-info-public {
-  width: 100%;
-  text-align: center;
-}
-
-.product-title {
-  margin: 0.4rem 0 0.2rem 0;
-  font-size: 1.18rem;
-  color: #5e17eb;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
-
-.product-price {
-  font-weight: bold;
-  color: #964fd6;
-  font-size: 1.07rem;
-  margin-bottom: 0.15rem;
-}
-
-.product-description {
-  color: #474747;
-  font-size: 1.01rem;
-  margin: 0.13rem 0 0.17rem 0;
-  line-height: 1.4;
-}
-
-.product-category {
-  color: #b06bfa;
-  font-size: 0.96rem;
-  margin-top: 0.02rem;
-}
-
-/* טקסט אין מוצרים */
-.no-data {
-  text-align: center;
-  color: #b8b8b8;
-  margin-top: 1.5rem;
-  font-size: 1.08rem;
-}
-
-/* רספונסיביות */
-@media (max-width: 900px) {
-  .products-list-public { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 600px) {
-  .products-list-public { grid-template-columns: 1fr; }
-  .product-card-public {
-    min-height: 180px;
-    padding: 1rem 0.5rem;
-  }
-}
-
-/* Booking Tab Styles */
-/* === Booking Tab Styles (מעודכן) === */
-.booking-tab {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-  max-width: 700px;
-  margin: 1rem auto;
-}
-
-/* === ServicesSelector === */
-.services-selector {
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* קטגוריות */
-.cat-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-  justify-content: center;
-}
-.cat-tabs button {
-  padding: 6px 12px;
-  border: none;
-  background: #f0eaff;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
-}
-.cat-tabs button:hover {
-  transform: translateY(-1px);
-}
-.cat-tabs button.active {
-  background: #b46af1;
-  color: #fff;
-}
-
-/* שדה חיפוש */
-.services-search {
-  width: 100%;
-  padding: 8px 12px;
-  margin-bottom: 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-/* גריד של כרטיסי שירות */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
-  gap: 12px;
-}
-.no-results {
-  grid-column: 1 / -1;
-  text-align: center;
-  color: #888;
-  margin: 16px 0;
-}
-
-/* === ServiceCard === */
-.service-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 12px;
-  background: #f5f2ff;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
-  text-align: center;
-}
-.service-card:hover {
-  transform: translateY(-2px);
-}
-.service-card.selected {
-  border-color: #b46af1;
-  box-shadow: 0 0 8px rgba(180,106,241,0.3);
-}
-.service-icon {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 8px;
-}
-.service-card h5 {
-  margin: 4px 0;
-  font-size: 1rem;
-  color: #333;
-}
-.service-card__desc {
-  font-size: 0.85rem;
-  color: #555;
-  margin-top: 4px;
-  line-height: 1.3;
-}
-
-/* רספונסיביות לכרטיסים */
-@media (max-width: 600px) {
-  .services-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 400px) {
-  .services-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.calendar-fullwidth {
-  width: 100%;
-  max-width: 700px;
-  margin: 1rem auto;
-  padding: 1rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-/* ביטול flex-grow ו-flex-basis על כפתורי הניווט */
-.calendar-fullwidth .react-calendar__navigation button {
-  /* ביטול כל תכונות flex כדי למנוע flex-grow ו-flex-basis */
-  flex: 0 0 auto !important;
-  width: auto !important;
-  min-width: auto !important;
-}
-
-.public-main-images img,
-.gallery img {
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-}
-
-.public-main-images img:hover,
-.gallery img:hover {
-  transform: scale(1.05);           /* הגדלה קלה בהובר */
-  box-shadow: 0 8px 20px rgba(92, 45, 145, 0.6); /* צל חזק יותר בהובר */
-}
-
-
-
-.reviews-average {
-  font-weight: 900;
-  font-size: 2.4rem;
-  color: #5c2d91;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.star {
-  color: gold;
-  font-size: 2.4rem;
-  filter: drop-shadow(0 0 3px #c9b61b);
-}
-
-.reviews-count {
-  font-weight: 400;
-  font-size: 1rem;
-  opacity: 0.7;
-  color: #7c57c9;
-}
-
-/* רספונסיביות נוספת למסכים קטנים מאוד */
-@media (max-width: 360px) {
-  .profile-tabs {
-    grid-template-columns: 1fr;
-  }
-
+@media (max-width: 480px) {
   .public-main-images {
     grid-template-columns: 1fr;
   }
 
-  .products-list-public {
-    grid-template-columns: 1fr;
-  }
-
-  .review-card.improved,
-  .faq-card,
-  .public-shop,
-  .calendar-fullwidth,
-  .booking-tab {
-    padding: 0.5rem;
-  }
-
-  .add-review-btn,
-  .edit-profile-btn,
-  .back-btn {
-    font-size: 0.85rem;
-    padding: 0.5rem 0.8rem;
-  }
-
-  .product-title {
-    font-size: 1rem;
-  }
-
-  .reviews-summary {
-    flex-direction: column;
-    text-align: center;
-    gap: 8px;
-  }
-
-  .reviews-average {
-    font-size: 2rem;
-  }
-
-  .star {
-    font-size: 2rem;
-  }
-
-  .reviews-count {
-    font-size: 0.9rem;
-  }
-
-  .service-card h5 {
-    font-size: 0.95rem;
-  }
-
-  .service-card__desc {
-    font-size: 0.8rem;
-  }
-}
-/* טאבלטים בגודל בינוני (769px–1024px) */
-@media (max-width: 1024px) {
   .profile-tabs {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .public-main-images {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .products-list-public {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .review-card.improved,
-  .faq-card,
-  .calendar-fullwidth,
-  .booking-tab {
-    padding: 1rem;
-  }
-}
-
-/* מחשבים ניידים קטנים ומסכים בינוניים (1025px–1280px) */
-@media (max-width: 1280px) {
-  .products-list-public {
-    gap: 1rem;
-  }
-
-  .profile-page {
-    padding: 1.5rem 1rem;
-  }
-
-  .reviews-summary {
-    padding: 1rem;
-    gap: 12px;
-  }
-
-  .add-review-btn,
-  .edit-profile-btn,
-  .back-btn {
-    font-size: 0.9rem;
+    flex-wrap: wrap;
   }
 }

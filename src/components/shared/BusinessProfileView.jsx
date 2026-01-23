@@ -19,7 +19,7 @@ const ClientCalendar = lazy(() => import("../../pages/business/dashboardPages/bu
 
 
 
-function useOnScreen(ref) {
+ function useOnScreen(ref) {
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
     if (!ref.current) return;
@@ -40,6 +40,7 @@ export default function BusinessProfileView() {
   const socket = useSocket();
   const bizId = paramId || user?.businessId;
   const queryClient = useQueryClient();
+  
   
 
 
@@ -78,6 +79,8 @@ const [currentTab, setCurrentTab] = useState(initialTab);
   const [selectedService, setSelectedService] = useState(null);
   const [profileViewsCount, setProfileViewsCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+
 
   // Queries
   const { data, isLoading, error, refetch } = useQuery({
@@ -318,39 +321,28 @@ const isOwner =
             </div>
           )}
 
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <h1
-              className="business-name"
-              style={{ fontSize: "2rem", color: "#5c2d91", fontWeight: "bold" }}
-            >
-              {businessName}
-            </h1>
-            
-            {["customer", "user", "client"].includes(user?.role) && (
-  <button
-    onClick={toggleFavorite}
-    className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
-    aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-    style={{
-      background: isFavorite ? "#FF4081" : "#EEE",
-      border: "1px solid #4A148C",
-      borderRadius: "24px",
-      cursor: "pointer",
-      fontSize: "1.2rem",
-      color: isFavorite ? "white" : "#4A148C",
-      padding: "6px 12px",
-      display: "flex",
-      alignItems: "center",
-      gap: "6px",
-      transition: "all 0.3s ease",
-    }}
-  >
-    {isFavorite ? "❤️" : "🤍"}
-    <span>{isFavorite ? "Favorite" : "Add to Favorites"}</span>
-  </button>
-)}
+          <div className="profile-hero">
+  <div className="hero-title">
+    <h1 className="business-name">{businessName}</h1>
 
-          </div>
+    {hasRating && (
+      <div className="hero-rating">
+        ⭐ {roundedAvg.toFixed(1)} · {reviewsCount} reviews
+      </div>
+    )}
+  </div>
+
+  {["customer", "user", "client"].includes(user?.role) && (
+    <button
+      onClick={toggleFavorite}
+      className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
+      aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+    >
+      {isFavorite ? "❤️" : "🤍"}
+    </button>
+  )}
+</div>
+
 
           <div className="about-phone" style={{ marginBottom: "1rem" }}>
             {category && <p><strong>🏷️ Category:</strong> {category}</p>}
@@ -382,18 +374,7 @@ const isOwner =
                 onClick={() => handleTabChange(tab)}
                 role="tab"
                 aria-selected={tab === currentTab}
-                style={{
-                  padding: "10px 20px",
-                  fontSize: "1rem",
-                  background: "#5c2d91",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                  margin: "0 5px",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 12px rgba(92, 45, 145, 0.6)",
-                  transition: "background-color 0.3s ease, color 0.3s ease",
-                }}
+                
               >
                 {tab}
               </button>
@@ -462,66 +443,85 @@ const isOwner =
 
             {/* Reviews */}
             {currentTab === "Reviews" && (
-              <div ref={reviewsRef} className="reviews">
-                {reviewsLoaded ? (
-                  <>
-                    {!isOwner && user && (
-                      <button className="add-review-btn" onClick={() => setShowReviewModal(true)}>
-                        Add Review
-                      </button>
-                    )}
-                    {showReviewModal && (
-                      <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
-                        <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
-                          <Suspense fallback={<div>Loading review form...</div>}>
-                            <ReviewForm
-                              businessId={bizId}
-                              onSubmit={handleReviewSubmit}
-                              isSubmitting={isSubmitting}
-                            />
-                          </Suspense>
-                          <button className="modal-close" onClick={() => setShowReviewModal(false)}>
-                            Close
-                          </button>
-                        </div>
-                      </div>
-                    )}
+  <div ref={reviewsRef} className="reviews">
+    {reviewsLoaded ? (
+      <>
+        <div className="reviews-header">
+          <h2>Customer Reviews</h2>
+          <span>{reviewsCount} reviews</span>
+        </div>
 
-                    {sortedReviews.length ? (
-                      sortedReviews.map((r, i) => (
-  <ReviewCard
-    key={r._id || i}
-    review={r}
-  />
-))
+        {!isOwner && user && (
+          <button
+            className="add-review-btn"
+            onClick={() => setShowReviewModal(true)}
+          >
+            Add Review
+          </button>
+        )}
 
+        {showReviewModal && (
+          <div className="modal-bg" onClick={() => setShowReviewModal(false)}>
+            <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
+              <Suspense fallback={<div>Loading review form...</div>}>
+                <ReviewForm
+                  businessId={bizId}
+                  onSubmit={handleReviewSubmit}
+                  isSubmitting={isSubmitting}
+                />
+              </Suspense>
+              <button
+                className="modal-close"
+                onClick={() => setShowReviewModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
 
-
-                    ) : (
-                      <p className="no-data">No reviews available</p>
-                    )}
-                  </>
-                ) : (
-                  <p>Loading reviews…</p>
-                )}
-              </div>
-            )}
+        {sortedReviews.length ? (
+          sortedReviews.map((r, i) => (
+            <ReviewCard key={r._id || i} review={r} />
+          ))
+        ) : (
+          <p className="no-data">No reviews available</p>
+        )}
+      </>
+    ) : (
+      <p>Loading reviews…</p>
+    )}
+  </div>
+)}
 
             {/* FAQs */}
             {currentTab === "FAQs" && (
-              <div className="faqs-public">
-                {faqs.length === 0 ? (
-                  <p className="no-data">No FAQs yet</p>
-                ) : (
-                  faqs.map((faq, i) => (
-                    <div key={faq._id || i} className="faq-card">
-                      <p><strong>Question:</strong> {faq.question}</p>
-                      <p><strong>Answer:</strong> {faq.answer}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
+  <div className="faqs-public">
+    {faqs.length === 0 ? (
+      <p className="no-data">No FAQs yet</p>
+    ) : (
+      faqs.map((faq, i) => (
+        <div key={faq._id || i} className="faq-item">
+          <button
+            className="faq-question"
+            onClick={() =>
+              setOpenFaqIndex(openFaqIndex === i ? null : i)
+            }
+          >
+            {faq.question}
+          </button>
+
+          {openFaqIndex === i && (
+            <div className="faq-answer">
+              {faq.answer}
+            </div>
+          )}
+        </div>
+      ))
+    )}
+  </div>
+)}
+
 
             {/* Messages with Business / from Clients */}
             {currentTab === messagesTabName && (
@@ -541,35 +541,44 @@ const isOwner =
 
             {/* Calendar */}
             {currentTab === "Calendar" && (
-              <div ref={calendarRef}>
-                {calendarLoaded ? (
-                  <>
-                    <Suspense fallback={<div>Loading services…</div>}>
-                      <ServicesSelector services={services} onSelect={setSelectedService} />
-                    </Suspense>
-                    {!selectedService ? (
-                      <p className="choose-prompt">Please select a service to view the calendar</p>
-                    ) : (
-                      <>
-                        <button className="back-btn" onClick={() => setSelectedService(null)}>
-                          ← Change Service
-                        </button>
-                        <Suspense fallback={<div>Loading appointment calendar…</div>}>
-                          <ClientCalendar
-                            workHours={schedule}
-                            selectedService={selectedService}
-                            onBackToList={() => setSelectedService(null)}
-                            businessId={bizId}
-                          />
-                        </Suspense>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <p>Loading calendar…</p>
-                )}
-              </div>
-            )}
+  <div ref={calendarRef}>
+    {calendarLoaded ? (
+      <>
+        <h2 className="section-title">
+          {selectedService ? "Choose Date & Time" : "Choose a Service"}
+        </h2>
+
+        <Suspense fallback={<div>Loading services…</div>}>
+          <ServicesSelector services={services} onSelect={setSelectedService} />
+        </Suspense>
+
+        {!selectedService ? (
+          <p className="choose-prompt">
+            Please select a service to view the calendar
+          </p>
+        ) : (
+          <>
+            <button className="back-btn" onClick={() => setSelectedService(null)}>
+              ← Change Service
+            </button>
+
+            <Suspense fallback={<div>Loading appointment calendar…</div>}>
+              <ClientCalendar
+                workHours={schedule}
+                selectedService={selectedService}
+                onBackToList={() => setSelectedService(null)}
+                businessId={bizId}
+              />
+            </Suspense>
+          </>
+        )}
+      </>
+    ) : (
+      <p>Loading calendar…</p>
+    )}
+  </div>
+)}
+
           </div>
         </div>
       </div>
