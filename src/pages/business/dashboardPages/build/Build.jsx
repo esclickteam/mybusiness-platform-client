@@ -604,7 +604,6 @@ window.dispatchEvent(new Event("business-profile-updated"));
     handleSave={handleSave}
     navigate={navigate}
     currentUser={currentUser}
-    renderTopBar={renderTopBar}
     logoInputRef={logoInputRef}
     mainImagesInputRef={mainImagesInputRef}
     isSaving={isSaving}
@@ -619,7 +618,6 @@ window.dispatchEvent(new Event("business-profile-updated"));
   galleryInputRef={galleryInputRef}
   handleGalleryChange={handleGalleryChange}
   handleDeleteImage={handleDeleteGalleryImage}
-  renderTopBar={renderTopBar}
   isSaving={isSaving}
   navigate={navigate}
 />
@@ -630,14 +628,12 @@ window.dispatchEvent(new Event("business-profile-updated"));
             reviews={businessDetails.reviews}
             setReviews={r => setBusinessDetails(prev => ({ ...prev, reviews: r }))}
             currentUser={currentUser}
-            renderTopBar={renderTopBar}
           />
         );
       case "Calendar":
         return (
           <ShopSection
             setBusinessDetails={setBusinessDetails}
-            renderTopBar={renderTopBar}
             workHours={workHours}
             setWorkHours={setWorkHours}
           />
@@ -647,7 +643,6 @@ window.dispatchEvent(new Event("business-profile-updated"));
           <ChatSection
             businessDetails={businessDetails}
             setBusinessDetails={setBusinessDetails}
-            renderTopBar={renderTopBar}
           />
         );
       case "FAQs":
@@ -656,7 +651,6 @@ window.dispatchEvent(new Event("business-profile-updated"));
             faqs={businessDetails.faqs}
             setFaqs={f => setBusinessDetails(prev => ({ ...prev, faqs: f }))}
             currentUser={currentUser}
-            renderTopBar={renderTopBar}
           />
         );
       default:
@@ -665,21 +659,34 @@ window.dispatchEvent(new Event("business-profile-updated"));
   };
 
   return (
-    <div className="build-wrapper">
-      <Suspense fallback={<div>Loading...</div>}>
-        {renderTabContent()}
-      </Suspense>
+  <div className="build-wrapper">
+    <div className="profile-layout">
+      
+      {/* 🟣 צד ימין – קבוע תמיד */}
+      <aside className="profile-sidebar">
+        {renderTopBar()}
+      </aside>
 
-      {isPopupOpen && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <h3>Select Image Size</h3>
-            <button type="button" onClick={() => updateImageSize("full")}>Full Size</button>
-            <button type="button" onClick={() => updateImageSize("custom")}>Custom Size</button>
-            <button type="button" onClick={closePopup}>Cancel</button>
-          </div>
-        </div>
-      )}
+      {/* 🔵 צד שמאל – מתחלף לפי טאב */}
+      <main className="profile-content">
+        <Suspense fallback={<div>Loading...</div>}>
+          {renderTabContent()}
+        </Suspense>
+      </main>
+
     </div>
-  );
+
+    {isPopupOpen && (
+      <div className="popup-overlay">
+        <div className="popup-content">
+          <h3>Select Image Size</h3>
+          <button type="button" onClick={() => updateImageSize("full")}>Full Size</button>
+          <button type="button" onClick={() => updateImageSize("custom")}>Custom Size</button>
+          <button type="button" onClick={closePopup}>Cancel</button>
+        </div>
+      </div>
+    )}
+  </div>
+);
+
 }
