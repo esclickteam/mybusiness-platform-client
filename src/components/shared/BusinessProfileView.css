@@ -126,6 +126,11 @@ html, body, #root {
   transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
+.favorite-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
 .favorite-action:hover {
   box-shadow: 0 6px 18px rgba(0,0,0,0.16);
 }
@@ -142,6 +147,7 @@ html, body, #root {
 
 .favorite-text {
   white-space: nowrap;
+  color: #333; /* חובה */
 }
 
 
