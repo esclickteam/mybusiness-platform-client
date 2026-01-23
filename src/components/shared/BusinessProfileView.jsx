@@ -561,29 +561,29 @@ const isOwner =
             {/* FAQs */}
             {currentTab === "FAQs" && (
   <div className="faqs-public">
-    {faqs.length === 0 ? (
-      <p className="no-data">No FAQs yet</p>
-    ) : (
-      faqs.map((faq, i) => (
-        <div key={faq._id || i} className="faq-item">
-          <button
-            className="faq-question"
-            onClick={() =>
-              setOpenFaqIndex(openFaqIndex === i ? null : i)
-            }
-          >
-            {faq.question}
-          </button>
+  {faqs.map((faq, i) => (
+    <div key={faq._id || i} className="faq-card">
+      <button
+        className="faq-question"
+        onClick={() =>
+          setOpenFaqIndex(openFaqIndex === i ? null : i)
+        }
+      >
+        {faq.question}
+        <span className={`faq-arrow ${openFaqIndex === i ? "open" : ""}`}>
+          ▾
+        </span>
+      </button>
 
-          {openFaqIndex === i && (
-            <div className="faq-answer">
-              {faq.answer}
-            </div>
-          )}
+      {openFaqIndex === i && (
+        <div className="faq-answer">
+          {faq.answer}
         </div>
-      ))
-    )}
-  </div>
+      )}
+    </div>
+  ))}
+</div>
+
 )}
 
 
