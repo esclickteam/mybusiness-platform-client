@@ -9,9 +9,6 @@ export default function FaqSection({ currentUser, renderTopBar }) {
   const [faqs, setFaqs] = useState([]);
   const navigate = useNavigate();
 
-  /* =========================
-     Load FAQs
-  ========================= */
   useEffect(() => {
     API.get("/business/my/faqs")
       .then((res) => {
@@ -20,7 +17,6 @@ export default function FaqSection({ currentUser, renderTopBar }) {
           : Array.isArray(res.data?.faqs)
           ? res.data.faqs
           : [];
-
         setFaqs(faqsArr);
       })
       .catch((err) =>
@@ -29,35 +25,40 @@ export default function FaqSection({ currentUser, renderTopBar }) {
   }, []);
 
   const businessId = currentUser?._id;
+  const hasFaqs = faqs.length > 0;
 
   return (
     <>
       {/* =========================
-         RIGHT – PREVIEW (כרטיס)
+         RIGHT – PREVIEW
       ========================= */}
       <div className="preview-column">
         {renderTopBar && renderTopBar()}
-
-        <FaqTab
-          faqs={faqs}
-          setFaqs={() => {}}
-          isPreview={true}
-          navigate={navigate}
-          businessId={businessId}
-        />
+        <FaqTab faqs={faqs} isPreview />
       </div>
 
       {/* =========================
-         LEFT – EDIT (טופס)
+         LEFT – EDIT
       ========================= */}
       <div className="form-column">
         <FaqTab
           faqs={faqs}
           setFaqs={setFaqs}
           isPreview={false}
-          navigate={navigate}
-          businessId={businessId}
         />
+
+        {/* ✅ CTA מחוץ ל־FaqTab */}
+        {hasFaqs && businessId && (
+          <button
+            type="button"
+            className="view-profile-btn"
+            onClick={() =>
+              navigate(`/business/${businessId}?tab=reviews`)
+            }
+          >
+            👀 View Public Profile
+          </button>
+        )}
       </div>
     </>
   );
