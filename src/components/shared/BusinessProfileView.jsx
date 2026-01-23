@@ -203,23 +203,59 @@ useEffect(() => {
   }, [reviews]);
 
   const toggleFavorite = async () => {
-    if (!user) {
-      alert("Please log in to manage favorites");
-      return;
+  if (!user) {
+    alert("Please log in to manage favorites");
+    return;
+  }
+
+  try {
+    if (isFavorite) {
+      await API.delete(`/users/favorites/${bizId}`, {
+        withCredentials: true,
+      });
+
+      setUser(prev => {
+        if (!prev) return prev;
+        const updated = {
+          ...prev,
+          favorites: (prev.favorites || []).filter(id => id !== bizId),
+        };
+        localStorage.setItem(
+          "businessDetails",
+          JSON.stringify(updated)
+        );
+        return updated;
+      });
+
+      setIsFavorite(false);
+    } else {
+      await API.post(`/users/favorites/${bizId}`, null, {
+        withCredentials: true,
+      });
+
+      setUser(prev => {
+        if (!prev) return prev;
+        const updated = {
+          ...prev,
+          favorites: [...(prev.favorites || []), bizId],
+        };
+        localStorage.setItem(
+          "businessDetails",
+          JSON.stringify(updated)
+        );
+        return updated;
+      });
+
+      setIsFavorite(true);
     }
-    try {
-      if (isFavorite) {
-        await API.delete(`/users/favorites/${bizId}`, { withCredentials: true });
-        setIsFavorite(false);
-      } else {
-        await API.post(`/users/favorites/${bizId}`, null, { withCredentials: true });
-        setIsFavorite(true);
-      }
-    } catch (error) {
-      console.error("Error toggling favorite:", error);
-      alert("An error occurred, please try again");
-    }
-  };
+  } catch (err) {
+    console.error("Error toggling favorite:", err);
+    alert("An error occurred");
+  }
+};
+
+
+  
 
   const handleReviewSubmit = async (formData) => {
     setIsSubmitting(true);
