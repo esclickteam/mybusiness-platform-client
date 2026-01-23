@@ -322,22 +322,23 @@ const isOwner =
           )}
 
           <div className="profile-hero">
-  <div className="hero-title">
-    <h1 className="business-name">{businessName}</h1>
+  <div className="hero-content">
+    <div className="hero-title">
+      <h1 className="business-name">{businessName}</h1>
+      {hasRating && (
+        <div className="hero-rating">
+          ⭐ {roundedAvg.toFixed(1)} · {reviewsCount} reviews
+        </div>
+      )}
+    </div>
 
-    {hasRating && (
-      <div className="hero-rating">
-        ⭐ {roundedAvg.toFixed(1)} · {reviewsCount} reviews
-      </div>
-    )}
+    <button
+      onClick={toggleFavorite}
+      className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
+    >
+      {isFavorite ? "❤️" : "🤍"}
+    </button>
   </div>
-
-  <button
-    onClick={toggleFavorite}
-    className={`favorite-btn ${isFavorite ? "favorited" : ""}`}
-  >
-    {isFavorite ? "❤️" : "🤍"}
-  </button>
 </div>
 
 

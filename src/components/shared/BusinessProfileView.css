@@ -72,21 +72,23 @@ html, body, #root {
    HERO
 ========================= */
 .profile-hero {
-  position: relative;
   width: 100%;
-  max-width: 900px; /* אותו רוחב של הפרופיל */
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin-bottom: 32px;
+}
+
+.hero-content {
+  position: relative;
+  width: 100%;
+  max-width: 600px; /* אותו רוחב של התוכן */
+  display: flex;
+  justify-content: center;
 }
 
 .hero-title {
-  display: flex;
-  flex-direction: column;
-  align-items: center;   /* 👈 מרכז */
   text-align: center;
 }
+
 
 .business-name {
   margin: 0;
@@ -103,7 +105,7 @@ html, body, #root {
 
 .favorite-btn {
   position: absolute;
-  top: 6;
+  top: 6px;
   right: 2px;
 
   width: 44px;
