@@ -11,6 +11,10 @@ export default function GallerySection({
   setGalleryOrder,
   isSaving,
   renderTopBar,
+
+  /* 🆕 same pattern as MainSection */
+  showViewProfile,
+  navigate,
 }) {
   const containerRef = useRef(null);
 
@@ -153,6 +157,19 @@ export default function GallerySection({
           <div className="gallery-saving-overlay">
             Saving changes…
           </div>
+        )}
+
+        {/* =========================
+           VIEW PROFILE CTA (like MainSection)
+        ========================= */}
+        {showViewProfile && images.length > 0 && (
+          <button
+            type="button"
+            className="view-profile-btn"
+            onClick={() => navigate(`/business/${businessDetails._id}`)}
+          >
+            👀 View Public Profile
+          </button>
         )}
       </div>
 
