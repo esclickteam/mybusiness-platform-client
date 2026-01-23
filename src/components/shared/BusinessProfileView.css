@@ -348,32 +348,35 @@ html, body, #root {
    FAQ (Accordion)
 ========================= */
 .faqs-public {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
+  max-width: 720px;
+  margin: 40px auto 0;
 }
 
 .faq-item {
-  border-bottom: 1px solid #eee;
-  padding: 14px 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-bottom: 16px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  border: 1px solid #f0f0f5;
 }
 
 .faq-question {
-  width: 100%;
-  background: none;
-  border: none;
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 600;
-  cursor: pointer;
-  text-align: left;
+  color: #111;
+  margin: 0;
 }
 
 .faq-answer {
-  margin-top: 8px;
-  font-size: 14px;
+  margin-top: 14px;
+  font-size: 16px;
   color: #555;
-  line-height: 1.5;
+  line-height: 1.6;
 }
+
 
 /* =========================
    Calendar (Centered Flow)
