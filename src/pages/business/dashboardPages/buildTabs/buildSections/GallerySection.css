@@ -1,158 +1,207 @@
-/* GallerySection.css */
+/* =========================
+   LAYOUT
+========================= */
 
-/* מיכל הרשת של התמונות בגלריה - צד העריכה */
-.gallery-grid-container.edit {
-  display: grid; /* מחזיר ל-grid במקום flex */
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* שורות ועצמים משתנים */
-  gap: 15px;
-  padding: 10px 0;
-  overflow-x: visible; /* מבטל גלילה אופקית */
-}
-
-/* מיכל הרשת של התמונות בגלריה - צד התצוגה (3 עמודות קבועות) */
-.gallery-grid-container.view {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  padding: 10px 0;
-  max-width: 100%;      /* מונע חריגה רוחבית */
-  overflow-x: hidden;   /* מונע גלילה אופקית */
-  box-sizing: border-box;
-}
-
-/* עטיפת כל תמונה */
-.gallery-item-wrapper {
+.form-column {
   position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  background: white;
+  padding: 24px;
+}
+
+.preview-column {
+  padding: 24px;
+  background: #fafafa;
+  border-left: 1px solid #eee;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #222;
+}
+
+/* =========================
+   DROPZONE
+========================= */
+
+.gallery-dropzone {
+  border: 2px dashed #d6d6d6;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+.gallery-dropzone:hover {
+  border-color: #c9b48f;
+  background: #fdfbf7;
+}
+
+.gallery-dropzone.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.dropzone-inner {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 140px;
-  min-width: 140px; /* חשוב עבור גלריית סקרול אופקי בצד עריכה */
-  min-width: 0;     /* מונע חריגה רוחבית מיותרת בתצוגה */
+  gap: 14px;
 }
 
-/* התמונה עצמה */
+.dropzone-inner .icon {
+  font-size: 28px;
+}
+
+.dropzone-inner .text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  color: #555;
+}
+
+.dropzone-inner strong {
+  font-weight: 600;
+  color: #222;
+}
+
+/* =========================
+   GALLERY GRID
+========================= */
+
+.gallery-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 14px;
+}
+
+.gallery-grid-container.edit {
+  margin-top: 8px;
+}
+
+.gallery-grid-container.view {
+  margin-top: 12px;
+}
+
+/* =========================
+   IMAGE ITEM
+========================= */
+
+.gallery-item-wrapper {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f1f1f1;
+  aspect-ratio: 1 / 1;
+  cursor: grab;
+}
+
+.gallery-item-wrapper:active {
+  cursor: grabbing;
+}
+
 .gallery-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 12px;
   display: block;
 }
 
-/* כפתור מחיקה (מופיע רק בצד העריכה) */
+/* =========================
+   DELETE BUTTON
+========================= */
+
 .delete-btn {
   position: absolute;
   top: 6px;
   right: 6px;
-  background: rgba(255,255,255,0.8);
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 14px;
   cursor: pointer;
-  font-size: 1.2rem;
-  line-height: 1;
-  padding: 2px 6px;
-  transition: background 0.2s ease;
-  z-index: 10;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.15s ease;
+}
+
+.gallery-item-wrapper:hover .delete-btn {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .delete-btn:hover {
-  background: rgba(255, 0, 0, 0.9);
-  color: white;
+  background: rgba(0, 0, 0, 0.8);
 }
 
-/* כפתור להוספת תמונות */
-.save-btn {
-  background: linear-gradient(135deg, #9b59b6, #8e44ad);
-  color: white;
-  border: none;
-  border-radius: 25px;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: background 0.3s ease;
-  margin-bottom: 1rem;
+/* =========================
+   DRAG HINT
+========================= */
+
+.drag-hint {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
 }
 
-.save-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #8e44ad, #9b59b6);
+.gallery-item-wrapper:hover .drag-hint {
+  opacity: 1;
 }
 
-.save-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+/* =========================
+   EMPTY STATE
+========================= */
 
-/* טקסט כשאין תמונות בגלריה */
-.no-data {
+.gallery-empty {
+  grid-column: 1 / -1;
+  padding: 28px;
   text-align: center;
-  font-size: 1rem;
+  font-size: 14px;
+  color: #777;
+  border: 1px dashed #ddd;
+  border-radius: 14px;
+  background: #fafafa;
+}
+
+/* =========================
+   SAVING OVERLAY
+========================= */
+
+.gallery-saving-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  z-index: 10;
+}
+
+/* =========================
+   PREVIEW SIDE
+========================= */
+
+.no-data {
+  font-size: 14px;
   color: #888;
-  padding: 1rem;
-}
-/* === רספונסיביות === */
-@media (max-width: 480px) {
-  .gallery-grid-container.view {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .gallery-grid-container.edit {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-  }
-
-  .gallery-item-wrapper {
-    height: 100px;
-  }
-
-  .save-btn {
-    font-size: 0.9rem;
-    padding: 8px 16px;
-  }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-  .gallery-grid-container.view {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .gallery-item-wrapper {
-    height: 120px;
-  }
-
-  .save-btn {
-    font-size: 0.95rem;
-    padding: 9px 18px;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .gallery-grid-container.view {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .gallery-item-wrapper {
-    height: 130px;
-  }
-}
-
-@media (min-width: 1440px) {
-  .gallery-grid-container.view {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .gallery-item-wrapper {
-    height: 160px;
-  }
-
-  .save-btn {
-    font-size: 1.05rem;
-    padding: 12px 24px;
-  }
+  padding: 16px;
+  text-align: center;
 }
