@@ -7,8 +7,6 @@ import { NavLink, useParams } from "react-router-dom";
 
 export default function ShopAndCalendar({
   isPreview = false,
-  workHours = {},
-  setWorkHours = () => {},
   setBusinessDetails,
   renderTopBar,
 }) {
@@ -30,23 +28,20 @@ export default function ShopAndCalendar({
   return (
     <div className="build-wrapper">
       {/* =========================
-         RIGHT – PREVIEW (אחיד)
+         RIGHT – PREVIEW CARD
       ========================= */}
       <div className="preview-column">
         {renderTopBar?.()}
 
         <h3 className="section-title">Services & Availability</h3>
 
-        {/* Preview content */}
         <div className="shop-preview">
           {safeServices.length > 0 ? (
             safeServices.map((service) => (
               <div key={service._id} className="service-preview-item">
-                <div className="service-name">{service.name}</div>
+                <span className="service-name">{service.name}</span>
                 {service.price && (
-                  <div className="service-price">
-                    ${service.price}
-                  </div>
+                  <span className="service-price">${service.price}</span>
                 )}
               </div>
             ))

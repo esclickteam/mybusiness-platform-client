@@ -1,10 +1,10 @@
 /* =========================
-   LAYOUT (זהה ל-Main/Gallery)
+   LAYOUT – זהה לכל הטאבים
 ========================= */
 
 .build-wrapper {
   display: flex;
-  flex-direction: row-reverse; /* preview מימין */
+  flex-direction: row;          /* ⬅️ preview בצד ימין */
   justify-content: center;
   align-items: flex-start;
   gap: 2.5rem;
@@ -18,8 +18,7 @@
 }
 
 /* =========================
-   PREVIEW COLUMN (RIGHT)
-   כרטיס אחיד
+   RIGHT – PREVIEW CARD
 ========================= */
 
 .preview-column {
@@ -28,7 +27,7 @@
 
   background: #ffffff;
   border-radius: 28px;
-  padding: 1.5rem 1.5rem 3rem;
+  padding: 1.75rem 1.75rem 2.75rem;
 
   box-shadow:
     0 22px 48px rgba(92, 45, 145, 0.18),
@@ -38,8 +37,7 @@
 }
 
 /* =========================
-   FORM COLUMN (LEFT)
-   זהה ל-Main/Gallery
+   LEFT – FORM / ACTIONS
 ========================= */
 
 .form-column {
@@ -63,12 +61,12 @@
 .section-title {
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 16px;
-  color: #222;
+  margin-bottom: 1.2rem;
+  color: #2a165f;
 }
 
 /* =========================
-   PREVIEW CONTENT
+   SERVICES PREVIEW
 ========================= */
 
 .shop-preview {
@@ -83,7 +81,8 @@
   align-items: center;
 
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
+
   background: #f7f7fb;
   border: 1px solid #e5e7eb;
 }
@@ -99,14 +98,14 @@
 }
 
 /* =========================
-   EDIT LINKS (LEFT SIDE)
+   EDIT LINKS
 ========================= */
 
 .edit-links-container {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
-  margin-top: 12px;
+  margin-top: 1rem;
 }
 
 .edit-link-button {
@@ -114,8 +113,9 @@
   align-items: center;
   justify-content: center;
 
-  padding: 0.6rem 1.1rem;
+  padding: 0.65rem 1.4rem;
   border-radius: 999px;
+
   font-weight: 600;
   font-size: 0.9rem;
   text-decoration: none;
@@ -140,7 +140,7 @@
 .no-data {
   font-size: 14px;
   color: #888;
-  padding: 16px;
+  padding: 16px 0;
   text-align: center;
 }
 
