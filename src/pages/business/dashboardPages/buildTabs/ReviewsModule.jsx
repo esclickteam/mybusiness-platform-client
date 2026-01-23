@@ -21,7 +21,7 @@ const PARAMETERS = {
 const exampleReviews = [
   {
     id: "ex1",
-    user: "Shira",
+    user: "David B.",
     date: "03/10/2025",
     comment:
       "Excellent service experience! They responded quickly, the price was fair, and they met the deadlines.",
