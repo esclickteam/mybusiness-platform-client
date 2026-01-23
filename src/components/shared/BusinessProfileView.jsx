@@ -492,21 +492,18 @@ const isOwner =
             )}
 
             {/* Gallery */}
-            {currentTab === "Gallery" && (
-              <div ref={galleryRef} className="public-main-images">
-                {galleryLoaded ? (
-                  gallery.length ? (
-                    gallery.map((url, i) => (
-                      <img key={i} src={url} alt={`Gallery ${i + 1}`} loading="lazy" />
-                    ))
-                  ) : (
-                    <p className="no-data">No images in gallery</p>
-                  )
-                ) : (
-                  <p>Loading gallery…</p>
-                )}
-              </div>
-            )}
+           {currentTab === "Gallery" && (
+  <div ref={galleryRef} className="gallery-grid">
+    {galleryLoaded ? (
+      gallery.map((url, i) => (
+        <img key={i} src={url} alt={`Gallery ${i + 1}`} />
+      ))
+    ) : (
+      <p>Loading gallery…</p>
+    )}
+  </div>
+)}
+
 
             {/* Reviews */}
             {currentTab === "Reviews" && (
