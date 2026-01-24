@@ -115,46 +115,53 @@ export default function ConversationsList({
 
   // -------- RENDER ----------
   return (
-    <div className={styles.conversationsList}>
+    <div
+  className={`${styles.conversationsList} ${
+    selectedConversationId ? styles.chatOpen : ""
+  }`}
+>
+
       <div className={styles.sidebar}>
         <div className={styles.sidebarTitle}>
           {isBusiness ? "Chats with Clients" : "Chat with Business"}
         </div>
 
-        {uniqueConvs.map((conv) => {
-          const convoId = getConversationId(conv);
-          const partnerId = isBusiness ? conv.clientId : conv.businessId;
-          const displayName = isBusiness
-            ? conv.clientName
-            : conv.businessName || partnerId;
+        <div className={styles.listScroll}>
+  {uniqueConvs.map((conv) => {
+    const convoId = getConversationId(conv);
+    const partnerId = isBusiness ? conv.clientId : conv.businessId;
+    const displayName = isBusiness
+      ? conv.clientName
+      : conv.businessName || partnerId;
 
-          const unreadCount = unreadCountsByConversation[convoId] || 0;
-          const isActive = convoId === selectedId;
+    const unreadCount = unreadCountsByConversation[convoId] || 0;
+    const isActive = convoId === selectedId;
 
-          return (
-            <div
-              key={convoId}
-              className={`${styles.convItem} ${
-                isActive ? styles.active : ""
-              }`}
-              onClick={() =>
-                handleSelect(convoId, partnerId, displayName)
-              }
-              style={{ position: "relative" }}
-            >
-              <span>{displayName}</span>
+    return (
+      <div
+        key={convoId}
+        className={`${styles.convItem} ${
+          isActive ? styles.active : ""
+        }`}
+        onClick={() =>
+          handleSelect(convoId, partnerId, displayName)
+        }
+        style={{ position: "relative" }}
+      >
+        <span>{displayName}</span>
 
-              <div className={styles.badgeWrapper}>
-                {unreadCount > 0 && (
-                  <UnreadBadge
-                    conversationId={convoId}
-                    count={unreadCount}
-                  />
-                )}
-              </div>
-            </div>
-          );
-        })}
+        <div className={styles.badgeWrapper}>
+          {unreadCount > 0 && (
+            <UnreadBadge
+              conversationId={convoId}
+              count={unreadCount}
+            />
+          )}
+        </div>
+      </div>
+    );
+  })}
+</div>
       </div>
     </div>
   );
