@@ -82,9 +82,7 @@ export default function OrdersPage() {
           <li
             key={appt._id}
             className="order-card"
-            onClick={() =>
-              navigate(`/business/${appt.business}/appointments/${appt._id}`)
-            }
+            
           >
             <div className="order-card__header">
               <strong>{appt.serviceName || "Unknown Service"}</strong>

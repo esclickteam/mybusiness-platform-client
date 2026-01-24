@@ -51,18 +51,14 @@
 
   display: flex;
   flex-direction: column;
-  align-items: center;   /* 👈 מרכז אופקי */
-  text-align: center;    /* 👈 טקסט ממורכז */
+  align-items: center;   /* מרכז אופקי */
+  text-align: center;    /* טקסט ממורכז */
   gap: 16px;
 
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;        /* ❌ לא קליקבילי */
+  pointer-events: none;   /* ❌ אי אפשר ללחוץ */
 }
 
-.order-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
-}
 
 .order-card__header {
   font-size: 22px;
