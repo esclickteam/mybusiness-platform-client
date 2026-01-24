@@ -1,4 +1,8 @@
-.conversationsList {
+/* ================================
+   CONVERSATIONS WRAPPER
+================================ */
+.conversationsList,
+.chat-conversations {
   display: flex;
   height: 100%;
   background: #fff;
@@ -7,19 +11,27 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.sidebar {
+/* ================================
+   SIDEBAR
+================================ */
+.sidebar,
+.chat-sidebar-list {
   width: 250px;
   min-width: 170px;
   max-width: 320px;
   background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
-  border-right: 2px solid #c3a6fa;   /* סגול בהיר ומותגי */
+  border-right: 2px solid #c3a6fa;
   overflow-y: auto;
   box-shadow: 2px 0 14px #c3a6fa24, 0 1.5px 8px #7c43bd11;
-  border-radius: 0 18px 18px 0;       /* פינה עגולה לשילוב עם כרטיס הצ'אט */
+  border-radius: 0 18px 18px 0;
   padding: 10px 0;
 }
 
-.sidebarTitle {
+/* ================================
+   SIDEBAR TITLE
+================================ */
+.sidebarTitle,
+.chat-sidebar-title {
   padding: 0 16px;
   margin-bottom: 8px;
   font-size: 1.1rem;
@@ -28,15 +40,11 @@
   text-align: left;
 }
 
-/* zebra striping */
-.convItem:nth-child(odd) {
-  background: #ffffff;
-}
-.convItem:nth-child(even) {
-  background: #f9f9f9;
-}
-
-.convItem {
+/* ================================
+   CONVERSATION ITEM
+================================ */
+.convItem,
+.chat-conversation-item {
   padding: 12px 16px;
   cursor: pointer;
   border-bottom: 1px solid #eee;
@@ -46,24 +54,46 @@
   flex-direction: column;
 }
 
-.convItem:hover {
+.convItem:hover,
+.chat-conversation-item:hover {
   background: #f0f0f0;
 }
 
-.active {
+/* zebra striping */
+.convItem:nth-child(odd),
+.chat-conversation-item:nth-child(odd) {
+  background: #ffffff;
+}
+
+.convItem:nth-child(even),
+.chat-conversation-item:nth-child(even) {
+  background: #f9f9f9;
+}
+
+/* ================================
+   ACTIVE CONVERSATION
+================================ */
+.active,
+.chat-conversation-active {
   background: #e6f7ff !important;
   font-weight: bold;
 }
 
-/* שם הפרטנר */
-.partnerName {
+/* ================================
+   PARTNER NAME
+================================ */
+.partnerName,
+.chat-partner-name {
   margin: 0;
   font-size: 0.95rem;
   color: #333;
 }
 
-/* הטקסט של ההודעה האחרונה */
-.lastMessage {
+/* ================================
+   LAST MESSAGE
+================================ */
+.lastMessage,
+.chat-last-message {
   margin: 4px 0 0;
   font-size: 0.8rem;
   color: #666;
@@ -72,13 +102,11 @@
   text-overflow: ellipsis;
 }
 
-.chatArea {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.noSelection {
+/* ================================
+   EMPTY / NO SELECTION
+================================ */
+.noSelection,
+.chat-no-selection {
   flex: 1;
   display: flex;
   align-items: center;
@@ -87,14 +115,17 @@
   font-size: 1rem;
 }
 
-/* === MOBILE CHAT BEHAVIOR (WhatsApp style) === */
+/* ================================
+   MOBILE – WhatsApp behavior
+================================ */
 @media (max-width: 768px) {
-  .conversationsList {
+  .conversationsList,
+  .chat-conversations {
     position: relative;
   }
 
-  /* ברירת מחדל – רשימת שיחות מוצגת */
-  .sidebar {
+  .sidebar,
+  .chat-sidebar-list {
     display: block;
     width: 100%;
     max-width: none;
@@ -102,53 +133,78 @@
     z-index: 2;
   }
 
-  /* כששיחה פתוחה – מסתירים את הרשימה */
-  .conversationsList.chatOpen .sidebar {
+  /* 🔑 זה הקטע החשוב */
+  .conversationsList.chatOpen .sidebar,
+  .chat-conversations.chat-open .chat-sidebar-list {
     display: none;
   }
 }
 
-/* טאבלטים */
+/* ================================
+   TABLET
+================================ */
 @media (min-width: 768px) and (max-width: 1024px) {
-  .sidebar {
+  .sidebar,
+  .chat-sidebar-list {
     max-width: 240px;
   }
-  .convItem {
+
+  .convItem,
+  .chat-conversation-item {
     padding: 10px 12px;
     font-size: 0.92rem;
   }
 }
 
-/* מובייל קטנטן */
+/* ================================
+   VERY SMALL MOBILE
+================================ */
 @media (max-width: 350px) {
-  .sidebarTitle {
+  .sidebarTitle,
+  .chat-sidebar-title {
     font-size: 1rem;
     padding: 0 12px;
   }
-  .convItem {
+
+  .convItem,
+  .chat-conversation-item {
     padding: 8px 10px;
     font-size: 0.85rem;
   }
-  .partnerName {
+
+  .partnerName,
+  .chat-partner-name {
     font-size: 0.9rem;
   }
-  .lastMessage {
+
+  .lastMessage,
+  .chat-last-message {
     font-size: 0.75rem;
   }
 }
 
-/* מסכים רחבים במיוחד */
+/* ================================
+   LARGE SCREENS
+================================ */
 @media (min-width: 1440px) {
-  .sidebar {
+  .sidebar,
+  .chat-sidebar-list {
     max-width: 300px;
   }
-  .convItem {
+
+  .convItem,
+  .chat-conversation-item {
     padding: 14px 18px;
     font-size: 1rem;
   }
 }
 
+/* ================================
+   FORCE COLOR
+================================ */
 .conversationsList,
-.conversationsList * {
+.conversationsList *,
+.chat-conversations,
+.chat-conversations * {
   color: #0f172a !important;
 }

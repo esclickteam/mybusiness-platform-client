@@ -1,7 +1,8 @@
 /* ======================
    CHAT CONTAINER
 ====================== */
-.chat-container {
+.chat-container,
+.chat-thread {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -15,14 +16,16 @@
 /* ======================
    CHAT HEADER (Mobile)
 ====================== */
-.chat-header {
+.chat-header,
+.chat-thread-header {
   display: none; /* ❌ דסקטופ */
 }
 
 /* ======================
    MESSAGE LIST
 ====================== */
-.message-list {
+.message-list,
+.chat-messages {
   flex: 1;
   padding: 16px;
   overflow-y: auto;
@@ -36,7 +39,8 @@
 /* ======================
    MESSAGE
 ====================== */
-.message {
+.message,
+.chat-message {
   max-width: 70%;
   padding: 12px;
   border-radius: 16px;
@@ -45,19 +49,22 @@
   line-height: 1.35;
 }
 
-.message.mine {
+.message.mine,
+.chat-message.mine {
   background: #dcf8c6;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
 
-.message.theirs {
+.message.theirs,
+.chat-message.theirs {
   background: #ffffff;
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
 
-.message .time {
+.message .time,
+.chat-message-time {
   font-size: 0.75rem;
   color: #999;
   margin-top: 4px;
@@ -66,7 +73,8 @@
 /* ======================
    INPUT BAR
 ====================== */
-.input-bar {
+.input-bar,
+.chat-input {
   display: flex;
   padding: 12px;
   border-top: 1px solid #eee;
@@ -74,7 +82,8 @@
   flex-shrink: 0;
 }
 
-.input-bar input {
+.input-bar input,
+.chat-input input {
   flex: 1;
   padding: 8px 12px;
   border: 1px solid #ccc;
@@ -82,7 +91,8 @@
   font-size: 1rem;
 }
 
-.input-bar button {
+.input-bar button,
+.chat-input button {
   margin-left: 8px;
   padding: 8px 16px;
   border-radius: 20px;
@@ -94,14 +104,16 @@
 /* ======================
    PAGE LAYOUT
 ====================== */
-.chat-page {
+.chat-page,
+.chat-layout {
   display: flex;
   height: 100vh;
   width: 100%;
   overflow: hidden;
 }
 
-.chat-sidebar {
+.chat-sidebar,
+.chat-conversations-panel {
   width: 320px;
   min-width: 260px;
   background: #fff;
@@ -109,7 +121,8 @@
   overflow-y: auto;
 }
 
-.chat-main {
+.chat-main,
+.chat-thread-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -120,20 +133,24 @@
    📱 MOBILE ONLY
 ====================== */
 @media (max-width: 768px) {
-  .chat-page {
+  .chat-page,
+  .chat-layout {
     flex-direction: column;
   }
 
-  .chat-sidebar {
+  .chat-sidebar,
+  .chat-conversations-panel {
     width: 100%;
   }
 
-  .chat-main {
+  .chat-main,
+  .chat-thread-panel {
     height: 100dvh;
   }
 
   /* ✅ HEADER מופיע רק במובייל */
-  .chat-header {
+  .chat-header,
+  .chat-thread-header {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -146,7 +163,8 @@
     font-weight: 600;
   }
 
-  .mobile-back {
+  .mobile-back,
+  .chat-back-btn {
     background: none;
     border: none;
     font-size: 20px;
