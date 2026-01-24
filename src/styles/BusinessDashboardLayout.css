@@ -493,17 +493,48 @@
 
   /* כפתור המבורגר עדין */
   .header-hamburger-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    border: 1px solid rgba(88, 28, 135, 0.25);
-    background: rgba(255, 255, 255, 0.8);
-    color: #2a165f;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(88, 28, 135, 0.25);
+
+  background: #ffffff;          /* ✅ תמיד לבן */
+  color: #4c1fd8;               /* ✅ אייקון ברור */
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent; /* ✅ מונע אפקט לחיצה כחול */
+  outline: none;
+}
+
+/* ✅ גם בהובר נשאר לבן */
+.header-hamburger-btn:hover {
+  background: #ffffff;
+  color: #4c1fd8;
+}
+
+/* ✅ גם בלחיצה נשאר לבן (זה מה שחסר לך) */
+.header-hamburger-btn:active {
+  background: #ffffff !important;
+  color: #4c1fd8 !important;
+  transform: scale(0.97);
+}
+
+/* ✅ אם הדפדפן נותן “focus” אחרי לחיצה */
+.header-hamburger-btn:focus,
+.header-hamburger-btn:focus-visible {
+  background: #ffffff !important;
+  color: #4c1fd8 !important;
+  box-shadow: 0 0 0 2px rgba(94, 23, 235, 0.15);
+}
+
+/* ✅ מבטיח שגם האייקון עצמו לא יכהה */
+.header-hamburger-btn svg {
+  color: #4c1fd8 !important;
+}
 
   /* לא להעמיס באנר במובייל */
   .dashboard-layout-header-center {
