@@ -36,14 +36,16 @@
 
 /* card */
 .message-card {
+  background: #ffffff;                 /* 👈 לבן */
+  border-radius: 24px;
+  padding: 24px 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  background: #f9f9ff;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  gap: 16px;
+
+  transition: box-shadow 0.15s ease;
 }
 
 .message-card:hover {
