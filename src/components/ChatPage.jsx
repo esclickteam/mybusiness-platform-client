@@ -75,7 +75,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
     }
 
     setupSocket();
-  }, [userId, getValidAccessToken, logout, selected]);
+  }, [userId, getValidAccessToken, logout]);
 
   /* ======================
      HANDLERS

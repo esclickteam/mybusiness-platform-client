@@ -15,12 +15,16 @@ export default function ConversationsList({
   const socket = useSocket();
   const [selectedId, setSelectedId] = useState(selectedConversationId);
 
-  // -------- API ENDPOINT ----------
+  /* ======================
+     API ENDPOINT
+  ====================== */
   const endpoint = isBusiness
     ? "/api/messages/client-conversations"
     : "/api/messages/user-conversations";
 
-  // -------- REACT-QUERY ----------
+  /* ======================
+     REACT QUERY
+  ====================== */
   const {
     data: fetchedConversations = [],
     isLoading,
@@ -40,21 +44,28 @@ export default function ConversationsList({
     staleTime: 5 * 60 * 1000,
   });
 
+  // מעדיף שיחות שמגיעות מה־socket
   const list = conversations.length ? conversations : fetchedConversations;
 
-  // -------- SOCKET ----------
+  /* ======================
+     SOCKET
+  ====================== */
   useEffect(() => {
     if (isBusiness && socket && businessId) {
       socket.emit("joinBusinessRoom", businessId);
     }
   }, [socket, businessId, isBusiness]);
 
-  // -------- SYNC SELECTED ----------
+  /* ======================
+     SYNC SELECTED
+  ====================== */
   useEffect(() => {
     setSelectedId(selectedConversationId ?? null);
   }, [selectedConversationId]);
 
-  // -------- UI STATES ----------
+  /* ======================
+     UI STATES
+  ====================== */
   if (isLoading)
     return <div className={styles.noSelection}>Loading conversations…</div>;
 
@@ -68,10 +79,13 @@ export default function ConversationsList({
   if (!list.length)
     return <div className={styles.noSelection}>No conversations yet</div>;
 
-  // -------- HELPERS ----------
+  /* ======================
+     HELPERS
+  ====================== */
   const getConversationId = (conv) =>
     (conv.conversationId ?? conv._id ?? conv.id)?.toString() ?? "";
 
+  // שיחה אחת לכל פרטנר
   const uniqueConvs = list.reduce((acc, conv) => {
     const partnerId = isBusiness ? conv.clientId : conv.businessId;
     const exists = acc.some((c) =>
@@ -81,24 +95,23 @@ export default function ConversationsList({
     return acc;
   }, []);
 
-  // ✅ FIXED: send ONE object
+  /* ======================
+     SELECT (FIXED)
+  ====================== */
   const handleSelect = (convoId, partnerId, displayName) => {
-    console.log("SELECT CONVERSATION", {
-      convoId,
-      partnerId,
-      displayName,
-    });
+    if (!partnerId) return;
 
     onSelect({
       conversationId: convoId,
       partnerId,
-      partnerName: displayName,
     });
 
     setSelectedId(convoId);
   };
 
-  // -------- RENDER ----------
+  /* ======================
+     RENDER
+  ====================== */
   return (
     <div className={styles.conversationsList}>
       <div className={styles.sidebar}>
@@ -125,18 +138,15 @@ export default function ConversationsList({
               onClick={() =>
                 handleSelect(convoId, partnerId, displayName)
               }
-              style={{ position: "relative" }}
             >
               <span>{displayName}</span>
 
-              <div className={styles.badgeWrapper}>
-                {unreadCount > 0 && (
-                  <UnreadBadge
-                    conversationId={convoId}
-                    count={unreadCount}
-                  />
-                )}
-              </div>
+              {unreadCount > 0 && (
+                <UnreadBadge
+                  conversationId={convoId}
+                  count={unreadCount}
+                />
+              )}
             </div>
           );
         })}
