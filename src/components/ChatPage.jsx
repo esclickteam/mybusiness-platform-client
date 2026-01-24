@@ -21,6 +21,8 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
   const [error, setError] = useState("");
   const socketRef = useRef(null);
 
+  const isMobile = window.innerWidth <= 768;
+
   /* ======================
      SOCKET SETUP
   ====================== */
@@ -51,70 +53,42 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
             : [];
           setConversations(convs);
 
-          // ✅ auto-select רק בדסקטופ
-          if (!selected && convs.length > 0 && window.innerWidth > 768) {
+          // 💻 בדסקטופ בלבד – בוחר שיחה אוטומטית
+          if (!isMobile && !selected && convs.length > 0) {
             const first = convs[0];
             const convoId = first._id || first.conversationId;
-
             const partnerId =
               (first.participants || []).find(
                 (pid) => pid && pid.toString() !== userId.toString()
               ) || null;
 
-            setSelected({ conversationId: convoId, partnerId });
+            if (partnerId) {
+              setSelected({ conversationId: convoId, partnerId });
+            }
           }
         } else {
-          setError("Failed to load conversations: " + (res.error || "Error"));
+          setError("Failed to load conversations");
         }
       });
 
-      const handleNew = (message) => {
-        if (!isMounted) return;
-
-        setConversations((prev) =>
-          prev.map((conv) =>
-            conv._id === message.conversationId ||
-            conv.conversationId === message.conversationId
-              ? {
-                  ...conv,
-                  messages: [...(conv.messages || []), message],
-                }
-              : conv
-          )
-        );
-
-        if (selected?.conversationId === message.conversationId) {
-          setSelected((prev) => ({
-            ...prev,
-            messages: [...(prev.messages || []), message],
-          }));
-        }
-      };
-
-      sock.on("newMessage", handleNew);
+      sock.on("newMessage", () => {});
 
       return () => {
         isMounted = false;
-        sock.off("newMessage", handleNew);
         sock.disconnect();
         socketRef.current = null;
       };
     }
 
-    const cleanupPromise = setupSocket();
-    return () => {
-      cleanupPromise.then((cleanup) => cleanup && cleanup());
-    };
-  }, [userId, getValidAccessToken, logout, selected]);
+    const cleanup = setupSocket();
+    return () => cleanup && cleanup();
+  }, [userId, getValidAccessToken, logout, selected, isMobile]);
 
   /* ======================
      HANDLERS
   ====================== */
-  const handleSelect = ({ conversationId, partnerId }) => {
-    if (!partnerId) {
-      setError("Cannot select a conversation without a valid partner");
-      return;
-    }
+  const handleSelect = (conversationId, partnerId) => {
+    if (!partnerId) return;
     setSelected({ conversationId, partnerId });
   };
 
@@ -127,6 +101,42 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
   /* ======================
      RENDER
   ====================== */
+
+  // 📱 מובייל – או רשימה או צ'אט
+  if (isMobile) {
+    return (
+      <div className="chat-page">
+        {!selected ? (
+          <aside className="chat-sidebar">
+            {error && <div className="error-banner">{error}</div>}
+            <ConversationsList
+              conversations={conversations}
+              businessId={userId}
+              isBusiness={isBusiness}
+              onSelect={handleSelect}
+              selectedConversationId={null}
+            />
+          </aside>
+        ) : (
+          <main className="chat-main">
+            <button className="mobile-back" onClick={handleBackToList}>
+              ← חזרה
+            </button>
+
+            <ChatComponent
+              isBusiness={isBusiness}
+              userId={userId}
+              partnerId={selected.partnerId}
+              initialConversationId={selected.conversationId}
+              socket={socketRef.current}
+            />
+          </main>
+        )}
+      </div>
+    );
+  }
+
+  // 💻 דסקטופ – תמיד רשימה + צ'אט
   return (
     <div className="chat-page">
       <aside className="chat-sidebar">
@@ -141,13 +151,6 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
       </aside>
 
       <main className="chat-main">
-        {/* 🔙 חזרה לרשימת שיחות – נייד בלבד */}
-        {selected && (
-          <button className="mobile-back" onClick={handleBackToList}>
-            ← Back
-          </button>
-        )}
-
         {selected && (
           <ChatComponent
             isBusiness={isBusiness}
@@ -155,7 +158,6 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
             partnerId={selected.partnerId}
             initialConversationId={selected.conversationId}
             socket={socketRef.current}
-            existingMessages={selected.messages}
           />
         )}
       </main>
