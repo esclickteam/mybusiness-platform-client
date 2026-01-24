@@ -1,6 +1,5 @@
-/* ======================
-   CHAT CONTAINER
-====================== */
+/* src/components/ChatPage.css */
+
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -12,54 +11,21 @@
   overflow: hidden;
 }
 
-/* ======================
-   HEADER (כפתור חזרה)
-====================== */
-.chat-header {
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  border-bottom: 1px solid #eee;
-  background: #ffffff;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.mobile-back {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 20px;
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-/* ======================
-   MESSAGE LIST
-====================== */
 .message-list {
   flex: 1;
-  min-height: 0;              /* 🔥 קריטי */
   padding: 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
-
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 }
 
-/* ======================
-   MESSAGE BUBBLES
-====================== */
 .message {
   max-width: 70%;
   padding: 12px;
   border-radius: 16px;
   position: relative;
   word-wrap: break-word;
-  line-height: 1.35;
 }
 
 .message.mine {
@@ -81,15 +47,11 @@
   text-align: left;
 }
 
-/* ======================
-   INPUT BAR
-====================== */
 .input-bar {
   display: flex;
   padding: 12px;
   border-top: 1px solid #eee;
   background: #ffffff;
-  flex-shrink: 0;
 }
 
 .input-bar input {
@@ -116,19 +78,10 @@
 .input-bar button:hover {
   background: #357ABD;
 }
-
-/* ======================
-   📱 MOBILE
-====================== */
 @media (max-width: 768px) {
   .chat-container {
     border-radius: 0;
     box-shadow: none;
-    height: 100dvh;        /* 🔥 קריטי */
-  }
-
-  .mobile-back {
-    display: inline-flex;
   }
 
   .message {
@@ -138,7 +91,6 @@
 
   .input-bar {
     padding: 10px;
-    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .input-bar input {
@@ -151,9 +103,6 @@
   }
 }
 
-/* ======================
-   📱 SMALL MOBILE
-====================== */
 @media (max-width: 480px) {
   .message {
     max-width: 95%;
