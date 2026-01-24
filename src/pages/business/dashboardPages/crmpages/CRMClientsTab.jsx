@@ -211,28 +211,29 @@ export default function CRMClientsTab({ businessId }) {
       <td>{client.email || "-"}</td>
 
       {/* פעולות */}
-      <td className="actions-cell">
-        
-        <button
-  className="open-client-btn"
-  title="Open client file"
-  onClick={(e) => {
-    e.stopPropagation();
-    setSelectedClient(client);
-    setMode("view");
-  }}
->
-  📂 Open
-</button>
+     <td className="actions-cell">
+  <div className="client-actions">
+    <button
+      className="open-client-btn"
+      onClick={(e) => {
+        e.stopPropagation();
+        setSelectedClient(client);
+        setMode("view");
+      }}
+    >
+      📂 Open
+    </button>
 
-        {/* מחיקה */}
-        <button
-          className="icon-btn danger"
-          onClick={(e) => handleDelete(client, e)}
-        >
-          🗑
-        </button>
-      </td>
+    <button
+      className="icon-btn danger"
+      onClick={(e) => handleDelete(client, e)}
+      aria-label="Delete client"
+    >
+      🗑
+    </button>
+  </div>
+</td>
+
     </tr>
   ))}
 </tbody>
