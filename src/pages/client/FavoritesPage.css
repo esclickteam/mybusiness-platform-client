@@ -1,0 +1,141 @@
+.favorites-page {
+  padding: 28px 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.favorites-title {
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+/* states */
+.favorites-loading,
+.favorites-error,
+.favorites-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: #555;
+}
+
+.favorites-error {
+  color: #c0392b;
+}
+
+/* list */
+.favorites-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* card */
+.favorite-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #f9f9ff;
+  border-radius: 14px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.favorite-card:hover {
+  background: #f0f0ff;
+  transform: translateY(-2px);
+}
+
+/* main clickable area */
+.favorite-card__main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+/* logo */
+.favorite-card__logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* content */
+.favorite-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.favorite-card__name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #222;
+}
+
+.favorite-card__desc {
+  font-size: 14px;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* remove button */
+.favorite-card__remove {
+  background: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.favorite-card__remove:hover:not(:disabled) {
+  background: #e04343;
+  transform: scale(1.05);
+}
+
+.favorite-card__remove:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* mobile */
+@media (max-width: 600px) {
+  .favorites-page {
+    padding: 20px 12px;
+  }
+
+  .favorites-title {
+    font-size: 22px;
+  }
+
+  .favorite-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .favorite-card__logo {
+    width: 42px;
+    height: 42px;
+  }
+
+  .favorite-card__desc {
+    font-size: 13px;
+  }
+}

@@ -2,39 +2,39 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import "./FavoritesPage.css";
 
 function useFavorites() {
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
+
     async function load() {
       setLoading(true);
       setError(null);
 
       try {
-        const headers = user?.token ? { Authorization: `Bearer ${user.token}` } : {};
+        const headers = user?.token
+          ? { Authorization: `Bearer ${user.token}` }
+          : {};
+
         const res = await API.get("/users/favorites", {
           headers,
           withCredentials: true,
         });
 
-        if (isMounted) {
-          setFavorites(res.data || []);
-        }
+        if (isMounted) setFavorites(res.data || []);
       } catch (err) {
-        if (isMounted) {
-          setError(err.message || "Error loading favorites");
-        }
+        if (isMounted) setError("Error loading favorites");
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     }
+
     load();
     return () => {
       isMounted = false;
@@ -46,90 +46,79 @@ function useFavorites() {
 
 export default function FavoritesPage() {
   const { favorites, setFavorites, loading, error } = useFavorites();
+  const { setUser } = useAuth();
   const navigate = useNavigate();
-  const { setUser, user } = useAuth();
   const [removingId, setRemovingId] = useState(null);
 
   const handleRemoveFavorite = async (businessId) => {
-    if (removingId) return; // Prevents double clicks
+    if (removingId) return;
     setRemovingId(businessId);
+
     try {
-      await API.delete(`/users/favorites/${businessId}`, { withCredentials: true });
-      // Refresh favorites after removal
-      const updatedUser = await API.get("/auth/me", { withCredentials: true });
+      await API.delete(`/users/favorites/${businessId}`, {
+        withCredentials: true,
+      });
+
+      const updatedUser = await API.get("/auth/me", {
+        withCredentials: true,
+      });
       setUser(updatedUser.data);
-      // Update favorites list locally
-      setFavorites((prev) => prev.filter((biz) => biz._id !== businessId));
-    } catch (err) {
-      alert("Error removing favorite, please try again");
+
+      setFavorites((prev) => prev.filter((b) => b._id !== businessId));
+    } catch {
+      alert("Error removing favorite");
     } finally {
       setRemovingId(null);
     }
   };
 
-  if (loading) return <div>Loading favorites...</div>;
-  if (error)
+  if (loading) return <div className="favorites-loading">Loading favorites…</div>;
+  if (error) return <div className="favorites-error">{error}</div>;
+
+  if (favorites.length === 0)
     return (
-      <div style={{ color: "red" }}>
-        {error}
-        <br />
-        <button onClick={() => window.location.reload()}>Try Again</button>
+      <div className="favorites-empty">
+        <h3>No favorites yet</h3>
+        <p>Save businesses to quickly find them later.</p>
       </div>
     );
 
-  if (favorites.length === 0) return <div>You don’t have any favorite businesses yet.</div>;
-
   return (
-    <div style={{ padding: 20 }}>
-      <h2>⭐ My Favorites</h2>
-      <ul style={{ listStyle: "none", padding: 0 }}>
+    <div className="favorites-page">
+      <h2 className="favorites-title">⭐ My Favorites</h2>
+
+      <ul className="favorites-list">
         {favorites.map((biz) => (
-          <li
-            key={biz._id}
-            style={{
-              padding: "10px",
-              borderBottom: "1px solid #ccc",
-              marginBottom: "8px",
-              borderRadius: "6px",
-              backgroundColor: "#f9f9f9",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              cursor: "default",
-            }}
-            title={`Click to view ${biz.businessName} profile`}
-          >
+          <li key={biz._id} className="favorite-card">
             <div
-              style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+              className="favorite-card__main"
               onClick={() => navigate(`/business/${biz._id}`)}
             >
               {biz.logo && (
                 <img
                   src={biz.logo}
                   alt={`${biz.businessName} logo`}
-                  style={{ width: 40, height: 40, marginRight: 10 }}
+                  className="favorite-card__logo"
                 />
               )}
-              <div>
-                <strong>{biz.businessName}</strong>
-                <p>{biz.description?.slice(0, 100) || "No description"}</p>
+
+              <div className="favorite-card__content">
+                <strong className="favorite-card__name">
+                  {biz.businessName}
+                </strong>
+                <p className="favorite-card__desc">
+                  {biz.description || "No description"}
+                </p>
               </div>
             </div>
+
             <button
+              className="favorite-card__remove"
               onClick={() => handleRemoveFavorite(biz._id)}
               disabled={removingId === biz._id}
-              style={{
-                backgroundColor: "#ff4d4d",
-                border: "none",
-                color: "white",
-                padding: "6px 12px",
-                borderRadius: "6px",
-                cursor: "pointer",
-                marginLeft: "10px",
-              }}
               aria-label={`Remove ${biz.businessName} from favorites`}
             >
-              {removingId === biz._id ? "Removing..." : "Remove"}
+              {removingId === biz._id ? "Removing…" : "Remove"}
             </button>
           </li>
         ))}
