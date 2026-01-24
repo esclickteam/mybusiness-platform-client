@@ -6,7 +6,6 @@ import CityAutocomplete from "@components/CityAutocomplete";
 import CategoryAutocomplete from "@components/CategoryAutocomplete";
 import "./MainSection.css";
 
-
 export default function MainSection({
   businessDetails = {},
   reviews = [],
@@ -90,47 +89,12 @@ export default function MainSection({
   };
 
   return (
-
-    <div
-  className="main-section-grid"
-  style={{
-    display: "grid",
-    gridTemplateColumns: "minmax(520px, 1fr) 440px",
-    gridTemplateAreas: '"form preview"',
-    gap: "1.5rem",
-    alignItems: "start",
-
-    width: "100%",
-    paddingLeft: "2rem",
-    paddingRight: "2rem",
-
-    margin: "0",          // ❗ לא auto
-    justifyContent: "start",
-  }}
->
-
+    <div className="main-section-grid">
       {/* RIGHT COLUMN — PREVIEW */}
-      <div
-        className="preview-column"
-        style={{
-          gridArea: "preview",
-          background: "#fff",
-          borderRadius: "20px",
-          padding: "2rem",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-        }}
-      >
+      <div className="preview-column">
         {renderTopBar?.()}
 
-        <div
-          className="preview-images"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-            gap: "10px",
-            marginTop: "1rem",
-          }}
-        >
+        <div className="preview-images">
           {limitedMainImgs.map(({ preview }, i) => (
             <div key={i} className="image-wrapper">
               <ImageLoader
@@ -149,17 +113,7 @@ export default function MainSection({
       </div>
 
       {/* LEFT COLUMN — FORM */}
-      <div
-        className="form-column"
-        ref={containerRef}
-        style={{
-          gridArea: "form",
-          background: "#fff",
-          borderRadius: "20px",
-          padding: "2rem",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-        }}
-      >
+      <div className="form-column" ref={containerRef}>
         <h2 style={{ marginBottom: "1.5rem", fontWeight: 600, textAlign: "center" }}>
           🎨 Edit Business Details
         </h2>
@@ -189,27 +143,27 @@ export default function MainSection({
         {/* PHONE */}
         <label style={{ marginTop: "0.75rem" }}>Phone (US)</label>
         <PhoneInput
-  country="us"
-  enableSearch
-  value={phone?.replace("+", "")}
-  onChange={(val) =>
-    handleInputChange({
-      target: { name: "phone", value: "+" + val },
-    })
-  }
-  inputStyle={{
-    ...inputStyle,
-    paddingLeft: "58px",
-  }}
-  buttonStyle={{
-    border: "none",
-    background: "transparent",
-  }}
-  dropdownStyle={{
-    borderRadius: "12px",
-  }}
-  disabled={isSaving}
-/>
+          country="us"
+          enableSearch
+          value={phone?.replace("+", "")}
+          onChange={(val) =>
+            handleInputChange({
+              target: { name: "phone", value: "+" + val },
+            })
+          }
+          inputStyle={{
+            ...inputStyle,
+            paddingLeft: "58px",
+          }}
+          buttonStyle={{
+            border: "none",
+            background: "transparent",
+          }}
+          dropdownStyle={{
+            borderRadius: "12px",
+          }}
+          disabled={isSaving}
+        />
 
         {/* EMAIL */}
         <label style={{ marginTop: "0.75rem" }}>Email</label>
@@ -226,18 +180,14 @@ export default function MainSection({
         <label style={{ marginTop: "0.75rem" }}>Category *</label>
         <CategoryAutocomplete
           value={category}
-          onChange={(val) =>
-            handleInputChange({ target: { name: "category", value: val } })
-          }
+          onChange={(val) => handleInputChange({ target: { name: "category", value: val } })}
         />
 
         {/* CITY */}
         <label style={{ marginTop: "0.75rem" }}>City (USA)</label>
         <CityAutocomplete
           value={city}
-          onChange={(val) =>
-            handleInputChange({ target: { name: "address.city", value: val } })
-          }
+          onChange={(val) => handleInputChange({ target: { name: "address.city", value: val } })}
         />
 
         {/* LOGO */}
@@ -251,7 +201,7 @@ export default function MainSection({
           onChange={handleLogoChange}
         />
 
-        <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
+        <div style={{ display: "flex", gap: "10px", marginTop: "5px", flexWrap: "wrap" }}>
           <button
             type="button"
             onClick={() => logoInputRef.current?.click()}
@@ -340,24 +290,20 @@ export default function MainSection({
 
         {/* SAVE */}
         <div className="form-save-sticky">
-  <button
-    onClick={handleSave}
-    disabled={isSaving}
-    className="save-btn"
-  >
-    {isSaving ? "Saving..." : "💾 Save Changes"}
-  </button>
-</div>
+          <button onClick={handleSave} disabled={isSaving} className="save-btn">
+            {isSaving ? "Saving..." : "💾 Save Changes"}
+          </button>
+        </div>
 
         {showViewProfile && (
-  <button
-    type="button"
-    className="view-profile-btn"
-    onClick={() => navigate(`/business/${businessDetails._id}`)}
-  >
-    👀 View Profile
-  </button>
-)}
+          <button
+            type="button"
+            className="view-profile-btn"
+            onClick={() => navigate(`/business/${businessDetails._id}`)}
+          >
+            👀 View Profile
+          </button>
+        )}
       </div>
     </div>
   );
