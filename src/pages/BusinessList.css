@@ -111,6 +111,21 @@
   color: #777;
 }
 
+.text-search {
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 0 14px;
+  font-size: 15px;
+  outline: none;
+}
+
+.text-search:focus {
+  border-color: #7b61ff;
+  box-shadow: 0 0 0 2px rgba(123, 97, 255, 0.15);
+}
+
+
 /* =========================
    Mobile
 ========================= */
