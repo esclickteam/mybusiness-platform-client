@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaTimes, FaChevronRight } from "react-icons/fa";
+import { FaTimes, FaChevronRight, FaSearch } from "react-icons/fa";
 import logo from "../images/logo_final.svg";
 import "./MobileMenu.css";
 
@@ -37,65 +37,75 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
   if (!open) return null;
 
   return (
-    <div className="mm-overlay" role="dialog" aria-modal="true">
-      {/* Backdrop click closes */}
-      <div className="mm-backdrop" onClick={onClose} />
+    <div className="mobile-menu" role="dialog" aria-modal="true">
+      {/* ================= Header ================= */}
+      <div className="mobile-menu-header">
+        <img src={logo} alt="BizUply" />
+        <button
+          className="close-btn"
+          onClick={onClose}
+          aria-label="Close menu"
+        >
+          <FaTimes />
+        </button>
+      </div>
 
-      {/* Drawer */}
-      <aside className="mobile-menu">
-        {/* ================= Header ================= */}
-        <div className="mobile-menu-header">
-          <img src={logo} alt="BizUply" />
-          <button className="close-btn" onClick={onClose} aria-label="Close menu">
-            <FaTimes />
-          </button>
-        </div>
+     
+      {/* ================= Navigation ================= */}
+      <nav className="menu-nav">
+        {navLinks.map((item) => (
+          <Link
+            key={item.to}
+            to={item.to}
+            onClick={onClose}
+            className={location.pathname === item.to ? "active" : ""}
+          >
+            <span>{item.label}</span>
+            <FaChevronRight />
+          </Link>
+        ))}
+      </nav>
 
-        {/* ================= Navigation ================= */}
-        <nav className="menu-nav">
-          {navLinks.map((item) => (
+      {/* ================= CTAs ================= */}
+      <div className="menu-ctas">
+        {!user ? (
+          <>
             <Link
-              key={item.to}
-              to={item.to}
+              to="/register"
+              className="cta-primary"
               onClick={onClose}
-              className={location.pathname === item.to ? "active" : ""}
             >
-              <span>{item.label}</span>
-              <FaChevronRight />
+              Try it Free
             </Link>
-          ))}
-        </nav>
-
-        {/* ================= CTAs ================= */}
-        <div className="menu-ctas">
-          {!user ? (
-            <>
-              <Link to="/register" className="cta-primary" onClick={onClose}>
-                Try it Free
-              </Link>
-              <Link to="/login" className="cta-secondary" onClick={onClose}>
-                Log in
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link to="/dashboard" className="cta-primary" onClick={onClose}>
-                My Account
-              </Link>
-              <button
-                type="button"
-                className="cta-secondary logout"
-                onClick={() => {
-                  onLogout?.();
-                  onClose();
-                }}
-              >
-                Logout
-              </button>
-            </>
-          )}
-        </div>
-      </aside>
+            <Link
+              to="/login"
+              className="cta-secondary"
+              onClick={onClose}
+            >
+              Log in
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link
+              to="/dashboard"
+              className="cta-primary"
+              onClick={onClose}
+            >
+              My Account
+            </Link>
+            <button
+              className="cta-secondary logout"
+              onClick={() => {
+                onLogout?.();
+                onClose();
+              }}
+            >
+              Logout
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
