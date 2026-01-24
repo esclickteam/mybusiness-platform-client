@@ -1,176 +1,118 @@
-/* =========================================================
-   BusinessWorkspaceNav.css — UPDATED (Desktop + Mobile Drawer)
-   ✅ Desktop: sidebar רגיל
-   ✅ Mobile: drawer ימני צר + backdrop + כפתורים נוחים
-========================================================= */
-
-/* ============ Base ============ */
+/* =========================
+   Wrapper
+========================= */
 .business-workspace-nav {
-  width: 280px;
-  min-width: 280px;
-  height: calc(100vh - 64px); /* אם יש header קבוע, עדכני לפי הגובה שלך */
-  position: sticky;
-  top: 64px;
-
-  background: #ffffff;
-  border-right: 1px solid rgba(15, 23, 42, 0.08);
-  padding: 14px;
-
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  height: 100%;
 
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  padding: 16px 14px;
 }
 
-/* Sections */
+/* =========================
+   Sections
+========================= */
 .nav-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 16px;
-  background: #fbfaff;
-  box-shadow: inset 0 0 0 1px rgba(94, 23, 235, 0.10);
+  gap: 4px;
+  margin-bottom: 14px;
 }
 
+/* הצמדת Account לתחתית */
 .nav-section-bottom {
   margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(94, 23, 235, 0.08);
 }
 
-/* Links */
-.nav-link {
+/* =========================
+   Links
+========================= */
+.business-workspace-nav .nav-link {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 
-  padding: 12px 12px;
+  padding: 12px 14px;
   border-radius: 14px;
+
   text-decoration: none;
+  color: #2e1a72;
 
-  color: #0f172a;
-  font-weight: 700;
-  font-size: 14px;
+  font-size: 0.96rem;
+  font-weight: 600;
 
-  transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.12s ease,
+    box-shadow 0.18s ease;
 }
 
-.nav-link svg {
-  width: 18px;
-  height: 18px;
-  flex: 0 0 auto;
+.business-workspace-nav .nav-link:hover {
+  background: rgba(94, 23, 235, 0.07);
+  transform: translateX(2px);
+}
+
+/* =========================
+   Active state
+========================= */
+.business-workspace-nav .nav-link.active {
+  background: #ffffff;
+  color: #5e17eb;
+  box-shadow: 0 6px 16px rgba(94, 23, 235, 0.18);
+}
+
+/* =========================
+   Icon
+========================= */
+.business-workspace-nav svg {
+  width: 16px;
+  height: 16px;
+
   stroke: currentColor;
   fill: none;
-  opacity: 0.9;
+  stroke-width: 1.7;
+
+  opacity: 0.75;
+  flex-shrink: 0;
 }
 
-.nav-link span {
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.business-workspace-nav .nav-link.active svg {
+  opacity: 1;
 }
 
-.nav-link:hover {
-  background: rgba(94, 23, 235, 0.06);
-  color: #5e17eb;
+/* =========================
+   Label
+========================= */
+.business-workspace-nav .nav-link span {
+  line-height: 1.2;
 }
 
-.nav-link.active {
-  background: rgba(94, 23, 235, 0.12);
-  color: #5e17eb;
-}
+/* =========================
+   Badge (Messages)
+========================= */
+.business-workspace-nav .badge {
+  margin-left: auto;
 
-/* Badge */
-.badge {
   background: #5e17eb;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 800;
-  padding: 2px 8px;
+  color: #ffffff;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  padding: 3px 7px;
   border-radius: 999px;
-  line-height: 1.4;
-  flex: 0 0 auto;
+  line-height: 1;
+
+  box-shadow: 0 2px 6px rgba(94, 23, 235, 0.35);
 }
 
 /* =========================
-   Mobile Drawer Mode
-   איך מפעילים: בעטיפה של הדשבורד תוסיפי class כשהתפריט פתוח
-   לדוגמה:
-     <div className={`bw-shell ${navOpen ? "nav-open" : ""}`}>
-   ושים את .business-workspace-nav בתוך shell
+   Accessibility (nice touch)
 ========================= */
-
-/* Backdrop (נוצר ע״י pseudo-element על wrapper) */
-.bw-shell {
-  position: relative;
-}
-
-@media (max-width: 900px) {
-  /* sidebar הופך drawer */
-  .business-workspace-nav {
-    position: fixed;
-    top: 0;
-    right: 0;
-
-    height: 100vh;
-    width: min(320px, 86vw);
-    min-width: 0;
-
-    padding: 14px;
-    padding-top: calc(14px + env(safe-area-inset-top));
-    padding-bottom: calc(14px + env(safe-area-inset-bottom));
-
-    border-right: none;
-    border-left: 1px solid rgba(15, 23, 42, 0.08);
-
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.12);
-
-    transform: translateX(100%);
-    transition: transform 0.28s ease;
-    z-index: 4000;
-  }
-
-  /* כשהעטיפה מקבלת nav-open → drawer נפתח */
-  .ltr-wrapper.sidebar-open .business-workspace-nav {
-  transform: translateX(0);
-}
-
-
-  /* backdrop */
-  .ltr-wrapper.sidebar-open::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(2px);
-  z-index: 3999;
-}
-
-
-  /* במובייל נוח יותר: תמיד לראות פעיל, בלי hover dependence */
-  .nav-link {
-    padding: 13px 12px;
-    font-size: 14.5px;
-  }
-
-  .nav-section {
-    padding: 10px;
-  }
-}
-
-/* =========================
-   Small phones
-========================= */
-@media (max-width: 420px) {
-  .business-workspace-nav {
-    width: min(320px, 92vw);
-  }
-
-  .nav-link svg {
-    width: 19px;
-    height: 19px;
-  }
+.business-workspace-nav .nav-link:focus-visible {
+  outline: 2px solid rgba(94, 23, 235, 0.4);
+  outline-offset: 2px;
 }

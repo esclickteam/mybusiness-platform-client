@@ -249,18 +249,20 @@ const hasPaid = Boolean(user?.hasPaid);
               </aside>
             )}
 
+
             {/* ================= Header ================= */}
 <header className="dashboard-layout-header">
+
   <div className="dashboard-layout-header-left">
-    {/* ✅ במובייל: כפתור המבורגר בתוך ההידר */}
+    {/* ✅ MOBILE: כפתור המבורגר בתוך ההידר + לחיצה חוזרת סוגרת */}
     {isMobile && (
       <button
-        className="header-hamburger-btn"
-        aria-label="Open menu"
-        onClick={() => setShowSidebar(true)}
         type="button"
+        className="header-hamburger-btn"
+        aria-label={showSidebar ? "Close menu" : "Open menu"}
+        onClick={() => setShowSidebar(v => !v)}
       >
-        <FaBars />
+        {showSidebar ? <FaTimes /> : <FaBars />}
       </button>
     )}
 
@@ -286,7 +288,6 @@ const hasPaid = Boolean(user?.hasPaid);
     )}
   </div>
 
-  {/* ✅ EarlyBird נשאר אותו דבר (נוכל להסתיר במובייל עם CSS) */}
   {canShowEarlyBird && (
     <div className="dashboard-layout-header-center">
       <div className="earlybird-header-banner">
@@ -305,10 +306,7 @@ const hasPaid = Boolean(user?.hasPaid);
           </span>
         </div>
 
-        <button
-          className="earlybird-upgrade-btn"
-          onClick={handleEarlyBirdUpgrade}
-        >
+        <button className="earlybird-upgrade-btn" onClick={handleEarlyBirdUpgrade}>
           Upgrade
         </button>
       </div>
@@ -320,7 +318,7 @@ const hasPaid = Boolean(user?.hasPaid);
       <FacebookStyleNotifications />
     </div>
 
-    {/* ✅ בדסקטופ נשאר Logout בהידר, במובייל הוא כבר מופיע בסיידבר */}
+    {/* ✅ במובייל logout כבר קיים בפוטר של הסיידבר, אז לא מכפילים */}
     {!isMobile && (
       <button className="header-action-btn" onClick={handleLogout}>
         Logout

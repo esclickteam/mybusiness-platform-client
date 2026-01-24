@@ -459,20 +459,16 @@
     padding: 10px;  /* זה מבטיח שהשדה לא יצא החוצה */
   }
 }
-/* =========================================================
-   ✅ MOBILE HEADER FIX (After login)
-   Paste at the VERY END of the file
-========================================================= */
 @media (max-width: 768px) {
-  /* Header becomes full width on mobile */
+  /* ההידר חייב להיות full-width במובייל */
   .dashboard-layout-header {
-    left: 0 !important;        /* במקום left:250px */
+    left: 0 !important;
     right: 0 !important;
     height: 56px !important;
     padding: 0 12px !important;
   }
 
-  /* Left area becomes single row */
+  /* סידור שמאל בשורה אחת */
   .dashboard-layout-header-left {
     height: 56px !important;
     flex-direction: row !important;
@@ -480,61 +476,44 @@
     gap: 10px !important;
   }
 
-  /* Remove the translate hack on the greeting */
   .dashboard-layout-header-left > div:first-child {
     transform: none !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 55vw;
   }
 
-  /* Hide center banner on mobile (so it won't feel crowded) */
-  .dashboard-layout-header-center {
-    display: none !important;
-  }
-
-  /* Right stays compact */
-  .dashboard-layout-header-right {
-    gap: 10px !important;
-  }
-
-  /* ✅ Hamburger button inside header (subtle) */
+  /* כפתור המבורגר עדין */
   .header-hamburger-btn {
     width: 42px;
     height: 42px;
     border-radius: 12px;
     border: 1px solid rgba(88, 28, 135, 0.25);
-    background: rgba(255, 255, 255, 0.85);
-    color: #4c1fd8;
+    background: rgba(255, 255, 255, 0.8);
+    color: #2a165f;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 14px rgba(88, 28, 135, 0.12);
     cursor: pointer;
   }
 
-  .header-hamburger-btn:hover {
-    background: #ffffff;
+  /* לא להעמיס באנר במובייל */
+  .dashboard-layout-header-center {
+    display: none !important;
   }
 
-  /* ✅ Notifications dropdown stays inside screen */
+  /* דרופדאון התראות שלא ייצא מהמסך */
   .header-icon-wrapper .notifications-dropdown,
   .header-icon-wrapper [role="menu"],
   .header-icon-wrapper .dropdown,
   .header-icon-wrapper .popover {
+    transform: none !important;
     right: 0 !important;
     left: auto !important;
-    transform: none !important;                /* מבטל translateX(-100%) במובייל */
     width: min(320px, calc(100vw - 24px)) !important;
-    max-width: calc(100vw - 24px) !important;
   }
 
-  /* Content top offset on mobile */
+  /* תוכן במובייל בלי margin-left של הסיידבר */
   .dashboard-content {
     margin-left: 0 !important;
     margin-top: 56px !important;
     height: calc(100vh - 56px) !important;
-    padding-top: 18px !important;
   }
 }
