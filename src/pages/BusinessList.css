@@ -64,8 +64,10 @@
 ========================= */
 .business-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(3, 1fr); /* 👈 תמיד 3 */
+  gap: 32px; /* ריווח נושם */
+  max-width: 1200px; /* מונע מתיחה */
+  margin: 0 auto;
 }
 
 /* =========================
@@ -157,3 +159,18 @@
     padding: 20px 12px 40px;
   }
 }
+
+@media (max-width: 1024px) {
+  .business-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .business-list {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
