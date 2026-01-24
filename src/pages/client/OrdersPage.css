@@ -1,0 +1,99 @@
+.orders-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.orders-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #1f2937;
+}
+
+/* ===== States ===== */
+
+.orders-loading,
+.orders-empty,
+.orders-error {
+  text-align: center;
+  padding: 60px 20px;
+  color: #555;
+}
+
+.orders-error button {
+  margin-top: 16px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: none;
+  background: #8a2be2;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ===== List ===== */
+
+.orders-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 16px;
+}
+
+/* ===== Card ===== */
+
+.order-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
+}
+
+.order-card__header {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.order-card__meta {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.order-card__duration {
+  font-size: 14px;
+  color: #374151;
+}
+
+/* ===== Mobile ===== */
+
+@media (max-width: 600px) {
+  .orders-page {
+    padding: 24px 14px;
+  }
+
+  .orders-title {
+    font-size: 22px;
+  }
+
+  .order-card {
+    padding: 16px 16px;
+  }
+
+  .order-card__meta {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
