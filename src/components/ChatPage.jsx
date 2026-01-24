@@ -23,6 +23,7 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
 
   /* ======================
      SOCKET SETUP
+     ❌ אין auto-select
   ====================== */
   useEffect(() => {
     if (!userId) return;
@@ -50,18 +51,6 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
             ? res.conversations
             : [];
           setConversations(convs);
-
-          // ✅ auto-select רק בדסקטופ
-          if (!selected && convs.length > 0 && window.innerWidth > 768) {
-            const first = convs[0];
-            const convoId = first._id || first.conversationId;
-            const partnerId =
-              (first.participants || []).find(
-                (pid) => pid && pid.toString() !== userId.toString()
-              ) || null;
-
-            setSelected({ conversationId: convoId, partnerId });
-          }
         } else {
           setError("Failed to load conversations");
         }
@@ -93,10 +82,11 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
 
   /* ======================
      RENDER
+     📱 Mobile = מצב / מצב
   ====================== */
   return (
     <div className="chat-page">
-      {/* ===== SIDEBAR ===== */}
+      {/* 📱 רשימת שיחות */}
       {!selected && (
         <aside className="chat-sidebar">
           {error && <div className="error-banner">{error}</div>}
@@ -105,17 +95,17 @@ export default function ChatPage({ isBusiness, userId, initialPartnerId }) {
             businessId={userId}
             isBusiness={isBusiness}
             onSelect={handleSelect}
-            selectedConversationId={selected?.conversationId}
+            selectedConversationId={null}
           />
         </aside>
       )}
 
-      {/* ===== CHAT ===== */}
+      {/* 📱 שיחה */}
       {selected && (
         <main className="chat-main">
-          {/* 🔙 חזרה – נייד בלבד */}
+          {/* 🔙 חזרה – מובייל בלבד (CSS שולט) */}
           <button className="mobile-back" onClick={handleBackToList}>
-            ← Back
+            ←
           </button>
 
           <ChatComponent

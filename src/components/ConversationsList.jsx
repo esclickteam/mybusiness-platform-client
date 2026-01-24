@@ -113,7 +113,11 @@ export default function ConversationsList({
      RENDER
   ====================== */
   return (
-    <div className={styles.conversationsList}>
+    <div
+  className={`${styles.conversationsList} ${
+    selectedConversationId ? styles.chatOpen : ""
+  }`}
+>
       <div className={styles.sidebar}>
         <div className={styles.sidebarTitle}>
           {isBusiness ? "Chats with Clients" : "Chat with Business"}
