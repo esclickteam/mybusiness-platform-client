@@ -1,8 +1,27 @@
+/* ================================
+   Week grid
+================================ */
 .week-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
   gap: 16px;
   margin-top: 20px;
+}
+
+/* ✅ Tablet */
+@media (max-width: 1024px) {
+  .week-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+/* ✅ Mobile */
+@media (max-width: 640px) {
+  .week-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 14px;
+  }
 }
 
 .day-card {
@@ -13,27 +32,44 @@
   box-shadow: 0 6px 20px rgba(94, 23, 235, 0.08);
 }
 
-.day-card.closed {
-  opacity: 0.6;
+@media (max-width: 640px) {
+  .day-card {
+    padding: 14px 14px 16px;
+    border-radius: 18px;
+  }
 }
 
+.day-card.closed {
+  opacity: 0.65;
+}
+
+/* ================================
+   Header (Day + toggle)
+================================ */
 .day-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
 .day-name {
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-weight: 800;
+  font-size: 0.98rem;
+  color: #2a165f;
 }
 
+/* ✅ toggle = chip (לא פס ענק) */
 .day-toggle {
   border-radius: 999px;
-  padding: 6px 14px;
-  font-weight: 600;
+  padding: 8px 14px;
+  font-weight: 700;
   border: none;
   cursor: pointer;
+  line-height: 1;
+  min-width: 92px;
+  text-align: center;
+  box-shadow: 0 8px 22px rgba(94, 23, 235, 0.18);
 }
 
 .day-toggle.on {
@@ -42,29 +78,76 @@
 }
 
 .day-toggle.off {
-  background: #e0e0e0;
-  color: #555;
+  background: #ededed;
+  color: #666;
+  box-shadow: none;
 }
 
+/* ✅ במובייל הטוגל קטן יותר */
+@media (max-width: 640px) {
+  .day-toggle {
+    padding: 7px 12px;
+    min-width: 86px;
+    font-size: 0.9rem;
+  }
+}
+
+/* ================================
+   Time row
+================================ */
 .time-row {
   margin-top: 12px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .time-row input {
   flex: 1;
+  min-width: 0;
 }
 
+/* ✅ מקף רק בדסקטופ */
 .dash {
-  font-weight: bold;
+  font-weight: 800;
+  color: #2a165f;
+  opacity: 0.7;
 }
 
+/* ✅ במובייל: לא שורה אחת – עוברים ל-2 שורות (From/To) */
+@media (max-width: 640px) {
+  .time-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .dash {
+    display: none;
+  }
+
+  .time-row input {
+    width: 100%;
+  }
+}
+
+/* אופציונלי: תן תחושה יותר "טופס" במובייל */
+@media (max-width: 640px) {
+  .time-row input[type="time"] {
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+  }
+}
+
+/* ================================
+   Actions row (Save)
+================================ */
 .actions-row {
   margin-top: 24px;
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   gap: 12px;
 }
 
@@ -74,7 +157,8 @@
   padding: 12px 20px;
   border-radius: 14px;
   border: none;
-  font-weight: 700;
+  font-weight: 800;
+  cursor: pointer;
 }
 
 .secondary-btn {
@@ -83,19 +167,42 @@
   padding: 12px 20px;
   border-radius: 14px;
   border: none;
-  font-weight: 600;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ✅ מובייל: כפתור שמירה רוחב מלא */
+@media (max-width: 640px) {
+  .actions-row {
+    position: sticky;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    padding: 12px 0;
+    margin-top: 18px;
+    z-index: 10;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .secondary-btn {
+    display: none; /* אם לא חייב – מוריד עומס במובייל */
+  }
 }
 
 .save-indicator {
   margin-top: 12px;
   color: #2e7d32;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ================================
    Weekly Overview (Summary)
 ================================ */
-
 .weekly-overview {
   margin-top: 36px;
   padding: 22px 26px;
@@ -104,10 +211,18 @@
   box-shadow: inset 0 0 0 1px #e6ddff;
 }
 
+@media (max-width: 640px) {
+  .weekly-overview {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 18px;
+  }
+}
+
 .overview-title {
   margin-bottom: 16px;
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #2a165f;
 }
 
@@ -117,8 +232,21 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
   gap: 14px 22px;
+}
+
+@media (max-width: 1024px) {
+  .overview-list {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .overview-list {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 /* Row */
@@ -144,13 +272,13 @@
 
 /* Day name */
 .overview-day {
-  font-weight: 600;
+  font-weight: 700;
   color: #2a165f;
 }
 
 /* Hours */
 .overview-hours {
-  font-weight: 600;
+  font-weight: 800;
   color: #5e17eb;
 }
 
@@ -161,6 +289,14 @@
 }
 
 .overview-closed {
-  font-weight: 600;
+  font-weight: 700;
   color: #999;
+}
+
+/* ✅ מובייל: פחות “מרווח”, יותר קומפקטי */
+@media (max-width: 640px) {
+  .overview-row {
+    padding: 10px 12px;
+    font-size: 0.92rem;
+  }
 }
