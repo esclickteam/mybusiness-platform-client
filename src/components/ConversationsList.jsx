@@ -4,16 +4,6 @@ import { useSocket } from "../context/socketContext";
 import UnreadBadge from "./UnreadBadge";
 import styles from "./ConversationsList.module.css";
 
-/**
- * Sidebar displaying the list of conversations.
- * Works for both the **client app** and the **business dashboard**.
- *
- * - When `isBusiness=true`, we show business-side labels and join
- *   the socket room for the given `businessId`.
- * - We ensure only the first conversation per partner is kept,
- *   to avoid duplicates when the same client reopens a chat.
- * - `onSelect` is called with (conversationId, partnerId, partnerName).
- */
 export default function ConversationsList({
   conversations = [],
   businessId,
@@ -47,29 +37,26 @@ export default function ConversationsList({
       const json = await res.json();
       return json.conversations ?? json;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Prefer prop conversations (for optimistic updates)
   const list = conversations.length ? conversations : fetchedConversations;
 
-  // -------- SOCKET: join business room ----------
+  // -------- SOCKET ----------
   useEffect(() => {
     if (isBusiness && socket && businessId) {
       socket.emit("joinBusinessRoom", businessId);
     }
   }, [socket, businessId, isBusiness]);
 
-  // -------- SYNC SELECTED FROM PARENT ----------
+  // -------- SYNC SELECTED ----------
   useEffect(() => {
     setSelectedId(selectedConversationId ?? null);
   }, [selectedConversationId]);
 
   // -------- UI STATES ----------
   if (isLoading)
-    return (
-      <div className={styles.noSelection}>Loading conversations…</div>
-    );
+    return <div className={styles.noSelection}>Loading conversations…</div>;
 
   if (error)
     return (
@@ -79,15 +66,12 @@ export default function ConversationsList({
     );
 
   if (!list.length)
-    return (
-      <div className={styles.noSelection}>No conversations yet</div>
-    );
+    return <div className={styles.noSelection}>No conversations yet</div>;
 
   // -------- HELPERS ----------
   const getConversationId = (conv) =>
     (conv.conversationId ?? conv._id ?? conv.id)?.toString() ?? "";
 
-  /** Keep only one conversation per partner */
   const uniqueConvs = list.reduce((acc, conv) => {
     const partnerId = isBusiness ? conv.clientId : conv.businessId;
     const exists = acc.some((c) =>
@@ -97,7 +81,7 @@ export default function ConversationsList({
     return acc;
   }, []);
 
-  // -------- HANDLE SELECT ----------
+  // ✅ FIXED: send ONE object
   const handleSelect = (convoId, partnerId, displayName) => {
     console.log("SELECT CONVERSATION", {
       convoId,
@@ -105,13 +89,14 @@ export default function ConversationsList({
       displayName,
     });
 
-    // 1️⃣ עדכון Parent (בחירת שיחה + איפוס badge שם)
-    onSelect(convoId, partnerId, displayName);
+    onSelect({
+      conversationId: convoId,
+      partnerId,
+      partnerName: displayName,
+    });
 
-    // 2️⃣ עדכון מקומי
     setSelectedId(convoId);
-
-     };
+  };
 
   // -------- RENDER ----------
   return (

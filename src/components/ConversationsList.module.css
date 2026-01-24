@@ -87,12 +87,27 @@
   font-size: 1rem;
 }
 
-/* === הסתרת הסיידבר במובייל === */
+/* === MOBILE CHAT BEHAVIOR (WhatsApp style) === */
 @media (max-width: 768px) {
+  .conversationsList {
+    position: relative;
+  }
+
+  /* ברירת מחדל – רשימת שיחות מוצגת */
   .sidebar {
-    display: none !important;
+    display: block;
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    z-index: 2;
+  }
+
+  /* כששיחה פתוחה – מסתירים את הרשימה */
+  .conversationsList.chatOpen .sidebar {
+    display: none;
   }
 }
+
 /* טאבלטים */
 @media (min-width: 768px) and (max-width: 1024px) {
   .sidebar {
