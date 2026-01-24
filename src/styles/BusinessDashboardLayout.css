@@ -126,9 +126,11 @@
   .dashboard-layout-sidebar {
     transform: translateX(-100%);
     transition: transform 0.35s ease;
-    width: min(320px, 86vw); /* ✅ Drawer צר – רספונסיביות בלבד */
-  }
+    width: min(320px, 86vw);
 
+    top: 56px;
+    height: calc(100vh - 56px);
+  }
 
   .dashboard-layout-sidebar.open {
     transform: translateX(0);
