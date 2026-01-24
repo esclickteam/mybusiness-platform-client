@@ -24,6 +24,18 @@ function normalize(str) {
     ?.toLowerCase();
 }
 
+function getBusinessName(b) {
+  return (
+    b.name ||
+    b.businessName ||
+    b.title ||
+    b.displayName ||
+    b.ownerName ||
+    ""
+  );
+}
+
+
 /* ================= Component ================= */
 export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -125,7 +137,9 @@ export default function SearchBusinesses() {
     const normCity = normalize(city);
 
     const result = all.filter(b => {
-      if (normName && !normalize(b.name).includes(normName)) return false;
+      if (normName && !normalize(getBusinessName(b)).includes(normName))
+  return false;
+
       if (normCat && !normalize(b.category).includes(normCat)) return false;
       if (normCity && !normalize(b.address?.city || "").startsWith(normCity))
         return false;
