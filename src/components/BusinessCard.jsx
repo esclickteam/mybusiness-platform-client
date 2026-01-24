@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaMapMarkerAlt, FaPhoneAlt, FaTags, FaInfoCircle } from "react-icons/fa";
 import "./BusinessCard.css";
 
-export default function BusinessCard({ business = {}, onClick }) {
+ export default function BusinessCard({ business = {}, onClick }) {
   const {
     _id,
     businessName = "Business Name",
