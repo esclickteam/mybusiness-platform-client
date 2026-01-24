@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../images/logo_final.svg";
-import { FaUser, FaBars } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 import MobileMenu from "./MobileMenu";
@@ -65,13 +65,11 @@ export default function Header() {
         <div className="auth-controls desktop-only">
           {!user ? (
             <>
-              {/* Login – icon + text (NOT a button) */}
               <Link to="/login" className="login-link">
                 <FaUser className="login-icon" />
                 Login
               </Link>
 
-              {/* Try it Free – soft CTA */}
               <Link to="/register" className="cta-button">
                 Try it Free
               </Link>
@@ -84,36 +82,47 @@ export default function Header() {
                 My Account
               </Link>
 
-              <button
-                onClick={handleLogout}
-                className="login-link logout"
-              >
+              <button onClick={handleLogout} className="login-link logout">
                 Logout
               </button>
             </>
           )}
         </div>
 
-        {/* 🔹 Mobile – Try it Free */}
-        {!user && (
-          <Link
-            to="/register"
-            className="mobile-try-free mobile-only"
-          >
-            Try it Free
-          </Link>
-        )}
+        {/* ✅ Mobile right actions */}
+        <div className="header-actions mobile-only">
+          {/* Try it free only when NOT logged-in */}
+          {!user && (
+            <Link to="/register" className="mobile-try-free">
+              Try it Free
+            </Link>
+          )}
 
-        {/* 🔹 Mobile – Hamburger */}
-        <button
-          className="menu-button mobile-only"
-          onClick={() => setMenuOpen(true)}
-          aria-label="Open menu"
-        >
-          <span className="hamb-line" />
-          <span className="hamb-line" />
-          <span className="hamb-line" />
-        </button>
+          {/* When logged-in on mobile: show a small Logout (optional, if you want) */}
+          {user && (
+            <button
+              type="button"
+              className="mobile-logout"
+              onClick={handleLogout}
+              aria-label="Logout"
+              title="Logout"
+            >
+              Logout
+            </button>
+          )}
+
+          {/* Hamburger */}
+          <button
+            className="menu-button mobile-only"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+            type="button"
+          >
+            <span className="hamb-line" />
+            <span className="hamb-line" />
+            <span className="hamb-line" />
+          </button>
+        </div>
       </nav>
 
       {/* 🔹 Mobile Menu */}

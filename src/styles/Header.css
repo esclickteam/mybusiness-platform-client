@@ -1,8 +1,9 @@
 /* =================================================================== */
 /*                             Header.css                              */
+/*                   FINAL FULL FILE (Clean + Responsive)               */
 /* =================================================================== */
 
-/* ===== Header (Desktop) ===== */
+/* ===== Header (Base / Desktop default) ===== */
 .app-header {
   position: sticky;
   top: 0;
@@ -15,14 +16,10 @@
   height: 72px;
   padding: 0 28px;
 
-  background: #ffffff; /* לבן אמיתי */
+  background: #ffffff;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-
-  /* טיפה עומק – לא חובה אבל מומלץ */
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
 }
-
-
 
 /* Logo */
 .logo-wrapper {
@@ -31,6 +28,7 @@
   justify-content: flex-start;
   margin: 0;
 }
+
 .logo-link .logo {
   height: auto;
   max-height: 80px;
@@ -38,8 +36,9 @@
   object-fit: contain;
   transition: transform 0.2s ease;
 }
+
 .logo-link:hover .logo {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 /* ===== Nav Links (Desktop) ===== */
@@ -57,7 +56,6 @@
   position: relative;
   text-decoration: none;
   color: #0f172a;
-
   padding: 10px 0;
   transition: color 0.2s ease;
 }
@@ -73,18 +71,11 @@
   color: #5e17eb;
 }
 
-.nav-links a:hover::after,
-.nav-links a.active-link::after {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-
 /* ===== Auth Controls (Desktop) ===== */
 .auth-controls.desktop-only {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 18px;
   margin-left: auto;
 }
 
@@ -96,26 +87,28 @@
   color: #333;
   cursor: pointer;
   padding: 8px 14px;
-  transition: color 0.2s;
+  transition: color 0.2s, background 0.2s;
   text-decoration: none;
+  border-radius: 10px;
 }
 .auth-link:hover {
   color: #5e17eb;
+  background: rgba(94, 23, 235, 0.06);
 }
 .auth-link.logout {
   color: #c62828;
 }
 .auth-link.logout:hover {
   color: #a91f1f;
+  background: rgba(198, 40, 40, 0.06);
 }
 .hello-user {
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #555;
 }
 
 /* ===== CTA Button ===== */
-
 .cta-button {
   display: inline-flex;
   align-items: center;
@@ -125,19 +118,15 @@
   min-height: 42px;
 
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
 
   color: #ffffff;
   text-decoration: none;
 
-  border-radius: 999px; /* Pill אמיתי */
+  border-radius: 999px;
   border: none;
 
-  background: linear-gradient(
-    135deg,
-    #6a5cff 0%,
-    #5b7cfa 100%
-  );
+  background: linear-gradient(135deg, #6a5cff 0%, #5b7cfa 100%);
 
   box-shadow:
     0 8px 22px rgba(90, 100, 255, 0.28),
@@ -152,7 +141,6 @@
 .cta-button:hover {
   transform: translateY(-1px);
   filter: brightness(1.05);
-
   box-shadow:
     0 12px 30px rgba(90, 100, 255, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.22);
@@ -165,20 +153,19 @@
     inset 0 2px 6px rgba(0, 0, 0, 0.18);
 }
 
-
-
+/* Login link */
 .login-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 
   color: #032d60;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.95rem;
 
   text-decoration: none;
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: 10px;
 
   background: transparent;
   border: none;
@@ -196,16 +183,77 @@
   font-size: 16px;
 }
 
+/* ===== Header right actions wrapper (mobile) ===== */
+.header-actions {
+  display: none; /* shown on mobile via media */
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
 
-/* ===== Hamburger (mobile only) ===== */
- 
+/* ===== Mobile Try it Free ===== */
+.mobile-try-free {
+  background: #5e17eb;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(94, 23, 235, 0.18);
+}
+.mobile-try-free:hover {
+  background: #4315c7;
+}
 
+/* ===== Hamburger base ===== */
 .menu-button {
   background: none;
   border: none;
   cursor: pointer;
   color: #5e17eb;
   font-size: 24px;
+}
+
+/* Mobile hamburger button (subtle icon button) */
+.menu-button.mobile-only {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  border-radius: 12px;
+  border: 1px solid rgba(94, 23, 235, 0.18);
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(94, 23, 235, 0.12);
+}
+
+.menu-button.mobile-only:hover {
+  background: rgba(94, 23, 235, 0.06);
+}
+
+.menu-button.mobile-only .hamb-line {
+  height: 2px;
+  background: #5e17eb;
+  border-radius: 999px;
+  display: block;
+}
+.menu-button.mobile-only .hamb-line:nth-child(1) { width: 18px; }
+.menu-button.mobile-only .hamb-line:nth-child(2) { width: 12px; }
+.menu-button.mobile-only .hamb-line:nth-child(3) { width: 16px; }
+
+/* If you ever render X inside the same button */
+.menu-button.mobile-only .close-x {
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 800;
+  color: #5e17eb;
 }
 
 /* ===== Drawer (Hamburger menu) ===== */
@@ -241,20 +289,20 @@
   text-decoration: none;
   color: #4e2977;
   font-size: 0.95rem;
-  border-radius: 4px;
+  border-radius: 10px;
   transition: background .2s, color .2s;
 }
 .menu-section a:hover,
 .menu-section a.active-link {
   background: #f5f1fa;
   color: #2d006e;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .menu-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.45);
   z-index: 1500;
 }
 
@@ -271,79 +319,33 @@
   text-align: center;
 }
 
-/* ================= Responsive ================= */
-@media (max-width: 768px) {
-  .app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;   /* ⬅️ קריטי */
-  padding: 0 12px 0 8px;            /* שמאל קצת יותר צמוד */
-  height: 50px !important;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  position: relative;
-  overflow: visible;
-}
-
-
-  .logo-link .logo {
-    height: auto !important;
-    max-height: 160px !important;  /* ימלא כמעט את כל ההידר */
-    width: auto !important;
-    display: block;
-  }
-
-
-
-  .nav-links,
-  .auth-controls.desktop-only {
-    display: none !important;
-  }
-}
-
-/* ===== Header Desktop ===== */
-@media (min-width: 1025px) {
-  .mobile-only { display: none !important; }
-  .desktop-only { display: flex; }
-
-  .app-header {
-    height: 70px !important;
-    padding: 0 32px;
-    justify-content: space-between;   /* לוגו בצד שמאל, כפתורים בצד ימין */
-    gap: 40px;
-  }
-
-  .app-header .logo-wrapper .logo-link .logo {
-    height: 250px !important;       /* גודל לוגו קבוע גדול */
-    width: auto !important;
-    max-height: none !important;    /* מבטל הגבלה */
-    max-width: none !important;
-    object-fit: contain;
-    display: block;
-  }
-}
-
 /* =================================================================== */
-/*                         🔔 Notification Bell                        */
+/*                         🔔 Notification Bell                         */
 /* =================================================================== */
-
 .notification-bell {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-left: 14px;                /* ריווח מצד ימין של הלוגו */
+
+  width: 42px;
+  height: 42px;
+
   cursor: pointer;
-  color: #5e17eb;                   /* צבע סגול עסקלק */
-  background: linear-gradient(145deg, #f6edff, #ece2ff);
-  border-radius: 14px;
-  padding: 10px;
-  box-shadow: 0 2px 8px rgba(94, 23, 235, 0.15);
-  transition: all 0.25s ease-in-out;
-}
-.notification-bell:hover {
   color: #5e17eb;
+
+  background: #fff;
+  border: 1px solid rgba(94, 23, 235, 0.18);
+  border-radius: 12px;
+
+  box-shadow: 0 6px 18px rgba(94, 23, 235, 0.12);
+  transition: background 0.2s ease;
 }
+
+.notification-bell:hover {
+  background: rgba(94, 23, 235, 0.06);
+}
+
 .notification-dot {
   position: absolute;
   top: -3px;
@@ -354,11 +356,10 @@
   background-color: #ff3b30;
 }
 
-/* Dropdown */
 .notifications-dropdown {
   position: absolute;
   top: 75px;
-  right: 30px;
+  right: 28px;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
@@ -367,7 +368,7 @@
   animation: fadeIn 0.25s ease-in-out;
 }
 .notifications-dropdown .notif-header {
-  font-weight: 600;
+  font-weight: 700;
   padding: 12px 16px;
   border-bottom: 1px solid #eee;
   color: #333;
@@ -378,248 +379,67 @@
   color: #555;
 }
 .notifications-dropdown .notif-item:hover {
-   background: #f9f5ff;
+  background: #f9f5ff;
   color: #5e17eb;
   cursor: pointer;
 }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.header-loading {
-  background: #fff;
-  height: 80px; /* תואם לגובה ההידר הרגיל */
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 2rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  opacity: 0.95;
-  transition: all 0.3s ease;
-  z-index: 1502;
-}
+/* ===== Desktop breakpoint ===== */
+@media (min-width: 1025px) {
+  .mobile-only { display: none !important; }
+  .desktop-only { display: flex; }
 
-.header-loading .logo-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.header-loading .logo {
-  height: 60px;
-  width: auto;
-  opacity: 0.8;
-  filter: grayscale(0.1) brightness(0.95);
-  animation: headerLogoFade 0.6s ease-in-out;
-}
-
-@keyframes headerLogoFade {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 0.85;
-    transform: translateY(0);
-  }
-}
-
-/* כשיש טעינה — מבטל אינטראקציה זמנית */
-.header-loading * {
-  pointer-events: none;
-  user-select: none;
-}
-
-/* =================================================================== */
-/*                        📱 Sidebar Hamburger (Dashboard)              */
-/* =================================================================== */
-
-.menu-btn.mobile-only {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .menu-btn.mobile-only {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #fff;
-    border: none;
-    color: #5e17eb;
-    font-size: 22px;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(94, 23, 235, 0.2);
-    cursor: pointer;
-    margin-left: auto;        /* ✅ מצמיד לימין */
-    margin-right: 6px;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .menu-btn.mobile-only:hover {
-    background: #f5edff;
-    transform: scale(1.05);
-  }
-
-  /* יישור מדויק לגובה הפעמון */
-  .logo-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .notification-bell {
-    margin-right: 4px;
-  }
-}
-
-@media (max-width: 768px) {
-
-  .menu-button.mobile-only:hover {
-    transform: scale(1.05); /* ✅ בלי translateY */
-  }
-}
-
-/* ===============================
-   📱 Mobile Try it free Button
-   =============================== */
-@media (max-width: 768px) {
-  .mobile-try-free {
-    position: absolute;
-    right: 64px;              /* ⬅️ לפני ההמבורגר */
-    top: 50%;
-    transform: translateY(-50%);
-
-    background: #5e17eb;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 7px 14px;
-    border-radius: 999px;     /* pill */
-    text-decoration: none;
-    white-space: nowrap;
-
-    box-shadow: 0 4px 12px rgba(94, 23, 235, 0.35);
-    z-index: 25;
-  }
-
-  .mobile-try-free:hover {
-    background: #4315c7;
-  }
-}
-
-/* ===============================
-   📱 Mobile – Logo Left Aligned
-   =============================== */
-@media (max-width: 768px) {
-  .logo-wrapper {
-    position: relative;      /* חוזר ל־flow רגיל */
-    left: auto;
-    transform: none;
-
-    margin-left: 16px;       /* ריווח מהקצה */
-    margin-right: auto;     /* דוחף את השאר ימינה */
-    justify-content: flex-start;
-  }
-
-  .logo-link .logo {
-    max-height: 36px !important; /* גודל UX נכון למובייל */
-  }
-}
-
-/* ===============================
-   📱 Mobile – Logo FULL Left (Final)
-   =============================== */
-@media (max-width: 768px) {
   .app-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between !important;
-    padding: 0 12px;
-    height: 56px !important;
-    background: #fff;
-  }
-
-  /* ✅ הלוגו ממש צמוד לצד שמאל (או ימין ב־RTL) */
- .logo-wrapper {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-
-  margin-left: -80px !important;   /* ⬅️ הזזה שמאלה במובייל */
-  margin-right: auto !important;  /* דוחף את כל היתר ימינה */
-}
-
-  /* אם האתר בעברית (dir="rtl") – נתקן כך: */
-  html[dir="rtl"] .logo-wrapper {
-    justify-content: flex-end;
-    margin-right: 0 !important;
-    margin-left: auto !important;
+    height: 70px;
+    padding: 0 32px;
+    gap: 40px;
   }
 
   .logo-link .logo {
-    width: auto !important;
-    height: auto !important;
-    max-height: 130px !important;
-    object-fit: contain;
-    display: block;
+    max-height: 80px; /* ✅ keep sane */
   }
-
-  /* הכפתור Try it free נשאר צמוד לימין (או שמאל ב־RTL) */
-  .mobile-try-free {
-    position: absolute;
-    right: 60px; /* לפני ההמבורגר */
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  html[dir="rtl"] .mobile-try-free {
-    left: 60px;
-    right: auto;
-  }
-
 }
 
+/* =================================================================== */
+/* ✅ MOBILE – clean header, subtle right actions                       */
+/* =================================================================== */
 @media (max-width: 768px) {
-  .menu-button.mobile-only {
-    position: absolute;
-    right: 12px;
-    top: 30%;
-    transform: translateY(-50%);
-
-    width: 42px;
-    height: 42px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    box-shadow: none !important;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;              /* הרווח בין הפסים */
-    cursor: pointer;
-    z-index: 25;
+  /* hide desktop sections */
+  .nav-links,
+  .auth-controls.desktop-only {
+    display: none !important;
   }
 
- .menu-button.mobile-only .hamb-line {
-  height: 2.5px;
-  background: #0f172a;
-  border-radius: 999px;
-  display: block;
+  .app-header {
+    z-index: 1502;
+    height: 56px;
+    padding: 0 12px;
+    justify-content: space-between;
+  }
+
+  .logo-wrapper {
+    flex: 0 0 auto;
+  }
+
+  .logo-link .logo {
+    max-height: 34px;
+  }
+
+  .header-actions {
+    display: inline-flex; /* ✅ show mobile actions */
+  }
+
+  /* Notifications dropdown stays inside screen on mobile */
+  .notifications-dropdown {
+    right: 12px;
+    top: 62px;
+    width: min(320px, calc(100vw - 24px));
+  }
 }
 
-/* ✅ לא אחיד כמו בתמונה */
-.menu-button.mobile-only .hamb-line:nth-child(1) { width: 20px; } /* עליון ארוך */
-.menu-button.mobile-only .hamb-line:nth-child(2) { width: 14px; } /* אמצעי קצר */
-.menu-button.mobile-only .hamb-line:nth-child(3) { width: 18px; } /* תחתון בינוני */
-
-}
-
-.nav-links a {
-  text-decoration: none !important;
-}
+/* keep links clean */
+.nav-links a { text-decoration: none !important; }
