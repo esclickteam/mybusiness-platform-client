@@ -10,11 +10,11 @@ import Select from "react-select";
 import { Helmet } from "react-helmet-async";
 import "./BusinessList.css";
 
+/* ================= Config ================= */
 const ITEMS_PER_PAGE = 9;
 const DEBOUNCE_DELAY = 600;
 
 /* ================= Helpers ================= */
-
 function normalize(str) {
   return str
     ?.normalize("NFD")
@@ -25,21 +25,23 @@ function normalize(str) {
 }
 
 /* ================= Component ================= */
-
 export default function SearchBusinesses() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  /* ===== Data ===== */
+  /* ===== Raw Data ===== */
   const [all, setAll] = useState([]);
+
+  /* ===== Results ===== */
   const [filtered, setFiltered] = useState([]);
 
-  /* ===== UI States ===== */
+  /* ===== UI ===== */
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
 
   /* ===== Filters ===== */
+  const [name, setName] = useState(searchParams.get("name") || "");
   const [cat, setCat] = useState(searchParams.get("category") || "");
   const [city, setCity] = useState(searchParams.get("city") || "");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
@@ -48,32 +50,25 @@ export default function SearchBusinesses() {
   const [cities, setCities] = useState([]);
   const [loadingCities, setLoadingCities] = useState(true);
 
-  const categoryOptions = ALL_CATEGORIES.map((c) => ({
+  const categoryOptions = ALL_CATEGORIES.map(c => ({
     value: c,
     label: c,
   }));
 
-  /* ================= Load Businesses (ONCE) ================= */
-
+  /* ================= Load Businesses (once) ================= */
   useEffect(() => {
     let mounted = true;
 
     API.get("/business")
-      .then((res) => {
+      .then(res => {
         if (!mounted) return;
-
-        // ✅ תומך גם במבנה { businesses: [] } וגם במערך ישיר []
         const businesses = Array.isArray(res.data)
           ? res.data
           : res.data?.businesses || [];
-
         setAll(businesses);
-        setLoading(false);
       })
-      .catch((err) => {
-        console.error("❌ Failed loading businesses:", err);
-        setLoading(false);
-      });
+      .catch(err => console.error("❌ Failed loading businesses", err))
+      .finally(() => setLoading(false));
 
     return () => {
       mounted = false;
@@ -81,14 +76,12 @@ export default function SearchBusinesses() {
   }, []);
 
   /* ================= Load Cities (cached) ================= */
-
   useEffect(() => {
-    const loadCities = async () => {
+    (async () => {
       try {
         const cache = localStorage.getItem("allCities");
         if (cache) {
           setCities(JSON.parse(cache));
-          setLoadingCities(false);
           return;
         }
 
@@ -96,31 +89,27 @@ export default function SearchBusinesses() {
         setCities(fetched);
         localStorage.setItem("allCities", JSON.stringify(fetched));
       } catch (e) {
-        console.error("❌ Failed loading cities:", e);
+        console.error("❌ Failed loading cities", e);
       } finally {
         setLoadingCities(false);
       }
-    };
-
-    loadCities();
+    })();
   }, []);
 
-  /* ================= Sync URL with Filters ================= */
-
+  /* ================= Sync URL ================= */
   useEffect(() => {
     const params = new URLSearchParams();
 
+    if (name) params.set("name", name);
     if (cat) params.set("category", cat);
     if (city) params.set("city", city);
     if (page > 1) params.set("page", page);
 
     setSearchParams(params, { replace: true });
-  }, [cat, city, page, setSearchParams]);
+  }, [name, cat, city, page, setSearchParams]);
 
   /* ================= Search Logic ================= */
-
   const handleSearch = useCallback(() => {
-    // ✅ אם אין עסקים נטענו (ריק/שגיאה) – לא להיתקע
     if (!Array.isArray(all) || all.length === 0) {
       setFiltered([]);
       setSearched(true);
@@ -131,52 +120,47 @@ export default function SearchBusinesses() {
 
     setSearching(true);
 
+    const normName = normalize(name);
     const normCat = normalize(cat);
     const normCity = normalize(city);
 
-    const result = all.filter((b) => {
+    const result = all.filter(b => {
+      if (normName && !normalize(b.name).includes(normName)) return false;
       if (normCat && !normalize(b.category).includes(normCat)) return false;
-
       if (normCity && !normalize(b.address?.city || "").startsWith(normCity))
         return false;
-
       return true;
     });
 
     setFiltered(result);
     setSearched(true);
-    setPage(1); // 🔧 תמיד לחזור לעמוד 1 אחרי חיפוש
+    setPage(1);
 
     setTimeout(() => setSearching(false), 300);
-  }, [all, cat, city]);
+  }, [all, name, cat, city]);
 
-  /* ================= Debounced Search (Single source of truth) ================= */
-  // ✅ ביטלנו את Initial Search הנפרד כדי לא להפעיל handleSearch פעמיים
+  /* ================= Debounced Search ================= */
   useEffect(() => {
     if (loading) return;
 
-    const timeout = setTimeout(() => {
-      handleSearch();
-    }, DEBOUNCE_DELAY);
-
-    return () => clearTimeout(timeout);
-  }, [cat, city, handleSearch, loading]);
+    const t = setTimeout(handleSearch, DEBOUNCE_DELAY);
+    return () => clearTimeout(t);
+  }, [name, cat, city, handleSearch, loading]);
 
   /* ================= Pagination ================= */
-
   const start = (page - 1) * ITEMS_PER_PAGE;
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
   /* ================= SEO ================= */
-
   const seoTitle =
-    cat || city
-      ? `${cat || ""}${cat && city ? " – " : ""}${city || ""} | Search | Bizuply`
+    name || cat || city
+      ? `${name || ""}${name && (cat || city) ? " – " : ""}${cat || ""}${
+          cat && city ? " – " : ""
+        }${city || ""} | Search | Bizuply`
       : "Business Search | Bizuply";
 
   /* ================= Render ================= */
-
   return (
     <div className="list-page">
       <Helmet>
@@ -187,45 +171,32 @@ export default function SearchBusinesses() {
         <h1>Find Businesses</h1>
 
         {/* ===== Filters ===== */}
-        <div
-          style={{
-            display: "flex",
-            gap: "1rem",
-            alignItems: "center",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            marginBottom: "1.5rem",
-          }}
-        >
+        <div className="filters-row">
+          {/* 🔍 Name */}
+          <input
+            type="text"
+            className="text-search"
+            placeholder="Business name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+
           {/* City */}
-          <div style={{ width: "250px" }}>
-            <CityAutocomplete
-              value={city}
-              onChange={(val) => setCity(val)}
-              placeholder="City (United States)"
-              disabled={loadingCities}
-            />
-          </div>
+          <CityAutocomplete
+            value={city}
+            onChange={setCity}
+            placeholder="City (United States)"
+            disabled={loadingCities}
+          />
 
           {/* Category */}
-          <div style={{ width: "250px" }}>
-            <Select
-              options={categoryOptions}
-              value={categoryOptions.find((o) => o.value === cat) || null}
-              onChange={(opt) => setCat(opt ? opt.value : "")}
-              placeholder="Profession (e.g., Electrician)"
-              isClearable
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderRadius: "10px",
-                  borderColor: "#a855f7",
-                  boxShadow: "none",
-                  ":hover": { borderColor: "#6a11cb" },
-                }),
-              }}
-            />
-          </div>
+          <Select
+            options={categoryOptions}
+            value={categoryOptions.find(o => o.value === cat) || null}
+            onChange={(opt) => setCat(opt ? opt.value : "")}
+            placeholder="Profession (e.g., Electrician)"
+            isClearable
+          />
         </div>
 
         {/* ===== Results ===== */}
@@ -234,8 +205,8 @@ export default function SearchBusinesses() {
             Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
               <BusinessCardSkeleton key={i} />
             ))
-          ) : pageItems.length > 0 ? (
-            pageItems.map((b) => (
+          ) : pageItems.length ? (
+            pageItems.map(b => (
               <BusinessCard
                 key={b._id}
                 business={b}
@@ -245,6 +216,7 @@ export default function SearchBusinesses() {
           ) : (
             <p className="no-results">
               No businesses found
+              {name && ` matching "${name}"`}
               {city && ` in ${city}`}
               {cat && ` for ${cat.toLowerCase()}`}.
             </p>
@@ -255,7 +227,7 @@ export default function SearchBusinesses() {
         {searched && totalPages > 1 && (
           <div className="pagination">
             <button
-              onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              onClick={() => setPage(p => Math.max(p - 1, 1))}
               disabled={page === 1}
             >
               Previous
@@ -264,7 +236,7 @@ export default function SearchBusinesses() {
               {page} of {totalPages}
             </span>
             <button
-              onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+              onClick={() => setPage(p => Math.min(p + 1, totalPages))}
               disabled={page === totalPages}
             >
               Next
