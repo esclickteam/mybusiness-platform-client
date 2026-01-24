@@ -27,19 +27,28 @@
 }
 
 /* =========================
-   Filters Row
+   Filters Wrapper (NEW)
 ========================= */
-.filters-row {
+
+.filters-wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  max-width: 1100px;
+  margin: 0 auto 32px;
+  align-items: center;
 }
 
-/* react-select fix RTL */
-.filters-row .react-select__control {
+.filter-item {
+  width: 100%;
+}
+
+/* react-select */
+.filter-item .react-select__control {
   min-height: 44px;
   border-radius: 10px;
 }
+
 
 /* =========================
    Results Area
@@ -112,6 +121,7 @@
 }
 
 .text-search {
+  width: 100%;
   height: 44px;
   border-radius: 10px;
   border: 1px solid #ccc;
@@ -130,8 +140,9 @@
    Mobile
 ========================= */
 @media (max-width: 768px) {
-  .filters-row {
+  .filters-wrapper {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .filters-sticky {

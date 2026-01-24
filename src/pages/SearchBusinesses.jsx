@@ -171,33 +171,41 @@ export default function SearchBusinesses() {
         <h1>Find Businesses</h1>
 
         {/* ===== Filters ===== */}
-        <div className="filters-row">
-          {/* 🔍 Name */}
-          <input
-            type="text"
-            className="text-search"
-            placeholder="Business name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+<div className="filters-wrapper">
+  {/* Profession */}
+  <div className="filter-item">
+    <Select
+      options={categoryOptions}
+      value={categoryOptions.find(o => o.value === cat) || null}
+      onChange={(opt) => setCat(opt ? opt.value : "")}
+      placeholder="Profession (e.g., Electrician)"
+      isClearable
+    />
+  </div>
 
-          {/* City */}
-          <CityAutocomplete
-            value={city}
-            onChange={setCity}
-            placeholder="City (United States)"
-            disabled={loadingCities}
-          />
+  {/* City */}
+  <div className="filter-item">
+    <CityAutocomplete
+      value={city}
+      onChange={setCity}
+      placeholder="City (United States)"
+      disabled={loadingCities}
+    />
+  </div>
 
-          {/* Category */}
-          <Select
-            options={categoryOptions}
-            value={categoryOptions.find(o => o.value === cat) || null}
-            onChange={(opt) => setCat(opt ? opt.value : "")}
-            placeholder="Profession (e.g., Electrician)"
-            isClearable
-          />
-        </div>
+  {/* Business name */}
+  <div className="filter-item">
+    <input
+      type="text"
+      className="text-search"
+      placeholder="Business name"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
+  </div>
+</div>
+
+        
 
         {/* ===== Results ===== */}
         <div className="business-list">
