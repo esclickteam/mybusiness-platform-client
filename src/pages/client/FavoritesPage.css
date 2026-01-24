@@ -37,28 +37,33 @@
 /* card */
 .favorite-card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 16px 18px;
-  background: #f9f9ff;
-  border-radius: 14px;
-  transition: background 0.2s ease, transform 0.15s ease;
+  flex-direction: column;     /* ✅ */
+  align-items: center;        /* ✅ */
+  gap: 16px;
+
+  padding: 24px 22px;
+  background: #ffffff;        /* ✅ לבן */
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .favorite-card:hover {
-  background: #f0f0ff;
+  background: #ffffff;
   transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
 }
 
 /* main clickable area */
 .favorite-card__main {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  flex-direction: column;     /* ✅ */
+  align-items: center;        /* ✅ */
+  text-align: center;         /* ✅ */
+  gap: 10px;
+
   cursor: pointer;
-  flex: 1;
-  min-width: 0;
 }
 
 /* logo */
@@ -74,8 +79,9 @@
 .favorite-card__content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-width: 0;
+  align-items: center;        /* ✅ */
+  text-align: center;         /* ✅ */
+  gap: 6px;
 }
 
 .favorite-card__name {
@@ -87,9 +93,9 @@
 .favorite-card__desc {
   font-size: 14px;
   color: #555;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;        /* ✅ */
+  overflow: visible;          /* ✅ */
+  text-overflow: unset;       /* ✅ */
 }
 
 /* remove button */
