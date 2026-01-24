@@ -59,19 +59,25 @@
 @media (max-width: 900px) {
   .main-section-grid {
     grid-template-columns: 1fr;
-    grid-template-areas: "form";
+    /* ✅ במקום להסתיר — מציגים את ה-preview מתחת לטופס */
+    grid-template-areas:
+      "form"
+      "preview";
     padding-left: 1rem;
     padding-right: 1rem;
     gap: 1rem;
   }
 
-  /* ✅ במובייל מסתירים את ה-preview בצד כדי שלא ישבור */
-  .preview-column {
-    display: none;
-  }
-
   .form-column {
     padding: 1.5rem;
+    /* ✅ שלא יכסה את סוף הטופס + התצוגה */
+    padding-bottom: 110px;
+  }
+
+  .preview-column {
+    display: block; /* ✅ חובה כדי שלא יהיה hidden */
+    padding: 1.5rem;
+    margin-top: 0.25rem;
   }
 
   /* ✅ כפתור שמירה דביק למטה */
@@ -86,16 +92,16 @@
     z-index: 999;
     margin-top: 0;
   }
-
-  /* ✅ שלא יכסה את סוף הטופס */
-  .form-column {
-    padding-bottom: 90px;
-  }
 }
 
 /* ===== SMALL PHONES ===== */
 @media (max-width: 420px) {
   .form-column {
+    padding: 1.25rem;
+    padding-bottom: 120px;
+  }
+
+  .preview-column {
     padding: 1.25rem;
   }
 
