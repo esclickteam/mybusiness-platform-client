@@ -1,6 +1,6 @@
 /* src/components/Chat/ChatComponent.css */
-/* ✅ Updated: same look, cleaner + no duplicates + better responsive */
 
+/* הגדרת קופסא עבור הצ'אט */
 .chat-box {
   max-height: 60vh;
   overflow-y: auto;
@@ -8,63 +8,76 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  direction: rtl;
+  direction: rtl; /* כדי שגלילה וכיווניות יהיו נכונים */
 }
 
-/* rows */
+/* הגדרת שורת הודעות */
 .chat-message-row {
   display: flex;
   width: 100%;
 }
 
-.chat-message-row.from-customer { justify-content: flex-end; }
-.chat-message-row.from-business { justify-content: flex-start; }
-.chat-message-row.from-system   { justify-content: center; }
+/* הודעת לקוח */
+.chat-message-row.from-customer {
+  justify-content: flex-end;
+}
 
-/* bubble */
+/* הודעת עסק */
+.chat-message-row.from-business {
+  justify-content: flex-start;
+}
+
+/* הודעות מערכת */
+.chat-message-row.from-system {
+  justify-content: center;
+}
+
+/* הבועה עצמה */
 .chat-bubble {
   background-color: #f1f0f0;
   max-width: 70%;
-  padding: 10px 10px 22px; /* ✅ extra bottom space for timestamp */
-  border-radius: 15px;
+  padding: 10px;
+  border-radius: 12px;
   font-size: 14px;
   display: flex;
   flex-direction: column;
   position: relative;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
-/* customer bubble */
+/* הודעות של לקוח - סגול בהיר + סגנון מעודכן */
 .chat-message-row.from-customer .chat-bubble {
-  background-color: #d7c9ff;
+  background-color: #d7c9ff; /* סגול בהיר */
   border-top-left-radius: 0;
-  color: #000;
+  align-self: flex-end !important;
+  color: black;
 }
 
-/* business bubble */
+/* הודעות של העסק - לבן */
 .chat-message-row.from-business .chat-bubble {
-  background-color: #fff;
+  background-color: white;
   border-top-right-radius: 0;
-  color: #000;
+  align-self: flex-start;
+  color: black;
 }
 
-/* system bubble */
+/* הודעות מערכת */
 .chat-message-row.from-system .chat-bubble {
   background-color: #e0e0e0;
   text-align: center;
+  align-self: center;
   color: #555;
 }
 
-/* media */
+/* מדיה מצורפת */
 .chat-bubble img,
 .chat-bubble video {
   max-width: 100%;
   border-radius: 8px;
-  margin-top: 6px;
+  margin-top: 5px;
   object-fit: cover;
 }
 
-/* labels */
+/* טקסטים נלווים */
 .sender-label {
   font-size: 10px;
   color: #666;
@@ -72,19 +85,41 @@
   margin-bottom: 4px;
 }
 
-/* timestamp */
+/* זמן ההודעה */
 .timestamp {
   font-size: 10px;
   color: #888;
+  margin-top: 5px;
+  display: block;
   position: absolute;
-  bottom: 6px;
+  bottom: 5px;
   right: 10px;
-  line-height: 1;
+}
+.chat-message-row.from-customer {
+  justify-content: flex-end;
 }
 
-/* =========================
-   Responsive
-========================= */
+.chat-message-row.from-business {
+  justify-content: flex-start;
+}
+
+.chat-bubble {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 15px;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.chat-message-row.from-customer .chat-bubble {
+  background-color: #d7c9ff; /* סגול בהיר */
+}
+
+.chat-message-row.from-business .chat-bubble {
+  background-color: #fff;
+}
+/* רספונסיביות מלאה לתצוגת צ'אט בכל המכשירים */
+
 @media (max-width: 768px) {
   .chat-box {
     max-height: 50vh;
@@ -95,16 +130,18 @@
   .chat-bubble {
     max-width: 85%;
     font-size: 13px;
-    padding: 8px 8px 20px;
+    padding: 8px;
   }
 
   .timestamp {
     font-size: 9px;
-    bottom: 5px;
+    bottom: 4px;
     right: 8px;
   }
 
-  .sender-label { font-size: 9px; }
+  .sender-label {
+    font-size: 9px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -117,19 +154,35 @@
   .chat-bubble {
     max-width: 95%;
     font-size: 12px;
-    padding: 6px 6px 18px;
+    padding: 6px;
   }
 
   .timestamp {
     font-size: 8px;
-    bottom: 4px;
+    bottom: 3px;
     right: 6px;
   }
 
-  .sender-label { font-size: 8px; }
+  .sender-label {
+    font-size: 8px;
+  }
+}
+/* 4K מסכים גדולים מאוד */
+@media (min-width: 1400px) {
+  .chat-box {
+    max-width: 70%;
+    margin: auto;
+  }
 }
 
-/* tablets */
+/* דסקטופ רגיל */
+@media (min-width: 1025px) and (max-width: 1399px) {
+  .chat-box {
+    max-width: 90%;
+  }
+}
+
+/* טאבלטים ו־iPad אנכי/אופקי */
 @media (min-width: 768px) and (max-width: 1024px) {
   .chat-box {
     max-height: 55vh;
@@ -137,15 +190,29 @@
   }
 }
 
-/* desktop */
-@media (min-width: 1025px) and (max-width: 1399px) {
-  .chat-box { max-width: 90%; }
+/* סמארטפונים רגילים */
+@media (min-width: 481px) and (max-width: 767px) {
+  .chat-box {
+    max-height: 50vh;
+    padding: 6px;
+  }
 }
 
-/* very large screens */
-@media (min-width: 1400px) {
+/* מסכים קטנים במיוחד */
+@media (max-width: 480px) {
   .chat-box {
-    max-width: 70%;
-    margin: auto;
+    max-height: 45vh;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .chat-bubble {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .timestamp,
+  .sender-label {
+    font-size: 8px;
   }
 }

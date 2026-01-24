@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useLocation } from "react-router-dom";
 import ConversationsList from "./ConversationsList";
@@ -12,17 +12,12 @@ export default function BusinessChatPage() {
   const rawBusinessId = user?.businessId || user?.business?._id;
   const businessId = (rawBusinessId?._id ?? rawBusinessId)?.toString();
 
-  const socket = useSocket();
-  const location = useLocation();
-
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
   const [unreadCounts, setUnreadCounts] = useState({});
 
-  /* =========================
-     📱 Detect mobile
-  ========================= */
-  const isMobile = useMemo(() => window.innerWidth <= 768, []);
+  const socket = useSocket();
+  const location = useLocation();
 
   /* =========================
      🧩 Normalize conversation
@@ -37,6 +32,37 @@ export default function BusinessChatPage() {
     clientName: c.clientName || c.customer?.name || "Client",
     conversationType: c.conversationType || "user-business",
   });
+
+  /* =========================
+     🔍 Open conversation from navigation (AI / deep link)
+     ❗ רק בוחר שיחה – לא מסמן כנקראה
+  ========================= */
+  useEffect(() => {
+    if (!initialized || !businessId || convos.length === 0) return;
+
+    const threadId =
+      location.state?.threadId ||
+      new URLSearchParams(location.search).get("threadId");
+
+    if (!threadId) return;
+
+    const convo = convos.find((c) => c.conversationId === threadId);
+    if (!convo) return;
+
+    setSelected({
+      conversationId: convo.conversationId,
+      partnerId: convo.clientId,
+      partnerName: convo.clientName,
+      conversationType: convo.conversationType,
+    });
+
+    // איפוס badge מקומי בלבד
+    setUnreadCounts((prev) => {
+      const next = { ...prev };
+      delete next[threadId];
+      return next;
+    });
+  }, [location, convos, initialized, businessId]);
 
   /* =========================
      📦 Fetch conversations
@@ -65,50 +91,30 @@ export default function BusinessChatPage() {
         });
         setUnreadCounts(counts);
 
-        // בדסקטופ – פותחים אוטומטית שיחה ראשונה
-        if (!isMobile && !selected && deduped.length) {
-          const first = deduped[0];
+        const navigatedThreadId =
+          location.state?.threadId ||
+          new URLSearchParams(location.search).get("threadId");
+
+        if (!selected && !navigatedThreadId && deduped.length) {
+          const {
+            conversationId,
+            clientId: partnerId,
+            clientName: partnerName,
+            conversationType,
+          } = deduped[0];
+
           setSelected({
-            conversationId: first.conversationId,
-            partnerId: first.clientId,
-            partnerName: first.clientName,
-            conversationType: first.conversationType,
+            conversationId,
+            partnerId,
+            partnerName,
+            conversationType,
           });
         }
       })
       .catch((err) => {
         console.error("Error fetching client conversations:", err);
       });
-  }, [initialized, businessId]);
-
-  /* =========================
-     🔍 Deep link (AI / navigation)
-  ========================= */
-  useEffect(() => {
-    if (!initialized || !businessId || convos.length === 0) return;
-
-    const threadId =
-      location.state?.threadId ||
-      new URLSearchParams(location.search).get("threadId");
-
-    if (!threadId) return;
-
-    const convo = convos.find((c) => c.conversationId === threadId);
-    if (!convo) return;
-
-    setSelected({
-      conversationId: convo.conversationId,
-      partnerId: convo.clientId,
-      partnerName: convo.clientName,
-      conversationType: convo.conversationType,
-    });
-
-    setUnreadCounts((prev) => {
-      const next = { ...prev };
-      delete next[threadId];
-      return next;
-    });
-  }, [location, convos, initialized, businessId]);
+  }, [initialized, businessId, selected, location]);
 
   /* =========================
      💬 Realtime updates
@@ -120,6 +126,8 @@ export default function BusinessChatPage() {
 
     const handleNewMessage = (msg) => {
       if (msg?.toId !== businessId) return;
+
+      // אם זו השיחה הפעילה – לא מגדילים unread
       if (msg.conversationId === selected?.conversationId) return;
 
       setUnreadCounts((prev) => ({
@@ -137,7 +145,8 @@ export default function BusinessChatPage() {
   }, [socket, businessId, selected]);
 
   /* =========================
-     ✅ Mark as read
+     ✅ מקור אמת יחיד: סימון שיחה כנקראה
+     מופעל רק כש-selected.conversationId משתנה
   ========================= */
   useEffect(() => {
     if (!socket || !selected?.conversationId || !businessId) return;
@@ -150,18 +159,20 @@ export default function BusinessChatPage() {
   }, [socket, selected?.conversationId, businessId]);
 
   /* =========================
-     🧭 Select conversation
+     🧭 Manual selection (UI בלבד)
   ========================= */
   const handleSelect = (conversationId, partnerId, partnerName) => {
     const convo = convos.find((c) => c.conversationId === conversationId);
+    const type = convo?.conversationType || "user-business";
 
     setSelected({
       conversationId,
       partnerId,
       partnerName,
-      conversationType: convo?.conversationType || "user-business",
+      conversationType: type,
     });
 
+    // איפוס badge מקומי בלבד
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[conversationId];
@@ -175,48 +186,33 @@ export default function BusinessChatPage() {
 
   return (
     <div className={styles.chatContainer}>
-      {/* 📱 מובייל: רשימת שיחות בלבד */}
-      {(!isMobile || !selected) && (
-        <aside className={styles.sidebarInner}>
-          <ConversationsList
-            conversations={convos}
+      <aside className={styles.sidebarInner}>
+        <ConversationsList
+          conversations={convos}
+          businessId={businessId}
+          selectedConversationId={selected?.conversationId}
+          onSelect={handleSelect}
+          unreadCountsByConversation={unreadCounts}
+          isBusiness
+        />
+      </aside>
+
+      <section className={styles.chatArea}>
+        {selected ? (
+          <BusinessChatTab
+            conversationId={selected.conversationId}
             businessId={businessId}
-            selectedConversationId={selected?.conversationId}
-            onSelect={handleSelect}
-            unreadCountsByConversation={unreadCounts}
-            isBusiness
+            customerId={selected.partnerId}
+            customerName={selected.partnerName}
+            socket={socket}
+            conversationType={selected.conversationType}
           />
-        </aside>
-      )}
-
-      {/* 📱 מובייל: שיחה בלבד + חזרה */}
-      {(!isMobile || selected) && (
-        <section className={styles.chatArea}>
-          {isMobile && selected && (
-            <button
-              className={styles.backButton}
-              onClick={() => setSelected(null)}
-            >
-              ← חזרה לשיחות
-            </button>
-          )}
-
-          {selected ? (
-            <BusinessChatTab
-              conversationId={selected.conversationId}
-              businessId={businessId}
-              customerId={selected.partnerId}
-              customerName={selected.partnerName}
-              socket={socket}
-              conversationType={selected.conversationType}
-            />
-          ) : (
-            <div className={styles.emptyMessage}>
-              Select a conversation to view messages
-            </div>
-          )}
-        </section>
-      )}
+        ) : (
+          <div className={styles.emptyMessage}>
+            Select a conversation to view messages
+          </div>
+        )}
+      </section>
     </div>
   );
 }
