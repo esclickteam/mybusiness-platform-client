@@ -1,5 +1,6 @@
-/* src/components/ChatPage.css */
-
+/* ======================
+   CHAT CONTAINER
+====================== */
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -11,6 +12,30 @@
   overflow: hidden;
 }
 
+/* ======================
+   HEADER (לכפתור חזרה)
+====================== */
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  background: #ffffff;
+  font-weight: 600;
+}
+
+.mobile-back {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 20px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* ======================
+   MESSAGE LIST
+====================== */
 .message-list {
   flex: 1;
   padding: 16px;
@@ -20,6 +45,9 @@
   gap: 8px;
 }
 
+/* ======================
+   MESSAGE BUBBLES
+====================== */
 .message {
   max-width: 70%;
   padding: 12px;
@@ -47,6 +75,9 @@
   text-align: left;
 }
 
+/* ======================
+   INPUT BAR
+====================== */
 .input-bar {
   display: flex;
   padding: 12px;
@@ -78,10 +109,18 @@
 .input-bar button:hover {
   background: #357ABD;
 }
+
+/* ======================
+   📱 MOBILE
+====================== */
 @media (max-width: 768px) {
   .chat-container {
     border-radius: 0;
     box-shadow: none;
+  }
+
+  .mobile-back {
+    display: inline-flex;
   }
 
   .message {
@@ -103,6 +142,9 @@
   }
 }
 
+/* ======================
+   📱 SMALL MOBILE
+====================== */
 @media (max-width: 480px) {
   .message {
     max-width: 95%;
