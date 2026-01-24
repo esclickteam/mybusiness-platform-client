@@ -11,6 +11,9 @@
   overflow: hidden;
 }
 
+/* ======================
+   MESSAGE LIST
+====================== */
 .message-list {
   flex: 1;
   padding: 16px;
@@ -18,14 +21,22 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  /* 🔑 חשוב לנייד – שהגלילה תהיה רק פה */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* ======================
+   MESSAGE
+====================== */
 .message {
   max-width: 70%;
   padding: 12px;
   border-radius: 16px;
   position: relative;
   word-wrap: break-word;
+  line-height: 1.35;
 }
 
 .message.mine {
@@ -47,11 +58,17 @@
   text-align: left;
 }
 
+/* ======================
+   INPUT BAR
+====================== */
 .input-bar {
   display: flex;
   padding: 12px;
   border-top: 1px solid #eee;
   background: #ffffff;
+
+  /* 🔑 קריטי – שלא יידחף בגלילה */
+  flex-shrink: 0;
 }
 
 .input-bar input {
@@ -78,10 +95,17 @@
 .input-bar button:hover {
   background: #357ABD;
 }
+
+/* ======================
+   📱 MOBILE
+====================== */
 @media (max-width: 768px) {
   .chat-container {
     border-radius: 0;
     box-shadow: none;
+
+    /* 🔑 הכי חשוב */
+    height: 100dvh;
   }
 
   .message {
@@ -91,6 +115,7 @@
 
   .input-bar {
     padding: 10px;
+    padding-bottom: env(safe-area-inset-bottom); /* iOS */
   }
 
   .input-bar input {
@@ -103,6 +128,9 @@
   }
 }
 
+/* ======================
+   📱 SMALL MOBILE
+====================== */
 @media (max-width: 480px) {
   .message {
     max-width: 95%;
