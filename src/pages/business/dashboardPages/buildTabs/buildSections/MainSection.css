@@ -66,18 +66,24 @@
     padding-left: 1rem;
     padding-right: 1rem;
     gap: 1rem;
+
+    /* ✅ רווח כללי לכל התוכן כדי שלא ייחתך בגלל ה-sticky */
+    padding-bottom: 130px;
   }
 
   .form-column {
     padding: 1.5rem;
-    /* ✅ שלא יכסה את סוף הטופס + התצוגה */
-    padding-bottom: 110px;
+    /* ❗ לא חייבים כאן padding-bottom כי כבר יש ל-grid, אבל משאירים קטן שלא יפגע */
+    padding-bottom: 1.5rem;
   }
 
   .preview-column {
     display: block; /* ✅ חובה כדי שלא יהיה hidden */
     padding: 1.5rem;
     margin-top: 0.25rem;
+
+    /* ✅ רווח נוסף כדי שהסוף של התצוגה לא ייכנס מתחת לכפתור */
+    margin-bottom: 30px;
   }
 
   /* ✅ כפתור שמירה דביק למטה */
@@ -96,13 +102,17 @@
 
 /* ===== SMALL PHONES ===== */
 @media (max-width: 420px) {
+  .main-section-grid {
+    padding-bottom: 140px;
+  }
+
   .form-column {
     padding: 1.25rem;
-    padding-bottom: 120px;
   }
 
   .preview-column {
     padding: 1.25rem;
+    margin-bottom: 40px;
   }
 
   .save-btn {
