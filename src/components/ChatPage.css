@@ -1,8 +1,6 @@
-/* ======================
-   CHAT CONTAINER
-====================== */
-.chat-container,
-.chat-thread {
+/* src/components/ChatPage.css */
+
+.chat-container {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -13,161 +11,112 @@
   overflow: hidden;
 }
 
-/* ======================
-   CHAT HEADER (Mobile)
-====================== */
-.chat-header,
-.chat-thread-header {
-  display: none; /* ❌ דסקטופ */
-}
-
-/* ======================
-   MESSAGE LIST
-====================== */
-.message-list,
-.chat-messages {
+.message-list {
   flex: 1;
   padding: 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 }
 
-/* ======================
-   MESSAGE
-====================== */
-.message,
-.chat-message {
+.message {
   max-width: 70%;
   padding: 12px;
   border-radius: 16px;
   position: relative;
   word-wrap: break-word;
-  line-height: 1.35;
 }
 
-.message.mine,
-.chat-message.mine {
+.message.mine {
   background: #dcf8c6;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
 
-.message.theirs,
-.chat-message.theirs {
+.message.theirs {
   background: #ffffff;
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
 
-.message .time,
-.chat-message-time {
+.message .time {
   font-size: 0.75rem;
   color: #999;
   margin-top: 4px;
+  text-align: left;
 }
 
-/* ======================
-   INPUT BAR
-====================== */
-.input-bar,
-.chat-input {
+.input-bar {
   display: flex;
   padding: 12px;
   border-top: 1px solid #eee;
   background: #ffffff;
-  flex-shrink: 0;
 }
 
-.input-bar input,
-.chat-input input {
+.input-bar input {
   flex: 1;
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 20px;
   font-size: 1rem;
+  outline: none;
 }
 
-.input-bar button,
-.chat-input button {
+.input-bar button {
   margin-left: 8px;
   padding: 8px 16px;
+  border: none;
   border-radius: 20px;
   background: #4A90E2;
   color: #fff;
-  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-/* ======================
-   PAGE LAYOUT
-====================== */
-.chat-page,
-.chat-layout {
-  display: flex;
-  height: 100vh;
-  width: 100%;
-  overflow: hidden;
+.input-bar button:hover {
+  background: #357ABD;
 }
-
-.chat-sidebar,
-.chat-conversations-panel {
-  width: 320px;
-  min-width: 260px;
-  background: #fff;
-  border-right: 1px solid #e5e7eb;
-  overflow-y: auto;
-}
-
-.chat-main,
-.chat-thread-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: #f9f9f9;
-}
-
-/* ======================
-   📱 MOBILE ONLY
-====================== */
 @media (max-width: 768px) {
-  .chat-page,
-  .chat-layout {
-    flex-direction: column;
+  .chat-container {
+    border-radius: 0;
+    box-shadow: none;
   }
 
-  .chat-sidebar,
-  .chat-conversations-panel {
-    width: 100%;
+  .message {
+    max-width: 85%;
+    font-size: 0.95rem;
   }
 
-  .chat-main,
-  .chat-thread-panel {
-    height: 100dvh;
+  .input-bar {
+    padding: 10px;
   }
 
-  /* ✅ HEADER מופיע רק במובייל */
-  .chat-header,
-  .chat-thread-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    font-weight: 600;
+  .input-bar input {
+    font-size: 0.95rem;
   }
 
-  .mobile-back,
-  .chat-back-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
+  .input-bar button {
+    font-size: 0.95rem;
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .message {
+    max-width: 95%;
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .input-bar input {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
+
+  .input-bar button {
+    font-size: 0.9rem;
+    padding: 6px 12px;
   }
 }
