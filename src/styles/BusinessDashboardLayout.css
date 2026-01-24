@@ -126,8 +126,9 @@
   .dashboard-layout-sidebar {
     transform: translateX(-100%);
     transition: transform 0.35s ease;
-    width: 100vw;
+    width: min(320px, 86vw); /* ✅ Drawer צר – רספונסיביות בלבד */
   }
+
 
   .dashboard-layout-sidebar.open {
     transform: translateX(0);
@@ -468,6 +469,14 @@
     padding: 0 12px !important;
   }
 
+  /* ✅ Hello בשורה אחת */
+  .hello-line{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 55vw;
+  }
+
   /* סידור שמאל בשורה אחת */
   .dashboard-layout-header-left {
     height: 56px !important;
@@ -508,6 +517,7 @@
     right: 0 !important;
     left: auto !important;
     width: min(320px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px) !important; /* ✅ שלא יגלוש */
   }
 
   /* תוכן במובייל בלי margin-left של הסיידבר */

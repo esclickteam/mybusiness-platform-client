@@ -1,10 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  NavLink,
-  Outlet,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { AiProvider } from "../../context/AiContext";
@@ -14,8 +9,6 @@ import { io } from "socket.io-client";
 import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
-
-
 
 /* ============================
    🔌 Socket
@@ -91,46 +84,41 @@ export default function BusinessDashboardLayout() {
   }, [user?.isEarlyBirdActive, user?.earlyBirdExpiresAt]);
 
   /* 🎁 Upgrade → Stripe */
-  
+  const handleUpgrade = async () => {
+    if (!user?.userId) return;
 
-const handleUpgrade = async () => {
-  if (!user?.userId) return;
+    try {
+      const res = await API.post("/stripe/create-checkout-session", {
+        userId: user.userId,
+        plan: "monthly",
+        forceRegularPrice: true,
+      });
 
-  try {
-    const res = await API.post("/stripe/create-checkout-session", {
-      userId: user.userId,
-      plan: "monthly",
-      forceRegularPrice: true,
-    });
-
-    if (res.data?.url) {
-      window.location.href = res.data.url;
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
     }
-  } catch (err) {
-    console.error("Checkout error:", err);
-  }
-};
+  };
 
-const handleEarlyBirdUpgrade = async () => {
-  if (!user?.userId) return;
-  if (user?.earlyBirdUsed || user?.hasPaid) return;
+  const handleEarlyBirdUpgrade = async () => {
+    if (!user?.userId) return;
+    if (user?.earlyBirdUsed || user?.hasPaid) return;
 
-  try {
-    const res = await API.post("/stripe/create-checkout-session", {
-      userId: user.userId,
-      plan: "monthly",
-    });
+    try {
+      const res = await API.post("/stripe/create-checkout-session", {
+        userId: user.userId,
+        plan: "monthly",
+      });
 
-    if (res.data?.url) {
-      window.location.href = res.data.url;
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err) {
+      console.error("Early Bird checkout error:", err);
     }
-  } catch (err) {
-    console.error("Early Bird checkout error:", err);
-  }
-};
-
-
- 
+  };
 
   /* ============================
      🔓 Logout
@@ -158,15 +146,13 @@ const handleEarlyBirdUpgrade = async () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-    /* ============================
+  /* ============================
      ⏳ Trial Day Calculation
   ============================ */
   const DAY = 1000 * 60 * 60 * 24;
 
   const daysSinceTrialStart = user?.trialStartedAt
-    ? Math.floor(
-        (Date.now() - new Date(user.trialStartedAt).getTime()) / DAY
-      )
+    ? Math.floor((Date.now() - new Date(user.trialStartedAt).getTime()) / DAY)
     : 0;
 
   const isAfterDay4 = daysSinceTrialStart >= 4;
@@ -174,26 +160,17 @@ const handleEarlyBirdUpgrade = async () => {
   /* ============================
    🎯 Upgrade / Early Bird Guards
 ============================ */
-const earlyBirdUsed = Boolean(user?.earlyBirdUsed);
-const hasPaid = Boolean(user?.hasPaid);
+  const earlyBirdUsed = Boolean(user?.earlyBirdUsed);
+  const hasPaid = Boolean(user?.hasPaid);
 
- const isTrialActive =
-  user?.subscriptionPlan === "trial" &&
-  user?.trialEndsAt &&
-  new Date(user.trialEndsAt) > new Date();
+  const isTrialActive =
+    user?.subscriptionPlan === "trial" &&
+    user?.trialEndsAt &&
+    new Date(user.trialEndsAt) > new Date();
 
- const canUpgrade =
-  isTrialActive &&
-  !hasPaid &&
-  !earlyBirdUsed;
+  const canUpgrade = isTrialActive && !hasPaid && !earlyBirdUsed;
 
-  const canShowEarlyBird =
-  canUpgrade &&
-  user?.isEarlyBirdActive &&
-  isAfterDay4;
-
-
- 
+  const canShowEarlyBird = canUpgrade && user?.isEarlyBirdActive && isAfterDay4;
 
   if (loading) return null;
 
@@ -205,7 +182,6 @@ const hasPaid = Boolean(user?.hasPaid);
       <AiProvider>
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
-
             {/* ================= Sidebar ================= */}
             {(!isMobile || showSidebar) && (
               <aside
@@ -230,11 +206,10 @@ const hasPaid = Boolean(user?.hasPaid);
                   )}
                 </div>
 
-               <BusinessWorkspaceNav
-  messagesCount={messagesCount}
-  onNavigate={() => isMobile && setShowSidebar(false)}
-/>
-
+                <BusinessWorkspaceNav
+                  messagesCount={messagesCount}
+                  onNavigate={() => isMobile && setShowSidebar(false)}
+                />
 
                 {isMobile && (
                   <div className="sidebar-footer">
@@ -249,101 +224,96 @@ const hasPaid = Boolean(user?.hasPaid);
               </aside>
             )}
 
-
             {/* ================= Header ================= */}
-<header className="dashboard-layout-header">
+            <header className="dashboard-layout-header">
+              <div className="dashboard-layout-header-left">
+                {/* ✅ MOBILE: כפתור המבורגר בתוך ההידר + לחיצה חוזרת סוגרת */}
+                {isMobile && (
+                  <button
+                    type="button"
+                    className="header-hamburger-btn"
+                    aria-label={showSidebar ? "Close menu" : "Open menu"}
+                    onClick={() => setShowSidebar((v) => !v)}
+                  >
+                    {showSidebar ? <FaTimes /> : <FaBars />}
+                  </button>
+                )}
 
-  <div className="dashboard-layout-header-left">
-    {/* ✅ MOBILE: כפתור המבורגר בתוך ההידר + לחיצה חוזרת סוגרת */}
-    {isMobile && (
-      <button
-        type="button"
-        className="header-hamburger-btn"
-        aria-label={showSidebar ? "Close menu" : "Open menu"}
-        onClick={() => setShowSidebar(v => !v)}
-      >
-        {showSidebar ? <FaTimes /> : <FaBars />}
-      </button>
-    )}
+                <div className="hello-line">
+                  Hello, {user?.businessName || user?.name}
+                </div>
 
-    <div>Hello, {user?.businessName || user?.name}</div>
+                {/* ✅ בדסקטופ נשאר כמו שהיה */}
+                {!isMobile && isTrialActive && (
+                  <div className="trial-status">
+                    ⏳{" "}
+                    {user.isTrialEndingToday ? (
+                      <strong>Trial ends today</strong>
+                    ) : (
+                      <>
+                        Trial ends in <strong>{user.trialDaysLeft} days</strong>
+                      </>
+                    )}
 
-    {isTrialActive && (
-      <div className="trial-status">
-        ⏳{" "}
-        {user.isTrialEndingToday ? (
-          <strong>Trial ends today</strong>
-        ) : (
-          <>
-            Trial ends in <strong>{user.trialDaysLeft} days</strong>
-          </>
-        )}
+                    {canUpgrade && !canShowEarlyBird && (
+                      <button
+                        className="trial-upgrade-pill"
+                        onClick={handleUpgrade}
+                      >
+                        Upgrade
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
 
-        {canUpgrade && !canShowEarlyBird && (
-          <button className="trial-upgrade-pill" onClick={handleUpgrade}>
-            Upgrade
-          </button>
-        )}
-      </div>
-    )}
-  </div>
+              {/* ✅ רק רספונסיביות: EarlyBird לא מוצג במובייל */}
+              {!isMobile && canShowEarlyBird && (
+                <div className="dashboard-layout-header-center">
+                  <div className="earlybird-header-banner">
+                    {timeLeft && (
+                      <div className="earlybird-timer">
+                        ⏳ Ending in <strong>{timeLeft}</strong>
+                      </div>
+                    )}
 
-  {canShowEarlyBird && (
-    <div className="dashboard-layout-header-center">
-      <div className="earlybird-header-banner">
-        {timeLeft && (
-          <div className="earlybird-timer">
-            ⏳ Ending in <strong>{timeLeft}</strong>
-          </div>
-        )}
+                    <div className="earlybird-text">
+                      <span className="earlybird-badge">🎁 Early Bird</span>
+                      <span className="earlybird-main">
+                        Save <strong>$20</strong> today — first month only
+                        <span className="price"> $99</span>
+                        <span className="old-price"> $119</span>
+                      </span>
+                    </div>
 
-        <div className="earlybird-text">
-          <span className="earlybird-badge">🎁 Early Bird</span>
-          <span className="earlybird-main">
-            Save <strong>$20</strong> today — first month only
-            <span className="price"> $99</span>
-            <span className="old-price"> $119</span>
-          </span>
-        </div>
+                    <button
+                      className="earlybird-upgrade-btn"
+                      onClick={handleEarlyBirdUpgrade}
+                    >
+                      Upgrade
+                    </button>
+                  </div>
+                </div>
+              )}
 
-        <button className="earlybird-upgrade-btn" onClick={handleEarlyBirdUpgrade}>
-          Upgrade
-        </button>
-      </div>
-    </div>
-  )}
+              <div className="dashboard-layout-header-right">
+                <div className="fb-notif-wrapper">
+                  <FacebookStyleNotifications />
+                </div>
 
-  <div className="dashboard-layout-header-right">
-    <div className="fb-notif-wrapper">
-      <FacebookStyleNotifications />
-    </div>
-
-    {/* ✅ במובייל logout כבר קיים בפוטר של הסיידבר, אז לא מכפילים */}
-    {!isMobile && (
-      <button className="header-action-btn" onClick={handleLogout}>
-        Logout
-      </button>
-    )}
-  </div>
-</header>
-
-
-            {/* ================= Mobile Button ================= */}
-            {isMobile && !showSidebar && (
-              <button
-                className="sidebar-open-btn"
-                aria-label="Open menu"
-                onClick={() => setShowSidebar(true)}
-              >
-                <FaBars />
-              </button>
-            )}
+                {/* ✅ במובייל logout כבר קיים בפוטר של הסיידבר, אז לא מכפילים */}
+                {!isMobile && (
+                  <button className="header-action-btn" onClick={handleLogout}>
+                    Logout
+                  </button>
+                )}
+              </div>
+            </header>
 
             {/* ================= Content ================= */}
             <main className="dashboard-content">
               <Outlet />
             </main>
-
           </div>
         </div>
       </AiProvider>
