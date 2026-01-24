@@ -194,16 +194,6 @@ export default function BusinessDashboardLayout() {
                     alt="BizUply Logo"
                     className="sidebar-logo-img"
                   />
-
-                  {isMobile && (
-                    <button
-                      className="sidebar-close-btn"
-                      onClick={() => setShowSidebar(false)}
-                      aria-label="Close menu"
-                    >
-                      <FaTimes />
-                    </button>
-                  )}
                 </div>
 
                 <BusinessWorkspaceNav
