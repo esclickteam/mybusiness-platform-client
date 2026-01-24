@@ -5,6 +5,8 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* =========================
@@ -15,16 +17,22 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  gap: 12px;
 }
 
 .services-top h2 {
   font-size: 1.4rem;
   font-weight: 700;
+  margin: 0;
 }
 
 .services-actions {
   display: flex;
   gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 640px;
 }
 
 .services-actions input {
@@ -32,7 +40,10 @@
   border-radius: 12px;
   border: 1px solid #ddd;
   font-size: 0.95rem;
-  min-width: 220px;
+  min-width: 0;         /* ✅ היה 220px */
+  flex: 1;              /* ✅ שיתפוס רוחב */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* =========================
@@ -47,6 +58,7 @@
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 8px 24px rgba(94, 23, 235, 0.25);
+  white-space: nowrap;
 }
 
 .primary-btn:disabled {
@@ -62,6 +74,7 @@
   padding: 10px 18px;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 /* =========================
@@ -73,6 +86,8 @@
   padding: 20px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
   margin-bottom: 28px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .service-form h3 {
@@ -88,6 +103,7 @@
   border-radius: 12px;
   border: 1px solid #ddd;
   font-size: 0.95rem;
+  box-sizing: border-box;
 }
 
 .duration-row {
@@ -100,6 +116,7 @@
   justify-content: flex-end;
   gap: 10px;
   margin-top: 10px;
+  flex-wrap: wrap;
 }
 
 /* =========================
@@ -109,10 +126,13 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
-
-  justify-content: center; /* ✅ מרכז כשיש מעט כרטיסים */
+  justify-content: center;
+  width: 100%;
 }
 
+/* =========================
+   Service Card
+========================= */
 .service-card {
   background: white;
   border-radius: 22px;
@@ -144,22 +164,26 @@
 
 .card-body h4 {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 4px;
 }
 
 .card-body p {
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: #666;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  line-height: 1.35;
 }
 
 .meta {
   display: flex;
   justify-content: space-between;
-  font-weight: 600;
-  font-size: 0.85rem;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.88rem;
   color: #333;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* =========================
@@ -168,12 +192,12 @@
 .card-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 10px;
   padding: 10px 14px;
   border-top: 1px solid #eee;
 
-  opacity: 0;                     /* 🔽 מוסתר */
-  transition: opacity 0.2s ease;  /* אנימציה עדינה */
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 .service-card:hover .card-actions {
@@ -181,11 +205,17 @@
 }
 
 .card-actions button {
-  background: none;
+  background: #fff;
   border: none;
   cursor: pointer;
   font-size: 1.1rem;
-  opacity: 0.7;
+  opacity: 0.85;
+
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+
+  box-shadow: 0 8px 22px rgba(124, 58, 237, 0.18);
 }
 
 .card-actions button:hover {
@@ -204,9 +234,22 @@
 }
 
 /* =========================
-   Responsive
+   Responsive (Tablet)
+========================= */
+@media (max-width: 1024px) {
+  .crm-services-tab {
+    padding: 20px;
+  }
+}
+
+/* =========================
+   Responsive (Mobile)
 ========================= */
 @media (max-width: 768px) {
+  .crm-services-tab {
+    padding: 16px;
+  }
+
   .services-top {
     flex-direction: column;
     align-items: stretch;
@@ -215,9 +258,56 @@
 
   .services-actions {
     width: 100%;
+    max-width: none;
+    flex-direction: column;       /* ✅ */
+    gap: 10px;
   }
 
   .services-actions input {
-    flex: 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .primary-btn {
+    width: 100%;                  /* ✅ כפתור מלא במובייל */
+    padding: 12px 16px;
+  }
+
+  /* ✅ במובייל אין hover — פעולות תמיד גלויות */
+  .card-actions {
+    opacity: 1;
+  }
+
+  /* ✅ כרטיס יותר קומפקטי כדי שלא ירגיש ריק */
+  .service-card {
+    border-radius: 20px;
+  }
+
+  .card-body {
+    padding: 14px;
+  }
+
+  .service-card img {
+    height: 120px;
+  }
+
+  .meta {
+    font-size: 0.9rem;
+  }
+}
+
+/* =========================
+   Small Phones
+========================= */
+@media (max-width: 420px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .card-actions button {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
   }
 }
