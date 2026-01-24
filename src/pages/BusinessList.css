@@ -1,384 +1,133 @@
-/* src/pages/BusinessList.css */
-
-/* 0. :root – משתני CSS מרכזיים */
-:root {
-  --bg-start:       #f0f4ff;
-  --bg-mid:         #f9f7ff;
-  --bg-end:         #fffaf7;
-
-  --card-bg:        #ffffff;
-  --card-radius:    24px;
-  --card-shadow:    0 16px 48px rgba(0, 0, 0, 0.08);
-
-  --primary:        #8a2be2;
-  --primary-hover:  #7a23d0;
-
-  --text-main:      #222222;
-  --text-secondary: #555555;
-
-  --gap-sm:         12px;
-  --gap-md:         16px;
-  --gap-lg:         24px;
-}
-
-/* 1. body – רקע רעש + גרדיאנט בסיסי */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  direction: rtl;
-  background:
-    url('/assets/noise.png') repeat,
-    linear-gradient(135deg, #f9faff, #f3f4fc);
-  background-size: auto, cover;
-}
-
-
-/* 2. אלמנטים וקטוריים מאחורי הרקע */
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  pointer-events: none;
-  z-index: -1;
-}
-body::before {
-  top: -25%;
-  left: -20%;
-  width: 60vw;
-  height: 60vh;
-  background: url('/assets/blob1.svg') no-repeat center/contain;
-  opacity: 0.18;
-}
-body::after {
-  bottom: -30%;
-  right: -15%;
-  width: 55vw;
-  height: 55vh;
-  background: url('/assets/blob2.svg') no-repeat center/contain;
-  opacity: 0.12;
-}
-
-/* 3. אנימציית גרדיאנט */
-@keyframes gradientShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* 4. .list-page – רקע גרדיאנט אנימטיבי */
+/* =========================
+   Page
+========================= */
 .list-page {
   min-height: 100vh;
-  padding: 0 1rem;
-  background: linear-gradient(-45deg, var(--bg-start), var(--bg-mid), var(--bg-end), #e4e8ff);
-  background-size: 400% 400%;
-  animation: gradientShift 25s ease infinite;
-}
-
-/* 5. קונטיינר ראשי */
-.business-list-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--gap-lg) 0;
-}
-.business-list-container h1 {
-  text-align: center;
-  font-size: 2.4rem;
-  color: var(--text-main);
-  margin-bottom: var(--gap-lg);
-  letter-spacing: 0.5px;
-}
-
-/* 6. Filter chips */
-.filter-chips {
-  display: flex;
-  gap: var(--gap-sm);
-  justify-content: center;
-  margin-bottom: var(--gap-md);
-}
-.chip {
-  display: inline-flex;
-  align-items: center;
-  background: #fff;
-  border: 1px solid var(--primary);
-  border-radius: 24px;
-  padding: 0.4rem 0.8rem;
-}
-.chip span {
-  margin-left: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-main);
-}
-.chip button {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--primary-hover);
-}
-
-/* 7. שורת סינון */
-.filters-wrapper {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-md);
-  justify-content: center;
-  margin-bottom: var(--gap-lg);
+  background: #fafafa;
   direction: rtl;
 }
 
-/* 8. dropdown inputs */
-.dropdown-wrapper {
-  position: relative;
-  width: 240px;
-}
-.dropdown-wrapper input.filter-input {
-  width: 100%;
-  height: 48px;
-  padding: 0 1rem;
-  border: 2px solid var(--primary);
-  border-radius: 24px;
-  background: #fff;
-  font-size: 1rem;
-  color: var(--text-main);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-  text-align: left;
-  transition: border-color 0.2s ease;
-}
-.dropdown-wrapper input.filter-input::placeholder {
-  color: var(--text-secondary);
-}
-.dropdown-wrapper input.filter-input:focus {
-  outline: none;
-  border-color: var(--primary-hover);
-}
-
-/* 9. כפתור חיפוש */
-.search-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  height: 48px;
-  padding: 0 2.5rem; /* 🟣 הגדלת רוחב ע"י ריווח פנימי */
-  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
-  color: #fff;
-  font-size: 1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 24px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: background 0.2s ease;
-  white-space: nowrap;
-  min-width: unset;
-  width: auto;
-}
-
-
-
-.search-btn:hover:not(:disabled) {
-  background: linear-gradient(90deg, var(--primary-hover), var(--primary));
-}
-.search-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.search-btn__icon {
-  width: 20px;
-  height: 20px;
-  fill: #fff;
-}
-
-/* 10. suggestions list */
-.suggestions-list {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  width: 100%;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  border-radius: 16px;
-  max-height: 200px;
-  overflow-y: auto;
+/* =========================
+   Sticky Filters
+========================= */
+.filters-sticky {
+  position: sticky;
+  top: 0;
   z-index: 20;
-  margin: 0;
-  padding: 0.25rem 0;
-  list-style: none;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.2) transparent;
-}
-.suggestions-list::-webkit-scrollbar {
-  width: 6px;
-}
-.suggestions-list::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0.2);
-  border-radius: 3px;
-}
-.suggestions-list li {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  color: var(--text-main);
-  cursor: pointer;
-  border-radius: 8px;
-}
-.suggestions-list li:hover {
-  background: var(--bg-mid);
+  background: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+  padding: 20px 16px;
 }
 
-/* 11. תוצאות גריד */
-.business-list {
+.filters-sticky h1 {
+  margin: 0 0 14px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+}
+
+/* =========================
+   Filters Row
+========================= */
+.filters-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--gap-lg);
-  margin-top: var(--gap-lg);
-  padding-bottom: var(--gap-lg);
-  align-items: start; /* חשוב ליישור גובה נכון */
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
 
-
-.no-search,
-.no-results {
-  grid-column: 1 / -1;
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 1.1rem;
+/* react-select fix RTL */
+.filters-row .react-select__control {
+  min-height: 44px;
+  border-radius: 10px;
 }
 
-/* 12. כרטיס עסק */
-.business-card {
-  background: linear-gradient(135deg, #f6f0ff, #ffffff);
-  border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow);
-  padding: 2rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  max-width: 420px;
-  width: 100%;
+/* =========================
+   Results Area
+========================= */
+.results-area {
+  padding: 28px 16px 60px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
-
-
-
-.business-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 64px rgba(0,0,0,0.12);
-}
-.business-card img {
-  border-radius: 50%;
+/* =========================
+   Business Grid
+========================= */
+.business-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
 }
 
-.business-card__info {
-  display: flex;
-  justify-content: center;   /* 🟢 ממרכז אופקית */
-  align-items: center;
-  gap: 0.5rem;
-  text-align: center;        /* 🟢 הטקסט בתוך יהיה ממורכז */
-  color: var(--text-secondary);
-  margin-bottom: 0.6rem;
-  font-size: 1rem;
-  line-height: 1.5;
+/* =========================
+   Skeleton Loading
+========================= */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
 }
 
-
-/* 13. פגינציה */
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: var(--gap-md);
-  margin-top: var(--gap-lg);
-}
-.pagination button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 12px;
-  background-color: var(--primary);
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-.pagination button:hover:not(:disabled) {
-  background-color: var(--primary-hover);
-}
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.skeleton-card {
+  height: 210px;
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    #eeeeee 25%,
+    #f5f5f5 37%,
+    #eeeeee 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s infinite ease-in-out;
 }
 
-/* 14. Input clearable */
-.dropdown-wrapper.input-clearable input.filter-input {
-  padding-left: 3rem !important;
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }
 
+/* =========================
+   Empty State
+========================= */
+.empty-state {
+  text-align: center;
+  margin-top: 80px;
+  color: #666;
+}
+
+.empty-state h3 {
+  margin-bottom: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.empty-state p {
+  font-size: 15px;
+  color: #777;
+}
+
+/* =========================
+   Mobile
+========================= */
 @media (max-width: 768px) {
-  .filters-wrapper {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .dropdown-wrapper,
-  .search-btn {
-    width: 100%;
-    max-width: none;
-  }
-
-  .business-list-container h1 {
-    font-size: 2rem;
-  }
-
-  .chip {
-    font-size: 0.95rem;
-    padding: 0.3rem 0.7rem;
-  }
-
-  .search-btn {
-    padding: 0.75rem 2rem;
-    font-size: 1rem;
-  }
-}
-@media (max-width: 480px) {
-  .business-list-container {
-    padding: 10px;
-  }
-
-  .business-list-container h1 {
-    font-size: 1.6rem;
-  }
-
-  .filters-wrapper {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .dropdown-wrapper,
-  .search-btn {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .chip {
-    font-size: 0.85rem;
-    padding: 0.25rem 0.5rem;
-  }
-
-  .business-list {
+  .filters-row {
     grid-template-columns: 1fr;
-    gap: 16px;
   }
 
-  .business-card {
-    max-width: 100%;
-    padding: 1.5rem;
+  .filters-sticky {
+    padding: 16px 12px;
   }
 
-  .business-card__info {
-    font-size: 0.9rem;
+  .filters-sticky h1 {
+    font-size: 18px;
   }
 
-  .pagination button {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
+  .results-area {
+    padding: 20px 12px 40px;
   }
 }

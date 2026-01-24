@@ -1,38 +1,46 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import Select from "react-select";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
 import ALL_CATEGORIES from "../data/categories";
-import { fetchCities } from "../data/cities"; // 👈 import the dynamic cities function
-import { FaSearch } from "react-icons/fa";
+import { fetchCities } from "../data/cities";
 import { Helmet } from "react-helmet-async";
 import "./BusinessList.css";
 
-const BusinessesList = () => {
+/* 🧠 Debounce */
+const debounce = (fn, delay = 400) => {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), delay);
+  };
+};
+
+export default function BusinessesList() {
   const [searchParams, setSearchParams] = useSearchParams();
+
   const categoryParam = searchParams.get("category") || "";
   const cityParam = searchParams.get("city") || "";
 
   const [businesses, setBusinesses] = useState([]);
   const [category, setCategory] = useState(null);
   const [city, setCity] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const [cities, setCities] = useState([]); // 👈 cities from the API
+  const [cities, setCities] = useState([]);
   const [loadingCities, setLoadingCities] = useState(true);
 
-  const categoryOptions = ALL_CATEGORIES.map((c) => ({ value: c, label: c }));
-  const cityOptions = cities.map((c) => ({ value: c, label: c })); // 👈 dynamic
+  const categoryOptions = ALL_CATEGORIES.map(c => ({ value: c, label: c }));
+  const cityOptions = cities.map(c => ({ value: c, label: c }));
 
-  // Load cities from the API once
+  /* ================= Cities ================= */
   useEffect(() => {
-    const loadCities = async () => {
+    (async () => {
       setLoadingCities(true);
       const fetched = await fetchCities();
       setCities(fetched);
 
-      // If there's a URL param – set it in state only if it actually exists
       if (categoryParam && ALL_CATEGORIES.includes(categoryParam)) {
         setCategory({ value: categoryParam, label: categoryParam });
       }
@@ -40,144 +48,104 @@ const BusinessesList = () => {
         setCity({ value: cityParam, label: cityParam });
       }
       setLoadingCities(false);
-    };
-    loadCities();
+    })();
   }, [categoryParam, cityParam]);
 
-  // Fetch businesses
+  /* ================= Fetch ================= */
   const fetchBusinesses = async (cat, city) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (cat) params.append("category", cat);
       if (city) params.append("city", city);
-      const response = await API.get(`/business?${params.toString()}`);
-      setBusinesses(response.data.businesses || []);
-    } catch (err) {
-      console.error("Error fetching businesses:", err);
+
+      const res = await API.get(`/business?${params.toString()}`);
+      setBusinesses(res.data.businesses || []);
+    } catch {
       setBusinesses([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // On every URL param change – fetch businesses
+  const debouncedFetch = useCallback(
+    debounce(fetchBusinesses),
+    []
+  );
+
   useEffect(() => {
-    fetchBusinesses(categoryParam, cityParam);
+    debouncedFetch(categoryParam, cityParam);
   }, [categoryParam, cityParam]);
 
-  const onCategoryChange = (opt) => {
-    setCategory(opt);
-    if (opt) searchParams.set("category", opt.value);
-    else searchParams.delete("category");
+  /* ================= Handlers ================= */
+  const updateParam = (key, value) => {
+    value ? searchParams.set(key, value) : searchParams.delete(key);
     setSearchParams(searchParams, { replace: true });
   };
 
-  const onCityChange = (opt) => {
-    setCity(opt);
-    if (opt) searchParams.set("city", opt.value);
-    else searchParams.delete("city");
-    setSearchParams(searchParams, { replace: true });
-  };
-
-  const seoTitleParts = [];
-  if (category) seoTitleParts.push(category.label);
-  if (city) seoTitleParts.push(city.label);
-  const seoTitle = seoTitleParts.length
-    ? `${seoTitleParts.join(" - ")} | Businesses on Esklik`
-    : "Business List | Esklik";
+  /* ================= SEO ================= */
+  const seoTitle = [
+    category?.label,
+    city?.label,
+  ].filter(Boolean).join(" · ") || "Businesses on Esklik";
 
   return (
     <div className="list-page">
       <Helmet>
         <title>{seoTitle}</title>
-        <meta
-          name="description"
-          content={
-            seoTitleParts.length
-              ? `Find businesses in ${category ? category.label : ""} ${
-                  city ? "in " + city.label : ""
-                } on the Esklik platform.`
-              : "Search for businesses by category and city on the Esklik platform."
-          }
-        />
-        <link
-          rel="canonical"
-          href={`https://yourdomain.co.il/businesses${
-            category ? `?category=${category.value}` : ""
-          }${city ? `&city=${city.value}` : ""}`}
-        />
       </Helmet>
 
-      <div className="business-list-container">
-        <h1>Business List</h1>
+      {/* 🔍 Filters */}
+      <div className="filters-sticky">
+        <h1>Find a Business</h1>
 
-        {(category || city) && (
-          <div className="filter-chips">
-            {category && (
-              <div className="chip">
-                <span>{category.label}</span>
-                <button onClick={() => onCategoryChange(null)}>×</button>
-              </div>
-            )}
-            {city && (
-              <div className="chip">
-                <span>{city.label}</span>
-                <button onClick={() => onCityChange(null)}>×</button>
-              </div>
-            )}
-          </div>
-        )}
+        <div className="filters-row">
+          <Select
+            options={categoryOptions}
+            value={category}
+            onChange={opt => {
+              setCategory(opt);
+              updateParam("category", opt?.value);
+            }}
+            placeholder="Category"
+            isClearable
+          />
 
-        <div className="filters-wrapper">
-          <div className="dropdown-wrapper">
-            <Select
-              options={categoryOptions}
-              value={category}
-              onChange={onCategoryChange}
-              placeholder="Category (e.g., Electrician)"
-              isClearable
-            />
-          </div>
-
-          <div className="dropdown-wrapper">
-            <Select
-              options={cityOptions}
-              value={city}
-              onChange={onCityChange}
-              placeholder={
-                loadingCities ? "Loading cities..." : "City (e.g., Tel Aviv)"
-              }
-              isClearable
-              isDisabled={loadingCities}
-            />
-          </div>
-
-          <button
-            className="search-btn"
-            onClick={() =>
-              fetchBusinesses(category && category.value, city && city.value)
-            }
-            disabled={loading}
-          >
-            <FaSearch /> {loading ? "Loading…" : "Search"}
-          </button>
+          <Select
+            options={cityOptions}
+            value={city}
+            onChange={opt => {
+              setCity(opt);
+              updateParam("city", opt?.value);
+            }}
+            placeholder={loadingCities ? "Loading cities…" : "City"}
+            isClearable
+            isDisabled={loadingCities}
+          />
         </div>
+      </div>
 
+      {/* 🧾 Results */}
+      <div className="results-area">
         {loading ? (
-          <p className="no-results">Loading results…</p>
-        ) : businesses.length > 0 ? (
+          <div className="skeleton-grid">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="skeleton-card" />
+            ))}
+          </div>
+        ) : businesses.length ? (
           <div className="business-list">
-            {businesses.map((b) => (
+            {businesses.map(b => (
               <BusinessCard key={b._id} business={b} />
             ))}
           </div>
         ) : (
-          <p className="no-results">No matching results</p>
+          <div className="empty-state">
+            <h3>No businesses found</h3>
+            <p>Try changing the category or city</p>
+          </div>
         )}
       </div>
     </div>
   );
-};
-
-export default BusinessesList;
+}
