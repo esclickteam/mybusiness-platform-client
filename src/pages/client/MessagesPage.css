@@ -1,0 +1,114 @@
+.messages-page {
+  padding: 28px 16px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.messages-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* states */
+.messages-loading,
+.messages-error,
+.messages-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: #555;
+}
+
+.messages-error {
+  color: #c0392b;
+}
+
+/* list */
+.messages-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* card */
+.message-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #f9f9ff;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.message-card:hover {
+  background: #f0f0ff;
+  transform: translateY(-2px);
+}
+
+/* logo */
+.message-card__logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* content */
+.message-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.message-card__name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #222;
+}
+
+.message-card__preview {
+  font-size: 14px;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.message-card__date {
+  font-size: 12px;
+  color: #888;
+}
+
+/* mobile */
+@media (max-width: 600px) {
+  .messages-page {
+    padding: 20px 12px;
+  }
+
+  .messages-title {
+    font-size: 22px;
+  }
+
+  .message-card {
+    padding: 14px 14px;
+    gap: 12px;
+  }
+
+  .message-card__logo {
+    width: 42px;
+    height: 42px;
+  }
+
+  .message-card__preview {
+    font-size: 13px;
+  }
+}
