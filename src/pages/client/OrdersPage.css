@@ -45,9 +45,16 @@
 
 .order-card {
   background: #ffffff;
-  border-radius: 16px;
-  padding: 18px 20px;
+  border-radius: 20px;
+  padding: 28px 24px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* 👈 מרכז אופקי */
+  text-align: center;    /* 👈 טקסט ממורכז */
+  gap: 16px;
+
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -58,22 +65,22 @@
 }
 
 .order-card__header {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
   color: #111827;
-  margin-bottom: 8px;
 }
 
 .order-card__meta {
   display: flex;
-  gap: 16px;
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 6px;
+  gap: 24px;
+  justify-content: center; /* 👈 מרכז */
+  font-size: 16px;
+  color: #4b5563;
 }
 
 .order-card__duration {
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 600;
   color: #374151;
 }
 
@@ -81,19 +88,43 @@
 
 @media (max-width: 600px) {
   .orders-page {
-    padding: 24px 14px;
+    padding: 20px 12px;
   }
 
   .orders-title {
-    font-size: 22px;
+    font-size: 20px;
+    text-align: center; /* 👈 כותרת באמצע */
+  }
+
+  .orders-list {
+    gap: 14px;
   }
 
   .order-card {
-    padding: 16px 16px;
+    padding: 18px 14px;
+    border-radius: 16px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* 👈 הכל ממורכז */
+    text-align: center;
+    gap: 12px;
+  }
+
+  .order-card__header {
+    font-size: 18px;
+    font-weight: 700;
   }
 
   .order-card__meta {
-    flex-direction: column;
-    gap: 4px;
+    flex-direction: column; /* 👈 שדות אחד מתחת לשני */
+    gap: 6px;
+    font-size: 15px;
+  }
+
+  .order-card__duration {
+    font-size: 15px;
+    font-weight: 600;
   }
 }
+
