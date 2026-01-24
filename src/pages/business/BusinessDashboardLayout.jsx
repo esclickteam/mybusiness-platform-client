@@ -250,83 +250,85 @@ const hasPaid = Boolean(user?.hasPaid);
             )}
 
             {/* ================= Header ================= */}
-            {!isMobile && (
-              <header className="dashboard-layout-header">
-
-                <div className="dashboard-layout-header-left">
-                  <div>Hello, {user?.businessName || user?.name}</div>
-
-                  {isTrialActive && (
-
-  <div className="trial-status">
-    ⏳{" "}
-    {user.isTrialEndingToday ? (
-      <strong>Trial ends today</strong>
-    ) : (
-      <>
-        Trial ends in <strong>{user.trialDaysLeft} days</strong>
-      </>
+<header className="dashboard-layout-header">
+  <div className="dashboard-layout-header-left">
+    {/* ✅ במובייל: כפתור המבורגר בתוך ההידר */}
+    {isMobile && (
+      <button
+        className="header-hamburger-btn"
+        aria-label="Open menu"
+        onClick={() => setShowSidebar(true)}
+        type="button"
+      >
+        <FaBars />
+      </button>
     )}
 
-    {canUpgrade && !canShowEarlyBird && (
-  <button
-    className="trial-upgrade-pill"
-    onClick={handleUpgrade}
-  >
-    Upgrade
-  </button>
-)}
+    <div>Hello, {user?.businessName || user?.name}</div>
+
+    {isTrialActive && (
+      <div className="trial-status">
+        ⏳{" "}
+        {user.isTrialEndingToday ? (
+          <strong>Trial ends today</strong>
+        ) : (
+          <>
+            Trial ends in <strong>{user.trialDaysLeft} days</strong>
+          </>
+        )}
+
+        {canUpgrade && !canShowEarlyBird && (
+          <button className="trial-upgrade-pill" onClick={handleUpgrade}>
+            Upgrade
+          </button>
+        )}
+      </div>
+    )}
   </div>
-)}
 
+  {/* ✅ EarlyBird נשאר אותו דבר (נוכל להסתיר במובייל עם CSS) */}
+  {canShowEarlyBird && (
+    <div className="dashboard-layout-header-center">
+      <div className="earlybird-header-banner">
+        {timeLeft && (
+          <div className="earlybird-timer">
+            ⏳ Ending in <strong>{timeLeft}</strong>
+          </div>
+        )}
 
-                </div>
-{canShowEarlyBird && (
+        <div className="earlybird-text">
+          <span className="earlybird-badge">🎁 Early Bird</span>
+          <span className="earlybird-main">
+            Save <strong>$20</strong> today — first month only
+            <span className="price"> $99</span>
+            <span className="old-price"> $119</span>
+          </span>
+        </div>
 
+        <button
+          className="earlybird-upgrade-btn"
+          onClick={handleEarlyBirdUpgrade}
+        >
+          Upgrade
+        </button>
+      </div>
+    </div>
+  )}
 
-                  <div className="dashboard-layout-header-center">
-                    <div className="earlybird-header-banner">
+  <div className="dashboard-layout-header-right">
+    <div className="fb-notif-wrapper">
+      <FacebookStyleNotifications />
+    </div>
 
-                      {timeLeft && (
-                        <div className="earlybird-timer">
-                          ⏳ Ending in <strong>{timeLeft}</strong>
-                        </div>
-                      )}
+    {/* ✅ בדסקטופ נשאר Logout בהידר, במובייל הוא כבר מופיע בסיידבר */}
+    {!isMobile && (
+      <button className="header-action-btn" onClick={handleLogout}>
+        Logout
+      </button>
+    )}
+  </div>
+</header>
 
-                      <div className="earlybird-text">
-                        <span className="earlybird-badge">🎁 Early Bird</span>
-                        <span className="earlybird-main">
-                          Save <strong>$20</strong> today — first month only
-                          <span className="price"> $99</span>
-                          <span className="old-price"> $119</span>
-                        </span>
-                      </div>
-
-                      <button
-                        className="earlybird-upgrade-btn"
-                        onClick={handleEarlyBirdUpgrade}
-                      >
-                        Upgrade
-                      </button>
-
-                    </div>
-                  </div>
-                )}
-
-                <div className="dashboard-layout-header-right">
-                  <div className="fb-notif-wrapper">
-                    <FacebookStyleNotifications />
-                  </div>
-
-                  <button
-                    className="header-action-btn"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </div>
-              </header>
-            )}
 
             {/* ================= Mobile Button ================= */}
             {isMobile && !showSidebar && (
