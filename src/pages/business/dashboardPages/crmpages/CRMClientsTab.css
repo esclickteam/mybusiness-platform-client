@@ -4,6 +4,9 @@
 .crm-tab-content {
   padding: 24px;
   max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .crm-title {
@@ -28,6 +31,7 @@
   display: flex;
   gap: 12px;
   margin-bottom: 18px;
+  align-items: center;
 }
 
 .search-input {
@@ -36,6 +40,9 @@
   border-radius: 12px;
   border: 1px solid #ddd;
   font-size: 0.95rem;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .search-input:focus {
@@ -60,7 +67,7 @@
 }
 
 /* =====================================================
-   Table
+   Table (Desktop)
 ===================================================== */
 .clients-table {
   width: 100%;
@@ -81,12 +88,14 @@
   font-size: 0.85rem;
   color: #555;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .clients-table td {
   padding: 14px 16px;
   font-size: 0.95rem;
   color: #222;
+  vertical-align: middle;
 }
 
 .client-row {
@@ -103,8 +112,36 @@
 }
 
 .actions-cell {
-  width: 60px;
+  width: 220px;
   text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+/* =========================
+   Open Client Button
+========================= */
+.open-client-btn {
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid #d6c9ff;
+  background: #ffffff;
+  color: #5e17eb;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.open-client-btn:hover {
+  background: #f4f2ff;
+  box-shadow: 0 8px 20px rgba(94, 23, 235, 0.2);
+  transform: translateY(-1px);
 }
 
 /* =====================================================
@@ -192,6 +229,7 @@ button {
   border-radius: 12px;
   border: 1px solid #ddd;
   font-size: 0.95rem;
+  box-sizing: border-box;
 }
 
 .crm-card input:focus {
@@ -210,9 +248,6 @@ button {
 }
 
 /* =====================================================
-   Card Actions
-===================================================== */
-/* =====================================================
    Form Actions (Cancel / Save)
 ===================================================== */
 .actions {
@@ -220,6 +255,7 @@ button {
   justify-content: flex-end;
   gap: 14px;
   margin-top: 24px;
+  flex-wrap: wrap;
 }
 
 /* Cancel */
@@ -232,8 +268,7 @@ button {
   border: 1px solid #d0c9f7;
   background: #ffffff;
   color: #4a3fa7;
-  transition: background 0.15s ease, box-shadow 0.15s ease,
-    transform 0.1s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
 
 .actions button:hover {
@@ -253,16 +288,16 @@ button {
   box-shadow: 0 14px 30px rgba(94, 23, 235, 0.45);
 }
 
-
 /* =====================================================
    View Header
 ===================================================== */
-
 .view-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 18px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 /* בסיס לכל הכפתורים */
@@ -278,8 +313,7 @@ button {
   border: 1px solid #d0c9f7;
   background: #ffffff;
   color: #4a3fa7;
-  transition: background 0.15s ease, box-shadow 0.15s ease,
-    transform 0.1s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
 
 /* Hover כללי */
@@ -301,51 +335,13 @@ button {
   box-shadow: 0 14px 30px rgba(94, 23, 235, 0.45);
 }
 
-/* =========================
-   Open Client Button
-========================= */
-.open-client-btn {
-  padding: 10px 16px;
-  border-radius: 14px;
-  border: 1px solid #d6c9ff;
-  background: #ffffff;
-  color: #5e17eb;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: background 0.15s ease, box-shadow 0.15s ease,
-    transform 0.1s ease;
-}
-
-/* Hover */
-.open-client-btn:hover {
-  background: #f4f2ff;
-  box-shadow: 0 8px 20px rgba(94, 23, 235, 0.2);
-  transform: translateY(-1px);
-}
-
-/* פעולות בצד ימין */
-.actions-cell {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 10px;
-}
-
-.client-row {
-  transition: background 0.15s ease;
-}
-
-.client-row:hover {
-  background: rgba(124, 77, 255, 0.04);
-}
-
-/* Phone dropdown */
+/* =====================================================
+   Phone dropdown
+===================================================== */
 .crm-phone-container {
   width: 100%;
   margin-bottom: 14px;
+  box-sizing: border-box;
 }
 
 .crm-phone-input {
@@ -355,6 +351,7 @@ button {
   border: 1px solid #ddd !important;
   font-size: 0.95rem;
   padding-left: 56px !important;
+  box-sizing: border-box !important;
 }
 
 .crm-phone-input:focus {
@@ -374,12 +371,9 @@ button {
   display: block;
 }
 
-
-
 /* =====================================================
    FIX – isolate CRM table from global table styles
 ===================================================== */
-
 .clients-table {
   border-collapse: collapse !important;
   border-spacing: 0 !important;
@@ -388,7 +382,6 @@ button {
 .clients-table th,
 .clients-table td {
   text-align: left !important;
-  font-weight: normal;
   vertical-align: middle;
 }
 
@@ -406,4 +399,126 @@ button {
 
 .clients-table td {
   display: table-cell;
+}
+
+/* =====================================================
+   Responsive – Tablet
+===================================================== */
+@media (max-width: 1024px) {
+  .crm-tab-content {
+    padding: 20px;
+  }
+}
+
+/* =====================================================
+   Responsive – Mobile (table -> cards)
+   דורש JSX קטן: data-label לכל td
+===================================================== */
+@media (max-width: 768px) {
+  .crm-tab-content {
+    padding: 16px;
+  }
+
+  .clients-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-client-btn {
+    width: 100%;
+  }
+
+  /* 🔥 הופכים טבלה לכרטיסים */
+  .clients-table,
+  .clients-table tbody,
+  .clients-table tr,
+  .clients-table td {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .clients-table thead {
+    display: none !important;
+  }
+
+  .clients-table {
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .client-row {
+    background: #fff;
+    border-radius: 18px;
+    padding: 14px 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .client-row td {
+    padding: 8px 0;
+    border: none;
+  }
+
+  /* Label מעל כל שדה */
+  .client-row td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #777;
+    margin-bottom: 2px;
+  }
+
+  .actions-cell {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+
+  .open-client-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.18);
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+
+  .view-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .view-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* =====================================================
+   Small phones
+===================================================== */
+@media (max-width: 420px) {
+  .crm-card {
+    padding: 18px;
+  }
+
+  .open-client-btn {
+    padding: 10px 14px;
+  }
 }
