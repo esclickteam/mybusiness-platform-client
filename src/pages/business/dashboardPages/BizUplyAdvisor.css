@@ -1,10 +1,17 @@
+/* =========================
+   BizUply – Main Container
+========================= */
 .BizUply-container {
   padding: 3rem 2rem;
   text-align: center;
-  background-color: #f8f5ff;
-  min-height: 100vh; /* שומר על גובה מלא למראה אחיד */
+
+  background: transparent;   /* ✅ לא סגול */
+  min-height: unset;         /* ✅ לא 100vh */
 }
 
+/* =========================
+   Header
+========================= */
 .BizUply-header {
   color: #5a2ea6;
   margin-bottom: 1.5rem;
@@ -12,6 +19,9 @@
   font-size: 2rem;
 }
 
+/* =========================
+   Tabs Buttons
+========================= */
 .tab-buttons {
   display: flex;
   justify-content: center;
@@ -25,12 +35,12 @@
   border: 2px solid transparent;
   border-radius: 20px;
   padding: 10px 20px;
-  font-weight: bold;
+  font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   color: #5a2ea6;
-  position: relative; /* חשוב עבור מיקום נקודת ההתראה */
+  position: relative;
 }
 
 .tab-buttons button:hover {
@@ -39,57 +49,59 @@
 
 .tab-buttons .active {
   background-color: #7e57c2;
-  color: white;
+  color: #fff;
   border-color: #5a2ea6;
 }
 
-/* הנקודה האדומה ליד הכפתור */
+/* Notification dot */
 .notification-dot {
   position: absolute;
   top: 6px;
   right: 10px;
   width: 10px;
   height: 10px;
-  background-color: red;
+  background: red;
   border-radius: 50%;
-  box-shadow: 0 0 5px red;
 }
 
+/* =========================
+   Tab Content (NO SCROLL)
+========================= */
 .tab-content {
-  padding: 1rem;
-  background-color: white;
+  padding: 1.5rem;
+  background: #ffffff;
   border-radius: 12px;
   max-width: 900px;
-  margin: 0 auto;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  margin: 0 auto 2rem;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  direction: rtl;
 
-  /* תיקון חיתוך תוכן - הגדרת גובה וגלילה */
-  max-height: 600px; /* התאמה לפי הצורך */
-  overflow-y: auto;
-  direction: rtl; /* עברית - ימין לשמאל */
+  /* ❌ אין גלילה פנימית */
+  overflow: visible;
 }
 
-/* סגנון הצ'אט - מיכל ההודעות */
+/* =========================
+   Chat
+========================= */
 .chat-box-wrapper {
-  height: 600px; /* שמור גובה קבוע */
-  overflow-y: auto; /* אפשר גלילה אנכית */
-  overflow-x: hidden; /* למנוע גלילה אופקית */
+  overflow-x: hidden; /* ✅ אין height, אין overflow-y */
 }
 
 .chat-box {
   padding: 10px;
-  min-height: 100%; /* אפשר גם height: 100%; */
   box-sizing: border-box;
   direction: rtl;
   display: flex;
   flex-direction: column;
 }
 
-/* הוספתי סגנון בסיסי לרשימת שיחות לבחירת שיחה (אם תשלב עם הקוד) */
+/* =========================
+   Conversation Selector
+========================= */
 .conversation-selector {
   max-width: 900px;
   margin: 1rem auto 2rem;
-  text-align: left; /* עברית ימין לשמאל */
+  text-align: left;
 }
 
 .conversation-selector h3 {
@@ -110,41 +122,41 @@
   margin-bottom: 6px;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  text-align: left; /* עברית ימין לשמאל */
 }
 
 .conversation-selector li.active,
 .conversation-selector li:hover {
   background-color: #7e57c2;
-  color: white;
+  color: #fff;
 }
 
-/* סגנון עבור הבועות בצ'אט */
+/* =========================
+   Chat Bubbles
+========================= */
 .bubble {
   padding: 10px 14px;
   margin-bottom: 8px;
   border-radius: 12px;
   max-width: 80%;
-  white-space: normal !important;
-  word-break: break-word !important;
-  overflow-wrap: break-word !important;
-  direction: rtl; /* עברית */
-  box-sizing: border-box;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  direction: rtl;
 }
 
 .bubble.user {
   background-color: #e0d9ff;
   align-self: flex-end;
-  text-align: left;
 }
 
 .bubble.assistant {
   background-color: #f0f0f0;
   align-self: flex-start;
-  text-align: left;
 }
-/* טלפונים קטנים (עד 480px) */
-@media (max-width: 480px) {
+
+/* =========================
+   Responsive
+========================= */
+@media (max-width: 768px) {
   .BizUply-container {
     padding: 1.5rem 1rem;
   }
@@ -156,88 +168,10 @@
 
   .tab-buttons button {
     width: 100%;
-    font-size: 1rem;
     padding: 12px 0;
   }
 
   .tab-content {
-    max-height: 400px;
-    padding: 0.8rem;
-  }
-
-  .chat-box-wrapper {
-    height: 400px;
-  }
-
-  .conversation-selector {
-    max-width: 100%;
-    margin: 1rem 0;
-  }
-}
-
-/* טלפונים בינוניים וטאבלטים (481px עד 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  .BizUply-container {
-    padding: 2rem 1.5rem;
-  }
-
-  .tab-buttons {
-    gap: 10px;
-  }
-
-  .tab-buttons button {
-    padding: 10px 16px;
-  }
-
-  .tab-content {
-    max-height: 500px;
-  }
-
-  .chat-box-wrapper {
-    height: 500px;
-  }
-
-  .conversation-selector {
-    max-width: 90%;
-  }
-}
-
-/* טאבלטים גדולים ומחשבים קטנים (769px עד 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .BizUply-container {
-    padding: 3rem 2rem;
-  }
-
-  .tab-content {
-    max-height: 550px;
-  }
-
-  .chat-box-wrapper {
-    height: 550px;
-  }
-
-  .conversation-selector {
-    max-width: 900px;
-    margin: 1rem auto 2rem;
-  }
-}
-
-/* מחשבים בינוניים וגדולים (מעל 1025px) */
-@media (min-width: 1025px) {
-  .BizUply-container {
-    padding: 3rem 2rem;
-  }
-
-  .tab-content {
-    max-height: 600px;
-  }
-
-  .chat-box-wrapper {
-    height: 600px;
-  }
-
-  .conversation-selector {
-    max-width: 900px;
-    margin: 1rem auto 2rem;
+    padding: 1rem;
   }
 }
