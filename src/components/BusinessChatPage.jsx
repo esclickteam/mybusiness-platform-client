@@ -19,17 +19,6 @@ export default function BusinessChatPage() {
   const socket = useSocket();
   const location = useLocation();
 
-const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
-useEffect(() => {
-  const onResize = () => {
-    setIsMobile(window.innerWidth <= 768);
-  };
-
-  window.addEventListener("resize", onResize);
-  return () => window.removeEventListener("resize", onResize);
-}, []);
-
   /* =========================
      🧩 Normalize conversation
   ========================= */
@@ -67,6 +56,7 @@ useEffect(() => {
       conversationType: convo.conversationType,
     });
 
+    // איפוס badge מקומי בלבד
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[threadId];
@@ -105,9 +95,7 @@ useEffect(() => {
           location.state?.threadId ||
           new URLSearchParams(location.search).get("threadId");
 
-        /* ❗ בדסקטופ בלבד – בוחרים שיחה ראשונה אוטומטית */
-        if (!isMobile && !selected && !navigatedThreadId && deduped.length) {
-
+        if (!selected && !navigatedThreadId && deduped.length) {
           const {
             conversationId,
             clientId: partnerId,
@@ -126,7 +114,7 @@ useEffect(() => {
       .catch((err) => {
         console.error("Error fetching client conversations:", err);
       });
-  }, [initialized, businessId, selected, location, isMobile]);
+  }, [initialized, businessId, selected, location]);
 
   /* =========================
      💬 Realtime updates
@@ -138,6 +126,8 @@ useEffect(() => {
 
     const handleNewMessage = (msg) => {
       if (msg?.toId !== businessId) return;
+
+      // אם זו השיחה הפעילה – לא מגדילים unread
       if (msg.conversationId === selected?.conversationId) return;
 
       setUnreadCounts((prev) => ({
@@ -155,7 +145,8 @@ useEffect(() => {
   }, [socket, businessId, selected]);
 
   /* =========================
-     ✅ Mark conversation read
+     ✅ מקור אמת יחיד: סימון שיחה כנקראה
+     מופעל רק כש-selected.conversationId משתנה
   ========================= */
   useEffect(() => {
     if (!socket || !selected?.conversationId || !businessId) return;
@@ -168,7 +159,7 @@ useEffect(() => {
   }, [socket, selected?.conversationId, businessId]);
 
   /* =========================
-     🧭 Manual selection
+     🧭 Manual selection (UI בלבד)
   ========================= */
   const handleSelect = (conversationId, partnerId, partnerName) => {
     const convo = convos.find((c) => c.conversationId === conversationId);
@@ -181,6 +172,7 @@ useEffect(() => {
       conversationType: type,
     });
 
+    // איפוס badge מקומי בלבד
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[conversationId];
@@ -192,14 +184,21 @@ useEffect(() => {
     return <p className={styles.loading}>Loading data…</p>;
   }
 
-  /* =========================
-     🖥️ / 📱 RENDER
-  ========================= */
   return (
-  <div className={styles.whatsappBg}>
     <div className={styles.chatContainer}>
-      {isMobile ? (
-        selected ? (
+      <aside className={styles.sidebarInner}>
+        <ConversationsList
+          conversations={convos}
+          businessId={businessId}
+          selectedConversationId={selected?.conversationId}
+          onSelect={handleSelect}
+          unreadCountsByConversation={unreadCounts}
+          isBusiness
+        />
+      </aside>
+
+      <section className={styles.chatArea}>
+        {selected ? (
           <BusinessChatTab
             conversationId={selected.conversationId}
             businessId={businessId}
@@ -209,49 +208,11 @@ useEffect(() => {
             conversationType={selected.conversationType}
           />
         ) : (
-          <ConversationsList
-            conversations={convos}
-            businessId={businessId}
-            selectedConversationId={null}
-            onSelect={handleSelect}
-            unreadCountsByConversation={unreadCounts}
-            isBusiness
-          />
-        )
-      ) : (
-        <>
-          <aside className={styles.sidebarInner}>
-            <ConversationsList
-              conversations={convos}
-              businessId={businessId}
-              selectedConversationId={selected?.conversationId}
-              onSelect={handleSelect}
-              unreadCountsByConversation={unreadCounts}
-              isBusiness
-            />
-          </aside>
-
-          <section className={styles.chatArea}>
-            {selected ? (
-              <BusinessChatTab
-                conversationId={selected.conversationId}
-                businessId={businessId}
-                customerId={selected.partnerId}
-                customerName={selected.partnerName}
-                socket={socket}
-                conversationType={selected.conversationType}
-              />
-            ) : (
-              <div className={styles.emptyMessage}>
-                Select a conversation to view messages
-              </div>
-            )}
-          </section>
-        </>
-      )}
+          <div className={styles.emptyMessage}>
+            Select a conversation to view messages
+          </div>
+        )}
+      </section>
     </div>
-  </div>
-);
-
-
+  );
 }

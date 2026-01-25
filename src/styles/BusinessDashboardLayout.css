@@ -256,16 +256,12 @@
     margin-top: 64px;
 
     height: calc(100vh - 64px);
+    overflow-y: auto;
 
-    /* 🔑 התיקון הקריטי לצ'אט */
     display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-
     justify-content: center;
-    padding-top: 34px;
+
+    padding-top: 34px;   /* ⬅️ זה מה שמוריד למטה */
   }
 }
 
@@ -446,15 +442,12 @@
     padding-bottom: 20px;
   }
 
-.chat-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-
-  flex: 1;          /* ✅ במקום height */
-  min-height: 0;    /* 🔑 חובה */
-  overflow: hidden; /* 🔑 */
-}
+  .chat-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;  /* קובע שהקונטיינר יתפוס את כל הגובה */
+  }
 
   .message-list {
     flex-grow: 1;
@@ -561,32 +554,9 @@
   }
 
   /* תוכן במובייל בלי margin-left של הסיידבר */
-   .dashboard-content {
+  .dashboard-content {
     margin-left: 0 !important;
     margin-top: 56px !important;
     height: calc(100vh - 56px) !important;
-
-    /* 🔑 התיקון הקריטי */
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow: hidden;
-  }
-}
-
-.business-dashboard-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;   /* 🔑 הכי חשוב */
-  min-height: 0;   /* 🔑 מאפשר flex פנימי */
-}
-
-
-@media (max-width: 768px) {
-  .dashboard-content > div {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
   }
 }
