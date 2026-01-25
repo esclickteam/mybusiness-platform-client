@@ -207,16 +207,7 @@
     max-width: 100vw;
     border-radius: 0;
   }
-  .sidebarInner {
-    width: 100%;
-    height: 160px;
-    border-left: none;
-    border-right: none;
-    border-bottom: 1.5px solid #c3a6fa;
-    box-shadow: none;
-    flex-direction: row;
-    overflow-x: auto;
-  }
+  
   .convItem {
     white-space: normal;
     flex: 1 0 auto;
@@ -224,7 +215,6 @@
     font-size: 14px;
   }
   .chatArea {
-    width: 100%;
     flex: 1;
     min-height: 0;
   }
@@ -232,9 +222,7 @@
 
 /* מובייל קטן יותר */
 @media (max-width: 480px) {
-  .sidebarInner {
-    height: 140px;
-  }
+ 
   .convItem {
     font-size: 13px;
     padding: 10px 12px;
@@ -258,9 +246,7 @@
 
 /* מובייל קטן מאוד */
 @media (max-width: 320px) {
-  .sidebarInner {
-    height: 120px;
-  }
+ 
   .convItem {
     font-size: 12px;
     padding: 8px 10px;
@@ -288,16 +274,7 @@
     height: 82vh;
     border-radius: 16px;
   }
-  .sidebarInner {
-    width: 246px;
-    height: auto;
-    border-left: 1.5px solid #c3a6fa;
-    border-right: 1.5px solid #c3a6fa;
-    box-shadow: 1px 0 6px rgba(163, 137, 235, 0.15);
-    flex-direction: column;
-    overflow-y: auto;
-    display: flex !important;
-  }
+
   .chatArea {
     height: 100%;
   }
@@ -311,17 +288,7 @@
     max-width: 100vw;
     border-radius: 0;
   }
-  .sidebarInner {
-    width: 100%;
-    height: 160px;
-    border-left: none;
-    border-right: none;
-    border-bottom: 1.5px solid #c3a6fa;
-    box-shadow: none;
-    flex-direction: row;
-    overflow-x: auto;
-    display: flex !important;
-  }
+
   .chatArea {
     height: calc(100% - 160px);
     min-height: 0;
@@ -341,11 +308,4 @@
     border-radius: 0;
   }
 
-  .sidebarInner {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    border: none;
-    box-shadow: none;
-  }
 }
