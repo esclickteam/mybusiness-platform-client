@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ConversationsList from "./ConversationsList";
 import ChatPage from "./ChatPage";
-import "./ConversationsList.css";
 import createSocket from "../socket";
 
 export default function BusinessChatWrapper() {

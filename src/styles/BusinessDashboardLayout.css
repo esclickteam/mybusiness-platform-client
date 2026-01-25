@@ -567,11 +567,6 @@
   z-index: 8000;
 }
 
-/* 💬 Chat sidebar */
-.conversationsList,
-.sidebar {
-  z-index: 8500;
-}
 
 /* 🧠 Header תמיד מעל כולם */
 .dashboard-layout-header {
