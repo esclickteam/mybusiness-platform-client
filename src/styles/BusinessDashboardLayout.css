@@ -580,3 +580,13 @@
   height: 100vh;   /* 🔑 הכי חשוב */
   min-height: 0;   /* 🔑 מאפשר flex פנימי */
 }
+
+
+@media (max-width: 768px) {
+  .dashboard-content > div {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+}

@@ -13,6 +13,7 @@ export default function BusinessChatWrapper() {
 
   const [convos, setConvos] = useState([]);
   const [selected, setSelected] = useState(null);
+
   const socketRef = useRef(null);
   const hasJoinedRef = useRef(false);
   const selectedRef = useRef(selected);
@@ -31,40 +32,38 @@ export default function BusinessChatWrapper() {
         return;
       }
 
-      // Here we send the getValidAccessToken function, not the token itself!
       const sock = await createSocket(getValidAccessToken, logout, businessId);
       if (!sock) return;
 
       if (!sock.connected) sock.connect();
-
       socketRef.current = sock;
 
-      sock.emit(
-        "getConversations",
-        { businessId },
-        (res) => {
-          if (!res || typeof res !== "object") {
-            console.error("Invalid response from getConversations:", res);
-            return;
-          }
-          const { ok, conversations = [], error } = res;
-          if (ok) {
-            setConvos(conversations);
-            if (!selected && conversations.length > 0) {
-              const first = conversations[0];
-              const convoId = first._id || first.conversationId || first.id;
-              const partnerId =
-                (first.participants || []).find((pid) => pid !== businessId) ||
-                first.customer?._id ||
-                null;
-              setSelected({ conversationId: convoId, partnerId });
-              hasJoinedRef.current = false;
-            }
-          } else {
-            console.error("Error loading conversations:", error);
-          }
+      sock.emit("getConversations", { businessId }, (res) => {
+        if (!res || typeof res !== "object") {
+          console.error("Invalid response from getConversations:", res);
+          return;
         }
-      );
+
+        const { ok, conversations = [], error } = res;
+        if (!ok) {
+          console.error("Error loading conversations:", error);
+          return;
+        }
+
+        setConvos(conversations);
+
+        if (!selected && conversations.length > 0) {
+          const first = conversations[0];
+          const convoId = first._id || first.conversationId || first.id;
+          const partnerId =
+            (first.participants || []).find((pid) => pid !== businessId) ||
+            first.customer?._id ||
+            null;
+
+          setSelected({ conversationId: convoId, partnerId });
+          hasJoinedRef.current = false;
+        }
+      });
 
       sock.on("connect_error", (err) => {
         console.error("Socket connect error:", err.message);
@@ -86,10 +85,7 @@ export default function BusinessChatWrapper() {
 
   const handleSelect = (conversationId) => {
     const sock = socketRef.current;
-    if (!sock || !sock.connected) {
-      console.warn("Socket not connected, cannot emit joinConversation");
-      return;
-    }
+    if (!sock || !sock.connected) return;
 
     const convo = convos.find(
       (c) =>
@@ -108,28 +104,21 @@ export default function BusinessChatWrapper() {
       null;
 
     if (hasJoinedRef.current && selectedRef.current?.conversationId) {
-      sock.emit("leaveConversation", selectedRef.current.conversationId, (ack) => {
-        if (!ack || !ack.ok) {
-          console.error("Failed to leave conversation:", ack?.error);
-        }
-      });
+      sock.emit(
+        "leaveConversation",
+        selectedRef.current.conversationId,
+        () => {}
+      );
     }
 
-    sock.emit("joinConversation", conversationId, (ack) => {
-      if (!ack || !ack.ok) {
-        console.error("Failed to join conversation:", ack?.error);
-      }
-    });
-
+    sock.emit("joinConversation", conversationId, () => {});
     hasJoinedRef.current = true;
+
     setSelected({ conversationId, partnerId });
   };
 
   return (
-    <div
-      className="business-chat-wrapper"
-      style={{ display: "flex", height: "100%" }}
-    >
+    <div className="business-chat-wrapper">
       <ConversationsList
         conversations={convos}
         businessId={businessId}
@@ -137,27 +126,22 @@ export default function BusinessChatWrapper() {
         selectedConversationId={selected?.conversationId}
         onSelect={handleSelect}
       />
-      {selected && selected.partnerId ? (
-        <ChatPage
-          isBusiness={true}
-          userId={businessId}
-          partnerId={selected.partnerId}
-          initialConversationId={selected.conversationId}
-          socket={socketRef.current}
-        />
-      ) : (
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#b5b5b5",
-          }}
-        >
-          Select a conversation to view messages
-        </div>
-      )}
+
+      <div className="chat-area">
+        {selected && selected.partnerId ? (
+          <ChatPage
+            isBusiness={true}
+            userId={businessId}
+            partnerId={selected.partnerId}
+            initialConversationId={selected.conversationId}
+            socket={socketRef.current}
+          />
+        ) : (
+          <div className="noSelection">
+            Select a conversation to view messages
+          </div>
+        )}
+      </div>
     </div>
   );
 }
