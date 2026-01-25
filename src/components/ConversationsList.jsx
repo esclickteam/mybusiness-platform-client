@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSocket } from "../context/socketContext";
+import { useOutletContext } from "react-router-dom";
 import UnreadBadge from "./UnreadBadge";
 import styles from "./ConversationsList.module.css";
 
@@ -18,8 +19,16 @@ export default function ConversationsList({
 }) {
   const socket = useSocket();
 
+  /* =========================
+     ⬅️ STATE מגיע מה־Layout
+  ========================= */
+  const {
+    chatSidebarOpen: sidebarOpen,
+    setChatSidebarOpen: setSidebarOpen,
+    isMobile,
+  } = useOutletContext();
+
   const [selectedId, setSelectedId] = useState(selectedConversationId);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // ⬅️ חדש (UI בלבד)
 
   // -------- API ENDPOINT ----------
   const endpoint = isBusiness
@@ -46,7 +55,6 @@ export default function ConversationsList({
     staleTime: 5 * 60 * 1000,
   });
 
-  // Prefer prop conversations (for optimistic updates)
   const list = conversations.length ? conversations : fetchedConversations;
 
   // -------- SOCKET ----------
@@ -96,28 +104,15 @@ export default function ConversationsList({
   const handleSelect = (convoId, partnerId, displayName) => {
     onSelect(convoId, partnerId, displayName);
     setSelectedId(convoId);
-    setSidebarOpen(false); // ⬅️ סגירה במובייל בלבד
+
+    if (isMobile) {
+      setSidebarOpen(false); // ⬅️ סוגר צ’אט במובייל
+    }
   };
 
   // -------- RENDER ----------
   return (
     <div className={styles.conversationsList}>
-      {/* כפתור מובייל */}
-      <button
-        className={styles.mobileToggle}
-        onClick={() => setSidebarOpen(true)}
-      >
-        ☰
-      </button>
-
-      {/* Overlay לסגירה */}
-      {sidebarOpen && (
-        <div
-          className={styles.overlay}
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       {/* Sidebar */}
       <div
         className={`${styles.sidebar} ${
@@ -135,7 +130,9 @@ export default function ConversationsList({
             ? conv.clientName
             : conv.businessName || partnerId;
 
-          const unreadCount = unreadCountsByConversation[convoId] || 0;
+          const unreadCount =
+            unreadCountsByConversation[convoId] || 0;
+
           const isActive = convoId === selectedId;
 
           return (
@@ -147,7 +144,6 @@ export default function ConversationsList({
               onClick={() =>
                 handleSelect(convoId, partnerId, displayName)
               }
-              style={{ position: "relative" }}
             >
               <span>{displayName}</span>
 

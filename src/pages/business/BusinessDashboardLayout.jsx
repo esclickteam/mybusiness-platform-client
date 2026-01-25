@@ -52,6 +52,8 @@ export default function BusinessDashboardLayout() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
   const sidebarRef = useRef(null);
+  const [chatSidebarOpen, setChatSidebarOpen] = useState(false);
+
 
   /* ============================
      🎁 Early Bird UI State
@@ -222,8 +224,14 @@ export default function BusinessDashboardLayout() {
                   <button
                     type="button"
                     className="header-hamburger-btn"
-                    aria-label={showSidebar ? "Close menu" : "Open menu"}
-                    onClick={() => setShowSidebar((v) => !v)}
+                    aria-label={
+  showSidebar || chatSidebarOpen ? "Close menu" : "Open menu"
+}
+
+                    onClick={() => {
+  setChatSidebarOpen((v) => !v);   // ✅ רק צ’אט
+}}
+
                   >
                     {showSidebar ? <FaTimes /> : <FaBars />}
                   </button>
@@ -302,8 +310,14 @@ export default function BusinessDashboardLayout() {
 
             {/* ================= Content ================= */}
             <main className="dashboard-content">
-              <Outlet />
-            </main>
+  <Outlet
+    context={{
+      chatSidebarOpen,
+      setChatSidebarOpen,
+      isMobile,
+    }}
+  />
+</main>
           </div>
         </div>
       </AiProvider>
