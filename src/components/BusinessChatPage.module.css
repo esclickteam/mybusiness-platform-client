@@ -24,7 +24,7 @@
   flex-direction: column;
 
   width: 100%;
-  max-width: none;        /* 🔥 חובה – מסך מלא כברירת מחדל */
+  max-width: none;       /* מסך מלא כברירת מחדל */
   height: 100%;
 
   background: #faf7ff;
@@ -47,8 +47,9 @@
   display: flex;
   flex-direction: column;
 
-  flex: 1;        /* 🔥 קריטי */
-  min-height: 0;  /* 🔥 קריטי */
+  /* ✅ בדסקטופ זה sidebar, לא flex:1 */
+  flex: none;
+  min-height: 0;
 
   overflow: hidden; /* גלילה רק בילדים */
   box-shadow: 1px 0 6px rgba(163, 137, 235, 0.15);
@@ -95,6 +96,7 @@
   justify-content: flex-end;
 
   width: 100%;
+  overflow: hidden; /* ✅ הגלילה בפנים */
 }
 
 /* =========================
@@ -153,6 +155,8 @@
 
   background: #f3edff;
   border-top: 1.5px solid #e9e2ff;
+
+  flex-shrink: 0; /* ✅ שלא יימעך */
 }
 
 /* =========================
@@ -175,30 +179,45 @@
    Responsive
 ========================= */
 
-/* 📱 Tablet & Mobile – FULLSCREEN */
+/* 📱 Mobile/Tablet – FIX (לא 100vh בתוך Dashboard!) */
 @media (max-width: 1024px) {
   .chatContainer {
     flex-direction: column;
-    height: 100vh;
-    max-width: 100vw;
+
+    /* ❌ לא height: 100vh (שובר בתוך Dashboard) */
+    height: auto !important;
+    flex: 1;
+    min-height: 0;
+
+    max-width: 100%;
     border-radius: 0;
   }
 
+  /* Sidebar למעלה/ברשימה (אם את מציגה אותו במובייל) */
   .sidebarInner {
     width: 100%;
     min-width: 100%;
 
     border-left: none;
     border-right: none;
-    border-bottom: none;
 
-    flex: 1;
+    /* ✅ לא לתפוס את כל הגובה */
+    flex: none;
+    max-height: 40vh;      /* כדי שלא יחנוק את הצ׳אט */
     overflow-y: auto;
   }
 
+  /* אזור הצ׳אט חייב לתפוס את כל שאר הגובה */
   .chatArea {
-    flex: 0;
+    flex: 1;
     min-height: 0;
+    overflow: hidden;
+  }
+
+  .messageList {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
   }
 }
 
@@ -224,5 +243,6 @@
 
   .chatArea {
     flex: 1;
+    min-height: 0;
   }
 }
