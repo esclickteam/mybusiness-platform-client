@@ -255,13 +255,14 @@
     margin-left: 250px;
     margin-top: 64px;
 
-    flex: 1;              /* ✅ במקום height */
-    min-height: 0;        /* ✅ קריטי */
+    flex: 1;
+    min-height: 0;          /* 🔥 קריטי */
+    height: calc(100vh - 64px); /* 🔥 זה מה שחסר לך */
+
     display: flex;
     flex-direction: column;
 
-    overflow-y: auto;     /* ✅ הגלילה כאן */
-    overflow-x: hidden;
+    overflow: hidden;       /* ❗ לא auto כאן */
     padding-top: 0;
   }
 }
