@@ -252,18 +252,16 @@
    =========================== */
 @media (min-width: 769px) {
   .dashboard-content {
-    margin-left: 250px;
-    margin-top: 64px;
+  margin-left: 250px;
+  margin-top: 64px;
 
-    flex: 1;              /* ✅ במקום height */
-    min-height: 0;        /* ✅ קריטי */
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 
-    overflow-y: auto;     /* ✅ הגלילה כאן */
-    overflow-x: hidden;
-    padding-top: 0;
-  }
+  overflow: hidden;     /* 🔥 חשוב */
+}
 }
 
 
@@ -467,9 +465,9 @@
   }
 
   .inputBar {
-    margin-top: auto;
-    padding: 10px;  /* זה מבטיח שהשדה לא יצא החוצה */
-  }
+  flex-shrink: 0;
+  padding: 10px;
+}
 }
 @media (max-width: 768px) {
   /* ההידר חייב להיות full-width במובייל */
@@ -563,18 +561,17 @@
   }
 
   /* תוכן במובייל בלי margin-left של הסיידבר */
-    .dashboard-content {
-  margin-left: 0 !important;
-  margin-top: 56px !important;
+  .dashboard-content {
+    margin-left: 0 !important;
+    margin-top: 56px !important;
 
-  flex: 1;               /* ✅ במקום height */
-  min-height: 0;         /* ✅ קריטי */
-  display: flex;
-  flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 
-  overflow-y: auto;      /* ✅ הגלילה כאן */
-  overflow-x: hidden;
-}
+    overflow: hidden;   /* 🔥 אותו כלל כמו בדסקטופ */
+  }
 
 
   .chat-container {
