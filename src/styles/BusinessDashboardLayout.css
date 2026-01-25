@@ -560,3 +560,32 @@
     height: calc(100vh - 56px) !important;
   }
 }
+
+/* ==========================
+   Mobile fixes to avoid white screen
+========================== */
+.dashboard-content {
+  flex: 1;            /* ממלא את ההורים */
+  min-height: 0;      /* חובה ל-flex */
+  overflow-y: auto;   /* מאפשר גלילה */
+  display: flex;
+  flex-direction: column;
+  margin-left: 0 !important; /* אין margin בסיידבר מוסתר */
+  margin-top: 56px !important; /* התאמה לגובה header במובייל */
+  height: auto !important;     /* מונע גובה אפס */
+}
+
+.business-dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;      /* חייב להיות גובה מלא */
+  min-height: 0;      /* מאפשר flex children לגדול */
+}
+
+.app-scroll-area {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;   /* חובה כדי שה-Outlets / Pages יגללו */
+  display: flex;
+  flex-direction: column;
+}
