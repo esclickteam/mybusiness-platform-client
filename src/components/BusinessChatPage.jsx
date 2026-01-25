@@ -190,7 +190,8 @@ export default function BusinessChatPage() {
   }
 
   return (
-    <div className={styles.chatContainer}>
+    <div className={`${styles.chatContainer} chat-page`}>
+
       {/* 📱 Sidebar – מוסתר רק כשיש שיחה במובייל */}
       {(!isMobile || !selected) && (
         <aside className={styles.sidebarInner}>

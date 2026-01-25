@@ -443,6 +443,11 @@
     padding-bottom: 20px;
   }
 
+  /* 🟣 Chat page – full height, no bottom gap */
+.dashboard-content > .chat-page {
+  padding-bottom: 0 !important;
+}
+
    .chat-container {
     width: 100%;
     display: flex;
