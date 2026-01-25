@@ -450,13 +450,13 @@
     overflow: hidden;
   }
 
-   .message-list {
-    flex: 1;          /* ✅ במקום flex-grow */
-    min-height: 0;    /* ✅ קריטי */
+     .message-list {
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
-    padding-bottom: 10px;
     display: flex;
     flex-direction: column;
+    padding-bottom: 10px; /* ✅ להוסיף */
   }
 
   .inputBar {
