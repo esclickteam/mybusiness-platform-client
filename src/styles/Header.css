@@ -4,7 +4,7 @@
 
 /* ===== Header (Desktop) ===== */
 .app-header {
-  position: sticky;
+  position: fixed; 
   top: 0;
   z-index: 1000;
 
@@ -281,7 +281,6 @@
   height: 50px !important;
   background: #fff;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  position: relative;
   overflow: visible;
 }
 
