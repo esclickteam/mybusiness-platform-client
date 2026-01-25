@@ -65,10 +65,29 @@ const BizUplyAdvisor = () => {
   }, [user?.businessId, token]);
 
   useEffect(() => {
+  console.group("🟣 TAB SWITCH DEBUG");
+  console.log("activeTab:", activeTab);
+
   requestAnimationFrame(() => {
+    const tabContent = document.querySelector(".tab-content");
+    const advisor = document.querySelector(".advisor-chat-container");
+    const chatWrapper = document.querySelector(".chat-box-wrapper");
+    const chatBox = document.querySelector(".chat-box");
+
+    console.log("tab-content height:", tabContent?.offsetHeight);
+    console.log("advisor-chat-container height:", advisor?.offsetHeight);
+    console.log("chat-box-wrapper height:", chatWrapper?.offsetHeight);
+    console.log("chat-box height:", chatBox?.offsetHeight);
+
+    console.log("tab-content display:", tabContent && getComputedStyle(tabContent).display);
+    console.log("advisor overflow:", advisor && getComputedStyle(advisor).overflow);
+
+    console.groupEnd();
+
     window.dispatchEvent(new Event("resize"));
   });
 }, [activeTab]);
+
 
   /* =========================
      RENDER TAB CONTENT
