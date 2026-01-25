@@ -62,16 +62,15 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  width: 100%;
+
+  min-height: 0;     /* 🔥 חובה */
   min-width: 0;
-  min-height: 0;
-  height: 100%; /* important */
+
+  position: relative;
+  overflow: hidden; /* הגלילה תהיה בפנים */
   background: none;
   padding: 0;
-  position: relative;
-  overflow: hidden;
 }
-
 /* Empty message */
 .emptyMessage {
   flex: 1;
