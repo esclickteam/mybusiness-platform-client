@@ -6,7 +6,7 @@
   top: 0;
   left: 0;
   width: 250px;
-  height: 100dvh; 
+  height: 100vh;
   background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
   color: #2a165f;
   display: flex;
@@ -129,7 +129,7 @@
     width: min(320px, 86vw);
 
     top: 56px;
-    height: calc(100dvh - 56px);
+    height: calc(100vh - 56px);
   }
 
   .dashboard-layout-sidebar.open {
@@ -247,8 +247,23 @@
   background: #ffffff;
 }
 
+/* ===========================
+   🧱 Content Offset
+   =========================== */
+@media (min-width: 769px) {
+  .dashboard-content {
+    margin-left: 250px;
+    margin-top: 64px;
 
+    height: calc(100vh - 64px);
+    overflow-y: auto;
 
+    display: flex;
+    justify-content: center;
+
+    padding-top: 34px;   /* ⬅️ זה מה שמוריד למטה */
+  }
+}
 
 
 /* ===========================
@@ -420,7 +435,20 @@
 }
 
 @media (min-width: 769px) {
-    
+  .dashboard-content > div {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 20px;
+  }
+
+  .chat-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;  /* קובע שהקונטיינר יתפוס את כל הגובה */
+  }
+
   .message-list {
     flex-grow: 1;
     overflow-y: auto;
@@ -527,41 +555,8 @@
 
   /* תוכן במובייל בלי margin-left של הסיידבר */
   .dashboard-content {
-  flex: 1;           /* 🔥 */
-  min-height: 0;     /* 🔥 */
-  overflow: hidden;  /* 🔥 */
-}
-}
-
-/* ===========================
-   🔧 Root Dashboard Layout (CRITICAL)
-=========================== */
-.business-dashboard-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;   /* 🔥 גובה מסך אמיתי (mobile safe) */
-  min-height: 0;    /* 🔥 מאפשר ל־children לגלול */
-}
-
-/* ===========================
-   💬 Chat Container (GLOBAL)
-=========================== */
-.chat-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-
-  flex: 1;          /* 🔥 ממלא גובה */
-  min-height: 0;    /* 🔥 חובה למובייל */
-  overflow: hidden; /* 🔥 מונע קריסת flex */
-}
-
-/* ===========================
-   📦 Dashboard Content (GLOBAL)
-=========================== */
-.dashboard-content {
-  flex: 1;          /* 🔥 חובה */
-  min-height: 0;    /* 🔥 חובה */
-  display: flex;    /* 🔥 כדי ש־Outlet / Chat יתפסו גובה */
-  overflow: hidden; /* 🔥 הגלילה בפנים, לא כאן */
+    margin-left: 0 !important;
+    margin-top: 56px !important;
+    height: calc(100vh - 56px) !important;
+  }
 }
