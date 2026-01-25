@@ -53,11 +53,10 @@ body {
 .app-layout {
   direction: ltr;
 
+  /* 🔥 קריטי */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
-  position: relative; /* ✅ הוסף */
 }
 
 .app-main {
@@ -66,8 +65,6 @@ body {
 
   display: flex;
   flex-direction: column;
-
-  padding-top: 56px; /* ✅ גובה ההידר במובייל */
 }
 
 
