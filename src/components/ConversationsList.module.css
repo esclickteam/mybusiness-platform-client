@@ -1,24 +1,38 @@
+/* ===============================
+   Conversations List (ROOT)
+================================ */
 .conversationsList {
+  flex: 1;                 /* 🔥 חובה – במקום height: 100% */
+  min-height: 0;           /* 🔥 חובה ל־mobile */
   display: flex;
-  height: 100%;
+  flex-direction: column;
   background: #fff;
   border-radius: 8px;
-  overflow: hidden;
+  overflow-y: auto;        /* 🔥 חובה */
+  overflow-x: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* ===============================
+   Sidebar (Desktop)
+================================ */
 .sidebar {
   width: 250px;
   min-width: 170px;
   max-width: 320px;
   background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
-  border-right: 2px solid #c3a6fa;   /* סגול בהיר ומותגי */
+  border-right: 2px solid #c3a6fa;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
   box-shadow: 2px 0 14px #c3a6fa24, 0 1.5px 8px #7c43bd11;
-  border-radius: 0 18px 18px 0;       /* פינה עגולה לשילוב עם כרטיס הצ'אט */
+  border-radius: 0 18px 18px 0;
   padding: 10px 0;
 }
 
+/* ===============================
+   Sidebar Title
+================================ */
 .sidebarTitle {
   padding: 0 16px;
   margin-bottom: 8px;
@@ -26,7 +40,12 @@
   font-weight: 600;
   color: #5e35b1;
   text-align: left;
+  flex-shrink: 0;
 }
+
+/* ===============================
+   Conversation Items
+================================ */
 
 /* zebra striping */
 .convItem:nth-child(odd) {
@@ -55,14 +74,18 @@
   font-weight: bold;
 }
 
-/* שם הפרטנר */
+/* ===============================
+   Partner Name
+================================ */
 .partnerName {
   margin: 0;
   font-size: 0.95rem;
   color: #333;
 }
 
-/* הטקסט של ההודעה האחרונה */
+/* ===============================
+   Last Message Preview
+================================ */
 .lastMessage {
   margin: 4px 0 0;
   font-size: 0.8rem;
@@ -72,8 +95,12 @@
   text-overflow: ellipsis;
 }
 
+/* ===============================
+   Chat Area Placeholder
+================================ */
 .chatArea {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -87,52 +114,73 @@
   font-size: 1rem;
 }
 
-/* === הסתרת הסיידבר במובייל === */
+/* ===============================
+   Mobile
+================================ */
 @media (max-width: 768px) {
   .sidebar {
     display: none !important;
   }
+
+  .conversationsList {
+    border-radius: 0;
+  }
 }
-/* טאבלטים */
+
+/* ===============================
+   Tablets
+================================ */
 @media (min-width: 768px) and (max-width: 1024px) {
   .sidebar {
     max-width: 240px;
   }
+
   .convItem {
     padding: 10px 12px;
     font-size: 0.92rem;
   }
 }
 
-/* מובייל קטנטן */
+/* ===============================
+   Very small mobile
+================================ */
 @media (max-width: 350px) {
   .sidebarTitle {
     font-size: 1rem;
     padding: 0 12px;
   }
+
   .convItem {
     padding: 8px 10px;
     font-size: 0.85rem;
   }
+
   .partnerName {
     font-size: 0.9rem;
   }
+
   .lastMessage {
     font-size: 0.75rem;
   }
 }
 
-/* מסכים רחבים במיוחד */
+/* ===============================
+   Wide screens
+================================ */
 @media (min-width: 1440px) {
   .sidebar {
     max-width: 300px;
   }
+
   .convItem {
     padding: 14px 18px;
     font-size: 1rem;
   }
 }
 
+/* ===============================
+   Text color safety
+================================ */
 .conversationsList,
 .conversationsList * {
   color: #0f172a !important;

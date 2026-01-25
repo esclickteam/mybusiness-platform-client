@@ -2,7 +2,7 @@
    WhatsApp background wrapper
 ================================ */
 .whatsappBg {
-  height: 100vh;
+  height: 100dvh;  
   min-height: 0;
   display: flex;
   align-items: stretch;        /* ❗ חובה */
