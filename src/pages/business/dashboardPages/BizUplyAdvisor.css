@@ -4,11 +4,9 @@
 .BizUply-container {
   padding: 3rem 2rem;
   text-align: center;
-  background: transparent;
 
-  /* 🔥 קריטי */
-  display: flex;
-  flex-direction: column;
+  background: transparent;   /* ✅ לא סגול */
+  min-height: unset;         /* ✅ לא 100vh */
 }
 
 /* =========================
@@ -73,21 +71,13 @@
   padding: 1.5rem;
   background: #ffffff;
   border-radius: 12px;
-
-  /* רוחב */
   max-width: 900px;
-  width: 100%;              /* 🔥 חשוב – מונע קפיצות בטאב AI */
   margin: 0 auto 2rem;
-
-  /* עיצוב */
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
   direction: rtl;
 
-  /* אין גלילה פנימית */
+  /* ❌ אין גלילה פנימית */
   overflow: visible;
-
-  /* יציבות layout */
-  box-sizing: border-box;
 }
 
 /* =========================

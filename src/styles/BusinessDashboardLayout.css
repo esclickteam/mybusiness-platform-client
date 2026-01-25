@@ -592,8 +592,16 @@
     flex-direction: column;
   }
 
-
-
 }
 
 
+/* ============================
+   🧠 FIX – BizUply Advisor ONLY
+   לא משפיע על צ'אט
+============================ */
+.dashboard-content:has(.BizUply-container) {
+  display: block !important;
+  height: auto !important;
+  min-height: unset !important;
+  overflow-y: auto !important;
+}
