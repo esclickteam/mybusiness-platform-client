@@ -94,6 +94,7 @@
 /* =====================
    MOBILE
 ===================== */
+
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
@@ -110,14 +111,8 @@
     display: block;
   }
 
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-/* =====================
-   OVERLAY
-===================== */
- .overlay {
+  /* OVERLAY */
+  .overlay {
     position: fixed;
     inset: 56px 0 0 0; /* ✅ לא מכסה header */
     background: rgba(0, 0, 0, 0.35);
@@ -125,57 +120,14 @@
     display: none;
     pointer-events: none;
   }
-
-  .overlay.show {
-    display: block;
-    pointer-events: auto;
-  }
 }
 
-/* =====================
-   TABLETS
-===================== */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .sidebar {
-    max-width: 240px;
-  }
-  .convItem {
-    padding: 10px 12px;
-    font-size: 0.92rem;
-  }
+/* ✅ CSS Modules exported classes */
+.open {
+  transform: translateX(0);
 }
 
-/* =====================
-   VERY SMALL MOBILE
-===================== */
-@media (max-width: 350px) {
-  .sidebarTitle {
-    font-size: 1rem;
-    padding: 0 12px;
-  }
-  .convItem {
-    padding: 8px 10px;
-    font-size: 0.85rem;
-  }
-}
-
-/* =====================
-   LARGE SCREENS
-===================== */
-@media (min-width: 1440px) {
-  .sidebar {
-    max-width: 300px;
-  }
-  .convItem {
-    padding: 14px 18px;
-    font-size: 1rem;
-  }
-}
-
-/* =====================
-   FORCE TEXT COLOR
-===================== */
-.conversationsList,
-.conversationsList * {
-  color: #0f172a !important;
+.show {
+  display: block;
+  pointer-events: auto;
 }
