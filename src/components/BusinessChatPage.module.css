@@ -37,12 +37,14 @@
   border-right: 1.5px solid #c3a6fa;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+
+  /* 🔥 הקריטי באמת */
+  flex: 1;        /* נותן גובה אמיתי בתוך flex-column */
+  min-height: 0;  /* מאפשר לילדים לגלול */
+
+  overflow: hidden; /* ⛔ לא auto כאן */
   box-shadow: 1px 0 6px rgba(163, 137, 235, 0.15);
   z-index: 2;
-
-  /* 🔥 קריטי – חלוקת גובה ב-flex column */
-  flex: 1;
 }
 
 /* נשלט ע״י React בלבד */
