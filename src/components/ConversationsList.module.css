@@ -109,14 +109,21 @@
     transform: translateX(0);
   }
 
-  /* 🔥 overlay מופיע רק כשהסיידבר פתוח */
-  .sidebar.open + .overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    z-index: 1500;
-  }
+/* =====================
+   OVERLAY
+===================== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1500;
+  display: none;
+}
+
+.overlay.show {
+  display: block;
+}
+ 
 }
 
 /* =====================

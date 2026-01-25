@@ -160,9 +160,11 @@ export default function ConversationsList({
 
   {/* 🔥 OVERLAY – חובה */}
   <div
-    className={styles.overlay}
-    onClick={() => setSidebarOpen(false)}
-  />
+  className={`${styles.overlay} ${
+    sidebarOpen ? styles.show : ""
+  }`}
+  onClick={() => setSidebarOpen(false)}
+/>
 </div>
 
 
