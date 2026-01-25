@@ -99,10 +99,8 @@ const BusinessDashboardRoutes = () => {
       <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>
           {/* Default redirects to dashboard */}
-          <Route index element={<Navigate to="dashboard" replace />} />
 
-          {/* Main dashboard page and its sub-tabs */}
-          <Route path="dashboard" element={<DashboardPage />} />
+        <Route index element={<DashboardPage />} />
 
           {/* Business profile page under the same layout */}
           <Route path="dashboard/profile" element={<BusinessProfilePage />} />
@@ -167,7 +165,8 @@ const BusinessDashboardRoutes = () => {
 
           <Route path="help-center" element={<HelpCenter />} />
 
-          <Route path="*" element={<Navigate to="dashboard" replace />} />
+          <Route path="*" element={<Navigate to="." replace />} />
+
         </Route>
       </Routes>
     </Suspense>
