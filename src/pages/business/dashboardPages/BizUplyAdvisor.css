@@ -2,10 +2,7 @@
   padding: 3rem 2rem;
   text-align: center;
   background-color: #f8f5ff;
-
-  min-height: 100vh;
-  display: flex;            /* ✅ */
-  flex-direction: column;   /* ✅ */
+  min-height: 100vh; /* שומר על גובה מלא למראה אחיד */
 }
 
 .BizUply-header {
@@ -66,26 +63,24 @@
   margin: 0 auto;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
 
-  direction: rtl;
-
-  flex: 1;        /* ✅ */
-  min-height: 0;  /* 🔥 קריטי */
+  /* תיקון חיתוך תוכן - הגדרת גובה וגלילה */
+  max-height: 600px; /* התאמה לפי הצורך */
+  overflow-y: auto;
+  direction: rtl; /* עברית - ימין לשמאל */
 }
 
 /* סגנון הצ'אט - מיכל ההודעות */
 .chat-box-wrapper {
-  flex: 1;           /* ✅ */
-  min-height: 0;     /* 🔥 */
-  overflow-y: auto;
-  overflow-x: hidden;
+  height: 600px; /* שמור גובה קבוע */
+  overflow-y: auto; /* אפשר גלילה אנכית */
+  overflow-x: hidden; /* למנוע גלילה אופקית */
 }
 
 .chat-box {
   padding: 10px;
-  min-height: 100%;
+  min-height: 100%; /* אפשר גם height: 100%; */
   box-sizing: border-box;
   direction: rtl;
-
   display: flex;
   flex-direction: column;
 }
@@ -148,7 +143,6 @@
   align-self: flex-start;
   text-align: left;
 }
-
 /* טלפונים קטנים (עד 480px) */
 @media (max-width: 480px) {
   .BizUply-container {
@@ -167,10 +161,13 @@
   }
 
   .tab-content {
+    max-height: 400px;
     padding: 0.8rem;
   }
 
-
+  .chat-box-wrapper {
+    height: 400px;
+  }
 
   .conversation-selector {
     max-width: 100%;
@@ -192,7 +189,13 @@
     padding: 10px 16px;
   }
 
+  .tab-content {
+    max-height: 500px;
+  }
 
+  .chat-box-wrapper {
+    height: 500px;
+  }
 
   .conversation-selector {
     max-width: 90%;
@@ -205,7 +208,13 @@
     padding: 3rem 2rem;
   }
 
+  .tab-content {
+    max-height: 550px;
+  }
 
+  .chat-box-wrapper {
+    height: 550px;
+  }
 
   .conversation-selector {
     max-width: 900px;
@@ -219,7 +228,13 @@
     padding: 3rem 2rem;
   }
 
- 
+  .tab-content {
+    max-height: 600px;
+  }
+
+  .chat-box-wrapper {
+    height: 600px;
+  }
 
   .conversation-selector {
     max-width: 900px;
