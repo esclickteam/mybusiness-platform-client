@@ -560,17 +560,19 @@
 
   /* תוכן במובייל בלי margin-left של הסיידבר */
     .dashboard-content {
-  margin-left: 0 !important;
-  margin-top: 56px !important;
+    margin-left: 0 !important;
+    margin-top: 56px !important;
 
-  flex: 1;               /* ✅ במקום height */
-  min-height: 0;         /* ✅ קריטי */
-  display: flex;
-  flex-direction: column;
+    flex: 1;
+    min-height: 0;           /* 🔥 קריטי */
+    height: calc(100vh - 56px); /* 🔥 חובה במובייל */
 
-  overflow-y: auto;      /* ✅ הגלילה כאן */
-  overflow-x: hidden;
-}
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;        /* ❗ לא auto */
+    overflow-x: hidden;
+  }
 
 
   .chat-container {
