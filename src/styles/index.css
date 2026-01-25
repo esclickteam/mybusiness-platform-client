@@ -20,7 +20,7 @@
 }
 
 /* ===========================
-   🧩 ROOT LAYOUT (NORMAL SCROLL)
+   🧩 ROOT LAYOUT
 =========================== */
 
 html,
@@ -30,7 +30,7 @@ body {
   margin: 0;
   padding: 0;
 
-  /* ✅ גלילה טבעית */
+  /* ברירת מחדל – אתר ציבורי */
   overflow-x: hidden;
   overflow-y: auto;
 
@@ -50,10 +50,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ===========================
+   🧠 DASHBOARD SCROLL LOGIC
+=========================== */
+
+/* בדשבורד – אין גלילה על body */
+[data-theme="business"] body {
+  overflow: hidden;
+}
+
+/* ===========================
+   APP LAYOUT
+=========================== */
+
 .app-layout {
   direction: ltr;
-
-  /* 🔥 קריטי */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -62,12 +73,29 @@ body {
 .app-main {
   flex: 1;
   min-height: 0;
-
   display: flex;
   flex-direction: column;
 }
 
+/* ===========================
+   ✅ SCROLL AREA – FIXED
+=========================== */
 
+.app-scroll-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  /* ברירת מחדל – אתר רגיל */
+  overflow: visible;
+}
+
+/* בדשבורד – הגלילה היחידה */
+[data-theme="business"] .app-scroll-area {
+  overflow-y: auto;      /* ✅ כאן הגלילה */
+  overflow-x: hidden;
+}
 
 /* ===========================
    GLOBAL BOX MODEL
@@ -78,15 +106,6 @@ body {
 *::after {
   box-sizing: inherit;
 }
-
-.app-scroll-area {
-  flex: 1;
-  min-height: 0;              /* 🔥 זה החסר הקריטי */
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
 
 a {
   text-decoration: none;
@@ -174,16 +193,17 @@ button {
 }
 
 /* ===========================
-   💬 Business Chat – Fullscreen
+   💬 BUSINESS CHAT – FULLSCREEN
 =========================== */
 
 .business-chat-fullscreen {
   flex: 1;
   min-height: 0;
   width: 100%;
-
   display: flex;
   flex-direction: column;
+
+  /* לצ'אט יש גלילה פנימית משלו */
   overflow: hidden;
 }
 
@@ -193,10 +213,9 @@ button {
 }
 
 /* ===========================
-   💬 Business Chat – FIX dashboard padding
+   💬 CHAT – FIX DASHBOARD PADDING
 =========================== */
 
-/* מבטל padding שמקצר גובה בצ'אט */
 .dashboard-content:has(.business-chat-fullscreen) {
   padding-top: 0 !important;
   justify-content: stretch;
