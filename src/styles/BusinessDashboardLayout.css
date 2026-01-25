@@ -251,17 +251,19 @@
    🧱 Content Offset
    =========================== */
 @media (min-width: 769px) {
-  .dashboard-content {
+ .dashboard-content {
   margin-left: 250px;
+  margin-top: 64px;
 
-  height: calc(100vh - 64px); /* 🔥 זה הקסם */
+  flex: 1;
   min-height: 0;
 
   display: flex;
   flex-direction: column;
 
-  overflow: hidden;
+  overflow: hidden; /* נשאר */
 }
+
 }
 
 
@@ -442,13 +444,13 @@
   }
 
    .chat-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    flex: 1;        /* ✅ במקום height */
-    min-height: 0;  /* ✅ קריטי */
-    overflow: hidden;
-  }
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
      .message-list {
     flex: 1;
@@ -557,9 +559,11 @@
   }
 
   /* תוכן במובייל בלי margin-left של הסיידבר */
-     .dashboard-content {
+      .dashboard-content {
     margin-left: 0;
-    height: calc(100vh - 56px); /* גובה ההידר במובייל */
+    margin-top: 56px;
+
+    flex: 1;
     min-height: 0;
 
     display: flex;
