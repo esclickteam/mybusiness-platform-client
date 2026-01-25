@@ -187,7 +187,7 @@ export default function BusinessDashboardLayout() {
             {/* ================= Sidebar ================= */}
             {(!isMobile || showSidebar) && (
               <aside
-                className={`dashboard-layout-sidebar ${isMobile ? "open" : ""}`}
+                className={`dashboard-layout-sidebar ${showSidebar ? "open" : ""}`}
                 ref={sidebarRef}
               >
                 <div className="sidebar-logo">
@@ -229,7 +229,8 @@ export default function BusinessDashboardLayout() {
 }
 
                     onClick={() => {
-  setChatSidebarOpen((v) => !v);   // ✅ רק צ’אט
+  setChatSidebarOpen(false);      // ⛔ סוגר צ’אט אם פתוח
+  setShowSidebar((v) => !v);      // ✅ פותח/סוגר ניווט
 }}
 
                   >

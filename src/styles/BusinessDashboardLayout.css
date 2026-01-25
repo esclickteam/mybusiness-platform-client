@@ -561,3 +561,19 @@
     height: calc(100vh - 56px) !important;
   }
 }
+
+/* 🧭 Navigation sidebar */
+.dashboard-layout-sidebar {
+  z-index: 8000;
+}
+
+/* 💬 Chat sidebar */
+.conversationsList,
+.sidebar {
+  z-index: 8500;
+}
+
+/* 🧠 Header תמיד מעל כולם */
+.dashboard-layout-header {
+  z-index: 10000 !important;
+}
