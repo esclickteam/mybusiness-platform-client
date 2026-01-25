@@ -243,7 +243,7 @@
   cursor: pointer;
 }
 
-.header-action-btn:hover {
+ .header-action-btn:hover {
   background: #ffffff;
 }
 
@@ -256,12 +256,11 @@
     margin-top: 64px;
 
     height: calc(100vh - 64px);
-    overflow-y: auto;
+    overflow: hidden;        /* ❗ לא auto */
 
     display: flex;
-    justify-content: center;
-
-    padding-top: 34px;   /* ⬅️ זה מה שמוריד למטה */
+    flex-direction: column; /* 🔥 */
+    padding-top: 0;         /* ❌ מבטלים */
   }
 }
 

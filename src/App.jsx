@@ -149,7 +149,7 @@ const isBusinessChatRoute =
 
     <main className="app-main">
       {isBusinessChatRoute ? (
-  <div style={{ height: "100vh", width: "100vw", overflow: "hidden" }}>
+  <div className="business-chat-fullscreen">
     <Routes location={location} key={location.pathname}>
       <Route
         path="/business/:businessId/chat/*"
@@ -161,8 +161,9 @@ const isBusinessChatRoute =
       />
     </Routes>
   </div>
-          
-  ) : (
+  
+            ) : (
+              
     // ✅ כל שאר האתר – נשאר כמו שהיה
     <div className="app-scroll-area">
       <AiProvider>

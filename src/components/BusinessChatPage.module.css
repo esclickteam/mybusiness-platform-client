@@ -2,28 +2,36 @@
    WhatsApp background
 ========================= */
 .whatsappBg {
-  min-height: 100vh;
-  background: #f3edff;
+  height: 100vh;
+  width: 100vw;
+
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
+
+  background: #f3edff;
   padding: 0;
 }
 
 /* =========================
-   Chat container
+   Chat container (ROOT)
 ========================= */
 .chatContainer {
+  flex: 1;
+  min-height: 0;
+
   display: flex;
   flex-direction: column;
+
   width: 100%;
-  max-width: 950px;
-  height: 100vh;
-  min-height: 380px;
-  border-radius: 20px;
+  max-width: none;        /* 🔥 חובה – מסך מלא כברירת מחדל */
+  height: 100%;
+
   background: #faf7ff;
-  border: 1.5px solid #c3a6fa;
-  box-shadow: 0 4px 32px rgba(163,137,235,0.17);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+
   overflow: hidden;
 }
 
@@ -35,14 +43,14 @@
   background: #f3edff;
   border-left: 1.5px solid #c3a6fa;
   border-right: 1.5px solid #c3a6fa;
+
   display: flex;
   flex-direction: column;
 
-  /* 🔥 הקריטי באמת */
-  flex: 1;        /* נותן גובה אמיתי בתוך flex-column */
-  min-height: 0;  /* מאפשר לילדים לגלול */
+  flex: 1;        /* 🔥 קריטי */
+  min-height: 0;  /* 🔥 קריטי */
 
-  overflow: hidden; /* ⛔ לא auto כאן */
+  overflow: hidden; /* גלילה רק בילדים */
   box-shadow: 1px 0 6px rgba(163, 137, 235, 0.15);
   z-index: 2;
 }
@@ -59,9 +67,11 @@
   padding: 14px 22px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
   color: #252525;
   border-bottom: 1px solid #f3f0ff;
   font-size: 15px;
@@ -77,13 +87,14 @@
    Chat area
 ========================= */
 .chatArea {
+  flex: 1;
+  min-height: 0;
+
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  width: 100%;
 
-  /* 🔥 קריטי – בלי height:100% */
-  flex: 1;
+  width: 100%;
 }
 
 /* =========================
@@ -91,10 +102,14 @@
 ========================= */
 .messageList {
   flex: 1;
+  min-height: 0;
+
   overflow-y: auto;
+
   display: flex;
   flex-direction: column;
   gap: 10px;
+
   background: #faf7ff;
   padding: 20px 18px 10px;
 }
@@ -102,11 +117,14 @@
 .message {
   max-width: 72%;
   min-width: 44px;
+
   padding: 10px 15px 8px 13px;
   border-radius: 18px;
+
   word-break: break-word;
   line-height: 1.48;
   font-size: 15px;
+
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
@@ -118,7 +136,7 @@
 
 .theirs {
   align-self: flex-start;
-  background: #fff;
+  background: #ffffff;
   color: #222;
   border: 1px solid #eee;
 }
@@ -128,11 +146,13 @@
 ========================= */
 .inputBar {
   display: flex;
-  padding: 13px 15px 13px 12px;
-  border-top: 1.5px solid #e9e2ff;
-  background: #f3edff;
   align-items: center;
+
+  padding: 13px 15px 13px 12px;
   min-height: 66px;
+
+  background: #f3edff;
+  border-top: 1.5px solid #e9e2ff;
 }
 
 /* =========================
@@ -155,27 +175,25 @@
    Responsive
 ========================= */
 
-/* Tablet & Mobile */
+/* 📱 Tablet & Mobile – FULLSCREEN */
 @media (max-width: 1024px) {
   .chatContainer {
     flex-direction: column;
-    max-width: 100vw;
     height: 100vh;
+    max-width: 100vw;
     border-radius: 0;
   }
 
-  /* רשימת שיחות – WhatsApp style */
   .sidebarInner {
     width: 100%;
     min-width: 100%;
+
     border-left: none;
     border-right: none;
     border-bottom: none;
-    flex-direction: column;
-    overflow-y: auto;
 
-    /* חשוב גם כאן */
     flex: 1;
+    overflow-y: auto;
   }
 
   .chatArea {
@@ -184,17 +202,23 @@
   }
 }
 
-/* Desktop */
+/* 🖥️ Desktop – card centered */
 @media (min-width: 1025px) {
   .chatContainer {
     flex-direction: row;
+
+    max-width: 950px;
     height: 82vh;
+
+    margin: auto;
+
     border-radius: 16px;
+    border: 1.5px solid #c3a6fa;
+    box-shadow: 0 4px 32px rgba(163,137,235,0.17);
   }
 
   .sidebarInner {
     width: 246px;
-    height: auto;
     flex: none;
   }
 
