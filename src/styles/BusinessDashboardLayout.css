@@ -255,12 +255,14 @@
     margin-left: 250px;
     margin-top: 64px;
 
-    height: calc(100vh - 64px);
-    overflow: hidden;        /* ❗ לא auto */
-
+    flex: 1;              /* ✅ במקום height */
+    min-height: 0;        /* ✅ קריטי */
     display: flex;
-    flex-direction: column; /* 🔥 */
-    padding-top: 0;         /* ❌ מבטלים */
+    flex-direction: column;
+
+    overflow-y: auto;     /* ✅ הגלילה כאן */
+    overflow-x: hidden;
+    padding-top: 0;
   }
 }
 
@@ -557,15 +559,18 @@
 
   /* תוכן במובייל בלי margin-left של הסיידבר */
     .dashboard-content {
-    margin-left: 0 !important;
-    margin-top: 56px !important;
-    height: calc(100vh - 56px) !important;
+  margin-left: 0 !important;
+  margin-top: 56px !important;
 
-    display: flex;           /* ✅ חדש */
-    flex-direction: column; /* ✅ חדש */
-    min-height: 0;           /* ✅ חדש (קריטי) */
-    overflow: hidden;        /* ✅ חדש */
-  }
+  flex: 1;               /* ✅ במקום height */
+  min-height: 0;         /* ✅ קריטי */
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;      /* ✅ הגלילה כאן */
+  overflow-x: hidden;
+}
+
 
   .chat-container {
     width: 100%;
