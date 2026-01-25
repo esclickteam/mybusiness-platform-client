@@ -2,8 +2,10 @@
    WhatsApp background
 ========================= */
 .whatsappBg {
-  height: 100vh;
-  width: 100vw;
+  flex: 1;          /* ✅ במקום 100vh */
+  min-height: 0;    /* ✅ קריטי ל־flex */
+
+  width: 100%;
 
   display: flex;
   align-items: stretch;
@@ -230,7 +232,7 @@
     flex: 1;        /* ✅ */
     min-height: 0;  /* ✅ */
 
-    margin: auto;
+    margin: 0 auto;  
     border-radius: 16px;
     border: 1.5px solid #c3a6fa;
     box-shadow: 0 4px 32px rgba(163,137,235,0.17);
