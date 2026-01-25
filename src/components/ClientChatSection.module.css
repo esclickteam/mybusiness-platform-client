@@ -2,22 +2,34 @@
 
 /* General page background */
 .whatsappBg {
-  min-height: 100vh;
-  background: #f3edff;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
+
+  background: #f3edff;
   padding: 0;
+  overflow: hidden;
 }
 
 /* Main container: includes both sidebar and chat, with a professional shadow */
 .chatContainer {
+  flex: 1;
+  min-height: 0;
+
   display: flex;
   flex-direction: row;
+
   width: 100%;
   max-width: 950px;
-  height: 80vh;
-  min-height: 380px;
+  margin: auto;
+
+  height: auto;          /* ✅ לא vh */
+  min-height: 0;         /* ✅ חשוב */
+
   border-radius: 20px;
   background: #faf7ff;
   border: 1.5px solid #c3a6fa;
@@ -99,11 +111,12 @@
 
 /* Optional – make layout a single column on mobile */
 @media (max-width: 700px) {
-  .chatContainer {
+   .chatContainer {
     flex-direction: column-reverse;
-    height: 98vh;
-    min-width: 0;
-    max-width: 98vw;
+    flex: 1;
+    min-height: 0;
+    height: auto;
+    max-width: 100%;
   }
   .sidebarInner {
     width: 100%;
@@ -116,7 +129,8 @@
     justify-content: flex-end;
   }
   .chatArea {
-    min-height: 240px;
+    flex: 1;
+    min-height: 0;   /* ✅ במקום 240px */
   }
 }
 
@@ -142,8 +156,10 @@
 
 /* Tablets – iPad, Galaxy Tab, etc. */
 @media (min-width: 700px) and (max-width: 1024px) {
-  .chatContainer {
-    height: 90vh;
+    .chatContainer {
+    flex: 1;
+    min-height: 0;
+    height: auto;     /* ✅ לא vh */
     max-width: 100%;
     flex-direction: row;
   }
@@ -160,7 +176,7 @@
 @media (min-width: 1280px) {
   .chatContainer {
     max-width: 1150px;
-    height: 85vh;
+    /* ✅ בלי height */
   }
   .sidebarInner {
     width: 260px;

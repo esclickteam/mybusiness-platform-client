@@ -2,8 +2,9 @@
    WhatsApp background
 ========================= */
 .whatsappBg {
-  height: 100vh;
-  width: 100vw;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
 
   display: flex;
   align-items: stretch;
@@ -11,6 +12,7 @@
 
   background: #f3edff;
   padding: 0;
+  overflow: hidden;
 }
 
 /* =========================
@@ -24,9 +26,9 @@
   flex-direction: column;
 
   width: 100%;
-  max-width: none;       /* מסך מלא כברירת מחדל */
-  height: 100%;
+  max-width: none;
 
+  height: auto;          /* ✅ במקום height:100% */
   background: #faf7ff;
   border: none;
   border-radius: 0;
@@ -34,6 +36,7 @@
 
   overflow: hidden;
 }
+
 
 /* =========================
    Sidebar
@@ -93,7 +96,6 @@
 
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* או למחוק לגמרי */
 
   width: 100%;
   overflow: hidden;
@@ -241,8 +243,4 @@
     flex: none;
   }
 
-  .chatArea {
-    flex: 1;
-    min-height: 0;
-  }
 }
