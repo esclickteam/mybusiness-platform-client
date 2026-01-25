@@ -2,10 +2,10 @@
    WhatsApp background wrapper
 ================================ */
 .whatsappBg {
-  height: 100dvh;  
-  min-height: 0;
+  flex: 1;              /* 🔑 מקבל גובה מה־dashboard-content */
+  min-height: 0;        /* 🔑 קריטי ל־flex scroll */
   display: flex;
-  align-items: stretch;        /* ❗ חובה */
+  align-items: stretch;
   justify-content: stretch;
   background: #f3edff;
   padding: 0;
@@ -15,8 +15,8 @@
    Chat container (root)
 ================================ */
 .chatContainer {
-  flex: 1;                     /* ❗ לא 100vh */
-  min-height: 0;               /* ❗ קריטי לגלילה */
+  flex: 1;              /* 🔑 ממשיך שרשרת flex */
+  min-height: 0;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -207,7 +207,6 @@
   .chatContainer {
     flex-direction: row;
     max-width: 950px;
-    height: 82vh;
     border-radius: 16px;
   }
 }
