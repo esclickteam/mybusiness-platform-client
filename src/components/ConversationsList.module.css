@@ -16,9 +16,9 @@
    Sidebar (הרשימה עצמה)
 ========================= */
 .sidebar {
-  width: 250px;
+  width: 400px;
   min-width: 170px;
-  max-width: 320px;
+  max-width: 500px;
 
   background: linear-gradient(135deg, #ede7f6 0%, #f5f3fa 100%);
   border-right: 2px solid #c3a6fa; /* סגול בהיר ומותגי */
