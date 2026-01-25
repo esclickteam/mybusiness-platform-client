@@ -79,40 +79,14 @@ body {
   box-sizing: inherit;
 }
 
-/* ===========================
-   ❌ REMOVED: FIXED BACKGROUND LAYER
-   (שבר Header + Mobile במובייל)
-=========================== */
-/*
-html::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    var(--bg-start),
-    var(--bg-end)
-  );
-  z-index: -1;
-  pointer-events: none;
-}
-*/
-
-/* ===========================
-   ❌ REMOVED: SINGLE SCROLL OWNER
-   (לא מתאים ל־Landing Pages)
-=========================== */
-/*
 .app-scroll-area {
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;              /* 🔥 זה החסר הקריטי */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
-*/
 
-/* ===========================
-   LINKS
-=========================== */
 
 a {
   text-decoration: none;
