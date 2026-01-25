@@ -217,3 +217,13 @@ button {
   flex: 1;
   min-height: 0;
 }
+
+/* ===========================
+   💬 Business Chat – FIX dashboard padding
+=========================== */
+
+/* מבטל padding שמקצר גובה בצ'אט */
+.dashboard-content:has(.business-chat-fullscreen) {
+  padding-top: 0 !important;
+  justify-content: stretch;
+}
