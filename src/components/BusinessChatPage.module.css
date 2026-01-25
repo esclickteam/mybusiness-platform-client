@@ -224,7 +224,8 @@
     font-size: 14px;
   }
   .chatArea {
-    height: calc(100% - 160px);
+    width: 100%;
+    flex: 1;
     min-height: 0;
   }
 }
@@ -276,20 +277,7 @@
   }
 }
 
-/* סיידבר מוסתר במובייל - רק הצ'אט יופיע */
-@media (max-width: 768px) {
-  .sidebarInner {
-    display: none !important;
-  }
-  .chatArea {
-    height: 100% !important;
-  }
-  .chatContainer {
-    max-width: 100vw !important;
-    height: 100vh !important;
-    border-radius: 0 !important;
-  }
-}
+
 /* רספונסיביות כללית - WhatsApp style chat */
 
 /* Extra Large - מעל 1024px */
@@ -340,64 +328,24 @@
   }
 }
 
-/* Small - 481px עד 768px */
-@media (min-width: 481px) and (max-width: 768px) {
-  .sidebarInner {
-    display: none !important;
-  }
-  .chatArea {
-    height: 100% !important;
-  }
+
+
+
+/* 📱 Mobile Inbox – רשימת שיחות בלבד */
+@media (max-width: 768px) {
   .chatContainer {
-    max-width: 100vw !important;
-    height: 100vh !important;
-    border-radius: 0 !important;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    border-radius: 0;
   }
-}
 
-/* Extra Small - עד 480px */
-@media (max-width: 480px) {
   .sidebarInner {
-    height: 140px;
-  }
-  .convItem {
-    font-size: 13px;
-    padding: 10px 12px;
-  }
-  .inputBar {
-    padding: 10px 10px 10px 10px;
-    min-height: 56px;
-  }
-  .inputField {
-    font-size: 14px;
-    padding: 10px 12px;
-    border-radius: 22px;
-  }
-  .sendButton {
-    width: 40px;
-    height: 40px;
-    font-size: 17px;
-    margin-left: 6px;
-  }
-}
-
-/* Very Small - עד 320px */
-@media (max-width: 320px) {
-  .sidebarInner {
-    height: 120px;
-  }
-  .convItem {
-    font-size: 12px;
-    padding: 8px 10px;
-  }
-  .inputField {
-    font-size: 13px;
-    padding: 8px 10px;
-  }
-  .sendButton {
-    width: 36px;
-    height: 36px;
-    font-size: 16px;
-    margin-left: 5px;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    border: none;
+    box-shadow: none;
   }
 }

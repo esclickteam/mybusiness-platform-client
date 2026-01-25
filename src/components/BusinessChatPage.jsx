@@ -19,6 +19,9 @@ export default function BusinessChatPage() {
   const socket = useSocket();
   const location = useLocation();
 
+  /* 📱 זיהוי מובייל */
+  const isMobile = window.innerWidth <= 768;
+
   /* =========================
      🧩 Normalize conversation
   ========================= */
@@ -56,7 +59,6 @@ export default function BusinessChatPage() {
       conversationType: convo.conversationType,
     });
 
-    // איפוס badge מקומי בלבד
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[threadId];
@@ -95,7 +97,8 @@ export default function BusinessChatPage() {
           location.state?.threadId ||
           new URLSearchParams(location.search).get("threadId");
 
-        if (!selected && !navigatedThreadId && deduped.length) {
+        /* ❗ בדסקטופ בלבד – בוחרים שיחה ראשונה אוטומטית */
+        if (!isMobile && !selected && !navigatedThreadId && deduped.length) {
           const {
             conversationId,
             clientId: partnerId,
@@ -114,7 +117,7 @@ export default function BusinessChatPage() {
       .catch((err) => {
         console.error("Error fetching client conversations:", err);
       });
-  }, [initialized, businessId, selected, location]);
+  }, [initialized, businessId, selected, location, isMobile]);
 
   /* =========================
      💬 Realtime updates
@@ -126,8 +129,6 @@ export default function BusinessChatPage() {
 
     const handleNewMessage = (msg) => {
       if (msg?.toId !== businessId) return;
-
-      // אם זו השיחה הפעילה – לא מגדילים unread
       if (msg.conversationId === selected?.conversationId) return;
 
       setUnreadCounts((prev) => ({
@@ -145,8 +146,7 @@ export default function BusinessChatPage() {
   }, [socket, businessId, selected]);
 
   /* =========================
-     ✅ מקור אמת יחיד: סימון שיחה כנקראה
-     מופעל רק כש-selected.conversationId משתנה
+     ✅ Mark conversation read
   ========================= */
   useEffect(() => {
     if (!socket || !selected?.conversationId || !businessId) return;
@@ -159,7 +159,7 @@ export default function BusinessChatPage() {
   }, [socket, selected?.conversationId, businessId]);
 
   /* =========================
-     🧭 Manual selection (UI בלבד)
+     🧭 Manual selection
   ========================= */
   const handleSelect = (conversationId, partnerId, partnerName) => {
     const convo = convos.find((c) => c.conversationId === conversationId);
@@ -172,7 +172,6 @@ export default function BusinessChatPage() {
       conversationType: type,
     });
 
-    // איפוס badge מקומי בלבד
     setUnreadCounts((prev) => {
       const next = { ...prev };
       delete next[conversationId];
@@ -184,21 +183,14 @@ export default function BusinessChatPage() {
     return <p className={styles.loading}>Loading data…</p>;
   }
 
+  /* =========================
+     🖥️ / 📱 RENDER
+  ========================= */
   return (
     <div className={styles.chatContainer}>
-      <aside className={styles.sidebarInner}>
-        <ConversationsList
-          conversations={convos}
-          businessId={businessId}
-          selectedConversationId={selected?.conversationId}
-          onSelect={handleSelect}
-          unreadCountsByConversation={unreadCounts}
-          isBusiness
-        />
-      </aside>
-
-      <section className={styles.chatArea}>
-        {selected ? (
+      {isMobile ? (
+        /* 📱 מובייל – או Inbox או Chat */
+        selected ? (
           <BusinessChatTab
             conversationId={selected.conversationId}
             businessId={businessId}
@@ -208,11 +200,47 @@ export default function BusinessChatPage() {
             conversationType={selected.conversationType}
           />
         ) : (
-          <div className={styles.emptyMessage}>
-            Select a conversation to view messages
-          </div>
-        )}
-      </section>
+          <ConversationsList
+            conversations={convos}
+            businessId={businessId}
+            selectedConversationId={null}
+            onSelect={handleSelect}
+            unreadCountsByConversation={unreadCounts}
+            isBusiness
+          />
+        )
+      ) : (
+        /* 🖥️ דסקטופ – תצוגה מפוצלת */
+        <>
+          <aside className={styles.sidebarInner}>
+            <ConversationsList
+              conversations={convos}
+              businessId={businessId}
+              selectedConversationId={selected?.conversationId}
+              onSelect={handleSelect}
+              unreadCountsByConversation={unreadCounts}
+              isBusiness
+            />
+          </aside>
+
+          <section className={styles.chatArea}>
+            {selected ? (
+              <BusinessChatTab
+                conversationId={selected.conversationId}
+                businessId={businessId}
+                customerId={selected.partnerId}
+                customerName={selected.partnerName}
+                socket={socket}
+                conversationType={selected.conversationType}
+              />
+            ) : (
+              <div className={styles.emptyMessage}>
+                Select a conversation to view messages
+              </div>
+            )}
+          </section>
+        </>
+      )}
     </div>
   );
 }
