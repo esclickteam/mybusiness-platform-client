@@ -1,12 +1,12 @@
 /* 🌐 HELP CENTER – MODERN LTR DESIGN (2025 EDITION) */
 .help-center-container {
   max-width: 1200px;
-  margin: 60px auto;
-  padding: 40px 25px;
+  margin: 0 auto;              /* ❌ בלי רווחים אנכיים */
+  padding: 0;                  /* ❌ לא עוטף את כל העמוד */
   direction: ltr;
   font-family: "Poppins", "Inter", sans-serif;
   color: #1f1f29;
-  background: linear-gradient(180deg, #f9f9ff 0%, #eef1ff 100%);
+  background: transparent;     /* ❌ מסיר את הבלוק האחורי */
   animation: fadeIn 0.5s ease-in-out;
 }
 
