@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 24px rgba(88, 28, 135, 0.15);
-  z-index: 8000;
+  z-index: 9000;
   overflow-y: auto;
 }
 
@@ -155,10 +155,9 @@
   justify-content: space-between;
 
   padding: 0 24px;
-  z-index: 10000; 
+  z-index: 9050;
 
   box-sizing: border-box;
-  pointer-events: auto;
 }
 
 .dashboard-layout-header-center {
@@ -225,7 +224,7 @@
   /* ⬅️ זה הקסם – נפתח שמאלה */
   transform: translateX(-100%) !important;
 
-  z-index: 9500; 
+  z-index: 9999;
   max-width: 320px;
 }
 
@@ -560,15 +559,4 @@
     margin-top: 56px !important;
     height: calc(100vh - 56px) !important;
   }
-}
-
-/* 🧭 Navigation sidebar */
-.dashboard-layout-sidebar {
-  z-index: 8000;
-}
-
-
-/* 🧠 Header תמיד מעל כולם */
-.dashboard-layout-header {
-  z-index: 10000 !important;
 }

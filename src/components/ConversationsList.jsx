@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSocket } from "../context/socketContext";
-import { useOutletContext } from "react-router-dom";
 import UnreadBadge from "./UnreadBadge";
 import styles from "./ConversationsList.module.css";
 
 /**
  * Sidebar displaying the list of conversations.
  * Works for both the **client app** and the **business dashboard**.
+ *
+ * - When `isBusiness=true`, we show business-side labels and join
+ *   the socket room for the given `businessId`.
+ * - We ensure only the first conversation per partner is kept,
+ *   to avoid duplicates when the same client reopens a chat.
+ * - `onSelect` is called with (conversationId, partnerId, partnerName).
  */
 export default function ConversationsList({
   conversations = [],
@@ -18,16 +23,6 @@ export default function ConversationsList({
   unreadCountsByConversation = {},
 }) {
   const socket = useSocket();
-
-  /* =========================
-     ⬅️ STATE מגיע מה־Layout
-  ========================= */
-  const {
-    chatSidebarOpen: sidebarOpen,
-    setChatSidebarOpen: setSidebarOpen,
-    isMobile,
-  } = useOutletContext();
-
   const [selectedId, setSelectedId] = useState(selectedConversationId);
 
   // -------- API ENDPOINT ----------
@@ -52,19 +47,20 @@ export default function ConversationsList({
       const json = await res.json();
       return json.conversations ?? json;
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  // Prefer prop conversations (for optimistic updates)
   const list = conversations.length ? conversations : fetchedConversations;
 
-  // -------- SOCKET ----------
+  // -------- SOCKET: join business room ----------
   useEffect(() => {
     if (isBusiness && socket && businessId) {
       socket.emit("joinBusinessRoom", businessId);
     }
   }, [socket, businessId, isBusiness]);
 
-  // -------- SYNC SELECTED ----------
+  // -------- SYNC SELECTED FROM PARENT ----------
   useEffect(() => {
     setSelectedId(selectedConversationId ?? null);
   }, [selectedConversationId]);
@@ -91,6 +87,7 @@ export default function ConversationsList({
   const getConversationId = (conv) =>
     (conv.conversationId ?? conv._id ?? conv.id)?.toString() ?? "";
 
+  /** Keep only one conversation per partner */
   const uniqueConvs = list.reduce((acc, conv) => {
     const partnerId = isBusiness ? conv.clientId : conv.businessId;
     const exists = acc.some((c) =>
@@ -102,71 +99,63 @@ export default function ConversationsList({
 
   // -------- HANDLE SELECT ----------
   const handleSelect = (convoId, partnerId, displayName) => {
+    console.log("SELECT CONVERSATION", {
+      convoId,
+      partnerId,
+      displayName,
+    });
+
+    // 1️⃣ עדכון Parent (בחירת שיחה + איפוס badge שם)
     onSelect(convoId, partnerId, displayName);
+
+    // 2️⃣ עדכון מקומי
     setSelectedId(convoId);
 
-    if (isMobile) {
-      setSidebarOpen(false); // ⬅️ סוגר צ’אט במובייל
-    }
-  };
+     };
 
   // -------- RENDER ----------
   return (
     <div className={styles.conversationsList}>
-  {/* Sidebar */}
-  <div
-    className={`${styles.sidebar} ${
-      sidebarOpen ? styles.open : ""
-    }`}
-  >
-    <div className={styles.sidebarTitle}>
-      {isBusiness ? "Chats with Clients" : "Chat with Business"}
-    </div>
-
-    {uniqueConvs.map((conv) => {
-      const convoId = getConversationId(conv);
-      const partnerId = isBusiness ? conv.clientId : conv.businessId;
-      const displayName = isBusiness
-        ? conv.clientName
-        : conv.businessName || partnerId;
-
-      const unreadCount =
-        unreadCountsByConversation[convoId] || 0;
-
-      const isActive = convoId === selectedId;
-
-      return (
-        <div
-          key={convoId}
-          className={`${styles.convItem} ${
-            isActive ? styles.active : ""
-          }`}
-          onClick={() =>
-            handleSelect(convoId, partnerId, displayName)
-          }
-        >
-          <span>{displayName}</span>
-
-          {unreadCount > 0 && (
-            <UnreadBadge
-              conversationId={convoId}
-              count={unreadCount}
-            />
-          )}
+      <div className={styles.sidebar}>
+        <div className={styles.sidebarTitle}>
+          {isBusiness ? "Chats with Clients" : "Chat with Business"}
         </div>
-      );
-    })}
-  </div>
 
-  {/* 🔥 OVERLAY – חובה */}
-  <div
-  className={`${styles.overlay} ${
-    sidebarOpen ? styles.show : ""
-  }`}
-  onClick={() => setSidebarOpen(false)}
-/>
-</div>
+        {uniqueConvs.map((conv) => {
+          const convoId = getConversationId(conv);
+          const partnerId = isBusiness ? conv.clientId : conv.businessId;
+          const displayName = isBusiness
+            ? conv.clientName
+            : conv.businessName || partnerId;
 
+          const unreadCount = unreadCountsByConversation[convoId] || 0;
+          const isActive = convoId === selectedId;
 
+          return (
+            <div
+              key={convoId}
+              className={`${styles.convItem} ${
+                isActive ? styles.active : ""
+              }`}
+              onClick={() =>
+                handleSelect(convoId, partnerId, displayName)
+              }
+              style={{ position: "relative" }}
+            >
+              <span>{displayName}</span>
+
+              <div className={styles.badgeWrapper}>
+                {unreadCount > 0 && (
+                  <UnreadBadge
+                    conversationId={convoId}
+                    count={unreadCount}
+                  />
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }

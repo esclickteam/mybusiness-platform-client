@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { AiProvider } from "../../context/AiContext";
@@ -10,7 +9,6 @@ import { io } from "socket.io-client";
 import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
-
 
 /* ============================
    🔌 Socket
@@ -22,10 +20,6 @@ export default function BusinessDashboardLayout() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
   const { businessId } = useParams();
-
-  const location = useLocation();
-const isChatRoute = location.pathname.includes("customer-messages");
-
 
   /* ============================
      📩 Unread Messages
@@ -58,8 +52,6 @@ const isChatRoute = location.pathname.includes("customer-messages");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showSidebar, setShowSidebar] = useState(!isMobile);
   const sidebarRef = useRef(null);
-  const [chatSidebarOpen, setChatSidebarOpen] = useState(false);
-
 
   /* ============================
      🎁 Early Bird UI State
@@ -191,10 +183,9 @@ const isChatRoute = location.pathname.includes("customer-messages");
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
             {/* ================= Sidebar ================= */}
-            {(!isMobile || (showSidebar && !isChatRoute)) && (
-
+            {(!isMobile || showSidebar) && (
               <aside
-                className={`dashboard-layout-sidebar ${showSidebar ? "open" : ""}`}
+                className={`dashboard-layout-sidebar ${isMobile ? "open" : ""}`}
                 ref={sidebarRef}
               >
                 <div className="sidebar-logo">
@@ -231,23 +222,10 @@ const isChatRoute = location.pathname.includes("customer-messages");
                   <button
                     type="button"
                     className="header-hamburger-btn"
-                    aria-label={
-  (isChatRoute ? chatSidebarOpen : showSidebar) ? "Close menu" : "Open menu"
-}
-
-                    onClick={() => {
-  if (isChatRoute) {
-    setShowSidebar(false);                 // סוגר ניווט
-    setChatSidebarOpen((v) => !v);         // פותח/סוגר שיחות
-  } else {
-    setChatSidebarOpen(false);             // סוגר שיחות
-    setShowSidebar((v) => !v);             // פותח/סוגר ניווט
-  }
-}}
-
+                    aria-label={showSidebar ? "Close menu" : "Open menu"}
+                    onClick={() => setShowSidebar((v) => !v)}
                   >
-                    {(isChatRoute ? chatSidebarOpen : showSidebar) ? <FaTimes /> : <FaBars />}
-
+                    {showSidebar ? <FaTimes /> : <FaBars />}
                   </button>
                 )}
 
@@ -324,14 +302,8 @@ const isChatRoute = location.pathname.includes("customer-messages");
 
             {/* ================= Content ================= */}
             <main className="dashboard-content">
-  <Outlet
-    context={{
-      chatSidebarOpen,
-      setChatSidebarOpen,
-      isMobile,
-    }}
-  />
-</main>
+              <Outlet />
+            </main>
           </div>
         </div>
       </AiProvider>
