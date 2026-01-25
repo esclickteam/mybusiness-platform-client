@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 24px rgba(88, 28, 135, 0.15);
-  z-index: 9000;
+  z-index: 8000;
   overflow-y: auto;
 }
 
@@ -155,9 +155,10 @@
   justify-content: space-between;
 
   padding: 0 24px;
-  z-index: 9050;
+  z-index: 10000; 
 
   box-sizing: border-box;
+  pointer-events: auto;
 }
 
 .dashboard-layout-header-center {
@@ -224,7 +225,7 @@
   /* ⬅️ זה הקסם – נפתח שמאלה */
   transform: translateX(-100%) !important;
 
-  z-index: 9999;
+  z-index: 9500; 
   max-width: 320px;
 }
 
