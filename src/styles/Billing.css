@@ -2,9 +2,9 @@
    Page Layout
 =========================== */
 .billing-page {
-  background: #f6f7fb;
-  min-height: 100vh;
-  padding: 40px 16px;
+  background: transparent; /* ✅ אין בלוק מאחורה */
+  padding: 0;              /* ✅ לא עוטף את כל הדף */
+  min-height: unset;       /* ✅ מבטל 100vh */
 }
 
 .billing-container {
