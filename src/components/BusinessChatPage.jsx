@@ -19,26 +19,16 @@ export default function BusinessChatPage() {
   const socket = useSocket();
   const location = useLocation();
 
-  // ✅ מובייל בלבד – התנהגות כמו וואטסאפ
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth <= 768 : false
-  );
-
-  useEffect(() => {
-    const onResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
   /* =========================
      🧩 Normalize conversation
   ========================= */
   const normaliseConversation = (c) => ({
     ...c,
     conversationId: (c.conversationId ?? c._id ?? c.id)?.toString() ?? "",
-    clientId: c.clientId?.toString() || c.customer?._id?.toString() || "",
+    clientId:
+      c.clientId?.toString() ||
+      c.customer?._id?.toString() ||
+      "",
     clientName: c.clientName || c.customer?.name || "Client",
     conversationType: c.conversationType || "user-business",
   });
@@ -74,8 +64,6 @@ export default function BusinessChatPage() {
     });
   }, [location, convos, initialized, businessId]);
 
-
-
   /* =========================
      📦 Fetch conversations
   ========================= */
@@ -107,30 +95,26 @@ export default function BusinessChatPage() {
           location.state?.threadId ||
           new URLSearchParams(location.search).get("threadId");
 
-        // ✅ לא משנים לוגיקה: עדיין בוחר שיחה ראשונה רק אם לא נבחרה שיחה ואין ניווט
-        // (במובייל זה לא "מפריע", כי רק אם selected יש שיחה פתוחה)
-        if (!isMobile && !selected && !navigatedThreadId && deduped.length) {
-  const {
-    conversationId,
-    clientId: partnerId,
-    clientName: partnerName,
-    conversationType,
-  } = deduped[0];
+        if (!selected && !navigatedThreadId && deduped.length) {
+          const {
+            conversationId,
+            clientId: partnerId,
+            clientName: partnerName,
+            conversationType,
+          } = deduped[0];
 
-  setSelected({
-    conversationId,
-    partnerId,
-    partnerName,
-    conversationType,
-  });
-}
-
+          setSelected({
+            conversationId,
+            partnerId,
+            partnerName,
+            conversationType,
+          });
+        }
       })
       .catch((err) => {
         console.error("Error fetching client conversations:", err);
       });
-  }, [initialized, businessId, selected, location, isMobile]);
-
+  }, [initialized, businessId, selected, location]);
 
   /* =========================
      💬 Realtime updates
@@ -196,66 +180,10 @@ export default function BusinessChatPage() {
     });
   };
 
-  const handleBackMobile = () => {
-  setSelected(null);
-
-  const url = new URL(window.location.href);
-  url.searchParams.delete("threadId");
-  window.history.replaceState({}, "", url.toString());
-};
-
   if (!initialized) {
     return <p className={styles.loading}>Loading data…</p>;
   }
 
-  // ✅ מובייל כמו וואטסאפ: או רשימה או צ'אט
-  if (isMobile) {
-    return (
-      <div className={styles.chatContainer}>
-        {!selected ? (
-          <aside className={styles.sidebarInner}>
-            <ConversationsList
-              conversations={convos}
-              businessId={businessId}
-              selectedConversationId={selected?.conversationId}
-              onSelect={handleSelect}
-              unreadCountsByConversation={unreadCounts}
-              isBusiness
-            />
-          </aside>
-        ) : (
-          <section className={styles.chatArea}>
-            <div className={styles.mobileChatTopBar}>
-              <button
-                type="button"
-                className={styles.mobileBackBtn}
-                onClick={handleBackMobile}
-                aria-label="Back to conversations"
-                title="Back"
-              >
-                ←
-              </button>
-
-              <div className={styles.mobileChatTitle}>
-                {selected.partnerName}
-              </div>
-            </div>
-
-            <BusinessChatTab
-              conversationId={selected.conversationId}
-              businessId={businessId}
-              customerId={selected.partnerId}
-              customerName={selected.partnerName}
-              socket={socket}
-              conversationType={selected.conversationType}
-            />
-          </section>
-        )}
-      </div>
-    );
-  }
-
-  // ✅ דסקטופ: נשאר בדיוק כמו אצלך
   return (
     <div className={styles.chatContainer}>
       <aside className={styles.sidebarInner}>
