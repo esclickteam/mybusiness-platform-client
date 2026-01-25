@@ -4,9 +4,12 @@
 .BizUply-container {
   padding: 3rem 2rem;
   text-align: center;
+  background: transparent;
 
-  background: transparent;   /* ✅ לא סגול */
-  min-height: unset;         /* ✅ לא 100vh */
+  display: flex;           /* 🔥 */
+  flex-direction: column;  /* 🔥 */
+  flex: 1;                 /* 🔥 */
+  min-height: 0;           /* 🔥 */
 }
 
 /* =========================
@@ -76,23 +79,33 @@
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
   direction: rtl;
 
-  /* ❌ אין גלילה פנימית */
-  overflow: visible;
+  display: flex;           /* 🔥 */
+  flex-direction: column;  /* 🔥 */
+  flex: 1;                 /* 🔥 */
+  min-height: 0;           /* 🔥 */
+  overflow: hidden;        /* 🔥 במקום visible */
 }
 
 /* =========================
    Chat
 ========================= */
 .chat-box-wrapper {
-  overflow-x: hidden; /* ✅ אין height, אין overflow-y */
+  flex: 1;                 /* 🔥 */
+  min-height: 0;           /* 🔥 */
+  display: flex;           /* 🔥 */
+  overflow: hidden;        /* 🔥 */
 }
 
 .chat-box {
   padding: 10px;
   box-sizing: border-box;
   direction: rtl;
+
   display: flex;
   flex-direction: column;
+  flex: 1;               /* 🔥 */
+  min-height: 0;         /* 🔥 */
+  overflow-y: auto;      /* 🔥 */
 }
 
 /* =========================
