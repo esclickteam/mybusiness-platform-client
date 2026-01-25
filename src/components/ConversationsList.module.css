@@ -3,9 +3,14 @@
   height: 100%;
   background: #fff;
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
+@media (max-width: 768px) {
+  .conversationsList {
+    overflow: visible; /* 🔥 קריטי */
+  }
+}
+
 
 /* =====================
    SIDEBAR
@@ -92,16 +97,16 @@
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
-    top: 0;
+    top: 56px; /* ✅ מתחת להידר */
     left: 0;
-    height: 100dvh;
+    height: calc(100dvh - 56px);
     width: 85%;
     max-width: 300px;
 
     transform: translateX(-100%);
     transition: transform 0.3s ease;
 
-    z-index: 2000; /* מעל הכל */
+    z-index: 12000; /* ✅ מעל sidebar הראשי */
     display: block;
   }
 
@@ -112,18 +117,19 @@
 /* =====================
    OVERLAY
 ===================== */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 1500;
-  display: none;
-}
+ .overlay {
+    position: fixed;
+    inset: 56px 0 0 0; /* ✅ לא מכסה header */
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 11000; /* מתחת לסיידבר */
+    display: none;
+    pointer-events: none;
+  }
 
-.overlay.show {
-  display: block;
-}
- 
+  .overlay.show {
+    display: block;
+    pointer-events: auto;
+  }
 }
 
 /* =====================
