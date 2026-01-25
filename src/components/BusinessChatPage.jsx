@@ -19,8 +19,16 @@ export default function BusinessChatPage() {
   const socket = useSocket();
   const location = useLocation();
 
-  /* 📱 זיהוי מובייל */
-  const isMobile = window.innerWidth <= 768;
+const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+useEffect(() => {
+  const onResize = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+
+  window.addEventListener("resize", onResize);
+  return () => window.removeEventListener("resize", onResize);
+}, []);
 
   /* =========================
      🧩 Normalize conversation
@@ -99,6 +107,7 @@ export default function BusinessChatPage() {
 
         /* ❗ בדסקטופ בלבד – בוחרים שיחה ראשונה אוטומטית */
         if (!isMobile && !selected && !navigatedThreadId && deduped.length) {
+
           const {
             conversationId,
             clientId: partnerId,
