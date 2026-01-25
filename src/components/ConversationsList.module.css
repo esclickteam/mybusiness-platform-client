@@ -61,23 +61,6 @@
   font-weight: bold;
 }
 
-/* שם הפרטנר */
-.partnerName {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #333;
-}
-
-/* הודעה אחרונה */
-.lastMessage {
-  margin: 4px 0 0;
-  font-size: 0.8rem;
-  color: #666;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 /* =====================
    CHAT AREA
 ===================== */
@@ -97,35 +80,16 @@
 }
 
 /* =====================
-   MOBILE TOGGLE + OVERLAY
+   OVERLAY (ברירת מחדל – מוסתר)
 ===================== */
-.mobileToggle {
-  display: none;
-}
-
 .overlay {
   display: none;
 }
 
 /* =====================
-   MOBILE (FIX)
+   MOBILE
 ===================== */
 @media (max-width: 768px) {
-  .mobileToggle {
-    display: block;
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 1200;
-    background: #ede7f6;
-    border-radius: 10px;
-    padding: 8px 12px;
-    font-size: 18px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  }
-
   .sidebar {
     position: fixed;
     top: 0;
@@ -133,12 +97,11 @@
     height: 100dvh;
     width: 85%;
     max-width: 300px;
-    z-index: 1100;
 
     transform: translateX(-100%);
     transition: transform 0.3s ease;
 
-    /* ⚠️ חשוב: לא display:none */
+    z-index: 2000; /* מעל הכל */
     display: block;
   }
 
@@ -146,12 +109,13 @@
     transform: translateX(0);
   }
 
-  .overlay {
+  /* 🔥 overlay מופיע רק כשהסיידבר פתוח */
+  .sidebar.open + .overlay {
     display: block;
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.35);
-    z-index: 1000;
+    z-index: 1500;
   }
 }
 
@@ -179,12 +143,6 @@
   .convItem {
     padding: 8px 10px;
     font-size: 0.85rem;
-  }
-  .partnerName {
-    font-size: 0.9rem;
-  }
-  .lastMessage {
-    font-size: 0.75rem;
   }
 }
 
