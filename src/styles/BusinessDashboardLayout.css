@@ -446,13 +446,14 @@
     padding-bottom: 20px;
   }
 
- .chat-container {
+.chat-container {
   width: 100%;
   display: flex;
   flex-direction: column;
 
-  height: 100%;      /* 🔑 מקבל גובה מה־dashboard-content */
-  min-height: 0;     /* 🔑 מאפשר גלילה פנימית */
+  flex: 1;          /* ✅ במקום height */
+  min-height: 0;    /* 🔑 חובה */
+  overflow: hidden; /* 🔑 */
 }
 
   .message-list {
