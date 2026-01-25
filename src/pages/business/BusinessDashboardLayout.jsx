@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { AiProvider } from "../../context/AiContext";
@@ -9,6 +10,7 @@ import { io } from "socket.io-client";
 import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
+
 
 /* ============================
    🔌 Socket
@@ -20,6 +22,10 @@ export default function BusinessDashboardLayout() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
   const { businessId } = useParams();
+
+  const location = useLocation();
+const isChatRoute = location.pathname.includes("customer-messages");
+
 
   /* ============================
      📩 Unread Messages
@@ -185,7 +191,8 @@ export default function BusinessDashboardLayout() {
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
             {/* ================= Sidebar ================= */}
-            {(!isMobile || showSidebar) && (
+            {(!isMobile || (showSidebar && !isChatRoute)) && (
+
               <aside
                 className={`dashboard-layout-sidebar ${showSidebar ? "open" : ""}`}
                 ref={sidebarRef}
@@ -225,16 +232,22 @@ export default function BusinessDashboardLayout() {
                     type="button"
                     className="header-hamburger-btn"
                     aria-label={
-  showSidebar || chatSidebarOpen ? "Close menu" : "Open menu"
+  (isChatRoute ? chatSidebarOpen : showSidebar) ? "Close menu" : "Open menu"
 }
 
                     onClick={() => {
-  setChatSidebarOpen(false);      // ⛔ סוגר צ’אט אם פתוח
-  setShowSidebar((v) => !v);      // ✅ פותח/סוגר ניווט
+  if (isChatRoute) {
+    setShowSidebar(false);                 // סוגר ניווט
+    setChatSidebarOpen((v) => !v);         // פותח/סוגר שיחות
+  } else {
+    setChatSidebarOpen(false);             // סוגר שיחות
+    setShowSidebar((v) => !v);             // פותח/סוגר ניווט
+  }
 }}
 
                   >
-                    {showSidebar ? <FaTimes /> : <FaBars />}
+                    {(isChatRoute ? chatSidebarOpen : showSidebar) ? <FaTimes /> : <FaBars />}
+
                   </button>
                 )}
 
