@@ -19,14 +19,20 @@ export default function BusinessChatPage() {
   /* =========================
      📱 Mobile handling
   ========================= */
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(false);
+
   const [mobileView, setMobileView] = useState("list"); // list | chat
 
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
+  const checkMobile = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+
+  checkMobile(); // 👈 קובע מצב מיד אחרי mount
+
+  window.addEventListener("resize", checkMobile);
+  return () => window.removeEventListener("resize", checkMobile);
+}, []);
 
   const socket = useSocket();
   const location = useLocation();
@@ -203,15 +209,19 @@ export default function BusinessChatPage() {
           </aside>
         ) : (
           <section className={styles.chatArea}>
-            <BusinessChatTab
-              conversationId={selected?.conversationId}
-              businessId={businessId}
-              customerId={selected?.partnerId}
-              customerName={selected?.partnerName}
-              conversationType={selected?.conversationType}
-              onBack={() => setMobileView("list")}
-            />
-          </section>
+  {selected ? (
+    <BusinessChatTab
+      conversationId={selected.conversationId}
+      businessId={businessId}
+      customerId={selected.partnerId}
+      customerName={selected.partnerName}
+      conversationType={selected.conversationType}
+      onBack={() => setMobileView("list")}
+    />
+  ) : (
+    <div className={styles.loading}>Loading chat…</div>
+  )}
+</section>
         )
       ) : (
         <>
