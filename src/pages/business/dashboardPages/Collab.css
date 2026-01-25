@@ -109,7 +109,7 @@ body {
 ===================================================== */
 
 .collab-container {
-  background: linear-gradient(to bottom right, #f5f2fc, #fdfbff);
+  background: #f8f9fb;        /* ✅ רקע SaaS ניטרלי */
   padding: 2rem;
   direction: ltr;
   text-align: left;
