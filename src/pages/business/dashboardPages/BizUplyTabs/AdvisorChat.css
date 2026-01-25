@@ -6,9 +6,14 @@
   max-width: 920px;
   margin: 0 auto;
   padding: 24px;
+
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  flex: 1;          /* 🔥 חובה */
+  min-height: 0;    /* 🔥 חובה */
+
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
@@ -86,11 +91,12 @@
 .chat-box-wrapper {
   flex: 1;
   display: flex;
-  min-height: 420px;
+  min-height: 0;   /* 🔥 במקום 420px */
 }
 
 .chat-box {
   flex: 1;
+  min-height: 0;       /* 🔒 */
   background: #fafafa;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
