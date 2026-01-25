@@ -247,24 +247,8 @@
   background: #ffffff;
 }
 
-/* ===========================
-   🧱 Content Offset
-   =========================== */
-@media (min-width: 769px) {
-  .dashboard-content {
-    margin-left: 250px;
-    margin-top: 64px;
 
-    flex: 1;           /* 🔥 במקום height */
-    min-height: 0;     /* 🔥 חובה ל־flex */
-    overflow-y: auto;
 
-    display: flex;
-    justify-content: center;
-
-    padding-top: 34px;
-  }
-}
 
 
 /* ===========================
@@ -436,14 +420,7 @@
 }
 
 @media (min-width: 769px) {
-  .dashboard-content > div {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-bottom: 20px;
-  }
-
-  
+    
   .message-list {
     flex-grow: 1;
     overflow-y: auto;
@@ -577,4 +554,14 @@
   flex: 1;          /* 🔥 ממלא גובה */
   min-height: 0;    /* 🔥 חובה למובייל */
   overflow: hidden; /* 🔥 מונע קריסת flex */
+}
+
+/* ===========================
+   📦 Dashboard Content (GLOBAL)
+=========================== */
+.dashboard-content {
+  flex: 1;          /* 🔥 חובה */
+  min-height: 0;    /* 🔥 חובה */
+  display: flex;    /* 🔥 כדי ש־Outlet / Chat יתפסו גובה */
+  overflow: hidden; /* 🔥 הגלילה בפנים, לא כאן */
 }
