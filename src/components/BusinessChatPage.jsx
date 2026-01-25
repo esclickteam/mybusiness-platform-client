@@ -196,9 +196,9 @@ useEffect(() => {
      🖥️ / 📱 RENDER
   ========================= */
   return (
+  <div className={styles.whatsappBg}>
     <div className={styles.chatContainer}>
       {isMobile ? (
-        /* 📱 מובייל – או Inbox או Chat */
         selected ? (
           <BusinessChatTab
             conversationId={selected.conversationId}
@@ -219,7 +219,6 @@ useEffect(() => {
           />
         )
       ) : (
-        /* 🖥️ דסקטופ – תצוגה מפוצלת */
         <>
           <aside className={styles.sidebarInner}>
             <ConversationsList
@@ -251,5 +250,8 @@ useEffect(() => {
         </>
       )}
     </div>
-  );
+  </div>
+);
+
+
 }
