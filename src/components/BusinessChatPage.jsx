@@ -17,22 +17,17 @@ export default function BusinessChatPage() {
   const [unreadCounts, setUnreadCounts] = useState({});
 
   /* =========================
-     📱 Mobile handling
+     📱 Mobile handling (SAFE)
   ========================= */
   const [isMobile, setIsMobile] = useState(false);
-
   const [mobileView, setMobileView] = useState("list"); // list | chat
 
   useEffect(() => {
-  const checkMobile = () => {
-    setIsMobile(window.innerWidth <= 768);
-  };
-
-  checkMobile(); // 👈 קובע מצב מיד אחרי mount
-
-  window.addEventListener("resize", checkMobile);
-  return () => window.removeEventListener("resize", checkMobile);
-}, []);
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile(); // 🔑 קריטי – קובע מצב מיד
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const socket = useSocket();
   const location = useLocation();
@@ -55,7 +50,7 @@ export default function BusinessChatPage() {
      🔍 Open conversation from navigation
   ========================= */
   useEffect(() => {
-    if (!initialized || !businessId || convos.length === 0) return;
+    if (!initialized || !businessId || !convos.length) return;
 
     const threadId =
       location.state?.threadId ||
@@ -109,7 +104,8 @@ export default function BusinessChatPage() {
         });
         setUnreadCounts(counts);
 
-        if (!selected && deduped.length && !isMobile) {
+        // ✅ בדסקטופ בלבד בוחרים אוטומטית
+        if (!isMobile && !selected && deduped.length) {
           const first = deduped[0];
           setSelected({
             conversationId: first.conversationId,
@@ -122,7 +118,7 @@ export default function BusinessChatPage() {
       .catch((err) => {
         console.error("Error fetching client conversations:", err);
       });
-  }, [initialized, businessId, selected, isMobile]);
+  }, [initialized, businessId, isMobile]);
 
   /* =========================
      💬 Realtime unread updates
@@ -186,8 +182,11 @@ export default function BusinessChatPage() {
     if (isMobile) setMobileView("chat");
   };
 
-  if (!initialized) {
-    return <p className={styles.loading}>Loading data…</p>;
+  /* =========================
+     🚧 HARD GUARD – מונע מסך לבן
+  ========================= */
+  if (!initialized || !businessId) {
+    return <div className={styles.loading}>Loading…</div>;
   }
 
   /* =========================
@@ -209,19 +208,19 @@ export default function BusinessChatPage() {
           </aside>
         ) : (
           <section className={styles.chatArea}>
-  {selected ? (
-    <BusinessChatTab
-      conversationId={selected.conversationId}
-      businessId={businessId}
-      customerId={selected.partnerId}
-      customerName={selected.partnerName}
-      conversationType={selected.conversationType}
-      onBack={() => setMobileView("list")}
-    />
-  ) : (
-    <div className={styles.loading}>Loading chat…</div>
-  )}
-</section>
+            {selected ? (
+              <BusinessChatTab
+                conversationId={selected.conversationId}
+                businessId={businessId}
+                customerId={selected.partnerId}
+                customerName={selected.partnerName}
+                conversationType={selected.conversationType}
+                onBack={() => setMobileView("list")}
+              />
+            ) : (
+              <div className={styles.loading}>Loading chat…</div>
+            )}
+          </section>
         )
       ) : (
         <>

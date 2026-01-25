@@ -79,6 +79,15 @@ export default function BusinessChatTab({
   onBack, // ⬅️ הוספה
 }) {
 
+  if (!conversationId || !businessId || !customerId) {
+  return (
+    <div className="chat-container business">
+      <div className="loading">Loading chat…</div>
+    </div>
+  );
+}
+
+
   const socket = useSocket();
   const { addNotification } = useNotifications();
 
@@ -224,13 +233,6 @@ export default function BusinessChatTab({
   /* ---------------------------------------------------
      RENDER
 --------------------------------------------------- */
-  if (!businessId) {
-    return (
-      <div className="chat-container business">
-        <div className="loading">Loading chat...</div>
-      </div>
-    );
-  }
 
   const sorted = [...messages].sort(
     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
