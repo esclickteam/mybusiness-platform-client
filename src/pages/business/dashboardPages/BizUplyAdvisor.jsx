@@ -64,6 +64,12 @@ const BizUplyAdvisor = () => {
       });
   }, [user?.businessId, token]);
 
+  useEffect(() => {
+  requestAnimationFrame(() => {
+    window.dispatchEvent(new Event("resize"));
+  });
+}, [activeTab]);
+
   /* =========================
      RENDER TAB CONTENT
   ========================= */
