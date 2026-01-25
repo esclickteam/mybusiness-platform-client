@@ -19,7 +19,9 @@ export default function BusinessChatPage() {
   const socket = useSocket();
   const location = useLocation();
 
-  // 🟣 זיהוי מובייל – לוגיקה בלבד
+  /* =========================
+     📱 Detect mobile (logic only)
+  ========================= */
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
@@ -42,8 +44,7 @@ export default function BusinessChatPage() {
   });
 
   /* =========================
-     🔍 Open conversation from navigation (deep link)
-     ❗ לא בוחר אוטומטית במובייל
+     🔍 Open conversation from navigation
   ========================= */
   useEffect(() => {
     if (!initialized || !businessId || convos.length === 0) return;
@@ -98,7 +99,7 @@ export default function BusinessChatPage() {
         });
         setUnreadCounts(counts);
 
-        // 🟣 בחירה אוטומטית – רק בדסקטופ
+        // ✅ בחירה אוטומטית – רק בדסקטופ
         const navigatedThreadId =
           location.state?.threadId ||
           new URLSearchParams(location.search).get("threadId");
@@ -151,7 +152,7 @@ export default function BusinessChatPage() {
   }, [socket, businessId, selected]);
 
   /* =========================
-     ✅ Mark as read
+     ✅ Mark conversation as read
   ========================= */
   useEffect(() => {
     if (!socket || !selected?.conversationId || !businessId) return;
@@ -190,7 +191,7 @@ export default function BusinessChatPage() {
 
   return (
     <div className={styles.chatContainer}>
-      {/* 🟣 במובייל – רשימה רק אם אין שיחה */}
+      {/* 📱 Sidebar – מוסתר רק כשיש שיחה במובייל */}
       {(!isMobile || !selected) && (
         <aside className={styles.sidebarInner}>
           <ConversationsList
@@ -204,9 +205,9 @@ export default function BusinessChatPage() {
         </aside>
       )}
 
-      {/* 🟣 שיחה – רק אם נבחרה */}
-      {selected && (
-        <section className={styles.chatArea}>
+      {/* ❗ chatArea תמיד קיים – זה מונע מסך לבן */}
+      <section className={styles.chatArea}>
+        {selected ? (
           <BusinessChatTab
             conversationId={selected.conversationId}
             businessId={businessId}
@@ -216,8 +217,12 @@ export default function BusinessChatPage() {
             conversationType={selected.conversationType}
             onBack={isMobile ? () => setSelected(null) : undefined}
           />
-        </section>
-      )}
+        ) : (
+          <div className={styles.emptyMessage}>
+            Select a conversation to view messages
+          </div>
+        )}
+      </section>
     </div>
   );
 }
