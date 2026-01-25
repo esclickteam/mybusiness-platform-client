@@ -76,7 +76,9 @@ export default function BusinessChatTab({
   customerId,
   customerName,
   conversationType = "user-business",
+  onBack, // ⬅️ הוספה
 }) {
+
   const socket = useSocket();
   const { addNotification } = useNotifications();
 
@@ -243,8 +245,19 @@ export default function BusinessChatTab({
   return (
     <div className="chat-container business">
       <div className="chat-header">
-        <h3>{customerName}</h3>
-      </div>
+  {onBack && (
+    <button
+      className="backBtn"
+      onClick={onBack}
+      aria-label="Back to chats"
+    >
+      ←
+    </button>
+  )}
+
+  <h3>{customerName}</h3>
+</div>
+
 
       <div className="message-list" ref={listRef}>
         {sorted.map((m, i) => (
