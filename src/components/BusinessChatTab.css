@@ -1,6 +1,6 @@
 /* רקע של וואטסאפ */
 .whatsappBg {
-  height: 100%;
+  height: 100dvh; 
   min-height: 0;
   background: #ece5dd;
   display: flex;
