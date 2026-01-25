@@ -81,13 +81,12 @@ body {
 
 .app-scroll-area {
   flex: 1;
-  min-height: 0;
+  min-height: 0;              /* 🔥 זה החסר הקריטי */
   display: flex;
   flex-direction: column;
-
-  overflow-y: auto;   /* ✅ כאן הגלילה */
-  overflow-x: hidden;
+  overflow: hidden;
 }
+
 
 a {
   text-decoration: none;
