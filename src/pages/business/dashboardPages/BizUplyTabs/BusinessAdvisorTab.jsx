@@ -195,76 +195,82 @@ const BusinessAdvisorTab = ({
   ========================= */
   return (
     <div className="advisor-chat-container">
-      <h2>AI Business Advisor</h2>
-      <p className="subtitle">
-        Get clear, practical advice for running and growing your business.
-      </p>
+      {/* ===== TOP (STATIC CONTENT) ===== */}
+      <div className="advisor-top">
+        <h2>AI Business Advisor</h2>
 
-      {remainingQuestions !== null && (
-        <p className="question-balance">
-          <span>You have </span>
-          <strong>{remainingQuestions}</strong>
-          <span> AI questions remaining this month.</span>
+        <p className="subtitle">
+          Get clear, practical advice for running and growing your business.
         </p>
-      )}
 
-      {/* PRESET QUESTIONS – before chat starts */}
-      {!startedChat && (
-        <>
-          <div className="preset-questions-container">
-            {presetQuestions.map((q, i) => (
-              <div
-                key={i}
-                className="preset-card"
-                onClick={() => handlePresetQuestion(q)}
-              >
-                {q}
-              </div>
-            ))}
-          </div>
-          <hr />
-        </>
-      )}
+        {remainingQuestions !== null && (
+          <p className="question-balance">
+            <span>You have </span>
+            <strong>{remainingQuestions}</strong>
+            <span> AI questions remaining this month.</span>
+          </p>
+        )}
 
-      <div className="chat-box-wrapper">
-        <div className="chat-box" ref={chatContainerRef}>
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`bubble ${msg.role}`}>
-              {msg.role === "assistant" ? (
-                <Markdown>{msg.content}</Markdown>
-              ) : (
-                msg.content
-              )}
+        {!startedChat && (
+          <>
+            <div className="preset-questions-container">
+              {presetQuestions.map((q, i) => (
+                <div
+                  key={i}
+                  className="preset-card"
+                  onClick={() => handlePresetQuestion(q)}
+                >
+                  {q}
+                </div>
+              ))}
             </div>
-          ))}
-
-          {loading && (
-            <div className="bubble assistant typing">
-              AI is analyzing your question…
-            </div>
-          )}
-        </div>
+            <hr />
+          </>
+        )}
       </div>
 
-      <div className="chat-input">
-        <input
-          type="text"
-          placeholder="e.g. Should I raise prices or cut expenses first?"
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          disabled={
-            loading ||
-            (remainingQuestions !== null && remainingQuestions <= 0)
-          }
-        />
+      {/* ===== CHAT AREA (FLEX ZONE) ===== */}
+      <div className="advisor-chat-area">
+        <div className="chat-box-wrapper">
+          <div className="chat-box" ref={chatContainerRef}>
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`bubble ${msg.role}`}>
+                {msg.role === "assistant" ? (
+                  <Markdown>{msg.content}</Markdown>
+                ) : (
+                  msg.content
+                )}
+              </div>
+            ))}
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading || !userInput.trim()}
-        >
-          Send
-        </button>
+            {loading && (
+              <div className="bubble assistant typing">
+                AI is analyzing your question…
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="chat-input">
+          <input
+            type="text"
+            placeholder="e.g. Should I raise prices or cut expenses first?"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+            disabled={
+              loading ||
+              (remainingQuestions !== null && remainingQuestions <= 0)
+            }
+          />
+
+          <button
+            onClick={handleSubmit}
+            disabled={loading || !userInput.trim()}
+          >
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );
