@@ -3,7 +3,7 @@
   flex-direction: column;
   padding: 1.5rem;
   gap: 1.5rem;
-  background-color: #f9f9ff;
+  background-color: #f8f9fb; /* ✅ שינוי כאן */
   min-height: 100%;
   box-sizing: border-box;
 }
