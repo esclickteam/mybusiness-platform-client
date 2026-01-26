@@ -982,39 +982,8 @@ section.faq-mini .faq-item::before {
   }
 }
 
-@media (max-width: 768px) {
-
-  /* ===== STRUCTURE RESET ===== */
-  .step-with-visual {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 24px !important;
-  }
-
-  .scroll-story {
-    gap: 64px !important;
-  }
-
-  /* ===== KILL FIXED HEIGHTS ===== */
-  .step-visual {
-    height: auto !important;
-    max-height: none !important;
-  }
-
-  /* ===== IMAGE ===== */
-  .step-visual img {
-    width: 100% !important;
-    height: auto !important;
-    object-fit: contain !important;
-  }
-
-  /* ===== HERO ===== */
-  .hero {
-    padding-bottom: 96px !important;
-  }
-
-  /* ===== REMOVE DESKTOP OFFSETS ===== */
-  .step-right .step-visual {
-    margin-right: 0 !important;
+@media (max-width: 2000px) {
+  body {
+    filter: blur(4px) !important;
   }
 }
