@@ -10,6 +10,9 @@ import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
 
+const DEMO_MODE = true; // ⛔️ להחזיר ל-false אחרי הצילום
+
+
 /* ============================
    🔌 Socket
 ============================ */
@@ -234,27 +237,28 @@ export default function BusinessDashboardLayout() {
                 </div>
 
                 {/* ✅ בדסקטופ נשאר כמו שהיה */}
-                {!isMobile && isTrialActive && (
-                  <div className="trial-status">
-                    ⏳{" "}
-                    {user.isTrialEndingToday ? (
-                      <strong>Trial ends today</strong>
-                    ) : (
-                      <>
-                        Trial ends in <strong>{user.trialDaysLeft} days</strong>
-                      </>
-                    )}
+                {!DEMO_MODE && !isMobile && isTrialActive && (
+  <div className="trial-status">
+    ⏳{" "}
+    {user.isTrialEndingToday ? (
+      <strong>Trial ends today</strong>
+    ) : (
+      <>
+        Trial ends in <strong>{user.trialDaysLeft} days</strong>
+      </>
+    )}
 
-                    {canUpgrade && !canShowEarlyBird && (
-                      <button
-                        className="trial-upgrade-pill"
-                        onClick={handleUpgrade}
-                      >
-                        Upgrade
-                      </button>
-                    )}
-                  </div>
-                )}
+    {canUpgrade && !canShowEarlyBird && (
+      <button
+        className="trial-upgrade-pill"
+        onClick={handleUpgrade}
+      >
+        Upgrade
+      </button>
+    )}
+  </div>
+)}
+
               </div>
 
               {/* ✅ רק רספונסיביות: EarlyBird לא מוצג במובייל */}
