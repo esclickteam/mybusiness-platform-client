@@ -541,27 +541,30 @@
 }
 
 @media (max-width: 768px) {
-  /* הקונטיינר של הצ'אט */
+  /* 1) הקונטיינר של הצ'אט תופס את גובה המסך */
   .chat-container.business {
-    height: 100dvh;          /* מסך מלא */
+    height: calc(100dvh - 56px); /* אם יש לך header בגובה 56 */
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
 
-  /* אזור ההודעות – לוקח את כל הגובה הפנוי */
+  /* 2) רק ההודעות גוללות */
   .message-list {
     flex: 1;
-    min-height: 0;           /* 🔥 קריטי ל-iOS */
+    min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 
-  /* שורת הקלט – תמיד למטה */
+  /* 3) האינפוט נדבק למטה */
   .inputBar {
-    margin-top: auto;        /* 🔥 דוחף לתחתית */
+    flex-shrink: 0;
+    margin-top: auto;
     position: sticky;
     bottom: 0;
-    z-index: 5;
+    z-index: 10;
+    background: #f7f7fa;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
   }
 }
