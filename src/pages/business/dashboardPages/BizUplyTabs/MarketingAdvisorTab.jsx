@@ -189,18 +189,21 @@ const MarketingAdvisorTab = ({
      RENDER
   ========================= */
   return (
-    <div className="advisor-chat-container">
+  <div className="advisor-chat-container">
+    {/* ===== TOP ===== */}
+    <div className="advisor-top">
       <h2>AI Marketing Advisor</h2>
+
       <p className="subtitle">
         Get clear, actionable advice to grow your audience and increase conversions.
       </p>
 
       {remainingQuestions !== null && (
         <p className="question-balance">
-  <span>You have </span>
-  <strong>{remainingQuestions}</strong>
-  <span> AI questions remaining this month.</span>
-</p>
+          <span>You have </span>
+          <strong>{remainingQuestions}</strong>
+          <span> AI questions remaining this month.</span>
+        </p>
       )}
 
       {!startedChat && (
@@ -219,7 +222,10 @@ const MarketingAdvisorTab = ({
           <hr />
         </>
       )}
+    </div>
 
+    {/* ===== CHAT FLEX AREA ===== */}
+    <div className="advisor-chat-area">
       <div className="chat-box-wrapper">
         <div className="chat-box" ref={chatContainerRef}>
           {messages.map((msg, idx) => (
@@ -265,7 +271,10 @@ const MarketingAdvisorTab = ({
         </button>
       </div>
     </div>
-  );
+  </div>
+);
+
+
 };
 
 export default MarketingAdvisorTab;
