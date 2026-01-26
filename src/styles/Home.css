@@ -146,47 +146,34 @@
 }
 
 /* ===== Video Showcase ===== */
-
-/* ===== Video Showcase – Notion-style frame ===== */
 .video-showcase {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 28px 16px 48px;
+  margin-top: -180px; /* חיבור טבעי יותר ל-Hero */
+  padding: 0 24px 180px;
 }
 
-/* ה"חלון" הלבן */
 .video-frame {
-  width: min(1100px, 100%);
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 10px;
-  border: 1px solid rgba(17, 24, 39, 0.06);
-  box-shadow:
-    0 22px 60px rgba(17, 24, 39, 0.10),
-    0 3px 10px rgba(17, 24, 39, 0.05);
+  max-width: 1280px;
+  margin: 0 auto;
+
+  border-radius: 28px;
   overflow: hidden;
+
+  background: #0f172a;
+  box-shadow:
+    0 40px 120px rgba(15, 23, 42, 0.35);
+
+  /* 🔑 זה הקסם */
+  aspect-ratio: 16 / 9;
 }
 
-/* הוידאו עצמו */
 .video-frame video {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
-  border-radius: 12px;
-  object-fit: cover;
+
+  object-fit: none
 }
 
-/* מובייל – קצת פחות padding כדי שיראה tight */
-@media (max-width: 640px) {
-  .video-frame {
-    border-radius: 14px;
-    padding: 8px;
-  }
-  .video-frame video {
-    border-radius: 10px;
-  }
-}
 
 
 /* ===== Buttons ===== */
