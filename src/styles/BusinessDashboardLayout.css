@@ -6,7 +6,7 @@
   top: 0;
   left: 0;
   width: 250px;
-  height: 100vh;
+  height: 100dvh;
   background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
   color: #2a165f;
   display: flex;
@@ -124,18 +124,20 @@
    =========================== */
 @media (max-width: 768px) {
   .dashboard-layout-sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.35s ease;
-    width: min(320px, 86vw);
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+  width: min(320px, 86vw);
 
-    top: 56px;
-    height: calc(100vh - 56px);
-  }
+  top: 56px;
+  height: calc(100dvh - 56px); /* ✅ iPhone safe */
+}
 
   .dashboard-layout-sidebar.open {
     transform: translateX(0);
   }
 }
+
+
 
 /* ===========================
    🧭 Dashboard Layout Header
@@ -246,6 +248,24 @@
  .header-action-btn:hover {
   background: #ffffff;
 }
+
+@media (max-width: 768px) {
+  .dashboard-content {
+    position: relative;
+  }
+
+  .dashboard-content > div {
+    flex: 0 0 auto;
+    min-height: auto;
+  }
+
+  .BizUply-container {
+    flex: 0 0 auto;
+    min-height: auto;
+  }
+}
+
+
 
 /* ===========================
    🧱 Content Offset
@@ -560,19 +580,29 @@
 
   /* תוכן במובייל בלי margin-left של הסיידבר */
     .dashboard-content {
-    margin-left: 0 !important;
-    margin-top: 56px !important;
+  margin-left: 0 !important;
+  margin-top: 56px !important;
 
-    flex: 1;
-    min-height: 0;           /* 🔥 קריטי */
-    height: calc(100vh - 56px); /* 🔥 חובה במובייל */
+  height: calc(100dvh - 56px);       /* ✅ iPhone safe */
+  display: flex;
+  flex-direction: column;
 
-    display: flex;
-    flex-direction: column;
+  overflow-y: auto;                  /* ✅ גלילה פה */
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; /* ✅ smooth iOS */
+  overscroll-behavior: contain;
 
-     overflow-y: auto;        /* ❗ לא auto */
-    overflow-x: hidden;
-  }
+  /* ❗ חשוב: לא צריך flex/min-height כאן */
+}
+
+html, body {
+  overflow-y: auto;
+}
+
+.app-scroll-area {
+  overflow: hidden;
+}
+
 
 
   .chat-container {
