@@ -106,13 +106,15 @@
 .chat-box {
   padding: 10px;
   box-sizing: border-box;
-  direction: rtl;
+
+  direction: ltr;       /* ✅ אמריקאים */
+  text-align: left;     /* ✅ */
 
   display: flex;
   flex-direction: column;
-  flex: 1;               /* 🔥 */
-  min-height: 0;         /* 🔥 */
-  overflow-y: auto;      /* 🔥 */
+  flex: 1;              /* 🔥 */
+  min-height: 0;        /* 🔥 */
+  overflow-y: auto;     /* 🔥 */
 }
 
 /* =========================
