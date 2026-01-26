@@ -957,3 +957,9 @@ section.faq-mini .faq-item::before {
   }
 }
 
+
+@media (max-width: 768px) {
+  .step-business-page .img-business-page {
+    max-height: 380px; /* היה 340 — תרגישי חופשי 360–420 */
+  }
+}
