@@ -71,13 +71,7 @@
 
 /* ===== Hero Wrap (Unified Background) ===== */
 .hero-wrap {
-  background: linear-gradient(
-    180deg,
-    var(--hero-bg-start) 0%,
-    var(--hero-bg-mid) 45%,
-    var(--hero-bg-end) 100%
-  );
-
+  background: var(--hero-bg);
   overflow: hidden;
 }
 
@@ -104,7 +98,8 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 24px;
-  color: var(--text-on-dark-main);
+    color: var(--hero-text-main);
+
 }
 
 .hero-accent {
@@ -121,7 +116,7 @@
 .hero-subtitle {
   font-size: 19px;        /* ⬅️ הגדלה ברורה */
   line-height: 1.6;       /* קריא ונושם */
-  color: var(--text-on-dark-muted);
+  color: var(--hero-text-muted);
   max-width: 760px;       /* יותר רחב – כמו בדוגמה */
   margin: 0 auto 40px;
   opacity: 0.95;
@@ -137,7 +132,7 @@
 .hero-note {
   margin-top: 20px;
   font-size: 13px;
-  color: rgba(224, 242, 254, 0.8);
+   color: rgba(71, 85, 105, 0.7);
 }
 
 .hero-content {
