@@ -841,15 +841,7 @@ section.faq-mini .faq-answer p {
   gap: 10px;
 }
 
-/* ✅ Business Page – bigger image */
-.step-with-visual.step-business-page .step-visual img {
-  width: 100%;
-  height: 100%;
 
-  object-fit: cover;      /* 🔥 ממלא את הקונטיינר */
-  object-position: center;
-  transform: scale(1.40); /* ✨ מילוי עדין, בלי לפגוע */
-}
 
 /* FORCE FAQ TITLE TO BLACK – FINAL */
 section.faq-mini h2,
@@ -881,4 +873,12 @@ section.faq-mini .faq-item::before {
   background: none !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+@media (max-width: 768px) {
+  /* AI image – behave like dashboard */
+  .step-ai .visual-card {
+    transform: none;
+    box-shadow: none;
+  }
 }
