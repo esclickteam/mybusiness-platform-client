@@ -539,3 +539,29 @@
   color: #0f172a !important;
   opacity: 1 !important;
 }
+
+@media (max-width: 768px) {
+  /* הקונטיינר של הצ'אט */
+  .chat-container.business {
+    height: 100dvh;          /* מסך מלא */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* אזור ההודעות – לוקח את כל הגובה הפנוי */
+  .message-list {
+    flex: 1;
+    min-height: 0;           /* 🔥 קריטי ל-iOS */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* שורת הקלט – תמיד למטה */
+  .inputBar {
+    margin-top: auto;        /* 🔥 דוחף לתחתית */
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+  }
+}
