@@ -963,31 +963,3 @@ section.faq-mini .faq-item::before {
     max-height: 380px; /* היה 340 — תרגישי חופשי 360–420 */
   }
 }
-
-
-/* =========================
-   MOBILE – release ScrollStory width
-========================= */
-@media (max-width: 768px) {
-  .home-page section.scroll-story > * {
-    max-width: none !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-
-  .scroll-story .step-inner {
-    max-width: 100% !important;
-  }
-
-  .scroll-story .step-visual {
-    width: 100% !important;
-    padding: 0 12px;
-  }
-
-  .scroll-story .step-visual img {
-    width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
-    object-fit: contain !important;
-  }
-}
