@@ -906,3 +906,20 @@ section.faq-mini .faq-item::before {
     margin-right: 0 !important;
   }
 }
+
+@media (max-width: 768px) {
+  /* תמיד תמונה לפני טקסט */
+  .scroll-story .step-inner {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .scroll-story .step-visual {
+    order: 1 !important;
+  }
+
+  .scroll-story .step-content,
+  .scroll-story .step-content-center {
+    order: 2 !important;
+  }
+}
