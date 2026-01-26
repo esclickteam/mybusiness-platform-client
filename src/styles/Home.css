@@ -982,8 +982,188 @@ section.faq-mini .faq-item::before {
   }
 }
 
-@media (max-width: 2000px) {
-  body {
-    filter: blur(4px) !important;
+/* =========================
+   📱 HERO + VIDEO – MOBILE MINIMAL
+   ========================= */
+@media (max-width: 768px) {
+
+  /* 1) Hero: פחות "אוויר" */
+  .hero {
+    padding-top: 72px !important;
+    padding-bottom: 72px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* 2) טקסט: ריווח אחיד */
+  .hero-content {
+    max-width: 560px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .hero h1 { margin: 0 !important; }
+  .hero-subtitle { margin: 0 !important; }
+  .hero-note { margin: 0 !important; }
+
+  /* 3) כפתור: ריווח עקבי */
+  .hero-actions {
+    margin: 0 !important;
+    padding-top: 8px !important;
+  }
+
+  /* 4) Video: לבטל את כל הטריקים של הדסקטופ */
+  .video-showcase {
+    margin-top: 0 !important;        /* מבטל חפיפה */
+    padding: 0 16px 56px !important; /* ריווח תחתון סביר */
+  }
+
+  /* 5) Video frame: גובה מובייל הגיוני */
+  .video-frame {
+    aspect-ratio: 16 / 9 !important; /* יותר טבעי במובייל */
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .video-frame video {
+    width: 100% !important;
+    height: 100% !important;         /* חשוב! שלא ייקח גובה ענק */
+    object-fit: cover !important;     /* ממלא יפה */
+    display: block;
   }
 }
+
+/* =========================
+   📱 ScrollStory – MOBILE MINIMAL (ONE SOURCE OF TRUTH)
+   ========================= */
+@media (max-width: 768px) {
+
+  /* 1) הקצב הכללי */
+  .scroll-story {
+    padding: 64px 16px !important;
+    gap: 56px !important;          /* במקום 140 */
+    margin-top: 0 !important;
+    background: transparent !important;
+  }
+
+  /* 2) כל Step נהיה עמודה */
+  .scroll-story .step-inner,
+  .scroll-story .step-with-visual {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 24px !important;
+    width: 100% !important;
+  }
+
+  /* 3) תמונה: מבטלים את ה"קופסה" הקשיחה של הדסקטופ */
+  .scroll-story .step-visual {
+    width: 100% !important;
+    height: auto !important;        /* 🔥 הכי חשוב */
+    max-height: none !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* 4) התמונה עצמה: יציבה, לא ענקית */
+  .scroll-story .step-visual img,
+  .scroll-story .img-business-page {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 320px !important;   /* תכווני 280–380 */
+    object-fit: contain !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
+
+  /* 5) טקסט: ריווח אחיד */
+  .scroll-story h3 {
+    margin: 0 0 12px !important;
+  }
+
+  .scroll-story p {
+    margin: 0 !important;
+  }
+
+  /* 6) מבטל הזזות צד דסקטופ */
+  .step-right .step-visual,
+  .step-business-page .step-visual {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  /* 7) AI: בלי מרווחים חריגים */
+  .step-ai {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+}
+
+/* =========================
+   📱 WhyBizuply – MOBILE MINIMAL
+   ========================= */
+@media (max-width: 768px) {
+
+  /* סקשן */
+  .why-bizuply {
+    padding: 64px 16px !important;
+  }
+
+  /* קונטיינר (אם יש max-width/פדינג מוזר) */
+  .why-bizuply .container {
+    max-width: 680px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
+  /* כותרת */
+  .why-bizuply .header {
+    text-align: center;
+    margin-bottom: 32px !important;
+  }
+
+  .why-bizuply .header h2 {
+    margin: 0 0 12px !important;
+    font-size: 28px !important;
+  }
+
+  .why-bizuply .header p {
+    margin: 0 !important;
+  }
+
+  /* ✅ במקום 3 עמודות – עמודה אחת */
+  .why-bizuply .features {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important; /* ריווח אחיד בין כרטיסים */
+    margin-top: 0 !important;
+  }
+
+  /* כרטיס */
+   .why-bizuply .feature {
+    padding: 24px !important;
+    border-radius: 18px;
+  }
+
+  /* אייקון */
+   .why-bizuply .icon {
+    margin-bottom: 14px !important;
+  }
+
+  /* טקסט בכרטיס */
+  .why-bizuply .feature h3 {
+    margin: 0 0 10px !important;
+    font-size: 18px !important;
+    line-height: 1.25;
+  }
+
+  .why-bizuply .feature p {
+    margin: 0 !important;
+    font-size: 15px !important;
+    line-height: 1.6;
+  }
+}
+
