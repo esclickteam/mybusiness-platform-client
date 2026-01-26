@@ -981,3 +981,35 @@ section.faq-mini .faq-item::before {
     background: transparent !important;
   }
 }
+
+@media (max-width: 768px) {
+  .home-page section {
+    padding: 56px 16px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .scroll-story {
+    gap: 64px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .step {
+    margin-bottom: 0 !important;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .hero {
+    padding-top: 96px;
+    padding-bottom: 120px;
+  }
+
+  .scroll-story {
+    padding-top: 48px;
+    padding-bottom: 48px;
+    margin-top: 0;
+  }
+}
