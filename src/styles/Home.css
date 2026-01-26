@@ -983,44 +983,33 @@ section.faq-mini .faq-item::before {
 }
 
 /* =========================
-   📱 MOBILE UX RHYTHM – FINAL
+   📱 MOBILE – FORCE UX RHYTHM
    ========================= */
 @media (max-width: 768px) {
 
-  /* 🎯 קצב ריווח אחיד */
+  /* 🔒 משתנים */
   :root {
     --m-section: 64px;
     --m-block: 32px;
     --m-tight: 16px;
   }
 
-  /* כל הסקשנים אותו ריווח */
-  .home-page section {
-    padding: var(--m-section) 16px !important;
-  }
-
-  /* Hero */
-  .hero {
-    padding-top: var(--m-section) !important;
-    padding-bottom: var(--m-section) !important;
-  }
-
-  /* Video */
-  .video-showcase {
-    margin-top: 0 !important;
-    padding-bottom: var(--m-section) !important;
-  }
-
-  /* Scroll story */
-  .scroll-story {
+  /* ===== FORCE SECTIONS ===== */
+  .hero,
+  .video-showcase,
+  .scroll-story,
+  .why,
+  section.faq-mini,
+  .final-cta-compact {
     padding-top: var(--m-section) !important;
     padding-bottom: var(--m-section) !important;
     margin-top: 0 !important;
-    gap: var(--m-section) !important;
+    margin-bottom: 0 !important;
   }
 
-  /* כל step */
-  .step {
+  /* ===== FORCE STEPS ===== */
+  .step,
+  .step-ai {
     margin: 0 !important;
   }
 
@@ -1028,31 +1017,21 @@ section.faq-mini .faq-item::before {
     gap: var(--m-block) !important;
   }
 
-  /* תמונה */
+  /* ===== IMAGE ↔ TEXT ===== */
   .step-visual {
     margin-bottom: var(--m-block) !important;
   }
 
-  /* טקסט */
-  .step-content h3,
-  .step-content-center h3 {
+  /* ===== TEXT RHYTHM ===== */
+  h1, h2, h3 {
     margin-bottom: var(--m-tight) !important;
   }
 
-  .step-content p,
-  .step-content-center p {
+  p {
     margin-bottom: var(--m-block) !important;
   }
 
-  /* Why / FAQ / CTA */
-  .why,
-  section.faq-mini,
-  .final-cta-compact {
-    padding-top: var(--m-section) !important;
-    padding-bottom: var(--m-section) !important;
-  }
-
-  /* כפתורים */
+  /* ===== HERO BUTTONS ===== */
   .hero-actions {
     gap: var(--m-tight) !important;
   }
