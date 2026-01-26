@@ -189,9 +189,15 @@
 
 .bubble.user {
   align-self: flex-end;
-  background: #5e17eb;
-  color: #ffffff;
+
+  background: #5e17eb;         /* ✅ סגול חזק */
+  color: #ffffff;              /* ✅ ניגודיות גבוהה */
+
+  border-radius: 16px;
   border-bottom-right-radius: 6px;
+
+  font-weight: 600;            /* ✅ קריא יותר */
+  box-shadow: 0 6px 16px rgba(94, 23, 235, 0.22); /* ✅ לא נראה דהוי */
 }
 
 .bubble.assistant {
