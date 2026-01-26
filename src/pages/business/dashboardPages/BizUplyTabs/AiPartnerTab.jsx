@@ -381,7 +381,7 @@ const AiPartnerTab = ({
 
   chatScrollRef.current.scrollTop =
     chatScrollRef.current.scrollHeight;
-}, [chat, suggestions]);
+}, [chat, suggestions, commandResponse]);
 
   useEffect(() => {
     if (activeSuggestion) {
