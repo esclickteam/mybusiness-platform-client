@@ -128,13 +128,7 @@ export default function CRMCustomerFile({
         </p>
       </div>
 
-      {/* AI Insight */}
-      {aiInsight && (
-        <div className="ai-insight">
-          🤖 <strong>AI Insight:</strong> {aiInsight}
-        </div>
-      )}
-
+   
       {/* Tabs */}
       <div className="tabs-header">
         <button
