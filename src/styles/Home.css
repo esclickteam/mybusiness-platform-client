@@ -138,31 +138,33 @@
   margin: 0 auto;
 }
 
-/* =========================
-   VIDEO SHOWCASE
-========================= */
-
+/* ===== Video Showcase ===== */
 .video-showcase {
-  background: var(--bg-soft);
-  padding: 120px 24px 160px;
+  margin-top: -140px; /* נכנס מתחת ל־Hero כמו Nation */
+  padding: 0 24px 140px;
 }
 
 .video-frame {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
 
-  border-radius: 24px;
+  border-radius: 28px;
   overflow: hidden;
 
   background: #0f172a;
   box-shadow:
-    0 40px 100px rgba(15, 23, 42, 0.35);
+    0 40px 120px rgba(15, 23, 42, 0.35);
+
+  /* 🔑 זה הקסם */
+  aspect-ratio: 16 / 9;
 }
 
 .video-frame video {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+
+  object-fit: cover; /* ❗ לא contain */
 }
 
 
