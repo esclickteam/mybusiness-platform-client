@@ -1233,7 +1233,7 @@ section.faq-mini .faq-item::before {
   .step-center .step-inner {
     display: flex !important;
     flex-direction: column !important;
-    gap: 24px !important;
+    gap: 14px !important;
     align-items: center;
     text-align: center;
   }
@@ -1251,7 +1251,7 @@ section.faq-mini .faq-item::before {
   .step-center .img-business-page {
     width: 100% !important;
     height: auto !important;
-    max-height: 260px !important;   /* תכווני: 220–300 */
+    max-height: 240px !important;
     object-fit: contain !important;
     display: block;
     margin: 0 auto !important;
