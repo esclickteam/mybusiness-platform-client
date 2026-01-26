@@ -867,11 +867,10 @@ section.faq-mini .faq-item::before {
     gap: 32px;
   }
 
-      .step-visual {
-    width: calc(100% + 48px) !important; /* 24px מכל צד */
-    margin-left: -24px !important;
-    margin-right: -24px !important;
+    .step-visual {
+    width: 100% !important;
     height: auto !important;
+    margin: 0 auto !important;
   }
 
   .step-right .step-visual {
