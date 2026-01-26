@@ -73,7 +73,8 @@
 .hero {
   position: relative;
   padding-top: 140px;
-  padding-bottom: 260px;
+  padding-bottom: 180px;
+
 
   /* ⬇️ זה החלק החדש */
   padding-left: 24px;
@@ -90,6 +91,17 @@
 
   overflow: visible;
 }
+
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 64px;
+  align-items: center;
+}
+
 
 .hero h1 {
   font-size: clamp(36px, 5vw, 56px);
@@ -123,7 +135,7 @@
 
 .hero-actions {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 16px;
 }
 
@@ -134,8 +146,27 @@
 }
 
 .hero-content {
-  max-width: 960px;
-  margin: 0 auto;
+  max-width: 560px;
+  margin: 0;
+  text-align: left;
+}
+
+.hero-video-wrapper {
+  border-radius: 20px;
+  overflow: hidden;
+
+  box-shadow:
+    0 30px 70px rgba(15, 23, 42, 0.35);
+
+  background: #0f172a;
+}
+
+.hero-video {
+  width: 100%;
+  height: auto;
+  display: block;
+
+  object-fit: cover;
 }
 
 
@@ -840,4 +871,17 @@ section.faq-mini .faq-item::before {
   background: none !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+
+@media (max-width: 900px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .hero-content {
+    text-align: center;
+    margin: 0 auto;
+  }
 }
