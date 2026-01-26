@@ -587,12 +587,10 @@
   display: flex;
   flex-direction: column;
 
-  overflow-y: auto;                  /* ✅ גלילה פה */
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch; /* ✅ smooth iOS */
+  overflow: hidden;                  /* ✅ לא גוללים כאן */
+  /* overflow-x: hidden;  לא חובה כשיש overflow:hidden */
+  /* -webkit-overflow-scrolling: touch; לא רלוונטי כשאין גלילה פה */
   overscroll-behavior: contain;
-
-  /* ❗ חשוב: לא צריך flex/min-height כאן */
 }
 
 html, body {
@@ -624,42 +622,4 @@ html, body {
 
 }
 
-
-/* =========================
-   Mobile ONLY – Chat full height (FINAL)
-========================= */
-@media (max-width: 768px) {
-
-  /* 1️⃣ האזור שמתחת להידר */
-  .dashboard-content {
-    height: calc(100dvh - 56px);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* ❗ חשוב */
-  }
-
-  /* 2️⃣ כל שרשרת הצ'אט חייבת להיות flex */
-  .chatArea_18s32_90,
-  ._chatContainer_18s32_19,
-  .chat-container.business {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* 3️⃣ זה האזור שגולל */
-  .message-list {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* 4️⃣ האינפוט תמיד למטה */
-  .inputBar {
-    flex-shrink: 0;
-  }
-}
 
