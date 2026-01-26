@@ -276,6 +276,12 @@
   cursor: not-allowed;
 }
 
+.chat-box.pre-chat {
+  min-height: 180px;
+  max-height: 220px;
+}
+
+
 /* =========================
    Responsive
 ========================= */

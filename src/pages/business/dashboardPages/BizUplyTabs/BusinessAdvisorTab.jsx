@@ -231,7 +231,11 @@ const BusinessAdvisorTab = ({
       {/* ===== CHAT AREA (FLEX ZONE) ===== */}
       <div className="advisor-chat-area">
         <div className="chat-box-wrapper">
-          <div className="chat-box" ref={chatContainerRef}>
+          <div
+  className={`chat-box ${!startedChat ? "pre-chat" : ""}`}
+  ref={chatContainerRef}
+>
+
             {messages.map((msg, idx) => (
               <div key={idx} className={`bubble ${msg.role}`}>
                 {msg.role === "assistant" ? (
