@@ -867,6 +867,17 @@ section.faq-mini .faq-item::before {
     gap: 32px;
   }
 
+    .step-visual {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 auto !important;
+  }
+
+  .step-right .step-visual {
+    margin-right: 0 !important;
+  }
+
+
   /* 🔒 מבטל grid אם נשאר על האלמנט */
   .step-with-visual {
     grid-template-columns: none !important;
@@ -937,7 +948,12 @@ section.faq-mini .faq-item::before {
 
 @media (max-width: 768px) {
   .img-business-page {
-    transform: scale(1.18);
-    transform-origin: center;
+    width: 100% !important;
+    height: auto !important;
+    max-height: 340px;
+    object-fit: contain !important;
+    display: block;
+    margin: 0 auto;
   }
 }
+
