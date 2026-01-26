@@ -477,9 +477,11 @@
 
 @media (max-width: 768px) {
   .chat-container {
-    height: 100vh;
+    height: 100% !important;      /* ✅ לא 100vh */
+    min-height: 0 !important;     /* ✅ מבטל 380px */
     max-width: 100vw;
     border-radius: 0;
+    overflow: hidden;             /* ✅ מונע דאבל-סק롤 */
   }
   .message {
     max-width: 90%;
@@ -541,15 +543,13 @@
 }
 
 @media (max-width: 768px) {
-  /* 1) הקונטיינר של הצ'אט תופס את גובה המסך */
   .chat-container.business {
-    height: calc(100dvh - 56px); /* אם יש לך header בגובה 56 */
+    height: calc(100dvh - 56px);  /* ✅ גובה מתחת להידר */
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
 
-  /* 2) רק ההודעות גוללות */
   .message-list {
     flex: 1;
     min-height: 0;
@@ -557,7 +557,6 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* 3) האינפוט נדבק למטה */
   .inputBar {
     flex-shrink: 0;
     margin-top: auto;
