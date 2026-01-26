@@ -72,7 +72,7 @@
 /* ===== Hero Wrap (Unified Background) ===== */
 .hero-wrap {
   background: #ffffff;
-  padding-bottom: 96px;
+  padding-bottom: 50px;
 }
 
 
@@ -979,21 +979,5 @@ section.faq-mini .faq-item::before {
 @media (max-width: 768px) {
   .scroll-story {
     background: transparent !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .home-page section {
-    padding: 48px 16px;
-  }
-
-  .scroll-story {
-    gap: 56px;
-    padding-top: 56px;
-    padding-bottom: 56px;
-  }
-
-  .step-ai {
-    margin-bottom: 0;
   }
 }
