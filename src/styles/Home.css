@@ -333,11 +333,7 @@
   overflow: visible;
 }
 
-.step-center .step-visual img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
+
 
 
 
@@ -363,12 +359,6 @@
 /* איזון טקסט מול התמונה */
 .step-ai .step-content {
   max-width: 420px;
-}
-
-/* תמונת AI – נוכחות בלי אגרסיביות */
-.step-ai .visual-card {
-  transform: scale(1.06);
-  box-shadow: 0 20px 60px rgba(91, 76, 245, 0.12);
 }
 
 
@@ -816,15 +806,6 @@ section.faq-mini .faq-answer p {
   gap: 88px;
 }
 
-/* ✅ Business Page – bigger image */
-.step-with-visual.step-business-page .step-visual img {
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;      /* 🔥 ממלא את הקונטיינר */
-  object-position: center;
-  transform: scale(1.40); /* ✨ מילוי עדין, בלי לפגוע */
-}
 
 /* FORCE FAQ TITLE TO BLACK – FINAL */
 section.faq-mini h2,
@@ -866,10 +847,10 @@ section.faq-mini .faq-item::before {
   }
 
   .step-visual {
-    order: -1;              /* תמונה מעל הטקסט */
+    order: -1;
     width: 100%;
-    height: auto;           /* 🔥 אין גובה קשיח */
-    min-height: unset;      /* 🔥 חשוב */
+    min-height: auto;   /* 🔥 */
+    height: auto;       /* 🔥 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -877,17 +858,19 @@ section.faq-mini .faq-item::before {
 
   .visual-card {
     width: 100%;
-    height: auto;           /* 🔥 */
+    height: auto;
   }
 
   .step-visual img {
     width: 100%;
-    height: auto;           /* 🔥 שומר יחס */
-    object-fit: contain;    /* 🔥 לא נחתך */
+    height: auto;       /* 🔥 כמו CRM */
+    object-fit: contain;/* 🔥 כמו CRM */
     object-position: center;
+    border-radius: 18px;
   }
 
   .step-content {
     text-align: center;
   }
 }
+
