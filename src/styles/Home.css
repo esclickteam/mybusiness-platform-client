@@ -173,7 +173,7 @@
   width: 100%;
   height: auto;
   display: block;
-  object-fit: contain;
+   object-fit: cover;
 
   margin: 0 auto; /* יישור מושלם */
 }
