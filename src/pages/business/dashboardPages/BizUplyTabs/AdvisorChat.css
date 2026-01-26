@@ -3,20 +3,20 @@
 ========================= */
 
 .advisor-chat-container {
-  max-width: none;        /* ✅ שלא יוגבל ע"י שכבות הורים */
   width: 100%;
-  margin: 0;              /* ✅ לא מרכז כרטיס בתוך כרטיס */
+  max-width: none;          /* ✅ לא מוגבל ע"י הורים */
+  margin: 0;
   padding: 24px;
 
   display: flex;
   flex-direction: column;
   gap: 16px;
 
-  flex: 1;                /* 🔥 חובה */
-  min-height: 0;          /* 🔥 חובה */
-  overflow: hidden;       /* 🔥 סוגר קריסות גובה */
+  flex: 1;                  /* 🔥 */
+  min-height: 0;            /* 🔥 */
+  overflow: hidden;         /* 🔥 */
 
-  text-align: left;       /* ✅ לא מושפע מ-center של הורים */
+  text-align: left;         /* ✅ LTR */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
@@ -26,7 +26,7 @@
 ========================= */
 
 .advisor-top {
-  flex-shrink: 0; /* 🔥 לא מתכווץ */
+  flex-shrink: 0;           /* 🔥 */
 }
 
 /* =========================
@@ -34,10 +34,11 @@
 ========================= */
 
 .advisor-chat-area {
-  flex: 1;                  /* 🔥 תופס את כל הגובה שנשאר */
-  min-height: 0;            /* 🔥 חובה ל-scroll */
+  flex: 1;                  /* 🔥 */
+  min-height: 0;            /* 🔥 */
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
 /* =========================
@@ -61,26 +62,22 @@
   unicode-bidi: isolate;
 
   display: inline-flex;
-  justify-content: center;
   align-items: center;
+  gap: 6px;
 
-  gap: 4px;
-
-  margin: 16px auto 28px;
-  padding: 10px 20px;
+  margin: 12px 0 20px;
+  padding: 8px 16px;
 
   background: #f5f7fa;
   border-radius: 999px;
 
-  font-size: 15px;
+  font-size: 14px;
   color: #444;
-  text-align: center;
-
   width: fit-content;
 }
 
 /* =========================
-   Preset Questions
+   Preset Questions (CTA UX)
 ========================= */
 
 .preset-questions-container {
@@ -94,16 +91,28 @@
   border: 1px solid #e5e7eb;
   border-radius: 14px;
   padding: 16px;
+
   cursor: pointer;
   font-size: 0.95rem;
-  line-height: 1.4;
-  transition: all 0.2s ease;
+  line-height: 1.45;
+
+  transition: all 0.15s ease;
 }
 
 .preset-card:hover {
   border-color: #5e17eb;
   box-shadow: 0 6px 18px rgba(94, 23, 235, 0.15);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+}
+
+/* =========================
+   Divider (Flow cue)
+========================= */
+
+.advisor-chat-container hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 16px 0 8px;
 }
 
 /* =========================
@@ -112,8 +121,8 @@
 
 .chat-box-wrapper {
   flex: 1;
+  min-height: 0;
   display: flex;
-  min-height: 0; /* 🔥 חובה */
 }
 
 .chat-box {
@@ -132,6 +141,15 @@
   gap: 14px;
 }
 
+/* Empty / First state (optional) */
+.chat-empty {
+  margin: auto;
+  text-align: center;
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
 /* =========================
    Message Bubbles
 ========================= */
@@ -140,6 +158,7 @@
   max-width: 80%;
   padding: 12px 16px;
   border-radius: 16px;
+
   font-size: 0.95rem;
   line-height: 1.45;
   word-break: break-word;
@@ -149,14 +168,14 @@
   align-self: flex-end;
   background: #5e17eb;
   color: #ffffff;
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 6px;
 }
 
 .bubble.assistant {
   align-self: flex-start;
   background: #f1f3f5;
   color: #111827;
-  border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 6px;
 }
 
 .bubble.assistant.typing {
@@ -180,16 +199,18 @@
 .chat-input {
   display: flex;
   gap: 12px;
-  margin-top: 12px;
-  flex-shrink: 0; /* 🔥 לא נמחץ */
+  margin-top: 10px;
+  flex-shrink: 0;
 }
 
 .chat-input input {
   flex: 1;
   padding: 14px 16px;
+
   font-size: 0.95rem;
   border-radius: 14px;
   border: 1px solid #d1d5db;
+
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -208,10 +229,13 @@
   padding: 0 20px;
   border-radius: 14px;
   border: none;
+
   background: #5e17eb;
   color: #ffffff;
+
   font-size: 0.95rem;
   font-weight: 600;
+
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
 }
@@ -227,16 +251,6 @@
 .chat-input button:disabled {
   background: #c4b5fd;
   cursor: not-allowed;
-}
-
-/* =========================
-   Divider
-========================= */
-
-.advisor-chat-container hr {
-  border: none;
-  border-top: 1px solid #e5e7eb;
-  margin: 20px 0;
 }
 
 /* =========================
