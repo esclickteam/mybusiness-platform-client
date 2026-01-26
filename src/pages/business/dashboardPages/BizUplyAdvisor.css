@@ -3,13 +3,14 @@
 ========================= */
 .BizUply-container {
   padding: 3rem 2rem;
-  text-align: center;
   background: transparent;
 
   display: flex;           /* 🔥 */
   flex-direction: column;  /* 🔥 */
   flex: 1;                 /* 🔥 */
   min-height: 0;           /* 🔥 */
+
+  text-align: left;        /* ✅ במקום center */
 }
 
 /* =========================
@@ -17,9 +18,12 @@
 ========================= */
 .BizUply-header {
   color: #5a2ea6;
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-  font-size: 2rem;
+  margin: 0 auto 1.5rem;   /* ✅ מרכז את הבלוק */
+  text-align: center;      /* ✅ מרכז רק את הטקסט */
+  font-weight: 800;        /* ✅ יותר פרימיום */
+  font-size: 2.2rem;       /* ✅ טיפה יותר חזק */
+  letter-spacing: 0.2px;   /* ✅ חדות */
+  line-height: 1.1;
 }
 
 /* =========================
