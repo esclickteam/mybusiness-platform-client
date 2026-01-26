@@ -10,9 +10,6 @@ import { FaTimes, FaBars } from "react-icons/fa";
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
 
-const DEMO_MODE = true; // ⛔️ להחזיר ל-false אחרי הצילום
-
-
 /* ============================
    🔌 Socket
 ============================ */
@@ -233,33 +230,31 @@ export default function BusinessDashboardLayout() {
                 )}
 
                 <div className="hello-line">
-                    Hello, {DEMO_MODE ? "Michael Carter" : user?.businessName || user?.name}
-
+                  Hello, {user?.businessName || user?.name}
                 </div>
 
                 {/* ✅ בדסקטופ נשאר כמו שהיה */}
-                {!DEMO_MODE && !isMobile && isTrialActive && (
-  <div className="trial-status">
-    ⏳{" "}
-    {user.isTrialEndingToday ? (
-      <strong>Trial ends today</strong>
-    ) : (
-      <>
-        Trial ends in <strong>{user.trialDaysLeft} days</strong>
-      </>
-    )}
+                {!isMobile && isTrialActive && (
+                  <div className="trial-status">
+                    ⏳{" "}
+                    {user.isTrialEndingToday ? (
+                      <strong>Trial ends today</strong>
+                    ) : (
+                      <>
+                        Trial ends in <strong>{user.trialDaysLeft} days</strong>
+                      </>
+                    )}
 
-    {canUpgrade && !canShowEarlyBird && (
-      <button
-        className="trial-upgrade-pill"
-        onClick={handleUpgrade}
-      >
-        Upgrade
-      </button>
-    )}
-  </div>
-)}
-
+                    {canUpgrade && !canShowEarlyBird && (
+                      <button
+                        className="trial-upgrade-pill"
+                        onClick={handleUpgrade}
+                      >
+                        Upgrade
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* ✅ רק רספונסיביות: EarlyBird לא מוצג במובייל */}

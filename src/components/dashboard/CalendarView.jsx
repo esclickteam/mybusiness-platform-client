@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import "./CalendarView.css";
 
 const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -18,39 +18,13 @@ const MONTH_NAMES = [
   "December",
 ];
 
-// 🔧 תמיד בפורמט YYYY-MM-DD
-const todayStr = new Date().toISOString().split("T")[0];
+const todayStr = new Date().toLocaleDateString("en-CA");
 
-const CalendarView = ({
-  appointments = [],
-  selectedDate,
-  onDateClick,
-  demoMode = false,
-}) => {
-  /* =========================
-     Initial month/year
-     ✔️ לפי selectedDate
-  ========================= */
-  const initialDate = selectedDate
-    ? new Date(selectedDate)
-    : new Date();
+const CalendarView = ({ appointments = [], onDateClick }) => {
+  const today = new Date();
 
-  const [currentYear, setCurrentYear] = useState(
-    initialDate.getFullYear()
-  );
-  const [currentMonth, setCurrentMonth] = useState(
-    initialDate.getMonth()
-  );
-
-  /* =========================
-     Sync when selectedDate changes
-  ========================= */
-  useEffect(() => {
-    if (!selectedDate) return;
-    const d = new Date(selectedDate);
-    setCurrentYear(d.getFullYear());
-    setCurrentMonth(d.getMonth());
-  }, [selectedDate]);
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
 
   /* =========================
      Month navigation
@@ -76,15 +50,17 @@ const CalendarView = ({
   };
 
   /* =========================
-     Appointments grouped by day
-     ✅ חיתוך T
+     Appointments grouped by date
+     ✔️ ללא Date parsing
   ========================= */
   const appointmentsByDay = useMemo(() => {
     const map = {};
 
     appointments.forEach((a) => {
       if (!a.date) return;
-      const dateKey = a.date.split("T")[0];
+
+      // date כבר בפורמט YYYY-MM-DD
+      const dateKey = a.date;
 
       if (!map[dateKey]) map[dateKey] = [];
       map[dateKey].push(a);
@@ -96,34 +72,27 @@ const CalendarView = ({
   /* =========================
      Calendar grid
   ========================= */
-  const daysInMonth = new Date(
-    currentYear,
-    currentMonth + 1,
-    0
-  ).getDate();
-
-  const firstDayOfWeek = new Date(
-    currentYear,
-    currentMonth,
-    1
-  ).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
   const cells = Array.from(
     { length: daysInMonth + firstDayOfWeek },
     (_, i) => {
-      if (i < firstDayOfWeek) return { day: null };
+      if (i < firstDayOfWeek) {
+        return { day: null };
+      }
 
       const day = i - firstDayOfWeek + 1;
 
-      const dateStr = `${currentYear}-${String(
-        currentMonth + 1
-      ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
+        2,
+        "0"
+      )}-${String(day).padStart(2, "0")}`;
 
       return {
         day,
         dateStr,
         isToday: dateStr === todayStr,
-        isSelected: dateStr === selectedDate,
         count: appointmentsByDay[dateStr]?.length || 0,
       };
     }
@@ -141,8 +110,7 @@ const CalendarView = ({
         </button>
 
         <h3 className="calendar-title">
-          {MONTH_NAMES[currentMonth]}
-          {!demoMode && ` ${currentYear}`}
+          {MONTH_NAMES[currentMonth]} {currentYear}
         </h3>
 
         <button className="nav-btn" onClick={goNext}>
@@ -173,11 +141,9 @@ const CalendarView = ({
           return (
             <div
               key={cell.dateStr}
-              className={`calendar-cell
-                ${cell.isToday ? "today" : ""}
-                ${cell.isSelected ? "selected" : ""}
-                ${cell.count ? "has-events" : ""}
-              `}
+              className={`calendar-cell ${
+                cell.isToday ? "today" : ""
+              } ${cell.count ? "has-events" : ""}`}
               onClick={() => onDateClick?.(cell.dateStr)}
             >
               <div className="cell-day">{cell.day}</div>

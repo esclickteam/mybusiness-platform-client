@@ -5,11 +5,6 @@ import CRMCustomerFile from "./CRMCustomerFile";
 import "./CRMClientsTab.css";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import dashboardDemoClients from "@/demo/dashboardDemoClients";
-
-
-const DEMO_MODE = true; // ⛔️ false בפרודקשן
-
 
 
 /* =====================================================
@@ -55,21 +50,19 @@ export default function CRMClientsTab({ businessId }) {
      QUERY
   ===================================================== */
   const {
-  data: clients = [],
-  isLoading,
-  error,
-} = useQuery({
-  queryKey: ["clients", businessId],
-  queryFn: () => fetchClients(businessId),
-  enabled: !!businessId && !DEMO_MODE,
-});
-
-const demoClients = DEMO_MODE ? dashboardDemoClients : clients;
+    data: clients = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["clients", businessId],
+    queryFn: () => fetchClients(businessId),
+    enabled: !!businessId,
+  });
 
   /* =====================================================
      FILTER
   ===================================================== */
-const filteredClients = demoClients.filter((client) => {
+  const filteredClients = clients.filter((client) => {
     const q = search.toLowerCase();
     return (
       client.fullName.toLowerCase().includes(q) ||
@@ -177,12 +170,11 @@ const filteredClients = demoClients.filter((client) => {
   </button>
 </div>
 
-          {!DEMO_MODE && isLoading ? (
-  <p>Loading…</p>
-) : !DEMO_MODE && error ? (
-  <p>Error loading clients</p>
-) : filteredClients.length === 0 ? (
-
+          {isLoading ? (
+            <p>Loading…</p>
+          ) : error ? (
+            <p>Error loading clients</p>
+          ) : filteredClients.length === 0 ? (
             <div className="empty-state">
               <h3>No clients yet</h3>
               <p>Create your first client</p>
@@ -233,15 +225,12 @@ const filteredClients = demoClients.filter((client) => {
     </button>
 
     <button
-  className="icon-btn danger"
-  onClick={(e) => {
-    e.stopPropagation();
-    if (DEMO_MODE) return alert("Demo mode – action disabled");
-    handleDelete(client, e);
-  }}
->
-  🗑
-</button>
+      className="icon-btn danger"
+      onClick={(e) => handleDelete(client, e)}
+      aria-label="Delete client"
+    >
+      🗑
+    </button>
   </div>
 </td>
 

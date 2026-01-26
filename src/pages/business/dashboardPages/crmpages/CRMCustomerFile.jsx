@@ -1,22 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import API from "@api";
 import { useQueryClient } from "@tanstack/react-query";
 import "./CRMCustomerProfile.css";
-import dashboardDemoAppointmentsByClient from "@/demo/dashboardDemoAppointmentsByClient";
 
 // Components
 import ClientTasksAndNotes from "../../../../components/CRM/ClientTasksAndNotes";
-
-const DEMO_MODE = true;
-
-/* =========================
-   Demo helpers
-========================= */
-function getDemoStatus(client) {
-  return client?.status || "Active";
-}
-
-
 
 export default function CRMCustomerFile({
   client,
@@ -42,7 +30,7 @@ export default function CRMCustomerFile({
   const [error, setError] = useState(null);
 
   /* =========================
-     FORM STATE
+     FORM STATE (NEW / EDIT)
   ========================= */
   const [newClient, setNewClient] = useState(
     isNew
@@ -56,80 +44,75 @@ export default function CRMCustomerFile({
   );
 
   /* =========================
-     DEMO DERIVED DATA
+     SAVE CLIENT
   ========================= */
-  const clientStatus = useMemo(
-    () => (DEMO_MODE ? getDemoStatus(client) : null),
-    [client]
-  );
-
- 
-
-  /* =========================
-     FETCH CUSTOMER FILE
-  ========================= */
-  useEffect(() => {
-  if (DEMO_MODE && client?._id) {
-    setCustomerData({
-      appointments:
-        dashboardDemoAppointmentsByClient[client._id] || [],
-    });
-    return;
-  }
-
-  const fetchCustomerFile = async () => {
-    setLoading(true);
-    setError(null);
+  const handleSave = async () => {
+    if (!newClient.fullName.trim() || !newClient.phone.trim()) {
+      alert("❌ Full name and phone number are required");
+      return;
+    }
 
     try {
-      const res = await API.get(`/crm-customer/${client._id}`, {
-        params: { businessId },
+      await API.post(`/crm-clients`, {
+        ...newClient,
+        businessId,
       });
 
-      setCustomerData({
-        appointments: Array.isArray(res.data?.appointments)
-          ? res.data.appointments
-          : [],
-      });
+      queryClient.invalidateQueries(["clients", businessId]);
+      alert("✅ Client saved successfully");
+      onClose();
     } catch (err) {
-      console.error("❌ Error loading customer file:", err);
-      setCustomerData({ appointments: [] });
-      setError("Failed to load customer data");
-    } finally {
-      setLoading(false);
+      console.error("❌ Error saving client:", err);
+      alert("❌ Failed to save client");
     }
   };
 
-  if (client?._id && businessId && !isNew) {
-    fetchCustomerFile();
-  }
-}, [client?._id, businessId, isNew]);
+  /* =========================
+     FETCH CUSTOMER APPOINTMENTS
+  ========================= */
+  useEffect(() => {
+    const fetchCustomerFile = async () => {
+      setLoading(true);
+      setError(null);
 
+      try {
+        const res = await API.get(`/crm-customer/${client._id}`, {
+          params: { businessId },
+        });
+
+        setCustomerData({
+          appointments: Array.isArray(res.data?.appointments)
+            ? res.data.appointments
+            : [],
+        });
+      } catch (err) {
+        console.error("❌ Error loading customer file:", err);
+        setCustomerData({ appointments: [] });
+        setError("Failed to load customer data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (client?._id && businessId && !isNew) {
+      fetchCustomerFile();
+    }
+  }, [client?._id, businessId, isNew]);
 
   /* =========================
      RENDER
   ========================= */
   return (
     <div className="crm-customer-profile">
-      {/* Header */}
-      <div className="customer-header">
-        <h2>
-          Customer File – {client?.fullName || "New Client"}
-          {clientStatus && (
-            <span className={`client-badge ${clientStatus.toLowerCase()}`}>
-              {clientStatus}
-            </span>
-          )}
-        </h2>
+      <h2>Customer File – {client?.fullName || "New Client"}</h2>
+      <p>
+        📞 {client?.phone || "-"} | ✉️ {client?.email || "-"} | 📍{" "}
+        {client?.address || "-"}
+      </p>
 
-        <p className="customer-meta">
-          📞 {client?.phone || "-"} | ✉️ {client?.email || "-"} | 📍{" "}
-          {client?.address || "-"}
-        </p>
-      </div>
-
-   
-      {/* Tabs */}
+      {/* =========================
+          TABS HEADER
+      ========================= */}
       <div className="tabs-header">
         <button
           className={activeTab === "appointments" ? "active" : ""}
@@ -146,7 +129,9 @@ export default function CRMCustomerFile({
         </button>
       </div>
 
-      {/* Content */}
+      {/* =========================
+          TAB CONTENT
+      ========================= */}
       <div className="tab-content">
         {loading ? (
           <p>⏳ Loading data...</p>
@@ -154,7 +139,7 @@ export default function CRMCustomerFile({
           <p className="error-text">❌ {error}</p>
         ) : (
           <>
-            {/* Appointments */}
+            {/* ===== Appointments ===== */}
             {activeTab === "appointments" && (
               <>
                 {customerData.appointments.length === 0 ? (
@@ -184,7 +169,7 @@ export default function CRMCustomerFile({
               </>
             )}
 
-            {/* Notes & Tasks */}
+            {/* ===== Notes & Tasks ===== */}
             {activeTab === "extras" && (
               <ClientTasksAndNotes
                 clientId={client?._id}
@@ -194,6 +179,8 @@ export default function CRMCustomerFile({
           </>
         )}
       </div>
+
+    
     </div>
   );
 }

@@ -1,4 +1,4 @@
- import React, {
+import React, {
   useEffect,
   useState,
   useRef,
@@ -18,13 +18,9 @@ import DashboardSkeleton from "../../../components/DashboardSkeleton";
 import UpgradeOfferCard from "../../../components/UpgradeOfferCard";
 import useAiInsights from "@/hooks/useAiInsights";
 import AiInsightsPanel from "@/components/AiInsightsPanel";
-import dashboardDemoStats from "@/demo/dashboardDemoStats";
-import dashboardDemoInsights from "@/demo/dashboardDemoInsights";
 
 
 
-
-const DEMO_MODE = true; // ⛔️ false אחרי הצילום
 
 
 /*************************
@@ -124,8 +120,6 @@ const DashboardPage = () => {
   } = useAuth();
   const { businessId } = useParams();
 
-  
-
  
   /* 🎨 הפעלה מיידית של ה־theme לעסקים */
   useEffect(() => {
@@ -148,13 +142,7 @@ const DashboardPage = () => {
   const location = useLocation();
 
   /* state */
-const today = useMemo(
-  () =>
-    DEMO_MODE
-      ? "2025-01-26"
-      : new Date().toISOString().split("T")[0],
-  []
-);
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [selectedDate, setSelectedDate] = useState(today);
   const [alert, setAlert] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
@@ -163,14 +151,7 @@ const today = useMemo(
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
-const {
-  insights: realInsights,
-  loading: insightsLoading,
-} = useAiInsights(businessId);
-
-const insights = DEMO_MODE
-  ? dashboardDemoInsights.slice(0, 2) // לא להציף
-  : realInsights;
+const { insights, loading: insightsLoading } = useAiInsights(businessId);
 
 /* =========================
    🎁 Early Bird Logic
@@ -294,48 +275,27 @@ const shouldShowEarlyBirdModal =
 
   /* fetch stats */
   const loadStats = async () => {
-  if (!DEMO_MODE && !businessId) return;
+    if (!businessId) return;
+    setLoading(true);
+    setError(null);
 
-  // 🎬 DEMO MODE
-  if (DEMO_MODE) {
-    setStats(dashboardDemoStats);
-    localStorage.setItem(
-      "dashboardStats",
-      JSON.stringify(dashboardDemoStats)
-    );
-    return;
-  }
+    const cached = localStorage.getItem("dashboardStats");
+    if (cached) setStats(JSON.parse(cached));
 
-  // ===== Production logic =====
-  setLoading(true);
-  setError(null);
-
-  const cached = localStorage.getItem("dashboardStats");
-  if (cached) setStats(JSON.parse(cached));
-
-  try {
-    const data = await fetchDashboardStats(businessId, refreshAccessToken);
-    setStats(data);
-    localStorage.setItem("dashboardStats", JSON.stringify(data));
-  } catch (err) {
-    setError("❌ Error loading data from server.");
-    if (err.message === "No token") logout();
-  } finally {
-    setLoading(false);
-  }
-};
-
-/* 🚀 LOAD STATS ON MOUNT / BUSINESS CHANGE */
-useEffect(() => {
-  loadStats(); // ✅ עכשיו זה במקום הנכון
-}, [businessId]);
-
-
-
+    try {
+      const data = await fetchDashboardStats(businessId, refreshAccessToken);
+      setStats(data);
+      localStorage.setItem("dashboardStats", JSON.stringify(data));
+    } catch (err) {
+      setError("❌ Error loading data from server.");
+      if (err.message === "No token") logout();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /* refresh appointments on server notification */
   const refreshAppointmentsFromAPI = useCallback(async () => {
-    if (DEMO_MODE) return;
     if (!businessId) return;
     try {
       const appts = await fetchAppointments(businessId, refreshAccessToken);
@@ -351,7 +311,6 @@ useEffect(() => {
 
   /* socket lifecycle */
   useEffect(() => {
-    if (DEMO_MODE) return; 
   if (!initialized || !businessId) return;
 
   let isMounted = true;
@@ -512,11 +471,9 @@ sock.on("newReview", (reviewData) => {
 
   };
 
-
-if (!DEMO_MODE) {
+  loadStats();
   refreshAppointmentsFromAPI();
   setupSocket();
-}
 
   return () => {
     isMounted = false;
@@ -677,21 +634,23 @@ if (isRefreshingUser) {
 
 
  
-{!DEMO_MODE && shouldShowEarlyBirdModal && (
+{shouldShowEarlyBirdModal && (
   <UpgradeOfferCard
     expiresAt={user?.earlyBirdExpiresAt}
     onUpgrade={handleEarlyBirdUpgrade}
     onClose={async () => {
+      
+
       try {
         await API.post("/users/mark-earlybird-modal-seen");
-        await refreshUser();
+        await refreshUser(); // 🔑 מפיל את התנאי
       } catch {}
     }}
   />
 )}
 
 {/* 🔮 AI INSIGHTS — Action Center */}
- <section className="dp-section">
+<section className="dp-section">
   <AiInsightsPanel
     insights={insights}
     loading={insightsLoading}
@@ -784,7 +743,6 @@ if (isRefreshingUser) {
                   appointments={enrichedAppointments}
                   onDateClick={setSelectedDate}
                   selectedDate={selectedDate}
-                  demoMode={DEMO_MODE}
                 />
               </Suspense>
             </div>

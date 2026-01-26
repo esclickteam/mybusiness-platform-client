@@ -2,11 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import "./AiPartnerTab.css";
-import { aiDemoResponses } from "@/demo/aiDemoResponses";
-
-const DEMO_MODE = true; // ⛔️ false בפרודקשן
-
-
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 
@@ -252,40 +247,14 @@ const AiPartnerTab = ({
   }, [businessId, token, conversationId, onNewRecommendation]);
 
   const sendAiCommand = useCallback(async () => {
-  if (!commandText.trim()) return;
+    if (!commandText.trim() || (remainingQuestions !== null && remainingQuestions <= 0)) return;
 
-  /* =========================
-     🎬 DEMO MODE
-  ========================= */
-  if (DEMO_MODE) {
+    const convertedCommandText = convertNaturalDateToISO(commandText);
+
     setLoading(true);
-
-    // שלב ביניים – נראה "חושב"
-    setCommandResponse("🤖 Analyzing client data...");
-
-    setTimeout(() => {
-      setCommandResponse(aiDemoResponses.personal);
-      setLoading(false);
-      setCommandText("");
-    }, 900);
-
-    return;
-  }
-
-  /* =========================
-     🚀 PRODUCTION MODE
-  ========================= */
-  if (remainingQuestions !== null && remainingQuestions <= 0) return;
-
-  const convertedCommandText = convertNaturalDateToISO(commandText);
-
-  setLoading(true);
-  setCommandResponse(null);
-
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_API_URL}/chat/ai-partner`,
-      {
+    setCommandResponse(null);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/chat/ai-partner`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -304,38 +273,36 @@ const AiPartnerTab = ({
           },
           messages: chat,
         }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send command");
+
+      setCommandResponse(data.answer);
+
+      if (data.actionResult) {
+        console.log("Action result:", data.actionResult);
       }
-    );
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Failed to send command");
-
-    setCommandResponse(data.answer);
-
-    setRemainingQuestions((prev) =>
-      prev !== null ? Math.max(prev - 1, 0) : null
-    );
-  } catch (err) {
-    alert("Error sending AI command: " + err.message);
-  } finally {
-    setLoading(false);
-    setCommandText("");
-  }
-}, [
-  commandText,
-  businessId,
-  token,
-  businessName,
-  businessType,
-  languageTone,
-  targetAudience,
-  businessGoal,
-  conversationId,
-  chat,
-  remainingQuestions,
-]);
-
-
+      setRemainingQuestions((prev) => (prev !== null ? Math.max(prev - 1, 0) : null));
+    } catch (err) {
+      alert("Error sending AI command: " + err.message);
+    } finally {
+      setLoading(false);
+      setCommandText("");
+    }
+  }, [
+    commandText,
+    businessId,
+    token,
+    businessName,
+    businessType,
+    languageTone,
+    targetAudience,
+    businessGoal,
+    conversationId,
+    chat,
+    remainingQuestions,
+  ]);
 
   const approveSuggestion = useCallback(
     async ({ id, text }) => {
