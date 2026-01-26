@@ -6,6 +6,28 @@ import "./CRMCustomerProfile.css";
 // Components
 import ClientTasksAndNotes from "../../../../components/CRM/ClientTasksAndNotes";
 
+const DEMO_MODE = true; // ⛔️ false בפרודקשן
+
+// 🎬 Demo data for video
+const demoCustomerData = {
+  appointments: [
+    {
+      _id: "a1",
+      serviceName: "Consultation Call",
+      date: "Jan 30, 2025",
+      time: "10:00 AM",
+      note: "Discuss premium package",
+    },
+    {
+      _id: "a2",
+      serviceName: "Initial Inquiry",
+      date: "Jan 18, 2025",
+      time: "4:30 PM",
+      note: "Client asked about pricing",
+    },
+  ],
+};
+
 export default function CRMCustomerFile({
   client,
   isNew = false,
@@ -68,9 +90,15 @@ export default function CRMCustomerFile({
   };
 
   /* =========================
-     FETCH CUSTOMER APPOINTMENTS
+     FETCH CUSTOMER FILE
   ========================= */
   useEffect(() => {
+    // 🎬 DEMO MODE — no API
+    if (DEMO_MODE) {
+      setCustomerData(demoCustomerData);
+      return;
+    }
+
     const fetchCustomerFile = async () => {
       setLoading(true);
       setError(null);
@@ -105,6 +133,7 @@ export default function CRMCustomerFile({
   return (
     <div className="crm-customer-profile">
       <h2>Customer File – {client?.fullName || "New Client"}</h2>
+
       <p>
         📞 {client?.phone || "-"} | ✉️ {client?.email || "-"} | 📍{" "}
         {client?.address || "-"}
@@ -179,8 +208,6 @@ export default function CRMCustomerFile({
           </>
         )}
       </div>
-
-    
     </div>
   );
 }
