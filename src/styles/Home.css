@@ -1172,3 +1172,54 @@ section.faq-mini .faq-item::before {
     padding: 56px 16px !important;
   }
 }
+
+/* =========================
+   📱 AI STEP – MOBILE FIX (FINAL)
+   ========================= */
+@media (max-width: 768px) {
+
+  /* 1️⃣ לבטל רווחים של דסקטופ */
+  .step-ai {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .step-ai .step-inner {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* 2️⃣ להפוך לעמודה נקייה */
+  .step-ai .step-with-visual {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* 3️⃣ לבטל גובה קשיח של התמונה */
+  .step-ai .step-visual {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    order: 1 !important;
+  }
+
+  .step-ai .step-visual img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 260px !important; /* כאן נחתך ה"אוויר" */
+    object-fit: contain !important;
+    margin: 0 auto !important;
+    display: block;
+  }
+
+  /* 4️⃣ טקסט אחרי התמונה */
+  .step-ai .step-content {
+    order: 2 !important;
+    margin: 0 !important;
+  }
+}
+
