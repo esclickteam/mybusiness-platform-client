@@ -1167,3 +1167,8 @@ section.faq-mini .faq-item::before {
   }
 }
 
+@media (max-width: 768px) {
+  .home-page section {
+    padding: 56px 16px !important;
+  }
+}
