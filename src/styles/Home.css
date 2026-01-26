@@ -882,30 +882,3 @@ section.faq-mini .faq-item::before {
   box-shadow: none !important;
   border: none !important;
 }
-
-@media (max-width: 768px) {
-  .step-visual {
-    width: 100% !important;   /* 🔥 מבטל 740px */
-    height: auto !important;  /* 🔥 מבטל 420px */
-    min-height: 260px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 768px) {
-  .visual-card {
-    width: 100%;
-    min-height: 260px;
-  }
-}
-
-@media (max-width: 768px) {
-  .step-visual img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
