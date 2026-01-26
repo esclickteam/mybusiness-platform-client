@@ -26,12 +26,11 @@ const BusinessAdvisorTab = ({
   const abortControllerRef = useRef(null);
 
   const presetQuestions = [
-    "How to raise prices without losing customers?",
-    "How to deal with a drop in income?",
-    "What is the best way to manage employees?",
-    "How can customer service be improved?",
-    "How to build a simple business plan?",
-  ];
+  "How can I get more customers this month?",
+  "How should I raise prices without losing customers?",
+  "Where can I cut costs without hurting quality?",
+  "What should I focus on this week to grow faster?",
+];
 
   /* =========================
      REFRESH QUESTION BALANCE
