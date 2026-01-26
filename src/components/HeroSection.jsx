@@ -4,47 +4,53 @@ export default function HeroSection() {
   return (
     <>
       {/* =========================
-          HERO (TEXT ONLY)
+          HERO + VIDEO WRAP
+          (Unified background)
       ========================= */}
-      <section className="hero">
-        <div className="hero-content">
-          <h1>
-            Run your business.
-            <br />
-            <span className="hero-accent">All in one place.</span>
-          </h1>
+      <div className="hero-wrap">
+        {/* =========================
+            HERO (TEXT ONLY)
+        ========================= */}
+        <section className="hero">
+          <div className="hero-content">
+            <h1>
+              Run your business.
+              <br />
+              <span className="hero-accent">All in one place.</span>
+            </h1>
 
-          <p className="hero-subtitle">
-            One smart platform to manage your business page,
-            clients, collaborations, CRM and AI — all connected.
-          </p>
+            <p className="hero-subtitle">
+              One smart platform to manage your business page,
+              clients, collaborations, CRM and AI — all connected.
+            </p>
 
-          <div className="hero-actions">
-            <Link to="/register" className="btn-primary">
-              Try it Free
-            </Link>
+            <div className="hero-actions">
+              <Link to="/register" className="btn-primary">
+                Try it Free
+              </Link>
+            </div>
+
+            <p className="hero-note">
+              14-day free trial · No credit card required · Cancel anytime
+            </p>
           </div>
+        </section>
 
-          <p className="hero-note">
-            14-day free trial · No credit card required · Cancel anytime
-          </p>
-        </div>
-      </section>
-
-      {/* =========================
-          VIDEO SHOWCASE (BIG)
-      ========================= */}
-      <section className="video-showcase">
-        <div className="video-frame">
-          <video
-            src="/hero-demo.mp4"   // ⬅️ נמצא בתיקיית public
-            autoPlay
-            muted
-            loop
-            playsInline
-          />
-        </div>
-      </section>
+        {/* =========================
+            VIDEO SHOWCASE (BIG)
+        ========================= */}
+        <section className="video-showcase">
+          <div className="video-frame">
+            <video
+              src="/hero-demo.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          </div>
+        </section>
+      </div>
     </>
   );
 }

@@ -69,6 +69,19 @@
   margin-right: auto;
 }
 
+/* ===== Hero Wrap (Unified Background) ===== */
+.hero-wrap {
+  background: linear-gradient(
+    180deg,
+    var(--hero-bg-start) 0%,
+    var(--hero-bg-mid) 45%,
+    var(--hero-bg-end) 100%
+  );
+
+  overflow: hidden;
+}
+
+
 /* ===== Hero ===== */
 .hero {
   position: relative;
@@ -81,13 +94,7 @@
 
   text-align: center;
 
-  background: linear-gradient(
-    180deg,
-    var(--hero-bg-start) 0%,
-    var(--hero-bg-mid) 45%,
-    var(--hero-bg-end) 100%
-  );
-
+  
   overflow: visible;
 }
 
@@ -140,8 +147,8 @@
 
 /* ===== Video Showcase ===== */
 .video-showcase {
-  margin-top: -140px; /* נכנס מתחת ל־Hero כמו Nation */
-  padding: 0 24px 140px;
+  margin-top: -180px; /* חיבור טבעי יותר ל-Hero */
+  padding: 0 24px 180px;
 }
 
 .video-frame {
