@@ -877,12 +877,6 @@ section.faq-mini .faq-item::before {
     flex-direction: column;
   }
 
- .step-visual {
-  order: -1;
-  width: 100% !important;
-  height: auto !important;
-  margin: 0 !important;
-}
 
   .step-visual img {
     width: 100%;
@@ -935,7 +929,15 @@ section.faq-mini .faq-item::before {
   }
 
   .scroll-story {
-    margin-top: 24px;      /* היה 80 */
+    margin-top: 12px;      /* היה 80 */
     padding-top: 64px;     /* היה 120 */
+  }
+}
+
+
+@media (max-width: 768px) {
+  .img-business-page {
+    transform: scale(1.18);
+    transform-origin: center;
   }
 }

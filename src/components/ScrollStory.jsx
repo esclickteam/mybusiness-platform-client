@@ -37,12 +37,15 @@ export default function ScrollStory() {
   <div className="step-inner step-with-visual step-business-page">
     <div className="step-visual">
       <div className="visual-card">
+
         <img
-          src="/images/business-page-v4.png"
-          alt="Business page preview"
-          loading="lazy"
-          decoding="async"
-        />
+  className="img-business-page"
+  src="/images/business-page-v4.png"
+  alt="Business page preview"
+  loading="lazy"
+  decoding="async"
+/>
+
       </div>
     </div>
 
