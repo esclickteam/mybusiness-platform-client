@@ -71,22 +71,19 @@
    Tab Content (NO SCROLL)
 ========================= */
 .tab-content {
-  /* ❌ להסיר כרטיסיות מפה */
-  background: transparent;
-  box-shadow: none;
-  border-radius: 0;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  direction: rtl;
 
-  /* ❌ להסיר padding שמפריע לגובה */
-  padding: 0;
-
-  max-width: none;
-  margin: 0;
-
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  display: flex;           /* 🔥 */
+  flex-direction: column;  /* 🔥 */
+  flex: 1;                 /* 🔥 */
+  min-height: 0;           /* 🔥 */
+  overflow: hidden;        /* 🔥 במקום visible */
 }
 
 /* =========================
@@ -187,5 +184,7 @@
     padding: 12px 0;
   }
 
- 
+  .tab-content {
+    padding: 1rem;
+  }
 }

@@ -262,8 +262,7 @@
     display: flex;
     flex-direction: column;
 
-    overflow: hidden;
-        /* ❗ לא auto כאן */
+    overflow-y: auto;        /* ❗ לא auto כאן */
     padding-top: 0;
   }
 }
@@ -571,8 +570,7 @@
     display: flex;
     flex-direction: column;
 
-     overflow: hidden;
-       /* ❗ לא auto */
+     overflow-y: auto;        /* ❗ לא auto */
     overflow-x: hidden;
   }
 
