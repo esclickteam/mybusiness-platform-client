@@ -788,12 +788,7 @@ section.faq-mini .faq-answer p {
     height: auto;        /* שחרור הגובה הקבוע */
   }
 
-  .step-visual img {
-    width: 100%;
-    height: auto;        /* במובייל כן */
-    object-fit: contain;
-  }
-
+ 
   .step-content {
     text-align: center;
   }
@@ -842,13 +837,12 @@ section.faq-mini .faq-answer p {
 }
 
 /* ✅ Business Page – bigger image */
-.step-with-visual.step-business-page .step-visual img {
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;      /* 🔥 ממלא את הקונטיינר */
-  object-position: center;
-  transform: scale(1.40); /* ✨ מילוי עדין, בלי לפגוע */
+@media (min-width: 769px) {
+  .step-with-visual.step-business-page .step-visual img {
+    object-fit: cover;
+    object-position: center;
+    transform: scale(1.40);
+  }
 }
 
 /* FORCE FAQ TITLE TO BLACK – FINAL */
@@ -881,4 +875,30 @@ section.faq-mini .faq-item::before {
   background: none !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+@media (max-width: 768px) {
+  /* כל התמונות במובייל – אחיד, גדול, כמו CRM */
+  .step-visual {
+    order: -1;
+    width: 100%;
+    min-height: 280px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .visual-card {
+    width: 100%;
+    min-height: 280px;
+  }
+
+  .step-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;      /* 🔥 זה הקסם */
+    object-position: center;
+    transform: none;        /* מבטל scale מדסקטופ */
+  }
 }
