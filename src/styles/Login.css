@@ -295,3 +295,19 @@ label {
     font-size: 34px;
   }
 }
+
+@media (max-width: 520px) {
+  .login-extra-options {
+    text-align: center;
+  }
+
+  .signup-link {
+    display: block;
+  }
+
+  .signup-link-text {
+    display: inline-block;
+    white-space: nowrap; /* 🔥 מונע שבירה באמצע */
+    margin-top: 6px;
+  }
+}
