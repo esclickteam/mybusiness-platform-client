@@ -259,13 +259,15 @@ const AiPartnerTab = ({
   ========================= */
   if (DEMO_MODE) {
     setLoading(true);
-    setCommandResponse(null);
+
+    // שלב ביניים – נראה "חושב"
+    setCommandResponse("🤖 Analyzing client data...");
 
     setTimeout(() => {
       setCommandResponse(aiDemoResponses.personal);
       setLoading(false);
       setCommandText("");
-    }, 700);
+    }, 900);
 
     return;
   }
@@ -332,6 +334,7 @@ const AiPartnerTab = ({
   chat,
   remainingQuestions,
 ]);
+
 
 
   const approveSuggestion = useCallback(
