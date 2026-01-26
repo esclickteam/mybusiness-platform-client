@@ -16,18 +16,7 @@ function getDemoStatus(client) {
   return client?.status || "Active";
 }
 
-function getDemoInsight(client) {
-  if (!client) return null;
 
-  switch (client.status) {
-    case "Lead":
-      return "Client showed interest but hasn’t booked yet. Follow-up recommended.";
-    case "VIP":
-      return "High-value client. Consider offering a premium package.";
-    default:
-      return "Client is active. No immediate action required.";
-  }
-}
 
 export default function CRMCustomerFile({
   client,
