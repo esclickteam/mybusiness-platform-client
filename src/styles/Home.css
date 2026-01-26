@@ -72,7 +72,7 @@
 /* ===== Hero Wrap (Unified Background) ===== */
 .hero-wrap {
   background: #ffffff;
-  padding-bottom: 50px;
+  padding-bottom: 96px;
 }
 
 
@@ -940,8 +940,6 @@ section.faq-mini .faq-item::before {
   .scroll-story {
     margin-top: 12px;      /* היה 80 */
     padding-top: 64px;     /* היה 120 */
-    padding-bottom: 64px; /* שיהיה סימטרי */
-    gap: 56px;             /* היה 140 */
   }
 }
 
@@ -981,5 +979,81 @@ section.faq-mini .faq-item::before {
 @media (max-width: 768px) {
   .scroll-story {
     background: transparent !important;
+  }
+}
+
+/* =========================
+   📱 MOBILE UX RHYTHM – FINAL
+   ========================= */
+@media (max-width: 768px) {
+
+  /* 🎯 קצב ריווח אחיד */
+  :root {
+    --m-section: 64px;
+    --m-block: 32px;
+    --m-tight: 16px;
+  }
+
+  /* כל הסקשנים אותו ריווח */
+  .home-page section {
+    padding: var(--m-section) 16px !important;
+  }
+
+  /* Hero */
+  .hero {
+    padding-top: var(--m-section) !important;
+    padding-bottom: var(--m-section) !important;
+  }
+
+  /* Video */
+  .video-showcase {
+    margin-top: 0 !important;
+    padding-bottom: var(--m-section) !important;
+  }
+
+  /* Scroll story */
+  .scroll-story {
+    padding-top: var(--m-section) !important;
+    padding-bottom: var(--m-section) !important;
+    margin-top: 0 !important;
+    gap: var(--m-section) !important;
+  }
+
+  /* כל step */
+  .step {
+    margin: 0 !important;
+  }
+
+  .step-with-visual {
+    gap: var(--m-block) !important;
+  }
+
+  /* תמונה */
+  .step-visual {
+    margin-bottom: var(--m-block) !important;
+  }
+
+  /* טקסט */
+  .step-content h3,
+  .step-content-center h3 {
+    margin-bottom: var(--m-tight) !important;
+  }
+
+  .step-content p,
+  .step-content-center p {
+    margin-bottom: var(--m-block) !important;
+  }
+
+  /* Why / FAQ / CTA */
+  .why,
+  section.faq-mini,
+  .final-cta-compact {
+    padding-top: var(--m-section) !important;
+    padding-bottom: var(--m-section) !important;
+  }
+
+  /* כפתורים */
+  .hero-actions {
+    gap: var(--m-tight) !important;
   }
 }
