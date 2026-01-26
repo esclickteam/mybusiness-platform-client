@@ -1,4 +1,4 @@
-import React, {
+ import React, {
   useEffect,
   useState,
   useRef,
@@ -18,9 +18,11 @@ import DashboardSkeleton from "../../../components/DashboardSkeleton";
 import UpgradeOfferCard from "../../../components/UpgradeOfferCard";
 import useAiInsights from "@/hooks/useAiInsights";
 import AiInsightsPanel from "@/components/AiInsightsPanel";
+import dashboardDemoStats from "@/demo/dashboardDemoStats";
 
 
 
+const DEMO_MODE = true; // ⛔️ false אחרי הצילום
 
 
 /*************************
@@ -275,27 +277,40 @@ const shouldShowEarlyBirdModal =
 
   /* fetch stats */
   const loadStats = async () => {
-    if (!businessId) return;
-    setLoading(true);
-    setError(null);
+  if (!businessId) return;
 
-    const cached = localStorage.getItem("dashboardStats");
-    if (cached) setStats(JSON.parse(cached));
+  // 🎬 DEMO MODE — for video / screenshots
+  if (DEMO_MODE) {
+    setStats(dashboardDemoStats);
+    localStorage.setItem(
+      "dashboardStats",
+      JSON.stringify(dashboardDemoStats)
+    );
+    return; // ⛔️ עוצר פה — לא API, לא sockets
+  }
 
-    try {
-      const data = await fetchDashboardStats(businessId, refreshAccessToken);
-      setStats(data);
-      localStorage.setItem("dashboardStats", JSON.stringify(data));
-    } catch (err) {
-      setError("❌ Error loading data from server.");
-      if (err.message === "No token") logout();
-    } finally {
-      setLoading(false);
-    }
-  };
+  // ===== Production logic =====
+  setLoading(true);
+  setError(null);
+
+  const cached = localStorage.getItem("dashboardStats");
+  if (cached) setStats(JSON.parse(cached));
+
+  try {
+    const data = await fetchDashboardStats(businessId, refreshAccessToken);
+    setStats(data);
+    localStorage.setItem("dashboardStats", JSON.stringify(data));
+  } catch (err) {
+    setError("❌ Error loading data from server.");
+    if (err.message === "No token") logout();
+  } finally {
+    setLoading(false);
+  }
+};
 
   /* refresh appointments on server notification */
   const refreshAppointmentsFromAPI = useCallback(async () => {
+    if (DEMO_MODE) return;
     if (!businessId) return;
     try {
       const appts = await fetchAppointments(businessId, refreshAccessToken);
@@ -311,6 +326,7 @@ const shouldShowEarlyBirdModal =
 
   /* socket lifecycle */
   useEffect(() => {
+  if (DEMO_MODE) return; // ⛔️ אין סוקט בדמו
   if (!initialized || !businessId) return;
 
   let isMounted = true;
@@ -472,8 +488,11 @@ sock.on("newReview", (reviewData) => {
   };
 
   loadStats();
+
+if (!DEMO_MODE) {
   refreshAppointmentsFromAPI();
   setupSocket();
+}
 
   return () => {
     isMounted = false;
