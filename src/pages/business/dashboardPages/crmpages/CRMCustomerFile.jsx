@@ -63,10 +63,7 @@ export default function CRMCustomerFile({
     [client]
   );
 
-  const aiInsight = useMemo(
-    () => (DEMO_MODE ? getDemoInsight(client) : null),
-    [client]
-  );
+ 
 
   /* =========================
      FETCH CUSTOMER FILE
