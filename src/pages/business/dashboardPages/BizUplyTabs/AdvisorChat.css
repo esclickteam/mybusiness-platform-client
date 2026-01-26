@@ -373,3 +373,11 @@
   margin: 0 auto;         /* ✅ ביטחון */
   text-align: left;       /* ✅ נשאר LTR */
 }
+
+@media (max-width: 640px) {
+  .advisor-chat-container {
+    flex: 0 0 auto;        /* ❌ לא תופס גובה מסך */
+    min-height: auto;
+    overflow: visible;     /* ✅ מאפשר גלילה של הדף */
+  }
+}
