@@ -1241,7 +1241,7 @@ section.faq-mini .faq-item::before {
   /* 2️⃣ לבטל את הגובה הקשיח */
   .step-center .step-visual {
     width: 100% !important;
-    height: auto !important;        /* 🔥 זה העיקר */
+    height: auto !important;         /* 🔥 זה העיקר */
     max-height: none !important;
     margin: 0 !important;
   }
@@ -1260,7 +1260,7 @@ section.faq-mini .faq-item::before {
   /* 4️⃣ לבטל “אוויר” פנימי */
   .step-center .visual-card {
     padding: 0 !important;
-    margin-top: -6px !important;
+    margin-top: -60px !important;
   }
 }
 
