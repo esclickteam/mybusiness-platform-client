@@ -19,6 +19,8 @@ import UpgradeOfferCard from "../../../components/UpgradeOfferCard";
 import useAiInsights from "@/hooks/useAiInsights";
 import AiInsightsPanel from "@/components/AiInsightsPanel";
 import dashboardDemoStats from "@/demo/dashboardDemoStats";
+import dashboardDemoInsights from "@/demo/dashboardDemoInsights";
+
 
 
 
@@ -161,7 +163,14 @@ const today = useMemo(
   const [error, setError] = useState(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState(false);
 
-const { insights, loading: insightsLoading } = useAiInsights(businessId);
+const {
+  insights: realInsights,
+  loading: insightsLoading,
+} = useAiInsights(businessId);
+
+const insights = DEMO_MODE
+  ? dashboardDemoInsights.slice(0, 2) // לא להציף
+  : realInsights;
 
 /* =========================
    🎁 Early Bird Logic
@@ -684,7 +693,7 @@ if (isRefreshingUser) {
 )}
 
 {/* 🔮 AI INSIGHTS — Action Center */}
-<section className="dp-section">
+ <section className="dp-section">
   <AiInsightsPanel
     insights={insights}
     loading={insightsLoading}
