@@ -882,3 +882,27 @@ section.faq-mini .faq-item::before {
   box-shadow: none !important;
   border: none !important;
 }
+
+@media (max-width: 768px) {
+  .step-visual {
+    order: -1;
+    width: 100%;
+    min-height: 280px;
+
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .visual-card {
+    width: 100%;
+    height: 100%;          /* ⬅️ זה החסר */
+  }
+
+  .step-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;     /* עכשיו זה באמת עובד */
+    object-position: center;
+  }
+}
