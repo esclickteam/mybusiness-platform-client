@@ -838,7 +838,7 @@ section.faq-mini .faq-answer p {
 /* ✅ Business Page – make image column bigger */
 .step-with-visual.step-business-page {
   grid-template-columns: 1.35fr 0.65fr; /* תמונה גדולה, טקסט קטן יותר */
-  gap: 15px;
+  gap: 10px;
 }
 
 /* ✅ Business Page – bigger image */
