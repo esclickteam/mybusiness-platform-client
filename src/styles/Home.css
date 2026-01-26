@@ -858,31 +858,32 @@ section.faq-mini .faq-item::before {
   border: none !important;
 }
 
+
 @media (max-width: 768px) {
   .step-with-visual {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 32px;
   }
 
   .step-visual {
-    order: -1;
+    order: -1;              /* תמונה מעל הטקסט */
     width: 100%;
-    min-height: 280px;
-
+    height: auto;           /* 🔥 אין גובה קשיח */
+    min-height: unset;      /* 🔥 חשוב */
     display: flex;
-    align-items: stretch;
-    justify-content: stretch;
+    align-items: center;
+    justify-content: center;
   }
 
   .visual-card {
     width: 100%;
-    height: 100%;
+    height: auto;           /* 🔥 */
   }
 
   .step-visual img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;           /* 🔥 שומר יחס */
+    object-fit: contain;    /* 🔥 לא נחתך */
     object-position: center;
   }
 
