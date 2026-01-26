@@ -72,18 +72,19 @@
 ========================= */
 .tab-content {
   padding: 1.5rem;
+  padding-bottom: 2rem;          /* ✅ במקום margin-bottom */
   background: #ffffff;
   border-radius: 12px;
   max-width: 900px;
-  margin: 0 auto 2rem;
+  margin: 0 auto;                /* ✅ הוסר 2rem */
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
   direction: rtl;
 
-  display: flex;           /* 🔥 */
-  flex-direction: column;  /* 🔥 */
-  flex: 1;                 /* 🔥 */
-  min-height: 0;           /* 🔥 */
-  overflow: hidden;        /* 🔥 במקום visible */
+  display: flex;                 /* 🔥 */
+  flex-direction: column;        /* 🔥 */
+  flex: 1;                       /* 🔥 */
+  min-height: 0;                 /* 🔥 */
+  overflow: hidden;              /* 🔥 */
 }
 
 /* =========================
