@@ -233,7 +233,8 @@ export default function BusinessDashboardLayout() {
                 )}
 
                 <div className="hello-line">
-                  Hello, {user?.businessName || user?.name}
+                    Hello, {DEMO_MODE ? "John Miller" : user?.businessName || user?.name}
+
                 </div>
 
                 {/* ✅ בדסקטופ נשאר כמו שהיה */}
