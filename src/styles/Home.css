@@ -966,13 +966,9 @@ section.faq-mini .faq-item::before {
 
 @media (max-width: 768px) {
   .step-ai {
-    background: linear-gradient(
-      180deg,
-      #F8FAFC 0%,
-      #EEF2FF 100%
-    );
-    padding: 48px 16px;
-    border-radius: 24px;
+    background: transparent;   /* 🔑 */
+    padding: 48px 16px;        /* ריווח, לא רקע */
+    margin: 0;
   }
 }
 
