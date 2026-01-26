@@ -205,7 +205,9 @@
 
 @media (max-width: 768px) {
   .BizUply-container {
-    padding: 18px 12px; /* ✅ פחות “ענק” במובייל */
+    padding: 18px 12px;   /* ✅ פחות “ענק” במובייל */
+    flex: 1;              /* ✅ שומר על גובה בתוך flex */
+    min-height: 0;        /* ✅ קריטי לגלילה במובייל */
   }
 
   /* ✅ טאבים כמו Segmented Control קומפקטי */
