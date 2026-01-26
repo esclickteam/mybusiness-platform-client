@@ -294,17 +294,75 @@
 
 @media (max-width: 640px) {
   .advisor-chat-container {
-    padding: 16px;
+    padding: 14px;
+    gap: 12px;
   }
 
-  .bubble {
-    max-width: 95%;
+  .advisor-top h2 {
+    font-size: 1.35rem;
+  }
+
+  .advisor-top .subtitle {
+    font-size: 0.9rem;
+    max-width: 92%;
+  }
+
+  .question-balance {
+    font-size: 13px;
+    padding: 8px 14px;
+    margin: 10px 0 14px;
+  }
+
+  /* ✅ במובייל: כרטיסים בשורה אחת (לא 2–4) */
+  .preset-questions-container {
+    grid-template-columns: 1fr;   /* ⭐ הכי חשוב */
+    max-width: 100%;
+    gap: 10px;
+  }
+
+  .preset-card {
+    padding: 14px;
+    font-size: 0.95rem;
+    border-radius: 14px;
   }
 
   .chat-box {
-    padding: 16px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .bubble {
+    max-width: 100%;
+  }
+
+  /* ✅ input + button מתחת אחד לשני */
+  .chat-input {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .chat-input input {
+    padding: 14px 14px;
+    border-radius: 14px;
+  }
+
+  .chat-input button {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+  }
+
+  /* pre-chat פחות גבוה במובייל */
+  .chat-box.pre-chat {
+    min-height: 120px;
+    max-height: 160px;
+  }
+
+  .chat-box.pre-chat .bubble.assistant:first-child {
+    max-width: 100%;
   }
 }
+
 
 
 /* Center ONLY the first assistant bubble before chat starts */

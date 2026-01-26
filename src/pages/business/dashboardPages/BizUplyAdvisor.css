@@ -202,22 +202,32 @@
 /* =========================
    Responsive
 ========================= */
+
 @media (max-width: 768px) {
   .BizUply-container {
-    padding: 1.5rem 1rem;
+    padding: 18px 12px; /* ✅ פחות “ענק” במובייל */
   }
 
+  /* ✅ טאבים כמו Segmented Control קומפקטי */
   .tab-buttons {
+    display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-bottom: 16px;
   }
 
   .tab-buttons button {
     width: 100%;
-    padding: 12px 0;
+    padding: 14px 14px;     /* ✅ נוח לאצבע */
+    border-radius: 18px;
+    font-size: 1rem;
+    line-height: 1.2;
   }
 
+  /* ✅ לא להחזיר padding לכאן */
   .tab-content {
     padding: 0;
+    max-width: none;
+    margin: 0;
   }
 }
