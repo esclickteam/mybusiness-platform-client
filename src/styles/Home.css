@@ -963,3 +963,23 @@ section.faq-mini .faq-item::before {
     max-height: 380px; /* היה 340 — תרגישי חופשי 360–420 */
   }
 }
+
+
+/* =========================
+   MOBILE – Bigger images
+========================= */
+@media (max-width: 768px) {
+  .step-visual {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    padding: 0 12px; /* נותן תחושת רוחב בלי לגעת בקצוות */
+  }
+
+  .step-visual img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
+  }
+}
