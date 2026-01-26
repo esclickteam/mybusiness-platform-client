@@ -254,10 +254,10 @@
     position: relative;
   }
 
-  .dashboard-content > div {
-    flex: 1 1 auto;   /* ✅ מאפשר גדילה */
-    min-height: 0;    /* 🔥 חובה ל-flex */
-  }
+  .dashboard-content > div.chat-page {
+  min-height: 0;
+  flex: 1 1 auto;
+}
 
   .BizUply-container {
     flex: 0 0 auto;

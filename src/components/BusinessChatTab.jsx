@@ -224,7 +224,8 @@ export default function BusinessChatTab({
 --------------------------------------------------- */
   if (!businessId) {
     return (
-      <div className="chat-container business">
+        <div className="chat-container business chat-page">
+
         <div className="loading">Loading chat...</div>
       </div>
     );
