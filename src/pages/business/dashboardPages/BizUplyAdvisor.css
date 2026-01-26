@@ -162,8 +162,24 @@
   max-width: 80%;
   word-break: break-word;
   overflow-wrap: break-word;
-  direction: rtl;
+
+  direction: ltr;          /* ✅ אמריקאים */
+  text-align: left;        /* ✅ */
+  unicode-bidi: plaintext; /* ✅ מונע בלבול פיסוק */
 }
+
+.bubble ul,
+.bubble ol {
+  direction: ltr;
+  text-align: left;
+  padding-left: 18px;
+  margin: 8px 0 0;
+}
+
+.bubble li {
+  margin: 6px 0;
+}
+
 
 .bubble.user {
   background-color: #e0d9ff;
@@ -194,6 +210,6 @@
   }
 
   .tab-content {
-    padding: 1rem;
+    padding: 0;
   }
 }
