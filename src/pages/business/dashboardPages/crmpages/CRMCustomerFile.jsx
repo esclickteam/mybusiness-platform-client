@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import API from "@api";
 import { useQueryClient } from "@tanstack/react-query";
 import "./CRMCustomerProfile.css";
+import dashboardDemoAppointmentsByClient from "@/demo/dashboardDemoAppointmentsByClient";
 
 // Components
 import ClientTasksAndNotes from "../../../../components/CRM/ClientTasksAndNotes";
@@ -82,32 +83,42 @@ export default function CRMCustomerFile({
      FETCH CUSTOMER FILE
   ========================= */
   useEffect(() => {
-    if (DEMO_MODE || !client?._id || !businessId || isNew) return;
+  if (DEMO_MODE && client?._id) {
+    setCustomerData({
+      appointments:
+        dashboardDemoAppointmentsByClient[client._id] || [],
+    });
+    return;
+  }
 
-    const fetchCustomerFile = async () => {
-      setLoading(true);
-      setError(null);
+  const fetchCustomerFile = async () => {
+    setLoading(true);
+    setError(null);
 
-      try {
-        const res = await API.get(`/crm-customer/${client._id}`, {
-          params: { businessId },
-        });
+    try {
+      const res = await API.get(`/crm-customer/${client._id}`, {
+        params: { businessId },
+      });
 
-        setCustomerData({
-          appointments: Array.isArray(res.data?.appointments)
-            ? res.data.appointments
-            : [],
-        });
-      } catch (err) {
-        console.error("❌ Error loading customer file:", err);
-        setError("Failed to load customer data");
-      } finally {
-        setLoading(false);
-      }
-    };
+      setCustomerData({
+        appointments: Array.isArray(res.data?.appointments)
+          ? res.data.appointments
+          : [],
+      });
+    } catch (err) {
+      console.error("❌ Error loading customer file:", err);
+      setCustomerData({ appointments: [] });
+      setError("Failed to load customer data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  if (client?._id && businessId && !isNew) {
     fetchCustomerFile();
-  }, [client?._id, businessId, isNew]);
+  }
+}, [client?._id, businessId, isNew]);
+
 
   /* =========================
      RENDER
