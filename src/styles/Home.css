@@ -977,3 +977,9 @@ section.faq-mini .faq-item::before {
     margin-bottom: 0; /* ❗ */
   }
 }
+
+@media (max-width: 768px) {
+  .scroll-story {
+    background: transparent !important;
+  }
+}
