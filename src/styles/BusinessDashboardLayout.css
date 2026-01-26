@@ -586,8 +586,7 @@
   height: calc(100dvh - 56px);       /* ✅ iPhone safe */
   display: flex;
   flex-direction: column;
-
-  overflow: hidden;                  /* ✅ לא גוללים כאן */
+  overflow-y: auto;                   /* ✅ לא גוללים כאן */
   /* overflow-x: hidden;  לא חובה כשיש overflow:hidden */
   /* -webkit-overflow-scrolling: touch; לא רלוונטי כשאין גלילה פה */
   overscroll-behavior: contain;
@@ -597,9 +596,7 @@ html, body {
   overflow-y: auto;
 }
 
-.app-scroll-area {
-  overflow: hidden;
-}
+
 
 
 
