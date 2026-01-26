@@ -940,6 +940,8 @@ section.faq-mini .faq-item::before {
   .scroll-story {
     margin-top: 12px;      /* היה 80 */
     padding-top: 64px;     /* היה 120 */
+    padding-bottom: 64px; /* שיהיה סימטרי */
+    gap: 56px;             /* היה 140 */
   }
 }
 
