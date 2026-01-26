@@ -71,8 +71,8 @@
 
 /* ===== Hero Wrap (Unified Background) ===== */
 .hero-wrap {
-  background: var(--hero-bg);
-  overflow: hidden;
+  background: #ffffff;
+  padding-bottom: 96px;
 }
 
 
@@ -150,10 +150,11 @@
   max-width: 1280px;
   margin: 0 auto;
 
-  overflow: visible;
+  overflow: hidden;    /* ✅ */
+
 
   /* Notion-style: הווידאו קובע יחס */
-  aspect-ratio: auto;
+  aspect-ratio: 2560 / 1600;
 
   /* רקע “חכם” במקום שחור */
   background:
@@ -173,7 +174,7 @@
   width: 100%;
   height: auto;
   display: block;
-   object-fit: cover;
+  object-fit: contain;
 
   margin: 0 auto; /* יישור מושלם */
 }
