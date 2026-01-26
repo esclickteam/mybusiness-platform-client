@@ -122,6 +122,8 @@ const DashboardPage = () => {
   } = useAuth();
   const { businessId } = useParams();
 
+  
+
  
   /* 🎨 הפעלה מיידית של ה־theme לעסקים */
   useEffect(() => {
@@ -277,16 +279,16 @@ const shouldShowEarlyBirdModal =
 
   /* fetch stats */
   const loadStats = async () => {
-  if (!businessId) return;
+  if (!DEMO_MODE && !businessId) return;
 
-  // 🎬 DEMO MODE — for video / screenshots
+  // 🎬 DEMO MODE
   if (DEMO_MODE) {
     setStats(dashboardDemoStats);
     localStorage.setItem(
       "dashboardStats",
       JSON.stringify(dashboardDemoStats)
     );
-    return; // ⛔️ עוצר פה — לא API, לא sockets
+    return;
   }
 
   // ===== Production logic =====
@@ -308,6 +310,14 @@ const shouldShowEarlyBirdModal =
   }
 };
 
+/* 🚀 LOAD STATS ON MOUNT / BUSINESS CHANGE */
+useEffect(() => {
+  loadStats(); // ✅ עכשיו זה במקום הנכון
+}, [businessId]);
+
+
+
+
   /* refresh appointments on server notification */
   const refreshAppointmentsFromAPI = useCallback(async () => {
     if (DEMO_MODE) return;
@@ -326,7 +336,7 @@ const shouldShowEarlyBirdModal =
 
   /* socket lifecycle */
   useEffect(() => {
-  if (DEMO_MODE) return; // ⛔️ אין סוקט בדמו
+    if (DEMO_MODE) return; 
   if (!initialized || !businessId) return;
 
   let isMounted = true;
@@ -487,7 +497,6 @@ sock.on("newReview", (reviewData) => {
 
   };
 
-  loadStats();
 
 if (!DEMO_MODE) {
   refreshAppointmentsFromAPI();
