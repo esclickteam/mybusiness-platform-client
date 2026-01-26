@@ -19,6 +19,7 @@ export default function ScrollStory() {
           <div className="step-visual">
             <div className="visual-card">
               <img
+                className="img-business-page"
                 src="/images/dashboard-preview-v3.png"
                 alt="Business dashboard preview"
                 loading="lazy"
@@ -34,21 +35,18 @@ export default function ScrollStory() {
           IMAGE LEFT | TEXT RIGHT
       ============================== */}
       <div className="step step-left">
-  <div className="step-inner step-with-visual step-business-page">
-    <div className="step-visual">
-      <div className="visual-card">
-
-        <img
-  className="img-business-page"
-  src="/images/business-page-v4.png"
-  alt="Business page preview"
-  loading="lazy"
-  decoding="async"
-/>
-
-      </div>
-    </div>
-
+        <div className="step-inner step-with-visual step-business-page">
+          <div className="step-visual">
+            <div className="visual-card">
+              <img
+                className="img-business-page"
+                src="/images/business-page-v4.png"
+                alt="Business page preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
 
           <div className="step-content">
             <span className="step-label">PLATFORM</span>
@@ -65,29 +63,30 @@ export default function ScrollStory() {
           Step 2 – Collaborations
           TEXT LEFT | IMAGE RIGHT
       ============================== */}
-     <div className="step step-right">
-  <div className="step-inner step-with-visual">
-    <div className="step-content">
-      <span className="step-label">WORK TOGETHER</span>
-      <h3>Collaborations</h3>
-      <p>
-        Work with partners and other businesses — messages, proposals and
-        shared activity.
-      </p>
-    </div>
+      <div className="step step-right">
+        <div className="step-inner step-with-visual">
+          <div className="step-content">
+            <span className="step-label">WORK TOGETHER</span>
+            <h3>Collaborations</h3>
+            <p>
+              Work with partners and other businesses — messages, proposals and
+              shared activity.
+            </p>
+          </div>
 
-    <div className="step-visual">
-      <div className="visual-card">
-        <img
-          src="/images/collaborations-v11.png"
-          alt="Collaborations preview"
-          loading="lazy"
-          decoding="async"
-        />
+          <div className="step-visual">
+            <div className="visual-card">
+              <img
+                className="img-business-page"
+                src="/images/collaborations-v11.png"
+                alt="Collaborations preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
 
       {/* =============================
           Step 3 – CRM
@@ -98,6 +97,7 @@ export default function ScrollStory() {
           <div className="step-visual">
             <div className="visual-card">
               <img
+                className="img-business-page"
                 src="/images/crm-preview-v2.png"
                 alt="CRM preview"
                 loading="lazy"
@@ -122,30 +122,29 @@ export default function ScrollStory() {
           TEXT LEFT | IMAGE RIGHT
       ============================== */}
       <div className="step step-right step-ai">
-  <div className="step-inner step-with-visual">
-    <div className="step-content">
-      <span className="step-label">GROW SMART</span>
-      <h3>AI that works for you</h3>
-      <p>
-        Get smart recommendations, automated follow-ups and insights that
-        help you decide what to do next — faster and better.
-      </p>
-    </div>
+        <div className="step-inner step-with-visual">
+          <div className="step-content">
+            <span className="step-label">GROW SMART</span>
+            <h3>AI that works for you</h3>
+            <p>
+              Get smart recommendations, automated follow-ups and insights that
+              help you decide what to do next — faster and better.
+            </p>
+          </div>
 
-    <div className="step-visual">
-      <div className="visual-card">
-        <img
-          src="/images/ai-preview.png"
-          alt="AI assistant preview"
-          loading="lazy"
-          decoding="async"
-        />
+          <div className="step-visual">
+            <div className="visual-card">
+              <img
+                className="img-business-page"
+                src="/images/ai-preview.png"
+                alt="AI assistant preview"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
-
-
     </section>
   );
 }
