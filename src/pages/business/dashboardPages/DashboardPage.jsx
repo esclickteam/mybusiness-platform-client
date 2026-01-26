@@ -146,7 +146,13 @@ const DashboardPage = () => {
   const location = useLocation();
 
   /* state */
-  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+const today = useMemo(
+  () =>
+    DEMO_MODE
+      ? "2025-01-26"
+      : new Date().toISOString().split("T")[0],
+  []
+);
   const [selectedDate, setSelectedDate] = useState(today);
   const [alert, setAlert] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
@@ -771,6 +777,7 @@ if (isRefreshingUser) {
                   appointments={enrichedAppointments}
                   onDateClick={setSelectedDate}
                   selectedDate={selectedDate}
+                  demoMode={DEMO_MODE}
                 />
               </Suspense>
             </div>
