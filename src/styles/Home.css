@@ -1223,3 +1223,44 @@ section.faq-mini .faq-item::before {
   }
 }
 
+
+/* =========================
+   📱 OVERVIEW / STEP-CENTER – MOBILE FIX
+   ========================= */
+@media (max-width: 768px) {
+
+  /* 1️⃣ להפוך את ה-step-center לעמודה נקייה */
+  .step-center .step-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* 2️⃣ לבטל את הגובה הקשיח */
+  .step-center .step-visual {
+    width: 100% !important;
+    height: auto !important;        /* 🔥 זה העיקר */
+    max-height: none !important;
+    margin: 0 !important;
+  }
+
+  /* 3️⃣ לשלוט בגובה התמונה עצמה */
+  .step-center .step-visual img,
+  .step-center .img-business-page {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 260px !important;   /* תכווני: 220–300 */
+    object-fit: contain !important;
+    display: block;
+    margin: 0 auto !important;
+  }
+
+  /* 4️⃣ לבטל “אוויר” פנימי */
+  .step-center .visual-card {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+
