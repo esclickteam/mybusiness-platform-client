@@ -1260,7 +1260,7 @@ section.faq-mini .faq-item::before {
   /* 4️⃣ לבטל “אוויר” פנימי */
   .step-center .visual-card {
     padding: 0 !important;
-    margin: 0 !important;
+    margin-top: -6px !important;
   }
 }
 
