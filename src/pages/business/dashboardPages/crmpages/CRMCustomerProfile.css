@@ -211,3 +211,35 @@
 .primary:hover {
   box-shadow: 0 14px 30px rgba(94, 23, 235, 0.45);
 }
+
+
+.client-badge {
+  margin-left: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.client-badge.vip {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.client-badge.lead {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.client-badge.active {
+  background: #ecfeff;
+  color: #0369a1;
+}
+
+.ai-insight {
+  margin: 14px 0 18px;
+  padding: 12px 16px;
+  background: linear-gradient(90deg, #f5f3ff, #faf5ff);
+  border-radius: 14px;
+  font-size: 14px;
+}
