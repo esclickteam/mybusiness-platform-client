@@ -32,7 +32,7 @@ body {
 
   /* ✅ גלילה טבעית */
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: auto;   /* ⭐ במקום overflow: hidden */
 
   font-family: "Poppins", "Arial", sans-serif;
   direction: ltr;
@@ -85,8 +85,7 @@ body {
   display: flex;
   flex-direction: column;
 
-  overflow-y: auto;           /* ✅ כאן הגלילה הכללית */
-  overflow-x: hidden;
+  overflow: hidden;           /* ✅ אין גלילה כאן */
 }
 
 
