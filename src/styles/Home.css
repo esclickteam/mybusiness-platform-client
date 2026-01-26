@@ -984,32 +984,24 @@ section.faq-mini .faq-item::before {
 
 @media (max-width: 768px) {
   .home-page section {
-    padding: 56px 16px !important;
+    padding: 48px 16px; /* היה 96px */
   }
 }
 
 @media (max-width: 768px) {
   .scroll-story {
-    gap: 64px !important;
+    gap: 56px;        /* היה 140 */
+    padding-top: 56px;
+    padding-bottom: 56px;
   }
 }
 
 @media (max-width: 768px) {
-  .step {
-    margin-bottom: 0 !important;
-  }
-}
-
-
-@media (max-width: 768px) {
-  .hero {
-    padding-top: 96px;
-    padding-bottom: 120px;
+  .scroll-story h3 {
+    margin-bottom: 10px; /* היה 16+ */
   }
 
-  .scroll-story {
-    padding-top: 48px;
-    padding-bottom: 48px;
+  .scroll-story p {
     margin-top: 0;
   }
 }
