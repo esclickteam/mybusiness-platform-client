@@ -21,12 +21,11 @@ const MarketingAdvisorTab = ({
   const abortControllerRef = useRef(null);
 
   const presetQuestions = [
-    "How to get more leads for my business?",
-    "How to build a monthly marketing plan?",
-    "What’s the difference between paid and organic campaigns?",
-    "How to improve conversion rates on my website?",
-    "Which social network should I focus on?",
-  ];
+  "How can I get more leads this month?",
+  "How should I increase conversions?",
+  "Where should I focus my marketing budget?",
+  "Which channel will bring results fastest?",
+];
 
   /* =========================
      LOAD REMAINING QUESTIONS
@@ -185,87 +184,97 @@ const MarketingAdvisorTab = ({
       chatContainerRef.current.scrollHeight;
   }, [messages]);
 
-  /* =========================
+
+    /* =========================
      RENDER
   ========================= */
   return (
     <div className="advisor-chat-container">
-      <h2>AI Marketing Advisor</h2>
-      <p className="subtitle">
-        Get clear, actionable advice to grow your audience and increase conversions.
-      </p>
+      {/* ===== TOP (STATIC CONTENT) ===== */}
+      <div className="advisor-top">
+        <h2>AI Marketing Advisor</h2>
 
-      {remainingQuestions !== null && (
-        <p className="question-balance">
-  <span>You have </span>
-  <strong>{remainingQuestions}</strong>
-  <span> AI questions remaining this month.</span>
-</p>
-      )}
+        <p className="subtitle">
+          Get clear, actionable advice to grow your audience and increase conversions.
+        </p>
 
-      {!startedChat && (
-        <>
-          <div className="preset-questions-container">
-            {presetQuestions.map((q, i) => (
-              <div
-                key={i}
-                className="preset-card"
-                onClick={() => handlePresetQuestion(q)}
-              >
-                {q}
-              </div>
-            ))}
-          </div>
-          <hr />
-        </>
-      )}
+        {remainingQuestions !== null && (
+          <p className="question-balance">
+            <span>You have </span>
+            <strong>{remainingQuestions}</strong>
+            <span> AI questions remaining this month.</span>
+          </p>
+        )}
 
-      <div className="chat-box-wrapper">
-        <div className="chat-box" ref={chatContainerRef}>
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`bubble ${msg.role}`}>
-              {msg.role === "assistant" ? (
-                <Markdown>{msg.content}</Markdown>
-              ) : (
-                msg.content
-              )}
+        {!startedChat && (
+          <>
+            <div className="preset-questions-container">
+              {presetQuestions.map((q, i) => (
+                <div
+                  key={i}
+                  className="preset-card"
+                  onClick={() => handlePresetQuestion(q)}
+                >
+                  {q}
+                </div>
+              ))}
             </div>
-          ))}
-
-          {loading && (
-            <div className="bubble assistant typing">
-              AI is analyzing your marketing question…
-            </div>
-          )}
-        </div>
+            <hr />
+          </>
+        )}
       </div>
 
-      <div className="chat-input">
-        <input
-          type="text"
-          placeholder="e.g. How can I get more leads with a small budget?"
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          disabled={
-            loading ||
-            (remainingQuestions !== null && remainingQuestions <= 0)
-          }
-        />
+      {/* ===== CHAT AREA (FLEX ZONE) ===== */}
+      <div className="advisor-chat-area">
+        <div className="chat-box-wrapper">
+          <div
+            className={`chat-box ${!startedChat ? "pre-chat" : ""}`}
+            ref={chatContainerRef}
+          >
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`bubble ${msg.role}`}>
+                {msg.role === "assistant" ? (
+                  <Markdown>{msg.content}</Markdown>
+                ) : (
+                  msg.content
+                )}
+              </div>
+            ))}
 
-        <button
-          onClick={handleSubmit}
-          disabled={
-            loading ||
-            !userInput.trim() ||
-            (remainingQuestions !== null && remainingQuestions <= 0)
-          }
-        >
-          Send
-        </button>
+            {loading && (
+              <div className="bubble assistant typing">
+                AI is analyzing your marketing question…
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="chat-input">
+          <input
+            type="text"
+            placeholder="e.g. How can I get more leads with a small budget?"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+            disabled={loading || (remainingQuestions !== null && remainingQuestions <= 0)}
+          />
+
+          <button
+            onClick={handleSubmit}
+            disabled={
+              loading ||
+              !userInput.trim() ||
+              (remainingQuestions !== null && remainingQuestions <= 0)
+            }
+          >
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );
+
+
 };
 
 export default MarketingAdvisorTab;
