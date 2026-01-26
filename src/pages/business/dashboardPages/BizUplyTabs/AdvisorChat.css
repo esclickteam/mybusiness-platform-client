@@ -22,11 +22,30 @@
 }
 
 /* =========================
-   Top Static Area
+   Advisor Top – CENTERED UX
 ========================= */
 
 .advisor-top {
-  flex-shrink: 0;           /* 🔥 */
+  text-align: center;
+  display: flex;            /* ✅ חסר */
+  flex-direction: column;   /* ✅ */
+  align-items: center;      /* ✅ עכשיו עובד */
+}
+
+.advisor-top h2 {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.advisor-top .subtitle {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 720px;       /* ⭐ קריא, לא רחב מדי */
+}
+
+.advisor-top .question-balance {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* =========================
@@ -84,6 +103,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 12px;
+
+  width: 100%;
+  max-width: 1000px;        /* ✅ נראות SaaS */
+  margin: 0 auto;           /* ✅ מרכז */
 }
 
 .preset-card {
