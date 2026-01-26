@@ -296,6 +296,11 @@
   .advisor-chat-container {
     padding: 14px;
     gap: 12px;
+
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .advisor-top h2 {
