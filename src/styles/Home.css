@@ -963,3 +963,15 @@ section.faq-mini .faq-item::before {
     max-height: 380px; /* היה 340 — תרגישי חופשי 360–420 */
   }
 }
+
+@media (max-width: 768px) {
+  .step-ai {
+    background: linear-gradient(
+      180deg,
+      #F8FAFC 0%,
+      #EEF2FF 100%
+    );
+    padding: 48px 16px;
+    border-radius: 24px;
+  }
+}
