@@ -208,10 +208,12 @@
   }
 
   /* אזור הצ׳אט חייב לתפוס את כל שאר הגובה */
-  .chatArea {
+   .chatArea {
     flex: 1;
-    min-height: 0;
-    overflow: hidden;
+    min-height: 0;     /* 🔥 חובה ל-flex */
+    overflow: hidden; /* מונע גלילה כפולה */
+    display: flex;
+    flex-direction: column;
   }
 
   .messageList {
