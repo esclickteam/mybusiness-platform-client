@@ -255,8 +255,8 @@
   }
 
   .dashboard-content > div {
-    flex: 0 0 auto;
-    min-height: auto;
+    flex: 1 1 auto;   /* ✅ מאפשר גדילה */
+    min-height: 0;    /* 🔥 חובה ל-flex */
   }
 
   .BizUply-container {
