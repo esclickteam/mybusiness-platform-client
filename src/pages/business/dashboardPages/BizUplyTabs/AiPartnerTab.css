@@ -51,6 +51,11 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: none;
+
+  display: block;       /* ✅ */
+  width: fit-content;   /* ✅ */
+  max-width: 100%;      /* ✅ */
+  margin: 12px auto;    /* ✅ מרכז */
 }
 
 .toggle-suggestions-btn:hover {
