@@ -983,47 +983,114 @@ section.faq-mini .faq-item::before {
 }
 
 /* =========================
-   📱 MOBILE – FORCE UX RHYTHM
+   📱 MOBILE – CLEAN & MINIMAL
    ========================= */
 @media (max-width: 768px) {
 
-  /* 🔒 משתנים */
+  /* 🔹 Mobile rhythm tokens */
   :root {
     --m-section: 64px;
     --m-block: 32px;
     --m-tight: 16px;
   }
 
-  /* ===== FORCE SECTIONS ===== */
+  /* =========================
+     GLOBAL RESET
+     ========================= */
+  * {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* =========================
+     SECTIONS
+     ========================= */
   .hero,
   .video-showcase,
   .scroll-story,
   .why,
   section.faq-mini,
   .final-cta-compact {
-    padding-top: var(--m-section) !important;
-    padding-bottom: var(--m-section) !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-  }
-
-  /* ===== FORCE STEPS ===== */
-  .step,
-  .step-ai {
+    padding: var(--m-section) 16px !important;
     margin: 0 !important;
+    background: transparent !important;
   }
 
-  .step-with-visual {
-    gap: var(--m-block) !important;
+  /* =========================
+     HERO
+     ========================= */
+  .hero {
+    text-align: center;
   }
 
-  /* ===== IMAGE ↔ TEXT ===== */
-  .step-visual {
+  .hero h1 {
+    font-size: 34px;
+    line-height: 1.15;
+    margin-bottom: var(--m-tight) !important;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
     margin-bottom: var(--m-block) !important;
   }
 
-  /* ===== TEXT RHYTHM ===== */
-  h1, h2, h3 {
+  .hero-actions {
+    flex-direction: column;
+    gap: var(--m-tight) !important;
+  }
+
+  .btn-primary {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  /* =========================
+     VIDEO
+     ========================= */
+  .video-showcase {
+    padding-top: 0 !important;
+  }
+
+  .video-frame {
+    aspect-ratio: 16 / 10;
+  }
+
+  /* =========================
+     SCROLL STORY
+     ========================= */
+  .scroll-story {
+    gap: var(--m-section) !important;
+  }
+
+  .step-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center;
+    text-align: center;
+  }
+
+  .step-with-visual {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--m-block) !important;
+  }
+
+  .step-visual {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .step-visual img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* =========================
+     TEXT
+     ========================= */
+  h2, h3 {
     margin-bottom: var(--m-tight) !important;
   }
 
@@ -1031,8 +1098,17 @@ section.faq-mini .faq-item::before {
     margin-bottom: var(--m-block) !important;
   }
 
-  /* ===== HERO BUTTONS ===== */
-  .hero-actions {
-    gap: var(--m-tight) !important;
+  /* =========================
+     FAQ
+     ========================= */
+  section.faq-mini .faq-question {
+    padding: 20px 0 !important;
+  }
+
+  /* =========================
+     FINAL CTA
+     ========================= */
+  .final-cta-headline {
+    font-size: 28px;
   }
 }
