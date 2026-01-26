@@ -677,16 +677,14 @@ if (isRefreshingUser) {
 
 
  
-{shouldShowEarlyBirdModal && (
+{!DEMO_MODE && shouldShowEarlyBirdModal && (
   <UpgradeOfferCard
     expiresAt={user?.earlyBirdExpiresAt}
     onUpgrade={handleEarlyBirdUpgrade}
     onClose={async () => {
-      
-
       try {
         await API.post("/users/mark-earlybird-modal-seen");
-        await refreshUser(); // 🔑 מפיל את התנאי
+        await refreshUser();
       } catch {}
     }}
   />
