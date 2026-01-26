@@ -71,12 +71,13 @@
 
 /* ===== Hero Wrap (Unified Background) ===== */
 .hero-wrap {
-  background: linear-gradient(
-    180deg,
-    var(--hero-bg-start) 0%,
-    var(--hero-bg-mid) 45%,
-    var(--hero-bg-end) 100%
-  );
+  background:
+    radial-gradient(
+      1200px 600px at 50% -200px,
+      rgba(91, 76, 245, 0.12),
+      transparent 60%
+    ),
+    var(--bg-soft);
 
   overflow: hidden;
 }
@@ -104,7 +105,7 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 24px;
-  color: var(--text-on-dark-main);
+  color: var(--text-main);
 }
 
 .hero-accent {
@@ -121,7 +122,7 @@
 .hero-subtitle {
   font-size: 19px;        /* ⬅️ הגדלה ברורה */
   line-height: 1.6;       /* קריא ונושם */
-  color: var(--text-on-dark-muted);
+  color: var(--text-muted);
   max-width: 760px;       /* יותר רחב – כמו בדוגמה */
   margin: 0 auto 40px;
   opacity: 0.95;
@@ -137,7 +138,8 @@
 .hero-note {
   margin-top: 20px;
   font-size: 13px;
-  color: rgba(224, 242, 254, 0.8);
+  color: rgba(15, 23, 42, 0.55);
+
 }
 
 .hero-content {
@@ -147,31 +149,29 @@
 
 /* ===== Video Showcase ===== */
 .video-showcase {
-  margin-top: -180px; /* חיבור טבעי יותר ל-Hero */
-  padding: 0 24px 180px;
+  margin-top: -200px;          /* חיבור יפה להירו */
+  padding: 0;                  /* ❌ בלי ריווח לבן */
 }
 
 .video-frame {
-  max-width: 1280px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;             /* ❌ לא מוגבל */
+  margin: 0;
 
-  border-radius: 28px;
-  overflow: hidden;
+  border-radius: 0;            /* ❌ בלי עיגול */
+  background: transparent;     /* ❌ בלי שחור */
+  box-shadow: none;            /* ❌ בלי צל */
 
-  background: #0f172a;
-  box-shadow:
-    0 40px 120px rgba(15, 23, 42, 0.35);
-
-  /* 🔑 זה הקסם */
-  aspect-ratio: 16 / 9;
+  aspect-ratio: auto;          /* ❌ לא מסך בתוך מסך */
 }
 
 .video-frame video {
-  width: 100%;
-  height: 100%;
-  display: block;
+  width: 100vw;                /* 🔥 מסך מלא */
+  max-width: 100%;
+  height: auto;
 
-  object-fit: cover; /* ❗ לא contain */
+  display: block;
+  object-fit: cover;           /* ממלא יפה */
 }
 
 
