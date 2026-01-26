@@ -277,8 +277,8 @@
 }
 
 .chat-box.pre-chat {
-  min-height: 180px;
-  max-height: 220px;
+  min-height: 140px;
+  max-height: 180px;
 }
 
 
@@ -298,4 +298,14 @@
   .chat-box {
     padding: 16px;
   }
+}
+
+
+/* Center ONLY the first assistant bubble before chat starts */
+.chat-box.pre-chat .bubble.assistant:first-child {
+  align-self: center;     /* ✅ במקום flex-start */
+  max-width: 720px;       /* ✅ רוחב קריא */
+  width: 100%;            /* ✅ נראה כמו Welcome card */
+  margin: 0 auto;         /* ✅ ביטחון */
+  text-align: left;       /* ✅ נשאר LTR */
 }
