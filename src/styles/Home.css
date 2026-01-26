@@ -975,3 +975,9 @@ section.faq-mini .faq-item::before {
     border-radius: 24px;
   }
 }
+
+@media (max-width: 768px) {
+  .step-ai {
+    margin-bottom: 0; /* ❗ */
+  }
+}
