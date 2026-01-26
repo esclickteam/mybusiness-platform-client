@@ -2,9 +2,11 @@ import { Link } from "react-router-dom";
 
 export default function HeroSection() {
   return (
-    <section className="hero">
-      <div className="hero-inner">
-        {/* 🔹 TEXT CONTENT */}
+    <>
+      {/* =========================
+          HERO (TEXT ONLY)
+      ========================= */}
+      <section className="hero">
         <div className="hero-content">
           <h1>
             Run your business.
@@ -27,19 +29,22 @@ export default function HeroSection() {
             14-day free trial · No credit card required · Cancel anytime
           </p>
         </div>
+      </section>
 
-        {/* 🎬 VIDEO DEMO */}
-        <div className="hero-video-wrapper">
+      {/* =========================
+          VIDEO SHOWCASE (BIG)
+      ========================= */}
+      <section className="video-showcase">
+        <div className="video-frame">
           <video
-            className="hero-video"
-            src="/bizuply-demo.mp4"
+            src="/hero-demo.mp4"   // ⬅️ נמצא בתיקיית public
             autoPlay
             muted
             loop
             playsInline
           />
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
