@@ -783,21 +783,37 @@ section.faq-mini .faq-answer p {
   }
 
   .step-visual {
-    order: -1;           /* תמונה מעל הטקסט */
-    width: 100%;         /* רוחב מלא */
-    height: auto;        /* שחרור הגובה הקבוע */
+    order: -1;
+    width: 100%;
+    height: auto;
+
+    min-height: 260px;   /* 🔥 זה החסר הקריטי */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+
+
 
   .step-visual img {
     width: 100%;
-    height: auto;        /* במובייל כן */
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;   /* 🔥 במקום contain */
+    transform: none;     /* ❗ לבטל scaleים */
   }
 
   .step-content {
     text-align: center;
   }
 }
+
+@media (max-width: 768px) {
+  .visual-card {
+    width: 100%;
+    min-height: 260px;
+  }
+}
+
 
 
 
@@ -848,7 +864,7 @@ section.faq-mini .faq-answer p {
 
   object-fit: cover;      /* 🔥 ממלא את הקונטיינר */
   object-position: center;
-  transform: scale(1.40); /* ✨ מילוי עדין, בלי לפגוע */
+  transform: scale(1.15); /* ✨ מילוי עדין, בלי לפגוע */
 }
 
 /* FORCE FAQ TITLE TO BLACK – FINAL */
@@ -882,3 +898,5 @@ section.faq-mini .faq-item::before {
   box-shadow: none !important;
   border: none !important;
 }
+
+
