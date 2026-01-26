@@ -923,3 +923,19 @@ section.faq-mini .faq-item::before {
     order: 2 !important;
   }
 }
+
+@media (max-width: 768px) {
+  .hero {
+    padding-bottom: 120px; /* היה 260 */
+  }
+
+  .video-showcase {
+    margin-top: -80px;     /* היה -180 */
+    padding-bottom: 72px;  /* היה 180 */
+  }
+
+  .scroll-story {
+    margin-top: 24px;      /* היה 80 */
+    padding-top: 64px;     /* היה 120 */
+  }
+}
