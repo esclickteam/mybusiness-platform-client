@@ -775,30 +775,6 @@ section.faq-mini .faq-answer p {
 }
 
 
-/* ✅ Mobile: cancel huge min-height so it won't feel broken */
-@media (max-width: 768px) {
-  .step-with-visual {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .step-visual {
-    order: -1;           /* תמונה מעל הטקסט */
-    width: 100%;         /* רוחב מלא */
-    height: auto;        /* שחרור הגובה הקבוע */
-  }
-
-  .step-visual img {
-    width: 100%;
-    height: auto;        /* במובייל כן */
-    object-fit: contain;
-  }
-
-  .step-content {
-    text-align: center;
-  }
-}
-
 
 
 @media (max-width: 768px) {
@@ -834,11 +810,20 @@ section.faq-mini .faq-answer p {
 
 
 
+/* ✅ Business Page – bigger image */
+@media (min-width: 769px) {
+  .step-with-visual.step-business-page {
+    grid-template-columns: 1.35fr 0.65fr;
+    gap: 88px;
+  }
 
-/* ✅ Business Page – make image column bigger */
-.step-with-visual.step-business-page {
-  grid-template-columns: 1.35fr 0.65fr; /* תמונה גדולה, טקסט קטן יותר */
-  gap: 10px;
+  .step-with-visual.step-business-page .step-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transform: scale(1.40);
+  }
 }
 
 
@@ -876,9 +861,48 @@ section.faq-mini .faq-item::before {
 }
 
 @media (max-width: 768px) {
-  /* AI image – behave like dashboard */
-  .step-ai .visual-card {
-    transform: none;
-    box-shadow: none;
+  .step-with-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* 🔒 מבטל grid אם נשאר על האלמנט */
+  .step-with-visual {
+    grid-template-columns: none !important;
+  }
+
+  /* מבטל כל reverse */
+  .step-right .step-with-visual {
+    flex-direction: column;
+  }
+
+ .step-visual {
+  order: -1;
+  width: 100% !important;
+  height: auto !important;
+  margin: 0 !important;
+}
+
+  .step-visual img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .step-content {
+    text-align: center;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .step-with-visual.step-business-page .step-visual img {
+    transform: none !important;
+    object-fit: contain !important;
+  }
+
+  .step-right .step-visual {
+    margin-right: 0 !important;
   }
 }
