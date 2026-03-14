@@ -54,7 +54,7 @@ export default function UpgradeOfferCard({
           ×
         </button>
 
-        <span className="offer-badge">🎁 Limited-time</span>
+        <span className="offer-badge">🎁 Limited-time offer</span>
 
         {/* ⭐ Price highlight */}
         <h2 className="offer-title">
@@ -72,16 +72,16 @@ export default function UpgradeOfferCard({
         )}
 
         <p className="offer-desc">
-          Unlock <strong>BizUply</strong> automations, CRM & AI tools.
+          Unlock <strong>BizUply</strong> automations, CRM, messaging and AI tools.
           <br />
-          Early upgrade pricing — no commitment.
+          Special early access pricing — no commitment.
         </p>
 
         <p className="offer-note">
           Then <strong>$149/month</strong>. Cancel anytime.
         </p>
 
-        {/* ✅ כפתור Upgrade */}
+        {/* ✅ Upgrade button */}
         <button
           type="button"
           className="offer-upgrade-btn"
@@ -94,6 +94,7 @@ export default function UpgradeOfferCard({
         <p className="offer-footer">
           Your trial stays active • No obligation
         </p>
+
       </div>
     </div>
   );

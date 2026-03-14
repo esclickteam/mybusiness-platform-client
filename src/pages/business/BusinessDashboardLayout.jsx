@@ -174,14 +174,12 @@ export default function BusinessDashboardLayout() {
 
   if (loading) return null;
 
-  /* ============================
-     🎨 Layout
-  ============================ */
   return (
     <BusinessServicesProvider>
       <AiProvider>
         <div className={`ltr-wrapper ${showSidebar ? "sidebar-open" : ""}`}>
           <div className="business-dashboard-layout">
+
             {/* ================= Sidebar ================= */}
             {(!isMobile || showSidebar) && (
               <aside
@@ -217,12 +215,11 @@ export default function BusinessDashboardLayout() {
             {/* ================= Header ================= */}
             <header className="dashboard-layout-header">
               <div className="dashboard-layout-header-left">
-                {/* ✅ MOBILE: כפתור המבורגר בתוך ההידר + לחיצה חוזרת סוגרת */}
+
                 {isMobile && (
                   <button
                     type="button"
                     className="header-hamburger-btn"
-                    aria-label={showSidebar ? "Close menu" : "Open menu"}
                     onClick={() => setShowSidebar((v) => !v)}
                   >
                     {showSidebar ? <FaTimes /> : <FaBars />}
@@ -233,7 +230,6 @@ export default function BusinessDashboardLayout() {
                   Hello, {user?.businessName || user?.name}
                 </div>
 
-                {/* ✅ בדסקטופ נשאר כמו שהיה */}
                 {!isMobile && isTrialActive && (
                   <div className="trial-status">
                     ⏳{" "}
@@ -257,10 +253,11 @@ export default function BusinessDashboardLayout() {
                 )}
               </div>
 
-              {/* ✅ רק רספונסיביות: EarlyBird לא מוצג במובייל */}
+              {/* ================= Early Bird Banner ================= */}
               {!isMobile && canShowEarlyBird && (
                 <div className="dashboard-layout-header-center">
                   <div className="earlybird-header-banner">
+
                     {timeLeft && (
                       <div className="earlybird-timer">
                         ⏳ Ending in <strong>{timeLeft}</strong>
@@ -269,10 +266,11 @@ export default function BusinessDashboardLayout() {
 
                     <div className="earlybird-text">
                       <span className="earlybird-badge">🎁 Early Bird</span>
+
                       <span className="earlybird-main">
-                        Save <strong>$20</strong> today — first month only
-                        <span className="price"> $99</span>
-                        <span className="old-price"> $119</span>
+                        Save <strong>$30</strong> today — first month only
+                        <span className="price"> $119</span>
+                        <span className="old-price"> $149</span>
                       </span>
                     </div>
 
@@ -291,7 +289,6 @@ export default function BusinessDashboardLayout() {
                   <FacebookStyleNotifications />
                 </div>
 
-                {/* ✅ במובייל logout כבר קיים בפוטר של הסיידבר, אז לא מכפילים */}
                 {!isMobile && (
                   <button className="header-action-btn" onClick={handleLogout}>
                     Logout
@@ -304,6 +301,7 @@ export default function BusinessDashboardLayout() {
             <main className="dashboard-content">
               <Outlet />
             </main>
+
           </div>
         </div>
       </AiProvider>
