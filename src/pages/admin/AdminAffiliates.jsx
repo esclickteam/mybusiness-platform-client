@@ -101,18 +101,6 @@ function AdminAffiliates() {
           />
         </label>
 
-        <label>
-          Unique ID (affiliateId)*:
-          <input
-            type="text"
-            name="affiliateId"
-            value={form.affiliateId}
-            onChange={handleChange}
-            required
-            placeholder="e.g., yael123"
-            autoComplete="off"
-          />
-        </label>
 
         <label>
           Password*:
