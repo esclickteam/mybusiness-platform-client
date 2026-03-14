@@ -291,7 +291,16 @@ navigate("/dashboard", { replace: true });
       document.body.style.background =
         "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
 
-      refreshUser(true).catch(() => {});
+      refreshUser(true).then((freshUser) => {
+  if (freshUser) {
+    localStorage.setItem(
+      "businessDetails",
+      JSON.stringify(freshUser)
+    );
+    setUser(freshUser);
+  }
+}).catch(() => {});
+
 
       /* ⭐️⭐️⭐️ NEW — PRIORITY REDIRECT FROM URL ⭐️⭐️⭐️ */
       const urlRedirect = new URLSearchParams(window.location.search).get("redirect");
