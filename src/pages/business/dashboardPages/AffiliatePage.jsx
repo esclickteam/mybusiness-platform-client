@@ -3,272 +3,326 @@ import API from "@api";
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
 
-/**
- * AffiliatePage – Full updated version
- */
 const AffiliatePage = () => {
-  // States
-  const [affiliateId, setAffiliateId]     = useState(null);
-  const [businessId, setBusinessId]       = useState(null);
-  const [referralCode, setReferralCode]   = useState(null);
-  const [marketerBusiness, setMarketerBusiness] = useState(null);
-  const [currentBalance, setCurrentBalance]     = useState(0);
 
-  const [allStats, setAllStats]         = useState([]);
+  const [affiliateId, setAffiliateId] = useState(null);
+  const [referralCode, setReferralCode] = useState(null);
+  const [currentBalance, setCurrentBalance] = useState(0);
+
+  const [allStats, setAllStats] = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
-  const [errorStats, setErrorStats]     = useState(null);
+  const [errorStats, setErrorStats] = useState(null);
 
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawStatus, setWithdrawStatus] = useState(null);
-  const [receiptFile, setReceiptFile]       = useState(null);
-  const [withdrawalId, setWithdrawalId]     = useState(null);
 
   const [showBankForm, setShowBankForm] = useState(false);
 
-  // Total commissions that have not been paid at all
-  const totalUnpaidCommissions = allStats
-    .filter((s) => s.paymentStatus !== "paid")
-    .reduce((sum, s) =>
-      sum + ((s.totalCommissions || 0) - (s.paidCommissions || 0))
-    , 0);
+  // ⭐ NEW CLIENT FORM
+  const [clientBusinessName, setClientBusinessName] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
 
-  // 1) Fetch business details + referral code
+  const [clientStatus, setClientStatus] = useState(null);
+  const [paymentLink, setPaymentLink] = useState(null);
+
+  // ----------------------------------------------------
+  // Load affiliate data
+  // ----------------------------------------------------
+
   useEffect(() => {
     (async () => {
       try {
         const { data } = await API.get("/business/my");
         const business = data.business;
-        const marketer = data.marketerBusiness || null;
 
-        setBusinessId(business._id);
-        setReferralCode(business.referralCode || null);
-        // 👉 Change: affiliateId = the business itself
         setAffiliateId(business._id);
-        setMarketerBusiness(marketer);
-        // We did not update currentBalance here
+        setReferralCode(business.referralCode || null);
       } catch {
         setErrorStats("Failed to retrieve business details");
       }
     })();
   }, []);
 
-  // 2) Load statistics when affiliateId is ready
+  // ----------------------------------------------------
+  // Load statistics
+  // ----------------------------------------------------
+
   useEffect(() => {
     if (!affiliateId) return;
+
     (async () => {
       try {
         setLoadingStats(true);
+
         const { data } = await API.get("/affiliate/stats/all", {
-          params: { affiliateId },
+          params: { affiliateId }
         });
+
         setAllStats(data.stats || []);
-        // 👉 Get updated currentBalance from the API
-        setCurrentBalance(data.currentBalance);
+        setCurrentBalance(data.currentBalance || 0);
         setErrorStats(null);
+
       } catch {
         setErrorStats("Error loading data");
       } finally {
         setLoadingStats(false);
       }
     })();
+
   }, [affiliateId]);
 
-  // 💸 Withdrawal request
+  // ----------------------------------------------------
+  // CREATE CLIENT + PAYMENT LINK
+  // ----------------------------------------------------
+
+  const handleCreateClient = async () => {
+
+    if (!clientBusinessName || !clientName || !clientEmail || !clientPhone) {
+      return alert("Please fill all fields");
+    }
+
+    try {
+
+      const { data } = await API.post("/affiliate/create-client", {
+        affiliateId,
+        businessName: clientBusinessName,
+        contactName: clientName,
+        email: clientEmail,
+        phone: clientPhone
+      });
+
+      setPaymentLink(data.paymentLink);
+      setClientStatus("Client created successfully. Invite email sent.");
+
+      // reset form
+      setClientBusinessName("");
+      setClientName("");
+      setClientEmail("");
+      setClientPhone("");
+
+    } catch (err) {
+      alert(err.response?.data?.message || "Error creating client");
+    }
+  };
+
+  // ----------------------------------------------------
+  // WITHDRAWAL
+  // ----------------------------------------------------
+
   const handleWithdrawRequest = async () => {
+
     const amount = Number(withdrawAmount);
+
     if (isNaN(amount) || amount < 200) {
       return alert("Minimum withdrawal amount is $200");
     }
+
     if (amount > currentBalance) {
       return alert("Withdrawal amount exceeds available balance");
     }
 
     try {
+
       const { data } = await API.post("/affiliate/request-withdrawal", {
         affiliateId,
-        amount,
+        amount
       });
+
       setWithdrawStatus(data.message || "Withdrawal request received.");
-      setWithdrawalId(data.withdrawalId || null);
-      // The API no longer returns currentBalance here, but we can assume it will refresh
+
     } catch (err) {
       alert(err.response?.data?.message || "Error submitting withdrawal request");
     }
   };
 
-  // 📤 Receipt upload
-  const handleReceiptUpload = async (e) => {
-    e.preventDefault();
-    if (!receiptFile) return alert("Please choose a receipt file");
+  // ----------------------------------------------------
+  // Affiliate link
+  // ----------------------------------------------------
 
-    try {
-      const fd = new FormData();
-      fd.append("receipt", receiptFile);
-      fd.append("affiliateId", affiliateId);
-      if (withdrawalId) fd.append("withdrawalId", withdrawalId);
-
-      const { data } = await API.post("/affiliate/upload-receipt", fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      alert(data.message || "Receipt uploaded successfully");
-      setWithdrawStatus("Receipt uploaded and pending approval.");
-      setReceiptFile(null);
-      setWithdrawalId(null);
-    } catch (err) {
-      alert(err.response?.data?.message || "Error uploading receipt");
-    }
-  };
-
-  // 🔗 Personal link
   const affiliateLink = referralCode
     ? `${window.location.origin}/register?ref=${referralCode}`
     : "";
 
+  // ----------------------------------------------------
+  // UI
+  // ----------------------------------------------------
+
   return (
     <div className="affiliate-page">
-      <h1>Affiliate Program</h1>
-      <p>Here you can track referrals, commissions, and income from your affiliate program.</p>
 
-      {/* 🔗 Personal link */}
+      <h1>Affiliate Program</h1>
+
+      {/* -------------------------------------------------- */}
+      {/* PERSONAL LINK */}
+      {/* -------------------------------------------------- */}
+
       <section className="affiliate-section">
+
         <h2>🎯 Your Personal Affiliate Link</h2>
+
         <input
           type="text"
           value={affiliateLink}
           readOnly
-          onClick={(e) => e.target.select()}
           className="affiliate-link-input"
         />
+
         <button
-          onClick={() =>
-            referralCode && navigator.clipboard.writeText(affiliateLink)
-          }
-          disabled={!referralCode}
+          onClick={() => navigator.clipboard.writeText(affiliateLink)}
         >
-          📋 Copy Link
+          Copy Link
         </button>
-        {!referralCode && (
-          <p style={{ color: "red", marginTop: 8 }}>No referral code detected.</p>
-        )}
+
       </section>
 
-      {/* 🏷️ Marketer details */}
-      {marketerBusiness && (
-        <section className="marketer-business">
-          <h2>Marketer Business:</h2>
-          <p>
-            Marketer business name: <strong>{marketerBusiness.businessName}</strong>
-          </p>
-        </section>
-      )}
+      {/* -------------------------------------------------- */}
+      {/* CREATE CLIENT */}
+      {/* -------------------------------------------------- */}
 
-      {/* 📊 Statistics table */}
+      <section className="create-client-section">
+
+        <h2>Create New Client</h2>
+
+        <input
+          type="text"
+          placeholder="Business Name"
+          value={clientBusinessName}
+          onChange={(e) => setClientBusinessName(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="Contact Name"
+          value={clientName}
+          onChange={(e) => setClientName(e.target.value)}
+        />
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={clientEmail}
+          onChange={(e) => setClientEmail(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="Phone"
+          value={clientPhone}
+          onChange={(e) => setClientPhone(e.target.value)}
+        />
+
+        <button onClick={handleCreateClient}>
+          Create Client & Payment Link
+        </button>
+
+        {clientStatus && (
+          <p className="success">{clientStatus}</p>
+        )}
+
+        {paymentLink && (
+          <div className="payment-link-box">
+            <p>Payment link:</p>
+            <input value={paymentLink} readOnly />
+            <button onClick={() => navigator.clipboard.writeText(paymentLink)}>
+              Copy Link
+            </button>
+          </div>
+        )}
+
+      </section>
+
+      {/* -------------------------------------------------- */}
+      {/* STATS */}
+      {/* -------------------------------------------------- */}
+
       <section className="affiliate-stats">
-        <h2>📊 Statistics for All Months</h2>
-        {loadingStats && <p>Loading data...</p>}
-        {errorStats && <p className="error">{errorStats}</p>}
-        {!loadingStats && allStats.length === 0 && <p>No data to display.</p>}
-        {allStats.length > 0 && (
+
+        <h2>Statistics</h2>
+
+        {loadingStats && <p>Loading...</p>}
+        {errorStats && <p>{errorStats}</p>}
+
+        {!loadingStats && allStats.length > 0 && (
+
           <table className="stats-table">
+
             <thead>
               <tr>
                 <th>Month</th>
                 <th>Purchases</th>
-                <th>Paid ($)</th>
-                <th>Unpaid ($)</th>
-                <th>Payment Status</th>
+                <th>Paid</th>
+                <th>Unpaid</th>
               </tr>
             </thead>
+
             <tbody>
+
               {allStats.map((s, i) => {
-                const paid   = s.paidCommissions || 0;
+
+                const paid = s.paidCommissions || 0;
                 const unpaid = (s.totalCommissions || 0) - paid;
+
                 return (
-                  <tr key={s.month || i}>
-                    <td>{s.month || "-"}</td>
-                    <td>{s.purchases || 0}</td>
+                  <tr key={i}>
+                    <td>{s.month}</td>
+                    <td>{s.purchases}</td>
                     <td>${paid.toFixed(2)}</td>
                     <td>${unpaid.toFixed(2)}</td>
-                    <td
-                      className={
-                        s.paymentStatus === "paid"
-                          ? "paid"
-                          : s.paymentStatus === "no-data"
-                            ? "no-data"
-                            : "unpaid"
-                      }
-                    >
-                      {s.paymentStatus === "paid"
-                        ? "Paid ✅"
-                        : s.paymentStatus === "no-data"
-                          ? "No data"
-                          : "Pending"}
-                    </td>
                   </tr>
                 );
+
               })}
+
             </tbody>
+
           </table>
+
         )}
+
       </section>
 
-      {/* 💵 Payment actions */}
+      {/* -------------------------------------------------- */}
+      {/* WITHDRAW */}
+      {/* -------------------------------------------------- */}
+
       <section className="affiliate-bank-section">
-        <h2>💵 Payment Actions</h2>
+
+        <h2>Withdraw Balance</h2>
+
         <p>
-          Your available balance for withdrawal: <strong>${currentBalance.toFixed(2)}</strong>
+          Available balance: <b>${currentBalance.toFixed(2)}</b>
         </p>
 
-        {currentBalance < 200 ? (
-          <p style={{ color: "red", fontWeight: "bold" }}>
-            Minimum withdrawal amount is $200.
-          </p>
-        ) : (
-          <>
-            <input
-              type="number"
-              min="200"
-              max={currentBalance}
-              value={withdrawAmount}
-              onChange={(e) => setWithdrawAmount(e.target.value)}
-              placeholder="Minimum withdrawal amount: $200"
-            />
-            <button
-              onClick={handleWithdrawRequest}
-              disabled={Number(withdrawAmount) < 200}
-            >
-              Request Withdrawal
-            </button>
-          </>
-        )}
-        {withdrawStatus && <p>{withdrawStatus}</p>}
+        <input
+          type="number"
+          value={withdrawAmount}
+          onChange={(e) => setWithdrawAmount(e.target.value)}
+          placeholder="Minimum $200"
+        />
 
-        {withdrawalId && (
-          <form className="receipt-upload-form" onSubmit={handleReceiptUpload}>
-            <label>Select receipt file (PDF or image):</label>
-            <input
-              type="file"
-              accept=".pdf,image/*"
-              onChange={(e) => setReceiptFile(e.target.files[0])}
-              required
-            />
-            <button type="submit">🚀 Upload Receipt</button>
-          </form>
-        )}
+        <button onClick={handleWithdrawRequest}>
+          Request Withdrawal
+        </button>
+
+        {withdrawStatus && <p>{withdrawStatus}</p>}
 
         <button
           className="payment-button"
-          onClick={() => setShowBankForm((prev) => !prev)}
+          onClick={() => setShowBankForm(!showBankForm)}
         >
-          ⚙️ Manage Bank Account Details
+          Manage Bank Details
         </button>
+
         {showBankForm && (
           <div className="bank-form-wrapper">
             <BankDetailsForm />
           </div>
         )}
+
       </section>
+
     </div>
   );
 };

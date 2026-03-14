@@ -7,6 +7,7 @@ import "react-phone-input-2/lib/style.css";
 import "../styles/Register.css";
 
 const Register = () => {
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,35 +19,69 @@ const Register = () => {
     referralCode: "",
   });
 
-   const [error, setError] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
   const [searchParams] = useSearchParams();
 
-  // ✅ שמירת קוד הפניה (referral) מה-URL
+  /*
+  -------------------------------------------------------
+  AFFILIATE REF TRACKING
+  -------------------------------------------------------
+  */
+
   useEffect(() => {
-    const ref = searchParams.get("ref");
-    if (ref) {
-      localStorage.setItem("affiliate_referral", ref);
-      setFormData((prev) => ({ ...prev, referralCode: ref }));
-    } else {
-      localStorage.removeItem("affiliate_referral");
-      setFormData((prev) => ({ ...prev, referralCode: "" }));
+
+    const refFromUrl = searchParams.get("ref");
+    const refFromStorage = localStorage.getItem("affiliate_referral");
+
+    if (refFromUrl) {
+
+      localStorage.setItem("affiliate_referral", refFromUrl);
+
+      setFormData(prev => ({
+        ...prev,
+        referralCode: refFromUrl
+      }));
+
+    } else if (refFromStorage) {
+
+      setFormData(prev => ({
+        ...prev,
+        referralCode: refFromStorage
+      }));
+
     }
+
   }, [searchParams]);
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
   };
 
-  // ✅ ולידציה בינלאומית לפי תקן E.164
+  /*
+  -------------------------------------------------------
+  PHONE VALIDATION (E.164)
+  -------------------------------------------------------
+  */
+
   const isValidPhone = (phone) => {
     const cleaned = phone.trim().replace(/\s|-/g, "");
     const regex = /^\+?[1-9]\d{7,14}$/;
     return regex.test(cleaned);
   };
 
+  /*
+  -------------------------------------------------------
+  REGISTER
+  -------------------------------------------------------
+  */
+
   const handleSubmit = async (e) => {
+
     e.preventDefault();
     setError("");
 
@@ -58,95 +93,138 @@ const Register = () => {
       confirmPassword,
       userType,
       businessName,
-      referralCode,
+      referralCode
     } = formData;
 
     if (!name || !email || !password || !confirmPassword) {
       setError("⚠️ Please fill in all required fields");
       return;
     }
+
     if (password !== confirmPassword) {
       setError("⚠️ Passwords do not match");
       return;
     }
 
     if (userType === "business") {
+
       if (!businessName.trim()) {
-        setError("⚠️ Please enter a business name to register as a business owner");
+        setError("⚠️ Please enter a business name");
         return;
       }
+
       if (!phone.trim()) {
-        setError("⚠️ Please enter a phone number to register as a business owner");
+        setError("⚠️ Please enter a phone number");
         return;
       }
+
       if (!isValidPhone(phone.trim())) {
-        setError(
-          "⚠️ Please enter a valid phone number (e.g., +1..., +972..., +44...)"
-        );
+        setError("⚠️ Please enter a valid phone number");
         return;
       }
+
     }
 
     try {
-      await API.post(
-        "/auth/register",
-        {
-          name: name.trim(),
-          email: email.trim().toLowerCase(),
-          phone: userType === "business" ? phone.trim() : "",
-          password,
-          userType,
-          businessName:
-            userType === "business" ? businessName.trim() : undefined,
-          referralCode:
-            userType === "business" ? referralCode || undefined : undefined,
-        },
-        { withCredentials: true }
+
+      await API.post("/auth/register",
+      {
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: userType === "business" ? phone.trim() : "",
+        password,
+        userType,
+        businessName: userType === "business"
+          ? businessName.trim()
+          : undefined,
+
+        referralCode: userType === "business"
+          ? referralCode || localStorage.getItem("affiliate_referral") || undefined
+          : undefined,
+
+      },
+      { withCredentials: true });
+
+      /*
+      -------------------------------------------------------
+      CLEAR AFFILIATE AFTER SUCCESS
+      -------------------------------------------------------
+      */
+
+      localStorage.removeItem("affiliate_referral");
+
+      /*
+      -------------------------------------------------------
+      AUTO LOGIN
+      -------------------------------------------------------
+      */
+
+      const { user } = await login(
+        email.trim().toLowerCase(),
+        password,
+        { skipRedirect: true }
       );
 
-      // ✅ Auto-login אחרי הרשמה
-      const { user } = await login(email.trim().toLowerCase(), password, {
-        skipRedirect: true,
-      });
-
-    
-
       if (!user) {
-        setError("❌ Failed to log in after registration, please try again");
+        setError("❌ Failed to log in after registration");
         return;
       }
 
-      // 🟣 Facebook Pixel Event - CompleteRegistration
-if (window.fbq && userType === "business") {
+      /*
+      -------------------------------------------------------
+      FACEBOOK PIXEL
+      -------------------------------------------------------
+      */
 
-  window.fbq("track", "CompleteRegistration");
-  console.log("✅ Facebook Pixel: CompleteRegistration sent");
-}
+      if (window.fbq && userType === "business") {
 
-      // ✅ הפניה לפי סוג המשתמש
+        window.fbq("track", "CompleteRegistration");
+
+        console.log("✅ Facebook Pixel: CompleteRegistration sent");
+
+      }
+
+      /*
+      -------------------------------------------------------
+      REDIRECT
+      -------------------------------------------------------
+      */
+
       if (userType === "business") {
         navigate("/dashboard");
       } else {
         navigate("/client/dashboard/search");
       }
+
     } catch (err) {
-      console.error("❌ Registration error:", err.response?.data || err.message);
+
+      console.error("Registration error:", err.response?.data || err.message);
+
       if (err.response?.status === 400) {
-        setError(err.response.data.error || "❌ Email is already registered");
-      } else if (err.response?.status === 401) {
-        setError("❌ Failed to log in after registration, please try again");
+        setError(err.response.data.error || "❌ Email already exists");
       } else {
         setError("❌ Unexpected error. Please try again later.");
       }
+
     }
+
   };
 
+  /*
+  -------------------------------------------------------
+  UI
+  -------------------------------------------------------
+  */
+
   return (
+
     <div className="register-container">
+
       <h2>Register</h2>
       <p>Select your account type and enter your details</p>
 
       <form onSubmit={handleSubmit}>
+
         <input
           type="text"
           name="name"
@@ -176,14 +254,17 @@ if (window.fbq && userType === "business") {
               required
             />
 
-            {/* ✅ Phone input with country flags - default US 🇺🇸 */}
             <div className="phone-input-wrapper">
+
               <PhoneInput
-                country={"us"} // 🇺🇸 ברירת מחדל
-                enableSearch={true}
+                country={"us"}
+                enableSearch
                 value={formData.phone}
                 onChange={(phone) =>
-                  setFormData((prev) => ({ ...prev, phone: `+${phone}` }))
+                  setFormData(prev => ({
+                    ...prev,
+                    phone: `+${phone}`
+                  }))
                 }
                 inputStyle={{
                   width: "100%",
@@ -193,20 +274,14 @@ if (window.fbq && userType === "business") {
                   paddingLeft: "48px",
                   fontSize: "16px",
                 }}
-                buttonStyle={{
-                  border: "none",
-                  backgroundColor: "transparent",
-                }}
-                dropdownStyle={{
-                  maxHeight: "200px",
-                }}
-                placeholder="Enter phone number"
               />
+
             </div>
           </>
         )}
 
         {formData.referralCode && (
+
           <input
             type="text"
             name="referralCode"
@@ -214,6 +289,7 @@ if (window.fbq && userType === "business") {
             readOnly
             placeholder="Referral Code"
           />
+
         )}
 
         <input
@@ -234,30 +310,30 @@ if (window.fbq && userType === "business") {
           required
         />
 
-        {/* ✅ בחירת סוג משתמש */}
         <div className="radio-container">
-          <div className="radio-option">
+
+          <label>
             <input
               type="radio"
-              id="customer"
               name="userType"
               value="customer"
               checked={formData.userType === "customer"}
               onChange={handleChange}
             />
-            <label htmlFor="customer">Register as Customer</label>
-          </div>
-          <div className="radio-option">
+            Register as Customer
+          </label>
+
+          <label>
             <input
               type="radio"
-              id="business"
               name="userType"
               value="business"
               checked={formData.userType === "business"}
               onChange={handleChange}
             />
-            <label htmlFor="business">Register as Business Owner</label>
-          </div>
+            Register as Business Owner
+          </label>
+
         </div>
 
         <button type="submit" className="register-button">
@@ -265,12 +341,15 @@ if (window.fbq && userType === "business") {
         </button>
 
         {error && <p className="error-message">{error}</p>}
+
       </form>
 
       <div className="login-link">
         Already have an account? <Link to="/login">Log in</Link>
       </div>
+
     </div>
+
   );
 };
 
