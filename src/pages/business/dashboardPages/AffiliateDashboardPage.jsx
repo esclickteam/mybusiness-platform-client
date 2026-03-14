@@ -26,12 +26,11 @@ export default function AffiliateDashboardPage() {
   const [copyStatus, setCopyStatus] = useState("");
 
   const inviteLink = useMemo(() => {
-  if (!user?.publicToken) return "";
-  return `${window.location.origin}/register?ref=${encodeURIComponent(
-    user.publicToken
-  )}`;
-}, [user?.publicToken]);
-
+    if (!user?.publicToken) return "";
+    return `${window.location.origin}/register?ref=${encodeURIComponent(
+      user.publicToken
+    )}`;
+  }, [user?.publicToken]);
 
   const showCopyStatus = (message) => {
     setCopyStatus(message);
@@ -58,7 +57,7 @@ export default function AffiliateDashboardPage() {
       setLoadingStats(true);
       setErrorStats(null);
 
-      const { data } = await API.get("/affiliate-marketer/dashboard", {
+      const { data } = await API.get("/affiliate/dashboard", {
         withCredentials: true,
       });
 
@@ -86,7 +85,7 @@ export default function AffiliateDashboardPage() {
   const updateBankDetails = async (bankDetails) => {
     try {
       const response = await API.put(
-        "/affiliate-marketer/marketers/bank-details",
+        "/affiliate/bank-details",
         bankDetails,
         { withCredentials: true }
       );
