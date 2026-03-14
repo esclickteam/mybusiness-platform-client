@@ -6,10 +6,12 @@ import MarketerBankDetailsForm from "./MarketerBankDetailsForm";
 
 export default function AffiliateDashboardPage() {
   const { user } = useAuth();
-  const affiliateId = user?.affiliateId;
 
   const [showBankForm, setShowBankForm] = useState(false);
+
   const [allStats, setAllStats] = useState([]);
+  const [clients, setClients] = useState([]);
+
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState(null);
 
@@ -46,6 +48,7 @@ export default function AffiliateDashboardPage() {
       });
 
       setAllStats(data.months || []);
+      setClients(data.clients || []);
       setCurrentBalance(data.balance || 0);
     } catch (err) {
       setErrorStats("Error loading data");
@@ -72,7 +75,14 @@ export default function AffiliateDashboardPage() {
 
       setPaymentLink(data.paymentLink);
 
-      alert("Client created successfully");
+      setNewClient({
+        businessName: "",
+        name: "",
+        email: "",
+        phone: "",
+      });
+
+      refreshStats();
     } catch (err) {
       console.error(err);
       alert("Error creating client");
@@ -103,6 +113,7 @@ export default function AffiliateDashboardPage() {
       <h1>Partner Dashboard</h1>
 
       {/* SUMMARY */}
+
       <section className="affiliate-stats-summary">
 
         <div className="stat-card">
@@ -123,6 +134,7 @@ export default function AffiliateDashboardPage() {
       </section>
 
       {/* CREATE CLIENT */}
+
       <section className="affiliate-section">
 
         <h2>Create New Client</h2>
@@ -180,6 +192,64 @@ export default function AffiliateDashboardPage() {
         )}
       </section>
 
+      {/* CLIENTS CREATED */}
+
+      <section className="affiliate-clients">
+
+        <h2>Your Clients</h2>
+
+        {clients.length === 0 && <p>No clients yet</p>}
+
+        {clients.length > 0 && (
+          <table className="stats-table">
+
+            <thead>
+              <tr>
+                <th>Business</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Commission</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              {clients.map((client) => (
+
+                <tr key={client._id}>
+
+                  <td>{client.businessName}</td>
+
+                  <td>{client.email}</td>
+
+                  <td>
+                    <span className={`status ${client.partnerStatus}`}>
+                      {client.partnerStatus}
+                    </span>
+                  </td>
+
+                  <td>
+                    {new Date(client.partnerCreatedAt).toLocaleDateString()}
+                  </td>
+
+                  <td>
+                    {client.partnerStatus === "active"
+                      ? "$23.80"
+                      : "$0"}
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+        )}
+
+      </section>
+
       {/* MONTHLY COMMISSIONS */}
 
       <section className="affiliate-stats">
@@ -202,13 +272,17 @@ export default function AffiliateDashboardPage() {
             </thead>
 
             <tbody>
+
               {allStats.map((stat) => (
+
                 <tr key={stat.month}>
                   <td>{stat.month}</td>
                   <td>{stat.users}</td>
                   <td>${stat.commission.toFixed(2)}</td>
                 </tr>
+
               ))}
+
             </tbody>
 
           </table>
@@ -235,7 +309,7 @@ export default function AffiliateDashboardPage() {
 
         {showBankForm && (
           <MarketerBankDetailsForm
-            affiliateId={affiliateId}
+            affiliateId={user?.affiliateId}
             onSubmit={updateBankDetails}
           />
         )}

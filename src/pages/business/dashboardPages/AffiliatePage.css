@@ -2,8 +2,8 @@
   max-width: 1100px;
   margin: auto;
   padding: 2.5rem 3rem;
-  direction: rtl;
-  text-align: right;
+  direction: ltr;
+  text-align: left;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #3a0ca3;
   background: #f6f2ff;
@@ -15,13 +15,15 @@
 .affiliate-page h1 {
   font-size: 2rem;
   margin-bottom: 2rem;
+  font-weight: 700;
 }
 
 /* SECTIONS */
 
 .affiliate-section,
 .affiliate-stats,
-.affiliate-bank-section {
+.affiliate-bank-section,
+.affiliate-clients {
   margin-top: 2rem;
   background: white;
   padding: 2rem;
@@ -128,6 +130,7 @@ button:disabled {
   color: white;
   padding: .8rem;
   font-size: .95rem;
+  text-align: center;
 }
 
 .stats-table td {
@@ -138,6 +141,30 @@ button:disabled {
 
 .stats-table tr:hover {
   background: #f5f2ff;
+}
+
+/* STATUS BADGES */
+
+.status {
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status.active {
+  background: #e7f9ed;
+  color: #1a8f3c;
+}
+
+.status.trial {
+  background: #fff6e6;
+  color: #d68c00;
+}
+
+.status.inactive {
+  background: #ffe7e7;
+  color: #c62828;
 }
 
 /* PAYMENT SECTION */
@@ -165,7 +192,8 @@ button:disabled {
 
   .affiliate-section,
   .affiliate-stats,
-  .affiliate-bank-section {
+  .affiliate-bank-section,
+  .affiliate-clients {
     padding: 1.5rem;
   }
 
