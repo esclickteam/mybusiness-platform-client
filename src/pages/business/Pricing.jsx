@@ -11,11 +11,12 @@ export default function Plans() {
   const { user } = useAuth();
 
   const plans = {
-    monthly: { price: 119, total: 119, save: 0 },
-    yearly: { price: 1190, total: 1190, save: 238 },
+    monthly: { price: 149, total: 149, save: 0 },
+    yearly: { price: 1490, total: 1490, save: 298 },
   };
 
   const { price, total, save } = plans[selectedPeriod];
+
   const API_BASE = import.meta.env.VITE_API_URL;
   const userId = user?._id || user?.userId || user?.id;
 
@@ -24,7 +25,6 @@ export default function Plans() {
     user?.subscriptionPlan === "trial" &&
     user?.subscriptionEnd &&
     new Date(user.subscriptionEnd) < now;
-
 
   /* ========================================
       🟦 STRIPE CHECKOUT
@@ -64,7 +64,6 @@ export default function Plans() {
     }
   };
 
-
   return (
     <div className="plans-page">
       <header className="plans-header">
@@ -102,6 +101,7 @@ export default function Plans() {
       <section className="plan-card-container">
         <div className="plan-card highlight">
           <h2>BizUply Professional Plan</h2>
+
           <p className="plan-desc">
             Access every BizUply feature — including your AI Partner, CRM,
             messaging, client reviews, and collaboration tools — all from one
@@ -133,14 +133,12 @@ export default function Plans() {
           ) : loading ? (
             <button className="plan-btn loading">Processing…</button>
           ) : (
-
             <button
-  className="plan-btn primary"
-  onClick={() => navigate("/register")}
->
-  Try Free for 14 Days
-</button>
-
+              className="plan-btn primary"
+              onClick={() => navigate("/register")}
+            >
+              Try Free for 14 Days
+            </button>
           )}
 
           <div className="summary-box">
@@ -148,6 +146,7 @@ export default function Plans() {
               <span>Total to pay:</span>
               <strong>${total}</strong>
             </div>
+
             {save > 0 && (
               <div className="summary-row save">
                 <span>You save:</span>
@@ -155,7 +154,6 @@ export default function Plans() {
               </div>
             )}
           </div>
-
         </div>
       </section>
     </div>
