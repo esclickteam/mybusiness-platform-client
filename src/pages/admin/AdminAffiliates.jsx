@@ -41,7 +41,7 @@ function AdminAffiliates() {
     try {
       const res = await API.post("/admin/affiliates", {
         ...form,
-        commissionRate: 0.2, // ⭐ קבוע 20%
+        commissionRate: 0.2,
       });
 
       if (res.data.success) {
@@ -50,7 +50,10 @@ function AdminAffiliates() {
         const affiliateId = res.data.affiliate.affiliateId;
         const publicToken = res.data.affiliate.publicToken;
 
-        
+        setAffiliateLinks({
+          login: `${window.location.origin}/affiliate/login`,
+          referral: `${window.location.origin}/register?ref=${publicToken}`,
+        });
 
         setForm({
           name: "",
@@ -127,7 +130,6 @@ function AdminAffiliates() {
           />
         </label>
 
-        {/* ⭐ Commission fixed */}
         <label>
           Commission Rate:
           <input
