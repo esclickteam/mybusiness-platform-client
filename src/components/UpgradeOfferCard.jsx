@@ -15,8 +15,8 @@ export default function UpgradeOfferCard({
 }) {
 
   useEffect(() => {
-  console.log("🎉 UpgradeOfferCard MOUNTED", { expiresAt });
-}, []);
+    console.log("🎉 UpgradeOfferCard MOUNTED", { expiresAt });
+  }, []);
 
   /* ⏳ fallback של 48 שעות */
   const fallbackExpiresAt = useMemo(
@@ -43,6 +43,7 @@ export default function UpgradeOfferCard({
   return (
     <div className="offer-overlay" role="dialog" aria-modal="true">
       <div className="offer-card">
+
         {/* ❌ Close */}
         <button
           type="button"
@@ -58,11 +59,11 @@ export default function UpgradeOfferCard({
         {/* ⭐ Price highlight */}
         <h2 className="offer-title">
           First Month Only{" "}
-          <span className="price-highlight">$99</span>
-          <span className="price-original">$119</span>
+          <span className="price-highlight">$119</span>
+          <span className="price-original">$149</span>
         </h2>
 
-        <p className="offer-save">Save $20 on your first month</p>
+        <p className="offer-save">Save $30 on your first month</p>
 
         {!isExpired && (
           <p className="offer-timer">
@@ -77,17 +78,17 @@ export default function UpgradeOfferCard({
         </p>
 
         <p className="offer-note">
-          Then <strong>$119/month</strong>. Cancel anytime.
+          Then <strong>$149/month</strong>. Cancel anytime.
         </p>
 
-        {/* ✅ הכפתור הקריטי — מוגדר כ־button */}
+        {/* ✅ כפתור Upgrade */}
         <button
           type="button"
           className="offer-upgrade-btn"
           onClick={onUpgrade}
           disabled={isExpired}
         >
-          Upgrade for $99
+          Upgrade for $119
         </button>
 
         <p className="offer-footer">
