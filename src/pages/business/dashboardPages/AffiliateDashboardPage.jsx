@@ -23,24 +23,14 @@ export default function AffiliateDashboardPage() {
     monthlyCommission: 0,
   });
 
-  const [newClient, setNewClient] = useState({
-    businessName: "",
-    name: "",
-    email: "",
-    phone: "",
-  });
-
-  const [paymentLink, setPaymentLink] = useState(null);
-  const [creatingClient, setCreatingClient] = useState(false);
-  const [clientStatus, setClientStatus] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
 
   const inviteLink = useMemo(() => {
-  if (!user?.affiliateId) return "";
-  return `${window.location.origin}/register?ref=${encodeURIComponent(
-    user.affiliateId
-  )}`;
-}, [user?.affiliateId]);
+    if (!user?.affiliateId) return "";
+    return `${window.location.origin}/register?ref=${encodeURIComponent(
+      user.affiliateId
+    )}`;
+  }, [user?.affiliateId]);
 
   const showCopyStatus = (message) => {
     setCopyStatus(message);
@@ -91,51 +81,6 @@ export default function AffiliateDashboardPage() {
   useEffect(() => {
     refreshStats();
   }, []);
-
-  const handleCreateClient = async () => {
-    const payload = {
-      businessName: newClient.businessName.trim(),
-      name: newClient.name.trim(),
-      email: newClient.email.trim().toLowerCase(),
-      phone: newClient.phone.trim(),
-    };
-
-    if (!payload.businessName || !payload.name || !payload.email || !payload.phone) {
-      alert("Please fill all fields");
-      return;
-    }
-
-    try {
-      setCreatingClient(true);
-      setClientStatus("");
-      setPaymentLink(null);
-
-      const { data } = await API.post(
-        "/affiliate-marketer/create-client",
-        payload,
-        { withCredentials: true }
-      );
-
-      setPaymentLink(data.paymentLink || null);
-      setClientStatus(
-        data.message || "Client created successfully. Invite email sent."
-      );
-
-      setNewClient({
-        businessName: "",
-        name: "",
-        email: "",
-        phone: "",
-      });
-
-      await refreshStats();
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Error creating client");
-    } finally {
-      setCreatingClient(false);
-    }
-  };
 
   const updateBankDetails = async (bankDetails) => {
     try {
@@ -198,78 +143,6 @@ export default function AffiliateDashboardPage() {
         </p>
       </section>
 
-      {/* CREATE CLIENT */}
-      <section className="affiliate-section">
-        <h2>Create New Client</h2>
-
-        <input
-          placeholder="Business Name"
-          value={newClient.businessName}
-          onChange={(e) =>
-            setNewClient((prev) => ({
-              ...prev,
-              businessName: e.target.value,
-            }))
-          }
-        />
-
-        <input
-          placeholder="Contact Name"
-          value={newClient.name}
-          onChange={(e) =>
-            setNewClient((prev) => ({
-              ...prev,
-              name: e.target.value,
-            }))
-          }
-        />
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={newClient.email}
-          onChange={(e) =>
-            setNewClient((prev) => ({
-              ...prev,
-              email: e.target.value,
-            }))
-          }
-        />
-
-        <input
-          placeholder="Phone"
-          value={newClient.phone}
-          onChange={(e) =>
-            setNewClient((prev) => ({
-              ...prev,
-              phone: e.target.value,
-            }))
-          }
-        />
-
-        <button onClick={handleCreateClient} disabled={creatingClient}>
-          {creatingClient ? "Creating..." : "Create Client & Payment Link"}
-        </button>
-
-        {clientStatus && <p className="success">{clientStatus}</p>}
-
-        {paymentLink && (
-          <div className="payment-link-box">
-            <h3>Payment Link</h3>
-
-            <input value={paymentLink} readOnly />
-
-            <button
-              onClick={() =>
-                copyToClipboard(paymentLink, "Payment link copied successfully")
-              }
-            >
-              Copy Payment Link
-            </button>
-          </div>
-        )}
-      </section>
-
       {/* CLIENTS CREATED */}
       <section className="affiliate-clients">
         <h2>Your Clients</h2>
@@ -292,7 +165,6 @@ export default function AffiliateDashboardPage() {
               {clients.map((client) => (
                 <tr key={client._id}>
                   <td>{client.businessName}</td>
-
                   <td>{client.email}</td>
 
                   <td>
@@ -356,7 +228,8 @@ export default function AffiliateDashboardPage() {
         <h2>Payments</h2>
 
         <p>
-          Available balance: <strong>${Number(currentBalance || 0).toFixed(2)}</strong>
+          Available balance:{" "}
+          <strong>${Number(currentBalance || 0).toFixed(2)}</strong>
         </p>
 
         <button
