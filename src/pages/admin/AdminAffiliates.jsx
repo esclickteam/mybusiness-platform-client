@@ -8,13 +8,11 @@ function AdminAffiliates() {
     email: "",
     affiliateId: "",
     password: "",
-    commissionRate: 0.2,
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
-
   const [affiliateLinks, setAffiliateLinks] = useState(null);
 
   const handleChange = (e) => {
@@ -22,7 +20,7 @@ function AdminAffiliates() {
 
     setForm((prev) => ({
       ...prev,
-      [name]: name === "commissionRate" ? parseFloat(value) : value,
+      [name]: value,
     }));
   };
 
@@ -40,14 +38,11 @@ function AdminAffiliates() {
       return;
     }
 
-    if (form.commissionRate < 0 || form.commissionRate > 1) {
-      setError("Commission rate must be between 0 and 1");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const res = await API.post("/admin/affiliates", form);
+      const res = await API.post("/admin/affiliates", {
+        ...form,
+        commissionRate: 0.2, // ⭐ קבוע 20%
+      });
 
       if (res.data.success) {
         setMessage("✅ Marketer created successfully!");
@@ -65,7 +60,6 @@ function AdminAffiliates() {
           email: "",
           affiliateId: "",
           password: "",
-          commissionRate: 0.2,
         });
       } else {
         setError("Error creating marketer");
@@ -136,17 +130,13 @@ function AdminAffiliates() {
           />
         </label>
 
+        {/* ⭐ Commission fixed */}
         <label>
-          Commission Rate* (0–1):
+          Commission Rate:
           <input
-            type="number"
-            name="commissionRate"
-            step="0.01"
-            min="0"
-            max="1"
-            value={form.commissionRate}
-            onChange={handleChange}
-            required
+            type="text"
+            value="20%"
+            disabled
           />
         </label>
 
