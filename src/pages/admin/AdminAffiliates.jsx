@@ -50,10 +50,7 @@ function AdminAffiliates() {
         const affiliateId = res.data.affiliate.affiliateId;
         const publicToken = res.data.affiliate.publicToken;
 
-        setAffiliateLinks({
-          login: `https://bizuply.com/affiliate/auto-login/${publicToken}`,
-          referral: `https://bizuply.com/register?ref=${affiliateId}`,
-        });
+        
 
         setForm({
           name: "",
