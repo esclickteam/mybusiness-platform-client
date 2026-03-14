@@ -7,17 +7,19 @@ function AdminAffiliates() {
     name: "",
     email: "",
     affiliateId: "",
-    password: "",           // Added password field
+    password: "",
     commissionRate: 0.2,
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
-  const [affiliateUrl, setAffiliateUrl] = useState(null);
+
+  const [affiliateLinks, setAffiliateLinks] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setForm((prev) => ({
       ...prev,
       [name]: name === "commissionRate" ? parseFloat(value) : value,
@@ -26,16 +28,18 @@ function AdminAffiliates() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
     setMessage(null);
     setError(null);
-    setAffiliateUrl(null);
+    setAffiliateLinks(null);
 
     if (!form.name.trim() || !form.affiliateId.trim() || !form.password.trim()) {
       setError("Please fill in name, unique ID, and password");
       setLoading(false);
       return;
     }
+
     if (form.commissionRate < 0 || form.commissionRate > 1) {
       setError("Commission rate must be between 0 and 1");
       setLoading(false);
@@ -44,15 +48,23 @@ function AdminAffiliates() {
 
     try {
       const res = await API.post("/admin/affiliates", form);
+
       if (res.data.success) {
         setMessage("✅ Marketer created successfully!");
-        setAffiliateUrl(`https://bizuply.com/affiliate/auto-login/${res.data.affiliate.publicToken}`);
+
+        const affiliateId = res.data.affiliate.affiliateId;
+        const publicToken = res.data.affiliate.publicToken;
+
+        setAffiliateLinks({
+          login: `https://bizuply.com/affiliate/auto-login/${publicToken}`,
+          referral: `https://bizuply.com/register?ref=${affiliateId}`,
+        });
 
         setForm({
           name: "",
           email: "",
           affiliateId: "",
-          password: "",           // Reset password as well
+          password: "",
           commissionRate: 0.2,
         });
       } else {
@@ -143,12 +155,32 @@ function AdminAffiliates() {
         </button>
       </form>
 
-      {affiliateUrl && (
+      {affiliateLinks && (
         <div className="affiliate-url-container">
-          Marketer URL:{" "}
-          <a href={affiliateUrl} target="_blank" rel="noopener noreferrer" className="affiliate-link">
-            {affiliateUrl}
+
+          <p><strong>🔑 Marketer Login:</strong></p>
+          <a
+            href={affiliateLinks.login}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="affiliate-link"
+          >
+            {affiliateLinks.login}
           </a>
+
+          <p style={{ marginTop: "15px" }}>
+            <strong>🔗 Referral Link:</strong>
+          </p>
+
+          <a
+            href={affiliateLinks.referral}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="affiliate-link"
+          >
+            {affiliateLinks.referral}
+          </a>
+
         </div>
       )}
     </div>
