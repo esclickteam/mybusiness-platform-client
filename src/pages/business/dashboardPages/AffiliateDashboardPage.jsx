@@ -26,11 +26,11 @@ export default function AffiliateDashboardPage() {
   const [copyStatus, setCopyStatus] = useState("");
 
   const inviteLink = useMemo(() => {
-  if (!user?.affiliateId) return "";
-  return `${window.location.origin}/register?ref=${encodeURIComponent(
-    user.affiliateId
-  )}`;
-}, [user?.affiliateId]);
+    if (!user?.affiliateId) return "";
+    return `${window.location.origin}/register?ref=${encodeURIComponent(
+      user.affiliateId
+    )}`;
+  }, [user?.affiliateId]);
 
   const showCopyStatus = (message) => {
     setCopyStatus(message);
@@ -84,17 +84,19 @@ export default function AffiliateDashboardPage() {
 
   const updateBankDetails = async (bankDetails) => {
     try {
-      const response = await API.put(
-        "/affiliate/bank-details",
-        bankDetails,
-        { withCredentials: true }
-      );
+      const response = await API.put("/affiliate/bank-details", bankDetails, {
+        withCredentials: true,
+      });
 
       alert(response.data.message || "Bank details updated successfully");
       setShowBankForm(false);
+      await refreshStats();
     } catch (error) {
       console.error(error);
-      alert("Error updating bank details");
+      alert(
+        error?.response?.data?.message || "Error updating bank details"
+      );
+      throw error;
     }
   };
 
@@ -104,7 +106,6 @@ export default function AffiliateDashboardPage() {
 
       {copyStatus && <p className="success">{copyStatus}</p>}
 
-      {/* SUMMARY */}
       <section className="affiliate-stats-summary">
         <div className="stat-card">
           <h3>Users Created</h3>
@@ -122,7 +123,6 @@ export default function AffiliateDashboardPage() {
         </div>
       </section>
 
-      {/* INVITE LINK */}
       <section className="affiliate-section">
         <h2>Your Invite Link</h2>
 
@@ -143,7 +143,6 @@ export default function AffiliateDashboardPage() {
         </p>
       </section>
 
-      {/* CLIENTS CREATED */}
       <section className="affiliate-clients">
         <h2>Your Clients</h2>
 
@@ -189,7 +188,6 @@ export default function AffiliateDashboardPage() {
         )}
       </section>
 
-      {/* MONTHLY COMMISSIONS */}
       <section className="affiliate-stats">
         <h2>Monthly Commissions</h2>
 
@@ -223,7 +221,6 @@ export default function AffiliateDashboardPage() {
         )}
       </section>
 
-      {/* PAYMENTS */}
       <section className="affiliate-bank-section">
         <h2>Payments</h2>
 
@@ -234,16 +231,13 @@ export default function AffiliateDashboardPage() {
 
         <button
           className="payment-button"
-          onClick={() => setShowBankForm((p) => !p)}
+          onClick={() => setShowBankForm((prev) => !prev)}
         >
           Manage Bank Details
         </button>
 
         {showBankForm && (
-          <MarketerBankDetailsForm
-            affiliateId={user?.affiliateId}
-            onSubmit={updateBankDetails}
-          />
+          <MarketerBankDetailsForm onSubmit={updateBankDetails} />
         )}
       </section>
     </div>
