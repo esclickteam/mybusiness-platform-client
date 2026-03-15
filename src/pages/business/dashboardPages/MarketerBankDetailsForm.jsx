@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import API from "@api"; // pre-configured axios
 import "./MarketerBankDetailsForm.css";
 
-export default function MarketerBankDetailsForm() {
+export default function MarketerBankDetailsForm({ onSubmit }) {
   const { user } = useAuth();
 
   const [form, setForm] = useState({
@@ -13,6 +12,7 @@ export default function MarketerBankDetailsForm() {
     fullName: "",
     idNumber: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
@@ -21,8 +21,8 @@ export default function MarketerBankDetailsForm() {
     if (user) {
       setForm({
         bankName: user.bankName || "",
-        branchNumber: user.branch || "",
-        accountNumber: user.account || "",
+        branchNumber: user.branchNumber || user.branch || "",
+        accountNumber: user.accountNumber || user.account || "",
         fullName: user.fullName || "",
         idNumber: user.idNumber || "",
       });
@@ -41,7 +41,9 @@ export default function MarketerBankDetailsForm() {
     setSuccessMsg(null);
 
     try {
-      if (!user?.affiliateId) throw new Error("Affiliate marketer not identified");
+      if (!user?.affiliateId) {
+        throw new Error("Affiliate marketer not identified");
+      }
 
       const payload = {
         affiliateId: user.affiliateId,
@@ -52,15 +54,8 @@ export default function MarketerBankDetailsForm() {
         idNumber: form.idNumber,
       };
 
-      const res = await API.put("/affiliate-marketer/marketers/bank-details", payload, {
-        withCredentials: true,
-      });
-
-      if (res.status === 200) {
-        setSuccessMsg("Bank details updated successfully!");
-      } else {
-        throw new Error("Error updating bank details");
-      }
+      await onSubmit(payload);
+      setSuccessMsg("Bank details updated successfully!");
     } catch (err) {
       setError(err.response?.data?.message || err.message || "Unexpected error");
     } finally {
@@ -71,6 +66,7 @@ export default function MarketerBankDetailsForm() {
   return (
     <section className="marketer-bank-details-form">
       <h2>Update Bank Account Details - Marketer</h2>
+
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -80,6 +76,7 @@ export default function MarketerBankDetailsForm() {
           onChange={handleChange}
           required
         />
+
         <input
           type="text"
           name="branchNumber"
@@ -88,6 +85,7 @@ export default function MarketerBankDetailsForm() {
           onChange={handleChange}
           required
         />
+
         <input
           type="text"
           name="accountNumber"
@@ -96,6 +94,7 @@ export default function MarketerBankDetailsForm() {
           onChange={handleChange}
           required
         />
+
         <input
           type="text"
           name="fullName"
@@ -104,6 +103,7 @@ export default function MarketerBankDetailsForm() {
           onChange={handleChange}
           required
         />
+
         <input
           type="text"
           name="idNumber"
@@ -112,10 +112,12 @@ export default function MarketerBankDetailsForm() {
           onChange={handleChange}
           required
         />
+
         <button type="submit" disabled={loading}>
           {loading ? "Saving..." : "Save Details"}
         </button>
       </form>
+
       {error && <p className="error">{error}</p>}
       {successMsg && <p className="success">{successMsg}</p>}
     </section>
