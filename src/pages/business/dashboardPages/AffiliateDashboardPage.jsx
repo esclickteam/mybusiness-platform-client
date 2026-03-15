@@ -26,11 +26,11 @@ export default function AffiliateDashboardPage() {
   const [copyStatus, setCopyStatus] = useState("");
 
   const inviteLink = useMemo(() => {
-    if (!user?.publicToken) return "";
-    return `${window.location.origin}/register?ref=${encodeURIComponent(
-      user.publicToken
-    )}`;
-  }, [user?.publicToken]);
+  if (!user?.affiliateId) return "";
+  return `${window.location.origin}/register?ref=${encodeURIComponent(
+    user.affiliateId
+  )}`;
+}, [user?.affiliateId]);
 
   const showCopyStatus = (message) => {
     setCopyStatus(message);

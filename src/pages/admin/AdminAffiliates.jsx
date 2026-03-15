@@ -52,7 +52,7 @@ function AdminAffiliates() {
 
         setAffiliateLinks({
           login: `${window.location.origin}/affiliate/login`,
-          referral: `${window.location.origin}/register?ref=${publicToken}`,
+          referral: `${window.location.origin}/register?ref=${affiliateId}`,
         });
 
         setForm({
