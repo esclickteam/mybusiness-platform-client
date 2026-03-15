@@ -202,20 +202,22 @@ export function AuthProvider({ children }) {
      👤 Refresh user
   =========================== */
   const refreshUser = async (force = false) => {
-    try {
-      const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
-        withCredentials: true,
-      });
+  try {
+    const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
+      withCredentials: true,
+    });
 
-      const normalized = normalizeUser(data);
-      setUser(normalized);
-      localStorage.setItem("businessDetails", JSON.stringify(normalized));
-      return normalized;
-    } catch (err) {
-      console.error("Failed to refresh user", err);
-      return null;
-    }
-  };
+    console.log("RAW /auth/me response:", data);
+
+    const normalized = normalizeUser(data);
+    setUser(normalized);
+    localStorage.setItem("businessDetails", JSON.stringify(normalized));
+    return normalized;
+  } catch (err) {
+    console.error("Failed to refresh user", err);
+    return null;
+  }
+};
 
   const loginWithToken = (userFromServer, accessToken, { skipRedirect = false } = {}) => {
   // שמירת token
@@ -279,6 +281,8 @@ navigate("/dashboard", { replace: true });
       );
 
       const { accessToken, user: loggedInUser, redirectUrl } = data;
+
+console.log("RAW /auth/login response:", data);
 
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
