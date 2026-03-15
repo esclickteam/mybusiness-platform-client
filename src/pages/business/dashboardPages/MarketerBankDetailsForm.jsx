@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
+import API from "@api";
 import "./MarketerBankDetailsForm.css";
 
 export default function MarketerBankDetailsForm({ onSubmit }) {
@@ -14,20 +15,38 @@ export default function MarketerBankDetailsForm({ onSubmit }) {
   });
 
   const [loading, setLoading] = useState(false);
+  const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
 
-  useEffect(() => {
-    if (user) {
+  const loadBankDetails = async () => {
+    try {
+      if (!user?.affiliateId) return;
+
+      setLoadingInitial(true);
+      const { data } = await API.get(
+        `/affiliate/bank-details/${encodeURIComponent(user.affiliateId)}`,
+        { withCredentials: true }
+      );
+
       setForm({
-        bankName: user.bankName || "",
-        branchNumber: user.branchNumber || user.branch || "",
-        accountNumber: user.accountNumber || user.account || "",
-        fullName: user.fullName || "",
-        idNumber: user.idNumber || "",
+        bankName: data.bankName || "",
+        branchNumber: data.branchNumber || "",
+        accountNumber: data.accountNumber || "",
+        fullName: data.fullName || "",
+        idNumber: data.idNumber || "",
       });
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load bank details");
+    } finally {
+      setLoadingInitial(false);
     }
-  }, [user]);
+  };
+
+  useEffect(() => {
+    loadBankDetails();
+  }, [user?.affiliateId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,12 +75,18 @@ export default function MarketerBankDetailsForm({ onSubmit }) {
 
       await onSubmit(payload);
       setSuccessMsg("Bank details updated successfully!");
+
+      await loadBankDetails();
     } catch (err) {
       setError(err.response?.data?.message || err.message || "Unexpected error");
     } finally {
       setLoading(false);
     }
   };
+
+  if (loadingInitial) {
+    return <p>Loading bank details...</p>;
+  }
 
   return (
     <section className="marketer-bank-details-form">
