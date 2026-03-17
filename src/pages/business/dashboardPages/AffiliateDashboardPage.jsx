@@ -17,7 +17,7 @@ export default function AffiliateDashboardPage() {
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState(null);
 
-  const [currentBalance, setCurrentBalance] = useState(0); // 🔥 תיקון
+  const [currentBalance, setCurrentBalance] = useState(0);
 
   const [statsSummary, setStatsSummary] = useState({
     totalUsers: 0,
@@ -90,7 +90,6 @@ export default function AffiliateDashboardPage() {
   useEffect(() => {
     refreshStats();
 
-    // 🔥 רענון נוסף אחרי תשלום
     if (searchParams.get("checkout") === "success") {
       setTimeout(() => {
         refreshStats();
@@ -166,6 +165,7 @@ export default function AffiliateDashboardPage() {
 
       {copyStatus && <p className="success">{copyStatus}</p>}
 
+      {/* 🔥 KPI Cards */}
       <section className="affiliate-stats-summary">
         <div className="stat-card">
           <h3>Users Created</h3>
@@ -182,16 +182,10 @@ export default function AffiliateDashboardPage() {
           <p>${Number(statsSummary.paidOut || 0).toFixed(2)}</p>
         </div>
 
-        {/* 🔥 חדש */}
+        {/* 🔥 הכי חשוב */}
         <div className="stat-card">
-          <h3>Total Earnings</h3>
-          <p>
-            $
-            {Number(
-              (statsSummary.monthlyCommission || 0) +
-                (statsSummary.paidOut || 0)
-            ).toFixed(2)}
-          </p>
+          <h3>Available Balance</h3>
+          <p>${Number(currentBalance || 0).toFixed(2)}</p>
         </div>
       </section>
 
@@ -245,7 +239,6 @@ export default function AffiliateDashboardPage() {
                       : "-"}
                   </td>
 
-                  {/* 🔥 דינמי */}
                   <td>${Number(client.commission || 0).toFixed(2)}</td>
                 </tr>
               ))}
