@@ -21,6 +21,7 @@ export default function AffiliateDashboardPage() {
     totalUsers: 0,
     payingUsers: 0,
     monthlyCommission: 0,
+    paidOut: 0, // 🔥 חדש
   });
 
   const [copyStatus, setCopyStatus] = useState("");
@@ -71,6 +72,7 @@ export default function AffiliateDashboardPage() {
         totalUsers: data.totalUsers || 0,
         payingUsers: data.payingUsers || 0,
         monthlyCommission: data.monthlyCommission || 0,
+        paidOut: data.paidOut || 0, // 🔥 חשוב
       });
 
       setAllStats(data.months || []);
@@ -119,13 +121,11 @@ export default function AffiliateDashboardPage() {
         return;
       }
 
-      // 🔥 מינימום 50$
       if (amount < 50) {
         setPayoutError("Minimum payout amount is $50");
         return;
       }
 
-      // 🔥 לא יותר מהיתרה
       if (amount > currentBalance) {
         setPayoutError("Amount exceeds available balance");
         return;
@@ -165,11 +165,15 @@ export default function AffiliateDashboardPage() {
           <p>{statsSummary.totalUsers}</p>
         </div>
 
-        
-
         <div className="stat-card">
           <h3>Monthly Commission</h3>
           <p>${Number(statsSummary.monthlyCommission || 0).toFixed(2)}</p>
+        </div>
+
+        {/* 🔥 החדש */}
+        <div className="stat-card">
+          <h3>Paid Out</h3>
+          <p>${Number(statsSummary.paidOut || 0).toFixed(2)}</p>
         </div>
       </section>
 
@@ -261,7 +265,6 @@ export default function AffiliateDashboardPage() {
               {allStats.map((stat) => (
                 <tr key={stat.month}>
                   <td>{stat.month}</td>
-                  <td>{stat.users}</td>
                   <td>${Number(stat.commission || 0).toFixed(2)}</td>
                 </tr>
               ))}
@@ -270,7 +273,6 @@ export default function AffiliateDashboardPage() {
         )}
       </section>
 
-      {/* 💸 PAYMENTS */}
       <section className="affiliate-bank-section">
         <h2>Payments</h2>
 
@@ -279,7 +281,6 @@ export default function AffiliateDashboardPage() {
           <strong>${Number(currentBalance || 0).toFixed(2)}</strong>
         </p>
 
-        {/* 🔥 Request payout */}
         <div className="payout-box">
           <input
             type="number"
