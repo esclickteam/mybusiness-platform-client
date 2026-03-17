@@ -151,7 +151,7 @@ function AdminDashboard() {
           {/* 💸 NEW – PAYOUTS */}
           <div
             className="summary-card clickable"
-            onClick={() => navigate("/admin/payouts")}
+            onClick={() => navigate("/admin/affiliate-payouts")}
           >
             💸 Manage Payouts
           </div>
