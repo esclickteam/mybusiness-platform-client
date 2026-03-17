@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../../context/AuthContext";
+import { useSearchParams } from "react-router-dom";
 import API from "@api";
 import "./AffiliatePage.css";
 import MarketerBankDetailsForm from "./MarketerBankDetailsForm";
 
 export default function AffiliateDashboardPage() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
 
   const [showBankForm, setShowBankForm] = useState(false);
 
@@ -15,18 +17,17 @@ export default function AffiliateDashboardPage() {
   const [loadingStats, setLoadingStats] = useState(true);
   const [errorStats, setErrorStats] = useState(null);
 
-  const [currentBalance, setCurrentBalance] = useState(user?.balance || 0);
+  const [currentBalance, setCurrentBalance] = useState(0); // 🔥 תיקון
 
   const [statsSummary, setStatsSummary] = useState({
     totalUsers: 0,
     payingUsers: 0,
     monthlyCommission: 0,
-    paidOut: 0, // 🔥 חדש
+    paidOut: 0,
   });
 
   const [copyStatus, setCopyStatus] = useState("");
 
-  // 💸 payout states
   const [payoutAmount, setPayoutAmount] = useState("");
   const [payoutLoading, setPayoutLoading] = useState(false);
   const [payoutMessage, setPayoutMessage] = useState("");
@@ -72,7 +73,7 @@ export default function AffiliateDashboardPage() {
         totalUsers: data.totalUsers || 0,
         payingUsers: data.payingUsers || 0,
         monthlyCommission: data.monthlyCommission || 0,
-        paidOut: data.paidOut || 0, // 🔥 חשוב
+        paidOut: data.paidOut || 0,
       });
 
       setAllStats(data.months || []);
@@ -88,6 +89,13 @@ export default function AffiliateDashboardPage() {
 
   useEffect(() => {
     refreshStats();
+
+    // 🔥 רענון נוסף אחרי תשלום
+    if (searchParams.get("checkout") === "success") {
+      setTimeout(() => {
+        refreshStats();
+      }, 3000);
+    }
   }, []);
 
   const updateBankDetails = async (bankDetails) => {
@@ -108,7 +116,6 @@ export default function AffiliateDashboardPage() {
     }
   };
 
-  // 💸 request payout
   const handleRequestPayout = async () => {
     try {
       setPayoutError("");
@@ -170,10 +177,21 @@ export default function AffiliateDashboardPage() {
           <p>${Number(statsSummary.monthlyCommission || 0).toFixed(2)}</p>
         </div>
 
-        {/* 🔥 החדש */}
         <div className="stat-card">
           <h3>Paid Out</h3>
           <p>${Number(statsSummary.paidOut || 0).toFixed(2)}</p>
+        </div>
+
+        {/* 🔥 חדש */}
+        <div className="stat-card">
+          <h3>Total Earnings</h3>
+          <p>
+            $
+            {Number(
+              (statsSummary.monthlyCommission || 0) +
+                (statsSummary.paidOut || 0)
+            ).toFixed(2)}
+          </p>
         </div>
       </section>
 
@@ -190,11 +208,6 @@ export default function AffiliateDashboardPage() {
         >
           Copy Invite Link
         </button>
-
-        <p className="affiliate-helper-text">
-          Share this link with leads. If they register through it, they will be
-          linked to you automatically.
-        </p>
       </section>
 
       <section className="affiliate-clients">
@@ -232,9 +245,8 @@ export default function AffiliateDashboardPage() {
                       : "-"}
                   </td>
 
-                  <td>
-                    {client.partnerStatus === "active" ? "$23.80" : "$0"}
-                  </td>
+                  {/* 🔥 דינמי */}
+                  <td>${Number(client.commission || 0).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -247,10 +259,6 @@ export default function AffiliateDashboardPage() {
 
         {loadingStats && <p>Loading data...</p>}
         {errorStats && <p>{errorStats}</p>}
-
-        {!loadingStats && !errorStats && allStats.length === 0 && (
-          <p>No monthly data yet</p>
-        )}
 
         {allStats.length > 0 && (
           <table className="stats-table">
