@@ -31,36 +31,61 @@
   box-shadow: 0 8px 24px rgba(98,0,234,0.08);
 }
 
+/* ===================== */
 /* SUMMARY CARDS */
+/* ===================== */
 
 .affiliate-stats-summary {
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(4, 1fr); /* 🔥 4 קופסאות */
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
 .stat-card {
   background: white;
-  padding: 1.5rem;
+  padding: 1.6rem;
   border-radius: 14px;
   text-align: center;
   box-shadow: 0 6px 20px rgba(98,0,234,0.1);
+  transition: all 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(98,0,234,0.15);
 }
 
 .stat-card h3 {
-  font-size: 1rem;
-  margin-bottom: .4rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
   color: #6a48f2;
 }
 
 .stat-card p {
-  font-size: 1.6rem;
+  font-size: 1.7rem;
   font-weight: 700;
   color: #2b0d83;
 }
 
+/* 🔥 HIGHLIGHT BALANCE */
+.stat-card.balance {
+  background: linear-gradient(135deg, #e8fff2, #d7ffe8);
+  border: 2px solid #b6f5c8;
+}
+
+.stat-card.balance h3 {
+  color: #1a8f3c;
+}
+
+.stat-card.balance p {
+  color: #0f6b2c;
+  font-size: 1.9rem;
+}
+
+/* ===================== */
 /* INPUTS */
+/* ===================== */
 
 .affiliate-section input {
   width: 100%;
@@ -78,20 +103,9 @@
   box-shadow: 0 0 10px rgba(98,0,234,.2);
 }
 
-/* PAYMENT LINK */
-
-.payment-link-box {
-  margin-top: 1.5rem;
-  padding: 1.2rem;
-  background: #f7f4ff;
-  border-radius: 12px;
-}
-
-.payment-link-box input {
-  margin-top: .5rem;
-}
-
+/* ===================== */
 /* BUTTONS */
+/* ===================== */
 
 button,
 .payment-button {
@@ -117,7 +131,9 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* ===================== */
 /* TABLE */
+/* ===================== */
 
 .stats-table {
   width: 100%;
@@ -143,7 +159,9 @@ button:disabled {
   background: #f5f2ff;
 }
 
+/* ===================== */
 /* STATUS BADGES */
+/* ===================== */
 
 .status {
   padding: 4px 10px;
@@ -167,14 +185,18 @@ button:disabled {
   color: #c62828;
 }
 
+/* ===================== */
 /* PAYMENT SECTION */
+/* ===================== */
 
 .affiliate-bank-section p {
   font-size: 1.1rem;
   margin-bottom: .7rem;
 }
 
+/* ===================== */
 /* MOBILE */
+/* ===================== */
 
 @media (max-width: 900px) {
 
@@ -183,11 +205,11 @@ button:disabled {
   }
 
   .affiliate-stats-summary {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* 🔥 הכל אחד מתחת לשני */
   }
 
   .stat-card p {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
 
   .affiliate-section,
@@ -201,7 +223,6 @@ button:disabled {
   .payment-button {
     width: 100%;
   }
-
 }
 
 @media (max-width: 500px) {
@@ -217,5 +238,4 @@ button:disabled {
   .stat-card p {
     font-size: 1.2rem;
   }
-
 }

@@ -172,18 +172,19 @@ export default function AffiliateDashboardPage() {
           <p>{statsSummary.totalUsers}</p>
         </div>
 
-        
+         {/* 🔥 הכי חשוב */}
+        <div className="stat-card balance">
+  <h3>Available Balance</h3>
+  <p>${Number(currentBalance || 0).toFixed(2)}</p>
+</div>
 
+        
         <div className="stat-card">
           <h3>Paid Out</h3>
           <p>${Number(statsSummary.paidOut || 0).toFixed(2)}</p>
         </div>
 
-        {/* 🔥 הכי חשוב */}
-        <div className="stat-card">
-          <h3>Available Balance</h3>
-          <p>${Number(currentBalance || 0).toFixed(2)}</p>
-        </div>
+       
       </section>
 
       <section className="affiliate-section">
