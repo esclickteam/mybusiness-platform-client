@@ -37,9 +37,9 @@
 
 .affiliate-stats-summary {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 🔥 4 קופסאות */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+  justify-content: center; /* 🔥 זה הקסם */
   gap: 1rem;
-  margin-bottom: 2rem;
 }
 
 .stat-card {
