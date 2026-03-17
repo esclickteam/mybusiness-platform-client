@@ -172,10 +172,7 @@ export default function AffiliateDashboardPage() {
           <p>{statsSummary.totalUsers}</p>
         </div>
 
-        <div className="stat-card">
-          <h3>Monthly Commission</h3>
-          <p>${Number(statsSummary.monthlyCommission || 0).toFixed(2)}</p>
-        </div>
+        
 
         <div className="stat-card">
           <h3>Paid Out</h3>
@@ -248,7 +245,6 @@ export default function AffiliateDashboardPage() {
       </section>
 
       <section className="affiliate-stats">
-        <h2>Monthly Commissions</h2>
 
         {loadingStats && <p>Loading data...</p>}
         {errorStats && <p>{errorStats}</p>}
