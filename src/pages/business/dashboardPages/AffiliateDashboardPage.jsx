@@ -25,6 +25,12 @@ export default function AffiliateDashboardPage() {
 
   const [copyStatus, setCopyStatus] = useState("");
 
+  // 💸 payout states
+  const [payoutAmount, setPayoutAmount] = useState("");
+  const [payoutLoading, setPayoutLoading] = useState(false);
+  const [payoutMessage, setPayoutMessage] = useState("");
+  const [payoutError, setPayoutError] = useState("");
+
   const inviteLink = useMemo(() => {
     if (!user?.affiliateId) return "";
     return `${window.location.origin}/register?ref=${encodeURIComponent(
@@ -97,6 +103,53 @@ export default function AffiliateDashboardPage() {
         error?.response?.data?.message || "Error updating bank details"
       );
       throw error;
+    }
+  };
+
+  // 💸 request payout
+  const handleRequestPayout = async () => {
+    try {
+      setPayoutError("");
+      setPayoutMessage("");
+
+      const amount = Number(payoutAmount);
+
+      if (!amount || amount <= 0) {
+        setPayoutError("Please enter a valid amount");
+        return;
+      }
+
+      // 🔥 מינימום 50$
+      if (amount < 50) {
+        setPayoutError("Minimum payout amount is $50");
+        return;
+      }
+
+      // 🔥 לא יותר מהיתרה
+      if (amount > currentBalance) {
+        setPayoutError("Amount exceeds available balance");
+        return;
+      }
+
+      setPayoutLoading(true);
+
+      await API.post(
+        "/affiliate/request-payout",
+        { amount },
+        { withCredentials: true }
+      );
+
+      setPayoutMessage("Payout request sent successfully ✅");
+      setPayoutAmount("");
+
+      await refreshStats();
+    } catch (err) {
+      console.error(err);
+      setPayoutError(
+        err?.response?.data?.message || "Failed to send payout request"
+      );
+    } finally {
+      setPayoutLoading(false);
     }
   };
 
@@ -221,6 +274,7 @@ export default function AffiliateDashboardPage() {
         )}
       </section>
 
+      {/* 💸 PAYMENTS */}
       <section className="affiliate-bank-section">
         <h2>Payments</h2>
 
@@ -228,6 +282,23 @@ export default function AffiliateDashboardPage() {
           Available balance:{" "}
           <strong>${Number(currentBalance || 0).toFixed(2)}</strong>
         </p>
+
+        {/* 🔥 Request payout */}
+        <div className="payout-box">
+          <input
+            type="number"
+            placeholder="Enter amount (min $50)"
+            value={payoutAmount}
+            onChange={(e) => setPayoutAmount(e.target.value)}
+          />
+
+          <button onClick={handleRequestPayout} disabled={payoutLoading}>
+            {payoutLoading ? "Sending..." : "Request Payout"}
+          </button>
+
+          {payoutMessage && <p className="success">{payoutMessage}</p>}
+          {payoutError && <p className="error">{payoutError}</p>}
+        </div>
 
         <button
           className="payment-button"
