@@ -165,10 +165,7 @@ export default function AffiliateDashboardPage() {
           <p>{statsSummary.totalUsers}</p>
         </div>
 
-        <div className="stat-card">
-          <h3>Paying Users</h3>
-          <p>{statsSummary.payingUsers}</p>
-        </div>
+        
 
         <div className="stat-card">
           <h3>Monthly Commission</h3>
@@ -256,7 +253,6 @@ export default function AffiliateDashboardPage() {
             <thead>
               <tr>
                 <th>Month</th>
-                <th>Paying Users</th>
                 <th>Commission</th>
               </tr>
             </thead>
