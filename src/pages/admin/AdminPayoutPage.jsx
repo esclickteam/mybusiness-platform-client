@@ -5,7 +5,7 @@ import "./AdminPayoutPage.css";
 
 const AdminPayoutPage = () => {
   const [months, setMonths] = useState([]);
-  const [month, setMonth] = useState("");
+  const [month, setMonth] = useState(""); // "" = All time
   const [payouts, setPayouts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -21,39 +21,32 @@ const AdminPayoutPage = () => {
     { label: "Receipt File", key: "receiptUrl" },
   ];
 
+  // 🔥 load months (לא חובה למערכת לעבוד)
   useEffect(() => {
     async function fetchMonths() {
       try {
         const res = await API.get("/admin/payout-months");
         const monthsList = res.data.months || [];
         setMonths(monthsList);
-
-        if (monthsList.length > 0) {
-          setMonth((currentMonth) => {
-            if (!currentMonth || !monthsList.includes(currentMonth)) {
-              return monthsList[0];
-            }
-            return currentMonth;
-          });
-        }
       } catch (err) {
         console.error("Error fetching months:", err);
-        setError("Error loading months list");
+        // לא חוסמים את המערכת!
       }
     }
     fetchMonths();
   }, []);
 
+  // 🔥 fetch payouts (עובד גם בלי חודש)
   useEffect(() => {
-    if (!month) return;
-
     async function fetchPayouts() {
       setLoading(true);
       setError(null);
+
       try {
         const res = await API.get("/admin/payouts", {
-          params: { month },
+          params: month ? { month } : {}, // 🔥 רק אם יש חודש
         });
+
         setPayouts(res.data.payouts || []);
       } catch (err) {
         console.error("Error fetching payouts:", err);
@@ -66,20 +59,24 @@ const AdminPayoutPage = () => {
     fetchPayouts();
   }, [month]);
 
+  // 🔥 סכום כולל
+  const totalAmount = payouts.reduce((sum, p) => sum + (p.amount || 0), 0);
+
   return (
     <div className="admin-payout-page">
       <h1>Affiliate Payout Report</h1>
 
-      <label htmlFor="month">Select month:</label>
+      {/* 🔥 סיכום */}
+      <h3>Total Paid: ${totalAmount.toFixed(2)}</h3>
+
+      <label htmlFor="month">Filter by month:</label>
       <select
         id="month"
         value={month}
-        onChange={(e) => {
-          setMonth(e.target.value);
-        }}
-        disabled={months.length === 0}
+        onChange={(e) => setMonth(e.target.value)}
       >
-        {months.length === 0 && <option>Loading months...</option>}
+        <option value="">All time</option> {/* 🔥 הכי חשוב */}
+
         {months.map((m) => (
           <option key={m} value={m}>
             {m}
@@ -109,19 +106,19 @@ const AdminPayoutPage = () => {
               {payouts.length === 0 ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: "center" }}>
-                    No payout data for this month
+                    No payout data
                   </td>
                 </tr>
               ) : (
                 payouts.map((partner, idx) => (
                   <tr key={idx}>
-                    <td>{partner.businessName}</td>
-                    <td>{partner.phone}</td>
-                    <td>${partner.amount.toFixed(2)}</td>
-                    <td>{partner.bankName}</td>
-                    <td>{partner.branch}</td>
-                    <td>{partner.account}</td>
-                    <td>{partner.idNumber}</td>
+                    <td>{partner.businessName || "—"}</td>
+                    <td>{partner.phone || "—"}</td>
+                    <td>${Number(partner.amount || 0).toFixed(2)}</td>
+                    <td>{partner.bankName || "—"}</td>
+                    <td>{partner.branch || "—"}</td>
+                    <td>{partner.account || "—"}</td>
+                    <td>{partner.idNumber || "—"}</td>
                     <td>
                       {partner.receiptUrl ? (
                         <a href={partner.receiptUrl} target="_blank" rel="noreferrer">
@@ -138,7 +135,11 @@ const AdminPayoutPage = () => {
           </table>
 
           <div className="export-button">
-            <CSVLink data={payouts} headers={headers} filename={`payouts-${month}.csv`}>
+            <CSVLink
+              data={payouts}
+              headers={headers}
+              filename={`payouts-${month || "all"}.csv`} // 🔥 תיקון
+            >
               📤 Export to CSV
             </CSVLink>
           </div>
