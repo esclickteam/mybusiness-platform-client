@@ -68,8 +68,7 @@ const earlyBirdExpiresAt = user.earlyBirdExpiresAt
 const hasPaid = Boolean(
   user?.hasPaid === true ||
   user?.paymentStatus === "active" ||
-  user?.paymentStatus === "paid" ||
-  user?.subscriptionStatus === "active"
+  user?.paymentStatus === "paid"
 );
 
 const isTrialActive =
