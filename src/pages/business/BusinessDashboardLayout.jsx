@@ -161,16 +161,24 @@ export default function BusinessDashboardLayout() {
    🎯 Upgrade / Early Bird Guards
 ============================ */
   const earlyBirdUsed = Boolean(user?.earlyBirdUsed);
-  const hasPaid = Boolean(user?.hasPaid);
 
-  const isTrialActive =
-    user?.subscriptionPlan === "trial" &&
-    user?.trialEndsAt &&
-    new Date(user.trialEndsAt) > new Date();
+const hasPaid = Boolean(
+  user?.hasPaid === true ||
+  user?.paymentStatus === "active" ||
+  user?.paymentStatus === "paid" ||
+  user?.subscriptionStatus === "active"
+);
 
-  const canUpgrade = isTrialActive && !hasPaid && !earlyBirdUsed;
+const isTrialActive =
+  !hasPaid &&
+  user?.subscriptionPlan === "trial" &&
+  user?.trialEndsAt &&
+  new Date(user.trialEndsAt) > new Date();
 
-  const canShowEarlyBird = canUpgrade && user?.isEarlyBirdActive && isAfterDay4;
+const canUpgrade = isTrialActive && !earlyBirdUsed;
+
+const canShowEarlyBird =
+  canUpgrade && user?.isEarlyBirdActive && isAfterDay4;
 
   if (loading) return null;
 

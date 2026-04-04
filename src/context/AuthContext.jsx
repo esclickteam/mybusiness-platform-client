@@ -60,7 +60,9 @@ const trialDaysLeft =
 
 
     const isTrialActive =
-  trialEndsAt && trialEndsAt > now;
+  !hasPaid &&
+  trialEndsAt &&
+  trialEndsAt > now;
 
 /* ============================
    🎁 Early Bird (48h)
@@ -70,7 +72,8 @@ const earlyBirdExpiresAt = user.earlyBirdExpiresAt
   : null;
 
 const isEarlyBirdActive = Boolean(
-  earlyBirdExpiresAt &&
+  !hasPaid &&
+    earlyBirdExpiresAt &&
     earlyBirdExpiresAt > now &&
     user?.earlyBirdUsed !== true
 );
@@ -78,7 +81,12 @@ const isEarlyBirdActive = Boolean(
 
 
 
-const hasPaid = user?.paymentStatus === "paid";
+const hasPaid = Boolean(
+  user?.hasPaid === true ||
+  user?.paymentStatus === "active" ||
+  user?.paymentStatus === "paid" ||
+  user?.subscriptionStatus === "active"
+);
 
 
 
@@ -119,7 +127,7 @@ const hasPaid = user?.paymentStatus === "paid";
       : computedIsValid,
 
   subscriptionStatus:
-    user.status || user.subscriptionPlan || "free",
+  user?.subscriptionStatus || user?.status || "free",
 
   /* =====================
      🚪 Access
