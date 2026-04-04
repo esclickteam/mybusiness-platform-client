@@ -165,26 +165,31 @@ export default function AffiliateDashboardPage() {
 
       {copyStatus && <p className="success">{copyStatus}</p>}
 
-      {/* 🔥 KPI Cards */}
       <section className="affiliate-stats-summary">
         <div className="stat-card">
           <h3>Users Created</h3>
           <p>{statsSummary.totalUsers}</p>
         </div>
 
-         {/* 🔥 הכי חשוב */}
-        <div className="stat-card balance">
-  <h3>Available Balance</h3>
-  <p>${Number(currentBalance || 0).toFixed(2)}</p>
-</div>
+        <div className="stat-card">
+          <h3>Paying Users</h3>
+          <p>{statsSummary.payingUsers}</p>
+        </div>
 
-        
+        <div className="stat-card">
+          <h3>This Month Commission</h3>
+          <p>${Number(statsSummary.monthlyCommission || 0).toFixed(2)}</p>
+        </div>
+
+        <div className="stat-card balance">
+          <h3>Available Balance</h3>
+          <p>${Number(currentBalance || 0).toFixed(2)}</p>
+        </div>
+
         <div className="stat-card">
           <h3>Paid Out</h3>
           <p>${Number(statsSummary.paidOut || 0).toFixed(2)}</p>
         </div>
-
-       
       </section>
 
       <section className="affiliate-section">
@@ -215,7 +220,8 @@ export default function AffiliateDashboardPage() {
                 <th>Email</th>
                 <th>Status</th>
                 <th>Created</th>
-                <th>Commission</th>
+                <th>This Month</th>
+                <th>Total Commission</th>
               </tr>
             </thead>
 
@@ -237,7 +243,8 @@ export default function AffiliateDashboardPage() {
                       : "-"}
                   </td>
 
-                  <td>${Number(client.commission || 0).toFixed(2)}</td>
+                  <td>${Number(client.monthlyCommission || 0).toFixed(2)}</td>
+                  <td>${Number(client.totalCommission || 0).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -246,7 +253,6 @@ export default function AffiliateDashboardPage() {
       </section>
 
       <section className="affiliate-stats">
-
         {loadingStats && <p>Loading data...</p>}
         {errorStats && <p>{errorStats}</p>}
 
