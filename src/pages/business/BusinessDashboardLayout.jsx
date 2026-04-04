@@ -102,23 +102,23 @@ export default function BusinessDashboardLayout() {
     }
   };
 
-  const handleEarlyBirdUpgrade = async () => {
-    if (!user?.userId) return;
-    if (user?.earlyBirdUsed || user?.hasPaid) return;
+ const handleEarlyBirdUpgrade = async () => {
+  if (!user?.userId) return;
+  if (earlyBirdUsed || hasPaid) return;
 
-    try {
-      const res = await API.post("/stripe/create-checkout-session", {
-        userId: user.userId,
-        plan: "monthly",
-      });
+  try {
+    const res = await API.post("/stripe/create-checkout-session", {
+      userId: user.userId,
+      plan: "monthly",
+    });
 
-      if (res.data?.url) {
-        window.location.href = res.data.url;
-      }
-    } catch (err) {
-      console.error("Early Bird checkout error:", err);
+    if (res.data?.url) {
+      window.location.href = res.data.url;
     }
-  };
+  } catch (err) {
+    console.error("Early Bird checkout error:", err);
+  }
+};
 
   /* ============================
      🔓 Logout
@@ -161,16 +161,28 @@ export default function BusinessDashboardLayout() {
    🎯 Upgrade / Early Bird Guards
 ============================ */
   const earlyBirdUsed = Boolean(user?.earlyBirdUsed);
-  const hasPaid = Boolean(user?.hasPaid);
 
-  const isTrialActive =
-    user?.subscriptionPlan === "trial" &&
-    user?.trialEndsAt &&
-    new Date(user.trialEndsAt) > new Date();
+const hasActiveSubscription =
+  user?.subscriptionPlan === "monthly" ||
+  user?.subscriptionPlan === "yearly";
 
-  const canUpgrade = isTrialActive && !hasPaid && !earlyBirdUsed;
+const hasPaid =
+  user?.hasPaid === true ||
+  user?.paymentStatus === "paid" ||
+  user?.paymentStatus === "active" ||
+  hasActiveSubscription;
 
-  const canShowEarlyBird = canUpgrade && user?.isEarlyBirdActive && isAfterDay4;
+const isTrialActive =
+  user?.subscriptionPlan === "trial" &&
+  user?.trialEndsAt &&
+  new Date(user.trialEndsAt) > new Date();
+
+const canUpgrade = isTrialActive && !hasPaid && !earlyBirdUsed;
+
+const canShowEarlyBird =
+  canUpgrade &&
+  user?.isEarlyBirdActive &&
+  isAfterDay4;
 
   if (loading) return null;
 
@@ -230,7 +242,7 @@ export default function BusinessDashboardLayout() {
                   Hello, {user?.businessName || user?.name}
                 </div>
 
-                {!isMobile && isTrialActive && (
+                {!isMobile && isTrialActive && !hasPaid && (
                   <div className="trial-status">
                     ⏳{" "}
                     {user.isTrialEndingToday ? (
