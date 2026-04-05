@@ -80,7 +80,7 @@ const AdminWithdrawalsPage = () => {
             <thead>
               <tr>
                 <th>Business Name</th>
-                <th>Phone</th>
+                <th>Email</th>
                 <th>Amount</th>
                 <th>Bank</th>
                 <th>Branch</th>
@@ -95,7 +95,7 @@ const AdminWithdrawalsPage = () => {
               {withdrawals.map((w) => (
                 <tr key={w.id}>
                   <td>{w.businessName || w.name || "—"}</td>
-                  <td>{w.phone}</td>
+                  <td>{w.email || "—"}</td>
                   <td>${Number(w.amount).toFixed(2)}</td>
                   <td>{w.bankName}</td>
                   <td>{w.branch}</td>
