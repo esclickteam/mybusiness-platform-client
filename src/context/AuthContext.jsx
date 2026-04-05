@@ -78,7 +78,9 @@ const isEarlyBirdActive = Boolean(
 
 
 
-const hasPaid = user?.paymentStatus === "paid";
+const hasPaid =
+  user?.paymentStatus === "paid" ||
+  user?.paymentStatus === "active";
 
 
 
@@ -119,7 +121,7 @@ const hasPaid = user?.paymentStatus === "paid";
       : computedIsValid,
 
   subscriptionStatus:
-    user.status || user.subscriptionPlan || "free",
+  user.subscriptionStatus || user.status || user.subscriptionPlan || "free",
 
   /* =====================
      🚪 Access
