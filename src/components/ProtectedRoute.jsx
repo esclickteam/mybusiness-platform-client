@@ -68,12 +68,13 @@ export default function ProtectedRoute({
      💎 REAL ACCESS CHECK (🔥 הכי חשוב)
   =========================== */
   const hasActiveSubscription = useMemo(() => {
-    return (
-      user?.subscriptionStatus === "active" &&
-      user?.subscriptionEnd &&
-      new Date(user.subscriptionEnd) > new Date()
-    );
-  }, [user?.subscriptionStatus, user?.subscriptionEnd]);
+  return (
+    user?.isSubscriptionValid === true ||
+    (user?.subscriptionEnd &&
+      new Date(user.subscriptionEnd) > new Date()) ||
+    user?.hasPaid === true
+  );
+}, [user]);
 
   /* ===========================
      🕓 Trial expired (רק אם אין מנוי)
