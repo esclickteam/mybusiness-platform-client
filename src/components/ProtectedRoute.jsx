@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Unauthorized from "./Unauthorized";
@@ -65,28 +65,18 @@ export default function ProtectedRoute({
   }
 
   /* ===========================
-     💎 REAL ACCESS CHECK (🔥 הכי חשוב)
+     💎 ACCESS LOGIC (🔥 מתוקן)
   =========================== */
-  const hasActiveSubscription = useMemo(() => {
-  return (
-    user?.isSubscriptionValid === true ||
-    (user?.subscriptionEnd &&
-      new Date(user.subscriptionEnd) > new Date()) ||
-    user?.hasPaid === true
-  );
-}, [user]);
 
-  /* ===========================
-     🕓 Trial expired (רק אם אין מנוי)
-  =========================== */
-  const isTrialExpired = useMemo(() => {
-    return (
-      isBusiness &&
-      !hasActiveSubscription && // 🔥 קריטי
-      user?.trialEndsAt &&
-      new Date(user.trialEndsAt) < new Date()
-    );
-  }, [isBusiness, user?.trialEndsAt, hasActiveSubscription]);
+  // ✅ מנוי פעיל = שילם
+  const hasActiveSubscription = Boolean(user?.hasPaid === true);
+
+  // ✅ ניסיון נגמר
+  const isTrialExpired =
+    isBusiness &&
+    !hasActiveSubscription &&
+    user?.trialEndsAt &&
+    new Date(user.trialEndsAt) < new Date();
 
   /* ===========================
      🧠 Show trial modal ONLY inside dashboard
@@ -101,7 +91,13 @@ export default function ProtectedRoute({
     } else {
       setShowTrialModal(false);
     }
-  }, [isBusiness, isTrialExpired, location.pathname]);
+  }, [
+    isBusiness,
+    isTrialExpired,
+    location.pathname,
+    user?.hasPaid,
+    user?.trialEndsAt,
+  ]);
 
   /* ===========================
      ⚠️ Trial expired – modal only
