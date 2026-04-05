@@ -20,7 +20,6 @@ export default function ProtectedRoute({
 
   /* ===========================
      ⏳ Wait for auth to fully settle
-     (CRITICAL – no redirects before this)
   =========================== */
   if (!initialized || loading) {
     return (
@@ -65,18 +64,28 @@ export default function ProtectedRoute({
     return <Navigate to="/create-business" replace />;
   }
 
+  /* ===========================
+     💎 REAL ACCESS CHECK (🔥 הכי חשוב)
+  =========================== */
+  const hasActiveSubscription = useMemo(() => {
+    return (
+      user?.subscriptionStatus === "active" &&
+      user?.subscriptionEnd &&
+      new Date(user.subscriptionEnd) > new Date()
+    );
+  }, [user?.subscriptionStatus, user?.subscriptionEnd]);
 
   /* ===========================
-     🕓 Trial expired
+     🕓 Trial expired (רק אם אין מנוי)
   =========================== */
   const isTrialExpired = useMemo(() => {
-  return (
-    isBusiness &&
-    user?.subscriptionPlan === "trial" &&
-    user?.trialEndsAt &&
-    new Date(user.trialEndsAt) < new Date()
-  );
-}, [isBusiness, user?.subscriptionPlan, user?.trialEndsAt]);
+    return (
+      isBusiness &&
+      !hasActiveSubscription && // 🔥 קריטי
+      user?.trialEndsAt &&
+      new Date(user.trialEndsAt) < new Date()
+    );
+  }, [isBusiness, user?.trialEndsAt, hasActiveSubscription]);
 
   /* ===========================
      🧠 Show trial modal ONLY inside dashboard
@@ -94,11 +103,11 @@ export default function ProtectedRoute({
   }, [isBusiness, isTrialExpired, location.pathname]);
 
   /* ===========================
-     ⚠️ Trial expired – modal only (no redirect)
+     ⚠️ Trial expired – modal only
   =========================== */
   if (showTrialModal) {
-  return <TrialExpiredModal />;
-}
+    return <TrialExpiredModal />;
+  }
 
   /* ===========================
      ✅ Access granted
