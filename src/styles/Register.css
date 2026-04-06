@@ -150,8 +150,8 @@ body {
   position: relative;
   width: 100%;
 
-  padding: 12px 10px;
-  border-radius: 12px;
+  padding: 16px 14px;
+  border-radius: 16px;
   border: 1px solid rgba(15, 23, 42, 0.12);
   background: #ffffff;
 
@@ -186,12 +186,12 @@ body {
 }
 
 .radio-option label::before {
-  content: "◯";
-  font-size: 14px; /* 🔥 קטן יותר */
-  line-height: 1;
-  color: rgba(15, 23, 42, 0.4);
-  margin-bottom: 4px; /* פחות רווח */
-  transition: color 0.18s ease, transform 0.18s ease;
+  content: "";
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(15, 23, 42, 0.4);
+  border-radius: 50%;
+  margin-bottom: 8px;
 }
 
 /* hover */
@@ -203,9 +203,8 @@ body {
 
 /* selected (card highlight) */
 .radio-option input[type="radio"]:checked + label::before {
-  content: "●";
-  font-size: 14px;
-  color: #5b4cf5;
+  background: #5b4cf5;
+  border-color: #5b4cf5;
 }
 
 .radio-option:has(input[type="radio"]:checked) {
