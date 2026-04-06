@@ -312,29 +312,35 @@ const Register = () => {
 
         <div className="radio-container">
 
-          <label>
-            <input
-              type="radio"
-              name="userType"
-              value="customer"
-              checked={formData.userType === "customer"}
-              onChange={handleChange}
-            />
-            Register as Customer
-          </label>
+  <div className="radio-option">
+    <input
+      type="radio"
+      id="customer"
+      name="userType"
+      value="customer"
+      checked={formData.userType === "customer"}
+      onChange={handleChange}
+    />
+    <label htmlFor="customer">
+      Register as Customer
+    </label>
+  </div>
 
-          <label>
-            <input
-              type="radio"
-              name="userType"
-              value="business"
-              checked={formData.userType === "business"}
-              onChange={handleChange}
-            />
-            Register as Business Owner
-          </label>
+  <div className="radio-option">
+    <input
+      type="radio"
+      id="business"
+      name="userType"
+      value="business"
+      checked={formData.userType === "business"}
+      onChange={handleChange}
+    />
+    <label htmlFor="business">
+      Register as Business Owner
+    </label>
+  </div>
 
-        </div>
+</div>
 
         <button type="submit" className="register-button">
           Sign Up
