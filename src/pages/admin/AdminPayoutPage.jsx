@@ -12,7 +12,7 @@ const AdminPayoutPage = () => {
 
   const headers = [
     { label: "Business Name", key: "businessName" },
-    { label: "Phone", key: "phone" },
+    { label: "Email", key: "email" },
     { label: "Commission Amount", key: "amount" },
     { label: "Bank", key: "bankName" },
     { label: "Branch", key: "branch" },
@@ -93,7 +93,7 @@ const AdminPayoutPage = () => {
             <thead>
               <tr>
                 <th>Business Name</th>
-                <th>Phone</th>
+                <th>Email</th>
                 <th>Amount</th>
                 <th>Bank</th>
                 <th>Branch</th>
@@ -113,7 +113,7 @@ const AdminPayoutPage = () => {
                 payouts.map((partner, idx) => (
                   <tr key={idx}>
                     <td>{partner.businessName || "—"}</td>
-                    <td>{partner.phone || "—"}</td>
+                    <td>{partner.email || "—"}</td>
                     <td>${Number(partner.amount || 0).toFixed(2)}</td>
                     <td>{partner.bankName || "—"}</td>
                     <td>{partner.branch || "—"}</td>
