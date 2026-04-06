@@ -187,10 +187,10 @@ body {
 
 .radio-option label::before {
   content: "◯";
-  font-size: 18px;
+  font-size: 14px; /* 🔥 קטן יותר */
   line-height: 1;
-  color: rgba(15, 23, 42, 0.45);
-  margin-bottom: 6px;
+  color: rgba(15, 23, 42, 0.4);
+  margin-bottom: 4px; /* פחות רווח */
   transition: color 0.18s ease, transform 0.18s ease;
 }
 
@@ -204,8 +204,8 @@ body {
 /* selected (card highlight) */
 .radio-option input[type="radio"]:checked + label::before {
   content: "●";
+  font-size: 14px;
   color: #5b4cf5;
-  transform: scale(1.05);
 }
 
 .radio-option:has(input[type="radio"]:checked) {
