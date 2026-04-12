@@ -5,7 +5,6 @@ import "../../styles/Pricing.css";
 export default function Plans() {
   const { user } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState(null);
-  const [selectedPlan, setSelectedPlan] = useState(null);
 
   const API_BASE = import.meta.env.VITE_API_URL;
   const userId = user?._id || user?.userId || user?.id;
@@ -23,6 +22,7 @@ export default function Plans() {
 
       if (!userId) {
         alert("User data not loaded yet.");
+        setLoadingPlan(null);
         return;
       }
 
@@ -39,6 +39,7 @@ export default function Plans() {
 
       if (!data.url) {
         alert("Failed to start Stripe Checkout");
+        setLoadingPlan(null);
         return;
       }
 
@@ -46,7 +47,6 @@ export default function Plans() {
     } catch (err) {
       console.error(err);
       alert("Error, please try again.");
-    } finally {
       setLoadingPlan(null);
     }
   };
@@ -64,24 +64,14 @@ export default function Plans() {
     "Predictive Analytics",
   ];
 
-  const handleClick = (type) => {
-    setSelectedPlan(type);
-
-    // נותן זמן לצביעה לפני מעבר
-    setTimeout(() => {
-      handleCheckout(type);
-    }, 120);
-  };
-
   const renderButton = (type, label) => {
-    const isSelected = selectedPlan === type || loadingPlan === type;
     const isLoading = loadingPlan === type;
 
     return (
       <button
-        className={`plan-btn ${isSelected ? "selected" : ""}`}
-        aria-pressed={isSelected}
-        onClick={() => handleClick(type)}
+        className={`plan-btn ${isLoading ? "selected" : ""}`}
+        aria-pressed={isLoading}
+        onClick={() => handleCheckout(type)}
         disabled={isLoading}
       >
         {isLoading ? "Processing..." : label}
