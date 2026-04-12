@@ -207,17 +207,15 @@
   transition: all 0.25s ease;
   margin-top: 12px;
 
-  background: linear-gradient(90deg, #6a11cb, #2575fc);
-  border: none;
-
-  color: #ffffff; /* 🔥 הכי חשוב */
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  color: #0f172a;
 }
 
 .plan-btn:hover {
+  border-color: #6a11cb;
+  color: #6a11cb;
   transform: translateY(-2px);
-  box-shadow:
-    0 10px 25px rgba(106, 17, 203, 0.35),
-    0 6px 12px rgba(37, 117, 252, 0.25);
 }
 
 /* ===========================
