@@ -165,56 +165,44 @@
 }
 
 /* ===========================
-   CTA – FIXED
+   CTA – FINAL (כפתור כחול קבוע)
 =========================== */
 
 .plan-btn {
   width: 100%;
   border-radius: 999px;
   font-size: 1.05rem;
-  font-weight: 500;
+  font-weight: 600;
   padding: 18px 24px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
   margin-top: 12px;
 
-  background: #ffffff;
-  border: 1.5px solid #d9e1ec;
+  background: #1976d2;
+  border: none;
 
-  color: #0f172a; /* ❗ בלי important */
-  outline: none;
-  box-shadow: none;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+
+  box-shadow: 0 8px 22px rgba(25, 118, 210, 0.25);
 }
 
 /* hover */
 .plan-btn:hover {
-  border-color: #1d22a8;
-  color: #1d22a8;
+  background: #1565c0;
   transform: translateY(-1px);
 }
 
-/* selected */
-.plan-btn.selected,
-.plan-btn.active,
-.plan-btn[aria-pressed="true"] {
-  background: #2b1fb3;
-  border-color: #2b1fb3;
-  color: #ffffff;
-}
-
-/* selected hover */
-.plan-btn.selected:hover,
-.plan-btn.active:hover,
-.plan-btn[aria-pressed="true"]:hover {
-  background: #2b1fb3;
-  border-color: #2b1fb3;
-  color: #ffffff;
+/* click */
+.plan-btn:active {
+  transform: scale(0.98);
 }
 
 /* disabled */
 .plan-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* ===========================
