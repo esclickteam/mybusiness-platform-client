@@ -74,7 +74,7 @@ export default function Plans() {
   };
 
   const renderButton = (type, label) => {
-    const isSelected = selectedPlan === type;
+    const isSelected = selectedPlan === type || loadingPlan === type;
     const isLoading = loadingPlan === type;
 
     return (
