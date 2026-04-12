@@ -37,7 +37,7 @@
 }
 
 /* ===========================
-   Plans Layout (🔥 חדש)
+   Plans Layout
 =========================== */
 
 .plan-card-container {
@@ -72,11 +72,19 @@
 
   text-align: left;
   backdrop-filter: blur(6px);
-  transition: all 0.3s ease;
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .plan-card:hover {
-  transform: translateY(-4px);
+  transform: scale(1.04);
+  box-shadow:
+    0 50px 120px rgba(15, 23, 42, 0.18),
+    0 20px 40px rgba(15, 23, 42, 0.1);
+}
+
+.plan-card:active {
+  transform: scale(1.02);
 }
 
 /* ===========================
@@ -89,13 +97,8 @@
     0 40px 100px rgba(106, 17, 203, 0.15),
     0 10px 30px rgba(37, 117, 252, 0.1);
 
-  transform: translateY(-6px);
   position: relative;
   z-index: 2;
-}
-
-.plan-card.highlight:hover {
-  transform: scale(1.06) translateY(-4px);
 }
 
 /* ===========================
@@ -108,7 +111,7 @@
   left: 50%;
   transform: translateX(-50%);
 
-  background: #c7e67a; /* ירקרק כמו בדוגמה */
+  background: #c7e67a;
   color: #0f172a;
 
   padding: 6px 14px;
@@ -215,12 +218,6 @@
   transform: translateY(-2px);
 }
 
-.plan-btn:hover {
-  transform: translateY(-2px);
-}
-
-
-
 /* ===========================
    Loading
 =========================== */
@@ -261,9 +258,5 @@
 @media (max-width: 768px) {
   .two-plans {
     flex-direction: column;
-  }
-
-  .plan-card.highlight {
-    transform: scale(1);
   }
 }
