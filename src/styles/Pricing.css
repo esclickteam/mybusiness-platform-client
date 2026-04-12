@@ -84,8 +84,12 @@
 =========================== */
 
 .plan-card.highlight {
-  transform: scale(1.06);
-  border: 2px solid #6a11cb;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow:
+    0 40px 100px rgba(106, 17, 203, 0.15),
+    0 10px 30px rgba(37, 117, 252, 0.1);
+
+  transform: translateY(-6px);
   position: relative;
   z-index: 2;
 }
@@ -100,16 +104,17 @@
 
 .badge {
   position: absolute;
-  top: -12px;
+  top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(90deg, #6a11cb, #2575fc);
-  color: white;
+
+  background: #c7e67a; /* ירקרק כמו בדוגמה */
+  color: #0f172a;
+
   padding: 6px 14px;
   font-size: 0.75rem;
-  border-radius: 999px;
-  font-weight: 600;
-  box-shadow: 0 6px 18px rgba(106, 17, 203, 0.3);
+  border-radius: 6px;
+  font-weight: 700;
 }
 
 /* ===========================
@@ -198,23 +203,23 @@
   cursor: pointer;
   transition: all 0.25s ease;
   margin-top: 12px;
-  border: 1px solid #e2e8f0;
+
   background: white;
+  border: 1.5px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.plan-btn:hover {
+  border-color: #6a11cb;
+  color: #6a11cb;
+  transform: translateY(-2px);
 }
 
 .plan-btn:hover {
   transform: translateY(-2px);
 }
 
-.plan-btn.primary {
-  background: linear-gradient(90deg, #6a11cb, #2575fc);
-  border: none;
-  color: #ffffff;
-}
 
-.plan-btn.primary:hover {
-  box-shadow: 0 14px 30px rgba(106, 17, 203, 0.4);
-}
 
 /* ===========================
    Loading
