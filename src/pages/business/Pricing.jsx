@@ -19,12 +19,10 @@ export default function Plans() {
 
   const handleCheckout = async (plan) => {
     try {
-      setSelectedPlan(plan);
       setLoadingPlan(plan);
 
       if (!userId) {
         alert("User data not loaded yet.");
-        setSelectedPlan(null);
         return;
       }
 
@@ -41,7 +39,6 @@ export default function Plans() {
 
       if (!data.url) {
         alert("Failed to start Stripe Checkout");
-        setSelectedPlan(null);
         return;
       }
 
@@ -49,7 +46,6 @@ export default function Plans() {
     } catch (err) {
       console.error(err);
       alert("Error, please try again.");
-      setSelectedPlan(null);
     } finally {
       setLoadingPlan(null);
     }
@@ -68,6 +64,15 @@ export default function Plans() {
     "Predictive Analytics",
   ];
 
+  const handleClick = (type) => {
+    setSelectedPlan(type);
+
+    // נותן זמן לצביעה לפני מעבר
+    setTimeout(() => {
+      handleCheckout(type);
+    }, 120);
+  };
+
   const renderButton = (type, label) => {
     const isSelected = selectedPlan === type;
     const isLoading = loadingPlan === type;
@@ -76,13 +81,8 @@ export default function Plans() {
       <button
         className={`plan-btn ${isSelected ? "selected" : ""}`}
         aria-pressed={isSelected}
-        onClick={() => handleCheckout(type)}
+        onClick={() => handleClick(type)}
         disabled={isLoading}
-        style={
-          isSelected
-            ? { color: "#fff", WebkitTextFillColor: "#fff" } // 🔥 FIX סופי
-            : {}
-        }
       >
         {isLoading ? "Processing..." : label}
       </button>
