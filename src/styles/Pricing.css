@@ -318,3 +318,22 @@
     padding: 16px 20px;
   }
 }
+
+.plan-btn.selected,
+.plan-btn.active,
+.plan-btn[aria-pressed="true"] {
+  background: #2b1fb3;
+  border-color: #2b1fb3;
+
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+
+  background-image: none !important; /* מבטל גרדיאנט אם יש */
+}
+
+.plan-btn.selected *,
+.plan-btn.active *,
+.plan-btn[aria-pressed="true"] * {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
