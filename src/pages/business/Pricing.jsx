@@ -5,6 +5,7 @@ import "../../styles/Pricing.css";
 export default function Plans() {
   const { user } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState(null);
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
   const API_BASE = import.meta.env.VITE_API_URL;
   const userId = user?._id || user?.userId || user?.id;
@@ -21,44 +22,44 @@ export default function Plans() {
   ========================= */
   const handleCheckout = async (plan) => {
     try {
+      setSelectedPlan(plan);
       setLoadingPlan(plan);
 
       if (!userId) {
         alert("User data not loaded yet.");
+        setSelectedPlan(null);
         return;
       }
 
-      const res = await fetch(
-        `${API_BASE}/stripe/create-checkout-session`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId,
-            plan,
-          }),
-        }
-      );
+      const res = await fetch(`${API_BASE}/stripe/create-checkout-session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          plan,
+        }),
+      });
 
       const data = await res.json();
 
       if (!data.url) {
         alert("Failed to start Stripe Checkout");
+        setSelectedPlan(null);
         return;
       }
 
       window.location.href = data.url;
-
     } catch (err) {
       console.error(err);
       alert("Error, please try again.");
+      setSelectedPlan(null);
     } finally {
       setLoadingPlan(null);
     }
   };
 
   /* =========================
-     📦 FEATURES (נשאר מלא!)
+     📦 FEATURES
   ========================= */
   const features = [
     "Professional Business Page",
@@ -75,8 +76,6 @@ export default function Plans() {
 
   return (
     <div className="plans-page">
-
-      {/* ================= HEADER ================= */}
       <header className="plans-header">
         <h1>Choose Your BizUply Plan</h1>
 
@@ -87,17 +86,12 @@ export default function Plans() {
               Start your <strong>14-day free trial</strong>. No credit card required.
             </>
           ) : (
-            <>
-              Your free trial has ended. Choose a plan below to continue.
-            </>
+            <>Your free trial has ended. Choose a plan below to continue.</>
           )}
         </p>
       </header>
 
-      {/* ================= PLANS ================= */}
       <section className="plan-card-container two-plans">
-
-        {/* ================= MONTHLY ================= */}
         <div className="plan-card">
           <h2>Monthly Plan</h2>
 
@@ -117,20 +111,15 @@ export default function Plans() {
           </ul>
 
           <button
-            className="plan-btn"
+            className={`plan-btn ${selectedPlan === "monthly" ? "selected" : ""}`}
             onClick={() => handleCheckout("monthly")}
             disabled={loadingPlan === "monthly"}
           >
-            {loadingPlan === "monthly"
-              ? "Processing..."
-              : "Start Monthly"}
+            {loadingPlan === "monthly" ? "Processing..." : "Start Monthly"}
           </button>
         </div>
 
-        {/* ================= YEARLY ================= */}
         <div className="plan-card highlight">
-
-
           <h2>Yearly Plan</h2>
 
           <div className="plan-price">
@@ -154,18 +143,14 @@ export default function Plans() {
           </ul>
 
           <button
-            className="plan-btn primary"
+            className={`plan-btn ${selectedPlan === "yearly" ? "selected" : ""}`}
             onClick={() => handleCheckout("yearly")}
             disabled={loadingPlan === "yearly"}
           >
-            {loadingPlan === "yearly"
-              ? "Processing..."
-              : "Start Yearly"}
+            {loadingPlan === "yearly" ? "Processing..." : "Start Yearly"}
           </button>
         </div>
-
       </section>
-
     </div>
   );
 }

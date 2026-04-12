@@ -23,7 +23,6 @@
   font-weight: 700;
   line-height: 1.25;
   margin-bottom: 1rem;
-
   background: linear-gradient(90deg, #6a11cb, #2575fc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -65,14 +64,11 @@
   flex: 1;
   min-width: 320px;
   max-width: 460px;
-
   box-shadow:
     0 30px 80px rgba(15, 23, 42, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
-
   text-align: left;
   backdrop-filter: blur(6px);
-
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -96,7 +92,6 @@
   box-shadow:
     0 40px 100px rgba(106, 17, 203, 0.15),
     0 10px 30px rgba(37, 117, 252, 0.1);
-
   position: relative;
   z-index: 2;
 }
@@ -110,10 +105,8 @@
   top: -14px;
   left: 50%;
   transform: translateX(-50%);
-
   background: #c7e67a;
   color: #0f172a;
-
   padding: 6px 14px;
   font-size: 0.75rem;
   border-radius: 6px;
@@ -199,23 +192,52 @@
 
 .plan-btn {
   width: 100%;
-  border-radius: 14px;
+  border-radius: 999px;
   font-size: 1.05rem;
-  font-weight: 600;
-  padding: 14px 0;
+  font-weight: 500;
+  padding: 18px 24px;
   cursor: pointer;
   transition: all 0.25s ease;
   margin-top: 12px;
-
-  background: white;
-  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  border: 1.5px solid #d9e1ec;
   color: #0f172a;
+  outline: none;
+  box-shadow: none;
 }
 
 .plan-btn:hover {
-  border-color: #6a11cb;
-  color: #6a11cb;
-  transform: translateY(-2px);
+  border-color: #1d22a8;
+  color: #1d22a8;
+  transform: translateY(-1px);
+}
+
+.plan-btn:active {
+  transform: scale(0.98);
+}
+
+.plan-btn:focus-visible {
+  box-shadow: 0 0 0 4px rgba(29, 34, 168, 0.12);
+}
+
+/* מצב נבחר */
+.plan-btn.selected,
+.plan-btn.active,
+.plan-btn[aria-pressed="true"] {
+  background: #1d22a8;
+  border-color: #1d22a8;
+  color: #ffffff;
+  box-shadow: none;
+  transform: none;
+}
+
+.plan-btn.selected:hover,
+.plan-btn.active:hover,
+.plan-btn[aria-pressed="true"]:hover {
+  background: #1d22a8;
+  border-color: #1d22a8;
+  color: #ffffff;
+  transform: none;
 }
 
 /* ===========================
@@ -223,7 +245,7 @@
 =========================== */
 
 .plan-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
@@ -258,5 +280,23 @@
 @media (max-width: 768px) {
   .two-plans {
     flex-direction: column;
+  }
+
+  .plan-card {
+    min-width: 100%;
+    max-width: 100%;
+    padding: 32px 24px;
+  }
+
+  .plans-header h1 {
+    font-size: 2.1rem;
+  }
+
+  .plans-header p {
+    font-size: 1rem;
+  }
+
+  .plan-btn {
+    padding: 16px 20px;
   }
 }
