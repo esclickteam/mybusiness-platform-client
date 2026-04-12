@@ -83,10 +83,7 @@
   transform: scale(1.02);
 }
 
-/* ===========================
-   Highlight (Yearly)
-=========================== */
-
+/* Highlight */
 .plan-card.highlight {
   background: rgba(255, 255, 255, 0.98);
   box-shadow:
@@ -97,23 +94,6 @@
 }
 
 /* ===========================
-   Badge
-=========================== */
-
-.badge {
-  position: absolute;
-  top: -14px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #c7e67a;
-  color: #0f172a;
-  padding: 6px 14px;
-  font-size: 0.75rem;
-  border-radius: 6px;
-  font-weight: 700;
-}
-
-/* ===========================
    Text
 =========================== */
 
@@ -121,13 +101,11 @@
   font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 14px;
-  color: #0f172a;
 }
 
 .plan-desc {
   color: #475569;
   margin-bottom: 28px;
-  font-size: 1rem;
 }
 
 /* ===========================
@@ -187,11 +165,7 @@
 }
 
 /* ===========================
-   CTA
-=========================== */
-
-/* ===========================
-   CTA
+   CTA – FIXED
 =========================== */
 
 .plan-btn {
@@ -203,104 +177,44 @@
   cursor: pointer;
   transition: all 0.25s ease;
   margin-top: 12px;
+
   background: #ffffff;
   border: 1.5px solid #d9e1ec;
-  color: #0f172a !important;
+
+  color: #0f172a; /* ❗ בלי important */
   outline: none;
   box-shadow: none;
 }
 
+/* hover */
 .plan-btn:hover {
   border-color: #1d22a8;
-  color: #1d22a8 !important;
-  -webkit-text-fill-color: #1d22a8 !important;
+  color: #1d22a8;
   transform: translateY(-1px);
 }
 
-.plan-btn:active {
-  transform: scale(0.98);
-}
-
-.plan-btn:focus-visible {
-  box-shadow: 0 0 0 4px rgba(29, 34, 168, 0.12);
-}
-
-/* מצב נבחר */
-button.plan-btn.selected,
-button.plan-btn.active,
-button.plan-btn[aria-pressed="true"] {
+/* selected */
+.plan-btn.selected,
+.plan-btn.active,
+.plan-btn[aria-pressed="true"] {
   background: #2b1fb3;
   border-color: #2b1fb3;
-
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-
-  box-shadow: none;
-  transform: none;
-
-  /* 🔥 קריטי */
-  background-image: none !important;
+  color: #ffffff;
 }
 
-/* לוודא שגם טקסט פנימי לא נשבר */
-button.plan-btn.selected span,
-button.plan-btn.active span,
-button.plan-btn[aria-pressed="true"] span {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-/* מצב נבחר גם בהובר */
+/* selected hover */
 .plan-btn.selected:hover,
 .plan-btn.active:hover,
 .plan-btn[aria-pressed="true"]:hover {
   background: #2b1fb3;
   border-color: #2b1fb3;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  transform: none;
+  color: #ffffff;
 }
 
-/* מצב נבחר + disabled בזמן loading */
-.plan-btn.selected:disabled,
-.plan-btn.active:disabled,
-.plan-btn[aria-pressed="true"]:disabled {
-  background: #2b1fb3;
-  border-color: #2b1fb3;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  opacity: 1;
-  cursor: not-allowed;
-}
-
-/* disabled רגיל */
+/* disabled */
 .plan-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-}
-
-/* ===========================
-   Summary
-=========================== */
-
-.summary-box {
-  background: rgba(248, 247, 255, 0.8);
-  border: 1px solid rgba(203, 213, 225, 0.6);
-  border-radius: 14px;
-  padding: 16px;
-  margin-top: 28px;
-}
-
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.95rem;
-  color: #334155;
-}
-
-.summary-row.save {
-  color: #059669;
-  font-weight: 700;
 }
 
 /* ===========================
@@ -329,23 +243,4 @@ button.plan-btn[aria-pressed="true"] span {
   .plan-btn {
     padding: 16px 20px;
   }
-}
-
-.plan-btn.selected,
-.plan-btn.active,
-.plan-btn[aria-pressed="true"] {
-  background: #2b1fb3;
-  border-color: #2b1fb3;
-
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
-
-  background-image: none !important; /* מבטל גרדיאנט אם יש */
-}
-
-.plan-btn.selected *,
-.plan-btn.active *,
-.plan-btn[aria-pressed="true"] * {
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
 }

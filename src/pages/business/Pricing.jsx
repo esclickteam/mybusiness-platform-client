@@ -68,6 +68,27 @@ export default function Plans() {
     "Predictive Analytics",
   ];
 
+  const renderButton = (type, label) => {
+    const isSelected = selectedPlan === type;
+    const isLoading = loadingPlan === type;
+
+    return (
+      <button
+        className={`plan-btn ${isSelected ? "selected" : ""}`}
+        aria-pressed={isSelected}
+        onClick={() => handleCheckout(type)}
+        disabled={isLoading}
+        style={
+          isSelected
+            ? { color: "#fff", WebkitTextFillColor: "#fff" } // 🔥 FIX סופי
+            : {}
+        }
+      >
+        {isLoading ? "Processing..." : label}
+      </button>
+    );
+  };
+
   return (
     <div className="plans-page">
       <header className="plans-header">
@@ -104,14 +125,7 @@ export default function Plans() {
             ))}
           </ul>
 
-          <button
-            className={`plan-btn ${selectedPlan === "monthly" ? "selected" : ""}`}
-            aria-pressed={selectedPlan === "monthly"}
-            onClick={() => handleCheckout("monthly")}
-            disabled={loadingPlan === "monthly"}
-          >
-            {loadingPlan === "monthly" ? "Processing..." : "Start Monthly"}
-          </button>
+          {renderButton("monthly", "Start Monthly")}
         </div>
 
         <div className="plan-card highlight">
@@ -137,14 +151,7 @@ export default function Plans() {
             ))}
           </ul>
 
-          <button
-            className={`plan-btn ${selectedPlan === "yearly" ? "selected" : ""}`}
-            aria-pressed={selectedPlan === "yearly"}
-            onClick={() => handleCheckout("yearly")}
-            disabled={loadingPlan === "yearly"}
-          >
-            {loadingPlan === "yearly" ? "Processing..." : "Start Yearly"}
-          </button>
+          {renderButton("yearly", "Start Yearly")}
         </div>
       </section>
     </div>
