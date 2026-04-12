@@ -226,7 +226,8 @@
 .plan-btn[aria-pressed="true"] {
   background: #1d22a8;
   border-color: #1d22a8;
-  color: #ffffff;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
   box-shadow: none;
   transform: none;
 }
@@ -236,7 +237,8 @@
 .plan-btn[aria-pressed="true"]:hover {
   background: #1d22a8;
   border-color: #1d22a8;
-  color: #ffffff;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
   transform: none;
 }
 
@@ -244,9 +246,12 @@
    Loading
 =========================== */
 
-.plan-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+.plan-btn.selected:disabled,
+.plan-btn.active:disabled,
+.plan-btn[aria-pressed="true"]:disabled {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+  opacity: 1;
 }
 
 /* ===========================
