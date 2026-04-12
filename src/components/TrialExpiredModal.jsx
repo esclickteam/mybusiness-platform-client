@@ -1,30 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import "./TrialExpiredModal.css";
 
 /**
  * 💜 TrialExpiredModal
  * מוצג כאשר תקופת הניסיון הסתיימה
- * מפנה לעמוד חבילות במקום Stripe
+ * מפנה לעמוד החבילות (Pricing)
  */
 export default function TrialExpiredModal() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
 
   /* ===========================
-     🚀 Redirect to Plans Page
+     🚀 Redirect to Pricing Page
   =========================== */
   const handleUpgrade = () => {
-    console.log("🟣 Redirecting to plans page");
-
-    setLoading(true);
-
-    // נותן אפקט לחיצה קטן
-    setTimeout(() => {
-      navigate("/plans?from=trial", { replace: true });
-    }, 150);
+    console.log("🟣 Redirect to pricing page");
+    navigate("/pricing?from=trial");
   };
 
   /* ===========================
@@ -69,9 +60,8 @@ export default function TrialExpiredModal() {
           <button
             className="upgrade-btn"
             onClick={handleUpgrade}
-            disabled={loading}
           >
-            {loading ? "Loading plans..." : "Upgrade & Keep My Access"}
+            Upgrade & Keep My Access
           </button>
         </div>
 
