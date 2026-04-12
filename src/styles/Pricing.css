@@ -190,6 +190,10 @@
    CTA
 =========================== */
 
+/* ===========================
+   CTA
+=========================== */
+
 .plan-btn {
   width: 100%;
   border-radius: 999px;
@@ -201,14 +205,16 @@
   margin-top: 12px;
   background: #ffffff;
   border: 1.5px solid #d9e1ec;
-  color: #0f172a;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
   outline: none;
   box-shadow: none;
 }
 
 .plan-btn:hover {
   border-color: #1d22a8;
-  color: #1d22a8;
+  color: #1d22a8 !important;
+  -webkit-text-fill-color: #1d22a8 !important;
   transform: translateY(-1px);
 }
 
@@ -224,34 +230,43 @@
 .plan-btn.selected,
 .plan-btn.active,
 .plan-btn[aria-pressed="true"] {
-  background: #1d22a8;
-  border-color: #1d22a8;
+  background: #2b1fb3;
+  border-color: #2b1fb3;
   color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff;
+  -webkit-text-fill-color: #ffffff !important;
   box-shadow: none;
   transform: none;
 }
 
+/* מצב נבחר גם בהובר */
 .plan-btn.selected:hover,
 .plan-btn.active:hover,
 .plan-btn[aria-pressed="true"]:hover {
-  background: #1d22a8;
-  border-color: #1d22a8;
+  background: #2b1fb3;
+  border-color: #2b1fb3;
   color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff;
+  -webkit-text-fill-color: #ffffff !important;
   transform: none;
 }
 
-/* ===========================
-   Loading
-=========================== */
-
+/* מצב נבחר + disabled בזמן loading */
 .plan-btn.selected:disabled,
 .plan-btn.active:disabled,
 .plan-btn[aria-pressed="true"]:disabled {
+  background: #2b1fb3;
+  border-color: #2b1fb3;
   color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff;
+  -webkit-text-fill-color: #ffffff !important;
   opacity: 1;
+  cursor: not-allowed;
+}
+
+/* disabled רגיל */
+.plan-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  color: inherit;
+  -webkit-text-fill-color: inherit;
 }
 
 /* ===========================

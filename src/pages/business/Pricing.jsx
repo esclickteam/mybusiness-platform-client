@@ -17,9 +17,6 @@ export default function Plans() {
     user?.subscriptionEnd &&
     new Date(user.subscriptionEnd) < now;
 
-  /* =========================
-     💳 STRIPE CHECKOUT
-  ========================= */
   const handleCheckout = async (plan) => {
     try {
       setSelectedPlan(plan);
@@ -58,9 +55,6 @@ export default function Plans() {
     }
   };
 
-  /* =========================
-     📦 FEATURES
-  ========================= */
   const features = [
     "Professional Business Page",
     "Smart CRM for Clients & Appointments",
@@ -112,6 +106,7 @@ export default function Plans() {
 
           <button
             className={`plan-btn ${selectedPlan === "monthly" ? "selected" : ""}`}
+            aria-pressed={selectedPlan === "monthly"}
             onClick={() => handleCheckout("monthly")}
             disabled={loadingPlan === "monthly"}
           >
@@ -144,6 +139,7 @@ export default function Plans() {
 
           <button
             className={`plan-btn ${selectedPlan === "yearly" ? "selected" : ""}`}
+            aria-pressed={selectedPlan === "yearly"}
             onClick={() => handleCheckout("yearly")}
             disabled={loadingPlan === "yearly"}
           >
