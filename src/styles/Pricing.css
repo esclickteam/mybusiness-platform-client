@@ -206,7 +206,6 @@
   background: #ffffff;
   border: 1.5px solid #d9e1ec;
   color: #0f172a !important;
-  -webkit-text-fill-color: #0f172a !important;
   outline: none;
   box-shadow: none;
 }
@@ -227,15 +226,28 @@
 }
 
 /* מצב נבחר */
-.plan-btn.selected,
-.plan-btn.active,
-.plan-btn[aria-pressed="true"] {
+button.plan-btn.selected,
+button.plan-btn.active,
+button.plan-btn[aria-pressed="true"] {
   background: #2b1fb3;
   border-color: #2b1fb3;
+
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
+
   box-shadow: none;
   transform: none;
+
+  /* 🔥 קריטי */
+  background-image: none !important;
+}
+
+/* לוודא שגם טקסט פנימי לא נשבר */
+button.plan-btn.selected span,
+button.plan-btn.active span,
+button.plan-btn[aria-pressed="true"] span {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 /* מצב נבחר גם בהובר */
