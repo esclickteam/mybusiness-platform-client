@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import API from "../api";
 import "./TrialExpiredModal.css";
 
 /**
  * 💜 TrialExpiredModal
  * מוצג כאשר תקופת הניסיון הסתיימה
- * מפנה ישירות ל־Stripe Checkout ($119 monthly)
+ * מפנה לעמוד חבילות במקום Stripe
  */
 export default function TrialExpiredModal() {
   const navigate = useNavigate();
@@ -15,50 +14,21 @@ export default function TrialExpiredModal() {
   const [loading, setLoading] = useState(false);
 
   /* ===========================
-     🚀 Redirect to Stripe – $119 Monthly
+     🚀 Redirect to Plans Page
   =========================== */
-  const handleUpgrade = async () => {
-  console.log("🟣 [TrialExpiredModal] Upgrade clicked");
+  const handleUpgrade = () => {
+    console.log("🟣 Redirecting to plans page");
 
-  if (!user?.userId) {
-    console.error("❌ No userId – cannot start checkout", user);
-    return;
-  }
-
-  try {
     setLoading(true);
 
-    console.log("➡️ Creating Stripe Checkout session", {
-      userId: user.userId,
-      plan: "monthly",
-    });
-
-    const res = await API.post(
-      "/stripe/create-checkout-session",
-      {
-        userId: user.userId, // ✅ זה השדה הנכון
-        plan: "monthly",     // $119
-      }
-    );
-
-    console.log("✅ Stripe response:", res.data);
-
-    if (res.data?.url) {
-      console.log("🔗 Redirecting to Stripe:", res.data.url);
-      window.location.href = res.data.url; // 🔥 redirect אמיתי
-    } else {
-      throw new Error("Stripe checkout URL missing");
-    }
-  } catch (err) {
-    console.error("❌ Stripe redirect failed:", err);
-    alert("Unable to start checkout. Please try again.");
-    setLoading(false);
-  }
-};
-
+    // נותן אפקט לחיצה קטן
+    setTimeout(() => {
+      navigate("/plans?from=trial", { replace: true });
+    }, 150);
+  };
 
   /* ===========================
-     🔙 Back to Home (ללא logout)
+     🔙 Back to Home
   =========================== */
   const handleBackHome = () => {
     console.log("↩️ Back to home clicked");
@@ -101,10 +71,8 @@ export default function TrialExpiredModal() {
             onClick={handleUpgrade}
             disabled={loading}
           >
-            {loading ? "Redirecting to payment…" : "Upgrade & Keep My Access"}
+            {loading ? "Loading plans..." : "Upgrade & Keep My Access"}
           </button>
-
-          
         </div>
 
         {/* 💬 Secondary CTA */}
@@ -118,7 +86,7 @@ export default function TrialExpiredModal() {
           Need more time? <span>Contact us for an extension</span>
         </p>
 
-        {/* 💜 Soft footer */}
+        {/* 💜 Footer */}
         <p className="note">
           We’re glad you tried <strong>BizUply</strong>.  
           Let’s keep your business running smoothly 🚀
