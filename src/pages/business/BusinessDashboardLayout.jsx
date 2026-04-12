@@ -256,7 +256,7 @@ const canShowEarlyBird =
                     {canUpgrade && !canShowEarlyBird && (
                       <button
                         className="trial-upgrade-pill"
-                        onClick={handleUpgrade}
+                        onClick={() => navigate("/pricing")}
                       >
                         Upgrade
                       </button>
