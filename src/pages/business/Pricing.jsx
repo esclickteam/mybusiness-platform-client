@@ -24,7 +24,7 @@ export default function Plans() {
       setLoadingPlan(plan);
 
       if (!userId) {
-        alert("User not ready");
+        alert("User data not loaded yet.");
         return;
       }
 
@@ -35,7 +35,7 @@ export default function Plans() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userId,
-            plan, // 🔥 monthly / yearly
+            plan,
           }),
         }
       );
@@ -43,18 +43,35 @@ export default function Plans() {
       const data = await res.json();
 
       if (!data.url) {
-        alert("Stripe failed");
+        alert("Failed to start Stripe Checkout");
         return;
       }
 
       window.location.href = data.url;
+
     } catch (err) {
       console.error(err);
-      alert("Error, try again");
+      alert("Error, please try again.");
     } finally {
       setLoadingPlan(null);
     }
   };
+
+  /* =========================
+     📦 FEATURES (נשאר מלא!)
+  ========================= */
+  const features = [
+    "Professional Business Page",
+    "Smart CRM for Clients & Appointments",
+    "Built-in Messaging System",
+    "Ratings & Reviews Management",
+    "Business Collaboration Network",
+    "AI Business Advisor & Smart Insights",
+    "Create and Track Client Tasks",
+    "Log and Document Client Calls",
+    "Automated Notifications",
+    "Predictive Analytics",
+  ];
 
   return (
     <div className="plans-page">
@@ -71,7 +88,7 @@ export default function Plans() {
             </>
           ) : (
             <>
-              Your free trial has ended. Choose a plan to continue.
+              Your free trial has ended. Choose a plan below to continue.
             </>
           )}
         </p>
@@ -94,10 +111,9 @@ export default function Plans() {
           </p>
 
           <ul className="plan-features">
-            <li>✔ All features included</li>
-            <li>✔ AI Business Advisor</li>
-            <li>✔ CRM & Messaging</li>
-            <li>✔ Cancel anytime</li>
+            {features.map((f, i) => (
+              <li key={i}>✔ {f}</li>
+            ))}
           </ul>
 
           <button
@@ -111,10 +127,9 @@ export default function Plans() {
           </button>
         </div>
 
-        {/* ================= YEARLY (HIGHLIGHT) ================= */}
+        {/* ================= YEARLY ================= */}
         <div className="plan-card highlight">
 
-          <div className="badge">⭐ Most Popular</div>
 
           <h2>Yearly Plan</h2>
 
@@ -133,10 +148,9 @@ export default function Plans() {
           </p>
 
           <ul className="plan-features">
-            <li>✔ Everything in Monthly</li>
-            <li>✔ Save 20%</li>
-            <li>✔ Priority support</li>
-            <li>✔ Better long-term growth</li>
+            {features.map((f, i) => (
+              <li key={i}>✔ {f}</li>
+            ))}
           </ul>
 
           <button

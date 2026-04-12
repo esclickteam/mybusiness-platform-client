@@ -1,6 +1,5 @@
 /* ===========================
    Pricing – Unified SaaS UX
-   Same style as Solutions / Features / How It Works
 =========================== */
 
 .plans-page {
@@ -12,8 +11,6 @@
   color: #0f172a;
   font-family: "Poppins", sans-serif;
   line-height: 1.8;
-
-  /* ❌ אין רקע כאן */
   background: transparent;
 }
 
@@ -40,52 +37,34 @@
 }
 
 /* ===========================
-   Billing Toggle
+   Plans Layout (🔥 חדש)
 =========================== */
 
-.plans-toggle {
-  display: inline-flex;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 999px;
-  padding: 6px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  margin-bottom: 3rem;
-  backdrop-filter: blur(6px);
+.plan-card-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
-.toggle-btn {
-  border: none;
-  background: transparent;
-  padding: 10px 26px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  border-radius: 999px;
-  transition: all 0.25s ease;
-  color: #64748b;
-}
-
-.toggle-btn.active {
-  background: linear-gradient(90deg, #6a11cb, #2575fc);
-  color: #ffffff;
-  box-shadow: 0 6px 18px rgba(106, 17, 203, 0.35);
+.two-plans {
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
 }
 
 /* ===========================
    Plan Card
 =========================== */
 
-.plan-card-container {
-  display: flex;
-  justify-content: center;
-}
-
 .plan-card {
   background: rgba(255, 255, 255, 0.92);
   border-radius: 22px;
   padding: 44px 38px;
-  max-width: 520px;
-  width: 100%;
+  flex: 1;
+  min-width: 320px;
+  max-width: 460px;
 
   box-shadow:
     0 30px 80px rgba(15, 23, 42, 0.12),
@@ -93,7 +72,49 @@
 
   text-align: left;
   backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
 }
+
+.plan-card:hover {
+  transform: translateY(-4px);
+}
+
+/* ===========================
+   Highlight (Yearly)
+=========================== */
+
+.plan-card.highlight {
+  transform: scale(1.06);
+  border: 2px solid #6a11cb;
+  position: relative;
+  z-index: 2;
+}
+
+.plan-card.highlight:hover {
+  transform: scale(1.06) translateY(-4px);
+}
+
+/* ===========================
+   Badge
+=========================== */
+
+.badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: white;
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(106, 17, 203, 0.3);
+}
+
+/* ===========================
+   Text
+=========================== */
 
 .plan-card h2 {
   font-size: 1.6rem;
@@ -116,7 +137,7 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin-bottom: 22px;
+  margin-bottom: 12px;
 }
 
 .plan-price .price {
@@ -130,6 +151,22 @@
 .plan-price .duration {
   font-size: 1rem;
   color: #64748b;
+}
+
+/* ===========================
+   Yearly Info
+=========================== */
+
+.yearly-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.yearly-info .save {
+  color: #059669;
+  font-weight: 700;
 }
 
 /* ===========================
@@ -152,23 +189,40 @@
    CTA
 =========================== */
 
-.plan-btn.primary {
+.plan-btn {
   width: 100%;
-  background: linear-gradient(90deg, #6a11cb, #2575fc);
-  border: none;
   border-radius: 14px;
-  color: #ffffff;
   font-size: 1.05rem;
   font-weight: 600;
   padding: 14px 0;
   cursor: pointer;
   transition: all 0.25s ease;
   margin-top: 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+}
+
+.plan-btn:hover {
+  transform: translateY(-2px);
+}
+
+.plan-btn.primary {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  border: none;
+  color: #ffffff;
 }
 
 .plan-btn.primary:hover {
-  transform: translateY(-2px);
   box-shadow: 0 14px 30px rgba(106, 17, 203, 0.4);
+}
+
+/* ===========================
+   Loading
+=========================== */
+
+.plan-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ===========================
@@ -193,4 +247,18 @@
 .summary-row.save {
   color: #059669;
   font-weight: 700;
+}
+
+/* ===========================
+   Mobile
+=========================== */
+
+@media (max-width: 768px) {
+  .two-plans {
+    flex-direction: column;
+  }
+
+  .plan-card.highlight {
+    transform: scale(1);
+  }
 }
