@@ -10,7 +10,6 @@ export default function AffiliateDashboardPage() {
   const [searchParams] = useSearchParams();
 
   const [showBankForm, setShowBankForm] = useState(false);
-
   const [allStats, setAllStats] = useState([]);
   const [clients, setClients] = useState([]);
 
@@ -165,6 +164,7 @@ export default function AffiliateDashboardPage() {
 
       {copyStatus && <p className="success">{copyStatus}</p>}
 
+      {/* 🔥 SUMMARY */}
       <section className="affiliate-stats-summary">
         <div className="stat-card">
           <h3>Users Created</h3>
@@ -177,8 +177,9 @@ export default function AffiliateDashboardPage() {
         </div>
 
         <div className="stat-card">
-          <h3>This Month Commission</h3>
+          <h3>This Month Earnings</h3>
           <p>${Number(statsSummary.monthlyCommission || 0).toFixed(2)}</p>
+          <small>Monthly = recurring • Yearly = one-time</small>
         </div>
 
         <div className="stat-card balance">
@@ -192,6 +193,7 @@ export default function AffiliateDashboardPage() {
         </div>
       </section>
 
+      {/* 🔗 INVITE */}
       <section className="affiliate-section">
         <h2>Your Invite Link</h2>
 
@@ -207,6 +209,7 @@ export default function AffiliateDashboardPage() {
         </button>
       </section>
 
+      {/* 👥 CLIENTS */}
       <section className="affiliate-clients">
         <h2>Your Clients</h2>
 
@@ -218,6 +221,7 @@ export default function AffiliateDashboardPage() {
               <tr>
                 <th>Business</th>
                 <th>Email</th>
+                <th>Plan</th>
                 <th>Status</th>
                 <th>Created</th>
                 <th>This Month</th>
@@ -230,6 +234,21 @@ export default function AffiliateDashboardPage() {
                 <tr key={client._id}>
                   <td>{client.businessName}</td>
                   <td>{client.email}</td>
+
+                  {/* 🔥 PLAN */}
+                  <td>
+                    <span
+                      className={
+                        client.packageType === "yearly"
+                          ? "badge yearly"
+                          : "badge monthly"
+                      }
+                    >
+                      {client.packageType === "yearly"
+                        ? "Yearly (One-time)"
+                        : "Monthly (Recurring)"}
+                    </span>
+                  </td>
 
                   <td>
                     <span className={`status ${client.partnerStatus}`}>
@@ -252,6 +271,7 @@ export default function AffiliateDashboardPage() {
         )}
       </section>
 
+      {/* 📊 MONTHS */}
       <section className="affiliate-stats">
         {loadingStats && <p>Loading data...</p>}
         {errorStats && <p>{errorStats}</p>}
@@ -277,6 +297,7 @@ export default function AffiliateDashboardPage() {
         )}
       </section>
 
+      {/* 💸 PAYOUT */}
       <section className="affiliate-bank-section">
         <h2>Payments</h2>
 
