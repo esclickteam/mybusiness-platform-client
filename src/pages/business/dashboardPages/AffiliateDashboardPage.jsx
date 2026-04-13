@@ -179,7 +179,6 @@ export default function AffiliateDashboardPage() {
         <div className="stat-card">
           <h3>This Month Earnings</h3>
           <p>${Number(statsSummary.monthlyCommission || 0).toFixed(2)}</p>
-          <small>Monthly = recurring • Yearly = one-time</small>
         </div>
 
         <div className="stat-card balance">
