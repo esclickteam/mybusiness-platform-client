@@ -221,7 +221,6 @@ export default function AffiliateDashboardPage() {
                 <th>Business</th>
                 <th>Email</th>
                 <th>Plan</th>
-                <th>Status</th>
                 <th>Created</th>
                 <th>This Month</th>
                 <th>Total Commission</th>
