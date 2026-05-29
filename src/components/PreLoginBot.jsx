@@ -137,7 +137,6 @@ export default function PreLoginBot() {
 
                 <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-slate-500 shadow-sm">
                   <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  Online
                 </div>
               </div>
             </div>
