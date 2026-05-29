@@ -121,11 +121,7 @@ export default function PreLoginBot() {
                     key={btn.label}
                     type="button"
                     onClick={() => handleAction(btn)}
-                    className={`group flex w-full items-center justify-between gap-4 rounded-2xl px-4 py-3.5 text-left text-sm font-black shadow-sm transition hover:-translate-y-0.5 ${
-                      index === 0
-                        ? "bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 text-white shadow-indigo-200"
-                        : "border border-slate-100 bg-white text-slate-800 hover:border-indigo-100 hover:bg-indigo-50/70"
-                    }`}
+                    className="group flex w-full items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-white px-4 py-3.5 text-left text-sm font-black text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-100 hover:bg-indigo-50/70"
                   >
                     <span>{btn.label}</span>
 
