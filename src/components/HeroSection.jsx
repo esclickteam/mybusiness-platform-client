@@ -2,356 +2,254 @@ import { Link } from "react-router-dom";
 
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,_#ffffff_0%,_#f7f8ff_38%,_#eef2ff_72%,_#f8fbff_100%)]">
-      {/* Background glow */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-[-120px] top-[80px] h-[340px] w-[340px] rounded-full bg-cyan-200/30 blur-3xl" />
-        <div className="absolute right-[-120px] top-[40px] h-[420px] w-[420px] rounded-full bg-violet-300/25 blur-3xl" />
-        <div className="absolute left-1/2 top-0 h-[280px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/20 blur-3xl" />
-        <div className="absolute right-20 top-20 hidden h-40 w-40 bg-[radial-gradient(circle,#7c3aed_1px,transparent_1px)] [background-size:14px_14px] opacity-15 lg:block" />
+    <section className="relative overflow-hidden bg-[#081126] text-white">
+      {/* Background */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#243b88_0%,#101a3a_38%,#081126_78%)]" />
+        <div className="absolute left-1/2 top-[-220px] h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-500/25 blur-3xl" />
+        <div className="absolute right-[-160px] top-28 h-[420px] w-[420px] rounded-full bg-cyan-400/15 blur-3xl" />
+        <div className="absolute left-[-180px] top-64 h-[420px] w-[420px] rounded-full bg-violet-500/20 blur-3xl" />
+        <div className="absolute right-28 top-24 hidden h-56 w-56 bg-[radial-gradient(circle,#60a5fa_1px,transparent_1px)] [background-size:16px_16px] opacity-20 lg:block" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-6 pb-14 pt-16 sm:pt-20 lg:px-8 lg:pb-24 lg:pt-24">
-        <div className="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr]">
-          {/* LEFT */}
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm font-bold text-indigo-700 shadow-lg shadow-indigo-100 backdrop-blur">
-              <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.95)]" />
-              All-in-one business platform
-            </div>
+      <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-20 text-center lg:px-8 lg:pb-28 lg:pt-24">
+        {/* Top badge */}
+        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-2 text-sm font-black text-cyan-100 shadow-2xl shadow-indigo-950/30 backdrop-blur">
+          <span className="h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.95)]" />
+          All-in-one business management platform
+        </div>
 
-            <h1 className="mt-7 text-5xl font-black leading-[0.94] tracking-[-0.04em] text-slate-950 sm:text-6xl lg:text-7xl">
-              Run your
-              <br />
-              business
-              <br />
-              <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-                beautifully.
-              </span>
-            </h1>
+        {/* Headline */}
+        <h1 className="mx-auto mt-8 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.05em] text-white sm:text-6xl lg:text-7xl xl:text-8xl">
+          Run your business
+          <br />
+          <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent">
+            in one place.
+          </span>
+        </h1>
 
-            <p className="mt-7 max-w-xl text-lg leading-8 text-slate-600 sm:text-xl">
-              One premium workspace for clients, appointments, CRM,
-              collaborations, proposals and AI — built for modern service
-              businesses that want to look and operate at a higher level.
-            </p>
+        <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-300 sm:text-xl">
+          One smart platform to manage clients, appointments, CRM,
+          collaborations, proposals and AI — everything connected in one
+          premium workspace.
+        </p>
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Link
-                to="/register"
-                className="group inline-flex items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#4f46e5_0%,#7c3aed_55%,#06b6d4_100%)] px-8 py-4 text-base font-black text-white shadow-[0_16px_40px_rgba(99,102,241,0.32)] transition duration-200 hover:-translate-y-0.5"
-              >
-                Start Free
-                <span className="ml-2 transition group-hover:translate-x-1">
-                  →
+        {/* Product preview */}
+        <div className="relative mx-auto mt-14 max-w-6xl">
+          <div className="absolute inset-x-10 -top-8 h-24 rounded-full bg-cyan-400/20 blur-3xl" />
+
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 p-4 shadow-[0_34px_110px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+            <div className="relative overflow-hidden rounded-[1.5rem] bg-[#0b1226]">
+              {/* Split overlay like light/dark demo */}
+              <div className="absolute inset-y-0 left-0 z-20 w-1/2 bg-white/92 mix-blend-normal" />
+              <div className="absolute inset-y-0 left-1/2 z-30 w-px bg-white/40" />
+
+              {/* Toggle */}
+              <div className="absolute left-1/2 top-6 z-40 flex -translate-x-1/2 items-center rounded-full border border-white/15 bg-[#111827]/90 p-1 shadow-2xl backdrop-blur">
+                <span className="rounded-full bg-white px-5 py-2 text-sm font-black text-slate-900">
+                  Light
                 </span>
-              </Link>
-
-              <Link
-                to="/pricing"
-                className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white/90 px-8 py-4 text-base font-black text-slate-900 shadow-lg shadow-slate-100 transition hover:-translate-y-0.5 hover:border-slate-300"
-              >
-                View Pricing
-              </Link>
-            </div>
-
-            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-slate-500">
-              <span className="inline-flex items-center gap-2">
-                <span className="grid h-5 w-5 place-items-center rounded-full bg-indigo-50 text-indigo-600">
-                  ✓
+                <span className="px-5 py-2 text-sm font-black text-slate-300">
+                  Dark
                 </span>
-                14-day free trial
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <span className="grid h-5 w-5 place-items-center rounded-full bg-indigo-50 text-indigo-600">
-                  ✓
-                </span>
-                No credit card required
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <span className="grid h-5 w-5 place-items-center rounded-full bg-indigo-50 text-indigo-600">
-                  ✓
-                </span>
-                Cancel anytime
-              </span>
-            </div>
-          </div>
+              </div>
 
-          {/* RIGHT */}
-          <div className="relative min-h-[640px]">
-            {/* Main product frame */}
-            <div className="absolute inset-x-0 top-6 mx-auto w-full max-w-[760px] rounded-[32px] border border-white/80 bg-white/80 p-4 shadow-[0_30px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl">
-              <div className="overflow-hidden rounded-[28px] border border-slate-100 bg-white">
-                <div className="flex min-h-[500px]">
-                  {/* Sidebar */}
-                  <aside className="hidden w-[200px] shrink-0 bg-slate-950 px-5 py-6 text-white md:block">
-                    <div className="mb-8 flex items-center gap-3">
-                      <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[linear-gradient(135deg,#6366f1,#06b6d4)] text-lg font-black">
-                        B
+              {/* App top bar */}
+              <div className="relative z-10 flex min-h-[500px]">
+                {/* Sidebar */}
+                <aside className="hidden w-[210px] shrink-0 bg-[#07101f] p-5 text-left md:block">
+                  <div className="mb-7 flex items-center gap-3">
+                    <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-lg font-black text-white">
+                      B
+                    </div>
+                    <div>
+                      <p className="text-lg font-black text-white">BizUply</p>
+                      <p className="text-xs font-semibold text-slate-400">
+                        Business OS
+                      </p>
+                    </div>
+                  </div>
+
+                  {[
+                    "Dashboard",
+                    "Clients",
+                    "Appointments",
+                    "CRM",
+                    "Collaborations",
+                    "Reports",
+                    "AI Tools",
+                  ].map((item, index) => (
+                    <div
+                      key={item}
+                      className={`mb-2 rounded-2xl px-4 py-3 text-sm font-bold ${
+                        index === 0
+                          ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-950/30"
+                          : "text-slate-400"
+                      }`}
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </aside>
+
+                {/* Main dashboard */}
+                <main className="flex-1 bg-gradient-to-br from-white to-slate-100 p-5 text-left md:p-7">
+                  <div className="flex flex-col gap-4 border-b border-slate-200/70 pb-5 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-[0.28em] text-indigo-600">
+                        Good morning, Michael
+                      </p>
+                      <h3 className="mt-2 text-2xl font-black text-slate-950 md:text-3xl">
+                        Your business pipeline
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="hidden rounded-full bg-white px-4 py-2 text-xs font-bold text-slate-500 shadow-sm sm:block">
+                        This month
                       </div>
+                      <div className="grid h-10 w-10 place-items-center rounded-full bg-slate-950 text-white">
+                        +
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pipeline card */}
+                  <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/60">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                       <div>
-                        <p className="text-lg font-black">BizUply</p>
-                        <p className="text-xs text-slate-400">
-                          Business OS
+                        <p className="text-sm font-black text-slate-900">
+                          Sales & Client Pipeline
                         </p>
+                        <p className="mt-1 text-xs font-semibold text-slate-500">
+                          Active opportunities, appointments and proposals
+                        </p>
+                      </div>
+
+                      <div className="rounded-full bg-indigo-50 px-4 py-2 text-sm font-black text-indigo-700">
+                        296 active deals
                       </div>
                     </div>
 
-                    {[
-                      "Overview",
-                      "Clients",
-                      "Appointments",
-                      "Projects",
-                      "Collaborations",
-                      "CRM",
-                      "AI Assistant",
-                    ].map((item, i) => (
-                      <div
-                        key={item}
-                        className={`mb-2 rounded-2xl px-4 py-3 text-sm font-bold transition ${
-                          i === 0
-                            ? "bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] text-white shadow-lg shadow-violet-900/25"
-                            : "text-slate-400 hover:bg-white/5"
-                        }`}
-                      >
-                        {item}
-                      </div>
-                    ))}
-                  </aside>
-
-                  {/* Main content */}
-                  <div className="flex-1 bg-[linear-gradient(180deg,#ffffff_0%,#f8faff_100%)] p-5 sm:p-6">
-                    <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <p className="text-xs font-black uppercase tracking-[0.22em] text-indigo-600">
-                          Good morning, Michael
-                        </p>
-                        <h3 className="mt-2 text-2xl font-black text-slate-950">
-                          Here’s what’s happening today
-                        </h3>
-                      </div>
-
-                      <div className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-500 shadow-sm">
-                        May 2026
-                      </div>
-                    </div>
-
-                    <div className="mt-5 grid gap-3 sm:grid-cols-4">
+                    <div className="mt-6 grid gap-3 md:grid-cols-5">
                       {[
-                        ["Revenue", "$12,540", "+18%"],
-                        ["Appointments", "18", "+12%"],
-                        ["Clients", "124", "+8%"],
-                        ["Reviews", "4.9", "+0.4"],
-                      ].map(([label, value, delta]) => (
+                        ["Leads", "$8.2k", "29 deals"],
+                        ["Contacted", "$14.8k", "54 deals"],
+                        ["Proposal", "$21.4k", "38 deals"],
+                        ["Scheduled", "$9.6k", "16 deals"],
+                        ["Converted", "$32.1k", "40 deals"],
+                      ].map(([title, amount, deals]) => (
                         <div
-                          key={label}
-                          className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
+                          key={title}
+                          className="rounded-2xl bg-gradient-to-br from-slate-50 to-indigo-50/60 p-4"
                         >
-                          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
-                            {label}
+                          <p className="text-xs font-black uppercase tracking-wide text-slate-400">
+                            {title}
                           </p>
-                          <div className="mt-2 flex items-end justify-between">
-                            <p className="text-2xl font-black text-slate-950">
-                              {value}
-                            </p>
-                            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-600">
-                              {delta}
-                            </span>
-                          </div>
+                          <p className="mt-3 text-xl font-black text-slate-950">
+                            {amount}
+                          </p>
+                          <p className="mt-1 text-xs font-bold text-slate-500">
+                            {deals}
+                          </p>
                         </div>
                       ))}
                     </div>
 
-                    <div className="mt-5 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-                      {/* Chart card */}
-                      <div className="rounded-[26px] border border-slate-100 bg-white p-5 shadow-sm">
+                    <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                      <div className="rounded-2xl bg-slate-50 p-5">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-base font-black text-slate-950">
-                            Business Performance
-                          </h4>
-                          <span className="rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-500">
-                            This month
+                          <p className="font-black text-slate-900">
+                            Revenue Growth
+                          </p>
+                          <span className="text-xs font-black text-emerald-600">
+                            +18%
                           </span>
                         </div>
 
-                        <div className="mt-5 flex h-56 items-end gap-3 rounded-2xl bg-[linear-gradient(180deg,#f9fbff_0%,#f3f6ff_100%)] p-4">
-                          {[56, 72, 88, 67, 102, 84, 118].map((h, idx) => (
-                            <div
-                              key={idx}
-                              className="flex flex-1 items-end"
-                            >
+                        <div className="mt-5 flex h-44 items-end gap-3">
+                          {[42, 66, 53, 82, 74, 96, 120, 106].map(
+                            (height, index) => (
                               <div
-                                className="w-full rounded-t-2xl bg-[linear-gradient(180deg,#60a5fa_0%,#6366f1_55%,#7c3aed_100%)] shadow-[0_12px_20px_rgba(99,102,241,0.18)]"
-                                style={{ height: `${h}px` }}
-                              />
-                            </div>
-                          ))}
+                                key={index}
+                                className="flex flex-1 items-end rounded-full bg-white"
+                              >
+                                <div
+                                  className="w-full rounded-full bg-gradient-to-t from-indigo-600 via-blue-500 to-cyan-400"
+                                  style={{ height: `${height}px` }}
+                                />
+                              </div>
+                            )
+                          )}
                         </div>
                       </div>
 
-                      {/* Activity card */}
-                      <div className="rounded-[26px] border border-slate-100 bg-white p-5 shadow-sm">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-base font-black text-slate-950">
-                            Upcoming Schedule
-                          </h4>
-                          <span className="text-xs font-bold text-indigo-600">
-                            View all
+                      <div className="rounded-2xl bg-slate-950 p-5 text-white">
+                        <div className="mb-4 flex items-center justify-between">
+                          <p className="font-black">AI Assistant</p>
+                          <span className="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400">
+                            ✦
                           </span>
                         </div>
 
-                        <div className="mt-4 space-y-3">
+                        <p className="rounded-2xl bg-white/10 p-4 text-sm font-semibold leading-6 text-slate-200">
+                          I found 3 open time slots and prepared a proposal
+                          draft for your new client.
+                        </p>
+
+                        <div className="mt-4 space-y-2">
                           {[
-                            [
-                              "Design Consultation",
-                              "Today • 10:00 AM",
-                              "Daniel Brooks",
-                            ],
-                            ["Project Review", "Tomorrow • 2:00 PM", "Olivia"],
-                            ["Strategy Call", "May 16 • 11:00 AM", "Sarah"],
-                          ].map(([title, time, client]) => (
-                            <div
-                              key={title}
-                              className="rounded-2xl bg-slate-50 p-4"
+                            "Summarize my week",
+                            "Draft proposal",
+                            "Find free slots",
+                          ].map((item) => (
+                            <button
+                              key={item}
+                              type="button"
+                              className="w-full rounded-xl bg-white/10 px-4 py-3 text-left text-sm font-black text-white"
                             >
-                              <p className="text-sm font-black text-slate-900">
-                                {title}
-                              </p>
-                              <p className="mt-1 text-xs font-semibold text-slate-500">
-                                {time}
-                              </p>
-                              <p className="mt-2 text-xs font-bold text-indigo-600">
-                                {client}
-                              </p>
-                            </div>
+                              {item}
+                            </button>
                           ))}
                         </div>
                       </div>
                     </div>
-
-                    <div className="mt-5 rounded-[26px] border border-slate-100 bg-white p-5 shadow-sm">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-base font-black text-slate-950">
-                          Top Services
-                        </h4>
-                        <span className="text-xs font-bold text-slate-500">
-                          Revenue split
-                        </span>
-                      </div>
-
-                      <div className="mt-4 grid gap-3 sm:grid-cols-4">
-                        {[
-                          ["Brand Design", "$4,250", "34%"],
-                          ["Consulting", "$3,120", "26%"],
-                          ["Web Projects", "$2,880", "23%"],
-                          ["Marketing", "$1,770", "17%"],
-                        ].map(([name, amount, share]) => (
-                          <div
-                            key={name}
-                            className="rounded-2xl bg-slate-50 p-4"
-                          >
-                            <p className="text-sm font-black text-slate-900">
-                              {name}
-                            </p>
-                            <p className="mt-2 text-lg font-black text-slate-950">
-                              {amount}
-                            </p>
-                            <p className="text-xs font-bold text-indigo-600">
-                              {share} of total
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Floating card 1 */}
-            <div className="absolute -left-6 bottom-20 hidden w-[320px] rounded-[28px] border border-white/80 bg-white/92 p-5 shadow-[0_24px_50px_rgba(99,102,241,0.18)] backdrop-blur-xl md:block">
-              <div className="mb-4 flex items-center justify-between">
-                <h4 className="text-lg font-black text-slate-950">Clients</h4>
-                <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-600">
-                  Active
-                </span>
-              </div>
-
-              {[
-                ["Daniel Brooks", "daniel@email.com"],
-                ["Sarah Johnson", "sarah@email.com"],
-                ["Olivia White", "olivia@email.com"],
-              ].map(([name, email]) => (
-                <div
-                  key={name}
-                  className="mb-3 flex items-center gap-3 rounded-2xl bg-slate-50 p-3"
-                >
-                  <div className="h-11 w-11 rounded-full bg-[linear-gradient(135deg,#818cf8,#22d3ee)]" />
-                  <div>
-                    <p className="text-sm font-black text-slate-900">{name}</p>
-                    <p className="text-xs font-semibold text-slate-500">
-                      {email}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Floating card 2 */}
-            <div className="absolute -right-3 top-20 hidden w-[280px] rounded-[28px] border border-white/80 bg-white/92 p-5 shadow-[0_24px_50px_rgba(15,23,42,0.12)] backdrop-blur-xl xl:block">
-              <div className="flex items-center justify-between">
-                <h4 className="text-lg font-black text-slate-950">AI Copilot</h4>
-                <div className="grid h-9 w-9 place-items-center rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] text-white">
-                  ✦
-                </div>
-              </div>
-
-              <p className="mt-4 rounded-2xl bg-[linear-gradient(180deg,#eef2ff_0%,#f5f3ff_100%)] p-4 text-sm font-semibold leading-6 text-slate-700">
-                I found three available time slots and prepared a proposal draft
-                for your new lead.
-              </p>
-
-              <div className="mt-4 space-y-2">
-                {["Summarize my week", "Draft proposal", "Find open slots"].map(
-                  (item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      className="w-full rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] px-4 py-3 text-left text-sm font-black text-white shadow-lg shadow-violet-200"
-                    >
-                      {item}
-                    </button>
-                  )
-                )}
+                </main>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom trust strip */}
-        <div className="mt-14 rounded-[34px] border border-white/70 bg-white/85 px-6 py-8 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-          <p className="mb-8 text-center text-base font-black text-slate-500">
-            Built for service businesses, agencies, freelancers, studios and
-            growing teams.
-          </p>
+        {/* CTAs */}
+        <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <Link
+            to="/register"
+            className="inline-flex min-w-[180px] items-center justify-center rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 px-8 py-4 text-base font-black text-slate-950 shadow-[0_18px_40px_rgba(34,211,238,0.25)] transition hover:-translate-y-0.5"
+          >
+            Start a trial
+          </Link>
 
-          <div className="grid gap-6 text-center sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              ["1,000+", "Businesses"],
-              ["50K+", "Users"],
-              ["98%", "Customer Satisfaction"],
-              ["24/7", "Support"],
-            ].map(([value, label]) => (
-              <div key={label}>
-                <p className="text-5xl font-black tracking-tight text-slate-950">
-                  {value}
-                </p>
-                <p className="mt-2 text-base font-bold text-slate-500">
-                  {label}
-                </p>
-              </div>
-            ))}
-          </div>
+          <Link
+            to="/pricing"
+            className="inline-flex min-w-[180px] items-center justify-center rounded-full border border-white/50 bg-white/5 px-8 py-4 text-base font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/10"
+          >
+            View pricing
+          </Link>
+        </div>
+
+        {/* Trust bullets */}
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-base font-semibold text-slate-300">
+          {["No credit card required", "14-day free trial", "Cancel anytime"].map(
+            (item) => (
+              <span key={item} className="inline-flex items-center gap-2">
+                <span className="grid h-5 w-5 place-items-center rounded-full border border-cyan-400/30 text-xs text-cyan-300">
+                  ✓
+                </span>
+                {item}
+              </span>
+            )
+          )}
         </div>
       </div>
     </section>
