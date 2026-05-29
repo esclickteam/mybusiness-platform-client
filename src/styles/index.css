@@ -1,3 +1,4 @@
+@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap");
 
 /* ===========================
@@ -67,8 +68,6 @@ body {
   flex-direction: column;
 }
 
-
-
 /* ===========================
    GLOBAL BOX MODEL
 =========================== */
@@ -88,7 +87,6 @@ body {
   overflow-y: auto;           /* ✅ כאן הגלילה הכללית */
   overflow-x: hidden;
 }
-
 
 a {
   text-decoration: none;
@@ -131,6 +129,7 @@ button {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
