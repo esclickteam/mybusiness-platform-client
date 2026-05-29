@@ -33,33 +33,31 @@ export default function PreLoginBot() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999]">
+    <div className="fixed bottom-5 right-5 z-[9999]">
       {/* Launcher */}
       {!open && (
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Ask BizUply"
-          className="group relative overflow-hidden rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_18px_50px_rgba(79,70,229,0.35)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(79,70,229,0.45)]"
+          className="group relative flex items-center gap-2.5 rounded-full border border-white/80 bg-white px-4 py-2.5 shadow-[0_12px_30px_rgba(15,23,42,0.12)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.16)]"
         >
-          <span className="relative flex items-center gap-3 rounded-full bg-white/95 px-5 py-4 backdrop-blur-xl">
-            <span className="relative grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-xl text-white shadow-lg shadow-indigo-200">
-              💬
-              <span className="absolute -right-0.5 -top-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-400" />
-            </span>
+          <span className="relative grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm text-white shadow-md shadow-indigo-200">
+            💬
+            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-400" />
+          </span>
 
-            <span className="text-left">
-              <span className="block text-sm font-black leading-none text-slate-950">
-                Ask BizUply
-              </span>
-              <span className="mt-1 block text-xs font-bold text-slate-500">
-                Get help instantly
-              </span>
+          <span className="text-left">
+            <span className="block text-xs font-black leading-none text-slate-950">
+              Ask BizUply
             </span>
+            <span className="mt-0.5 block text-[10px] font-bold text-slate-500">
+              Get help instantly
+            </span>
+          </span>
 
-            <span className="text-lg font-black text-indigo-600 transition group-hover:translate-x-1">
-              →
-            </span>
+          <span className="ml-1 text-sm font-black text-indigo-600 transition group-hover:translate-x-0.5">
+            →
           </span>
         </button>
       )}
