@@ -133,13 +133,7 @@ export default function PreLoginBot() {
               </div>
 
               <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-                <button
-                  type="button"
-                  onClick={resetBot}
-                  className="text-xs font-black text-slate-400 transition hover:text-indigo-700"
-                >
-                  Restart
-                </button>
+                
 
                 <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-slate-500 shadow-sm">
                   <span className="h-2 w-2 rounded-full bg-emerald-400" />
