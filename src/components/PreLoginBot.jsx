@@ -28,10 +28,6 @@ export default function PreLoginBot() {
     }
   };
 
-  const resetBot = () => {
-    setNode("entry");
-  };
-
   return (
     <div className="fixed bottom-5 right-5 z-[9999]">
       {/* Launcher */}
@@ -130,14 +126,6 @@ export default function PreLoginBot() {
                     </span>
                   </button>
                 ))}
-              </div>
-
-              <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
-                
-
-                <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-slate-500 shadow-sm">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                </div>
               </div>
             </div>
           </div>
