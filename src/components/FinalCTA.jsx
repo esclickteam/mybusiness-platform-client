@@ -2,17 +2,105 @@ import { Link } from "react-router-dom";
 
 export default function FinalCTA() {
   return (
-    <section className="final-cta-compact">
-      <div className="final-cta-compact-inner">
-        <div className="final-cta-brand">bizuply</div>
+    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] px-6 py-24 text-slate-950 lg:px-8">
+      {/* Background */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
+        <div className="absolute -right-40 top-24 h-[360px] w-[360px] rounded-full bg-cyan-200/35 blur-3xl" />
+        <div className="absolute -left-40 bottom-0 h-[360px] w-[360px] rounded-full bg-violet-200/35 blur-3xl" />
+        <div className="absolute right-24 top-24 hidden h-56 w-56 bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] [background-size:16px_16px] opacity-20 lg:block" />
+      </div>
 
-        <h2 className="final-cta-headline">Run your business in one place.</h2>
+      <div className="relative mx-auto max-w-7xl">
+        <div className="overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_30px_100px_rgba(79,70,229,0.18)] backdrop-blur-xl">
+          <div className="relative overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-16 text-center text-white sm:px-10 lg:px-16 lg:py-20">
+            {/* Inner glows */}
+            <div className="pointer-events-none absolute inset-0">
+              <div className="absolute left-1/2 top-[-220px] h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-500/35 blur-3xl" />
+              <div className="absolute right-[-120px] top-20 h-[360px] w-[360px] rounded-full bg-cyan-400/25 blur-3xl" />
+              <div className="absolute left-[-140px] bottom-[-140px] h-[380px] w-[380px] rounded-full bg-violet-500/25 blur-3xl" />
+              <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(79,70,229,0.18),transparent_35%,rgba(6,182,212,0.16))]" />
+            </div>
 
-        <Link to="/register" className="btn-primary btn-lg">
-          Get started free
-        </Link>
+            <div className="relative mx-auto max-w-4xl">
+              <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-2 text-sm font-black text-cyan-100 shadow-2xl shadow-indigo-950/30 backdrop-blur">
+                <span className="h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.95)]" />
+                BizUply business OS
+              </div>
 
-        <p className="final-cta-note">No credit card required.</p>
+              <h2 className="mt-8 text-4xl font-black leading-[1.02] tracking-[-0.05em] text-white sm:text-6xl lg:text-7xl">
+                Run your business
+                <br />
+                <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent">
+                  in one place.
+                </span>
+              </h2>
+
+              <p className="mx-auto mt-6 max-w-2xl text-lg font-semibold leading-8 text-slate-300">
+                Start with a beautiful business page, manage your CRM,
+                appointments, collaborations and AI tools — all from one
+                connected workspace.
+              </p>
+
+              <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <Link
+                  to="/register"
+                  className="group inline-flex min-w-[190px] items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-8 py-4 text-base font-black text-white shadow-[0_20px_50px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5"
+                >
+                  Get started free
+                  <span className="ml-2 transition group-hover:translate-x-1">
+                    →
+                  </span>
+                </Link>
+
+                <Link
+                  to="/pricing"
+                  className="inline-flex min-w-[190px] items-center justify-center rounded-full border border-white/25 bg-white/10 px-8 py-4 text-base font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
+                >
+                  View pricing
+                </Link>
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-sm font-semibold text-slate-300">
+                {[
+                  "No credit card required",
+                  "14-day free trial",
+                  "Cancel anytime",
+                ].map((item) => (
+                  <span key={item} className="inline-flex items-center gap-2">
+                    <span className="grid h-5 w-5 place-items-center rounded-full border border-cyan-300/30 text-xs text-cyan-300">
+                      ✓
+                    </span>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom mini product strip */}
+            <div className="relative mx-auto mt-14 grid max-w-5xl gap-4 sm:grid-cols-3">
+              {[
+                ["CRM", "Clients, leads and follow-ups"],
+                ["Appointments", "Bookings and schedule"],
+                ["AI Tools", "Insights and next actions"],
+              ].map(([title, text]) => (
+                <div
+                  key={title}
+                  className="rounded-3xl border border-white/10 bg-white/10 p-5 text-left backdrop-blur transition hover:bg-white/[0.14]"
+                >
+                  <div className="mb-4 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-sm font-black text-white">
+                    ✓
+                  </div>
+
+                  <h3 className="text-lg font-black text-white">{title}</h3>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-slate-300">
+                    {text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

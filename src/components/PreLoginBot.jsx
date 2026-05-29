@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import botFlow from "../data/preLoginBot.flow.json";
-import "./PreLoginBot.css";
 
 export default function PreLoginBot() {
   const [open, setOpen] = useState(false);
@@ -29,46 +28,136 @@ export default function PreLoginBot() {
     }
   };
 
+  const resetBot = () => {
+    setNode("entry");
+  };
+
   return (
-    <div className="plb">
-      {/* 🔹 Launcher – Ask BizUply */}
+    <div className="fixed bottom-6 right-6 z-[9999]">
+      {/* Launcher */}
       {!open && (
         <button
-          className="plb-launch-pill"
+          type="button"
           onClick={() => setOpen(true)}
           aria-label="Ask BizUply"
+          className="group relative overflow-hidden rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_18px_50px_rgba(79,70,229,0.35)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(79,70,229,0.45)]"
         >
-          <span className="plb-launch-icon">💬</span>
-          <span className="plb-launch-text">Ask BizUply</span>
+          <span className="relative flex items-center gap-3 rounded-full bg-white/95 px-5 py-4 backdrop-blur-xl">
+            <span className="relative grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-xl text-white shadow-lg shadow-indigo-200">
+              💬
+              <span className="absolute -right-0.5 -top-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-400" />
+            </span>
+
+            <span className="text-left">
+              <span className="block text-sm font-black leading-none text-slate-950">
+                Ask BizUply
+              </span>
+              <span className="mt-1 block text-xs font-bold text-slate-500">
+                Get help instantly
+              </span>
+            </span>
+
+            <span className="text-lg font-black text-indigo-600 transition group-hover:translate-x-1">
+              →
+            </span>
+          </span>
         </button>
       )}
 
-      {/* 🔹 Bot Window */}
+      {/* Bot window */}
       {open && (
-        <div className="plb-window">
-          <header className="plb-header">
-            <strong>BizUply Assistant</strong>
-            <button
-              className="plb-close"
-              onClick={() => setOpen(false)}
-              aria-label="Close"
-            >
-              ×
-            </button>
-          </header>
+        <div className="w-[calc(100vw-32px)] max-w-[420px] overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-3 shadow-[0_28px_90px_rgba(15,23,42,0.22)] backdrop-blur-2xl">
+          <div className="overflow-hidden rounded-[1.55rem] border border-slate-100 bg-white">
+            {/* Header */}
+            <header className="relative overflow-hidden bg-slate-950 px-5 py-5 text-white">
+              <div className="pointer-events-none absolute inset-0">
+                <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-indigo-500/35 blur-3xl" />
+                <div className="absolute -bottom-24 left-10 h-48 w-48 rounded-full bg-cyan-400/25 blur-3xl" />
+              </div>
 
-          <div className="plb-body">
-            <p>{current.text}</p>
+              <div className="relative flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-xl shadow-xl shadow-indigo-950/30">
+                    ✦
+                    <span className="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full border-2 border-slate-950 bg-emerald-400" />
+                  </div>
 
-            <div className="plb-actions">
-              {current.buttons?.map((btn) => (
+                  <div>
+                    <strong className="block text-lg font-black tracking-[-0.02em]">
+                      BizUply Assistant
+                    </strong>
+                    <span className="mt-0.5 block text-xs font-semibold text-slate-300">
+                      Smart guidance before you start
+                    </span>
+                  </div>
+                </div>
+
                 <button
-                  key={btn.label}
-                  onClick={() => handleAction(btn)}
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close"
+                  className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/10 text-2xl font-light text-white transition hover:bg-white/15"
                 >
-                  {btn.label}
+                  ×
                 </button>
-              ))}
+              </div>
+            </header>
+
+            {/* Body */}
+            <div className="bg-gradient-to-br from-white to-indigo-50/60 px-5 py-5">
+              <div className="mb-4 flex items-start gap-3">
+                <div className="mt-1 grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-black text-white shadow-lg shadow-indigo-100">
+                  B
+                </div>
+
+                <div className="rounded-[1.35rem] rounded-tl-md border border-slate-100 bg-white px-4 py-3 shadow-sm">
+                  <p className="text-sm font-semibold leading-6 text-slate-700">
+                    {current.text}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-3">
+                {current.buttons?.map((btn, index) => (
+                  <button
+                    key={btn.label}
+                    type="button"
+                    onClick={() => handleAction(btn)}
+                    className={`group flex w-full items-center justify-between gap-4 rounded-2xl px-4 py-3.5 text-left text-sm font-black shadow-sm transition hover:-translate-y-0.5 ${
+                      index === 0
+                        ? "bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 text-white shadow-indigo-200"
+                        : "border border-slate-100 bg-white text-slate-800 hover:border-indigo-100 hover:bg-indigo-50/70"
+                    }`}
+                  >
+                    <span>{btn.label}</span>
+
+                    <span
+                      className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition group-hover:translate-x-1 ${
+                        index === 0
+                          ? "bg-white/20 text-white"
+                          : "bg-indigo-50 text-indigo-700"
+                      }`}
+                    >
+                      →
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+                <button
+                  type="button"
+                  onClick={resetBot}
+                  className="text-xs font-black text-slate-400 transition hover:text-indigo-700"
+                >
+                  Restart
+                </button>
+
+                <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-slate-500 shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                  Online
+                </div>
+              </div>
             </div>
           </div>
         </div>
