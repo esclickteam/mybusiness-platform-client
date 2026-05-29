@@ -40,7 +40,7 @@ export default function PreLoginBot() {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Ask BizUply"
-          className="group relative flex items-center gap-2.5 rounded-full border border-slate-100 bg-white px-4 py-2.5 shadow-[0_12px_30px_rgba(15,23,42,0.12)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.16)]"
+          className="group relative flex items-center gap-2.5 rounded-full border border-slate-100 !bg-white px-4 py-2.5 text-slate-950 shadow-[0_12px_30px_rgba(15,23,42,0.12)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.16)]"
         >
           <span className="relative grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm text-white shadow-md shadow-indigo-200">
             💬
@@ -116,7 +116,7 @@ export default function PreLoginBot() {
               </div>
 
               <div className="mt-5 grid gap-3">
-                {current.buttons?.map((btn, index) => (
+                {current.buttons?.map((btn) => (
                   <button
                     key={btn.label}
                     type="button"
@@ -125,13 +125,7 @@ export default function PreLoginBot() {
                   >
                     <span>{btn.label}</span>
 
-                    <span
-                      className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition group-hover:translate-x-1 ${
-                        index === 0
-                          ? "bg-white/20 text-white"
-                          : "bg-indigo-50 text-indigo-700"
-                      }`}
-                    >
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-indigo-50 text-indigo-700 transition group-hover:translate-x-1">
                       →
                     </span>
                   </button>
