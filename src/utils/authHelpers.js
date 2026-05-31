@@ -1,14 +1,17 @@
 import jwtDecode from "jwt-decode";
 
+const BASE_URL =
+  import.meta.env.VITE_API_URL || "https://api.bizuply.com/api";
+
 // Checks if the token is expired
 export function isTokenExpired(token) {
   if (!token) return true;
+
   try {
     const { exp } = jwtDecode(token);
-    // Compare the current time to the expiration time (exp) in milliseconds
     return Date.now() >= exp * 1000;
   } catch {
-    return true; // In case of token decoding error, treat as expired
+    return true;
   }
 }
 
@@ -33,12 +36,13 @@ export async function getValidAccessToken() {
 
   if (!token || isTokenExpired(token)) {
     try {
-      const response = await fetch(`/refresh-token`, {
+      const response = await fetch(`${BASE_URL}/auth/refresh-token`, {
         method: "POST",
-        credentials: "include", // Automatically sends the refreshToken cookie
+        credentials: "include",
       });
 
       if (!response.ok) {
+        localStorage.removeItem("token");
         return null;
       }
 
@@ -48,12 +52,16 @@ export async function getValidAccessToken() {
         localStorage.setItem("token", data.accessToken);
         token = data.accessToken;
       } else {
+        localStorage.removeItem("token");
         return null;
       }
-    } catch {
+    } catch (err) {
+      console.error("❌ Failed to refresh access token:", err);
+      localStorage.removeItem("token");
       return null;
     }
   }
+
   return token;
 }
 
@@ -64,9 +72,8 @@ export function getUserRole() {
 
   try {
     const decoded = jwtDecode(token);
-    let role = decoded.role || null;
+    const role = decoded.role || null;
 
-    // Adjust for special role in business dashboard
     if (role === "business" && window.location.pathname.includes("/dashboard")) {
       return "business-dashboard";
     }

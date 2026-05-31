@@ -11,7 +11,6 @@ function normalizeUser(user) {
 
   const now = new Date();
 
- 
   /* ============================
      🔐 Subscription (paid)
   ============================ */
@@ -25,113 +24,113 @@ function normalizeUser(user) {
   /* ============================
      ⏳ Trial
   ============================ */
-  const TRIAL_DAYS = 14; // אותו מספר כמו ב־backend
+  const TRIAL_DAYS = 14;
 
-let trialEndsAt = user.trialEndsAt
-  ? new Date(user.trialEndsAt)
-  : null;
+  let trialEndsAt = user.trialEndsAt ? new Date(user.trialEndsAt) : null;
 
-// 🛟 Fallback למשתמשים ישנים / cache
-if (
-  !trialEndsAt &&
-  user.subscriptionPlan === "trial" &&
-  user.trialStartedAt
-) {
-  const start = new Date(user.trialStartedAt);
-  trialEndsAt = new Date(start);
-  trialEndsAt.setDate(start.getDate() + TRIAL_DAYS);
-}
-
+  if (
+    !trialEndsAt &&
+    user.subscriptionPlan === "trial" &&
+    user.trialStartedAt
+  ) {
+    const start = new Date(user.trialStartedAt);
+    trialEndsAt = new Date(start);
+    trialEndsAt.setDate(start.getDate() + TRIAL_DAYS);
+  }
 
   const DAY = 1000 * 60 * 60 * 24;
 
-const diffMs =
-  user.subscriptionPlan === "trial" && trialEndsAt
-    ? trialEndsAt.getTime() - now.getTime()
-    : 0;
+  const diffMs =
+    user.subscriptionPlan === "trial" && trialEndsAt
+      ? trialEndsAt.getTime() - now.getTime()
+      : 0;
 
-const trialDaysLeft =
-  diffMs > 0
-    ? Math.floor(diffMs / DAY) + 1
-    : 0;
+  const trialDaysLeft = diffMs > 0 ? Math.floor(diffMs / DAY) + 1 : 0;
+  const isTrialEndingToday = diffMs > 0 && diffMs < DAY;
+  const isTrialActive = Boolean(trialEndsAt && trialEndsAt > now);
 
-    const isTrialEndingToday =
-  diffMs > 0 && diffMs < DAY;
+  /* ============================
+     🎁 Early Bird (48h)
+  ============================ */
+  const earlyBirdExpiresAt = user.earlyBirdExpiresAt
+    ? new Date(user.earlyBirdExpiresAt)
+    : null;
 
+  const isEarlyBirdActive = Boolean(
+    earlyBirdExpiresAt &&
+      earlyBirdExpiresAt > now &&
+      user?.earlyBirdUsed !== true
+  );
 
-    const isTrialActive =
-  trialEndsAt && trialEndsAt > now;
-
-/* ============================
-   🎁 Early Bird (48h)
-============================ */
-const earlyBirdExpiresAt = user.earlyBirdExpiresAt
-  ? new Date(user.earlyBirdExpiresAt)
-  : null;
-
-const isEarlyBirdActive = Boolean(
-  earlyBirdExpiresAt &&
-    earlyBirdExpiresAt > now &&
-    user?.earlyBirdUsed !== true
-);
-
-
-
-
-const hasPaid =
-  user?.paymentStatus === "paid" ||
-  user?.paymentStatus === "active";
-
-
-
+  const hasPaid =
+    user?.paymentStatus === "paid" || user?.paymentStatus === "active";
 
   return {
-  ...user,
+    ...user,
 
-  /* =====================
-     ⏳ Trial / Early Bird
-  ===================== */
-  trialEndsAt,
-  trialDaysLeft,
-  isTrialEndingToday,
-  paymentStatus: user.paymentStatus,
-  isTrialActive,
-  isEarlyBirdActive,
+    trialEndsAt,
+    trialDaysLeft,
+    isTrialEndingToday,
+    paymentStatus: user.paymentStatus,
+    isTrialActive,
+    isEarlyBirdActive,
 
-  earlyBirdHoursLeft: isEarlyBirdActive
-    ? Math.ceil(
-        (earlyBirdExpiresAt.getTime() - now.getTime()) /
-          (1000 * 60 * 60)
-      )
-    : 0,
+    earlyBirdHoursLeft: isEarlyBirdActive
+      ? Math.ceil(
+          (earlyBirdExpiresAt.getTime() - now.getTime()) /
+            (1000 * 60 * 60)
+        )
+      : 0,
 
-  /* =====================
-     💳 Payment
-  ===================== */
-  hasPaid,
+    hasPaid,
+    subscriptionCancelled: Boolean(user?.subscriptionCancelled),
 
-  subscriptionCancelled: Boolean(user?.subscriptionCancelled),
+    isSubscriptionValid:
+      typeof user?.isSubscriptionValid === "boolean"
+        ? user.isSubscriptionValid
+        : computedIsValid,
 
-  /* =====================
-     🔐 Subscription validity
-  ===================== */
-  isSubscriptionValid:
-    typeof user?.isSubscriptionValid === "boolean"
-      ? user.isSubscriptionValid
-      : computedIsValid,
+    subscriptionStatus:
+      user.subscriptionStatus || user.status || user.subscriptionPlan || "free",
 
-  subscriptionStatus:
-  user.subscriptionStatus || user.status || user.subscriptionPlan || "free",
+    hasAccess: isTrialActive || hasPaid || isPendingActivation,
+  };
+}
 
-  /* =====================
-     🚪 Access
-  ===================== */
-  hasAccess:
-    isTrialActive ||
-    hasPaid ||
-    isPendingActivation,
-};
+/* ===========================
+   🔓 Public routes
+=========================== */
+function isPublicRoute(pathname) {
+  const publicRoutes = [
+    "/",
+    "/login",
+    "/register",
+    "/pricing",
+    "/features",
+    "/solutions",
+    "/how-it-works",
+    "/about",
+    "/contact",
+    "/privacy",
+    "/terms",
+    "/accessibility",
+  ];
 
+  return publicRoutes.some((route) => {
+    if (route === "/") return pathname === "/";
+    return pathname === route || pathname.startsWith(`${route}/`);
+  });
+}
+
+/* ===========================
+   🧹 Clear local auth only
+=========================== */
+function clearLocalAuth() {
+  setAuthToken(null);
+  localStorage.removeItem("token");
+  localStorage.removeItem("businessDetails");
+  localStorage.removeItem("dashboardStats");
+  localStorage.removeItem("impersonatedBy");
 }
 
 /* ===========================
@@ -142,30 +141,27 @@ let ongoingRefresh = null;
 export async function singleFlightRefresh() {
   const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 
-  // ⛔ אין refresh בזמן impersonation
   if (isImpersonating) {
     throw new Error("Refresh disabled during impersonation");
   }
 
   if (!ongoingRefresh) {
-    ongoingRefresh = API.post(
-      "/auth/refresh-token",
-      null,
-      { withCredentials: true }
-    )
+    ongoingRefresh = API.post("/auth/refresh-token", null, {
+      withCredentials: true,
+    })
       .then((res) => {
         const { accessToken, user: refreshedUser } = res.data;
-        if (!accessToken) throw new Error("No new token");
+
+        if (!accessToken) {
+          throw new Error("No new token");
+        }
 
         localStorage.setItem("token", accessToken);
         setAuthToken(accessToken);
 
         if (refreshedUser) {
           const normalized = normalizeUser(refreshedUser);
-          localStorage.setItem(
-            "businessDetails",
-            JSON.stringify(normalized)
-          );
+          localStorage.setItem("businessDetails", JSON.stringify(normalized));
         }
 
         return accessToken;
@@ -178,7 +174,6 @@ export async function singleFlightRefresh() {
   return ongoingRefresh;
 }
 
-
 /* ===========================
    ⚙ Context
 =========================== */
@@ -190,9 +185,15 @@ export function AuthProvider({ children }) {
 
   const [socket, setSocket] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
+
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("businessDetails");
-    return saved ? normalizeUser(JSON.parse(saved)) : null;
+    try {
+      const saved = localStorage.getItem("businessDetails");
+      return saved ? normalizeUser(JSON.parse(saved)) : null;
+    } catch {
+      localStorage.removeItem("businessDetails");
+      return null;
+    }
   });
 
   const [loading, setLoading] = useState(false);
@@ -204,66 +205,73 @@ export function AuthProvider({ children }) {
      👤 Refresh user
   =========================== */
   const refreshUser = async (force = false) => {
-  try {
-    const { data } = await API.get(`/auth/me${force ? "?forceRefresh=1" : ""}`, {
-      withCredentials: true,
-    });
+    try {
+      const { data } = await API.get(
+        `/auth/me${force ? "?forceRefresh=1" : ""}`,
+        {
+          withCredentials: true,
+        }
+      );
 
-    console.log("RAW /auth/me response:", data);
+      console.log("RAW /auth/me response:", data);
 
-    const normalized = normalizeUser(data);
-    setUser(normalized);
-    localStorage.setItem("businessDetails", JSON.stringify(normalized));
-    return normalized;
-  } catch (err) {
-    console.error("Failed to refresh user", err);
-    return null;
-  }
-};
+      const normalized = normalizeUser(data);
+      setUser(normalized);
+      localStorage.setItem("businessDetails", JSON.stringify(normalized));
 
-  const loginWithToken = (userFromServer, accessToken, { skipRedirect = false } = {}) => {
-  // שמירת token
-  localStorage.setItem("token", accessToken);
-  setAuthToken(accessToken);
-  setToken(accessToken);
+      return normalized;
+    } catch (err) {
+      console.error("Failed to refresh user", err);
+      return null;
+    }
+  };
 
-  // שמירת user
-  const normalizedUser = normalizeUser(userFromServer);
-  setUser(normalizedUser);
-  localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+  /* ===========================
+     🔐 Login with token
+  =========================== */
+  const loginWithToken = (
+    userFromServer,
+    accessToken,
+    { skipRedirect = false } = {}
+  ) => {
+    localStorage.setItem("token", accessToken);
+    setAuthToken(accessToken);
+    setToken(accessToken);
 
-  // סימון impersonation
-  try {
-    const payload = JSON.parse(atob(accessToken.split(".")[1]));
-    if (payload.impersonatedBy) {
-      localStorage.setItem("impersonatedBy", payload.impersonatedBy);
-    } else {
+    const normalizedUser = normalizeUser(userFromServer);
+    setUser(normalizedUser);
+    localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+
+    try {
+      const payload = JSON.parse(atob(accessToken.split(".")[1]));
+
+      if (payload.impersonatedBy) {
+        localStorage.setItem("impersonatedBy", payload.impersonatedBy);
+      } else {
+        localStorage.removeItem("impersonatedBy");
+      }
+    } catch {
       localStorage.removeItem("impersonatedBy");
     }
-  } catch {
-    localStorage.removeItem("impersonatedBy");
-  }
 
-  // בדיקה אם זה impersonation
-const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
+    const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 
-// ⛔ בזמן impersonation או skipRedirect – לא מנווטים אוטומטית
-if (skipRedirect || isImpersonating) return;
+    if (skipRedirect || isImpersonating) return;
 
-// מעבר לדשבורד של המשתמש
-if (normalizedUser.role === "business" && normalizedUser.businessId) {
-  navigate(
-    `/business/${normalizedUser.businessId}/dashboard`,
-    { replace: true }
-  );
-  return;
-}
+    if (normalizedUser.role === "business" && normalizedUser.businessId) {
+      navigate(`/business/${normalizedUser.businessId}/dashboard`, {
+        replace: true,
+      });
+      return;
+    }
 
-// משתמש רגיל
-navigate("/dashboard", { replace: true });
-};
+    if (normalizedUser.role === "admin") {
+      navigate("/admin/dashboard", { replace: true });
+      return;
+    }
 
-
+    navigate("/dashboard", { replace: true });
+  };
 
   /* ===========================
      🔐 Login
@@ -271,9 +279,6 @@ navigate("/dashboard", { replace: true });
   const login = async (email, password, { skipRedirect = false } = {}) => {
     setLoading(true);
     setError(null);
-
-    
-
 
     try {
       const { data } = await API.post(
@@ -284,7 +289,7 @@ navigate("/dashboard", { replace: true });
 
       const { accessToken, user: loggedInUser, redirectUrl } = data;
 
-console.log("RAW /auth/login response:", data);
+      console.log("RAW /auth/login response:", data);
 
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
@@ -297,51 +302,46 @@ console.log("RAW /auth/login response:", data);
       document.body.style.background =
         "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
 
-      refreshUser(true).then((freshUser) => {
-  if (freshUser) {
-    localStorage.setItem(
-      "businessDetails",
-      JSON.stringify(freshUser)
-    );
-    setUser(freshUser);
-  }
-}).catch(() => {});
+      refreshUser(true)
+        .then((freshUser) => {
+          if (freshUser) {
+            localStorage.setItem("businessDetails", JSON.stringify(freshUser));
+            setUser(freshUser);
+          }
+        })
+        .catch(() => {});
 
+      const urlRedirect = new URLSearchParams(window.location.search).get(
+        "redirect"
+      );
 
-      /* ⭐️⭐️⭐️ NEW — PRIORITY REDIRECT FROM URL ⭐️⭐️⭐️ */
-      const urlRedirect = new URLSearchParams(window.location.search).get("redirect");
       if (urlRedirect) {
         navigate(urlRedirect, { replace: true });
         setLoading(false);
         return { user: normalizedUser, redirectUrl: urlRedirect };
       }
-      /* ⭐️⭐️⭐️ END NEW CODE ⭐️⭐️⭐️ */
 
-      // Existing redirect flow
       if (!skipRedirect) {
+        const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 
-  // 👑 ADMIN — תמיד לדשבורד אדמין
-  const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
+        if (normalizedUser.role === "admin" && !isImpersonating) {
+          navigate("/admin/dashboard", { replace: true });
+          setLoading(false);
+          return { user: normalizedUser, redirectUrl };
+        }
 
-if (normalizedUser.role === "admin" && !isImpersonating) {
-  navigate("/admin/dashboard", { replace: true });
-  setLoading(false);
-  return;
-}
+        if (normalizedUser.role !== "admin" && normalizedUser.hasAccess) {
+          sessionStorage.setItem("justRegistered", "true");
 
-  if (normalizedUser.role !== "admin" && normalizedUser.hasAccess) {
-  sessionStorage.setItem("justRegistered", "true");
-
-  if (normalizedUser.role === "business" && normalizedUser.businessId) {
-    navigate(`/business/${normalizedUser.businessId}/dashboard`, {
-      replace: true,
-    });
-  } else {
-    navigate("/dashboard", { replace: true });
-  }
-}
-}
-
+          if (normalizedUser.role === "business" && normalizedUser.businessId) {
+            navigate(`/business/${normalizedUser.businessId}/dashboard`, {
+              replace: true,
+            });
+          } else {
+            navigate("/dashboard", { replace: true });
+          }
+        }
+      }
 
       setLoading(false);
       return { user: normalizedUser, redirectUrl };
@@ -351,6 +351,7 @@ if (normalizedUser.role === "admin" && !isImpersonating) {
           ? "❌ אימייל או סיסמה שגויים"
           : "❌ שגיאת שרת"
       );
+
       setLoading(false);
       throw err;
     }
@@ -422,135 +423,167 @@ if (normalizedUser.role === "admin" && !isImpersonating) {
   /* ===========================
      🚪 Logout
   =========================== */
-  const logout = async () => {
+  const logout = async ({ callServer = true, redirect = true } = {}) => {
     setLoading(true);
-    try {
-      await API.post("/auth/logout", {}, { withCredentials: true });
-    } catch {}
 
-    setAuthToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("businessDetails");
-    localStorage.removeItem("dashboardStats");
-    localStorage.removeItem("impersonatedBy");
+    if (callServer) {
+      try {
+        await API.post("/auth/logout", {}, { withCredentials: true });
+      } catch (err) {
+        console.warn("Logout server call failed:", err?.message || err);
+      }
+    }
+
+    clearLocalAuth();
 
     setToken(null);
     setUser(null);
 
-    socket?.disconnect();
-    setSocket(null);
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+    }
 
     setLoading(false);
-    navigate("/login", { replace: true });
+
+    if (redirect) {
+      navigate("/login", { replace: true });
+    }
   };
 
   /* ===========================
-   🔥 Initialize (Fixed – no infinite refresh)
-=========================== */
-useEffect(() => {
-  // ✅ אם אין token — ננקה הכל ונצא
-  if (!token) {
-    socket?.disconnect();
-    setSocket(null);
-    setUser(null);
-    localStorage.removeItem("businessDetails");
-    setInitialized(true);
-    return;
-  }
+     🔥 Initialize
+  =========================== */
+  useEffect(() => {
+    let cancelled = false;
 
-  // ✅ אם כבר אותחל — לא לרוץ שוב
-  if (initialized) return;
-
-  setLoading(true);
-  setAuthToken(token);
-
-  (async () => {
-    try {
-      const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
-
-      // ⬇️ חשוב: בלי forceRefresh כדי לא לשבור cache
-      const freshUser = await refreshUser();
-
-      if (!freshUser) throw new Error("Missing user");
-
-
-      // 👑 ניתוב אדמין אם צריך
-      if (
-        freshUser.role === "admin" &&
-        !isImpersonating &&
-        !location.pathname.startsWith("/admin")
-      ) {
-        navigate("/admin/dashboard", { replace: true });
-        return;
+    if (!token) {
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
       }
 
-      // 🎧 יצירת socket
-      const newSocket = await createSocket(
-        singleFlightRefresh,
-        logout,
-        freshUser.businessId
-      );
-      setSocket(newSocket);
+      setUser(null);
+      localStorage.removeItem("businessDetails");
+      setInitialized(true);
+      return;
+    }
 
-      // 📦 ניתוב משתמש חדש שנרשם
-      const justRegistered = sessionStorage.getItem("justRegistered");
-      if (justRegistered) {
-        sessionStorage.removeItem("justRegistered");
-        if (freshUser.role === "business" && freshUser.businessId) {
+    if (initialized) return;
+
+    setLoading(true);
+    setAuthToken(token);
+
+    (async () => {
+      try {
+        const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
+
+        const freshUser = await refreshUser();
+
+        if (!freshUser) {
+          throw new Error("Missing user");
+        }
+
+        if (cancelled) return;
+
+        if (
+          freshUser.role === "admin" &&
+          !isImpersonating &&
+          !location.pathname.startsWith("/admin")
+        ) {
+          navigate("/admin/dashboard", { replace: true });
+          return;
+        }
+
+        const newSocket = await createSocket(
+          singleFlightRefresh,
+          () => logout({ callServer: false, redirect: true }),
+          freshUser.businessId
+        );
+
+        if (!cancelled) {
+          setSocket(newSocket);
+        }
+
+        const justRegistered = sessionStorage.getItem("justRegistered");
+
+        if (justRegistered) {
+          sessionStorage.removeItem("justRegistered");
+
+          if (freshUser.role === "business" && freshUser.businessId) {
+            navigate(`/business/${freshUser.businessId}/dashboard`, {
+              replace: true,
+            });
+          } else {
+            navigate("/dashboard", { replace: true });
+          }
+
+          return;
+        }
+
+        const savedRedirect = sessionStorage.getItem("postLoginRedirect");
+
+        if (savedRedirect) {
+          const isPricing = savedRedirect === "/pricing";
+          const shouldSkip = isPricing && freshUser.hasAccess;
+
+          if (!shouldSkip) {
+            navigate(savedRedirect, { replace: true });
+          }
+
+          sessionStorage.removeItem("postLoginRedirect");
+          return;
+        }
+
+        if (
+          freshUser.role === "business" &&
+          freshUser.businessId &&
+          !location.pathname.startsWith("/business/")
+        ) {
           navigate(`/business/${freshUser.businessId}/dashboard`, {
             replace: true,
           });
-        } else {
-          navigate("/dashboard", { replace: true });
         }
-        return;
+      } catch (err) {
+        console.error("❌ Auth init failed:", err);
+
+        clearLocalAuth();
+
+        if (!cancelled) {
+          setToken(null);
+          setUser(null);
+
+          if (socket) {
+            socket.disconnect();
+            setSocket(null);
+          }
+
+          if (!isPublicRoute(location.pathname)) {
+            navigate("/login", { replace: true });
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+          setInitialized(true);
+        }
       }
+    })();
 
-      // 🔁 ניתוב מ־postLoginRedirect אם יש
-      const savedRedirect = sessionStorage.getItem("postLoginRedirect");
-      if (savedRedirect) {
-         const isPricing = savedRedirect === "/pricing";
-        const shouldSkip = isPricing && freshUser.hasAccess;
-
-        if (!shouldSkip) navigate(savedRedirect, { replace: true });
-        sessionStorage.removeItem("postLoginRedirect");
-        return;
-      }
-
-      // 🏠 ניתוב ברירת מחדל
-      if (
-  freshUser.role === "business" &&
-  freshUser.businessId &&
-  !location.pathname.startsWith("/business/")
-) {
-  navigate(`/business/${freshUser.businessId}/dashboard`, {
-    replace: true,
-  });
-}
-
-    } catch (err) {
-  console.error("❌ Auth init failed:", err);
-  await logout();
-  return;
-} finally {
-      setLoading(false);
-      setInitialized(true);
-    }
-  })();
-}, [token, initialized]);
-
-
-
-
-
+    return () => {
+      cancelled = true;
+    };
+  }, [token, initialized, location.pathname]);
 
   /* ===========================
      Toast timeout
   =========================== */
   useEffect(() => {
     if (!successMessage) return;
-    const t = setTimeout(() => setSuccessMessage(null), 4000);
-    return () => clearTimeout(t);
+
+    const timer = setTimeout(() => setSuccessMessage(null), 4000);
+
+    return () => clearTimeout(timer);
   }, [successMessage]);
 
   /* ===========================
@@ -571,16 +604,15 @@ useEffect(() => {
 
     isImpersonating: Boolean(localStorage.getItem("impersonatedBy")),
 
-
     fetchWithAuth: async (fn) => {
       try {
         return await fn();
-
       } catch (err) {
         if ([401, 403].includes(err.response?.status)) {
-          await logout();
+          await logout({ callServer: false, redirect: true });
           setError("❌ יש להתחבר מחדש");
         }
+
         throw err;
       }
     },

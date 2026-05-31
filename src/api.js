@@ -133,11 +133,27 @@ API.interceptors.response.use(
           return API(config);
         }
       } catch (err) {
-        onRefreshed(null);
-        console.error("Error refreshing token:", err);
-        window.location.replace("/login");
-        return Promise.reject(err);
-      } finally {
+  onRefreshed(null);
+  console.error("Error refreshing token:", err);
+
+  localStorage.removeItem("token");
+  delete API.defaults.headers.common["Authorization"];
+
+  const isAlreadyOnLogin = window.location.pathname === "/login";
+  const isPublicPage =
+    window.location.pathname === "/" ||
+    window.location.pathname === "/register" ||
+    window.location.pathname === "/pricing" ||
+    window.location.pathname === "/features" ||
+    window.location.pathname === "/about" ||
+    window.location.pathname === "/contact";
+
+  if (!isAlreadyOnLogin && !isPublicPage) {
+    window.location.replace("/login");
+  }
+
+  return Promise.reject(err);
+} finally {
         isRefreshing = false;
       }
     }
