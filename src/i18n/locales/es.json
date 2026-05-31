@@ -121,6 +121,32 @@
       "empty": "Aún no hay próximas citas."
     },
 
+    "dailyAgenda": {
+  "upcomingAppointments": "Próximas citas",
+  "viewCalendar": "Ver calendario",
+  "noAppointments": "No hay citas en esta fecha",
+  "noAppointmentsDescription": "Cuando los clientes reserven citas para este día, aparecerán aquí.",
+  "confirmed": "Confirmado",
+  "email": "Email",
+  "manage": "Gestionar",
+  "viewAllAppointments": "Ver todas las citas",
+  "service": "Servicio",
+  "clientEmailMissing": "El email del cliente no está disponible",
+  "appointmentReminderSubject": "Recordatorio de cita – {{businessName}}",
+  "appointmentReminderBody": "Hola {{clientName}},\n\nEste es un recordatorio amable sobre tu próxima cita.\n\nFecha: {{date}}\nHora: {{time}}\nServicio: {{service}}\n\nSaludos,\n{{businessName}}"
+},
+
+"cards": {
+  "ariaLabel": "Métricas clave del panel",
+  "profileViews": "Vistas del perfil",
+  "appointments": "Citas",
+  "messages": "Mensajes",
+  "revenue": "Ingresos",
+  "reviews": "Reseñas",
+  "period30Days": "30 días",
+  "vsLast30Days": "frente a los últimos 30 días"
+},
+
     "states": {
       "loading": "Cargando panel de negocio...",
       "refreshingUser": "Actualizando datos del usuario...",

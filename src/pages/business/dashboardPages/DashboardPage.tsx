@@ -1040,11 +1040,13 @@ export default function DashboardPage() {
                 }
               >
                 <DailyAgenda
-                  date={selectedDate}
-                  appointments={enrichedAppointments}
-                  businessName={syncedStats.businessName}
-                  businessId={businessId}
-                />
+  date={selectedDate}
+  appointments={enrichedAppointments}
+  businessName={syncedStats.businessName || t("dashboard.yourBusiness")}
+  businessId={businessId}
+  t={t}
+  locale={i18n.language}
+/>
               </Suspense>
             </SectionCard>
 
@@ -1206,9 +1208,11 @@ export default function DashboardPage() {
               }
             >
               <DashboardCards
-                stats={syncedStats}
-                unreadCount={syncedStats.messages_count}
-              />
+  stats={syncedStats}
+  t={t}
+  locale={i18n.language}
+  currency={i18n.language === "he" || i18n.language === "he-IL" ? "ILS" : "USD"}
+/>
             </Suspense>
           </SectionCard>
 

@@ -121,6 +121,32 @@
       "empty": "Non ci sono ancora appuntamenti in programma."
     },
 
+    "dailyAgenda": {
+  "upcomingAppointments": "Prossimi appuntamenti",
+  "viewCalendar": "Vedi calendario",
+  "noAppointments": "Nessun appuntamento in questa data",
+  "noAppointmentsDescription": "Quando i clienti prenoteranno appuntamenti per questo giorno, appariranno qui.",
+  "confirmed": "Confermato",
+  "email": "Email",
+  "manage": "Gestisci",
+  "viewAllAppointments": "Vedi tutti gli appuntamenti",
+  "service": "Servizio",
+  "clientEmailMissing": "L’email del cliente non è disponibile",
+  "appointmentReminderSubject": "Promemoria appuntamento – {{businessName}}",
+  "appointmentReminderBody": "Ciao {{clientName}},\n\nQuesto è un promemoria per il tuo prossimo appuntamento.\n\nData: {{date}}\nOra: {{time}}\nServizio: {{service}}\n\nCordiali saluti,\n{{businessName}}"
+},
+
+"cards": {
+  "ariaLabel": "Metriche principali della dashboard",
+  "profileViews": "Visualizzazioni profilo",
+  "appointments": "Appuntamenti",
+  "messages": "Messaggi",
+  "revenue": "Ricavi",
+  "reviews": "Recensioni",
+  "period30Days": "30 giorni",
+  "vsLast30Days": "rispetto agli ultimi 30 giorni"
+},
+
     "states": {
       "loading": "Caricamento dashboard aziendale...",
       "refreshingUser": "Aggiornamento dati utente...",

@@ -121,6 +121,32 @@
       "empty": "Noch keine bevorstehenden Termine."
     },
 
+    "dailyAgenda": {
+  "upcomingAppointments": "Bevorstehende Termine",
+  "viewCalendar": "Kalender ansehen",
+  "noAppointments": "Keine Termine an diesem Datum",
+  "noAppointmentsDescription": "Wenn Kunden Termine für diesen Tag buchen, werden sie hier angezeigt.",
+  "confirmed": "Bestätigt",
+  "email": "E-Mail",
+  "manage": "Verwalten",
+  "viewAllAppointments": "Alle Termine ansehen",
+  "service": "Service",
+  "clientEmailMissing": "Die E-Mail-Adresse des Kunden ist nicht verfügbar",
+  "appointmentReminderSubject": "Terminerinnerung – {{businessName}}",
+  "appointmentReminderBody": "Hallo {{clientName}},\n\nDies ist eine freundliche Erinnerung an Ihren bevorstehenden Termin.\n\nDatum: {{date}}\nUhrzeit: {{time}}\nService: {{service}}\n\nMit freundlichen Grüßen,\n{{businessName}}"
+},
+
+"cards": {
+  "ariaLabel": "Wichtige Dashboard-Kennzahlen",
+  "profileViews": "Profilaufrufe",
+  "appointments": "Termine",
+  "messages": "Nachrichten",
+  "revenue": "Umsatz",
+  "reviews": "Bewertungen",
+  "period30Days": "30 Tage",
+  "vsLast30Days": "im Vergleich zu den letzten 30 Tagen"
+},
+
     "states": {
       "loading": "Business-Dashboard wird geladen...",
       "refreshingUser": "Benutzerdaten werden aktualisiert...",

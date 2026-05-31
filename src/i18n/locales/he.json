@@ -121,6 +121,32 @@
       "empty": "אין עדיין תורים קרובים."
     },
 
+    "dailyAgenda": {
+  "upcomingAppointments": "תורים קרובים",
+  "viewCalendar": "צפייה ביומן",
+  "noAppointments": "אין תורים בתאריך הזה",
+  "noAppointmentsDescription": "כאשר לקוחות יקבעו תורים ליום הזה, הם יופיעו כאן.",
+  "confirmed": "מאושר",
+  "email": "אימייל",
+  "manage": "ניהול",
+  "viewAllAppointments": "צפייה בכל התורים",
+  "service": "שירות",
+  "clientEmailMissing": "כתובת האימייל של הלקוח לא זמינה",
+  "appointmentReminderSubject": "תזכורת לתור – {{businessName}}",
+  "appointmentReminderBody": "היי {{clientName}},\n\nזו תזכורת ידידותית לתור הקרוב שלך.\n\nתאריך: {{date}}\nשעה: {{time}}\nשירות: {{service}}\n\nבברכה,\n{{businessName}}"
+},
+
+"cards": {
+  "ariaLabel": "מדדי הדשבורד המרכזיים",
+  "profileViews": "צפיות בפרופיל",
+  "appointments": "תורים",
+  "messages": "הודעות",
+  "revenue": "הכנסות",
+  "reviews": "ביקורות",
+  "period30Days": "30 ימים",
+  "vsLast30Days": "לעומת 30 הימים הקודמים"
+},
+
     "states": {
       "loading": "טוען דשבורד עסקי...",
       "refreshingUser": "מרענן נתוני משתמש...",

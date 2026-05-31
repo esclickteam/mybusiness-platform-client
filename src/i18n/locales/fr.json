@@ -121,6 +121,33 @@
       "empty": "Aucun rendez-vous à venir."
     },
 
+    "dailyAgenda": {
+  "upcomingAppointments": "Prochains rendez-vous",
+  "viewCalendar": "Voir le calendrier",
+  "noAppointments": "Aucun rendez-vous à cette date",
+  "noAppointmentsDescription": "Lorsque des clients réservent des rendez-vous pour ce jour, ils apparaîtront ici.",
+  "confirmed": "Confirmé",
+  "email": "E-mail",
+  "manage": "Gérer",
+  "viewAllAppointments": "Voir tous les rendez-vous",
+  "service": "Service",
+  "clientEmailMissing": "L’e-mail du client n’est pas disponible",
+  "appointmentReminderSubject": "Rappel de rendez-vous – {{businessName}}",
+  "appointmentReminderBody": "Bonjour {{clientName}},\n\nCeci est un rappel amical concernant votre prochain rendez-vous.\n\nDate : {{date}}\nHeure : {{time}}\nService : {{service}}\n\nCordialement,\n{{businessName}}"
+},
+
+"cards": {
+  "ariaLabel": "Indicateurs clés du tableau de bord",
+  "profileViews": "Vues du profil",
+  "appointments": "Rendez-vous",
+  "messages": "Messages",
+  "revenue": "Revenus",
+  "reviews": "Avis",
+  "period30Days": "30 jours",
+  "vsLast30Days": "par rapport aux 30 derniers jours"
+},
+
+
     "states": {
       "loading": "Chargement du tableau de bord professionnel...",
       "refreshingUser": "Actualisation des données utilisateur...",

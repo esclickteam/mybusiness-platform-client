@@ -121,6 +121,32 @@
       "empty": "Nog geen aankomende afspraken."
     },
 
+    "dailyAgenda": {
+  "upcomingAppointments": "Aankomende afspraken",
+  "viewCalendar": "Kalender bekijken",
+  "noAppointments": "Geen afspraken op deze datum",
+  "noAppointmentsDescription": "Wanneer klanten afspraken voor deze dag boeken, verschijnen ze hier.",
+  "confirmed": "Bevestigd",
+  "email": "E-mail",
+  "manage": "Beheren",
+  "viewAllAppointments": "Alle afspraken bekijken",
+  "service": "Service",
+  "clientEmailMissing": "Het e-mailadres van de klant is niet beschikbaar",
+  "appointmentReminderSubject": "Afspraakherinnering – {{businessName}}",
+  "appointmentReminderBody": "Hallo {{clientName}},\n\nDit is een vriendelijke herinnering aan je komende afspraak.\n\nDatum: {{date}}\nTijd: {{time}}\nService: {{service}}\n\nMet vriendelijke groet,\n{{businessName}}"
+},
+
+"cards": {
+  "ariaLabel": "Belangrijkste dashboardstatistieken",
+  "profileViews": "Profielweergaven",
+  "appointments": "Afspraken",
+  "messages": "Berichten",
+  "revenue": "Omzet",
+  "reviews": "Beoordelingen",
+  "period30Days": "30 dagen",
+  "vsLast30Days": "vergeleken met de afgelopen 30 dagen"
+},
+
     "states": {
       "loading": "Bedrijfsdashboard laden...",
       "refreshingUser": "Gebruikersgegevens vernieuwen...",

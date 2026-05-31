@@ -120,6 +120,32 @@
       "description": "A quick view of upcoming appointments in your business.",
       "empty": "No upcoming appointments yet."
     },
+    
+    "dailyAgenda": {
+  "upcomingAppointments": "Upcoming appointments",
+  "viewCalendar": "View calendar",
+  "noAppointments": "No appointments on this date",
+  "noAppointmentsDescription": "When clients book appointments for this day, they will appear here.",
+  "confirmed": "Confirmed",
+  "email": "Email",
+  "manage": "Manage",
+  "viewAllAppointments": "View all appointments",
+  "service": "Service",
+  "clientEmailMissing": "Client email is not available",
+  "appointmentReminderSubject": "Appointment reminder – {{businessName}}",
+  "appointmentReminderBody": "Hi {{clientName}},\n\nThis is a friendly reminder about your upcoming appointment.\n\nDate: {{date}}\nTime: {{time}}\nService: {{service}}\n\nBest regards,\n{{businessName}}"
+},
+
+"cards": {
+  "ariaLabel": "Dashboard key metrics",
+  "profileViews": "Profile Views",
+  "appointments": "Appointments",
+  "messages": "Messages",
+  "revenue": "Revenue",
+  "reviews": "Reviews",
+  "period30Days": "30 days",
+  "vsLast30Days": "vs last 30 days"
+},
 
     "states": {
       "loading": "Loading business dashboard...",
