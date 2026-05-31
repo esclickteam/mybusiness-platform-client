@@ -196,8 +196,6 @@ const CalendarView = React.memo(
             className="
               flex h-9 w-9 items-center justify-center rounded-xl
               border border-slate-200 bg-white text-slate-500
-              transition hover:border-violet-200 hover:bg-violet-50
-              hover:text-violet-700
             "
           >
             {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
@@ -220,8 +218,6 @@ const CalendarView = React.memo(
             className="
               flex h-9 w-9 items-center justify-center rounded-xl
               border border-slate-200 bg-white text-slate-500
-              transition hover:border-violet-200 hover:bg-violet-50
-              hover:text-violet-700
             "
           >
             {isRtl ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
@@ -263,9 +259,7 @@ const CalendarView = React.memo(
                 onClick={() => onDateClick?.(cell.dateStr)}
                 className={`
                   relative flex h-[58px] flex-col justify-between rounded-xl
-                  border p-2 text-start transition duration-200
-                  hover:border-violet-200 hover:bg-violet-50/60
-                  sm:h-[68px]
+                  border p-2 text-start sm:h-[68px]
                   ${
                     cell.isSelected
                       ? "border-violet-300 bg-violet-50 shadow-[0_10px_24px_rgba(124,58,237,0.10)]"
