@@ -1,0 +1,42 @@
+{
+  "home": {
+    "badge": "Plataforma integral de gestión empresarial",
+    "headlineTop": "Gestiona tu negocio",
+    "headlineHighlight": "en un solo lugar.",
+    "subtitle": "Una plataforma inteligente para gestionar clientes, citas, CRM, colaboraciones, propuestas e IA — todo conectado en un espacio de trabajo profesional.",
+    "startTrial": "Iniciar prueba",
+    "viewPricing": "Ver precios",
+    "trustNoCard": "No se requiere tarjeta de crédito",
+    "trustTrial": "Prueba gratis de 14 días",
+    "trustCancel": "Cancela cuando quieras"
+  },
+  "preview": {
+    "themeLight": "Claro",
+    "themeSmart": "Inteligente",
+    "businessOs": "Sistema empresarial",
+    "sidebarDashboard": "Panel",
+    "sidebarClients": "Clientes",
+    "sidebarAppointments": "Citas",
+    "sidebarCrm": "CRM",
+    "sidebarCollaborations": "Colaboraciones",
+    "sidebarReports": "Informes",
+    "sidebarAiTools": "Herramientas IA",
+    "greeting": "Buenos días, Michael",
+    "pipelineTitle": "Tu pipeline de negocio",
+    "thisMonth": "Este mes",
+    "salesPipeline": "Pipeline de ventas y clientes",
+    "salesPipelineSubtitle": "Oportunidades activas, citas y propuestas",
+    "activeDeals": "296 negocios activos",
+    "stageLeads": "Leads",
+    "stageContacted": "Contactados",
+    "stageProposal": "Propuesta",
+    "stageScheduled": "Programados",
+    "stageConverted": "Convertidos",
+    "revenueGrowth": "Crecimiento de ingresos",
+    "aiAssistant": "Asistente IA",
+    "aiMessage": "Encontré 3 horarios disponibles y preparé un borrador de propuesta para tu nuevo cliente.",
+    "aiSummarize": "Resumir mi semana",
+    "aiDraftProposal": "Crear propuesta",
+    "aiFindSlots": "Encontrar horarios"
+  }
+}

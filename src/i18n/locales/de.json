@@ -1,0 +1,42 @@
+{
+  "home": {
+    "badge": "All-in-one Plattform für Unternehmensmanagement",
+    "headlineTop": "Führen Sie Ihr Unternehmen",
+    "headlineHighlight": "an einem Ort.",
+    "subtitle": "Eine intelligente Plattform zur Verwaltung von Kunden, Terminen, CRM, Kooperationen, Angeboten und KI — alles verbunden in einem professionellen Workspace.",
+    "startTrial": "Testversion starten",
+    "viewPricing": "Preise ansehen",
+    "trustNoCard": "Keine Kreditkarte erforderlich",
+    "trustTrial": "14 Tage kostenlos testen",
+    "trustCancel": "Jederzeit kündbar"
+  },
+  "preview": {
+    "themeLight": "Hell",
+    "themeSmart": "Smart",
+    "businessOs": "Business OS",
+    "sidebarDashboard": "Dashboard",
+    "sidebarClients": "Kunden",
+    "sidebarAppointments": "Termine",
+    "sidebarCrm": "CRM",
+    "sidebarCollaborations": "Kooperationen",
+    "sidebarReports": "Berichte",
+    "sidebarAiTools": "KI-Tools",
+    "greeting": "Guten Morgen, Michael",
+    "pipelineTitle": "Ihre Business-Pipeline",
+    "thisMonth": "Diesen Monat",
+    "salesPipeline": "Vertriebs- & Kundenpipeline",
+    "salesPipelineSubtitle": "Aktive Chancen, Termine und Angebote",
+    "activeDeals": "296 aktive Deals",
+    "stageLeads": "Leads",
+    "stageContacted": "Kontaktiert",
+    "stageProposal": "Angebot",
+    "stageScheduled": "Geplant",
+    "stageConverted": "Abgeschlossen",
+    "revenueGrowth": "Umsatzwachstum",
+    "aiAssistant": "KI-Assistent",
+    "aiMessage": "Ich habe 3 freie Zeitfenster gefunden und einen Angebotsentwurf für Ihren neuen Kunden vorbereitet.",
+    "aiSummarize": "Meine Woche zusammenfassen",
+    "aiDraftProposal": "Angebot erstellen",
+    "aiFindSlots": "Freie Zeiten finden"
+  }
+}

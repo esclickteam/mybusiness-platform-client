@@ -1,0 +1,42 @@
+{
+  "home": {
+    "badge": "Piattaforma completa per la gestione aziendale",
+    "headlineTop": "Gestisci la tua attività",
+    "headlineHighlight": "in un unico posto.",
+    "subtitle": "Una piattaforma intelligente per gestire clienti, appuntamenti, CRM, collaborazioni, proposte e IA — tutto collegato in un ambiente di lavoro professionale.",
+    "startTrial": "Inizia la prova",
+    "viewPricing": "Vedi i prezzi",
+    "trustNoCard": "Nessuna carta di credito richiesta",
+    "trustTrial": "Prova gratuita di 14 giorni",
+    "trustCancel": "Annulla in qualsiasi momento"
+  },
+  "preview": {
+    "themeLight": "Chiaro",
+    "themeSmart": "Smart",
+    "businessOs": "Sistema aziendale",
+    "sidebarDashboard": "Dashboard",
+    "sidebarClients": "Clienti",
+    "sidebarAppointments": "Appuntamenti",
+    "sidebarCrm": "CRM",
+    "sidebarCollaborations": "Collaborazioni",
+    "sidebarReports": "Report",
+    "sidebarAiTools": "Strumenti IA",
+    "greeting": "Buongiorno, Michael",
+    "pipelineTitle": "La tua pipeline aziendale",
+    "thisMonth": "Questo mese",
+    "salesPipeline": "Pipeline vendite e clienti",
+    "salesPipelineSubtitle": "Opportunità attive, appuntamenti e proposte",
+    "activeDeals": "296 trattative attive",
+    "stageLeads": "Lead",
+    "stageContacted": "Contattati",
+    "stageProposal": "Proposta",
+    "stageScheduled": "Pianificati",
+    "stageConverted": "Convertiti",
+    "revenueGrowth": "Crescita dei ricavi",
+    "aiAssistant": "Assistente IA",
+    "aiMessage": "Ho trovato 3 slot disponibili e preparato una bozza di proposta per il tuo nuovo cliente.",
+    "aiSummarize": "Riassumi la mia settimana",
+    "aiDraftProposal": "Crea proposta",
+    "aiFindSlots": "Trova slot liberi"
+  }
+}

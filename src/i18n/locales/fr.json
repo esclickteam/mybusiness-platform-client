@@ -1,0 +1,42 @@
+{
+  "home": {
+    "badge": "Plateforme complète de gestion d’entreprise",
+    "headlineTop": "Gérez votre entreprise",
+    "headlineHighlight": "au même endroit.",
+    "subtitle": "Une plateforme intelligente pour gérer les clients, les rendez-vous, le CRM, les collaborations, les propositions et l’IA — tout est connecté dans un espace de travail professionnel.",
+    "startTrial": "Commencer l’essai",
+    "viewPricing": "Voir les tarifs",
+    "trustNoCard": "Aucune carte bancaire requise",
+    "trustTrial": "Essai gratuit de 14 jours",
+    "trustCancel": "Annulez à tout moment"
+  },
+  "preview": {
+    "themeLight": "Clair",
+    "themeSmart": "Intelligent",
+    "businessOs": "Système de gestion d’entreprise",
+    "sidebarDashboard": "Tableau de bord",
+    "sidebarClients": "Clients",
+    "sidebarAppointments": "Rendez-vous",
+    "sidebarCrm": "CRM",
+    "sidebarCollaborations": "Collaborations",
+    "sidebarReports": "Rapports",
+    "sidebarAiTools": "Outils IA",
+    "greeting": "Bonjour, Michael",
+    "pipelineTitle": "Votre pipeline commercial",
+    "thisMonth": "Ce mois-ci",
+    "salesPipeline": "Pipeline ventes & clients",
+    "salesPipelineSubtitle": "Opportunités actives, rendez-vous et propositions",
+    "activeDeals": "296 affaires actives",
+    "stageLeads": "Prospects",
+    "stageContacted": "Contactés",
+    "stageProposal": "Proposition",
+    "stageScheduled": "Planifiés",
+    "stageConverted": "Convertis",
+    "revenueGrowth": "Croissance du revenu",
+    "aiAssistant": "Assistant IA",
+    "aiMessage": "J’ai trouvé 3 créneaux disponibles et préparé un brouillon de proposition pour votre nouveau client.",
+    "aiSummarize": "Résumer ma semaine",
+    "aiDraftProposal": "Créer une proposition",
+    "aiFindSlots": "Trouver des créneaux"
+  }
+}

@@ -5,7 +5,12 @@ import { useTranslation } from "react-i18next";
 
 const languages = [
   { code: "en", label: "English" },
-  { code: "he", label: "עברית" }
+  { code: "he", label: "עברית" },
+  { code: "fr", label: "Français" },
+  { code: "de", label: "Deutsch" },
+  { code: "es", label: "Español" },
+  { code: "nl", label: "Nederlands" },
+  { code: "it", label: "Italiano" },
 ];
 
 export default function LanguageSwitcher() {
@@ -13,15 +18,18 @@ export default function LanguageSwitcher() {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
 
-  const currentLanguage =
-    languages.find((lang) => lang.code === i18n.language?.split("-")[0]) ||
-    languages[0];
+  const currentLangCode = i18n.language?.split("-")?.[0] || "en";
 
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
+  const currentLanguage =
+    languages.find((lang) => lang.code === currentLangCode) || languages[0];
+
+  const changeLanguage = async (lng) => {
+    await i18n.changeLanguage(lng);
+
     localStorage.setItem("i18nextLng", lng);
     document.documentElement.lang = lng;
     document.documentElement.dir = lng === "he" ? "rtl" : "ltr";
+
     setOpen(false);
   };
 
@@ -43,36 +51,45 @@ export default function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-sky-50 text-sky-600 shadow-sm transition hover:bg-sky-100"
+        className={`flex h-[58px] w-[58px] items-center justify-center rounded-2xl shadow-[0_12px_30px_rgba(79,70,229,0.22)] transition hover:-translate-y-0.5 ${
+          open
+            ? "bg-gradient-to-br from-indigo-600 to-violet-700 text-white"
+            : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+        }`}
         aria-label="Change language"
+        title={currentLanguage.label}
       >
-        <Globe className="h-7 w-7" strokeWidth={2.2} />
+        <Globe className="h-7 w-7" strokeWidth={2.4} />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-[72px] z-50 min-w-[180px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
-          <div className="border-b border-slate-100 px-4 py-3 text-sm font-bold text-slate-700">
-            Select language
+        <div className="absolute right-1/2 top-[74px] z-[9999] w-[260px] translate-x-1/2 rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-[0_28px_80px_rgba(15,23,42,0.18)]">
+          <div className="absolute -top-2.5 right-1/2 h-5 w-5 translate-x-1/2 rotate-45 border-l border-t border-slate-200 bg-white" />
+
+          <div className="relative border-b border-slate-100 px-4 pb-4 pt-3 text-lg font-black text-slate-950">
+            Change language
           </div>
 
-          <div className="p-2">
+          <div className="relative mt-3 space-y-2">
             {languages.map((lang) => {
-              const isActive =
-                i18n.language?.split("-")[0] === lang.code;
+              const isActive = currentLangCode === lang.code;
 
               return (
                 <button
                   key={lang.code}
                   type="button"
                   onClick={() => changeLanguage(lang.code)}
-                  className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                  className={`flex w-full items-center justify-between rounded-2xl px-5 py-4 text-left text-base font-black transition ${
                     isActive
-                      ? "bg-sky-50 text-sky-700"
-                      : "text-slate-700 hover:bg-slate-50"
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-700 text-white shadow-lg shadow-indigo-200"
+                      : "bg-white text-slate-700 hover:bg-slate-50 hover:text-indigo-700"
                   }`}
                 >
                   <span>{lang.label}</span>
-                  {isActive && <span className="text-xs">✓</span>}
+
+                  {isActive && (
+                    <span className="text-lg font-black leading-none">✓</span>
+                  )}
                 </button>
               );
             })}

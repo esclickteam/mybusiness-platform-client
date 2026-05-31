@@ -1,0 +1,42 @@
+{
+  "home": {
+    "badge": "Alles-in-één platform voor bedrijfsbeheer",
+    "headlineTop": "Beheer je bedrijf",
+    "headlineHighlight": "op één plek.",
+    "subtitle": "Eén slim platform om klanten, afspraken, CRM, samenwerkingen, voorstellen en AI te beheren — alles verbonden in één professionele werkruimte.",
+    "startTrial": "Start proefperiode",
+    "viewPricing": "Bekijk prijzen",
+    "trustNoCard": "Geen creditcard vereist",
+    "trustTrial": "14 dagen gratis proberen",
+    "trustCancel": "Altijd opzegbaar"
+  },
+  "preview": {
+    "themeLight": "Licht",
+    "themeSmart": "Slim",
+    "businessOs": "Business OS",
+    "sidebarDashboard": "Dashboard",
+    "sidebarClients": "Klanten",
+    "sidebarAppointments": "Afspraken",
+    "sidebarCrm": "CRM",
+    "sidebarCollaborations": "Samenwerkingen",
+    "sidebarReports": "Rapporten",
+    "sidebarAiTools": "AI-tools",
+    "greeting": "Goedemorgen, Michael",
+    "pipelineTitle": "Je zakelijke pipeline",
+    "thisMonth": "Deze maand",
+    "salesPipeline": "Sales- en klantpipeline",
+    "salesPipelineSubtitle": "Actieve kansen, afspraken en voorstellen",
+    "activeDeals": "296 actieve deals",
+    "stageLeads": "Leads",
+    "stageContacted": "Gecontacteerd",
+    "stageProposal": "Voorstel",
+    "stageScheduled": "Gepland",
+    "stageConverted": "Geconverteerd",
+    "revenueGrowth": "Omzetgroei",
+    "aiAssistant": "AI-assistent",
+    "aiMessage": "Ik heb 3 vrije tijdsloten gevonden en een voorstelconcept voorbereid voor je nieuwe klant.",
+    "aiSummarize": "Vat mijn week samen",
+    "aiDraftProposal": "Voorstel maken",
+    "aiFindSlots": "Vrije tijden vinden"
+  }
+}
