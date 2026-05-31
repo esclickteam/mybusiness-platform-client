@@ -42,7 +42,6 @@ const fallbackT: TFunction = (key, values) => {
     "dashboard.calendarView.previousMonth": "Previous month",
     "dashboard.calendarView.nextMonth": "Next month",
     "dashboard.calendarView.hint": "Click a date to view your daily agenda",
-    "dashboard.calendarView.today": "Today",
     "dashboard.calendarView.appointment": "{{count}} appointment",
     "dashboard.calendarView.appointments": "{{count}} appointments",
   };
@@ -102,13 +101,12 @@ const CalendarView = React.memo(
 
     const isRtl = isHebrewLocale(locale);
 
-    const weekDays = useMemo(() => {
-      return getWeekDays(locale);
-    }, [locale]);
+    const weekDays = useMemo(() => getWeekDays(locale), [locale]);
 
-    const monthTitle = useMemo(() => {
-      return getMonthTitle(currentYear, currentMonth, locale);
-    }, [currentYear, currentMonth, locale]);
+    const monthTitle = useMemo(
+      () => getMonthTitle(currentYear, currentMonth, locale),
+      [currentYear, currentMonth, locale]
+    );
 
     const appointmentsByDay = useMemo(() => {
       const map: Record<string, Appointment[]> = {};
@@ -130,31 +128,34 @@ const CalendarView = React.memo(
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
       const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
-      return Array.from({ length: daysInMonth + firstDayOfWeek }, (_, index) => {
-        if (index < firstDayOfWeek) {
+      return Array.from(
+        { length: daysInMonth + firstDayOfWeek },
+        (_, index) => {
+          if (index < firstDayOfWeek) {
+            return {
+              type: "empty",
+              key: `empty-${index}`,
+            };
+          }
+
+          const day = index - firstDayOfWeek + 1;
+
+          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
+            2,
+            "0"
+          )}-${String(day).padStart(2, "0")}`;
+
           return {
-            type: "empty",
-            key: `empty-${index}`,
+            type: "day",
+            key: dateStr,
+            day,
+            dateStr,
+            isToday: dateStr === todayStr,
+            isSelected: selectedDate === dateStr,
+            count: appointmentsByDay[dateStr]?.length || 0,
           };
         }
-
-        const day = index - firstDayOfWeek + 1;
-
-        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
-          2,
-          "0"
-        )}-${String(day).padStart(2, "0")}`;
-
-        return {
-          type: "day",
-          key: dateStr,
-          day,
-          dateStr,
-          isToday: dateStr === todayStr,
-          isSelected: selectedDate === dateStr,
-          count: appointmentsByDay[dateStr]?.length || 0,
-        };
-      });
+      );
     }, [appointmentsByDay, currentMonth, currentYear, selectedDate, todayStr]);
 
     const goPrev = () => {
@@ -251,6 +252,7 @@ const CalendarView = React.memo(
             }
 
             const hasEvents = cell.count > 0;
+            const isPurpleMarked = cell.isSelected || cell.isToday;
 
             return (
               <button
@@ -261,11 +263,10 @@ const CalendarView = React.memo(
                   relative flex h-[58px] flex-col justify-between rounded-xl
                   border p-2 text-start sm:h-[68px]
                   ${
-                    cell.isSelected
-                      ? "border-violet-300 bg-white shadow-[0_8px_20px_rgba(124,58,237,0.08)]"
+                    isPurpleMarked
+                      ? "border-violet-200 bg-violet-50/40"
                       : "border-slate-200 bg-white"
                   }
-                  ${cell.isToday ? "border-violet-300" : ""}
                 `}
               >
                 <div className="flex items-start justify-between gap-1">
@@ -274,22 +275,14 @@ const CalendarView = React.memo(
                       flex h-7 w-7 items-center justify-center rounded-lg
                       text-xs font-black
                       ${
-                        cell.isSelected || cell.isToday
-                          ? "bg-violet-50 text-violet-700"
+                        isPurpleMarked
+                          ? "bg-violet-600 text-white"
                           : "bg-slate-50 text-slate-700"
                       }
                     `}
                   >
                     {cell.day}
                   </span>
-
-                  {cell.isToday && (
-                    <span
-                      aria-label={t("dashboard.calendarView.today")}
-                      title={t("dashboard.calendarView.today")}
-                      className="mt-1 h-2 w-2 rounded-full bg-violet-500"
-                    />
-                  )}
                 </div>
 
                 {hasEvents ? (
@@ -316,10 +309,6 @@ const CalendarView = React.memo(
                   </div>
                 ) : (
                   <span className="h-1" />
-                )}
-
-                {cell.isSelected && (
-                  <span className="absolute bottom-2 left-2 right-2 h-[3px] rounded-full bg-violet-300" />
                 )}
               </button>
             );
