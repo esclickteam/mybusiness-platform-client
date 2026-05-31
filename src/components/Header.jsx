@@ -17,6 +17,11 @@ const navLinks = [
 const languages = [
   { code: "en", label: "English" },
   { code: "he", label: "עברית" },
+  { code: "fr", label: "Français" },
+  { code: "de", label: "Deutsch" },
+  { code: "es", label: "Español" },
+  { code: "nl", label: "Nederlands" },
+  { code: "it", label: "Italiano" },
 ];
 
 export default function Header() {
