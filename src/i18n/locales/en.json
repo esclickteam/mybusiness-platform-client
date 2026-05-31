@@ -38,5 +38,102 @@
     "aiSummarize": "Summarize my week",
     "aiDraftProposal": "Draft proposal",
     "aiFindSlots": "Find free slots"
+  },
+  "dashboard": {
+    "live": "Live",
+    "title": "Business Dashboard",
+    "badge": "Business dashboard",
+    "subtitle": "Manage appointments, AI insights, client messages, reviews, exposure and real-time business activity — all from one clean and professional workspace.",
+    "business": "Business",
+    "planStatus": "Plan status",
+    "refresh": "Refresh",
+    "syncDashboard": "Sync dashboard",
+    "paid": "Paid",
+    "trial": "Trial",
+    "yourBusiness": "Your business",
+
+    "metrics": {
+      "profileViews": "Profile views",
+      "profileViewsHint": "Live exposure from your public business page",
+      "appointments": "Appointments",
+      "appointmentsHint": "{{today}} today · {{week}} in the next 7 days",
+      "messages": "Messages",
+      "messagesHint": "Active conversations and unread client messages",
+      "reviews": "Reviews",
+      "reviewsHint": "Customer trust and rating activity"
+    },
+
+    "agenda": {
+      "eyebrow": "Daily agenda",
+      "title": "Selected day schedule",
+      "description": "View the appointments for the selected date in a clean and organized way.",
+      "loading": "Loading agenda..."
+    },
+
+    "calendar": {
+      "eyebrow": "Calendar",
+      "title": "Appointment overview",
+      "description": "Choose a date and manage your business appointment flow.",
+      "loading": "Loading calendar..."
+    },
+
+    "ai": {
+      "eyebrow": "AI action center",
+      "title": "Smart insights for your business",
+      "description": "AI recommendations based on your business activity, clients, appointments and performance."
+    },
+
+    "operations": {
+      "eyebrow": "Today overview",
+      "title": "Activity pulse",
+      "todayAppointments": "Appointments today",
+      "upcomingWeek": "Upcoming week",
+      "pendingAiApprovals": "AI recommendations pending approval"
+    },
+
+    "recommendations": {
+      "eyebrow": "Pending approval",
+      "title": "AI recommendations",
+      "description": "Review AI recommendations before sending them to clients.",
+      "client": "Client:",
+      "aiSuggestion": "AI suggestion:",
+      "approveAndSend": "Approve and send"
+    },
+
+    "performance": {
+      "eyebrow": "Business performance",
+      "title": "Dashboard cards",
+      "description": "Your performance cards are connected to live business data.",
+      "loading": "Loading cards..."
+    },
+
+    "analytics": {
+      "eyebrow": "Growth analytics",
+      "title": "Clients who booked appointments by month",
+      "description": "Monthly trends of appointment demand and client activity.",
+      "loading": "Loading chart..."
+    },
+
+    "upcoming": {
+      "eyebrow": "Upcoming appointments",
+      "title": "Next activity",
+      "description": "A quick view of upcoming appointments in your business.",
+      "empty": "No upcoming appointments yet."
+    },
+
+    "states": {
+      "loading": "Loading business dashboard...",
+      "refreshingUser": "Refreshing user data...",
+      "accessDeniedTitle": "Access denied",
+      "accessDeniedMessage": "You do not have permission to access this business dashboard.",
+      "loadErrorTitle": "Could not load dashboard",
+      "loadErrorMessage": "Error loading data from server.",
+      "subscriptionPending": "Your subscription has not been activated yet. Try again in a few minutes.",
+      "subscriptionCheckError": "Error checking subscription status.",
+      "somethingWrong": "Something went wrong. Please try again.",
+      "closeOfferError": "Could not close the offer right now. Please try again.",
+      "socketNotConnected": "Real-time connection is not connected",
+      "unknownError": "Unknown error"
+    }
   }
 }
