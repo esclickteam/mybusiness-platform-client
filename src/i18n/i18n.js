@@ -4,13 +4,8 @@ import LanguageDetector from "i18next-browser-languagedetector";
 
 import en from "./locales/en.json";
 import he from "./locales/he.json";
-import fr from "./locales/fr.json";
-import de from "./locales/de.json";
-import es from "./locales/es.json";
-import nl from "./locales/nl.json";
-import it from "./locales/it.json";
 
-const supportedLanguages = ["en", "he", "fr", "de", "es", "nl", "it"];
+const supportedLanguages = ["en", "he"];
 
 i18n
   .use(LanguageDetector)
@@ -19,11 +14,6 @@ i18n
     resources: {
       en: { translation: en },
       he: { translation: he },
-      fr: { translation: fr },
-      de: { translation: de },
-      es: { translation: es },
-      nl: { translation: nl },
-      it: { translation: it },
     },
 
     fallbackLng: "en",

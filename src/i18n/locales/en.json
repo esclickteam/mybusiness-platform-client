@@ -1,0 +1,42 @@
+{
+  "home": {
+    "badge": "All-in-one business management platform",
+    "headlineTop": "Run your business",
+    "headlineHighlight": "in one place.",
+    "subtitle": "One smart platform to manage clients, appointments, CRM, collaborations, proposals and AI — everything connected in one premium workspace.",
+    "startTrial": "Start a trial",
+    "viewPricing": "View pricing",
+    "trustNoCard": "No credit card required",
+    "trustTrial": "14-day free trial",
+    "trustCancel": "Cancel anytime"
+  },
+  "preview": {
+    "themeLight": "Light",
+    "themeSmart": "Smart",
+    "businessOs": "Business OS",
+    "sidebarDashboard": "Dashboard",
+    "sidebarClients": "Clients",
+    "sidebarAppointments": "Appointments",
+    "sidebarCrm": "CRM",
+    "sidebarCollaborations": "Collaborations",
+    "sidebarReports": "Reports",
+    "sidebarAiTools": "AI Tools",
+    "greeting": "Good morning, Michael",
+    "pipelineTitle": "Your business pipeline",
+    "thisMonth": "This month",
+    "salesPipeline": "Sales & Client Pipeline",
+    "salesPipelineSubtitle": "Active opportunities, appointments and proposals",
+    "activeDeals": "296 active deals",
+    "stageLeads": "Leads",
+    "stageContacted": "Contacted",
+    "stageProposal": "Proposal",
+    "stageScheduled": "Scheduled",
+    "stageConverted": "Converted",
+    "revenueGrowth": "Revenue Growth",
+    "aiAssistant": "AI Assistant",
+    "aiMessage": "I found 3 open time slots and prepared a proposal draft for your new client.",
+    "aiSummarize": "Summarize my week",
+    "aiDraftProposal": "Draft proposal",
+    "aiFindSlots": "Find free slots"
+  }
+}
