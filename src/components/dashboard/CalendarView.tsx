@@ -8,22 +8,23 @@ type TFunction = (key: string, values?: TranslationValues) => string;
 type Appointment = {
   _id?: string;
   id?: string;
-  date?: string; // YYYY-MM-DD
+  date?: string;
   time?: string;
   [key: string]: any;
 };
 
 type CalendarCell =
   | {
-      day: null;
-      dateStr?: never;
-      isToday?: never;
-      count?: never;
+      type: "empty";
+      key: string;
     }
   | {
+      type: "day";
+      key: string;
       day: number;
       dateStr: string;
       isToday: boolean;
+      isSelected: boolean;
       count: number;
     };
 
@@ -42,7 +43,6 @@ const fallbackT: TFunction = (key, values) => {
     "dashboard.calendarView.nextMonth": "Next month",
     "dashboard.calendarView.hint": "Click a date to view your daily agenda",
     "dashboard.calendarView.today": "Today",
-    "dashboard.calendarView.selected": "Selected",
     "dashboard.calendarView.appointment": "{{count}} appointment",
     "dashboard.calendarView.appointments": "{{count}} appointments",
   };
@@ -74,7 +74,7 @@ function getMonthTitle(year: number, month: number, locale: string): string {
 }
 
 function getWeekDays(locale: string): string[] {
-  const baseSunday = new Date(2024, 0, 7); // Sunday
+  const baseSunday = new Date(2024, 0, 7);
 
   return Array.from({ length: 7 }, (_, index) => {
     const date = new Date(baseSunday);
@@ -110,6 +110,53 @@ const CalendarView = React.memo(
       return getMonthTitle(currentYear, currentMonth, locale);
     }, [currentYear, currentMonth, locale]);
 
+    const appointmentsByDay = useMemo(() => {
+      const map: Record<string, Appointment[]> = {};
+
+      appointments.forEach((appointment) => {
+        if (!appointment?.date) return;
+
+        if (!map[appointment.date]) {
+          map[appointment.date] = [];
+        }
+
+        map[appointment.date].push(appointment);
+      });
+
+      return map;
+    }, [appointments]);
+
+    const cells = useMemo<CalendarCell[]>(() => {
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
+
+      return Array.from({ length: daysInMonth + firstDayOfWeek }, (_, index) => {
+        if (index < firstDayOfWeek) {
+          return {
+            type: "empty",
+            key: `empty-${index}`,
+          };
+        }
+
+        const day = index - firstDayOfWeek + 1;
+
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
+          2,
+          "0"
+        )}-${String(day).padStart(2, "0")}`;
+
+        return {
+          type: "day",
+          key: dateStr,
+          day,
+          dateStr,
+          isToday: dateStr === todayStr,
+          isSelected: selectedDate === dateStr,
+          count: appointmentsByDay[dateStr]?.length || 0,
+        };
+      });
+    }, [appointmentsByDay, currentMonth, currentYear, selectedDate, todayStr]);
+
     const goPrev = () => {
       setCurrentMonth((month) => {
         if (month === 0) {
@@ -132,70 +179,23 @@ const CalendarView = React.memo(
       });
     };
 
-    const appointmentsByDay = useMemo(() => {
-      const map: Record<string, Appointment[]> = {};
-
-      appointments.forEach((appointment) => {
-        if (!appointment?.date) return;
-
-        const dateKey = appointment.date;
-
-        if (!map[dateKey]) {
-          map[dateKey] = [];
-        }
-
-        map[dateKey].push(appointment);
-      });
-
-      return map;
-    }, [appointments]);
-
-    const cells = useMemo<CalendarCell[]>(() => {
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
-
-      return Array.from(
-        { length: daysInMonth + firstDayOfWeek },
-        (_, index): CalendarCell => {
-          if (index < firstDayOfWeek) {
-            return { day: null };
-          }
-
-          const day = index - firstDayOfWeek + 1;
-
-          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
-            2,
-            "0"
-          )}-${String(day).padStart(2, "0")}`;
-
-          return {
-            day,
-            dateStr,
-            isToday: dateStr === todayStr,
-            count: appointmentsByDay[dateStr]?.length || 0,
-          };
-        }
-      );
-    }, [appointmentsByDay, currentMonth, currentYear, todayStr]);
-
     return (
       <section
         dir={isRtl ? "rtl" : "ltr"}
         aria-label={t("dashboard.calendarView.ariaLabel")}
         className="
-          overflow-hidden rounded-3xl border border-slate-200/70 bg-white
-          shadow-[0_18px_50px_rgba(15,23,42,0.06)]
+          overflow-hidden rounded-[24px] border border-slate-200 bg-white
+          shadow-[0_12px_35px_rgba(15,23,42,0.05)]
         "
       >
-        {/* Header */}
-        <div className="flex items-center justify-between gap-4 border-b border-slate-100 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-4">
           <button
             type="button"
             onClick={goPrev}
             aria-label={t("dashboard.calendarView.previousMonth")}
             className="
-              flex h-10 w-10 items-center justify-center rounded-2xl
-              border border-slate-200 bg-white text-slate-700 shadow-sm
+              flex h-9 w-9 items-center justify-center rounded-xl
+              border border-slate-200 bg-white text-slate-500
               transition hover:border-violet-200 hover:bg-violet-50
               hover:text-violet-700
             "
@@ -203,8 +203,8 @@ const CalendarView = React.memo(
             {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </button>
 
-          <div className="text-center">
-            <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
               <CalendarDays size={18} />
             </div>
 
@@ -218,8 +218,8 @@ const CalendarView = React.memo(
             onClick={goNext}
             aria-label={t("dashboard.calendarView.nextMonth")}
             className="
-              flex h-10 w-10 items-center justify-center rounded-2xl
-              border border-slate-200 bg-white text-slate-700 shadow-sm
+              flex h-9 w-9 items-center justify-center rounded-xl
+              border border-slate-200 bg-white text-slate-500
               transition hover:border-violet-200 hover:bg-violet-50
               hover:text-violet-700
             "
@@ -228,13 +228,11 @@ const CalendarView = React.memo(
           </button>
         </div>
 
-        {/* Hint */}
-        <div className="border-b border-slate-100 bg-slate-50/70 px-5 py-3 text-center text-xs font-semibold text-slate-500">
+        <div className="border-b border-slate-100 bg-slate-50/60 px-4 py-2.5 text-center text-xs font-bold text-slate-500">
           {t("dashboard.calendarView.hint")}
         </div>
 
-        {/* Weekdays */}
-        <div className="grid grid-cols-7 border-b border-slate-100 bg-white px-3 py-3">
+        <div className="grid grid-cols-7 border-b border-slate-100 bg-white px-2 py-3">
           {weekDays.map((dayName, index) => (
             <div
               key={`${dayName}-${index}`}
@@ -245,46 +243,44 @@ const CalendarView = React.memo(
           ))}
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-7 gap-2 p-3 sm:p-4">
-          {cells.map((cell, index) => {
-            if (!cell.day) {
+        <div className="grid grid-cols-7 gap-1.5 p-2.5 sm:gap-2 sm:p-3">
+          {cells.map((cell) => {
+            if (cell.type === "empty") {
               return (
                 <div
-                  key={`empty-${index}`}
-                  className="min-h-[84px] rounded-2xl bg-slate-50/50"
+                  key={cell.key}
+                  className="h-[58px] rounded-xl bg-slate-50/60 sm:h-[68px]"
                 />
               );
             }
 
-            const isSelected = selectedDate === cell.dateStr;
             const hasEvents = cell.count > 0;
 
             return (
               <button
-                key={cell.dateStr}
+                key={cell.key}
                 type="button"
                 onClick={() => onDateClick?.(cell.dateStr)}
                 className={`
-                  group relative min-h-[84px] rounded-2xl border p-2 text-start
-                  transition duration-200 hover:-translate-y-0.5
-                  hover:border-violet-200 hover:bg-violet-50/70
-                  hover:shadow-[0_12px_30px_rgba(88,28,135,0.10)]
+                  relative flex h-[58px] flex-col justify-between rounded-xl
+                  border p-2 text-start transition duration-200
+                  hover:border-violet-200 hover:bg-violet-50/60
+                  sm:h-[68px]
                   ${
-                    isSelected
-                      ? "border-violet-300 bg-violet-50 shadow-[0_14px_32px_rgba(109,40,217,0.14)]"
+                    cell.isSelected
+                      ? "border-violet-300 bg-violet-50 shadow-[0_10px_24px_rgba(124,58,237,0.10)]"
                       : "border-slate-200 bg-white"
                   }
-                  ${cell.isToday ? "ring-2 ring-violet-200" : ""}
+                  ${cell.isToday ? "ring-1 ring-violet-300" : ""}
                 `}
               >
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start justify-between gap-1">
                   <span
                     className={`
-                      flex h-8 w-8 items-center justify-center rounded-xl
-                      text-sm font-black
+                      flex h-7 w-7 items-center justify-center rounded-lg
+                      text-xs font-black
                       ${
-                        isSelected
+                        cell.isSelected
                           ? "bg-violet-600 text-white"
                           : cell.isToday
                             ? "bg-violet-100 text-violet-700"
@@ -296,26 +292,26 @@ const CalendarView = React.memo(
                   </span>
 
                   {cell.isToday && (
-                    <span className="hidden rounded-full bg-violet-100 px-2 py-1 text-[10px] font-bold text-violet-700 sm:inline-flex">
+                    <span className="hidden rounded-full bg-violet-100 px-1.5 py-0.5 text-[9px] font-black text-violet-700 xl:inline-flex">
                       {t("dashboard.calendarView.today")}
                     </span>
                   )}
                 </div>
 
-                {hasEvents && (
-                  <div className="mt-3">
+                {hasEvents ? (
+                  <div className="min-w-0">
                     <div className="mb-1 flex items-center gap-1">
                       {Array.from({ length: Math.min(cell.count, 3) }).map(
-                        (_, dotIndex) => (
+                        (_, index) => (
                           <span
-                            key={dotIndex}
+                            key={index}
                             className="h-1.5 w-1.5 rounded-full bg-violet-500"
                           />
                         )
                       )}
                     </div>
 
-                    <p className="line-clamp-2 text-[11px] font-bold leading-4 text-violet-700">
+                    <p className="truncate text-[10px] font-bold text-violet-700">
                       {t(
                         cell.count === 1
                           ? "dashboard.calendarView.appointment"
@@ -324,10 +320,8 @@ const CalendarView = React.memo(
                       )}
                     </p>
                   </div>
-                )}
-
-                {isSelected && (
-                  <div className="absolute inset-x-3 bottom-2 h-1 rounded-full bg-violet-500" />
+                ) : (
+                  <span className="h-1" />
                 )}
               </button>
             );

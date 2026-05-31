@@ -2,15 +2,14 @@ import React from "react";
 import { NavLink, useParams } from "react-router-dom";
 import {
   LayoutDashboard,
-  Users,
-  CalendarDays,
+  MessageSquare,
   CircleUserRound,
   Handshake,
-  FileText,
-  BarChart3,
   Sparkles,
-  MessageSquare,
-  Settings,
+  PencilLine,
+  UserRound,
+  CreditCard,
+  HelpCircle,
   ArrowRight,
   ChevronDown,
 } from "lucide-react";
@@ -55,15 +54,14 @@ type NavItemConfig = {
 const fallbackT: TFunction = (key) => {
   const dictionary: Record<string, string> = {
     "businessNav.dashboard": "Dashboard",
-    "businessNav.clients": "Clients",
-    "businessNav.appointments": "Appointments",
-    "businessNav.crm": "CRM",
+    "businessNav.customerMessages": "Customer Messages",
+    "businessNav.crmSystem": "CRM System",
     "businessNav.collaborations": "Collaborations",
-    "businessNav.proposals": "Proposals",
-    "businessNav.reports": "Reports",
-    "businessNav.aiTools": "AI Tools",
-    "businessNav.messages": "Messages",
-    "businessNav.settings": "Settings",
+    "businessNav.bizuplyAdvisor": "BizUply Advisor",
+    "businessNav.editBusinessPage": "Edit Business Page",
+    "businessNav.viewPublicProfile": "View Public Profile",
+    "businessNav.billing": "Billing & Subscription",
+    "businessNav.helpCenter": "Help Center",
 
     "businessNav.upgradeTitle": "Upgrade to Bizuply Pro",
     "businessNav.upgradeText": "Unlock advanced analytics, AI automations and more.",
@@ -216,7 +214,7 @@ function WorkspaceCard({
 
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-black text-slate-900">
-          {workspaceName || "GrowWell Co."}
+          {workspaceName || "Bizuply"}
         </p>
 
         <p className="truncate text-xs font-medium text-slate-500">
@@ -251,20 +249,15 @@ export default function BusinessWorkspaceNav({
       icon: LayoutDashboard,
     },
     {
-      labelKey: "businessNav.clients",
-      fallback: "Clients",
-      to: `${basePath}/dashboard/clients`,
-      icon: Users,
+      labelKey: "businessNav.customerMessages",
+      fallback: "Customer Messages",
+      to: `${basePath}/dashboard/messages`,
+      icon: MessageSquare,
+      badge: messagesCount,
     },
     {
-      labelKey: "businessNav.appointments",
-      fallback: "Appointments",
-      to: `${basePath}/dashboard/crm/appointments`,
-      icon: CalendarDays,
-    },
-    {
-      labelKey: "businessNav.crm",
-      fallback: "CRM",
+      labelKey: "businessNav.crmSystem",
+      fallback: "CRM System",
       to: `${basePath}/dashboard/crm`,
       icon: CircleUserRound,
     },
@@ -275,35 +268,35 @@ export default function BusinessWorkspaceNav({
       icon: Handshake,
     },
     {
-      labelKey: "businessNav.proposals",
-      fallback: "Proposals",
-      to: `${basePath}/dashboard/proposals`,
-      icon: FileText,
-    },
-    {
-      labelKey: "businessNav.reports",
-      fallback: "Reports",
-      to: `${basePath}/dashboard/reports`,
-      icon: BarChart3,
-    },
-    {
-      labelKey: "businessNav.aiTools",
-      fallback: "AI Tools",
+      labelKey: "businessNav.bizuplyAdvisor",
+      fallback: "BizUply Advisor",
       to: `${basePath}/dashboard/BizUply`,
       icon: Sparkles,
     },
     {
-      labelKey: "businessNav.messages",
-      fallback: "Messages",
-      to: `${basePath}/dashboard/messages`,
-      icon: MessageSquare,
-      badge: messagesCount,
+      labelKey: "businessNav.editBusinessPage",
+      fallback: "Edit Business Page",
+      to: `${basePath}/dashboard/build`,
+      icon: PencilLine,
     },
     {
-      labelKey: "businessNav.settings",
-      fallback: "Settings",
-      to: `${basePath}/dashboard/settings`,
-      icon: Settings,
+      labelKey: "businessNav.viewPublicProfile",
+      fallback: "View Public Profile",
+      to: basePath,
+      icon: UserRound,
+      exact: true,
+    },
+    {
+      labelKey: "businessNav.billing",
+      fallback: "Billing & Subscription",
+      to: `${basePath}/dashboard/billing`,
+      icon: CreditCard,
+    },
+    {
+      labelKey: "businessNav.helpCenter",
+      fallback: "Help Center",
+      to: `${basePath}/dashboard/help-center`,
+      icon: HelpCircle,
     },
   ];
 
