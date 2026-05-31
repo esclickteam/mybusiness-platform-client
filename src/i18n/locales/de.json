@@ -38,5 +38,102 @@
     "aiSummarize": "Meine Woche zusammenfassen",
     "aiDraftProposal": "Angebot erstellen",
     "aiFindSlots": "Freie Zeiten finden"
+  },
+  "dashboard": {
+    "live": "Live",
+    "title": "Business-Dashboard",
+    "badge": "Business-Dashboard",
+    "subtitle": "Verwalten Sie Termine, KI-Insights, Kundennachrichten, Bewertungen, Sichtbarkeit und Echtzeit-Aktivität in einem klaren und professionellen Workspace.",
+    "business": "Unternehmen",
+    "planStatus": "Abo-Status",
+    "refresh": "Aktualisieren",
+    "syncDashboard": "Dashboard synchronisieren",
+    "paid": "Bezahlt",
+    "trial": "Testphase",
+    "yourBusiness": "Ihr Unternehmen",
+
+    "metrics": {
+      "profileViews": "Profilaufrufe",
+      "profileViewsHint": "Live-Sichtbarkeit Ihrer öffentlichen Unternehmensseite",
+      "appointments": "Termine",
+      "appointmentsHint": "{{today}} heute · {{week}} in den nächsten 7 Tagen",
+      "messages": "Nachrichten",
+      "messagesHint": "Aktive Kundengespräche und ungelesene Nachrichten",
+      "reviews": "Bewertungen",
+      "reviewsHint": "Kundenvertrauen und Bewertungsaktivität"
+    },
+
+    "agenda": {
+      "eyebrow": "Tagesagenda",
+      "title": "Zeitplan für den ausgewählten Tag",
+      "description": "Sehen Sie die Termine des ausgewählten Datums in einer klaren und organisierten Ansicht.",
+      "loading": "Agenda wird geladen..."
+    },
+
+    "calendar": {
+      "eyebrow": "Kalender",
+      "title": "Terminübersicht",
+      "description": "Wählen Sie ein Datum aus und verwalten Sie Ihren Terminablauf.",
+      "loading": "Kalender wird geladen..."
+    },
+
+    "ai": {
+      "eyebrow": "KI-Aktionszentrum",
+      "title": "Intelligente Insights für Ihr Unternehmen",
+      "description": "KI-Empfehlungen basierend auf Ihrer Aktivität, Ihren Kunden, Terminen und Geschäftsergebnissen."
+    },
+
+    "operations": {
+      "eyebrow": "Tagesübersicht",
+      "title": "Operativer Überblick",
+      "todayAppointments": "Termine heute",
+      "upcomingWeek": "Kommende Woche",
+      "pendingAiApprovals": "Ausstehende KI-Freigaben"
+    },
+
+    "recommendations": {
+      "eyebrow": "Wartet auf Freigabe",
+      "title": "KI-Empfehlungen",
+      "description": "Prüfen Sie KI-Vorschläge, bevor sie an Kunden gesendet werden.",
+      "client": "Kunde:",
+      "aiSuggestion": "KI-Vorschlag:",
+      "approveAndSend": "Freigeben und senden"
+    },
+
+    "performance": {
+      "eyebrow": "Business-Performance",
+      "title": "Dashboard-Karten",
+      "description": "Ihre Performance-Karten sind mit Live-Unternehmensdaten verbunden.",
+      "loading": "Karten werden geladen..."
+    },
+
+    "analytics": {
+      "eyebrow": "Wachstumsanalyse",
+      "title": "Kunden, die Termine pro Monat gebucht haben",
+      "description": "Monatliche Trends bei Terminnachfrage und Kundenaktivität.",
+      "loading": "Diagramm wird geladen..."
+    },
+
+    "upcoming": {
+      "eyebrow": "Bevorstehende Termine",
+      "title": "Nächste Aktivität",
+      "description": "Schneller Überblick über die nächsten Termine in Ihrem Unternehmen.",
+      "empty": "Noch keine bevorstehenden Termine."
+    },
+
+    "states": {
+      "loading": "Business-Dashboard wird geladen...",
+      "refreshingUser": "Benutzerdaten werden aktualisiert...",
+      "accessDeniedTitle": "Zugriff verweigert",
+      "accessDeniedMessage": "Sie haben keine Berechtigung, auf dieses Business-Dashboard zuzugreifen.",
+      "loadErrorTitle": "Dashboard konnte nicht geladen werden",
+      "loadErrorMessage": "Fehler beim Laden der Daten vom Server.",
+      "subscriptionPending": "Ihr Abonnement wurde noch nicht aktiviert. Bitte versuchen Sie es in ein paar Minuten erneut.",
+      "subscriptionCheckError": "Fehler beim Prüfen des Abo-Status.",
+      "somethingWrong": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+      "closeOfferError": "Das Angebot kann momentan nicht geschlossen werden. Bitte versuchen Sie es erneut.",
+      "socketNotConnected": "Die Echtzeitverbindung ist nicht verbunden",
+      "unknownError": "Unbekannter Fehler"
+    }
   }
 }

@@ -38,5 +38,102 @@
     "aiSummarize": "Résumer ma semaine",
     "aiDraftProposal": "Créer une proposition",
     "aiFindSlots": "Trouver des créneaux"
+  },
+  "dashboard": {
+    "live": "En direct",
+    "title": "Tableau de bord professionnel",
+    "badge": "Tableau de bord business",
+    "subtitle": "Gérez les rendez-vous, les insights IA, les messages clients, les avis, la visibilité et l’activité en temps réel depuis un seul espace clair et professionnel.",
+    "business": "Entreprise",
+    "planStatus": "Statut de l’abonnement",
+    "refresh": "Actualiser",
+    "syncDashboard": "Synchroniser",
+    "paid": "Payé",
+    "trial": "Essai",
+    "yourBusiness": "Votre entreprise",
+
+    "metrics": {
+      "profileViews": "Vues du profil",
+      "profileViewsHint": "Visibilité en direct de votre page publique",
+      "appointments": "Rendez-vous",
+      "appointmentsHint": "{{today}} aujourd’hui · {{week}} dans les 7 prochains jours",
+      "messages": "Messages",
+      "messagesHint": "Conversations actives et messages non lus",
+      "reviews": "Avis",
+      "reviewsHint": "Confiance client et activité des évaluations"
+    },
+
+    "agenda": {
+      "eyebrow": "Agenda quotidien",
+      "title": "Planning du jour sélectionné",
+      "description": "Consultez les rendez-vous de la date sélectionnée dans une vue claire et organisée.",
+      "loading": "Chargement de l’agenda..."
+    },
+
+    "calendar": {
+      "eyebrow": "Calendrier",
+      "title": "Vue des rendez-vous",
+      "description": "Choisissez une date et gérez le flux de vos rendez-vous.",
+      "loading": "Chargement du calendrier..."
+    },
+
+    "ai": {
+      "eyebrow": "Centre d’actions IA",
+      "title": "Insights intelligents pour votre entreprise",
+      "description": "Recommandations IA basées sur votre activité, vos clients, vos rendez-vous et vos performances."
+    },
+
+    "operations": {
+      "eyebrow": "Vue du jour",
+      "title": "Activité opérationnelle",
+      "todayAppointments": "Rendez-vous aujourd’hui",
+      "upcomingWeek": "Semaine à venir",
+      "pendingAiApprovals": "Validations IA en attente"
+    },
+
+    "recommendations": {
+      "eyebrow": "En attente de validation",
+      "title": "Recommandations IA",
+      "description": "Vérifiez les suggestions IA avant de les envoyer aux clients.",
+      "client": "Client :",
+      "aiSuggestion": "Suggestion IA :",
+      "approveAndSend": "Valider et envoyer"
+    },
+
+    "performance": {
+      "eyebrow": "Performance business",
+      "title": "Cartes du tableau de bord",
+      "description": "Vos cartes de performance sont connectées aux données en direct de votre entreprise.",
+      "loading": "Chargement des cartes..."
+    },
+
+    "analytics": {
+      "eyebrow": "Analyse de croissance",
+      "title": "Clients ayant réservé des rendez-vous par mois",
+      "description": "Tendances mensuelles de la demande de rendez-vous et de l’activité client.",
+      "loading": "Chargement du graphique..."
+    },
+
+    "upcoming": {
+      "eyebrow": "Prochains rendez-vous",
+      "title": "Prochaine activité",
+      "description": "Aperçu rapide des prochains rendez-vous de votre entreprise.",
+      "empty": "Aucun rendez-vous à venir."
+    },
+
+    "states": {
+      "loading": "Chargement du tableau de bord professionnel...",
+      "refreshingUser": "Actualisation des données utilisateur...",
+      "accessDeniedTitle": "Accès refusé",
+      "accessDeniedMessage": "Vous n’avez pas l’autorisation d’accéder à ce tableau de bord.",
+      "loadErrorTitle": "Impossible de charger le tableau de bord",
+      "loadErrorMessage": "Erreur lors du chargement des données depuis le serveur.",
+      "subscriptionPending": "Votre abonnement n’est pas encore activé. Réessayez dans quelques minutes.",
+      "subscriptionCheckError": "Erreur lors de la vérification du statut de l’abonnement.",
+      "somethingWrong": "Une erreur est survenue. Veuillez réessayer.",
+      "closeOfferError": "Impossible de fermer l’offre pour le moment. Veuillez réessayer.",
+      "socketNotConnected": "La connexion en temps réel n’est pas connectée",
+      "unknownError": "Erreur inconnue"
+    }
   }
 }

@@ -38,5 +38,102 @@
     "aiSummarize": "Vat mijn week samen",
     "aiDraftProposal": "Voorstel maken",
     "aiFindSlots": "Vrije tijden vinden"
+  },
+  "dashboard": {
+    "live": "Live",
+    "title": "Bedrijfsdashboard",
+    "badge": "Zakelijk dashboard",
+    "subtitle": "Beheer afspraken, AI-inzichten, klantberichten, beoordelingen, zichtbaarheid en realtime bedrijfsactiviteit vanuit één duidelijke en professionele werkruimte.",
+    "business": "Bedrijf",
+    "planStatus": "Abonnementsstatus",
+    "refresh": "Vernieuwen",
+    "syncDashboard": "Dashboard synchroniseren",
+    "paid": "Betaald",
+    "trial": "Proefperiode",
+    "yourBusiness": "Je bedrijf",
+
+    "metrics": {
+      "profileViews": "Profielweergaven",
+      "profileViewsHint": "Realtime zichtbaarheid van je openbare bedrijfspagina",
+      "appointments": "Afspraken",
+      "appointmentsHint": "{{today}} vandaag · {{week}} in de komende 7 dagen",
+      "messages": "Berichten",
+      "messagesHint": "Actieve klantgesprekken en ongelezen berichten",
+      "reviews": "Beoordelingen",
+      "reviewsHint": "Klantvertrouwen en beoordelingsactiviteit"
+    },
+
+    "agenda": {
+      "eyebrow": "Dagagenda",
+      "title": "Planning voor de geselecteerde dag",
+      "description": "Bekijk de afspraken van de geselecteerde datum in een duidelijke en georganiseerde weergave.",
+      "loading": "Agenda laden..."
+    },
+
+    "calendar": {
+      "eyebrow": "Kalender",
+      "title": "Afsprakenoverzicht",
+      "description": "Kies een datum en beheer de afsprakenstroom van je bedrijf.",
+      "loading": "Kalender laden..."
+    },
+
+    "ai": {
+      "eyebrow": "AI-actiecentrum",
+      "title": "Slimme inzichten voor je bedrijf",
+      "description": "AI-aanbevelingen op basis van je activiteit, klanten, afspraken en bedrijfsprestaties."
+    },
+
+    "operations": {
+      "eyebrow": "Overzicht van vandaag",
+      "title": "Operationele status",
+      "todayAppointments": "Afspraken vandaag",
+      "upcomingWeek": "Komende week",
+      "pendingAiApprovals": "AI-goedkeuringen in behandeling"
+    },
+
+    "recommendations": {
+      "eyebrow": "Wacht op goedkeuring",
+      "title": "AI-aanbevelingen",
+      "description": "Controleer AI-suggesties voordat je ze naar klanten verstuurt.",
+      "client": "Klant:",
+      "aiSuggestion": "AI-suggestie:",
+      "approveAndSend": "Goedkeuren en verzenden"
+    },
+
+    "performance": {
+      "eyebrow": "Bedrijfsprestaties",
+      "title": "Dashboardkaarten",
+      "description": "Je prestatiekaarten zijn gekoppeld aan realtime bedrijfsgegevens.",
+      "loading": "Kaarten laden..."
+    },
+
+    "analytics": {
+      "eyebrow": "Groeianalyse",
+      "title": "Klanten die per maand afspraken hebben geboekt",
+      "description": "Maandelijkse trends in afspraakaanvragen en klantactiviteit.",
+      "loading": "Grafiek laden..."
+    },
+
+    "upcoming": {
+      "eyebrow": "Aankomende afspraken",
+      "title": "Volgende activiteit",
+      "description": "Een snelle weergave van de volgende afspraken in je bedrijf.",
+      "empty": "Nog geen aankomende afspraken."
+    },
+
+    "states": {
+      "loading": "Bedrijfsdashboard laden...",
+      "refreshingUser": "Gebruikersgegevens vernieuwen...",
+      "accessDeniedTitle": "Toegang geweigerd",
+      "accessDeniedMessage": "Je hebt geen toestemming om dit bedrijfsdashboard te openen.",
+      "loadErrorTitle": "Dashboard kon niet worden geladen",
+      "loadErrorMessage": "Fout bij het laden van gegevens vanaf de server.",
+      "subscriptionPending": "Je abonnement is nog niet geactiveerd. Probeer het over een paar minuten opnieuw.",
+      "subscriptionCheckError": "Fout bij het controleren van de abonnementsstatus.",
+      "somethingWrong": "Er is iets misgegaan. Probeer het opnieuw.",
+      "closeOfferError": "De aanbieding kan momenteel niet worden gesloten. Probeer het opnieuw.",
+      "socketNotConnected": "De realtime verbinding is niet verbonden",
+      "unknownError": "Onbekende fout"
+    }
   }
 }

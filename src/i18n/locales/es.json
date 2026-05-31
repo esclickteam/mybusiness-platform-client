@@ -38,5 +38,102 @@
     "aiSummarize": "Resumir mi semana",
     "aiDraftProposal": "Crear propuesta",
     "aiFindSlots": "Encontrar horarios"
+  },
+  "dashboard": {
+    "live": "En vivo",
+    "title": "Panel de negocio",
+    "badge": "Panel empresarial",
+    "subtitle": "Gestiona citas, insights de IA, mensajes de clientes, reseñas, visibilidad y actividad en tiempo real desde un espacio claro y profesional.",
+    "business": "Negocio",
+    "planStatus": "Estado del plan",
+    "refresh": "Actualizar",
+    "syncDashboard": "Sincronizar panel",
+    "paid": "Pagado",
+    "trial": "Prueba",
+    "yourBusiness": "Tu negocio",
+
+    "metrics": {
+      "profileViews": "Vistas del perfil",
+      "profileViewsHint": "Visibilidad en vivo desde tu página pública",
+      "appointments": "Citas",
+      "appointmentsHint": "{{today}} hoy · {{week}} en los próximos 7 días",
+      "messages": "Mensajes",
+      "messagesHint": "Conversaciones activas y mensajes sin leer",
+      "reviews": "Reseñas",
+      "reviewsHint": "Confianza de clientes y actividad de valoraciones"
+    },
+
+    "agenda": {
+      "eyebrow": "Agenda diaria",
+      "title": "Horario del día seleccionado",
+      "description": "Consulta las citas de la fecha seleccionada en una vista clara y organizada.",
+      "loading": "Cargando agenda..."
+    },
+
+    "calendar": {
+      "eyebrow": "Calendario",
+      "title": "Resumen de citas",
+      "description": "Elige una fecha y gestiona el flujo de citas de tu negocio.",
+      "loading": "Cargando calendario..."
+    },
+
+    "ai": {
+      "eyebrow": "Centro de acciones IA",
+      "title": "Insights inteligentes para tu negocio",
+      "description": "Recomendaciones de IA basadas en tu actividad, clientes, citas y rendimiento del negocio."
+    },
+
+    "operations": {
+      "eyebrow": "Resumen de hoy",
+      "title": "Pulso operativo",
+      "todayAppointments": "Citas de hoy",
+      "upcomingWeek": "Próxima semana",
+      "pendingAiApprovals": "Aprobaciones IA pendientes"
+    },
+
+    "recommendations": {
+      "eyebrow": "Pendiente de aprobación",
+      "title": "Recomendaciones IA",
+      "description": "Revisa las sugerencias de IA antes de enviarlas a los clientes.",
+      "client": "Cliente:",
+      "aiSuggestion": "Sugerencia IA:",
+      "approveAndSend": "Aprobar y enviar"
+    },
+
+    "performance": {
+      "eyebrow": "Rendimiento del negocio",
+      "title": "Tarjetas del panel",
+      "description": "Tus tarjetas de rendimiento están conectadas a los datos en vivo del negocio.",
+      "loading": "Cargando tarjetas..."
+    },
+
+    "analytics": {
+      "eyebrow": "Análisis de crecimiento",
+      "title": "Clientes que reservaron citas por mes",
+      "description": "Tendencias mensuales de demanda de citas y actividad de clientes.",
+      "loading": "Cargando gráfico..."
+    },
+
+    "upcoming": {
+      "eyebrow": "Próximas citas",
+      "title": "Próxima actividad",
+      "description": "Vista rápida de las próximas citas de tu negocio.",
+      "empty": "Aún no hay próximas citas."
+    },
+
+    "states": {
+      "loading": "Cargando panel de negocio...",
+      "refreshingUser": "Actualizando datos del usuario...",
+      "accessDeniedTitle": "Acceso denegado",
+      "accessDeniedMessage": "No tienes permiso para acceder a este panel de negocio.",
+      "loadErrorTitle": "No se pudo cargar el panel",
+      "loadErrorMessage": "Error al cargar los datos desde el servidor.",
+      "subscriptionPending": "Tu suscripción aún no se ha activado. Inténtalo de nuevo en unos minutos.",
+      "subscriptionCheckError": "Error al comprobar el estado de la suscripción.",
+      "somethingWrong": "Algo salió mal. Inténtalo de nuevo.",
+      "closeOfferError": "No se puede cerrar la oferta en este momento. Inténtalo de nuevo.",
+      "socketNotConnected": "La conexión en tiempo real no está conectada",
+      "unknownError": "Error desconocido"
+    }
   }
 }

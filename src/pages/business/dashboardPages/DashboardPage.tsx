@@ -9,6 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import API from "@/api";
 import { useAuth } from "@/context/AuthContext";
@@ -23,10 +24,6 @@ import DashboardSkeleton from "@/components/DashboardSkeleton";
 import UpgradeOfferCard from "@/components/UpgradeOfferCard";
 import useAiInsights from "@/hooks/useAiInsights";
 import AiInsightsPanel from "@/components/AiInsightsPanel";
-
-/* =========================================================
-   Types
-========================================================= */
 
 type AnyRecord = Record<string, any>;
 
@@ -106,10 +103,6 @@ type DashboardNavRefs = {
 
 type LazyAnyComponent = PreloadableComponent<React.ComponentType<any>>;
 
-/* =========================================================
-   Lazy Components
-========================================================= */
-
 const DashboardCards = lazyWithPreload(() =>
   import("@/components/DashboardCards")
 ) as LazyAnyComponent;
@@ -129,10 +122,6 @@ const DailyAgenda = lazyWithPreload(() =>
 const DashboardNav = lazyWithPreload(() =>
   import("@/components/dashboard/DashboardNav")
 ) as LazyAnyComponent;
-
-/* =========================================================
-   Helpers
-========================================================= */
 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout>;
@@ -195,7 +184,16 @@ function getTodayAppointmentsCount(appointments: Appointment[]) {
 }
 
 function getLastAppointments(appointments: Appointment[], limit = 5) {
+  const now = Date.now();
+
   return [...appointments]
+    .filter((appt) => {
+      const dateTime = new Date(
+        `${appt.date}T${appt.time || "00:00"}`
+      ).getTime();
+
+      return Number.isFinite(dateTime) && dateTime >= now - 24 * 60 * 60 * 1000;
+    })
     .sort((a, b) => {
       const dateA = new Date(`${a.date}T${a.time || "00:00"}`).getTime();
       const dateB = new Date(`${b.date}T${b.time || "00:00"}`).getTime();
@@ -248,10 +246,6 @@ export function preloadDashboardComponents() {
   DailyAgenda.preload();
   DashboardNav.preload();
 }
-
-/* =========================================================
-   Small UI Components
-========================================================= */
 
 function LoadingShell({ text }: { text: string }) {
   return (
@@ -331,7 +325,7 @@ function PremiumMetricCard({
       />
 
       <div className="relative flex items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0">
           <p className="text-xs font-black uppercase tracking-[0.15em] text-slate-500">
             {label}
           </p>
@@ -359,25 +353,29 @@ function SectionCard({
   description,
   children,
   className = "",
+  compact = false,
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   children: React.ReactNode;
   className?: string;
+  compact?: boolean;
 }) {
   return (
     <section
-      className={`rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(88,28,135,0.08)] sm:p-6 ${className}`}
+      className={`rounded-[32px] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(88,28,135,0.08)] ${
+        compact ? "p-4 sm:p-5" : "p-5 sm:p-6"
+      } ${className}`}
     >
-      <div className="mb-5">
+      <div className={compact ? "mb-3" : "mb-5"}>
         {eyebrow && (
           <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
             {eyebrow}
           </p>
         )}
 
-        <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+        <h2 className="mt-1.5 text-xl font-black tracking-tight text-slate-950 sm:text-2xl">
           {title}
         </h2>
 
@@ -393,11 +391,9 @@ function SectionCard({
   );
 }
 
-/* =========================================================
-   Main Page
-========================================================= */
-
 export default function DashboardPage() {
+  const { t, i18n } = useTranslation();
+
   const {
     user,
     initialized,
@@ -512,13 +508,11 @@ export default function DashboardPage() {
         }
 
         setIsRefreshingUser(false);
-        setAlertMessage(
-          "Your subscription has not been activated yet. Try again soon."
-        );
+        setAlertMessage(t("dashboard.states.subscriptionPending"));
         window.history.replaceState({}, document.title, location.pathname);
       } catch {
         setIsRefreshingUser(false);
-        setAlertMessage("Error checking subscription status.");
+        setAlertMessage(t("dashboard.states.subscriptionCheckError"));
         window.history.replaceState({}, document.title, location.pathname);
       }
     };
@@ -531,6 +525,7 @@ export default function DashboardPage() {
     refreshAccessToken,
     refreshUser,
     setUser,
+    t,
   ]);
 
   useEffect(() => {
@@ -565,7 +560,7 @@ export default function DashboardPage() {
       setStats(data);
       localStorage.setItem("dashboardStats", JSON.stringify(data));
     } catch (err: any) {
-      setError("Error loading data from server.");
+      setError(t("dashboard.states.loadErrorMessage"));
 
       if (err?.message === "No token") {
         logout();
@@ -573,7 +568,7 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [businessId, refreshAccessToken, logout]);
+  }, [businessId, refreshAccessToken, logout, t]);
 
   const refreshAppointmentsFromAPI = useCallback(async () => {
     if (!businessId) return;
@@ -828,12 +823,12 @@ export default function DashboardPage() {
       }
     } catch (err) {
       console.error("Early Bird checkout error:", err);
-      setAlertMessage("Something went wrong. Please try again.");
+      setAlertMessage(t("dashboard.states.somethingWrong"));
     }
   };
 
   if (!initialized) {
-    return <LoadingShell text="Loading business dashboard..." />;
+    return <LoadingShell text={t("dashboard.states.loading")} />;
   }
 
   const isAdmin = user?.role === "admin";
@@ -843,8 +838,8 @@ export default function DashboardPage() {
   if (!isAdmin && !isBusinessOwner) {
     return (
       <ErrorShell
-        title="Access denied"
-        message="You do not have permission to access this business dashboard."
+        title={t("dashboard.states.accessDeniedTitle")}
+        message={t("dashboard.states.accessDeniedMessage")}
       />
     );
   }
@@ -856,14 +851,14 @@ export default function DashboardPage() {
   if (error) {
     return (
       <ErrorShell
-        title="Could not load dashboard"
+        title={t("dashboard.states.loadErrorTitle")}
         message={alertMessage || error}
       />
     );
   }
 
   if (isRefreshingUser) {
-    return <LoadingShell text="Refreshing user info..." />;
+    return <LoadingShell text={t("dashboard.states.refreshingUser")} />;
   }
 
   const effectiveStats = stats || {};
@@ -891,30 +886,33 @@ export default function DashboardPage() {
 
   const metricCards = [
     {
-      label: "Profile views",
+      label: t("dashboard.metrics.profileViews"),
       value: formatNumber(syncedStats.views_count),
-      hint: "Live exposure from your public business page",
+      hint: t("dashboard.metrics.profileViewsHint"),
       icon: "👁",
       tone: "violet" as const,
     },
     {
-      label: "Appointments",
+      label: t("dashboard.metrics.appointments"),
       value: formatNumber(syncedStats.appointments_count),
-      hint: `${todayAppointments} today · ${upcomingAppointments} next 7 days`,
+      hint: t("dashboard.metrics.appointmentsHint", {
+        today: todayAppointments,
+        week: upcomingAppointments,
+      }),
       icon: "📅",
       tone: "sky" as const,
     },
     {
-      label: "Messages",
+      label: t("dashboard.metrics.messages"),
       value: formatNumber(syncedStats.messages_count),
-      hint: "Unread and active client conversations",
+      hint: t("dashboard.metrics.messagesHint"),
       icon: "💬",
       tone: "emerald" as const,
     },
     {
-      label: "Reviews",
+      label: t("dashboard.metrics.reviews"),
       value: formatNumber(syncedStats.reviews_count),
-      hint: "Customer trust and rating activity",
+      hint: t("dashboard.metrics.reviewsHint"),
       icon: "⭐",
       tone: "amber" as const,
     },
@@ -922,7 +920,7 @@ export default function DashboardPage() {
 
   return (
     <div
-      dir="ltr"
+      dir={i18n.dir()}
       className="min-h-screen overflow-x-hidden overflow-y-auto bg-[#f7f4ff] text-slate-950"
     >
       <div className="pointer-events-none fixed inset-0 -z-10">
@@ -932,51 +930,49 @@ export default function DashboardPage() {
       </div>
 
       <div className="mx-auto flex w-full max-w-[1760px] flex-col px-4 py-4 sm:px-6 lg:px-8">
-        <header className="sticky top-4 z-30 mb-6 overflow-hidden rounded-[34px] border border-violet-100 bg-white/95 px-5 py-5 shadow-[0_24px_70px_rgba(88,28,135,0.10)] backdrop-blur-2xl sm:px-7">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-300 to-transparent" />
-
+        <header className="mb-6 overflow-hidden rounded-[34px] border border-violet-100 bg-white/95 px-5 py-5 shadow-[0_24px_70px_rgba(88,28,135,0.10)] backdrop-blur-2xl sm:px-7">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
             <div className="min-w-0">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-emerald-700">
                   <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_14px_rgba(16,185,129,0.8)]" />
-                  Live
+                  {t("dashboard.live")}
                 </span>
 
                 <span className="rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-violet-700">
-                  Business dashboard
+                  {t("dashboard.badge")}
                 </span>
               </div>
 
               <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl xl:text-5xl">
-                Business Dashboard
+                {t("dashboard.title")}
               </h1>
 
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
-                Manage appointments, AI insights, client messages, reviews,
-                exposure and real-time business activity from one clean
-                workspace.
+                {t("dashboard.subtitle")}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[520px]">
               <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                  Business
+                  {t("dashboard.business")}
                 </p>
                 <p className="mt-2 truncate text-sm font-black text-slate-950">
                   {user?.businessName ||
                     syncedStats.businessName ||
-                    "Your business"}
+                    t("dashboard.yourBusiness")}
                 </p>
               </div>
 
               <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                  Plan status
+                  {t("dashboard.planStatus")}
                 </p>
                 <p className="mt-2 text-sm font-black text-slate-950">
-                  {user?.hasPaid ? "Paid" : user?.paymentStatus || "Trial"}
+                  {user?.hasPaid
+                    ? t("dashboard.paid")
+                    : user?.paymentStatus || t("dashboard.trial")}
                 </p>
               </div>
 
@@ -986,9 +982,11 @@ export default function DashboardPage() {
                 className="rounded-[24px] border border-violet-200 bg-violet-600 p-4 text-left text-white shadow-[0_16px_35px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:bg-violet-700"
               >
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-100">
-                  Refresh
+                  {t("dashboard.refresh")}
                 </p>
-                <p className="mt-2 text-sm font-black">Sync dashboard</p>
+                <p className="mt-2 text-sm font-black">
+                  {t("dashboard.syncDashboard")}
+                </p>
               </button>
             </div>
           </div>
@@ -1010,7 +1008,7 @@ export default function DashboardPage() {
                   await API.post("/users/mark-earlybird-modal-seen");
                   await refreshUser();
                 } catch {
-                  setAlertMessage("Could not close the offer. Try again.");
+                  setAlertMessage(t("dashboard.states.closeOfferError"));
                 }
               }}
             />
@@ -1030,14 +1028,14 @@ export default function DashboardPage() {
             className="grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]"
           >
             <SectionCard
-              eyebrow="Daily agenda"
-              title="Selected day schedule"
-              description="See the appointments for the selected date in a clean operational view."
+              eyebrow={t("dashboard.agenda.eyebrow")}
+              title={t("dashboard.agenda.title")}
+              description={t("dashboard.agenda.description")}
             >
               <Suspense
                 fallback={
                   <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
-                    Loading agenda...
+                    {t("dashboard.agenda.loading")}
                   </div>
                 }
               >
@@ -1051,14 +1049,14 @@ export default function DashboardPage() {
             </SectionCard>
 
             <SectionCard
-              eyebrow="Calendar"
-              title="Appointment overview"
-              description="Choose a date and manage your appointment flow."
+              eyebrow={t("dashboard.calendar.eyebrow")}
+              title={t("dashboard.calendar.title")}
+              description={t("dashboard.calendar.description")}
             >
               <Suspense
                 fallback={
                   <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
-                    Loading calendar...
+                    {t("dashboard.calendar.loading")}
                   </div>
                 }
               >
@@ -1073,9 +1071,9 @@ export default function DashboardPage() {
 
           <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.55fr)]">
             <SectionCard
-              eyebrow="AI action center"
-              title="Smart insights for your business"
-              description="AI recommendations based on your activity, clients, appointments and business performance."
+              eyebrow={t("dashboard.ai.eyebrow")}
+              title={t("dashboard.ai.title")}
+              description={t("dashboard.ai.description")}
             >
               <AiInsightsPanel
                 insights={insights}
@@ -1084,11 +1082,15 @@ export default function DashboardPage() {
               />
             </SectionCard>
 
-            <SectionCard eyebrow="Today overview" title="Operations pulse">
-              <div className="space-y-3">
+            <SectionCard
+              eyebrow={t("dashboard.operations.eyebrow")}
+              title={t("dashboard.operations.title")}
+              compact
+            >
+              <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs font-bold text-slate-500">
-                    Today appointments
+                    {t("dashboard.operations.todayAppointments")}
                   </p>
                   <p className="mt-2 text-3xl font-black text-slate-950">
                     {todayAppointments}
@@ -1097,7 +1099,7 @@ export default function DashboardPage() {
 
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs font-bold text-slate-500">
-                    Upcoming week
+                    {t("dashboard.operations.upcomingWeek")}
                   </p>
                   <p className="mt-2 text-3xl font-black text-slate-950">
                     {upcomingAppointments}
@@ -1106,7 +1108,7 @@ export default function DashboardPage() {
 
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs font-bold text-slate-500">
-                    Pending AI approvals
+                    {t("dashboard.operations.pendingAiApprovals")}
                   </p>
                   <p className="mt-2 text-3xl font-black text-slate-950">
                     {recommendations.length}
@@ -1118,9 +1120,9 @@ export default function DashboardPage() {
 
           {recommendations.length > 0 && (
             <SectionCard
-              eyebrow="Pending approval"
-              title="AI recommendations"
-              description="Review AI suggestions before sending them to customers."
+              eyebrow={t("dashboard.recommendations.eyebrow")}
+              title={t("dashboard.recommendations.title")}
+              description={t("dashboard.recommendations.description")}
             >
               <ul className="space-y-3">
                 {recommendations.map(
@@ -1133,14 +1135,14 @@ export default function DashboardPage() {
                         <div className="space-y-2">
                           <p className="text-sm leading-6 text-slate-700">
                             <span className="font-black text-slate-950">
-                              Client:
+                              {t("dashboard.recommendations.client")}
                             </span>{" "}
                             {message}
                           </p>
 
                           <p className="text-sm leading-6 text-amber-800">
                             <span className="font-black text-slate-950">
-                              AI Suggestion:
+                              {t("dashboard.recommendations.aiSuggestion")}
                             </span>{" "}
                             {recommendation}
                           </p>
@@ -1151,7 +1153,9 @@ export default function DashboardPage() {
                           className="rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:bg-violet-700"
                           onClick={() => {
                             if (!socketRef.current) {
-                              setAlertMessage("Socket not connected");
+                              setAlertMessage(
+                                t("dashboard.states.socketNotConnected")
+                              );
                               return;
                             }
 
@@ -1169,14 +1173,17 @@ export default function DashboardPage() {
                                   );
                                 } else {
                                   setAlertMessage(
-                                    `Error: ${res?.error || "Unknown error"}`
+                                    `Error: ${
+                                      res?.error ||
+                                      t("dashboard.states.unknownError")
+                                    }`
                                   );
                                 }
                               }
                             );
                           }}
                         >
-                          Approve & Send
+                          {t("dashboard.recommendations.approveAndSend")}
                         </button>
                       </div>
                     </li>
@@ -1187,14 +1194,14 @@ export default function DashboardPage() {
           )}
 
           <SectionCard
-            eyebrow="Business performance"
-            title="Dashboard cards"
-            description="Your existing performance cards, connected to the live stats object."
+            eyebrow={t("dashboard.performance.eyebrow")}
+            title={t("dashboard.performance.title")}
+            description={t("dashboard.performance.description")}
           >
             <Suspense
               fallback={
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
-                  Loading cards...
+                  {t("dashboard.performance.loading")}
                 </div>
               }
             >
@@ -1206,41 +1213,42 @@ export default function DashboardPage() {
           </SectionCard>
 
           <SectionCard
-            eyebrow="Growth analytics"
-            title="Clients who booked appointments by month"
-            description="Monthly appointment demand and client activity trends."
-            className=""
+            eyebrow={t("dashboard.analytics.eyebrow")}
+            title={t("dashboard.analytics.title")}
+            description={t("dashboard.analytics.description")}
           >
             <div ref={chartsRef}>
               <Suspense
                 fallback={
                   <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
-                    Loading chart...
+                    {t("dashboard.analytics.loading")}
                   </div>
                 }
               >
                 <BarChartComponent
                   appointments={enrichedAppointments}
-                  title="Clients Who Booked Appointments by Month"
+                  title={t("dashboard.analytics.title")}
                 />
               </Suspense>
             </div>
           </SectionCard>
 
           <SectionCard
-            eyebrow="Upcoming appointments"
-            title="Next activity"
-            description="A quick view of the next appointments in your business."
+            eyebrow={t("dashboard.upcoming.eyebrow")}
+            title={t("dashboard.upcoming.title")}
+            description={t("dashboard.upcoming.description")}
           >
             {recentAppointments.length === 0 ? (
               <div className="rounded-[26px] border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">
-                No upcoming appointments yet.
+                {t("dashboard.upcoming.empty")}
               </div>
             ) : (
               <div className="grid gap-3">
                 {recentAppointments.map((appt, index) => (
                   <div
-                    key={appt._id || appt.id || `${appt.date}-${appt.time}-${index}`}
+                    key={
+                      appt._id || appt.id || `${appt.date}-${appt.time}-${index}`
+                    }
                     className="grid gap-3 rounded-[26px] border border-slate-200 bg-slate-50 p-4 sm:grid-cols-[1fr_auto] sm:items-center"
                   >
                     <div>

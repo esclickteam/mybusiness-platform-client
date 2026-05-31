@@ -38,5 +38,102 @@
     "aiSummarize": "Riassumi la mia settimana",
     "aiDraftProposal": "Crea proposta",
     "aiFindSlots": "Trova slot liberi"
+  },
+  "dashboard": {
+    "live": "Live",
+    "title": "Dashboard aziendale",
+    "badge": "Dashboard business",
+    "subtitle": "Gestisci appuntamenti, insight IA, messaggi dei clienti, recensioni, visibilità e attività in tempo reale da un unico spazio chiaro e professionale.",
+    "business": "Attività",
+    "planStatus": "Stato abbonamento",
+    "refresh": "Aggiorna",
+    "syncDashboard": "Sincronizza dashboard",
+    "paid": "Pagato",
+    "trial": "Prova",
+    "yourBusiness": "La tua attività",
+
+    "metrics": {
+      "profileViews": "Visualizzazioni profilo",
+      "profileViewsHint": "Visibilità in tempo reale dalla tua pagina pubblica",
+      "appointments": "Appuntamenti",
+      "appointmentsHint": "{{today}} oggi · {{week}} nei prossimi 7 giorni",
+      "messages": "Messaggi",
+      "messagesHint": "Conversazioni attive e messaggi non letti",
+      "reviews": "Recensioni",
+      "reviewsHint": "Fiducia dei clienti e attività delle valutazioni"
+    },
+
+    "agenda": {
+      "eyebrow": "Agenda giornaliera",
+      "title": "Programma del giorno selezionato",
+      "description": "Visualizza gli appuntamenti della data selezionata in modo chiaro e organizzato.",
+      "loading": "Caricamento agenda..."
+    },
+
+    "calendar": {
+      "eyebrow": "Calendario",
+      "title": "Panoramica appuntamenti",
+      "description": "Scegli una data e gestisci il flusso degli appuntamenti della tua attività.",
+      "loading": "Caricamento calendario..."
+    },
+
+    "ai": {
+      "eyebrow": "Centro azioni IA",
+      "title": "Insight intelligenti per la tua attività",
+      "description": "Raccomandazioni IA basate sulla tua attività, sui clienti, sugli appuntamenti e sulle performance aziendali."
+    },
+
+    "operations": {
+      "eyebrow": "Panoramica di oggi",
+      "title": "Stato operativo",
+      "todayAppointments": "Appuntamenti di oggi",
+      "upcomingWeek": "Prossima settimana",
+      "pendingAiApprovals": "Approvazioni IA in sospeso"
+    },
+
+    "recommendations": {
+      "eyebrow": "In attesa di approvazione",
+      "title": "Raccomandazioni IA",
+      "description": "Controlla i suggerimenti IA prima di inviarli ai clienti.",
+      "client": "Cliente:",
+      "aiSuggestion": "Suggerimento IA:",
+      "approveAndSend": "Approva e invia"
+    },
+
+    "performance": {
+      "eyebrow": "Performance aziendale",
+      "title": "Schede dashboard",
+      "description": "Le tue schede di performance sono collegate ai dati aziendali in tempo reale.",
+      "loading": "Caricamento schede..."
+    },
+
+    "analytics": {
+      "eyebrow": "Analisi crescita",
+      "title": "Clienti che hanno prenotato appuntamenti per mese",
+      "description": "Trend mensili della domanda di appuntamenti e dell’attività dei clienti.",
+      "loading": "Caricamento grafico..."
+    },
+
+    "upcoming": {
+      "eyebrow": "Prossimi appuntamenti",
+      "title": "Prossima attività",
+      "description": "Una vista rapida dei prossimi appuntamenti della tua attività.",
+      "empty": "Non ci sono ancora appuntamenti in programma."
+    },
+
+    "states": {
+      "loading": "Caricamento dashboard aziendale...",
+      "refreshingUser": "Aggiornamento dati utente...",
+      "accessDeniedTitle": "Accesso negato",
+      "accessDeniedMessage": "Non hai l’autorizzazione per accedere a questa dashboard aziendale.",
+      "loadErrorTitle": "Impossibile caricare la dashboard",
+      "loadErrorMessage": "Errore durante il caricamento dei dati dal server.",
+      "subscriptionPending": "Il tuo abbonamento non è ancora stato attivato. Riprova tra qualche minuto.",
+      "subscriptionCheckError": "Errore durante il controllo dello stato dell’abbonamento.",
+      "somethingWrong": "Qualcosa è andato storto. Riprova.",
+      "closeOfferError": "Al momento non è possibile chiudere l’offerta. Riprova.",
+      "socketNotConnected": "La connessione in tempo reale non è connessa",
+      "unknownError": "Errore sconosciuto"
+    }
   }
 }
