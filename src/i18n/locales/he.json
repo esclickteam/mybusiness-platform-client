@@ -38,5 +38,102 @@
     "aiSummarize": "סכם את השבוע שלי",
     "aiDraftProposal": "צור הצעת מחיר",
     "aiFindSlots": "מצא מועדים פנויים"
+  },
+  "dashboard": {
+    "live": "פעיל",
+    "title": "דשבורד עסקי",
+    "badge": "לוח בקרה לעסק",
+    "subtitle": "ניהול תורים, תובנות AI, הודעות מלקוחות, ביקורות, חשיפה ופעילות עסקית בזמן אמת — במקום אחד מסודר ונוח.",
+    "business": "עסק",
+    "planStatus": "סטטוס מנוי",
+    "refresh": "רענון",
+    "syncDashboard": "סנכרן דשבורד",
+    "paid": "בתשלום",
+    "trial": "ניסיון",
+    "yourBusiness": "העסק שלך",
+
+    "metrics": {
+      "profileViews": "צפיות בפרופיל",
+      "profileViewsHint": "חשיפה חיה מהעמוד הציבורי של העסק",
+      "appointments": "תורים",
+      "appointmentsHint": "{{today}} היום · {{week}} ב־7 הימים הקרובים",
+      "messages": "הודעות",
+      "messagesHint": "שיחות פעילות והודעות שלא נקראו מלקוחות",
+      "reviews": "ביקורות",
+      "reviewsHint": "אמון לקוחות ופעילות דירוגים"
+    },
+
+    "agenda": {
+      "eyebrow": "יומן יומי",
+      "title": "לו״ז ליום שנבחר",
+      "description": "צפייה בתורים של התאריך שנבחר בצורה נקייה וברורה.",
+      "loading": "טוען יומן..."
+    },
+
+    "calendar": {
+      "eyebrow": "לוח שנה",
+      "title": "סקירת תורים",
+      "description": "בחרי תאריך ונהלי את זרימת התורים של העסק.",
+      "loading": "טוען לוח שנה..."
+    },
+
+    "ai": {
+      "eyebrow": "מרכז פעולות AI",
+      "title": "תובנות חכמות לעסק שלך",
+      "description": "המלצות AI לפי הפעילות העסקית, הלקוחות, התורים והביצועים שלך."
+    },
+
+    "operations": {
+      "eyebrow": "סקירת היום",
+      "title": "דופק פעילות",
+      "todayAppointments": "תורים היום",
+      "upcomingWeek": "השבוע הקרוב",
+      "pendingAiApprovals": "המלצות AI לאישור"
+    },
+
+    "recommendations": {
+      "eyebrow": "ממתין לאישור",
+      "title": "המלצות AI",
+      "description": "בדיקת המלצות AI לפני שליחה ללקוחות.",
+      "client": "לקוח:",
+      "aiSuggestion": "הצעת AI:",
+      "approveAndSend": "אשר ושלח"
+    },
+
+    "performance": {
+      "eyebrow": "ביצועי העסק",
+      "title": "כרטיסי דשבורד",
+      "description": "כרטיסי הביצועים שלך מחוברים לנתונים החיים.",
+      "loading": "טוען כרטיסים..."
+    },
+
+    "analytics": {
+      "eyebrow": "ניתוח צמיחה",
+      "title": "לקוחות שקבעו תורים לפי חודשים",
+      "description": "מגמות חודשיות של ביקוש לתורים ופעילות לקוחות.",
+      "loading": "טוען גרף..."
+    },
+
+    "upcoming": {
+      "eyebrow": "תורים קרובים",
+      "title": "הפעילות הבאה",
+      "description": "מבט מהיר על התורים הקרובים בעסק.",
+      "empty": "אין עדיין תורים קרובים."
+    },
+
+    "states": {
+      "loading": "טוען דשבורד עסקי...",
+      "refreshingUser": "מרענן נתוני משתמש...",
+      "accessDeniedTitle": "אין הרשאה",
+      "accessDeniedMessage": "אין לך הרשאה להיכנס לדשבורד העסק הזה.",
+      "loadErrorTitle": "לא ניתן לטעון את הדשבורד",
+      "loadErrorMessage": "שגיאה בטעינת נתונים מהשרת.",
+      "subscriptionPending": "המנוי שלך עדיין לא הופעל. נסי שוב בעוד כמה דקות.",
+      "subscriptionCheckError": "שגיאה בבדיקת סטטוס המנוי.",
+      "somethingWrong": "משהו השתבש. נסי שוב.",
+      "closeOfferError": "לא ניתן לסגור את ההצעה כרגע. נסי שוב.",
+      "socketNotConnected": "החיבור בזמן אמת לא מחובר",
+      "unknownError": "שגיאה לא ידועה"
+    }
   }
 }
