@@ -10,6 +10,13 @@ import React, {
 } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import {
+  Sparkles,
+  TrendingUp,
+  CalendarDays,
+  Star,
+  ArrowRight,
+} from "lucide-react";
 
 import API from "@/api";
 import { useAuth } from "@/context/AuthContext";
@@ -78,6 +85,18 @@ type DashboardStats = {
     _id: string;
     name: string;
   }>;
+  recentMessages?: Array<{
+    _id?: string;
+    id?: string;
+    senderName?: string;
+    senderBusiness?: string;
+    text?: string;
+    createdAt?: string;
+  }>;
+  collaborations_count?: number;
+  proposals_count?: number;
+  revenue?: number;
+  revenue_count?: number;
   [key: string]: any;
 };
 
@@ -137,12 +156,29 @@ function safeNumber(value: unknown): number {
   return Number.isFinite(num) ? num : 0;
 }
 
-function formatNumber(value: unknown): string {
-  return new Intl.NumberFormat("en-US").format(safeNumber(value));
+function formatNumber(value: unknown, locale = "en-US"): string {
+  return new Intl.NumberFormat(locale).format(safeNumber(value));
 }
 
-function getTodayIso() {
+function formatMoney(value: unknown, locale = "en-US", currency = "USD"): string {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(safeNumber(value));
+}
+
+function getTodayIso(): string {
   return new Date().toISOString().split("T")[0];
+}
+
+function getLocale(language?: string): string {
+  if (language === "he") return "he-IL";
+  return language || "en-US";
+}
+
+function getCurrency(language?: string): string {
+  return language === "he" || language === "he-IL" ? "ILS" : "USD";
 }
 
 function enrichAppointment(
@@ -166,7 +202,7 @@ function enrichAppointment(
   };
 }
 
-function getUpcomingAppointmentsCount(appointments: Appointment[]) {
+function getUpcomingAppointmentsCount(appointments: Appointment[]): number {
   const now = new Date();
   const endOfWeek = new Date();
 
@@ -178,7 +214,7 @@ function getUpcomingAppointmentsCount(appointments: Appointment[]) {
   }).length;
 }
 
-function getTodayAppointmentsCount(appointments: Appointment[]) {
+function getTodayAppointmentsCount(appointments: Appointment[]): number {
   const today = getTodayIso();
   return appointments.filter((appt) => appt.date === today).length;
 }
@@ -247,10 +283,10 @@ export function preloadDashboardComponents() {
   DashboardNav.preload();
 }
 
-function LoadingShell({ text }: { text: string }) {
+function LoadingShell({ text }: { text: React.ReactNode }) {
   return (
-    <div className="min-h-[70vh] bg-[#f7f4ff] px-5 py-10 text-slate-950">
-      <div className="mx-auto flex max-w-7xl items-center justify-center rounded-[32px] border border-violet-100 bg-white p-10 shadow-[0_20px_70px_rgba(88,28,135,0.10)]">
+    <div className="min-h-[70vh] bg-[#f5f6fb] px-5 py-10 text-slate-950">
+      <div className="mx-auto flex max-w-7xl items-center justify-center rounded-[28px] border border-violet-100 bg-white p-10 shadow-[0_20px_60px_rgba(88,28,135,0.08)]">
         <div className="flex items-center gap-3">
           <span className="h-3 w-3 animate-pulse rounded-full bg-violet-600" />
           <p className="text-sm font-bold text-slate-700">{text}</p>
@@ -264,12 +300,12 @@ function ErrorShell({
   title,
   message,
 }: {
-  title: string;
-  message: string;
+  title: React.ReactNode;
+  message: React.ReactNode;
 }) {
   return (
-    <div className="min-h-[70vh] bg-[#f7f4ff] px-5 py-10 text-slate-950">
-      <div className="mx-auto max-w-3xl rounded-[32px] border border-red-100 bg-white p-8 text-center shadow-[0_20px_70px_rgba(127,29,29,0.10)]">
+    <div className="min-h-[70vh] bg-[#f5f6fb] px-5 py-10 text-slate-950">
+      <div className="mx-auto max-w-3xl rounded-[28px] border border-red-100 bg-white p-8 text-center shadow-[0_20px_60px_rgba(127,29,29,0.08)]">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-red-50 text-2xl font-black text-red-600">
           !
         </div>
@@ -280,110 +316,27 @@ function ErrorShell({
   );
 }
 
-function PremiumMetricCard({
-  label,
-  value,
-  hint,
-  icon,
-  tone = "violet",
-}: {
-  label: string;
-  value: string | number;
-  hint: string;
-  icon: string;
-  tone?: "violet" | "emerald" | "amber" | "sky";
-}) {
-  const toneClasses = {
-    violet: {
-      card: "from-violet-50 to-white",
-      icon: "bg-violet-100 text-violet-700",
-      line: "bg-violet-500",
-    },
-    emerald: {
-      card: "from-emerald-50 to-white",
-      icon: "bg-emerald-100 text-emerald-700",
-      line: "bg-emerald-500",
-    },
-    amber: {
-      card: "from-amber-50 to-white",
-      icon: "bg-amber-100 text-amber-700",
-      line: "bg-amber-500",
-    },
-    sky: {
-      card: "from-sky-50 to-white",
-      icon: "bg-sky-100 text-sky-700",
-      line: "bg-sky-500",
-    },
-  };
-
-  return (
-    <div
-      className={`group relative overflow-hidden rounded-[28px] border border-slate-200 bg-gradient-to-br ${toneClasses[tone].card} p-5 shadow-[0_16px_45px_rgba(88,28,135,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(88,28,135,0.13)]`}
-    >
-      <div
-        className={`absolute left-0 top-0 h-full w-1.5 ${toneClasses[tone].line}`}
-      />
-
-      <div className="relative flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-xs font-black uppercase tracking-[0.15em] text-slate-500">
-            {label}
-          </p>
-
-          <p className="mt-3 text-3xl font-black tracking-tight text-slate-950">
-            {value}
-          </p>
-
-          <p className="mt-2 text-sm leading-5 text-slate-600">{hint}</p>
-        </div>
-
-        <div
-          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-2xl ${toneClasses[tone].icon}`}
-        >
-          {icon}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SectionCard({
-  eyebrow,
+function SectionShell({
   title,
-  description,
+  action,
   children,
   className = "",
-  compact = false,
 }: {
-  eyebrow?: string;
-  title: string;
-  description?: string;
+  title: React.ReactNode;
+  action?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
-  compact?: boolean;
 }) {
   return (
     <section
-      className={`rounded-[32px] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(88,28,135,0.08)] ${
-        compact ? "p-4 sm:p-5" : "p-5 sm:p-6"
-      } ${className}`}
+      className={`rounded-[24px] border border-slate-200 bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,0.05)] ${className}`}
     >
-      <div className={compact ? "mb-3" : "mb-5"}>
-        {eyebrow && (
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
-            {eyebrow}
-          </p>
-        )}
-
-        <h2 className="mt-1.5 text-xl font-black tracking-tight text-slate-950 sm:text-2xl">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="text-lg font-black tracking-tight text-slate-950">
           {title}
         </h2>
 
-        {description && (
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            {description}
-          </p>
-        )}
+        {action}
       </div>
 
       {children}
@@ -391,8 +344,345 @@ function SectionCard({
   );
 }
 
+function WelcomeBanner({
+  title,
+  subtitle,
+  insightTitle,
+  insightText,
+}: {
+  title: React.ReactNode;
+  subtitle: React.ReactNode;
+  insightTitle: React.ReactNode;
+  insightText: React.ReactNode;
+}) {
+  return (
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.9fr)]">
+      <div className="rounded-[24px] border border-slate-200 bg-white px-5 py-5 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
+        <div className="flex items-start gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[20px] bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-[0_16px_35px_rgba(109,40,217,0.24)]">
+            <Sparkles size={26} />
+          </div>
+
+          <div className="min-w-0">
+            <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+              {title}
+            </h1>
+
+            <p className="mt-2 text-sm text-slate-600 sm:text-base">
+              {subtitle}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative overflow-hidden rounded-[24px] border border-violet-100 bg-gradient-to-r from-violet-50 via-white to-violet-50 px-5 py-5 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
+        <div className="relative z-10 max-w-[330px]">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-violet-200 bg-white text-violet-600">
+            <TrendingUp size={22} />
+          </div>
+
+          <p className="text-sm font-black text-violet-700">{insightTitle}</p>
+
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            {insightText}
+          </p>
+        </div>
+
+        <div className="pointer-events-none absolute bottom-0 right-0 h-full w-[48%] opacity-90">
+          <div className="absolute bottom-4 right-3 h-24 w-16 rounded-t-[999px] bg-violet-200/80" />
+          <div className="absolute bottom-4 right-16 h-32 w-20 rounded-t-[999px] bg-violet-300/80" />
+          <div className="absolute bottom-4 right-32 h-20 w-16 rounded-t-[999px] bg-violet-100/90" />
+          <div className="absolute bottom-4 right-44 h-14 w-12 rounded-t-[999px] bg-violet-50" />
+          <div className="absolute bottom-[130px] right-[92px] h-12 w-[2px] bg-slate-400" />
+          <div className="absolute bottom-[168px] right-[84px] rounded-full bg-pink-400 px-3 py-1 text-[10px] font-bold text-white shadow">
+            ★
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MiniStatCard({
+  title,
+  value,
+  delta,
+  tone = "violet",
+}: {
+  title: React.ReactNode;
+  value: React.ReactNode;
+  delta?: React.ReactNode;
+  tone?: "violet" | "green" | "pink";
+}) {
+  const toneMap = {
+    violet: "bg-violet-50 text-violet-700 border-violet-100",
+    green: "bg-emerald-50 text-emerald-700 border-emerald-100",
+    pink: "bg-pink-50 text-pink-700 border-pink-100",
+  };
+
+  return (
+    <div className={`rounded-[18px] border p-4 ${toneMap[tone]} shadow-sm`}>
+      <p className="text-xs font-bold text-slate-500">{title}</p>
+      <p className="mt-2 text-2xl font-black text-slate-950">{value}</p>
+      {delta && <p className="mt-1 text-xs font-semibold">{delta}</p>}
+    </div>
+  );
+}
+
+function PipelineSection({
+  title,
+  actionText,
+  items,
+}: {
+  title: React.ReactNode;
+  actionText: React.ReactNode;
+  items: Array<{ label: React.ReactNode; value: number; tone: string }>;
+}) {
+  const maxValue = Math.max(...items.map((item) => item.value), 1);
+
+  return (
+    <SectionShell
+      title={title}
+      action={
+        <button
+          type="button"
+          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+        >
+          {actionText}
+        </button>
+      }
+      className="h-full"
+    >
+      <div className="space-y-4">
+        {items.map((item, index) => (
+          <div key={index} className="space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: item.tone }}
+                />
+                <span className="truncate text-sm font-semibold text-slate-700">
+                  {item.label}
+                </span>
+              </div>
+
+              <span className="text-sm font-bold text-slate-900">
+                {item.value}
+              </span>
+            </div>
+
+            <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${Math.max((item.value / maxValue) * 100, 8)}%`,
+                  backgroundColor: item.tone,
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function RecentMessagesCard({
+  title,
+  actionText,
+  messages,
+  emptyText,
+}: {
+  title: React.ReactNode;
+  actionText: React.ReactNode;
+  messages: Array<{
+    name: string;
+    subtitle?: string;
+    text?: string;
+    badge?: string | number;
+  }>;
+  emptyText: React.ReactNode;
+}) {
+  return (
+    <SectionShell
+      title={title}
+      action={
+        <button
+          type="button"
+          className="text-xs font-bold text-violet-600 hover:text-violet-800"
+        >
+          {actionText}
+        </button>
+      }
+      className="h-full"
+    >
+      {messages.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+          {emptyText}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {messages.map((item, index) => (
+            <div key={`${item.name}-${index}`} className="flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-violet-100 text-sm font-black text-violet-700">
+                {item.name?.charAt(0)?.toUpperCase() || "C"}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-black text-slate-900">
+                      {item.name}
+                    </p>
+
+                    {item.subtitle && (
+                      <p className="truncate text-xs text-slate-500">
+                        {item.subtitle}
+                      </p>
+                    )}
+                  </div>
+
+                  {item.badge ? (
+                    <span className="inline-flex h-6 min-w-[24px] items-center justify-center rounded-full bg-violet-100 px-2 text-xs font-bold text-violet-700">
+                      {item.badge}
+                    </span>
+                  ) : null}
+                </div>
+
+                {item.text && (
+                  <p className="mt-1 max-h-10 overflow-hidden text-sm leading-5 text-slate-600">
+                    {item.text}
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </SectionShell>
+  );
+}
+
+function RecentActivityCard({
+  title,
+  actionText,
+  items,
+  emptyText,
+}: {
+  title: React.ReactNode;
+  actionText: React.ReactNode;
+  items: Array<{
+    icon: React.ReactNode;
+    text: React.ReactNode;
+    subtext?: React.ReactNode;
+  }>;
+  emptyText: React.ReactNode;
+}) {
+  return (
+    <SectionShell
+      title={title}
+      action={
+        <button
+          type="button"
+          className="text-xs font-bold text-violet-600 hover:text-violet-800"
+        >
+          {actionText}
+        </button>
+      }
+      className="h-full"
+    >
+      {items.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+          {emptyText}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {items.map((item, index) => (
+            <div key={index} className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+                {item.icon}
+              </div>
+
+              <div className="min-w-0">
+                <p className="text-sm text-slate-700">{item.text}</p>
+
+                {item.subtext && (
+                  <p className="mt-1 text-xs text-slate-400">{item.subtext}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </SectionShell>
+  );
+}
+
+function CollaborationsCard({
+  title,
+  actionText,
+  activeValue,
+  activeLabel,
+  proposalsValue,
+  proposalsLabel,
+  emptyText,
+}: {
+  title: React.ReactNode;
+  actionText: React.ReactNode;
+  activeValue: React.ReactNode;
+  activeLabel: React.ReactNode;
+  proposalsValue: React.ReactNode;
+  proposalsLabel: React.ReactNode;
+  emptyText: React.ReactNode;
+}) {
+  return (
+    <SectionShell
+      title={title}
+      action={
+        <button
+          type="button"
+          className="text-xs font-bold text-violet-600 hover:text-violet-800"
+        >
+          {actionText}
+        </button>
+      }
+      className="h-full"
+    >
+      <div className="grid gap-3 sm:grid-cols-2">
+        <MiniStatCard title={activeLabel} value={activeValue} tone="violet" />
+        <MiniStatCard title={proposalsLabel} value={proposalsValue} tone="pink" />
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+        {emptyText}
+      </div>
+    </SectionShell>
+  );
+}
+
 export default function DashboardPage() {
   const { t, i18n } = useTranslation();
+
+  const tx = useCallback(
+    (key: string, fallback: string, values?: Record<string, any>): string => {
+      const translated = t(key, {
+        ...(values || {}),
+        returnObjects: false,
+      } as any);
+
+      if (typeof translated !== "string") {
+        return fallback;
+      }
+
+      if (translated === key) {
+        return fallback;
+      }
+
+      return translated;
+    },
+    [t]
+  );
 
   const {
     user,
@@ -508,11 +798,11 @@ export default function DashboardPage() {
         }
 
         setIsRefreshingUser(false);
-        setAlertMessage(t("dashboard.states.subscriptionPending"));
+        setAlertMessage(tx("dashboard.states.subscriptionPending", "Your subscription has not been activated yet. Try again in a few minutes."));
         window.history.replaceState({}, document.title, location.pathname);
       } catch {
         setIsRefreshingUser(false);
-        setAlertMessage(t("dashboard.states.subscriptionCheckError"));
+        setAlertMessage(tx("dashboard.states.subscriptionCheckError", "Error checking subscription status."));
         window.history.replaceState({}, document.title, location.pathname);
       }
     };
@@ -525,7 +815,7 @@ export default function DashboardPage() {
     refreshAccessToken,
     refreshUser,
     setUser,
-    t,
+    tx,
   ]);
 
   useEffect(() => {
@@ -560,7 +850,7 @@ export default function DashboardPage() {
       setStats(data);
       localStorage.setItem("dashboardStats", JSON.stringify(data));
     } catch (err: any) {
-      setError(t("dashboard.states.loadErrorMessage"));
+      setError(tx("dashboard.states.loadErrorMessage", "Error loading data from server."));
 
       if (err?.message === "No token") {
         logout();
@@ -568,7 +858,7 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [businessId, refreshAccessToken, logout, t]);
+  }, [businessId, refreshAccessToken, logout, tx]);
 
   const refreshAppointmentsFromAPI = useCallback(async () => {
     if (!businessId) return;
@@ -823,12 +1113,16 @@ export default function DashboardPage() {
       }
     } catch (err) {
       console.error("Early Bird checkout error:", err);
-      setAlertMessage(t("dashboard.states.somethingWrong"));
+      setAlertMessage(tx("dashboard.states.somethingWrong", "Something went wrong. Please try again."));
     }
   };
 
   if (!initialized) {
-    return <LoadingShell text={t("dashboard.states.loading")} />;
+    return (
+      <LoadingShell
+        text={tx("dashboard.states.loading", "Loading business dashboard...")}
+      />
+    );
   }
 
   const isAdmin = user?.role === "admin";
@@ -838,8 +1132,11 @@ export default function DashboardPage() {
   if (!isAdmin && !isBusinessOwner) {
     return (
       <ErrorShell
-        title={t("dashboard.states.accessDeniedTitle")}
-        message={t("dashboard.states.accessDeniedMessage")}
+        title={tx("dashboard.states.accessDeniedTitle", "Access denied")}
+        message={tx(
+          "dashboard.states.accessDeniedMessage",
+          "You do not have permission to access this business dashboard."
+        )}
       />
     );
   }
@@ -851,14 +1148,18 @@ export default function DashboardPage() {
   if (error) {
     return (
       <ErrorShell
-        title={t("dashboard.states.loadErrorTitle")}
+        title={tx("dashboard.states.loadErrorTitle", "Could not load dashboard")}
         message={alertMessage || error}
       />
     );
   }
 
   if (isRefreshingUser) {
-    return <LoadingShell text={t("dashboard.states.refreshingUser")} />;
+    return (
+      <LoadingShell
+        text={tx("dashboard.states.refreshingUser", "Refreshing user data...")}
+      />
+    );
   }
 
   const effectiveStats = stats || {};
@@ -878,123 +1179,86 @@ export default function DashboardPage() {
     appointmentsRef,
   };
 
+  const locale = getLocale(i18n.language);
+  const currency = getCurrency(i18n.language);
+
   const todayAppointments = getTodayAppointmentsCount(enrichedAppointments);
   const upcomingAppointments = getUpcomingAppointmentsCount(
     enrichedAppointments
   );
   const recentAppointments = getLastAppointments(enrichedAppointments, 5);
 
-  const metricCards = [
+  const pipelineItems = [
     {
-      label: t("dashboard.metrics.profileViews"),
-      value: formatNumber(syncedStats.views_count),
-      hint: t("dashboard.metrics.profileViewsHint"),
-      icon: "👁",
-      tone: "violet" as const,
+      label: tx("dashboard.pipeline.leads", "Lead"),
+      value: safeNumber(syncedStats.views_count),
+      tone: "#8b5cf6",
     },
     {
-      label: t("dashboard.metrics.appointments"),
-      value: formatNumber(syncedStats.appointments_count),
-      hint: t("dashboard.metrics.appointmentsHint", {
-        today: todayAppointments,
-        week: upcomingAppointments,
-      }),
-      icon: "📅",
-      tone: "sky" as const,
+      label: tx("dashboard.pipeline.qualified", "Qualified"),
+      value: safeNumber(syncedStats.messages_count),
+      tone: "#3b82f6",
     },
     {
-      label: t("dashboard.metrics.messages"),
-      value: formatNumber(syncedStats.messages_count),
-      hint: t("dashboard.metrics.messagesHint"),
-      icon: "💬",
-      tone: "emerald" as const,
+      label: tx("dashboard.pipeline.proposals", "Proposal Sent"),
+      value: safeNumber(syncedStats.requests_count),
+      tone: "#f59e0b",
     },
     {
-      label: t("dashboard.metrics.reviews"),
-      value: formatNumber(syncedStats.reviews_count),
-      hint: t("dashboard.metrics.reviewsHint"),
-      icon: "⭐",
-      tone: "amber" as const,
+      label: tx("dashboard.pipeline.negotiation", "Negotiation"),
+      value: safeNumber(syncedStats.appointments_count),
+      tone: "#06b6d4",
+    },
+    {
+      label: tx("dashboard.pipeline.closedWon", "Closed Won"),
+      value: safeNumber(syncedStats.orders_count),
+      tone: "#22c55e",
     },
   ];
+
+  const recentMessages =
+    Array.isArray(syncedStats.recentMessages) &&
+    syncedStats.recentMessages.length
+      ? syncedStats.recentMessages.slice(0, 3).map((message, index) => ({
+          name:
+            message.senderName ||
+            tx("dashboard.recent.defaultClientName", `Client ${index + 1}`),
+          subtitle: message.senderBusiness || "",
+          text: message.text || "",
+          badge: index === 0 ? 2 : index === 1 ? 1 : undefined,
+        }))
+      : [];
+
+  const recentActivityItems = [
+    ...recentAppointments.slice(0, 2).map((appt) => ({
+      icon: <CalendarDays size={16} />,
+      text: `${appt.clientName} • ${appt.serviceName}`,
+      subtext: `${appt.date} ${appt.time || ""}`,
+    })),
+    ...(syncedStats.reviews || []).slice(0, 2).map((review) => ({
+      icon: <Star size={16} />,
+      text:
+        review.comment ||
+        tx("dashboard.recent.reviewReceived", "New review received"),
+      subtext: review.createdAt || "",
+    })),
+  ];
+
+  const revenueValue =
+    syncedStats.revenue ??
+    syncedStats.revenue_count ??
+    syncedStats.orders_count ??
+    0;
 
   return (
     <div
       dir={i18n.dir()}
-      className="min-h-screen overflow-x-hidden overflow-y-auto bg-[#f7f4ff] text-slate-950"
+      className="min-h-screen overflow-x-hidden bg-[#f5f6fb] text-slate-950"
     >
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute left-[-12rem] top-[-12rem] h-[34rem] w-[34rem] rounded-full bg-violet-200/70 blur-[120px]" />
-        <div className="absolute right-[-10rem] top-[10rem] h-[30rem] w-[30rem] rounded-full bg-sky-100/80 blur-[120px]" />
-        <div className="absolute bottom-[-14rem] left-[34%] h-[32rem] w-[32rem] rounded-full bg-fuchsia-100/80 blur-[120px]" />
-      </div>
-
-      <div className="mx-auto flex w-full max-w-[1760px] flex-col px-4 py-4 sm:px-6 lg:px-8">
-        <header className="mb-6 overflow-hidden rounded-[34px] border border-violet-100 bg-white/95 px-5 py-5 shadow-[0_24px_70px_rgba(88,28,135,0.10)] backdrop-blur-2xl sm:px-7">
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-            <div className="min-w-0">
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-emerald-700">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_14px_rgba(16,185,129,0.8)]" />
-                  {t("dashboard.live")}
-                </span>
-
-                <span className="rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-violet-700">
-                  {t("dashboard.badge")}
-                </span>
-              </div>
-
-              <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl xl:text-5xl">
-                {t("dashboard.title")}
-              </h1>
-
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
-                {t("dashboard.subtitle")}
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[520px]">
-              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                  {t("dashboard.business")}
-                </p>
-                <p className="mt-2 truncate text-sm font-black text-slate-950">
-                  {user?.businessName ||
-                    syncedStats.businessName ||
-                    t("dashboard.yourBusiness")}
-                </p>
-              </div>
-
-              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                  {t("dashboard.planStatus")}
-                </p>
-                <p className="mt-2 text-sm font-black text-slate-950">
-                  {user?.hasPaid
-                    ? t("dashboard.paid")
-                    : user?.paymentStatus || t("dashboard.trial")}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={loadStats}
-                className="rounded-[24px] border border-violet-200 bg-violet-600 p-4 text-left text-white shadow-[0_16px_35px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:bg-violet-700"
-              >
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-100">
-                  {t("dashboard.refresh")}
-                </p>
-                <p className="mt-2 text-sm font-black">
-                  {t("dashboard.syncDashboard")}
-                </p>
-              </button>
-            </div>
-          </div>
-        </header>
-
-        <main className="space-y-6 pb-12">
+      <div className="mx-auto w-full max-w-[1720px] px-4 py-5 sm:px-6 lg:px-8">
+        <main className="space-y-5 pb-12">
           {alertMessage && (
-            <div className="rounded-[26px] border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-800 shadow-[0_14px_40px_rgba(180,83,9,0.10)]">
+            <div className="rounded-[20px] border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-800 shadow-sm">
               {alertMessage}
             </div>
           )}
@@ -1008,145 +1272,226 @@ export default function DashboardPage() {
                   await API.post("/users/mark-earlybird-modal-seen");
                   await refreshUser();
                 } catch {
-                  setAlertMessage(t("dashboard.states.closeOfferError"));
+                  setAlertMessage(
+                    tx(
+                      "dashboard.states.closeOfferError",
+                      "Could not close the offer right now. Please try again."
+                    )
+                  );
                 }
               }}
             />
           )}
 
-          <section
-            ref={cardsRef}
-            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-          >
-            {metricCards.map((card) => (
-              <PremiumMetricCard key={card.label} {...card} />
-            ))}
-          </section>
+          <WelcomeBanner
+            title={tx(
+              "dashboard.welcomeTitle",
+              `Welcome back, ${user?.name || user?.businessName || "Olivia"}! 👋`
+            )}
+            subtitle={tx(
+              "dashboard.welcomeSubtitle",
+              "Here's what's happening with your business today."
+            )}
+            insightTitle={tx("dashboard.insightTitle", "Insight of the day")}
+            insightText={tx(
+              "dashboard.insightText",
+              "You closed 24% more deals this month compared to last month. Keep it up!"
+            )}
+          />
 
-          <section
+          <div ref={cardsRef}>
+            <Suspense
+              fallback={
+                <div className="rounded-[24px] border border-slate-200 bg-white p-6 text-sm font-semibold text-slate-600 shadow-sm">
+                  {tx("dashboard.performance.loading", "Loading cards...")}
+                </div>
+              }
+            >
+              <DashboardCards
+                stats={syncedStats}
+                t={t}
+                locale={locale}
+                currency={currency}
+              />
+            </Suspense>
+          </div>
+
+          <div
             ref={appointmentsRef}
-            className="grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]"
+            className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.85fr)_minmax(320px,0.9fr)]"
           >
-            <SectionCard
-              eyebrow={t("dashboard.agenda.eyebrow")}
-              title={t("dashboard.agenda.title")}
-              description={t("dashboard.agenda.description")}
+            <SectionShell
+              title={tx(
+                "dashboard.analytics.title",
+                "Business Growth Overview"
+              )}
+              action={
+                <button
+                  type="button"
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                >
+                  {tx("dashboard.thisMonth", "This Month")}
+                </button>
+              }
             >
-              <Suspense
-                fallback={
-                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
-                    {t("dashboard.agenda.loading")}
-                  </div>
-                }
-              >
-                <DailyAgenda
-  date={selectedDate}
-  appointments={enrichedAppointments}
-  businessName={syncedStats.businessName || t("dashboard.yourBusiness")}
-  businessId={businessId}
-  t={t}
-  locale={i18n.language}
-/>
-              </Suspense>
-            </SectionCard>
+              <div className="mb-4 grid gap-3 sm:grid-cols-4">
+                <MiniStatCard
+                  title={tx("dashboard.cards.revenue", "Revenue")}
+                  value={formatMoney(revenueValue, locale, currency)}
+                  tone="violet"
+                />
 
-            <SectionCard
-              eyebrow={t("dashboard.calendar.eyebrow")}
-              title={t("dashboard.calendar.title")}
-              description={t("dashboard.calendar.description")}
+                <MiniStatCard
+                  title={tx("dashboard.cards.transactions", "Transactions")}
+                  value={formatNumber(syncedStats.requests_count, locale)}
+                  tone="green"
+                />
+
+                <MiniStatCard
+                  title={tx("dashboard.cards.newClients", "New Clients")}
+                  value={formatNumber(syncedStats.messages_count, locale)}
+                  tone="pink"
+                />
+
+                <MiniStatCard
+                  title={tx("dashboard.cards.conversionRate", "Conversion Rate")}
+                  value={`${Math.min(
+                    100,
+                    safeNumber(syncedStats.orders_count) * 5
+                  )}%`}
+                  tone="violet"
+                />
+              </div>
+
+              <div ref={chartsRef}>
+                <Suspense
+                  fallback={
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
+                      {tx("dashboard.analytics.loading", "Loading chart...")}
+                    </div>
+                  }
+                >
+                  <BarChartComponent
+                    appointments={enrichedAppointments}
+                    title={tx(
+                      "dashboard.analytics.title",
+                      "Clients who booked appointments by month"
+                    )}
+                  />
+                </Suspense>
+              </div>
+            </SectionShell>
+
+            <PipelineSection
+              title={tx("dashboard.pipeline.title", "Sales Pipeline")}
+              actionText={tx("dashboard.pipeline.allPipelines", "All Pipelines")}
+              items={pipelineItems}
+            />
+
+            <Suspense
+              fallback={
+                <div className="rounded-[24px] border border-slate-200 bg-white p-6 text-sm font-semibold text-slate-600 shadow-sm">
+                  {tx("dashboard.agenda.loading", "Loading agenda...")}
+                </div>
+              }
+            >
+              <DailyAgenda
+                date={selectedDate}
+                appointments={enrichedAppointments}
+                businessName={
+                  syncedStats.businessName ||
+                  tx("dashboard.yourBusiness", "Your business")
+                }
+                businessId={businessId}
+                t={t}
+                locale={locale}
+              />
+            </Suspense>
+          </div>
+
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <SectionShell
+              title={tx("dashboard.calendar.title", "Appointment overview")}
             >
               <Suspense
                 fallback={
-                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
-                    {t("dashboard.calendar.loading")}
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
+                    {tx("dashboard.calendar.loading", "Loading calendar...")}
                   </div>
                 }
               >
                 <CalendarView
-  appointments={enrichedAppointments}
-  onDateClick={setSelectedDate}
-  selectedDate={selectedDate}
-  t={t}
-  locale={i18n.language}
-/>
+                  appointments={enrichedAppointments}
+                  onDateClick={setSelectedDate}
+                  selectedDate={selectedDate}
+                  t={t}
+                  locale={locale}
+                />
               </Suspense>
-            </SectionCard>
-          </section>
+            </SectionShell>
 
-          <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.55fr)]">
-            <SectionCard
-              eyebrow={t("dashboard.ai.eyebrow")}
-              title={t("dashboard.ai.title")}
-              description={t("dashboard.ai.description")}
+            <SectionShell
+              title={tx("dashboard.operations.title", "Activity pulse")}
             >
-              <AiInsightsPanel
-                insights={insights}
-                loading={insightsLoading}
-                businessId={businessId}
-              />
-            </SectionCard>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <MiniStatCard
+                  title={tx(
+                    "dashboard.operations.todayAppointments",
+                    "Appointments today"
+                  )}
+                  value={todayAppointments}
+                  tone="violet"
+                />
 
-            <SectionCard
-              eyebrow={t("dashboard.operations.eyebrow")}
-              title={t("dashboard.operations.title")}
-              compact
-            >
-              <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-xs font-bold text-slate-500">
-                    {t("dashboard.operations.todayAppointments")}
-                  </p>
-                  <p className="mt-2 text-3xl font-black text-slate-950">
-                    {todayAppointments}
-                  </p>
-                </div>
+                <MiniStatCard
+                  title={tx("dashboard.operations.upcomingWeek", "Upcoming week")}
+                  value={upcomingAppointments}
+                  tone="green"
+                />
 
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-xs font-bold text-slate-500">
-                    {t("dashboard.operations.upcomingWeek")}
-                  </p>
-                  <p className="mt-2 text-3xl font-black text-slate-950">
-                    {upcomingAppointments}
-                  </p>
-                </div>
-
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-xs font-bold text-slate-500">
-                    {t("dashboard.operations.pendingAiApprovals")}
-                  </p>
-                  <p className="mt-2 text-3xl font-black text-slate-950">
-                    {recommendations.length}
-                  </p>
-                </div>
+                <MiniStatCard
+                  title={tx(
+                    "dashboard.operations.pendingAiApprovals",
+                    "AI recommendations pending approval"
+                  )}
+                  value={recommendations.length}
+                  tone="pink"
+                />
               </div>
-            </SectionCard>
-          </section>
+            </SectionShell>
+          </div>
 
           {recommendations.length > 0 && (
-            <SectionCard
-              eyebrow={t("dashboard.recommendations.eyebrow")}
-              title={t("dashboard.recommendations.title")}
-              description={t("dashboard.recommendations.description")}
+            <SectionShell
+              title={tx("dashboard.recommendations.title", "AI recommendations")}
+              action={
+                <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
+                  {recommendations.length}
+                </span>
+              }
             >
               <ul className="space-y-3">
                 {recommendations.map(
                   ({ recommendationId, message, recommendation }) => (
                     <li
                       key={recommendationId}
-                      className="rounded-[26px] border border-amber-200 bg-amber-50 p-4"
+                      className="rounded-[20px] border border-amber-200 bg-amber-50 p-4"
                     >
                       <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
                         <div className="space-y-2">
                           <p className="text-sm leading-6 text-slate-700">
                             <span className="font-black text-slate-950">
-                              {t("dashboard.recommendations.client")}
+                              {tx("dashboard.recommendations.client", "Client:")}
                             </span>{" "}
                             {message}
                           </p>
 
                           <p className="text-sm leading-6 text-amber-800">
                             <span className="font-black text-slate-950">
-                              {t("dashboard.recommendations.aiSuggestion")}
+                              {tx(
+                                "dashboard.recommendations.aiSuggestion",
+                                "AI suggestion:"
+                              )}
                             </span>{" "}
                             {recommendation}
                           </p>
@@ -1158,7 +1503,10 @@ export default function DashboardPage() {
                           onClick={() => {
                             if (!socketRef.current) {
                               setAlertMessage(
-                                t("dashboard.states.socketNotConnected")
+                                tx(
+                                  "dashboard.states.socketNotConnected",
+                                  "Real-time connection is not connected"
+                                )
                               );
                               return;
                             }
@@ -1179,7 +1527,10 @@ export default function DashboardPage() {
                                   setAlertMessage(
                                     `Error: ${
                                       res?.error ||
-                                      t("dashboard.states.unknownError")
+                                      tx(
+                                        "dashboard.states.unknownError",
+                                        "Unknown error"
+                                      )
                                     }`
                                   );
                                 }
@@ -1187,83 +1538,132 @@ export default function DashboardPage() {
                             );
                           }}
                         >
-                          {t("dashboard.recommendations.approveAndSend")}
+                          {tx(
+                            "dashboard.recommendations.approveAndSend",
+                            "Approve and send"
+                          )}
                         </button>
                       </div>
                     </li>
                   )
                 )}
               </ul>
-            </SectionCard>
+            </SectionShell>
           )}
 
-          <SectionCard
-            eyebrow={t("dashboard.performance.eyebrow")}
-            title={t("dashboard.performance.title")}
-            description={t("dashboard.performance.description")}
-          >
-            <Suspense
-              fallback={
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
-                  {t("dashboard.performance.loading")}
-                </div>
+          <div className="grid gap-5 xl:grid-cols-4">
+            <RecentMessagesCard
+              title={tx("dashboard.recentMessages.title", "Recent Messages")}
+              actionText={tx("dashboard.actions.viewAll", "View all")}
+              messages={recentMessages}
+              emptyText={tx(
+                "dashboard.recentMessages.empty",
+                "No recent messages yet."
+              )}
+            />
+
+            <SectionShell
+              title={tx("dashboard.aiAssistant.title", "AI Assistant")}
+              action={
+                <button
+                  type="button"
+                  className="text-xs font-bold text-violet-600 hover:text-violet-800"
+                >
+                  {tx("dashboard.actions.viewAll", "View all")}
+                </button>
               }
+              className="h-full"
             >
-              <DashboardCards
-  stats={syncedStats}
-  t={t}
-  locale={i18n.language}
-  currency={i18n.language === "he" || i18n.language === "he-IL" ? "ILS" : "USD"}
-/>
-            </Suspense>
-          </SectionCard>
+              <AiInsightsPanel
+                insights={insights}
+                loading={insightsLoading}
+                businessId={businessId}
+              />
+            </SectionShell>
 
-          <SectionCard
-            eyebrow={t("dashboard.analytics.eyebrow")}
-            title={t("dashboard.analytics.title")}
-            description={t("dashboard.analytics.description")}
-          >
-            <div ref={chartsRef}>
-              <Suspense
-                fallback={
-                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
-                    {t("dashboard.analytics.loading")}
-                  </div>
-                }
+            <RecentActivityCard
+              title={tx("dashboard.recentActivity.title", "Recent Activity")}
+              actionText={tx("dashboard.actions.viewAll", "View all")}
+              items={recentActivityItems}
+              emptyText={tx(
+                "dashboard.recentActivity.empty",
+                "No recent activity yet."
+              )}
+            />
+
+            <CollaborationsCard
+              title={tx(
+                "dashboard.collaborations.title",
+                "Collaborations & Proposals"
+              )}
+              actionText={tx("dashboard.actions.viewAll", "View all")}
+              activeValue={formatNumber(
+                syncedStats.collaborations_count || 0,
+                locale
+              )}
+              activeLabel={tx(
+                "dashboard.collaborations.active",
+                "Active Collaborations"
+              )}
+              proposalsValue={formatNumber(
+                syncedStats.proposals_count || 0,
+                locale
+              )}
+              proposalsLabel={tx(
+                "dashboard.collaborations.proposals",
+                "Open Proposals"
+              )}
+              emptyText={tx(
+                "dashboard.collaborations.empty",
+                "Your collaboration and proposal activity will appear here."
+              )}
+            />
+          </div>
+
+          <SectionShell
+            title={tx("dashboard.upcoming.title", "Next activity")}
+            action={
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 text-xs font-bold text-violet-600 hover:text-violet-800"
               >
-                <BarChartComponent
-                  appointments={enrichedAppointments}
-                  title={t("dashboard.analytics.title")}
-                />
-              </Suspense>
-            </div>
-          </SectionCard>
-
-          <SectionCard
-            eyebrow={t("dashboard.upcoming.eyebrow")}
-            title={t("dashboard.upcoming.title")}
-            description={t("dashboard.upcoming.description")}
+                {tx("dashboard.upcoming.viewAll", "View all appointments")}
+                <ArrowRight size={14} />
+              </button>
+            }
           >
             {recentAppointments.length === 0 ? (
-              <div className="rounded-[26px] border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">
-                {t("dashboard.upcoming.empty")}
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">
+                {tx(
+                  "dashboard.upcoming.empty",
+                  "No upcoming appointments yet."
+                )}
               </div>
             ) : (
               <div className="grid gap-3">
                 {recentAppointments.map((appt, index) => (
                   <div
                     key={
-                      appt._id || appt.id || `${appt.date}-${appt.time}-${index}`
+                      appt._id ||
+                      appt.id ||
+                      `${appt.date}-${appt.time}-${index}`
                     }
-                    className="grid gap-3 rounded-[26px] border border-slate-200 bg-slate-50 p-4 sm:grid-cols-[1fr_auto] sm:items-center"
+                    className="grid gap-3 rounded-[20px] border border-slate-200 bg-slate-50 p-4 sm:grid-cols-[1fr_auto] sm:items-center"
                   >
-                    <div>
-                      <p className="text-sm font-black text-slate-950">
-                        {appt.clientName}
-                      </p>
-                      <p className="mt-1 text-sm text-slate-600">
-                        {appt.serviceName}
-                      </p>
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+                        <CalendarDays size={20} />
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-black text-slate-950">
+                          {appt.clientName}
+                        </p>
+
+                        <p className="mt-1 text-sm text-slate-600">
+                          {appt.serviceName}
+                        </p>
+                      </div>
                     </div>
 
                     <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700">
@@ -1273,7 +1673,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             )}
-          </SectionCard>
+          </SectionShell>
 
           <div className="hidden">
             <Suspense fallback={null}>
