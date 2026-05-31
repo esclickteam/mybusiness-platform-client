@@ -262,10 +262,10 @@ const CalendarView = React.memo(
                   border p-2 text-start sm:h-[68px]
                   ${
                     cell.isSelected
-                      ? "border-violet-300 bg-violet-50 shadow-[0_10px_24px_rgba(124,58,237,0.10)]"
+                      ? "border-violet-300 bg-white shadow-[0_8px_20px_rgba(124,58,237,0.08)]"
                       : "border-slate-200 bg-white"
                   }
-                  ${cell.isToday ? "ring-1 ring-violet-300" : ""}
+                  ${cell.isToday ? "border-violet-300" : ""}
                 `}
               >
                 <div className="flex items-start justify-between gap-1">
@@ -274,11 +274,9 @@ const CalendarView = React.memo(
                       flex h-7 w-7 items-center justify-center rounded-lg
                       text-xs font-black
                       ${
-                        cell.isSelected
-                          ? "bg-violet-600 text-white"
-                          : cell.isToday
-                            ? "bg-violet-100 text-violet-700"
-                            : "bg-slate-50 text-slate-700"
+                        cell.isSelected || cell.isToday
+                          ? "bg-violet-50 text-violet-700"
+                          : "bg-slate-50 text-slate-700"
                       }
                     `}
                   >
@@ -286,9 +284,11 @@ const CalendarView = React.memo(
                   </span>
 
                   {cell.isToday && (
-                    <span className="hidden rounded-full bg-violet-100 px-1.5 py-0.5 text-[9px] font-black text-violet-700 xl:inline-flex">
-                      {t("dashboard.calendarView.today")}
-                    </span>
+                    <span
+                      aria-label={t("dashboard.calendarView.today")}
+                      title={t("dashboard.calendarView.today")}
+                      className="mt-1 h-2 w-2 rounded-full bg-violet-500"
+                    />
                   )}
                 </div>
 
@@ -316,6 +316,10 @@ const CalendarView = React.memo(
                   </div>
                 ) : (
                   <span className="h-1" />
+                )}
+
+                {cell.isSelected && (
+                  <span className="absolute bottom-2 left-2 right-2 h-[3px] rounded-full bg-violet-300" />
                 )}
               </button>
             );
