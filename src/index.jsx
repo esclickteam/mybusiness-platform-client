@@ -3,7 +3,10 @@ import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HelmetProvider } from "react-helmet-async"; // ✅ נוספה השורה החשובה הזו
+import { HelmetProvider } from "react-helmet-async";
+
+/* i18n */
+import "./i18n/i18n";
 
 /* Contexts */
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -44,7 +47,7 @@ const App = lazy(() => import("./App"));
    ========================================================== */
 function AppWithIdleLogout() {
   const { logout } = useAuth();
-  useIdleLogout(logout, 10 * 60 * 1000); // יציאה אחרי 10 דקות אי פעילות
+  useIdleLogout(logout, 10 * 60 * 1000);
   return <App />;
 }
 

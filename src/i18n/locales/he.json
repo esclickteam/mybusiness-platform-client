@@ -1,0 +1,42 @@
+{
+  "home": {
+    "badge": "פלטפורמה מלאה לניהול העסק",
+    "headlineTop": "נהלו את העסק שלכם",
+    "headlineHighlight": "במקום אחד.",
+    "subtitle": "מערכת חכמה אחת לניהול לקוחות, פגישות, CRM, שיתופי פעולה, הצעות מחיר ובינה מלאכותית — הכל מחובר בסביבת עבודה מקצועית אחת.",
+    "startTrial": "התחילו ניסיון",
+    "viewPricing": "צפו במחירים",
+    "trustNoCard": "ללא צורך בכרטיס אשראי",
+    "trustTrial": "14 ימי ניסיון חינם",
+    "trustCancel": "אפשר לבטל בכל זמן"
+  },
+  "preview": {
+    "themeLight": "בהיר",
+    "themeSmart": "חכם",
+    "businessOs": "מערכת ניהול עסקית",
+    "sidebarDashboard": "דשבורד",
+    "sidebarClients": "לקוחות",
+    "sidebarAppointments": "פגישות",
+    "sidebarCrm": "CRM",
+    "sidebarCollaborations": "שיתופי פעולה",
+    "sidebarReports": "דוחות",
+    "sidebarAiTools": "כלי AI",
+    "greeting": "בוקר טוב, מיכאל",
+    "pipelineTitle": "תהליך המכירות של העסק",
+    "thisMonth": "החודש",
+    "salesPipeline": "ניהול מכירות ולקוחות",
+    "salesPipelineSubtitle": "הזדמנויות פעילות, פגישות והצעות מחיר",
+    "activeDeals": "296 עסקאות פעילות",
+    "stageLeads": "לידים",
+    "stageContacted": "נוצר קשר",
+    "stageProposal": "הצעה",
+    "stageScheduled": "נקבעה פגישה",
+    "stageConverted": "נסגר",
+    "revenueGrowth": "צמיחת הכנסות",
+    "aiAssistant": "עוזר AI",
+    "aiMessage": "מצאתי 3 מועדים פנויים והכנתי טיוטת הצעה ללקוח החדש שלך.",
+    "aiSummarize": "סכם את השבוע שלי",
+    "aiDraftProposal": "צור הצעת מחיר",
+    "aiFindSlots": "מצא מועדים פנויים"
+  }
+}
