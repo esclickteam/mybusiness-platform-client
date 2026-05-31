@@ -147,6 +147,17 @@
   "vsLast30Days": "vergeleken met de afgelopen 30 dagen"
 },
 
+"calendarView": {
+  "ariaLabel": "Afsprakenkalender",
+  "previousMonth": "Vorige maand",
+  "nextMonth": "Volgende maand",
+  "hint": "Klik op een datum om je dagagenda te bekijken",
+  "today": "Vandaag",
+  "selected": "Geselecteerd",
+  "appointment": "{{count}} afspraak",
+  "appointments": "{{count}} afspraken"
+},
+
     "states": {
       "loading": "Bedrijfsdashboard laden...",
       "refreshingUser": "Gebruikersgegevens vernieuwen...",

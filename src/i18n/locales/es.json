@@ -147,6 +147,17 @@
   "vsLast30Days": "frente a los últimos 30 días"
 },
 
+"calendarView": {
+  "ariaLabel": "Calendario de citas",
+  "previousMonth": "Mes anterior",
+  "nextMonth": "Mes siguiente",
+  "hint": "Haz clic en una fecha para ver tu agenda diaria",
+  "today": "Hoy",
+  "selected": "Seleccionado",
+  "appointment": "{{count}} cita",
+  "appointments": "{{count}} citas"
+},
+
     "states": {
       "loading": "Cargando panel de negocio...",
       "refreshingUser": "Actualizando datos del usuario...",

@@ -1063,10 +1063,12 @@ export default function DashboardPage() {
                 }
               >
                 <CalendarView
-                  appointments={enrichedAppointments}
-                  onDateClick={setSelectedDate}
-                  selectedDate={selectedDate}
-                />
+  appointments={enrichedAppointments}
+  onDateClick={setSelectedDate}
+  selectedDate={selectedDate}
+  t={t}
+  locale={i18n.language}
+/>
               </Suspense>
             </SectionCard>
           </section>

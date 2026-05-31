@@ -147,6 +147,17 @@
   "vsLast30Days": "par rapport aux 30 derniers jours"
 },
 
+"calendarView": {
+  "ariaLabel": "Calendrier des rendez-vous",
+  "previousMonth": "Mois précédent",
+  "nextMonth": "Mois suivant",
+  "hint": "Cliquez sur une date pour voir votre agenda du jour",
+  "today": "Aujourd’hui",
+  "selected": "Sélectionné",
+  "appointment": "{{count}} rendez-vous",
+  "appointments": "{{count}} rendez-vous"
+},
+
 
     "states": {
       "loading": "Chargement du tableau de bord professionnel...",

@@ -147,6 +147,17 @@
   "vsLast30Days": "vs last 30 days"
 },
 
+"calendarView": {
+  "ariaLabel": "Appointment calendar",
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month",
+  "hint": "Click a date to view your daily agenda",
+  "today": "Today",
+  "selected": "Selected",
+  "appointment": "{{count}} appointment",
+  "appointments": "{{count}} appointments"
+},
+
     "states": {
       "loading": "Loading business dashboard...",
       "refreshingUser": "Refreshing user data...",

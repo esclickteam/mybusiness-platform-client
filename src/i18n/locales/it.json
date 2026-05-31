@@ -147,6 +147,17 @@
   "vsLast30Days": "rispetto agli ultimi 30 giorni"
 },
 
+"calendarView": {
+  "ariaLabel": "Calendario appuntamenti",
+  "previousMonth": "Mese precedente",
+  "nextMonth": "Mese successivo",
+  "hint": "Clicca su una data per vedere l’agenda giornaliera",
+  "today": "Oggi",
+  "selected": "Selezionato",
+  "appointment": "{{count}} appuntamento",
+  "appointments": "{{count}} appuntamenti"
+},
+
     "states": {
       "loading": "Caricamento dashboard aziendale...",
       "refreshingUser": "Aggiornamento dati utente...",

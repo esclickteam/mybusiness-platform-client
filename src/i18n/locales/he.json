@@ -147,6 +147,17 @@
   "vsLast30Days": "לעומת 30 הימים הקודמים"
 },
 
+"calendarView": {
+  "ariaLabel": "לוח תורים",
+  "previousMonth": "החודש הקודם",
+  "nextMonth": "החודש הבא",
+  "hint": "לחצי על תאריך כדי לראות את הלו״ז היומי",
+  "today": "היום",
+  "selected": "נבחר",
+  "appointment": "{{count}} תור",
+  "appointments": "{{count}} תורים"
+},
+
     "states": {
       "loading": "טוען דשבורד עסקי...",
       "refreshingUser": "מרענן נתוני משתמש...",

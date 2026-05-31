@@ -147,6 +147,17 @@
   "vsLast30Days": "im Vergleich zu den letzten 30 Tagen"
 },
 
+"calendarView": {
+  "ariaLabel": "Terminkalender",
+  "previousMonth": "Vorheriger Monat",
+  "nextMonth": "Nächster Monat",
+  "hint": "Klicken Sie auf ein Datum, um Ihre Tagesagenda zu sehen",
+  "today": "Heute",
+  "selected": "Ausgewählt",
+  "appointment": "{{count}} Termin",
+  "appointments": "{{count}} Termine"
+},
+
     "states": {
       "loading": "Business-Dashboard wird geladen...",
       "refreshingUser": "Benutzerdaten werden aktualisiert...",
