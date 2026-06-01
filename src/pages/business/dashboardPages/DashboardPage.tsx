@@ -429,65 +429,6 @@ function MiniStatCard({
   );
 }
 
-function PipelineSection({
-  title,
-  actionText,
-  items,
-}: {
-  title: React.ReactNode;
-  actionText: React.ReactNode;
-  items: Array<{ label: React.ReactNode; value: number; tone: string }>;
-}) {
-  const maxValue = Math.max(...items.map((item) => item.value), 1);
-
-  return (
-    <SectionShell
-      title={title}
-      action={
-        <button
-          type="button"
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-        >
-          {actionText}
-        </button>
-      }
-      className="h-full"
-    >
-      <div className="space-y-4">
-        {items.map((item, index) => (
-          <div key={index} className="space-y-2">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-2">
-                <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: item.tone }}
-                />
-                <span className="truncate text-sm font-semibold text-slate-700">
-                  {item.label}
-                </span>
-              </div>
-
-              <span className="text-sm font-bold text-slate-900">
-                {item.value}
-              </span>
-            </div>
-
-            <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
-              <div
-                className="h-full rounded-full"
-                style={{
-                  width: `${Math.max((item.value / maxValue) * 100, 8)}%`,
-                  backgroundColor: item.tone,
-                }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </SectionShell>
-  );
-}
-
 function RecentMessagesCard({
   title,
   actionText,
@@ -798,11 +739,21 @@ export default function DashboardPage() {
         }
 
         setIsRefreshingUser(false);
-        setAlertMessage(tx("dashboard.states.subscriptionPending", "Your subscription has not been activated yet. Try again in a few minutes."));
+        setAlertMessage(
+          tx(
+            "dashboard.states.subscriptionPending",
+            "Your subscription has not been activated yet. Try again in a few minutes."
+          )
+        );
         window.history.replaceState({}, document.title, location.pathname);
       } catch {
         setIsRefreshingUser(false);
-        setAlertMessage(tx("dashboard.states.subscriptionCheckError", "Error checking subscription status."));
+        setAlertMessage(
+          tx(
+            "dashboard.states.subscriptionCheckError",
+            "Error checking subscription status."
+          )
+        );
         window.history.replaceState({}, document.title, location.pathname);
       }
     };
@@ -850,7 +801,9 @@ export default function DashboardPage() {
       setStats(data);
       localStorage.setItem("dashboardStats", JSON.stringify(data));
     } catch (err: any) {
-      setError(tx("dashboard.states.loadErrorMessage", "Error loading data from server."));
+      setError(
+        tx("dashboard.states.loadErrorMessage", "Error loading data from server.")
+      );
 
       if (err?.message === "No token") {
         logout();
@@ -1113,7 +1066,9 @@ export default function DashboardPage() {
       }
     } catch (err) {
       console.error("Early Bird checkout error:", err);
-      setAlertMessage(tx("dashboard.states.somethingWrong", "Something went wrong. Please try again."));
+      setAlertMessage(
+        tx("dashboard.states.somethingWrong", "Something went wrong. Please try again.")
+      );
     }
   };
 
@@ -1187,34 +1142,6 @@ export default function DashboardPage() {
     enrichedAppointments
   );
   const recentAppointments = getLastAppointments(enrichedAppointments, 5);
-
-  const pipelineItems = [
-    {
-      label: tx("dashboard.pipeline.leads", "Lead"),
-      value: safeNumber(syncedStats.views_count),
-      tone: "#8b5cf6",
-    },
-    {
-      label: tx("dashboard.pipeline.qualified", "Qualified"),
-      value: safeNumber(syncedStats.messages_count),
-      tone: "#3b82f6",
-    },
-    {
-      label: tx("dashboard.pipeline.proposals", "Proposal Sent"),
-      value: safeNumber(syncedStats.requests_count),
-      tone: "#f59e0b",
-    },
-    {
-      label: tx("dashboard.pipeline.negotiation", "Negotiation"),
-      value: safeNumber(syncedStats.appointments_count),
-      tone: "#06b6d4",
-    },
-    {
-      label: tx("dashboard.pipeline.closedWon", "Closed Won"),
-      value: safeNumber(syncedStats.orders_count),
-      tone: "#22c55e",
-    },
-  ];
 
   const recentMessages =
     Array.isArray(syncedStats.recentMessages) &&
@@ -1318,12 +1245,12 @@ export default function DashboardPage() {
 
           <div
             ref={appointmentsRef}
-            className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.85fr)_minmax(320px,0.9fr)]"
+            className="grid gap-5 xl:grid-cols-[minmax(0,2.2fr)_minmax(320px,0.8fr)]"
           >
             <SectionShell
               title={tx(
                 "dashboard.analytics.title",
-                "Business Growth Overview"
+                "Clients who booked appointments by month"
               )}
               action={
                 <button
@@ -1333,6 +1260,7 @@ export default function DashboardPage() {
                   {tx("dashboard.thisMonth", "This Month")}
                 </button>
               }
+              className="min-h-[520px]"
             >
               <div className="mb-4 grid gap-3 sm:grid-cols-4">
                 <MiniStatCard
@@ -1363,7 +1291,7 @@ export default function DashboardPage() {
                 />
               </div>
 
-              <div ref={chartsRef}>
+              <div ref={chartsRef} className="min-h-[390px]">
                 <Suspense
                   fallback={
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
@@ -1381,12 +1309,6 @@ export default function DashboardPage() {
                 </Suspense>
               </div>
             </SectionShell>
-
-            <PipelineSection
-              title={tx("dashboard.pipeline.title", "Sales Pipeline")}
-              actionText={tx("dashboard.pipeline.allPipelines", "All Pipelines")}
-              items={pipelineItems}
-            />
 
             <Suspense
               fallback={

@@ -2,7 +2,6 @@ import React from "react";
 import { NavLink, useParams } from "react-router-dom";
 import {
   LayoutDashboard,
-  MessageSquare,
   CircleUserRound,
   Handshake,
   Sparkles,
@@ -23,7 +22,6 @@ type TranslationValues = Record<string, string | number>;
 type TFunction = (key: string, values?: TranslationValues) => string;
 
 type BusinessWorkspaceNavProps = {
-  messagesCount?: number;
   onNavigate?: () => void;
   t?: TFunction;
   workspaceName?: string;
@@ -33,7 +31,6 @@ type NavItemProps = {
   label: string;
   to: string;
   icon: React.ElementType;
-  badge?: number;
   exact?: boolean;
   onNavigate?: () => void;
 };
@@ -43,7 +40,6 @@ type NavItemConfig = {
   fallback: string;
   to: string;
   icon: React.ElementType;
-  badge?: number;
   exact?: boolean;
 };
 
@@ -54,7 +50,6 @@ type NavItemConfig = {
 const fallbackT: TFunction = (key) => {
   const dictionary: Record<string, string> = {
     "businessNav.dashboard": "Dashboard",
-    "businessNav.customerMessages": "Customer Messages",
     "businessNav.crmSystem": "CRM System",
     "businessNav.collaborations": "Collaborations",
     "businessNav.bizuplyAdvisor": "BizUply Advisor",
@@ -64,7 +59,8 @@ const fallbackT: TFunction = (key) => {
     "businessNav.helpCenter": "Help Center",
 
     "businessNav.upgradeTitle": "Upgrade to Bizuply Pro",
-    "businessNav.upgradeText": "Unlock advanced analytics, AI automations and more.",
+    "businessNav.upgradeText":
+      "Unlock advanced analytics, AI automations and more.",
     "businessNav.upgradeButton": "Upgrade Now",
 
     "businessNav.workspaceLabel": "Workspace",
@@ -86,7 +82,6 @@ function NavItem({
   label,
   to,
   icon: Icon,
-  badge = 0,
   exact = false,
   onNavigate,
 }: NavItemProps) {
@@ -123,22 +118,6 @@ function NavItem({
           />
 
           <span className="min-w-0 flex-1 truncate">{label}</span>
-
-          {badge > 0 && (
-            <span
-              className={`
-                flex h-6 min-w-[24px] shrink-0 items-center justify-center
-                rounded-full px-2 text-xs font-black
-                ${
-                  isActive
-                    ? "bg-white text-violet-700"
-                    : "bg-violet-600 text-white"
-                }
-              `}
-            >
-              {badge > 99 ? "99+" : badge}
-            </span>
-          )}
         </>
       )}
     </NavLink>
@@ -232,7 +211,6 @@ function WorkspaceCard({
 ========================= */
 
 export default function BusinessWorkspaceNav({
-  messagesCount = 0,
   onNavigate,
   t = fallbackT,
   workspaceName,
@@ -247,13 +225,6 @@ export default function BusinessWorkspaceNav({
       fallback: "Dashboard",
       to: `${basePath}/dashboard/dashboard`,
       icon: LayoutDashboard,
-    },
-    {
-      labelKey: "businessNav.customerMessages",
-      fallback: "Customer Messages",
-      to: `${basePath}/dashboard/messages`,
-      icon: MessageSquare,
-      badge: messagesCount,
     },
     {
       labelKey: "businessNav.crmSystem",
@@ -312,7 +283,6 @@ export default function BusinessWorkspaceNav({
             label={translate(t, item.labelKey, item.fallback)}
             to={item.to}
             icon={item.icon}
-            badge={item.badge}
             exact={item.exact}
             onNavigate={onNavigate}
           />
