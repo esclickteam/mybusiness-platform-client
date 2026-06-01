@@ -283,47 +283,48 @@ export default function MarketingAdvisorTab({
   return (
     <section
       dir="ltr"
-      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-white/70 bg-slate-950 p-4 text-left shadow-[0_30px_100px_rgba(15,23,42,0.28)] sm:p-6 lg:p-8"
+      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-fuchsia-50 p-4 text-left !text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
     >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-fuchsia-500/25 blur-3xl" />
-        <div className="absolute right-0 top-16 h-80 w-80 rounded-full bg-orange-400/20 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-rose-400/10 blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.13),transparent_42%)]" />
+        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-fuchsia-200/50 blur-3xl" />
+        <div className="absolute right-0 top-16 h-96 w-96 rounded-full bg-orange-200/45 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-96 w-96 rounded-full bg-rose-200/35 blur-3xl" />
       </div>
 
-      <div className="relative grid min-h-[calc(100vh-180px)] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.08] shadow-2xl backdrop-blur-2xl">
+      <div className="relative grid min-h-[calc(100vh-180px)] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[26px] border border-slate-200 bg-white/85 shadow-[0_24px_90px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
         {/* Header */}
-        <header className="border-b border-white/10 bg-white/[0.06] px-5 py-5 sm:px-7 lg:px-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <header className="relative overflow-hidden border-b border-slate-200 bg-white px-5 py-5 sm:px-7 lg:px-8">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.10),transparent_34%),radial-gradient(circle_at_top_right,rgba(14,165,233,0.10),transparent_30%)]" />
+
+          <div className="relative flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80 shadow-sm">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-fuchsia-200 bg-fuchsia-50 px-3 py-1.5 text-xs font-black !text-fuchsia-700 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.9)]" />
                 AI Marketing Advisor
               </div>
 
-              <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
+              <h2 className="text-3xl font-black tracking-tight !text-slate-950 sm:text-4xl lg:text-5xl">
                 Your marketing command center
               </h2>
 
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+              <p className="mt-3 max-w-2xl text-sm leading-6 !text-slate-600 sm:text-base">
                 Get focused marketing advice for leads, campaigns, ads,
                 funnels, content strategy and conversion growth — built around
                 your business context.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-4 shadow-xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300">
+            <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
+              <p className="text-xs font-black uppercase tracking-[0.22em] !text-slate-400">
                 Monthly balance
               </p>
 
               <div className="mt-2 flex items-end gap-2">
-                <span className="text-4xl font-black text-white">
+                <span className="text-4xl font-black !text-slate-950">
                   {remainingQuestions ?? "—"}
                 </span>
-                <span className="pb-1 text-sm font-medium text-slate-300">
+                <span className="pb-1 text-sm font-bold !text-slate-500">
                   questions
                 </span>
               </div>
@@ -331,7 +332,7 @@ export default function MarketingAdvisorTab({
               {balanceLabel && (
                 <p
                   className={`mt-2 text-xs font-semibold ${
-                    isLimitReached ? "text-rose-300" : "text-emerald-300"
+                    isLimitReached ? "!text-rose-600" : "!text-emerald-600"
                   }`}
                 >
                   {balanceLabel}
@@ -343,11 +344,11 @@ export default function MarketingAdvisorTab({
           {!startedChat && (
             <div className="mt-7">
               <div className="mb-3 flex items-center justify-between gap-4">
-                <p className="text-sm font-bold text-white">
+                <p className="text-sm font-black !text-slate-950">
                   Start with a ready marketing question
                 </p>
 
-                <p className="hidden text-xs text-slate-400 sm:block">
+                <p className="hidden text-xs font-bold !text-slate-500 sm:block">
                   Choose one or type your own below
                 </p>
               </div>
@@ -359,12 +360,12 @@ export default function MarketingAdvisorTab({
                     type="button"
                     onClick={() => handlePresetQuestion(question)}
                     disabled={loading || isLimitReached}
-                    className="group rounded-2xl border border-white/10 bg-white/[0.08] p-4 text-left text-sm font-semibold leading-6 text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:border-white/25 hover:bg-white/[0.14] hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-50"
+                    className="group rounded-2xl border border-slate-200 bg-white p-4 text-left text-sm font-bold leading-6 !text-slate-700 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-fuchsia-200 hover:bg-fuchsia-50 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-lg transition group-hover:bg-white/20">
+                    <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-fuchsia-100 text-lg !text-fuchsia-700 transition group-hover:bg-fuchsia-200">
                       ✦
                     </span>
-                    {question}
+                    <span className="block !text-slate-700">{question}</span>
                   </button>
                 ))}
               </div>
@@ -393,12 +394,12 @@ export default function MarketingAdvisorTab({
                   <div
                     className={`max-w-[88%] rounded-[24px] px-5 py-4 text-sm leading-7 shadow-xl sm:max-w-[76%] sm:text-[15px] ${
                       isAssistant
-                        ? "border border-white/10 bg-white/[0.92] text-slate-800"
-                        : "bg-gradient-to-br from-fuchsia-500 via-rose-500 to-orange-500 text-white"
+                        ? "border border-slate-200 bg-white !text-slate-800"
+                        : "bg-gradient-to-br from-fuchsia-500 via-rose-500 to-orange-500 !text-white"
                     }`}
                   >
                     {isAssistant ? (
-                      <div className="prose prose-sm max-w-none prose-p:my-2 prose-ul:my-2 prose-li:my-1 prose-strong:text-slate-950">
+                      <div className="max-w-none text-sm leading-7 [&_p]:my-2 [&_strong]:!text-slate-950 [&_ul]:my-2 [&_li]:my-1">
                         <Markdown>{msg.content}</Markdown>
                       </div>
                     ) : (
@@ -411,7 +412,7 @@ export default function MarketingAdvisorTab({
 
             {loading && (
               <div className="flex justify-start">
-                <div className="max-w-[88%] rounded-[24px] border border-white/10 bg-white/[0.92] px-5 py-4 text-sm font-semibold text-slate-700 shadow-xl sm:max-w-[76%]">
+                <div className="max-w-[88%] rounded-[24px] border border-slate-200 bg-white px-5 py-4 text-sm font-bold !text-slate-700 shadow-xl sm:max-w-[76%]">
                   <div className="flex items-center gap-3">
                     <span className="flex gap-1">
                       <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.2s]" />
@@ -427,14 +428,14 @@ export default function MarketingAdvisorTab({
         </main>
 
         {/* Input */}
-        <footer className="border-t border-white/10 bg-slate-950/45 px-4 py-4 backdrop-blur-xl sm:px-7 lg:px-8">
+        <footer className="border-t border-slate-200 bg-white/90 px-4 py-4 backdrop-blur-xl sm:px-7 lg:px-8">
           {isLimitReached && (
-            <div className="mb-3 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm font-semibold text-rose-100">
+            <div className="mb-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold !text-rose-700">
               You’ve reached your monthly AI question limit.
             </div>
           )}
 
-          <div className="mx-auto flex max-w-5xl flex-col gap-3 rounded-3xl border border-white/10 bg-white/10 p-2 shadow-2xl sm:flex-row sm:items-center">
+          <div className="mx-auto flex max-w-5xl flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-2 shadow-[0_18px_60px_rgba(15,23,42,0.08)] sm:flex-row sm:items-center">
             <input
               type="text"
               value={userInput}
@@ -446,14 +447,14 @@ export default function MarketingAdvisorTab({
                   handleSubmit();
                 }
               }}
-              className="min-h-12 flex-1 rounded-2xl border border-transparent bg-white px-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-fuchsia-300 focus:ring-4 focus:ring-fuchsia-500/20 disabled:cursor-not-allowed disabled:bg-slate-200"
+              className="min-h-12 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold !text-slate-900 outline-none transition placeholder:!text-slate-400 focus:border-fuchsia-400 focus:bg-white focus:ring-4 focus:ring-fuchsia-100 disabled:cursor-not-allowed disabled:bg-slate-100"
             />
 
             <button
               type="button"
               onClick={handleSubmit}
               disabled={loading || !userInput.trim() || isLimitReached}
-              className="min-h-12 rounded-2xl bg-white px-6 text-sm font-black text-slate-950 shadow-lg transition duration-300 hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 sm:min-w-32"
+              className="min-h-12 rounded-2xl bg-fuchsia-600 px-6 text-sm font-black !text-white shadow-lg shadow-fuchsia-200 transition duration-300 hover:-translate-y-0.5 hover:bg-fuchsia-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:!text-slate-500 disabled:shadow-none disabled:hover:translate-y-0 sm:min-w-32"
             >
               {loading ? "Thinking..." : "Send"}
             </button>
