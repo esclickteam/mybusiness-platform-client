@@ -30,14 +30,11 @@ const ClientCalendar = lazy(
 
 type UserRole = "business" | "customer" | "admin" | "staff" | string;
 
-type FavoriteItem = string | { _id: string };
-
 type AuthUser = {
   _id?: string;
   name?: string;
   role?: UserRole;
   businessId?: string;
-  favorites?: FavoriteItem[];
 };
 
 type FaqItem = {
@@ -145,10 +142,11 @@ const TAB_MAP: Record<string, string> = {
   calendar: "Calendar",
 };
 
+const TABS = ["Main", "Gallery", "Reviews", "FAQs", "Calendar"];
+
 export default function BusinessProfileView() {
-  const { user, setUser } = useAuth() as {
+  const { user } = useAuth() as {
     user: AuthUser | null;
-    setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
   };
 
   const socket = useSocket() as SocketLike | null;
@@ -158,16 +156,6 @@ export default function BusinessProfileView() {
   const queryClient = useQueryClient();
 
   const bizId = paramId || user?.businessId || "";
-
-  const messagesTabName =
-    user?.role === "customer"
-      ? "Messages with the Business"
-      : "Messages from Clients";
-
-  const TABS = useMemo(
-    () => ["Main", "Gallery", "Reviews", "FAQs", messagesTabName, "Calendar"],
-    [messagesTabName]
-  );
 
   const initialTab =
     TAB_MAP[searchParams.get("tab")?.toLowerCase() || ""] || "Main";
@@ -180,7 +168,6 @@ export default function BusinessProfileView() {
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(
     null
   );
-  const [isFavorite, setIsFavorite] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   const galleryRef = useRef<HTMLDivElement | null>(null);
@@ -195,12 +182,7 @@ export default function BusinessProfileView() {
   const [reviewsLoaded, setReviewsLoaded] = useState(false);
   const [calendarLoaded, setCalendarLoaded] = useState(false);
 
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery<BusinessData>({
+  const { data, isLoading, error, refetch } = useQuery<BusinessData>({
     queryKey: ["business", bizId],
     queryFn: async () => {
       const res = await API.get(`/business/${bizId}`);
@@ -238,21 +220,7 @@ export default function BusinessProfileView() {
 
     setFaqs(data.faqs || []);
     setServices(data.services || []);
-
-    if (!user) {
-      setIsFavorite(false);
-      return;
-    }
-
-    const favoriteIds = (user.favorites || []).map((favorite) =>
-      typeof favorite === "string" ? favorite : favorite._id
-    );
-
-    setIsFavorite((prev) => {
-      const next = favoriteIds.includes(bizId);
-      return prev === next ? prev : next;
-    });
-  }, [data, user, bizId]);
+  }, [data]);
 
   useEffect(() => {
     if (!workHoursData) return;
@@ -306,15 +274,13 @@ export default function BusinessProfileView() {
         error?: string;
       }) => {
         if (res?.ok && res.stats?.views_count !== undefined) {
-          queryClient.setQueryData<BusinessData>(
-            ["business", bizId],
-            (old) =>
-              old
-                ? {
-                    ...old,
-                    views_count: res.stats?.views_count,
-                  }
-                : old
+          queryClient.setQueryData<BusinessData>(["business", bizId], (old) =>
+            old
+              ? {
+                  ...old,
+                  views_count: res.stats?.views_count,
+                }
+              : old
           );
         }
 
@@ -409,53 +375,6 @@ export default function BusinessProfileView() {
 
     const key = tab.toLowerCase();
     window.history.replaceState(null, "", `?tab=${key}`);
-  };
-
-  const toggleFavorite = async () => {
-    if (!user) {
-      alert("Please log in to manage favorites");
-      return;
-    }
-
-    try {
-      if (isFavorite) {
-        await API.delete(`/users/favorites/${bizId}`, {
-          withCredentials: true,
-        });
-
-        setUser((prev) => {
-          if (!prev) return prev;
-
-          return {
-            ...prev,
-            favorites: (prev.favorites || []).filter((favorite) => {
-              const id = typeof favorite === "string" ? favorite : favorite._id;
-              return id !== bizId;
-            }),
-          };
-        });
-
-        setIsFavorite(false);
-      } else {
-        await API.post(`/users/favorites/${bizId}`, null, {
-          withCredentials: true,
-        });
-
-        setUser((prev) => {
-          if (!prev) return prev;
-
-          return {
-            ...prev,
-            favorites: [...(prev.favorites || []), { _id: bizId }],
-          };
-        });
-
-        setIsFavorite(true);
-      }
-    } catch (err) {
-      console.error("Error toggling favorite:", err);
-      alert("An error occurred, please try again");
-    }
   };
 
   if (isLoading) {
@@ -602,49 +521,27 @@ export default function BusinessProfileView() {
               </div>
             </div>
 
-            <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
-              <div className="grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
-                {phone && (
-                  <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-sm">
-                    <div className="flex items-center gap-2 font-bold text-slate-950">
-                      <Icon name="phone" />
-                      Phone
-                    </div>
-                    <p className="mt-1 text-slate-600">{phone}</p>
+            <div className="mt-8 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+              {phone && (
+                <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-sm">
+                  <div className="flex items-center gap-2 font-bold text-slate-950">
+                    <Icon name="phone" />
+                    Phone
                   </div>
-                )}
+                  <p className="mt-1 text-slate-600">{phone}</p>
+                </div>
+              )}
 
-                {description && (
-                  <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-sm sm:col-span-2">
-                    <div className="flex items-center gap-2 font-bold text-slate-950">
-                      <Icon name="description" />
-                      Description
-                    </div>
-                    <p className="mt-2 leading-7 text-slate-600">
-                      {description}
-                    </p>
+              {description && (
+                <div className="rounded-2xl border border-slate-100 bg-white/80 p-4 shadow-sm sm:col-span-2">
+                  <div className="flex items-center gap-2 font-bold text-slate-950">
+                    <Icon name="description" />
+                    Description
                   </div>
-                )}
-              </div>
-
-              {user && (
-                <button
-                  type="button"
-                  onClick={toggleFavorite}
-                  className={`inline-flex items-center justify-center gap-2 rounded-2xl border px-5 py-3 text-sm font-bold shadow-sm transition hover:-translate-y-0.5 ${
-                    isFavorite
-                      ? "border-rose-100 bg-rose-50 text-rose-700"
-                      : "border-violet-100 bg-white text-slate-700 hover:text-violet-700"
-                  }`}
-                  aria-label={
-                    isFavorite ? "Remove from favorites" : "Save to favorites"
-                  }
-                >
-                  <span>{isFavorite ? "❤️" : "🤍"}</span>
-                  <span>
-                    {isFavorite ? "Saved to favorites" : "Save to favorites"}
-                  </span>
-                </button>
+                  <p className="mt-2 leading-7 text-slate-600">
+                    {description}
+                  </p>
+                </div>
               )}
             </div>
 
@@ -881,35 +778,6 @@ export default function BusinessProfileView() {
             </div>
           )}
 
-          {currentTab === messagesTabName && (
-            <div className="mx-auto max-w-xl text-center">
-              {user?.role === "customer" && (
-                <Link
-                  to={`/business/${bizId}/messages`}
-                  className="inline-flex rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
-                >
-                  💬 Send a Message to the Business
-                </Link>
-              )}
-
-              {user?.role === "business" && (
-                <Link
-                  to={`/business/${bizId}/dashboard/messages`}
-                  className="inline-flex rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
-                >
-                  ▶️ Manage Client Messages
-                </Link>
-              )}
-
-              {!user && (
-                <EmptyState
-                  title="Messaging requires login"
-                  text="Booking appointments is open to everyone. Messaging can stay available only for logged-in clients."
-                />
-              )}
-            </div>
-          )}
-
           {currentTab === "Calendar" && (
             <div ref={calendarRef}>
               {calendarLoaded ? (
@@ -919,7 +787,9 @@ export default function BusinessProfileView() {
                       Public booking
                     </p>
                     <h2 className="mt-2 text-3xl font-black text-slate-950">
-                      {selectedService ? "Choose Date & Time" : "Choose a Service"}
+                      {selectedService
+                        ? "Choose Date & Time"
+                        : "Choose a Service"}
                     </h2>
                     <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500">
                       Clients can schedule an appointment directly from this
@@ -951,7 +821,9 @@ export default function BusinessProfileView() {
                         ← Change Service
                       </button>
 
-                      <Suspense fallback={<div>Loading appointment calendar…</div>}>
+                      <Suspense
+                        fallback={<div>Loading appointment calendar…</div>}
+                      >
                         <ClientCalendar
                           workHours={scheduleArray}
                           selectedService={selectedService}
