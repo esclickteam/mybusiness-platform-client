@@ -10,7 +10,7 @@ const MainSection    = lazy(() => import("../buildTabs/buildSections/MainSection
 const GallerySection = lazy(() => import("../buildTabs/buildSections/GallerySection"));
 const ReviewsSection = lazy(() => import("../buildTabs/buildSections/ReviewsSection"));
 const ShopSection    = lazy(() => import("../buildTabs/buildSections/ShopSection"));
-const ChatSection    = lazy(() => import("../buildTabs/buildSections/ChatSection"));
+const ChatSection    = lazy(() => import("../buildTabs/buildSections/ChatButton"));
 const FaqSection     = lazy(() => import("../buildTabs/buildSections/FaqSection"));
 
 
