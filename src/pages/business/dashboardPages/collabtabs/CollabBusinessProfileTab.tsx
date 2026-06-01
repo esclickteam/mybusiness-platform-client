@@ -1,0 +1,844 @@
+import React, { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Building2,
+  Camera,
+  CheckCircle2,
+  Edit3,
+  Handshake,
+  ImageIcon,
+  Loader2,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Sparkles,
+  Trash2,
+  UserRound,
+  X,
+} from "lucide-react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
+import API from "../../../../api";
+import CollabChat from "./CollabChat";
+import { useAi } from "../../../../context/AiContext";
+import AiModal from "../../../../components/AiModal";
+
+type CollabBusinessProfileTabProps = {
+  socket?: any;
+};
+
+type BusinessProfile = {
+  _id?: string;
+  businessName?: string;
+  category?: string;
+  area?: string;
+  description?: string;
+  collabPref?: string;
+  contact?: string;
+  phone?: string;
+  email?: string;
+  logo?: string | { preview?: string };
+};
+
+type SafeProfile = {
+  businessName: string;
+  category: string;
+  area: string;
+  about: string;
+  collabPref: string[];
+  contact: string;
+  phone: string;
+  email: string;
+};
+
+type EditProfilePayload = {
+  businessName: FormDataEntryValue | null;
+  category: FormDataEntryValue | null;
+  area: FormDataEntryValue | null;
+  description: FormDataEntryValue | null;
+  collabPref: FormDataEntryValue | null;
+  contact: FormDataEntryValue | null;
+  phone: string;
+  email: FormDataEntryValue | null;
+  logo?: string;
+};
+
+export default function CollabBusinessProfileTab({
+  socket,
+}: CollabBusinessProfileTabProps) {
+  const [profileData, setProfileData] = useState<BusinessProfile | null>(null);
+
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showBusinessChat, setShowBusinessChat] = useState(false);
+
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isDeletingLogo, setIsDeletingLogo] = useState(false);
+  const [phone, setPhone] = useState("");
+
+  const [myBusinessId, setMyBusinessId] = useState<string | null>(null);
+  const [myBusinessName, setMyBusinessName] = useState("");
+
+  const {
+    addSuggestion,
+    activeSuggestion,
+    approveSuggestion,
+    rejectSuggestion,
+    closeModal,
+    loading: aiLoading,
+  } = useAi();
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+
+    try {
+      const [profileRes, businessIdRes] = await Promise.all([
+        API.get("/business/my"),
+        API.get("/business-chat/me"),
+      ]);
+
+      const businessData: BusinessProfile =
+        profileRes.data.business || profileRes.data || null;
+
+      if (businessData) {
+        setProfileData(businessData);
+
+        if (businessData.phone) {
+          setPhone(businessData.phone);
+        }
+
+        if (typeof businessData.logo === "string") {
+          setLogoPreview(businessData.logo);
+        } else if (businessData.logo?.preview) {
+          setLogoPreview(businessData.logo.preview);
+        } else {
+          setLogoPreview(null);
+        }
+
+        setMyBusinessName(businessData.businessName || "My Business");
+      }
+
+      if (businessIdRes.data.myBusinessId) {
+        setMyBusinessId(businessIdRes.data.myBusinessId);
+      }
+    } catch (error) {
+      console.error("Error loading business details:", error);
+      alert("Error loading business details");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleNewRecommendation = useCallback(
+    (recommendation: unknown) => {
+      addSuggestion(recommendation);
+    },
+    [addSuggestion]
+  );
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("newRecommendation", handleNewRecommendation);
+
+    return () => {
+      socket.off("newRecommendation", handleNewRecommendation);
+    };
+  }, [socket, handleNewRecommendation]);
+
+  useEffect(() => {
+    return () => {
+      if (logoPreview && logoFile) {
+        URL.revokeObjectURL(logoPreview);
+      }
+    };
+  }, [logoPreview, logoFile]);
+
+  const handleLogoChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+
+      if (!file) return;
+
+      if (logoPreview && logoFile) {
+        URL.revokeObjectURL(logoPreview);
+      }
+
+      setLogoFile(file);
+      setLogoPreview(URL.createObjectURL(file));
+    },
+    [logoPreview, logoFile]
+  );
+
+  const handleDeleteLogo = useCallback(async () => {
+    if (saving || isDeletingLogo) return;
+    if (!window.confirm("Are you sure you want to delete the logo?")) return;
+
+    try {
+      setIsDeletingLogo(true);
+
+      const res = await API.delete("/business/my/logo");
+
+      if (res.status !== 200 && res.status !== 204) {
+        alert("Error deleting logo");
+        return;
+      }
+
+      setLogoPreview(null);
+      setLogoFile(null);
+
+      await fetchData();
+    } catch (error) {
+      console.error("Error deleting logo:", error);
+      alert("Error deleting logo");
+    } finally {
+      setIsDeletingLogo(false);
+    }
+  }, [saving, isDeletingLogo, fetchData]);
+
+  const handleSaveProfile = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setSaving(true);
+
+      const formData = new FormData(event.currentTarget);
+
+      const updatedData: EditProfilePayload = {
+        businessName: formData.get("businessName"),
+        category: formData.get("category"),
+        area: formData.get("area"),
+        description: formData.get("about"),
+        collabPref: formData.get("collabPref"),
+        contact: formData.get("contact"),
+        phone,
+        email: formData.get("email"),
+      };
+
+      try {
+        if (logoFile) {
+          const logoFormData = new FormData();
+          logoFormData.append("logo", logoFile);
+
+          const logoRes = await API.put("/business/my/logo", logoFormData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          if (logoRes.status === 200) {
+            updatedData.logo = logoRes.data.logo;
+            setLogoPreview(logoRes.data.logo);
+            setLogoFile(null);
+          }
+        }
+
+        const profileRes = await API.put("/business/profile", updatedData);
+
+        if (profileRes.status === 200) {
+          await fetchData();
+          setShowEditProfile(false);
+        } else {
+          alert("Error saving profile");
+        }
+      } catch (error) {
+        console.error("Error saving profile:", error);
+        alert("Error saving profile");
+      } finally {
+        setSaving(false);
+      }
+    },
+    [logoFile, fetchData, phone]
+  );
+
+  const collabPrefLines = useMemo(() => {
+    if (!profileData?.collabPref) return [];
+
+    return profileData.collabPref
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+  }, [profileData]);
+
+  if (loading || !profileData) {
+    return <ProfileSkeleton />;
+  }
+
+  const safeProfile: SafeProfile = {
+    businessName: profileData.businessName || "—",
+    category: profileData.category || "—",
+    area: profileData.area || "—",
+    about: profileData.description || "—",
+    collabPref: collabPrefLines,
+    contact: profileData.contact || "—",
+    phone: profileData.phone || "—",
+    email: profileData.email || "—",
+  };
+
+  const token =
+    (API as any).token || localStorage.getItem("token") || "";
+
+  return (
+    <>
+      <section className="space-y-5">
+        <section className="relative overflow-hidden rounded-[2rem] border border-slate-800/10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
+          <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-sky-400/15 blur-3xl" />
+          <div className="pointer-events-none absolute bottom-0 left-28 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+
+          <div className="relative flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
+              <label
+                htmlFor="logo-upload"
+                className="group relative flex h-24 w-24 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-[1.8rem] border border-white/15 bg-white/10 shadow-xl shadow-slate-950/20 backdrop-blur"
+              >
+                {logoPreview ? (
+                  <img
+                    src={logoPreview}
+                    alt="Business logo"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <Building2 className="h-10 w-10 text-white/80" />
+                )}
+
+                <div className="absolute inset-0 flex items-center justify-center bg-slate-950/45 opacity-0 transition group-hover:opacity-100">
+                  <Camera className="h-6 w-6 text-white" />
+                </div>
+
+                <input
+                  id="logo-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoChange}
+                  hidden
+                />
+              </label>
+
+              <div className="min-w-0">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-100">
+                  <Sparkles className="h-4 w-4" />
+                  Business Profile
+                </div>
+
+                <h1 className="mt-4 truncate text-3xl font-black tracking-tight sm:text-4xl">
+                  {safeProfile.businessName}
+                </h1>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-black text-sky-100">
+                    {safeProfile.category}
+                  </span>
+
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-black text-sky-100">
+                    <MapPin className="h-3.5 w-3.5" />
+                    {safeProfile.area}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row xl:justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setPhone(profileData?.phone || "");
+                  setShowEditProfile(true);
+                }}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-slate-950 shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-sky-50"
+              >
+                <Edit3 className="h-5 w-5" />
+                Edit Profile
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowBusinessChat(true)}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-5 text-sm font-black text-white transition hover:bg-white/15"
+              >
+                <MessageCircle className="h-5 w-5" />
+                Business Messages
+              </button>
+
+              {logoPreview && (
+                <button
+                  type="button"
+                  onClick={handleDeleteLogo}
+                  disabled={saving || isDeletingLogo}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-500/10 px-5 text-sm font-black text-rose-100 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isDeletingLogo ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-5 w-5" />
+                  )}
+                  {isDeletingLogo ? "Deleting..." : "Delete Logo"}
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            label="Profile status"
+            value="Active"
+            helper="visible to businesses"
+            icon={CheckCircle2}
+          />
+          <StatCard
+            label="Category"
+            value={safeProfile.category}
+            helper="business type"
+            icon={Building2}
+          />
+          <StatCard
+            label="Area"
+            value={safeProfile.area}
+            helper="operating location"
+            icon={MapPin}
+          />
+          <StatCard
+            label="Collaborations"
+            value={safeProfile.collabPref.length}
+            helper="preferred options"
+            icon={Handshake}
+          />
+        </section>
+
+        <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="space-y-5">
+            <InfoSection
+              icon={MapPin}
+              title="Operating Area"
+              value={safeProfile.area}
+            />
+
+            <InfoSection
+              icon={Building2}
+              title="About"
+              value={safeProfile.about}
+            />
+
+            <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+                  <Handshake className="h-5 w-5" />
+                </div>
+
+                <div>
+                  <h3 className="text-base font-black text-slate-950">
+                    Preferred Collaborations
+                  </h3>
+                  <p className="text-xs font-semibold text-slate-500">
+                    What this business is looking for
+                  </p>
+                </div>
+              </div>
+
+              {safeProfile.collabPref.length ? (
+                <div className="grid gap-3 md:grid-cols-2">
+                  {safeProfile.collabPref.map((line, index) => (
+                    <div
+                      key={`${line}-${index}`}
+                      className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4"
+                    >
+                      <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                        <CheckCircle2 className="h-4 w-4" />
+                      </div>
+
+                      <p className="text-sm font-semibold leading-6 text-slate-600">
+                        {line}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="rounded-2xl bg-slate-50 p-4 text-sm font-semibold text-slate-500">
+                  No collaborations listed.
+                </p>
+              )}
+            </section>
+          </div>
+
+          <aside className="space-y-5">
+            <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+                  <UserRound className="h-5 w-5" />
+                </div>
+
+                <div>
+                  <h3 className="text-base font-black text-slate-950">
+                    Contact Details
+                  </h3>
+                  <p className="text-xs font-semibold text-slate-500">
+                    Main business contact
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 space-y-3">
+                <ContactRow icon={UserRound} label="Name" value={safeProfile.contact} />
+                <ContactRow icon={Phone} label="Phone" value={safeProfile.phone} />
+                <ContactRow icon={Mail} label="Email" value={safeProfile.email} />
+              </div>
+            </section>
+
+            <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+              <h3 className="text-base font-black text-slate-950">
+                Quick Actions
+              </h3>
+
+              <div className="mt-4 grid gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowBusinessChat(true)}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  Open Messages
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowEditProfile(true)}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-100 px-5 text-sm font-black text-slate-700 transition hover:bg-slate-200"
+                >
+                  <Edit3 className="h-5 w-5" />
+                  Edit Business Info
+                </button>
+              </div>
+            </section>
+          </aside>
+        </section>
+      </section>
+
+      {showEditProfile && (
+        <AppModal onClose={() => setShowEditProfile(false)}>
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl sm:p-6">
+            <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
+                  Edit profile
+                </p>
+                <h2 className="mt-1 text-2xl font-black text-slate-950">
+                  Edit Business Profile
+                </h2>
+                <p className="mt-1 text-sm font-semibold text-slate-500">
+                  Update business details, collaborations and contact info.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowEditProfile(false)}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProfile} className="grid gap-4 lg:grid-cols-2">
+              <FormField label="Business Name" required>
+                <input
+                  name="businessName"
+                  defaultValue={safeProfile.businessName}
+                  required
+                  className="input-tailwind"
+                />
+              </FormField>
+
+              <FormField label="Category" required>
+                <input
+                  name="category"
+                  defaultValue={safeProfile.category}
+                  required
+                  className="input-tailwind"
+                />
+              </FormField>
+
+              <FormField label="Operating Area" required>
+                <input
+                  name="area"
+                  defaultValue={safeProfile.area}
+                  required
+                  className="input-tailwind"
+                />
+              </FormField>
+
+              <FormField label="Contact Name" required>
+                <input
+                  name="contact"
+                  defaultValue={safeProfile.contact}
+                  required
+                  className="input-tailwind"
+                />
+              </FormField>
+
+              <FormField label="Phone" required>
+                <PhoneInput
+                  country="us"
+                  value={phone}
+                  onChange={(value) => setPhone(value)}
+                  inputProps={{ required: true }}
+                  containerClass="!w-full"
+                  inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none"
+                  buttonClass="!rounded-l-2xl !border-slate-200"
+                />
+              </FormField>
+
+              <FormField label="Email" required>
+                <input
+                  name="email"
+                  defaultValue={safeProfile.email}
+                  required
+                  className="input-tailwind"
+                />
+              </FormField>
+
+              <div className="lg:col-span-2">
+                <FormField label="About">
+                  <textarea
+                    name="about"
+                    defaultValue={safeProfile.about}
+                    rows={4}
+                    className="input-tailwind resize-none py-3"
+                  />
+                </FormField>
+              </div>
+
+              <div className="lg:col-span-2">
+                <FormField label="Preferred Collaborations">
+                  <textarea
+                    name="collabPref"
+                    defaultValue={profileData.collabPref || ""}
+                    rows={4}
+                    className="input-tailwind resize-none py-3"
+                  />
+                </FormField>
+              </div>
+
+              <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 lg:col-span-2 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowEditProfile(false)}
+                  disabled={saving}
+                  className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {saving ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="h-5 w-5" />
+                  )}
+                  {saving ? "Saving..." : "Save Profile"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </AppModal>
+      )}
+
+      {showBusinessChat && (
+        <AppModal onClose={() => setShowBusinessChat(false)}>
+          <div className="w-full max-w-5xl overflow-hidden rounded-[2rem] bg-white shadow-2xl">
+            {myBusinessId ? (
+              <CollabChat
+                token={token}
+                myBusinessId={myBusinessId}
+                myBusinessName={myBusinessName}
+                onClose={() => setShowBusinessChat(false)}
+              />
+            ) : (
+              <div className="p-10 text-center">
+                <p className="text-sm font-black text-slate-500">
+                  Business chat is not ready yet.
+                </p>
+              </div>
+            )}
+          </div>
+        </AppModal>
+      )}
+
+      <AiModal
+        loading={aiLoading}
+        activeSuggestion={activeSuggestion}
+        approveSuggestion={approveSuggestion}
+        rejectSuggestion={rejectSuggestion}
+        closeModal={closeModal}
+      />
+    </>
+  );
+}
+
+function ProfileSkeleton() {
+  return (
+    <section className="space-y-5">
+      <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+        <div className="flex animate-pulse gap-5">
+          <div className="h-24 w-24 rounded-[1.8rem] bg-slate-100" />
+
+          <div className="flex-1 space-y-4">
+            <div className="h-4 w-40 rounded-full bg-slate-100" />
+            <div className="h-9 w-72 rounded-full bg-slate-100" />
+            <div className="h-4 w-56 rounded-full bg-slate-100" />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div
+            key={index}
+            className="h-28 animate-pulse rounded-2xl bg-slate-100"
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  helper,
+  icon: Icon,
+}: {
+  label: string;
+  value: React.ReactNode;
+  helper: string;
+  icon: React.ElementType;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-bold text-slate-400">{label}</p>
+          <p className="mt-2 truncate text-2xl font-black tracking-tight text-slate-950">
+            {value}
+          </p>
+          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+          <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
+        </div>
+
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+          <Icon className="h-5 w-5" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InfoSection({
+  icon: Icon,
+  title,
+  value,
+}: {
+  icon: React.ElementType;
+  title: string;
+  value: string;
+}) {
+  return (
+    <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+          <Icon className="h-5 w-5" />
+        </div>
+
+        <div>
+          <h3 className="text-base font-black text-slate-950">{title}</h3>
+          <p className="text-xs font-semibold text-slate-500">
+            Business profile information
+          </p>
+        </div>
+      </div>
+
+      <p className="rounded-2xl bg-slate-50 p-4 text-sm font-semibold leading-7 text-slate-600">
+        {value}
+      </p>
+    </section>
+  );
+}
+
+function ContactRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-sky-900 shadow-sm">
+        <Icon className="h-4 w-4" />
+      </div>
+
+      <div className="min-w-0">
+        <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+          {label}
+        </p>
+        <p className="mt-0.5 truncate text-sm font-black text-slate-800">
+          {value}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function FormField({
+  label,
+  required,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-black text-slate-800">
+        {label}
+        {required && <span className="ml-1 text-rose-500">*</span>}
+      </span>
+      {children}
+    </label>
+  );
+}
+
+function AppModal({
+  children,
+  onClose,
+}: {
+  children: React.ReactNode;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
+      onMouseDown={onClose}
+    >
+      <div
+        className="w-full"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}

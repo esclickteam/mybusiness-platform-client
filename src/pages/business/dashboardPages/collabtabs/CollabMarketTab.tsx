@@ -1,0 +1,764 @@
+import React, { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  BriefcaseBusiness,
+  CalendarClock,
+  CheckCircle2,
+  DollarSign,
+  Eye,
+  Handshake,
+  Loader2,
+  Megaphone,
+  Phone,
+  Plus,
+  Search,
+  Sparkles,
+  Tags,
+  Target,
+  UserRound,
+  X,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
+import API from "../../../../api";
+
+type CollabFormState = {
+  title: string;
+  description: string;
+  needs: string;
+  offers: string;
+  contactName: string;
+  budget: string;
+  expiryDate: string;
+};
+
+type CollabMarketItem = {
+  _id: string;
+  title?: string;
+  description?: string;
+  needs?: string[];
+  offers?: string[];
+  budget?: number;
+  validUntil?: string | null;
+  fromBusinessId?: string;
+  contactName?: string;
+  phone?: string;
+  createdAt?: string;
+};
+
+type CreateCollabFormProps = {
+  onSuccess?: () => void;
+  onCancel: () => void;
+};
+
+const emptyForm: CollabFormState = {
+  title: "",
+  description: "",
+  needs: "",
+  offers: "",
+  contactName: "",
+  budget: "",
+  expiryDate: "",
+};
+
+function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
+  const [formData, setFormData] = useState<CollabFormState>(emptyForm);
+  const [useExpiry, setUseExpiry] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [phone, setPhone] = useState("");
+
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = event.target;
+
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    },
+    []
+  );
+
+  const handleSubmit = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setError(null);
+
+      const { title, description, contactName } = formData;
+
+      if (!title.trim() || !description.trim() || !contactName.trim() || !phone) {
+        setError("Please fill all required fields");
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        await API.post("/collaboration-market", {
+          title: formData.title.trim(),
+          description: formData.description.trim(),
+          needs: splitTags(formData.needs),
+          offers: splitTags(formData.offers),
+          budget: formData.budget ? Number(formData.budget) : undefined,
+          validUntil:
+            useExpiry && formData.expiryDate
+              ? new Date(formData.expiryDate).toISOString()
+              : null,
+          contactName: formData.contactName.trim(),
+          phone,
+        });
+
+        setFormData(emptyForm);
+        setPhone("");
+        setUseExpiry(false);
+
+        onSuccess?.();
+      } catch (submitError) {
+        console.error("Publish collaboration error:", submitError);
+        setError("Error publishing proposal");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [formData, useExpiry, phone, onSuccess]
+  );
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-sky-900">
+            <Sparkles className="h-4 w-4" />
+            New opportunity
+          </div>
+
+          <h3 className="mt-3 text-2xl font-black text-slate-950">
+            Publish Collaboration
+          </h3>
+
+          <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
+            Create a professional collaboration listing and let other businesses
+            reach you.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+          aria-label="Close"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+
+      {error && (
+        <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-black text-rose-700">
+          {error}
+        </div>
+      )}
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <FormField label="Title" required icon={Megaphone}>
+          <input
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="Example: Looking for marketing partner"
+            className="input-tailwind"
+          />
+        </FormField>
+
+        <FormField label="Contact Name" required icon={UserRound}>
+          <input
+            name="contactName"
+            value={formData.contactName}
+            onChange={handleChange}
+            placeholder="Contact person"
+            className="input-tailwind"
+          />
+        </FormField>
+
+        <div className="lg:col-span-2">
+          <FormField label="Description" required icon={BriefcaseBusiness}>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={4}
+              placeholder="Describe what collaboration you are looking for..."
+              className="input-tailwind resize-none py-3"
+            />
+          </FormField>
+        </div>
+
+        <FormField label="Needs" icon={Target}>
+          <input
+            name="needs"
+            placeholder="Marketing, Investor, Supplier"
+            value={formData.needs}
+            onChange={handleChange}
+            className="input-tailwind"
+          />
+          <p className="mt-2 text-xs font-semibold text-slate-400">
+            Separate tags with commas.
+          </p>
+        </FormField>
+
+        <FormField label="Offers" icon={Tags}>
+          <input
+            name="offers"
+            placeholder="Equity, Partnership, Exposure"
+            value={formData.offers}
+            onChange={handleChange}
+            className="input-tailwind"
+          />
+          <p className="mt-2 text-xs font-semibold text-slate-400">
+            Separate tags with commas.
+          </p>
+        </FormField>
+
+        <FormField label="Phone" required icon={Phone}>
+          <PhoneInput
+            country="us"
+            value={phone}
+            onChange={(value) => setPhone(value)}
+            inputProps={{
+              required: true,
+              name: "phone",
+            }}
+            containerClass="!w-full"
+            inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none"
+            buttonClass="!rounded-l-2xl !border-slate-200"
+          />
+        </FormField>
+
+        <FormField label="Budget" icon={DollarSign}>
+          <input
+            type="number"
+            name="budget"
+            placeholder="Budget in USD"
+            value={formData.budget}
+            onChange={handleChange}
+            className="input-tailwind"
+          />
+        </FormField>
+
+        <div className="lg:col-span-2">
+          <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+            <input
+              type="checkbox"
+              checked={useExpiry}
+              onChange={(event) => setUseExpiry(event.target.checked)}
+              className="h-5 w-5 rounded border-slate-300 text-slate-950 focus:ring-sky-500"
+            />
+
+            <div>
+              <p className="text-sm font-black text-slate-900">
+                Set expiration date
+              </p>
+              <p className="text-xs font-semibold text-slate-500">
+                Optional. Hide this collaboration after a selected date.
+              </p>
+            </div>
+          </label>
+        </div>
+
+        {useExpiry && (
+          <FormField label="Expiration Date" icon={CalendarClock}>
+            <input
+              type="date"
+              name="expiryDate"
+              value={formData.expiryDate}
+              onChange={handleChange}
+              className="input-tailwind"
+            />
+          </FormField>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={loading}
+          className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Plus className="h-5 w-5" />
+          )}
+          {loading ? "Publishing..." : "Publish Collaboration"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+export default function CollabMarketTab() {
+  const [collabMarket, setCollabMarket] = useState<CollabMarketItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const navigate = useNavigate();
+
+  const fetchCollabs = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      const res = await API.get("/collaboration-market");
+      setCollabMarket(res.data.collabs || []);
+    } catch (error) {
+      console.error("Failed loading collaboration market:", error);
+      setCollabMarket([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCollabs();
+  }, [fetchCollabs]);
+
+  const filteredCollabs = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    if (!query) return collabMarket;
+
+    return collabMarket.filter((item) => {
+      return (
+        item.title?.toLowerCase().includes(query) ||
+        item.description?.toLowerCase().includes(query) ||
+        item.needs?.some((tag) => tag.toLowerCase().includes(query)) ||
+        item.offers?.some((tag) => tag.toLowerCase().includes(query))
+      );
+    });
+  }, [collabMarket, search]);
+
+  const activeCount = useMemo(() => {
+    const now = Date.now();
+
+    return collabMarket.filter((item) => {
+      if (!item.validUntil) return true;
+      return new Date(item.validUntil).getTime() >= now;
+    }).length;
+  }, [collabMarket]);
+
+  const withBudgetCount = useMemo(() => {
+    return collabMarket.filter((item) => Number(item.budget) > 0).length;
+  }, [collabMarket]);
+
+  const totalTagsCount = useMemo(() => {
+    return collabMarket.reduce((sum, item) => {
+      return sum + (item.needs?.length || 0) + (item.offers?.length || 0);
+    }, 0);
+  }, [collabMarket]);
+
+  return (
+    <div className="space-y-5">
+      <section className="relative overflow-hidden rounded-[2rem] border border-slate-800/10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
+        <div className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 rounded-full bg-sky-400/15 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 left-28 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-100">
+              <Handshake className="h-4 w-4" />
+              Collaboration Market
+            </div>
+
+            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
+              Find business collaboration opportunities
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-sky-100/90">
+              Publish opportunities, discover partners, view business profiles
+              and build valuable collaborations from one premium workspace.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-slate-950 shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-sky-50"
+          >
+            <Plus className="h-5 w-5" />
+            Publish Collaboration
+          </button>
+        </div>
+      </section>
+
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label="Total opportunities"
+          value={collabMarket.length}
+          helper="published listings"
+          icon={Handshake}
+        />
+        <StatCard
+          label="Active listings"
+          value={activeCount}
+          helper="available now"
+          icon={CheckCircle2}
+        />
+        <StatCard
+          label="With budget"
+          value={withBudgetCount}
+          helper="budget included"
+          icon={DollarSign}
+        />
+        <StatCard
+          label="Market tags"
+          value={totalTagsCount}
+          helper="needs and offers"
+          icon={Tags}
+        />
+      </section>
+
+      <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+        <div className="border-b border-slate-100 p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h3 className="text-2xl font-black text-slate-950">
+                Collaboration Opportunities
+              </h3>
+              <p className="mt-1 text-sm font-semibold text-slate-500">
+                {filteredCollabs.length} shown from {collabMarket.length} total
+                listings
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search opportunities..."
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100 sm:w-[360px]"
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowCreateModal(true)}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+              >
+                <Plus className="h-5 w-5" />
+                New Listing
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {loading ? (
+          <LoadingState />
+        ) : filteredCollabs.length === 0 ? (
+          <EmptyMarketState onCreate={() => setShowCreateModal(true)} />
+        ) : (
+          <div className="grid gap-4 p-5 md:grid-cols-2 2xl:grid-cols-3">
+            {filteredCollabs.map((item) => (
+              <CollabCard
+                key={item._id}
+                item={item}
+                onViewProfile={() => {
+                  if (item.fromBusinessId) {
+                    navigate(`/business-profile/${item.fromBusinessId}`);
+                  }
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {showCreateModal && (
+        <AppModal onClose={() => setShowCreateModal(false)}>
+          <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl sm:p-6">
+            <CreateCollabForm
+              onSuccess={() => {
+                setShowCreateModal(false);
+                fetchCollabs();
+              }}
+              onCancel={() => setShowCreateModal(false)}
+            />
+          </div>
+        </AppModal>
+      )}
+    </div>
+  );
+}
+
+function CollabCard({
+  item,
+  onViewProfile,
+}: {
+  item: CollabMarketItem;
+  onViewProfile: () => void;
+}) {
+  const needs = item.needs || [];
+  const offers = item.offers || [];
+
+  return (
+    <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-5 text-white">
+        <div className="pointer-events-none absolute -right-12 -top-14 h-40 w-40 rounded-full bg-sky-400/20 blur-3xl" />
+
+        <div className="relative">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white backdrop-blur">
+              <Handshake className="h-6 w-6" />
+            </div>
+
+            <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-black text-sky-100">
+              {item.validUntil ? "Limited" : "Open"}
+            </span>
+          </div>
+
+          <h3 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7">
+            {item.title || "Untitled collaboration"}
+          </h3>
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col p-5">
+        <div className="space-y-4">
+          {needs.length > 0 && (
+            <TagBlock label="Needs" tags={needs} tone="need" />
+          )}
+
+          {offers.length > 0 && (
+            <TagBlock label="Offers" tags={offers} tone="offer" />
+          )}
+
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+              Description
+            </p>
+            <p className="line-clamp-4 text-sm font-semibold leading-6 text-slate-600">
+              {item.description || "No description provided."}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <InfoTile
+            icon={DollarSign}
+            label="Budget"
+            value={item.budget ? `$${item.budget.toLocaleString()}` : "Not specified"}
+          />
+          <InfoTile
+            icon={CalendarClock}
+            label="Expires"
+            value={
+              item.validUntil
+                ? new Date(item.validUntil).toLocaleDateString()
+                : "No expiration"
+            }
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={onViewProfile}
+          disabled={!item.fromBusinessId}
+          className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Eye className="h-5 w-5" />
+          View Profile
+        </button>
+      </div>
+    </article>
+  );
+}
+
+function TagBlock({
+  label,
+  tags,
+  tone,
+}: {
+  label: string;
+  tags: string[];
+  tone: "need" | "offer";
+}) {
+  return (
+    <div>
+      <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+        {label}
+      </p>
+
+      <div className="flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <span
+            key={`${label}-${tag}`}
+            className={[
+              "rounded-full px-3 py-1.5 text-xs font-black",
+              tone === "need"
+                ? "bg-sky-50 text-sky-900"
+                : "bg-emerald-50 text-emerald-700",
+            ].join(" ")}
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function InfoTile({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl bg-slate-50 p-4">
+      <div className="mb-2 flex items-center gap-2 text-sky-900">
+        <Icon className="h-4 w-4" />
+        <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+          {label}
+        </p>
+      </div>
+
+      <p className="truncate text-sm font-black text-slate-950">{value}</p>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  icon: Icon,
+  helper,
+}: {
+  label: string;
+  value: React.ReactNode;
+  icon: React.ElementType;
+  helper: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)]">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold text-slate-400">{label}</p>
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+            {value}
+          </p>
+          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+          <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
+        </div>
+
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
+          <Icon className="h-5 w-5" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FormField({
+  label,
+  required,
+  icon: Icon,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  icon: React.ElementType;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block">
+      <div className="mb-2 flex items-center gap-2">
+        <Icon className="h-4 w-4 text-sky-900" />
+        <span className="text-sm font-black text-slate-800">
+          {label}
+          {required && <span className="ml-1 text-rose-500">*</span>}
+        </span>
+      </div>
+
+      {children}
+    </label>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div className="p-10 text-center">
+      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
+      <p className="text-sm font-bold text-slate-500">
+        Loading collaboration market...
+      </p>
+    </div>
+  );
+}
+
+function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
+  return (
+    <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-950 shadow-sm">
+        <Handshake className="h-7 w-7" />
+      </div>
+
+      <h4 className="text-xl font-black text-slate-950">
+        No collaborations yet
+      </h4>
+
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+        Publish the first collaboration opportunity and start connecting with
+        relevant businesses.
+      </p>
+
+      <button
+        type="button"
+        onClick={onCreate}
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+      >
+        <Plus className="h-5 w-5" />
+        Publish Collaboration
+      </button>
+    </div>
+  );
+}
+
+function AppModal({
+  children,
+  onClose,
+}: {
+  children: React.ReactNode;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
+      onMouseDown={onClose}
+    >
+      <div className="w-full" onMouseDown={(event) => event.stopPropagation()}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function splitTags(value: string) {
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
