@@ -43,12 +43,6 @@ const ShopSection = lazy(
     }>
 );
 
-const ChatSection = lazy(
-  () =>
-    import("../buildTabs/buildSections/ChatButton") as Promise<{
-      default: React.ComponentType<any>;
-    }>
-);
 
 const FaqSection = lazy(
   () =>
@@ -61,14 +55,7 @@ const FaqSection = lazy(
    CONSTANTS
 ===================================================== */
 
-const TABS = [
-  "Main",
-  "Gallery",
-  "Reviews",
-  "Calendar",
-  "Chat with Business",
-  "FAQs",
-] as const;
+const TABS = ["Main", "Gallery", "Reviews", "Calendar", "FAQs"] as const;
 
 type BuildTab = (typeof TABS)[number];
 
@@ -883,17 +870,7 @@ export default function Build() {
           />
         );
 
-      case "Chat with Business":
-        return (
-          <ChatSection
-            businessDetails={businessDetails}
-            setBusinessDetails={setBusinessDetails}
-            previewContent={null}
-            renderTopBar={renderTopBar}
-          />
-        );
-
-      case "FAQs":
+        case "FAQs":
         return (
           <FaqSection
             faqs={businessDetails.faqs}

@@ -159,134 +159,11 @@ export default function MainSection({
 
   return (
     <section className="min-h-screen bg-slate-50 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        {/* PREVIEW */}
-        <aside className="order-2 xl:order-1">
-          <div className="sticky top-6 overflow-hidden rounded-[2rem] border border-white/70 bg-white/80 shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl">
-            {renderTopBar && (
-              <div className="border-b border-slate-100 bg-white/70 px-5 py-4">
-                {renderTopBar()}
-              </div>
-            )}
-
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-600/20 via-fuchsia-500/10 to-sky-500/20" />
-
-              <div className="relative p-5">
-                <div className="overflow-hidden rounded-[1.6rem] border border-white/70 bg-slate-900 shadow-2xl">
-                  {coverImage ? (
-                    <ImageLoader
-                      src={coverImage}
-                      alt={businessName || "Business cover image"}
-                      className="h-64 w-full object-cover sm:h-80"
-                    />
-                  ) : (
-                    <div className="flex h-64 w-full items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-violet-950 text-center text-white sm:h-80">
-                      <div>
-                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-3xl backdrop-blur">
-                          ✨
-                        </div>
-                        <p className="text-lg font-bold">Add your main image</p>
-                        <p className="mt-1 text-sm text-white/70">
-                          Your profile preview will appear here
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="-mt-12 px-4">
-                  <div className="relative rounded-[1.5rem] border border-white/80 bg-white/90 p-5 shadow-xl backdrop-blur-xl">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br from-violet-100 to-sky-100 shadow-lg">
-                        {logoPreview ? (
-                          <ImageLoader
-                            src={logoPreview}
-                            alt={`${businessName || "Business"} logo`}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <span className="text-3xl">🏢</span>
-                        )}
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <div className="mb-2 inline-flex rounded-full bg-violet-50 px-3 py-1 text-xs font-bold text-violet-700">
-                          Live profile preview
-                        </div>
-
-                        <h2 className="truncate text-2xl font-black tracking-tight text-slate-950">
-                          {businessName || "Business name"}
-                        </h2>
-
-                        <p className="mt-1 text-sm font-medium text-slate-500">
-                          {[category, city].filter(Boolean).join(" • ") ||
-                            "Category • City"}
-                        </p>
-
-                        <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
-                          {description ||
-                            "Write a short, clear description that tells customers what your business offers and why they should choose you."}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
-                      <div className="rounded-2xl bg-slate-50 p-4">
-                        <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                          Phone
-                        </p>
-                        <p className="mt-1 truncate font-bold text-slate-800">
-                          {phone || "Not added"}
-                        </p>
-                      </div>
-
-                      <div className="rounded-2xl bg-slate-50 p-4">
-                        <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                          Email
-                        </p>
-                        <p className="mt-1 truncate font-bold text-slate-800">
-                          {email || "Not added"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-5 grid grid-cols-3 gap-3">
-                  {limitedMainImgs.slice(0, 6).map(({ preview }, i) => (
-                    <div
-                      key={`${preview}-${i}`}
-                      className="overflow-hidden rounded-2xl border border-white/70 bg-white shadow-lg"
-                    >
-                      <ImageLoader
-                        src={preview}
-                        alt={`Business image ${i + 1}`}
-                        className="h-24 w-full object-cover"
-                      />
-                    </div>
-                  ))}
-
-                  {limitedMainImgs.length === 0 && (
-                    <>
-                      {[1, 2, 3].map((item) => (
-                        <div
-                          key={item}
-                          className="h-24 rounded-2xl border border-dashed border-slate-200 bg-white/70"
-                        />
-                      ))}
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        {/* FORM */}
+      <div className="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        {/* FORM - LEFT SIDE */}
         <div
           ref={containerRef}
-          className="order-1 overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.10)] xl:order-2"
+          className="order-1 overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.10)] xl:order-1"
         >
           <div className="border-b border-slate-100 bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-6 py-7 text-white sm:px-8">
             <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-bold text-white/80 backdrop-blur">
@@ -536,9 +413,7 @@ export default function MainSection({
                     <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-3xl font-light shadow-sm">
                       +
                     </span>
-                    <span className="mt-3 text-sm font-black">
-                      Add Images
-                    </span>
+                    <span className="mt-3 text-sm font-black">Add Images</span>
                   </button>
                 )}
               </div>
@@ -570,6 +445,129 @@ export default function MainSection({
             </div>
           </div>
         </div>
+
+        {/* PREVIEW - RIGHT SIDE */}
+        <aside className="order-2 xl:order-2">
+          <div className="sticky top-6 overflow-hidden rounded-[2rem] border border-white/70 bg-white/80 shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl">
+            {renderTopBar && (
+              <div className="border-b border-slate-100 bg-white/70 px-5 py-4">
+                {renderTopBar()}
+              </div>
+            )}
+
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-600/20 via-fuchsia-500/10 to-sky-500/20" />
+
+              <div className="relative p-5">
+                <div className="overflow-hidden rounded-[1.6rem] border border-white/70 bg-slate-900 shadow-2xl">
+                  {coverImage ? (
+                    <ImageLoader
+                      src={coverImage}
+                      alt={businessName || "Business cover image"}
+                      className="h-64 w-full object-cover sm:h-80"
+                    />
+                  ) : (
+                    <div className="flex h-64 w-full items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-violet-950 text-center text-white sm:h-80">
+                      <div>
+                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-3xl backdrop-blur">
+                          ✨
+                        </div>
+                        <p className="text-lg font-bold">Add your main image</p>
+                        <p className="mt-1 text-sm text-white/70">
+                          Your profile preview will appear here
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="-mt-12 px-4">
+                  <div className="relative rounded-[1.5rem] border border-white/80 bg-white/90 p-5 shadow-xl backdrop-blur-xl">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br from-violet-100 to-sky-100 shadow-lg">
+                        {logoPreview ? (
+                          <ImageLoader
+                            src={logoPreview}
+                            alt={`${businessName || "Business"} logo`}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-3xl">🏢</span>
+                        )}
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 inline-flex rounded-full bg-violet-50 px-3 py-1 text-xs font-bold text-violet-700">
+                          Live profile preview
+                        </div>
+
+                        <h2 className="truncate text-2xl font-black tracking-tight text-slate-950">
+                          {businessName || "Business name"}
+                        </h2>
+
+                        <p className="mt-1 text-sm font-medium text-slate-500">
+                          {[category, city].filter(Boolean).join(" • ") ||
+                            "Category • City"}
+                        </p>
+
+                        <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
+                          {description ||
+                            "Write a short, clear description that tells customers what your business offers and why they should choose you."}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+                      <div className="rounded-2xl bg-slate-50 p-4">
+                        <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                          Phone
+                        </p>
+                        <p className="mt-1 truncate font-bold text-slate-800">
+                          {phone || "Not added"}
+                        </p>
+                      </div>
+
+                      <div className="rounded-2xl bg-slate-50 p-4">
+                        <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                          Email
+                        </p>
+                        <p className="mt-1 truncate font-bold text-slate-800">
+                          {email || "Not added"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-5 grid grid-cols-3 gap-3">
+                  {limitedMainImgs.slice(0, 6).map(({ preview }, i) => (
+                    <div
+                      key={`${preview}-${i}`}
+                      className="overflow-hidden rounded-2xl border border-white/70 bg-white shadow-lg"
+                    >
+                      <ImageLoader
+                        src={preview}
+                        alt={`Business image ${i + 1}`}
+                        className="h-24 w-full object-cover"
+                      />
+                    </div>
+                  ))}
+
+                  {limitedMainImgs.length === 0 && (
+                    <>
+                      {[1, 2, 3].map((item) => (
+                        <div
+                          key={item}
+                          className="h-24 rounded-2xl border border-dashed border-slate-200 bg-white/70"
+                        />
+                      ))}
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
   );
