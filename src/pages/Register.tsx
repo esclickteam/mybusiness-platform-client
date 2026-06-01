@@ -1,12 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link, useSearchParams } from "react-router-dom";
-import API from "../api";
-import { useAuth } from "../context/AuthContext";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
-const Register = () => {
-  const [formData, setFormData] = useState({
+import API from "../api";
+import { useAuth } from "../context/AuthContext";
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
+type RegisterFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+  userType: "business";
+  businessName: string;
+  referralCode: string;
+};
+
+type ApiError = {
+  response?: {
+    status?: number;
+    data?: {
+      error?: string;
+    };
+  };
+  message?: string;
+};
+
+export default function Register() {
+  const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
     email: "",
     phone: "",
@@ -17,16 +45,11 @@ const Register = () => {
     referralCode: "",
   });
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
+
   const navigate = useNavigate();
   const { login } = useAuth();
   const [searchParams] = useSearchParams();
-
-  /*
-  -------------------------------------------------------
-  AFFILIATE REF TRACKING
-  -------------------------------------------------------
-  */
 
   useEffect(() => {
     const refFromUrl = searchParams.get("ref");
@@ -39,7 +62,11 @@ const Register = () => {
         ...prev,
         referralCode: refFromUrl,
       }));
-    } else if (refFromStorage) {
+
+      return;
+    }
+
+    if (refFromStorage) {
       setFormData((prev) => ({
         ...prev,
         referralCode: refFromStorage,
@@ -47,32 +74,23 @@ const Register = () => {
     }
   }, [searchParams]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
-  /*
-  -------------------------------------------------------
-  PHONE VALIDATION (E.164)
-  -------------------------------------------------------
-  */
-
-  const isValidPhone = (phone) => {
+  const isValidPhone = (phone: string) => {
     const cleaned = phone.trim().replace(/\s|-/g, "");
     const regex = /^\+?[1-9]\d{7,14}$/;
+
     return regex.test(cleaned);
   };
 
-  /*
-  -------------------------------------------------------
-  REGISTER
-  -------------------------------------------------------
-  */
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -82,13 +100,27 @@ const Register = () => {
       phone,
       password,
       confirmPassword,
-      userType,
       businessName,
       referralCode,
     } = formData;
 
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
       setError("⚠️ Please fill in all required fields");
+      return;
+    }
+
+    if (!businessName.trim()) {
+      setError("⚠️ Please enter a business name");
+      return;
+    }
+
+    if (!phone.trim()) {
+      setError("⚠️ Please enter a phone number");
+      return;
+    }
+
+    if (!isValidPhone(phone.trim())) {
+      setError("⚠️ Please enter a valid phone number");
       return;
     }
 
@@ -97,58 +129,25 @@ const Register = () => {
       return;
     }
 
-    if (userType === "business") {
-      if (!businessName.trim()) {
-        setError("⚠️ Please enter a business name");
-        return;
-      }
-
-      if (!phone.trim()) {
-        setError("⚠️ Please enter a phone number");
-        return;
-      }
-
-      if (!isValidPhone(phone.trim())) {
-        setError("⚠️ Please enter a valid phone number");
-        return;
-      }
-    }
-
     try {
       await API.post(
         "/auth/register",
         {
           name: name.trim(),
           email: email.trim().toLowerCase(),
-          phone: userType === "business" ? phone.trim() : "",
+          phone: phone.trim(),
           password,
-          userType,
-          businessName:
-            userType === "business" ? businessName.trim() : undefined,
-
+          userType: "business",
+          businessName: businessName.trim(),
           referralCode:
-            userType === "business"
-              ? referralCode ||
-                localStorage.getItem("affiliate_referral") ||
-                undefined
-              : undefined,
+            referralCode ||
+            localStorage.getItem("affiliate_referral") ||
+            undefined,
         },
         { withCredentials: true }
       );
 
-      /*
-      -------------------------------------------------------
-      CLEAR AFFILIATE AFTER SUCCESS
-      -------------------------------------------------------
-      */
-
       localStorage.removeItem("affiliate_referral");
-
-      /*
-      -------------------------------------------------------
-      AUTO LOGIN
-      -------------------------------------------------------
-      */
 
       const { user } = await login(email.trim().toLowerCase(), password, {
         skipRedirect: true,
@@ -159,44 +158,28 @@ const Register = () => {
         return;
       }
 
-      /*
-      -------------------------------------------------------
-      FACEBOOK PIXEL
-      -------------------------------------------------------
-      */
-
-      if (window.fbq && userType === "business") {
+      if (window.fbq) {
         window.fbq("track", "CompleteRegistration");
         console.log("✅ Facebook Pixel: CompleteRegistration sent");
       }
 
-      /*
-      -------------------------------------------------------
-      REDIRECT
-      -------------------------------------------------------
-      */
-
-      if (userType === "business") {
-        navigate("/dashboard");
-      } else {
-        navigate("/client/dashboard/search");
-      }
+      navigate("/dashboard");
     } catch (err) {
-      console.error("Registration error:", err.response?.data || err.message);
+      const apiError = err as ApiError;
 
-      if (err.response?.status === 400) {
-        setError(err.response.data.error || "❌ Email already exists");
-      } else {
-        setError("❌ Unexpected error. Please try again later.");
+      console.error(
+        "Registration error:",
+        apiError.response?.data || apiError.message
+      );
+
+      if (apiError.response?.status === 400) {
+        setError(apiError.response.data?.error || "❌ Email already exists");
+        return;
       }
+
+      setError("❌ Unexpected error. Please try again later.");
     }
   };
-
-  /*
-  -------------------------------------------------------
-  UI
-  -------------------------------------------------------
-  */
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
@@ -205,10 +188,10 @@ const Register = () => {
         <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-40 h-[420px] w-[420px] rounded-full bg-cyan-200/35 blur-3xl" />
         <div className="absolute -left-40 bottom-0 h-[420px] w-[420px] rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="absolute right-24 top-32 hidden h-56 w-56 bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] [background-size:16px_16px] opacity-20 lg:block" />
+        <div className="absolute right-24 top-32 hidden h-56 w-56 bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] opacity-20 [background-size:16px_16px] lg:block" />
       </div>
 
-      <main className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
+      <main className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-5 py-16 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8 lg:py-20">
         {/* Left content */}
         <section className="hidden lg:block">
           <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
@@ -259,23 +242,25 @@ const Register = () => {
           </div>
 
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-slate-500">
-            {["No credit card required", "Cancel anytime", "All tools included"].map(
-              (item) => (
-                <span key={item} className="inline-flex items-center gap-2">
-                  <span className="grid h-5 w-5 place-items-center rounded-full bg-indigo-50 text-xs text-indigo-600">
-                    ✓
-                  </span>
-                  {item}
+            {[
+              "No credit card required",
+              "Cancel anytime",
+              "All tools included",
+            ].map((item) => (
+              <span key={item} className="inline-flex items-center gap-2">
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-indigo-50 text-xs text-indigo-600">
+                  ✓
                 </span>
-              )
-            )}
+                {item}
+              </span>
+            ))}
           </div>
         </section>
 
         {/* Register card */}
         <section className="mx-auto w-full max-w-md">
-          <div className="overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl">
-            <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white">
+          <div className="overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 p-2 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-3">
+            <div className="overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white sm:rounded-[2rem]">
               {/* Header */}
               <div className="relative overflow-hidden bg-slate-950 px-7 py-8 text-white">
                 <div className="pointer-events-none absolute inset-0">
@@ -293,7 +278,7 @@ const Register = () => {
                   </h2>
 
                   <p className="mt-2 text-sm font-semibold leading-6 text-slate-300">
-                    Select your account type and create your BizUply workspace.
+                    Create your BizUply business workspace.
                   </p>
                 </div>
               </div>
@@ -303,64 +288,26 @@ const Register = () => {
                 onSubmit={handleSubmit}
                 className="bg-gradient-to-br from-white to-indigo-50/60 px-7 py-7"
               >
-                {/* Account type */}
+                {/* Account type - Business only */}
                 <div>
                   <p className="mb-3 text-sm font-black text-slate-700">
                     Account type
                   </p>
 
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <label
-                      htmlFor="business"
-                      className={`cursor-pointer rounded-2xl border px-4 py-4 transition ${
-                        formData.userType === "business"
-                          ? "border-indigo-300 bg-indigo-50 shadow-sm"
-                          : "border-slate-200 bg-white hover:border-indigo-200"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        id="business"
-                        name="userType"
-                        value="business"
-                        checked={formData.userType === "business"}
-                        onChange={handleChange}
-                        className="sr-only"
-                      />
+                  <div className="rounded-2xl border border-indigo-300 bg-indigo-50 px-4 py-4 shadow-sm">
+                    <input
+                      type="hidden"
+                      name="userType"
+                      value="business"
+                    />
 
-                      <span className="block text-sm font-black text-slate-950">
-                        Business Owner
-                      </span>
-                      <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
-                        Manage clients, CRM and business tools.
-                      </span>
-                    </label>
+                    <span className="block text-sm font-black text-slate-950">
+                      Business Owner
+                    </span>
 
-                    <label
-                      htmlFor="customer"
-                      className={`cursor-pointer rounded-2xl border px-4 py-4 transition ${
-                        formData.userType === "customer"
-                          ? "border-indigo-300 bg-indigo-50 shadow-sm"
-                          : "border-slate-200 bg-white hover:border-indigo-200"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        id="customer"
-                        name="userType"
-                        value="customer"
-                        checked={formData.userType === "customer"}
-                        onChange={handleChange}
-                        className="sr-only"
-                      />
-
-                      <span className="block text-sm font-black text-slate-950">
-                        Customer
-                      </span>
-                      <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
-                        Search businesses and manage bookings.
-                      </span>
-                    </label>
+                    <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
+                      Manage clients, CRM, appointments and business tools.
+                    </span>
                   </div>
                 </div>
 
@@ -368,6 +315,7 @@ const Register = () => {
                   <label className="mb-2 block text-sm font-black text-slate-700">
                     Full name
                   </label>
+
                   <input
                     type="text"
                     name="name"
@@ -383,6 +331,7 @@ const Register = () => {
                   <label className="mb-2 block text-sm font-black text-slate-700">
                     Email address
                   </label>
+
                   <input
                     type="email"
                     name="email"
@@ -394,65 +343,62 @@ const Register = () => {
                   />
                 </div>
 
-                {formData.userType === "business" && (
-                  <>
-                    <div className="mt-5">
-                      <label className="mb-2 block text-sm font-black text-slate-700">
-                        Business name
-                      </label>
-                      <input
-                        type="text"
-                        name="businessName"
-                        placeholder="Business Name"
-                        value={formData.businessName}
-                        onChange={handleChange}
-                        required
-                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-                      />
-                    </div>
+                <div className="mt-5">
+                  <label className="mb-2 block text-sm font-black text-slate-700">
+                    Business name
+                  </label>
 
-                    <div className="mt-5">
-                      <label className="mb-2 block text-sm font-black text-slate-700">
-                        Phone number
-                      </label>
+                  <input
+                    type="text"
+                    name="businessName"
+                    placeholder="Business Name"
+                    value={formData.businessName}
+                    onChange={handleChange}
+                    required
+                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                  />
+                </div>
 
-                      <div className="rounded-2xl border border-slate-200 bg-white px-2 py-2 shadow-sm transition focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-100">
-                        <PhoneInput
-                          country="us"
-                          enableSearch
-                          value={formData.phone}
-                          onChange={(phone) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              phone: `+${phone}`,
-                            }))
-                          }
-                          inputStyle={{
-                            width: "100%",
-                            height: "46px",
-                            borderRadius: "14px",
-                            border: "0",
-                            paddingLeft: "48px",
-                            fontSize: "14px",
-                            fontWeight: 600,
-                            color: "#0f172a",
-                            background: "transparent",
-                          }}
-                          buttonStyle={{
-                            border: "0",
-                            background: "transparent",
-                            borderRadius: "14px",
-                          }}
-                          dropdownStyle={{
-                            borderRadius: "16px",
-                            border: "1px solid #e2e8f0",
-                            boxShadow: "0 20px 60px rgba(15,23,42,0.14)",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
+                <div className="mt-5">
+                  <label className="mb-2 block text-sm font-black text-slate-700">
+                    Phone number
+                  </label>
+
+                  <div className="rounded-2xl border border-slate-200 bg-white px-2 py-2 shadow-sm transition focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-100">
+                    <PhoneInput
+                      country="us"
+                      enableSearch
+                      value={formData.phone}
+                      onChange={(phone: string) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          phone: `+${phone}`,
+                        }))
+                      }
+                      inputStyle={{
+                        width: "100%",
+                        height: "46px",
+                        borderRadius: "14px",
+                        border: "0",
+                        paddingLeft: "48px",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: "#0f172a",
+                        background: "transparent",
+                      }}
+                      buttonStyle={{
+                        border: "0",
+                        background: "transparent",
+                        borderRadius: "14px",
+                      }}
+                      dropdownStyle={{
+                        borderRadius: "16px",
+                        border: "1px solid #e2e8f0",
+                        boxShadow: "0 20px 60px rgba(15,23,42,0.14)",
+                      }}
+                    />
+                  </div>
+                </div>
 
                 {formData.referralCode && (
                   <div className="mt-5">
@@ -540,6 +486,4 @@ const Register = () => {
       </main>
     </div>
   );
-};
-
-export default Register;
+}
