@@ -68,110 +68,11 @@ export default function GallerySection({
   const featuredImage = images[0]?.preview;
 
   return (
-    <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-      {/* PREVIEW */}
-      <aside className="order-2 xl:order-1">
-        <div className="sticky top-6 overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl">
-          {renderTopBar && (
-            <div className="border-b border-slate-100 bg-white/80 px-5 py-4">
-              {renderTopBar()}
-            </div>
-          )}
-
-          <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 p-5 text-white sm:p-6">
-            <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/30 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
-
-            <div className="relative">
-              <div className="mb-5 flex items-start justify-between gap-4">
-                <div>
-                  <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-black text-white/75 backdrop-blur">
-                    Public profile preview
-                  </div>
-
-                  <h2 className="mt-3 text-3xl font-black tracking-tight">
-                    Our Gallery
-                  </h2>
-
-                  <p className="mt-2 text-sm leading-6 text-white/60">
-                    This is how your gallery will look on the public business
-                    profile.
-                  </p>
-                </div>
-
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-2xl shadow-xl backdrop-blur">
-                  📸
-                </div>
-              </div>
-
-              {featuredImage ? (
-                <div className="mb-4 overflow-hidden rounded-[1.5rem] border border-white/15 bg-white/10 shadow-2xl">
-                  <ImageLoader
-                    src={featuredImage}
-                    alt="Featured gallery image"
-                    className="h-64 w-full object-cover sm:h-80"
-                  />
-                </div>
-              ) : (
-                <div className="mb-4 flex h-64 flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-white/20 bg-white/10 text-center backdrop-blur sm:h-80">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-3xl">
-                    🖼️
-                  </div>
-
-                  <h3 className="mt-4 text-lg font-black">
-                    No images in the gallery
-                  </h3>
-
-                  <p className="mt-2 max-w-xs text-sm leading-6 text-white/55">
-                    Upload images to make your public profile look more
-                    professional.
-                  </p>
-                </div>
-              )}
-
-              {hasImages && (
-                <div className="grid grid-cols-3 gap-3">
-                  {images.slice(0, 6).map(({ preview, publicId }, index) => (
-                    <div
-                      key={`${publicId}-${index}`}
-                      className="overflow-hidden rounded-2xl border border-white/15 bg-white/10 shadow-lg"
-                    >
-                      <ImageLoader
-                        src={preview}
-                        alt={`Gallery image ${index + 1}`}
-                        className="h-24 w-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                  <p className="text-xs font-black uppercase tracking-wide text-white/45">
-                    Images
-                  </p>
-                  <p className="mt-1 text-2xl font-black">{images.length}</p>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                  <p className="text-xs font-black uppercase tracking-wide text-white/45">
-                    Status
-                  </p>
-                  <p className="mt-1 text-lg font-black">
-                    {hasImages ? "Active" : "Empty"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* EDIT FORM */}
+    <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+      {/* EDIT FORM - LEFT SIDE */}
       <div
         ref={containerRef}
-        className="order-1 relative overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-2"
+        className="order-1 relative overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-1"
       >
         <div className="border-b border-slate-100 bg-gradient-to-br from-white via-slate-50 to-violet-50 px-6 py-7 sm:px-8">
           <div className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-4 py-1.5 text-xs font-black text-violet-700">
@@ -331,6 +232,105 @@ export default function GallerySection({
           </div>
         )}
       </div>
+
+      {/* PREVIEW - RIGHT SIDE */}
+      <aside className="order-2 xl:order-2">
+        <div className="sticky top-6 overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl">
+          {renderTopBar && (
+            <div className="border-b border-slate-100 bg-white/80 px-5 py-4">
+              {renderTopBar()}
+            </div>
+          )}
+
+          <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 p-5 text-white sm:p-6">
+            <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/30 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
+
+            <div className="relative">
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div>
+                  <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-black text-white/75 backdrop-blur">
+                    Public profile preview
+                  </div>
+
+                  <h2 className="mt-3 text-3xl font-black tracking-tight">
+                    Our Gallery
+                  </h2>
+
+                  <p className="mt-2 text-sm leading-6 text-white/60">
+                    This is how your gallery will look on the public business
+                    profile.
+                  </p>
+                </div>
+
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-2xl shadow-xl backdrop-blur">
+                  📸
+                </div>
+              </div>
+
+              {featuredImage ? (
+                <div className="mb-4 overflow-hidden rounded-[1.5rem] border border-white/15 bg-white/10 shadow-2xl">
+                  <ImageLoader
+                    src={featuredImage}
+                    alt="Featured gallery image"
+                    className="h-64 w-full object-cover sm:h-80"
+                  />
+                </div>
+              ) : (
+                <div className="mb-4 flex h-64 flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-white/20 bg-white/10 text-center backdrop-blur sm:h-80">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-3xl">
+                    🖼️
+                  </div>
+
+                  <h3 className="mt-4 text-lg font-black">
+                    No images in the gallery
+                  </h3>
+
+                  <p className="mt-2 max-w-xs text-sm leading-6 text-white/55">
+                    Upload images to make your public profile look more
+                    professional.
+                  </p>
+                </div>
+              )}
+
+              {hasImages && (
+                <div className="grid grid-cols-3 gap-3">
+                  {images.slice(0, 6).map(({ preview, publicId }, index) => (
+                    <div
+                      key={`${publicId}-${index}`}
+                      className="overflow-hidden rounded-2xl border border-white/15 bg-white/10 shadow-lg"
+                    >
+                      <ImageLoader
+                        src={preview}
+                        alt={`Gallery image ${index + 1}`}
+                        className="h-24 w-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                  <p className="text-xs font-black uppercase tracking-wide text-white/45">
+                    Images
+                  </p>
+                  <p className="mt-1 text-2xl font-black">{images.length}</p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                  <p className="text-xs font-black uppercase tracking-wide text-white/45">
+                    Status
+                  </p>
+                  <p className="mt-1 text-lg font-black">
+                    {hasImages ? "Active" : "Empty"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
     </section>
   );
 }

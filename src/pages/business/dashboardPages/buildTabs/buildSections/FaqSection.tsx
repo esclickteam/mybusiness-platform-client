@@ -84,9 +84,96 @@ export default function FaqSection({
   const typedSetFaqs = setFaqs as unknown as () => void;
 
   return (
-    <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-      {/* PREVIEW */}
-      <aside className="order-2 xl:order-1">
+    <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+      {/* EDIT - LEFT SIDE */}
+      <div className="order-1 overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-1">
+        <div className="border-b border-slate-100 bg-gradient-to-br from-white via-slate-50 to-violet-50 px-6 py-7 sm:px-8">
+          <div className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-4 py-1.5 text-xs font-black text-violet-700">
+            <span className="h-2 w-2 rounded-full bg-violet-500" />
+            FAQ Manager
+          </div>
+
+          <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                Frequently Asked Questions
+              </h1>
+
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                Add answers to common customer questions and make your profile
+                feel clear, professional and trustworthy.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+              <p className="text-xs font-black uppercase tracking-wide text-slate-400">
+                Total Questions
+              </p>
+              <p className="mt-1 text-2xl font-black text-slate-950">
+                {faqs.length}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6 p-5 sm:p-8">
+          {isLoading ? (
+            <div className="flex min-h-80 flex-col items-center justify-center rounded-[1.75rem] border border-slate-100 bg-slate-50 text-center">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
+
+              <h3 className="mt-5 text-lg font-black text-slate-950">
+                Loading FAQs…
+              </h3>
+
+              <p className="mt-2 text-sm text-slate-500">
+                Your questions and answers are loading.
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-[1.75rem] border border-slate-100 bg-slate-50/70 p-4 shadow-sm sm:p-5">
+              <FaqTab
+                faqs={faqs}
+                setFaqs={typedSetFaqs}
+                isPreview={false}
+                navigate={navigate}
+                businessId={businessId}
+              />
+            </div>
+          )}
+
+          {!isLoading && !hasFaqs && (
+            <div className="rounded-[1.75rem] border border-dashed border-slate-200 bg-white p-8 text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-50 text-3xl">
+                ❔
+              </div>
+
+              <h3 className="mt-4 text-lg font-black text-slate-950">
+                Start with your first FAQ
+              </h3>
+
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+                Add questions about prices, working hours, booking process,
+                cancellations, location or anything customers usually ask.
+              </p>
+            </div>
+          )}
+
+          {hasFaqs && businessId && (
+            <div className="sticky bottom-4 z-10 rounded-[1.5rem] border border-white/80 bg-white/85 p-3 shadow-[0_20px_60px_rgba(15,23,42,0.18)] backdrop-blur-xl">
+              <button
+                type="button"
+                onClick={() => navigate(`/business/${businessId}?tab=faq`)}
+                className="flex h-13 w-full items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-violet-700"
+              >
+                View Public Profile
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* PREVIEW - RIGHT SIDE */}
+      <aside className="order-2 xl:order-2">
         <div className="sticky top-6 overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl">
           {renderTopBar && (
             <div className="border-b border-slate-100 bg-white/80 px-5 py-4">
@@ -174,93 +261,6 @@ export default function FaqSection({
           </div>
         </div>
       </aside>
-
-      {/* EDIT */}
-      <div className="order-1 overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-2">
-        <div className="border-b border-slate-100 bg-gradient-to-br from-white via-slate-50 to-violet-50 px-6 py-7 sm:px-8">
-          <div className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-4 py-1.5 text-xs font-black text-violet-700">
-            <span className="h-2 w-2 rounded-full bg-violet-500" />
-            FAQ Manager
-          </div>
-
-          <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                Frequently Asked Questions
-              </h1>
-
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                Add answers to common customer questions and make your profile
-                feel clear, professional and trustworthy.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
-              <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                Total Questions
-              </p>
-              <p className="mt-1 text-2xl font-black text-slate-950">
-                {faqs.length}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6 p-5 sm:p-8">
-          {isLoading ? (
-            <div className="flex min-h-80 flex-col items-center justify-center rounded-[1.75rem] border border-slate-100 bg-slate-50 text-center">
-              <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-
-              <h3 className="mt-5 text-lg font-black text-slate-950">
-                Loading FAQs…
-              </h3>
-
-              <p className="mt-2 text-sm text-slate-500">
-                Your questions and answers are loading.
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-[1.75rem] border border-slate-100 bg-slate-50/70 p-4 shadow-sm sm:p-5">
-              <FaqTab
-                faqs={faqs}
-                setFaqs={typedSetFaqs}
-                isPreview={false}
-                navigate={navigate}
-                businessId={businessId}
-              />
-            </div>
-          )}
-
-          {!isLoading && !hasFaqs && (
-            <div className="rounded-[1.75rem] border border-dashed border-slate-200 bg-white p-8 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-50 text-3xl">
-                ❔
-              </div>
-
-              <h3 className="mt-4 text-lg font-black text-slate-950">
-                Start with your first FAQ
-              </h3>
-
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-                Add questions about prices, working hours, booking process,
-                cancellations, location or anything customers usually ask.
-              </p>
-            </div>
-          )}
-
-          {hasFaqs && businessId && (
-            <div className="sticky bottom-4 z-10 rounded-[1.5rem] border border-white/80 bg-white/85 p-3 shadow-[0_20px_60px_rgba(15,23,42,0.18)] backdrop-blur-xl">
-              <button
-                type="button"
-                onClick={() => navigate(`/business/${businessId}?tab=faq`)}
-                className="flex h-13 w-full items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-violet-700"
-              >
-                View Public Profile
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
     </section>
   );
 }
