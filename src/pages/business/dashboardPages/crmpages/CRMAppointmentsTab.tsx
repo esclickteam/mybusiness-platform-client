@@ -286,7 +286,6 @@ export default function CRMAppointmentsTab() {
 
   const todayAppointments = useMemo(() => {
     const today = new Date().toLocaleDateString("en-CA");
-
     return appointments.filter((appointment) => appointment.date === today);
   }, [appointments]);
 
@@ -357,10 +356,7 @@ export default function CRMAppointmentsTab() {
           : "",
       clientName: appointment.clientSnapshot?.name || "",
       clientPhone: appointment.clientSnapshot?.phone || "",
-      address:
-        appointment.clientSnapshot?.address ||
-        appointment.address ||
-        "",
+      address: appointment.clientSnapshot?.address || appointment.address || "",
       email: appointment.clientSnapshot?.email || "",
       note: appointment.note || "",
       serviceId: appointment.serviceId || "",
@@ -415,8 +411,7 @@ export default function CRMAppointmentsTab() {
       paid: newAppointment.paid,
       note: newAppointment.note.trim(),
       serviceId: newAppointment.serviceId,
-      serviceName:
-        newAppointment.serviceName || selectedService?.name || "",
+      serviceName: newAppointment.serviceName || selectedService?.name || "",
       date: newAppointment.date,
       time: newAppointment.time,
       duration: Number(newAppointment.duration) || minDuration,
@@ -448,7 +443,7 @@ export default function CRMAppointmentsTab() {
   if (isLoading) {
     return (
       <div className="rounded-[2rem] border border-slate-100 bg-white p-10 text-center shadow-sm">
-        <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600" />
+        <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
         <p className="text-sm font-bold text-slate-500">
           Loading appointments…
         </p>
@@ -471,10 +466,13 @@ export default function CRMAppointmentsTab() {
 
   return (
     <div className="space-y-6">
-      <section className="overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-slate-950 via-violet-950 to-violet-700 p-6 text-white shadow-[0_24px_80px_rgba(88,28,135,0.20)]">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+      <section className="relative overflow-hidden rounded-[2rem] border border-slate-800/10 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
+        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-sky-400/16 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 left-20 h-56 w-56 rounded-full bg-white/8 blur-3xl" />
+
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-violet-100">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-sky-100">
               <CalendarDays className="h-4 w-4" />
               Appointments CRM
             </div>
@@ -483,7 +481,7 @@ export default function CRMAppointmentsTab() {
               Smart appointment management
             </h2>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-violet-100">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-sky-100/90">
               Manage bookings, client details, services, payments and follow-ups
               from one premium CRM screen.
             </p>
@@ -492,14 +490,14 @@ export default function CRMAppointmentsTab() {
           <button
             type="button"
             onClick={openCreateModal}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-violet-700 shadow-xl shadow-violet-950/20 transition hover:-translate-y-0.5 hover:bg-violet-50"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-slate-950 shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-sky-50"
           >
             <Plus className="h-5 w-5" />
             Add Appointment
           </button>
         </div>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard
             label="Total appointments"
             value={appointments.length}
@@ -515,11 +513,7 @@ export default function CRMAppointmentsTab() {
             value={`$${totalRevenue.toLocaleString()}`}
             icon={DollarSign}
           />
-          <MetricCard
-            label="Unpaid"
-            value={unpaidCount}
-            icon={CreditCard}
-          />
+          <MetricCard label="Unpaid" value={unpaidCount} icon={CreditCard} />
         </div>
       </section>
 
@@ -530,7 +524,8 @@ export default function CRMAppointmentsTab() {
               Appointments
             </h3>
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              {filteredAppointments.length} shown · ${paidRevenue.toLocaleString()} paid
+              {filteredAppointments.length} shown · $
+              {paidRevenue.toLocaleString()} paid
             </p>
           </div>
 
@@ -541,14 +536,14 @@ export default function CRMAppointmentsTab() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search name, phone, email or service…"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100 sm:w-[360px]"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100 sm:w-[360px]"
               />
             </div>
 
             <button
               type="button"
               onClick={openCreateModal}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
             >
               <Plus className="h-5 w-5" />
               New Appointment
@@ -571,8 +566,8 @@ export default function CRMAppointmentsTab() {
         </div>
 
         {filteredAppointments.length === 0 && (
-          <div className="mt-6 rounded-[2rem] border border-dashed border-violet-200 bg-violet-50/50 px-6 py-14 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-violet-600 shadow-sm">
+          <div className="mt-6 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-950 shadow-sm">
               <CalendarDays className="h-7 w-7" />
             </div>
             <h4 className="text-xl font-black text-slate-950">
@@ -618,7 +613,7 @@ function MetricCard({
     <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-100">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-100">
             {label}
           </p>
           <p className="mt-2 text-2xl font-black text-white">{value}</p>
@@ -660,7 +655,7 @@ function AppointmentCard({
     <article className="group relative rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
             <UserRound className="h-6 w-6" />
           </div>
 
@@ -736,7 +731,7 @@ function AppointmentCard({
                     : appointment._id
                 );
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-sky-50 hover:text-sky-900"
             >
               <Mail className="h-4 w-4" />
             </button>
@@ -784,7 +779,7 @@ function AppointmentCard({
             type="button"
             title="Edit appointment"
             onClick={onEdit}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition hover:bg-violet-600 hover:text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-sky-900 transition hover:bg-slate-950 hover:text-white"
           >
             <Edit3 className="h-4 w-4" />
           </button>
@@ -835,7 +830,7 @@ function AppointmentModal({
       <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl sm:p-6">
         <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
               {editId ? "Edit booking" : "New booking"}
             </p>
             <h3 className="mt-1 text-2xl font-black text-slate-950">
@@ -1071,7 +1066,7 @@ function AppointmentModal({
                     paid: event.target.checked,
                   }))
                 }
-                className="h-5 w-5 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
+                className="h-5 w-5 rounded border-slate-300 text-slate-950 focus:ring-sky-500"
               />
               Mark as paid
             </label>
@@ -1108,7 +1103,7 @@ function AppointmentModal({
             type="button"
             onClick={onSave}
             disabled={isSaving}
-            className="rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSaving ? "Saving…" : editId ? "Save Changes" : "Schedule"}
           </button>
@@ -1162,7 +1157,7 @@ function EmailMenuButton({
     <button
       type="button"
       onClick={onClick}
-      className="block w-full rounded-xl px-3 py-2 text-left text-sm font-bold text-slate-600 transition hover:bg-violet-50 hover:text-violet-700"
+      className="block w-full rounded-xl px-3 py-2 text-left text-sm font-bold text-slate-600 transition hover:bg-sky-50 hover:text-sky-900"
     >
       {label}
     </button>

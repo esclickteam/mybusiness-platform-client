@@ -10,7 +10,6 @@ import {
   Flame,
   KanbanSquare,
   Settings,
-  Sparkles,
   UsersRound,
   Wrench,
   Zap,
@@ -36,7 +35,7 @@ const crmTabs: CrmTab[] = [
     label: "Leads",
     description: "New opportunities",
     icon: Flame,
-    badge: "New",
+    badge: "NEW",
   },
   {
     path: "clients",
@@ -180,78 +179,20 @@ export default function CRMMain() {
   const ActiveIcon = activeTabData.icon;
 
   return (
-    <section className="min-h-[calc(100vh-92px)] bg-[radial-gradient(circle_at_top_left,#f4edff_0%,#f8fafc_35%,#ffffff_100%)] px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1500px]">
-        <header className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-white/90 p-6 shadow-[0_24px_80px_rgba(88,28,135,0.10)] backdrop-blur md:p-8">
-          <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-violet-200/50 blur-3xl" />
-          <div className="pointer-events-none absolute left-40 top-20 h-56 w-56 rounded-full bg-fuchsia-100/70 blur-3xl" />
-
-          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-violet-700">
-                <Sparkles className="h-4 w-4" />
-                Smart CRM Workspace
-              </div>
-
-              <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
-                Manage leads, clients and bookings in one place
-              </h1>
-
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-500 sm:text-base">
-                A premium CRM hub for appointments, leads, customers, services,
-                work hours, payments, follow-ups and automations.
-              </p>
-            </div>
-
-            <div className="grid min-w-[260px] gap-3 sm:grid-cols-3 lg:grid-cols-1">
-              <div className="rounded-2xl border border-violet-100 bg-violet-50 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-500">
-                  Active section
-                </p>
-                <div className="mt-2 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-lg shadow-violet-200">
-                    <ActiveIcon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-black text-slate-950">
-                      {activeTabData.label}
-                    </p>
-                    <p className="text-xs font-semibold text-slate-500">
-                      {activeTabData.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600">
-                  CRM Health
-                </p>
-                <p className="mt-2 text-2xl font-black text-emerald-700">
-                  Active
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-600">
-                  Smart mode
-                </p>
-                <p className="mt-2 text-2xl font-black text-amber-700">Ready</p>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <div className="mt-6 grid gap-6 lg:grid-cols-[310px_1fr]">
-          <aside className="h-fit rounded-[2rem] border border-slate-100 bg-white/90 p-3 shadow-[0_18px_60px_rgba(15,23,42,0.06)] backdrop-blur">
-            <div className="mb-3 flex items-center gap-3 px-3 py-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
+    <section className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top_left,#eef6ff_0%,#f7fafc_32%,#fbfcff_62%,#ffffff_100%)] px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1540px]">
+        <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
+          <aside className="h-fit rounded-[2rem] border border-white/80 bg-white/90 p-4 shadow-[0_26px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl lg:sticky lg:top-6">
+            <div className="mb-5 flex items-center gap-3 px-2 pt-1">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-[0_14px_34px_rgba(15,23,42,0.22)]">
                 <KanbanSquare className="h-5 w-5" />
               </div>
 
-              <div>
-                <p className="text-sm font-black text-slate-950">CRM Menu</p>
-                <p className="text-xs font-semibold text-slate-400">
+              <div className="min-w-0">
+                <p className="text-[15px] font-black tracking-tight text-slate-950">
+                  CRM Menu
+                </p>
+                <p className="text-xs font-bold text-slate-400">
                   Manage every workflow
                 </p>
               </div>
@@ -267,10 +208,11 @@ export default function CRMMain() {
                     to={tab.path}
                     className={({ isActive }) =>
                       [
-                        "group flex items-center justify-between gap-3 rounded-2xl px-4 py-3 transition",
+                        "group relative flex items-center justify-between gap-3 rounded-[1.35rem] px-4 py-3.5 transition-all duration-200",
+                        "focus:outline-none focus:ring-2 focus:ring-sky-200 focus:ring-offset-2",
                         isActive
-                          ? "bg-violet-600 text-white shadow-lg shadow-violet-200"
-                          : "bg-white text-slate-600 hover:bg-violet-50 hover:text-violet-700",
+                          ? "bg-gradient-to-r from-slate-950 via-slate-900 to-sky-950 text-white shadow-[0_18px_42px_rgba(15,23,42,0.28)]"
+                          : "bg-transparent text-slate-600 hover:bg-sky-50/90 hover:text-sky-900",
                       ].join(" ")
                     }
                   >
@@ -279,23 +221,23 @@ export default function CRMMain() {
                         <div className="flex min-w-0 items-center gap-3">
                           <div
                             className={[
-                              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition",
+                              "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-all duration-200",
                               isActive
                                 ? "bg-white/15 text-white"
-                                : "bg-slate-50 text-slate-500 group-hover:bg-white group-hover:text-violet-700",
+                                : "bg-slate-50 text-slate-500 group-hover:bg-white group-hover:text-sky-900 group-hover:shadow-sm",
                             ].join(" ")}
                           >
                             <Icon className="h-5 w-5" />
                           </div>
 
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-black">
+                            <p className="truncate text-[14px] font-black leading-5 tracking-tight">
                               {tab.label}
                             </p>
                             <p
                               className={[
-                                "truncate text-xs font-semibold",
-                                isActive ? "text-violet-100" : "text-slate-400",
+                                "truncate text-[12px] font-bold leading-4",
+                                isActive ? "text-sky-100" : "text-slate-400",
                               ].join(" ")}
                             >
                               {tab.description}
@@ -306,10 +248,10 @@ export default function CRMMain() {
                         {tab.badge && (
                           <span
                             className={[
-                              "rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide",
+                              "shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide",
                               isActive
-                                ? "bg-white text-violet-700"
-                                : "bg-violet-50 text-violet-700",
+                                ? "bg-white text-slate-950"
+                                : "bg-sky-50 text-sky-800",
                             ].join(" ")}
                           >
                             {tab.badge}
@@ -321,10 +263,29 @@ export default function CRMMain() {
                 );
               })}
             </nav>
+
+            <div className="mt-5 rounded-[1.5rem] border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-white">
+                  <ActiveIcon className="h-5 w-5" />
+                </div>
+
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-sky-700">
+                    Active
+                  </p>
+                  <p className="text-sm font-black text-slate-950">
+                    {activeTabData.label}
+                  </p>
+                </div>
+              </div>
+            </div>
           </aside>
 
-          <main className="min-w-0 rounded-[2rem] border border-slate-100 bg-white/90 p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] backdrop-blur sm:p-6">
-            <Outlet />
+          <main className="min-w-0">
+            <div className="rounded-[2.2rem] border border-white/80 bg-white/90 p-4 shadow-[0_30px_90px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6 lg:p-7">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>
