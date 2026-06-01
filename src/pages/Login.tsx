@@ -1,14 +1,35 @@
-import React, { useState, lazy, Suspense, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { lazy, Suspense, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
 import { lazyWithPreload } from "../utils/lazyWithPreload";
 
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
+
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
 );
+
+type LoginForm = {
+  email: string;
+  password: string;
+};
+
+type LoginUser = {
+  role?: string;
+  businessId?: string;
+};
+
+type LoginResponse = {
+  user?: LoginUser | null;
+  redirectUrl?: string;
+};
+
+type ApiError = {
+  message?: string;
+};
 
 export function LoginSkeleton() {
   return (
@@ -28,24 +49,37 @@ export function LoginSkeleton() {
 export default function Login() {
   const { login, error: authError } = useAuth();
   const { fetchNotifications } = useNotifications();
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  const [dashPreloadDone, setDashPreloadDone] = useState(false);
-  const [loginError, setLoginError] = useState("");
-  const [showForgot, setShowForgot] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [form, setForm] = useState<LoginForm>({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [dashPreloadDone, setDashPreloadDone] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState<string>("");
+  const [showForgot, setShowForgot] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   useEffect(() => {
-    DashboardPage.preload().finally(() => setDashPreloadDone(true));
+    DashboardPage.preload().finally(() => {
+      setDashPreloadDone(true);
+    });
   }, []);
 
-  const handleChange = (e) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
 
-  const handleSubmit = async (e) => {
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoginError("");
 
@@ -59,10 +93,13 @@ export default function Login() {
     try {
       const cleanEmail = form.email.trim().toLowerCase();
 
-      const { user: loggedInUser, redirectUrl } = await login(
+      const loginResult = (await login(
         cleanEmail,
         form.password
-      );
+      )) as LoginResponse;
+
+      const loggedInUser = loginResult?.user;
+      const redirectUrl = loginResult?.redirectUrl;
 
       const urlRedirect = new URLSearchParams(location.search).get("redirect");
       const finalRedirect = urlRedirect || redirectUrl;
@@ -76,20 +113,28 @@ export default function Login() {
           replace: true,
         });
       } else {
-        navigate("/client/dashboard", { replace: true });
+        navigate("/dashboard", { replace: true });
       }
 
       setTimeout(() => {
-        if (typeof fetchNotifications === "function") fetchNotifications();
+        if (typeof fetchNotifications === "function") {
+          fetchNotifications();
+        }
       }, 1000);
     } catch (err) {
-      setLoginError(authError || err?.message || "Incorrect email or password");
+      const apiError = err as ApiError;
+
+      setLoginError(
+        authError || apiError.message || "Incorrect email or password"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  if (!dashPreloadDone || loading) return <LoginSkeleton />;
+  if (!dashPreloadDone || loading) {
+    return <LoginSkeleton />;
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
@@ -98,10 +143,10 @@ export default function Login() {
         <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-40 h-[420px] w-[420px] rounded-full bg-cyan-200/35 blur-3xl" />
         <div className="absolute -left-40 bottom-0 h-[420px] w-[420px] rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="absolute right-24 top-32 hidden h-56 w-56 bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] [background-size:16px_16px] opacity-20 lg:block" />
+        <div className="absolute right-24 top-32 hidden h-56 w-56 bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] opacity-20 [background-size:16px_16px] lg:block" />
       </div>
 
-      <main className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
+      <main className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-5 py-16 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8 lg:py-20">
         {/* Left content */}
         <section className="hidden lg:block">
           <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
@@ -140,6 +185,7 @@ export default function Login() {
                   <h3 className="text-lg font-black text-slate-950">
                     {title}
                   </h3>
+
                   <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
                     {text}
                   </p>
@@ -151,9 +197,9 @@ export default function Login() {
 
         {/* Login card */}
         <section className="mx-auto w-full max-w-md">
-          <div className="overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl">
+          <div className="overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 p-2 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-3">
             <div
-              className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white"
+              className="overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white sm:rounded-[2rem]"
               aria-live="polite"
               aria-busy={loading}
             >
@@ -201,8 +247,8 @@ export default function Login() {
                     disabled={loading}
                     required
                     autoComplete="email"
-                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
                     placeholder="you@example.com"
+                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
                   />
                 </div>
 
@@ -224,13 +270,13 @@ export default function Login() {
                       disabled={loading}
                       required
                       autoComplete="current-password"
-                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 pr-14 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
                       placeholder="Enter your password"
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 pr-14 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
                     />
 
                     <button
                       type="button"
-                      onClick={() => setShowPassword((p) => !p)}
+                      onClick={() => setShowPassword((prev) => !prev)}
                       aria-label={
                         showPassword ? "Hide password" : "Show password"
                       }
@@ -261,6 +307,7 @@ export default function Login() {
                   className="group mt-7 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-8 py-4 text-base font-black text-white shadow-[0_18px_40px_rgba(99,102,241,0.28)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {loading ? "Logging in..." : "Sign in"}
+
                   {!loading && (
                     <span className="ml-2 transition group-hover:translate-x-1">
                       →

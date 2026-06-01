@@ -1,10 +1,23 @@
 import React, { useState } from "react";
 import API from "../api";
 
-const ForgotPassword = ({ closePopup }) => {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+type ForgotPasswordProps = {
+  closePopup: () => void;
+};
+
+type ApiError = {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+  message?: string;
+};
+
+export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
+  const [email, setEmail] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSendReset = async () => {
     if (!email.trim()) {
@@ -22,9 +35,13 @@ const ForgotPassword = ({ closePopup }) => {
 
       setMessage("A reset link has been sent to your email.");
     } catch (error) {
-      console.error("❌ Error sending reset link:", error);
+      const apiError = error as ApiError;
+
+      console.error("❌ Error sending reset link:", apiError);
+
       setMessage(
-        error.response?.data?.error || "Unexpected error. Please try again."
+        apiError.response?.data?.error ||
+          "Unexpected error. Please try again."
       );
     } finally {
       setLoading(false);
@@ -40,7 +57,7 @@ const ForgotPassword = ({ closePopup }) => {
       aria-modal="true"
       aria-labelledby="forgot-password-title"
     >
-      {/* Overlay click */}
+      {/* Overlay */}
       <button
         type="button"
         aria-label="Close reset password modal"
@@ -48,8 +65,8 @@ const ForgotPassword = ({ closePopup }) => {
         className="absolute inset-0 h-full w-full cursor-default"
       />
 
-      <div className="relative w-full max-w-[440px] overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/80 p-3 shadow-[0_30px_100px_rgba(15,23,42,0.28)] backdrop-blur-2xl">
-        <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white">
+      <div className="relative w-full max-w-[440px] overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-2 shadow-[0_30px_100px_rgba(15,23,42,0.28)] backdrop-blur-2xl sm:rounded-[2.5rem] sm:p-3">
+        <div className="overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white sm:rounded-[2rem]">
           {/* Header */}
           <div className="relative overflow-hidden bg-slate-950 px-7 py-8 text-white">
             <div className="pointer-events-none absolute inset-0">
@@ -89,7 +106,9 @@ const ForgotPassword = ({ closePopup }) => {
               type="email"
               placeholder="you@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setEmail(e.target.value)
+              }
               disabled={loading}
               autoComplete="email"
               className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
@@ -116,6 +135,7 @@ const ForgotPassword = ({ closePopup }) => {
               className="group mt-6 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-8 py-4 text-base font-black text-white shadow-[0_18px_40px_rgba(99,102,241,0.28)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {loading ? "Sending..." : "Send Reset Link"}
+
               {!loading && (
                 <span className="ml-2 transition group-hover:translate-x-1">
                   →
@@ -135,6 +155,4 @@ const ForgotPassword = ({ closePopup }) => {
       </div>
     </div>
   );
-};
-
-export default ForgotPassword;
+}
