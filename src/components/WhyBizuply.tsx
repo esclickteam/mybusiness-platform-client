@@ -1,9 +1,21 @@
+"use client";
+
+import type { ReactNode } from "react";
+
+type Feature = {
+  title: string;
+  text: string;
+  icon: ReactNode;
+  badge: string;
+  gradient: string;
+  glow: string;
+};
+
 export default function WhyBizuply() {
-  const features = [
+  const features: Feature[] = [
     {
       title: "One platform instead of many tools",
-      text:
-        "Manage clients, tasks, deals, appointments and automations in one clean workspace — without jumping between systems.",
+      text: "Manage clients, tasks, deals, appointments and automations in one clean workspace — without jumping between systems.",
       icon: (
         <svg
           width="34"
@@ -32,8 +44,7 @@ export default function WhyBizuply() {
     },
     {
       title: "Built for real daily business work",
-      text:
-        "Designed for real workflows, not theory. Fast actions, clear data and practical tools your business can use every day.",
+      text: "Designed for real workflows, not theory. Fast actions, clear data and practical tools your business can use every day.",
       icon: (
         <svg
           width="34"
@@ -56,8 +67,7 @@ export default function WhyBizuply() {
     },
     {
       title: "Designed to grow with you",
-      text:
-        "Start simple and unlock advanced CRM, collaboration, analytics and AI tools as your business grows.",
+      text: "Start simple and unlock advanced CRM, collaboration, analytics and AI tools as your business grows.",
       icon: (
         <svg
           width="34"
@@ -87,9 +97,21 @@ export default function WhyBizuply() {
     },
   ];
 
+  const workflows = [
+    ["Clients", "Centralize contacts, history and activity"],
+    ["Appointments", "Schedule and manage bookings easily"],
+    ["Collaborations", "Work with partners in one place"],
+    ["AI Assistant", "Get summaries, insights and next actions"],
+  ];
+
+  const stats = [
+    ["50K+", "actions managed"],
+    ["98%", "satisfaction"],
+    ["24/7", "business visibility"],
+  ];
+
   return (
     <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] py-24 text-slate-950">
-      {/* Background */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-40 h-[360px] w-[360px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -98,7 +120,6 @@ export default function WhyBizuply() {
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Header */}
         <div className="mx-auto max-w-3xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
@@ -120,7 +141,6 @@ export default function WhyBizuply() {
           </p>
         </div>
 
-        {/* Main premium feature card */}
         <div className="mt-16 overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_28px_90px_rgba(79,70,229,0.16)] backdrop-blur-xl">
           <div className="grid overflow-hidden rounded-[2rem] border border-slate-100 bg-white lg:grid-cols-[0.95fr_1.05fr]">
             <div className="relative overflow-hidden bg-slate-950 p-8 text-white sm:p-10">
@@ -143,11 +163,7 @@ export default function WhyBizuply() {
                 </p>
 
                 <div className="mt-9 grid gap-4 sm:grid-cols-3">
-                  {[
-                    ["50K+", "actions managed"],
-                    ["98%", "satisfaction"],
-                    ["24/7", "business visibility"],
-                  ].map(([value, label]) => (
+                  {stats.map(([value, label]) => (
                     <div
                       key={label}
                       className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur"
@@ -164,12 +180,7 @@ export default function WhyBizuply() {
 
             <div className="bg-gradient-to-br from-white to-indigo-50/70 p-6 sm:p-8">
               <div className="grid gap-4">
-                {[
-                  ["Clients", "Centralize contacts, history and activity"],
-                  ["Appointments", "Schedule and manage bookings easily"],
-                  ["Collaborations", "Work with partners in one place"],
-                  ["AI Assistant", "Get summaries, insights and next actions"],
-                ].map(([title, text], index) => (
+                {workflows.map(([title, text], index) => (
                   <div
                     key={title}
                     className="group flex items-center gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
@@ -197,7 +208,6 @@ export default function WhyBizuply() {
           </div>
         </div>
 
-        {/* Features */}
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {features.map((feature) => (
             <div
@@ -227,18 +237,18 @@ export default function WhyBizuply() {
                   {feature.text}
                 </p>
 
-                <div className="mt-7 flex items-center gap-2 text-sm font-black text-indigo-700">
+                <a
+                  href="/features"
+                  className="mt-7 flex items-center gap-2 text-sm font-black text-indigo-700"
+                >
                   Learn more
-                  <span className="transition group-hover:translate-x-1">
-                    →
-                  </span>
-                </div>
+                  <span className="transition group-hover:translate-x-1">→</span>
+                </a>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Bottom mini CTA */}
         <div className="mx-auto mt-14 max-w-4xl rounded-[2rem] border border-indigo-100 bg-white/85 px-8 py-8 text-center shadow-xl shadow-indigo-100/60 backdrop-blur">
           <h3 className="text-2xl font-black tracking-[-0.03em] text-slate-950 sm:text-3xl">
             Built to replace scattered tools with one beautiful business OS.

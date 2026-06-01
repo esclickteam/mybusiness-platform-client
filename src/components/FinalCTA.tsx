@@ -1,9 +1,22 @@
+"use client";
+
 import { Link } from "react-router-dom";
 
 export default function FinalCTA() {
+  const trustItems = [
+    "No credit card required",
+    "14-day free trial",
+    "Cancel anytime",
+  ];
+
+  const productItems = [
+    ["CRM", "Clients, leads and follow-ups"],
+    ["Appointments", "Bookings and schedule"],
+    ["AI Tools", "Insights and next actions"],
+  ];
+
   return (
     <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] px-6 py-24 text-slate-950 lg:px-8">
-      {/* Background */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-24 h-[360px] w-[360px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -14,7 +27,6 @@ export default function FinalCTA() {
       <div className="relative mx-auto max-w-7xl">
         <div className="overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_30px_100px_rgba(79,70,229,0.18)] backdrop-blur-xl">
           <div className="relative overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-16 text-center text-white sm:px-10 lg:px-16 lg:py-20">
-            {/* Inner glows */}
             <div className="pointer-events-none absolute inset-0">
               <div className="absolute left-1/2 top-[-220px] h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-500/35 blur-3xl" />
               <div className="absolute right-[-120px] top-20 h-[360px] w-[360px] rounded-full bg-cyan-400/25 blur-3xl" />
@@ -62,11 +74,7 @@ export default function FinalCTA() {
               </div>
 
               <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-sm font-semibold text-slate-300">
-                {[
-                  "No credit card required",
-                  "14-day free trial",
-                  "Cancel anytime",
-                ].map((item) => (
+                {trustItems.map((item) => (
                   <span key={item} className="inline-flex items-center gap-2">
                     <span className="grid h-5 w-5 place-items-center rounded-full border border-cyan-300/30 text-xs text-cyan-300">
                       ✓
@@ -77,13 +85,8 @@ export default function FinalCTA() {
               </div>
             </div>
 
-            {/* Bottom mini product strip */}
             <div className="relative mx-auto mt-14 grid max-w-5xl gap-4 sm:grid-cols-3">
-              {[
-                ["CRM", "Clients, leads and follow-ups"],
-                ["Appointments", "Bookings and schedule"],
-                ["AI Tools", "Insights and next actions"],
-              ].map(([title, text]) => (
+              {productItems.map(([title, text]) => (
                 <div
                   key={title}
                   className="rounded-3xl border border-white/10 bg-white/10 p-5 text-left backdrop-blur transition hover:bg-white/[0.14]"
@@ -93,6 +96,7 @@ export default function FinalCTA() {
                   </div>
 
                   <h3 className="text-lg font-black text-white">{title}</h3>
+
                   <p className="mt-2 text-sm font-semibold leading-6 text-slate-300">
                     {text}
                   </p>

@@ -1,6 +1,18 @@
-// ScrollStory.jsx
+"use client";
 
-const features = [
+type FeatureAlign = "center" | "left" | "right";
+
+type Feature = {
+  label: string;
+  title: string;
+  description: string;
+  image: string;
+  alt: string;
+  badge: string;
+  align: FeatureAlign;
+};
+
+const features: Feature[] = [
   {
     label: "OVERVIEW",
     title: "Everything you need. In one dashboard.",
@@ -53,7 +65,7 @@ const features = [
   },
 ];
 
-function FeatureVisual({ feature }) {
+function FeatureVisual({ feature }: { feature: Feature }) {
   return (
     <div className="relative">
       <div className="absolute -inset-5 rounded-[2.5rem] bg-gradient-to-br from-indigo-200/45 via-violet-200/35 to-cyan-200/40 blur-2xl" />
@@ -87,7 +99,20 @@ function FeatureVisual({ feature }) {
   );
 }
 
-function FeatureText({ feature, index }) {
+function FeatureText({
+  feature,
+  index,
+}: {
+  feature: Feature;
+  index: number;
+}) {
+  const bullets = [
+    "Beautiful workflow",
+    "Real-time updates",
+    "Easy to manage",
+    "Built to grow",
+  ];
+
   return (
     <div className="relative">
       <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-4 py-2 text-sm font-black text-indigo-700 shadow-lg shadow-indigo-100/70 backdrop-blur">
@@ -104,12 +129,7 @@ function FeatureText({ feature, index }) {
       </p>
 
       <div className="mt-7 grid max-w-xl gap-3 sm:grid-cols-2">
-        {[
-          "Beautiful workflow",
-          "Real-time updates",
-          "Easy to manage",
-          "Built to grow",
-        ].map((item) => (
+        {bullets.map((item) => (
           <div
             key={item}
             className="flex items-center gap-3 rounded-2xl border border-white/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-700 shadow-sm backdrop-blur"
@@ -122,13 +142,16 @@ function FeatureText({ feature, index }) {
         ))}
       </div>
 
-      <div className="mt-8 inline-flex items-center gap-3 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-xl shadow-slate-200">
+      <a
+        href="/register"
+        className="mt-8 inline-flex items-center gap-3 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-xl shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-indigo-700"
+      >
         <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-400">
           {index + 1}
         </span>
         Explore this feature
         <span>→</span>
-      </div>
+      </a>
     </div>
   );
 }
@@ -138,7 +161,6 @@ export default function ScrollStory() {
 
   return (
     <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] py-24 text-slate-950">
-      {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute right-[-180px] top-[520px] h-[420px] w-[420px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -147,7 +169,6 @@ export default function ScrollStory() {
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Intro */}
         <div className="mx-auto max-w-3xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
@@ -172,7 +193,6 @@ export default function ScrollStory() {
           <FeatureVisual feature={intro} />
         </div>
 
-        {/* Feature steps */}
         <div className="mt-28 space-y-28">
           {steps.map((feature, index) => {
             const imageFirst = feature.align === "left";
@@ -187,13 +207,9 @@ export default function ScrollStory() {
                 </div>
 
                 <div
-                  className={`${
-                    imageFirst ? "lg:order-2" : "lg:order-1"
-                  } ${
-                    imageFirst
-                      ? "lg:pl-4"
-                      : "lg:pr-4"
-                  }`}
+                  className={[
+                    imageFirst ? "lg:order-2 lg:pl-4" : "lg:order-1 lg:pr-4",
+                  ].join(" ")}
                 >
                   <FeatureText feature={feature} index={index + 1} />
                 </div>
@@ -202,7 +218,6 @@ export default function ScrollStory() {
           })}
         </div>
 
-        {/* Bottom CTA */}
         <div className="mt-28 overflow-hidden rounded-[2rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2rem] bg-white/10 px-8 py-10 text-center backdrop-blur-xl sm:px-12">
             <h3 className="text-3xl font-black tracking-[-0.03em] text-white sm:text-4xl">
