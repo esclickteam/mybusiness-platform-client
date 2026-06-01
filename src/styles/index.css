@@ -1,11 +1,12 @@
+/* styles/App.css */
+
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap");
 
 /* ===========================
-   🎨 GLOBAL COLOR VARIABLES
+   GLOBAL VARIABLES
 =========================== */
 
-/* Default (light / public) */
 :root {
   --bg-start: #fdfcff;
   --bg-end: #e4e8ff;
@@ -14,34 +15,38 @@
 
 /* Business / dashboard theme */
 [data-theme="business"],
-[data-theme="dark" ] {
+[data-theme="dark"] {
   --bg-start: #f6f7fb;
   --bg-end: #e8ebf8;
   --text-color: #0f172a;
 }
 
 /* ===========================
-   🧩 ROOT LAYOUT
+   ROOT LAYOUT
 =========================== */
 
 html,
-body {
+body,
+#root {
   width: 100%;
   min-height: 100%;
   margin: 0;
   padding: 0;
+}
 
+html {
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+body {
   overflow-x: hidden;
   overflow-y: auto;
-
   font-family: "Poppins", "Arial", sans-serif;
   direction: ltr;
   text-align: left;
-
   background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
   color: var(--text-color);
-
-  box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -57,13 +62,9 @@ a {
   color: inherit;
 }
 
+/* חשוב: לא להכריח צבע/רקע על כפתורים כדי לא לדרוס Tailwind */
 button {
-  cursor: pointer;
   font: inherit;
-  background: none;
-  border: none;
-  padding: 0;
-  color: inherit;
 }
 
 button:disabled {
@@ -138,35 +139,7 @@ button:disabled {
 }
 
 /* ===========================
-   RESPONSIVE TYPOGRAPHY
-=========================== */
-
-@media (min-width: 1200px) {
-  body {
-    font-size: 18px;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1199px) {
-  body {
-    font-size: 16px;
-  }
-}
-
-@media (max-width: 767px) {
-  body {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  body {
-    font-size: 13px;
-  }
-}
-
-/* ===========================
-   💬 Business Chat – Fullscreen
+   BUSINESS CHAT FULLSCREEN
 =========================== */
 
 .business-chat-fullscreen {
@@ -190,8 +163,7 @@ button:disabled {
 }
 
 /* ===========================
-   🧱 TAILWIND COMPONENTS
-   Reusable classes for CRM / Dashboard
+   TAILWIND COMPONENTS
 =========================== */
 
 @layer components {
@@ -245,7 +217,7 @@ button:disabled {
 }
 
 /* ===========================
-   📞 react-phone-input-2 Tailwind-ish fix
+   REACT PHONE INPUT FIX
 =========================== */
 
 .react-tel-input {
