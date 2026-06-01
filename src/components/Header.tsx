@@ -1,12 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../images/logo_final.svg";
-import { FaUser, FaGlobe } from "react-icons/fa";
+import { FaGlobe, FaUser } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+
+import logo from "../images/logo_final.svg";
 import { useAuth } from "../context/AuthContext";
 import MobileMenu from "./MobileMenu";
 
-const navLinks = [
+type NavLink = {
+  to: string;
+  label: string;
+};
+
+type Language = {
+  code: string;
+  label: string;
+};
+
+const navLinks: NavLink[] = [
   { to: "/features", label: "Features" },
   { to: "/solutions", label: "Solutions" },
   { to: "/how-it-works", label: "How it Works" },
@@ -14,7 +25,7 @@ const navLinks = [
   { to: "/about", label: "About" },
 ];
 
-const languages = [
+const languages: Language[] = [
   { code: "en", label: "English" },
   { code: "he", label: "עברית" },
   { code: "fr", label: "Français" },
@@ -30,32 +41,38 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [languageOpen, setLanguageOpen] = useState(false);
-  const languageRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [languageOpen, setLanguageOpen] = useState<boolean>(false);
+
+  const languageRef = useRef<HTMLDivElement | null>(null);
 
   const currentLangCode = i18n.language?.split("-")?.[0] || "en";
+
   const currentLanguage =
-    languages.find((lang) => lang.code === currentLangCode) || languages[0];
+    languages.find((lang) => lang.code === currentLangCode) ?? languages[0];
 
   const isDashboard =
     location.pathname.includes("/dashboard") ||
     location.pathname.includes("/business/");
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (languageRef.current && !languageRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        languageRef.current &&
+        !languageRef.current.contains(event.target as Node)
+      ) {
         setLanguageOpen(false);
       }
-    }
+    };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
-  if (isDashboard) return null;
-
-  const handleChangeLanguage = async (lng) => {
+  const handleChangeLanguage = async (lng: string) => {
     await i18n.changeLanguage(lng);
 
     localStorage.setItem("i18nextLng", lng);
@@ -76,21 +93,23 @@ export default function Header() {
     }
   };
 
+  if (isDashboard) return null;
+
   return (
     <>
-      <nav className="sticky top-0 z-50 flex h-20 w-full items-center justify-between border-b border-slate-100 bg-white/95 px-6 shadow-sm backdrop-blur-xl lg:px-14">
+      <nav className="sticky top-0 z-50 flex h-20 w-full items-center justify-between border-b border-slate-100 bg-white/95 px-5 shadow-sm backdrop-blur-xl sm:px-6 lg:px-14">
         {/* Logo */}
         <div className="flex items-center">
           <Link to="/" className="inline-flex items-center">
             <img
               src={logo}
               alt="Bizuply Logo"
-              className="h-11 w-auto object-contain"
+              className="h-10 w-auto object-contain sm:h-11"
             />
           </Link>
         </div>
 
-        {/* Navigation - Desktop */}
+        {/* Desktop Navigation */}
         <div className="hidden items-center gap-10 lg:flex">
           {navLinks.map((item) => {
             const isActive = location.pathname === item.to;
@@ -111,7 +130,7 @@ export default function Header() {
           })}
         </div>
 
-        {/* Desktop actions */}
+        {/* Desktop Actions */}
         <div className="hidden items-center gap-5 lg:flex">
           <Link
             to="/contact"
@@ -127,6 +146,7 @@ export default function Header() {
               onClick={() => setLanguageOpen((prev) => !prev)}
               className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#eaf4ff] text-[#0f7ee8] shadow-[0_10px_28px_rgba(15,126,232,0.14)] transition hover:-translate-y-0.5 hover:bg-[#dff0ff]"
               aria-label="Change language"
+              aria-expanded={languageOpen}
             >
               <FaGlobe className="text-[25px]" />
             </button>
@@ -155,6 +175,7 @@ export default function Header() {
                         }`}
                       >
                         <span>{lang.label}</span>
+
                         {isActive && (
                           <span className="text-xs font-black">✓</span>
                         )}
@@ -207,7 +228,7 @@ export default function Header() {
           )}
         </div>
 
-        {/* Mobile actions */}
+        {/* Mobile Actions */}
         <div className="ml-auto flex items-center gap-3 lg:hidden">
           <button
             type="button"
@@ -232,8 +253,9 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white shadow-sm"
+            className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white shadow-sm transition hover:bg-slate-50"
             aria-label="Open menu"
+            aria-expanded={menuOpen}
           >
             <span className="h-0.5 w-5 rounded-full bg-slate-900" />
             <span className="h-0.5 w-5 rounded-full bg-slate-900" />
