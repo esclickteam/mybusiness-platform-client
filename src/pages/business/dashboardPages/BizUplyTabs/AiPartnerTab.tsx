@@ -189,13 +189,9 @@ export default function AiPartnerTab({
   const balanceText = useMemo(() => {
     if (remainingQuestions === null) return "Loading balance";
 
-    if (remainingQuestions === 0) {
-      return "No AI questions remaining";
-    }
+    if (remainingQuestions === 0) return "No AI questions remaining";
 
-    if (remainingQuestions === 1) {
-      return "1 AI question remaining";
-    }
+    if (remainingQuestions === 1) return "1 AI question remaining";
 
     return `${remainingQuestions} AI questions remaining`;
   }, [remainingQuestions]);
@@ -237,9 +233,7 @@ export default function AiPartnerTab({
         },
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch business data");
-      }
+      if (!res.ok) throw new Error("Failed to fetch business data");
 
       const data = (await res.json()) as BusinessResponse;
       const business = data.business;
@@ -281,9 +275,7 @@ export default function AiPartnerTab({
           }
         );
 
-        if (!res.ok) {
-          throw new Error("Failed to load recommendations");
-        }
+        if (!res.ok) throw new Error("Failed to load recommendations");
 
         const recs = (await res.json()) as RawRecommendation[];
         const valid = filterValidUniqueRecommendations(recs);
@@ -307,12 +299,7 @@ export default function AiPartnerTab({
     if (!showHistory) {
       void fetchRecommendations();
     }
-  }, [
-    businessId,
-    token,
-    filterValidUniqueRecommendations,
-    showHistory,
-  ]);
+  }, [businessId, token, filterValidUniqueRecommendations, showHistory]);
 
   const fetchAiCommandHistory = useCallback(async () => {
     if (!businessId || !token) return;
@@ -330,9 +317,7 @@ export default function AiPartnerTab({
         }
       );
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch AI command history");
-      }
+      if (!res.ok) throw new Error("Failed to fetch AI command history");
 
       const data = (await res.json()) as AiCommandHistoryItem[];
       setAiCommandHistory(data);
@@ -419,9 +404,7 @@ export default function AiPartnerTab({
       "updateRecommendationStatus",
       ({ id, status }: { id: string; status: string }) => {
         setSuggestions((prev) =>
-          prev.map((item) =>
-            item.id === id ? { ...item, status } : item
-          )
+          prev.map((item) => (item.id === id ? { ...item, status } : item))
         );
       }
     );
@@ -727,7 +710,7 @@ export default function AiPartnerTab({
   return (
     <section
       dir="ltr"
-      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-white/70 bg-slate-950 p-4 text-left shadow-[0_30px_100px_rgba(15,23,42,0.28)] sm:p-6 lg:p-8"
+      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-white/70 bg-slate-950 p-4 text-left !text-white shadow-[0_30px_100px_rgba(15,23,42,0.28)] sm:p-6 lg:p-8"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full bg-indigo-500/30 blur-3xl" />
@@ -743,16 +726,16 @@ export default function AiPartnerTab({
         <header className="border-b border-white/10 bg-white/[0.06] px-5 py-6 sm:px-7 lg:px-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80 shadow-sm">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold !text-white/80 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.9)]" />
                 AI Business Partner
               </div>
 
-              <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
+              <h2 className="text-3xl font-black tracking-tight !text-white sm:text-4xl lg:text-5xl">
                 Your AI command center
               </h2>
 
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+              <p className="mt-3 max-w-2xl text-sm leading-6 !text-slate-300 sm:text-base">
                 Give your AI partner business tasks, review smart
                 recommendations, approve client messages and keep every command
                 organized in one premium workspace.
@@ -761,15 +744,15 @@ export default function AiPartnerTab({
 
             <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[460px]">
               <div className="rounded-3xl border border-white/10 bg-white/10 p-4 shadow-xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] !text-slate-300">
                   Balance
                 </p>
-                <p className="mt-2 text-3xl font-black text-white">
+                <p className="mt-2 text-3xl font-black !text-white">
                   {remainingQuestions ?? "—"}
                 </p>
                 <p
                   className={`mt-1 text-xs font-semibold ${
-                    isLimitReached ? "text-rose-300" : "text-emerald-300"
+                    isLimitReached ? "!text-rose-300" : "!text-emerald-300"
                   }`}
                 >
                   {balanceText}
@@ -777,25 +760,25 @@ export default function AiPartnerTab({
               </div>
 
               <div className="rounded-3xl border border-white/10 bg-white/10 p-4 shadow-xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] !text-slate-300">
                   Pending
                 </p>
-                <p className="mt-2 text-3xl font-black text-white">
+                <p className="mt-2 text-3xl font-black !text-white">
                   {pendingSuggestions.length}
                 </p>
-                <p className="mt-1 text-xs font-semibold text-amber-200">
+                <p className="mt-1 text-xs font-semibold !text-amber-200">
                   Recommendations
                 </p>
               </div>
 
               <div className="rounded-3xl border border-white/10 bg-white/10 p-4 shadow-xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] !text-slate-300">
                   Sent
                 </p>
-                <p className="mt-2 text-3xl font-black text-white">
+                <p className="mt-2 text-3xl font-black !text-white">
                   {sentSuggestions.length}
                 </p>
-                <p className="mt-1 text-xs font-semibold text-cyan-200">
+                <p className="mt-1 text-xs font-semibold !text-cyan-200">
                   Completed
                 </p>
               </div>
@@ -806,7 +789,7 @@ export default function AiPartnerTab({
             <button
               type="button"
               onClick={() => setShowHistory((prev) => !prev)}
-              className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/15 bg-white/10 px-5 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-white/15"
+              className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/15 bg-white/10 px-5 text-sm font-bold !text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-white/15"
             >
               {showHistory ? "Back to AI Partner" : "View Command History"}
             </button>
@@ -814,7 +797,7 @@ export default function AiPartnerTab({
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/10 bg-slate-950/30 px-5 text-sm font-bold text-slate-200 transition hover:bg-slate-950/50"
+              className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/10 bg-slate-950/30 px-5 text-sm font-bold !text-white transition hover:bg-slate-950/50"
             >
               Back
             </button>
@@ -826,23 +809,23 @@ export default function AiPartnerTab({
             <div className="rounded-[28px] border border-white/10 bg-white/[0.08] p-4 shadow-xl">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-xl font-black text-white">
+                  <h3 className="text-xl font-black !text-white">
                     Command History
                   </h3>
-                  <p className="mt-1 text-sm text-slate-300">
+                  <p className="mt-1 text-sm !text-slate-300">
                     Previous commands and AI responses.
                   </p>
                 </div>
               </div>
 
               {loadingHistory && (
-                <div className="rounded-2xl border border-white/10 bg-white/10 p-5 text-sm font-semibold text-white">
+                <div className="rounded-2xl border border-white/10 bg-white/10 p-5 text-sm font-semibold !text-white">
                   Loading history...
                 </div>
               )}
 
               {historyError && (
-                <div className="rounded-2xl border border-rose-400/30 bg-rose-500/10 p-5 text-sm font-semibold text-rose-100">
+                <div className="rounded-2xl border border-rose-400/30 bg-rose-500/10 p-5 text-sm font-semibold !text-rose-100">
                   Error loading history: {historyError}
                 </div>
               )}
@@ -850,7 +833,7 @@ export default function AiPartnerTab({
               {!loadingHistory &&
                 !historyError &&
                 aiCommandHistory.length === 0 && (
-                  <div className="rounded-2xl border border-white/10 bg-white/10 p-5 text-sm font-semibold text-slate-200">
+                  <div className="rounded-2xl border border-white/10 bg-white/10 p-5 text-sm font-semibold !text-slate-200">
                     No previous AI commands.
                   </div>
                 )}
@@ -864,7 +847,7 @@ export default function AiPartnerTab({
                         key={cmd._id}
                         className="rounded-3xl border border-white/10 bg-white/[0.09] p-5 shadow-xl"
                       >
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] !text-slate-400">
                           {new Date(cmd.createdAt).toLocaleString("en-US", {
                             dateStyle: "short",
                             timeStyle: "short",
@@ -873,19 +856,19 @@ export default function AiPartnerTab({
 
                         <div className="mt-4 grid gap-4 lg:grid-cols-2">
                           <div className="rounded-2xl bg-slate-950/45 p-4">
-                            <p className="mb-2 text-sm font-black text-white">
+                            <p className="mb-2 text-sm font-black !text-white">
                               Command
                             </p>
-                            <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-slate-200">
+                            <pre className="whitespace-pre-wrap break-words text-sm leading-6 !text-slate-200">
                               {cmd.commandText}
                             </pre>
                           </div>
 
                           <div className="rounded-2xl bg-white/[0.92] p-4">
-                            <p className="mb-2 text-sm font-black text-slate-950">
+                            <p className="mb-2 text-sm font-black !text-slate-950">
                               AI Response
                             </p>
-                            <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">
+                            <pre className="whitespace-pre-wrap break-words text-sm leading-6 !text-slate-700">
                               {cmd.responseText}
                             </pre>
                           </div>
@@ -899,7 +882,7 @@ export default function AiPartnerTab({
             <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
               <div className="space-y-5">
                 <div className="rounded-[28px] border border-white/10 bg-white/[0.08] p-4 shadow-xl sm:p-5">
-                  <label className="mb-3 block text-sm font-black text-white">
+                  <label className="mb-3 block text-sm font-black !text-white">
                     What should your AI partner do?
                   </label>
 
@@ -909,11 +892,11 @@ export default function AiPartnerTab({
                     onChange={(event) => setCommandText(event.target.value)}
                     placeholder="Tell your AI partner what you need — for example: Create a follow-up message for clients who did not book this month."
                     disabled={loading || isLimitReached}
-                    className="min-h-36 w-full resize-none rounded-3xl border border-white/10 bg-white px-4 py-4 text-sm font-medium leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-300 focus:ring-4 focus:ring-cyan-500/20 disabled:cursor-not-allowed disabled:bg-slate-200"
+                    className="min-h-36 w-full resize-none rounded-3xl border border-white/10 bg-white px-4 py-4 text-sm font-medium leading-7 !text-slate-900 outline-none transition placeholder:!text-slate-400 focus:border-cyan-300 focus:ring-4 focus:ring-cyan-500/20 disabled:cursor-not-allowed disabled:bg-slate-200"
                   />
 
                   <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs font-semibold text-slate-300">
+                    <p className="text-xs font-semibold !text-slate-300">
                       Tip: include the goal, client type and desired action.
                     </p>
 
@@ -923,7 +906,7 @@ export default function AiPartnerTab({
                       disabled={
                         loading || !commandText.trim() || isLimitReached
                       }
-                      className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-white px-6 text-sm font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                      className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-white px-6 text-sm font-black !text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:bg-white/20 disabled:!text-white/40 disabled:opacity-100 disabled:hover:translate-y-0"
                     >
                       {loading ? "Working..." : "Send to AI"}
                     </button>
@@ -932,10 +915,10 @@ export default function AiPartnerTab({
 
                 {isLimitReached && (
                   <div className="rounded-[28px] border border-rose-400/30 bg-rose-500/10 p-5 shadow-xl">
-                    <h3 className="text-lg font-black text-rose-100">
+                    <h3 className="text-lg font-black !text-rose-100">
                       Monthly limit reached
                     </h3>
-                    <p className="mt-2 text-sm leading-6 text-rose-100/85">
+                    <p className="mt-2 text-sm leading-6 !text-rose-100/85">
                       You’ve reached the monthly question limit. You can
                       purchase an additional AI package.
                     </p>
@@ -946,8 +929,8 @@ export default function AiPartnerTab({
                           key={pkg.id}
                           className={`cursor-pointer rounded-2xl border p-4 transition ${
                             selectedPackage?.id === pkg.id
-                              ? "border-white bg-white text-slate-950"
-                              : "border-white/15 bg-white/10 text-white hover:bg-white/15"
+                              ? "border-white bg-white !text-slate-950"
+                              : "border-white/15 bg-white/10 !text-white hover:bg-white/15"
                           }`}
                         >
                           <input
@@ -972,19 +955,19 @@ export default function AiPartnerTab({
                       type="button"
                       onClick={handlePurchaseExtra}
                       disabled={purchaseLoading || !selectedPackage}
-                      className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-white px-6 text-sm font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                      className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-white px-6 text-sm font-black !text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:bg-white/20 disabled:!text-white/40 disabled:opacity-100 sm:w-auto"
                     >
                       {purchaseLoading ? "Processing..." : "Buy Package"}
                     </button>
 
                     {purchaseMessage && (
-                      <p className="mt-3 text-sm font-semibold text-emerald-200">
+                      <p className="mt-3 text-sm font-semibold !text-emerald-200">
                         {purchaseMessage}
                       </p>
                     )}
 
                     {purchaseError && (
-                      <p className="mt-3 text-sm font-semibold text-rose-200">
+                      <p className="mt-3 text-sm font-semibold !text-rose-200">
                         {purchaseError}
                       </p>
                     )}
@@ -992,15 +975,15 @@ export default function AiPartnerTab({
                 )}
 
                 {commandResponse && (
-                  <div className="rounded-[28px] border border-white/10 bg-white/[0.92] p-5 text-slate-800 shadow-xl">
+                  <div className="rounded-[28px] border border-white/10 bg-white/[0.92] p-5 !text-slate-800 shadow-xl">
                     <div className="mb-3 flex items-center gap-2">
                       <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                      <h3 className="text-lg font-black text-slate-950">
+                      <h3 className="text-lg font-black !text-slate-950">
                         AI Response
                       </h3>
                     </div>
 
-                    <div className="whitespace-pre-wrap text-sm leading-7">
+                    <div className="whitespace-pre-wrap text-sm leading-7 !text-slate-800">
                       {commandResponse}
                     </div>
                   </div>
@@ -1010,10 +993,10 @@ export default function AiPartnerTab({
               <aside className="rounded-[28px] border border-white/10 bg-white/[0.08] p-4 shadow-xl sm:p-5">
                 <div className="mb-4 flex items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-xl font-black text-white">
+                    <h3 className="text-xl font-black !text-white">
                       AI Recommendations
                     </h3>
-                    <p className="mt-1 text-sm text-slate-300">
+                    <p className="mt-1 text-sm !text-slate-300">
                       Review, edit and approve messages before sending.
                     </p>
                   </div>
@@ -1021,10 +1004,10 @@ export default function AiPartnerTab({
 
                 {suggestions.length === 0 ? (
                   <div className="rounded-3xl border border-dashed border-white/15 bg-white/[0.06] p-6 text-center">
-                    <p className="text-sm font-bold text-white">
+                    <p className="text-sm font-bold !text-white">
                       No recommendations yet
                     </p>
-                    <p className="mt-2 text-xs leading-5 text-slate-400">
+                    <p className="mt-2 text-xs leading-5 !text-slate-400">
                       New AI suggestions from client conversations will appear
                       here.
                     </p>
@@ -1045,15 +1028,15 @@ export default function AiPartnerTab({
                             <span
                               className={`rounded-full px-3 py-1 text-xs font-black ${
                                 isPending
-                                  ? "bg-amber-400/15 text-amber-200"
-                                  : "bg-emerald-400/15 text-emerald-200"
+                                  ? "bg-amber-400/15 !text-amber-200"
+                                  : "bg-emerald-400/15 !text-emerald-200"
                               }`}
                             >
                               {isPending ? "Pending" : "Sent"}
                             </span>
 
                             {suggestion.timestamp && (
-                              <span className="text-xs font-semibold text-slate-400">
+                              <span className="text-xs font-semibold !text-slate-400">
                                 {new Date(
                                   suggestion.timestamp
                                 ).toLocaleDateString("en-US")}
@@ -1061,12 +1044,12 @@ export default function AiPartnerTab({
                             )}
                           </div>
 
-                          <p className="line-clamp-4 text-sm leading-6 text-slate-100">
+                          <p className="line-clamp-4 text-sm leading-6 !text-slate-100">
                             {filterText(suggestion.text)}
                           </p>
 
                           {suggestion.isEdited && (
-                            <p className="mt-3 text-xs font-bold text-cyan-200">
+                            <p className="mt-3 text-xs font-bold !text-cyan-200">
                               Edited recommendation
                             </p>
                           )}
@@ -1087,15 +1070,15 @@ export default function AiPartnerTab({
           onClick={() => setActiveSuggestion(null)}
         >
           <div
-            className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[32px] border border-white/15 bg-slate-950 p-5 text-left shadow-[0_30px_120px_rgba(0,0,0,0.5)] sm:p-6"
+            className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[32px] border border-white/15 bg-slate-950 p-5 text-left !text-white shadow-[0_30px_120px_rgba(0,0,0,0.5)] sm:p-6"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] !text-cyan-200">
                   New AI Message
                 </p>
-                <h4 className="mt-2 text-2xl font-black text-white">
+                <h4 className="mt-2 text-2xl font-black !text-white">
                   Review recommendation
                 </h4>
               </div>
@@ -1103,7 +1086,7 @@ export default function AiPartnerTab({
               <button
                 type="button"
                 onClick={() => setActiveSuggestion(null)}
-                className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-xl font-black text-white transition hover:bg-white/20"
+                className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-xl font-black !text-white transition hover:bg-white/20"
               >
                 ×
               </button>
@@ -1116,7 +1099,7 @@ export default function AiPartnerTab({
                   value={editedText}
                   onChange={(event) => setEditedText(event.target.value)}
                   disabled={loading}
-                  className="w-full resize-none rounded-3xl border border-white/10 bg-white px-4 py-4 text-sm font-medium leading-7 text-slate-900 outline-none transition focus:border-cyan-300 focus:ring-4 focus:ring-cyan-500/20 disabled:cursor-not-allowed disabled:bg-slate-200"
+                  className="w-full resize-none rounded-3xl border border-white/10 bg-white px-4 py-4 text-sm font-medium leading-7 !text-slate-900 outline-none transition focus:border-cyan-300 focus:ring-4 focus:ring-cyan-500/20 disabled:cursor-not-allowed disabled:bg-slate-200"
                 />
 
                 <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
@@ -1129,7 +1112,7 @@ export default function AiPartnerTab({
                       });
                     }}
                     disabled={loading || !editedText.trim()}
-                    className="min-h-12 rounded-2xl bg-emerald-400 px-5 text-sm font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="min-h-12 rounded-2xl bg-emerald-400 px-5 text-sm font-black !text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Approve & Send
                   </button>
@@ -1141,7 +1124,7 @@ export default function AiPartnerTab({
                       setEditing(false);
                       setEditedText(activeSuggestion.text);
                     }}
-                    className="min-h-12 rounded-2xl border border-white/15 bg-white/10 px-5 text-sm font-black text-white transition hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="min-h-12 rounded-2xl border border-white/15 bg-white/10 px-5 text-sm font-black !text-white transition hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -1149,11 +1132,14 @@ export default function AiPartnerTab({
               </>
             ) : (
               <>
-                <div className="rounded-3xl border border-white/10 bg-white/[0.92] p-5 text-slate-800 shadow-xl">
+                <div className="rounded-3xl border border-white/10 bg-white/[0.92] p-5 !text-slate-800 shadow-xl">
                   {filterText(activeSuggestion.text)
                     .split("\n")
                     .map((line, index) => (
-                      <p key={`${line}-${index}`} className="mb-3 text-sm leading-7">
+                      <p
+                        key={`${line}-${index}`}
+                        className="mb-3 text-sm leading-7 !text-slate-800"
+                      >
                         {line}
                       </p>
                     ))}
@@ -1171,7 +1157,7 @@ export default function AiPartnerTab({
                         });
                       }}
                       disabled={loading}
-                      className="min-h-12 rounded-2xl bg-emerald-400 px-5 text-sm font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="min-h-12 rounded-2xl bg-emerald-400 px-5 text-sm font-black !text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       Approve & Send
                     </button>
@@ -1180,7 +1166,7 @@ export default function AiPartnerTab({
                       type="button"
                       disabled={loading}
                       onClick={() => setEditing(true)}
-                      className="min-h-12 rounded-2xl bg-white px-5 text-sm font-black text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="min-h-12 rounded-2xl bg-white px-5 text-sm font-black !text-slate-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       Edit
                     </button>
@@ -1189,13 +1175,13 @@ export default function AiPartnerTab({
                       type="button"
                       disabled={loading}
                       onClick={() => rejectSuggestion(activeSuggestion.id)}
-                      className="min-h-12 rounded-2xl border border-rose-400/30 bg-rose-500/15 px-5 text-sm font-black text-rose-100 transition hover:bg-rose-500/25 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="min-h-12 rounded-2xl border border-rose-400/30 bg-rose-500/15 px-5 text-sm font-black !text-rose-100 transition hover:bg-rose-500/25 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       Reject
                     </button>
                   </div>
                 ) : (
-                  <p className="mt-5 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-100">
+                  <p className="mt-5 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm font-semibold !text-emerald-100">
                     The recommendation has been approved and sent to the
                     client.
                   </p>
