@@ -35,8 +35,7 @@ const crmTabs: CrmTab[] = [
     label: "Leads",
     description: "New opportunities",
     icon: Flame,
-    badge: "NEW",
-  },
+      },
   {
     path: "clients",
     label: "Clients",
