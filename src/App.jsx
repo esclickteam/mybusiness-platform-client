@@ -275,11 +275,7 @@ export default function App() {
 
                         <Route
   path="/integrations/meta/callback"
-  element={
-    <ProtectedRoute roles={["business", "admin"]}>
-      <MetaCallbackPage />
-    </ProtectedRoute>
-  }
+  element={<MetaCallbackPage />}
 />
 
                         <Route
