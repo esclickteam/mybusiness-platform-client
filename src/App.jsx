@@ -83,6 +83,9 @@ const Features = lazy(() => import("./pages/Features"));
 const Solutions = lazy(() => import("./pages/Solutions"));
 const Support = lazy(() => import("./pages/Support"));
 const TrialEnded = lazy(() => import("./pages/TrialEnded"));
+const MetaCallbackPage = lazy(() =>
+  import("./pages/integrations/MetaCallbackPage")
+);
 
 const noopResetSearchFilters = () => {};
 
@@ -269,6 +272,15 @@ export default function App() {
                         <Route path="/solutions" element={<Solutions />} />
                         <Route path="/trial-ended" element={<TrialEnded />} />
                         <Route path="/unsubscribe" element={<Unsubscribe />} />
+
+                        <Route
+  path="/integrations/meta/callback"
+  element={
+    <ProtectedRoute roles={["business", "admin"]}>
+      <MetaCallbackPage />
+    </ProtectedRoute>
+  }
+/>
 
                         <Route
                           path="/business/collaborations/:tab?"
