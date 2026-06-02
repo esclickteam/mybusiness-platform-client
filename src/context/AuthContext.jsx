@@ -535,15 +535,21 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        if (
-          freshUser.role === "business" &&
-          freshUser.businessId &&
-          !location.pathname.startsWith("/business/")
-        ) {
-          navigate(`/business/${freshUser.businessId}/dashboard`, {
-            replace: true,
-          });
-        }
+        const isMetaCallbackRoute = location.pathname.startsWith(
+  "/integrations/meta/callback"
+);
+
+if (
+  freshUser.role === "business" &&
+  freshUser.businessId &&
+  !location.pathname.startsWith("/business/") &&
+  !isMetaCallbackRoute
+) {
+  navigate(`/business/${freshUser.businessId}/dashboard`, {
+    replace: true,
+  });
+}
+
       } catch (err) {
         console.error("❌ Auth init failed:", err);
 
