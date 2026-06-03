@@ -29,8 +29,6 @@ import {
 
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import UpgradeOfferCard from "@/components/UpgradeOfferCard";
-import useAiInsights from "@/hooks/useAiInsights";
-import AiInsightsPanel from "@/components/AiInsightsPanel";
 
 type AnyRecord = Record<string, any>;
 
@@ -429,82 +427,6 @@ function MiniStatCard({
   );
 }
 
-function RecentMessagesCard({
-  title,
-  actionText,
-  messages,
-  emptyText,
-}: {
-  title: React.ReactNode;
-  actionText: React.ReactNode;
-  messages: Array<{
-    name: string;
-    subtitle?: string;
-    text?: string;
-    badge?: string | number;
-  }>;
-  emptyText: React.ReactNode;
-}) {
-  return (
-    <SectionShell
-      title={title}
-      action={
-        <button
-          type="button"
-          className="text-xs font-bold text-violet-600 hover:text-violet-800"
-        >
-          {actionText}
-        </button>
-      }
-      className="h-full"
-    >
-      {messages.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-          {emptyText}
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {messages.map((item, index) => (
-            <div key={`${item.name}-${index}`} className="flex items-start gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-violet-100 text-sm font-black text-violet-700">
-                {item.name?.charAt(0)?.toUpperCase() || "C"}
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-black text-slate-900">
-                      {item.name}
-                    </p>
-
-                    {item.subtitle && (
-                      <p className="truncate text-xs text-slate-500">
-                        {item.subtitle}
-                      </p>
-                    )}
-                  </div>
-
-                  {item.badge ? (
-                    <span className="inline-flex h-6 min-w-[24px] items-center justify-center rounded-full bg-violet-100 px-2 text-xs font-bold text-violet-700">
-                      {item.badge}
-                    </span>
-                  ) : null}
-                </div>
-
-                {item.text && (
-                  <p className="mt-1 max-h-10 overflow-hidden text-sm leading-5 text-slate-600">
-                    {item.text}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </SectionShell>
-  );
-}
-
 function RecentActivityCard({
   title,
   actionText,
@@ -659,8 +581,6 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState<boolean>(false);
-
-  const { insights, loading: insightsLoading } = useAiInsights(businessId);
 
   const shouldShowEarlyBirdModal =
     user?.isEarlyBirdActive &&
@@ -1143,19 +1063,6 @@ export default function DashboardPage() {
   );
   const recentAppointments = getLastAppointments(enrichedAppointments, 5);
 
-  const recentMessages =
-    Array.isArray(syncedStats.recentMessages) &&
-    syncedStats.recentMessages.length
-      ? syncedStats.recentMessages.slice(0, 3).map((message, index) => ({
-          name:
-            message.senderName ||
-            tx("dashboard.recent.defaultClientName", `Client ${index + 1}`),
-          subtitle: message.senderBusiness || "",
-          text: message.text || "",
-          badge: index === 0 ? 2 : index === 1 ? 1 : undefined,
-        }))
-      : [];
-
   const recentActivityItems = [
     ...recentAppointments.slice(0, 2).map((appt) => ({
       icon: <CalendarDays size={16} />,
@@ -1473,36 +1380,7 @@ export default function DashboardPage() {
             </SectionShell>
           )}
 
-          <div className="grid gap-5 xl:grid-cols-4">
-            <RecentMessagesCard
-              title={tx("dashboard.recentMessages.title", "Recent Messages")}
-              actionText={tx("dashboard.actions.viewAll", "View all")}
-              messages={recentMessages}
-              emptyText={tx(
-                "dashboard.recentMessages.empty",
-                "No recent messages yet."
-              )}
-            />
-
-            <SectionShell
-              title={tx("dashboard.aiAssistant.title", "AI Assistant")}
-              action={
-                <button
-                  type="button"
-                  className="text-xs font-bold text-violet-600 hover:text-violet-800"
-                >
-                  {tx("dashboard.actions.viewAll", "View all")}
-                </button>
-              }
-              className="h-full"
-            >
-              <AiInsightsPanel
-                insights={insights}
-                loading={insightsLoading}
-                businessId={businessId}
-              />
-            </SectionShell>
-
+          <div className="grid gap-5 xl:grid-cols-2">
             <RecentActivityCard
               title={tx("dashboard.recentActivity.title", "Recent Activity")}
               actionText={tx("dashboard.actions.viewAll", "View all")}
@@ -1542,60 +1420,72 @@ export default function DashboardPage() {
             />
           </div>
 
-          <SectionShell
-            title={tx("dashboard.upcoming.title", "Next activity")}
-            action={
-              <button
-                type="button"
-                className="inline-flex items-center gap-1 text-xs font-bold text-violet-600 hover:text-violet-800"
-              >
-                {tx("dashboard.upcoming.viewAll", "View all appointments")}
-                <ArrowRight size={14} />
-              </button>
-            }
-          >
-            {recentAppointments.length === 0 ? (
-              <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">
-                {tx(
-                  "dashboard.upcoming.empty",
-                  "No upcoming appointments yet."
-                )}
-              </div>
-            ) : (
-              <div className="grid gap-3">
-                {recentAppointments.map((appt, index) => (
-                  <div
-                    key={
-                      appt._id ||
-                      appt.id ||
-                      `${appt.date}-${appt.time}-${index}`
-                    }
-                    className="grid gap-3 rounded-[20px] border border-slate-200 bg-slate-50 p-4 sm:grid-cols-[1fr_auto] sm:items-center"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
-                        <CalendarDays size={20} />
-                      </div>
+          <div className="grid gap-5 xl:grid-cols-[minmax(360px,0.75fr)_minmax(0,1.25fr)]">
+            <SectionShell
+              title={tx("dashboard.upcoming.title", "Next activity")}
+              action={
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-violet-600 transition hover:text-violet-800"
+                >
+                  {tx("dashboard.upcoming.viewAll", "View all appointments")}
+                  <ArrowRight size={14} />
+                </button>
+              }
+              className="xl:max-w-[720px]"
+            >
+              {recentAppointments.length === 0 ? (
+                <div className="rounded-[22px] border border-dashed border-slate-200 bg-slate-50/80 p-6 text-sm font-medium text-slate-500">
+                  {tx(
+                    "dashboard.upcoming.empty",
+                    "No upcoming appointments yet."
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recentAppointments.map((appt, index) => (
+                    <div
+                      key={
+                        appt._id ||
+                        appt.id ||
+                        `${appt.date}-${appt.time}-${index}`
+                      }
+                      className="group rounded-[24px] border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 shadow-[0_14px_35px_rgba(15,23,42,0.05)] transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_18px_45px_rgba(109,40,217,0.10)]"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 ring-8 ring-violet-50">
+                            <CalendarDays size={20} />
+                          </div>
 
-                      <div>
-                        <p className="text-sm font-black text-slate-950">
-                          {appt.clientName}
-                        </p>
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-black text-slate-950">
+                              {appt.clientName}
+                            </p>
 
-                        <p className="mt-1 text-sm text-slate-600">
-                          {appt.serviceName}
-                        </p>
+                            <p className="mt-1 truncate text-sm font-medium text-slate-500">
+                              {appt.serviceName}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="shrink-0 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right shadow-sm">
+                          <p className="text-xs font-bold text-slate-400">
+                            {appt.date}
+                          </p>
+                          <p className="mt-1 text-sm font-black text-slate-800">
+                            {appt.time || ""}
+                          </p>
+                        </div>
                       </div>
                     </div>
+                  ))}
+                </div>
+              )}
+            </SectionShell>
 
-                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700">
-                      {appt.date} {appt.time || ""}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </SectionShell>
+            <div className="hidden xl:block" />
+          </div>
 
           <div className="hidden">
             <Suspense fallback={null}>
