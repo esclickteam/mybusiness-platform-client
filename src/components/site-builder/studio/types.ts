@@ -39,7 +39,9 @@ export type AnimationPresetValue =
   | "fade-up"
   | "zoom-in"
   | "slide-right"
-  | "blur-reveal";
+  | "blur-reveal"
+  | "float-soft"
+  | "pulse-soft";
 
 /* =====================================================
    ELEMENT LIBRARY
@@ -132,8 +134,8 @@ export type ThemePalette = {
     muted: string;
   };
   font: {
-    heading: string;
-    body: string;
+    heading: FontOption;
+    body: FontOption;
   };
 };
 
@@ -175,6 +177,33 @@ export type BizuplySmartBlock = {
 };
 
 /* =====================================================
+   SITE / PUBLIC PAGE SETTINGS
+===================================================== */
+
+export type SitePageStatus = "draft" | "published";
+
+export type SiteSeoSettings = {
+  title: string;
+  description: string;
+  keywords?: string;
+  ogImage?: string;
+};
+
+export type SiteDomainSettings = {
+  slug: string;
+  customDomain?: string;
+  published: boolean;
+};
+
+export type SiteBrandSettings = {
+  businessName: string;
+  tagline?: string;
+  logoUrl?: string;
+  faviconUrl?: string;
+  paletteId?: string;
+};
+
+/* =====================================================
    SAVE / PUBLISH
 ===================================================== */
 
@@ -185,6 +214,14 @@ export type SiteSavePayload = {
   css: string;
   projectData: unknown;
   updatedAt: string;
+
+  /**
+   * שדות אופציונליים להמשך חיבור למונגו / פרסום אמיתי
+   */
+  status?: SitePageStatus;
+  seo?: SiteSeoSettings;
+  domain?: SiteDomainSettings;
+  brand?: SiteBrandSettings;
 };
 
 export type WebsiteStudioPageProps = {

@@ -1,4 +1,4 @@
-import type { ThemePalette } from "../types";
+import type { FontOption, ThemePalette } from "../types";
 
 export const themePalettes: ThemePalette[] = [
   {
@@ -48,7 +48,7 @@ export const themePalettes: ThemePalette[] = [
       muted: "#D6D3D1",
     },
     font: {
-      heading: "Heebo",
+      heading: "Playfair Display",
       body: "Assistant",
     },
   },
@@ -103,9 +103,111 @@ export const themePalettes: ThemePalette[] = [
       body: "Assistant",
     },
   },
+  {
+    id: "cream-bronze",
+    name: "Cream Bronze",
+    description: "שמנת, ברונזה, נקי ויוקרתי מאוד",
+    colors: {
+      primary: "#92400E",
+      secondary: "#FEF3C7",
+      accent: "#C08457",
+      background: "#FFFBF4",
+      text: "#221A14",
+      muted: "#7C6F64",
+    },
+    font: {
+      heading: "Playfair Display",
+      body: "Assistant",
+    },
+  },
+  {
+    id: "emerald-luxury",
+    name: "Emerald Luxury",
+    description: "ירוק אמרלד יוקרתי, עמוק ומודרני",
+    colors: {
+      primary: "#047857",
+      secondary: "#D1FAE5",
+      accent: "#A3E635",
+      background: "#F7FDF9",
+      text: "#10231C",
+      muted: "#5F746B",
+    },
+    font: {
+      heading: "Rubik",
+      body: "Assistant",
+    },
+  },
+  {
+    id: "clean-blue",
+    name: "Clean Blue",
+    description: "עסקי, נקי, מתאים לנותני שירות ו־SaaS",
+    colors: {
+      primary: "#2563EB",
+      secondary: "#DBEAFE",
+      accent: "#38BDF8",
+      background: "#F8FBFF",
+      text: "#0F172A",
+      muted: "#64748B",
+    },
+    font: {
+      heading: "Inter",
+      body: "Assistant",
+    },
+  },
+  {
+    id: "soft-pink",
+    name: "Soft Pink",
+    description: "ורוד עדין, נקי ומודרני לעסקי יופי ולייף סטייל",
+    colors: {
+      primary: "#DB2777",
+      secondary: "#FCE7F3",
+      accent: "#FB7185",
+      background: "#FFF7FB",
+      text: "#27111D",
+      muted: "#806572",
+    },
+    font: {
+      heading: "Heebo",
+      body: "Assistant",
+    },
+  },
+  {
+    id: "champagne",
+    name: "Champagne",
+    description: "שמפניה, זהב רך ומראה פרימיום נקי",
+    colors: {
+      primary: "#B7791F",
+      secondary: "#FFF4D6",
+      accent: "#EAB308",
+      background: "#FFFDF7",
+      text: "#292113",
+      muted: "#7A6F5A",
+    },
+    font: {
+      heading: "Libre Baskerville",
+      body: "Assistant",
+    },
+  },
+  {
+    id: "dark-violet",
+    name: "Dark Violet",
+    description: "כהה, טכנולוגי, דרמטי ומאוד מודרני",
+    colors: {
+      primary: "#A855F7",
+      secondary: "#2E1065",
+      accent: "#EC4899",
+      background: "#09090F",
+      text: "#FFFFFF",
+      muted: "#C4B5FD",
+    },
+    font: {
+      heading: "Poppins",
+      body: "Assistant",
+    },
+  },
 ];
 
-export const fontOptions = [
+export const fontOptions: FontOption[] = [
   "Heebo",
   "Assistant",
   "Rubik",

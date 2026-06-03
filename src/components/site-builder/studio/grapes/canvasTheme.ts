@@ -20,13 +20,17 @@ export function createCanvasCss(palette?: ThemePalette) {
   --biz-bg: ${background};
   --biz-text: ${text};
   --biz-muted: ${muted};
+
   --biz-heading-font: "${headingFont}", Arial, sans-serif;
   --biz-body-font: "${bodyFont}", Arial, sans-serif;
+
   --biz-radius-sm: 18px;
   --biz-radius-md: 28px;
   --biz-radius-lg: 42px;
   --biz-radius-xl: 56px;
+
   --biz-shadow-soft: 0 24px 80px rgba(15,23,42,0.08);
+  --biz-shadow-medium: 0 34px 105px rgba(15,23,42,0.13);
   --biz-shadow-strong: 0 44px 140px rgba(15,23,42,0.16);
   --biz-shadow-color: 0 28px 90px ${primary}35;
 }
@@ -45,11 +49,14 @@ body {
   font-family: var(--biz-body-font);
   color: var(--biz-text);
   background: var(--biz-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  cursor: pointer;
 }
 
 button,
@@ -59,18 +66,25 @@ select {
   font-family: inherit;
 }
 
-img {
+img,
+video,
+iframe {
   max-width: 100%;
 }
 
 .biz-page {
   min-height: 100vh;
   overflow: hidden;
+  color: var(--biz-text);
   background:
     radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--biz-primary) 16%, transparent), transparent 34%),
     radial-gradient(circle at 88% 20%, color-mix(in srgb, var(--biz-accent) 12%, transparent), transparent 32%),
     linear-gradient(135deg, var(--biz-bg) 0%, #ffffff 48%, color-mix(in srgb, var(--biz-secondary) 42%, #ffffff) 100%);
 }
+
+/* =====================================================
+   NAV
+===================================================== */
 
 .biz-nav {
   min-height: 92px;
@@ -78,6 +92,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 28px;
   background: rgba(255,255,255,0.88);
   backdrop-filter: blur(26px);
   border-bottom: 1px solid rgba(226,232,240,0.82);
@@ -134,7 +149,12 @@ img {
 
 .biz-nav-links a:hover {
   color: var(--biz-primary);
+  transform: translateY(-1px);
 }
+
+/* =====================================================
+   LAYOUT
+===================================================== */
 
 .biz-section {
   max-width: 1180px;
@@ -151,6 +171,37 @@ img {
 .biz-section-full {
   padding: 104px 78px;
 }
+
+.biz-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 58px;
+  align-items: center;
+}
+
+.biz-grid-2,
+.biz-grid-3,
+.biz-grid-4 {
+  margin-top: 48px;
+  display: grid;
+  gap: 24px;
+}
+
+.biz-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.biz-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.biz-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* =====================================================
+   HERO
+===================================================== */
 
 .biz-hero {
   min-height: 710px;
@@ -182,11 +233,47 @@ img {
     radial-gradient(circle at 8% 82%, color-mix(in srgb, var(--biz-primary) 16%, transparent), transparent 36%);
 }
 
+.biz-hero-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.biz-hero-image-wrap {
+  position: relative;
+  border-radius: var(--biz-radius-xl);
+  padding: 15px;
+  background: #fff;
+  box-shadow: var(--biz-shadow-strong);
+}
+
+.biz-hero-image-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -28px;
+  border-radius: 68px;
+  background: color-mix(in srgb, var(--biz-primary) 20%, transparent);
+  filter: blur(38px);
+  z-index: -1;
+}
+
+.biz-hero-image {
+  display: block;
+  width: 100%;
+  height: 560px;
+  object-fit: cover;
+  border-radius: 40px;
+}
+
+/* =====================================================
+   TYPOGRAPHY
+===================================================== */
+
 .biz-pill {
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  width: fit-content;
   border-radius: 999px;
   background: #fff;
   border: 1px solid #e2e8f0;
@@ -218,70 +305,6 @@ img {
   font-weight: 760;
 }
 
-.biz-actions {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 38px;
-}
-
-.biz-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 58px;
-  padding: 0 32px;
-  border-radius: 20px;
-  font-weight: 950;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.biz-btn:hover {
-  transform: translateY(-3px);
-}
-
-.biz-btn-primary {
-  background: linear-gradient(135deg, var(--biz-primary), var(--biz-accent));
-  color: #fff;
-  box-shadow: var(--biz-shadow-color);
-}
-
-.biz-btn-secondary {
-  background: #fff;
-  color: var(--biz-text);
-  border-color: #e2e8f0;
-  box-shadow: 0 16px 40px rgba(15,23,42,0.08);
-}
-
-.biz-hero-image-wrap {
-  position: relative;
-  border-radius: var(--biz-radius-xl);
-  padding: 15px;
-  background: #fff;
-  box-shadow: var(--biz-shadow-strong);
-}
-
-.biz-hero-image-wrap::before {
-  content: "";
-  position: absolute;
-  inset: -28px;
-  border-radius: 68px;
-  background: color-mix(in srgb, var(--biz-primary) 20%, transparent);
-  filter: blur(38px);
-  z-index: -1;
-}
-
-.biz-hero-image {
-  display: block;
-  width: 100%;
-  height: 560px;
-  object-fit: cover;
-  border-radius: 40px;
-}
-
 .biz-section-kicker {
   margin: 0 auto 14px;
   width: fit-content;
@@ -311,25 +334,52 @@ img {
   font-weight: 720;
 }
 
-.biz-grid-2,
-.biz-grid-3,
-.biz-grid-4 {
-  margin-top: 48px;
-  display: grid;
-  gap: 24px;
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.biz-actions {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 38px;
 }
 
-.biz-grid-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.biz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  padding: 0 32px;
+  border-radius: 20px;
+  font-weight: 950;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: 0.25s ease;
+  user-select: none;
 }
 
-.biz-grid-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.biz-btn:hover {
+  transform: translateY(-3px);
 }
 
-.biz-grid-4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.biz-btn-primary {
+  background: linear-gradient(135deg, var(--biz-primary), var(--biz-accent));
+  color: #fff;
+  box-shadow: var(--biz-shadow-color);
 }
+
+.biz-btn-secondary {
+  background: #fff;
+  color: var(--biz-text);
+  border-color: #e2e8f0;
+  box-shadow: 0 16px 40px rgba(15,23,42,0.08);
+}
+
+/* =====================================================
+   CARDS / IMAGES
+===================================================== */
 
 .biz-card {
   border-radius: 34px;
@@ -342,7 +392,7 @@ img {
 
 .biz-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 34px 105px rgba(15,23,42,0.13);
+  box-shadow: var(--biz-shadow-medium);
 }
 
 .biz-card-icon {
@@ -378,25 +428,21 @@ img {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   margin-top: 26px;
   color: var(--biz-muted);
   font-weight: 850;
 }
 
 .biz-price {
+  display: inline-flex;
+  width: fit-content;
   border-radius: 999px;
   background: var(--biz-secondary);
   color: var(--biz-primary);
   padding: 9px 16px;
   font-size: 14px;
   font-weight: 950;
-}
-
-.biz-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 58px;
-  align-items: center;
 }
 
 .biz-image-card {
@@ -428,6 +474,10 @@ img {
   transform: scale(1.025);
 }
 
+/* =====================================================
+   SPECIAL SECTIONS
+===================================================== */
+
 .biz-dark-section {
   background:
     radial-gradient(circle at 12% 20%, color-mix(in srgb, var(--biz-primary) 40%, transparent), transparent 34%),
@@ -439,131 +489,13 @@ img {
   box-shadow: 0 44px 150px rgba(2,6,23,0.36);
 }
 
-.biz-booking-box {
-  background: #fff;
-  color: var(--biz-text);
-  border-radius: 36px;
-  padding: 32px;
-  box-shadow: 0 32px 100px rgba(2,6,23,0.26);
-}
-
-.biz-time-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-}
-
-.biz-time {
-  border: 1px solid var(--biz-secondary);
-  background: var(--biz-secondary);
-  color: var(--biz-primary);
-  border-radius: 21px;
-  padding: 16px;
-  text-align: center;
-  font-weight: 950;
-}
-
-.biz-form {
-  display: grid;
-  gap: 15px;
-  margin-top: 30px;
-}
-
-.biz-input,
-.biz-textarea {
-  border-radius: 21px;
-  border: 1px solid #e2e8f0;
-  padding: 0 18px;
-  font-weight: 800;
-  background: #fff;
-  color: var(--biz-text);
-  outline: none;
-}
-
-.biz-input:focus,
-.biz-textarea:focus {
-  border-color: var(--biz-primary);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--biz-primary) 16%, transparent);
-}
-
-.biz-input {
-  min-height: 56px;
-}
-
-.biz-textarea {
-  min-height: 136px;
-  padding-top: 18px;
-  resize: vertical;
-}
-
-.biz-carousel {
-  display: flex;
-  gap: 24px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding: 10px 4px 18px;
-}
-
-.biz-carousel > * {
-  scroll-snap-align: start;
-  min-width: 340px;
-}
-
-.biz-marquee {
-  overflow: hidden;
-  white-space: nowrap;
-  border-top: 1px solid #e2e8f0;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 20px 0;
-  color: var(--biz-primary);
-  font-size: 30px;
-  font-weight: 950;
-}
-
-.biz-marquee span {
-  display: inline-block;
-  padding-left: 44px;
-  animation: biz-marquee 18s linear infinite;
-}
-
-@keyframes biz-marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(50%); }
-}
-
-.biz-counter {
-  text-align: center;
-  border-radius: 34px;
-  background: #fff;
-  padding: 38px;
+.biz-strip-soft {
+  border-radius: var(--biz-radius-xl);
+  padding: 72px;
+  background:
+    radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--biz-primary) 12%, transparent), transparent 32%),
+    linear-gradient(135deg, #ffffff, color-mix(in srgb, var(--biz-secondary) 55%, #ffffff));
   box-shadow: var(--biz-shadow-soft);
-}
-
-.biz-counter strong {
-  display: block;
-  font-size: 50px;
-  color: var(--biz-primary);
-  font-weight: 950;
-}
-
-.biz-footer {
-  background: #020617;
-  color: #fff;
-  padding: 62px 78px;
-}
-
-.biz-footer-grid {
-  max-width: 1180px;
-  margin: 0 auto;
-  display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.biz-footer-card {
-  background: rgba(255,255,255,0.08);
-  border-radius: 28px;
-  padding: 26px;
 }
 
 .biz-bg-image {
@@ -591,15 +523,6 @@ img {
   z-index: 1;
 }
 
-.biz-strip-soft {
-  border-radius: var(--biz-radius-xl);
-  padding: 72px;
-  background:
-    radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--biz-primary) 12%, transparent), transparent 32%),
-    linear-gradient(135deg, #ffffff, color-mix(in srgb, var(--biz-secondary) 55%, #ffffff));
-  box-shadow: var(--biz-shadow-soft);
-}
-
 .biz-floating-badge {
   display: inline-flex;
   align-items: center;
@@ -612,6 +535,176 @@ img {
   font-weight: 950;
   box-shadow: 0 14px 34px rgba(15,23,42,0.08);
 }
+
+/* =====================================================
+   BOOKING / FORMS / STORE
+===================================================== */
+
+.biz-booking-box {
+  background: #fff;
+  color: var(--biz-text);
+  border-radius: 36px;
+  padding: 32px;
+  box-shadow: 0 32px 100px rgba(2,6,23,0.26);
+}
+
+.biz-time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.biz-time {
+  border: 1px solid var(--biz-secondary);
+  background: var(--biz-secondary);
+  color: var(--biz-primary);
+  border-radius: 21px;
+  padding: 16px;
+  text-align: center;
+  font-weight: 950;
+  transition: 0.2s ease;
+}
+
+.biz-time:hover {
+  background: var(--biz-primary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.biz-form {
+  display: grid;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.biz-input,
+.biz-textarea {
+  width: 100%;
+  border-radius: 21px;
+  border: 1px solid #e2e8f0;
+  padding: 0 18px;
+  font-weight: 800;
+  background: #fff;
+  color: var(--biz-text);
+  outline: none;
+}
+
+.biz-input:focus,
+.biz-textarea:focus {
+  border-color: var(--biz-primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--biz-primary) 16%, transparent);
+}
+
+.biz-input {
+  min-height: 56px;
+}
+
+.biz-textarea {
+  min-height: 136px;
+  padding-top: 18px;
+  resize: vertical;
+}
+
+/* =====================================================
+   CAROUSEL / MARQUEE / COUNTERS
+===================================================== */
+
+.biz-carousel {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 10px 4px 18px;
+}
+
+.biz-carousel > * {
+  scroll-snap-align: start;
+  min-width: 340px;
+}
+
+.biz-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+
+.biz-carousel::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 999px;
+}
+
+.biz-carousel::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--biz-primary) 50%, #cbd5e1);
+  border-radius: 999px;
+}
+
+.biz-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 20px 0;
+  color: var(--biz-primary);
+  font-size: 30px;
+  font-weight: 950;
+}
+
+.biz-marquee span {
+  display: inline-block;
+  padding-left: 44px;
+  animation: biz-marquee 18s linear infinite;
+}
+
+@keyframes biz-marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+.biz-counter {
+  text-align: center;
+  border-radius: 34px;
+  background: #fff;
+  padding: 38px;
+  box-shadow: var(--biz-shadow-soft);
+}
+
+.biz-counter strong {
+  display: block;
+  font-size: 50px;
+  color: var(--biz-primary);
+  font-weight: 950;
+}
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.biz-footer {
+  background: #020617;
+  color: #fff;
+  padding: 62px 78px;
+}
+
+.biz-footer-grid {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.biz-footer-card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 28px;
+  padding: 26px;
+}
+
+/* =====================================================
+   ANIMATIONS
+===================================================== */
 
 [data-animate="fade-up"] {
   animation: biz-fade-up 0.85s ease both;
@@ -629,25 +722,89 @@ img {
   animation: biz-blur-reveal 0.9s ease both;
 }
 
+[data-animate="float-soft"] {
+  animation: biz-float-soft 3.2s ease-in-out infinite;
+}
+
+[data-animate="pulse-soft"] {
+  animation: biz-pulse-soft 2.4s ease-in-out infinite;
+}
+
 @keyframes biz-fade-up {
-  from { opacity: 0; transform: translateY(28px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes biz-zoom-in {
-  from { opacity: 0; transform: scale(0.94); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes biz-slide-right {
-  from { opacity: 0; transform: translateX(38px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(38px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes biz-blur-reveal {
-  from { opacity: 0; filter: blur(14px); transform: translateY(18px); }
-  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+  from {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
 }
+
+@keyframes biz-float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes biz-pulse-soft {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media (max-width: 900px) {
   .biz-nav {
@@ -695,9 +852,18 @@ img {
   }
 
   .biz-dark-section,
-  .biz-strip-soft {
+  .biz-strip-soft,
+  .biz-bg-image {
     padding: 36px;
     border-radius: 34px;
+  }
+
+  .biz-time-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .biz-carousel > * {
+    min-width: 280px;
   }
 }
 `;
@@ -751,7 +917,7 @@ export const defaultWebsiteHtml = `
     </p>
   </section>
 
-  <section class="biz-section">
+  <section class="biz-section" data-bizuply-block="services">
     <p class="biz-section-kicker">שירותים</p>
     <h2 class="biz-section-title">השירותים שלי</h2>
     <div class="biz-grid-3">
@@ -784,6 +950,31 @@ export const defaultWebsiteHtml = `
           <span class="biz-price">₪900</span>
         </div>
       </article>
+    </div>
+  </section>
+
+  <section class="biz-section" data-bizuply-block="booking">
+    <div class="biz-dark-section">
+      <div class="biz-split">
+        <div>
+          <p class="biz-pill">מחובר ליומן</p>
+          <h2 class="biz-section-title" style="color:#fff;text-align:right;">קובעים תור אונליין</h2>
+          <p class="biz-card-text" style="color:rgba(255,255,255,0.72);font-size:18px;">
+            הלקוחה בוחרת שירות, תאריך ושעה פנויה — ישירות מהאתר.
+          </p>
+        </div>
+
+        <div class="biz-booking-box">
+          <div class="biz-time-grid">
+            <div class="biz-time">09:00</div>
+            <div class="biz-time">10:30</div>
+            <div class="biz-time">12:00</div>
+            <div class="biz-time">14:00</div>
+            <div class="biz-time">16:30</div>
+            <div class="biz-time">18:00</div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </div>

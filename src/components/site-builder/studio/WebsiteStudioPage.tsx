@@ -7,6 +7,7 @@ import type {
   PageTemplate,
   SiteSavePayload,
   StudioPanel,
+  StylePatch,
   ThemePalette,
   WebsiteStudioPageProps,
 } from "./types";
@@ -22,8 +23,6 @@ import {
   defaultCanvasCss,
   defaultWebsiteHtml,
 } from "./grapes/canvasTheme";
-
-type StylePatch = Record<string, string | number>;
 
 export default function WebsiteStudioPage({
   businessId,
@@ -41,6 +40,7 @@ export default function WebsiteStudioPage({
   const [device, setDevice] = useState<DeviceMode>("Desktop");
   const [slug, setSlug] = useState(initialSlug);
   const [ready, setReady] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState("");
 
   const publicUrl = useMemo(() => {
@@ -72,6 +72,7 @@ export default function WebsiteStudioPage({
     return () => {
       editor.destroy();
       editorRef.current = null;
+      setReady(false);
     };
   }, []);
 
@@ -101,6 +102,16 @@ export default function WebsiteStudioPage({
   const handleAddHtml = (html: string) => {
     runEditor((editor) => {
       editor.addComponents(html);
+
+      setTimeout(() => {
+        const wrapper = editor.getWrapper();
+        const components = wrapper?.components();
+
+        if (!components || components.length === 0) return;
+
+        const lastComponent = components.at(components.length - 1);
+        if (lastComponent) editor.select(lastComponent);
+      }, 0);
     });
   };
 
@@ -111,6 +122,7 @@ export default function WebsiteStudioPage({
     runEditor((editor) => {
       editor.setComponents(template.html);
       editor.setStyle(defaultCanvasCss);
+      editor.select(null);
     });
   };
 
@@ -154,38 +166,53 @@ export default function WebsiteStudioPage({
     runEditor((editor) => {
       editor.setComponents(defaultWebsiteHtml);
       editor.setStyle(defaultCanvasCss);
+      editor.select(null);
     });
   };
 
   const handleSave = async (published: boolean) => {
-    if (!editorRef.current || !slugValid) return;
+    if (!editorRef.current || !slugValid || saving) return;
 
-    const editor = editorRef.current;
+    setSaving(true);
 
-    const payload: SiteSavePayload = {
-      slug,
-      published,
-      html: editor.getHtml(),
-      css: editor.getCss(),
-      projectData: editor.getProjectData(),
-      updatedAt: new Date().toISOString(),
-    };
+    try {
+      const editor = editorRef.current;
 
-    localStorage.setItem(
-      `bizuply-mini-site-${businessId || "demo"}`,
-      JSON.stringify(payload)
-    );
+      const payload: SiteSavePayload = {
+        slug,
+        published,
+        html: editor.getHtml(),
+        css: editor.getCss(),
+        projectData: editor.getProjectData(),
+        updatedAt: new Date().toISOString(),
+        status: published ? "published" : "draft",
+        domain: {
+          slug,
+          published,
+        },
+      };
 
-    await onSave?.(payload);
+      localStorage.setItem(
+        `bizuply-mini-site-${businessId || "demo"}`,
+        JSON.stringify(payload)
+      );
 
-    setSavedAt(
-      new Date().toLocaleTimeString("he-IL", {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    );
+      await onSave?.(payload);
 
-    console.log("BIZUPLY SITE SAVED:", payload);
+      setSavedAt(
+        new Date().toLocaleTimeString("he-IL", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      );
+
+      console.log("BIZUPLY SITE SAVED:", payload);
+    } catch (error) {
+      console.error("BIZUPLY SITE SAVE ERROR:", error);
+      alert("אירעה שגיאה בשמירת האתר. נסי שוב.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleApplyStyle = (style: StylePatch) => {
@@ -210,7 +237,11 @@ export default function WebsiteStudioPage({
         return;
       }
 
-      selected.clone();
+      const cloned = selected.clone();
+
+      if (cloned) {
+        editor.select(cloned);
+      }
     });
   };
 
@@ -222,6 +253,9 @@ export default function WebsiteStudioPage({
         alert("בחרי אלמנט למחיקה");
         return;
       }
+
+      const ok = window.confirm("למחוק את האלמנט הנבחר?");
+      if (!ok) return;
 
       selected.remove();
     });
@@ -317,7 +351,9 @@ export default function WebsiteStudioPage({
         return;
       }
 
-      const attributes = selected.getAttributes();
+      const attributes = {
+        ...selected.getAttributes(),
+      };
 
       delete attributes["data-animate"];
 
@@ -345,7 +381,7 @@ export default function WebsiteStudioPage({
           slugValid={slugValid}
           device={device}
           setDevice={handleSetDevice}
-          ready={ready}
+          ready={ready && !saving}
           onUndo={handleUndo}
           onRedo={handleRedo}
           onPreview={handlePreview}
@@ -361,7 +397,13 @@ export default function WebsiteStudioPage({
           </div>
         )}
 
-        {savedAt && (
+        {saving && (
+          <div className="z-40 border-b border-violet-100 bg-violet-50 px-4 py-2 text-center text-xs font-black text-violet-700">
+            שומר את האתר...
+          </div>
+        )}
+
+        {savedAt && !saving && (
           <div className="z-40 border-b border-emerald-100 bg-emerald-50 px-4 py-2 text-center text-xs font-black text-emerald-700">
             נשמר בהצלחה בשעה {savedAt} · {publicUrl}
           </div>

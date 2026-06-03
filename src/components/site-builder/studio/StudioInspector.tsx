@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import type { InspectorTab } from "./types";
-
-type StylePatch = Record<string, string | number>;
+import type { InspectorTab, StylePatch } from "./types";
 
 type Props = {
   activeTab: InspectorTab;
@@ -13,19 +11,8 @@ type Props = {
   onDelete: () => void;
   onBringForward: () => void;
   onSendBackward: () => void;
-
-  /**
-   * יחובר ב־WebsiteStudioPage לקומפוננטה הנבחרת ב־GrapesJS:
-   * selected.addStyle(style)
-   */
   onApplyStyle?: (style: StylePatch) => void;
-
-  /**
-   * יחובר ב־WebsiteStudioPage:
-   * selected.addAttributes({ "data-animate": value })
-   */
   onSetAnimation?: (animation: string) => void;
-
   onClearAnimation?: () => void;
 };
 
@@ -41,26 +28,11 @@ const colorPresets = [
 ];
 
 const backgroundPresets = [
-  {
-    label: "לבן נקי",
-    value: "#FFFFFF",
-  },
-  {
-    label: "סגול רך",
-    value: "#F5F3FF",
-  },
-  {
-    label: "ורוד יוקרתי",
-    value: "#FFF1F5",
-  },
-  {
-    label: "שמנת",
-    value: "#FFFBF6",
-  },
-  {
-    label: "כהה",
-    value: "#020617",
-  },
+  { label: "לבן נקי", value: "#FFFFFF" },
+  { label: "סגול רך", value: "#F5F3FF" },
+  { label: "ורוד יוקרתי", value: "#FFF1F5" },
+  { label: "שמנת", value: "#FFFBF6" },
+  { label: "כהה", value: "#020617" },
   {
     label: "גרדיאנט סגול",
     value: "linear-gradient(135deg, #8B5CF6, #EC4899)",
@@ -69,25 +41,17 @@ const backgroundPresets = [
     label: "גרדיאנט נקי",
     value: "linear-gradient(135deg, #FFFFFF, #F5F3FF)",
   },
+  {
+    label: "גרדיאנט שמנת",
+    value: "linear-gradient(135deg, #FFFBF6, #F7E7D4)",
+  },
 ];
 
 const shadowPresets = [
-  {
-    label: "ללא",
-    value: "none",
-  },
-  {
-    label: "עדין",
-    value: "0 18px 50px rgba(15,23,42,0.08)",
-  },
-  {
-    label: "יוקרתי",
-    value: "0 34px 110px rgba(15,23,42,0.14)",
-  },
-  {
-    label: "זוהר",
-    value: "0 30px 90px rgba(139,92,246,0.28)",
-  },
+  { label: "ללא", value: "none" },
+  { label: "עדין", value: "0 18px 50px rgba(15,23,42,0.08)" },
+  { label: "יוקרתי", value: "0 34px 110px rgba(15,23,42,0.14)" },
+  { label: "זוהר", value: "0 30px 90px rgba(139,92,246,0.28)" },
 ];
 
 const animationPresets = [
@@ -116,6 +80,29 @@ const animationPresets = [
     value: "blur-reveal",
     description: "חשיפה עם טשטוש יוקרתי",
   },
+  {
+    label: "Float Soft",
+    value: "float-soft",
+    description: "תנועה עדינה למעלה ולמטה",
+  },
+  {
+    label: "Pulse Soft",
+    value: "pulse-soft",
+    description: "פעימה עדינה לאלמנט",
+  },
+];
+
+const fontOptions = [
+  "Heebo",
+  "Assistant",
+  "Rubik",
+  "Alef",
+  "Varela Round",
+  "Noto Sans Hebrew",
+  "Poppins",
+  "Inter",
+  "DM Sans",
+  "Playfair Display",
 ];
 
 export default function StudioInspector({
@@ -160,8 +147,8 @@ export default function StudioInspector({
   const updateAccentColor = (value: string) => {
     setAccentColor(value);
     applyStyle({
-      color: value,
       "border-color": value,
+      "--biz-primary": value,
     });
   };
 
@@ -200,6 +187,23 @@ export default function StudioInspector({
     applyStyle({ opacity: value / 100 });
   };
 
+  const resetSelectedStyle = () => {
+    applyStyle({
+      color: "",
+      background: "",
+      "background-color": "",
+      "background-image": "",
+      "border-radius": "",
+      padding: "",
+      margin: "",
+      "box-shadow": "",
+      border: "",
+      transform: "",
+      filter: "",
+      opacity: 1,
+    });
+  };
+
   return (
     <aside className="flex min-h-0 flex-col border-r border-slate-200 bg-white">
       <div className="flex h-14 shrink-0 border-b border-slate-200">
@@ -227,7 +231,7 @@ export default function StudioInspector({
           <>
             <PanelTitle
               title="עיצוב אלמנט"
-              subtitle="שני צבע טקסט, רקע, סקשן, בלוק, ריווח, פינות, צל ותמונת רקע"
+              subtitle="שינוי צבעים, רקעים, פונטים, פינות, צל, גודל וריווח לאלמנט הנבחר"
             />
 
             <div className="mb-5 grid grid-cols-2 gap-2">
@@ -235,6 +239,7 @@ export default function StudioInspector({
               <ActionButton onClick={onDuplicate}>שכפול</ActionButton>
               <ActionButton onClick={onBringForward}>קדימה</ActionButton>
               <ActionButton onClick={onSendBackward}>אחורה</ActionButton>
+              <ActionButton onClick={resetSelectedStyle}>איפוס עיצוב</ActionButton>
               <ActionButton danger onClick={onDelete}>
                 מחיקה
               </ActionButton>
@@ -259,15 +264,36 @@ export default function StudioInspector({
                 onChange={updateAccentColor}
               />
 
-              <div className="mt-4 grid grid-cols-4 gap-2">
+              <p className="mb-2 mt-4 text-xs font-black text-slate-500">
+                צבעים מהירים לטקסט
+              </p>
+
+              <div className="grid grid-cols-4 gap-2">
                 {colorPresets.map((color) => (
                   <button
-                    key={color}
+                    key={`text-${color}`}
                     type="button"
                     onClick={() => updateTextColor(color)}
                     className="h-10 rounded-2xl border border-slate-200 shadow-sm transition hover:scale-105"
                     style={{ backgroundColor: color }}
-                    title={color}
+                    title={`טקסט ${color}`}
+                  />
+                ))}
+              </div>
+
+              <p className="mb-2 mt-4 text-xs font-black text-slate-500">
+                צבעים מהירים לרקע
+              </p>
+
+              <div className="grid grid-cols-4 gap-2">
+                {colorPresets.map((color) => (
+                  <button
+                    key={`background-${color}`}
+                    type="button"
+                    onClick={() => updateBackgroundColor(color)}
+                    className="h-10 rounded-2xl border border-slate-200 shadow-sm transition hover:scale-105"
+                    style={{ backgroundColor: color }}
+                    title={`רקע ${color}`}
                   />
                 ))}
               </div>
@@ -335,16 +361,7 @@ export default function StudioInspector({
               />
 
               <div className="mt-4 grid grid-cols-2 gap-2">
-                {[
-                  "Heebo",
-                  "Assistant",
-                  "Rubik",
-                  "Alef",
-                  "Varela Round",
-                  "Noto Sans Hebrew",
-                  "Poppins",
-                  "Playfair Display",
-                ].map((font) => (
+                {fontOptions.map((font) => (
                   <button
                     key={font}
                     type="button"
@@ -397,16 +414,14 @@ export default function StudioInspector({
             </DesignSection>
 
             <DesignSection title="צל וגבול">
-              <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
                 {shadowPresets.map((shadow) => (
-                  <button
+                  <ActionButton
                     key={shadow.label}
-                    type="button"
                     onClick={() => applyStyle({ "box-shadow": shadow.value })}
-                    className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-right text-xs font-black text-slate-700 transition hover:border-violet-300 hover:bg-violet-50"
                   >
                     {shadow.label}
-                  </button>
+                  </ActionButton>
                 ))}
               </div>
 
@@ -452,6 +467,20 @@ export default function StudioInspector({
                 </ActionButton>
                 <ActionButton onClick={() => applyStyle({ "max-width": "1180px" })}>
                   רוחב אתר
+                </ActionButton>
+                <ActionButton onClick={() => applyStyle({ display: "block" })}>
+                  בלוק
+                </ActionButton>
+                <ActionButton
+                  onClick={() =>
+                    applyStyle({
+                      display: "flex",
+                      "align-items": "center",
+                      "justify-content": "center",
+                    })
+                  }
+                >
+                  Flex מרכז
                 </ActionButton>
               </div>
             </DesignSection>

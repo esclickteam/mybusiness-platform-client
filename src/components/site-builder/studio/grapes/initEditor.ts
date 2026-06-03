@@ -1,5 +1,6 @@
 import grapesjs, { Editor } from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
+
 import { defaultCanvasCss, defaultWebsiteHtml } from "./canvasTheme";
 import { studioElements } from "../data/elementLibrary";
 
@@ -11,6 +12,41 @@ type InitEditorArgs = {
   onReady?: (editor: Editor) => void;
   onSelect?: () => void;
 };
+
+const defaultAssets = [
+  {
+    src: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1400&q=90",
+    name: "Beauty hero",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1400&q=90",
+    name: "Beauty gallery",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1400&q=90",
+    name: "Spa / Salon",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1400&q=90",
+    name: "Clinic",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=90",
+    name: "Business office",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1400&q=90",
+    name: "Store",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1400&q=90",
+    name: "Product",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1400&q=90",
+    name: "Restaurant",
+  },
+];
 
 export function initBizuplyEditor({
   container,
@@ -26,6 +62,9 @@ export function initBizuplyEditor({
     width: "100%",
     fromElement: false,
     storageManager: false,
+    undoManager: {
+      trackSelection: true,
+    },
 
     panels: {
       defaults: [],
@@ -60,6 +99,7 @@ export function initBizuplyEditor({
             "background-image",
             "background-size",
             "background-position",
+            "background-repeat",
             "opacity",
           ],
         },
@@ -88,9 +128,22 @@ export function initBizuplyEditor({
             "left",
             "width",
             "height",
+            "min-width",
             "min-height",
             "max-width",
+            "max-height",
             "z-index",
+          ],
+        },
+        {
+          name: "Flex / Grid",
+          open: false,
+          properties: [
+            "flex-direction",
+            "align-items",
+            "justify-content",
+            "gap",
+            "grid-template-columns",
           ],
         },
         {
@@ -101,40 +154,59 @@ export function initBizuplyEditor({
         {
           name: "פינות, גבול וצל",
           open: true,
-          properties: ["border-radius", "border", "box-shadow"],
+          properties: [
+            "border-radius",
+            "border",
+            "border-color",
+            "box-shadow",
+          ],
         },
         {
           name: "אפקטים ותנועה",
           open: false,
-          properties: ["transform", "transition", "filter", "backdrop-filter"],
+          properties: [
+            "transform",
+            "transition",
+            "filter",
+            "backdrop-filter",
+            "animation",
+          ],
         },
       ],
     },
 
     assetManager: {
       upload: false,
-      assets: [
-        {
-          src: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1400&q=90",
-          name: "Beauty hero",
-        },
-        {
-          src: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&q=90",
-          name: "Beauty gallery",
-        },
-        {
-          src: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=90",
-          name: "Spa",
-        },
-      ],
+      autoAdd: true,
+      assets: defaultAssets,
     },
 
     deviceManager: {
       devices: [
-        { name: "Desktop", width: "" },
-        { name: "Tablet", width: "768px", widthMedia: "992px" },
-        { name: "Mobile", width: "390px", widthMedia: "480px" },
+        {
+          name: "Desktop",
+          width: "",
+        },
+        {
+          name: "Tablet",
+          width: "768px",
+          widthMedia: "992px",
+        },
+        {
+          name: "Mobile",
+          width: "390px",
+          widthMedia: "480px",
+        },
       ],
+    },
+
+    canvas: {
+      styles: [],
+      scripts: [],
+    },
+
+    domComponents: {
+      processor: undefined,
     },
 
     i18n: {
@@ -154,10 +226,26 @@ export function initBizuplyEditor({
             modalTitle: "ניהול מדיה",
             uploadTitle: "גררי תמונות לכאן",
           },
+          domComponents: {
+            names: {
+              "": "אלמנט",
+              wrapper: "עמוד",
+              text: "טקסט",
+              image: "תמונה",
+              link: "קישור",
+              section: "סקשן",
+              button: "כפתור",
+            },
+          },
         },
       },
     },
   });
+
+  registerDefaultTraits(editor);
+  registerComponentDefaults(editor);
+  registerCommands(editor);
+  registerKeyboardShortcuts(editor);
 
   editor.on("load", () => {
     editor.setComponents(defaultWebsiteHtml);
@@ -177,14 +265,343 @@ export function initBizuplyEditor({
         outline: 3px solid #8B5CF6 !important;
         outline-offset: 3px !important;
       }
+
+      .gjs-hovered {
+        outline: 2px dashed rgba(139, 92, 246, 0.55) !important;
+        outline-offset: 2px !important;
+      }
+
+      .gjs-toolbar {
+        border-radius: 16px !important;
+        overflow: hidden !important;
+      }
+
+      .gjs-toolbar-item {
+        font-weight: 900 !important;
+      }
     `);
 
+    editor.select(null);
     onReady?.(editor);
   });
 
-  editor.on("component:selected", () => {
+  editor.on("component:selected", (component) => {
+    if (!component) return;
+
+    ensureComponentEditable(component);
     onSelect?.();
   });
 
+  editor.on("component:add", (component) => {
+    ensureComponentEditable(component);
+  });
+
+  editor.on("component:mount", (component) => {
+    ensureComponentEditable(component);
+  });
+
   return editor;
+}
+
+/* =====================================================
+   COMPONENT DEFAULTS
+===================================================== */
+
+function registerComponentDefaults(editor: Editor) {
+  const componentTypes = editor.DomComponents.getTypes();
+
+  componentTypes.forEach((type) => {
+    const model = type.model;
+
+    if (!model) return;
+
+    const defaults = model.prototype.defaults || {};
+
+    model.prototype.defaults = {
+      ...defaults,
+      draggable: true,
+      droppable: true,
+      copyable: true,
+      removable: true,
+      resizable: {
+        tl: true,
+        tc: true,
+        tr: true,
+        cl: true,
+        cr: true,
+        bl: true,
+        bc: true,
+        br: true,
+        keyWidth: "width",
+        keyHeight: "height",
+      },
+      editable: true,
+      stylable: true,
+      highlightable: true,
+      hoverable: true,
+      selectable: true,
+    };
+  });
+}
+
+function ensureComponentEditable(component: any) {
+  component.set({
+    draggable: true,
+    droppable: true,
+    copyable: true,
+    removable: true,
+    editable: true,
+    stylable: true,
+    highlightable: true,
+    hoverable: true,
+    selectable: true,
+    resizable: {
+      tl: true,
+      tc: true,
+      tr: true,
+      cl: true,
+      cr: true,
+      bl: true,
+      bc: true,
+      br: true,
+      keyWidth: "width",
+      keyHeight: "height",
+    },
+    toolbar: [
+      {
+        attributes: {
+          class: "fa fa-arrows",
+          title: "גרירה",
+        },
+        command: "tlb-move",
+      },
+      {
+        attributes: {
+          class: "fa fa-clone",
+          title: "שכפול",
+        },
+        command: "bizuply-duplicate",
+      },
+      {
+        attributes: {
+          class: "fa fa-trash",
+          title: "מחיקה",
+        },
+        command: "bizuply-delete",
+      },
+    ],
+  });
+}
+
+/* =====================================================
+   TRAITS
+===================================================== */
+
+function registerDefaultTraits(editor: Editor) {
+  const domComponents = editor.DomComponents;
+
+  const linkType = domComponents.getType("link");
+  const imageType = domComponents.getType("image");
+  const textType = domComponents.getType("text");
+
+  if (linkType?.model) {
+    const defaults = linkType.model.prototype.defaults || {};
+
+    linkType.model.prototype.defaults = {
+      ...defaults,
+      traits: [
+        {
+          type: "text",
+          name: "href",
+          label: "קישור",
+          placeholder: "https://...",
+        },
+        {
+          type: "select",
+          name: "target",
+          label: "פתיחה",
+          options: [
+            { id: "", label: "באותו חלון" },
+            { id: "_blank", label: "בטאב חדש" },
+          ],
+        },
+        {
+          type: "text",
+          name: "title",
+          label: "Title",
+        },
+      ],
+    };
+  }
+
+  if (imageType?.model) {
+    const defaults = imageType.model.prototype.defaults || {};
+
+    imageType.model.prototype.defaults = {
+      ...defaults,
+      traits: [
+        {
+          type: "text",
+          name: "src",
+          label: "כתובת תמונה",
+        },
+        {
+          type: "text",
+          name: "alt",
+          label: "טקסט חלופי",
+        },
+        {
+          type: "text",
+          name: "title",
+          label: "Title",
+        },
+      ],
+    };
+  }
+
+  if (textType?.model) {
+    const defaults = textType.model.prototype.defaults || {};
+
+    textType.model.prototype.defaults = {
+      ...defaults,
+      editable: true,
+      traits: [
+        {
+          type: "text",
+          name: "id",
+          label: "ID",
+        },
+        {
+          type: "text",
+          name: "class",
+          label: "Class",
+        },
+      ],
+    };
+  }
+}
+
+/* =====================================================
+   COMMANDS
+===================================================== */
+
+function registerCommands(editor: Editor) {
+  editor.Commands.add("bizuply-duplicate", {
+    run(currentEditor) {
+      const selected = currentEditor.getSelected();
+
+      if (!selected) return;
+
+      const cloned = selected.clone();
+
+      if (cloned) {
+        currentEditor.select(cloned);
+      }
+    },
+  });
+
+  editor.Commands.add("bizuply-delete", {
+    run(currentEditor) {
+      const selected = currentEditor.getSelected();
+
+      if (!selected) return;
+
+      selected.remove();
+    },
+  });
+
+  editor.Commands.add("bizuply-bring-forward", {
+    run(currentEditor) {
+      const selected = currentEditor.getSelected();
+
+      if (!selected) return;
+
+      const currentStyle = selected.getStyle();
+      const currentZIndex = Number(currentStyle["z-index"] || 1);
+
+      selected.addStyle({
+        position: currentStyle.position || "relative",
+        "z-index": currentZIndex + 1,
+      });
+    },
+  });
+
+  editor.Commands.add("bizuply-send-backward", {
+    run(currentEditor) {
+      const selected = currentEditor.getSelected();
+
+      if (!selected) return;
+
+      const currentStyle = selected.getStyle();
+      const currentZIndex = Number(currentStyle["z-index"] || 1);
+
+      selected.addStyle({
+        position: currentStyle.position || "relative",
+        "z-index": Math.max(0, currentZIndex - 1),
+      });
+    },
+  });
+
+  editor.Commands.add("bizuply-wrap-section", {
+    run(currentEditor) {
+      const selected = currentEditor.getSelected();
+
+      if (!selected) return;
+
+      const html = selected.toHTML();
+
+      selected.replaceWith(`
+        <section class="biz-section">
+          ${html}
+        </section>
+      `);
+    },
+  });
+
+  editor.Commands.add("bizuply-set-bg-image", {
+    run(currentEditor) {
+      const selected = currentEditor.getSelected();
+
+      if (!selected) {
+        alert("בחרי אלמנט כדי להגדיר תמונת רקע");
+        return;
+      }
+
+      const url = window.prompt("הדביקי כתובת תמונה:");
+      if (!url) return;
+
+      selected.addStyle({
+        "background-image": `linear-gradient(rgba(2,6,23,0.38), rgba(2,6,23,0.38)), url("${url}")`,
+        "background-size": "cover",
+        "background-position": "center",
+        "background-repeat": "no-repeat",
+      });
+    },
+  });
+}
+
+/* =====================================================
+   SHORTCUTS
+===================================================== */
+
+function registerKeyboardShortcuts(editor: Editor) {
+  editor.Keymaps.add("bizuply:delete", "backspace, delete", (currentEditor) => {
+    const selected = currentEditor.getSelected();
+
+    if (!selected) return;
+
+    selected.remove();
+  });
+
+  editor.Keymaps.add("bizuply:duplicate", "ctrl+d, cmd+d", (currentEditor) => {
+    currentEditor.runCommand("bizuply-duplicate");
+  });
+
+  editor.Keymaps.add("bizuply:undo", "ctrl+z, cmd+z", (currentEditor) => {
+    currentEditor.UndoManager.undo();
+  });
+
+  editor.Keymaps.add("bizuply:redo", "ctrl+shift+z, cmd+shift+z", (currentEditor) => {
+    currentEditor.UndoManager.redo();
+  });
 }
