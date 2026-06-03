@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   CalendarDays,
   ChevronLeft,
@@ -30,6 +31,7 @@ type Appointment = {
     email?: string;
   };
   crmClientId?: {
+    _id?: string;
     fullName?: string;
     phone?: string;
     email?: string;
@@ -142,6 +144,10 @@ function getServiceName(appointment: Appointment): string {
   );
 }
 
+function getAppointmentId(appointment: Appointment): string {
+  return String(appointment._id || appointment.id || "");
+}
+
 function sortAppointmentsByTime(a: Appointment, b: Appointment) {
   return String(a.time || "99:99").localeCompare(String(b.time || "99:99"));
 }
@@ -154,6 +160,9 @@ const CalendarView = React.memo(
     t = fallbackT,
     locale = "en-US",
   }: CalendarViewProps) => {
+    const navigate = useNavigate();
+    const { businessId } = useParams<{ businessId: string }>();
+
     const today = useMemo(() => new Date(), []);
     const todayStr = useMemo(() => getTodayIso(), []);
 
@@ -247,6 +256,31 @@ const CalendarView = React.memo(
       });
     };
 
+    const handleAppointmentClick = (
+      event: React.MouseEvent<HTMLButtonElement>,
+      appointment: Appointment
+    ) => {
+      event.stopPropagation();
+
+      if (!businessId) return;
+
+      const appointmentId = getAppointmentId(appointment);
+      const basePath = `/business/${businessId}/dashboard/crm/appointments`;
+
+      navigate(
+        appointmentId
+          ? `${basePath}?appointmentId=${appointmentId}`
+          : basePath,
+        {
+          state: {
+            appointmentId,
+            appointment,
+            fromCalendar: true,
+          },
+        }
+      );
+    };
+
     return (
       <section
         dir={isRtl ? "rtl" : "ltr"}
@@ -327,12 +361,18 @@ const CalendarView = React.memo(
               cell.appointments.length - visibleAppointments.length;
 
             return (
-              <button
+              <div
                 key={cell.key}
-                type="button"
+                role="button"
+                tabIndex={0}
                 onClick={() => onDateClick?.(cell.dateStr)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    onDateClick?.(cell.dateStr);
+                  }
+                }}
                 className={`
-                  relative flex min-h-[118px] min-w-0 flex-col rounded-xl border p-2 text-start
+                  relative flex min-h-[118px] min-w-0 cursor-pointer flex-col rounded-xl border p-2 text-start
                   transition sm:min-h-[145px] sm:p-3 xl:min-h-[160px]
                   hover:border-violet-200 hover:bg-violet-50/30
                   ${
@@ -371,16 +411,22 @@ const CalendarView = React.memo(
                         eventColorClasses[index % eventColorClasses.length];
 
                       return (
-                        <div
+                        <button
                           key={
                             appointment._id ||
                             appointment.id ||
                             `${cell.dateStr}-${appointment.time}-${index}`
                           }
+                          type="button"
+                          onClick={(event) =>
+                            handleAppointmentClick(event, appointment)
+                          }
                           className={`
                             w-full min-w-0 rounded-xl border px-3 py-2 text-left shadow-sm
+                            transition hover:-translate-y-0.5 hover:shadow-md
                             ${colorClass}
                           `}
+                          title="Open appointment in CRM"
                         >
                           {appointment.time && (
                             <p className="truncate text-[10px] font-black leading-4 opacity-85 sm:text-[11px]">
@@ -395,7 +441,7 @@ const CalendarView = React.memo(
                           <p className="truncate text-[10px] font-bold leading-4 opacity-85 sm:text-[11px]">
                             {getServiceName(appointment)}
                           </p>
-                        </div>
+                        </button>
                       );
                     })}
 
@@ -410,7 +456,7 @@ const CalendarView = React.memo(
                 ) : (
                   <span className="h-1" />
                 )}
-              </button>
+              </div>
             );
           })}
         </div>
