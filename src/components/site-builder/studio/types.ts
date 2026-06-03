@@ -1,6 +1,14 @@
 import type { Editor } from "grapesjs";
 
+/* =====================================================
+   DEVICE / VIEW
+===================================================== */
+
 export type DeviceMode = "Desktop" | "Tablet" | "Mobile";
+
+/* =====================================================
+   MAIN STUDIO PANELS
+===================================================== */
 
 export type StudioPanel =
   | "templates"
@@ -18,7 +26,24 @@ export type StudioPanel =
   | "seo"
   | "settings";
 
+/* =====================================================
+   INSPECTOR
+===================================================== */
+
 export type InspectorTab = "design" | "settings" | "animations";
+
+export type StylePatch = Record<string, string | number>;
+
+export type AnimationPresetValue =
+  | ""
+  | "fade-up"
+  | "zoom-in"
+  | "slide-right"
+  | "blur-reveal";
+
+/* =====================================================
+   ELEMENT LIBRARY
+===================================================== */
 
 export type ElementCategory =
   | "text"
@@ -51,6 +76,10 @@ export type StudioElement = {
   html: string;
 };
 
+/* =====================================================
+   SECTION TEMPLATES
+===================================================== */
+
 export type SectionCategory =
   | "welcome"
   | "about"
@@ -73,6 +102,10 @@ export type SectionTemplate = {
   html: string;
 };
 
+/* =====================================================
+   PAGE TEMPLATES
+===================================================== */
+
 export type PageTemplate = {
   id: string;
   name: string;
@@ -81,6 +114,10 @@ export type PageTemplate = {
   preview: string;
   html: string;
 };
+
+/* =====================================================
+   THEME / BRAND DESIGN
+===================================================== */
 
 export type ThemePalette = {
   id: string;
@@ -100,6 +137,47 @@ export type ThemePalette = {
   };
 };
 
+export type FontOption =
+  | "Heebo"
+  | "Assistant"
+  | "Rubik"
+  | "Alef"
+  | "Varela Round"
+  | "Noto Sans Hebrew"
+  | "Poppins"
+  | "Inter"
+  | "DM Sans"
+  | "Playfair Display"
+  | "Lora"
+  | "Libre Baskerville";
+
+/* =====================================================
+   SMART BIZUPLY BLOCKS
+===================================================== */
+
+export type BizuplySmartBlockType =
+  | "services"
+  | "booking"
+  | "products"
+  | "lead-form"
+  | "customer-club"
+  | "reviews"
+  | "faq"
+  | "coupons"
+  | "contact"
+  | "whatsapp";
+
+export type BizuplySmartBlock = {
+  type: BizuplySmartBlockType;
+  label: string;
+  description: string;
+  html: string;
+};
+
+/* =====================================================
+   SAVE / PUBLISH
+===================================================== */
+
 export type SiteSavePayload = {
   slug: string;
   published: boolean;
@@ -114,5 +192,9 @@ export type WebsiteStudioPageProps = {
   initialSlug?: string;
   onSave?: (payload: SiteSavePayload) => Promise<void> | void;
 };
+
+/* =====================================================
+   GRAPES
+===================================================== */
 
 export type GrapesEditor = Editor;

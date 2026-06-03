@@ -17,7 +17,13 @@ import StudioCanvas from "./StudioCanvas";
 import StudioInspector from "./StudioInspector";
 
 import { initBizuplyEditor } from "./grapes/initEditor";
-import { createCanvasCss, defaultCanvasCss, defaultWebsiteHtml } from "./grapes/canvasTheme";
+import {
+  createCanvasCss,
+  defaultCanvasCss,
+  defaultWebsiteHtml,
+} from "./grapes/canvasTheme";
+
+type StylePatch = Record<string, string | number>;
 
 export default function WebsiteStudioPage({
   businessId,
@@ -74,9 +80,22 @@ export default function WebsiteStudioPage({
     callback(editorRef.current);
   };
 
+  const getSelectedOrWrapper = (editor: Editor) => {
+    const selected = editor.getSelected();
+
+    if (selected) return selected;
+
+    const wrapper = editor.getWrapper();
+
+    return wrapper || null;
+  };
+
   const handleSetDevice = (nextDevice: DeviceMode) => {
     setDevice(nextDevice);
-    runEditor((editor) => editor.setDevice(nextDevice));
+
+    runEditor((editor) => {
+      editor.setDevice(nextDevice);
+    });
   };
 
   const handleAddHtml = (html: string) => {
@@ -102,23 +121,34 @@ export default function WebsiteStudioPage({
   };
 
   const handleOpenMedia = () => {
-    runEditor((editor) => editor.runCommand("open-assets"));
+    runEditor((editor) => {
+      editor.runCommand("open-assets");
+    });
   };
 
   const handlePreview = () => {
-    runEditor((editor) => editor.runCommand("preview"));
+    runEditor((editor) => {
+      editor.runCommand("preview");
+    });
   };
 
   const handleUndo = () => {
-    runEditor((editor) => editor.UndoManager.undo());
+    runEditor((editor) => {
+      editor.UndoManager.undo();
+    });
   };
 
   const handleRedo = () => {
-    runEditor((editor) => editor.UndoManager.redo());
+    runEditor((editor) => {
+      editor.UndoManager.redo();
+    });
   };
 
   const handleReset = () => {
-    const ok = window.confirm("למחוק את כל העיצוב הנוכחי ולהחזיר לברירת מחדל?");
+    const ok = window.confirm(
+      "למחוק את כל העיצוב הנוכחי ולהחזיר לברירת מחדל?"
+    );
+
     if (!ok) return;
 
     runEditor((editor) => {
@@ -158,10 +188,28 @@ export default function WebsiteStudioPage({
     console.log("BIZUPLY SITE SAVED:", payload);
   };
 
+  const handleApplyStyle = (style: StylePatch) => {
+    runEditor((editor) => {
+      const target = getSelectedOrWrapper(editor);
+
+      if (!target) {
+        alert("בחרי אלמנט באתר כדי לערוך אותו");
+        return;
+      }
+
+      target.addStyle(style);
+    });
+  };
+
   const handleDuplicateSelected = () => {
     runEditor((editor) => {
       const selected = editor.getSelected();
-      if (!selected) return;
+
+      if (!selected) {
+        alert("בחרי אלמנט לשכפול");
+        return;
+      }
+
       selected.clone();
     });
   };
@@ -169,7 +217,12 @@ export default function WebsiteStudioPage({
   const handleDeleteSelected = () => {
     runEditor((editor) => {
       const selected = editor.getSelected();
-      if (!selected) return;
+
+      if (!selected) {
+        alert("בחרי אלמנט למחיקה");
+        return;
+      }
+
       selected.remove();
     });
   };
@@ -177,12 +230,17 @@ export default function WebsiteStudioPage({
   const handleBringForward = () => {
     runEditor((editor) => {
       const selected = editor.getSelected();
-      if (!selected) return;
+
+      if (!selected) {
+        alert("בחרי אלמנט");
+        return;
+      }
 
       const current = selected.getStyle();
       const zIndex = Number(current["z-index"] || 1);
 
       selected.addStyle({
+        position: current.position || "relative",
         "z-index": zIndex + 1,
       });
     });
@@ -191,12 +249,17 @@ export default function WebsiteStudioPage({
   const handleSendBackward = () => {
     runEditor((editor) => {
       const selected = editor.getSelected();
-      if (!selected) return;
+
+      if (!selected) {
+        alert("בחרי אלמנט");
+        return;
+      }
 
       const current = selected.getStyle();
       const zIndex = Number(current["z-index"] || 1);
 
       selected.addStyle({
+        position: current.position || "relative",
         "z-index": Math.max(0, zIndex - 1),
       });
     });
@@ -204,16 +267,66 @@ export default function WebsiteStudioPage({
 
   const handleSetBackgroundImage = () => {
     const url = window.prompt("הדביקי כתובת תמונה לרקע הבלוק:");
+
     if (!url) return;
 
     runEditor((editor) => {
-      const selected = editor.getSelected();
-      if (!selected) return;
+      const target = getSelectedOrWrapper(editor);
 
-      selected.addStyle({
-        "background-image": `linear-gradient(rgba(2,6,23,0.35), rgba(2,6,23,0.35)), url('${url}')`,
+      if (!target) {
+        alert("בחרי בלוק / סקשן כדי להגדיר לו תמונת רקע");
+        return;
+      }
+
+      target.addStyle({
+        "background-image": `linear-gradient(rgba(2,6,23,0.38), rgba(2,6,23,0.38)), url("${url}")`,
         "background-size": "cover",
         "background-position": "center",
+        "background-repeat": "no-repeat",
+      });
+    });
+  };
+
+  const handleSetAnimation = (animation: string) => {
+    runEditor((editor) => {
+      const selected = editor.getSelected();
+
+      if (!selected) {
+        alert("בחרי אלמנט / סקשן כדי להוסיף לו תנועה");
+        return;
+      }
+
+      selected.addAttributes({
+        "data-animate": animation,
+      });
+
+      selected.addStyle({
+        "animation-duration": "0.85s",
+        "animation-timing-function": "ease",
+        "animation-fill-mode": "both",
+      });
+    });
+  };
+
+  const handleClearAnimation = () => {
+    runEditor((editor) => {
+      const selected = editor.getSelected();
+
+      if (!selected) {
+        alert("בחרי אלמנט / סקשן כדי להסיר ממנו תנועה");
+        return;
+      }
+
+      const attributes = selected.getAttributes();
+
+      delete attributes["data-animate"];
+
+      selected.setAttributes(attributes);
+
+      selected.addStyle({
+        animation: "none",
+        transform: "none",
+        filter: "none",
       });
     });
   };
@@ -254,7 +367,7 @@ export default function WebsiteStudioPage({
           </div>
         )}
 
-        <div className="grid min-h-0 flex-1 grid-cols-[522px_minmax(0,1fr)_390px]">
+        <div className="grid min-h-0 flex-1 grid-cols-[522px_minmax(0,1fr)_430px]">
           <StudioSidebar
             activePanel={activePanel}
             setActivePanel={setActivePanel}
@@ -280,6 +393,9 @@ export default function WebsiteStudioPage({
             onDelete={handleDeleteSelected}
             onBringForward={handleBringForward}
             onSendBackward={handleSendBackward}
+            onApplyStyle={handleApplyStyle}
+            onSetAnimation={handleSetAnimation}
+            onClearAnimation={handleClearAnimation}
           />
         </div>
       </div>
@@ -326,6 +442,18 @@ const studioShellCss = `
     box-shadow: 0 18px 45px rgba(15,23,42,0.20) !important;
   }
 
+  .gjs-badge {
+    background: #8b5cf6 !important;
+    color: #ffffff !important;
+    border-radius: 999px !important;
+    padding: 4px 8px !important;
+    font-weight: 900 !important;
+  }
+
+  .gjs-resizer-h {
+    border-color: #8b5cf6 !important;
+  }
+
   .gjs-sm-sector {
     border: 1px solid #e2e8f0 !important;
     border-radius: 24px !important;
@@ -367,5 +495,20 @@ const studioShellCss = `
 
   .gjs-am-assets-cont {
     background: #fff !important;
+  }
+
+  .gjs-am-file-uploader {
+    border-radius: 24px !important;
+    border: 1px dashed #c4b5fd !important;
+    background: #f8f5ff !important;
+  }
+
+  .gjs-am-assets {
+    background: #ffffff !important;
+  }
+
+  .gjs-am-preview-cont {
+    border-radius: 18px !important;
+    overflow: hidden !important;
   }
 `;
