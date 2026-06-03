@@ -19,7 +19,6 @@ import {
   CheckCircle2,
   Clock,
   ChevronDown,
-  DollarSign,
   Eye,
   Plus,
   Search,
@@ -121,8 +120,6 @@ type DashboardStats = {
   }>;
   collaborations_count?: number;
   proposals_count?: number;
-  revenue?: number;
-  revenue_count?: number;
   newClients?: number;
   clients_count?: number;
   crm_clients_count?: number;
@@ -168,13 +165,6 @@ function formatNumber(value: unknown, locale = "en-US"): string {
   return new Intl.NumberFormat(locale).format(safeNumber(value));
 }
 
-function formatMoney(value: unknown, locale = "en-US", currency = "USD"): string {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(safeNumber(value));
-}
 
 function getTodayIso(): string {
   return new Date().toISOString().split("T")[0];
@@ -185,9 +175,6 @@ function getLocale(language?: string): string {
   return language || "en-US";
 }
 
-function getCurrency(language?: string): string {
-  return language === "he" || language === "he-IL" ? "ILS" : "USD";
-}
 
 function getInitials(name?: string): string {
   const clean = (name || "Business").trim();
@@ -1696,7 +1683,6 @@ export default function DashboardPage() {
   };
 
   const locale = getLocale(i18n.language);
-  const currency = getCurrency(i18n.language);
 
   const totalAppointments =
     safeNumber(syncedStats.appointments_count) || enrichedAppointments.length;
@@ -1706,11 +1692,6 @@ export default function DashboardPage() {
     enrichedAppointments
   );
 
-  const revenueValue =
-    syncedStats.revenue ??
-    syncedStats.revenue_count ??
-    syncedStats.orders_count ??
-    0;
 
   const fallbackClientsFromAppointments =
     getUniqueClientsFromAppointments(enrichedAppointments);
@@ -1765,7 +1746,7 @@ export default function DashboardPage() {
 
           <Header user={user} locale={locale} />
 
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <MetricCard
               icon={<CalendarDays size={21} />}
               title="Appointments"
@@ -1774,16 +1755,6 @@ export default function DashboardPage() {
               miniLabel="vs last 7 days"
               chart="line"
               accent="violet"
-            />
-
-            <MetricCard
-              icon={<DollarSign size={21} />}
-              title="Revenue"
-              value={formatMoney(revenueValue, locale, currency)}
-              delta="+24%"
-              miniLabel="vs last 7 days"
-              chart="line"
-              accent="emerald"
             />
 
             <MetricCard
