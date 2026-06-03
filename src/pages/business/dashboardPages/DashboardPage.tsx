@@ -1765,16 +1765,8 @@ export default function DashboardPage() {
 
           <Header user={user} locale={locale} />
 
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-            <MetricCard
-              icon={<CalendarDays size={21} />}
-              title="Appointments"
-              value={formatNumber(totalAppointments, locale)}
-              delta="+18%"
-              miniLabel="vs last 7 days"
-              chart="line"
-              accent="violet"
-            />
+          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            
 
             <MetricCard
               icon={<DollarSign size={21} />}
