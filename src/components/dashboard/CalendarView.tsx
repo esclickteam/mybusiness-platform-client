@@ -254,17 +254,17 @@ const CalendarView = React.memo(
         dir={isRtl ? "rtl" : "ltr"}
         aria-label={t("dashboard.calendarView.ariaLabel")}
         className="
-          overflow-hidden rounded-[24px] border border-slate-200 bg-white
+          w-full max-w-none overflow-hidden rounded-[24px] border border-slate-200 bg-white
           shadow-[0_12px_35px_rgba(15,23,42,0.05)]
         "
       >
-        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-4">
+        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-4 sm:px-6">
           <button
             type="button"
             onClick={goPrev}
             aria-label={t("dashboard.calendarView.previousMonth")}
             className="
-              flex h-9 w-9 items-center justify-center rounded-xl
+              flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
               border border-slate-200 bg-white text-slate-500
               transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700
             "
@@ -272,12 +272,12 @@ const CalendarView = React.memo(
             {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </button>
 
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+          <div className="flex min-w-0 flex-col items-center text-center">
+            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
               <CalendarDays size={18} />
             </div>
 
-            <h3 className="text-base font-black capitalize text-slate-950">
+            <h3 className="text-lg font-black capitalize text-slate-950 sm:text-xl">
               {monthTitle}
             </h3>
           </div>
@@ -287,7 +287,7 @@ const CalendarView = React.memo(
             onClick={goNext}
             aria-label={t("dashboard.calendarView.nextMonth")}
             className="
-              flex h-9 w-9 items-center justify-center rounded-xl
+              flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
               border border-slate-200 bg-white text-slate-500
               transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700
             "
@@ -296,35 +296,35 @@ const CalendarView = React.memo(
           </button>
         </div>
 
-        <div className="border-b border-slate-100 bg-slate-50/60 px-4 py-2.5 text-center text-xs font-bold text-slate-500">
+        <div className="border-b border-slate-100 bg-slate-50/60 px-4 py-3 text-center text-xs font-bold text-slate-500 sm:text-sm">
           {t("dashboard.calendarView.hint")}
         </div>
 
-        <div className="grid grid-cols-7 border-b border-slate-100 bg-white px-2 py-3">
+        <div className="grid w-full grid-cols-7 border-b border-slate-100 bg-white px-2 py-3 sm:px-3">
           {weekDays.map((dayName, index) => (
             <div
               key={`${dayName}-${index}`}
-              className="text-center text-[11px] font-black uppercase tracking-wide text-slate-400"
+              className="text-center text-[11px] font-black uppercase tracking-wide text-slate-400 sm:text-xs"
             >
               {dayName}
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-1.5 p-2.5 sm:gap-2 sm:p-3">
+        <div className="grid w-full grid-cols-7 gap-2 p-2.5 sm:gap-2.5 sm:p-4">
           {cells.map((cell) => {
             if (cell.type === "empty") {
               return (
                 <div
                   key={cell.key}
-                  className="h-[96px] rounded-xl bg-slate-50/60 sm:h-[118px] xl:h-[128px]"
+                  className="min-h-[118px] rounded-xl bg-slate-50/60 sm:min-h-[145px] xl:min-h-[160px]"
                 />
               );
             }
 
             const hasEvents = cell.appointments.length > 0;
             const isPurpleMarked = cell.isSelected || cell.isToday;
-            const visibleAppointments = cell.appointments.slice(0, 2);
+            const visibleAppointments = cell.appointments.slice(0, 3);
             const hiddenCount =
               cell.appointments.length - visibleAppointments.length;
 
@@ -334,8 +334,8 @@ const CalendarView = React.memo(
                 type="button"
                 onClick={() => onDateClick?.(cell.dateStr)}
                 className={`
-                  relative flex h-[96px] flex-col rounded-xl border p-2 text-start
-                  transition sm:h-[118px] xl:h-[128px]
+                  relative flex min-h-[118px] min-w-0 flex-col rounded-xl border p-2 text-start
+                  transition sm:min-h-[145px] sm:p-3 xl:min-h-[160px]
                   hover:border-violet-200 hover:bg-violet-50/30
                   ${
                     isPurpleMarked
@@ -344,11 +344,11 @@ const CalendarView = React.memo(
                   }
                 `}
               >
-                <div className="mb-1.5 flex items-start justify-between gap-1">
+                <div className="mb-2 flex items-start justify-between gap-1">
                   <span
                     className={`
-                      flex h-7 w-7 shrink-0 items-center justify-center rounded-lg
-                      text-xs font-black
+                      flex h-8 w-8 shrink-0 items-center justify-center rounded-lg
+                      text-xs font-black sm:h-9 sm:w-9 sm:text-sm
                       ${
                         isPurpleMarked
                           ? "bg-violet-600 text-white"
@@ -367,7 +367,7 @@ const CalendarView = React.memo(
                 </div>
 
                 {hasEvents ? (
-                  <div className="min-w-0 space-y-1.5">
+                  <div className="min-w-0 flex-1 space-y-1.5">
                     {visibleAppointments.map((appointment, index) => {
                       const colorClass =
                         eventColorClasses[index % eventColorClasses.length];
@@ -380,23 +380,23 @@ const CalendarView = React.memo(
                             `${cell.dateStr}-${appointment.time}-${index}`
                           }
                           className={`
-                            min-w-0 rounded-xl border px-2 py-1.5 text-left shadow-sm
+                            w-full min-w-0 rounded-xl border px-2.5 py-2 text-left shadow-sm
                             ${colorClass}
                           `}
                         >
                           <div className="flex min-w-0 items-start justify-between gap-2">
-                            <div className="min-w-0">
-                              <p className="truncate text-[11px] font-black leading-4">
+                            <div className="min-w-0 flex-1">
+                              <p className="whitespace-normal break-words text-[11px] font-black leading-4 sm:text-xs">
                                 {getClientName(appointment)}
                               </p>
 
-                              <p className="truncate text-[10px] font-bold leading-4 opacity-80">
+                              <p className="mt-0.5 whitespace-normal break-words text-[10px] font-bold leading-4 opacity-80 sm:text-[11px]">
                                 {getServiceName(appointment)}
                               </p>
                             </div>
 
                             {appointment.time && (
-                              <span className="hidden shrink-0 items-center gap-1 text-[9px] font-black opacity-70 2xl:inline-flex">
+                              <span className="hidden shrink-0 items-center gap-1 rounded-lg bg-white/55 px-1.5 py-1 text-[9px] font-black opacity-80 2xl:inline-flex">
                                 <Clock className="h-3 w-3" />
                                 {appointment.time}
                               </span>
