@@ -15,9 +15,6 @@ import { useSocket } from "../../context/socketContext";
 import Icon from "@/components/UI/Icon";
 import ReviewCard from "../../components/ReviewCard";
 
-const ReviewForm = lazy(
-  () => import("../../pages/business/dashboardPages/buildTabs/ReviewForm")
-);
 
 const ServicesSelector = lazy(() => import("../ServicesSelector"));
 
@@ -67,11 +64,28 @@ type ReviewItem = {
   comment?: string;
   createdAt?: string;
   date?: string;
+  clientName?: string;
+  clientEmail?: string;
   client?: {
     name?: string;
+    email?: string;
   };
   ratings?: Record<string, number>;
   [key: string]: unknown;
+};
+
+type ReviewFormState = {
+  name: string;
+  email: string;
+  rating: number;
+  comment: string;
+};
+
+const emptyReviewForm: ReviewFormState = {
+  name: "",
+  email: "",
+  rating: 5,
+  comment: "",
 };
 
 type BusinessData = {
@@ -165,6 +179,11 @@ export default function BusinessProfileView() {
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [schedule, setSchedule] = useState<ScheduleMap>({});
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewForm, setReviewForm] =
+    useState<ReviewFormState>(emptyReviewForm);
+  const [editingReview, setEditingReview] = useState<ReviewItem | null>(null);
+  const [reviewSaving, setReviewSaving] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(
     null
   );
@@ -375,6 +394,176 @@ export default function BusinessProfileView() {
 
     const key = tab.toLowerCase();
     window.history.replaceState(null, "", `?tab=${key}`);
+  };
+
+  const openCreateReview = () => {
+    setEditingReview(null);
+    setReviewForm(emptyReviewForm);
+    setReviewError(null);
+    setShowReviewModal(true);
+  };
+
+  const openEditReview = (review: ReviewItem) => {
+    setEditingReview(review);
+    setReviewForm({
+      name: review.client?.name || review.clientName || "",
+      email: review.client?.email || review.clientEmail || "",
+      rating: Number(review.rating || review.averageScore || 5),
+      comment: review.comment || "",
+    });
+    setReviewError(null);
+    setShowReviewModal(true);
+  };
+
+  const closeReviewModal = () => {
+    if (reviewSaving) return;
+
+    setShowReviewModal(false);
+    setEditingReview(null);
+    setReviewForm(emptyReviewForm);
+    setReviewError(null);
+  };
+
+  const validateReviewForm = () => {
+    if (!reviewForm.name.trim()) {
+      setReviewError("Please enter your name.");
+      return false;
+    }
+
+    if (!reviewForm.comment.trim()) {
+      setReviewError("Please write a review.");
+      return false;
+    }
+
+    if (reviewForm.rating < 1 || reviewForm.rating > 5) {
+      setReviewError("Rating must be between 1 and 5.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const normalizeReviewForCache = (review: ReviewItem): ReviewItem => {
+    return {
+      ...review,
+      rating: Number(review.rating || review.averageScore || reviewForm.rating),
+      averageScore: Number(
+        review.averageScore || review.rating || reviewForm.rating
+      ),
+      comment: review.comment || reviewForm.comment,
+      createdAt: review.createdAt || review.date || new Date().toISOString(),
+      client: {
+        name:
+          review.client?.name ||
+          review.clientName ||
+          reviewForm.name ||
+          "Anonymous",
+        email: review.client?.email || review.clientEmail || reviewForm.email,
+      },
+    };
+  };
+
+  const refreshReviewsAfterMutation = async () => {
+    await Promise.all([
+      refetch(),
+      refetchReviews(),
+      queryClient.refetchQueries({
+        queryKey: ["reviews", bizId],
+        exact: true,
+      }),
+      queryClient.refetchQueries({
+        queryKey: ["business", bizId],
+        exact: true,
+      }),
+    ]);
+  };
+
+  const handleSaveReview = async () => {
+    if (!bizId || reviewSaving || !validateReviewForm()) return;
+
+    setReviewSaving(true);
+    setReviewError(null);
+
+    const payload = {
+      businessId: bizId,
+      name: reviewForm.name.trim(),
+      clientName: reviewForm.name.trim(),
+      email: reviewForm.email.trim(),
+      clientEmail: reviewForm.email.trim(),
+      rating: reviewForm.rating,
+      averageScore: reviewForm.rating,
+      comment: reviewForm.comment.trim(),
+    };
+
+    try {
+      let savedReview: ReviewItem;
+
+      if (editingReview?._id) {
+        const res = await API.put(
+          `/business/${bizId}/reviews/${editingReview._id}`,
+          payload
+        );
+
+        savedReview = normalizeReviewForCache(res.data.review || res.data);
+
+        queryClient.setQueryData<ReviewItem[]>(["reviews", bizId], (old = []) =>
+          old.map((review) =>
+            review._id === editingReview._id ? savedReview : review
+          )
+        );
+      } else {
+        const res = await API.post(`/business/${bizId}/reviews`, payload);
+
+        savedReview = normalizeReviewForCache(res.data.review || res.data);
+
+        queryClient.setQueryData<ReviewItem[]>(["reviews", bizId], (old = []) => [
+          savedReview,
+          ...old,
+        ]);
+
+        socket?.emit?.("review:new", {
+          businessId: bizId,
+          review: savedReview,
+        });
+      }
+
+      await refreshReviewsAfterMutation();
+      closeReviewModal();
+    } catch (err: any) {
+      console.error("Save review error:", err);
+      setReviewError(
+        err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          "Could not save review. Please try again."
+      );
+    } finally {
+      setReviewSaving(false);
+    }
+  };
+
+  const handleDeleteReview = async (review: ReviewItem) => {
+    if (!bizId || !review._id) return;
+
+    const ok = window.confirm("Delete this review?");
+
+    if (!ok) return;
+
+    try {
+      await API.delete(`/business/${bizId}/reviews/${review._id}`);
+
+      queryClient.setQueryData<ReviewItem[]>(["reviews", bizId], (old = []) =>
+        old.filter((item) => item._id !== review._id)
+      );
+
+      await refreshReviewsAfterMutation();
+    } catch (err: any) {
+      console.error("Delete review error:", err);
+      alert(
+        err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          "Could not delete review."
+      );
+    }
   };
 
   if (isLoading) {
@@ -672,11 +861,11 @@ export default function BusinessProfileView() {
                       </p>
                     </div>
 
-                    {!isOwner && user && (
+                    {!isOwner && (
                       <button
                         type="button"
                         className="rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
-                        onClick={() => setShowReviewModal(true)}
+                        onClick={openCreateReview}
                       >
                         Add Review
                       </button>
@@ -686,30 +875,21 @@ export default function BusinessProfileView() {
                   {showReviewModal && (
                     <div
                       className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
-                      onClick={() => setShowReviewModal(false)}
+                      onClick={closeReviewModal}
                     >
                       <div
                         className="w-full max-w-2xl rounded-[2rem] bg-white p-6 shadow-2xl"
                         onClick={(event) => event.stopPropagation()}
                       >
-                        <Suspense fallback={<div>Loading review form...</div>}>
-                          <ReviewForm
-                            businessId={bizId}
-                            socket={socket as any}
-                            onSuccess={async () => {
-                              setShowReviewModal(false);
-                              await Promise.all([refetch(), refetchReviews()]);
-                            }}
-                          />
-                        </Suspense>
-
-                        <button
-                          type="button"
-                          className="mt-4 w-full rounded-2xl bg-slate-100 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200"
-                          onClick={() => setShowReviewModal(false)}
-                        >
-                          Close
-                        </button>
+                        <ReviewEditor
+                          form={reviewForm}
+                          setForm={setReviewForm}
+                          isSaving={reviewSaving}
+                          error={reviewError}
+                          isEditing={Boolean(editingReview)}
+                          onSave={handleSaveReview}
+                          onClose={closeReviewModal}
+                        />
                       </div>
                     </div>
                   )}
@@ -717,14 +897,58 @@ export default function BusinessProfileView() {
                   {sortedReviews.length ? (
                     <div className="grid gap-4 lg:grid-cols-2">
                       {sortedReviews.map((review, index) => (
-                        <ReviewCard key={review._id || index} review={review} />
+                        <div
+                          key={review._id || index}
+                          className="rounded-[1.5rem] border border-slate-100 bg-white p-4 shadow-sm"
+                        >
+                          <ReviewCard review={review} />
+
+                          {isOwner && review._id && (
+                            <div className="mt-4 flex justify-end gap-2 border-t border-slate-100 pt-4">
+                              <button
+                                type="button"
+                                onClick={() => openEditReview(review)}
+                                className="rounded-xl bg-slate-100 px-4 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-200"
+                              >
+                                Edit
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteReview(review)}
+                                className="rounded-xl bg-rose-50 px-4 py-2 text-xs font-black text-rose-700 transition hover:bg-rose-100"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   ) : (
-                    <EmptyState
-                      title="No reviews available"
-                      text="Customer reviews will appear here."
-                    />
+                    <div className="rounded-[1.75rem] border border-dashed border-violet-200 bg-violet-50/50 px-6 py-12 text-center">
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
+                        ✨
+                      </div>
+
+                      <h3 className="text-lg font-black text-slate-950">
+                        No reviews available
+                      </h3>
+
+                      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+                        Customer reviews will appear here.
+                      </p>
+
+                      {!isOwner && (
+                        <button
+                          type="button"
+                          onClick={openCreateReview}
+                          className="mt-5 rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+                        >
+                          Write the first review
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
               ) : (
@@ -846,6 +1070,161 @@ export default function BusinessProfileView() {
     </main>
   );
 }
+
+
+function ReviewEditor({
+  form,
+  setForm,
+  isSaving,
+  error,
+  isEditing,
+  onSave,
+  onClose,
+}: {
+  form: ReviewFormState;
+  setForm: React.Dispatch<React.SetStateAction<ReviewFormState>>;
+  isSaving: boolean;
+  error: string | null;
+  isEditing: boolean;
+  onSave: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div>
+      <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
+            Customer review
+          </p>
+
+          <h3 className="mt-1 text-2xl font-black text-slate-950">
+            {isEditing ? "Edit Review" : "Write a Review"}
+          </h3>
+
+          <p className="mt-1 text-sm leading-6 text-slate-500">
+            Share your experience so future clients can learn more about this
+            business.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          disabled={isSaving}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200 disabled:opacity-50"
+        >
+          ×
+        </button>
+      </div>
+
+      {error && (
+        <div className="mb-4 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold text-rose-700">
+          {error}
+        </div>
+      )}
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="block">
+          <span className="mb-2 block text-sm font-black text-slate-800">
+            Your name *
+          </span>
+          <input
+            value={form.name}
+            onChange={(event) =>
+              setForm((prev) => ({ ...prev, name: event.target.value }))
+            }
+            placeholder="Your name"
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-black text-slate-800">
+            Email
+          </span>
+          <input
+            value={form.email}
+            type="email"
+            onChange={(event) =>
+              setForm((prev) => ({ ...prev, email: event.target.value }))
+            }
+            placeholder="you@example.com"
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+          />
+        </label>
+      </div>
+
+      <div className="mt-4">
+        <span className="mb-2 block text-sm font-black text-slate-800">
+          Rating *
+        </span>
+
+        <div className="flex gap-2">
+          {[1, 2, 3, 4, 5].map((rating) => {
+            const active = rating <= form.rating;
+
+            return (
+              <button
+                key={rating}
+                type="button"
+                onClick={() => setForm((prev) => ({ ...prev, rating }))}
+                className={`flex h-11 w-11 items-center justify-center rounded-2xl text-xl transition ${
+                  active
+                    ? "bg-amber-50 text-amber-500 ring-1 ring-amber-100"
+                    : "bg-slate-100 text-slate-300 hover:bg-slate-200"
+                }`}
+                aria-label={`${rating} stars`}
+              >
+                ★
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <label className="mt-4 block">
+        <span className="mb-2 block text-sm font-black text-slate-800">
+          Review *
+        </span>
+
+        <textarea
+          value={form.comment}
+          onChange={(event) =>
+            setForm((prev) => ({ ...prev, comment: event.target.value }))
+          }
+          placeholder="Write your review..."
+          rows={5}
+          className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+        />
+      </label>
+
+      <div className="mt-6 flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          onClick={onClose}
+          disabled={isSaving}
+          className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200 disabled:opacity-50"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={isSaving}
+          className="rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isSaving
+            ? "Saving..."
+            : isEditing
+              ? "Save Changes"
+              : "Submit Review"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 function EmptyState({ title, text }: { title: string; text: string }) {
   return (
