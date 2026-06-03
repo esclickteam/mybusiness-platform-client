@@ -5,7 +5,6 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Clock,
 } from "lucide-react";
 
 type TranslationValues = Record<string, string | number>;
@@ -82,12 +81,12 @@ const fallbackT: TFunction = (key, values) => {
 };
 
 const eventColorClasses = [
-  "border-violet-100 bg-violet-50 text-violet-800",
-  "border-amber-100 bg-amber-50 text-amber-800",
-  "border-pink-100 bg-pink-50 text-pink-800",
-  "border-emerald-100 bg-emerald-50 text-emerald-800",
-  "border-sky-100 bg-sky-50 text-sky-800",
-  "border-fuchsia-100 bg-fuchsia-50 text-fuchsia-800",
+  "border-yellow-100 bg-yellow-50 text-yellow-950",
+  "border-pink-100 bg-pink-50 text-pink-950",
+  "border-violet-100 bg-violet-50 text-violet-950",
+  "border-emerald-100 bg-emerald-50 text-emerald-950",
+  "border-blue-100 bg-blue-50 text-blue-950",
+  "border-orange-100 bg-orange-50 text-orange-950",
 ];
 
 function isHebrewLocale(locale: string): boolean {
@@ -100,7 +99,6 @@ function getTodayIso(): string {
 
 function normalizeDateKey(date?: string): string {
   if (!date) return "";
-
   return String(date).split("T")[0];
 }
 
@@ -380,30 +378,23 @@ const CalendarView = React.memo(
                             `${cell.dateStr}-${appointment.time}-${index}`
                           }
                           className={`
-                            w-full min-w-0 rounded-xl border px-2.5 py-2 text-left shadow-sm
+                            w-full min-w-0 rounded-xl border px-3 py-2 text-left shadow-sm
                             ${colorClass}
                           `}
                         >
-                          <div className="flex min-w-0 items-center gap-2">
-                            <div className="min-w-0 flex-1">
-                              <div className="flex min-w-0 items-center gap-2">
-                                <p className="min-w-0 flex-1 truncate text-[11px] font-black leading-4 sm:text-xs">
-                                  {getClientName(appointment)}
-                                </p>
+                          {appointment.time && (
+                            <p className="truncate text-[10px] font-black leading-4 opacity-85 sm:text-[11px]">
+                              {appointment.time}
+                            </p>
+                          )}
 
-                                {appointment.time && (
-                                  <span className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-white/60 px-1.5 py-1 text-[9px] font-black opacity-80">
-                                    <Clock className="h-3 w-3" />
-                                    {appointment.time}
-                                  </span>
-                                )}
-                              </div>
+                          <p className="truncate text-[11px] font-black leading-4 sm:text-xs">
+                            {getClientName(appointment)}
+                          </p>
 
-                              <p className="mt-0.5 truncate text-[10px] font-bold leading-4 opacity-80 sm:text-[11px]">
-                                {getServiceName(appointment)}
-                              </p>
-                            </div>
-                          </div>
+                          <p className="truncate text-[10px] font-bold leading-4 opacity-85 sm:text-[11px]">
+                            {getServiceName(appointment)}
+                          </p>
                         </div>
                       );
                     })}
