@@ -13,6 +13,10 @@ const BusinessMiniSiteClub = lazy(() =>
   import("../BusinessMiniSiteClub")
 );
 
+const BusinessMiniSiteBuilder = lazy(() =>
+  import("../BusinessMiniSiteBuilder")
+);
+
 const DashboardPage = lazyWithPreload(() =>
   import("./dashboardPages/DashboardPage")
 );
@@ -171,6 +175,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="edit" element={<BuildBusinessPage />} />
           <Route path="build" element={<BuildBusinessPage />} />
 
+<Route path="site-builder" element={<BusinessMiniSiteBuilder />} />
 <Route path="mini-site-club" element={<BusinessMiniSiteClub />} />
 
           <Route
