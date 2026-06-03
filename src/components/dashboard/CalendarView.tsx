@@ -384,23 +384,25 @@ const CalendarView = React.memo(
                             ${colorClass}
                           `}
                         >
-                          <div className="flex min-w-0 items-start justify-between gap-2">
+                          <div className="flex min-w-0 items-center gap-2">
                             <div className="min-w-0 flex-1">
-                              <p className="whitespace-normal break-words text-[11px] font-black leading-4 sm:text-xs">
-                                {getClientName(appointment)}
-                              </p>
+                              <div className="flex min-w-0 items-center gap-2">
+                                <p className="min-w-0 flex-1 truncate text-[11px] font-black leading-4 sm:text-xs">
+                                  {getClientName(appointment)}
+                                </p>
 
-                              <p className="mt-0.5 whitespace-normal break-words text-[10px] font-bold leading-4 opacity-80 sm:text-[11px]">
+                                {appointment.time && (
+                                  <span className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-white/60 px-1.5 py-1 text-[9px] font-black opacity-80">
+                                    <Clock className="h-3 w-3" />
+                                    {appointment.time}
+                                  </span>
+                                )}
+                              </div>
+
+                              <p className="mt-0.5 truncate text-[10px] font-bold leading-4 opacity-80 sm:text-[11px]">
                                 {getServiceName(appointment)}
                               </p>
                             </div>
-
-                            {appointment.time && (
-                              <span className="hidden shrink-0 items-center gap-1 rounded-lg bg-white/55 px-1.5 py-1 text-[9px] font-black opacity-80 2xl:inline-flex">
-                                <Clock className="h-3 w-3" />
-                                {appointment.time}
-                              </span>
-                            )}
                           </div>
                         </div>
                       );
