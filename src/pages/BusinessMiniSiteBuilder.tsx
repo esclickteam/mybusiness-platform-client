@@ -1,14 +1,14 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import BizuplyWebsiteStudio from "../components/site-builder/grapes/BizuplyWebsiteStudio";
-import type { BizuplySitePayload } from "../components/site-builder/grapes/types";
+import WebsiteStudioPage from "../components/site-builder/studio/WebsiteStudioPage";
+import type { SiteSavePayload } from "../components/site-builder/studio/types";
 
 export default function BusinessMiniSiteBuilder() {
   const { businessId } = useParams();
 
-  const handleSave = async (payload: BizuplySitePayload) => {
+  const handleSave = async (payload: SiteSavePayload) => {
     /*
-      שלב הבא נחבר לשרת:
+      שלב הבא — חיבור אמיתי לשרת:
 
       await fetch("/api/business/my/mini-site", {
         method: "PATCH",
@@ -18,14 +18,14 @@ export default function BusinessMiniSiteBuilder() {
       });
     */
 
-    console.log("SAVE FROM PAGE:", {
+    console.log("SAVE MINI SITE:", {
       businessId,
       payload,
     });
   };
 
   return (
-    <BizuplyWebsiteStudio
+    <WebsiteStudioPage
       businessId={businessId}
       initialSlug="hadar-beauty"
       onSave={handleSave}
