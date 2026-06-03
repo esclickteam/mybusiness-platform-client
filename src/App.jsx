@@ -28,12 +28,6 @@ import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
 const HomePage = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
-
-const BusinessMiniSiteClub = lazy(() =>
-  import("./pages/BusinessMiniSiteClub")
-);
-
-
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const Pricing = lazy(() => import("./pages/business/Pricing"));
@@ -208,9 +202,6 @@ export default function App() {
                         />
 
                         <Route path="/about" element={<About />} />
-
-                        <Route path="/mini-site-club" element={<BusinessMiniSiteClub />} />
-
                         <Route
                           path="/privacy-policy"
                           element={<PrivacyPolicy />}
