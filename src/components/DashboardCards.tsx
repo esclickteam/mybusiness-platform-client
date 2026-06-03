@@ -5,8 +5,6 @@ type DashboardStats = {
   reviews_count?: number;
   appointments_count?: number;
   messages_count?: number;
-  revenue_count?: number;
-  revenue?: number;
 };
 
 type TranslationValues = Record<string, string | number>;
@@ -17,7 +15,6 @@ type DashboardCardsProps = {
   stats?: DashboardStats;
   t?: TFunction;
   locale?: string;
-  currency?: string;
 };
 
 type CardItem = {
@@ -38,7 +35,6 @@ const fallbackT: TFunction = (key, values) => {
     "dashboard.cards.profileViews": "Profile Views",
     "dashboard.cards.appointments": "Appointments",
     "dashboard.cards.messages": "Messages",
-    "dashboard.cards.revenue": "Revenue",
     "dashboard.cards.reviews": "Reviews",
     "dashboard.cards.period30Days": "30 days",
     "dashboard.cards.vsLast30Days": "vs last 30 days",
@@ -58,19 +54,6 @@ const fallbackT: TFunction = (key, values) => {
 const formatNumber = (value?: number, locale = "en-US") => {
   return new Intl.NumberFormat(locale).format(value ?? 0);
 };
-
-const formatMoney = (
-  value?: number,
-  locale = "en-US",
-  currency = "USD"
-) => {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(value ?? 0);
-};
-
 const isHebrewLocale = (locale: string) => {
   return locale === "he" || locale === "he-IL";
 };
@@ -122,20 +105,6 @@ const MessagesIcon = () => (
     <path d="M16 10h.01" />
   </svg>
 );
-
-const RevenueIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    className="h-6 w-6"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-  >
-    <path d="M12 2v20" />
-    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6" />
-  </svg>
-);
-
 const ReviewsIcon = () => (
   <svg
     viewBox="0 0 24 24"
@@ -175,7 +144,6 @@ const DashboardCards = React.memo(
     stats = {},
     t = fallbackT,
     locale = "en-US",
-    currency = "USD",
   }: DashboardCardsProps) => {
     useEffect(() => {
       if (process.env.NODE_ENV === "development") {
@@ -184,8 +152,6 @@ const DashboardCards = React.memo(
     }, [stats]);
 
     const isRtl = isHebrewLocale(locale);
-    const revenueValue = stats.revenue ?? stats.revenue_count ?? 0;
-
     const cards: CardItem[] = [
       {
         key: "profileViews",
@@ -221,17 +187,6 @@ const DashboardCards = React.memo(
         Icon: MessagesIcon,
       },
       {
-        key: "revenue",
-        label: t("dashboard.cards.revenue"),
-        value: formatMoney(revenueValue, locale, currency),
-        trend: "28.3%",
-        trendColor: "text-emerald-600",
-        iconBg: "bg-green-100",
-        iconColor: "text-green-600",
-        lineColor: "#22c55e",
-        Icon: RevenueIcon,
-      },
-      {
         key: "reviews",
         label: t("dashboard.cards.reviews"),
         value: stats.reviews_count
@@ -251,7 +206,7 @@ const DashboardCards = React.memo(
         dir={isRtl ? "rtl" : "ltr"}
         role="list"
         aria-label={t("dashboard.cards.ariaLabel")}
-        className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5"
+        className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
       >
         {cards.map((card) => {
           const Icon = card.Icon;
