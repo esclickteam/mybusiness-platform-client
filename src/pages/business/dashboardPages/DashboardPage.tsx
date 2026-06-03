@@ -11,8 +11,6 @@ import React, {
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-  Sparkles,
-  TrendingUp,
   CalendarDays,
   Star,
   ArrowRight,
@@ -339,65 +337,6 @@ function SectionShell({
 
       {children}
     </section>
-  );
-}
-
-function WelcomeBanner({
-  title,
-  subtitle,
-  insightTitle,
-  insightText,
-}: {
-  title: React.ReactNode;
-  subtitle: React.ReactNode;
-  insightTitle: React.ReactNode;
-  insightText: React.ReactNode;
-}) {
-  return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.9fr)]">
-      <div className="rounded-[24px] border border-slate-200 bg-white px-5 py-5 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
-        <div className="flex items-start gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[20px] bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-[0_16px_35px_rgba(109,40,217,0.24)]">
-            <Sparkles size={26} />
-          </div>
-
-          <div className="min-w-0">
-            <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
-              {title}
-            </h1>
-
-            <p className="mt-2 text-sm text-slate-600 sm:text-base">
-              {subtitle}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="relative overflow-hidden rounded-[24px] border border-violet-100 bg-gradient-to-r from-violet-50 via-white to-violet-50 px-5 py-5 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
-        <div className="relative z-10 max-w-[330px]">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-violet-200 bg-white text-violet-600">
-            <TrendingUp size={22} />
-          </div>
-
-          <p className="text-sm font-black text-violet-700">{insightTitle}</p>
-
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            {insightText}
-          </p>
-        </div>
-
-        <div className="pointer-events-none absolute bottom-0 right-0 h-full w-[48%] opacity-90">
-          <div className="absolute bottom-4 right-3 h-24 w-16 rounded-t-[999px] bg-violet-200/80" />
-          <div className="absolute bottom-4 right-16 h-32 w-20 rounded-t-[999px] bg-violet-300/80" />
-          <div className="absolute bottom-4 right-32 h-20 w-16 rounded-t-[999px] bg-violet-100/90" />
-          <div className="absolute bottom-4 right-44 h-14 w-12 rounded-t-[999px] bg-violet-50" />
-          <div className="absolute bottom-[130px] right-[92px] h-12 w-[2px] bg-slate-400" />
-          <div className="absolute bottom-[168px] right-[84px] rounded-full bg-pink-400 px-3 py-1 text-[10px] font-bold text-white shadow">
-            ★
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -1116,22 +1055,6 @@ export default function DashboardPage() {
               }}
             />
           )}
-
-          <WelcomeBanner
-            title={tx(
-              "dashboard.welcomeTitle",
-              `Welcome back, ${user?.name || user?.businessName || "Olivia"}! 👋`
-            )}
-            subtitle={tx(
-              "dashboard.welcomeSubtitle",
-              "Here's what's happening with your business today."
-            )}
-            insightTitle={tx("dashboard.insightTitle", "Insight of the day")}
-            insightText={tx(
-              "dashboard.insightText",
-              "You closed 24% more deals this month compared to last month. Keep it up!"
-            )}
-          />
 
           <div ref={cardsRef}>
             <Suspense
