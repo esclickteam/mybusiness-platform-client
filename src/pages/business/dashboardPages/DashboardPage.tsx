@@ -77,7 +77,23 @@ type Appointment = {
   serviceName?: string;
   clientName?: string;
   status?: string;
+  crmClientId?: string | { _id?: string; fullName?: string };
+  clientSnapshot?: {
+    name?: string;
+    phone?: string;
+    email?: string;
+  };
+  phone?: string;
+  email?: string;
   [key: string]: any;
+};
+
+type CRMClient = {
+  _id?: string;
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  appointments?: unknown[];
 };
 
 type DashboardStats = {
@@ -107,6 +123,10 @@ type DashboardStats = {
   proposals_count?: number;
   revenue?: number;
   revenue_count?: number;
+  newClients?: number;
+  clients_count?: number;
+  crm_clients_count?: number;
+  customers_count?: number;
   [key: string]: any;
 };
 
@@ -395,6 +415,48 @@ async function fetchAppointments(
   );
 
   return res.data;
+}
+
+async function fetchCRMClients(
+  businessId: string,
+  refreshAccessToken: () => Promise<string | null>
+): Promise<CRMClient[]> {
+  const token = await refreshAccessToken();
+
+  if (!token) {
+    throw new Error("No token");
+  }
+
+  const res = await API.get(`/crm-clients/${businessId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return Array.isArray(res.data) ? res.data : [];
+}
+
+function getUniqueClientsFromAppointments(appointments: Appointment[]): number {
+  const uniqueClients = new Set<string>();
+
+  appointments.forEach((appt) => {
+    const crmClientId =
+      typeof appt.crmClientId === "object"
+        ? appt.crmClientId?._id
+        : appt.crmClientId;
+
+    const key =
+      crmClientId ||
+      appt.clientSnapshot?.email ||
+      appt.clientSnapshot?.phone ||
+      appt.email ||
+      appt.phone ||
+      appt.clientName;
+
+    if (key) {
+      uniqueClients.add(String(key).trim().toLowerCase());
+    }
+  });
+
+  return uniqueClients.size;
 }
 
 export function preloadDashboardComponents() {
@@ -1095,6 +1157,7 @@ export default function DashboardPage() {
     []
   );
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [crmClientsCount, setCrmClientsCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshingUser, setIsRefreshingUser] = useState<boolean>(false);
@@ -1266,6 +1329,25 @@ export default function DashboardPage() {
     }
   }, [businessId, refreshAccessToken]);
 
+  const refreshCRMClientsFromAPI = useCallback(async () => {
+    if (!businessId) return;
+
+    try {
+      const clients = await fetchCRMClients(businessId, refreshAccessToken);
+
+      setCrmClientsCount(clients.length);
+
+      setStats((oldStats) => ({
+        ...(oldStats || {}),
+        clients_count: clients.length,
+        crm_clients_count: clients.length,
+        newClients: clients.length,
+      }));
+    } catch (err) {
+      console.error("Error refreshing CRM clients from API:", err);
+    }
+  }, [businessId, refreshAccessToken]);
+
   useEffect(() => {
     if (!initialized || !businessId) return;
 
@@ -1330,9 +1412,21 @@ export default function DashboardPage() {
         debouncedSetStats(newStats);
       });
 
-      sock.on("appointmentCreated", refreshAppointmentsFromAPI);
-      sock.on("appointmentUpdated", refreshAppointmentsFromAPI);
-      sock.on("appointmentDeleted", refreshAppointmentsFromAPI);
+      sock.on("appointmentCreated", () => {
+        refreshAppointmentsFromAPI();
+        refreshCRMClientsFromAPI();
+      });
+      sock.on("appointmentUpdated", () => {
+        refreshAppointmentsFromAPI();
+        refreshCRMClientsFromAPI();
+      });
+      sock.on("appointmentDeleted", () => {
+        refreshAppointmentsFromAPI();
+        refreshCRMClientsFromAPI();
+      });
+      sock.on("crmClientCreated", refreshCRMClientsFromAPI);
+      sock.on("crmClientUpdated", refreshCRMClientsFromAPI);
+      sock.on("crmClientDeleted", refreshCRMClientsFromAPI);
 
       sock.on("newRecommendation", (rec: RecommendationItem) => {
         setRecommendations((prev) => [...prev, rec]);
@@ -1453,6 +1547,7 @@ export default function DashboardPage() {
 
     loadStats();
     refreshAppointmentsFromAPI();
+    refreshCRMClientsFromAPI();
     setupSocket();
 
     return () => {
@@ -1472,6 +1567,7 @@ export default function DashboardPage() {
     refreshAccessToken,
     debouncedSetStats,
     refreshAppointmentsFromAPI,
+    refreshCRMClientsFromAPI,
     loadStats,
   ]);
 
@@ -1616,11 +1712,15 @@ export default function DashboardPage() {
     syncedStats.orders_count ??
     0;
 
+  const fallbackClientsFromAppointments =
+    getUniqueClientsFromAppointments(enrichedAppointments);
+
   const newClientsValue =
-    syncedStats.newClients ??
-    syncedStats.clients_count ??
-    syncedStats.messages_count ??
-    0;
+    crmClientsCount ||
+    safeNumber(syncedStats.crm_clients_count) ||
+    safeNumber(syncedStats.clients_count) ||
+    safeNumber(syncedStats.newClients) ||
+    fallbackClientsFromAppointments;
 
   const ratingValue =
     syncedStats.average_rating ??
