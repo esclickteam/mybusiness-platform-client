@@ -1,8 +1,10 @@
+"use client";
+
 import React, { useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   CheckCircle2,
-  Clock3,
+  Clock,
   Power,
   Save,
   Sparkles,
@@ -34,8 +36,138 @@ const defaultDay: WorkDay = {
   end: "17:00",
 };
 
+const emptyWeeklyHours: WeeklyHours = {
+  0: null,
+  1: null,
+  2: null,
+  3: null,
+  4: null,
+  5: null,
+  6: null,
+};
+
+function isValidDayIndex(value: unknown): value is number {
+  const dayIndex = Number(value);
+  return Number.isInteger(dayIndex) && dayIndex >= 0 && dayIndex <= 6;
+}
+
+function normalizeTime(value: unknown, fallback = "") {
+  if (typeof value !== "string") return fallback;
+
+  const clean = value.trim();
+
+  if (/^\d{2}:\d{2}$/.test(clean)) return clean;
+
+  const shortMatch = clean.match(/^(\d{1,2}):(\d{2})$/);
+
+  if (!shortMatch) return fallback;
+
+  const hours = shortMatch[1].padStart(2, "0");
+  const minutes = shortMatch[2];
+
+  return `${hours}:${minutes}`;
+}
+
+function normalizeWorkDay(value: any): WorkDay | null {
+  if (!value) return null;
+
+  if (
+    value === null ||
+    value.isOpen === false ||
+    value.open === false ||
+    value.closed === true ||
+    value.status === "closed"
+  ) {
+    return null;
+  }
+
+  const start = normalizeTime(
+    value.start ??
+      value.startTime ??
+      value.from ??
+      value.openFrom ??
+      value.openingTime,
+    defaultDay.start
+  );
+
+  const end = normalizeTime(
+    value.end ??
+      value.endTime ??
+      value.to ??
+      value.openTo ??
+      value.closingTime,
+    defaultDay.end
+  );
+
+  return { start, end };
+}
+
+function normalizeWorkHours(raw: any): WeeklyHours {
+  const next: WeeklyHours = { ...emptyWeeklyHours };
+
+  if (!raw) return next;
+
+  if (Array.isArray(raw)) {
+    raw.forEach((item, arrayIndex) => {
+      const dayIndex =
+        item && typeof item === "object" && isValidDayIndex(item.dayIndex)
+          ? Number(item.dayIndex)
+          : item && typeof item === "object" && isValidDayIndex(item.day)
+            ? Number(item.day)
+            : arrayIndex;
+
+      if (!isValidDayIndex(dayIndex)) return;
+
+      next[dayIndex] = normalizeWorkDay(item);
+    });
+
+    return next;
+  }
+
+  if (typeof raw === "object") {
+    Object.entries(raw).forEach(([key, value]) => {
+      const dayIndex = Number(key);
+
+      if (isValidDayIndex(dayIndex)) {
+        next[dayIndex] = normalizeWorkDay(value);
+        return;
+      }
+
+      const namedDayIndex = weekdays.findIndex(
+        (day) => day.toLowerCase() === key.toLowerCase()
+      );
+
+      if (isValidDayIndex(namedDayIndex)) {
+        next[namedDayIndex] = normalizeWorkDay(value);
+      }
+    });
+  }
+
+  return next;
+}
+
+function sanitizeWorkHours(weeklyHours: WeeklyHours): WeeklyHours {
+  const next: WeeklyHours = { ...emptyWeeklyHours };
+
+  weekdays.forEach((_, index) => {
+    const day = weeklyHours[index];
+
+    if (!day) {
+      next[index] = null;
+      return;
+    }
+
+    next[index] = {
+      start: normalizeTime(day.start, defaultDay.start),
+      end: normalizeTime(day.end, defaultDay.end),
+    };
+  });
+
+  return next;
+}
+
 export default function WorkHoursTab() {
-  const [weeklyHours, setWeeklyHours] = useState<WeeklyHours>({});
+  const [weeklyHours, setWeeklyHours] = useState<WeeklyHours>(emptyWeeklyHours);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -46,10 +178,18 @@ export default function WorkHoursTab() {
         setLoading(true);
 
         const res = await API.get("/appointments/get-work-hours");
-        setWeeklyHours(res.data.workHours || {});
+
+        const serverWorkHours =
+          res.data?.workHours ??
+          res.data?.schedule ??
+          res.data?.business?.workHours ??
+          res.data?.business?.schedule ??
+          null;
+
+        setWeeklyHours(normalizeWorkHours(serverWorkHours));
       } catch (error) {
         console.error("Error loading work hours:", error);
-        setWeeklyHours({});
+        setWeeklyHours(emptyWeeklyHours);
       } finally {
         setLoading(false);
       }
@@ -81,19 +221,23 @@ export default function WorkHoursTab() {
     field: WorkHourField,
     value: string
   ) => {
-    setWeeklyHours((prev) => ({
-      ...prev,
-      [dayIndex]: {
-        ...(prev[dayIndex] ?? defaultDay),
-        [field]: value,
-      },
-    }));
+    setWeeklyHours((prev) => {
+      const current = prev[dayIndex] ?? defaultDay;
+
+      return {
+        ...prev,
+        [dayIndex]: {
+          ...current,
+          [field]: value,
+        },
+      };
+    });
   };
 
   const toggleDay = (dayIndex: number) => {
     setWeeklyHours((prev) => ({
       ...prev,
-      [dayIndex]: prev[dayIndex] === null ? defaultDay : null,
+      [dayIndex]: prev[dayIndex] === null ? { ...defaultDay } : null,
     }));
   };
 
@@ -102,10 +246,13 @@ export default function WorkHoursTab() {
       setSaving(true);
       setSaved(false);
 
+      const cleanWorkHours = sanitizeWorkHours(weeklyHours);
+
       await API.post("/appointments/update-work-hours", {
-        workHours: weeklyHours,
+        workHours: cleanWorkHours,
       });
 
+      setWeeklyHours(cleanWorkHours);
       setSaved(true);
     } catch (error) {
       console.error("Error saving work hours:", error);
@@ -128,7 +275,7 @@ export default function WorkHoursTab() {
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-100">
-              <Clock3 className="h-4 w-4" />
+              <Clock className="h-4 w-4" />
               CRM Work Hours
             </div>
 
@@ -170,7 +317,7 @@ export default function WorkHoursTab() {
         <StatCard
           label="Weekly hours"
           value={formatWeeklyHours(totalWeeklyMinutes)}
-          icon={Clock3}
+          icon={Clock}
           helper="total availability"
         />
         <StatCard
@@ -238,7 +385,7 @@ export default function WorkHoursTab() {
                         {!isClosed && (
                           <div className="flex items-center gap-2 rounded-2xl bg-slate-50 p-2">
                             <TimeInput
-                              value={dayData?.start || ""}
+                              value={dayData?.start || defaultDay.start}
                               onChange={(value) =>
                                 handleChange(index, "start", value)
                               }
@@ -249,7 +396,7 @@ export default function WorkHoursTab() {
                             </span>
 
                             <TimeInput
-                              value={dayData?.end || ""}
+                              value={dayData?.end || defaultDay.end}
                               onChange={(value) =>
                                 handleChange(index, "end", value)
                               }
@@ -283,7 +430,7 @@ export default function WorkHoursTab() {
           <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
-                <Clock3 className="h-5 w-5" />
+                <Clock className="h-5 w-5" />
               </div>
 
               <div>
