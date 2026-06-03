@@ -3,6 +3,11 @@ import "grapesjs/dist/css/grapes.min.css";
 
 import { defaultCanvasCss, defaultWebsiteHtml } from "./canvasTheme";
 import { studioElements } from "../data/elementLibrary";
+import {
+  getSectionLayoutVariants,
+  type SectionKind,
+  type SectionLayoutVariant,
+} from "../data/sectionLayoutVariants";
 
 type InitEditorArgs = {
   container: HTMLElement;
@@ -265,10 +270,96 @@ export function initBizuplyEditor({
       .gjs-toolbar {
         border-radius: 16px !important;
         overflow: hidden !important;
+        box-shadow: 0 18px 50px rgba(15,23,42,0.22) !important;
       }
 
       .gjs-toolbar-item {
         font-weight: 900 !important;
+      }
+
+      .bizuply-layout-modal {
+        direction: rtl;
+        font-family: Assistant, Heebo, Arial, sans-serif;
+        padding: 6px;
+      }
+
+      .bizuply-layout-modal-head {
+        margin-bottom: 18px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #f8f5ff, #fff);
+        border: 1px solid #ede9fe;
+        padding: 18px;
+      }
+
+      .bizuply-layout-modal-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 950;
+        color: #0f172a;
+      }
+
+      .bizuply-layout-modal-text {
+        margin: 6px 0 0;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.7;
+        color: #64748b;
+      }
+
+      .bizuply-layout-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        max-height: 62vh;
+        overflow: auto;
+        padding-left: 4px;
+      }
+
+      .bizuply-layout-card {
+        cursor: pointer;
+        text-align: right;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        background: #fff;
+        padding: 14px;
+        transition: 0.22s ease;
+        box-shadow: 0 12px 34px rgba(15,23,42,0.06);
+      }
+
+      .bizuply-layout-card:hover {
+        transform: translateY(-3px);
+        border-color: #a78bfa;
+        box-shadow: 0 24px 70px rgba(139,92,246,0.16);
+      }
+
+      .bizuply-layout-preview {
+        height: 104px;
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at 20% 20%, rgba(139,92,246,0.22), transparent 34%),
+          linear-gradient(135deg, #f8fafc, #ffffff);
+        border: 1px solid #eef2ff;
+        display: grid;
+        place-items: center;
+        color: #7c3aed;
+        font-size: 12px;
+        font-weight: 950;
+        margin-bottom: 12px;
+      }
+
+      .bizuply-layout-card-title {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 950;
+        color: #0f172a;
+      }
+
+      .bizuply-layout-card-text {
+        margin: 5px 0 0;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.55;
+        color: #64748b;
       }
     `);
 
@@ -298,7 +389,6 @@ export function initBizuplyEditor({
 
 /* =====================================================
    SAFE COMPONENT EDITING
-   לא נוגעים ב־prototype.defaults כדי לא לקבל getter error
 ===================================================== */
 
 function makeAllComponentsEditable(editor: Editor) {
@@ -313,6 +403,8 @@ function makeAllComponentsEditable(editor: Editor) {
 
 function ensureComponentEditable(component: any) {
   if (!component || typeof component.set !== "function") return;
+
+  const isSection = isSectionComponent(component);
 
   component.set({
     draggable: true,
@@ -336,32 +428,70 @@ function ensureComponentEditable(component: any) {
       keyWidth: "width",
       keyHeight: "height",
     },
-    toolbar: [
-      {
-        attributes: {
-          class: "fa fa-arrows",
-          title: "גרירה",
-        },
-        command: "tlb-move",
-      },
-      {
-        attributes: {
-          class: "fa fa-clone",
-          title: "שכפול",
-        },
-        command: "bizuply-duplicate",
-      },
-      {
-        attributes: {
-          class: "fa fa-trash",
-          title: "מחיקה",
-        },
-        command: "bizuply-delete",
-      },
-    ],
+    toolbar: isSection
+      ? [
+          {
+            label: "שינוי מבנה",
+            attributes: {
+              title: "שינוי מבנה הסקשן",
+            },
+            command: "bizuply-change-layout",
+          },
+          {
+            attributes: {
+              class: "fa fa-image",
+              title: "תמונת רקע",
+            },
+            command: "bizuply-set-bg-image",
+          },
+          {
+            attributes: {
+              class: "fa fa-arrows",
+              title: "גרירה",
+            },
+            command: "tlb-move",
+          },
+          {
+            attributes: {
+              class: "fa fa-clone",
+              title: "שכפול",
+            },
+            command: "bizuply-duplicate",
+          },
+          {
+            attributes: {
+              class: "fa fa-trash",
+              title: "מחיקה",
+            },
+            command: "bizuply-delete",
+          },
+        ]
+      : [
+          {
+            attributes: {
+              class: "fa fa-arrows",
+              title: "גרירה",
+            },
+            command: "tlb-move",
+          },
+          {
+            attributes: {
+              class: "fa fa-clone",
+              title: "שכפול",
+            },
+            command: "bizuply-duplicate",
+          },
+          {
+            attributes: {
+              class: "fa fa-trash",
+              title: "מחיקה",
+            },
+            command: "bizuply-delete",
+          },
+        ],
   });
 
-  const tagName = component.get?.("tagName");
+  const tagName = String(component.get?.("tagName") || "").toLowerCase();
 
   if (tagName === "a") {
     component.set({
@@ -413,6 +543,80 @@ function ensureComponentEditable(component: any) {
   }
 }
 
+function isSectionComponent(component: any) {
+  if (!component || typeof component.get !== "function") return false;
+
+  const tagName = String(component.get("tagName") || "").toLowerCase();
+  const classes = component.getClasses?.() || [];
+  const attrs = component.getAttributes?.() || {};
+
+  return (
+    tagName === "section" ||
+    attrs["data-section-kind"] ||
+    classes.includes("biz-section") ||
+    classes.includes("biz-section-wide") ||
+    classes.includes("biz-section-full") ||
+    classes.includes("biz-hero")
+  );
+}
+
+function getParentComponent(component: any) {
+  if (!component) return null;
+
+  if (typeof component.parent === "function") {
+    return component.parent();
+  }
+
+  if (typeof component.getParent === "function") {
+    return component.getParent();
+  }
+
+  return null;
+}
+
+function findSelectedSection(editor: Editor) {
+  let current: any = editor.getSelected();
+
+  while (current) {
+    if (isSectionComponent(current)) return current;
+    current = getParentComponent(current);
+  }
+
+  return null;
+}
+
+function getSectionKind(component: any): SectionKind {
+  const attrs = component.getAttributes?.() || {};
+  const classes = component.getClasses?.() || [];
+  const html = component.toHTML?.() || "";
+
+  const explicit = attrs["data-section-kind"];
+
+  if (explicit) return explicit as SectionKind;
+
+  if (attrs["data-bizuply-block"] === "services") return "services";
+  if (attrs["data-bizuply-block"] === "booking") return "booking";
+  if (attrs["data-bizuply-block"] === "products") return "store";
+  if (attrs["data-bizuply-block"] === "reviews") return "reviews";
+  if (attrs["data-bizuply-block"] === "lead-form") return "contact";
+  if (attrs["data-bizuply-block"] === "customer-club") return "club";
+
+  if (classes.includes("biz-hero")) return "hero";
+
+  if (html.includes("אודות")) return "about";
+  if (html.includes("שירות")) return "services";
+  if (html.includes("גלר")) return "gallery";
+  if (html.includes("מוצר") || html.includes("חנות")) return "store";
+  if (html.includes("תור") || html.includes("יומן")) return "booking";
+  if (html.includes("ביקור")) return "reviews";
+  if (html.includes("מועדון")) return "club";
+  if (html.includes("צור קשר") || html.includes("השאירו פרטים")) {
+    return "contact";
+  }
+
+  return "basic";
+}
+
 /* =====================================================
    CUSTOM TYPES
 ===================================================== */
@@ -428,7 +632,8 @@ function registerCustomComponentTypes(editor: Editor) {
         el.tagName === "SECTION" ||
         el.classList.contains("biz-section") ||
         el.classList.contains("biz-section-wide") ||
-        el.classList.contains("biz-section-full")
+        el.classList.contains("biz-section-full") ||
+        el.classList.contains("biz-hero")
       ) {
         return { type: "biz-section" };
       }
@@ -540,6 +745,27 @@ function registerCustomComponentTypes(editor: Editor) {
 ===================================================== */
 
 function registerCommands(editor: Editor) {
+  editor.Commands.add("bizuply-change-layout", {
+    run(currentEditor) {
+      const section = findSelectedSection(currentEditor);
+
+      if (!section) {
+        alert("בחרי סקשן כדי לשנות לו מבנה");
+        return;
+      }
+
+      const kind = getSectionKind(section);
+      const variants = getSectionLayoutVariants(kind);
+
+      if (!variants.length) {
+        alert("אין עדיין מבנים לסקשן הזה");
+        return;
+      }
+
+      openLayoutVariantsModal(currentEditor, section, kind, variants);
+    },
+  });
+
   editor.Commands.add("bizuply-duplicate", {
     run(currentEditor) {
       const selected = currentEditor.getSelected();
@@ -615,6 +841,79 @@ function registerCommands(editor: Editor) {
         "background-repeat": "no-repeat",
       });
     },
+  });
+}
+
+function openLayoutVariantsModal(
+  editor: Editor,
+  section: any,
+  kind: SectionKind,
+  variants: SectionLayoutVariant[]
+) {
+  const content = document.createElement("div");
+  content.className = "bizuply-layout-modal";
+
+  content.innerHTML = `
+    <div class="bizuply-layout-modal-head">
+      <p class="bizuply-layout-modal-title">שינוי מבנה סקשן</p>
+      <p class="bizuply-layout-modal-text">
+        בחרי מבנה חדש שמתאים לסוג הסקשן: ${kind}.
+        המבנה יחליף את הסקשן הנבחר, ואז תוכלי לערוך טקסט, תמונות, צבעים, פינות וריווחים.
+      </p>
+    </div>
+
+    <div class="bizuply-layout-grid">
+      ${variants
+        .map(
+          (variant) => `
+        <button
+          type="button"
+          class="bizuply-layout-card"
+          data-variant-id="${variant.id}"
+        >
+          <div class="bizuply-layout-preview">${variant.previewLabel}</div>
+          <p class="bizuply-layout-card-title">${variant.title}</p>
+          <p class="bizuply-layout-card-text">${variant.description}</p>
+        </button>
+      `
+        )
+        .join("")}
+    </div>
+  `;
+
+  content.querySelectorAll<HTMLButtonElement>("[data-variant-id]").forEach(
+    (button) => {
+      button.addEventListener("click", () => {
+        const variantId = button.dataset.variantId;
+        const selectedVariant = variants.find(
+          (variant) => variant.id === variantId
+        );
+
+        if (!selectedVariant) return;
+
+        const replaced = section.replaceWith(selectedVariant.html);
+        editor.Modal.close();
+
+        setTimeout(() => {
+          makeAllComponentsEditable(editor);
+
+          const wrapper = editor.getWrapper();
+          const allSections = wrapper?.find("section") || [];
+          const nextSection = allSections[allSections.length - 1];
+
+          if (nextSection) {
+            editor.select(nextSection);
+          } else if (Array.isArray(replaced) && replaced[0]) {
+            editor.select(replaced[0]);
+          }
+        }, 0);
+      });
+    }
+  );
+
+  editor.Modal.open({
+    title: "בחירת מבנה",
+    content,
   });
 }
 
