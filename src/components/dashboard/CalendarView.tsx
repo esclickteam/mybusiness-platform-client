@@ -1,14 +1,8 @@
 import React, { useMemo, useState } from "react";
-import {
-  CalendarDays,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Plus,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 
 type TranslationValues = Record<string, string | number>;
+
 type TFunction = (key: string, values?: TranslationValues) => string;
 
 type Appointment = {
@@ -16,12 +10,23 @@ type Appointment = {
   id?: string;
   date?: string;
   time?: string;
-  serviceName?: string;
-  clientName?: string;
-  clientSnapshot?: { name?: string };
-  client?: { name?: string };
   [key: string]: any;
 };
+
+type CalendarCell =
+  | {
+      type: "empty";
+      key: string;
+    }
+  | {
+      type: "day";
+      key: string;
+      day: number;
+      dateStr: string;
+      isToday: boolean;
+      isSelected: boolean;
+      count: number;
+    };
 
 type CalendarViewProps = {
   appointments?: Appointment[];
@@ -29,22 +34,16 @@ type CalendarViewProps = {
   selectedDate?: string;
   t?: TFunction;
   locale?: string;
-  onNewAppointment?: () => void;
 };
 
 const fallbackT: TFunction = (key, values) => {
   const dictionary: Record<string, string> = {
     "dashboard.calendarView.ariaLabel": "Appointment calendar",
-    "dashboard.calendarView.previousWeek": "Previous week",
-    "dashboard.calendarView.nextWeek": "Next week",
-    "dashboard.calendarView.today": "Today",
-    "dashboard.calendarView.day": "Day",
-    "dashboard.calendarView.week": "Week",
-    "dashboard.calendarView.month": "Month",
-    "dashboard.calendarView.newAppointment": "New Appointment",
-    "dashboard.calendarView.allDay": "all-day",
-    "dashboard.calendarView.emptySlot": "Available",
-    "dashboard.calendarView.client": "Client",
+    "dashboard.calendarView.previousMonth": "Previous month",
+    "dashboard.calendarView.nextMonth": "Next month",
+    "dashboard.calendarView.hint": "Click a date to view your daily agenda",
+    "dashboard.calendarView.appointment": "{{count}} appointment",
+    "dashboard.calendarView.appointments": "{{count}} appointments",
   };
 
   let text = dictionary[key] || key;
@@ -59,87 +58,32 @@ const fallbackT: TFunction = (key, values) => {
 };
 
 function isHebrewLocale(locale: string): boolean {
-  return locale === "he" || locale === "he-IL" || locale.startsWith("he-");
+  return locale === "he" || locale === "he-IL";
 }
 
-function getLocalIso(date: Date): string {
-  return date.toLocaleDateString("en-CA");
+function getTodayIso(): string {
+  return new Date().toLocaleDateString("en-CA");
 }
 
-function getSafeDate(date?: string): Date {
-  if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return new Date(`${date}T12:00:00`);
-  }
-
-  return new Date();
+function getMonthTitle(year: number, month: number, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(year, month, 1));
 }
 
-function startOfWeek(date: Date): Date {
-  const next = new Date(date);
-  next.setHours(12, 0, 0, 0);
-  next.setDate(next.getDate() - next.getDay());
-  return next;
+function getWeekDays(locale: string): string[] {
+  const baseSunday = new Date(2024, 0, 7);
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(baseSunday);
+    date.setDate(baseSunday.getDate() + index);
+
+    return new Intl.DateTimeFormat(locale, {
+      weekday: "short",
+    }).format(date);
+  });
 }
-
-function addDays(date: Date, amount: number): Date {
-  const next = new Date(date);
-  next.setDate(next.getDate() + amount);
-  return next;
-}
-
-function addWeeks(date: Date, amount: number): Date {
-  const next = new Date(date);
-  next.setDate(next.getDate() + amount * 7);
-  return next;
-}
-
-function getClientName(appointment: Appointment): string {
-  return (
-    appointment.clientSnapshot?.name ||
-    appointment.client?.name ||
-    appointment.clientName ||
-    "Client"
-  );
-}
-
-function getServiceName(appointment: Appointment): string {
-  return appointment.serviceName || "Appointment";
-}
-
-function getWeekRangeTitle(weekStart: Date, locale: string): string {
-  const weekEnd = addDays(weekStart, 6);
-  const sameMonth = weekStart.getMonth() === weekEnd.getMonth();
-  const sameYear = weekStart.getFullYear() === weekEnd.getFullYear();
-
-  const startText = new Intl.DateTimeFormat(locale, {
-    month: "short",
-    day: "numeric",
-  }).format(weekStart);
-
-  const endText = new Intl.DateTimeFormat(locale, {
-    month: sameMonth ? undefined : "short",
-    day: "numeric",
-    year: sameYear ? undefined : "numeric",
-  }).format(weekEnd);
-
-  const yearText = sameYear ? `, ${weekStart.getFullYear()}` : "";
-  return `${startText} - ${endText}${yearText}`;
-}
-
-function getEventTone(index: number): string {
-  const tones = [
-    "border-violet-200 bg-violet-100/80 text-violet-950",
-    "border-pink-200 bg-pink-100/80 text-pink-950",
-    "border-amber-200 bg-amber-100/80 text-amber-950",
-    "border-emerald-200 bg-emerald-100/80 text-emerald-950",
-    "border-indigo-200 bg-indigo-100/80 text-indigo-950",
-    "border-orange-200 bg-orange-100/80 text-orange-950",
-  ];
-
-  return tones[index % tones.length];
-}
-
-const HOURS = Array.from({ length: 10 }, (_, index) => 9 + index);
 
 const CalendarView = React.memo(
   ({
@@ -148,22 +92,20 @@ const CalendarView = React.memo(
     selectedDate,
     t = fallbackT,
     locale = "en-US",
-    onNewAppointment,
   }: CalendarViewProps) => {
+    const today = useMemo(() => new Date(), []);
+    const todayStr = useMemo(() => getTodayIso(), []);
+
+    const [currentYear, setCurrentYear] = useState(today.getFullYear());
+    const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+
     const isRtl = isHebrewLocale(locale);
-    const todayIso = useMemo(() => getLocalIso(new Date()), []);
-    const [weekStart, setWeekStart] = useState(() =>
-      startOfWeek(getSafeDate(selectedDate))
-    );
 
-    const days = useMemo(
-      () => Array.from({ length: 7 }, (_, index) => addDays(weekStart, index)),
-      [weekStart]
-    );
+    const weekDays = useMemo(() => getWeekDays(locale), [locale]);
 
-    const weekRangeTitle = useMemo(
-      () => getWeekRangeTitle(weekStart, locale),
-      [locale, weekStart]
+    const monthTitle = useMemo(
+      () => getMonthTitle(currentYear, currentMonth, locale),
+      [currentYear, currentMonth, locale]
     );
 
     const appointmentsByDay = useMemo(() => {
@@ -179,201 +121,198 @@ const CalendarView = React.memo(
         map[appointment.date].push(appointment);
       });
 
-      Object.values(map).forEach((items) => {
-        items.sort((a, b) => (a.time || "00:00").localeCompare(b.time || "00:00"));
-      });
-
       return map;
     }, [appointments]);
 
-    const goToday = () => {
-      const today = new Date();
-      setWeekStart(startOfWeek(today));
-      onDateClick?.(getLocalIso(today));
+    const cells = useMemo<CalendarCell[]>(() => {
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
+
+      return Array.from(
+        { length: daysInMonth + firstDayOfWeek },
+        (_, index) => {
+          if (index < firstDayOfWeek) {
+            return {
+              type: "empty",
+              key: `empty-${index}`,
+            };
+          }
+
+          const day = index - firstDayOfWeek + 1;
+
+          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
+            2,
+            "0"
+          )}-${String(day).padStart(2, "0")}`;
+
+          return {
+            type: "day",
+            key: dateStr,
+            day,
+            dateStr,
+            isToday: dateStr === todayStr,
+            isSelected: selectedDate === dateStr,
+            count: appointmentsByDay[dateStr]?.length || 0,
+          };
+        }
+      );
+    }, [appointmentsByDay, currentMonth, currentYear, selectedDate, todayStr]);
+
+    const goPrev = () => {
+      setCurrentMonth((month) => {
+        if (month === 0) {
+          setCurrentYear((year) => year - 1);
+          return 11;
+        }
+
+        return month - 1;
+      });
+    };
+
+    const goNext = () => {
+      setCurrentMonth((month) => {
+        if (month === 11) {
+          setCurrentYear((year) => year + 1);
+          return 0;
+        }
+
+        return month + 1;
+      });
     };
 
     return (
       <section
         dir={isRtl ? "rtl" : "ltr"}
         aria-label={t("dashboard.calendarView.ariaLabel")}
-        className="relative overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.07)]"
+        className="
+          overflow-hidden rounded-[24px] border border-slate-200 bg-white
+          shadow-[0_12px_35px_rgba(15,23,42,0.05)]
+        "
       >
-        <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-violet-100/70 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-28 left-1/3 h-56 w-56 rounded-full bg-pink-100/60 blur-3xl" />
+        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-4">
+          <button
+            type="button"
+            onClick={goPrev}
+            aria-label={t("dashboard.calendarView.previousMonth")}
+            className="
+              flex h-9 w-9 items-center justify-center rounded-xl
+              border border-slate-200 bg-white text-slate-500
+            "
+          >
+            {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
 
-        <div className="relative z-10 flex flex-col gap-4 border-b border-slate-100 px-5 py-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 shadow-inner">
-              <CalendarDays size={20} />
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+              <CalendarDays size={18} />
             </div>
 
-            <div className="min-w-0">
-              <h3 className="text-lg font-black tracking-tight text-slate-950">
-                Calendar
-              </h3>
-              <button
-                type="button"
-                className="mt-1 inline-flex items-center gap-1 text-sm font-bold text-slate-600 hover:text-violet-700"
-              >
-                <span>{weekRangeTitle}</span>
-                <ChevronDown size={15} />
-              </button>
-            </div>
+            <h3 className="text-base font-black capitalize text-slate-950">
+              {monthTitle}
+            </h3>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
-              <button
-                type="button"
-                onClick={() => setWeekStart((current) => addWeeks(current, isRtl ? 1 : -1))}
-                aria-label={t("dashboard.calendarView.previousWeek")}
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-50 hover:text-violet-700"
-              >
-                {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setWeekStart((current) => addWeeks(current, isRtl ? -1 : 1))}
-                aria-label={t("dashboard.calendarView.nextWeek")}
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-50 hover:text-violet-700"
-              >
-                {isRtl ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-              </button>
-            </div>
-
-            <button
-              type="button"
-              onClick={goToday}
-              className="h-10 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
-            >
-              {t("dashboard.calendarView.today")}
-            </button>
-
-            <div className="flex rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
-              <button className="h-9 rounded-xl px-4 text-xs font-bold text-slate-500" type="button">
-                {t("dashboard.calendarView.day")}
-              </button>
-              <button className="h-9 rounded-xl bg-violet-100 px-4 text-xs font-black text-violet-700" type="button">
-                {t("dashboard.calendarView.week")}
-              </button>
-              <button className="h-9 rounded-xl px-4 text-xs font-bold text-slate-500" type="button">
-                {t("dashboard.calendarView.month")}
-              </button>
-            </div>
-
-            <button
-              type="button"
-              onClick={onNewAppointment}
-              className="inline-flex h-10 items-center gap-2 rounded-2xl bg-violet-600 px-4 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.24)] transition hover:-translate-y-0.5 hover:bg-violet-700"
-            >
-              <Plus size={16} />
-              {t("dashboard.calendarView.newAppointment")}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={goNext}
+            aria-label={t("dashboard.calendarView.nextMonth")}
+            className="
+              flex h-9 w-9 items-center justify-center rounded-xl
+              border border-slate-200 bg-white text-slate-500
+            "
+          >
+            {isRtl ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+          </button>
         </div>
 
-        <div className="relative z-10 overflow-x-auto px-4 pb-5 pt-3">
-          <div className="min-w-[960px] overflow-hidden rounded-[24px] border border-slate-200 bg-white">
-            <div className="grid grid-cols-[86px_repeat(7,minmax(112px,1fr))] border-b border-slate-100 bg-slate-50/60">
-              <div className="flex items-end justify-center px-3 py-3 text-xs font-black uppercase text-slate-400">
-                {t("dashboard.calendarView.allDay")}
-              </div>
+        <div className="border-b border-slate-100 bg-slate-50/60 px-4 py-2.5 text-center text-xs font-bold text-slate-500">
+          {t("dashboard.calendarView.hint")}
+        </div>
 
-              {days.map((day) => {
-                const dateStr = getLocalIso(day);
-                const isToday = dateStr === todayIso;
-                const isSelected = selectedDate === dateStr;
-
-                return (
-                  <button
-                    type="button"
-                    key={dateStr}
-                    onClick={() => onDateClick?.(dateStr)}
-                    className={`border-l border-slate-100 px-2 py-3 text-center transition first:border-l-0 ${
-                      isSelected ? "bg-violet-50" : "hover:bg-white"
-                    }`}
-                  >
-                    <p className="text-[11px] font-black uppercase tracking-wide text-slate-500">
-                      {new Intl.DateTimeFormat(locale, { weekday: "short" }).format(day)}
-                    </p>
-                    <div className="mt-1 flex items-center justify-center gap-1.5">
-                      <span
-                        className={`flex h-8 min-w-8 items-center justify-center rounded-full px-2 text-sm font-black ${
-                          isToday || isSelected
-                            ? "bg-violet-600 text-white shadow-[0_8px_18px_rgba(124,58,237,0.28)]"
-                            : "text-slate-800"
-                        }`}
-                      >
-                        {new Intl.DateTimeFormat(locale, { day: "numeric" }).format(day)}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
+        <div className="grid grid-cols-7 border-b border-slate-100 bg-white px-2 py-3">
+          {weekDays.map((dayName, index) => (
+            <div
+              key={`${dayName}-${index}`}
+              className="text-center text-[11px] font-black uppercase tracking-wide text-slate-400"
+            >
+              {dayName}
             </div>
+          ))}
+        </div>
 
-            {HOURS.map((hour) => (
-              <div
-                key={hour}
-                className="grid min-h-[82px] grid-cols-[86px_repeat(7,minmax(112px,1fr))] border-b border-slate-100 last:border-b-0"
+        <div className="grid grid-cols-7 gap-1.5 p-2.5 sm:gap-2 sm:p-3">
+          {cells.map((cell) => {
+            if (cell.type === "empty") {
+              return (
+                <div
+                  key={cell.key}
+                  className="h-[58px] rounded-xl bg-slate-50/60 sm:h-[68px]"
+                />
+              );
+            }
+
+            const hasEvents = cell.count > 0;
+            const isPurpleMarked = cell.isSelected || cell.isToday;
+
+            return (
+              <button
+                key={cell.key}
+                type="button"
+                onClick={() => onDateClick?.(cell.dateStr)}
+                className={`
+                  relative flex h-[58px] flex-col justify-between rounded-xl
+                  border p-2 text-start sm:h-[68px]
+                  ${
+                    isPurpleMarked
+                      ? "border-violet-200 bg-violet-50/40"
+                      : "border-slate-200 bg-white"
+                  }
+                `}
               >
-                <div className="border-r border-slate-100 bg-slate-50/40 px-3 py-3 text-right text-xs font-bold text-slate-500">
-                  {new Intl.DateTimeFormat(locale, {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  }).format(new Date(2024, 0, 1, hour, 0))}
+                <div className="flex items-start justify-between gap-1">
+                  <span
+                    className={`
+                      flex h-7 w-7 items-center justify-center rounded-lg
+                      text-xs font-black
+                      ${
+                        isPurpleMarked
+                          ? "bg-violet-600 text-white"
+                          : "bg-slate-50 text-slate-700"
+                      }
+                    `}
+                  >
+                    {cell.day}
+                  </span>
                 </div>
 
-                {days.map((day, dayIndex) => {
-                  const dateStr = getLocalIso(day);
-                  const items = (appointmentsByDay[dateStr] || []).filter((appointment) => {
-                    const apptHour = Number((appointment.time || "").slice(0, 2));
-                    return Number.isFinite(apptHour) && apptHour === hour;
-                  });
-
-                  return (
-                    <button
-                      type="button"
-                      key={`${dateStr}-${hour}`}
-                      onClick={() => onDateClick?.(dateStr)}
-                      className="relative border-l border-slate-100 bg-white px-2 py-2 text-start transition hover:bg-violet-50/30 first:border-l-0"
-                    >
-                      {items.length === 0 ? (
-                        <span className="sr-only">{t("dashboard.calendarView.emptySlot")}</span>
-                      ) : (
-                        <div className="space-y-1.5">
-                          {items.slice(0, 2).map((appointment, itemIndex) => (
-                            <div
-                              key={appointment._id || appointment.id || `${dateStr}-${hour}-${itemIndex}`}
-                              className={`rounded-xl border px-3 py-2 shadow-sm ${getEventTone(dayIndex + itemIndex)}`}
-                            >
-                              <div className="mb-1 flex items-center gap-1.5 text-[11px] font-black">
-                                <Clock size={12} />
-                                <span>{appointment.time || "--:--"}</span>
-                              </div>
-                              <p className="truncate text-xs font-black">
-                                {getClientName(appointment)}
-                              </p>
-                              <p className="truncate text-[11px] font-semibold opacity-80">
-                                {getServiceName(appointment)}
-                              </p>
-                            </div>
-                          ))}
-
-                          {items.length > 2 && (
-                            <div className="rounded-lg bg-slate-100 px-2 py-1 text-[11px] font-black text-slate-600">
-                              +{items.length - 2}
-                            </div>
-                          )}
-                        </div>
+                {hasEvents ? (
+                  <div className="min-w-0">
+                    <div className="mb-1 flex items-center gap-1">
+                      {Array.from({ length: Math.min(cell.count, 3) }).map(
+                        (_, index) => (
+                          <span
+                            key={index}
+                            className="h-1.5 w-1.5 rounded-full bg-violet-500"
+                          />
+                        )
                       )}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+                    </div>
+
+                    <p className="truncate text-[10px] font-bold text-violet-700">
+                      {t(
+                        cell.count === 1
+                          ? "dashboard.calendarView.appointment"
+                          : "dashboard.calendarView.appointments",
+                        { count: cell.count }
+                      )}
+                    </p>
+                  </div>
+                ) : (
+                  <span className="h-1" />
+                )}
+              </button>
+            );
+          })}
         </div>
       </section>
     );

@@ -9,8 +9,6 @@ import {
   Settings,
   ChevronDown,
   Inbox,
-  ArrowRight,
-  Sparkles,
 } from "lucide-react";
 
 /* =====================================================
@@ -35,9 +33,8 @@ type Client = {
 
 type Appointment = {
   _id?: string;
-  id?: string;
-  date?: string;
-  time?: string;
+  date?: string; // expected YYYY-MM-DD
+  time?: string; // expected HH:mm
   serviceName?: string;
 
   clientSnapshot?: ClientSnapshot;
@@ -46,20 +43,22 @@ type Appointment = {
   clientName?: string;
   clientEmail?: string;
   email?: string;
-  status?: string;
 };
 
 type DailyAgendaProps = {
-  date: string;
+  date: string; // expected YYYY-MM-DD
   appointments?: Appointment[];
   businessName?: string;
   businessId?: string;
+
+  // חדש: תמיכה בתרגומים
   t?: TFunction;
   locale?: string;
 };
 
 /* =====================================================
    Fallback Translation
+   אם לא העברת t מבחוץ, הקומפוננטה עדיין תעבוד באנגלית
 ===================================================== */
 
 const fallbackT: TFunction = (key, values) => {
@@ -93,7 +92,7 @@ const fallbackT: TFunction = (key, values) => {
 };
 
 /* =====================================================
-   Utils
+   Utils – Single Source of Truth
 ===================================================== */
 
 function getClientName(appointment: Appointment): string {
@@ -161,18 +160,6 @@ function formatEmailDate(date?: string, locale = "en-US"): string {
   });
 }
 
-function getInitials(name: string): string {
-  const parts = name.trim().split(" ").filter(Boolean);
-
-  if (parts.length === 0) return "C";
-
-  if (parts.length === 1) {
-    return parts[0].charAt(0).toUpperCase();
-  }
-
-  return `${parts[0].charAt(0)}${parts[1].charAt(0)}`.toUpperCase();
-}
-
 /* =====================================================
    Component
 ===================================================== */
@@ -187,7 +174,6 @@ const DailyAgenda = React.memo(
     locale = "en-US",
   }: DailyAgendaProps) => {
     const navigate = useNavigate();
-
     const [emailMenuOpenId, setEmailMenuOpenId] = useState<string | null>(null);
 
     const isRtl = isHebrewLocale(locale);
@@ -284,301 +270,283 @@ const DailyAgenda = React.memo(
       <section
         dir={isRtl ? "rtl" : "ltr"}
         className="
-          relative h-full overflow-hidden rounded-[28px] border border-violet-100/80
-          bg-white shadow-[0_20px_55px_rgba(88,28,135,0.08)]
+          relative overflow-hidden rounded-3xl border border-slate-200/70
+          bg-white shadow-[0_18px_50px_rgba(15,23,42,0.06)]
         "
       >
-        <div className="pointer-events-none absolute -right-20 -top-20 h-52 w-52 rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 left-8 h-56 w-56 rounded-full bg-fuchsia-200/30 blur-3xl" />
-
         {/* Header */}
-        <div className="relative z-10 border-b border-slate-100/80 px-5 py-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex min-w-0 items-start gap-3">
-              <div
-                className="
-                  flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl
-                  bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white
-                  shadow-[0_16px_32px_rgba(124,58,237,0.28)]
-                "
-              >
-                <CalendarDays size={21} />
-              </div>
-
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-base font-black tracking-tight text-slate-950">
-                    {t("dashboard.dailyAgenda.upcomingAppointments")}
-                  </h3>
-
-                  {dayAppointments.length > 0 && (
-                    <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-black text-violet-700">
-                      {dayAppointments.length}
-                    </span>
-                  )}
-                </div>
-
-                <p className="mt-1 text-xs font-semibold text-slate-500">
-                  {displayDate}
-                </p>
-              </div>
+        <div className="flex items-center justify-between gap-4 border-b border-slate-100 px-5 py-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
+              <CalendarDays size={18} />
             </div>
 
-            <button
-              type="button"
-              onClick={editAppointment}
-              disabled={!businessId}
-              className="
-                inline-flex shrink-0 items-center gap-1.5 rounded-2xl border
-                border-violet-100 bg-violet-50 px-3 py-2 text-xs font-black
-                text-violet-700 transition hover:-translate-y-0.5
-                hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-40
-              "
-            >
-              {t("dashboard.dailyAgenda.viewCalendar")}
-              <ArrowRight
-                size={14}
-                className={isRtl ? "rotate-180" : ""}
-              />
-            </button>
+            <div>
+              <h3 className="text-base font-bold text-slate-950">
+                {t("dashboard.dailyAgenda.upcomingAppointments")}
+              </h3>
+
+              <p className="text-xs font-medium text-slate-500">
+                {displayDate}
+              </p>
+            </div>
           </div>
+
+          <button
+            type="button"
+            onClick={editAppointment}
+            disabled={!businessId}
+            className="
+              rounded-xl px-3 py-2 text-xs font-semibold text-violet-600
+              transition hover:bg-violet-50 disabled:cursor-not-allowed
+              disabled:opacity-40
+            "
+          >
+            {t("dashboard.dailyAgenda.viewCalendar")}
+          </button>
         </div>
 
         {/* Body */}
-        <div className="relative z-10">
-          {dayAppointments.length === 0 ? (
-            <div className="flex min-h-[260px] flex-col items-center justify-center px-6 py-12 text-center">
-              <div
-                className="
-                  mb-4 flex h-16 w-16 items-center justify-center rounded-3xl
-                  border border-violet-100 bg-violet-50 text-violet-600
-                "
-              >
-                <Inbox size={27} />
-              </div>
-
-              <h4 className="text-sm font-black text-slate-950">
-                {t("dashboard.dailyAgenda.noAppointments")}
-              </h4>
-
-              <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
-                {t("dashboard.dailyAgenda.noAppointmentsDescription")}
-              </p>
+        {dayAppointments.length === 0 ? (
+          <div className="flex min-h-[210px] flex-col items-center justify-center px-6 py-10 text-center">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
+              <Inbox size={24} />
             </div>
-          ) : (
-            <ul className="space-y-3 p-4">
-              {dayAppointments.map((appointment, index) => {
-                const uniqueId =
-                  appointment._id ||
-                  appointment.id ||
-                  `${appointment.date}-${appointment.time}-${index}`;
 
-                const appointmentDate = getValidDate(appointment.date);
-                const time = appointment.time || "--:--";
-                const clientName = getClientName(appointment);
-                const serviceName =
-                  appointment.serviceName ||
-                  t("dashboard.dailyAgenda.service");
+            <h4 className="text-sm font-bold text-slate-900">
+              {t("dashboard.dailyAgenda.noAppointments")}
+            </h4>
 
-                const email = getClientEmail(appointment);
-                const isEmailMenuOpen = emailMenuOpenId === uniqueId;
+            <p className="mt-1 max-w-xs text-sm leading-6 text-slate-500">
+              {t("dashboard.dailyAgenda.noAppointmentsDescription")}
+            </p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-slate-100">
+            {dayAppointments.map((appointment) => {
+              if (!appointment?._id) return null;
 
-                return (
-                  <li
-                    key={uniqueId}
-                    className="
-                      group relative overflow-visible rounded-[24px] border border-slate-200/80
-                      bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)]
-                      transition duration-300 hover:-translate-y-0.5
-                      hover:border-violet-200 hover:shadow-[0_18px_42px_rgba(124,58,237,0.12)]
-                    "
-                  >
-                    <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                      <div className="flex min-w-0 items-start gap-4">
-                        <div
-                          className="
-                            flex h-16 w-16 shrink-0 flex-col items-center justify-center
-                            rounded-[22px] border border-violet-100 bg-gradient-to-br
-                            from-violet-50 to-fuchsia-50 text-violet-700
-                          "
-                        >
-                          <span className="text-[10px] font-black uppercase tracking-wide">
-                            {appointmentDate
-                              ? appointmentDate.toLocaleDateString(locale, {
-                                  month: "short",
-                                })
-                              : "--"}
-                          </span>
+              const appointmentDate = getValidDate(appointment.date);
+              const time = appointment.time || "--:--";
+              const clientName = getClientName(appointment);
+              const serviceName =
+                appointment.serviceName ||
+                t("dashboard.dailyAgenda.service");
 
-                          <span className="mt-0.5 text-xl font-black leading-none">
-                            {appointmentDate
-                              ? appointmentDate.toLocaleDateString(locale, {
-                                  day: "2-digit",
-                                })
-                              : "--"}
-                          </span>
-                        </div>
+              const email = getClientEmail(appointment);
+              const isEmailMenuOpen = emailMenuOpenId === appointment._id;
 
-                        <div className="min-w-0 flex-1">
-                          <div className="mb-2 flex flex-wrap items-center gap-2">
-                            <span
-                              className="
-                                inline-flex items-center gap-1.5 rounded-full bg-slate-100
-                                px-2.5 py-1 text-xs font-black text-slate-600
-                              "
-                            >
-                              <Clock size={13} />
-                              {time}
-                            </span>
+              return (
+                <li
+                  key={appointment._id}
+                  className="
+                    group relative px-5 py-4 transition
+                    hover:bg-slate-50/80
+                  "
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    {/* Left */}
+                    <div className="flex min-w-0 items-center gap-4">
+                      <div
+                        className="
+                          flex h-14 w-14 shrink-0 flex-col items-center
+                          justify-center rounded-2xl border border-violet-100
+                          bg-violet-50 text-violet-700
+                        "
+                      >
+                        <span className="text-[10px] font-bold uppercase tracking-wide">
+                          {appointmentDate
+                            ? appointmentDate.toLocaleDateString(locale, {
+                                month: "short",
+                              })
+                            : "--"}
+                        </span>
 
-                            <span
-                              className="
-                                inline-flex items-center gap-1.5 rounded-full bg-emerald-50
-                                px-2.5 py-1 text-xs font-black text-emerald-700
-                              "
-                            >
-                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                              {t("dashboard.dailyAgenda.confirmed")}
-                            </span>
-                          </div>
-
-                          <h4 className="truncate text-sm font-black text-slate-950">
-                            {serviceName}
-                          </h4>
-
-                          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-slate-500">
-                            <span className="inline-flex items-center gap-1.5">
-                              <span
-                                className="
-                                  flex h-6 w-6 items-center justify-center rounded-full
-                                  bg-violet-100 text-[10px] font-black text-violet-700
-                                "
-                              >
-                                {getInitials(clientName)}
-                              </span>
-                              {clientName}
-                            </span>
-
-                            <span className="inline-flex items-center gap-1.5">
-                              <Briefcase size={13} />
-                              {businessName}
-                            </span>
-                          </div>
-                        </div>
+                        <span className="text-lg font-black leading-none">
+                          {appointmentDate
+                            ? appointmentDate.toLocaleDateString(locale, {
+                                day: "2-digit",
+                              })
+                            : "--"}
+                        </span>
                       </div>
 
-                      <div className="relative flex shrink-0 flex-wrap items-center gap-2 xl:justify-end">
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setEmailMenuOpenId(
-                                isEmailMenuOpen ? null : uniqueId
-                              )
-                            }
-                            className="
-                              inline-flex items-center gap-2 rounded-2xl border
-                              border-slate-200 bg-white px-3.5 py-2.5 text-xs
-                              font-black text-slate-700 shadow-sm transition
-                              hover:border-violet-200 hover:bg-violet-50
-                              hover:text-violet-700
-                            "
-                          >
-                            <Mail size={14} />
-                            {t("dashboard.dailyAgenda.email")}
-                            <ChevronDown
-                              size={14}
-                              className={`transition ${
-                                isEmailMenuOpen ? "rotate-180" : ""
-                              }`}
-                            />
-                          </button>
-
-                          {isEmailMenuOpen && (
-                            <div
-                              className={`
-                                absolute top-12 z-50 w-44 overflow-hidden rounded-2xl
-                                border border-slate-200 bg-white p-1.5
-                                shadow-[0_22px_48px_rgba(15,23,42,0.18)]
-                                ${isRtl ? "left-0" : "right-0"}
-                              `}
-                            >
-                              {(["gmail", "outlook", "default"] as EmailProvider[]).map(
-                                (provider) => (
-                                  <button
-                                    key={provider}
-                                    type="button"
-                                    onClick={() =>
-                                      sendEmailReminder({
-                                        provider,
-                                        email,
-                                        clientName,
-                                        appointmentDate: appointment.date,
-                                        time,
-                                        service: serviceName,
-                                      })
-                                    }
-                                    className="
-                                      w-full rounded-xl px-3 py-2.5 text-start text-sm
-                                      font-bold capitalize text-slate-700 transition
-                                      hover:bg-violet-50 hover:text-violet-700
-                                    "
-                                  >
-                                    {provider}
-                                  </button>
-                                )
-                              )}
-                            </div>
-                          )}
+                      <div className="min-w-0">
+                        <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-slate-500">
+                          <Clock size={14} />
+                          <span>{time}</span>
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={editAppointment}
-                          disabled={!businessId}
-                          className="
-                            inline-flex items-center gap-2 rounded-2xl bg-slate-950
-                            px-3.5 py-2.5 text-xs font-black text-white
-                            shadow-[0_14px_28px_rgba(15,23,42,0.18)]
-                            transition hover:-translate-y-0.5 hover:bg-violet-700
-                            disabled:cursor-not-allowed disabled:opacity-40
-                          "
-                        >
-                          <Settings size={14} />
-                          {t("dashboard.dailyAgenda.manage")}
-                        </button>
+                        <h4 className="truncate text-sm font-bold text-slate-950">
+                          {serviceName}
+                        </h4>
+
+                        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                          <span className="inline-flex items-center gap-1">
+                            <User size={13} />
+                            {clientName}
+                          </span>
+
+                          <span className="inline-flex items-center gap-1">
+                            <Briefcase size={13} />
+                            {businessName}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+
+                    {/* Status */}
+                    <div className="hidden items-center gap-2 xl:flex">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      <span className="text-xs font-semibold text-slate-600">
+                        {t("dashboard.dailyAgenda.confirmed")}
+                      </span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="relative flex shrink-0 items-center gap-2">
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEmailMenuOpenId(
+                              isEmailMenuOpen ? null : appointment._id || null
+                            )
+                          }
+                          className="
+                            inline-flex items-center gap-2 rounded-xl border
+                            border-slate-200 bg-white px-3 py-2 text-xs
+                            font-semibold text-slate-700 shadow-sm transition
+                            hover:border-violet-200 hover:bg-violet-50
+                            hover:text-violet-700
+                          "
+                        >
+                          <Mail size={14} />
+                          {t("dashboard.dailyAgenda.email")}
+                          <ChevronDown
+                            size={14}
+                            className={`transition ${
+                              isEmailMenuOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+
+                        {isEmailMenuOpen && (
+                          <div
+                            className={`
+                              absolute top-11 z-30 w-40 overflow-hidden
+                              rounded-2xl border border-slate-200 bg-white
+                              p-1 shadow-[0_18px_40px_rgba(15,23,42,0.14)]
+                              ${isRtl ? "left-0" : "right-0"}
+                            `}
+                          >
+                            <button
+                              type="button"
+                              onClick={() =>
+                                sendEmailReminder({
+                                  provider: "gmail",
+                                  email,
+                                  clientName,
+                                  appointmentDate: appointment.date,
+                                  time,
+                                  service: serviceName,
+                                })
+                              }
+                              className="
+                                w-full rounded-xl px-3 py-2 text-start text-sm
+                                font-medium text-slate-700 transition
+                                hover:bg-violet-50 hover:text-violet-700
+                              "
+                            >
+                              Gmail
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                sendEmailReminder({
+                                  provider: "outlook",
+                                  email,
+                                  clientName,
+                                  appointmentDate: appointment.date,
+                                  time,
+                                  service: serviceName,
+                                })
+                              }
+                              className="
+                                w-full rounded-xl px-3 py-2 text-start text-sm
+                                font-medium text-slate-700 transition
+                                hover:bg-violet-50 hover:text-violet-700
+                              "
+                            >
+                              Outlook
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                sendEmailReminder({
+                                  provider: "default",
+                                  email,
+                                  clientName,
+                                  appointmentDate: appointment.date,
+                                  time,
+                                  service: serviceName,
+                                })
+                              }
+                              className="
+                                w-full rounded-xl px-3 py-2 text-start text-sm
+                                font-medium text-slate-700 transition
+                                hover:bg-violet-50 hover:text-violet-700
+                              "
+                            >
+                              Default
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={editAppointment}
+                        disabled={!businessId}
+                        className="
+                          inline-flex items-center gap-2 rounded-xl bg-slate-950
+                          px-3 py-2 text-xs font-semibold text-white shadow-sm
+                          transition hover:bg-violet-700 disabled:cursor-not-allowed
+                          disabled:opacity-40
+                        "
+                      >
+                        <Settings size={14} />
+                        {t("dashboard.dailyAgenda.manage")}
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
 
         {/* Footer */}
         {dayAppointments.length > 0 && (
-          <div className="relative z-10 border-t border-slate-100 px-5 py-4">
+          <div
+            className={`flex border-t border-slate-100 px-5 py-3 ${
+              isRtl ? "justify-start" : "justify-end"
+            }`}
+          >
             <button
               type="button"
               onClick={editAppointment}
               disabled={!businessId}
               className="
-                group inline-flex items-center gap-2 rounded-2xl bg-violet-600
-                px-4 py-3 text-xs font-black text-white
-                shadow-[0_14px_30px_rgba(124,58,237,0.24)]
-                transition hover:-translate-y-0.5 hover:bg-violet-700
-                disabled:cursor-not-allowed disabled:opacity-40
+                text-xs font-bold text-violet-600 transition
+                hover:text-violet-800 disabled:cursor-not-allowed
+                disabled:opacity-40
               "
             >
-              <Sparkles size={14} />
-              {t("dashboard.dailyAgenda.viewAllAppointments")}
-              <ArrowRight
-                size={14}
-                className={`transition group-hover:translate-x-0.5 ${
-                  isRtl ? "rotate-180 group-hover:-translate-x-0.5" : ""
-                }`}
-              />
+              {t("dashboard.dailyAgenda.viewAllAppointments")}{" "}
+              {isRtl ? "←" : "→"}
             </button>
           </div>
         )}
