@@ -12,26 +12,21 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Activity,
-  ArrowRight,
   Bell,
   Calendar,
   CalendarCheck2,
   CalendarDays,
   CheckCircle2,
+  Clock,
   ChevronDown,
-  Clock3,
   DollarSign,
   Eye,
-  LayoutDashboard,
-  MessageCircle,
-  MoreHorizontal,
   Plus,
   Search,
   Sparkles,
   Star,
   TrendingUp,
   Users,
-  WalletCards,
   XCircle,
   Zap,
 } from "lucide-react";
@@ -133,10 +128,6 @@ type LazyAnyComponent = PreloadableComponent<React.ComponentType<any>>;
 
 const CalendarView = lazyWithPreload(() =>
   import("@/components/dashboard/CalendarView")
-) as LazyAnyComponent;
-
-const BarChartComponent = lazyWithPreload(() =>
-  import("@/components/dashboard/BarChart")
 ) as LazyAnyComponent;
 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
@@ -319,7 +310,6 @@ async function fetchAppointments(
 
 export function preloadDashboardComponents() {
   CalendarView.preload();
-  BarChartComponent.preload();
 }
 
 function LoadingShell({ text }: { text: React.ReactNode }) {
@@ -562,7 +552,7 @@ function AppointmentOverview({
       label: "Upcoming",
       value: upcoming,
       percent: Math.round((upcoming / safeTotal) * 100),
-      icon: <Clock3 size={14} />,
+      icon: <Clock size={14} />,
       bar: "bg-violet-500",
     },
     {
@@ -649,156 +639,6 @@ function AppointmentOverview({
               </div>
             </div>
           ))}
-        </div>
-      </div>
-    </GlassPanel>
-  );
-}
-
-function CalendarTimeline({
-  appointments,
-  selectedDate,
-  onSelectDate,
-  locale,
-}: {
-  appointments: Appointment[];
-  selectedDate: string;
-  onSelectDate: (date: string) => void;
-  locale: string;
-}) {
-  const weekDays = useMemo(() => getWeekDays(locale), [locale]);
-
-  const selectedAppointments = useMemo(
-    () =>
-      appointments
-        .filter((appt) => appt.date === selectedDate)
-        .sort((a, b) => (a.time || "").localeCompare(b.time || "")),
-    [appointments, selectedDate]
-  );
-
-  const hours = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
-
-  return (
-    <GlassPanel className="p-5 xl:col-span-2">
-      <SectionHeader
-        icon={<CalendarDays size={18} />}
-        title="Calendar"
-        subtitle="Smart schedule overview"
-        action={
-          <div className="flex items-center gap-2">
-            <button className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm transition hover:bg-slate-50">
-              Day
-            </button>
-            <button className="rounded-xl bg-violet-600 px-3 py-2 text-xs font-black text-white shadow-[0_12px_28px_rgba(124,58,237,0.25)]">
-              Week
-            </button>
-            <button className="hidden rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm transition hover:bg-slate-50 sm:block">
-              Month
-            </button>
-            <button className="rounded-xl bg-violet-600 px-3 py-2 text-xs font-black text-white shadow-[0_12px_28px_rgba(124,58,237,0.25)]">
-              + New Appointment
-            </button>
-          </div>
-        }
-      />
-
-      <div className="mb-4 grid grid-cols-7 gap-2">
-        {weekDays.map((day) => {
-          const count = appointments.filter((appt) => appt.date === day.iso).length;
-          const active = selectedDate === day.iso;
-
-          return (
-            <button
-              key={day.iso}
-              type="button"
-              onClick={() => onSelectDate(day.iso)}
-              className={`rounded-2xl border px-2 py-3 text-center transition ${
-                active
-                  ? "border-violet-200 bg-violet-600 text-white shadow-[0_14px_32px_rgba(124,58,237,0.26)]"
-                  : "border-slate-100 bg-white text-slate-600 hover:border-violet-200 hover:bg-violet-50"
-              }`}
-            >
-              <p className="text-[10px] font-black uppercase opacity-80">{day.day}</p>
-              <p className="mt-1 text-lg font-black">{day.dateNumber}</p>
-              {count > 0 && (
-                <span
-                  className={`mx-auto mt-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-black ${
-                    active ? "bg-white/20 text-white" : "bg-violet-100 text-violet-700"
-                  }`}
-                >
-                  {count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-[90px_minmax(0,1fr)]">
-        <div className="hidden space-y-3 xl:block">
-          {hours.map((hour) => (
-            <div key={hour} className="h-14 text-xs font-black text-slate-400">
-              {hour}
-            </div>
-          ))}
-        </div>
-
-        <div className="relative overflow-hidden rounded-[28px] border border-slate-100 bg-gradient-to-br from-white to-violet-50/30 p-4">
-          <div className="pointer-events-none absolute left-0 right-0 top-[40%] h-px bg-rose-400/50" />
-
-          {selectedAppointments.length === 0 ? (
-            <div className="flex min-h-[330px] items-center justify-center rounded-[24px] border border-dashed border-slate-200 bg-white/70 text-center">
-              <div>
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl bg-violet-50 text-violet-700">
-                  <Calendar size={24} />
-                </div>
-                <p className="mt-3 text-sm font-black text-slate-700">
-                  No appointments for this day
-                </p>
-                <p className="mt-1 text-xs font-semibold text-slate-400">
-                  Choose another date or create a new appointment.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="grid min-h-[330px] gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {selectedAppointments.map((appt, index) => (
-                <div
-                  key={appt._id || appt.id || `${appt.date}-${appt.time}-${index}`}
-                  className="group flex min-h-[112px] flex-col justify-between rounded-[24px] border border-violet-100 bg-white p-4 shadow-[0_18px_45px_rgba(88,28,135,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_65px_rgba(88,28,135,0.13)]"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-black text-slate-950">
-                        {appt.clientName}
-                      </p>
-                      <p className="mt-1 truncate text-xs font-semibold text-slate-500">
-                        {appt.serviceName}
-                      </p>
-                    </div>
-
-                    <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-black text-violet-700">
-                      {appt.status || "Upcoming"}
-                    </span>
-                  </div>
-
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-xs font-black text-slate-500">
-                      <Clock3 size={14} />
-                      {appt.time || "No time"}
-                    </span>
-
-                    <button
-                      type="button"
-                      className="rounded-xl bg-slate-50 p-2 text-slate-500 transition hover:bg-violet-50 hover:text-violet-700"
-                    >
-                      <MoreHorizontal size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </GlassPanel>
@@ -993,99 +833,6 @@ function AiRecommendationPanel({
         ))}
       </div>
     </GlassPanel>
-  );
-}
-
-function MobileSidebarHint() {
-  return (
-    <div className="mb-4 flex items-center justify-between rounded-[26px] border border-white/80 bg-white/80 p-3 shadow-[0_14px_40px_rgba(88,28,135,0.08)] backdrop-blur-xl lg:hidden">
-      <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-600 text-white">
-          <Sparkles size={18} />
-        </div>
-
-        <div>
-          <p className="text-sm font-black text-slate-950">GlowPro</p>
-          <p className="text-xs font-semibold text-slate-400">Dashboard</p>
-        </div>
-      </div>
-
-      <button className="rounded-2xl bg-violet-50 p-3 text-violet-700">
-        <LayoutDashboard size={18} />
-      </button>
-    </div>
-  );
-}
-
-function Sidebar() {
-  const nav = [
-    { icon: <LayoutDashboard size={17} />, label: "Dashboard", active: true },
-    { icon: <CalendarCheck2 size={17} />, label: "Appointments" },
-    { icon: <Calendar size={17} />, label: "Calendar" },
-    { icon: <Users size={17} />, label: "Clients" },
-    { icon: <WalletCards size={17} />, label: "Services" },
-    { icon: <MessageCircle size={17} />, label: "Messages", badge: "2" },
-    { icon: <Star size={17} />, label: "Reviews" },
-    { icon: <DollarSign size={17} />, label: "Finance" },
-    { icon: <TrendingUp size={17} />, label: "Marketing" },
-  ];
-
-  return (
-    <aside className="sticky top-4 hidden h-[calc(100vh-32px)] overflow-hidden rounded-[34px] border border-white/90 bg-white/86 p-4 shadow-[0_24px_80px_rgba(88,28,135,0.11)] backdrop-blur-2xl lg:block">
-      <div className="mb-8 flex items-center gap-3 px-2">
-        <div className="flex h-12 w-12 items-center justify-center rounded-[22px] bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-[0_16px_35px_rgba(124,58,237,0.28)]">
-          <Sparkles size={22} />
-        </div>
-
-        <div>
-          <p className="text-lg font-black tracking-tight text-slate-950">
-            GlowPro
-          </p>
-          <p className="text-xs font-bold text-slate-400">Business OS</p>
-        </div>
-      </div>
-
-      <nav className="space-y-1.5">
-        {nav.map((item) => (
-          <button
-            key={item.label}
-            type="button"
-            className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-black transition ${
-              item.active
-                ? "bg-violet-600 text-white shadow-[0_15px_35px_rgba(124,58,237,0.28)]"
-                : "text-slate-500 hover:bg-violet-50 hover:text-violet-700"
-            }`}
-          >
-            <span className="flex items-center gap-3">
-              {item.icon}
-              {item.label}
-            </span>
-
-            {item.badge && (
-              <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-black text-violet-700">
-                {item.badge}
-              </span>
-            )}
-          </button>
-        ))}
-      </nav>
-
-      <div className="absolute bottom-4 left-4 right-4 overflow-hidden rounded-[28px] bg-gradient-to-br from-violet-50 to-fuchsia-50 p-4 text-center">
-        <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-violet-300/40 blur-2xl" />
-        <div className="relative z-10">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-violet-700 shadow-sm">
-            <Sparkles size={20} />
-          </div>
-          <p className="text-sm font-black text-slate-950">Upgrade to Pro</p>
-          <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">
-            Unlock advanced features and grow faster.
-          </p>
-          <button className="mt-4 w-full rounded-2xl bg-violet-600 py-3 text-xs font-black text-white shadow-[0_14px_32px_rgba(124,58,237,0.25)]">
-            Upgrade now
-          </button>
-        </div>
-      </div>
-    </aside>
   );
 }
 
@@ -1743,11 +1490,8 @@ export default function DashboardPage() {
       dir={i18n.dir()}
       className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,#f1e8ff_0,#f8f6ff_34%,#f6f7fb_68%,#ffffff_100%)] text-slate-950"
     >
-      <div className="mx-auto grid w-full max-w-[1800px] gap-5 px-4 py-4 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6">
-        <Sidebar />
-
+      <div className="mx-auto w-full max-w-[1680px] px-4 py-4 sm:px-6 lg:px-8">
         <main className="min-w-0 pb-10">
-          <MobileSidebarHint />
 
           {alertMessage && (
             <div className="mb-4 rounded-[24px] border border-amber-200 bg-amber-50 p-4 text-sm font-black text-amber-800 shadow-sm">
@@ -1831,7 +1575,7 @@ export default function DashboardPage() {
             />
           </section>
 
-          <section className="mt-5 grid gap-5 xl:grid-cols-[minmax(320px,0.78fr)_minmax(0,1.72fr)]">
+          <section className="mt-5 grid items-stretch gap-5 xl:grid-cols-[minmax(320px,0.82fr)_minmax(0,1.18fr)]">
             <AppointmentOverview
               total={totalAppointments}
               averagePerDay={averagePerDay}
@@ -1840,79 +1584,7 @@ export default function DashboardPage() {
               canceled={canceledAppointments}
             />
 
-            <CalendarTimeline
-              appointments={enrichedAppointments}
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
-              locale={locale}
-            />
-          </section>
-
-          <section className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(360px,0.8fr)]">
-            <GlassPanel className="min-h-[430px] p-5">
-              <SectionHeader
-                icon={<TrendingUp size={18} />}
-                title="Clients who booked appointments by month"
-                subtitle="Monthly booking growth"
-                action={
-                  <button className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm hover:bg-slate-50">
-                    This Month
-                  </button>
-                }
-              />
-
-              <div className="mb-4 grid gap-3 sm:grid-cols-3">
-                <div className="rounded-[22px] border border-violet-100 bg-violet-50/70 p-4">
-                  <p className="text-xs font-black text-slate-500">Today</p>
-                  <p className="mt-2 text-2xl font-black text-slate-950">
-                    {todayAppointments}
-                  </p>
-                </div>
-
-                <div className="rounded-[22px] border border-emerald-100 bg-emerald-50/70 p-4">
-                  <p className="text-xs font-black text-slate-500">Upcoming week</p>
-                  <p className="mt-2 text-2xl font-black text-slate-950">
-                    {upcomingAppointments}
-                  </p>
-                </div>
-
-                <div className="rounded-[22px] border border-pink-100 bg-pink-50/70 p-4">
-                  <p className="text-xs font-black text-slate-500">AI pending</p>
-                  <p className="mt-2 text-2xl font-black text-slate-950">
-                    {recommendations.length}
-                  </p>
-                </div>
-              </div>
-
-              <div className="min-h-[310px]">
-                <Suspense
-                  fallback={
-                    <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-6 text-sm font-black text-slate-600">
-                      Loading chart...
-                    </div>
-                  }
-                >
-                  <BarChartComponent
-                    appointments={enrichedAppointments}
-                    title="Clients who booked appointments by month"
-                  />
-                </Suspense>
-              </div>
-            </GlassPanel>
-
-            <UpcomingAppointmentsPanel
-              appointments={enrichedAppointments}
-              locale={locale}
-            />
-          </section>
-
-          <section className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-            <RecentActivityPanel
-              appointments={getLastAppointments(enrichedAppointments, 4)}
-              reviews={syncedStats.reviews || []}
-            />
-
-            <GlassPanel className="p-5">
+            <GlassPanel className="h-full p-5">
               <SectionHeader
                 icon={<Calendar size={18} />}
                 title="Appointment calendar"
@@ -1941,6 +1613,18 @@ export default function DashboardPage() {
                 />
               </Suspense>
             </GlassPanel>
+          </section>
+
+          <section className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <RecentActivityPanel
+              appointments={getLastAppointments(enrichedAppointments, 4)}
+              reviews={syncedStats.reviews || []}
+            />
+
+            <UpcomingAppointmentsPanel
+              appointments={enrichedAppointments}
+              locale={locale}
+            />
           </section>
 
           <section className="mt-5">
