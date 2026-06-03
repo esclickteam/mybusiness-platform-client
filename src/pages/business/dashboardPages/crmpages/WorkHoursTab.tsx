@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   CalendarDays,
   CheckCircle2,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 
 import API from "@api";
+import { useAuth } from "@/context/AuthContext";
 
 type WorkDay = {
   start: string;
@@ -20,6 +22,14 @@ type WorkDay = {
 type WeeklyHours = Record<number, WorkDay | null>;
 
 type WorkHourField = keyof WorkDay;
+
+type AuthUser = {
+  businessId?: string;
+};
+
+type AuthContextValue = {
+  user?: AuthUser | null;
+};
 
 const weekdays = [
   "Sunday",
@@ -167,6 +177,10 @@ function sanitizeWorkHours(weeklyHours: WeeklyHours): WeeklyHours {
 }
 
 export default function WorkHoursTab() {
+  const { businessId: routeBusinessId } = useParams<{ businessId: string }>();
+  const { user } = useAuth() as AuthContextValue;
+  const businessId = routeBusinessId || user?.businessId || "";
+
   const [weeklyHours, setWeeklyHours] = useState<WeeklyHours>(emptyWeeklyHours);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -177,16 +191,23 @@ export default function WorkHoursTab() {
       try {
         setLoading(true);
 
-        const res = await API.get("/appointments/get-work-hours");
+        if (!businessId) {
+          setWeeklyHours(emptyWeeklyHours);
+          return;
+        }
 
-        const serverWorkHours =
-          res.data?.workHours ??
+        const res = await API.get("/appointments/get-work-hours", {
+          params: { businessId },
+        });
+
+        const serverSchedule =
           res.data?.schedule ??
-          res.data?.business?.workHours ??
+          res.data?.workHours ??
           res.data?.business?.schedule ??
+          res.data?.business?.workHours ??
           null;
 
-        setWeeklyHours(normalizeWorkHours(serverWorkHours));
+        setWeeklyHours(normalizeWorkHours(serverSchedule));
       } catch (error) {
         console.error("Error loading work hours:", error);
         setWeeklyHours(emptyWeeklyHours);
@@ -196,7 +217,7 @@ export default function WorkHoursTab() {
     }
 
     fetchWorkHours();
-  }, []);
+  }, [businessId]);
 
   const openDaysCount = useMemo(() => {
     return weekdays.filter((_, index) => weeklyHours[index] !== null).length;
@@ -246,13 +267,20 @@ export default function WorkHoursTab() {
       setSaving(true);
       setSaved(false);
 
-      const cleanWorkHours = sanitizeWorkHours(weeklyHours);
+      if (!businessId) {
+        alert("Missing businessId");
+        return;
+      }
+
+      const cleanSchedule = sanitizeWorkHours(weeklyHours);
 
       await API.post("/appointments/update-work-hours", {
-        workHours: cleanWorkHours,
+        businessId,
+        schedule: cleanSchedule,
+        workHours: cleanSchedule,
       });
 
-      setWeeklyHours(cleanWorkHours);
+      setWeeklyHours(cleanSchedule);
       setSaved(true);
     } catch (error) {
       console.error("Error saving work hours:", error);
