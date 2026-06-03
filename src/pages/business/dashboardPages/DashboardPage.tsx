@@ -252,6 +252,95 @@ function getLastAppointments(appointments: Appointment[], limit = 5) {
     .slice(0, limit);
 }
 
+
+function getStartOfWeek(date: Date): Date {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - start.getDay());
+  return start;
+}
+
+function getEndOfWeek(startOfWeek: Date): Date {
+  const end = new Date(startOfWeek);
+  end.setDate(startOfWeek.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
+  return end;
+}
+
+function parseAppointmentDate(appt: Appointment): Date | null {
+  if (!appt.date) return null;
+
+  const dateTime = new Date(`${appt.date}T${appt.time || "00:00"}`);
+
+  if (!Number.isFinite(dateTime.getTime())) return null;
+
+  return dateTime;
+}
+
+function getWeeklyAppointmentCounts(
+  appointments: Appointment[],
+  weekOffset = 0
+): number[] {
+  const today = new Date();
+  const currentWeekStart = getStartOfWeek(today);
+  const weekStart = new Date(currentWeekStart);
+
+  weekStart.setDate(currentWeekStart.getDate() + weekOffset * 7);
+
+  const weekEnd = getEndOfWeek(weekStart);
+  const counts = Array.from({ length: 7 }, () => 0);
+
+  appointments.forEach((appt) => {
+    const date = parseAppointmentDate(appt);
+
+    if (!date) return;
+    if (date < weekStart || date > weekEnd) return;
+
+    counts[date.getDay()] += 1;
+  });
+
+  return counts;
+}
+
+function getWeeklyAppointmentsByStatus(
+  appointments: Appointment[],
+  weekOffset = 0
+) {
+  const today = new Date();
+  const currentWeekStart = getStartOfWeek(today);
+  const weekStart = new Date(currentWeekStart);
+
+  weekStart.setDate(currentWeekStart.getDate() + weekOffset * 7);
+
+  const weekEnd = getEndOfWeek(weekStart);
+
+  const weekAppointments = appointments.filter((appt) => {
+    const date = parseAppointmentDate(appt);
+
+    if (!date) return false;
+
+    return date >= weekStart && date <= weekEnd;
+  });
+
+  const completed = weekAppointments.filter(
+    (appt) => String(appt.status || "").toLowerCase() === "completed"
+  ).length;
+
+  const canceled = weekAppointments.filter((appt) => {
+    const status = String(appt.status || "").toLowerCase();
+    return status === "canceled" || status === "cancelled";
+  }).length;
+
+  const upcoming = Math.max(weekAppointments.length - completed - canceled, 0);
+
+  return {
+    total: weekAppointments.length,
+    upcoming,
+    completed,
+    canceled,
+  };
+}
+
 function getWeekDays(locale: string) {
   const today = new Date();
   const start = new Date(today);
@@ -533,47 +622,56 @@ function MetricCard({
 }
 
 
+
 function AppointmentOverview({
-  total,
-  averagePerDay,
-  upcoming,
-  completed,
-  canceled,
+  appointments,
 }: {
-  total: number;
-  averagePerDay: number;
-  upcoming: number;
-  completed: number;
-  canceled: number;
+  appointments: Appointment[];
 }) {
+  const thisWeek = useMemo(
+    () => getWeeklyAppointmentCounts(appointments, 0),
+    [appointments]
+  );
+
+  const lastWeek = useMemo(
+    () => getWeeklyAppointmentCounts(appointments, -1),
+    [appointments]
+  );
+
+  const status = useMemo(
+    () => getWeeklyAppointmentsByStatus(appointments, 0),
+    [appointments]
+  );
+
+  const total = status.total;
+  const averagePerDay = Math.round((total / 7) * 10) / 10;
   const safeTotal = Math.max(total, 1);
+  const maxValue = Math.max(...thisWeek, ...lastWeek, 1);
 
   const statusRows = [
     {
       label: "Upcoming",
-      value: upcoming,
-      percent: Math.round((upcoming / safeTotal) * 100),
+      value: status.upcoming,
+      percent: Math.round((status.upcoming / safeTotal) * 100),
       icon: <Clock size={14} />,
       bar: "bg-violet-500",
     },
     {
       label: "Completed",
-      value: completed,
-      percent: Math.round((completed / safeTotal) * 100),
+      value: status.completed,
+      percent: Math.round((status.completed / safeTotal) * 100),
       icon: <CheckCircle2 size={14} />,
       bar: "bg-emerald-500",
     },
     {
       label: "Canceled",
-      value: canceled,
-      percent: Math.round((canceled / safeTotal) * 100),
+      value: status.canceled,
+      percent: Math.round((status.canceled / safeTotal) * 100),
       icon: <XCircle size={14} />,
       bar: "bg-rose-500",
     },
   ];
 
-  const thisWeek = [1, 5, 7, 9, 6, 10, 7];
-  const lastWeek = [0, 4, 6, 8, 6, 8, 6];
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const peakDayIndex = thisWeek.indexOf(Math.max(...thisWeek));
   const peakDay = days[peakDayIndex];
@@ -584,7 +682,7 @@ function AppointmentOverview({
       <SectionHeader
         icon={<Activity size={18} />}
         title="Appointment overview"
-        subtitle="This week performance"
+        subtitle="Synced with your live appointments"
         action={
           <button
             type="button"
@@ -599,13 +697,19 @@ function AppointmentOverview({
         <div className="rounded-[24px] border border-violet-100 bg-violet-50/70 p-4">
           <p className="text-xs font-black text-slate-500">Total appointments</p>
           <p className="mt-3 text-3xl font-black text-slate-950">{total}</p>
-          <p className="mt-1 text-xs font-black text-emerald-600">+18% vs last 7 days</p>
+          <p className="mt-1 text-xs font-black text-emerald-600">
+            From MongoDB appointments
+          </p>
         </div>
 
         <div className="rounded-[24px] border border-slate-200 bg-white p-4">
           <p className="text-xs font-black text-slate-500">Appointments per day avg</p>
-          <p className="mt-3 text-3xl font-black text-slate-950">{averagePerDay}</p>
-          <p className="mt-1 text-xs font-black text-emerald-600">+18% vs last 7 days</p>
+          <p className="mt-3 text-3xl font-black text-slate-950">
+            {averagePerDay}
+          </p>
+          <p className="mt-1 text-xs font-black text-emerald-600">
+            Based on this week
+          </p>
         </div>
       </div>
 
@@ -626,55 +730,60 @@ function AppointmentOverview({
         </div>
 
         <div className="grid h-[150px] grid-cols-7 items-end gap-3">
-          {days.map((day, index) => (
-            <div key={day} className="flex h-full flex-col justify-end">
-              <div className="flex h-[118px] items-end justify-center gap-1.5">
-                <div className="flex h-full w-4 items-end">
-                  <div
-                    className="w-full rounded-t-full bg-slate-200"
-                    style={{ height: `${(lastWeek[index] / 10) * 100}%` }}
-                  />
+          {days.map((day, index) => {
+            const lastWeekHeight = lastWeek[index] === 0 ? 0 : Math.max(14, (lastWeek[index] / maxValue) * 100);
+            const thisWeekHeight = thisWeek[index] === 0 ? 0 : Math.max(14, (thisWeek[index] / maxValue) * 100);
+
+            return (
+              <div key={day} className="flex h-full flex-col justify-end">
+                <div className="flex h-[118px] items-end justify-center gap-1.5">
+                  <div className="flex h-full w-4 items-end">
+                    <div
+                      className="w-full rounded-t-full bg-slate-200 transition-all"
+                      style={{ height: `${lastWeekHeight}%` }}
+                      title={`Last week: ${lastWeek[index]}`}
+                    />
+                  </div>
+
+                  <div className="flex h-full w-4 items-end">
+                    <div
+                      className="w-full rounded-t-full bg-gradient-to-t from-violet-600 to-violet-300 shadow-[0_8px_18px_rgba(124,58,237,0.25)] transition-all"
+                      style={{ height: `${thisWeekHeight}%` }}
+                      title={`This week: ${thisWeek[index]}`}
+                    />
+                  </div>
                 </div>
 
-                <div className="flex h-full w-4 items-end">
-                  <div
-                    className="w-full rounded-t-full bg-gradient-to-t from-violet-600 to-violet-300 shadow-[0_8px_18px_rgba(124,58,237,0.25)]"
-                    style={{ height: `${(thisWeek[index] / 10) * 100}%` }}
-                  />
-                </div>
+                <p className="mt-3 text-center text-[11px] font-black text-slate-400">
+                  {day}
+                </p>
               </div>
-
-              <p className="mt-3 text-center text-[11px] font-black text-slate-400">
-                {day}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-4 space-y-3">
-          <div className="space-y-2">
-            {statusRows.map((row) => (
-              <div key={row.label}>
-                <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
-                  <span className="flex items-center gap-2 font-black text-slate-600">
-                    <span className="text-slate-500">{row.icon}</span>
-                    {row.label}
-                  </span>
+          {statusRows.map((row) => (
+            <div key={row.label}>
+              <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
+                <span className="flex items-center gap-2 font-black text-slate-600">
+                  <span className="text-slate-500">{row.icon}</span>
+                  {row.label}
+                </span>
 
-                  <span className="font-black text-slate-800">
-                    {row.value} ({row.percent}%)
-                  </span>
-                </div>
-
-                <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
-                  <div
-                    className={`h-full rounded-full ${row.bar}`}
-                    style={{ width: `${row.percent}%` }}
-                  />
-                </div>
+                <span className="font-black text-slate-800">
+                  {row.value} ({row.percent}%)
+                </span>
               </div>
-            ))}
-          </div>
+
+              <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className={`h-full rounded-full ${row.bar} transition-all`}
+                  style={{ width: `${row.percent}%` }}
+                />
+              </div>
+            </div>
+          ))}
 
           <div className="flex items-center justify-between rounded-[18px] bg-violet-50 px-3 py-2 text-xs">
             <span className="font-black text-violet-700">Peak day: {peakDay}</span>
@@ -1501,16 +1610,6 @@ export default function DashboardPage() {
     enrichedAppointments
   );
 
-  const completedAppointments = enrichedAppointments.filter(
-    (appt) => appt.status === "completed"
-  ).length;
-
-  const canceledAppointments = enrichedAppointments.filter(
-    (appt) => appt.status === "canceled" || appt.status === "cancelled"
-  ).length;
-
-  const averagePerDay = Math.max(1, Math.round(totalAppointments / 7));
-
   const revenueValue =
     syncedStats.revenue ??
     syncedStats.revenue_count ??
@@ -1619,13 +1718,7 @@ export default function DashboardPage() {
           </section>
 
           <section className="mt-5 grid items-stretch gap-5 xl:grid-cols-[minmax(320px,0.82fr)_minmax(0,1.18fr)]">
-            <AppointmentOverview
-              total={totalAppointments}
-              averagePerDay={averagePerDay}
-              upcoming={upcomingAppointments}
-              completed={completedAppointments}
-              canceled={canceledAppointments}
-            />
+            <AppointmentOverview appointments={enrichedAppointments} />
 
             <GlassPanel className="h-full p-5">
               <SectionHeader
