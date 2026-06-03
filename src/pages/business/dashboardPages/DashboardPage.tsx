@@ -11,9 +11,13 @@ import React, {
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-  CalendarDays,
-  Star,
   ArrowRight,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  Plus,
+  Star,
+  XCircle,
 } from "lucide-react";
 
 import API from "@/api";
@@ -122,10 +126,6 @@ const DashboardCards = lazyWithPreload(() =>
   import("@/components/DashboardCards")
 ) as LazyAnyComponent;
 
-const BarChartComponent = lazyWithPreload(() =>
-  import("@/components/dashboard/BarChart")
-) as LazyAnyComponent;
-
 const CalendarView = lazyWithPreload(() =>
   import("@/components/dashboard/CalendarView")
 ) as LazyAnyComponent;
@@ -156,16 +156,8 @@ function formatNumber(value: unknown, locale = "en-US"): string {
   return new Intl.NumberFormat(locale).format(safeNumber(value));
 }
 
-function formatMoney(value: unknown, locale = "en-US", currency = "USD"): string {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(safeNumber(value));
-}
-
 function getTodayIso(): string {
-  return new Date().toISOString().split("T")[0];
+  return new Date().toLocaleDateString("en-CA");
 }
 
 function getLocale(language?: string): string {
@@ -201,11 +193,10 @@ function enrichAppointment(
 function getUpcomingAppointmentsCount(appointments: Appointment[]): number {
   const now = new Date();
   const endOfWeek = new Date();
-
   endOfWeek.setDate(now.getDate() + 7);
 
   return appointments.filter((appt) => {
-    const apptDate = new Date(appt.date);
+    const apptDate = new Date(`${appt.date}T${appt.time || "12:00"}`);
     return apptDate >= now && apptDate <= endOfWeek;
   }).length;
 }
@@ -215,7 +206,7 @@ function getTodayAppointmentsCount(appointments: Appointment[]): number {
   return appointments.filter((appt) => appt.date === today).length;
 }
 
-function getLastAppointments(appointments: Appointment[], limit = 5) {
+function getUpcomingAppointments(appointments: Appointment[], limit = 5) {
   const now = Date.now();
 
   return [...appointments]
@@ -232,6 +223,48 @@ function getLastAppointments(appointments: Appointment[], limit = 5) {
       return dateA - dateB;
     })
     .slice(0, limit);
+}
+
+function getAppointmentsByStatus(appointments: Appointment[]) {
+  const total = appointments.length;
+  const completed = appointments.filter((appt) =>
+    ["completed", "done", "finished"].includes(String(appt.status || "").toLowerCase())
+  ).length;
+  const cancelled = appointments.filter((appt) =>
+    ["cancelled", "canceled", "declined"].includes(String(appt.status || "").toLowerCase())
+  ).length;
+  const upcoming = Math.max(total - completed - cancelled, 0);
+
+  return { total, completed, cancelled, upcoming };
+}
+
+function getAppointmentsPerDay(appointments: Appointment[]) {
+  if (!appointments.length) return 0;
+
+  const uniqueDays = new Set(appointments.map((appt) => appt.date).filter(Boolean));
+  return uniqueDays.size ? appointments.length / uniqueDays.size : 0;
+}
+
+function getPeakDay(appointments: Appointment[], locale: string) {
+  const counts: Record<string, number> = {};
+
+  appointments.forEach((appt) => {
+    if (!appt.date) return;
+    counts[appt.date] = (counts[appt.date] || 0) + 1;
+  });
+
+  const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+
+  if (!best) {
+    return { label: "-", count: 0 };
+  }
+
+  const date = new Date(`${best[0]}T12:00:00`);
+  const label = Number.isNaN(date.getTime())
+    ? best[0]
+    : new Intl.DateTimeFormat(locale, { weekday: "long" }).format(date);
+
+  return { label, count: best[1] };
 }
 
 async function fetchDashboardStats(
@@ -273,7 +306,6 @@ async function fetchAppointments(
 
 export function preloadDashboardComponents() {
   DashboardCards.preload();
-  BarChartComponent.preload();
   CalendarView.preload();
   DailyAgenda.preload();
   DashboardNav.preload();
@@ -281,7 +313,7 @@ export function preloadDashboardComponents() {
 
 function LoadingShell({ text }: { text: React.ReactNode }) {
   return (
-    <div className="min-h-[70vh] bg-[#f5f6fb] px-5 py-10 text-slate-950">
+    <div className="min-h-[70vh] bg-[#f6f7fb] px-5 py-10 text-slate-950">
       <div className="mx-auto flex max-w-7xl items-center justify-center rounded-[28px] border border-violet-100 bg-white p-10 shadow-[0_20px_60px_rgba(88,28,135,0.08)]">
         <div className="flex items-center gap-3">
           <span className="h-3 w-3 animate-pulse rounded-full bg-violet-600" />
@@ -300,7 +332,7 @@ function ErrorShell({
   message: React.ReactNode;
 }) {
   return (
-    <div className="min-h-[70vh] bg-[#f5f6fb] px-5 py-10 text-slate-950">
+    <div className="min-h-[70vh] bg-[#f6f7fb] px-5 py-10 text-slate-950">
       <div className="mx-auto max-w-3xl rounded-[28px] border border-red-100 bg-white p-8 text-center shadow-[0_20px_60px_rgba(127,29,29,0.08)]">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-red-50 text-2xl font-black text-red-600">
           !
@@ -308,6 +340,38 @@ function ErrorShell({
         <h1 className="text-2xl font-black">{title}</h1>
         <p className="mt-3 text-sm leading-6 text-red-700">{message}</p>
       </div>
+    </div>
+  );
+}
+
+function DashboardHeader({
+  title,
+  subtitle,
+  onNewAppointment,
+}: {
+  title: React.ReactNode;
+  subtitle: React.ReactNode;
+  onNewAppointment: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+      <div>
+        <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+          {title}
+        </h1>
+        <p className="mt-1 text-sm font-medium text-slate-500 sm:text-base">
+          {subtitle}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={onNewAppointment}
+        className="inline-flex w-fit items-center gap-2 rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-[0_16px_34px_rgba(124,58,237,0.24)] transition hover:-translate-y-0.5 hover:bg-violet-700"
+      >
+        <Plus size={17} />
+        New Appointment
+      </button>
     </div>
   );
 }
@@ -325,43 +389,175 @@ function SectionShell({
 }) {
   return (
     <section
-      className={`rounded-[24px] border border-slate-200 bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,0.05)] ${className}`}
+      className={`rounded-[28px] border border-slate-200/80 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.07)] ${className}`}
     >
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-lg font-black tracking-tight text-slate-950">
+        <h2 className="text-base font-black tracking-tight text-slate-950 sm:text-lg">
           {title}
         </h2>
-
         {action}
       </div>
-
       {children}
     </section>
   );
 }
 
-function MiniStatCard({
+function AppointmentOverviewPanel({
+  appointments,
+  locale,
   title,
-  value,
-  delta,
-  tone = "violet",
 }: {
+  appointments: Appointment[];
+  locale: string;
   title: React.ReactNode;
-  value: React.ReactNode;
-  delta?: React.ReactNode;
-  tone?: "violet" | "green" | "pink";
 }) {
-  const toneMap = {
-    violet: "bg-violet-50 text-violet-700 border-violet-100",
-    green: "bg-emerald-50 text-emerald-700 border-emerald-100",
-    pink: "bg-pink-50 text-pink-700 border-pink-100",
-  };
+  const status = getAppointmentsByStatus(appointments);
+  const appointmentsPerDay = getAppointmentsPerDay(appointments);
+  const peakDay = getPeakDay(appointments, locale);
+
+  const maxValue = Math.max(status.upcoming, status.completed, status.cancelled, 1);
+
+  const trendData = useMemo(() => {
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(weekStart);
+      date.setDate(weekStart.getDate() + index);
+      const iso = date.toLocaleDateString("en-CA");
+      const count = appointments.filter((appt) => appt.date === iso).length;
+      return {
+        label: new Intl.DateTimeFormat(locale, { weekday: "short" }).format(date),
+        count,
+      };
+    });
+  }, [appointments, locale]);
+
+  const maxTrend = Math.max(...trendData.map((item) => item.count), 1);
 
   return (
-    <div className={`rounded-[18px] border p-4 ${toneMap[tone]} shadow-sm`}>
-      <p className="text-xs font-bold text-slate-500">{title}</p>
-      <p className="mt-2 text-2xl font-black text-slate-950">{value}</p>
-      {delta && <p className="mt-1 text-xs font-semibold">{delta}</p>}
+    <section className="relative overflow-hidden rounded-[28px] border border-slate-200/80 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.07)]">
+      <div className="pointer-events-none absolute -left-20 -top-20 h-44 w-44 rounded-full bg-violet-100/80 blur-3xl" />
+
+      <div className="relative z-10 mb-5 flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-black text-slate-950">{title}</h2>
+          <p className="mt-1 text-xs font-bold text-slate-500">This week</p>
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm">
+          This week
+        </div>
+      </div>
+
+      <div className="relative z-10 grid grid-cols-2 gap-4 border-b border-slate-100 pb-5">
+        <div>
+          <p className="text-4xl font-black tracking-tight text-slate-950">
+            {formatNumber(status.total, locale)}
+          </p>
+          <p className="mt-1 text-xs font-bold text-slate-500">Total appointments</p>
+          <p className="mt-1 text-xs font-black text-emerald-600">↑ 18% vs last 7 days</p>
+        </div>
+
+        <div className="border-l border-slate-100 pl-4">
+          <p className="text-4xl font-black tracking-tight text-slate-950">
+            {appointmentsPerDay.toFixed(1)}
+          </p>
+          <p className="mt-1 text-xs font-bold text-slate-500">Appointments per day</p>
+          <p className="mt-1 text-xs font-black text-emerald-600">↑ 18% vs last 7 days</p>
+        </div>
+      </div>
+
+      <div className="relative z-10 mt-5">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-sm font-black text-slate-950">Appointments trend</p>
+          <span className="text-xs font-bold text-violet-600">View all</span>
+        </div>
+
+        <div className="flex h-36 items-end gap-3 rounded-3xl border border-slate-100 bg-slate-50/60 px-4 py-4">
+          {trendData.map((item) => (
+            <div key={item.label} className="flex min-w-0 flex-1 flex-col items-center gap-2">
+              <div className="flex h-24 w-full items-end justify-center">
+                <div
+                  className="w-full max-w-8 rounded-t-xl bg-gradient-to-t from-violet-600 to-violet-300 shadow-[0_10px_20px_rgba(124,58,237,0.18)]"
+                  style={{ height: `${Math.max(10, (item.count / maxTrend) * 100)}%` }}
+                />
+              </div>
+              <span className="truncate text-[10px] font-black text-slate-500">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="relative z-10 mt-5 space-y-3">
+        <StatusRow
+          icon={<Clock3 size={15} />}
+          label="Upcoming"
+          value={status.upcoming}
+          total={status.total}
+          maxValue={maxValue}
+          barClassName="bg-violet-500"
+        />
+        <StatusRow
+          icon={<CheckCircle2 size={15} />}
+          label="Completed"
+          value={status.completed}
+          total={status.total}
+          maxValue={maxValue}
+          barClassName="bg-emerald-500"
+        />
+        <StatusRow
+          icon={<XCircle size={15} />}
+          label="Canceled"
+          value={status.cancelled}
+          total={status.total}
+          maxValue={maxValue}
+          barClassName="bg-pink-500"
+        />
+      </div>
+
+      <div className="relative z-10 mt-5 flex items-center justify-between rounded-2xl bg-violet-50 px-4 py-3 text-sm font-black text-violet-700 ring-1 ring-violet-100">
+        <span className="inline-flex items-center gap-2">
+          <CalendarDays size={16} />
+          Peak day: {peakDay.label}
+        </span>
+        <span>{peakDay.count} appointments</span>
+      </div>
+    </section>
+  );
+}
+
+function StatusRow({
+  icon,
+  label,
+  value,
+  total,
+  maxValue,
+  barClassName,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  total: number;
+  maxValue: number;
+  barClassName: string;
+}) {
+  const percent = total ? Math.round((value / total) * 100) : 0;
+
+  return (
+    <div className="grid grid-cols-[115px_minmax(0,1fr)_70px] items-center gap-3 text-xs font-bold text-slate-600">
+      <div className="flex items-center gap-2">
+        {icon}
+        <span>{label}</span>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+        <div
+          className={`h-full rounded-full ${barClassName}`}
+          style={{ width: `${Math.max(6, (value / maxValue) * 100)}%` }}
+        />
+      </div>
+      <div className="text-right text-slate-700">
+        {value} ({percent}%)
+      </div>
     </div>
   );
 }
@@ -385,14 +581,11 @@ function RecentActivityCard({
     <SectionShell
       title={title}
       action={
-        <button
-          type="button"
-          className="text-xs font-bold text-violet-600 hover:text-violet-800"
-        >
+        <button type="button" className="text-xs font-black text-violet-600 hover:text-violet-800">
           {actionText}
         </button>
       }
-      className="h-full"
+      className="min-h-[260px]"
     >
       {items.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
@@ -401,64 +594,21 @@ function RecentActivityCard({
       ) : (
         <div className="space-y-4">
           {items.map((item, index) => (
-            <div key={index} className="flex items-start gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+            <div key={index} className="grid grid-cols-[42px_minmax(0,1fr)_auto] items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
                 {item.icon}
               </div>
-
               <div className="min-w-0">
-                <p className="text-sm text-slate-700">{item.text}</p>
-
+                <p className="truncate text-sm font-black text-slate-900">{item.text}</p>
                 {item.subtext && (
-                  <p className="mt-1 text-xs text-slate-400">{item.subtext}</p>
+                  <p className="mt-1 truncate text-xs font-semibold text-slate-500">{item.subtext}</p>
                 )}
               </div>
+              <span className="text-xs font-bold text-slate-400">{index + 1}h ago</span>
             </div>
           ))}
         </div>
       )}
-    </SectionShell>
-  );
-}
-
-function CollaborationsCard({
-  title,
-  actionText,
-  activeValue,
-  activeLabel,
-  proposalsValue,
-  proposalsLabel,
-  emptyText,
-}: {
-  title: React.ReactNode;
-  actionText: React.ReactNode;
-  activeValue: React.ReactNode;
-  activeLabel: React.ReactNode;
-  proposalsValue: React.ReactNode;
-  proposalsLabel: React.ReactNode;
-  emptyText: React.ReactNode;
-}) {
-  return (
-    <SectionShell
-      title={title}
-      action={
-        <button
-          type="button"
-          className="text-xs font-bold text-violet-600 hover:text-violet-800"
-        >
-          {actionText}
-        </button>
-      }
-      className="h-full"
-    >
-      <div className="grid gap-3 sm:grid-cols-2">
-        <MiniStatCard title={activeLabel} value={activeValue} tone="violet" />
-        <MiniStatCard title={proposalsLabel} value={proposalsValue} tone="pink" />
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-        {emptyText}
-      </div>
     </SectionShell>
   );
 }
@@ -473,14 +623,8 @@ export default function DashboardPage() {
         returnObjects: false,
       } as any);
 
-      if (typeof translated !== "string") {
-        return fallback;
-      }
-
-      if (translated === key) {
-        return fallback;
-      }
-
+      if (typeof translated !== "string") return fallback;
+      if (translated === key) return fallback;
       return translated;
     },
     [t]
@@ -498,7 +642,6 @@ export default function DashboardPage() {
   const { businessId } = useParams<{ businessId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-
   const locationState = location.state as { conversationId?: string } | null;
 
   const today = useMemo(() => getTodayIso(), []);
@@ -506,16 +649,13 @@ export default function DashboardPage() {
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const chartsRef = useRef<HTMLDivElement | null>(null);
   const appointmentsRef = useRef<HTMLDivElement | null>(null);
-
   const socketRef = useRef<SocketLike | null>(null);
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
 
   const [selectedDate, setSelectedDate] = useState<string>(today);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const [recommendations, setRecommendations] = useState<RecommendationItem[]>(
-    []
-  );
+  const [recommendations, setRecommendations] = useState<RecommendationItem[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -527,12 +667,14 @@ export default function DashboardPage() {
     !user?.earlyBirdModalSeenAt &&
     !isRefreshingUser;
 
+  const openAppointments = useCallback(() => {
+    if (!businessId) return;
+    navigate(`/business/${businessId}/dashboard/crm/appointments`);
+  }, [businessId, navigate]);
+
   useEffect(() => {
     document.body.setAttribute("data-theme", "business");
-
-    return () => {
-      document.body.removeAttribute("data-theme");
-    };
+    return () => document.body.removeAttribute("data-theme");
   }, []);
 
   useEffect(() => {
@@ -560,11 +702,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-
     if (params.get("paid") !== "1") return;
 
     setIsRefreshingUser(true);
-
     let attempts = 0;
     const maxAttempts = 10;
 
@@ -573,7 +713,6 @@ export default function DashboardPage() {
 
       try {
         await refreshAccessToken();
-
         const updatedUser = await refreshUser();
 
         if (updatedUser?.hasPaid) {
@@ -582,9 +721,7 @@ export default function DashboardPage() {
           window.history.replaceState({}, document.title, location.pathname);
 
           if (updatedUser.role === "business" && updatedUser.businessId) {
-            navigate(`/business/${updatedUser.businessId}/dashboard`, {
-              replace: true,
-            });
+            navigate(`/business/${updatedUser.businessId}/dashboard`, { replace: true });
           } else {
             navigate("/dashboard", { replace: true });
           }
@@ -618,15 +755,7 @@ export default function DashboardPage() {
     };
 
     poll();
-  }, [
-    location.search,
-    location.pathname,
-    navigate,
-    refreshAccessToken,
-    refreshUser,
-    setUser,
-    tx,
-  ]);
+  }, [location.search, location.pathname, navigate, refreshAccessToken, refreshUser, setUser, tx]);
 
   useEffect(() => {
     preloadDashboardComponents();
@@ -646,7 +775,6 @@ export default function DashboardPage() {
     setError(null);
 
     const cached = localStorage.getItem("dashboardStats");
-
     if (cached) {
       try {
         setStats(JSON.parse(cached));
@@ -660,13 +788,8 @@ export default function DashboardPage() {
       setStats(data);
       localStorage.setItem("dashboardStats", JSON.stringify(data));
     } catch (err: any) {
-      setError(
-        tx("dashboard.states.loadErrorMessage", "Error loading data from server.")
-      );
-
-      if (err?.message === "No token") {
-        logout();
-      }
+      setError(tx("dashboard.states.loadErrorMessage", "Error loading data from server."));
+      if (err?.message === "No token") logout();
     } finally {
       setLoading(false);
     }
@@ -677,7 +800,6 @@ export default function DashboardPage() {
 
     try {
       const appts = await fetchAppointments(businessId, refreshAccessToken);
-
       setStats((oldStats) => ({
         ...(oldStats || {}),
         appointments: appts,
@@ -702,12 +824,7 @@ export default function DashboardPage() {
         return;
       }
 
-      const sock = (await createSocket(
-        refreshAccessToken,
-        logout,
-        businessId
-      )) as SocketLike | null;
-
+      const sock = (await createSocket(refreshAccessToken, logout, businessId)) as SocketLike | null;
       if (!sock || !isMounted) return;
 
       socketRef.current = sock;
@@ -720,11 +837,7 @@ export default function DashboardPage() {
 
       sock.on("disconnect", () => {
         if (isMounted && reconnectAttempts.current < maxReconnectAttempts) {
-          const delay = Math.min(
-            1000 * 2 ** reconnectAttempts.current,
-            30000
-          );
-
+          const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
           reconnectTimeout = setTimeout(() => {
             reconnectAttempts.current += 1;
             setupSocket();
@@ -734,17 +847,12 @@ export default function DashboardPage() {
 
       sock.on("tokenExpired", async () => {
         const newToken = await refreshAccessToken();
-
         if (!newToken) {
           logout();
           return;
         }
 
-        sock.auth = {
-          ...(sock.auth || {}),
-          token: newToken,
-        };
-
+        sock.auth = { ...(sock.auth || {}), token: newToken };
         sock.emit("authenticate", { token: newToken });
       });
 
@@ -761,12 +869,9 @@ export default function DashboardPage() {
       });
 
       sock.off("businessUpdates");
-
       sock.on("businessUpdates", (payload: any) => {
         try {
-          const data =
-            typeof payload === "string" ? JSON.parse(payload) : payload;
-
+          const data = typeof payload === "string" ? JSON.parse(payload) : payload;
           if (!data?.type) return;
 
           const { type, data: eventData } = data;
@@ -779,19 +884,10 @@ export default function DashboardPage() {
             case "profileViewsUpdated":
               setStats((currentStats) => {
                 if (!currentStats) return currentStats;
-
-                if (
-                  !eventData?.views_count ||
-                  safeNumber(currentStats.views_count) >=
-                    safeNumber(eventData.views_count)
-                ) {
+                if (!eventData?.views_count || safeNumber(currentStats.views_count) >= safeNumber(eventData.views_count)) {
                   return currentStats;
                 }
-
-                return {
-                  ...currentStats,
-                  views_count: eventData.views_count,
-                };
+                return { ...currentStats, views_count: eventData.views_count };
               });
               break;
 
@@ -804,11 +900,7 @@ export default function DashboardPage() {
             case "newReview":
               setStats((currentStats) => {
                 if (!currentStats) return currentStats;
-
-                const exists = currentStats.reviews?.some(
-                  (review) => review._id === eventData._id
-                );
-
+                const exists = currentStats.reviews?.some((review) => review._id === eventData._id);
                 if (exists) return currentStats;
 
                 return {
@@ -825,10 +917,7 @@ export default function DashboardPage() {
                 currentStats
                   ? {
                       ...currentStats,
-                      notifications_count:
-                        eventData.count ||
-                        currentStats.notifications_count ||
-                        0,
+                      notifications_count: eventData.count || currentStats.notifications_count || 0,
                     }
                   : currentStats
               );
@@ -839,8 +928,7 @@ export default function DashboardPage() {
                 currentStats
                   ? {
                       ...currentStats,
-                      messages_count:
-                        safeNumber(currentStats.messages_count) + 1,
+                      messages_count: safeNumber(currentStats.messages_count) + 1,
                     }
                   : currentStats
               );
@@ -857,11 +945,7 @@ export default function DashboardPage() {
       sock.on("newReview", (reviewData: AnyRecord) => {
         setStats((currentStats) => {
           if (!currentStats) return currentStats;
-
-          const exists = currentStats.reviews?.some(
-            (review) => review._id === reviewData._id
-          );
-
+          const exists = currentStats.reviews?.some((review) => review._id === reviewData._id);
           if (exists) return currentStats;
 
           return {
@@ -879,11 +963,7 @@ export default function DashboardPage() {
 
     return () => {
       isMounted = false;
-
-      if (reconnectTimeout) {
-        clearTimeout(reconnectTimeout);
-      }
-
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
@@ -902,10 +982,7 @@ export default function DashboardPage() {
 
     if (location.pathname.includes("/messages")) {
       const conversationId = locationState?.conversationId;
-
-      if (conversationId) {
-        socketRef.current.emit("markMessagesRead", conversationId);
-      }
+      if (conversationId) socketRef.current.emit("markMessagesRead", conversationId);
     }
   }, [location.pathname, locationState]);
 
@@ -914,34 +991,24 @@ export default function DashboardPage() {
 
     try {
       await API.post("/users/mark-earlybird-modal-seen");
-
       const res = await API.post("/stripe/create-checkout-session", {
         userId: user.userId,
         plan: "monthly",
       });
 
-      if (res.data?.url) {
-        window.location.href = res.data.url;
-      }
+      if (res.data?.url) window.location.href = res.data.url;
     } catch (err) {
       console.error("Early Bird checkout error:", err);
-      setAlertMessage(
-        tx("dashboard.states.somethingWrong", "Something went wrong. Please try again.")
-      );
+      setAlertMessage(tx("dashboard.states.somethingWrong", "Something went wrong. Please try again."));
     }
   };
 
   if (!initialized) {
-    return (
-      <LoadingShell
-        text={tx("dashboard.states.loading", "Loading business dashboard...")}
-      />
-    );
+    return <LoadingShell text={tx("dashboard.states.loading", "Loading business dashboard...")} />;
   }
 
   const isAdmin = user?.role === "admin";
-  const isBusinessOwner =
-    user?.role === "business" && user?.businessId === businessId;
+  const isBusinessOwner = user?.role === "business" && user?.businessId === businessId;
 
   if (!isAdmin && !isBusinessOwner) {
     return (
@@ -955,9 +1022,7 @@ export default function DashboardPage() {
     );
   }
 
-  if (loading && !stats) {
-    return <DashboardSkeleton />;
-  }
+  if (loading && !stats) return <DashboardSkeleton />;
 
   if (error) {
     return (
@@ -969,65 +1034,44 @@ export default function DashboardPage() {
   }
 
   if (isRefreshingUser) {
-    return (
-      <LoadingShell
-        text={tx("dashboard.states.refreshingUser", "Refreshing user data...")}
-      />
-    );
+    return <LoadingShell text={tx("dashboard.states.refreshingUser", "Refreshing user data...")} />;
   }
 
   const effectiveStats = stats || {};
-
   const enrichedAppointments = (effectiveStats.appointments || []).map((appt) =>
     enrichAppointment(appt, effectiveStats)
   );
 
   const syncedStats: DashboardStats = {
     ...effectiveStats,
+    appointments_count: enrichedAppointments.length,
     messages_count: safeNumber(effectiveStats.messages_count),
   };
 
-  const navRefs: DashboardNavRefs = {
-    cardsRef,
-    chartsRef,
-    appointmentsRef,
-  };
-
+  const navRefs: DashboardNavRefs = { cardsRef, chartsRef, appointmentsRef };
   const locale = getLocale(i18n.language);
   const currency = getCurrency(i18n.language);
+  const businessDisplayName = syncedStats.businessName || user?.businessName || "Your business";
 
   const todayAppointments = getTodayAppointmentsCount(enrichedAppointments);
-  const upcomingAppointments = getUpcomingAppointmentsCount(
-    enrichedAppointments
-  );
-  const recentAppointments = getLastAppointments(enrichedAppointments, 5);
+  const upcomingAppointments = getUpcomingAppointmentsCount(enrichedAppointments);
+  const recentAppointments = getUpcomingAppointments(enrichedAppointments, 5);
 
   const recentActivityItems = [
     ...recentAppointments.slice(0, 2).map((appt) => ({
-      icon: <CalendarDays size={16} />,
+      icon: <CalendarDays size={17} />,
       text: `${appt.clientName} • ${appt.serviceName}`,
       subtext: `${appt.date} ${appt.time || ""}`,
     })),
     ...(syncedStats.reviews || []).slice(0, 2).map((review) => ({
-      icon: <Star size={16} />,
-      text:
-        review.comment ||
-        tx("dashboard.recent.reviewReceived", "New review received"),
+      icon: <Star size={17} />,
+      text: review.comment || tx("dashboard.recent.reviewReceived", "New review received"),
       subtext: review.createdAt || "",
     })),
   ];
 
-  const revenueValue =
-    syncedStats.revenue ??
-    syncedStats.revenue_count ??
-    syncedStats.orders_count ??
-    0;
-
   return (
-    <div
-      dir={i18n.dir()}
-      className="min-h-screen overflow-x-hidden bg-[#f5f6fb] text-slate-950"
-    >
+    <div dir={i18n.dir()} className="min-h-screen overflow-x-hidden bg-[#f6f7fb] text-slate-950">
       <div className="mx-auto w-full max-w-[1720px] px-4 py-5 sm:px-6 lg:px-8">
         <main className="space-y-5 pb-12">
           {alertMessage && (
@@ -1056,6 +1100,18 @@ export default function DashboardPage() {
             />
           )}
 
+          <DashboardHeader
+            title={tx(
+              "dashboard.welcomeTitle",
+              `Good morning, ${user?.name || user?.businessName || "Bdikaa"}! 👋`
+            )}
+            subtitle={tx(
+              "dashboard.welcomeSubtitle",
+              "Here’s what’s happening with your business today."
+            )}
+            onNewAppointment={openAppointments}
+          />
+
           <div ref={cardsRef}>
             <Suspense
               fallback={
@@ -1064,110 +1120,24 @@ export default function DashboardPage() {
                 </div>
               }
             >
-              <DashboardCards
-                stats={syncedStats}
-                t={t}
-                locale={locale}
-                currency={currency}
-              />
+              <DashboardCards stats={syncedStats} t={t} locale={locale} currency={currency} />
             </Suspense>
           </div>
 
           <div
             ref={appointmentsRef}
-            className="grid gap-5 xl:grid-cols-[minmax(0,2.2fr)_minmax(320px,0.8fr)]"
+            className="grid gap-5 xl:grid-cols-[minmax(320px,0.55fr)_minmax(0,1.45fr)] xl:items-stretch"
           >
-            <SectionShell
-              title={tx(
-                "dashboard.analytics.title",
-                "Clients who booked appointments by month"
-              )}
-              action={
-                <button
-                  type="button"
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                >
-                  {tx("dashboard.thisMonth", "This Month")}
-                </button>
-              }
-              className="min-h-[520px]"
-            >
-              <div className="mb-4 grid gap-3 sm:grid-cols-4">
-                <MiniStatCard
-                  title={tx("dashboard.cards.revenue", "Revenue")}
-                  value={formatMoney(revenueValue, locale, currency)}
-                  tone="violet"
-                />
-
-                <MiniStatCard
-                  title={tx("dashboard.cards.transactions", "Transactions")}
-                  value={formatNumber(syncedStats.requests_count, locale)}
-                  tone="green"
-                />
-
-                <MiniStatCard
-                  title={tx("dashboard.cards.newClients", "New Clients")}
-                  value={formatNumber(syncedStats.messages_count, locale)}
-                  tone="pink"
-                />
-
-                <MiniStatCard
-                  title={tx("dashboard.cards.conversionRate", "Conversion Rate")}
-                  value={`${Math.min(
-                    100,
-                    safeNumber(syncedStats.orders_count) * 5
-                  )}%`}
-                  tone="violet"
-                />
-              </div>
-
-              <div ref={chartsRef} className="min-h-[390px]">
-                <Suspense
-                  fallback={
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
-                      {tx("dashboard.analytics.loading", "Loading chart...")}
-                    </div>
-                  }
-                >
-                  <BarChartComponent
-                    appointments={enrichedAppointments}
-                    title={tx(
-                      "dashboard.analytics.title",
-                      "Clients who booked appointments by month"
-                    )}
-                  />
-                </Suspense>
-              </div>
-            </SectionShell>
-
-            <Suspense
-              fallback={
-                <div className="rounded-[24px] border border-slate-200 bg-white p-6 text-sm font-semibold text-slate-600 shadow-sm">
-                  {tx("dashboard.agenda.loading", "Loading agenda...")}
-                </div>
-              }
-            >
-              <DailyAgenda
-                date={selectedDate}
-                appointments={enrichedAppointments}
-                businessName={
-                  syncedStats.businessName ||
-                  tx("dashboard.yourBusiness", "Your business")
-                }
-                businessId={businessId}
-                t={t}
-                locale={locale}
-              />
-            </Suspense>
-          </div>
-
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <SectionShell
+            <AppointmentOverviewPanel
+              appointments={enrichedAppointments}
+              locale={locale}
               title={tx("dashboard.calendar.title", "Appointment overview")}
-            >
+            />
+
+            <div ref={chartsRef}>
               <Suspense
                 fallback={
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
+                  <div className="min-h-[520px] rounded-[28px] border border-slate-200 bg-white p-6 text-sm font-semibold text-slate-600 shadow-sm">
                     {tx("dashboard.calendar.loading", "Loading calendar...")}
                   </div>
                 }
@@ -1178,40 +1148,62 @@ export default function DashboardPage() {
                   selectedDate={selectedDate}
                   t={t}
                   locale={locale}
+                  onNewAppointment={openAppointments}
                 />
               </Suspense>
-            </SectionShell>
-
-            <SectionShell
-              title={tx("dashboard.operations.title", "Activity pulse")}
-            >
-              <div className="grid gap-4 sm:grid-cols-3">
-                <MiniStatCard
-                  title={tx(
-                    "dashboard.operations.todayAppointments",
-                    "Appointments today"
-                  )}
-                  value={todayAppointments}
-                  tone="violet"
-                />
-
-                <MiniStatCard
-                  title={tx("dashboard.operations.upcomingWeek", "Upcoming week")}
-                  value={upcomingAppointments}
-                  tone="green"
-                />
-
-                <MiniStatCard
-                  title={tx(
-                    "dashboard.operations.pendingAiApprovals",
-                    "AI recommendations pending approval"
-                  )}
-                  value={recommendations.length}
-                  tone="pink"
-                />
-              </div>
-            </SectionShell>
+            </div>
           </div>
+
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+            <RecentActivityCard
+              title={tx("dashboard.recentActivity.title", "Recent Activity")}
+              actionText={tx("dashboard.actions.viewAll", "View all")}
+              items={recentActivityItems}
+              emptyText={tx("dashboard.recentActivity.empty", "No recent activity yet.")}
+            />
+
+            <Suspense
+              fallback={
+                <div className="rounded-[28px] border border-slate-200 bg-white p-6 text-sm font-semibold text-slate-600 shadow-sm">
+                  {tx("dashboard.agenda.loading", "Loading agenda...")}
+                </div>
+              }
+            >
+              <DailyAgenda
+                date={selectedDate}
+                appointments={enrichedAppointments}
+                businessName={businessDisplayName}
+                businessId={businessId}
+                t={t}
+                locale={locale}
+              />
+            </Suspense>
+          </div>
+
+          <SectionShell title={tx("dashboard.operations.title", "Activity pulse")}>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="rounded-[24px] border border-violet-100 bg-violet-50 p-5">
+                <p className="text-xs font-black text-slate-500">
+                  {tx("dashboard.operations.todayAppointments", "Appointments today")}
+                </p>
+                <p className="mt-2 text-3xl font-black text-slate-950">{todayAppointments}</p>
+              </div>
+
+              <div className="rounded-[24px] border border-emerald-100 bg-emerald-50 p-5">
+                <p className="text-xs font-black text-slate-500">
+                  {tx("dashboard.operations.upcomingWeek", "Upcoming week")}
+                </p>
+                <p className="mt-2 text-3xl font-black text-slate-950">{upcomingAppointments}</p>
+              </div>
+
+              <div className="rounded-[24px] border border-pink-100 bg-pink-50 p-5">
+                <p className="text-xs font-black text-slate-500">
+                  {tx("dashboard.operations.pendingAiApprovals", "AI recommendations pending approval")}
+                </p>
+                <p className="mt-2 text-3xl font-black text-slate-950">{recommendations.length}</p>
+              </div>
+            </div>
+          </SectionShell>
 
           {recommendations.length > 0 && (
             <SectionShell
@@ -1223,192 +1215,103 @@ export default function DashboardPage() {
               }
             >
               <ul className="space-y-3">
-                {recommendations.map(
-                  ({ recommendationId, message, recommendation }) => (
-                    <li
-                      key={recommendationId}
-                      className="rounded-[20px] border border-amber-200 bg-amber-50 p-4"
-                    >
-                      <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
-                        <div className="space-y-2">
-                          <p className="text-sm leading-6 text-slate-700">
-                            <span className="font-black text-slate-950">
-                              {tx("dashboard.recommendations.client", "Client:")}
-                            </span>{" "}
-                            {message}
-                          </p>
-
-                          <p className="text-sm leading-6 text-amber-800">
-                            <span className="font-black text-slate-950">
-                              {tx(
-                                "dashboard.recommendations.aiSuggestion",
-                                "AI suggestion:"
-                              )}
-                            </span>{" "}
-                            {recommendation}
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          className="rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:bg-violet-700"
-                          onClick={() => {
-                            if (!socketRef.current) {
-                              setAlertMessage(
-                                tx(
-                                  "dashboard.states.socketNotConnected",
-                                  "Real-time connection is not connected"
-                                )
-                              );
-                              return;
-                            }
-
-                            socketRef.current.emit(
-                              "approveRecommendation",
-                              { recommendationId },
-                              (res: any) => {
-                                if (res?.ok) {
-                                  setRecommendations((prev) =>
-                                    prev.filter(
-                                      (item) =>
-                                        item.recommendationId !==
-                                        recommendationId
-                                    )
-                                  );
-                                } else {
-                                  setAlertMessage(
-                                    `Error: ${
-                                      res?.error ||
-                                      tx(
-                                        "dashboard.states.unknownError",
-                                        "Unknown error"
-                                      )
-                                    }`
-                                  );
-                                }
-                              }
-                            );
-                          }}
-                        >
-                          {tx(
-                            "dashboard.recommendations.approveAndSend",
-                            "Approve and send"
-                          )}
-                        </button>
+                {recommendations.map(({ recommendationId, message, recommendation }) => (
+                  <li key={recommendationId} className="rounded-[20px] border border-amber-200 bg-amber-50 p-4">
+                    <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+                      <div className="space-y-2">
+                        <p className="text-sm leading-6 text-slate-700">
+                          <span className="font-black text-slate-950">
+                            {tx("dashboard.recommendations.client", "Client:")}
+                          </span>{" "}
+                          {message}
+                        </p>
+                        <p className="text-sm leading-6 text-amber-800">
+                          <span className="font-black text-slate-950">
+                            {tx("dashboard.recommendations.aiSuggestion", "AI suggestion:")}
+                          </span>{" "}
+                          {recommendation}
+                        </p>
                       </div>
-                    </li>
-                  )
-                )}
+
+                      <button
+                        type="button"
+                        className="rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:bg-violet-700"
+                        onClick={() => {
+                          if (!socketRef.current) {
+                            setAlertMessage(
+                              tx("dashboard.states.socketNotConnected", "Real-time connection is not connected")
+                            );
+                            return;
+                          }
+
+                          socketRef.current.emit("approveRecommendation", { recommendationId }, (res: any) => {
+                            if (res?.ok) {
+                              setRecommendations((prev) =>
+                                prev.filter((item) => item.recommendationId !== recommendationId)
+                              );
+                            } else {
+                              setAlertMessage(
+                                `Error: ${res?.error || tx("dashboard.states.unknownError", "Unknown error")}`
+                              );
+                            }
+                          });
+                        }}
+                      >
+                        {tx("dashboard.recommendations.approveAndSend", "Approve and send")}
+                      </button>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </SectionShell>
           )}
 
-          <div className="grid gap-5 xl:grid-cols-2">
-            <RecentActivityCard
-              title={tx("dashboard.recentActivity.title", "Recent Activity")}
-              actionText={tx("dashboard.actions.viewAll", "View all")}
-              items={recentActivityItems}
-              emptyText={tx(
-                "dashboard.recentActivity.empty",
-                "No recent activity yet."
-              )}
-            />
-
-            <CollaborationsCard
-              title={tx(
-                "dashboard.collaborations.title",
-                "Collaborations & Proposals"
-              )}
-              actionText={tx("dashboard.actions.viewAll", "View all")}
-              activeValue={formatNumber(
-                syncedStats.collaborations_count || 0,
-                locale
-              )}
-              activeLabel={tx(
-                "dashboard.collaborations.active",
-                "Active Collaborations"
-              )}
-              proposalsValue={formatNumber(
-                syncedStats.proposals_count || 0,
-                locale
-              )}
-              proposalsLabel={tx(
-                "dashboard.collaborations.proposals",
-                "Open Proposals"
-              )}
-              emptyText={tx(
-                "dashboard.collaborations.empty",
-                "Your collaboration and proposal activity will appear here."
-              )}
-            />
-          </div>
-
-          <div className="grid gap-5 xl:grid-cols-[minmax(360px,0.75fr)_minmax(0,1.25fr)]">
-            <SectionShell
-              title={tx("dashboard.upcoming.title", "Next activity")}
-              action={
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 text-xs font-bold text-violet-600 transition hover:text-violet-800"
-                >
-                  {tx("dashboard.upcoming.viewAll", "View all appointments")}
-                  <ArrowRight size={14} />
-                </button>
-              }
-              className="xl:max-w-[720px]"
-            >
-              {recentAppointments.length === 0 ? (
-                <div className="rounded-[22px] border border-dashed border-slate-200 bg-slate-50/80 p-6 text-sm font-medium text-slate-500">
-                  {tx(
-                    "dashboard.upcoming.empty",
-                    "No upcoming appointments yet."
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {recentAppointments.map((appt, index) => (
-                    <div
-                      key={
-                        appt._id ||
-                        appt.id ||
-                        `${appt.date}-${appt.time}-${index}`
-                      }
-                      className="group rounded-[24px] border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 shadow-[0_14px_35px_rgba(15,23,42,0.05)] transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_18px_45px_rgba(109,40,217,0.10)]"
-                    >
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 ring-8 ring-violet-50">
-                            <CalendarDays size={20} />
-                          </div>
-
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-black text-slate-950">
-                              {appt.clientName}
-                            </p>
-
-                            <p className="mt-1 truncate text-sm font-medium text-slate-500">
-                              {appt.serviceName}
-                            </p>
-                          </div>
+          <SectionShell
+            title={tx("dashboard.upcoming.title", "Next activity")}
+            action={
+              <button
+                type="button"
+                onClick={openAppointments}
+                className="inline-flex items-center gap-1 text-xs font-black text-violet-600 hover:text-violet-800"
+              >
+                {tx("dashboard.upcoming.viewAll", "View all appointments")}
+                <ArrowRight size={14} />
+              </button>
+            }
+            className="xl:max-w-[760px]"
+          >
+            {recentAppointments.length === 0 ? (
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">
+                {tx("dashboard.upcoming.empty", "No upcoming appointments yet.")}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {recentAppointments.map((appt, index) => (
+                  <div
+                    key={appt._id || appt.id || `${appt.date}-${appt.time}-${index}`}
+                    className="group rounded-[24px] border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 shadow-[0_14px_35px_rgba(15,23,42,0.05)] transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_18px_45px_rgba(109,40,217,0.10)]"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 ring-8 ring-violet-50">
+                          <CalendarDays size={20} />
                         </div>
-
-                        <div className="shrink-0 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right shadow-sm">
-                          <p className="text-xs font-bold text-slate-400">
-                            {appt.date}
-                          </p>
-                          <p className="mt-1 text-sm font-black text-slate-800">
-                            {appt.time || ""}
-                          </p>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-black text-slate-950">{appt.clientName}</p>
+                          <p className="mt-1 truncate text-sm font-medium text-slate-500">{appt.serviceName}</p>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </SectionShell>
 
-            <div className="hidden xl:block" />
-          </div>
+                      <div className="shrink-0 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right shadow-sm">
+                        <p className="text-xs font-bold text-slate-400">{appt.date}</p>
+                        <p className="mt-1 text-sm font-black text-slate-800">{appt.time || ""}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionShell>
 
           <div className="hidden">
             <Suspense fallback={null}>
