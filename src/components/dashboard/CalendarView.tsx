@@ -1,5 +1,12 @@
+"use client";
+
 import React, { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+} from "lucide-react";
 
 type TranslationValues = Record<string, string | number>;
 
@@ -10,6 +17,24 @@ type Appointment = {
   id?: string;
   date?: string;
   time?: string;
+  serviceName?: string;
+  clientName?: string;
+  name?: string;
+  title?: string;
+  service?: {
+    name?: string;
+    title?: string;
+  };
+  clientSnapshot?: {
+    name?: string;
+    phone?: string;
+    email?: string;
+  };
+  crmClientId?: {
+    fullName?: string;
+    phone?: string;
+    email?: string;
+  };
   [key: string]: any;
 };
 
@@ -25,7 +50,7 @@ type CalendarCell =
       dateStr: string;
       isToday: boolean;
       isSelected: boolean;
-      count: number;
+      appointments: Appointment[];
     };
 
 type CalendarViewProps = {
@@ -42,8 +67,7 @@ const fallbackT: TFunction = (key, values) => {
     "dashboard.calendarView.previousMonth": "Previous month",
     "dashboard.calendarView.nextMonth": "Next month",
     "dashboard.calendarView.hint": "Click a date to view your daily agenda",
-    "dashboard.calendarView.appointment": "{{count}} appointment",
-    "dashboard.calendarView.appointments": "{{count}} appointments",
+    "dashboard.calendarView.more": "+{{count}} more",
   };
 
   let text = dictionary[key] || key;
@@ -57,12 +81,27 @@ const fallbackT: TFunction = (key, values) => {
   return text;
 };
 
+const eventColorClasses = [
+  "border-violet-100 bg-violet-50 text-violet-800",
+  "border-amber-100 bg-amber-50 text-amber-800",
+  "border-pink-100 bg-pink-50 text-pink-800",
+  "border-emerald-100 bg-emerald-50 text-emerald-800",
+  "border-sky-100 bg-sky-50 text-sky-800",
+  "border-fuchsia-100 bg-fuchsia-50 text-fuchsia-800",
+];
+
 function isHebrewLocale(locale: string): boolean {
   return locale === "he" || locale === "he-IL";
 }
 
 function getTodayIso(): string {
   return new Date().toLocaleDateString("en-CA");
+}
+
+function normalizeDateKey(date?: string): string {
+  if (!date) return "";
+
+  return String(date).split("T")[0];
 }
 
 function getMonthTitle(year: number, month: number, locale: string): string {
@@ -83,6 +122,30 @@ function getWeekDays(locale: string): string[] {
       weekday: "short",
     }).format(date);
   });
+}
+
+function getClientName(appointment: Appointment): string {
+  return (
+    appointment.clientName ||
+    appointment.clientSnapshot?.name ||
+    appointment.crmClientId?.fullName ||
+    appointment.name ||
+    "Client"
+  );
+}
+
+function getServiceName(appointment: Appointment): string {
+  return (
+    appointment.serviceName ||
+    appointment.service?.name ||
+    appointment.service?.title ||
+    appointment.title ||
+    "Service"
+  );
+}
+
+function sortAppointmentsByTime(a: Appointment, b: Appointment) {
+  return String(a.time || "99:99").localeCompare(String(b.time || "99:99"));
 }
 
 const CalendarView = React.memo(
@@ -112,13 +175,19 @@ const CalendarView = React.memo(
       const map: Record<string, Appointment[]> = {};
 
       appointments.forEach((appointment) => {
-        if (!appointment?.date) return;
+        const dateKey = normalizeDateKey(appointment?.date);
 
-        if (!map[appointment.date]) {
-          map[appointment.date] = [];
+        if (!dateKey) return;
+
+        if (!map[dateKey]) {
+          map[dateKey] = [];
         }
 
-        map[appointment.date].push(appointment);
+        map[dateKey].push(appointment);
+      });
+
+      Object.keys(map).forEach((dateKey) => {
+        map[dateKey].sort(sortAppointmentsByTime);
       });
 
       return map;
@@ -152,7 +221,7 @@ const CalendarView = React.memo(
             dateStr,
             isToday: dateStr === todayStr,
             isSelected: selectedDate === dateStr,
-            count: appointmentsByDay[dateStr]?.length || 0,
+            appointments: appointmentsByDay[dateStr] || [],
           };
         }
       );
@@ -197,6 +266,7 @@ const CalendarView = React.memo(
             className="
               flex h-9 w-9 items-center justify-center rounded-xl
               border border-slate-200 bg-white text-slate-500
+              transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700
             "
           >
             {isRtl ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
@@ -219,6 +289,7 @@ const CalendarView = React.memo(
             className="
               flex h-9 w-9 items-center justify-center rounded-xl
               border border-slate-200 bg-white text-slate-500
+              transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700
             "
           >
             {isRtl ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
@@ -246,13 +317,16 @@ const CalendarView = React.memo(
               return (
                 <div
                   key={cell.key}
-                  className="h-[58px] rounded-xl bg-slate-50/60 sm:h-[68px]"
+                  className="h-[96px] rounded-xl bg-slate-50/60 sm:h-[118px] xl:h-[128px]"
                 />
               );
             }
 
-            const hasEvents = cell.count > 0;
+            const hasEvents = cell.appointments.length > 0;
             const isPurpleMarked = cell.isSelected || cell.isToday;
+            const visibleAppointments = cell.appointments.slice(0, 2);
+            const hiddenCount =
+              cell.appointments.length - visibleAppointments.length;
 
             return (
               <button
@@ -260,8 +334,9 @@ const CalendarView = React.memo(
                 type="button"
                 onClick={() => onDateClick?.(cell.dateStr)}
                 className={`
-                  relative flex h-[58px] flex-col justify-between rounded-xl
-                  border p-2 text-start sm:h-[68px]
+                  relative flex h-[96px] flex-col rounded-xl border p-2 text-start
+                  transition sm:h-[118px] xl:h-[128px]
+                  hover:border-violet-200 hover:bg-violet-50/30
                   ${
                     isPurpleMarked
                       ? "border-violet-200 bg-violet-50/40"
@@ -269,10 +344,10 @@ const CalendarView = React.memo(
                   }
                 `}
               >
-                <div className="flex items-start justify-between gap-1">
+                <div className="mb-1.5 flex items-start justify-between gap-1">
                   <span
                     className={`
-                      flex h-7 w-7 items-center justify-center rounded-lg
+                      flex h-7 w-7 shrink-0 items-center justify-center rounded-lg
                       text-xs font-black
                       ${
                         isPurpleMarked
@@ -283,29 +358,61 @@ const CalendarView = React.memo(
                   >
                     {cell.day}
                   </span>
+
+                  {hasEvents && (
+                    <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-black text-violet-700">
+                      {cell.appointments.length}
+                    </span>
+                  )}
                 </div>
 
                 {hasEvents ? (
-                  <div className="min-w-0">
-                    <div className="mb-1 flex items-center gap-1">
-                      {Array.from({ length: Math.min(cell.count, 3) }).map(
-                        (_, index) => (
-                          <span
-                            key={index}
-                            className="h-1.5 w-1.5 rounded-full bg-violet-500"
-                          />
-                        )
-                      )}
-                    </div>
+                  <div className="min-w-0 space-y-1.5">
+                    {visibleAppointments.map((appointment, index) => {
+                      const colorClass =
+                        eventColorClasses[index % eventColorClasses.length];
 
-                    <p className="truncate text-[10px] font-bold text-violet-700">
-                      {t(
-                        cell.count === 1
-                          ? "dashboard.calendarView.appointment"
-                          : "dashboard.calendarView.appointments",
-                        { count: cell.count }
-                      )}
-                    </p>
+                      return (
+                        <div
+                          key={
+                            appointment._id ||
+                            appointment.id ||
+                            `${cell.dateStr}-${appointment.time}-${index}`
+                          }
+                          className={`
+                            min-w-0 rounded-xl border px-2 py-1.5 text-left shadow-sm
+                            ${colorClass}
+                          `}
+                        >
+                          <div className="flex min-w-0 items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <p className="truncate text-[11px] font-black leading-4">
+                                {getClientName(appointment)}
+                              </p>
+
+                              <p className="truncate text-[10px] font-bold leading-4 opacity-80">
+                                {getServiceName(appointment)}
+                              </p>
+                            </div>
+
+                            {appointment.time && (
+                              <span className="hidden shrink-0 items-center gap-1 text-[9px] font-black opacity-70 2xl:inline-flex">
+                                <Clock className="h-3 w-3" />
+                                {appointment.time}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {hiddenCount > 0 && (
+                      <div className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-black text-slate-500">
+                        {t("dashboard.calendarView.more", {
+                          count: hiddenCount,
+                        })}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <span className="h-1" />
