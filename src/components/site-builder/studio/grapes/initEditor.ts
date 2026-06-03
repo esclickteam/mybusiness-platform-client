@@ -62,9 +62,6 @@ export function initBizuplyEditor({
     width: "100%",
     fromElement: false,
     storageManager: false,
-    undoManager: {
-      trackSelection: true,
-    },
 
     panels: {
       defaults: [],
@@ -205,10 +202,6 @@ export function initBizuplyEditor({
       scripts: [],
     },
 
-    domComponents: {
-      processor: undefined,
-    },
-
     i18n: {
       locale: "he",
       localeFallback: "he",
@@ -228,7 +221,6 @@ export function initBizuplyEditor({
           },
           domComponents: {
             names: {
-              "": "אלמנט",
               wrapper: "עמוד",
               text: "טקסט",
               image: "תמונה",
@@ -242,10 +234,9 @@ export function initBizuplyEditor({
     },
   });
 
-  registerDefaultTraits(editor);
-  registerComponentDefaults(editor);
   registerCommands(editor);
   registerKeyboardShortcuts(editor);
+  registerCustomComponentTypes(editor);
 
   editor.on("load", () => {
     editor.setComponents(defaultWebsiteHtml);
@@ -281,6 +272,8 @@ export function initBizuplyEditor({
       }
     `);
 
+    makeAllComponentsEditable(editor);
+
     editor.select(null);
     onReady?.(editor);
   });
@@ -304,47 +297,23 @@ export function initBizuplyEditor({
 }
 
 /* =====================================================
-   COMPONENT DEFAULTS
+   SAFE COMPONENT EDITING
+   לא נוגעים ב־prototype.defaults כדי לא לקבל getter error
 ===================================================== */
 
-function registerComponentDefaults(editor: Editor) {
-  const componentTypes = editor.DomComponents.getTypes();
+function makeAllComponentsEditable(editor: Editor) {
+  const wrapper = editor.getWrapper();
 
-  componentTypes.forEach((type) => {
-    const model = type.model;
+  if (!wrapper) return;
 
-    if (!model) return;
-
-    const defaults = model.prototype.defaults || {};
-
-    model.prototype.defaults = {
-      ...defaults,
-      draggable: true,
-      droppable: true,
-      copyable: true,
-      removable: true,
-      resizable: {
-        tl: true,
-        tc: true,
-        tr: true,
-        cl: true,
-        cr: true,
-        bl: true,
-        bc: true,
-        br: true,
-        keyWidth: "width",
-        keyHeight: "height",
-      },
-      editable: true,
-      stylable: true,
-      highlightable: true,
-      hoverable: true,
-      selectable: true,
-    };
+  wrapper.find("*").forEach((component) => {
+    ensureComponentEditable(component);
   });
 }
 
 function ensureComponentEditable(component: any) {
+  if (!component || typeof component.set !== "function") return;
+
   component.set({
     draggable: true,
     droppable: true,
@@ -391,24 +360,11 @@ function ensureComponentEditable(component: any) {
       },
     ],
   });
-}
 
-/* =====================================================
-   TRAITS
-===================================================== */
+  const tagName = component.get?.("tagName");
 
-function registerDefaultTraits(editor: Editor) {
-  const domComponents = editor.DomComponents;
-
-  const linkType = domComponents.getType("link");
-  const imageType = domComponents.getType("image");
-  const textType = domComponents.getType("text");
-
-  if (linkType?.model) {
-    const defaults = linkType.model.prototype.defaults || {};
-
-    linkType.model.prototype.defaults = {
-      ...defaults,
+  if (tagName === "a") {
+    component.set({
       traits: [
         {
           type: "text",
@@ -431,14 +387,11 @@ function registerDefaultTraits(editor: Editor) {
           label: "Title",
         },
       ],
-    };
+    });
   }
 
-  if (imageType?.model) {
-    const defaults = imageType.model.prototype.defaults || {};
-
-    imageType.model.prototype.defaults = {
-      ...defaults,
+  if (tagName === "img") {
+    component.set({
       traits: [
         {
           type: "text",
@@ -456,29 +409,130 @@ function registerDefaultTraits(editor: Editor) {
           label: "Title",
         },
       ],
-    };
+    });
   }
+}
 
-  if (textType?.model) {
-    const defaults = textType.model.prototype.defaults || {};
+/* =====================================================
+   CUSTOM TYPES
+===================================================== */
 
-    textType.model.prototype.defaults = {
-      ...defaults,
-      editable: true,
-      traits: [
-        {
-          type: "text",
-          name: "id",
-          label: "ID",
-        },
-        {
-          type: "text",
-          name: "class",
-          label: "Class",
-        },
-      ],
-    };
-  }
+function registerCustomComponentTypes(editor: Editor) {
+  const domComponents = editor.DomComponents;
+
+  domComponents.addType("biz-section", {
+    isComponent: (el) => {
+      if (!(el instanceof HTMLElement)) return false;
+
+      if (
+        el.tagName === "SECTION" ||
+        el.classList.contains("biz-section") ||
+        el.classList.contains("biz-section-wide") ||
+        el.classList.contains("biz-section-full")
+      ) {
+        return { type: "biz-section" };
+      }
+
+      return false;
+    },
+    model: {
+      defaults: {
+        name: "סקשן",
+        draggable: true,
+        droppable: true,
+        copyable: true,
+        removable: true,
+        editable: true,
+        stylable: true,
+        selectable: true,
+        hoverable: true,
+        highlightable: true,
+        resizable: true,
+      },
+    },
+  });
+
+  domComponents.addType("biz-button", {
+    isComponent: (el) => {
+      if (!(el instanceof HTMLElement)) return false;
+
+      if (el.classList.contains("biz-btn")) {
+        return { type: "biz-button" };
+      }
+
+      return false;
+    },
+    model: {
+      defaults: {
+        name: "כפתור",
+        draggable: true,
+        droppable: false,
+        copyable: true,
+        removable: true,
+        editable: true,
+        stylable: true,
+        selectable: true,
+        hoverable: true,
+        highlightable: true,
+        traits: [
+          {
+            type: "text",
+            name: "href",
+            label: "קישור",
+            placeholder: "https://...",
+          },
+          {
+            type: "select",
+            name: "target",
+            label: "פתיחה",
+            options: [
+              { id: "", label: "באותו חלון" },
+              { id: "_blank", label: "בטאב חדש" },
+            ],
+          },
+        ],
+      },
+    },
+  });
+
+  domComponents.addType("biz-image", {
+    isComponent: (el) => {
+      if (!(el instanceof HTMLElement)) return false;
+
+      if (el.tagName === "IMG") {
+        return { type: "biz-image" };
+      }
+
+      return false;
+    },
+    model: {
+      defaults: {
+        name: "תמונה",
+        draggable: true,
+        droppable: false,
+        copyable: true,
+        removable: true,
+        editable: true,
+        stylable: true,
+        selectable: true,
+        hoverable: true,
+        highlightable: true,
+        resizable: true,
+        traits: [
+          {
+            type: "text",
+            name: "src",
+            label: "כתובת תמונה",
+          },
+          {
+            type: "text",
+            name: "alt",
+            label: "טקסט חלופי",
+          },
+        ],
+      },
+    },
+  });
 }
 
 /* =====================================================
@@ -542,22 +596,6 @@ function registerCommands(editor: Editor) {
     },
   });
 
-  editor.Commands.add("bizuply-wrap-section", {
-    run(currentEditor) {
-      const selected = currentEditor.getSelected();
-
-      if (!selected) return;
-
-      const html = selected.toHTML();
-
-      selected.replaceWith(`
-        <section class="biz-section">
-          ${html}
-        </section>
-      `);
-    },
-  });
-
   editor.Commands.add("bizuply-set-bg-image", {
     run(currentEditor) {
       const selected = currentEditor.getSelected();
@@ -601,7 +639,11 @@ function registerKeyboardShortcuts(editor: Editor) {
     currentEditor.UndoManager.undo();
   });
 
-  editor.Keymaps.add("bizuply:redo", "ctrl+shift+z, cmd+shift+z", (currentEditor) => {
-    currentEditor.UndoManager.redo();
-  });
+  editor.Keymaps.add(
+    "bizuply:redo",
+    "ctrl+shift+z, cmd+shift+z",
+    (currentEditor) => {
+      currentEditor.UndoManager.redo();
+    }
+  );
 }
