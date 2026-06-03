@@ -9,10 +9,6 @@ import { lazyWithPreload } from "../../utils/lazyWithPreload";
 /* Dashboard pages */
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
 
-const BusinessMiniSiteClub = lazy(() =>
-  import("../BusinessMiniSiteClub")
-);
-
 const BusinessMiniSiteBuilder = lazy(() =>
   import("../BusinessMiniSiteBuilder")
 );
@@ -64,7 +60,6 @@ const WorkHoursTab = lazy(() =>
   import("./dashboardPages/crmpages/WorkHoursTab")
 );
 
-/* ✅ חדש — Leads page */
 const CRMLeadsTab = lazy(() =>
   import("./dashboardPages/crmpages/CRMLeadsTab")
 );
@@ -98,29 +93,6 @@ import TroubleshootingFAQ from "../troubleshootingFAQs";
 /* Business profile */
 const BusinessProfilePage = lazy(() => import("../BusinessProfilePage"));
 
-function FAQPage({ faqs }) {
-  return (
-    <div
-      style={{
-        maxWidth: 900,
-        margin: "auto",
-        padding: 20,
-        fontFamily: "Arial, sans-serif",
-        lineHeight: 1.6,
-      }}
-    >
-      <h1>Questions & Answers</h1>
-
-      {faqs.map(({ question, answer }, idx) => (
-        <section key={idx} style={{ marginBottom: 30 }}>
-          <h2 style={{ color: "#3a0ca3" }}>{question}</h2>
-          <div>{answer}</div>
-        </section>
-      ))}
-    </div>
-  );
-}
-
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
   const businessId = user?.businessId;
@@ -131,12 +103,14 @@ const BusinessDashboardRoutes = () => {
 
     queryClient.prefetchQuery({
       queryKey: ["businessProfile", businessId],
-      queryFn: () => fetch(`/api/business/${businessId}`).then((res) => res.json()),
+      queryFn: () =>
+        fetch(`/api/business/${businessId}`).then((res) => res.json()),
     });
 
     queryClient.prefetchQuery({
       queryKey: ["businessServices", businessId],
-      queryFn: () => fetch("/api/business/my/services").then((res) => res.json()),
+      queryFn: () =>
+        fetch("/api/business/my/services").then((res) => res.json()),
     });
 
     queryClient.prefetchQuery({
@@ -175,8 +149,8 @@ const BusinessDashboardRoutes = () => {
           <Route path="edit" element={<BuildBusinessPage />} />
           <Route path="build" element={<BuildBusinessPage />} />
 
-<Route path="site-builder" element={<BusinessMiniSiteBuilder />} />
-<Route path="mini-site-club" element={<BusinessMiniSiteClub />} />
+          {/* Website Builder */}
+          <Route path="site-builder" element={<BusinessMiniSiteBuilder />} />
 
           <Route
             path="articles/build-business-page"
@@ -223,7 +197,6 @@ const BusinessDashboardRoutes = () => {
           <Route path="crm" element={<CRMMain />}>
             <Route index element={<Navigate to="appointments" replace />} />
 
-            {/* ✅ חדש — לחיצה על Leads תפתח את הדף הזה */}
             <Route
               path="leads"
               element={<CRMLeadsTab businessId={businessId} />}
@@ -233,18 +206,22 @@ const BusinessDashboardRoutes = () => {
               path="appointments"
               element={<CRMAppointmentsTab businessId={businessId} />}
             />
+
             <Route
               path="clients"
               element={<CRMClientsTab businessId={businessId} />}
             />
+
             <Route
               path="services"
               element={<CRMServicesTab businessId={businessId} />}
             />
+
             <Route
               path="settings"
               element={<CRMSettingsTab businessId={businessId} />}
             />
+
             <Route
               path="work-hours"
               element={<WorkHoursTab businessId={businessId} />}
