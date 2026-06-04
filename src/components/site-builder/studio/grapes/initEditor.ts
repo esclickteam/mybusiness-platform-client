@@ -18,6 +18,10 @@ type InitEditorArgs = {
   onSelect?: () => void;
 };
 
+const TAILWIND_CDN_URL = "https://cdn.tailwindcss.com";
+const GOOGLE_FONTS_URL =
+  "https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800;900&family=Heebo:wght@300;400;600;700;800;900&family=Rubik:wght@400;600;700;800;900&family=Alef:wght@400;700&family=Varela+Round&family=Noto+Sans+Hebrew:wght@400;600;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800;900&family=DM+Sans:wght@400;600;700;800;900&family=Playfair+Display:wght@500;600;700;800&family=Lora:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap";
+
 const defaultAssets = [
   {
     src: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1400&q=90",
@@ -188,8 +192,8 @@ export function initBizuplyEditor({
     },
 
     canvas: {
-      styles: [],
-      scripts: [],
+      styles: [GOOGLE_FONTS_URL],
+      scripts: [TAILWIND_CDN_URL],
     },
 
     i18n: {
@@ -219,7 +223,12 @@ export function initBizuplyEditor({
   registerKeyboardShortcuts(editor);
   registerCustomComponentTypes(editor);
 
+  editor.on("canvas:frame:load", () => {
+    injectCanvasRuntimeAssets(editor);
+  });
+
   editor.on("load", () => {
+    injectCanvasRuntimeAssets(editor);
     editor.setComponents(defaultWebsiteHtml);
     editor.setStyle(defaultCanvasCss);
 
@@ -342,6 +351,96 @@ export function initBizuplyEditor({
 
   return editor;
 }
+
+
+/* =====================================================
+   CANVAS RUNTIME ASSETS
+   GrapesJS renders the website inside an iframe.
+   Tailwind from the React app does NOT automatically exist there,
+   so we explicitly inject Tailwind CDN + fonts into the iframe.
+===================================================== */
+
+function injectCanvasRuntimeAssets(editor: Editor) {
+  const doc = editor.Canvas.getDocument();
+
+  if (!doc?.head) return;
+
+  const head = doc.head;
+
+  if (!head.querySelector('link[data-bizuply-fonts="true"]')) {
+    const fonts = doc.createElement("link");
+    fonts.setAttribute("data-bizuply-fonts", "true");
+    fonts.rel = "stylesheet";
+    fonts.href = GOOGLE_FONTS_URL;
+    head.appendChild(fonts);
+  }
+
+  if (!head.querySelector('script[data-bizuply-tailwind="true"]')) {
+    const config = doc.createElement("script");
+    config.setAttribute("data-bizuply-tailwind-config", "true");
+    config.textContent = `
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = {
+        corePlugins: { preflight: false },
+        theme: {
+          extend: {
+            fontFamily: {
+              assistant: ['Assistant', 'Arial', 'sans-serif'],
+              heebo: ['Heebo', 'Arial', 'sans-serif'],
+              rubik: ['Rubik', 'Arial', 'sans-serif'],
+            }
+          }
+        }
+      };
+    `;
+    head.appendChild(config);
+
+    const script = doc.createElement("script");
+    script.setAttribute("data-bizuply-tailwind", "true");
+    script.src = TAILWIND_CDN_URL;
+    head.appendChild(script);
+  }
+
+  if (!head.querySelector('style[data-bizuply-canvas-fixes="true"]')) {
+    const style = doc.createElement("style");
+    style.setAttribute("data-bizuply-canvas-fixes", "true");
+    style.textContent = `
+      html, body {
+        margin: 0;
+        direction: rtl;
+        min-height: 100%;
+        font-family: Assistant, Heebo, Arial, sans-serif;
+        background: var(--biz-bg, #FFF7FD);
+        color: var(--biz-text, #171321);
+      }
+
+      body {
+        overflow-x: hidden;
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      [data-section-kind],
+      section {
+        box-sizing: border-box;
+      }
+
+      .gjs-selected {
+        outline: 4px solid #7C3AED !important;
+        outline-offset: 8px !important;
+      }
+
+      .gjs-hovered {
+        outline: 2px dashed rgba(124,58,237,0.55) !important;
+        outline-offset: 6px !important;
+      }
+    `;
+    head.appendChild(style);
+  }
+}
+
 
 /* =====================================================
    SAFE COMPONENT EDITING
@@ -513,7 +612,7 @@ function ensureComponentEditable(component: any) {
         {
           type: "text",
           name: "src",
-          label: "כתובת תמונה",
+          label: "מקור תמונה",
         },
         {
           type: "text",
@@ -723,7 +822,7 @@ function registerCustomComponentTypes(editor: Editor) {
           {
             type: "text",
             name: "src",
-            label: "כתובת תמונה",
+            label: "מקור תמונה",
           },
           {
             type: "text",
