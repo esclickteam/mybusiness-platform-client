@@ -40,7 +40,7 @@ const img = {
 };
 
 const sectionName: Record<SectionKind, string> = {
-  hero: "ראשי",
+  hero: "דף הבית",
   about: "אודות",
   services: "שירותים",
   gallery: "גלריה",
@@ -72,40 +72,62 @@ function variant(
   };
 }
 
-function imageCard(src: string, extra = "") {
+function imageBlock(src: string, height = "min-h-[420px]") {
   return `
     <div
-      class="group relative overflow-hidden rounded-[32px] bg-white p-3 shadow-[0_28px_90px_rgba(15,23,42,0.12)] ${extra}"
+      class="relative overflow-hidden rounded-[38px] bg-white p-3 shadow-[0_30px_100px_rgba(15,23,42,0.12)]"
       data-editable-image-card="true"
     >
       <img
         src="${src}"
         alt=""
-        class="h-full min-h-[280px] w-full rounded-[24px] object-cover transition duration-500 group-hover:scale-[1.03]"
+        class="${height} h-full w-full rounded-[28px] object-cover"
         data-editable-image="true"
       />
-      <div class="pointer-events-none absolute left-5 top-5 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-700 shadow-lg">
-        תמונה ניתנת להחלפה
+    </div>
+  `;
+}
+
+function addImageBox() {
+  return `
+    <div
+      class="flex min-h-[320px] cursor-pointer items-center justify-center rounded-[38px] border-2 border-dashed border-violet-200 bg-violet-50/80 p-10 text-center transition hover:bg-violet-100"
+      data-image-drop-zone="true"
+    >
+      <div>
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-3xl font-black text-violet-700 shadow-xl">
+          +
+        </div>
+        <p class="text-xl font-black text-slate-950">הוספת תמונה</p>
+        <p class="mt-2 text-sm font-bold leading-6 text-slate-500">
+          לחצי כאן להוספת תמונה נוספת לסקשן
+        </p>
       </div>
     </div>
   `;
 }
 
-function addImageDropBox() {
+function primaryButton(text = "קביעת תור") {
   return `
-    <div
-      class="flex min-h-[260px] cursor-pointer items-center justify-center rounded-[32px] border-2 border-dashed border-violet-200 bg-violet-50/70 p-8 text-center transition hover:bg-violet-100"
-      data-image-drop-zone="true"
-    >
-      <div>
-        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-lg">
-          +
-        </div>
-        <p class="text-lg font-black text-slate-900">הוספת תמונה</p>
-        <p class="mt-2 text-sm font-bold leading-6 text-slate-500">
-          כאן אפשר לגרור תמונה / להחליף תמונה / להפוך לרקע
-        </p>
-      </div>
+    <a class="inline-flex min-h-[58px] items-center justify-center rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-8 text-sm font-black text-white shadow-xl shadow-violet-200">
+      ${text}
+    </a>
+  `;
+}
+
+function secondaryButton(text = "מידע נוסף") {
+  return `
+    <a class="inline-flex min-h-[58px] items-center justify-center rounded-2xl border border-slate-200 bg-white px-8 text-sm font-black text-slate-800 shadow-lg">
+      ${text}
+    </a>
+  `;
+}
+
+function actions(primary = "קביעת תור", secondary = "צור קשר") {
+  return `
+    <div class="mt-9 flex flex-wrap gap-4">
+      ${primaryButton(primary)}
+      ${secondaryButton(secondary)}
     </div>
   `;
 }
@@ -124,8 +146,8 @@ function sectionShell(kind: SectionKind, inner: string, extra = "") {
 function bgSection(kind: SectionKind, src: string, inner: string) {
   return `
 <section
-  class="relative mx-auto my-10 min-h-[680px] w-full max-w-[1320px] overflow-hidden rounded-[48px] bg-slate-950 bg-cover bg-center px-10 py-24 shadow-[0_40px_140px_rgba(15,23,42,0.22)]"
-  style="background-image:linear-gradient(135deg,rgba(2,6,23,.68),rgba(2,6,23,.22)),url('${src}')"
+  class="relative mx-auto my-10 min-h-[680px] w-full max-w-[1320px] overflow-hidden rounded-[54px] bg-slate-950 bg-cover bg-center px-10 py-24 shadow-[0_44px_150px_rgba(15,23,42,0.24)]"
+  style="background-image:linear-gradient(135deg,rgba(2,6,23,.66),rgba(2,6,23,.24)),url('${src}')"
   data-section-kind="${kind}"
   data-background-editable="true"
 >
@@ -134,40 +156,29 @@ function bgSection(kind: SectionKind, src: string, inner: string) {
 `;
 }
 
-function titleBlock(kind: SectionKind, align: "center" | "right" = "center") {
-  const isCenter = align === "center";
-
+function sectionTitle(
+  kind: SectionKind,
+  title = `${sectionName[kind]} מקצועי לעסק`,
+  text = "חוויה נקייה, ברורה ומרשימה שמציגה את העסק בצורה מקצועית ומובילה לפניות."
+) {
   return `
-    <div class="${isCenter ? "mx-auto text-center" : "text-right"} max-w-[820px]">
+    <div class="mx-auto max-w-[840px] text-center">
       <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">
         ${sectionName[kind]}
       </p>
       <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em] text-slate-950">
-        ${sectionName[kind]} בעיצוב מקצועי
+        ${title}
       </h2>
       <p class="mt-5 text-lg font-bold leading-9 text-slate-500">
-        אפשר לערוך טקסט, צבעים, תמונות, רקעים, פינות, ריווח, כפתורים וכל חלק בסקשן.
+        ${text}
       </p>
     </div>
   `;
 }
 
-function actions() {
+function featureCard(title: string, text: string, icon = "✦") {
   return `
-    <div class="mt-9 flex flex-wrap gap-4">
-      <a class="inline-flex min-h-[58px] items-center justify-center rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-8 text-sm font-black text-white shadow-xl shadow-violet-200">
-        קביעת תור
-      </a>
-      <a class="inline-flex min-h-[58px] items-center justify-center rounded-2xl border border-slate-200 bg-white px-8 text-sm font-black text-slate-800 shadow-lg">
-        מידע נוסף
-      </a>
-    </div>
-  `;
-}
-
-function card(title: string, text: string, icon = "✦") {
-  return `
-    <article class="rounded-[32px] border border-slate-200 bg-white p-8 shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
+    <article class="rounded-[34px] border border-slate-200 bg-white p-8 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
       <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 text-lg font-black text-white">
         ${icon}
       </div>
@@ -178,7 +189,7 @@ function card(title: string, text: string, icon = "✦") {
 }
 
 /* =====================================================
-   HERO — 10 מבנים
+   HERO — 10 מבנים אמיתיים
 ===================================================== */
 
 function heroLayout(index: number) {
@@ -187,13 +198,13 @@ function heroLayout(index: number) {
       "hero",
       `
       <div class="grid items-center gap-14 lg:grid-cols-2">
-        <div class="rounded-[44px] border border-white bg-white/90 p-14 shadow-[0_36px_120px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
+        <div class="rounded-[46px] border border-white bg-white/95 p-14 shadow-[0_36px_120px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
           <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">סטודיו פרימיום</p>
           <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">יופי טבעי שמתחיל בחוויה מקצועית</h1>
-          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">טיפולים מתקדמים, יחס אישי ותוצאה מדויקת.</p>
-          ${actions()}
+          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">טיפולים מתקדמים, יחס אישי ותוצאה מדויקת שמרגישה טבעית.</p>
+          ${actions("קביעת תור", "שליחת הודעה")}
         </div>
-        ${imageCard(img.beauty)}
+        ${imageBlock(img.beauty)}
       </div>
       `
     ),
@@ -202,12 +213,12 @@ function heroLayout(index: number) {
       "hero",
       `
       <div class="grid items-center gap-14 lg:grid-cols-2">
-        ${imageCard(img.hair)}
-        <div class="rounded-[44px] border border-white bg-white/90 p-14 shadow-[0_36px_120px_rgba(15,23,42,0.12)]">
-          <p class="mb-4 inline-flex rounded-full bg-fuchsia-50 px-5 py-2 text-sm font-black text-fuchsia-700">מבנה הפוך</p>
+        ${imageBlock(img.hair)}
+        <div class="rounded-[46px] border border-white bg-white/95 p-14 shadow-[0_36px_120px_rgba(15,23,42,0.12)]">
+          <p class="mb-4 inline-flex rounded-full bg-fuchsia-50 px-5 py-2 text-sm font-black text-fuchsia-700">טיפול אישי</p>
           <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">מראה יוקרתי שמרגיש טבעי</h1>
-          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">תמונה בצד ימין וטקסט בצד שמאל.</p>
-          ${actions()}
+          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">חוויה רגועה, מקצועית ומדויקת מהשיחה הראשונה ועד התוצאה.</p>
+          ${actions("לתיאום פגישה", "לגלריה")}
         </div>
       </div>
       `
@@ -217,11 +228,11 @@ function heroLayout(index: number) {
       "hero",
       img.salon,
       `
-      <div class="max-w-[820px]">
+      <div class="max-w-[850px]">
         <p class="mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-violet-700">תמונת רקע מלאה</p>
-        <h1 class="text-7xl font-black leading-[0.95] tracking-[-0.06em] text-white">אתר עסקי שנראה כמו מותג פרימיום</h1>
-        <p class="mt-6 text-xl font-bold leading-10 text-white/80">אפשר להפוך כל תמונה לרקע סקשן.</p>
-        ${actions()}
+        <h1 class="text-7xl font-black leading-[0.95] tracking-[-0.06em] text-white">הסטודיו שלך מוצג כמו מותג פרימיום</h1>
+        <p class="mt-6 text-xl font-bold leading-10 text-white/85">תצוגת פתיחה מרשימה עם תמונת אווירה, מסר ברור וכפתורי פעולה.</p>
+        ${actions("קביעת תור", "צור קשר")}
       </div>
       `
     ),
@@ -229,11 +240,11 @@ function heroLayout(index: number) {
     sectionShell(
       "hero",
       `
-      <div class="mx-auto max-w-[980px] rounded-[48px] border border-slate-200 bg-white p-16 text-center shadow-[0_36px_120px_rgba(15,23,42,0.10)]">
-        <p class="mx-auto mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">ממורכז נקי</p>
+      <div class="mx-auto max-w-[1020px] rounded-[52px] border border-slate-200 bg-white p-16 text-center shadow-[0_36px_120px_rgba(15,23,42,0.10)]">
+        <p class="mx-auto mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">עסק מקצועי</p>
         <h1 class="text-7xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">כותרת חזקה במרכז</h1>
-        <p class="mx-auto mt-6 max-w-[720px] text-xl font-bold leading-10 text-slate-500">מבנה נקי בלי תמונה, מתאים לדפי נחיתה ומסרים חזקים.</p>
-        <div class="flex justify-center">${actions()}</div>
+        <p class="mx-auto mt-6 max-w-[720px] text-xl font-bold leading-10 text-slate-500">מבנה נקי בלי תמונה, מתאים למסר חד וברור.</p>
+        <div class="flex justify-center">${actions("אני רוצה להתחיל", "מידע נוסף")}</div>
       </div>
       `
     ),
@@ -241,16 +252,16 @@ function heroLayout(index: number) {
     sectionShell(
       "hero",
       `
-      <div class="grid items-center gap-14 lg:grid-cols-[0.85fr_1.15fr]">
+      <div class="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
-          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">2 תמונות</p>
-          <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">הצגה ויזואלית חזקה</h1>
-          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">מתאים ליופי, קליניקה, חנות, סטודיו ושירותים.</p>
-          ${actions()}
+          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">גלריה בראש העמוד</p>
+          <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">הצגה ויזואלית חזקה לעסק</h1>
+          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">שתי תמונות שמציגות אווירה, תהליך ותוצאה.</p>
+          ${actions("קביעת תור", "צפייה בעבודות")}
         </div>
         <div class="grid gap-5 md:grid-cols-2">
-          ${imageCard(img.beauty)}
-          ${imageCard(img.hair)}
+          ${imageBlock(img.beauty, "min-h-[360px]")}
+          ${imageBlock(img.hair, "min-h-[360px]")}
         </div>
       </div>
       `
@@ -259,15 +270,15 @@ function heroLayout(index: number) {
     sectionShell(
       "hero",
       `
-      <div class="rounded-[48px] bg-slate-950 p-12 shadow-[0_40px_140px_rgba(15,23,42,0.22)]">
+      <div class="rounded-[52px] bg-slate-950 p-12 shadow-[0_44px_150px_rgba(15,23,42,0.25)]">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white">כהה יוקרתי</p>
-            <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-white">מותג שנראה יוקרתי</h1>
-            <p class="mt-6 text-xl font-bold leading-10 text-white/70">מבנה כהה, דרמטי ומרשים.</p>
-            ${actions()}
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white">Premium</p>
+            <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-white">מותג שנראה יוקרתי כבר בכניסה</h1>
+            <p class="mt-6 text-xl font-bold leading-10 text-white/70">מבנה כהה, דרמטי ומרשים לעסקים שרוצים להיראות יוקרתיים.</p>
+            ${actions("לתיאום", "לפרטים")}
           </div>
-          ${imageCard(img.clinic)}
+          ${imageBlock(img.clinic)}
         </div>
       </div>
       `
@@ -277,12 +288,12 @@ function heroLayout(index: number) {
       "hero",
       img.beauty,
       `
-      <div class="grid min-h-[500px] place-items-center text-center">
+      <div class="grid min-h-[520px] place-items-center text-center">
         <div>
-          <p class="mx-auto mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-violet-700">וידאו / מדיה</p>
-          <h1 class="text-7xl font-black leading-[0.95] tracking-[-0.06em] text-white">רקע ויזואלי מלא</h1>
-          <p class="mx-auto mt-6 max-w-[740px] text-xl font-bold leading-10 text-white/80">מתאים לוידאו, סליידר או תמונת אווירה.</p>
-          <div class="flex justify-center">${actions()}</div>
+          <p class="mx-auto mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-violet-700">מדיה / וידאו</p>
+          <h1 class="text-7xl font-black leading-[0.95] tracking-[-0.06em] text-white">חוויה ויזואלית מלאה</h1>
+          <p class="mx-auto mt-6 max-w-[740px] text-xl font-bold leading-10 text-white/85">מבנה שמתאים לוידאו, תמונת אווירה או סליידר.</p>
+          <div class="flex justify-center">${actions("צפייה", "יצירת קשר")}</div>
         </div>
       </div>
       `
@@ -293,14 +304,14 @@ function heroLayout(index: number) {
       `
       <div class="grid items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
         <div class="grid gap-5 md:grid-cols-2">
-          ${imageCard(img.salon)}
-          ${addImageDropBox()}
+          ${imageBlock(img.salon, "min-h-[360px]")}
+          ${addImageBox()}
         </div>
         <div>
-          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">הוספת תמונה</p>
-          <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">גררי תמונה לתוך המבנה</h1>
-          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">יש מקום מוכן להוספת תמונה נוספת.</p>
-          ${actions()}
+          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">תמונות נוספות</p>
+          <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">מבנה עם מקום להוספת תמונה</h1>
+          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">מתאים לעסק שרוצה להציג כמה תמונות כבר בחלק העליון.</p>
+          ${actions("הזמנת שירות", "צור קשר")}
         </div>
       </div>
       `
@@ -309,15 +320,18 @@ function heroLayout(index: number) {
     sectionShell(
       "hero",
       `
-      <div class="rounded-[48px] bg-gradient-to-l from-violet-700 to-fuchsia-600 p-16 text-white shadow-[0_40px_140px_rgba(139,92,246,0.26)]">
+      <div class="rounded-[52px] bg-gradient-to-l from-violet-700 to-fuchsia-600 p-16 text-white shadow-[0_44px_150px_rgba(139,92,246,0.28)]">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white">מוצר / שירות</p>
-            <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em]">שירות מוביל שמוכר מהר</h1>
-            <p class="mt-6 text-xl font-bold leading-10 text-white/80">מבנה עם מחיר, CTA ותמונה.</p>
-            ${actions()}
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white">שירות מוביל</p>
+            <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em]">שירות מרכזי שמוביל לפנייה</h1>
+            <p class="mt-6 text-xl font-bold leading-10 text-white/80">מתאים להצגת שירות אחד חזק עם מחיר וכפתור פעולה.</p>
+            <div class="mt-9 flex flex-wrap items-center gap-4">
+              <a class="rounded-2xl bg-white px-8 py-4 text-sm font-black text-violet-700">קביעת תור</a>
+              <span class="rounded-full bg-white/20 px-5 py-3 text-sm font-black text-white">החל מ־₪350</span>
+            </div>
           </div>
-          ${imageCard(img.product)}
+          ${imageBlock(img.product)}
         </div>
       </div>
       `
@@ -327,16 +341,16 @@ function heroLayout(index: number) {
       "hero",
       `
       <div class="grid items-stretch gap-8 lg:grid-cols-3">
-        <div class="lg:col-span-2 rounded-[44px] bg-white p-14 shadow-[0_30px_100px_rgba(15,23,42,0.10)]">
-          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">מבנה כרטיסים</p>
-          <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">כותרת ראשית + כרטיס צד</h1>
-          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">הירו שמתאים לעסקים שרוצים להציג גם פרטים מהירים.</p>
-          ${actions()}
+        <div class="rounded-[46px] bg-white p-14 shadow-[0_32px_110px_rgba(15,23,42,0.10)] lg:col-span-2">
+          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">פרטים מהירים</p>
+          <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">עמוד פתיחה עם כרטיס צד</h1>
+          <p class="mt-6 text-xl font-bold leading-10 text-slate-500">מושלם להצגת תועלת מרכזית לצד מחיר, שעות או הטבה.</p>
+          ${actions("קביעת תור", "הטבות")}
         </div>
-        <div class="rounded-[44px] bg-slate-950 p-8 text-white">
-          <p class="text-sm font-black text-white/60">פרטים מהירים</p>
-          <h3 class="mt-3 text-3xl font-black">VIP</h3>
-          <p class="mt-4 text-white/70">הטבה, מחיר, תור פנוי או מבצע.</p>
+        <div class="rounded-[46px] bg-slate-950 p-8 text-white">
+          <p class="text-sm font-black text-white/60">הטבת החודש</p>
+          <h3 class="mt-4 text-4xl font-black">VIP</h3>
+          <p class="mt-5 text-white/70">10% הנחה ללקוחות מועדון.</p>
         </div>
       </div>
       `
@@ -347,21 +361,31 @@ function heroLayout(index: number) {
 }
 
 /* =====================================================
-   GENERIC — 10 מבנים לכל סוג סקשן
+   GENERIC — 10 מבנים לכל סקשן
 ===================================================== */
 
 function genericLayout(kind: SectionKind, index: number) {
   const name = sectionName[kind];
 
   const layouts = [
-    sectionShell(kind, titleBlock(kind, "center")),
+    sectionShell(
+      kind,
+      sectionTitle(
+        kind,
+        `${name} לעסק שלך`,
+        "מידע מסודר וברור שמציג את הערך של העסק בצורה מקצועית."
+      )
+    ),
 
     sectionShell(
       kind,
       `
       <div class="grid items-center gap-12 lg:grid-cols-2">
-        <div>${titleBlock(kind, "right")}${actions()}</div>
-        ${imageCard(img.salon)}
+        <div>
+          ${sectionTitle(kind, `${name} עם תמונה`, "שילוב של טקסט ותמונה ליצירת אמון והבנה מהירה.")}
+          ${actions("לפרטים", "יצירת קשר")}
+        </div>
+        ${imageBlock(img.salon)}
       </div>
       `
     ),
@@ -370,8 +394,11 @@ function genericLayout(kind: SectionKind, index: number) {
       kind,
       `
       <div class="grid items-center gap-12 lg:grid-cols-2">
-        ${imageCard(img.beauty)}
-        <div>${titleBlock(kind, "right")}${actions()}</div>
+        ${imageBlock(img.beauty)}
+        <div>
+          ${sectionTitle(kind, `${name} במבנה הפוך`, "תמונה בצד אחד ותוכן בצד השני, מתאים להצגת אווירה או מוצר.")}
+          ${actions("המשך", "צור קשר")}
+        </div>
       </div>
       `
     ),
@@ -379,11 +406,11 @@ function genericLayout(kind: SectionKind, index: number) {
     sectionShell(
       kind,
       `
-      ${titleBlock(kind, "center")}
+      ${sectionTitle(kind, `${name} בכרטיסים`, "מבנה שמציג מידע קצר וברור בכמה כרטיסיות.")}
       <div class="mt-12 grid gap-6 md:grid-cols-3">
-        ${card(`${name} ראשון`, "תיאור קצר שאפשר לערוך.", "1")}
-        ${card(`${name} שני`, "תיאור קצר שאפשר לערוך.", "2")}
-        ${card(`${name} שלישי`, "תיאור קצר שאפשר לערוך.", "3")}
+        ${featureCard(`${name} ראשון`, "תיאור קצר ומקצועי שמציג יתרון או שירות.", "1")}
+        ${featureCard(`${name} שני`, "תיאור קצר ומקצועי שמציג יתרון או שירות.", "2")}
+        ${featureCard(`${name} שלישי`, "תיאור קצר ומקצועי שמציג יתרון או שירות.", "3")}
       </div>
       `
     ),
@@ -392,10 +419,12 @@ function genericLayout(kind: SectionKind, index: number) {
       kind,
       `
       <div class="grid items-center gap-8 lg:grid-cols-2">
-        <div>${titleBlock(kind, "right")}</div>
+        <div>
+          ${sectionTitle(kind, `${name} עם שתי תמונות`, "מבנה שמציג גם תוכן וגם גלריית תמונות קטנה.")}
+        </div>
         <div class="grid gap-5 md:grid-cols-2">
-          ${imageCard(img.beauty)}
-          ${imageCard(img.hair)}
+          ${imageBlock(img.beauty, "min-h-[320px]")}
+          ${imageBlock(img.hair, "min-h-[320px]")}
         </div>
       </div>
       `
@@ -405,11 +434,11 @@ function genericLayout(kind: SectionKind, index: number) {
       kind,
       img.salon,
       `
-      <div class="max-w-[760px]">
+      <div class="max-w-[780px]">
         <p class="mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-violet-700">${name}</p>
         <h2 class="text-6xl font-black leading-[1] tracking-[-0.05em] text-white">${name} עם תמונת רקע</h2>
-        <p class="mt-6 text-xl font-bold leading-10 text-white/80">אפשר להפוך כל תמונה לרקע הסקשן.</p>
-        ${actions()}
+        <p class="mt-6 text-xl font-bold leading-10 text-white/85">מבנה אווירה עם תמונה גדולה ברקע וטקסט ברור מעל.</p>
+        ${actions("לפרטים", "צור קשר")}
       </div>
       `
     ),
@@ -417,14 +446,14 @@ function genericLayout(kind: SectionKind, index: number) {
     sectionShell(
       kind,
       `
-      <div class="rounded-[48px] bg-slate-950 p-14 text-white shadow-[0_40px_140px_rgba(15,23,42,0.22)]">
+      <div class="rounded-[52px] bg-slate-950 p-14 text-white shadow-[0_44px_150px_rgba(15,23,42,0.24)]">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white">${name}</p>
-            <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em]">${name} כהה</h2>
-            <p class="mt-5 text-lg font-bold leading-9 text-white/70">מבנה כהה, יוקרתי ומודגש.</p>
+            <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em]">${name} בעיצוב כהה</h2>
+            <p class="mt-5 text-lg font-bold leading-9 text-white/70">מבנה יוקרתי ומודגש שמתאים להצגת מידע חשוב.</p>
           </div>
-          ${imageCard(img.clinic)}
+          ${imageBlock(img.clinic)}
         </div>
       </div>
       `
@@ -433,12 +462,12 @@ function genericLayout(kind: SectionKind, index: number) {
     sectionShell(
       kind,
       `
-      ${titleBlock(kind, "center")}
+      ${sectionTitle(kind, `${name} בקרוסלה`, "מבנה נגלל שמתאים לכרטיסים, מוצרים, ביקורות או תמונות.")}
       <div class="mt-12 flex gap-6 overflow-x-auto pb-5">
-        <div class="min-w-[340px]">${card(`${name} 1`, "כרטיס קרוסלה.", "✦")}</div>
-        <div class="min-w-[340px]">${card(`${name} 2`, "כרטיס קרוסלה.", "✦")}</div>
-        <div class="min-w-[340px]">${card(`${name} 3`, "כרטיס קרוסלה.", "✦")}</div>
-        <div class="min-w-[340px]">${card(`${name} 4`, "כרטיס קרוסלה.", "✦")}</div>
+        <div class="min-w-[340px]">${featureCard(`${name} 1`, "תיאור קצר.", "✦")}</div>
+        <div class="min-w-[340px]">${featureCard(`${name} 2`, "תיאור קצר.", "✦")}</div>
+        <div class="min-w-[340px]">${featureCard(`${name} 3`, "תיאור קצר.", "✦")}</div>
+        <div class="min-w-[340px]">${featureCard(`${name} 4`, "תיאור קצר.", "✦")}</div>
       </div>
       `
     ),
@@ -446,9 +475,9 @@ function genericLayout(kind: SectionKind, index: number) {
     sectionShell(
       kind,
       `
-      <div class="rounded-[48px] bg-gradient-to-br from-violet-50 to-white p-14 shadow-[0_28px_100px_rgba(15,23,42,0.08)]">
-        ${titleBlock(kind, "center")}
-        <div class="mt-10">${addImageDropBox()}</div>
+      <div class="rounded-[52px] bg-gradient-to-br from-violet-50 to-white p-14 shadow-[0_30px_110px_rgba(15,23,42,0.08)]">
+        ${sectionTitle(kind, `${name} עם אזור תמונה`, "מבנה עם מקום ברור להוספת תמונה חדשה.")}
+        <div class="mt-10">${addImageBox()}</div>
       </div>
       `
     ),
@@ -457,15 +486,15 @@ function genericLayout(kind: SectionKind, index: number) {
       kind,
       `
       <div class="grid gap-7 lg:grid-cols-2">
-        <div class="rounded-[40px] bg-white p-10 shadow-[0_28px_90px_rgba(15,23,42,0.09)]">
+        <div class="rounded-[44px] bg-white p-10 shadow-[0_30px_100px_rgba(15,23,42,0.09)]">
           <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">${name}</p>
-          <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em] text-slate-950">טור תוכן ראשי</h2>
-          <p class="mt-5 text-lg font-bold leading-9 text-slate-500">מבנה שני טורים עם תוכן וכרטיס צד.</p>
+          <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em] text-slate-950">תוכן מרכזי</h2>
+          <p class="mt-5 text-lg font-bold leading-9 text-slate-500">מבנה שני טורים שמאפשר להציג מידע מרכזי לצד כרטיס פעולה.</p>
         </div>
-        <div class="rounded-[40px] bg-slate-950 p-10 text-white">
-          <h3 class="text-3xl font-black">כרטיס צד</h3>
-          <p class="mt-4 text-white/70">אפשר לשים מחיר, שעות, קופון, טופס או CTA.</p>
-          ${actions()}
+        <div class="rounded-[44px] bg-slate-950 p-10 text-white">
+          <h3 class="text-3xl font-black">כרטיס פעולה</h3>
+          <p class="mt-4 text-white/70">כאן אפשר להציג מחיר, שעות, קופון, טופס או קריאה לפעולה.</p>
+          ${actions("פעולה", "פרטים")}
         </div>
       </div>
       `
@@ -476,17 +505,29 @@ function genericLayout(kind: SectionKind, index: number) {
 }
 
 /* =====================================================
-   STORE — 10 מבנים
+   STORE
 ===================================================== */
 
-function storeLayout(index: number) {
-  const base = genericLayout("store", index);
+function productCard(title: string, price: string, src: string) {
+  return `
+    <article class="rounded-[36px] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+      ${imageBlock(src, "min-h-[260px]")}
+      <h3 class="mt-6 text-2xl font-black text-slate-950">${title}</h3>
+      <p class="mt-2 text-sm font-bold leading-7 text-slate-500">תיאור קצר של המוצר, יתרון מרכזי ולמה כדאי לרכוש.</p>
+      <div class="mt-6 flex items-center justify-between gap-3">
+        <a class="rounded-2xl bg-violet-700 px-5 py-3 text-xs font-black text-white">הוספה לסל</a>
+        <span class="rounded-full bg-violet-50 px-4 py-2 text-sm font-black text-violet-700">${price}</span>
+      </div>
+    </article>
+  `;
+}
 
-  const layouts = [
+function storeLayout(index: number) {
+  const custom = [
     sectionShell(
       "store",
       `
-      ${titleBlock("store", "center")}
+      ${sectionTitle("store", "מוצרים לרכישה", "מוצרים נבחרים מהעסק, עם מחיר וכפתור רכישה.")}
       <div class="mt-12 grid gap-6 md:grid-cols-3" data-bizuply-block="products">
         ${productCard("מוצר ראשון", "₪129", img.product)}
         ${productCard("מוצר שני", "₪99", img.store)}
@@ -499,11 +540,11 @@ function storeLayout(index: number) {
       "store",
       `
       <div class="grid items-center gap-12 lg:grid-cols-2" data-bizuply-block="products">
-        ${imageCard(img.product)}
+        ${imageBlock(img.product)}
         <div>
           <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">מוצר מוביל</p>
-          <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em] text-slate-950">מוצר פרימיום</h2>
-          <p class="mt-5 text-lg font-bold leading-9 text-slate-500">מוצר אחד גדול עם מחיר וכפתור רכישה.</p>
+          <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em] text-slate-950">מוצר פרימיום לעסק</h2>
+          <p class="mt-5 text-lg font-bold leading-9 text-slate-500">הצגת מוצר אחד בצורה בולטת עם מחיר, תיאור וכפתור רכישה.</p>
           <div class="mt-8 flex items-center gap-4">
             <a class="rounded-2xl bg-violet-700 px-8 py-4 text-sm font-black text-white">הוספה לסל</a>
             <span class="rounded-full bg-violet-50 px-5 py-3 text-sm font-black text-violet-700">₪249</span>
@@ -514,43 +555,31 @@ function storeLayout(index: number) {
     ),
   ];
 
-  return layouts[index] || base;
-}
-
-function productCard(title: string, price: string, src: string) {
-  return `
-    <article class="rounded-[34px] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-      ${imageCard(src, "shadow-none")}
-      <h3 class="mt-6 text-2xl font-black text-slate-950">${title}</h3>
-      <p class="mt-2 text-sm font-bold leading-7 text-slate-500">תיאור קצר של המוצר.</p>
-      <div class="mt-6 flex items-center justify-between gap-3">
-        <a class="rounded-2xl bg-violet-700 px-5 py-3 text-xs font-black text-white">הוספה לסל</a>
-        <span class="rounded-full bg-violet-50 px-4 py-2 text-sm font-black text-violet-700">${price}</span>
-      </div>
-    </article>
-  `;
+  return custom[index] || genericLayout("store", index);
 }
 
 /* =====================================================
-   BOOKING — 10 מבנים
+   BOOKING
 ===================================================== */
 
-function bookingLayout(index: number) {
-  const base = genericLayout("booking", index);
+function bookingTimes() {
+  return ["09:00", "10:30", "12:00", "14:00", "16:30", "18:00"]
+    .map(
+      (time) =>
+        `<button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700 transition hover:bg-violet-700 hover:text-white">${time}</button>`
+    )
+    .join("");
+}
 
-  const layouts = [
+function bookingLayout(index: number) {
+  const custom = [
     sectionShell(
       "booking",
       `
-      ${titleBlock("booking", "center")}
+      ${sectionTitle("booking", "בחרו שעה פנויה", "הלקוחות יכולים לבחור שירות, תאריך ושעה פנויה ישירות מהאתר.")}
       <div class="mx-auto mt-12 max-w-[860px] rounded-[40px] bg-white p-8 shadow-[0_28px_100px_rgba(15,23,42,0.10)]" data-bizuply-block="booking">
         <div class="grid gap-4 sm:grid-cols-3">
-          ${["09:00", "10:30", "12:00", "14:00", "16:30", "18:00"]
-            .map(
-              (time) =>
-                `<button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700 hover:bg-violet-700 hover:text-white">${time}</button>`
-            )
-            .join("")}
+          ${bookingTimes()}
         </div>
       </div>
       `
@@ -559,21 +588,16 @@ function bookingLayout(index: number) {
     sectionShell(
       "booking",
       `
-      <div class="rounded-[48px] bg-slate-950 p-14 text-white" data-bizuply-block="booking">
+      <div class="rounded-[52px] bg-slate-950 p-14 text-white" data-bizuply-block="booking">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white">מחובר ליומן</p>
             <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em]">קובעים תור אונליין</h2>
-            <p class="mt-5 text-lg font-bold leading-9 text-white/70">בחירת שירות, תאריך ושעה פנויה.</p>
+            <p class="mt-5 text-lg font-bold leading-9 text-white/70">בחירת שירות, תאריך ושעה פנויה בצורה פשוטה ומהירה.</p>
           </div>
-          <div class="rounded-[34px] bg-white p-7">
+          <div class="rounded-[36px] bg-white p-7">
             <div class="grid gap-4 sm:grid-cols-2">
-              ${["09:00", "10:30", "12:00", "14:00", "16:30", "18:00"]
-                .map(
-                  (time) =>
-                    `<button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">${time}</button>`
-                )
-                .join("")}
+              ${bookingTimes()}
             </div>
           </div>
         </div>
@@ -582,7 +606,7 @@ function bookingLayout(index: number) {
     ),
   ];
 
-  return layouts[index] || base;
+  return custom[index] || genericLayout("booking", index);
 }
 
 /* =====================================================
@@ -741,16 +765,16 @@ export const sectionLayoutVariants: SectionLayoutVariant[] = kinds.flatMap(
         `${kind}-layout-${index + 1}`,
         kind,
         titles[kind][index],
-        `מבנה ${index + 1} מתוך 10 לסקשן ${sectionName[kind]} — כולל עריכת טקסט, תמונות, רקעים, צבעים ופינות.`,
+        `מבנה ${index + 1} מתוך 10 עבור ${sectionName[kind]}`,
         titles[kind][index],
-        index === 5
-          ? "רקע"
-          : index === 7
-            ? "קרוסלה"
-            : index === 8
-              ? "הוספת תמונה"
-              : index === 0
-                ? "מומלץ"
+        index === 0
+          ? "מומלץ"
+          : index === 5
+            ? "רקע"
+            : index === 7
+              ? "קרוסלה"
+              : index === 8
+                ? "תמונה"
                 : "מבנה",
         html
       );
