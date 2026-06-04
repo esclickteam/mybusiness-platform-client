@@ -8,6 +8,7 @@ export type DeviceMode = "Desktop" | "Tablet" | "Mobile";
 
 /* =====================================================
    MAIN STUDIO PANELS
+   null = no panel open. This is required for click-to-open/click-to-close sidebar.
 ===================================================== */
 
 export type StudioPanel =
@@ -25,6 +26,8 @@ export type StudioPanel =
   | "animations"
   | "seo"
   | "settings";
+
+export type ActiveStudioPanel = StudioPanel | null;
 
 /* =====================================================
    INSPECTOR
@@ -105,6 +108,33 @@ export type SectionTemplate = {
 };
 
 /* =====================================================
+   SECTION LAYOUT VARIANTS
+   Used by Grapes toolbar: "✨ מבנה"
+===================================================== */
+
+export type SectionKind =
+  | "hero"
+  | "about"
+  | "services"
+  | "gallery"
+  | "store"
+  | "booking"
+  | "reviews"
+  | "contact"
+  | "club"
+  | "basic";
+
+export type SectionLayoutVariant = {
+  id: string;
+  kind: SectionKind;
+  title: string;
+  description: string;
+  previewLabel: string;
+  badge: string;
+  html: string;
+};
+
+/* =====================================================
    PAGE TEMPLATES
 ===================================================== */
 
@@ -120,6 +150,20 @@ export type PageTemplate = {
 /* =====================================================
    THEME / BRAND DESIGN
 ===================================================== */
+
+export type FontOption =
+  | "Heebo"
+  | "Assistant"
+  | "Rubik"
+  | "Alef"
+  | "Varela Round"
+  | "Noto Sans Hebrew"
+  | "Poppins"
+  | "Inter"
+  | "DM Sans"
+  | "Playfair Display"
+  | "Lora"
+  | "Libre Baskerville";
 
 export type ThemePalette = {
   id: string;
@@ -138,20 +182,6 @@ export type ThemePalette = {
     body: FontOption;
   };
 };
-
-export type FontOption =
-  | "Heebo"
-  | "Assistant"
-  | "Rubik"
-  | "Alef"
-  | "Varela Round"
-  | "Noto Sans Hebrew"
-  | "Poppins"
-  | "Inter"
-  | "DM Sans"
-  | "Playfair Display"
-  | "Lora"
-  | "Libre Baskerville";
 
 /* =====================================================
    SMART BIZUPLY BLOCKS
@@ -224,10 +254,65 @@ export type SiteSavePayload = {
   brand?: SiteBrandSettings;
 };
 
+/* =====================================================
+   MAIN PAGE PROPS
+===================================================== */
+
 export type WebsiteStudioPageProps = {
   businessId?: string;
   initialSlug?: string;
   onSave?: (payload: SiteSavePayload) => Promise<void> | void;
+};
+
+/* =====================================================
+   COMPONENT PROPS
+   Keeping these optional lets the UI evolve without TS errors.
+===================================================== */
+
+export type StudioSidebarProps = {
+  activePanel: ActiveStudioPanel;
+  setActivePanel: (value: ActiveStudioPanel) => void;
+  onAddHtml: (html: string) => void;
+  onApplyTemplate: (template: PageTemplate) => void;
+  onApplyPalette: (palette: ThemePalette) => void;
+  onOpenMedia: () => void;
+};
+
+export type StudioTopbarProps = {
+  slug: string;
+  setSlug: (value: string) => void;
+  slugValid: boolean;
+  device: DeviceMode;
+  setDevice: (device: DeviceMode) => void;
+  ready: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
+  onPreview: () => void;
+  onMedia: () => void;
+  onReset: () => void;
+  onSaveDraft: () => void;
+  onPublish: () => void;
+};
+
+export type StudioCanvasProps = {
+  editorRefContainer: React.RefObject<HTMLDivElement | null>;
+  publicUrl: string;
+  layersRef?: React.RefObject<HTMLDivElement | null>;
+};
+
+export type StudioInspectorProps = {
+  activeTab: InspectorTab;
+  setActiveTab: (value: InspectorTab) => void;
+  stylesRef: React.RefObject<HTMLDivElement | null>;
+  traitsRef: React.RefObject<HTMLDivElement | null>;
+  onSetBackgroundImage: () => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
+  onBringForward: () => void;
+  onSendBackward: () => void;
+  onApplyStyle: (style: StylePatch) => void;
+  onSetAnimation: (animation: AnimationPresetValue | string) => void;
+  onClearAnimation: () => void;
 };
 
 /* =====================================================

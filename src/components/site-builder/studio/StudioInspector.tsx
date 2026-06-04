@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import type { InspectorTab, StylePatch } from "./types";
+import React, { useMemo, useState } from "react";
+import type { AnimationPresetValue, InspectorTab, StylePatch } from "./types";
 
 type Props = {
   activeTab: InspectorTab;
   setActiveTab: (tab: InspectorTab) => void;
-  stylesRef: React.RefObject<HTMLDivElement>;
-  traitsRef: React.RefObject<HTMLDivElement>;
+  stylesRef: React.RefObject<HTMLDivElement | null>;
+  traitsRef: React.RefObject<HTMLDivElement | null>;
   onSetBackgroundImage: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
   onBringForward: () => void;
   onSendBackward: () => void;
   onApplyStyle?: (style: StylePatch) => void;
-  onSetAnimation?: (animation: string) => void;
+  onSetAnimation?: (animation: AnimationPresetValue | string) => void;
   onClearAnimation?: () => void;
 };
 
 const colorPresets = [
-  "#8B5CF6",
+  "#7C3AED",
   "#EC4899",
   "#BE185D",
   "#F59E0B",
@@ -25,36 +25,51 @@ const colorPresets = [
   "#2563EB",
   "#111827",
   "#FFFFFF",
+  "#000000",
+  "#F8FAFC",
+  "#FEF3C7",
+  "#FCE7F3",
 ];
 
 const backgroundPresets = [
   { label: "לבן נקי", value: "#FFFFFF" },
+  { label: "רקע אתר", value: "var(--biz-bg)" },
+  { label: "צבע משני", value: "var(--biz-secondary)" },
   { label: "סגול רך", value: "#F5F3FF" },
   { label: "ורוד יוקרתי", value: "#FFF1F5" },
   { label: "שמנת", value: "#FFFBF6" },
   { label: "כהה", value: "#020617" },
   {
-    label: "גרדיאנט סגול",
-    value: "linear-gradient(135deg, #8B5CF6, #EC4899)",
+    label: "גרדיאנט מותג",
+    value:
+      "linear-gradient(135deg, var(--biz-primary), var(--biz-accent))",
   },
   {
     label: "גרדיאנט נקי",
-    value: "linear-gradient(135deg, #FFFFFF, #F5F3FF)",
+    value:
+      "linear-gradient(135deg, #FFFFFF, color-mix(in srgb, var(--biz-secondary) 65%, #FFFFFF))",
   },
   {
-    label: "גרדיאנט שמנת",
-    value: "linear-gradient(135deg, #FFFBF6, #F7E7D4)",
+    label: "גרדיאנט כהה",
+    value:
+      "linear-gradient(135deg, #020617, #111827, color-mix(in srgb, var(--biz-primary) 36%, #020617))",
   },
 ];
 
 const shadowPresets = [
   { label: "ללא", value: "none" },
   { label: "עדין", value: "0 18px 50px rgba(15,23,42,0.08)" },
+  { label: "מקצועי", value: "0 24px 80px rgba(15,23,42,0.10)" },
   { label: "יוקרתי", value: "0 34px 110px rgba(15,23,42,0.14)" },
-  { label: "זוהר", value: "0 30px 90px rgba(139,92,246,0.28)" },
+  { label: "עמוק", value: "0 44px 150px rgba(15,23,42,0.22)" },
+  { label: "זוהר מותג", value: "0 30px 90px color-mix(in srgb, var(--biz-primary) 28%, transparent)" },
 ];
 
-const animationPresets = [
+const animationPresets: {
+  label: string;
+  value: AnimationPresetValue;
+  description: string;
+}[] = [
   {
     label: "ללא תנועה",
     value: "",
@@ -103,6 +118,15 @@ const fontOptions = [
   "Inter",
   "DM Sans",
   "Playfair Display",
+  "Lora",
+  "Libre Baskerville",
+];
+
+const quickSizes = [
+  { label: "כותרת ענקית", style: { "font-size": "72px", "line-height": 0.95, "font-weight": 950 } },
+  { label: "כותרת סקשן", style: { "font-size": "48px", "line-height": 1.05, "font-weight": 950 } },
+  { label: "כותרת כרטיס", style: { "font-size": "24px", "line-height": 1.25, "font-weight": 900 } },
+  { label: "טקסט רגיל", style: { "font-size": "18px", "line-height": 1.75, "font-weight": 700 } },
 ];
 
 export default function StudioInspector({
@@ -121,7 +145,7 @@ export default function StudioInspector({
 }: Props) {
   const [textColor, setTextColor] = useState("#171321");
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
-  const [accentColor, setAccentColor] = useState("#8B5CF6");
+  const [accentColor, setAccentColor] = useState("#7C3AED");
   const [radius, setRadius] = useState(34);
   const [padding, setPadding] = useState(48);
   const [marginTop, setMarginTop] = useState(0);
@@ -129,6 +153,13 @@ export default function StudioInspector({
   const [fontWeight, setFontWeight] = useState(800);
   const [lineHeight, setLineHeight] = useState(1.7);
   const [opacity, setOpacity] = useState(100);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const currentTabTitle = useMemo(() => {
+    if (activeTab === "design") return "עיצוב אלמנט";
+    if (activeTab === "settings") return "הגדרות אלמנט";
+    return "אנימציות ותנועה";
+  }, [activeTab]);
 
   const applyStyle = (style: StylePatch) => {
     onApplyStyle?.(style);
@@ -196,56 +227,84 @@ export default function StudioInspector({
       "border-radius": "",
       padding: "",
       margin: "",
+      "margin-top": "",
       "box-shadow": "",
       border: "",
       transform: "",
       filter: "",
       opacity: 1,
+      "font-size": "",
+      "font-weight": "",
+      "line-height": "",
+      "letter-spacing": "",
+      "text-align": "",
     });
   };
 
   return (
     <aside className="flex min-h-0 flex-col border-r border-slate-200 bg-white">
-      <div className="flex h-14 shrink-0 border-b border-slate-200">
-        <Tab active={activeTab === "design"} onClick={() => setActiveTab("design")}>
-          עיצוב
-        </Tab>
+      <div className="shrink-0 border-b border-slate-200 bg-gradient-to-br from-white via-violet-50/60 to-fuchsia-50/50 p-4">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-violet-500">
+              Inspector
+            </p>
+            <h2 className="mt-1 text-xl font-black tracking-[-0.04em] text-slate-950">
+              {currentTabTitle}
+            </h2>
+          </div>
 
-        <Tab
-          active={activeTab === "settings"}
-          onClick={() => setActiveTab("settings")}
-        >
-          הגדרות
-        </Tab>
+          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-lg shadow-sm ring-1 ring-slate-200">
+            {activeTab === "design" ? "◐" : activeTab === "settings" ? "⚙" : "✺"}
+          </div>
+        </div>
 
-        <Tab
-          active={activeTab === "animations"}
-          onClick={() => setActiveTab("animations")}
-        >
-          תנועה
-        </Tab>
+        <div className="grid grid-cols-3 gap-2 rounded-2xl bg-white p-1 shadow-sm ring-1 ring-slate-200">
+          <Tab
+            active={activeTab === "design"}
+            onClick={() => setActiveTab("design")}
+          >
+            עיצוב
+          </Tab>
+
+          <Tab
+            active={activeTab === "settings"}
+            onClick={() => setActiveTab("settings")}
+          >
+            הגדרות
+          </Tab>
+
+          <Tab
+            active={activeTab === "animations"}
+            onClick={() => setActiveTab("animations")}
+          >
+            תנועה
+          </Tab>
+        </div>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto p-5">
         {activeTab === "design" && (
           <>
             <PanelTitle
-              title="עיצוב אלמנט"
-              subtitle="שינוי צבעים, רקעים, פונטים, פינות, צל, גודל וריווח לאלמנט הנבחר"
+              title="בחרי אלמנט באתר"
+              subtitle="לאחר בחירה אפשר לשנות צבע, רקע, פונט, ריווח, צל, גודל ומבנה. העיצוב חל רק על האלמנט הנבחר."
             />
 
-            <div className="mb-5 grid grid-cols-2 gap-2">
-              <ActionButton onClick={onSetBackgroundImage}>תמונת רקע</ActionButton>
-              <ActionButton onClick={onDuplicate}>שכפול</ActionButton>
-              <ActionButton onClick={onBringForward}>קדימה</ActionButton>
-              <ActionButton onClick={onSendBackward}>אחורה</ActionButton>
-              <ActionButton onClick={resetSelectedStyle}>איפוס עיצוב</ActionButton>
-              <ActionButton danger onClick={onDelete}>
-                מחיקה
-              </ActionButton>
-            </div>
+            <DesignSection title="פעולות מהירות" icon="⚡">
+              <div className="grid grid-cols-2 gap-2">
+                <ActionButton onClick={onSetBackgroundImage}>תמונת רקע</ActionButton>
+                <ActionButton onClick={onDuplicate}>שכפול</ActionButton>
+                <ActionButton onClick={onBringForward}>קדימה</ActionButton>
+                <ActionButton onClick={onSendBackward}>אחורה</ActionButton>
+                <ActionButton onClick={resetSelectedStyle}>איפוס עיצוב</ActionButton>
+                <ActionButton danger onClick={onDelete}>
+                  מחיקה
+                </ActionButton>
+              </div>
+            </DesignSection>
 
-            <DesignSection title="צבעים">
+            <DesignSection title="צבעים" icon="🎨">
               <ColorControl
                 label="צבע טקסט"
                 value={textColor}
@@ -264,42 +323,34 @@ export default function StudioInspector({
                 onChange={updateAccentColor}
               />
 
-              <p className="mb-2 mt-4 text-xs font-black text-slate-500">
-                צבעים מהירים לטקסט
-              </p>
+              <PresetLabel>צבעים מהירים לטקסט</PresetLabel>
 
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-6 gap-2">
                 {colorPresets.map((color) => (
-                  <button
+                  <ColorSwatch
                     key={`text-${color}`}
-                    type="button"
+                    color={color}
                     onClick={() => updateTextColor(color)}
-                    className="h-10 rounded-2xl border border-slate-200 shadow-sm transition hover:scale-105"
-                    style={{ backgroundColor: color }}
                     title={`טקסט ${color}`}
                   />
                 ))}
               </div>
 
-              <p className="mb-2 mt-4 text-xs font-black text-slate-500">
-                צבעים מהירים לרקע
-              </p>
+              <PresetLabel>צבעים מהירים לרקע</PresetLabel>
 
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-6 gap-2">
                 {colorPresets.map((color) => (
-                  <button
+                  <ColorSwatch
                     key={`background-${color}`}
-                    type="button"
+                    color={color}
                     onClick={() => updateBackgroundColor(color)}
-                    className="h-10 rounded-2xl border border-slate-200 shadow-sm transition hover:scale-105"
-                    style={{ backgroundColor: color }}
                     title={`רקע ${color}`}
                   />
                 ))}
               </div>
             </DesignSection>
 
-            <DesignSection title="רקע וסקשן">
+            <DesignSection title="רקע וסקשן" icon="▧">
               <div className="space-y-2">
                 {backgroundPresets.map((preset) => (
                   <button
@@ -326,13 +377,24 @@ export default function StudioInspector({
               <button
                 type="button"
                 onClick={onSetBackgroundImage}
-                className="mt-3 w-full rounded-2xl bg-slate-950 px-4 py-3 text-xs font-black text-white shadow-lg transition hover:-translate-y-0.5"
+                className="mt-3 w-full rounded-2xl bg-slate-950 px-4 py-3 text-xs font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-violet-700"
               >
-                העלאת / הדבקת תמונת רקע לבלוק
+                העלאת תמונת רקע לבלוק
               </button>
             </DesignSection>
 
-            <DesignSection title="טיפוגרפיה">
+            <DesignSection title="טיפוגרפיה" icon="T">
+              <div className="mb-4 grid grid-cols-2 gap-2">
+                {quickSizes.map((item) => (
+                  <ActionButton
+                    key={item.label}
+                    onClick={() => applyStyle(item.style)}
+                  >
+                    {item.label}
+                  </ActionButton>
+                ))}
+              </div>
+
               <RangeControl
                 label="גודל טקסט"
                 value={fontSize}
@@ -365,7 +427,11 @@ export default function StudioInspector({
                   <button
                     key={font}
                     type="button"
-                    onClick={() => applyStyle({ "font-family": font })}
+                    onClick={() =>
+                      applyStyle({
+                        "font-family": `"${font}", Arial, sans-serif`,
+                      })
+                    }
                     className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
                     style={{ fontFamily: font }}
                   >
@@ -375,7 +441,7 @@ export default function StudioInspector({
               </div>
             </DesignSection>
 
-            <DesignSection title="מבנה, פינות וריווח">
+            <DesignSection title="מבנה, פינות וריווח" icon="□">
               <RangeControl
                 label="עיגול פינות"
                 value={radius}
@@ -413,7 +479,7 @@ export default function StudioInspector({
               />
             </DesignSection>
 
-            <DesignSection title="צל וגבול">
+            <DesignSection title="צל וגבול" icon="◈">
               <div className="grid grid-cols-2 gap-2">
                 {shadowPresets.map((shadow) => (
                   <ActionButton
@@ -448,7 +514,7 @@ export default function StudioInspector({
               </div>
             </DesignSection>
 
-            <DesignSection title="יישור וגודל">
+            <DesignSection title="יישור וגודל" icon="↔">
               <div className="grid grid-cols-3 gap-2">
                 <ActionButton onClick={() => applyStyle({ "text-align": "right" })}>
                   ימין
@@ -477,6 +543,7 @@ export default function StudioInspector({
                       display: "flex",
                       "align-items": "center",
                       "justify-content": "center",
+                      gap: "16px",
                     })
                   }
                 >
@@ -485,12 +552,23 @@ export default function StudioInspector({
               </div>
             </DesignSection>
 
-            <DesignSection title="GrapesJS מתקדם">
-              <p className="mb-3 text-xs font-bold leading-5 text-slate-400">
-                הפאנל המקורי נשאר למקרים מתקדמים יותר.
-              </p>
-              <div ref={stylesRef} />
-            </DesignSection>
+            <button
+              type="button"
+              onClick={() => setShowAdvanced((value) => !value)}
+              className="mb-4 flex w-full items-center justify-between rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-black text-slate-700 transition hover:bg-violet-50 hover:text-violet-700"
+            >
+              <span>GrapesJS מתקדם</span>
+              <span>{showAdvanced ? "−" : "+"}</span>
+            </button>
+
+            {showAdvanced && (
+              <DesignSection title="פאנל מקורי מתקדם" icon="⚙">
+                <p className="mb-3 text-xs font-bold leading-5 text-slate-400">
+                  הפאנל המקורי נשאר למקרים מתקדמים יותר.
+                </p>
+                <div ref={stylesRef} />
+              </DesignSection>
+            )}
           </>
         )}
 
@@ -498,10 +576,10 @@ export default function StudioInspector({
           <>
             <PanelTitle
               title="הגדרות אלמנט"
-              subtitle="קישורים, פעולות, תמונות, שדות והגדרות מתקדמות"
+              subtitle="קישורים, פעולות, תמונות, שדות והגדרות מקוריות של GrapesJS."
             />
 
-            <DesignSection title="פעולות מהירות">
+            <DesignSection title="פעולות מהירות" icon="⚡">
               <div className="grid grid-cols-2 gap-2">
                 <ActionButton onClick={onDuplicate}>שכפול</ActionButton>
                 <ActionButton danger onClick={onDelete}>
@@ -512,7 +590,7 @@ export default function StudioInspector({
               </div>
             </DesignSection>
 
-            <DesignSection title="הגדרות מקוריות">
+            <DesignSection title="הגדרות מקוריות" icon="⚙">
               <div ref={traitsRef} />
             </DesignSection>
           </>
@@ -522,7 +600,7 @@ export default function StudioInspector({
           <>
             <PanelTitle
               title="אנימציות ותנועה"
-              subtitle="בחרי אנימציה לאלמנט / סקשן הנבחר"
+              subtitle="בחרי אנימציה לאלמנט / סקשן הנבחר. מתאים לכותרות, כרטיסים ותמונות."
             />
 
             <div className="space-y-3">
@@ -544,7 +622,7 @@ export default function StudioInspector({
               ))}
             </div>
 
-            <DesignSection title="אפקטים מהירים">
+            <DesignSection title="אפקטים מהירים" icon="✦">
               <div className="grid grid-cols-2 gap-2">
                 <ActionButton
                   onClick={() =>
@@ -612,9 +690,9 @@ function Tab({
       type="button"
       onClick={onClick}
       className={[
-        "flex-1 text-sm font-black transition",
+        "rounded-xl px-2 py-2.5 text-xs font-black transition",
         active
-          ? "border-b-2 border-violet-700 bg-violet-50 text-violet-700"
+          ? "bg-violet-700 text-white shadow-lg shadow-violet-100"
           : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
       ].join(" ")}
     >
@@ -625,7 +703,7 @@ function Tab({
 
 function PanelTitle({ title, subtitle }: { title: string; subtitle: string }) {
   return (
-    <div className="mb-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+    <div className="mb-4 rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
       <p className="text-sm font-black text-slate-950">{title}</p>
       <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
         {subtitle}
@@ -636,14 +714,21 @@ function PanelTitle({ title, subtitle }: { title: string; subtitle: string }) {
 
 function DesignSection({
   title,
+  icon,
   children,
 }: {
   title: string;
+  icon: string;
   children: React.ReactNode;
 }) {
   return (
     <section className="mb-4 rounded-[1.65rem] border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="mb-3 text-sm font-black text-slate-950">{title}</p>
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="text-sm font-black text-slate-950">{title}</p>
+        <span className="grid h-8 w-8 place-items-center rounded-xl bg-violet-50 text-xs font-black text-violet-700">
+          {icon}
+        </span>
+      </div>
       {children}
     </section>
   );
@@ -674,11 +759,39 @@ function ColorControl({
 
       <input
         type="color"
-        value={value.startsWith("#") ? value : "#8B5CF6"}
+        value={value.startsWith("#") ? value : "#7C3AED"}
         onChange={(event) => onChange(event.target.value)}
         className="h-[42px] w-full cursor-pointer rounded-2xl border border-slate-200 bg-white p-1"
       />
     </div>
+  );
+}
+
+function ColorSwatch({
+  color,
+  title,
+  onClick,
+}: {
+  color: string;
+  title: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="h-10 rounded-2xl border border-slate-200 shadow-sm transition hover:scale-105"
+      style={{ backgroundColor: color }}
+      title={title}
+    />
+  );
+}
+
+function PresetLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="mb-2 mt-4 text-xs font-black text-slate-500">
+      {children}
+    </p>
   );
 }
 

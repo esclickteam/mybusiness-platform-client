@@ -1,3 +1,9 @@
+/*
+  Bizuply Website Studio — Section Templates
+  Full professional section library.
+  Replace: studio/data/sectionTemplates.ts
+*/
+
 import type { SectionCategory, SectionTemplate } from "../types";
 
 export const sectionCategories: { key: SectionCategory; label: string }[] = [

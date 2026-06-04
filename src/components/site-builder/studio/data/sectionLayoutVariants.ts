@@ -1,24 +1,11 @@
-export type SectionKind =
-  | "hero"
-  | "about"
-  | "services"
-  | "gallery"
-  | "store"
-  | "booking"
-  | "reviews"
-  | "contact"
-  | "club"
-  | "basic";
+/*
+  Bizuply Website Studio — Section Layout Variants
+  Used by the inline toolbar command: ✨ מבנה
+  Replace: studio/data/sectionLayoutVariants.ts
+*/
 
-export type SectionLayoutVariant = {
-  id: string;
-  kind: SectionKind;
-  title: string;
-  description: string;
-  previewLabel: string;
-  badge: string;
-  html: string;
-};
+import type { SectionKind, SectionLayoutVariant } from "../types";
+export type { SectionKind, SectionLayoutVariant } from "../types";
 
 const img = {
   beauty:
@@ -91,11 +78,11 @@ function imageBlock(src: string, height = "min-h-[420px]") {
 function addImageBox() {
   return `
     <div
-      class="flex min-h-[320px] cursor-pointer items-center justify-center rounded-[38px] border-2 border-dashed border-violet-200 bg-violet-50/80 p-10 text-center transition hover:bg-violet-100"
+      class="flex min-h-[320px] cursor-pointer items-center justify-center rounded-[38px] border-2 border-dashed border-[color:var(--biz-secondary,#F3E8FF)] bg-[var(--biz-secondary,#F3E8FF)]/80 p-10 text-center transition hover:bg-[var(--biz-secondary,#F3E8FF)]"
       data-image-drop-zone="true"
     >
       <div>
-        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-3xl font-black text-violet-700 shadow-xl">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-3xl font-black text-[var(--biz-primary,#7C3AED)] shadow-xl">
           +
         </div>
         <p class="text-xl font-black text-slate-950">הוספת תמונה</p>
@@ -109,7 +96,7 @@ function addImageBox() {
 
 function primaryButton(text = "קביעת תור") {
   return `
-    <a class="inline-flex min-h-[58px] items-center justify-center rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-8 text-sm font-black text-white shadow-xl shadow-violet-200">
+    <a class="inline-flex min-h-[58px] items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl shadow-[color-mix(in_srgb,var(--biz-primary,#7C3AED)_25%,transparent)]">
       ${text}
     </a>
   `;
@@ -163,7 +150,7 @@ function sectionTitle(
 ) {
   return `
     <div class="mx-auto max-w-[840px] text-center">
-      <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">
+      <p class="mb-4 inline-flex rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">
         ${sectionName[kind]}
       </p>
       <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em] text-slate-950">
@@ -179,7 +166,7 @@ function sectionTitle(
 function featureCard(title: string, text: string, icon = "✦") {
   return `
     <article class="rounded-[34px] border border-slate-200 bg-white p-8 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-      <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 text-lg font-black text-white">
+      <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-white">
         ${icon}
       </div>
       <h3 class="text-2xl font-black text-slate-950">${title}</h3>
@@ -199,7 +186,7 @@ function heroLayout(index: number) {
       `
       <div class="grid items-center gap-14 lg:grid-cols-2">
         <div class="rounded-[46px] border border-white bg-white/95 p-14 shadow-[0_36px_120px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
-          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">עסק פרימיום</p>
+          <p class="mb-4 inline-flex rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">עסק פרימיום</p>
           <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">העסק שלך מוצג בצורה מקצועית ומרשימה</h1>
           <p class="mt-6 text-xl font-bold leading-10 text-slate-500">תוכן ברור, תמונות איכותיות וכפתורי פעולה שמובילים לפניות.</p>
           ${actions("קביעת תור", "שליחת הודעה")}
@@ -229,7 +216,7 @@ function heroLayout(index: number) {
       img.salon,
       `
       <div class="max-w-[850px]">
-        <p class="mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-violet-700">תמונת רקע מלאה</p>
+        <p class="mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">תמונת רקע מלאה</p>
         <h1 class="text-7xl font-black leading-[0.95] tracking-[-0.06em] text-white">העסק שלך מוצג כמו מותג פרימיום</h1>
         <p class="mt-6 text-xl font-bold leading-10 text-white/85">תצוגת פתיחה מרשימה עם תמונת אווירה, מסר ברור וכפתורי פעולה.</p>
         ${actions("קביעת תור", "צור קשר")}
@@ -241,7 +228,7 @@ function heroLayout(index: number) {
       "hero",
       `
       <div class="mx-auto max-w-[1020px] rounded-[52px] border border-slate-200 bg-white p-16 text-center shadow-[0_36px_120px_rgba(15,23,42,0.10)]">
-        <p class="mx-auto mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">עסק מקצועי</p>
+        <p class="mx-auto mb-4 inline-flex rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">עסק מקצועי</p>
         <h1 class="text-7xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">כותרת חזקה במרכז</h1>
         <p class="mx-auto mt-6 max-w-[720px] text-xl font-bold leading-10 text-slate-500">מבנה נקי בלי תמונה, מתאים למסר חד וברור.</p>
         <div class="flex justify-center">${actions("אני רוצה להתחיל", "מידע נוסף")}</div>
@@ -254,7 +241,7 @@ function heroLayout(index: number) {
       `
       <div class="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
-          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">גלריה בראש העמוד</p>
+          <p class="mb-4 inline-flex rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">גלריה בראש העמוד</p>
           <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">הצגה ויזואלית חזקה לעסק</h1>
           <p class="mt-6 text-xl font-bold leading-10 text-slate-500">שתי תמונות שמציגות אווירה, תהליך ותוצאה.</p>
           ${actions("קביעת תור", "צפייה בעבודות")}
@@ -290,7 +277,7 @@ function heroLayout(index: number) {
       `
       <div class="grid min-h-[520px] place-items-center text-center">
         <div>
-          <p class="mx-auto mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-violet-700">מדיה / וידאו</p>
+          <p class="mx-auto mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">מדיה / וידאו</p>
           <h1 class="text-7xl font-black leading-[0.95] tracking-[-0.06em] text-white">חוויה ויזואלית מלאה</h1>
           <p class="mx-auto mt-6 max-w-[740px] text-xl font-bold leading-10 text-white/85">מבנה שמתאים לוידאו, תמונת אווירה או סליידר.</p>
           <div class="flex justify-center">${actions("צפייה", "יצירת קשר")}</div>
@@ -308,7 +295,7 @@ function heroLayout(index: number) {
           ${addImageBox()}
         </div>
         <div>
-          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">תמונות נוספות</p>
+          <p class="mb-4 inline-flex rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">תמונות נוספות</p>
           <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">מבנה עם מקום להוספת תמונה</h1>
           <p class="mt-6 text-xl font-bold leading-10 text-slate-500">מתאים לעסק שרוצה להציג כמה תמונות כבר בחלק העליון.</p>
           ${actions("הזמנת שירות", "צור קשר")}
@@ -320,14 +307,14 @@ function heroLayout(index: number) {
     sectionShell(
       "hero",
       `
-      <div class="rounded-[52px] bg-gradient-to-l from-violet-700 to-fuchsia-600 p-16 text-white shadow-[0_44px_150px_rgba(139,92,246,0.28)]">
+      <div class="rounded-[52px] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] p-16 text-white shadow-[0_44px_150px_rgba(139,92,246,0.28)]">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white">שירות מוביל</p>
             <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em]">שירות מרכזי שמוביל לפנייה</h1>
             <p class="mt-6 text-xl font-bold leading-10 text-white/80">מתאים להצגת שירות אחד חזק עם מחיר וכפתור פעולה.</p>
             <div class="mt-9 flex flex-wrap items-center gap-4">
-              <a class="rounded-2xl bg-white px-8 py-4 text-sm font-black text-violet-700">קביעת תור</a>
+              <a class="rounded-2xl bg-white px-8 py-4 text-sm font-black text-[var(--biz-primary,#7C3AED)]">קביעת תור</a>
               <span class="rounded-full bg-white/20 px-5 py-3 text-sm font-black text-white">החל מ־₪350</span>
             </div>
           </div>
@@ -342,7 +329,7 @@ function heroLayout(index: number) {
       `
       <div class="grid items-stretch gap-8 lg:grid-cols-3">
         <div class="rounded-[46px] bg-white p-14 shadow-[0_32px_110px_rgba(15,23,42,0.10)] lg:col-span-2">
-          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">פרטים מהירים</p>
+          <p class="mb-4 inline-flex rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">פרטים מהירים</p>
           <h1 class="text-6xl font-black leading-[0.95] tracking-[-0.06em] text-slate-950">עמוד פתיחה עם כרטיס צד</h1>
           <p class="mt-6 text-xl font-bold leading-10 text-slate-500">מושלם להצגת תועלת מרכזית לצד מחיר, שעות או הטבה.</p>
           ${actions("קביעת תור", "הטבות")}
@@ -435,7 +422,7 @@ function genericLayout(kind: SectionKind, index: number) {
       img.salon,
       `
       <div class="max-w-[780px]">
-        <p class="mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-violet-700">${name}</p>
+        <p class="mb-4 inline-flex rounded-full bg-white/90 px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">${name}</p>
         <h2 class="text-6xl font-black leading-[1] tracking-[-0.05em] text-white">${name} עם תמונת רקע</h2>
         <p class="mt-6 text-xl font-bold leading-10 text-white/85">מבנה אווירה עם תמונה גדולה ברקע וטקסט ברור מעל.</p>
         ${actions("לפרטים", "צור קשר")}
@@ -487,7 +474,7 @@ function genericLayout(kind: SectionKind, index: number) {
       `
       <div class="grid gap-7 lg:grid-cols-2">
         <div class="rounded-[44px] bg-white p-10 shadow-[0_30px_100px_rgba(15,23,42,0.09)]">
-          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">${name}</p>
+          <p class="mb-4 inline-flex rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">${name}</p>
           <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em] text-slate-950">תוכן מרכזי</h2>
           <p class="mt-5 text-lg font-bold leading-9 text-slate-500">מבנה שני טורים שמאפשר להציג מידע מרכזי לצד כרטיס פעולה.</p>
         </div>
@@ -515,8 +502,8 @@ function productCard(title: string, price: string, src: string) {
       <h3 class="mt-6 text-2xl font-black text-slate-950">${title}</h3>
       <p class="mt-2 text-sm font-bold leading-7 text-slate-500">תיאור קצר של המוצר, יתרון מרכזי ולמה כדאי לרכוש.</p>
       <div class="mt-6 flex items-center justify-between gap-3">
-        <a class="rounded-2xl bg-violet-700 px-5 py-3 text-xs font-black text-white">הוספה לסל</a>
-        <span class="rounded-full bg-violet-50 px-4 py-2 text-sm font-black text-violet-700">${price}</span>
+        <a class="rounded-2xl bg-[var(--biz-primary,#7C3AED)] px-5 py-3 text-xs font-black text-white">הוספה לסל</a>
+        <span class="rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-4 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">${price}</span>
       </div>
     </article>
   `;
@@ -542,12 +529,12 @@ function storeLayout(index: number) {
       <div class="grid items-center gap-12 lg:grid-cols-2" data-bizuply-block="products">
         ${imageBlock(img.product)}
         <div>
-          <p class="mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-sm font-black text-violet-700">מוצר מוביל</p>
+          <p class="mb-4 inline-flex rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]">מוצר מוביל</p>
           <h2 class="text-5xl font-black leading-[1.05] tracking-[-0.04em] text-slate-950">מוצר פרימיום לעסק</h2>
           <p class="mt-5 text-lg font-bold leading-9 text-slate-500">הצגת מוצר אחד בצורה בולטת עם מחיר, תיאור וכפתור רכישה.</p>
           <div class="mt-8 flex items-center gap-4">
-            <a class="rounded-2xl bg-violet-700 px-8 py-4 text-sm font-black text-white">הוספה לסל</a>
-            <span class="rounded-full bg-violet-50 px-5 py-3 text-sm font-black text-violet-700">₪249</span>
+            <a class="rounded-2xl bg-[var(--biz-primary,#7C3AED)] px-8 py-4 text-sm font-black text-white">הוספה לסל</a>
+            <span class="rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-3 text-sm font-black text-[var(--biz-primary,#7C3AED)]">₪249</span>
           </div>
         </div>
       </div>
@@ -566,7 +553,7 @@ function bookingTimes() {
   return ["09:00", "10:30", "12:00", "14:00", "16:30", "18:00"]
     .map(
       (time) =>
-        `<button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700 transition hover:bg-violet-700 hover:text-white">${time}</button>`
+        `<button class="rounded-2xl bg-[var(--biz-secondary,#F3E8FF)] px-5 py-4 text-sm font-black text-[var(--biz-primary,#7C3AED)] transition hover:bg-[var(--biz-primary,#7C3AED)] hover:text-white">${time}</button>`
     )
     .join("");
 }

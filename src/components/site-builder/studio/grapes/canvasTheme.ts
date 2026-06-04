@@ -1,7 +1,7 @@
 import type { ThemePalette } from "../types";
 
 export function createCanvasCss(palette?: ThemePalette) {
-  const primary = palette?.colors.primary || "#8B5CF6";
+  const primary = palette?.colors.primary || "#7C3AED";
   const secondary = palette?.colors.secondary || "#F3E8FF";
   const accent = palette?.colors.accent || "#EC4899";
   const background = palette?.colors.background || "#FFF7FD";
@@ -13,7 +13,9 @@ export function createCanvasCss(palette?: ThemePalette) {
   return `
 @import url("https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800;900&family=Heebo:wght@300;400;600;700;800;900&family=Rubik:wght@400;600;700;800;900&family=Alef:wght@400;700&family=Varela+Round&family=Noto+Sans+Hebrew:wght@400;600;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800;900&family=DM+Sans:wght@400;600;700;800;900&family=Playfair+Display:wght@500;600;700;800&family=Lora:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap");
 
-:root {
+:root,
+[data-bizuply-page="true"],
+.biz-page {
   --biz-primary: ${primary};
   --biz-secondary: ${secondary};
   --biz-accent: ${accent};
@@ -21,8 +23,15 @@ export function createCanvasCss(palette?: ThemePalette) {
   --biz-text: ${text};
   --biz-muted: ${muted};
 
-  --biz-heading-font: "${headingFont}", Arial, sans-serif;
-  --biz-body-font: "${bodyFont}", Arial, sans-serif;
+  --biz-heading-font: "${headingFont}", "Heebo", Arial, sans-serif;
+  --biz-body-font: "${bodyFont}", "Assistant", Arial, sans-serif;
+
+  --biz-white: #ffffff;
+  --biz-black: #020617;
+  --biz-border: color-mix(in srgb, var(--biz-primary) 14%, #e2e8f0);
+  --biz-soft: color-mix(in srgb, var(--biz-secondary) 62%, #ffffff);
+  --biz-primary-soft: color-mix(in srgb, var(--biz-primary) 13%, #ffffff);
+  --biz-accent-soft: color-mix(in srgb, var(--biz-accent) 13%, #ffffff);
 
   --biz-radius-sm: 18px;
   --biz-radius-md: 28px;
@@ -32,7 +41,7 @@ export function createCanvasCss(palette?: ThemePalette) {
   --biz-shadow-soft: 0 24px 80px rgba(15,23,42,0.08);
   --biz-shadow-medium: 0 34px 105px rgba(15,23,42,0.13);
   --biz-shadow-strong: 0 44px 140px rgba(15,23,42,0.16);
-  --biz-shadow-color: 0 28px 90px ${primary}35;
+  --biz-shadow-color: 0 28px 90px color-mix(in srgb, var(--biz-primary) 28%, transparent);
 }
 
 * {
@@ -72,14 +81,58 @@ iframe {
   max-width: 100%;
 }
 
-.biz-page {
+.biz-page,
+[data-bizuply-page="true"] {
   min-height: 100vh;
   overflow: hidden;
   color: var(--biz-text);
+  font-family: var(--biz-body-font);
   background:
     radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--biz-primary) 16%, transparent), transparent 34%),
     radial-gradient(circle at 88% 20%, color-mix(in srgb, var(--biz-accent) 12%, transparent), transparent 32%),
     linear-gradient(135deg, var(--biz-bg) 0%, #ffffff 48%, color-mix(in srgb, var(--biz-secondary) 42%, #ffffff) 100%);
+}
+
+.biz-page *,
+[data-bizuply-page="true"] * {
+  font-family: inherit;
+}
+
+/* =====================================================
+   GLOBAL THEME OVERRIDES
+   These rules make palette + fonts affect old and new blocks
+===================================================== */
+
+.biz-page h1,
+.biz-page h2,
+.biz-page h3,
+.biz-page h4,
+.biz-page .biz-title,
+.biz-page .biz-section-title,
+.biz-page .biz-card-title,
+[data-bizuply-page="true"] h1,
+[data-bizuply-page="true"] h2,
+[data-bizuply-page="true"] h3,
+[data-bizuply-page="true"] h4 {
+  font-family: var(--biz-heading-font);
+  color: var(--biz-text);
+}
+
+.biz-page p,
+.biz-page span,
+.biz-page li,
+.biz-page input,
+.biz-page textarea,
+.biz-page button,
+.biz-page a,
+[data-bizuply-page="true"] p,
+[data-bizuply-page="true"] span,
+[data-bizuply-page="true"] li,
+[data-bizuply-page="true"] input,
+[data-bizuply-page="true"] textarea,
+[data-bizuply-page="true"] button,
+[data-bizuply-page="true"] a {
+  font-family: var(--biz-body-font);
 }
 
 /* =====================================================
@@ -87,18 +140,22 @@ iframe {
 ===================================================== */
 
 .biz-nav {
-  min-height: 92px;
-  padding: 0 78px;
+  width: min(1240px, calc(100% - 32px));
+  min-height: 82px;
+  margin: 16px auto 0;
+  padding: 14px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 28px;
   background: rgba(255,255,255,0.88);
   backdrop-filter: blur(26px);
-  border-bottom: 1px solid rgba(226,232,240,0.82);
+  border: 1px solid rgba(226,232,240,0.82);
+  border-radius: 28px;
   position: sticky;
-  top: 0;
+  top: 14px;
   z-index: 20;
+  box-shadow: 0 18px 70px rgba(15,23,42,0.08);
 }
 
 .biz-brand {
@@ -136,7 +193,7 @@ iframe {
 .biz-nav-links {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 8px;
   color: var(--biz-muted);
   font-size: 14px;
   font-weight: 850;
@@ -145,10 +202,13 @@ iframe {
 .biz-nav-links a {
   cursor: pointer;
   transition: 0.22s ease;
+  border-radius: 999px;
+  padding: 10px 14px;
 }
 
 .biz-nav-links a:hover {
   color: var(--biz-primary);
+  background: var(--biz-primary-soft);
   transform: translateY(-1px);
 }
 
@@ -157,19 +217,21 @@ iframe {
 ===================================================== */
 
 .biz-section {
-  max-width: 1180px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 96px 32px;
 }
 
 .biz-section-wide {
-  max-width: 1340px;
+  max-width: 1380px;
   margin: 0 auto;
   padding: 104px 40px;
 }
 
 .biz-section-full {
-  padding: 104px 78px;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 104px 40px;
 }
 
 .biz-split {
@@ -216,7 +278,7 @@ iframe {
   overflow: hidden;
   border-radius: var(--biz-radius-xl);
   padding: 74px;
-  background: rgba(255,255,255,0.82);
+  background: rgba(255,255,255,0.84);
   border: 1px solid rgba(255,255,255,0.96);
   box-shadow: var(--biz-shadow-strong);
   backdrop-filter: blur(30px);
@@ -276,7 +338,7 @@ iframe {
   width: fit-content;
   border-radius: 999px;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--biz-border);
   padding: 10px 18px;
   color: var(--biz-primary);
   font-size: 13px;
@@ -373,7 +435,7 @@ iframe {
 .biz-btn-secondary {
   background: #fff;
   color: var(--biz-text);
-  border-color: #e2e8f0;
+  border-color: var(--biz-border);
   box-shadow: 0 16px 40px rgba(15,23,42,0.08);
 }
 
@@ -487,6 +549,16 @@ iframe {
   border-radius: var(--biz-radius-xl);
   padding: 70px;
   box-shadow: 0 44px 150px rgba(2,6,23,0.36);
+}
+
+.biz-dark-section .biz-section-title,
+.biz-dark-section .biz-card-title {
+  color: #fff;
+}
+
+.biz-dark-section .biz-card-text,
+.biz-dark-section .biz-section-text {
+  color: rgba(255,255,255,0.72);
 }
 
 .biz-strip-soft {
@@ -808,7 +880,10 @@ iframe {
 
 @media (max-width: 900px) {
   .biz-nav {
-    padding: 0 22px;
+    width: calc(100% - 24px);
+    min-height: 74px;
+    padding: 12px 14px;
+    top: 10px;
   }
 
   .biz-nav-links {
@@ -872,13 +947,13 @@ iframe {
 export const defaultCanvasCss = createCanvasCss();
 
 export const defaultWebsiteHtml = `
-<div class="biz-page">
+<div class="biz-page" data-bizuply-page="true">
   <header class="biz-nav">
     <div class="biz-brand">
       <div class="biz-logo">B</div>
       <div>
-        <p class="biz-brand-title">הדר עשת ביוטי</p>
-        <p class="biz-brand-subtitle">איפור קבוע וטיפולי יופי</p>
+        <p class="biz-brand-title">שם העסק</p>
+        <p class="biz-brand-subtitle">תחום העסק</p>
       </div>
     </div>
 
@@ -893,18 +968,20 @@ export const defaultWebsiteHtml = `
   </header>
 
   <section class="biz-section-full biz-hero" data-animate="fade-up">
-    <div class="biz-hero-image-wrap">
-      <img class="biz-hero-image" src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1400&q=90" />
-    </div>
-
     <div class="biz-hero-card">
-      <div class="biz-pill">קריית אתא · איפור קבוע וטיפולי יופי</div>
-      <h1 class="biz-title">הדר עשת ביוטי</h1>
-      <p class="biz-subtitle">איפור קבוע וטיפולי יופי בהתאמה אישית, בגימור טבעי ומדויק.</p>
+      <div class="biz-pill">עסק מקצועי · אתר חכם</div>
+      <h1 class="biz-title">אתר עסקי שנראה כמו מותג פרימיום</h1>
+      <p class="biz-subtitle">
+        הציגו שירותים, תורים, מוצרים, לידים ותוכן שיווקי במקום אחד — עם עיצוב מקצועי שניתן לעריכה מלאה.
+      </p>
       <div class="biz-actions">
         <a class="biz-btn biz-btn-primary">קביעת תור</a>
-        <a class="biz-btn biz-btn-secondary">שליחת הודעה</a>
+        <a class="biz-btn biz-btn-secondary">צור קשר</a>
       </div>
+    </div>
+
+    <div class="biz-hero-image-wrap">
+      <img class="biz-hero-image" src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=90" />
     </div>
   </section>
 
@@ -912,29 +989,18 @@ export const defaultWebsiteHtml = `
     <p class="biz-section-kicker">אודות</p>
     <h2 class="biz-section-title">קצת על העסק</h2>
     <p class="biz-section-text">
-      סטודיו מקצועי לטיפולי יופי, איפור קבוע, גבות ושירותי אסתטיקה מתקדמים.
-      כל טיפול מותאם אישית למבנה הפנים, לסגנון ולמטרה של הלקוחה.
+      כאן אפשר לספר על העסק, הניסיון, השירותים והערך שהלקוחות מקבלים. כל טקסט, צבע, תמונה וכפתור ניתן לעריכה.
     </p>
   </section>
 
   <section class="biz-section" data-bizuply-block="services">
     <p class="biz-section-kicker">שירותים</p>
-    <h2 class="biz-section-title">השירותים שלי</h2>
+    <h2 class="biz-section-title">השירותים שלנו</h2>
     <div class="biz-grid-3">
       <article class="biz-card">
         <div class="biz-card-icon">✦</div>
-        <h3 class="biz-card-title">איפור קבוע לגבות</h3>
-        <p class="biz-card-text">עיצוב ומילוי גבות בשיטה מתקדמת.</p>
-        <div class="biz-price-row">
-          <span>90 דקות</span>
-          <span class="biz-price">₪850</span>
-        </div>
-      </article>
-
-      <article class="biz-card">
-        <div class="biz-card-icon">✦</div>
-        <h3 class="biz-card-title">טיפולי פנים</h3>
-        <p class="biz-card-text">טיפול פנים מקצועי לניקוי, הזנה וזוהר.</p>
+        <h3 class="biz-card-title">שירות ראשון</h3>
+        <p class="biz-card-text">תיאור קצר של השירות ומה הלקוח מקבל.</p>
         <div class="biz-price-row">
           <span>60 דקות</span>
           <span class="biz-price">₪350</span>
@@ -942,12 +1008,22 @@ export const defaultWebsiteHtml = `
       </article>
 
       <article class="biz-card">
-        <div class="biz-card-icon">✦</div>
-        <h3 class="biz-card-title">הדגשת שפתיים</h3>
-        <p class="biz-card-text">הדגשה עדינה וטבעית למראה אלגנטי.</p>
+        <div class="biz-card-icon">✓</div>
+        <h3 class="biz-card-title">שירות שני</h3>
+        <p class="biz-card-text">תיאור קצר של השירות ומה הלקוח מקבל.</p>
         <div class="biz-price-row">
           <span>90 דקות</span>
-          <span class="biz-price">₪900</span>
+          <span class="biz-price">₪550</span>
+        </div>
+      </article>
+
+      <article class="biz-card">
+        <div class="biz-card-icon">★</div>
+        <h3 class="biz-card-title">שירות שלישי</h3>
+        <p class="biz-card-text">תיאור קצר של השירות ומה הלקוח מקבל.</p>
+        <div class="biz-price-row">
+          <span>ייעוץ</span>
+          <span class="biz-price">₪150</span>
         </div>
       </article>
     </div>
@@ -960,7 +1036,7 @@ export const defaultWebsiteHtml = `
           <p class="biz-pill">מחובר ליומן</p>
           <h2 class="biz-section-title" style="color:#fff;text-align:right;">קובעים תור אונליין</h2>
           <p class="biz-card-text" style="color:rgba(255,255,255,0.72);font-size:18px;">
-            הלקוחה בוחרת שירות, תאריך ושעה פנויה — ישירות מהאתר.
+            הלקוח בוחר שירות, תאריך ושעה פנויה — ישירות מהאתר.
           </p>
         </div>
 

@@ -89,7 +89,7 @@ export function initBizuplyEditor({
       sectors: [
         {
           name: "צבעים ורקע",
-          open: true,
+          open: false,
           properties: [
             "color",
             "background-color",
@@ -103,7 +103,7 @@ export function initBizuplyEditor({
         },
         {
           name: "טיפוגרפיה",
-          open: true,
+          open: false,
           properties: [
             "font-family",
             "font-size",
@@ -116,7 +116,7 @@ export function initBizuplyEditor({
         },
         {
           name: "גודל ומיקום",
-          open: true,
+          open: false,
           properties: [
             "display",
             "position",
@@ -146,12 +146,12 @@ export function initBizuplyEditor({
         },
         {
           name: "מרווחים",
-          open: true,
+          open: false,
           properties: ["margin", "padding"],
         },
         {
           name: "פינות, גבול וצל",
-          open: true,
+          open: false,
           properties: [
             "border-radius",
             "border",
@@ -214,7 +214,8 @@ export function initBizuplyEditor({
     },
   });
 
-  registerCommands(editor);
+  setupDesignPanelVisibility(editor, stylesContainer);
+  registerCommands(editor, stylesContainer);
   registerKeyboardShortcuts(editor);
   registerCustomComponentTypes(editor);
 
@@ -254,23 +255,32 @@ export function initBizuplyEditor({
       }
 
       .gjs-toolbar {
-        border-radius: 999px !important;
-        overflow: hidden !important;
-        background: #0F172A !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        max-width: min(620px, calc(100vw - 360px)) !important;
+        border-radius: 18px !important;
+        overflow: visible !important;
+        background: rgba(15,23,42,.96) !important;
         box-shadow: 0 20px 70px rgba(15,23,42,.32) !important;
-        padding: 4px !important;
+        padding: 6px !important;
+        z-index: 9999 !important;
       }
 
       .gjs-toolbar-item {
         min-height: 34px !important;
-        padding: 0 12px !important;
+        max-height: 34px !important;
+        min-width: 34px !important;
+        padding: 0 10px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
+        white-space: nowrap !important;
         color: #fff !important;
         font-weight: 900 !important;
-        font-size: 12px !important;
-        border-radius: 999px !important;
+        font-size: 11px !important;
+        line-height: 1 !important;
+        border-radius: 12px !important;
         background: transparent !important;
       }
 
@@ -280,6 +290,11 @@ export function initBizuplyEditor({
 
       .gjs-toolbar-item:first-child {
         background: linear-gradient(135deg,#7C3AED,#EC4899) !important;
+      }
+
+      .gjs-toolbar-item svg,
+      .gjs-toolbar-item i {
+        pointer-events: none !important;
       }
 
       .gjs-resizer-h {
@@ -373,28 +388,35 @@ function ensureComponentEditable(component: any) {
     toolbar: isSection
       ? [
           {
-            label: "✨ החלף מבנה",
+            label: "✨ מבנה",
             attributes: {
               title: "בחירת מבנה מקצועי לסקשן",
             },
             command: "bizuply-change-layout",
           },
           {
-            label: "＋ תמונה מקובץ",
+            label: "🎨 עיצוב",
+            attributes: {
+              title: "פתיחת עיצוב, צבעים, גדלים וריווחים",
+            },
+            command: "bizuply-open-design-panel",
+          },
+          {
+            label: "＋ תמונה",
             attributes: {
               title: "הוספת תמונה מהמחשב לסקשן",
             },
             command: "bizuply-add-image-to-section",
           },
           {
-            label: "רקע מקובץ",
+            label: "רקע",
             attributes: {
               title: "הגדרת תמונה מהמחשב כרקע לסקשן",
             },
             command: "bizuply-set-section-bg-image",
           },
           {
-            label: "החלף תמונה",
+            label: "תמונה",
             attributes: {
               title: "החלפת תמונה מהמחשב",
             },
@@ -424,7 +446,14 @@ function ensureComponentEditable(component: any) {
         ]
       : [
           {
-            label: "החלף",
+            label: "🎨 עיצוב",
+            attributes: {
+              title: "פתיחת עיצוב לאלמנט הנבחר",
+            },
+            command: "bizuply-open-design-panel",
+          },
+          {
+            label: "תמונה",
             attributes: {
               title: "החלפת תמונה / עריכת מדיה",
             },
@@ -968,11 +997,71 @@ function appendImageToSection(editor: Editor, section: any, src: string) {
   }, 0);
 }
 
+
+function setupDesignPanelVisibility(
+  editor: Editor,
+  stylesContainer?: HTMLElement | null
+) {
+  if (!stylesContainer) return;
+
+  stylesContainer.dataset.bizuplyDesignPanel = "true";
+  stylesContainer.style.display = "none";
+
+  const hideDesignPanel = () => {
+    stylesContainer.style.display = "none";
+    stylesContainer.setAttribute("aria-hidden", "true");
+  };
+
+  const openDesignPanel = () => {
+    stylesContainer.style.display = "block";
+    stylesContainer.setAttribute("aria-hidden", "false");
+    stylesContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
+
+  (editor as any).__bizuplyOpenDesignPanel = openDesignPanel;
+  (editor as any).__bizuplyHideDesignPanel = hideDesignPanel;
+
+  window.addEventListener("bizuply:open-design-panel", openDesignPanel);
+  window.addEventListener("bizuply:close-design-panel", hideDesignPanel);
+
+  editor.on("destroy", () => {
+    window.removeEventListener("bizuply:open-design-panel", openDesignPanel);
+    window.removeEventListener("bizuply:close-design-panel", hideDesignPanel);
+  });
+}
+
+function openDesignPanel(editor: Editor, stylesContainer?: HTMLElement | null) {
+  const selected = editor.getSelected();
+
+  if (!selected) {
+    alert("בחרי אלמנט באתר ואז לחצי עיצוב");
+    return;
+  }
+
+  if (stylesContainer) {
+    stylesContainer.style.display = "block";
+    stylesContainer.setAttribute("aria-hidden", "false");
+    stylesContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  const externalOpen = (editor as any).__bizuplyOpenDesignPanel;
+  if (typeof externalOpen === "function") externalOpen();
+
+  editor.trigger("bizuply:design-panel:open", selected);
+  window.dispatchEvent(new CustomEvent("bizuply:design-panel:open"));
+}
+
 /* =====================================================
    COMMANDS
 ===================================================== */
 
-function registerCommands(editor: Editor) {
+function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) {
+  editor.Commands.add("bizuply-open-design-panel", {
+    run(currentEditor) {
+      openDesignPanel(currentEditor, stylesContainer);
+    },
+  });
+
   editor.Commands.add("bizuply-change-layout", {
     run(currentEditor) {
       const section = findSelectedSection(currentEditor);

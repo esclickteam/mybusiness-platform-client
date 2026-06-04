@@ -17,6 +17,32 @@ type Props = {
   onPublish: () => void;
 };
 
+const devices: {
+  value: DeviceMode;
+  label: string;
+  icon: string;
+  title: string;
+}[] = [
+  {
+    value: "Desktop",
+    label: "דסקטופ",
+    icon: "▭",
+    title: "תצוגת דסקטופ",
+  },
+  {
+    value: "Tablet",
+    label: "טאבלט",
+    icon: "▯",
+    title: "תצוגת טאבלט",
+  },
+  {
+    value: "Mobile",
+    label: "מובייל",
+    icon: "▮",
+    title: "תצוגת מובייל",
+  },
+];
+
 export default function StudioTopbar({
   slug,
   setSlug,
@@ -34,49 +60,56 @@ export default function StudioTopbar({
 }: Props) {
   const canSave = ready && slugValid;
 
+  const cleanSlug = (value: string) => {
+    return value
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
+
   return (
-    <header className="z-50 flex h-[76px] shrink-0 items-center justify-between gap-4 border-b border-slate-200/70 bg-white/95 px-5 shadow-[0_12px_45px_rgba(15,23,42,0.07)] backdrop-blur-2xl">
+    <header className="z-50 flex h-[78px] shrink-0 items-center justify-between gap-4 border-b border-slate-200/70 bg-white/90 px-4 shadow-[0_14px_55px_rgba(15,23,42,0.08)] backdrop-blur-2xl lg:px-5">
       {/* BRAND */}
-      <div className="flex min-w-[260px] items-center gap-3">
-        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-700 via-fuchsia-600 to-pink-500 text-base font-black text-white shadow-xl shadow-violet-200">
+      <div className="flex min-w-[210px] items-center gap-3 lg:min-w-[270px]">
+        <div className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[1.15rem] bg-gradient-to-br from-violet-700 via-fuchsia-600 to-pink-500 text-base font-black text-white shadow-xl shadow-violet-200">
           B
-          <span className="absolute -bottom-1 -left-1 h-4 w-4 rounded-full border-2 border-white bg-emerald-400" />
+          <span className="absolute -bottom-1 -left-1 h-4 w-4 rounded-full border-2 border-white bg-emerald-400 shadow-sm" />
         </div>
 
         <div className="min-w-0">
-          <p className="truncate text-base font-black leading-none text-slate-950">
-            Bizuply Website Studio
+          <p className="truncate text-base font-black leading-none tracking-[-0.03em] text-slate-950">
+            Bizuply Studio
           </p>
           <p className="mt-1 truncate text-xs font-bold leading-none text-slate-400">
-            עורך אתר מקצועי בלי קוד
+            בונה אתרים מקצועי לעסקים
           </p>
         </div>
       </div>
 
       {/* URL */}
-      <div className="hidden min-w-[360px] max-w-[520px] flex-1 items-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 xl:flex" dir="ltr">
-        <span className="shrink-0 px-3 text-xs font-black text-slate-400">
-          URL
+      <div
+        className={[
+          "hidden min-w-[340px] max-w-[560px] flex-1 items-center overflow-hidden rounded-2xl border bg-slate-50 shadow-inner xl:flex",
+          slugValid ? "border-slate-200" : "border-rose-200 bg-rose-50",
+        ].join(" ")}
+        dir="ltr"
+      >
+        <span className="shrink-0 border-r border-slate-200 bg-white px-3 py-3 text-xs font-black text-slate-400">
+          https://
         </span>
 
         <input
           value={slug}
-          onChange={(event) => {
-            const value = event.target.value
-              .toLowerCase()
-              .trim()
-              .replace(/\s+/g, "-")
-              .replace(/[^a-z0-9-]/g, "")
-              .replace(/-+/g, "-");
-
-            setSlug(value);
-          }}
+          onChange={(event) => setSlug(cleanSlug(event.target.value))}
           className={[
             "min-w-0 flex-1 bg-transparent px-3 py-3 text-sm font-black outline-none",
             slugValid ? "text-slate-800" : "text-rose-600",
           ].join(" ")}
           dir="ltr"
-          placeholder="hadar-beauty"
+          placeholder="your-business"
         />
 
         <span className="shrink-0 border-l border-slate-200 bg-white px-3 py-3 text-sm font-black text-slate-500">
@@ -86,60 +119,53 @@ export default function StudioTopbar({
 
       {/* ACTIONS */}
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2 overflow-x-auto">
-        <ToolbarButton title="ביטול פעולה אחרונה" onClick={onUndo}>
+        <IconButton title="ביטול פעולה אחרונה" onClick={onUndo} icon="↶">
           ביטול
-        </ToolbarButton>
+        </IconButton>
 
-        <ToolbarButton title="ביצוע מחדש" onClick={onRedo}>
-          בצע שוב
-        </ToolbarButton>
-
-        <Divider />
-
-        <DeviceButton
-          active={device === "Desktop"}
-          onClick={() => setDevice("Desktop")}
-          title="תצוגת דסקטופ"
-        >
-          דסקטופ
-        </DeviceButton>
-
-        <DeviceButton
-          active={device === "Tablet"}
-          onClick={() => setDevice("Tablet")}
-          title="תצוגת טאבלט"
-        >
-          טאבלט
-        </DeviceButton>
-
-        <DeviceButton
-          active={device === "Mobile"}
-          onClick={() => setDevice("Mobile")}
-          title="תצוגת מובייל"
-        >
-          מובייל
-        </DeviceButton>
+        <IconButton title="ביצוע מחדש" onClick={onRedo} icon="↷">
+          שוב
+        </IconButton>
 
         <Divider />
 
-        <ToolbarButton title="ניהול תמונות ומדיה" onClick={onMedia}>
+        <div className="flex shrink-0 items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1">
+          {devices.map((item) => (
+            <DeviceButton
+              key={item.value}
+              active={device === item.value}
+              onClick={() => setDevice(item.value)}
+              title={item.title}
+              icon={item.icon}
+            >
+              {item.label}
+            </DeviceButton>
+          ))}
+        </div>
+
+        <Divider />
+
+        <IconButton title="ניהול תמונות ומדיה" onClick={onMedia} icon="▧">
           מדיה
-        </ToolbarButton>
+        </IconButton>
 
-        <ToolbarButton title="תצוגה מקדימה" onClick={onPreview}>
+        <IconButton title="תצוגה מקדימה" onClick={onPreview} icon="👁">
           תצוגה
-        </ToolbarButton>
+        </IconButton>
 
-        <ToolbarButton title="איפוס האתר לברירת מחדל" onClick={onReset}>
+        <IconButton title="איפוס האתר לברירת מחדל" onClick={onReset} icon="↺">
           איפוס
-        </ToolbarButton>
+        </IconButton>
 
         <button
           type="button"
           title="בנייה חכמה עם AI"
-          className="shrink-0 rounded-2xl border border-violet-200 bg-violet-50 px-4 py-3 text-xs font-black text-violet-700 transition hover:-translate-y-0.5 hover:bg-violet-100 hover:shadow-lg hover:shadow-violet-100"
+          className="group shrink-0 rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-fuchsia-50 px-4 py-3 text-xs font-black text-violet-700 transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-100"
         >
-          AI ✨
+          <span className="ml-1 inline-block transition group-hover:rotate-12">
+            ✨
+          </span>
+          AI
         </button>
 
         <button
@@ -165,7 +191,7 @@ export default function StudioTopbar({
           className={[
             "shrink-0 rounded-2xl px-5 py-3 text-xs font-black text-white shadow-xl transition",
             canSave
-              ? "bg-gradient-to-l from-violet-700 via-fuchsia-600 to-pink-500 shadow-violet-200 hover:-translate-y-0.5"
+              ? "bg-gradient-to-l from-violet-700 via-fuchsia-600 to-pink-500 shadow-violet-200 hover:-translate-y-0.5 hover:shadow-violet-300"
               : "cursor-not-allowed bg-slate-300 shadow-none",
           ].join(" ")}
         >
@@ -176,22 +202,27 @@ export default function StudioTopbar({
   );
 }
 
-function ToolbarButton({
+function IconButton({
   children,
   onClick,
   title,
+  icon,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   title?: string;
+  icon: string;
 }) {
   return (
     <button
       type="button"
       title={title}
       onClick={onClick}
-      className="shrink-0 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black text-slate-600 transition hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 hover:shadow-lg hover:shadow-violet-100"
+      className="group shrink-0 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 text-xs font-black text-slate-600 transition hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 hover:shadow-lg hover:shadow-violet-100"
     >
+      <span className="ml-1 inline-block text-sm transition group-hover:scale-110">
+        {icon}
+      </span>
       {children}
     </button>
   );
@@ -202,11 +233,13 @@ function DeviceButton({
   active,
   onClick,
   title,
+  icon,
 }: {
   children: React.ReactNode;
   active: boolean;
   onClick: () => void;
   title?: string;
+  icon: string;
 }) {
   return (
     <button
@@ -214,12 +247,13 @@ function DeviceButton({
       title={title}
       onClick={onClick}
       className={[
-        "shrink-0 rounded-2xl px-4 py-3 text-xs font-black transition",
+        "shrink-0 rounded-xl px-3 py-2.5 text-xs font-black transition",
         active
           ? "bg-slate-950 text-white shadow-lg shadow-slate-200"
-          : "border border-slate-200 bg-white text-slate-600 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-lg hover:shadow-slate-100",
+          : "text-slate-500 hover:bg-white hover:text-slate-950 hover:shadow-sm",
       ].join(" ")}
     >
+      <span className="ml-1">{icon}</span>
       {children}
     </button>
   );

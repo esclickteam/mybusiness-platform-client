@@ -27,25 +27,25 @@ export const elementCategories: {
 
 const images = {
   beauty:
-    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1600&q=90",
   beautySoft:
-    "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1600&q=90",
   salon:
-    "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1600&q=90",
   clinic:
-    "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1600&q=90",
   store:
-    "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=90",
   product:
-    "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1600&q=90",
   office:
-    "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=90",
   people:
-    "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1600&q=90",
   food:
-    "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1600&q=90",
   fitness:
-    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=90",
+    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1600&q=90",
 };
 
 function element(
@@ -66,36 +66,65 @@ function element(
   };
 }
 
+const section =
+  "relative mx-auto w-full max-w-7xl px-6 py-20 sm:px-10 lg:px-12";
+const card =
+  "rounded-[2rem] border border-slate-200 bg-white p-7 shadow-[0_24px_80px_rgba(15,23,42,0.08)]";
+const title =
+  "text-4xl font-black leading-tight tracking-[-0.04em] text-slate-950 md:text-6xl";
+const h2 =
+  "text-3xl font-black leading-tight tracking-[-0.035em] text-slate-950 md:text-5xl";
+const text =
+  "mt-5 max-w-3xl text-base font-bold leading-8 text-slate-500 md:text-lg";
+const pill =
+  "mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-xs font-black text-violet-700";
+const primaryBtn =
+  "inline-flex min-h-12 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-7 text-sm font-black text-white shadow-xl shadow-violet-200 transition hover:-translate-y-0.5";
+const secondaryBtn =
+  "inline-flex min-h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-7 text-sm font-black text-slate-800 shadow-lg transition hover:-translate-y-0.5 hover:border-violet-200 hover:text-violet-700";
+const input =
+  "min-h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:border-violet-300 focus:bg-white";
+const textarea =
+  "min-h-32 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:border-violet-300 focus:bg-white";
+
+function img(src: string, extra = "h-[360px]") {
+  return `<div class="overflow-hidden rounded-[2rem] bg-white p-2 shadow-[0_24px_80px_rgba(15,23,42,0.10)]" data-editable-image-card="true"><img src="${src}" alt="" class="${extra} w-full rounded-[1.5rem] object-cover" data-editable-image="true" /></div>`;
+}
+
+function actionRow(primary = "קביעת תור", secondary = "יצירת קשר") {
+  return `<div class="mt-8 flex flex-wrap gap-3"><a class="${primaryBtn}">${primary}</a><a class="${secondaryBtn}">${secondary}</a></div>`;
+}
+
 export const studioElements: StudioElement[] = [
   /* =====================================================
-     TEXT
+     TEXT — professional editable text blocks
   ===================================================== */
 
   element(
     "text-h1",
-    "כותרת ענקית",
-    "כותרת ראשית גדולה לעמוד פתיחה",
+    "כותרת H1 ענקית",
+    "כותרת ראשית גדולה ומרשימה",
     "H1",
     "text",
-    `<h1 class="biz-title">כותרת ראשית מרשימה</h1>`
+    `<h1 class="${title}" data-editable-text="true">כותרת ראשית מרשימה</h1>`
   ),
 
   element(
     "text-h2",
-    "כותרת סקשן",
-    "כותרת גדולה לאזור באתר",
+    "כותרת H2",
+    "כותרת גדולה לסקשן",
     "H2",
     "text",
-    `<h2 class="biz-section-title">כותרת סקשן</h2>`
+    `<h2 class="${h2}" data-editable-text="true">כותרת סקשן מקצועית</h2>`
   ),
 
   element(
     "text-h3",
-    "כותרת קטנה",
-    "כותרת לכרטיס, שירות או מוצר",
+    "כותרת כרטיס",
+    "כותרת לשירות, מוצר או יתרון",
     "H3",
     "text",
-    `<h3 class="biz-card-title">כותרת קטנה</h3>`
+    `<h3 class="text-2xl font-black tracking-[-0.02em] text-slate-950" data-editable-text="true">כותרת כרטיס</h3>`
   ),
 
   element(
@@ -104,34 +133,34 @@ export const studioElements: StudioElement[] = [
     "טקסט הסבר מקצועי",
     "¶",
     "text",
-    `<p class="biz-section-text">הקלידי כאן טקסט מקצועי שמתאר את העסק, השירות או ההצעה שלך.</p>`
+    `<p class="${text}" data-editable-text="true">כאן כותבים טקסט מקצועי וברור שמסביר את הערך של העסק, השירות או ההצעה.</p>`
   ),
 
   element(
     "text-kicker",
-    "תגית קטנה",
-    "טקסט קטן מעל כותרת",
+    "כותרת קטנה",
+    "תגית מעל כותרת",
     "•",
     "text",
-    `<p class="biz-section-kicker">כותרת קטנה</p>`
+    `<p class="${pill}" data-editable-text="true">כותרת קטנה</p>`
   ),
 
   element(
     "text-pill",
     "תגית Pill",
-    "תגית מעוגלת מעל כותרת",
+    "תגית מעוגלת למבצע או סטטוס",
     "P",
     "text",
-    `<div class="biz-pill">עסק מקצועי · אתר חכם</div>`
+    `<div class="${pill}" data-editable-text="true">חדש · אתר מקצועי לעסק</div>`
   ),
 
   element(
     "text-highlight",
-    "טקסט מודגש",
-    "משפט גדול ומודגש",
+    "משפט מודגש",
+    "משפט גדול שמושך תשומת לב",
     "!",
     "text",
-    `<p style="font-size:28px;line-height:1.35;font-weight:950;color:var(--biz-text);">משפט מודגש שמושך תשומת לב ומעביר מסר חזק.</p>`
+    `<p class="max-w-4xl text-3xl font-black leading-snug tracking-[-0.03em] text-slate-950 md:text-5xl" data-editable-text="true">משפט מודגש שמוביל את הלקוח להבין למה לבחור דווקא בכם.</p>`
   ),
 
   element(
@@ -140,16 +169,25 @@ export const studioElements: StudioElement[] = [
     "ציטוט לקוח או משפט השראה",
     "”",
     "text",
-    `<blockquote class="biz-card" style="font-size:24px;line-height:1.65;font-weight:850;">“חוויה מקצועית, מדויקת ויוקרתית מהרגע הראשון.”</blockquote>`
+    `<blockquote class="${card} text-2xl font-black leading-10 text-slate-900" data-editable-text="true">“חוויה מקצועית, ברורה ויוקרתית מהרגע הראשון.”</blockquote>`
+  ),
+
+  element(
+    "text-stat-row",
+    "מספרי אמון",
+    "שלושה נתונים קצרים",
+    "123",
+    "text",
+    `<div class="grid gap-4 md:grid-cols-3"><div class="${card} text-center"><strong class="text-4xl font-black text-slate-950">500+</strong><p class="mt-2 text-sm font-bold text-slate-500">לקוחות</p></div><div class="${card} text-center"><strong class="text-4xl font-black text-slate-950">98%</strong><p class="mt-2 text-sm font-bold text-slate-500">שביעות רצון</p></div><div class="${card} text-center"><strong class="text-4xl font-black text-slate-950">7</strong><p class="mt-2 text-sm font-bold text-slate-500">שנות ניסיון</p></div></div>`
   ),
 
   element(
     "text-marquee",
-    "טקסט זז",
-    "שורת טקסט נעה לרוחב האתר",
+    "טקסט נע",
+    "שורת פרסום נעה",
     "↔",
     "text",
-    `<div class="biz-marquee"><span>מבצע מיוחד · קביעת תור אונליין · שירות מקצועי · חוויית לקוח פרימיום · </span></div>`
+    `<div class="overflow-hidden rounded-3xl bg-slate-950 py-4 text-white"><div class="whitespace-nowrap text-center text-sm font-black tracking-wide">מבצע מיוחד · קביעת תור אונליין · שירות מקצועי · חוויית לקוח פרימיום ·</div></div>`
   ),
 
   /* =====================================================
@@ -159,19 +197,19 @@ export const studioElements: StudioElement[] = [
   element(
     "image-basic",
     "תמונה",
-    "תמונה רגילה עם מסגרת פרימיום",
+    "תמונה עם מסגרת פרימיום",
     "▧",
     "image",
-    `<div class="biz-image-card"><img src="${images.beautySoft}" /></div>`
+    img(images.beautySoft)
   ),
 
   element(
     "image-rounded",
     "תמונה עגולה",
-    "תמונה עגולה לפרופיל / בעל עסק",
+    "תמונה לפרופיל / בעל עסק",
     "◯",
     "image",
-    `<img src="${images.salon}" style="width:260px;height:260px;object-fit:cover;border-radius:999px;box-shadow:0 28px 90px rgba(15,23,42,0.15);" />`
+    `<img src="${images.salon}" alt="" class="h-72 w-72 rounded-full object-cover shadow-[0_28px_90px_rgba(15,23,42,0.15)]" data-editable-image="true" />`
   ),
 
   element(
@@ -180,25 +218,34 @@ export const studioElements: StudioElement[] = [
     "תמונה רחבה לראש סקשן",
     "▭",
     "image",
-    `<div class="biz-image-card"><img style="height:360px;" src="${images.beauty}" /></div>`
+    img(images.beauty, "h-[440px]")
   ),
 
   element(
     "image-background-card",
-    "כרטיס תמונת רקע",
-    "בלוק עם תמונה כרקע וטקסט מעל",
+    "תמונת רקע",
+    "כרטיס עם תמונה כרקע וטקסט",
     "▧",
     "image",
-    `<div class="biz-bg-image" style="background-image:url('${images.beautySoft}');"><h2 class="biz-section-title" style="color:#fff;">תמונה כרקע</h2><p class="biz-section-text" style="color:rgba(255,255,255,0.84);">אפשר לשנות תמונה, צבע, overlay ופינות.</p></div>`
+    `<div class="relative min-h-[480px] overflow-hidden rounded-[2.5rem] bg-slate-950 p-10 shadow-[0_30px_110px_rgba(15,23,42,0.18)]" style="background-image:linear-gradient(135deg,rgba(2,6,23,.72),rgba(2,6,23,.25)),url('${images.beautySoft}');background-size:cover;background-position:center;" data-background-editable="true"><div class="max-w-xl"><p class="mb-4 inline-flex rounded-full bg-white/15 px-5 py-2 text-xs font-black text-white">תמונת רקע</p><h2 class="text-5xl font-black leading-tight tracking-[-0.04em] text-white">כותרת על תמונת רקע</h2><p class="mt-5 text-lg font-bold leading-8 text-white/75">אפשר להחליף תמונה, צבע, טקסט וכפתורים.</p>${actionRow("פעולה ראשית", "מידע נוסף")}</div></div>`
   ),
 
   element(
     "image-before-after",
     "לפני / אחרי",
-    "מבנה השוואה לפני ואחרי",
+    "השוואת שתי תמונות",
     "⇄",
     "image",
-    `<section class="biz-section"><h2 class="biz-section-title">לפני ואחרי</h2><div class="biz-grid-2"><div class="biz-image-card"><img src="${images.beautySoft}" /><p class="biz-card-text">לפני</p></div><div class="biz-image-card"><img src="${images.salon}" /><p class="biz-card-text">אחרי</p></div></div></section>`
+    `<section class="${section}"><h2 class="${h2} text-center">לפני ואחרי</h2><div class="mt-10 grid gap-6 md:grid-cols-2"><div>${img(images.beautySoft, "h-[380px]")}<p class="mt-4 text-center text-sm font-black text-slate-500">לפני</p></div><div>${img(images.salon, "h-[380px]")}<p class="mt-4 text-center text-sm font-black text-slate-500">אחרי</p></div></div></section>`
+  ),
+
+  element(
+    "image-stack",
+    "שתי תמונות מדורגות",
+    "תצוגת תמונות יוקרתית",
+    "▥",
+    "image",
+    `<div class="relative min-h-[520px]"><div class="absolute right-0 top-0 w-[72%]">${img(images.beautySoft, "h-[380px]")}</div><div class="absolute bottom-0 left-0 w-[58%]">${img(images.product, "h-[300px]")}</div></div>`
   ),
 
   /* =====================================================
@@ -211,16 +258,16 @@ export const studioElements: StudioElement[] = [
     "כפתור פעולה מרכזי",
     "●",
     "button",
-    `<a class="biz-btn biz-btn-primary">כפתור פעולה</a>`
+    `<a class="${primaryBtn}" data-editable-link="true">כפתור פעולה</a>`
   ),
 
   element(
     "button-secondary",
     "כפתור משני",
-    "כפתור פעולה רגוע יותר",
+    "כפתור רגוע יותר",
     "○",
     "button",
-    `<a class="biz-btn biz-btn-secondary">כפתור משני</a>`
+    `<a class="${secondaryBtn}" data-editable-link="true">כפתור משני</a>`
   ),
 
   element(
@@ -229,25 +276,25 @@ export const studioElements: StudioElement[] = [
     "שני כפתורי פעולה יחד",
     "◉",
     "button",
-    `<div class="biz-actions"><a class="biz-btn biz-btn-primary">קביעת תור</a><a class="biz-btn biz-btn-secondary">שליחת הודעה</a></div>`
+    actionRow()
   ),
 
   element(
     "button-whatsapp",
     "כפתור וואטסאפ",
-    "שליחת הודעה בוואטסאפ",
+    "קישור מהיר לוואטסאפ",
     "☎",
     "button",
-    `<a class="biz-btn biz-btn-primary" href="https://wa.me/972500000000">שליחה בוואטסאפ</a>`
+    `<a class="${primaryBtn}" href="https://wa.me/972500000000" data-editable-link="true">שליחה בוואטסאפ</a>`
   ),
 
   element(
     "button-phone",
     "כפתור שיחה",
-    "כפתור התקשרות מהירה",
+    "קישור להתקשרות",
     "☏",
     "button",
-    `<a class="biz-btn biz-btn-secondary" href="tel:0500000000">התקשרו עכשיו</a>`
+    `<a class="${secondaryBtn}" href="tel:0500000000" data-editable-link="true">התקשרו עכשיו</a>`
   ),
 
   element(
@@ -256,7 +303,7 @@ export const studioElements: StudioElement[] = [
     "כפתור צף בתחתית האתר",
     "↗",
     "button",
-    `<a class="biz-btn biz-btn-primary" style="position:fixed;left:28px;bottom:28px;z-index:999;border-radius:999px;">וואטסאפ</a>`
+    `<a class="${primaryBtn} fixed bottom-7 left-7 z-[999] rounded-full" href="https://wa.me/972500000000" data-editable-link="true">וואטסאפ</a>`
   ),
 
   /* =====================================================
@@ -266,10 +313,10 @@ export const studioElements: StudioElement[] = [
   element(
     "strip-light",
     "סקציה בהירה",
-    "סקציה בסיסית נקייה",
+    "סקציה נקייה",
     "▭",
     "strip",
-    `<section class="biz-section"><h2 class="biz-section-title">סקציה חדשה</h2><p class="biz-section-text">טקסט הסבר קצר.</p></section>`
+    `<section class="${section}" data-section-kind="basic"><div class="mx-auto max-w-3xl text-center"><p class="${pill}">סקציה חדשה</p><h2 class="${h2}">כותרת סקשן</h2><p class="${text} mx-auto">טקסט הסבר קצר וברור שמסביר את האזור באתר.</p></div></section>`
   ),
 
   element(
@@ -278,7 +325,7 @@ export const studioElements: StudioElement[] = [
     "סקציה עם רקע רך וצל",
     "▱",
     "strip",
-    `<section class="biz-section"><div class="biz-strip-soft"><h2 class="biz-section-title">סקציה רכה ומעוצבת</h2><p class="biz-section-text">אפשר לשנות צבעים, רקע, פינות, ריווח ותמונה.</p></div></section>`
+    `<section class="${section}" data-section-kind="basic"><div class="rounded-[3rem] bg-gradient-to-br from-violet-50 to-white p-12 shadow-[0_30px_110px_rgba(15,23,42,0.08)]"><p class="${pill}">אזור מעוצב</p><h2 class="${h2}">סקציה רכה ומעוצבת</h2><p class="${text}">אפשר לשנות צבעים, רקע, פינות, ריווח ותמונה.</p></div></section>`
   ),
 
   element(
@@ -287,16 +334,16 @@ export const studioElements: StudioElement[] = [
     "סקציה כהה יוקרתית",
     "◼",
     "strip",
-    `<section class="biz-section"><div class="biz-dark-section"><h2 class="biz-section-title" style="color:#fff;">סקציה כהה</h2><p class="biz-section-text" style="color:rgba(255,255,255,0.72);">טקסט על רקע כהה.</p></div></section>`
+    `<section class="${section}" data-section-kind="basic"><div class="rounded-[3rem] bg-slate-950 p-12 text-white shadow-[0_34px_120px_rgba(15,23,42,0.22)]"><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-white">Premium</p><h2 class="${h2} text-white">סקציה כהה ויוקרתית</h2><p class="${text} text-white/70">מתאים להצגת שירות יוקרתי, מבצע או מסר חשוב.</p></div></section>`
   ),
 
   element(
     "strip-background-image",
     "סקציה עם תמונת רקע",
-    "סקציה עם תמונת רקע ו־overlay",
+    "סקציה עם Overlay",
     "▧",
     "strip",
-    `<section class="biz-section"><div class="biz-bg-image" style="background-image:url('${images.beautySoft}');"><h2 class="biz-section-title" style="color:#fff;">סקציה עם תמונת רקע</h2><p class="biz-section-text" style="color:rgba(255,255,255,0.82);">אפשר לשנות תמונה, overlay, צבעים וריווחים.</p></div></section>`
+    `<section class="${section}" data-section-kind="basic"><div class="relative min-h-[560px] overflow-hidden rounded-[3rem] bg-slate-950 p-12" style="background-image:linear-gradient(135deg,rgba(2,6,23,.72),rgba(2,6,23,.24)),url('${images.beautySoft}');background-size:cover;background-position:center;" data-background-editable="true"><div class="max-w-2xl"><p class="mb-4 inline-flex rounded-full bg-white/15 px-5 py-2 text-xs font-black text-white">תמונת רקע</p><h2 class="${h2} text-white">סקציה עם תמונת רקע</h2><p class="${text} text-white/80">אפשר להחליף תמונה, צבעים, כפתורים וטקסטים.</p>${actionRow()}</div></div></section>`
   ),
 
   element(
@@ -305,7 +352,16 @@ export const studioElements: StudioElement[] = [
     "טקסט בצד ותמונה בצד",
     "▥",
     "strip",
-    `<section class="biz-section biz-split"><div><p class="biz-section-kicker" style="margin-right:0;">כותרת קטנה</p><h2 class="biz-section-title" style="text-align:right;">סקציה חצויה</h2><p class="biz-card-text" style="font-size:18px;">טקסט בצד אחד ותמונה בצד השני.</p></div><div class="biz-image-card"><img src="${images.salon}" /></div></section>`
+    `<section class="${section} grid items-center gap-12 lg:grid-cols-2" data-section-kind="basic"><div><p class="${pill}">כותרת קטנה</p><h2 class="${h2}">סקציה חצויה מקצועית</h2><p class="${text}">טקסט בצד אחד ותמונה בצד השני. מתאים לשירות, אודות או מוצר.</p>${actionRow()}</div>${img(images.salon)}</section>`
+  ),
+
+  element(
+    "strip-cta",
+    "CTA רחב",
+    "אזור הנעה לפעולה",
+    "↗",
+    "strip",
+    `<section class="${section}" data-section-kind="contact"><div class="rounded-[3rem] bg-gradient-to-l from-violet-700 to-fuchsia-600 p-12 text-center text-white shadow-[0_30px_110px_rgba(139,92,246,.28)]"><h2 class="${h2} text-white">מוכנים להתחיל?</h2><p class="mx-auto mt-5 max-w-2xl text-lg font-bold leading-8 text-white/80">משפט קצר שמוביל את הלקוח להשאיר פרטים או לקבוע תור.</p><div class="mt-8 flex justify-center"><a class="inline-flex min-h-12 items-center rounded-2xl bg-white px-8 text-sm font-black text-violet-700">יצירת קשר</a></div></div></section>`
   ),
 
   /* =====================================================
@@ -315,37 +371,46 @@ export const studioElements: StudioElement[] = [
   element(
     "decor-divider",
     "קו מפריד",
-    "קו מעבר עדין בין אזורים",
+    "קו מעבר עדין",
     "—",
     "decorative",
-    `<div style="height:1px;width:100%;background:linear-gradient(90deg,transparent,var(--biz-primary),transparent);margin:42px 0;"></div>`
+    `<div class="my-12 h-px w-full bg-gradient-to-l from-transparent via-violet-400 to-transparent"></div>`
   ),
 
   element(
     "decor-spacer",
     "רווח",
-    "רווח אנכי בין אלמנטים",
+    "רווח אנכי",
     "↕",
     "decorative",
-    `<div style="height:80px;"></div>`
+    `<div class="h-20"></div>`
   ),
 
   element(
     "decor-gradient-orb",
     "עיגול גרדיאנט",
-    "אלמנט דקורטיבי צבעוני",
+    "אלמנט דקורטיבי",
     "●",
     "decorative",
-    `<div style="width:180px;height:180px;border-radius:999px;background:linear-gradient(135deg,var(--biz-primary),var(--biz-accent));filter:blur(2px);opacity:.75;"></div>`
+    `<div class="h-48 w-48 rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-500 opacity-70 blur-sm"></div>`
   ),
 
   element(
     "decor-badge",
     "תגית צפה",
-    "תגית קטנה דקורטיבית",
+    "תגית מבצע",
     "✦",
     "decorative",
-    `<div class="biz-floating-badge">חדש · פרימיום</div>`
+    `<div class="inline-flex rounded-full bg-white px-5 py-3 text-xs font-black text-violet-700 shadow-[0_18px_55px_rgba(15,23,42,.12)]">חדש · פרימיום</div>`
+  ),
+
+  element(
+    "decor-wave",
+    "גל מעבר",
+    "מעבר דקורטיבי בין אזורים",
+    "≈",
+    "decorative",
+    `<div class="h-24 w-full rounded-[3rem] bg-gradient-to-l from-violet-50 via-white to-fuchsia-50"></div>`
   ),
 
   /* =====================================================
@@ -354,38 +419,56 @@ export const studioElements: StudioElement[] = [
 
   element(
     "box-card",
-    "כרטיס",
-    "כרטיס מידע בסיסי",
+    "כרטיס מידע",
+    "כרטיס בסיסי",
     "□",
     "box",
-    `<article class="biz-card"><div class="biz-card-icon">✦</div><h3 class="biz-card-title">כרטיס מידע</h3><p class="biz-card-text">טקסט קצר בתוך כרטיס מעוצב.</p></article>`
+    `<article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-50 text-lg font-black text-violet-700">✦</div><h3 class="text-2xl font-black text-slate-950">כרטיס מידע</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">טקסט קצר בתוך כרטיס מעוצב.</p></article>`
   ),
 
   element(
     "box-price",
     "כרטיס מחיר",
-    "כרטיס שירות עם מחיר",
+    "שירות עם מחיר",
     "₪",
     "box",
-    `<article class="biz-card"><h3 class="biz-card-title">חבילה מקצועית</h3><p class="biz-card-text">תיאור קצר של החבילה או השירות.</p><div class="biz-price-row"><span>החל מ־</span><span class="biz-price">₪350</span></div><a class="biz-btn biz-btn-primary" style="margin-top:22px;">בחירה</a></article>`
+    `<article class="${card}"><h3 class="text-2xl font-black text-slate-950">חבילה מקצועית</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">תיאור קצר של החבילה או השירות.</p><div class="mt-6 flex items-end justify-between gap-4"><span class="text-sm font-bold text-slate-400">החל מ־</span><strong class="text-4xl font-black text-violet-700">₪350</strong></div><a class="${primaryBtn} mt-6 w-full">בחירה</a></article>`
   ),
 
   element(
     "box-feature",
     "כרטיס יתרון",
-    "כרטיס יתרון לבניית אמון",
+    "יתרון לבניית אמון",
     "✓",
     "box",
-    `<article class="biz-card"><div class="biz-card-icon">✓</div><h3 class="biz-card-title">יתרון מרכזי</h3><p class="biz-card-text">משפט קצר שמסביר למה כדאי לבחור בעסק.</p></article>`
+    `<article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-emerald-50 text-lg font-black text-emerald-700">✓</div><h3 class="text-2xl font-black text-slate-950">יתרון מרכזי</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">משפט קצר שמסביר למה כדאי לבחור בעסק.</p></article>`
   ),
 
   element(
     "box-contact",
-    "כרטיס יצירת קשר",
+    "כרטיס קשר",
     "טלפון, וואטסאפ ופרטי קשר",
     "☎",
     "box",
-    `<article class="biz-card"><div class="biz-card-icon">☎</div><h3 class="biz-card-title">דברו איתנו</h3><p class="biz-card-text">050-0000000</p><a class="biz-btn biz-btn-primary" style="margin-top:20px;">שליחת הודעה</a></article>`
+    `<article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-50 text-lg font-black text-violet-700">☎</div><h3 class="text-2xl font-black text-slate-950">דברו איתנו</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">050-0000000</p><a class="${primaryBtn} mt-6">שליחת הודעה</a></article>`
+  ),
+
+  element(
+    "box-testimonial",
+    "כרטיס ביקורת",
+    "ביקורת לקוח",
+    "★",
+    "box",
+    `<article class="${card}"><div class="text-xl text-amber-400">★★★★★</div><p class="mt-4 text-base font-bold leading-8 text-slate-600">שירות מדהים, מקצועי ומדויק. ממליצה בחום.</p><div class="mt-6 flex items-center gap-3"><div class="h-11 w-11 rounded-full bg-violet-100"></div><div><p class="text-sm font-black text-slate-950">לקוחה מרוצה</p><p class="text-xs font-bold text-slate-400">ביקורת מאומתת</p></div></div></article>`
+  ),
+
+  element(
+    "box-team",
+    "כרטיס איש צוות",
+    "פרופיל איש צוות",
+    "👤",
+    "box",
+    `<article class="${card} text-center">${img(images.people, "h-64")}<h3 class="mt-6 text-2xl font-black text-slate-950">שם איש צוות</h3><p class="mt-2 text-sm font-bold text-violet-600">תפקיד בעסק</p><p class="mt-3 text-sm font-bold leading-7 text-slate-500">תיאור קצר על ניסיון, התמחות ויחס אישי.</p></article>`
   ),
 
   /* =====================================================
@@ -394,11 +477,11 @@ export const studioElements: StudioElement[] = [
 
   element(
     "gallery-grid",
-    "גלריה גריד",
-    "גלריית תמונות מסודרת",
+    "גלריית גריד",
+    "ארבע תמונות מסודרות",
     "▦",
     "gallery",
-    `<section class="biz-section"><h2 class="biz-section-title">גלריה</h2><div class="biz-grid-4"><img class="biz-gallery-img" src="${images.beautySoft}"/><img class="biz-gallery-img" src="${images.salon}"/><img class="biz-gallery-img" src="${images.beauty}"/><img class="biz-gallery-img" src="${images.product}"/></div></section>`
+    `<section class="${section}" data-section-kind="gallery"><h2 class="${h2} text-center">גלריה</h2><div class="mt-10 grid gap-5 md:grid-cols-4"><img class="h-64 w-full rounded-[1.5rem] object-cover shadow-lg" src="${images.beautySoft}" data-editable-image="true"/><img class="h-64 w-full rounded-[1.5rem] object-cover shadow-lg" src="${images.salon}" data-editable-image="true"/><img class="h-64 w-full rounded-[1.5rem] object-cover shadow-lg" src="${images.beauty}" data-editable-image="true"/><img class="h-64 w-full rounded-[1.5rem] object-cover shadow-lg" src="${images.product}" data-editable-image="true"/></div></section>`
   ),
 
   element(
@@ -407,16 +490,25 @@ export const studioElements: StudioElement[] = [
     "גלריה נגללת לרוחב",
     "↔",
     "gallery",
-    `<section class="biz-section"><h2 class="biz-section-title">קרוסלה</h2><div class="biz-carousel"><img class="biz-gallery-img" src="${images.beautySoft}"/><img class="biz-gallery-img" src="${images.salon}"/><img class="biz-gallery-img" src="${images.beauty}"/></div></section>`
+    `<section class="${section}" data-section-kind="gallery"><h2 class="${h2}">קרוסלה</h2><div class="mt-10 flex gap-5 overflow-x-auto pb-5"><img class="h-72 min-w-[320px] rounded-[1.5rem] object-cover shadow-lg" src="${images.beautySoft}" data-editable-image="true"/><img class="h-72 min-w-[320px] rounded-[1.5rem] object-cover shadow-lg" src="${images.salon}" data-editable-image="true"/><img class="h-72 min-w-[320px] rounded-[1.5rem] object-cover shadow-lg" src="${images.beauty}" data-editable-image="true"/><img class="h-72 min-w-[320px] rounded-[1.5rem] object-cover shadow-lg" src="${images.product}" data-editable-image="true"/></div></section>`
   ),
 
   element(
     "gallery-featured",
-    "גלריה תמונה גדולה",
-    "תמונה גדולה לצד תמונות קטנות",
+    "גלריה Featured",
+    "תמונה גדולה לצד קטנות",
     "▥",
     "gallery",
-    `<section class="biz-section"><h2 class="biz-section-title">תצוגת עבודות</h2><div class="biz-split" style="margin-top:44px;"><div class="biz-image-card"><img src="${images.beautySoft}" /></div><div class="biz-grid-2" style="margin-top:0;"><img class="biz-gallery-img" src="${images.salon}"/><img class="biz-gallery-img" src="${images.beauty}"/><img class="biz-gallery-img" src="${images.product}"/><img class="biz-gallery-img" src="${images.office}"/></div></div></section>`
+    `<section class="${section}" data-section-kind="gallery"><h2 class="${h2}">תצוגת עבודות</h2><div class="mt-10 grid gap-5 lg:grid-cols-[1.2fr_.8fr]">${img(images.beautySoft, "h-[560px]")}<div class="grid gap-5 md:grid-cols-2 lg:grid-cols-1"><img class="h-44 w-full rounded-[1.5rem] object-cover shadow-lg" src="${images.salon}" data-editable-image="true"/><img class="h-44 w-full rounded-[1.5rem] object-cover shadow-lg" src="${images.product}" data-editable-image="true"/><img class="h-44 w-full rounded-[1.5rem] object-cover shadow-lg" src="${images.office}" data-editable-image="true"/></div></div></section>`
+  ),
+
+  element(
+    "gallery-masonry",
+    "גלריית Masonry",
+    "גלריה גבוהה/נמוכה",
+    "▩",
+    "gallery",
+    `<section class="${section}" data-section-kind="gallery"><h2 class="${h2} text-center">גלריה מעוצבת</h2><div class="mt-10 grid gap-5 md:grid-cols-3"><img class="h-80 w-full rounded-[1.5rem] object-cover shadow-lg" src="${images.beauty}" data-editable-image="true"/><img class="h-56 w-full rounded-[1.5rem] object-cover shadow-lg md:mt-16" src="${images.salon}" data-editable-image="true"/><img class="h-96 w-full rounded-[1.5rem] object-cover shadow-lg" src="${images.product}" data-editable-image="true"/></div></section>`
   ),
 
   /* =====================================================
@@ -426,10 +518,10 @@ export const studioElements: StudioElement[] = [
   element(
     "menu-simple",
     "תפריט פשוט",
-    "קישורי ניווט בלבד",
+    "קישורי ניווט",
     "☰",
     "menu",
-    `<nav class="biz-nav-links"><a>דף הבית</a><a>אודות</a><a>שירותים</a><a>גלריה</a><a>צור קשר</a></nav>`
+    `<nav class="flex flex-wrap items-center justify-center gap-8 rounded-[2rem] border border-slate-200 bg-white px-8 py-5 text-sm font-black text-slate-600 shadow-lg"><a>דף הבית</a><a>אודות</a><a>שירותים</a><a>גלריה</a><a>צור קשר</a></nav>`
   ),
 
   element(
@@ -438,7 +530,16 @@ export const studioElements: StudioElement[] = [
     "לוגו, שם עסק ותפריט",
     "▤",
     "menu",
-    `<header class="biz-nav"><div class="biz-brand"><div class="biz-logo">B</div><div><p class="biz-brand-title">שם העסק</p><p class="biz-brand-subtitle">תחום העסק</p></div></div><nav class="biz-nav-links"><a>בית</a><a>אודות</a><a>שירותים</a><a>צור קשר</a></nav></header>`
+    `<header class="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 rounded-[2rem] border border-slate-200 bg-white px-6 py-5 shadow-lg"><div class="flex items-center gap-3"><div class="grid h-12 w-12 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-white">B</div><div><p class="text-base font-black text-slate-950">שם העסק</p><p class="text-xs font-bold text-slate-400">תחום העסק</p></div></div><nav class="hidden items-center gap-7 text-sm font-black text-slate-600 md:flex"><a>בית</a><a>אודות</a><a>שירותים</a><a>צור קשר</a></nav><a class="${primaryBtn}">קביעת תור</a></header>`
+  ),
+
+  element(
+    "menu-footer",
+    "Footer",
+    "פוטר מלא לאתר",
+    "▤",
+    "menu",
+    `<footer class="mx-auto w-full max-w-7xl rounded-[3rem] bg-slate-950 px-8 py-12 text-white"><div class="grid gap-10 md:grid-cols-3"><div><h3 class="text-2xl font-black">שם העסק</h3><p class="mt-3 text-sm font-bold leading-7 text-white/60">תיאור קצר על העסק והערך שלו.</p></div><div><p class="font-black">ניווט</p><div class="mt-4 grid gap-2 text-sm font-bold text-white/60"><a>בית</a><a>אודות</a><a>שירותים</a></div></div><div><p class="font-black">יצירת קשר</p><p class="mt-4 text-sm font-bold text-white/60">050-0000000</p></div></div></footer>`
   ),
 
   /* =====================================================
@@ -451,25 +552,25 @@ export const studioElements: StudioElement[] = [
     "טופס פנייה ל־CRM",
     "▤",
     "forms",
-    `<section class="biz-section"><h2 class="biz-section-title">השאירו פרטים</h2><p class="biz-section-text">נחזור אליכם בהקדם.</p><form class="biz-form"><input class="biz-input" placeholder="שם מלא"/><input class="biz-input" placeholder="טלפון"/><input class="biz-input" placeholder="אימייל"/><textarea class="biz-textarea" placeholder="במה אפשר לעזור?"></textarea><button class="biz-btn biz-btn-primary" type="button">שליחה</button></form></section>`
+    `<section class="${section}" data-section-kind="contact" data-bizuply-block="lead-form"><div class="mx-auto max-w-3xl rounded-[3rem] border border-slate-200 bg-white p-8 shadow-[0_30px_100px_rgba(15,23,42,.10)]"><h2 class="${h2}">השאירו פרטים</h2><p class="${text}">נחזור אליכם בהקדם.</p><form class="mt-8 grid gap-4"><input class="${input}" placeholder="שם מלא"/><input class="${input}" placeholder="טלפון"/><input class="${input}" placeholder="אימייל"/><textarea class="${textarea}" placeholder="במה אפשר לעזור?"></textarea><button class="${primaryBtn}" type="button">שליחה</button></form></div></section>`
   ),
 
   element(
     "form-newsletter",
     "ניוזלטר",
-    "טופס הרשמה לעדכונים",
+    "הרשמה לעדכונים",
     "✉",
     "forms",
-    `<section class="biz-section"><div class="biz-strip-soft" style="text-align:center;"><h2 class="biz-section-title">הצטרפות לעדכונים</h2><p class="biz-section-text">קבלו עדכונים, מבצעים והטבות.</p><form class="biz-form" style="max-width:620px;margin-left:auto;margin-right:auto;"><input class="biz-input" placeholder="אימייל"/><button class="biz-btn biz-btn-primary" type="button">הרשמה</button></form></div></section>`
+    `<section class="${section}"><div class="rounded-[3rem] bg-gradient-to-br from-violet-50 to-white p-12 text-center shadow-[0_25px_90px_rgba(15,23,42,.08)]"><h2 class="${h2}">הצטרפות לעדכונים</h2><p class="${text} mx-auto">קבלו עדכונים, מבצעים והטבות.</p><form class="mx-auto mt-8 flex max-w-2xl flex-col gap-3 sm:flex-row"><input class="${input}" placeholder="אימייל"/><button class="${primaryBtn}" type="button">הרשמה</button></form></div></section>`
   ),
 
   element(
     "form-booking-request",
     "בקשת תור",
-    "טופס בקשת תור ידני",
+    "טופס בקשת תור",
     "◷",
     "forms",
-    `<section class="biz-section"><h2 class="biz-section-title">בקשת תור</h2><form class="biz-form"><input class="biz-input" placeholder="שם מלא"/><input class="biz-input" placeholder="טלפון"/><input class="biz-input" placeholder="שירות רצוי"/><input class="biz-input" placeholder="תאריך מועדף"/><button class="biz-btn biz-btn-primary" type="button">שליחת בקשה</button></form></section>`
+    `<section class="${section}" data-section-kind="booking"><div class="grid gap-10 lg:grid-cols-2"><div><p class="${pill}">בקשת תור</p><h2 class="${h2}">השאירו פרטים לתיאום</h2><p class="${text}">הלקוח בוחר שירות ותאריך מועדף והבקשה נכנסת למערכת.</p></div><form class="${card} grid gap-4"><input class="${input}" placeholder="שם מלא"/><input class="${input}" placeholder="טלפון"/><input class="${input}" placeholder="שירות רצוי"/><input class="${input}" placeholder="תאריך מועדף"/><button class="${primaryBtn}" type="button">שליחת בקשה</button></form></div></section>`
   ),
 
   /* =====================================================
@@ -479,10 +580,10 @@ export const studioElements: StudioElement[] = [
   element(
     "video-youtube",
     "וידאו YouTube",
-    "הטמעת סרטון יוטיוב",
+    "הטמעת סרטון",
     "▶",
     "video",
-    `<section class="biz-section"><div class="biz-image-card"><iframe width="100%" height="460" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video" style="border:0;border-radius:28px;" allowfullscreen></iframe></div></section>`
+    `<section class="${section}"><div class="overflow-hidden rounded-[2.5rem] bg-white p-2 shadow-[0_30px_100px_rgba(15,23,42,.12)]"><iframe width="100%" height="520" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video" class="rounded-[2rem]" style="border:0;" allowfullscreen></iframe></div></section>`
   ),
 
   element(
@@ -491,7 +592,7 @@ export const studioElements: StudioElement[] = [
     "סקשן שנראה כמו וידאו רקע",
     "▶",
     "video",
-    `<section class="biz-section"><div class="biz-bg-image" style="background-image:url('${images.beautySoft}');"><h2 class="biz-section-title" style="color:#fff;">סקשן וידאו רקע</h2><p class="biz-section-text" style="color:rgba(255,255,255,0.84);">כאן אפשר להחליף לוידאו אמיתי בהמשך.</p></div></section>`
+    `<section class="${section}"><div class="relative grid min-h-[560px] place-items-center overflow-hidden rounded-[3rem] bg-slate-950 p-12 text-center" style="background-image:linear-gradient(135deg,rgba(2,6,23,.75),rgba(2,6,23,.25)),url('${images.beautySoft}');background-size:cover;background-position:center;"><button class="grid h-20 w-20 place-items-center rounded-full bg-white/90 text-2xl font-black text-violet-700 shadow-2xl">▶</button><h2 class="${h2} mt-8 text-white">וידאו תדמית לעסק</h2><p class="mt-4 max-w-2xl text-lg font-bold leading-8 text-white/75">כאן אפשר להציג וידאו או תמונת רקע מרשימה.</p></div></section>`
   ),
 
   /* =====================================================
@@ -501,10 +602,10 @@ export const studioElements: StudioElement[] = [
   element(
     "interactive-accordion",
     "שאלות נפתחות",
-    "FAQ עם פתיחה וסגירה",
+    "FAQ",
     "?",
     "interactive",
-    `<section class="biz-section"><h2 class="biz-section-title">שאלות נפוצות</h2><div class="biz-grid-2"><details class="biz-card" open><summary class="biz-card-title">איך קובעים תור?</summary><p class="biz-card-text">לוחצים על קביעת תור ובוחרים זמן פנוי.</p></details><details class="biz-card"><summary class="biz-card-title">האם אפשר לשלם באתר?</summary><p class="biz-card-text">כן, ניתן לחבר סליקה לעסק.</p></details></div></section>`
+    `<section class="${section}"><h2 class="${h2} text-center">שאלות נפוצות</h2><div class="mx-auto mt-10 grid max-w-4xl gap-4"><details class="${card}" open><summary class="cursor-pointer text-lg font-black text-slate-950">איך קובעים תור?</summary><p class="mt-3 text-sm font-bold leading-7 text-slate-500">לוחצים על קביעת תור ובוחרים זמן פנוי.</p></details><details class="${card}"><summary class="cursor-pointer text-lg font-black text-slate-950">האם אפשר לשלם באתר?</summary><p class="mt-3 text-sm font-bold leading-7 text-slate-500">כן, ניתן לחבר סליקה לעסק.</p></details></div></section>`
   ),
 
   element(
@@ -513,7 +614,7 @@ export const studioElements: StudioElement[] = [
     "טאבים להצגת תוכן",
     "▥",
     "interactive",
-    `<section class="biz-section"><div class="biz-strip-soft"><div class="biz-actions"><a class="biz-btn biz-btn-primary">טאב ראשון</a><a class="biz-btn biz-btn-secondary">טאב שני</a><a class="biz-btn biz-btn-secondary">טאב שלישי</a></div><h2 class="biz-section-title" style="margin-top:34px;">תוכן הטאב</h2><p class="biz-section-text">אפשר להשתמש בזה להצגת שירותים, תוכניות או שלבים.</p></div></section>`
+    `<section class="${section}"><div class="rounded-[3rem] bg-slate-50 p-8"><div class="flex flex-wrap gap-3"><a class="${primaryBtn}">טאב ראשון</a><a class="${secondaryBtn}">טאב שני</a><a class="${secondaryBtn}">טאב שלישי</a></div><h2 class="${h2} mt-10">תוכן הטאב</h2><p class="${text}">מתאים להצגת שירותים, תוכניות או שלבים.</p></div></section>`
   ),
 
   element(
@@ -522,16 +623,16 @@ export const studioElements: StudioElement[] = [
     "מספרים ליצירת אמון",
     "123",
     "interactive",
-    `<section class="biz-section"><div class="biz-grid-3"><div class="biz-counter"><strong>500+</strong><span>לקוחות מרוצים</span></div><div class="biz-counter"><strong>7</strong><span>שנות ניסיון</span></div><div class="biz-counter"><strong>98%</strong><span>שביעות רצון</span></div></div></section>`
+    `<section class="${section}"><div class="grid gap-5 md:grid-cols-3"><div class="${card} text-center"><strong class="text-5xl font-black text-violet-700">500+</strong><span class="mt-3 block text-sm font-bold text-slate-500">לקוחות מרוצים</span></div><div class="${card} text-center"><strong class="text-5xl font-black text-violet-700">7</strong><span class="mt-3 block text-sm font-bold text-slate-500">שנות ניסיון</span></div><div class="${card} text-center"><strong class="text-5xl font-black text-violet-700">98%</strong><span class="mt-3 block text-sm font-bold text-slate-500">שביעות רצון</span></div></div></section>`
   ),
 
   element(
     "interactive-popup-box",
-    "פופאפ בסיסי",
+    "פופאפ / קופון",
     "כרטיס הודעה או קופון",
     "□",
     "interactive",
-    `<div class="biz-card" style="max-width:460px;margin:auto;text-align:center;"><div class="biz-card-icon" style="margin-left:auto;margin-right:auto;">✦</div><h3 class="biz-card-title">פופאפ / הודעה</h3><p class="biz-card-text">אפשר להשתמש כקופון, הודעה או קריאה לפעולה.</p><a class="biz-btn biz-btn-primary" style="margin-top:20px;">הבנתי</a></div>`
+    `<div class="${card} mx-auto max-w-md text-center"><div class="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-violet-50 text-2xl font-black text-violet-700">✦</div><h3 class="text-2xl font-black text-slate-950">הטבה מיוחדת</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">אפשר להשתמש כקופון, הודעה או קריאה לפעולה.</p><a class="${primaryBtn} mt-6">מימוש הטבה</a></div>`
   ),
 
   /* =====================================================
@@ -544,16 +645,25 @@ export const studioElements: StudioElement[] = [
     "רשימה עם סימוני וי",
     "✓",
     "list",
-    `<ul class="biz-card" style="list-style:none;display:grid;gap:14px;"><li>✓ יתרון ראשון של העסק</li><li>✓ יתרון שני שמחזק אמון</li><li>✓ יתרון שלישי שמוביל לפעולה</li></ul>`
+    `<ul class="${card} grid gap-4 text-base font-bold text-slate-700" style="list-style:none;"><li>✓ יתרון ראשון של העסק</li><li>✓ יתרון שני שמחזק אמון</li><li>✓ יתרון שלישי שמוביל לפעולה</li></ul>`
   ),
 
   element(
     "list-steps",
     "שלבי תהליך",
-    "3 שלבים ברורים ללקוח",
+    "3 שלבים ברורים",
     "1",
     "list",
-    `<section class="biz-section"><h2 class="biz-section-title">איך זה עובד?</h2><div class="biz-grid-3"><article class="biz-card"><div class="biz-card-icon">1</div><h3 class="biz-card-title">שיחה</h3><p class="biz-card-text">מכירים את הצורך.</p></article><article class="biz-card"><div class="biz-card-icon">2</div><h3 class="biz-card-title">התאמה</h3><p class="biz-card-text">בונים פתרון מתאים.</p></article><article class="biz-card"><div class="biz-card-icon">3</div><h3 class="biz-card-title">ביצוע</h3><p class="biz-card-text">יוצאים לדרך.</p></article></div></section>`
+    `<section class="${section}"><h2 class="${h2} text-center">איך זה עובד?</h2><div class="mt-10 grid gap-5 md:grid-cols-3"><article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-white">1</div><h3 class="text-2xl font-black text-slate-950">שיחה</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">מכירים את הצורך.</p></article><article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-white">2</div><h3 class="text-2xl font-black text-slate-950">התאמה</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">בונים פתרון מתאים.</p></article><article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-white">3</div><h3 class="text-2xl font-black text-slate-950">ביצוע</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">יוצאים לדרך.</p></article></div></section>`
+  ),
+
+  element(
+    "list-pricing",
+    "מחירון",
+    "רשימת שירותים ומחירים",
+    "₪",
+    "list",
+    `<section class="${section}"><h2 class="${h2}">מחירון שירותים</h2><div class="mt-8 grid gap-3"><div class="${card} flex items-center justify-between"><span class="font-black text-slate-950">שירות ראשון</span><strong class="text-2xl font-black text-violet-700">₪250</strong></div><div class="${card} flex items-center justify-between"><span class="font-black text-slate-950">שירות שני</span><strong class="text-2xl font-black text-violet-700">₪350</strong></div><div class="${card} flex items-center justify-between"><span class="font-black text-slate-950">שירות שלישי</span><strong class="text-2xl font-black text-violet-700">₪450</strong></div></div></section>`
   ),
 
   /* =====================================================
@@ -563,10 +673,10 @@ export const studioElements: StudioElement[] = [
   element(
     "embed-map",
     "מפה",
-    "הטמעת Google Maps",
+    "Google Maps",
     "⌖",
     "embed",
-    `<section class="biz-section"><div class="biz-image-card"><iframe src="https://www.google.com/maps?q=Tel%20Aviv&output=embed" width="100%" height="420" style="border:0;border-radius:28px;" loading="lazy"></iframe></div></section>`
+    `<section class="${section}"><div class="overflow-hidden rounded-[2.5rem] bg-white p-2 shadow-[0_30px_100px_rgba(15,23,42,.12)]"><iframe src="https://www.google.com/maps?q=Tel%20Aviv&output=embed" width="100%" height="460" class="rounded-[2rem]" style="border:0;" loading="lazy"></iframe></div></section>`
   ),
 
   element(
@@ -575,7 +685,7 @@ export const studioElements: StudioElement[] = [
     "מקום לקוד חיצוני",
     "</>",
     "embed",
-    `<div class="biz-card"><h3 class="biz-card-title">Embed</h3><p class="biz-card-text">כאן אפשר לשים קוד חיצוני בהמשך.</p></div>`
+    `<div class="${card}"><h3 class="text-2xl font-black text-slate-950">Embed</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">כאן אפשר לשים קוד חיצוני בהמשך.</p></div>`
   ),
 
   /* =====================================================
@@ -588,16 +698,25 @@ export const studioElements: StudioElement[] = [
     "אינסטגרם, פייסבוק וטיקטוק",
     "↗",
     "social",
-    `<div class="biz-actions"><a class="biz-btn biz-btn-secondary">Instagram</a><a class="biz-btn biz-btn-secondary">Facebook</a><a class="biz-btn biz-btn-secondary">TikTok</a></div>`
+    `<div class="flex flex-wrap gap-3"><a class="${secondaryBtn}">Instagram</a><a class="${secondaryBtn}">Facebook</a><a class="${secondaryBtn}">TikTok</a></div>`
   ),
 
   element(
     "social-card",
     "כרטיס סושיאל",
-    "כרטיס מעקב ברשתות",
+    "מעקב ברשתות",
     "#",
     "social",
-    `<article class="biz-card"><h3 class="biz-card-title">עקבו אחרינו</h3><p class="biz-card-text">הישארו מעודכנים ברשתות החברתיות.</p><div class="biz-actions"><a class="biz-btn biz-btn-secondary">Instagram</a><a class="biz-btn biz-btn-secondary">Facebook</a></div></article>`
+    `<article class="${card}"><h3 class="text-2xl font-black text-slate-950">עקבו אחרינו</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">הישארו מעודכנים ברשתות החברתיות.</p><div class="mt-6 flex flex-wrap gap-3"><a class="${secondaryBtn}">Instagram</a><a class="${secondaryBtn}">Facebook</a></div></article>`
+  ),
+
+  element(
+    "social-icons",
+    "אייקוני סושיאל",
+    "שורת אייקונים עגולים",
+    "◎",
+    "social",
+    `<div class="flex flex-wrap gap-3"><a class="grid h-12 w-12 place-items-center rounded-full bg-slate-950 text-sm font-black text-white">IG</a><a class="grid h-12 w-12 place-items-center rounded-full bg-slate-950 text-sm font-black text-white">FB</a><a class="grid h-12 w-12 place-items-center rounded-full bg-slate-950 text-sm font-black text-white">TT</a><a class="grid h-12 w-12 place-items-center rounded-full bg-slate-950 text-sm font-black text-white">WA</a></div>`
   ),
 
   /* =====================================================
@@ -610,7 +729,7 @@ export const studioElements: StudioElement[] = [
     "בלוק תשלום מאובטח",
     "₪",
     "payments",
-    `<article class="biz-card"><h3 class="biz-card-title">תשלום מאובטח</h3><p class="biz-card-text">חיבור לסליקה של העסק.</p><a class="biz-btn biz-btn-primary">לתשלום</a></article>`
+    `<article class="${card}"><h3 class="text-2xl font-black text-slate-950">תשלום מאובטח</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">חיבור לסליקה של העסק.</p><a class="${primaryBtn} mt-6">לתשלום</a></article>`
   ),
 
   element(
@@ -619,7 +738,16 @@ export const studioElements: StudioElement[] = [
     "גביית מקדמה לפני תור",
     "₪",
     "payments",
-    `<article class="biz-card"><h3 class="biz-card-title">תשלום מקדמה</h3><p class="biz-card-text">אפשר לחבר גביית מקדמה לפני קביעת תור.</p><div class="biz-price-row"><span>מקדמה</span><span class="biz-price">₪100</span></div><a class="biz-btn biz-btn-primary" style="margin-top:20px;">תשלום מקדמה</a></article>`
+    `<article class="${card}"><h3 class="text-2xl font-black text-slate-950">תשלום מקדמה</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">אפשר לחבר גביית מקדמה לפני קביעת תור.</p><div class="mt-6 flex items-end justify-between gap-4"><span class="text-sm font-bold text-slate-400">מקדמה</span><strong class="text-4xl font-black text-violet-700">₪100</strong></div><a class="${primaryBtn} mt-6 w-full">תשלום מקדמה</a></article>`
+  ),
+
+  element(
+    "payments-pricing-table",
+    "טבלת חבילות",
+    "3 חבילות תשלום",
+    "₪",
+    "payments",
+    `<section class="${section}"><h2 class="${h2} text-center">בחרו חבילה</h2><div class="mt-10 grid gap-5 md:grid-cols-3"><article class="${card}"><h3 class="text-2xl font-black text-slate-950">Basic</h3><strong class="mt-5 block text-4xl font-black text-violet-700">₪99</strong><a class="${secondaryBtn} mt-6 w-full">בחירה</a></article><article class="${card} ring-2 ring-violet-500"><h3 class="text-2xl font-black text-slate-950">Pro</h3><strong class="mt-5 block text-4xl font-black text-violet-700">₪199</strong><a class="${primaryBtn} mt-6 w-full">בחירה</a></article><article class="${card}"><h3 class="text-2xl font-black text-slate-950">VIP</h3><strong class="mt-5 block text-4xl font-black text-violet-700">₪399</strong><a class="${secondaryBtn} mt-6 w-full">בחירה</a></article></div></section>`
   ),
 
   /* =====================================================
@@ -632,7 +760,7 @@ export const studioElements: StudioElement[] = [
     "כרטיס מוצר בודד",
     "◈",
     "store",
-    `<article class="biz-card"><div class="biz-image-card" style="padding:8px;margin-bottom:20px;"><img style="height:220px;" src="${images.product}" /></div><h3 class="biz-card-title">שם מוצר</h3><p class="biz-card-text">תיאור קצר של המוצר.</p><div class="biz-price-row"><a class="biz-btn biz-btn-primary">הוספה לסל</a><span class="biz-price">₪129</span></div></article>`
+    `<article class="${card}">${img(images.product, "h-64")}<h3 class="mt-6 text-2xl font-black text-slate-950">שם מוצר</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">תיאור קצר של המוצר.</p><div class="mt-6 flex items-center justify-between gap-3"><a class="${primaryBtn}">הוספה לסל</a><span class="text-2xl font-black text-violet-700">₪129</span></div></article>`
   ),
 
   element(
@@ -641,7 +769,16 @@ export const studioElements: StudioElement[] = [
     "3 מוצרים לרכישה",
     "▦",
     "store",
-    `<section class="biz-section" data-bizuply-block="products"><h2 class="biz-section-title">מוצרים לרכישה</h2><div class="biz-grid-3"><article class="biz-card"><h3 class="biz-card-title">מוצר ראשון</h3><p class="biz-card-text">תיאור מוצר.</p><span class="biz-price">₪129</span></article><article class="biz-card"><h3 class="biz-card-title">מוצר שני</h3><p class="biz-card-text">תיאור מוצר.</p><span class="biz-price">₪99</span></article><article class="biz-card"><h3 class="biz-card-title">מוצר שלישי</h3><p class="biz-card-text">תיאור מוצר.</p><span class="biz-price">₪249</span></article></div></section>`
+    `<section class="${section}" data-section-kind="store" data-bizuply-block="products"><h2 class="${h2} text-center">מוצרים לרכישה</h2><div class="mt-10 grid gap-5 md:grid-cols-3"><article class="${card}">${img(images.product, "h-56")}<h3 class="mt-5 text-xl font-black text-slate-950">מוצר ראשון</h3><span class="mt-3 block text-2xl font-black text-violet-700">₪129</span></article><article class="${card}">${img(images.store, "h-56")}<h3 class="mt-5 text-xl font-black text-slate-950">מוצר שני</h3><span class="mt-3 block text-2xl font-black text-violet-700">₪99</span></article><article class="${card}">${img(images.beauty, "h-56")}<h3 class="mt-5 text-xl font-black text-slate-950">מוצר שלישי</h3><span class="mt-3 block text-2xl font-black text-violet-700">₪249</span></article></div></section>`
+  ),
+
+  element(
+    "store-featured-product",
+    "מוצר מוביל",
+    "מוצר אחד גדול",
+    "◈",
+    "store",
+    `<section class="${section}" data-section-kind="store"><div class="grid items-center gap-12 lg:grid-cols-2">${img(images.product, "h-[520px]")}<div><p class="${pill}">מוצר מוביל</p><h2 class="${h2}">מוצר פרימיום לעסק</h2><p class="${text}">הצגת מוצר אחד בצורה חזקה עם מחיר, תיאור וכפתור רכישה.</p><div class="mt-8 flex items-center gap-4"><a class="${primaryBtn}">הוספה לסל</a><strong class="text-3xl font-black text-violet-700">₪249</strong></div></div></div></section>`
   ),
 
   /* =====================================================
@@ -654,7 +791,7 @@ export const studioElements: StudioElement[] = [
     "בחירת שעה פנויה",
     "◷",
     "bookings",
-    `<section class="biz-section" data-bizuply-block="booking"><h2 class="biz-section-title">בחרו שעה פנויה</h2><div class="biz-booking-box" style="margin-top:44px;"><div class="biz-time-grid"><div class="biz-time">09:00</div><div class="biz-time">10:30</div><div class="biz-time">12:00</div><div class="biz-time">14:00</div><div class="biz-time">16:30</div><div class="biz-time">18:00</div></div></div></section>`
+    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><h2 class="${h2} text-center">בחרו שעה פנויה</h2><div class="mx-auto mt-10 max-w-3xl rounded-[2.5rem] bg-white p-8 shadow-[0_28px_100px_rgba(15,23,42,.10)]"><div class="grid gap-4 sm:grid-cols-3"><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">09:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">10:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">12:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">14:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">16:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">18:00</button></div></div></section>`
   ),
 
   element(
@@ -663,7 +800,16 @@ export const studioElements: StudioElement[] = [
     "תיאום תורים בעיצוב כהה",
     "◷",
     "bookings",
-    `<section class="biz-section" data-bizuply-block="booking"><div class="biz-dark-section"><div class="biz-split"><div><p class="biz-pill">מחובר ליומן</p><h2 class="biz-section-title" style="color:#fff;text-align:right;">קובעים תור ישירות מהאתר</h2><p class="biz-card-text" style="color:rgba(255,255,255,0.7);">בחירת שירות, תאריך ושעה פנויה.</p></div><div class="biz-booking-box"><div class="biz-time-grid"><div class="biz-time">09:00</div><div class="biz-time">10:30</div><div class="biz-time">12:00</div><div class="biz-time">14:00</div><div class="biz-time">16:30</div><div class="biz-time">18:00</div></div></div></div></div></section>`
+    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="rounded-[3rem] bg-slate-950 p-10 text-white shadow-[0_34px_120px_rgba(15,23,42,.22)]"><div class="grid items-center gap-10 lg:grid-cols-2"><div><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-white">מחובר ליומן</p><h2 class="${h2} text-white">קובעים תור ישירות מהאתר</h2><p class="${text} text-white/70">בחירת שירות, תאריך ושעה פנויה.</p></div><div class="rounded-[2rem] bg-white p-6"><div class="grid gap-3 sm:grid-cols-2"><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">09:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">10:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">12:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">14:00</button></div></div></div></div></section>`
+  ),
+
+  element(
+    "booking-calendar-card",
+    "כרטיס יומן",
+    "תצוגת יומן מקצועית",
+    "◷",
+    "bookings",
+    `<section class="${section}" data-section-kind="booking"><div class="grid gap-8 lg:grid-cols-[.9fr_1.1fr]"><div><p class="${pill}">תיאום תורים</p><h2 class="${h2}">בחירת תאריך ושעה</h2><p class="${text}">בלוק תצוגה ליומן שמתחבר בהמשך לזמינות העסק.</p></div><div class="${card}"><div class="grid grid-cols-7 gap-2 text-center text-xs font-black text-slate-400"><span>א</span><span>ב</span><span>ג</span><span>ד</span><span>ה</span><span>ו</span><span>ש</span></div><div class="mt-4 grid grid-cols-7 gap-2">${Array.from({ length: 35 }, (_, i) => `<button class="aspect-square rounded-2xl bg-slate-50 text-sm font-black text-slate-600">${i + 1}</button>`).join("")}</div></div></div></section>`
   ),
 
   /* =====================================================
@@ -676,7 +822,7 @@ export const studioElements: StudioElement[] = [
     "יוחלף בהמשך בשירותי העסק",
     "B",
     "bizuply",
-    `<section class="biz-section" data-bizuply-block="services"><h2 class="biz-section-title">השירותים שלי</h2><div class="biz-grid-3"><article class="biz-card"><div class="biz-card-icon">✦</div><h3 class="biz-card-title">שירות מהמערכת</h3><p class="biz-card-text">יוחלף אוטומטית בשירותי העסק.</p><div class="biz-price-row"><span>60 דקות</span><span class="biz-price">₪350</span></div></article></div></section>`
+    `<section class="${section}" data-section-kind="services" data-bizuply-block="services"><h2 class="${h2} text-center">השירותים שלי</h2><div class="mt-10 grid gap-5 md:grid-cols-3"><article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-50 text-violet-700">✦</div><h3 class="text-2xl font-black text-slate-950">שירות מהמערכת</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">יוחלף אוטומטית בשירותי העסק.</p><div class="mt-6 flex justify-between"><span class="text-sm font-bold text-slate-400">60 דקות</span><span class="text-2xl font-black text-violet-700">₪350</span></div></article></div></section>`
   ),
 
   element(
@@ -685,16 +831,16 @@ export const studioElements: StudioElement[] = [
     "בלוק תורים חכם",
     "◷",
     "bizuply",
-    `<section class="biz-section" data-bizuply-block="booking"><div class="biz-dark-section"><div class="biz-split"><div><p class="biz-pill">מחובר ליומן</p><h2 class="biz-section-title" style="color:#fff;text-align:right;">קובעים תור ישירות מהאתר</h2><p class="biz-card-text" style="color:rgba(255,255,255,0.7);">בחירת שירות, תאריך ושעה פנויה.</p></div><div class="biz-booking-box"><div class="biz-time-grid"><div class="biz-time">09:00</div><div class="biz-time">10:30</div><div class="biz-time">12:00</div><div class="biz-time">14:00</div><div class="biz-time">16:30</div><div class="biz-time">18:00</div></div></div></div></div></section>`
+    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="rounded-[3rem] bg-slate-950 p-10 text-white"><div class="grid items-center gap-10 lg:grid-cols-2"><div><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-white">מחובר ליומן</p><h2 class="${h2} text-white">קובעים תור ישירות מהאתר</h2><p class="${text} text-white/70">בחירת שירות, תאריך ושעה פנויה.</p></div><div class="rounded-[2rem] bg-white p-6"><div class="grid gap-3 sm:grid-cols-2"><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">09:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">10:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">12:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">14:00</button></div></div></div></div></section>`
   ),
 
   element(
     "bizuply-products",
     "מוצרים מהחנות",
-    "יוחלף בהמשך במוצרי העסק",
+    "יוחלף במוצרי העסק",
     "◈",
     "bizuply",
-    `<section class="biz-section" data-bizuply-block="products"><h2 class="biz-section-title">מוצרים מהחנות</h2><div class="biz-grid-3"><article class="biz-card"><h3 class="biz-card-title">מוצר מהמערכת</h3><p class="biz-card-text">יוחלף אוטומטית במוצרי העסק.</p><div class="biz-price-row"><a class="biz-btn biz-btn-primary">הוספה לסל</a><span class="biz-price">₪129</span></div></article></div></section>`
+    `<section class="${section}" data-section-kind="store" data-bizuply-block="products"><h2 class="${h2} text-center">מוצרים מהחנות</h2><div class="mt-10 grid gap-5 md:grid-cols-3"><article class="${card}"><h3 class="text-2xl font-black text-slate-950">מוצר מהמערכת</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">יוחלף אוטומטית במוצרי העסק.</p><div class="mt-6 flex items-center justify-between"><a class="${primaryBtn}">הוספה לסל</a><span class="text-2xl font-black text-violet-700">₪129</span></div></article></div></section>`
   ),
 
   element(
@@ -703,24 +849,24 @@ export const studioElements: StudioElement[] = [
     "כל ליד ייכנס למערכת",
     "✉",
     "bizuply",
-    `<section class="biz-section" data-bizuply-block="lead-form"><div class="biz-hero-card" style="max-width:820px;margin:auto;"><h2 class="biz-section-title">השאירו פרטים</h2><p class="biz-section-text">כל ליד ייכנס ל־CRM של העסק.</p><form class="biz-form"><input class="biz-input" placeholder="שם מלא"/><input class="biz-input" placeholder="טלפון"/><input class="biz-input" placeholder="אימייל"/><textarea class="biz-textarea" placeholder="הודעה"></textarea><button class="biz-btn biz-btn-primary" type="button">שליחה</button></form></div></section>`
+    `<section class="${section}" data-section-kind="contact" data-bizuply-block="lead-form"><div class="mx-auto max-w-3xl rounded-[3rem] border border-slate-200 bg-white p-8 shadow-[0_30px_100px_rgba(15,23,42,.10)]"><h2 class="${h2}">השאירו פרטים</h2><p class="${text}">כל ליד ייכנס ל־CRM של העסק.</p><form class="mt-8 grid gap-4"><input class="${input}" placeholder="שם מלא"/><input class="${input}" placeholder="טלפון"/><input class="${input}" placeholder="אימייל"/><textarea class="${textarea}" placeholder="הודעה"></textarea><button class="${primaryBtn}" type="button">שליחה</button></form></div></section>`
   ),
 
   element(
     "bizuply-reviews",
     "ביקורות מהמערכת",
-    "ביקורות לקוחות מהמערכת",
+    "ביקורות לקוחות",
     "★",
     "bizuply",
-    `<section class="biz-section" data-bizuply-block="reviews"><h2 class="biz-section-title">ביקורות לקוחות</h2><div class="biz-grid-3"><article class="biz-card"><div style="color:#f59e0b;font-size:22px;">★★★★★</div><p class="biz-card-text">ביקורת מהמערכת תופיע כאן.</p><h3 class="biz-card-title">לקוחה</h3></article></div></section>`
+    `<section class="${section}" data-section-kind="reviews" data-bizuply-block="reviews"><h2 class="${h2} text-center">ביקורות לקוחות</h2><div class="mt-10 grid gap-5 md:grid-cols-3"><article class="${card}"><div class="text-xl text-amber-400">★★★★★</div><p class="mt-4 text-sm font-bold leading-7 text-slate-500">ביקורת מהמערכת תופיע כאן.</p><h3 class="mt-5 text-xl font-black text-slate-950">לקוחה</h3></article></div></section>`
   ),
 
   element(
     "bizuply-club",
     "מועדון לקוחות",
-    "הרשמה למועדון לקוחות וקופונים",
+    "הרשמה וקופונים",
     "♛",
     "bizuply",
-    `<section class="biz-section" data-bizuply-block="customer-club"><div style="border-radius:42px;padding:48px;background:linear-gradient(135deg,#8B5CF6,#EC4899);color:#fff;box-shadow:0 30px 100px rgba(139,92,246,0.28);"><h2 style="margin:0;font-size:42px;font-weight:950;">הצטרפות למועדון לקוחות</h2><p style="margin:14px 0 0;font-weight:700;color:rgba(255,255,255,0.82);">קבלו הטבות, קופונים ועדכונים מהעסק.</p><a class="biz-btn" style="margin-top:24px;background:#fff;color:#111827;">הצטרפות</a></div></section>`
+    `<section class="${section}" data-section-kind="club" data-bizuply-block="customer-club"><div class="rounded-[3rem] bg-gradient-to-l from-violet-700 to-fuchsia-600 p-12 text-white shadow-[0_30px_110px_rgba(139,92,246,.28)]"><h2 class="${h2} text-white">הצטרפות למועדון לקוחות</h2><p class="mt-5 text-lg font-bold leading-8 text-white/80">קבלו הטבות, קופונים ועדכונים מהעסק.</p><a class="mt-8 inline-flex min-h-12 items-center rounded-2xl bg-white px-8 text-sm font-black text-violet-700">הצטרפות</a></div></section>`
   ),
 ];
