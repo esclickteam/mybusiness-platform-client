@@ -373,14 +373,14 @@ function ensureComponentEditable(component: any) {
     toolbar: isSection
       ? [
           {
-            label: "מבנה",
+            label: "✨ החלף מבנה",
             attributes: {
-              title: "בחירת מבנה לסקשן",
+              title: "בחירת מבנה מקצועי לסקשן",
             },
             command: "bizuply-change-layout",
           },
           {
-            label: "תמונה +",
+            label: "＋ תמונה",
             attributes: {
               title: "הוספת תמונה לסקשן",
             },
@@ -886,61 +886,137 @@ function openLayoutVariantsModal(
   const content = document.createElement("div");
 
   content.dir = "rtl";
-  content.className =
-    "w-full bg-white text-slate-950";
+  content.className = "w-full bg-white text-slate-950";
+
+  const kindLabel: Record<SectionKind, string> = {
+    hero: "דף הבית",
+    about: "אודות",
+    services: "שירותים",
+    gallery: "גלריה",
+    store: "חנות",
+    booking: "תיאום תורים",
+    reviews: "ביקורות",
+    contact: "יצירת קשר",
+    club: "מועדון לקוחות",
+    basic: "סקשן חופשי",
+  };
+
+  const currentVariantIds = variants.map((variant) => variant.id).join(",");
 
   content.innerHTML = `
-    <div class="flex items-center justify-between gap-6 border-b border-slate-200 bg-gradient-to-br from-white via-violet-50 to-fuchsia-50 p-8">
+    <div class="flex items-center justify-between gap-6 border-b border-slate-200 bg-gradient-to-br from-white via-violet-50 to-fuchsia-50 px-8 py-7">
       <div>
-        <p class="mb-2 inline-flex rounded-full bg-white px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
-          שינוי מבנה סקשן
-        </p>
+        <div class="mb-3 flex flex-wrap items-center gap-2">
+          <span class="inline-flex rounded-full bg-violet-700 px-4 py-2 text-xs font-black text-white shadow-lg shadow-violet-200">
+            ${kindLabel[kind]}
+          </span>
+
+          <span class="inline-flex rounded-full bg-white px-4 py-2 text-xs font-black text-slate-600 shadow-sm">
+            ${variants.length} מבנים לבחירה
+          </span>
+
+          <span class="inline-flex rounded-full bg-emerald-50 px-4 py-2 text-xs font-black text-emerald-700">
+            משתנה מיד בלחיצה
+          </span>
+        </div>
 
         <h2 class="text-4xl font-black tracking-[-0.05em] text-slate-950">
-          בחרי מבנה חדש
+          בחרי איך הסקשן ייראה
         </h2>
 
-        <p class="mt-3 max-w-[720px] text-sm font-bold leading-7 text-slate-500">
-          כל כרטיסייה היא מבנה אמיתי לסקשן הנבחר. אחרי הבחירה אפשר לערוך טקסט, תמונות,
-          רקעים, צבעים, פינות, ריווחים וכפתורים.
+        <p class="mt-3 max-w-[760px] text-sm font-bold leading-7 text-slate-500">
+          כל כרטיסייה מציגה תצוגה אמיתית של המבנה. לחיצה על מבנה מחליפה אותו מיד באתר,
+          ואחר כך אפשר לערוך טקסטים, תמונות, צבעים, רקעים, כפתורים וריווחים.
         </p>
       </div>
 
-      <div class="hidden h-24 w-24 shrink-0 place-items-center rounded-[30px] bg-gradient-to-br from-violet-700 to-fuchsia-600 text-sm font-black text-white shadow-2xl shadow-violet-200 md:grid">
-        ${kind}
+      <button
+        type="button"
+        data-close-layout-modal="true"
+        class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-xl font-black text-slate-500 shadow-lg transition hover:bg-slate-950 hover:text-white"
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="border-b border-slate-200 bg-white px-8 py-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-2">
+          <button data-filter-layout="all" class="layout-filter-btn rounded-2xl bg-slate-950 px-5 py-3 text-xs font-black text-white">
+            הכל
+          </button>
+          <button data-filter-layout="מומלץ" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
+            מומלצים
+          </button>
+          <button data-filter-layout="רקע" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
+            תמונת רקע
+          </button>
+          <button data-filter-layout="תמונה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
+            תמונות
+          </button>
+          <button data-filter-layout="קרוסלה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
+            קרוסלה
+          </button>
+          <button data-filter-layout="מבנה" class="layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700">
+            מבנים נוספים
+          </button>
+        </div>
+
+        <div class="rounded-2xl bg-slate-50 px-4 py-3 text-xs font-black text-slate-500">
+          ${currentVariantIds ? "בחרי כרטיסייה והמבנה יוחל מיידית" : "אין מבנים"}
+        </div>
       </div>
     </div>
 
-    <div class="max-h-[68vh] overflow-y-auto bg-slate-50 p-6">
-      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+    <div class="max-h-[70vh] overflow-y-auto bg-slate-50 p-6">
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         ${variants
           .map(
-            (variant, index) => `
+            (variant) => `
           <button
             type="button"
             data-variant-id="${variant.id}"
-            class="group overflow-hidden rounded-[28px] border border-slate-200 bg-white text-right shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_28px_90px_rgba(124,58,237,0.18)]"
+            data-variant-badge="${variant.badge}"
+            class="group overflow-hidden rounded-[34px] border border-slate-200 bg-white text-right shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_28px_90px_rgba(124,58,237,0.18)]"
           >
-            <div class="relative h-[190px] overflow-hidden border-b border-slate-100 bg-white">
-              <div class="absolute right-4 top-4 z-10 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-black text-violet-700 shadow-lg">
+            <div class="relative h-[250px] overflow-hidden border-b border-slate-100 bg-white">
+              <div class="absolute right-4 top-4 z-20 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-black text-violet-700 shadow-lg">
                 ${variant.badge}
               </div>
 
-              ${renderVariantPreview(index, variant.previewLabel)}
+              <div class="absolute left-4 top-4 z-20 rounded-full bg-slate-950 px-3 py-1.5 text-[11px] font-black text-white opacity-0 shadow-lg transition group-hover:opacity-100">
+                לחצי להחלפה
+              </div>
+
+              ${renderVariantRealPreview(variant)}
             </div>
 
             <div class="p-5">
-              <h3 class="text-lg font-black text-slate-950">
-                ${variant.title}
-              </h3>
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="text-xl font-black text-slate-950">
+                    ${variant.title}
+                  </h3>
 
-              <p class="mt-2 min-h-[44px] text-xs font-bold leading-6 text-slate-500">
-                ${variant.description}
-              </p>
+                  <p class="mt-2 min-h-[44px] text-xs font-bold leading-6 text-slate-500">
+                    ${variant.description}
+                  </p>
+                </div>
 
-              <span class="mt-4 inline-flex rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 transition group-hover:bg-violet-700 group-hover:text-white">
-                החל מבנה
-              </span>
+                <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-violet-50 text-sm font-black text-violet-700 transition group-hover:bg-violet-700 group-hover:text-white">
+                  ✓
+                </span>
+              </div>
+
+              <div class="mt-5 flex items-center justify-between gap-3">
+                <span class="inline-flex rounded-full bg-slate-100 px-4 py-2 text-xs font-black text-slate-600">
+                  ניתן לעריכה מלאה
+                </span>
+
+                <span class="inline-flex rounded-full bg-violet-700 px-5 py-2 text-xs font-black text-white shadow-lg shadow-violet-100">
+                  החל מבנה
+                </span>
+              </div>
             </div>
           </button>
         `
@@ -949,6 +1025,38 @@ function openLayoutVariantsModal(
       </div>
     </div>
   `;
+
+  content
+    .querySelector<HTMLButtonElement>("[data-close-layout-modal]")
+    ?.addEventListener("click", () => {
+      editor.Modal.close();
+    });
+
+  content.querySelectorAll<HTMLButtonElement>("[data-filter-layout]").forEach(
+    (button) => {
+      button.addEventListener("click", () => {
+        const filter = button.dataset.filterLayout || "all";
+
+        content.querySelectorAll<HTMLButtonElement>(".layout-filter-btn").forEach(
+          (btn) => {
+            btn.className =
+              "layout-filter-btn rounded-2xl bg-slate-100 px-5 py-3 text-xs font-black text-slate-700";
+          }
+        );
+
+        button.className =
+          "layout-filter-btn rounded-2xl bg-slate-950 px-5 py-3 text-xs font-black text-white";
+
+        content.querySelectorAll<HTMLElement>("[data-variant-id]").forEach(
+          (card) => {
+            const badge = card.dataset.variantBadge || "";
+            const shouldShow = filter === "all" || badge === filter;
+            card.style.display = shouldShow ? "block" : "none";
+          }
+        );
+      });
+    }
+  );
 
   content.querySelectorAll<HTMLButtonElement>("[data-variant-id]").forEach(
     (button) => {
@@ -980,6 +1088,10 @@ function openLayoutVariantsModal(
 
           if (nextSection) {
             editor.select(nextSection);
+            nextSection.view?.el?.scrollIntoView?.({
+              behavior: "smooth",
+              block: "center",
+            });
           }
         }, 0);
       });
@@ -992,110 +1104,19 @@ function openLayoutVariantsModal(
   });
 }
 
-function renderVariantPreview(index: number, label: string) {
-  const previewType = index % 10;
-
-  if (previewType === 0) {
-    return `
-      <div class="flex h-full items-center gap-4 bg-gradient-to-br from-violet-50 to-white p-5">
-        <div class="h-24 flex-1 rounded-3xl bg-white shadow-lg"></div>
-        <div class="h-28 flex-1 rounded-3xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg"></div>
-      </div>
-    `;
-  }
-
-  if (previewType === 1) {
-    return `
-      <div class="flex h-full items-center gap-4 bg-gradient-to-br from-white to-violet-50 p-5">
-        <div class="h-28 flex-1 rounded-3xl bg-gradient-to-br from-fuchsia-500 to-violet-500 shadow-lg"></div>
-        <div class="h-24 flex-1 rounded-3xl bg-white shadow-lg"></div>
-      </div>
-    `;
-  }
-
-  if (previewType === 2) {
-    return `
-      <div class="grid h-full place-items-center bg-gradient-to-br from-slate-900 via-violet-950 to-fuchsia-900 p-5 text-center">
-        <div>
-          <div class="mx-auto mb-3 h-4 w-28 rounded-full bg-white/70"></div>
-          <div class="mx-auto h-8 w-52 rounded-2xl bg-white"></div>
-          <div class="mx-auto mt-3 h-3 w-40 rounded-full bg-white/50"></div>
-        </div>
-      </div>
-    `;
-  }
-
-  if (previewType === 3) {
-    return `
-      <div class="grid h-full place-items-center bg-white p-5 text-center">
-        <div>
-          <div class="mx-auto mb-4 h-5 w-28 rounded-full bg-violet-100"></div>
-          <div class="mx-auto h-8 w-64 rounded-2xl bg-slate-950"></div>
-          <div class="mx-auto mt-4 h-3 w-52 rounded-full bg-slate-200"></div>
-        </div>
-      </div>
-    `;
-  }
-
-  if (previewType === 4) {
-    return `
-      <div class="grid h-full grid-cols-2 gap-4 bg-gradient-to-br from-violet-50 to-white p-5">
-        <div class="rounded-3xl bg-gradient-to-br from-violet-400 to-fuchsia-400 shadow-lg"></div>
-        <div class="rounded-3xl bg-gradient-to-br from-slate-200 to-white shadow-lg"></div>
-      </div>
-    `;
-  }
-
-  if (previewType === 5) {
-    return `
-      <div class="grid h-full place-items-center bg-slate-950 p-5">
-        <div class="h-24 w-64 rounded-[2rem] bg-white/10 p-4">
-          <div class="mb-3 h-4 w-24 rounded-full bg-white/40"></div>
-          <div class="h-7 w-44 rounded-xl bg-white"></div>
-        </div>
-      </div>
-    `;
-  }
-
-  if (previewType === 6) {
-    return `
-      <div class="grid h-full place-items-center bg-gradient-to-br from-fuchsia-500 to-violet-700 p-5">
-        <div class="text-center">
-          <div class="mx-auto h-10 w-10 rounded-full bg-white"></div>
-          <div class="mx-auto mt-4 h-8 w-56 rounded-2xl bg-white/90"></div>
-          <div class="mx-auto mt-3 h-3 w-40 rounded-full bg-white/60"></div>
-        </div>
-      </div>
-    `;
-  }
-
-  if (previewType === 7) {
-    return `
-      <div class="flex h-full gap-4 overflow-hidden bg-white p-5">
-        <div class="min-w-[120px] rounded-3xl bg-violet-100"></div>
-        <div class="min-w-[120px] rounded-3xl bg-fuchsia-100"></div>
-        <div class="min-w-[120px] rounded-3xl bg-slate-100"></div>
-      </div>
-    `;
-  }
-
-  if (previewType === 8) {
-    return `
-      <div class="grid h-full place-items-center bg-violet-50 p-5">
-        <div class="grid h-28 w-64 place-items-center rounded-[2rem] border-2 border-dashed border-violet-300 bg-white">
-          <div class="text-center">
-            <div class="mx-auto h-10 w-10 rounded-2xl bg-violet-100"></div>
-            <div class="mt-3 h-3 w-24 rounded-full bg-violet-300"></div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
+function renderVariantRealPreview(variant: SectionLayoutVariant) {
   return `
-    <div class="grid h-full grid-cols-2 gap-4 bg-gradient-to-br from-white to-slate-50 p-5">
-      <div class="rounded-3xl bg-white shadow-lg"></div>
-      <div class="rounded-3xl bg-slate-950 shadow-lg"></div>
+    <div class="pointer-events-none absolute inset-0 overflow-hidden bg-white">
+      <div
+        class="origin-top-right scale-[0.22]"
+        style="
+          width: 1240px;
+          min-height: 960px;
+          transform-origin: top right;
+        "
+      >
+        ${variant.html}
+      </div>
     </div>
   `;
 }
