@@ -47,10 +47,6 @@ const defaultAssets = [
     src: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1400&q=90",
     name: "Product",
   },
-  {
-    src: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1400&q=90",
-    name: "Restaurant",
-  },
 ];
 
 export function initBizuplyEditor({
@@ -185,20 +181,9 @@ export function initBizuplyEditor({
 
     deviceManager: {
       devices: [
-        {
-          name: "Desktop",
-          width: "",
-        },
-        {
-          name: "Tablet",
-          width: "768px",
-          widthMedia: "992px",
-        },
-        {
-          name: "Mobile",
-          width: "390px",
-          widthMedia: "480px",
-        },
+        { name: "Desktop", width: "" },
+        { name: "Tablet", width: "768px", widthMedia: "992px" },
+        { name: "Mobile", width: "390px", widthMedia: "480px" },
       ],
     },
 
@@ -224,16 +209,6 @@ export function initBizuplyEditor({
             modalTitle: "ניהול מדיה",
             uploadTitle: "גררי תמונות לכאן",
           },
-          domComponents: {
-            names: {
-              wrapper: "עמוד",
-              text: "טקסט",
-              image: "תמונה",
-              link: "קישור",
-              section: "סקשן",
-              button: "כפתור",
-            },
-          },
         },
       },
     },
@@ -258,113 +233,79 @@ export function initBizuplyEditor({
 
     editor.Css.addRules(`
       .gjs-selected {
-        outline: 3px solid #8B5CF6 !important;
-        outline-offset: 3px !important;
+        outline: 4px solid #7C3AED !important;
+        outline-offset: 8px !important;
+        box-shadow: 0 0 0 9999px rgba(15,23,42,0.015) !important;
       }
 
       .gjs-hovered {
-        outline: 2px dashed rgba(139, 92, 246, 0.55) !important;
-        outline-offset: 2px !important;
+        outline: 2px dashed rgba(124,58,237,0.55) !important;
+        outline-offset: 6px !important;
+      }
+
+      .gjs-badge {
+        background: linear-gradient(135deg,#7C3AED,#EC4899) !important;
+        color: #fff !important;
+        border-radius: 999px !important;
+        padding: 7px 12px !important;
+        font-weight: 900 !important;
+        font-size: 12px !important;
+        box-shadow: 0 14px 40px rgba(124,58,237,.28) !important;
       }
 
       .gjs-toolbar {
-        border-radius: 16px !important;
+        border-radius: 999px !important;
         overflow: hidden !important;
-        box-shadow: 0 18px 50px rgba(15,23,42,0.22) !important;
+        background: #0F172A !important;
+        box-shadow: 0 20px 70px rgba(15,23,42,.32) !important;
+        padding: 4px !important;
       }
 
       .gjs-toolbar-item {
+        min-height: 34px !important;
+        padding: 0 12px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: #fff !important;
         font-weight: 900 !important;
+        font-size: 12px !important;
+        border-radius: 999px !important;
+        background: transparent !important;
       }
 
-      .bizuply-layout-modal {
-        direction: rtl;
-        font-family: Assistant, Heebo, Arial, sans-serif;
-        padding: 6px;
+      .gjs-toolbar-item:hover {
+        background: rgba(255,255,255,.14) !important;
       }
 
-      .bizuply-layout-modal-head {
-        margin-bottom: 18px;
-        border-radius: 24px;
-        background: linear-gradient(135deg, #f8f5ff, #fff);
-        border: 1px solid #ede9fe;
-        padding: 18px;
+      .gjs-toolbar-item:first-child {
+        background: linear-gradient(135deg,#7C3AED,#EC4899) !important;
       }
 
-      .bizuply-layout-modal-title {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 950;
-        color: #0f172a;
+      .gjs-resizer-h {
+        border-color: #7C3AED !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 6px 16px rgba(124,58,237,.25) !important;
       }
 
-      .bizuply-layout-modal-text {
-        margin: 6px 0 0;
-        font-size: 13px;
-        font-weight: 700;
-        line-height: 1.7;
-        color: #64748b;
+      .gjs-mdl-dialog {
+        width: min(1180px, 92vw) !important;
+        max-width: 1180px !important;
+        border-radius: 34px !important;
+        overflow: hidden !important;
+        box-shadow: 0 38px 160px rgba(15,23,42,.34) !important;
       }
 
-      .bizuply-layout-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
-        max-height: 62vh;
-        overflow: auto;
-        padding-left: 4px;
+      .gjs-mdl-header {
+        display: none !important;
       }
 
-      .bizuply-layout-card {
-        cursor: pointer;
-        text-align: right;
-        border: 1px solid #e2e8f0;
-        border-radius: 24px;
-        background: #fff;
-        padding: 14px;
-        transition: 0.22s ease;
-        box-shadow: 0 12px 34px rgba(15,23,42,0.06);
-      }
-
-      .bizuply-layout-card:hover {
-        transform: translateY(-3px);
-        border-color: #a78bfa;
-        box-shadow: 0 24px 70px rgba(139,92,246,0.16);
-      }
-
-      .bizuply-layout-preview {
-        height: 104px;
-        border-radius: 18px;
-        background:
-          radial-gradient(circle at 20% 20%, rgba(139,92,246,0.22), transparent 34%),
-          linear-gradient(135deg, #f8fafc, #ffffff);
-        border: 1px solid #eef2ff;
-        display: grid;
-        place-items: center;
-        color: #7c3aed;
-        font-size: 12px;
-        font-weight: 950;
-        margin-bottom: 12px;
-      }
-
-      .bizuply-layout-card-title {
-        margin: 0;
-        font-size: 14px;
-        font-weight: 950;
-        color: #0f172a;
-      }
-
-      .bizuply-layout-card-text {
-        margin: 5px 0 0;
-        font-size: 12px;
-        font-weight: 700;
-        line-height: 1.55;
-        color: #64748b;
+      .gjs-mdl-content {
+        padding: 0 !important;
       }
     `);
 
     makeAllComponentsEditable(editor);
-
     editor.select(null);
     onReady?.(editor);
   });
@@ -428,21 +369,36 @@ function ensureComponentEditable(component: any) {
       keyWidth: "width",
       keyHeight: "height",
     },
+
     toolbar: isSection
       ? [
           {
-            label: "שינוי מבנה",
+            label: "מבנה",
             attributes: {
-              title: "שינוי מבנה הסקשן",
+              title: "בחירת מבנה לסקשן",
             },
             command: "bizuply-change-layout",
           },
           {
+            label: "תמונה +",
             attributes: {
-              class: "fa fa-image",
-              title: "תמונת רקע",
+              title: "הוספת תמונה לסקשן",
             },
-            command: "bizuply-set-bg-image",
+            command: "bizuply-add-image-to-section",
+          },
+          {
+            label: "רקע",
+            attributes: {
+              title: "הגדרת תמונה כרקע לסקשן",
+            },
+            command: "bizuply-set-section-bg-image",
+          },
+          {
+            label: "החלף",
+            attributes: {
+              title: "החלפת תמונה בסקשן",
+            },
+            command: "bizuply-replace-image",
           },
           {
             attributes: {
@@ -467,6 +423,13 @@ function ensureComponentEditable(component: any) {
           },
         ]
       : [
+          {
+            label: "החלף",
+            attributes: {
+              title: "החלפת תמונה / עריכת מדיה",
+            },
+            command: "bizuply-replace-image",
+          },
           {
             attributes: {
               class: "fa fa-arrows",
@@ -511,11 +474,6 @@ function ensureComponentEditable(component: any) {
             { id: "_blank", label: "בטאב חדש" },
           ],
         },
-        {
-          type: "text",
-          name: "title",
-          label: "Title",
-        },
       ],
     });
   }
@@ -533,11 +491,6 @@ function ensureComponentEditable(component: any) {
           name: "alt",
           label: "טקסט חלופי",
         },
-        {
-          type: "text",
-          name: "title",
-          label: "Title",
-        },
       ],
     });
   }
@@ -552,11 +505,12 @@ function isSectionComponent(component: any) {
 
   return (
     tagName === "section" ||
-    attrs["data-section-kind"] ||
+    Boolean(attrs["data-section-kind"]) ||
     classes.includes("biz-section") ||
     classes.includes("biz-section-wide") ||
     classes.includes("biz-section-full") ||
-    classes.includes("biz-hero")
+    classes.includes("biz-hero") ||
+    classes.some((className: string) => String(className).includes("section"))
   );
 }
 
@@ -617,6 +571,18 @@ function getSectionKind(component: any): SectionKind {
   return "basic";
 }
 
+function findFirstImage(component: any) {
+  if (!component) return null;
+
+  const tagName = String(component.get?.("tagName") || "").toLowerCase();
+
+  if (tagName === "img") return component;
+
+  const images = component.find?.("img") || [];
+
+  return images[0] || null;
+}
+
 /* =====================================================
    CUSTOM TYPES
 ===================================================== */
@@ -633,7 +599,8 @@ function registerCustomComponentTypes(editor: Editor) {
         el.classList.contains("biz-section") ||
         el.classList.contains("biz-section-wide") ||
         el.classList.contains("biz-section-full") ||
-        el.classList.contains("biz-hero")
+        el.classList.contains("biz-hero") ||
+        el.hasAttribute("data-section-kind")
       ) {
         return { type: "biz-section" };
       }
@@ -766,6 +733,89 @@ function registerCommands(editor: Editor) {
     },
   });
 
+  editor.Commands.add("bizuply-add-image-to-section", {
+    run(currentEditor) {
+      const section = findSelectedSection(currentEditor);
+
+      if (!section) {
+        alert("בחרי סקשן כדי להוסיף אליו תמונה");
+        return;
+      }
+
+      const url = window.prompt("הדביקי כתובת תמונה:");
+      if (!url) return;
+
+      section.append(`
+        <div class="relative mt-8 overflow-hidden rounded-[34px] bg-white p-3 shadow-[0_28px_90px_rgba(15,23,42,0.12)]" data-editable-image-card="true">
+          <img
+            src="${url}"
+            alt=""
+            class="min-h-[320px] w-full rounded-[26px] object-cover"
+            data-editable-image="true"
+          />
+        </div>
+      `);
+
+      setTimeout(() => {
+        makeAllComponentsEditable(currentEditor);
+
+        const images = section.find("img");
+        const lastImage = images[images.length - 1];
+
+        if (lastImage) currentEditor.select(lastImage);
+      }, 0);
+    },
+  });
+
+  editor.Commands.add("bizuply-replace-image", {
+    run(currentEditor) {
+      const selected = currentEditor.getSelected();
+
+      if (!selected) {
+        alert("בחרי תמונה או סקשן שיש בו תמונה");
+        return;
+      }
+
+      const image = findFirstImage(selected);
+
+      if (!image) {
+        alert("לא נמצאה תמונה באלמנט הנבחר");
+        return;
+      }
+
+      const url = window.prompt("הדביקי כתובת תמונה חדשה:");
+      if (!url) return;
+
+      image.addAttributes({
+        src: url,
+      });
+
+      currentEditor.select(image);
+    },
+  });
+
+  editor.Commands.add("bizuply-set-section-bg-image", {
+    run(currentEditor) {
+      const section = findSelectedSection(currentEditor);
+
+      if (!section) {
+        alert("בחרי סקשן כדי להגדיר לו תמונת רקע");
+        return;
+      }
+
+      const url = window.prompt("הדביקי כתובת תמונה לרקע הסקשן:");
+      if (!url) return;
+
+      section.addStyle({
+        "background-image": `linear-gradient(135deg, rgba(2,6,23,0.58), rgba(2,6,23,0.20)), url("${url}")`,
+        "background-size": "cover",
+        "background-position": "center",
+        "background-repeat": "no-repeat",
+        color: "#ffffff",
+      });
+    },
+  });
+
   editor.Commands.add("bizuply-duplicate", {
     run(currentEditor) {
       const selected = currentEditor.getSelected();
@@ -821,28 +871,11 @@ function registerCommands(editor: Editor) {
       });
     },
   });
-
-  editor.Commands.add("bizuply-set-bg-image", {
-    run(currentEditor) {
-      const selected = currentEditor.getSelected();
-
-      if (!selected) {
-        alert("בחרי אלמנט כדי להגדיר תמונת רקע");
-        return;
-      }
-
-      const url = window.prompt("הדביקי כתובת תמונה:");
-      if (!url) return;
-
-      selected.addStyle({
-        "background-image": `linear-gradient(rgba(2,6,23,0.38), rgba(2,6,23,0.38)), url("${url}")`,
-        "background-size": "cover",
-        "background-position": "center",
-        "background-repeat": "no-repeat",
-      });
-    },
-  });
 }
+
+/* =====================================================
+   PREMIUM LAYOUT MODAL
+===================================================== */
 
 function openLayoutVariantsModal(
   editor: Editor,
@@ -851,33 +884,69 @@ function openLayoutVariantsModal(
   variants: SectionLayoutVariant[]
 ) {
   const content = document.createElement("div");
-  content.className = "bizuply-layout-modal";
+
+  content.dir = "rtl";
+  content.className =
+    "w-full bg-white text-slate-950";
 
   content.innerHTML = `
-    <div class="bizuply-layout-modal-head">
-      <p class="bizuply-layout-modal-title">שינוי מבנה סקשן</p>
-      <p class="bizuply-layout-modal-text">
-        בחרי מבנה חדש שמתאים לסוג הסקשן: ${kind}.
-        המבנה יחליף את הסקשן הנבחר, ואז תוכלי לערוך טקסט, תמונות, צבעים, פינות וריווחים.
-      </p>
+    <div class="flex items-center justify-between gap-6 border-b border-slate-200 bg-gradient-to-br from-white via-violet-50 to-fuchsia-50 p-8">
+      <div>
+        <p class="mb-2 inline-flex rounded-full bg-white px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
+          שינוי מבנה סקשן
+        </p>
+
+        <h2 class="text-4xl font-black tracking-[-0.05em] text-slate-950">
+          בחרי מבנה חדש
+        </h2>
+
+        <p class="mt-3 max-w-[720px] text-sm font-bold leading-7 text-slate-500">
+          כל כרטיסייה היא מבנה אמיתי לסקשן הנבחר. אחרי הבחירה אפשר לערוך טקסט, תמונות,
+          רקעים, צבעים, פינות, ריווחים וכפתורים.
+        </p>
+      </div>
+
+      <div class="hidden h-24 w-24 shrink-0 place-items-center rounded-[30px] bg-gradient-to-br from-violet-700 to-fuchsia-600 text-sm font-black text-white shadow-2xl shadow-violet-200 md:grid">
+        ${kind}
+      </div>
     </div>
 
-    <div class="bizuply-layout-grid">
-      ${variants
-        .map(
-          (variant) => `
-        <button
-          type="button"
-          class="bizuply-layout-card"
-          data-variant-id="${variant.id}"
-        >
-          <div class="bizuply-layout-preview">${variant.previewLabel}</div>
-          <p class="bizuply-layout-card-title">${variant.title}</p>
-          <p class="bizuply-layout-card-text">${variant.description}</p>
-        </button>
-      `
-        )
-        .join("")}
+    <div class="max-h-[68vh] overflow-y-auto bg-slate-50 p-6">
+      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        ${variants
+          .map(
+            (variant, index) => `
+          <button
+            type="button"
+            data-variant-id="${variant.id}"
+            class="group overflow-hidden rounded-[28px] border border-slate-200 bg-white text-right shadow-[0_18px_55px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_28px_90px_rgba(124,58,237,0.18)]"
+          >
+            <div class="relative h-[190px] overflow-hidden border-b border-slate-100 bg-white">
+              <div class="absolute right-4 top-4 z-10 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-black text-violet-700 shadow-lg">
+                ${variant.badge}
+              </div>
+
+              ${renderVariantPreview(index, variant.previewLabel)}
+            </div>
+
+            <div class="p-5">
+              <h3 class="text-lg font-black text-slate-950">
+                ${variant.title}
+              </h3>
+
+              <p class="mt-2 min-h-[44px] text-xs font-bold leading-6 text-slate-500">
+                ${variant.description}
+              </p>
+
+              <span class="mt-4 inline-flex rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 transition group-hover:bg-violet-700 group-hover:text-white">
+                החל מבנה
+              </span>
+            </div>
+          </button>
+        `
+          )
+          .join("")}
+      </div>
     </div>
   `;
 
@@ -885,13 +954,17 @@ function openLayoutVariantsModal(
     (button) => {
       button.addEventListener("click", () => {
         const variantId = button.dataset.variantId;
+
         const selectedVariant = variants.find(
           (variant) => variant.id === variantId
         );
 
         if (!selectedVariant) return;
 
-        const replaced = section.replaceWith(selectedVariant.html);
+        const parent = section.parent?.();
+        const index = parent ? parent.components().indexOf(section) : -1;
+
+        section.replaceWith(selectedVariant.html);
         editor.Modal.close();
 
         setTimeout(() => {
@@ -899,12 +972,14 @@ function openLayoutVariantsModal(
 
           const wrapper = editor.getWrapper();
           const allSections = wrapper?.find("section") || [];
-          const nextSection = allSections[allSections.length - 1];
+
+          const nextSection =
+            index >= 0 && allSections[index]
+              ? allSections[index]
+              : allSections[allSections.length - 1];
 
           if (nextSection) {
             editor.select(nextSection);
-          } else if (Array.isArray(replaced) && replaced[0]) {
-            editor.select(replaced[0]);
           }
         }, 0);
       });
@@ -912,9 +987,117 @@ function openLayoutVariantsModal(
   );
 
   editor.Modal.open({
-    title: "בחירת מבנה",
+    title: "",
     content,
   });
+}
+
+function renderVariantPreview(index: number, label: string) {
+  const previewType = index % 10;
+
+  if (previewType === 0) {
+    return `
+      <div class="flex h-full items-center gap-4 bg-gradient-to-br from-violet-50 to-white p-5">
+        <div class="h-24 flex-1 rounded-3xl bg-white shadow-lg"></div>
+        <div class="h-28 flex-1 rounded-3xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg"></div>
+      </div>
+    `;
+  }
+
+  if (previewType === 1) {
+    return `
+      <div class="flex h-full items-center gap-4 bg-gradient-to-br from-white to-violet-50 p-5">
+        <div class="h-28 flex-1 rounded-3xl bg-gradient-to-br from-fuchsia-500 to-violet-500 shadow-lg"></div>
+        <div class="h-24 flex-1 rounded-3xl bg-white shadow-lg"></div>
+      </div>
+    `;
+  }
+
+  if (previewType === 2) {
+    return `
+      <div class="grid h-full place-items-center bg-gradient-to-br from-slate-900 via-violet-950 to-fuchsia-900 p-5 text-center">
+        <div>
+          <div class="mx-auto mb-3 h-4 w-28 rounded-full bg-white/70"></div>
+          <div class="mx-auto h-8 w-52 rounded-2xl bg-white"></div>
+          <div class="mx-auto mt-3 h-3 w-40 rounded-full bg-white/50"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (previewType === 3) {
+    return `
+      <div class="grid h-full place-items-center bg-white p-5 text-center">
+        <div>
+          <div class="mx-auto mb-4 h-5 w-28 rounded-full bg-violet-100"></div>
+          <div class="mx-auto h-8 w-64 rounded-2xl bg-slate-950"></div>
+          <div class="mx-auto mt-4 h-3 w-52 rounded-full bg-slate-200"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (previewType === 4) {
+    return `
+      <div class="grid h-full grid-cols-2 gap-4 bg-gradient-to-br from-violet-50 to-white p-5">
+        <div class="rounded-3xl bg-gradient-to-br from-violet-400 to-fuchsia-400 shadow-lg"></div>
+        <div class="rounded-3xl bg-gradient-to-br from-slate-200 to-white shadow-lg"></div>
+      </div>
+    `;
+  }
+
+  if (previewType === 5) {
+    return `
+      <div class="grid h-full place-items-center bg-slate-950 p-5">
+        <div class="h-24 w-64 rounded-[2rem] bg-white/10 p-4">
+          <div class="mb-3 h-4 w-24 rounded-full bg-white/40"></div>
+          <div class="h-7 w-44 rounded-xl bg-white"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (previewType === 6) {
+    return `
+      <div class="grid h-full place-items-center bg-gradient-to-br from-fuchsia-500 to-violet-700 p-5">
+        <div class="text-center">
+          <div class="mx-auto h-10 w-10 rounded-full bg-white"></div>
+          <div class="mx-auto mt-4 h-8 w-56 rounded-2xl bg-white/90"></div>
+          <div class="mx-auto mt-3 h-3 w-40 rounded-full bg-white/60"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (previewType === 7) {
+    return `
+      <div class="flex h-full gap-4 overflow-hidden bg-white p-5">
+        <div class="min-w-[120px] rounded-3xl bg-violet-100"></div>
+        <div class="min-w-[120px] rounded-3xl bg-fuchsia-100"></div>
+        <div class="min-w-[120px] rounded-3xl bg-slate-100"></div>
+      </div>
+    `;
+  }
+
+  if (previewType === 8) {
+    return `
+      <div class="grid h-full place-items-center bg-violet-50 p-5">
+        <div class="grid h-28 w-64 place-items-center rounded-[2rem] border-2 border-dashed border-violet-300 bg-white">
+          <div class="text-center">
+            <div class="mx-auto h-10 w-10 rounded-2xl bg-violet-100"></div>
+            <div class="mt-3 h-3 w-24 rounded-full bg-violet-300"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="grid h-full grid-cols-2 gap-4 bg-gradient-to-br from-white to-slate-50 p-5">
+      <div class="rounded-3xl bg-white shadow-lg"></div>
+      <div class="rounded-3xl bg-slate-950 shadow-lg"></div>
+    </div>
+  `;
 }
 
 /* =====================================================
