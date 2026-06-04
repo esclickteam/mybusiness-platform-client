@@ -1,10 +1,13 @@
 import type { Editor } from "grapesjs";
+import type * as React from "react";
 
 /* =====================================================
    DEVICE / VIEW
 ===================================================== */
 
 export type DeviceMode = "Desktop" | "Tablet" | "Mobile";
+
+export type Direction = "rtl" | "ltr";
 
 /* =====================================================
    MAIN STUDIO PANELS
@@ -42,6 +45,7 @@ export type AnimationPresetValue =
   | "fade-up"
   | "zoom-in"
   | "slide-right"
+  | "slide-left"
   | "blur-reveal"
   | "float-soft"
   | "pulse-soft";
@@ -82,26 +86,78 @@ export type StudioElement = {
 };
 
 /* =====================================================
-   SECTION TEMPLATES
+   SECTION KINDS
+   Used by:
+   - studio sidebar sections
+   - section templates
+   - Grapes toolbar: "✨ מבנה"
+   - getSectionLayoutVariants(kind)
 ===================================================== */
 
-export type SectionCategory =
+export type SectionKind =
   | "header"
+  | "hero"
   | "welcome"
   | "about"
+  | "team"
   | "services"
   | "gallery"
-  | "testimonials"
   | "contact"
+  | "promotion"
+  | "subscribe"
+  | "testimonials"
+  | "reviews"
+  | "clients"
   | "store"
+  | "booking"
   | "bookings"
-  | "forms"
+  | "events"
   | "club"
   | "bot"
   | "social"
   | "course"
   | "miniSaas"
-  | "basic";
+  | "basic"
+  | "text"
+  | "list"
+  | "form"
+  | "forms"
+  | "savedSections";
+
+/* =====================================================
+   SECTION TEMPLATES
+   Used by the sidebar category list.
+===================================================== */
+
+export type SectionCategory =
+  | "header"
+  | "hero"
+  | "welcome"
+  | "about"
+  | "team"
+  | "services"
+  | "gallery"
+  | "reviews"
+  | "testimonials"
+  | "clients"
+  | "contact"
+  | "promotion"
+  | "subscribe"
+  | "store"
+  | "booking"
+  | "bookings"
+  | "events"
+  | "forms"
+  | "form"
+  | "club"
+  | "bot"
+  | "social"
+  | "course"
+  | "miniSaas"
+  | "basic"
+  | "text"
+  | "list"
+  | "savedSections";
 
 export type SectionTemplate = {
   id: string;
@@ -114,25 +170,8 @@ export type SectionTemplate = {
 
 /* =====================================================
    SECTION LAYOUT VARIANTS
-   Used by Grapes toolbar: "✨ מבנה"
+   Every card in the modal “בחרי מבנה”.
 ===================================================== */
-
-export type SectionKind =
-  | "header"
-  | "hero"
-  | "about"
-  | "services"
-  | "gallery"
-  | "store"
-  | "booking"
-  | "reviews"
-  | "contact"
-  | "club"
-  | "bot"
-  | "social"
-  | "course"
-  | "miniSaas"
-  | "basic";
 
 export type SectionLayoutVariant = {
   id: string;
@@ -142,11 +181,34 @@ export type SectionLayoutVariant = {
   previewLabel: string;
   badge: string;
   html: string;
+
+  /** Optional real preview image for Wix-style cards. */
+  previewImage?: string;
+
+  /** Optional tags for future filtering: Luxury / Minimal / Dark / RTL / LTR / SaaS etc. */
+  tags?: string[];
+
+  /** Recommended direction for the template. */
+  direction?: Direction;
+
+  /** Marks the layout as recommended/promoted in the modal. */
+  featured?: boolean;
 };
 
 /* =====================================================
    PAGE TEMPLATES
 ===================================================== */
+
+export type PageTemplateKind =
+  | "business"
+  | "landing"
+  | "store"
+  | "booking"
+  | "bookings"
+  | "portfolio"
+  | "course"
+  | "miniSaas"
+  | "blank";
 
 export type PageTemplate = {
   id: string;
@@ -154,6 +216,25 @@ export type PageTemplate = {
   category: string;
   description: string;
   preview: string;
+  html: string;
+};
+
+export type StudioPageTemplate = {
+  id: string;
+  title: string;
+  description: string;
+  badge?: string;
+  kind: PageTemplateKind;
+  previewImage?: string;
+  html: string;
+};
+
+export type StudioSectionTemplate = {
+  id: string;
+  title: string;
+  description: string;
+  badge?: string;
+  sections: SectionKind[];
   html: string;
 };
 
@@ -179,6 +260,7 @@ export type ThemePalette = {
   id: string;
   name: string;
   description: string;
+
   colors: {
     primary: string;
     secondary: string;
@@ -186,11 +268,68 @@ export type ThemePalette = {
     background: string;
     text: string;
     muted: string;
+    border?: string;
+    buttonText?: string;
   };
+
   font: {
     heading: FontOption;
     body: FontOption;
   };
+
+  preview?: {
+    from?: string;
+    to?: string;
+  };
+};
+
+/* =====================================================
+   HEADER SETTINGS
+===================================================== */
+
+export type HeaderEditableField =
+  | "logo"
+  | "businessName"
+  | "tagline"
+  | "navLinks"
+  | "cta"
+  | "login"
+  | "logout"
+  | "direction"
+  | "colors"
+  | "background"
+  | "shadow"
+  | "radius"
+  | "sticky";
+
+export type HeaderNavLink = {
+  id: string;
+  label: string;
+  href: string;
+  visible?: boolean;
+};
+
+export type HeaderSettings = {
+  direction: Direction;
+  businessName: string;
+  tagline?: string;
+  logoUrl?: string;
+  links: HeaderNavLink[];
+
+  showLogin?: boolean;
+  showLogout?: boolean;
+  showCta?: boolean;
+
+  ctaText?: string;
+  ctaHref?: string;
+
+  backgroundColor?: string;
+  textColor?: string;
+  mutedColor?: string;
+  buttonColor?: string;
+  buttonTextColor?: string;
+
+  sticky?: boolean;
 };
 
 /* =====================================================
@@ -200,6 +339,7 @@ export type ThemePalette = {
 export type BizuplySmartBlockType =
   | "services"
   | "booking"
+  | "bookings"
   | "products"
   | "lead-form"
   | "customer-club"
@@ -413,13 +553,37 @@ export type SiteSavePayload = {
   projectData: unknown;
   updatedAt: string;
 
-  /**
-   * שדות אופציונליים להמשך חיבור למונגו / פרסום אמיתי
-   */
+  /** שדות אופציונליים להמשך חיבור למונגו / פרסום אמיתי */
   status?: SitePageStatus;
   seo?: SiteSeoSettings;
   domain?: SiteDomainSettings;
   brand?: SiteBrandSettings;
+};
+
+/* =====================================================
+   SAVED STUDIO PAGE
+===================================================== */
+
+export type StudioSavedPage = {
+  id: string;
+  name: string;
+  slug?: string;
+  html: string;
+  css?: string;
+  projectData?: unknown;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+/* =====================================================
+   SIMPLE OPTION TYPES
+===================================================== */
+
+export type StudioOption<T extends string = string> = {
+  id: T;
+  label: string;
+  icon?: string;
+  description?: string;
 };
 
 /* =====================================================
